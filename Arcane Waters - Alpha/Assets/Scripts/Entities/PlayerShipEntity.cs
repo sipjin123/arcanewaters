@@ -56,11 +56,8 @@ public class PlayerShipEntity : ShipEntity
    public Color recoveringColor, defaultColor;
 
    // Speedup variables
-   public float speedMeter = 10;
-   public static float SPEEDUP_METER_MAX = 10;
-   public bool isReadyToSpeedup = true;
-   public float boostDepleteValue = 2;
-   public float boostRecoverValue = 1.6f;
+   public float boostCooldown = 3.0f;
+   public float boostForce = 10.0f;
 
    // Gets set to true when the player ship is hidden and cannot be damaged or controlled
    [SyncVar]
@@ -89,6 +86,9 @@ public class PlayerShipEntity : ShipEntity
 
    // The filled target arrow image used for showing the player's charge amount
    public Image targetArrow;
+
+   // GameObject containing the guildicon
+   public GameObject guildIconGO;
 
    // The different flags the ship can display
    public enum Flag
@@ -165,6 +165,8 @@ public class PlayerShipEntity : ShipEntity
          _targetCircle.gameObject.SetActive(false);
       }
 
+      updateSpeedUpDisplay();
+
       // Recolor the ship flag if needed
       if (isClient) {
          Instance instance = getInstance();
@@ -181,17 +183,6 @@ public class PlayerShipEntity : ShipEntity
                setFlag(Flag.Group);
             }
          }
-      }
-
-      if (!isLocalPlayer) {
-         // Display the ship boost meter for remote players based on velocity
-         if (getVelocity().magnitude > NETWORK_SHIP_SPEEDUP_MAGNITUDE) {
-            updateSpeedUpDisplay(0, true, false);
-         } else {
-            updateSpeedUpDisplay(0, false, false);
-         }
-
-         return;
       }
 
       // Adjust the volume on our movement audio source
@@ -247,50 +238,12 @@ public class PlayerShipEntity : ShipEntity
       }
 
       // Speed ship boost feature
-      if (!isSpeedingUp) {
-         if (isReadyToSpeedup && InputManager.isSpeedUpKeyPressed() && getVelocity().magnitude >= SHIP_SPEEDUP_MAGNITUDE) {
-            isSpeedingUp = true;
+      if (InputManager.isSpeedUpKeyPressed() && !isBoostCoolingDown() && isLocalPlayer) {
+         Cmd_RequestServerAddBoostForce(InputManager.getMovementInput(), ForceMode2D.Impulse);
+         _lastBoostTime = NetworkTime.time;
 
-            // Let the server and other clients know we started speeding up
-            updateSpeedUpDisplay(speedMeter, true, false);
-         }
-
-         if (speedMeter < SPEEDUP_METER_MAX) {
-            speedMeter += Time.deltaTime * boostRecoverValue;
-
-            shipBoostCooldownObj.SetActive(true);
-            shipBoostCooldownIcon.sprite = cooldownIconSprites[(int) speedMeter];
-
-            if (speedMeter >= SPEEDUP_METER_MAX) {
-               maxBoostEffectAnimation.Play("Trigger");
-            }
-         } else {
-            shipBoostCooldownObj.SetActive(false);
-            isReadyToSpeedup = true;
-         }
-      } else {
-         if (InputManager.isSpeedUpKeyReleased() || (InputManager.isSpeedUpKeyPressed() && getVelocity().magnitude < SHIP_SLOWDOWN_MAGNITUDE)) {
-            isSpeedingUp = false;
-            updateSpeedUpDisplay(speedMeter, false, false);
-
-            // Trigger the tutorial
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.ShipSpeedUp);
-         }
-
-         if (speedMeter > 0) {
-            speedMeter -= Time.deltaTime * boostDepleteValue;
-
-            shipBoostCooldownObj.SetActive(true);
-            shipBoostCooldownIcon.sprite = cooldownIconSprites[(int) speedMeter];
-         } else {
-            shipBoostCooldownObj.SetActive(false);
-            isReadyToSpeedup = false;
-            isSpeedingUp = false;
-            updateSpeedUpDisplay(speedMeter, false, false);
-
-            // Trigger the tutorial
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.ShipSpeedUp);
-         }
+         // Trigger the tutorial
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.ShipSpeedUp);
       }
    }
 
@@ -516,21 +469,25 @@ public class PlayerShipEntity : ShipEntity
       ChatPanel.self.addChatInfo(new ChatInfo(0, "Changed status type to: " + ((Status.Type)newStatusEffect).ToString(), System.DateTime.Now, ChatInfo.Type.System));
    }
 
-   private void updateSpeedUpDisplay (float meter, bool isOn, bool isReadySpeedup) {
-      // Handle GUI
-      if (isLocalPlayer) {
-         if (meter < SPEEDUP_METER_MAX) {
-            speedupGUI.enabled = true;
-            speedUpBar.fillAmount = meter / SPEEDUP_METER_MAX;
-         } 
-         speedUpBar.color = isReadySpeedup ? defaultColor : recoveringColor;
-      } else {
-         speedupGUI.enabled = false;
+   private void updateSpeedUpDisplay () {
+      const float FAST_SPEED = 0.5f;
+      foreach (SpriteRenderer renderer in speedUpEffectHolders) {
+         renderer.enabled = (_body.velocity.magnitude > FAST_SPEED);
       }
 
-      // Handle sprite effects
-      foreach (SpriteRenderer spriteRender in speedUpEffectHolders) {
-         spriteRender.enabled = isOn;
+      if (!isLocalPlayer) {
+         speedupGUI.enabled = false;
+         return;
+      }
+
+      bool isOn = isBoostCoolingDown();
+      
+      if (isOn) {
+         float timeSinceBoost = (float)(NetworkTime.time - _lastBoostTime);
+         speedupGUI.enabled = true;
+         speedUpBar.fillAmount = timeSinceBoost / boostCooldown;
+      } else {
+         speedupGUI.enabled = false;
       }
    }
 
@@ -629,8 +586,10 @@ public class PlayerShipEntity : ShipEntity
    }
 
    protected void adjustMovementAudio () {
-      float volumeModifier = isMoving() ? Time.deltaTime * .5f : -Time.deltaTime * .5f;
-      _movementAudioSource.volume += volumeModifier;
+      if (isLocalPlayer) {
+         float volumeModifier = isMoving() ? Time.deltaTime * .5f : -Time.deltaTime * .5f;
+         _movementAudioSource.volume += volumeModifier;
+      }
    }
 
    public float getAngleChangeSpeed () {
@@ -675,14 +634,14 @@ public class PlayerShipEntity : ShipEntity
             }
 
             _movementInputDirection = inputVector;
-            Cmd_RequestServerAddForce(inputVector, isSpeedingUp);
+            Cmd_RequestServerAddMovementForce(inputVector, isSpeedingUp);
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.MoveShip);
          }
       }
    }
 
    [Command]
-   protected void Cmd_RequestServerAddForce (Vector2 direction, bool isSpeedingUp) {
+   protected void Cmd_RequestServerAddMovementForce (Vector2 direction, bool isSpeedingUp) {
       if (NetworkTime.time - _lastInputChangeTime > getInputDelay()) {
          Vector2 forceToApply = direction;
 
@@ -697,6 +656,16 @@ public class PlayerShipEntity : ShipEntity
          _lastInputChangeTime = NetworkTime.time;
          this.isSpeedingUp = isSpeedingUp;
       }
+   }
+
+   [Command]
+   protected void Cmd_RequestServerAddBoostForce (Vector2 direction, ForceMode2D mode) {
+      if (isBoostCoolingDown()) {
+         return;
+      }
+
+      _body.AddForce(direction.normalized * boostForce, mode);
+      _lastBoostTime = NetworkTime.time;
    }
 
    protected override void updateMassAndDrag (bool increasedMass) {
@@ -924,6 +893,11 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
+   private bool isBoostCoolingDown () {
+      float timeSinceBoost = (float) (NetworkTime.time - _lastBoostTime);
+      return (timeSinceBoost < boostCooldown);
+   }
+
    #region Private Variables
 
    // Our ship movement sound
@@ -967,6 +941,9 @@ public class PlayerShipEntity : ShipEntity
 
    // The current flag being displayed by the ship
    private Flag _currentFlag = Flag.None;
+
+   // When the player last boosted
+   private double _lastBoostTime = -3.0f;
 
    #endregion
 }

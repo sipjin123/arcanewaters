@@ -2230,6 +2230,12 @@ public class RPCManager : NetworkBehaviour
             if (success) {
                // Let the player know that a friendship invitation has been sent
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, feedbackMessage);
+
+               // Let the potential friend know that he has got invitation
+               NetEntity friend = EntityManager.self.getEntity(friendUserId);
+               if (friend) {
+                  friend.rpc.checkForPendingFriendshipRequests();
+               }
             } else {
                ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, feedbackMessage);
             }
@@ -2373,7 +2379,7 @@ public class RPCManager : NetworkBehaviour
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (success) {
                // Let the player know that he has a new friend
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, feedbackMessage);
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.FriendshipInvitationAccepted, _player, feedbackMessage);
 
                // Let the new friend know that he was accepted
                NetEntity friend = EntityManager.self.getEntity(friendUserId);
@@ -3875,6 +3881,13 @@ public class RPCManager : NetworkBehaviour
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Target_ReceiveVoyageGroupMembers(_player.connectionToClient, groupMembersInfo.ToArray());
+
+            // Also send updated info of this user to the other group members
+            foreach (VoyageGroupMemberCellInfo cellInfo in groupMembersInfo) {
+               if (cellInfo.userId == _player.userId) {
+                  ServerNetworkingManager.self.sendMemberPartialUpdateToGroup(_player.voyageGroupId, cellInfo.userId, cellInfo.userName, cellInfo.userXP, cellInfo.areaKey);
+               }
+            }
          });
       });
    }

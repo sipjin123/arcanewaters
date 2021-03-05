@@ -168,7 +168,7 @@ public class ChatPanel : MonoBehaviour {
       // Focus the chat window if the forward slash key is released
       if ((Input.GetKeyUp(KeyCode.Slash))) {
 
-         if (!wasJustFocused()) {
+         if (!wasJustFocused() && nameInputField.isFocused) {
             inputField.text = "/";
 
             // Activate the input field in the next frame to avoid weird interactions

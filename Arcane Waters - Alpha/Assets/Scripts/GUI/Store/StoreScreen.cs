@@ -134,23 +134,8 @@ public class StoreScreen : Panel {
 
    public void getGemsButtonPressed () {
       if (Global.player != null) {
-         confirmGoToPaymentWall();
+         // TODO: Steam billing integration
       }
-   }
-
-   public void confirmGoToPaymentWall () {
-      // Associate a new function with the confirmation button
-      PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
-      PanelManager.self.confirmScreen.linkText.text = "arcanewaters.com/terms.php";
-      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => openPaymentWall());
-
-      // Show a confirmation panel with the user name
-      PanelManager.self.confirmScreen.show("To purchase gems, you must agree to the following terms: ");
-   }
-
-   public void openPaymentWall () {
-      PanelManager.self.confirmScreen.hide();
-      PaymentwallManager.self.openWebsite(Global.player.accountId);
    }
 
    public void selectItem (StoreItemBox itemBox) {

@@ -67,7 +67,7 @@ public class WhisperAutoCompletePanel : MonoBehaviour {
    public void updatePanel () {
       if (inputFieldFocused || _mouseOverPanel) {
          ChatManager.self.tryAutoCompleteWhisperName();
-      } else if (!_anyButtonSelected) {
+      } else {
          setAutoCompletes(null);
       }
 

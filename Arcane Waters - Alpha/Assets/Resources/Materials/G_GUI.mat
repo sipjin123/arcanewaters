@@ -99,7 +99,6 @@ Material:
     - _StencilWriteMask: 255
     - _Threshold: 0.05
     - _UVSec: 0
-    - _UseHatStencil: 0
     - _UseUIAlphaClip: 0
     - _WaterAlpha: 0
     - _WaterHeight: 0

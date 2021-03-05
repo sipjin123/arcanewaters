@@ -9,7 +9,6 @@ using System.Xml;
 using MapCreationTool;
 using MapCreationTool.Serialization;
 using System.IO;
-using SimpleJSON;
 using MapCustomization;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
@@ -9030,13 +9029,13 @@ public class DB_Main : DB_MainStub
       // Check config file
       if (File.Exists(dbServerConfigFile)) {
          string dbServerConfigContent = File.ReadAllText(dbServerConfigFile);
-         JSONNode dbServerConfig = JSON.Parse(dbServerConfigContent);
+         Dictionary<string, object> dbServerConfig = Json.Deserialize(dbServerConfigContent) as Dictionary<string, object>;
 
          DB_Main.setServer(
-            dbServerConfig["AW_DB_SERVER"].Value,
-            dbServerConfig["AW_DB_NAME"].Value,
-            dbServerConfig["AW_DB_USER"].Value,
-            dbServerConfig["AW_DB_PASS"].Value
+            dbServerConfig["AW_DB_SERVER"].ToString(),
+            dbServerConfig["AW_DB_NAME"].ToString(),
+            dbServerConfig["AW_DB_USER"].ToString(),
+            dbServerConfig["AW_DB_PASS"].ToString()
          );
       }
 

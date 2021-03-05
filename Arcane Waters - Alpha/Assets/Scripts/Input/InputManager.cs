@@ -209,7 +209,7 @@ public class InputManager : MonoBehaviour
 
    public static bool isSpeedUpKeyPressed () {
       if (isActionInputEnabled()) {
-         return getKeyAction(KeyAction.SpeedUp);
+         return getKeyActionDown(KeyAction.SpeedUp);
       }
 
       return false;

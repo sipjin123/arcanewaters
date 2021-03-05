@@ -121,7 +121,7 @@ public class AutoCompletePanel : MonoBehaviour {
    public void updatePanel () {
       if (inputFieldFocused || _mouseOverPanel) {
          ChatManager.self.tryAutoCompleteChatCommand();
-      } else if (!_anyButtonSelected) {
+      } else {
          setAutoCompletes(null);
       }
 

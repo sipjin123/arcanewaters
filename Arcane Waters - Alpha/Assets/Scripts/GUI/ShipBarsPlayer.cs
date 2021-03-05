@@ -44,17 +44,6 @@ public class ShipBarsPlayer : ShipBars
       showCharacterPortrait();
    }
 
-   protected override void Update () {
-      base.Update();
-
-      if (_entity == null) {
-         return;
-      }
-
-      // Enable the empty column to correctly align the character portrait when there is no guild icon
-      togglableSpacer.SetActive(!guildIcon.gameObject.activeSelf && !barsContainer.activeSelf);
-   }
-
    private IEnumerator CO_InitializeUserInfo () {
       // Wait until the entity has been initialized
       while (Util.isEmpty(_entity.entityName)) {

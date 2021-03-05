@@ -133,7 +133,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    private void OnDisable () {
       // If we are the local player, activate the camera's audio listener
-      if (isLocalPlayer) {
+      if (isLocalPlayer && !ClientManager.isApplicationQuitting) {
          if (!_audioListener) {
             _audioListener = GetComponent<AudioListener>();
          }

@@ -242,9 +242,9 @@ public class ClientMessageManager : MonoBehaviour {
                friendListPanel.refreshPanel();
             }
 
-            // Show a confirmation panel if there is a custom message to display
+            // Add the confirmation message in the chat panel
             if (!"".Equals(msg.customMessage)) {
-               PanelManager.self.noticeScreen.show(msg.customMessage);
+               ChatManager.self.addChat(msg.customMessage, msg.timestamp, ChatInfo.Type.System);
             }
             return;
 

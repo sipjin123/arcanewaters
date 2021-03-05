@@ -609,14 +609,9 @@ public class NetEntity : NetworkBehaviour
          this.guildIcon.setSigil(this.guildIconSigil, this.guildIconSigilPalettes);
       }
 
-      // Turn guild icon on/off for land character
-      if (this is PlayerBodyEntity) {
-         if (OptionsPanel.allGuildIconsShowing) {
-            showGuildIcon();
-         } else {
-            hideGuildIcon();
-         }
-      }
+      LandGuildIconShowHide();
+
+      ShipGuildIconShowHide();
    }
 
    [ClientRpc]
@@ -637,6 +632,23 @@ public class NetEntity : NetworkBehaviour
          this.guildIcon.setSigil(null, null);
       }
 
+      LandGuildIconShowHide();
+
+      ShipGuildIconShowHide();
+   }
+
+   public void ShipGuildIconShowHide () {
+      // Disable/Enable guildicon game object to properly center icons on screen
+      if (this is PlayerShipEntity) {
+         if (guildId > 0) {
+            this.getPlayerShipEntity().guildIconGO.SetActive(true);
+         } else {
+            this.getPlayerShipEntity().guildIconGO.SetActive(false);
+         }
+      }
+   }
+
+   public void LandGuildIconShowHide () {
       // Turn guild icon on/off for land character
       if (this is PlayerBodyEntity) {
          if (OptionsPanel.allGuildIconsShowing) {

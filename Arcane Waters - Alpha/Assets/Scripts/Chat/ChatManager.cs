@@ -234,6 +234,19 @@ public class ChatManager : MonoBehaviour
          return;
       }
 
+      if (!Global.player.isAdmin()) {
+         foreach (KeyValuePair<CommandType, List<string>> keyValue in ChatUtil.commandTypePrefixes) {
+            if (keyValue.Key == CommandType.Admin) {
+               foreach (String label in keyValue.Value) {
+                  if (textToProcess.StartsWith(label)) {
+                     this.addChat("You do not have Admin privileges ", ChatInfo.Type.System);
+                     return;
+                  }
+               }
+            }
+         }
+      }
+
       _sentMessageHistory.Add(textToProcess);
 
       // Check if it's a chat command
