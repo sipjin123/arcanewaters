@@ -3879,17 +3879,21 @@ public class RPCManager : NetworkBehaviour
          // Read in DB the group members info needed to display their portrait
          List<VoyageGroupMemberCellInfo> groupMembersInfo = VoyageGroupManager.self.getGroupMembersInfo(voyageGroup);
 
-         // Back to the Unity thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveVoyageGroupMembers(_player.connectionToClient, groupMembersInfo.ToArray());
+         if (groupMembersInfo == null) {
+            D.debug("Error here! Group member info is missing for voyage group" + " : " + voyageGroup.voyageId + " : " + voyageGroup.creationDate);
+         } else {
+            // Back to the Unity thread
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               Target_ReceiveVoyageGroupMembers(_player.connectionToClient, groupMembersInfo.ToArray());
 
-            // Also send updated info of this user to the other group members
-            foreach (VoyageGroupMemberCellInfo cellInfo in groupMembersInfo) {
-               if (cellInfo.userId == _player.userId) {
-                  ServerNetworkingManager.self.sendMemberPartialUpdateToGroup(_player.voyageGroupId, cellInfo.userId, cellInfo.userName, cellInfo.userXP, cellInfo.areaKey);
+               // Also send updated info of this user to the other group members
+               foreach (VoyageGroupMemberCellInfo cellInfo in groupMembersInfo) {
+                  if (cellInfo.userId == _player.userId) {
+                     ServerNetworkingManager.self.sendMemberPartialUpdateToGroup(_player.voyageGroupId, cellInfo.userId, cellInfo.userName, cellInfo.userXP, cellInfo.areaKey);
+                  }
                }
-            }
-         });
+            });
+         }
       });
    }
 
@@ -4018,6 +4022,11 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_MineOre (NetworkConnection connection, int oreId, Vector2 startingPosition, Vector2 endPosition) {
       OreNode oreNode = OreManager.self.getOreNode(oreId);
+
+      if (oreNode == null) {
+         D.debug("Ore node is missing! No ore with id:{" + oreId + "} registered to OreManager");
+         return;
+      }
       oreNode.interactCount++;
       oreNode.updateSprite(oreNode.interactCount);
       ExplosionManager.createMiningParticle(oreNode.transform.position);
@@ -4035,7 +4044,6 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_InteractOre (int oreId, Vector2 startingPosition, Vector2 endPosition) {
-      OreNode oreNode = OreManager.self.getOreNode(oreId);
       Target_MineOre(_player.connectionToClient, oreId, startingPosition, endPosition);
    }
 
