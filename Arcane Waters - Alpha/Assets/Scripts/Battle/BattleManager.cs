@@ -607,7 +607,7 @@ public class BattleManager : MonoBehaviour {
             target.animatingUntil = timeAttackEnds;
 
             // TODO: Remove after fixing bug wherein Golem boss action is stuck for a long time
-            if (source.enemyType == Enemy.Type.Golem_Boss && Global.displayLandCombatLogs) {
+            if (source.enemyType == Enemy.Type.Golem_Boss && Global.displayBossCombatLogs) {
                D.debug("Golem: " + " TimeToWait: " + (timeToWait) + " Cooldown: " + cooldownDuration + " AtkEnds: " + timeAttackEnds.ToString("f1")+ " CurrTime: " +NetworkTime.time.ToString("f1"));
             }
 

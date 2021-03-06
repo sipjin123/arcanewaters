@@ -18,6 +18,12 @@ public class ScreenLogger : MonoBehaviour {
    // The object where the logs will show
    public GameObject canvasObj;
 
+   // The maximum log count in characters before the text UI is deducted
+   public const int MAX_LOG_COUNT = 300;
+
+   // The deduct count when text reaches max cap
+   public const int TEXT_DEDUCT_COUNT = 50;
+
    #endregion
 
    private void Awake () {
@@ -44,6 +50,9 @@ public class ScreenLogger : MonoBehaviour {
          textUI.text += "\n" + message;
       } catch { 
          // Only process text write if possible
+      }
+      if (textUI.text.Length > MAX_LOG_COUNT) {
+         textUI.text = textUI.text.Remove(0, TEXT_DEDUCT_COUNT);
       }
    }
 

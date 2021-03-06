@@ -1140,7 +1140,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       switch (globalAbilityData.abilityActionType) {
          case AbilityActionType.Melee:
             // TODO: Remove after fixing bug wherein Golem boss action is stuck for a long time
-            if (sourceBattler.enemyType == Enemy.Type.Golem_Boss && Global.displayLandCombatLogs) {
+            if (sourceBattler.enemyType == Enemy.Type.Golem_Boss && Global.displayBossCombatLogs) {
                D.debug("Golem has started attacking" + " : " + NetworkTime.time.ToString("f1"));
             }
             onBattlerAttackStart.Invoke();
@@ -1317,7 +1317,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             onBattlerAttackEnd.Invoke();
 
             // TODO: Remove after fixing bug wherein Golem boss action is stuck for a long time
-            if (sourceBattler.enemyType == Enemy.Type.Golem_Boss && Global.displayLandCombatLogs) {
+            if (sourceBattler.enemyType == Enemy.Type.Golem_Boss && Global.displayBossCombatLogs) {
                actionDuration = NetworkTime.time - actionDuration;
                D.debug("Golem has finished attacking" + " : " + NetworkTime.time.ToString("f1") + " Duration: " + actionDuration.ToString("f1"));
             }
