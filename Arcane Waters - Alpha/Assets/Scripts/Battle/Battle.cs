@@ -162,14 +162,23 @@ public class Battle : NetworkBehaviour {
                      // Setup the maximum targets affected by this ability
                      foreach (Battler attacker in getAttackers()) {
                         targetBattlers.Add(attacker);
+                        if (Global.displayBossCombatLogs) {
+                           D.debug("Added attacker target {" + attacker.userId + " : " + attacker.enemyType + "}");
+                        }
                         targetCounter++;
                         if (targetCounter >= abilityData.maxTargets) {
                            break;
                         }
                      }
 
+                     if (Global.displayBossCombatLogs) {
+                        D.debug("Golem Boss is atttacking using AOE attack having {" + battlePlan.targets.Count + "} targets");
+                     }
                      BattleManager.self.executeBattleAction(this, battler, targetBattlers, 1, AbilityType.Standard);
                   } else {
+                     if (Global.displayBossCombatLogs) {
+                        D.debug("Golem Boss is atttacking using regular attack");
+                     }
                      BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0, AbilityType.Standard);
                   }
                } else {

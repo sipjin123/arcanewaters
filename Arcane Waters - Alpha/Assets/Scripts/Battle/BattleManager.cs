@@ -608,7 +608,12 @@ public class BattleManager : MonoBehaviour {
 
             // TODO: Remove after fixing bug wherein Golem boss action is stuck for a long time
             if (source.enemyType == Enemy.Type.Golem_Boss && Global.displayBossCombatLogs) {
-               D.debug("Golem: " + " TimeToWait: " + (timeToWait) + " Cooldown: " + cooldownDuration + " AtkEnds: " + timeAttackEnds.ToString("f1")+ " CurrTime: " +NetworkTime.time.ToString("f1"));
+               D.debug("Golem is attacking: "
+                  + " TimeToWait: " + (timeToWait)
+                  + " Cooldown: " + cooldownDuration
+                  + " AtkEnds: " + timeAttackEnds.ToString("f1")
+                  + " CurrTime: " + NetworkTime.time.ToString("f1") 
+                  + " Target: " + target.userId + " - " + target.enemyType);
             }
 
             // Wait to apply the effects of the action here on the server until the appointed time
