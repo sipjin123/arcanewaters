@@ -98,6 +98,9 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("win", "Kills all of the enemies in a land battle", requestWin, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("difficulty", "Enables the players to alter difficulty of current instance", requestDifficulty, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "difficultyLevel" }));
 
+      // Log Commands for investigation
+      cm.addCommand(new CommandData("warp_log", "Allows server and client to display logs related to warping/loading", requestWarpLogs, requiredPrefix: CommandType.Admin));
+
       List<Map> maps = MapManager.self.mapDataCache;
       List<string> mapNames = new List<string>();
       foreach (Map map in maps) {
@@ -464,6 +467,25 @@ public class AdminManager : NetworkBehaviour
    }
 
    [Command]
+   protected void Cmd_RequestWarpLogs () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      Global.displayWarpLogs = true;
+
+      // If the player is admin, send them an rpc allowing them to see land combat stats
+      Target_ReceiveWarpLogs(_player.connectionToClient);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveWarpLogs (NetworkConnection connection) {
+      D.debug("This user can now see warp logs!");
+      Global.displayWarpLogs = true;
+   }
+
+
+   [Command]
    protected void Cmd_RequestCombatStats () {
       if (!_player.isAdmin()) {
          return;
@@ -553,6 +575,10 @@ public class AdminManager : NetworkBehaviour
    private void requestScreenLogs () {
       Cmd_RequestScreenLog();
       Cmd_RequestCombatStats();
+   }
+   
+   private void requestWarpLogs () {
+      Cmd_RequestWarpLogs();
    }
 
    private void requestWarpAnywhere () {

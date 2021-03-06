@@ -60,14 +60,23 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             if (!customMapManager.canUserWarpInto(player, areaTarget, out System.Action<NetEntity> warpHandler)) {
                warpHandler?.Invoke(player);
                return;
-            } 
+            }
          }
 
+         if (Global.displayWarpLogs) {
+            D.debug("Sending warp request to server");
+         }
          player.setupForWarpClient();
          Global.player.rpc.Cmd_RequestWarp(areaTarget, spawnTarget);
 
          if (PanelManager.self.loadingScreen != null) {
             PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, PostSpotFader.self, PostSpotFader.self);
+         }
+      } else {
+         if (Global.displayWarpLogs) {
+            D.debug("Failed to warp! " +
+               "CanUseWarp?: {" + " : " + canPlayerUseWarp(player) + "} " +
+               "IsAboutToWarpClientSide?: {" + player.isAboutToWarpOnClient + "}");
          }
       }
    }

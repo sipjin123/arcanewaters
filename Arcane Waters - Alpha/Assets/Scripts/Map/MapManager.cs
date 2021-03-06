@@ -337,6 +337,9 @@ public class MapManager : MonoBehaviour
          }
          if (timeLimit >= maxTimeLimit) {
             startTime = NetworkTime.time - startTime;
+            if (Global.displayWarpLogs) {
+               D.debug("Max load time exceeded for player fetch" + " : " + startTime);
+            }
             yield break;
          }
          timeLimit = 0;
@@ -349,6 +352,9 @@ public class MapManager : MonoBehaviour
          }
          if (timeLimit >= maxTimeLimit) {
             startTime = NetworkTime.time - startTime;
+            if (Global.displayWarpLogs) {
+               D.debug("Max load time exceeded for instance fetch" + " : " + startTime);
+            }
             yield break;
          }
          timeLimit = 0;
@@ -362,6 +368,9 @@ public class MapManager : MonoBehaviour
          }
          if (timeLimit >= maxTimeLimit) {
             startTime = NetworkTime.time - startTime;
+            if (Global.displayWarpLogs) {
+               D.debug("Max load time exceeded for instance load fetch" + " : " + startTime);
+            }
             yield break;
          }
 

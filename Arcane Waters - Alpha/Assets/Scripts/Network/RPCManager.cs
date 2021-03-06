@@ -5780,13 +5780,23 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_RequestWarp (string areaTarget, string spawnTarget) {
+      if (Global.displayWarpLogs) {
+         D.debug("Player {" + _player.userId + "} Warping to {" + spawnTarget + "}");
+      }
+      
       if (_player == null || _player.connectionToClient == null) {
+         if (Global.displayWarpLogs) {
+            D.debug("Player {" + _player.userId + "} Failed to warp due to missing reference");
+         }
          Target_OnWarpFailed();
       }
 
       Area area = AreaManager.self.getArea(_player.areaKey);
       if (area == null) {
          Debug.Log("Area was null");
+         if (Global.displayWarpLogs) {
+            D.debug("Player {" + _player.userId + "} Failed to warp due to missing area: {" + " : " + _player.areaKey + "}");
+         }
          Target_OnWarpFailed();
          return;
       }
@@ -5796,7 +5806,8 @@ public class RPCManager : NetworkBehaviour
 
       foreach (Warp warp in warps) {
          // Only warp the player if they're close enough to the warp. Check area and spawn targets are the ones player requested just in case two warps are too close together.
-         if (Vector2.Distance(warp.transform.position, transform.position) < 2f && areaTarget == warp.areaTarget && spawnTarget == warp.spawnTarget && warp.canPlayerUseWarp(_player)) {
+         float distanceToWarp = Vector2.Distance(warp.transform.position, transform.position);
+         if (distanceToWarp < 2f && areaTarget == warp.areaTarget && spawnTarget == warp.spawnTarget && warp.canPlayerUseWarp(_player)) {
             if (warp.gameObject.activeInHierarchy) {
                warp.startWarpForPlayer(_player);
             } else {
@@ -5806,6 +5817,18 @@ public class RPCManager : NetworkBehaviour
             }
             return;
          }
+         if (Global.displayWarpLogs) {
+            D.debug("Checking " +
+               "WarpTo: {" + warp.areaTarget + "} " +
+               "IsNear: {" + (distanceToWarp < 2f) + "} " +
+               "AreaTarget: {" + areaTarget + "} " +
+               "WarpTarget: {" + warp.spawnTarget + "} " +
+               "CanUse?: {" + warp.canPlayerUseWarp(_player) + "}");
+         }
+      }
+
+      if (Global.displayWarpLogs) {
+         D.debug("Player {" + _player.userId + "} Failed to warp since there is no warp nearby!");
       }
 
       // If no valid warp was found, let the player know so at least they're not stuck
