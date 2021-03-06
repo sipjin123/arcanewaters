@@ -146,25 +146,27 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       SpriteSwap spriteSwap = GetComponent<SpriteSwap>();
       this.spritePath = npcData.spritePath;
 
-      try {
-         spriteSwap.newTexture = ImageManager.getTexture(this.spritePath);
-      } catch {
-         spriteSwap.newTexture = NPCManager.self.defaultNpcBodySprite.texture;
-      }
+      if (!Util.isBatch()) {
+         try {
+            spriteSwap.newTexture = ImageManager.getTexture(this.spritePath);
+         } catch {
+            spriteSwap.newTexture = NPCManager.self.defaultNpcBodySprite.texture;
+         }
 
-      if (spriteSwap.newTexture.name.Contains("empty")) {
-         D.debug("Invalid NPC sprite, please complete details in NPC Editor" + " : " + npcData.npcId + " : " + npcData.name);
-         spriteSwap.newTexture = NPCManager.self.defaultNpcBodySprite.texture;
-      }
+         if (spriteSwap.newTexture.name.Contains("empty")) {
+            D.debug("Invalid NPC sprite, please complete details in NPC Editor" + " : " + npcData.npcId + " : " + npcData.name);
+            spriteSwap.newTexture = NPCManager.self.defaultNpcBodySprite.texture;
+         }
 
-      List<ImageManager.ImageData> newSprites = ImageManager.getSpritesInDirectory(this.spritePath);
-      if (newSprites.Count > 0) {
-         GetComponent<SpriteRenderer>().sprite = newSprites[0].sprites[0];
+         List<ImageManager.ImageData> newSprites = ImageManager.getSpritesInDirectory(this.spritePath);
+         if (newSprites.Count > 0) {
+            GetComponent<SpriteRenderer>().sprite = newSprites[0].sprites[0];
 
-         // If we have a sprite swapper, we want to check that instead
-         Texture2D newTexture = newSprites[0].texture2D;
-         if (newTexture) {
-            spriteSwap.newTexture = newTexture;
+            // If we have a sprite swapper, we want to check that instead
+            Texture2D newTexture = newSprites[0].texture2D;
+            if (newTexture) {
+               spriteSwap.newTexture = newTexture;
+            }
          }
       }
 
