@@ -87,6 +87,12 @@ public class Global
    // If stats should be displayed on land combat
    public static bool displayLandCombatLogs = false;
 
+   // If stats should be displayed on land combat for boss enemy
+   public static bool displayBossCombatLogs = false;
+
+   // If mining logs should be displayed
+   public static bool displayMiningLogs = false;
+
    // If ability process should be logged
    public static bool displayAbilityLogs = false;
 

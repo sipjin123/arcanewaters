@@ -98,10 +98,9 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("difficulty", "Enables the players to alter difficulty of current instance", requestDifficulty, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "difficultyLevel" }));
 
       // Log Commands for investigation
-      cm.addCommand(new CommandData("debug_log", "Allows screen to log files", requestScreenLogs, requiredPrefix: CommandType.Admin));
-      cm.addCommand(new CommandData("warp_log", "Allows server and client to display logs related to warping/loading", requestWarpLogs, requiredPrefix: CommandType.Admin));
-      cm.addCommand(new CommandData("server_log", "Enables the Server Logs", requestServerLog, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "isTrue" }));
-
+      cm.addCommand(new CommandData("screen_log", "Allows screen to log files using D.debug()", requestScreenLogs, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("debug_log", "Enables isolated debug loggers", requestLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType", "isTrue" }));
+      
       List<Map> maps = MapManager.self.mapDataCache;
       List<string> mapNames = new List<string>();
       foreach (Map map in maps) {
@@ -210,7 +209,7 @@ public class AdminManager : NetworkBehaviour
       PlayerPrefs.SetString(MOTD_KEY, parameters);
    }
 
-   private void requestServerLog (string parameters) {
+   private void requestLogs (string parameters) {
       Cmd_SetServerLog(parameters);
    }
 
@@ -222,16 +221,25 @@ public class AdminManager : NetworkBehaviour
 
       string[] list = parameters.Split(' ');
 
-      if (list.Length > 0) {
-         string isTrue = "false";
+      if (list.Length > 1) {
+         string logType = "";
+         string isEnabledString = "false";
          try {
-            isTrue = list[0].ToLower();
+            logType = list[0].ToLower();
+            isEnabledString = list[1].ToLower();
          } catch {
-            _player.Target_FloatingMessage(_player.connectionToClient, "Invalid Settings" + " : " + parameters);
+            _player.Target_FloatingMessage(_player.connectionToClient, "Invalid Parameters" + " : " + parameters);
          }
+         bool isEnabled = isEnabledString == "false" ? false : true;
 
-         Global.displayLandCombatLogs = isTrue == "false" ? false : true;
-         D.debug("Server will Log Display" + " : " + Global.displayLandCombatLogs);
+         // Handle server logs
+         processLogAuthorization(logType, isEnabled, parameters);
+         D.debug("Server will Log Display: {" + logType + "} as {" + isEnabledString + "}");
+
+         // Handle client logs
+         Target_ReceiveLogAuthorization(_player.connectionToClient, logType, isEnabled, parameters);
+      } else {
+         _player.Target_FloatingMessage(_player.connectionToClient, "Invalid Parameters" + " : " + parameters);
       }
    }
 
@@ -492,39 +500,32 @@ public class AdminManager : NetworkBehaviour
       EntityManager.self.addBypassForUser(_player.userId);
    }
 
-   [Command]
-   protected void Cmd_RequestWarpLogs () {
-      if (!_player.isAdmin()) {
-         return;
-      }
-
-      Global.displayWarpLogs = true;
-
-      // If the player is admin, send them an rpc allowing them to see land combat stats
-      Target_ReceiveWarpLogs(_player.connectionToClient);
-   }
-
    [TargetRpc]
-   public void Target_ReceiveWarpLogs (NetworkConnection connection) {
-      D.debug("This user can now see warp logs!");
-      Global.displayWarpLogs = true;
+   public void Target_ReceiveLogAuthorization (NetworkConnection connection, string logType, bool isEnabled, string parameters) {
+      processLogAuthorization(logType, isEnabled, parameters);
+      D.log("This user has " + (isEnabled ? "Enabled" : "Disabled") + " {" + logType + "} logs!");
    }
 
-
-   [Command]
-   protected void Cmd_RequestCombatStats () {
-      if (!_player.isAdmin()) {
-         return;
+   private void processLogAuthorization (string logType, bool isEnabled, string parameters) {
+      switch (logType) {
+         case "combat":
+            Global.displayLandCombatLogs = isEnabled;
+            break;
+         case "warp":
+            Global.displayWarpLogs = isEnabled;
+            break;
+         case "boss":
+            Global.displayBossCombatLogs = isEnabled;
+            break;
+         case "mining":
+            Global.displayMiningLogs = isEnabled;
+            break;
+         default:
+            if (Util.isServerBuild()) {
+               _player.Target_FloatingMessage(_player.connectionToClient, "Invalid Parameters" + " : " + parameters);
+            }
+            return;
       }
-
-      // If the player is admin, send them an rpc allowing them to see land combat stats
-      Target_ReceiveCombatStats(_player.connectionToClient);
-   }
-
-   [TargetRpc]
-   public void Target_ReceiveCombatStats (NetworkConnection connection) {
-      D.log("This user can now see combat logs!");
-      Global.displayLandCombatLogs = true;
    }
 
    [Command]
@@ -600,13 +601,8 @@ public class AdminManager : NetworkBehaviour
 
    private void requestScreenLogs () {
       Cmd_RequestScreenLog();
-      Cmd_RequestCombatStats();
    }
    
-   private void requestWarpLogs () {
-      Cmd_RequestWarpLogs();
-   }
-
    private void requestWarpAnywhere () {
       Cmd_RequestWarpAnywhere();
    }
