@@ -6983,8 +6983,8 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO ships (usrId, shpType, palette1, palette2, mastType, sailType, shpName, sailPalette1, sailPalette2, supplies, suppliesMax, cargoMax, health, maxHealth, attackRange, speed, sailors, rarity, shipAbilities) " +
-            "VALUES(@usrId, @shpType, @palette1, @palette2, @mastType, @sailType, @shipName, @sailPalette1, @sailPalette2, @supplies, @suppliesMax, @cargoMax, @maxHealth, @maxHealth, @attackRange, @speed, @sailors, @rarity, @shipAbilities)", conn)) {
+            "INSERT INTO ships (usrId, damage, shpType, palette1, palette2, mastType, sailType, shpName, sailPalette1, sailPalette2, supplies, suppliesMax, cargoMax, health, maxHealth, attackRange, speed, sailors, rarity, shipAbilities) " +
+            "VALUES(@usrId, @damage, @shpType, @palette1, @palette2, @mastType, @sailType, @shipName, @sailPalette1, @sailPalette2, @supplies, @suppliesMax, @cargoMax, @maxHealth, @maxHealth, @attackRange, @speed, @sailors, @rarity, @shipAbilities)", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -7004,6 +7004,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@health", shipInfo.maxHealth);
             cmd.Parameters.AddWithValue("@maxHealth", shipInfo.maxHealth);
             cmd.Parameters.AddWithValue("@attackRange", shipInfo.attackRange);
+            cmd.Parameters.AddWithValue("@damage", shipInfo.damage);
             cmd.Parameters.AddWithValue("@speed", shipInfo.speed);
             cmd.Parameters.AddWithValue("@sailors", shipInfo.sailors);
             cmd.Parameters.AddWithValue("@rarity", (int) shipInfo.rarity);

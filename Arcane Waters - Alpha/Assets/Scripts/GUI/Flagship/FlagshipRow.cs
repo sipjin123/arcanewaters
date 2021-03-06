@@ -52,7 +52,7 @@ public class FlagshipRow : MonoBehaviour {
       itemName.color = Rarity.getColor(shipInfo.rarity);
 
       // Fill in the stats
-      damageText.text = "" + shipInfo.damage;
+      damageText.text = (shipInfo.damage * 100).ToString("f1") + "%";
       healthText.text = "" + shipInfo.maxHealth;
       suppliesText.text = "" + shipInfo.suppliesMax;
       cargoText.text = "" + shipInfo.cargoMax;

@@ -48,7 +48,7 @@ public class ShipInfo {
    public int maxHealth;
 
    // The amount of damage this ship does
-   public float damage;
+   public float damage = 0.05f;
 
    // The range of fire
    public int attackRange;
@@ -103,7 +103,7 @@ public class ShipInfo {
       this.suppliesMax = DataUtil.getInt(dataReader, "suppliesMax");
       this.cargoMax = DataUtil.getInt(dataReader, "cargoMax");
       this.maxHealth = DataUtil.getInt(dataReader, "maxHealth");
-      this.damage = DataUtil.getInt(dataReader, "damage");
+      this.damage = DataUtil.getFloat(dataReader, "damage");
       this.attackRange = DataUtil.getInt(dataReader, "attackRange");
       this.speed = DataUtil.getInt(dataReader, "speed");
       this.sailors = DataUtil.getInt(dataReader, "sailors");
