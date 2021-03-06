@@ -201,7 +201,7 @@ public class TreasureChest : NetworkBehaviour {
       }
 
       // If the user is NOT part of the sync list of allowed user interaction, do not proceed and send out a warning
-      if (!allowedUserIds.Contains(Global.player.userId) && chestType != ChestSpawnType.Site) {
+      if (!allowedUserIds.Contains(Global.player.userId) && chestType != ChestSpawnType.Site && chestType != ChestSpawnType.Sea) {
          FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asInvalidLoot();
          return;
       }
