@@ -52,7 +52,6 @@ public class NPCManager : MonoBehaviour {
    }
 
    public void storeNpcIdPerArea (int npcId, string areaKey) {
-#if IS_SERVER_BUILD
       // Add data to area collection
       if (_npcIDPerArea.ContainsKey(areaKey)) {
          if (!_npcIDPerArea[areaKey].Contains(npcId)) {
@@ -64,7 +63,6 @@ public class NPCManager : MonoBehaviour {
          _npcIDPerArea[areaKey] = new List<int>();
          _npcIDPerArea[areaKey].Add(npcId);
       }
-#endif
    }
 
    public void storeNPC (NPC npc) {

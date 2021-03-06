@@ -294,7 +294,7 @@ public class RPCManager : NetworkBehaviour
    #region NPC QUEST
 
    [TargetRpc]
-   public void Target_RemoveQuestNotif (NetworkConnection connection, int npcId) {
+   public void Target_RemoveQuestNotice (NetworkConnection connection, int npcId) {
       NPC npc = NPCManager.self.getNPC(npcId);
       npc.questNotice.SetActive(false);
    }
@@ -2004,6 +2004,7 @@ public class RPCManager : NetworkBehaviour
 
             // Get the quest progress status of the user for this npc
             List<QuestStatusInfo> totalQuestStatus = DB_Main.getQuestStatuses(npcId, _player.userId);
+
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                Target_ReceiveProcessRewardToggle(_player.connectionToClient);
                bool hasCompletedAllQuests = true;
@@ -2023,7 +2024,7 @@ public class RPCManager : NetworkBehaviour
                }
 
                if (hasCompletedAllQuests) {
-                  Target_RemoveQuestNotif(_player.connectionToClient, npcId);
+                  Target_RemoveQuestNotice(_player.connectionToClient, npcId);
                }
 
                if (questDialogue.itemRewards != null) {
