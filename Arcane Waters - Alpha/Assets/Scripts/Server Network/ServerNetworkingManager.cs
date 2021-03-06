@@ -79,6 +79,11 @@ public class ServerNetworkingManager : MonoBehaviour {
 
       // Find the server with the least people
       NetworkedServer bestServer = getFirstServerWithLeastPlayers();
+
+      if (bestServer == null) {
+         D.error("Couldn't find a good server to connect to, server count: " + servers.Count);
+      }
+
       try {
          string logMsg = string.Format("Found best server {0} with player count {1} for {2} ({3}) ServerName:{4} ServerCount:{5}",
             bestServer.networkedPort.Value, bestServer.connectedUserIds.Count, username, address, bestServer.name, servers.Count);
@@ -93,11 +98,6 @@ public class ServerNetworkingManager : MonoBehaviour {
             bestServer = server;
             break;
          }
-      }
-
-      if (bestServer == null) {
-         D.editorLog("Couldn't find a good server to connect to, server count:", Color.red);
-         D.log("Couldn't find a good server to connect to, server count: " + servers.Count);
       }
 
       return bestServer;
