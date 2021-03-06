@@ -159,25 +159,34 @@ public class Battle : NetworkBehaviour {
                      List<Battler> targetBattlers = new List<Battler>();
                      AttackAbilityData abilityData = AbilityManager.self.getAttackAbility(battler.basicAbilityIDList[1]);
 
+                     if (Global.displayBossCombatLogs) {
+                        D.debug("BATTLE_LOG::Golem Boss fetching ability :: " +
+                           "Name:{" + abilityData.itemName + "} " +
+                           "ID1:{" + battler.basicAbilityIDList[1] + "} " +
+                           "ID2:{" + abilityData.itemID + "} " +
+                           "MaxTarget: {" + abilityData.maxTargets + "}");
+                     }
+
                      // Setup the maximum targets affected by this ability
                      foreach (Battler attacker in getAttackers()) {
                         targetBattlers.Add(attacker);
                         if (Global.displayBossCombatLogs) {
-                           D.debug("Added attacker target {" + attacker.userId + " : " + attacker.enemyType + "}");
+                           D.debug("BATTLE_LOG::Added attacker target {" + attacker.userId + " : " + attacker.enemyType + "}");
                         }
                         targetCounter++;
                         if (targetCounter >= abilityData.maxTargets) {
+                           D.debug("BATTLE_LOG::Break target counter! Max target reached" + " Curr: " + targetCounter + " Max: " + abilityData.maxTargets);
                            break;
                         }
                      }
 
                      if (Global.displayBossCombatLogs) {
-                        D.debug("Golem Boss is atttacking using AOE attack having {" + battlePlan.targets.Count + "} targets");
+                        D.debug("BATTLE_LOG::Golem Boss is atttacking using AOE attack having {" + battlePlan.targets.Count + "} targets, AttackerCount:{" + getAttackers().Count + "}");
                      }
                      BattleManager.self.executeBattleAction(this, battler, targetBattlers, 1, AbilityType.Standard);
                   } else {
                      if (Global.displayBossCombatLogs) {
-                        D.debug("Golem Boss is atttacking using regular attack");
+                        D.debug("BATTLE_LOG::Golem Boss is atttacking using regular attack");
                      }
                      BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0, AbilityType.Standard);
                   }

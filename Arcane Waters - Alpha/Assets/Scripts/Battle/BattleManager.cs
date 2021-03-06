@@ -170,8 +170,14 @@ public class BattleManager : MonoBehaviour {
       storeBattler(battler);
       if (teamType == Battle.TeamType.Attackers) {
          battle.attackers.Add(battler.userId);
+         if (Global.displayBossCombatLogs) {
+            D.debug("BATTLE_LOG::Adding battler Player as Attacker" + " UID: " + battler.userId + " Type: " + battler.enemyType + " AtkrCount: " + battle.attackers.Count);
+         }
       } else if (teamType == Battle.TeamType.Defenders) {
          battle.defenders.Add(battler.userId);
+         if (Global.displayBossCombatLogs) {
+            D.debug("BATTLE_LOG::Adding battler Player as Defender" + " UID: " + battler.userId + " Type: " + battler.enemyType+ " DefrCount: " + battle.defenders.Count);
+         }
       }
 
       // Assign the Battle ID to the Sync Var
@@ -192,8 +198,14 @@ public class BattleManager : MonoBehaviour {
       // Add the Battler to the Battle
       if (teamType == Battle.TeamType.Attackers) {
          battle.attackers.Add(battler.userId);
+         if (Global.displayBossCombatLogs) {
+            D.debug("BATTLE_LOG::Adding battler Enemy as Attacker" + " UID: " + battler.userId + " Type: " + battler.enemyType + " AtkrCount: " + battle.attackers.Count);
+         }
       } else if (teamType == Battle.TeamType.Defenders) {
          battle.defenders.Add(battler.userId);
+         if (Global.displayBossCombatLogs) {
+            D.debug("BATTLE_LOG::Adding battler Enemy as Defender" + " UID: " + battler.userId + " Type: " + battler.enemyType + " DefrCount: " + battle.defenders.Count);
+         }
       }
 
       // Assign the Battle ID to the Sync Var, causing movement to stop and facing direction to change
