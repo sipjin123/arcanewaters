@@ -26,7 +26,7 @@ public class AbilityManager : MonoBehaviour
    public static int SLASH_ID = 9;
 
    // The id of the shoot ability
-   public static int SHOOT_ID = 27;
+   public static int SHOOT_ID = 91;
 
    // The id of the rum ability
    public static int RUM_ID = 88;
