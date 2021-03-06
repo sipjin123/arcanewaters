@@ -502,18 +502,31 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             List<BasicAbilityData> basicAbilityDataList = new List<BasicAbilityData>();
             foreach (int id in battlerData.battlerAbilities.basicAbilityDataList) {
-               AttackAbilityData attackData = AbilityManager.getAttackAbility(id);
+               AttackAbilityData attackData = AbilityManager.self.getAttackAbility(id);
                if (attackData != null) {
                   basicAbilityDataList.Add(attackData);
                }
+
+               BuffAbilityData buffData = AbilityManager.self.getBuffAbility(id);
+               if (buffData != null) {
+                  basicAbilityDataList.Add(buffData);
+               } 
             }
             foreach (int id in battlerData.battlerAbilities.attackAbilityDataList) {
-               AttackAbilityData attackData = AbilityManager.getAttackAbility(id);
-               basicAbilityDataList.Add(attackData);
+               AttackAbilityData attackData = AbilityManager.self.getAttackAbility(id);
+               if (attackData != null) {
+                  basicAbilityDataList.Add(attackData);
+               } else {
+                  D.debug("Failed to fetch attack ability from attack list" + " ID: " + id);
+               }
             }
             foreach (int id in battlerData.battlerAbilities.buffAbilityDataList) {
-               BuffAbilityData buffData = AbilityManager.getBuffAbility(id);
-               basicAbilityDataList.Add(buffData);
+               BuffAbilityData buffData = AbilityManager.self.getBuffAbility(id);
+               if (buffData != null) {
+                  basicAbilityDataList.Add(buffData);
+               } else {
+                  D.debug("Failed to fetch buff ability from buff list" + " ID: " + id);
+               }
             }
 
             setBattlerAbilities(basicAbilityDataList, battlerType);
@@ -720,11 +733,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       if (basicAbilityList != null) {
          foreach (BasicAbilityData abilityData in basicAbilityList) {
-            _battlerBasicAbilities.Add(abilityData);
+            if (abilityData != null) {
+               _battlerBasicAbilities.Add(abilityData);
 
-            // Sync ID's for battlers
-            if (NetworkServer.active) {
-               basicAbilityIDList.Add(abilityData.itemID);
+               // Sync ID's for battlers
+               if (NetworkServer.active) {
+                  basicAbilityIDList.Add(abilityData.itemID);
+               }
+            } else {
+               D.debug("Basic Ability is Null!");
             }
          }
          battlerAbilitiesInitialized = true;
@@ -2292,7 +2309,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       List<AttackAbilityData> attackAbilities = new List<AttackAbilityData>();
       foreach (BasicAbilityData basicData in _battlerBasicAbilities) {
          if (basicData.abilityType == AbilityType.Standard) {
-            attackAbilities.Add(AbilityManager.getAttackAbility(basicData.itemID));
+            AttackAbilityData attackAbility = AbilityManager.self.getAttackAbility(basicData.itemID);
+            if (attackAbility == null) {
+               D.debug("Failed to fetch attack ability!" + " : " + basicData.itemID);
+            } else {
+               attackAbilities.Add(attackAbility);
+            }
          }
       }
       return attackAbilities;
@@ -2302,7 +2324,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       List<BuffAbilityData> buffAbilities = new List<BuffAbilityData>();
       foreach (BasicAbilityData basicData in _battlerBasicAbilities) {
          if (basicData.abilityType == AbilityType.BuffDebuff) {
-            buffAbilities.Add(AbilityManager.getBuffAbility(basicData.itemID));
+            BuffAbilityData buffAbility = AbilityManager.self.getBuffAbility(basicData.itemID);
+            if (buffAbility == null) {
+               D.debug("Failed to fetch buff ability!" + " : " + basicData.itemID);
+            } else {
+               buffAbilities.Add(buffAbility);
+            }
          }
       }
       return buffAbilities;

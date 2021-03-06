@@ -282,27 +282,31 @@ public class AbilityManager : MonoBehaviour
       return returnAbility;
    }
 
-   public static AttackAbilityData getAttackAbility (string abilityName) {
-      AttackAbilityData returnAbility = self._attackAbilities.Find(_ => _.itemName == abilityName);
-
-      return returnAbility;
-   }
-
-   public static BuffAbilityData getBuffAbility (string abilityName) {
-      BuffAbilityData returnAbility = self._buffAbilities.Find(_ => _.itemName == abilityName);
-
-      return returnAbility;
-   }
-
-   public static AttackAbilityData getAttackAbility (int abilityGlobalID) {
+   public AttackAbilityData getAttackAbility (int abilityGlobalID) {
       AttackAbilityData returnAbility = new AttackAbilityData();
       returnAbility = self._attackAbilities.Find(_ => _.itemID == abilityGlobalID);
+
+      if (returnAbility == null) {
+         BasicAbilityData attackAbility = self.allGameAbilities.Find(_ => _.itemID == abilityGlobalID);
+         if (attackAbility != null && attackAbility.abilityType == AbilityType.Standard) {
+            return (AttackAbilityData) attackAbility;
+         }
+      }
+
       return returnAbility;
    }
 
-   public static BuffAbilityData getBuffAbility (int abilityGlobalID) {
+   public BuffAbilityData getBuffAbility (int abilityGlobalID) {
       BuffAbilityData returnAbility = new BuffAbilityData();
-      returnAbility = self._buffAbilities.Find(_ => _.itemID == abilityGlobalID);
+      returnAbility = allBuffAbilities.Find(_ => _.itemID == abilityGlobalID);
+
+      if (returnAbility == null) {
+         BasicAbilityData buffAbility = allGameAbilities.Find(_ => _.itemID == abilityGlobalID);
+         if (buffAbility != null && buffAbility.abilityType == AbilityType.BuffDebuff) {
+            return (BuffAbilityData) buffAbility;
+         } 
+      }
+
       return returnAbility;
    }
 

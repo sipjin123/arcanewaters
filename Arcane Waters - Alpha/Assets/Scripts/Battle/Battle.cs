@@ -157,7 +157,7 @@ public class Battle : NetworkBehaviour {
                   if (actionRandomizer > 5 && battler.basicAbilityIDList.Count > 1) {
                      int targetCounter = 0;
                      List<Battler> targetBattlers = new List<Battler>();
-                     AttackAbilityData abilityData = AbilityManager.getAttackAbility(battler.basicAbilityIDList[1]);
+                     AttackAbilityData abilityData = AbilityManager.self.getAttackAbility(battler.basicAbilityIDList[1]);
 
                      // Setup the maximum targets affected by this ability
                      foreach (Battler attacker in getAttackers()) {

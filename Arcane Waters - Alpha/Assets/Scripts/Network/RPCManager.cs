@@ -5007,7 +5007,7 @@ public class RPCManager : NetworkBehaviour
 
                   List<BasicAbilityData> basicAbilityList = new List<BasicAbilityData>();
                   foreach (AbilitySQLData temp in equippedAbilityList) {
-                     BasicAbilityData abilityData = AbilityManager.getAttackAbility(temp.abilityID);
+                     BasicAbilityData abilityData = AbilityManager.self.getAttackAbility(temp.abilityID);
                      if (abilityData != null) {
                         basicAbilityList.Add(abilityData);
                      }
