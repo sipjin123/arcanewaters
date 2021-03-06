@@ -94,12 +94,13 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("ore_voyage", "Enables the players and ores within the area of the player to have valid voyage id", requestOre, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "voyage" }));
       cm.addCommand(new CommandData("/motd", "Displays the message of the day", requestGetMotd));
       cm.addCommand(new CommandData("set_motd", "Sets the message of the day", requestSetMotd, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "message" }));
+      cm.addCommand(new CommandData("lose", "Kills player in a land battle", requestLose, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("win", "Kills all of the enemies in a land battle", requestWin, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("difficulty", "Enables the players to alter difficulty of current instance", requestDifficulty, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "difficultyLevel" }));
 
       // Log Commands for investigation
       cm.addCommand(new CommandData("screen_log", "Allows screen to log files using D.debug()", requestScreenLogs, requiredPrefix: CommandType.Admin));
-      cm.addCommand(new CommandData("debug_log", "Enables isolated debug loggers", requestLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType", "isTrue" }));
+      cm.addCommand(new CommandData("log", "Enables isolated debug loggers", requestLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType", "isTrue" }));
       
       List<Map> maps = MapManager.self.mapDataCache;
       List<string> mapNames = new List<string>();
@@ -161,6 +162,29 @@ public class AdminManager : NetworkBehaviour
       }
 
       return true;
+   }
+
+   private void requestLose (string parameter) {
+      Cmd_Lose(parameter);
+   }
+
+   [Command]
+   protected void Cmd_Lose (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+      Battle battle = BattleManager.self.getBattleForUser(_player.userId);
+      if (battle == null) {
+         return;
+      }
+
+      List<Battler> participants = battle.getParticipants();
+
+      foreach (Battler battler in participants) {
+         if ((battler != null) && battler.userId == _player.userId) {
+            battler.health = 0;
+         }
+      }
    }
 
    private void requestWin (string parameter) {
