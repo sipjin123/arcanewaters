@@ -147,6 +147,9 @@ public class Instance : NetworkBehaviour
       // Spawn all the area prefabs that are specific to this instance
       if (NetworkServer.active) {
          StartCoroutine(CO_SpawnInstanceSpecificPrefabs());
+         if (!Util.isCloudBuild()) {
+            InstanceManager.self.clientInstance = this;
+         }
       } else {
          InstanceManager.self.clientInstance = this;
       }

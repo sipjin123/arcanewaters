@@ -86,7 +86,6 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("ship_damage", "Sets your ship's damage", requestSetShipDamage, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "damage" }));
       cm.addCommand(new CommandData("ship_health", "Sets your ship's health", requestSetShipHealth, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "health" }));
       cm.addCommand(new CommandData("spawn_sea_enemy", "Spawns a sea enemy at your mouse position", requestSpawnSeaEnemy, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "enemyId" }));
-      cm.addCommand(new CommandData("debug_log", "Allows screen to log files", requestScreenLogs, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("warp_anywhere", "Allows user warp anywhere without getting returned to town", requestWarpAnywhere, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("kick", "Disconnects a player from the name", kickPlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "reason" }));
       cm.addCommand(new CommandData("ban", "Ban a player from the game for [duration] minutes", banPlayerTemporary, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "duration", "reason" }));
@@ -99,7 +98,9 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("difficulty", "Enables the players to alter difficulty of current instance", requestDifficulty, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "difficultyLevel" }));
 
       // Log Commands for investigation
+      cm.addCommand(new CommandData("debug_log", "Allows screen to log files", requestScreenLogs, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("warp_log", "Allows server and client to display logs related to warping/loading", requestWarpLogs, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("server_log", "Enables the Server Logs", requestServerLog, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "isTrue" }));
 
       List<Map> maps = MapManager.self.mapDataCache;
       List<string> mapNames = new List<string>();
@@ -209,10 +210,35 @@ public class AdminManager : NetworkBehaviour
       PlayerPrefs.SetString(MOTD_KEY, parameters);
    }
 
+   private void requestServerLog (string parameters) {
+      Cmd_SetServerLog(parameters);
+   }
+
+   [Command]
+   protected void Cmd_SetServerLog (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+
+      if (list.Length > 0) {
+         string isTrue = "false";
+         try {
+            isTrue = list[0].ToLower();
+         } catch {
+            _player.Target_FloatingMessage(_player.connectionToClient, "Invalid Settings" + " : " + parameters);
+         }
+
+         Global.displayLandCombatLogs = isTrue == "false" ? false : true;
+         D.debug("Server will Log Display" + " : " + Global.displayLandCombatLogs);
+      }
+   }
+
    private void requestDifficulty (string parameters) {
       Cmd_SetDifficulty(parameters);
    }
-
+   
    [Command]
    protected void Cmd_SetDifficulty (string parameters) {
       if (!_player.isAdmin()) {
@@ -497,7 +523,7 @@ public class AdminManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveCombatStats (NetworkConnection connection) {
-      D.debug("This user can now see combat logs!");
+      D.log("This user can now see combat logs!");
       Global.displayLandCombatLogs = true;
    }
 
