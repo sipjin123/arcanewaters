@@ -2319,7 +2319,9 @@ public class RPCManager : NetworkBehaviour
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveQuestNotifications(_player.connectionToClient, npcIdList.ToArray());
+            if (_player != null && _player.connectionToClient != null) {
+               Target_ReceiveQuestNotifications(_player.connectionToClient, npcIdList.ToArray());
+            }
          });
       });
    }

@@ -66,7 +66,12 @@ public class AchievementManager : MonoBehaviour {
       for (int i = 1; i < MAX_TIER_COUNT; i++) {
          string actionKey = actionType.ToString() + i.ToString();
          if (self._achievementDataCollection.Exists(_=>_.uniqueKey == actionKey)) {
-            newDataList.Add(self._achievementDataCollection.Find(_=>_.uniqueKey == actionKey).achievementData);
+            AchievementGroupData newData = self._achievementDataCollection.Find(_ => _.uniqueKey == actionKey);
+            if (newData != null) {
+               newDataList.Add(newData.achievementData);
+            } else {
+               D.debug("No achievement found for: {" + actionKey + "}");
+            }
          }
       }
 
@@ -263,7 +268,7 @@ public class AchievementManager : MonoBehaviour {
    #region Private Variables
 
    // Holds the collection of the xml translated data
-   private List<AchievementGroupData> _achievementDataCollection;
+   private List<AchievementGroupData> _achievementDataCollection = new List<AchievementGroupData>();
 
    // The achievements registered in steam dashboard
    private const string STEAM_REACH_LEVEL = "REACH_LEVEL_";
