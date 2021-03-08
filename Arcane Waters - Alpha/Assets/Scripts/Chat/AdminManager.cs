@@ -546,7 +546,7 @@ public class AdminManager : NetworkBehaviour
          case "boss":
             Global.displayBossCombatLogs = isEnabled;
             break;
-         case "mining":
+         case "mine":
             Global.displayMiningLogs = isEnabled;
             break;
          default:

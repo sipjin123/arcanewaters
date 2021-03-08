@@ -5842,7 +5842,7 @@ public class DB_Main : DB_MainStub
                         try {
                            userObjects.guildRankInfo = new GuildRankInfo(dataReader);
                         } catch {
-                           D.warning("Needs Investigation! Failed to process Guild Rank Info!");
+                           D.error("Needs Investigation! Failed to process Guild Rank Info!");
                            userObjects.guildRankInfo = new GuildRankInfo {
                               guildId = -1,
                               id = -1,

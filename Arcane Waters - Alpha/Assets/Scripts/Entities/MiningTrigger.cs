@@ -84,7 +84,14 @@ public class MiningTrigger : MonoBehaviour
                         messageCanvas.transform.position = pos;
                         messageCanvas.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Cannot mine outside voyage maps!";
                      }
-                  } 
+                  } else {
+                     if (Global.displayMiningLogs) {
+                        D.debug("MINING_LOG::Player cannot mine:: " +
+                           "hasBeenMined:{" + oreNode.hasBeenMined() + "} " +
+                           "finishedMining:{" + oreNode.finishedMining() + "} " +
+                           "oreIdInteracted:{" + oreIdsInteracted.Exists(_ => _ == oreNode.id) + "}");
+                     }
+                  }
                }
             } 
          }

@@ -210,7 +210,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 'Alt Q to show/hide
 
-    Alt P to clear logs'
+    Alt R to clear logs'
 --- !u!114 &1225064606091111380
 MonoBehaviour:
   m_ObjectHideFlags: 0

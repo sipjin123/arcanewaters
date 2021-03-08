@@ -19,7 +19,7 @@ public class ScreenLogger : MonoBehaviour {
    public GameObject canvasObj;
 
    // The maximum log count in characters before the text UI is deducted
-   public const int MAX_LOG_COUNT = 300;
+   public const int MAX_LOG_COUNT = 5000;
 
    // The deduct count when text reaches max cap
    public const int TEXT_DEDUCT_COUNT = 50;
@@ -30,7 +30,7 @@ public class ScreenLogger : MonoBehaviour {
       self = this;
       isEnabled = false;
       canvasObj.SetActive(false);
-      Global.displayLandCombatStats = true;
+
       if (!Util.isCloudBuild()) {
          isEnabled = true;
       }
@@ -68,7 +68,7 @@ public class ScreenLogger : MonoBehaviour {
          }
 
          // Clears log screen when holding left and T button
-         if (Input.GetKeyDown(KeyCode.T) && canvasObj.activeSelf) {
+         if (Input.GetKeyDown(KeyCode.R) && canvasObj.activeSelf) {
             clearLog();
          }
       }
