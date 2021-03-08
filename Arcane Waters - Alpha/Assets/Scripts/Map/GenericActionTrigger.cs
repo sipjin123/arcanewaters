@@ -15,10 +15,13 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
 
    #region Public Variables
 
+   // Hardcoded action strings
+   public static string WARP_TO_LEAGUE_ACTION = "Warp To League";
+
    // The list of actions that can be defined and triggered
    public static Dictionary<string, Action<NetEntity>> actions = new Dictionary<string, Action<NetEntity>> {
       { "Voyage Panel", showVoyagePanel },
-      { "Warp To League", warpToLeague },
+      { WARP_TO_LEAGUE_ACTION, warpToLeague },
       { "Exit League", exitLeague }
    };
 

@@ -5195,6 +5195,24 @@ public class DB_Main : DB_MainStub
 
    #region User Currency Features
 
+   public static new void setAdmin (int userId, int adminFlag) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE users SET usrAdminFlag = @adminStatus WHERE usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@adminStatus", adminFlag);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
    public static new void addGold (int userId, int amount) {
       try {
          using (MySqlConnection conn = getConnection())

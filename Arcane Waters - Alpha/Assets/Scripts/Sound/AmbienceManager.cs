@@ -32,6 +32,10 @@ public class AmbienceManager : ClientMonoBehaviour
       }
    }
 
+   public void setTitleScreenAmbience () {
+      updateAmbienceForArea("");
+   }
+
    protected void updateAmbienceForArea (string newAreaKey) {
       // Figure out what type we should be playing
       List<SoundManager.Type> ambienceTypes = getAmbienceTypeForArea(newAreaKey);

@@ -5120,6 +5120,18 @@ public class RPCManager : NetworkBehaviour
       BattleUIManager.self.setupAbilityUI(attackAbilityDataList.OrderBy(_ => _.equipSlotIndex).ToArray(), weaponClass, hasValidAbilities);
    }
 
+   [ClientRpc]
+   public void Rpc_SyncBattlerAbilities (int[] abilityIds) {
+      if (_player == null) {
+         return;
+      }
+
+      Battler battler = BattleManager.self.getBattler(_player.userId);
+      if (battler != null) {
+         battler.syncAbilities(abilityIds);
+      }
+   }
+
    #endregion
 
    #region Basic Info Fetching
@@ -5385,7 +5397,7 @@ public class RPCManager : NetworkBehaviour
    [Server]
    public void requestSetArmorId (int armorId) {
       // They may be in an island scene, or at sea
-      BodyEntity body = _player.GetComponent<BodyEntity>();
+      PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -5401,6 +5413,11 @@ public class RPCManager : NetworkBehaviour
             }
             if (body != null) {
                body.armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id, armor.paletteNames);
+
+               // Update the battler entity if the user is in battle
+               if (body.isInBattle()) {
+                  BattleManager.self.onPlayerEquipItem(body);
+               }
             }
 
             Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
@@ -5411,7 +5428,7 @@ public class RPCManager : NetworkBehaviour
    [Server]
    public void requestSetHatId (int hatId) {
       // They may be in an island scene, or at sea
-      BodyEntity body = _player.GetComponent<BodyEntity>();
+      PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -5427,6 +5444,11 @@ public class RPCManager : NetworkBehaviour
             }
             if (body != null) {
                body.hatsManager.updateHatSyncVars(hat.itemTypeId, hat.id);
+
+               // Update the battler entity if the user is in battle
+               if (body.isInBattle()) {
+                  BattleManager.self.onPlayerEquipItem(body);
+               }
             }
 
             Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
@@ -5437,7 +5459,7 @@ public class RPCManager : NetworkBehaviour
    [Server]
    public void requestSetWeaponId (int weaponId) {
       // They may be in an island scene, or at sea
-      BodyEntity body = _player.GetComponent<BodyEntity>();
+      PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -5454,6 +5476,11 @@ public class RPCManager : NetworkBehaviour
             }
             if (body != null) {
                body.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames);
+
+               // Update the battler entity if the user is in battle
+               if (body.isInBattle()) {
+                  BattleManager.self.onPlayerEquipItem(body);
+               }
             } else {
                D.editorLog("Failed to cast!", Color.magenta);
             }

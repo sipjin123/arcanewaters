@@ -560,17 +560,23 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
    }
 
-   private void syncAbilities () {
+   public void syncAbilities () {
+      syncAbilities(basicAbilityIDList.ToArray());
+   }
+
+   public void syncAbilities (int[] abilityIds) {
       if (battlerType == BattlerType.PlayerControlled) {
          // Create new ability record to assign to this entity
-         _battlerBasicAbilities = new List<BasicAbilityData>();
+         List<BasicAbilityData> abilities = new List<BasicAbilityData>();
 
-         foreach (int basicID in basicAbilityIDList) {
+         foreach (int basicID in abilityIds) {
             BasicAbilityData basicData = AbilityManager.getAbility(basicID, AbilityType.Undefined);
             if (basicData != null) {
-               _battlerBasicAbilities.Add(basicData);
+               abilities.Add(basicData);
             }
          }
+
+         setBattlerAbilities(abilities, battlerType);
       }
    }
 
@@ -713,17 +719,22 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public void setBattlerAbilities (List<BasicAbilityData> basicAbilityList, BattlerType battlerType) {
+      _battlerBasicAbilities.Clear();
+
       // If there are no abilities set, assign the default abilities for all weapon types
       if (basicAbilityList.Count == 0 && battlerType == BattlerType.PlayerControlled) {
          _battlerBasicAbilities.Add(AbilityManager.self.shootAbility());
          _battlerBasicAbilities.Add(AbilityManager.self.punchAbility());
          _battlerBasicAbilities.Add(AbilityManager.self.slashAbility());
          _battlerBasicAbilities.Add(AbilityManager.self.throwRum());
-      }
-
-      if (battlerAbilitiesInitialized) {
-         D.debug("Warning! Battler abilities has already been initialized!");
-         return;
+      } else {
+         foreach (BasicAbilityData abilityData in basicAbilityList) {
+            if (abilityData != null) {
+               _battlerBasicAbilities.Add(abilityData);
+            } else {
+               D.debug("Basic Ability is Null!");
+            }
+         }
       }
 
       // Create initialized copies of the stances data.
@@ -731,22 +742,27 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       _offenseInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.offenseStance);
       _defensiveInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.defenseStance);
 
-      if (basicAbilityList != null) {
-         foreach (BasicAbilityData abilityData in basicAbilityList) {
-            if (abilityData != null) {
-               _battlerBasicAbilities.Add(abilityData);
+      battlerAbilitiesInitialized = true;
 
-               // Sync ID's for battlers
-               if (NetworkServer.active) {
-                  basicAbilityIDList.Add(abilityData.itemID);
-               }
-            } else {
-               D.debug("Basic Ability is Null!");
-            }
+      if (!NetworkServer.active) {
+         return;
+      }
+
+      // Set the ability ids in the synced list - we can probably use only the synced list and remove _battlerBasicAbilities (needs some refactoring)
+      basicAbilityIDList.Clear();
+      foreach (BasicAbilityData abilityData in basicAbilityList) {
+         if (abilityData != null) {
+            basicAbilityIDList.Add(abilityData.itemID);
          }
-         battlerAbilitiesInitialized = true;
-      } else {
-         D.debug("Issue here, There is no ability to set");
+      }
+
+      if (!Util.isServerNonHost()) {
+         return;
+      }
+
+      if (battlerType == BattlerType.PlayerControlled) {
+         // Ask the clients to recreate _battlerBasicAbilities from the basicAbilityIDList sync list
+         player.rpc.Rpc_SyncBattlerAbilities(basicAbilityIDList.ToArray());
       }
    }
 

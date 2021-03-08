@@ -399,4 +399,6 @@ public enum TutorialTrigger
    SellCrops = 41,
    CloseMerchantScreen = 42,
    SpawnInLeagueNotLobby = 43,
+   SwitchToOffensiveStance = 44,
+   SpawnInLobby = 45,
 };

@@ -1090,7 +1090,7 @@ MonoBehaviour:
   - {fileID: 3476353292930757795}
   _animators: []
   damage: 90
-  reloadDelay: 0.25
+  reloadDelay: 0.5
   attackCounter: 0
   localAttackCirclePrefab: {fileID: 2921645448827512062, guid: 351ed76644c9d96439cd9bec5632f6a1,
     type: 3}

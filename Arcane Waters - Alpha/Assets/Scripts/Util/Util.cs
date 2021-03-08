@@ -1210,6 +1210,12 @@ public class Util : MonoBehaviour {
 
       // Notice the tutorial
       TutorialManager3.self.onUserLogOut();
+
+      // Look up the background music for the Title Screen, if we have any
+      SoundManager.setBackgroundMusic(SoundManager.Type.Intro_Music);
+
+      // Reset ambience
+      AmbienceManager.self.setTitleScreenAmbience();
    }
 
    public static bool isWithinCone (Vector2 coneStart, Vector2 target, float coneMiddleAngle, float coneHalfAngle, float coneRadius = -1.0f) {

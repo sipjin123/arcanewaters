@@ -61,7 +61,6 @@ public class MyCamera : BaseCamera
                   Vector2 confinerScale = confiner.m_BoundingShape2D.transform.localScale;
                   if (confinerScale.y != CONFINER_DEFAULT_HEIGHT || confinerScale.x != CONFINER_DEFAULT_WIDTH) {
                      confiner.m_BoundingShape2D.transform.localScale = new Vector3(CONFINER_DEFAULT_WIDTH, CONFINER_DEFAULT_HEIGHT, 1);
-                     D.debug(gameObject.name + ": CAMERA CONFINER Scaled into default. Height: " + CONFINER_DEFAULT_HEIGHT + ", Width: " + CONFINER_DEFAULT_WIDTH);
                   }
                }
             }

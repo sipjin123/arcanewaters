@@ -34,7 +34,7 @@ public class TutorialArrow : MonoBehaviour
    public void Update () {
       hideArrows();
 
-      if (Global.player == null || _targetWarp == null || _mainCamera == null) {
+      if (Global.player == null || _target == null || _mainCamera == null) {
          return;
       }
 
@@ -55,8 +55,8 @@ public class TutorialArrow : MonoBehaviour
 
       // Clamp the target to the camera bounds
       Vector2 clampedTarget = new Vector2(
-         Mathf.Clamp(_targetWarp.transform.position.x, cameraRect.xMin, cameraRect.xMax),
-         Mathf.Clamp(_targetWarp.transform.position.y, cameraRect.yMin, cameraRect.yMax));
+         Mathf.Clamp(_target.transform.position.x, cameraRect.xMin, cameraRect.xMax),
+         Mathf.Clamp(_target.transform.position.y, cameraRect.yMin, cameraRect.yMax));
 
       // If the current arrow position is too far away, teleport it
       if (Vector2.Distance(transform.position, clampedTarget) > 2f) {
@@ -68,15 +68,15 @@ public class TutorialArrow : MonoBehaviour
       }
 
       // When the target is visible, switch to an arrow that points down on it
-      if (cameraRect.Contains(_targetWarp.transform.position)) {
+      if (cameraRect.Contains(_target.transform.position)) {
          downArrow.SetActive(true);
       } else {
          // Show the correct arrow sprite
-         if (_targetWarp.transform.position.x > _mainCamera.transform.position.x + screenSize.x / 2) {
+         if (_target.transform.position.x > _mainCamera.transform.position.x + screenSize.x / 2) {
             eastArrow.SetActive(true);
-         } else if (_targetWarp.transform.position.x < _mainCamera.transform.position.x - screenSize.x / 2) {
+         } else if (_target.transform.position.x < _mainCamera.transform.position.x - screenSize.x / 2) {
             westArrow.SetActive(true);
-         } else if (_targetWarp.transform.position.y > _mainCamera.transform.position.y + screenSize.y / 2) {
+         } else if (_target.transform.position.y > _mainCamera.transform.position.y + screenSize.y / 2) {
             northArrow.SetActive(true);
          } else {
             southArrow.SetActive(true);
@@ -85,9 +85,11 @@ public class TutorialArrow : MonoBehaviour
    }
 
    public void setTarget (string targetAreaKey) {
-      if (!string.IsNullOrEmpty(targetAreaKey)) {
+      if (!string.IsNullOrEmpty(targetAreaKey) ||
+         TutorialManager3.self.getCurrentTrigger() == TutorialTrigger.SpawnInLobby ||
+         TutorialManager3.self.getCurrentTrigger() == TutorialTrigger.SpawnInLeagueNotLobby) {
          gameObject.SetActive(true);
-         _targetWarp = null;
+         _target = null;
          StopAllCoroutines();
          StartCoroutine(CO_PointTo(targetAreaKey));
       } else {
@@ -96,7 +98,7 @@ public class TutorialArrow : MonoBehaviour
    }
 
    public void deactivate () {
-      _targetWarp = null;
+      _target = null;
       gameObject.SetActive(false);
    }
 
@@ -131,12 +133,23 @@ public class TutorialArrow : MonoBehaviour
       // Search for the correct warp (entrance to target)
       foreach (Warp warp in AreaManager.self.getArea(Global.player.areaKey).getWarps()) {
          if (string.Equals(warp.targetInfo.name, targetAreaKey)) {
-            _targetWarp = warp;
+            _target = warp.gameObject;
             break;
          }
       }
 
-      if (_targetWarp == null) {
+      // Special case for league maps
+      if (TutorialManager3.self.getCurrentTrigger() == TutorialTrigger.SpawnInLobby ||
+         TutorialManager3.self.getCurrentTrigger() == TutorialTrigger.SpawnInLeagueNotLobby) {
+         foreach (GenericActionTrigger genericTrigger in AreaManager.self.getArea(Global.player.areaKey).GetComponentsInChildren<GenericActionTrigger>()) {
+            if (genericTrigger.actionName == GenericActionTrigger.WARP_TO_LEAGUE_ACTION) {
+               _target = genericTrigger.gameObject;
+               break;
+            }
+         }
+      }
+
+      if (_target == null) {
          deactivate();
          yield break;
       }
@@ -144,8 +157,8 @@ public class TutorialArrow : MonoBehaviour
 
    #region Private Variables
 
-   // The currently targetted warp
-   private Warp _targetWarp = null;
+   // The currently targetted object
+   private GameObject _target = null;
 
    // A cached reference to the main camera
    private Camera _mainCamera = null;

@@ -200,7 +200,7 @@ public class PlayerShipEntity : ShipEntity
       //}
 
       // Check if input is allowed
-      if (!Util.isGeneralInputAllowed() || isDisabled) {
+      if (!Util.isGeneralInputAllowed() || isDisabled || !isLocalPlayer) {
          return;
       }
 
@@ -212,10 +212,12 @@ public class PlayerShipEntity : ShipEntity
       }
 
       if (!isDead() && SeaManager.getAttackType() != Attack.Type.Air) {
-         SeaEntity target = _targetSelector.getTarget();
-         if (target != null && hasReloaded() && InputManager.isFireCannonKeyDown()) {
-            Cmd_FireMainCannonAtTarget(target.gameObject, Vector2.zero, true, false, -1.0f, -1.0f, true);
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
+         if (_targetSelector != null) {
+            SeaEntity target = _targetSelector.getTarget();
+            if (target != null && hasReloaded() && InputManager.isFireCannonKeyDown()) {
+               Cmd_FireMainCannonAtTarget(target.gameObject, Vector2.zero, true, false, -1.0f, -1.0f, true);
+               TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
+            }
          }
 
          if (InputManager.isFireCannonMouseDown() || (InputManager.isFireCannonMouse() && !_isChargingCannon)) {

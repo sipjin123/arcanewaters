@@ -934,6 +934,14 @@ public class BattleManager : MonoBehaviour {
       this.endBattle(battle, teamThatWon);
    }
 
+   public void onPlayerEquipItem (PlayerBodyEntity playerBody) {
+      Battler battler = getBattler(playerBody.userId);
+      if (battler != null) {
+         assignBattlerSyncData(battler, playerBody);
+         playerBody.rpc.processPlayerAbilities(playerBody, new List<PlayerBodyEntity>() { playerBody });
+      }
+   }
+
    public List<BattlerData> getAllBattlersData () { return _allBattlersData; }
 
    public Dictionary<int, Battle> getActiveBattlersData () { return _activeBattles; }

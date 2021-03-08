@@ -541,6 +541,10 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
+   public void setAdminPrivileges (int newAdminFlag) {
+      this.adminFlag = newAdminFlag;
+   }
+
    public virtual void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item hat,
       ShipInfo shipInfo, GuildInfo guildInfo, GuildRankInfo guildRankInfo) {
       this.entityName = userInfo.username;

@@ -253,6 +253,10 @@ public class AbilityManager : MonoBehaviour
       sourceBattler.lastStanceChange = action.actionEndTime;
       sourceBattler.stanceCooldownEndTime = action.actionEndTime;
       sourceBattler.stance = action.newStance;
+
+      if (action.newStance == Battler.Stance.Attack && Global.player != null && Global.player.userId == sourceBattler.userId) {
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.SwitchToOffensiveStance);
+      }
    }
 
    public static BasicAbilityData getAbility (int abilityGlobalID, AbilityType abilityType) {

@@ -126,6 +126,10 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       Util.disableCanvasGroup(this.canvasGroup);
    }
 
+   public bool isShowing () {
+      return this.canvasGroup.interactable;
+   }
+
    private void hideWithTransition () {
       _fadeCanvasTween?.Kill();
 
@@ -160,7 +164,6 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       int body = Random.Range(0, 5);
       skinGroup.setSelected(body, true);
    }
-
 
    private void randomizeSelectedColor (ToggleGroup toggleGroup) {
       Toggle[] toggles = toggleGroup.GetComponentsInChildren<Toggle>();
@@ -577,7 +580,6 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       List<int> armors = getArmorList();
       return armors[Random.Range(0, armors.Count)];
    }
-
 
    public List<HairLayer.Type> getOrderedHairList () {
       List<HairLayer.Type> newList = new List<HairLayer.Type>();

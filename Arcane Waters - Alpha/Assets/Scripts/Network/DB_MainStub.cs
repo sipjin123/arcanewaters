@@ -1278,6 +1278,10 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static void setAdmin (int userId, int adminFlag) {
+
+   }
+
    /*
 
    public static void refillSupplies (int userId) {

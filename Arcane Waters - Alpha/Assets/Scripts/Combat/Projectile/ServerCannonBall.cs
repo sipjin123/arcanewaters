@@ -197,7 +197,7 @@ public class ServerCannonBall : NetworkBehaviour {
 
    private void OnDestroy () {
       // Don't need to handle any of these effects in Batch Mode
-      if (Util.isBatch()) {
+      if (Util.isBatch() || ClientManager.isApplicationQuitting) {
          return;
       }
 

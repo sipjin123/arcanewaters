@@ -114,7 +114,19 @@ public class BattleUIManager : MonoBehaviour {
    public void updateButtons (AbilityType abilityType, int newStance = -1) {
       Battler.Stance playerStance;
       if (newStance == -1) {
-         playerStance = _playerLocalBattler.stance;
+         
+         if (_playerLocalBattler) {
+            playerStance = _playerLocalBattler.stance;
+         } else {
+            Battler player = BattleManager.self.getPlayerBattler();
+            if (player) {
+               playerStance = player.stance;
+            } else {
+               D.error("BattleUIManager: Couldn't get a reference to the player battler");
+               return;
+            }
+         }
+         
       } else {
          playerStance = (Battler.Stance) newStance;
       }
@@ -258,6 +270,9 @@ public class BattleUIManager : MonoBehaviour {
             abilityButton.enabled = true;
          } else {
             // Disable skill button if equipped abilities does not reach 5 (max abilities in combat)
+            abilityButton.abilityIndex = -1;
+            abilityButton.abilityTypeIndex = -1;
+            abilityButton.abilityType = AbilityType.Undefined;
             abilityButton.abilityIcon.sprite = null;
             abilityButton.disableButton();
             abilityButton.enabled = false;
@@ -271,7 +286,11 @@ public class BattleUIManager : MonoBehaviour {
          abilityIndex = abilitydata.Length - 1;
       }
 
-      updateButtons(AbilityType.Undefined);
+      if (BattleSelectionManager.self.selectedBattler == null) {
+         updateButtons(AbilityType.Undefined);
+      } else {
+         BattleSelectionManager.self.selectedBattler.selectThis();
+      }
    }
 
    public void deselectOtherAbilities () {

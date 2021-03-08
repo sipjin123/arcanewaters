@@ -57,6 +57,7 @@ public class AdminManager : NetworkBehaviour
 
       ChatManager.self.removeAdminCommands();
 
+      cm.addCommand(new CommandData("set_admin", "Sets admin privileges for the user", requestSetAdminPrivileges, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "adminFlag" }));
       cm.addCommand(new CommandData("add_gold", "Gives an amount of gold to the user", requestAddGold, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "goldAmount" }));
       cm.addCommand(new CommandData("add_ships", "Gives all ships to the user", requestAddShips, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("check_fps", "Checks the user's FPS (Not implemented yet)", requestCheckFPS, requiredPrefix: CommandType.Admin));
@@ -197,6 +198,10 @@ public class AdminManager : NetworkBehaviour
          return;
       }
       Battle battle = BattleManager.self.getBattleForUser(_player.userId);
+      if (battle == null) {
+         return;
+      }
+
       List<Battler> participants = battle.getParticipants();
 
       foreach (Battler battler in participants) {
@@ -788,6 +793,22 @@ public class AdminManager : NetworkBehaviour
       Cmd_AddGold(gold, username);
    }
 
+   protected void requestSetAdminPrivileges (string parameters) {
+      string[] list = parameters.Split(' ');
+      string username = "";
+      int adminFlag = 0;
+      try {
+         username = list[0];
+         adminFlag = Convert.ToInt32(list[1]);
+      } catch (System.Exception e) {
+         D.warning("Unable to set admin privileges for the player " + username);
+         return;
+      }
+
+      // Send the request to the server
+      Cmd_SetAdminPrivileges(username, adminFlag);
+   }
+
    private void requestGiveAbility (string parameters) {
       string[] list = parameters.Split(' ');
       string ability = "";
@@ -1103,6 +1124,48 @@ public class AdminManager : NetworkBehaviour
          });
       }
       return newAbility;
+   }
+
+   [Command]
+   protected void Cmd_SetAdminPrivileges (string username, int adminFlag) {
+      // Make sure this is an admin
+      if (!_player.isAdmin()) {
+         D.warning("Received admin command from non-admin!");
+         return;
+      }
+
+      // Update the player's admin privileges in the database
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int userId = DB_Main.getUserId(username);
+
+         if (userId > 0) {
+            DB_Main.setAdmin(userId, adminFlag);
+
+            // Back to the Unity thread
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               foreach (NetEntity entity in MyNetworkManager.getPlayers()) {
+                  if (entity.userId == userId) {
+                     entity.setAdminPrivileges(adminFlag);
+                  }
+               }
+               // Send confirmation back to the player who issued the command
+               string message = "";
+               if (adminFlag == 1) {
+                  message = string.Format("Admin privileges have been granted for {0}.", username);
+               } else {
+                  message = string.Format("Admin privileges have been removed for {0}.", username);
+               }
+               ChatManager.self.addChat(message, ChatInfo.Type.System);
+            });
+
+         } else {
+            // Send the failure message back to the client
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               string message = string.Format("Could not find user {0}.", username);
+               ServerMessageManager.sendError(ErrorMessage.Type.UsernameNotFound, _player, message);
+            });
+         }
+      });
    }
 
    [Command]

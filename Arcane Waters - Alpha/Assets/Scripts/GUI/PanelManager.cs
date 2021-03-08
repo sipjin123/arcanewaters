@@ -284,6 +284,11 @@ public class PanelManager : MonoBehaviour {
       tradeConfirmScreen.hide();
       itemSelectionScreen.hide();
       VoyageGroupManager.self.hideVoyageGroupInvitation();
+
+      if (CharacterCreationPanel.self.isShowing()) {
+         CharacterCreationPanel.self.cancelCreating();
+      }
+
       foreach (Panel panel in FindObjectsOfType<Panel>()) {
          if (panel.isShowing()) {
             panel.hide();
