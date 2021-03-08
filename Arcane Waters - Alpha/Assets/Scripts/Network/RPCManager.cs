@@ -3718,7 +3718,7 @@ public class RPCManager : NetworkBehaviour
                         allNames = allNames.Substring(0, allNames.Length - 2);
 
                         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Some group members are missing: " + allNames);
-                        Target_OnWarpFailed();
+                        Target_OnWarpFailed("Missing group members");
                         return;
                      }
 
@@ -3728,7 +3728,7 @@ public class RPCManager : NetworkBehaviour
                });
             }
          } else {
-            Target_OnWarpFailed();
+            Target_OnWarpFailed("League voyage and Lobby Area not Synced");
 
             // Display a panel with the current voyage map details
             Target_ReceiveCurrentVoyageInstance(_player.connectionToClient, voyage);
@@ -5819,8 +5819,8 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_OnWarpFailed () {
-      D.debug("Warp failed");
+   public void Target_OnWarpFailed (string msg) {
+      D.debug("Warp failed: " + msg);
       _player.onWarpFailed();
       PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.MapCreation);
    }
@@ -5835,16 +5835,16 @@ public class RPCManager : NetworkBehaviour
          if (Global.displayWarpLogs) {
             D.debug("Player {" + _player.userId + "} Failed to warp due to missing reference");
          }
-         Target_OnWarpFailed();
+         Target_OnWarpFailed("Missing player or player connection");
       }
-
+      
       Area area = AreaManager.self.getArea(_player.areaKey);
       if (area == null) {
-         Debug.Log("Area was null");
+         Debug.Log("Area was null: " + _player.areaKey);
          if (Global.displayWarpLogs) {
             D.debug("Player {" + _player.userId + "} Failed to warp due to missing area: {" + " : " + _player.areaKey + "}");
          }
-         Target_OnWarpFailed();
+         Target_OnWarpFailed("Missing Area: " + _player.areaKey);
          return;
       }
 
@@ -5879,7 +5879,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // If no valid warp was found, let the player know so at least they're not stuck
-      Target_OnWarpFailed();
+      Target_OnWarpFailed("No valid warp nearby");
    }
 
    [Command]

@@ -458,7 +458,7 @@ public class VoyageManager : MonoBehaviour {
 
             if (mapList.Count == 0) {
                D.error("No league maps available!");
-               player.rpc.Target_OnWarpFailed();
+               player.rpc.Target_OnWarpFailed("No league maps available");
                yield break;
             }
 
