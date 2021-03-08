@@ -85,11 +85,19 @@ public class OreNode : NetworkBehaviour
          spriteRenderer.sprite = oreSprites.First();
       }
 
-      OreManager.self.registerOreNode(this.id, this);
+      if (!NetworkServer.active) {
+         OreManager.self.registerOreNode(areaKey, this);
+      }
    }
 
    public void updateSprite (int spriteId) {
-      spriteRenderer.sprite = oreSprites[spriteId];
+      if (spriteId < oreSprites.Length) {
+         spriteRenderer.sprite = oreSprites[spriteId];
+      } else {
+         if (oreSprites.Length > 0) {
+            spriteRenderer.sprite = oreSprites[oreSprites.Length - 1];
+         }
+      }
 
       if (hasBeenMined() || finishedMining()) {
          _outline.setVisibility(false);

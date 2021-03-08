@@ -4008,7 +4008,7 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_CollectOre (NetworkConnection connection, int oreId, int effectId) {
-      OreNode oreNode = OreManager.self.getOreNode(oreId);
+      OreNode oreNode = OreManager.self.getOreNode(_player.areaKey, oreId);
       if (oreNode.orePickupCollection.Count > 0) {
          if (oreNode.orePickupCollection.ContainsKey(effectId)) {
             oreNode.tryToMineNodeOnClient();
@@ -4021,7 +4021,7 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_MineOre (NetworkConnection connection, int oreId, Vector2 startingPosition, Vector2 endPosition) {
-      OreNode oreNode = OreManager.self.getOreNode(oreId);
+      OreNode oreNode = OreManager.self.getOreNode(_player.areaKey, oreId);
 
       if (oreNode == null) {
          D.debug("Ore node is missing! No ore with id:{" + oreId + "} registered to OreManager");
@@ -4032,6 +4032,10 @@ public class RPCManager : NetworkBehaviour
       ExplosionManager.createMiningParticle(oreNode.transform.position);
 
       if (oreNode.finishedMining()) {
+         if (Global.displayMiningLogs) {
+            D.debug("MINING_LOG::Player has finished mining, spawning collectable ores:{" + oreNode.id + "}");
+         }
+
          int randomCount = Random.Range(1, 3);
 
          for (int i = 0; i < randomCount; i++) {
@@ -4049,7 +4053,15 @@ public class RPCManager : NetworkBehaviour
 
    public void processClientMineEffect (int oreId, Vector3 position, Direction direction, float angleOffset, float randomSpeed, int effectId, int ownerId, int voyageGroupId) {
       // Create object
-      OreNode oreNode = OreManager.self.getOreNode(oreId);
+      OreNode oreNode = OreManager.self.getOreNode(_player.areaKey, oreId);
+      if (oreNode == null) {
+         D.debug("Error! Missing Ore Node:{" + oreId + "}");
+         return;
+      }
+      if (Global.displayMiningLogs) {
+         D.debug("MINING_LOG:: Generating mine effect for ore:{" + oreNode.id + "}");
+      }
+
       GameObject oreBounce = Instantiate(PrefabsManager.self.oreDropPrefab, oreNode.transform);
       OreMineEffect oreMine = oreBounce.GetComponent<OreMineEffect>();
 
@@ -4072,7 +4084,7 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_MineNode (int nodeId, int oreEffectId, int ownerId, int voyageGroupId) {
-      OreNode oreNode = OreManager.self.getOreNode(nodeId);
+      OreNode oreNode = OreManager.self.getOreNode(_player.areaKey, nodeId);
 
       // Make sure we found the Node
       if (oreNode == null) {

@@ -1,8 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
+﻿using System.Collections.Generic;
 using Mirror;
+using UnityEngine;
 
 public class OreManager : MonoBehaviour
 {
@@ -35,23 +33,6 @@ public class OreManager : MonoBehaviour
       return null;
    }
 
-   public void createOreNodesForInstance (Instance instance) {
-      // Look up the Area associated with this intance
-      Area area = AreaManager.self.getArea(instance.areaKey);
-
-      // Find all of the possible ore spots in this Area
-      foreach (OreSpot spot in area.GetComponentsInChildren<OreSpot>()) {
-         // Have a random chance of spawning an ore node there
-         if (Random.Range(0f, 1f) <= 1.0f) {
-            OreNode ore = createOreNode(instance, spot);
-         }
-      }
-   }
-
-   public OreNode createOreNode (Instance instance, OreSpot spot) {
-      return createOreNode(instance, spot.transform.localPosition, spot.possibleOreTypes.ChooseByRandom());
-   }
-
    public OreNode createOreNode (Instance instance, Vector3 localPosition, OreNode.Type oreType) {
       // Instantiate a new Ore Node
       OreNode oreNode = Instantiate(oreNodePrefab);
@@ -72,12 +53,8 @@ public class OreManager : MonoBehaviour
       // Assign the voyage id
       oreNode.voyageId = instance.voyageId;
 
-      if (_oreNodes.ContainsKey(oreNode.id)) {
-         _oreNodes.Remove(oreNode.id);
-      }
-
       // Keep track of the ore nodes that we've created
-      _oreNodes.Add(oreNode.id, oreNode);
+      registerOreNode(instance.areaKey, oreNode);
 
       // The Instance needs to keep track of all Networked objects inside
       instance.entities.Add(oreNode);
@@ -88,20 +65,32 @@ public class OreManager : MonoBehaviour
       return oreNode;
    }
 
-   public void registerOreNode (int id, OreNode node) {
-      if (!_oreNodes.ContainsKey(id)) {
-         _oreNodes.Add(id, node);
-      } 
+   public void registerOreNode (string areaKey, OreNode node) {
+      // Create dictionary if none exists 
+      if (!_oreNodes.ContainsKey(areaKey)) {
+         _oreNodes.Add(areaKey, new List<OreNode>());
+      }
+
+      if (!_oreNodes[areaKey].Contains(node)) {
+         _oreNodes[areaKey].Add(node);
+      } else {
+         D.debug("Ore {" + node.id + "} already existing for area:{" + areaKey + "}");
+      }
    }
 
-   public OreNode getOreNode (int id) {
-      return _oreNodes[id];
+   public OreNode getOreNode (string areaKey, int id) {
+      if (!_oreNodes.ContainsKey(areaKey)) {
+         D.debug("No ore node dictionary for area:{" + areaKey + "}");
+         return null;
+      }
+
+      return _oreNodes[areaKey].Find(_ => _.id == id);
    }
 
    #region Private Variables
 
    // Stores the ore nodes we've created, indexed by their unique ID
-   protected Dictionary<int, OreNode> _oreNodes = new Dictionary<int, OreNode>();
+   protected Dictionary<string, List<OreNode>> _oreNodes = new Dictionary<string, List<OreNode>>();
 
    // An ID we use to uniquely identify ore nodes
    protected static int _id = 1;
