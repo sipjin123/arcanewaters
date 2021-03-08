@@ -323,55 +323,22 @@ public class MapManager : MonoBehaviour
 
    private IEnumerator CO_ProcessNpcQuestInArea () {
       bool isCloudBuild = Util.isCloudBuild();
-      float timeLimit = 0;
-      const float maxTimeLimit = 10;
-      const float waitDelay = .25f;
-      double startTime = NetworkTime.time;
 
       // Skip this process if its a server or if its a development/nonCloud build
       if (!(Mirror.NetworkServer.active && isCloudBuild)) {
-         while (Global.player == null && timeLimit < maxTimeLimit) {
-            yield return new WaitForSeconds(waitDelay);
-            timeLimit += waitDelay;
+         while (Global.player == null) {
             yield return 0;
          }
-         if (timeLimit >= maxTimeLimit) {
-            startTime = NetworkTime.time - startTime;
-            if (Global.displayWarpLogs) {
-               D.debug("Max load time exceeded for player fetch" + " : " + startTime);
-            }
-            yield break;
-         }
-         timeLimit = 0;
 
          // Wait for instance to generate
-         while (!InstanceManager.self.clientInstance && timeLimit < maxTimeLimit) {
-            yield return new WaitForSeconds(waitDelay);
-            timeLimit += waitDelay;
+         while (!InstanceManager.self.clientInstance) {
             yield return 0;
          }
-         if (timeLimit >= maxTimeLimit) {
-            startTime = NetworkTime.time - startTime;
-            if (Global.displayWarpLogs) {
-               D.debug("Max load time exceeded for instance fetch" + " : " + startTime);
-            }
-            yield break;
-         }
-         timeLimit = 0;
 
          // Wait for instance to finish spawning the network entities 
          Instance instance = InstanceManager.self.clientInstance;
-         while (!instance.isNetworkPrefabInstantiationFinished && timeLimit < maxTimeLimit) {
-            yield return new WaitForSeconds(waitDelay);
-            timeLimit += waitDelay;
+         while (!instance.isNetworkPrefabInstantiationFinished) {
             yield return 0;
-         }
-         if (timeLimit >= maxTimeLimit) {
-            startTime = NetworkTime.time - startTime;
-            if (Global.displayWarpLogs) {
-               D.debug("Max load time exceeded for instance load fetch" + " : " + startTime);
-            }
-            yield break;
          }
 
          Global.player.rpc.Cmd_RequestNPCQuestInArea();
