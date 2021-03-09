@@ -87,6 +87,9 @@ public class Global
    // If stats should be displayed on land combat
    public static bool displayLandCombatLogs = false;
 
+   // If stats should be displayed on sea combat
+   public static bool displaySeaCombatLogs = false;
+
    // If stats should be displayed on land combat for boss enemy
    public static bool displayBossCombatLogs = false;
 

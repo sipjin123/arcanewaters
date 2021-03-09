@@ -157,13 +157,18 @@ public class ServerCannonBall : NetworkBehaviour {
 
          ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(_abilityData.projectileId);
          int projectileBaseDamage = (int) projectileData.projectileDamage;
-         int shipDamageMultiplier = (int) ((sourceEntity.damage*.001f) * projectileBaseDamage);
-         int abilityDamageMultiplier = (int) ((_abilityData.damageModifier * .001f) * projectileBaseDamage);
+         int shipDamageMultiplier = (int) (sourceEntity.damage * projectileBaseDamage);
+         int abilityDamageMultiplier = (int) (_abilityData.damageModifier * projectileBaseDamage);
          int totalDamage = projectileBaseDamage + shipDamageMultiplier + abilityDamageMultiplier;
          hitEntity.currentHealth -= totalDamage;
 
          // TODO: Observe damage formula on live build
-         D.editorLog("Total damage of network Cannonball is" + " : " + totalDamage + " Projectile: " + projectileBaseDamage + " Ship: " + shipDamageMultiplier + " Ability: " + abilityDamageMultiplier, Color.cyan);
+         if (Global.displaySeaCombatLogs) {
+            D.debug("Total damage of network Cannonball is" + " : " + totalDamage +
+               " Projectile: " + projectileBaseDamage +
+               " Ship: " + shipDamageMultiplier + " Dmg: {" + (sourceEntity.damage * 100) + "%}" +
+               " Ability: " + abilityDamageMultiplier + "Dmg: {" + (_abilityData.damageModifier * 100) + "%}");
+         }
 
          // Apply the status effect
          if (_statusType != Status.Type.None) {
