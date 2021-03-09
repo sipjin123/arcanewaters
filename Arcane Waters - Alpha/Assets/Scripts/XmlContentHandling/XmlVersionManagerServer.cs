@@ -282,12 +282,12 @@ public class XmlVersionManagerServer : MonoBehaviour {
          string cropsData = DB_Main.getXmlContent(CROPS_TABLE);
          string abilityData = DB_Main.getXmlContent(ABILITY_TABLE);
 
-         string armorData = DB_Main.getXmlContent(ARMOR_TABLE);
-         string weaponData = DB_Main.getXmlContent(WEAPON_TABLE);
-         string hatData = DB_Main.getXmlContent(HAT_TABLE);
+         string armorData = DB_Main.getXmlContent(ARMOR_TABLE, EditorToolType.Equipment_Armor);
+         string weaponData = DB_Main.getXmlContent(WEAPON_TABLE, EditorToolType.Equipment_Weapon);
+         string hatData = DB_Main.getXmlContent(HAT_TABLE, EditorToolType.Equipment_Hat);
 
          string shopData = DB_Main.getXmlContent(SHOP_TABLE, EditorToolType.Shop);
-         string shipData = DB_Main.getXmlContent(SHIP_TABLE);
+         string shipData = DB_Main.getXmlContent(SHIP_TABLE, EditorToolType.Ship);
          string shipAbilityData = DB_Main.getXmlContent(SHIP_ABILITY_TABLE);
          string battleBGData = DB_Main.getXmlContent(BACKGROUND_DATA_TABLE);
 

@@ -597,6 +597,12 @@ public class DB_Main : DB_MainStub
          addedFields = ", ability_type";
       } else if (toolType == EditorSQLManager.EditorToolType.Palette) {
          contentToFetch = "id, xmlContent ";
+      } else if (toolType == EditorSQLManager.EditorToolType.Ship) {
+         addedFields = ", isActive";
+      } else if (toolType == EditorSQLManager.EditorToolType.Equipment_Weapon
+         || toolType == EditorSQLManager.EditorToolType.Equipment_Armor
+         || toolType == EditorSQLManager.EditorToolType.Equipment_Hat) {
+         addedFields = ", is_enabled";
       } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops
          || toolType == EditorSQLManager.EditorToolType.Quest
          || toolType == EditorSQLManager.EditorToolType.Projectiles
@@ -630,12 +636,24 @@ public class DB_Main : DB_MainStub
                   } else if (toolType == EditorSQLManager.EditorToolType.Palette) {
                      xmlId = dataReader.GetInt32("id");
                      xmlContent = dataReader.GetString("xmlContent");
+                  } else if (toolType == EditorSQLManager.EditorToolType.Ship) {
+                     xmlId = dataReader.GetInt32("xml_id");
+                     xmlContent = dataReader.GetString("xmlContent");
+                     addedContent = dataReader.GetInt32("isActive") + "[space]";
+                     D.debug(toolType + " : " + addedContent);
                   } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops
                      || toolType == EditorSQLManager.EditorToolType.Quest
                      || toolType == EditorSQLManager.EditorToolType.Projectiles
                      || toolType == EditorSQLManager.EditorToolType.Tutorial) {
                      xmlId = dataReader.GetInt32("xmlId");
                      xmlContent = dataReader.GetString("xmlContent");
+                  } else if (toolType == EditorSQLManager.EditorToolType.Equipment_Weapon
+                     || toolType == EditorSQLManager.EditorToolType.Equipment_Armor
+                     || toolType == EditorSQLManager.EditorToolType.Equipment_Hat) {
+                     xmlId = dataReader.GetInt32("xml_id");
+                     xmlContent = dataReader.GetString("xmlContent");
+                     addedContent = dataReader.GetInt32("is_enabled") + "[space]";
+                     D.debug(toolType+" : "+addedContent);
                   } else if (toolType == EditorSQLManager.EditorToolType.ItemDefinitions) {
                      xmlId = dataReader.GetInt32("id");
                      xmlContent = dataReader.GetString("serializedData");

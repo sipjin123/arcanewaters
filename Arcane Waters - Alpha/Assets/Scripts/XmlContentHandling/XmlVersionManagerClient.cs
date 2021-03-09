@@ -423,15 +423,20 @@ public class XmlVersionManagerClient : MonoBehaviour {
                string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
 
                // Extract the segregated data and assign to the xml manager
-               if (xmlSubGroup.Length == 2) {
+               if (xmlSubGroup.Length == 3) {
                   int dataId = int.Parse(xmlSubGroup[0]);
-                  ArmorStatData actualData = Util.xmlLoad<ArmorStatData>(xmlSubGroup[1]);
-                  if (actualData.armorType > 0) {
-                     actualData.sqlId = dataId;
-                     armorList.Add(actualData);
-                     message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.sqlId + " - " + actualData.armorType;
+                  bool isActive = int.Parse(xmlSubGroup[1]) == 1 ? true : false;
+                  if (isActive) {
+                     ArmorStatData actualData = Util.xmlLoad<ArmorStatData>(xmlSubGroup[2]);
+                     if (actualData.armorType > 0) {
+                        actualData.sqlId = dataId;
+                        armorList.Add(actualData);
+                        message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.sqlId + " - " + actualData.armorType;
+                     } else {
+                        D.debug("WARNING! An armor has no assigned armor type!" + dataId + " : " + actualData.armorType);
+                     }
                   } else {
-                     D.debug("WARNING! An armor has no assigned armor type!" + dataId + " : " + actualData.armorType);
+                     D.debug("Skip add entry for Armor:" + dataId);
                   }
                }
                EquipmentXMLManager.self.receiveArmorDataFromZipData(armorList);
@@ -443,15 +448,20 @@ public class XmlVersionManagerClient : MonoBehaviour {
                string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
 
                // Extract the segregated data and assign to the xml manager
-               if (xmlSubGroup.Length == 2) {
+               if (xmlSubGroup.Length == 3) {
                   int dataId = int.Parse(xmlSubGroup[0]);
-                  WeaponStatData actualData = Util.xmlLoad<WeaponStatData>(xmlSubGroup[1]);
-                  if (actualData.weaponType > 0) {
-                     actualData.sqlId = dataId;
-                     weaponList.Add(actualData);
-                     message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.sqlId + " - " + actualData.weaponType;
+                  bool isActive = int.Parse(xmlSubGroup[1]) == 1 ? true : false;
+                  if (isActive) {
+                     WeaponStatData actualData = Util.xmlLoad<WeaponStatData>(xmlSubGroup[2]);
+                     if (actualData.weaponType > 0) {
+                        actualData.sqlId = dataId;
+                        weaponList.Add(actualData);
+                        message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.sqlId + " - " + actualData.weaponType;
+                     } else {
+                        D.debug("WARNING! A weapon has no assigned weapon type! " + dataId + " : " + actualData.weaponType);
+                     }
                   } else {
-                     D.debug("WARNING! A weapon has no assigned weapon type! " + dataId + " : " + actualData.weaponType);
+                     D.debug("Skip add entry for Weapon:" + dataId);
                   }
                }
             }
@@ -463,19 +473,24 @@ public class XmlVersionManagerClient : MonoBehaviour {
                string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
                try {
                   // Extract the segregated data and assign to the xml manager
-                  if (xmlSubGroup.Length == 2) {
+                  if (xmlSubGroup.Length == 3) {
                      int dataId = int.Parse(xmlSubGroup[0]);
-                     HatStatData actualData = Util.xmlLoad<HatStatData>(xmlSubGroup[1]);
-                     if (actualData.hatType > 0) {
-                        actualData.sqlId = dataId;
-                        hatList.Add(actualData);
-                        message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.sqlId + " - " + actualData.hatType;
+                     bool isActive = int.Parse(xmlSubGroup[1]) == 1 ? true : false;
+                     if (isActive) {
+                        HatStatData actualData = Util.xmlLoad<HatStatData>(xmlSubGroup[2]);
+                        if (actualData.hatType > 0) {
+                           actualData.sqlId = dataId;
+                           hatList.Add(actualData);
+                           message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.sqlId + " - " + actualData.hatType;
+                        } else {
+                           D.debug("WARNING! A hat has no assigned hat type! " + dataId + " : " + actualData.hatType);
+                        }
                      } else {
-                        D.debug("WARNING! A hat has no assigned hat type! " + dataId + " : " + actualData.hatType);
+                        D.debug("Skip add entry for Hat:" + dataId);
                      }
                   }
                } catch {
-                  D.editorLog("Cant process hat data: " + xmlSubGroup[0] + " : " + xmlSubGroup[1] + " : ", Color.yellow);
+                  D.editorLog("Cant process hat data: " + xmlSubGroup[0] + " : " + xmlSubGroup[2] + " : ", Color.yellow);
                }
             }
             EquipmentXMLManager.self.receiveHatFromZipData(hatList);
@@ -552,12 +567,17 @@ public class XmlVersionManagerClient : MonoBehaviour {
                string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
 
                // Extract the segregated data and assign to the xml manager
-               if (xmlSubGroup.Length == 2) {
+               if (xmlSubGroup.Length == 3) {
                   int dataId = int.Parse(xmlSubGroup[0]);
-                  ShipData actualData = Util.xmlLoad<ShipData>(xmlSubGroup[1]);
-                  actualData.shipID = dataId;
-                  shipDataList.Add(dataId, actualData);
-                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+                  bool isActive = int.Parse(xmlSubGroup[1]) == 1 ? true : false;
+                  if (isActive) {
+                     ShipData actualData = Util.xmlLoad<ShipData>(xmlSubGroup[2]);
+                     actualData.shipID = dataId;
+                     shipDataList.Add(dataId, actualData);
+                     message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+                  } else {
+                     D.debug("Skip add entry for Ship: " + dataId);
+                  }
                }
             }
             ShipDataManager.self.receiveShipDataFromZipData(shipDataList);
