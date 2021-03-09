@@ -249,18 +249,27 @@ namespace NubisDataHandling {
             WeaponStatData xmlWeaponData = EquipmentXMLManager.self.getWeaponData(inventoryBundle.equippedWeapon.itemTypeId);
             if (xmlWeaponData != null) {
                inventoryBundle.equippedWeapon.data = WeaponStatData.serializeWeaponStatData(xmlWeaponData);
+            } else {
+               D.debug("NUBIS DATA FETCHER :: Weapon data missing! ID:" + inventoryBundle.equippedWeapon.itemTypeId);
+               inventoryBundle.equippedWeapon.itemTypeId = 0;
             }
          }
          if (inventoryBundle.equippedArmor.itemTypeId != 0) {
             ArmorStatData xmlArmorData = EquipmentXMLManager.self.getArmorDataBySqlId(inventoryBundle.equippedArmor.itemTypeId);
             if (xmlArmorData != null) {
                inventoryBundle.equippedArmor.data = ArmorStatData.serializeArmorStatData(xmlArmorData);
+            } else {
+               D.debug("NUBIS DATA FETCHER :: Armor data missing! ID:" + inventoryBundle.equippedArmor.itemTypeId);
+               inventoryBundle.equippedArmor.itemTypeId = 0;
             }
          }
          if (inventoryBundle.equippedHat.itemTypeId != 0) {
             HatStatData xmlHatData = EquipmentXMLManager.self.getHatData(inventoryBundle.equippedHat.itemTypeId);
             if (xmlHatData != null) {
                inventoryBundle.equippedHat.data = HatStatData.serializeHatStatData(xmlHatData);
+            } else {
+               D.debug("NUBIS DATA FETCHER :: Hat data missing! ID:" + inventoryBundle.equippedHat.itemTypeId);
+               inventoryBundle.equippedHat.itemTypeId = 0;
             }
          }
 

@@ -69,6 +69,8 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
             if (weaponData == null) {
                D.debug("Failed to process weapon data of item type: " + item.itemTypeId);
+               Destroy(gameObject);
+               return;
             } else {
                Weapon newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
                newWeapon.id = item.id;
@@ -84,6 +86,8 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId);
             if (armorData == null) {
                D.debug("Failed to process armor data of item type: " + item.itemTypeId);
+               Destroy(gameObject);
+               return;
             } else {
                Armor newArmor = ArmorStatData.translateDataToArmor(armorData);
                newArmor.id = item.id;
@@ -99,6 +103,8 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
             if (hatData == null) {
                D.debug("Failed to process hat data of item type: " + item.itemTypeId);
+               Destroy(gameObject);
+               return;
             } else {
                Hat newHat = HatStatData.translateDataToHat(hatData);
                newHat.id = item.id;
