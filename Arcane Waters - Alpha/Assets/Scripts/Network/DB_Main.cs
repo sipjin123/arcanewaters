@@ -640,7 +640,6 @@ public class DB_Main : DB_MainStub
                      xmlId = dataReader.GetInt32("xml_id");
                      xmlContent = dataReader.GetString("xmlContent");
                      addedContent = dataReader.GetInt32("isActive") + "[space]";
-                     D.debug(toolType + " : " + addedContent);
                   } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops
                      || toolType == EditorSQLManager.EditorToolType.Quest
                      || toolType == EditorSQLManager.EditorToolType.Projectiles
@@ -653,7 +652,6 @@ public class DB_Main : DB_MainStub
                      xmlId = dataReader.GetInt32("xml_id");
                      xmlContent = dataReader.GetString("xmlContent");
                      addedContent = dataReader.GetInt32("is_enabled") + "[space]";
-                     D.debug(toolType+" : "+addedContent);
                   } else if (toolType == EditorSQLManager.EditorToolType.ItemDefinitions) {
                      xmlId = dataReader.GetInt32("id");
                      xmlContent = dataReader.GetString("serializedData");

@@ -287,7 +287,7 @@ public class BattleUIManager : MonoBehaviour {
       }
 
       if (BattleSelectionManager.self.selectedBattler == null) {
-         updateButtons(AbilityType.Undefined);
+         updateButtons(AbilityType.Undefined, (int)Battler.Stance.Balanced);
       } else {
          BattleSelectionManager.self.selectedBattler.selectThis();
       }

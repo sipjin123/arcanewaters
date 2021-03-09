@@ -162,6 +162,7 @@ public class ContextMenuPanel : MonoBehaviour
          addButton("Leave Group", () => VoyageGroupPanel.self.OnLeaveGroupButtonClickedOn(), () => !Global.player.hasAttackers() && !PanelManager.self.countdownScreen.isShowing());
       }
 
+      addButton("Player Info", () => ((CharacterInfoPanel) PanelManager.self.get(Panel.Type.CharacterInfo)).show(targetEntity));
       show(userName);
    }
 

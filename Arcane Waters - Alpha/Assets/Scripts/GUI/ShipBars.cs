@@ -7,9 +7,9 @@ using Mirror;
 public class ShipBars : MonoBehaviour {
    #region Public Variables
 
-   // The amount of health represented by one health unit
-   public static int HP_PER_UNIT = 100;
-
+   // The maximum number of hp blocks in the hp bar
+   public static int MAX_BLOCKS = 12;
+   
    // Our reload bar image
    public Image reloadBarImage;
 
@@ -29,10 +29,10 @@ public class ShipBars : MonoBehaviour {
    public Sprite barsBackgroundAlt;
 
    // The prefab we use for creating health units
-   public ShipHealthUnit shipHealthUnitPrefab;
+   public ShipHealthBlock shipHealthBlockPrefab;
 
    // The container of health units
-   public GameObject healthUnitContainer;
+   public GameObject healthBlockContainer;
 
    #endregion
 
@@ -107,28 +107,44 @@ public class ShipBars : MonoBehaviour {
          return;
       }
 
+      int tier = getHealthBlockTier();
+      int hpPerBlock = ShipHealthBlock.HP_PER_BLOCK[tier];
+
+      // Update each hp block
       int hpStep = 0;
-      for (int i = 0; i < _healthUnits.Count; i++) {
-         if ((hpStep + (HP_PER_UNIT/ 2)) < _entity.currentHealth) {
-            _healthUnits[i].setStatus(ShipHealthUnit.Status.Healthy);
-         } else if (hpStep < _entity.currentHealth) {
-            _healthUnits[i].setStatus(ShipHealthUnit.Status.Damaged);
-         } else {
-            _healthUnits[i].setStatus(ShipHealthUnit.Status.Hidden);
-         }
-         hpStep += HP_PER_UNIT;
+      for (int i = 0; i < _healthBlocks.Count; i++) {
+         float blockHealth = (float)((_entity.currentHealth - hpStep)) / hpPerBlock;
+         _healthBlocks[i].updateBlock(tier, blockHealth);
+         hpStep += hpPerBlock;
       }
 
       _lastHealth = _entity.currentHealth;
    }
 
    protected void initializeHealthBar () {
-      healthUnitContainer.DestroyChildren();
-      for (int i = 0; i < Mathf.Ceil((float) _entity.maxHealth / HP_PER_UNIT); i++) {
-         ShipHealthUnit unit = Instantiate(shipHealthUnitPrefab, healthUnitContainer.transform, false);
-         unit.setStatus(ShipHealthUnit.Status.Healthy);
-         _healthUnits.Add(unit);
+      healthBlockContainer.DestroyChildren();
+
+      int tier = getHealthBlockTier();
+      int hpPerBlock = ShipHealthBlock.HP_PER_BLOCK[tier];
+
+      // Instantiate enough hp blocks to display the entity max hp
+      for (int i = 0; i < Mathf.Ceil((float) _entity.maxHealth / hpPerBlock); i++) {
+         ShipHealthBlock block = Instantiate(shipHealthBlockPrefab, healthBlockContainer.transform, false);
+         block.updateBlock(tier, 1);
+         _healthBlocks.Add(block);
       }
+   }
+
+   protected int getHealthBlockTier () {
+      // Get the lowest hp block tier that can display the full entity max hp
+      int tier = ShipHealthBlock.HP_PER_BLOCK.Length - 1;
+      for (int i = 0; i < ShipHealthBlock.HP_PER_BLOCK.Length; i++) {
+         if (_entity.maxHealth < ShipHealthBlock.HP_PER_BLOCK[i] * MAX_BLOCKS) {
+            tier = i;
+            break;
+         }
+      }
+      return tier;
    }
 
    #region Private Variables
@@ -140,10 +156,10 @@ public class ShipBars : MonoBehaviour {
    protected CanvasGroup _canvasGroup;
 
    // The list of all health unit objects
-   private List<ShipHealthUnit> _healthUnits = new List<ShipHealthUnit>();
+   private List<ShipHealthBlock> _healthBlocks = new List<ShipHealthBlock>();
 
    // The last registered ship health value
-   private float _lastHealth = 0;
+   private int _lastHealth = 0;
 
    #endregion
 }

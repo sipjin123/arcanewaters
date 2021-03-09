@@ -241,7 +241,12 @@ public class PlayerShipEntity : ShipEntity
 
       // Speed ship boost feature
       if (InputManager.isSpeedUpKeyPressed() && !isBoostCoolingDown() && isLocalPlayer) {
-         Cmd_RequestServerAddBoostForce(InputManager.getMovementInput(), ForceMode2D.Impulse);
+         // If the player is pressing a direction, boost them that way, otherwise boost them the way they are facing
+         Vector2 boostDirection = InputManager.getMovementInput();
+         if (boostDirection.magnitude < 0.1f) {
+            boostDirection = Util.getDirectionFromFacing(facing);
+         }
+         Cmd_RequestServerAddBoostForce(boostDirection, ForceMode2D.Impulse);
          _lastBoostTime = NetworkTime.time;
 
          // Trigger the tutorial
@@ -304,9 +309,9 @@ public class PlayerShipEntity : ShipEntity
 
       switch (_cannonAttackType) {
          case CannonAttackType.Normal:
-            float normalCannonballDist = 0.5f + (cannonChargeAmount * 3.5f);
+            float normalCannonballDist = 0.5f + (cannonChargeAmount * 2.5f);
             float normalCannonballLifetime = normalCannonballDist / Attack.getSpeedModifier(Attack.Type.Cannon);
-            Cmd_FireMainCannonAtTarget(null, Util.getMousePos(), false, false, normalCannonballLifetime, -1.0f, true);
+            Cmd_FireMainCannonAtTarget(null, Util.getMousePos(), true, false, normalCannonballLifetime, -1.0f, true);
             targetArrowParent.gameObject.SetActive(false);
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
             break;

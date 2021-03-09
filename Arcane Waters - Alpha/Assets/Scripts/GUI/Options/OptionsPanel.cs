@@ -86,6 +86,12 @@ public class OptionsPanel : Panel
    // The single player toggle
    public Toggle singlePlayerToggle;
 
+   // A reference to the game object containing the server log accessing buttons
+   public GameObject serverLogRow;
+
+   // Spaces out the right-column 'other settings' buttons when the server log row is disabled
+   public GameObject logRowSeparator;
+
    // A list of accepted fullscreen modes (windowed, borderless windowed, fullscreen)
    public List<FullScreenMode> fullScreenModes = new List<FullScreenMode>();
 
@@ -368,6 +374,13 @@ public class OptionsPanel : Panel
          }
       }
 
+      bool isAdmin = Global.isLoggedInAsAdmin();
+      serverLogRow.SetActive(isAdmin);
+      logRowSeparator.SetActive(!isAdmin);
+      if (isAdmin) {
+         Global.player.admin.Cmd_GetServerLogString();
+      }
+
       refreshDisplaySettingsControls();
    }
 
@@ -421,6 +434,14 @@ public class OptionsPanel : Panel
 
    public void onCopyLogPressed () {
       D.copyLogToClipboard();
+   }
+
+   public void onOpenServerLogFilePressed () {
+      D.openServerLogFile();
+   }
+
+   public void onCopyServerLogFilePressed () {
+      D.copyServerLogToClipboard();
    }
 
    public void onLogOutButtonPress () {

@@ -123,7 +123,7 @@ public class CharacterStack : MonoBehaviour {
       synchronizeAnimationIndexes();
    }
 
-   public void updateLayers (NetEntity entity) {
+   public void updateLayers (BodyEntity entity) {
       updateLayers(entity.gender, entity.bodyType, entity.eyesType, entity.hairType, entity.eyesPalettes, entity.hairPalettes, entity.getArmorCharacteristics(), entity.getWeaponCharacteristics(), entity.getHatCharacteristics());
    }
 
@@ -176,36 +176,29 @@ public class CharacterStack : MonoBehaviour {
    }
 
    public void updateWeapon (Gender.Type gender, int weaponType, string palettes, bool updatePalettes = true) {
-      if (weaponFrontLayer.gameObject.activeInHierarchy) {
-         weaponBackLayer.setType(gender, weaponType);
-         if (updatePalettes) {
-            weaponBackLayer.recolor(palettes);
-         }
-         weaponFrontLayer.setType(gender, weaponType);
-         if (updatePalettes) {
-            weaponFrontLayer.recolor(palettes);
-         }
-      } 
+      weaponBackLayer.setType(gender, weaponType);
+      weaponFrontLayer.setType(gender, weaponType);
+
+      if (updatePalettes) {
+         weaponFrontLayer.recolor(palettes);
+         weaponBackLayer.recolor(palettes);
+      }
    }
 
    public void updateHats (Gender.Type gender, int hatType, string palettes, bool updatePalettes = true) {
       if (hatLayer != null) {
-         if (hatLayer.gameObject.activeInHierarchy) {
-            hatLayer.setType(gender, hatType);
-            if (updatePalettes) {
-               hatLayer.recolor(palettes);
-            }
-         } 
+         hatLayer.setType(gender, hatType);
+         if (updatePalettes) {
+            hatLayer.recolor(palettes);
+         }
       }
    }
 
    public void updateArmor (Gender.Type gender, int armorType, string palettes, bool updatePalettes = true) {
-      if (armorLayer.gameObject.activeInHierarchy) {
-         armorLayer.setType(gender, armorType);
-         if (updatePalettes) {
-            armorLayer.recolor(palettes);
-         }
-      } 
+      armorLayer.setType(gender, armorType);
+      if (updatePalettes) {
+         armorLayer.recolor(palettes);
+      }
 
       // Only process this when the user is in avatar mode and not in ship mode
       // This syncs the users color scheme to the GUI material of the character stack(Inventory Char Preview)

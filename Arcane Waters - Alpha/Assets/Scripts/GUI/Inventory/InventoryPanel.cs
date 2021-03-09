@@ -18,16 +18,8 @@ public class InventoryPanel : Panel {
    // The prefab we use for creating item cells
    public ItemCell itemCellPrefab;
 
-   // The cell containers for the equipped items
-   public GameObject equippedWeaponCellContainer;
-   public GameObject equippedArmorCellContainer;
-   public GameObject equippedHatCellContainer;
-
    // Load Blocker when data is fetching
    public GameObject loadBlocker;
-
-   // Our character stack
-   public CharacterStack characterStack;
 
    // The page number text
    public Text pageNumberText;
@@ -37,14 +29,6 @@ public class InventoryPanel : Panel {
 
    // The previous page button
    public Button previousPageButton;
-
-   // The text components
-   public Text characterNameText;
-   public Text goldText;
-   public Text gemsText;
-   public Text levelText;
-   public Text hpText;
-   public Text xpText;
 
    // The common object used to display any grabbed item
    public GrabbedItem grabbedItem;
@@ -56,18 +40,8 @@ public class InventoryPanel : Panel {
    // The item tab filters
    public ItemTabs itemTabs;
 
-   // The stat rows for each element
-   public InventoryStatRow physicalStatRow;
-   public InventoryStatRow fireStatRow;
-   public InventoryStatRow earthStatRow;
-   public InventoryStatRow airStatRow;
-   public InventoryStatRow waterStatRow;
-
-   // The guild icon
-   public GuildIcon guildIcon;
-
-   // The experience progress bar
-   public Image levelProgressBar;
+   // The character info column
+   public CharacterInfoColumn characterInfoColumn;
 
    // Self
    public static InventoryPanel self;
@@ -84,12 +58,6 @@ public class InventoryPanel : Panel {
       // Initialize the inventory tabs
       itemTabs.initialize(onTabButtonPress);
 
-      // Initialize the stat rows
-      physicalStatRow.clear();
-      fireStatRow.clear();
-      earthStatRow.clear();
-      airStatRow.clear();
-      waterStatRow.clear();
    }
 
    public void refreshPanel () {
@@ -100,98 +68,10 @@ public class InventoryPanel : Panel {
    public void clearPanel () {
       // Clear out any current items
       itemCellsContainer.DestroyChildren();
-      equippedWeaponCellContainer.DestroyChildren();
-      equippedArmorCellContainer.DestroyChildren();
-      equippedHatCellContainer.DestroyChildren();
-      characterStack.gameObject.SetActive(false);
-
-      if (Global.player != null) {
-         characterNameText.text = Global.player.entityName;
-         goldText.text = "";
-         gemsText.text = "";
-      }
 
       // Load the character stack using the cached user info
-      if (Global.getUserObjects() != null) {
-         characterStack.gameObject.SetActive(true);
-         characterStack.updateLayers(Global.getUserObjects(), false);
-
-         // Clear old data
-         equippedWeaponCellContainer.DestroyChildren();
-         equippedArmorCellContainer.DestroyChildren();
-         equippedHatCellContainer.DestroyChildren();
-
-         // Quick load the cached equipment
-         UserObjects userObj = Global.getUserObjects();
-         if (userObj.weapon.itemTypeId != 0) {
-            loadCachedEquipment(userObj.weapon);
-         }
-         if (userObj.armor.itemTypeId != 0) {
-            loadCachedEquipment(userObj.armor);
-         }
-         if (userObj.hat.itemTypeId != 0) {
-            loadCachedEquipment(userObj.hat);
-         }
-
-         // Update the gold and gems count, with commas in thousands place
-         goldText.text = string.Format("{0:n0}", Global.lastUserGold);
-         gemsText.text = string.Format("{0:n0}", Global.lastUserGems);
-      }
-   }
-
-   private void loadCachedEquipment (Item item) {
-      // Instantiates the cell
-      ItemCell cell = Instantiate(itemCellPrefab, itemCellsContainer.transform, false);
-      try {
-         // If the item is equipped, place the item cell in the equipped slots
-         if (item.category == Item.Category.Weapon) {
-            Weapon newWeapon = new Weapon { category = Item.Category.Weapon, itemTypeId = item.itemTypeId };
-            if (item.itemTypeId > 0 && item.data.Length > 0 && item.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
-               WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(item.data);
-               newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
-               newWeapon.itemTypeId = weaponData.sqlId;
-            } else {
-               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
-               newWeapon.itemTypeId = weaponData.sqlId;
-               newWeapon.data = WeaponStatData.serializeWeaponStatData(weaponData);
-            }
-
-            cell.setCellForItem(newWeapon);
-            cell.transform.SetParent(equippedWeaponCellContainer.transform, false);
-            refreshStats(newWeapon);
-         } else if (item.category == Item.Category.Armor) {
-            Armor newArmor = new Armor { category = Item.Category.Armor, itemTypeId = item.itemTypeId };
-            if (item.itemTypeId > 0 && item.data.Length > 0 && item.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
-               ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(item.data);
-               newArmor = ArmorStatData.translateDataToArmor(armorData);
-               newArmor.itemTypeId = armorData.sqlId;
-            } else {
-               ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId);
-               newArmor.itemTypeId = armorData.sqlId;
-               newArmor.data = ArmorStatData.serializeArmorStatData(armorData);
-            }
-
-            cell.setCellForItem(newArmor);
-            cell.transform.SetParent(equippedArmorCellContainer.transform, false);
-            refreshStats(Armor.castItemToArmor(newArmor));
-         } else if (item.category == Item.Category.Hats) {
-            Hat newHat = new Hat { category = Item.Category.Hats, itemTypeId = item.itemTypeId };
-            if (item.itemTypeId > 0 && item.data.Length > 0 && item.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
-               HatStatData hatData = Util.xmlLoad<HatStatData>(item.data);
-               newHat = HatStatData.translateDataToHat(hatData);
-               newHat.itemTypeId = hatData.sqlId;
-            } else {
-               HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
-               newHat.itemTypeId = hatData.sqlId;
-               newHat.data = HatStatData.serializeHatStatData(hatData);
-            }
-
-            cell.setCellForItem(newHat);
-            cell.transform.SetParent(equippedHatCellContainer.transform, false);
-            refreshStats(Hat.castItemToHat(newHat));
-         }
-      } catch {
-         D.editorLog("Failed to process item: " + item.data, Color.red);
+      if (Global.player != null) {
+         characterInfoColumn.setPlayer(Global.player);
       }
    }
 
@@ -216,55 +96,13 @@ public class InventoryPanel : Panel {
       // Update the navigation buttons
       updateNavigationButtons();
 
-      // Update the gold and gems count, with commas in thousands place
-      goldText.text = string.Format("{0:n0}", userObjects.userInfo.gold);
-      gemsText.text = string.Format("{0:n0}", userObjects.userInfo.gems);
-
-      // Update the character preview
-      characterStack.gameObject.SetActive(true);
-      characterStack.updateLayers(userObjects);
-
       // Update cached user object equipment
       if (overrideEquipmentCache) {
          Global.setUserEquipment(userObjects.weapon, userObjects.armor, userObjects.hat);
       }
 
-      // Insert the player's name
-      if (Global.player != null) {
-         characterNameText.text = Global.player.entityName;
-      }
-
-      // Update the level and level progress bar
-      int currentLevel = LevelUtil.levelForXp(userObjects.userInfo.XP);
-      levelProgressBar.fillAmount = (float) LevelUtil.getProgressTowardsCurrentLevel(userObjects.userInfo.XP) / (float) LevelUtil.xpForLevel(currentLevel + 1);
-      levelText.text = "LVL " + currentLevel;
-      xpText.text = "EXP: " + LevelUtil.getProgressTowardsCurrentLevel(userObjects.userInfo.XP) + " / " + LevelUtil.xpForLevel(currentLevel + 1);
-
-      // Update the HP bar
-      Battler playerBattler = BattleManager.self.getPlayerBattler();
-
-      if (playerBattler != null) {
-         hpText.text = playerBattler.health.ToString();
-      } else if (Global.player != null) {
-         BattlerData battData = MonsterManager.self.getBattlerData(Enemy.Type.PlayerBattler);
-         int level = LevelUtil.levelForXp(Global.player.XP);
-         int health = (int) battData.baseHealth + ((int) battData.healthPerlevel * level);
-
-         hpText.text = health.ToString();
-      }
-
-      // Initialize the guild icon
-      guildIcon.initialize(guildInfo);
-
       // Select the correct tab
       itemTabs.updateCategoryTabs(categoryFilter[0]);
-
-      // Clear stat rows
-      physicalStatRow.clear();
-      fireStatRow.clear();
-      earthStatRow.clear();
-      airStatRow.clear();
-      waterStatRow.clear();
 
       // Clear out any current items
       itemCellsContainer.DestroyChildren();
@@ -276,31 +114,47 @@ public class InventoryPanel : Panel {
          } 
       }
 
-      // Update the equipped item cells
-      equippedWeaponCellContainer.DestroyChildren();
-      equippedArmorCellContainer.DestroyChildren();
-      equippedHatCellContainer.DestroyChildren();
+      // Update the CharacterInfo column
+      characterInfoColumn.setPlayer(Global.player);
 
       Item equippedWeapon = Global.getUserObjects().weapon;
       if (equippedWeapon.itemTypeId != 0) {
-         instantiateItemCell(equippedWeapon, equippedWeaponCellContainer.transform);
-         refreshStats(Weapon.castItemToWeapon(equippedWeapon));
+         subscribeClickEventsForCell(characterInfoColumn.equippedWeaponCell);
       }
 
       Item equippedArmor = Global.getUserObjects().armor;
       if (equippedArmor.itemTypeId != 0) {
-         instantiateItemCell(equippedArmor, equippedArmorCellContainer.transform);
-         refreshStats(Armor.castItemToArmor(equippedArmor));
+         subscribeClickEventsForCell(characterInfoColumn.equippedArmorCell);
       }
 
       Item equippedHat = Global.getUserObjects().hat;
       if (equippedHat.itemTypeId != 0) {
-         instantiateItemCell(equippedHat, equippedHatCellContainer.transform);
-         refreshStats(Hat.castItemToHat(equippedHat));
+         subscribeClickEventsForCell(characterInfoColumn.equippedHatCell);
       }
 
       // Trigger the tutorial
       TutorialManager3.self.tryCompletingStep(TutorialTrigger.OpenInventory);
+   }
+
+   private void subscribeClickEventsForCell (ItemCell cell) {
+      if (cell == null) {
+         D.error("Cannot subscribe click events because cell is null");
+         return;
+      }
+
+      // Set the cell click events
+      cell.leftClickEvent.RemoveAllListeners();
+      cell.rightClickEvent.RemoveAllListeners();
+      cell.doubleClickEvent.RemoveAllListeners();
+      cell.onPointerEnter.RemoveAllListeners();
+      cell.onPointerExit.RemoveAllListeners();
+      cell.onDragStarted.RemoveAllListeners();
+
+      cell.rightClickEvent.AddListener(() => showContextMenu(cell));
+      cell.doubleClickEvent.AddListener(() => InventoryManager.tryEquipOrUseItem(cell.getItem()));
+      cell.onPointerEnter.AddListener(() => characterInfoColumn.equipmentStats.setStatModifiers(cell.getItem()));
+      cell.onPointerExit.AddListener(() => characterInfoColumn.equipmentStats.clearStatModifiers());
+      cell.onDragStarted.AddListener(() => tryGrabItem(cell as ItemCellInventory));
    }
 
    private ItemCell instantiateItemCell (Item item, Transform parent) {
@@ -310,12 +164,8 @@ public class InventoryPanel : Panel {
       // Initializes the cell
       cell.setCellForItem(item);
 
-      // Set the cell click events
-      cell.leftClickEvent.RemoveAllListeners();
-      cell.rightClickEvent.RemoveAllListeners();
-      cell.doubleClickEvent.RemoveAllListeners();
-      cell.rightClickEvent.AddListener(() => showContextMenu(cell));
-      cell.doubleClickEvent.AddListener(() => InventoryManager.tryEquipOrUseItem(cell.getItem()));
+      // Subscribe the click events
+      subscribeClickEventsForCell(cell);
 
       return cell;
    }
@@ -323,67 +173,6 @@ public class InventoryPanel : Panel {
    public void onTabButtonPress () {
       _currentPage = 0;
       refreshPanel();
-   }
-
-   public void refreshStats (Weapon equippedWeapon) {
-      physicalStatRow.setEquippedWeapon(equippedWeapon);
-      fireStatRow.setEquippedWeapon(equippedWeapon);
-      earthStatRow.setEquippedWeapon(equippedWeapon);
-      airStatRow.setEquippedWeapon(equippedWeapon);
-      waterStatRow.setEquippedWeapon(equippedWeapon);
-   }
-
-   public void refreshStats (Hat equippedHat) {
-      physicalStatRow.setEquippedHat(equippedHat);
-      fireStatRow.setEquippedHat(equippedHat);
-      earthStatRow.setEquippedHat(equippedHat);
-      airStatRow.setEquippedHat(equippedHat);
-      waterStatRow.setEquippedHat(equippedHat);
-   }
-
-   public void refreshStats (Armor equippedArmor) {
-      physicalStatRow.setEquippedArmor(equippedArmor);
-      fireStatRow.setEquippedArmor(equippedArmor);
-      earthStatRow.setEquippedArmor(equippedArmor);
-      airStatRow.setEquippedArmor(equippedArmor);
-      waterStatRow.setEquippedArmor(equippedArmor);
-   }
-
-   public void setStatModifiers (Item item) {
-      // Skip equipped items
-      if (InventoryManager.isEquipped(item.id)) {
-         return;
-      }
-      
-      // Determine if the hovered item is a weapon or an armor
-      if (item.category == Item.Category.Weapon) {
-         Weapon weapon = Weapon.castItemToWeapon(item);
-
-         // Set how the stats would change if the item was equipped
-         physicalStatRow.setStatModifiersForWeapon(weapon);
-         fireStatRow.setStatModifiersForWeapon(weapon);
-         earthStatRow.setStatModifiersForWeapon(weapon);
-         airStatRow.setStatModifiersForWeapon(weapon);
-         waterStatRow.setStatModifiersForWeapon(weapon);
-
-      } else if (item.category == Item.Category.Armor) {
-         Armor armor = Armor.castItemToArmor(item);
-
-         // Set how the stats would change if the item was equipped
-         physicalStatRow.setStatModifiersForArmor(armor);
-         fireStatRow.setStatModifiersForArmor(armor);
-         earthStatRow.setStatModifiersForArmor(armor);
-         airStatRow.setStatModifiersForArmor(armor);
-         waterStatRow.setStatModifiersForArmor(armor);
-      }
-   }
-
-   public void clearStatModifiers () {
-      physicalStatRow.disableStatModifiers();
-      fireStatRow.disableStatModifiers();
-      earthStatRow.disableStatModifiers();
-      airStatRow.disableStatModifiers();
-      waterStatRow.disableStatModifiers();
    }
 
    public void showContextMenu (ItemCell itemCell) {
@@ -420,6 +209,10 @@ public class InventoryPanel : Panel {
    }
 
    public void tryGrabItem(ItemCellInventory itemCell) {
+      if (itemCell == null) {
+         return;
+      }
+
       Item castedItem = itemCell.getItem();
 
       // Only equippable items can be grabbed

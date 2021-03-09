@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 5996277594548989515}
   - component: {fileID: 2145884707352803168}
   - component: {fileID: 8914369610133269050}
-  - component: {fileID: 282086849583687113}
+  - component: {fileID: 210412077248137537}
   m_Layer: 0
-  m_Name: Ship Health Unit
+  m_Name: Ship Health Block
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -75,7 +75,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &282086849583687113
+--- !u!114 &210412077248137537
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -84,11 +84,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8612891978963320914}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a0735f45c059c7540a418128f1012a35, type: 3}
+  m_Script: {fileID: 11500000, guid: 4c3111c8f6526a24e9b230d1d8a6071d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   image: {fileID: 8914369610133269050}
-  healthyColor: {r: 0.3137255, g: 0.95686275, b: 0.14509805, a: 1}
-  damagedColor: {r: 0.25450808, g: 0.5943396, b: 0.16540584, a: 1}
-  predictedColor: {r: 0.90588236, g: 0.06666667, b: 0.06666667, a: 1}
-  hiddenColor: {r: 0.3137255, g: 0.95686275, b: 0.14509805, a: 0}
+  tierColors:
+  - {r: 0.3137255, g: 0.95686275, b: 0.14509805, a: 1}
+  - {r: 0.9716981, g: 0.9306432, b: 0.01375042, a: 1}
+  - {r: 0.9254902, g: 0.28627452, b: 0.10196076, a: 1}

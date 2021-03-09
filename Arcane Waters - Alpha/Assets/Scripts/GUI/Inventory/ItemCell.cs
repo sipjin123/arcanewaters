@@ -39,6 +39,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    public UnityEvent leftClickEvent;
    public UnityEvent rightClickEvent;
    public UnityEvent doubleClickEvent;
+   public UnityEvent onPointerEnter;
+   public UnityEvent onPointerExit;
+   public UnityEvent onDragStarted;
 
    // Item type id
    public int itemTypeId;
@@ -57,7 +60,33 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
    #endregion
 
-   public void setCellForItem (Item item) {
+   public virtual void clear () {
+      itemCache = null;
+      targetItem = null;
+      itemSpriteId = 0;
+      itemTypeId = 0;
+      leftClickEvent.RemoveAllListeners();
+      rightClickEvent.RemoveAllListeners();
+      doubleClickEvent.RemoveAllListeners();
+      onPointerEnter.RemoveAllListeners();
+      onPointerExit.RemoveAllListeners();
+      onDragStarted.RemoveAllListeners();
+      icon.sprite = null;      
+      iconShadow.sprite = null;
+
+      icon.enabled = false;
+      iconShadow.enabled = false;
+
+      itemCountText.gameObject.SetActive(false);
+
+      disablePointerEvents();
+   }
+
+   public virtual void setCellForItem (Item item) {
+      icon.enabled = true;
+      iconShadow.enabled = true;
+      enablePointerEvents();
+
       itemCache = item;
       setCellForItem(item, item.count);
    }
@@ -232,6 +261,10 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
    public void disablePointerEvents () {
       _interactable = false;
+   }
+
+   public void enablePointerEvents () {
+      _interactable = true;
    }
 
    public void showSelectedBox () {

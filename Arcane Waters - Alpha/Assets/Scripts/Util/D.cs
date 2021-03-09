@@ -23,6 +23,9 @@ public class D : MonoBehaviour {
    public static bool WRITE_DEBUG_TO_LOG_FILE = true;
    public static bool SHOW_DEBUG_IN_CHAT = false;
 
+   // Stores the contents of the last retrieved server log in a string
+   public static string serverLogString = "";
+
    #endregion
 
    public void Awake () {
@@ -44,7 +47,8 @@ public class D : MonoBehaviour {
 
          // Store the path to the log file
          _logFilePath = logsDirectoryPath + appName + " " + DateTime.Now.ToString(@"yyyy-M-d HH-mm-ss tt fffffff") + ".log";
-         
+         _serverLogFilePath = logsDirectoryPath + appName + " - SERVER LOG - " + DateTime.Now.ToString(@"yyyy-M-d HH-mm-ss tt fffffff") + ".log";
+
          // Log file name for AUTO_TEST
          if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {
             int testerNumber = Util.getCommandLineInt(CommandCodes.Type.AUTO_TEST + "");
@@ -96,6 +100,29 @@ public class D : MonoBehaviour {
 
    internal static void copyLogToClipboard () {
       GUIUtility.systemCopyBuffer = _logString;
+   }
+
+   public static void openServerLogFile () {
+      if (Global.isLoggedInAsAdmin() && WRITE_TO_FILE) {
+         if (!File.Exists(_serverLogFilePath)) {
+            StreamWriter sr = File.CreateText(_serverLogFilePath);
+            sr.Close();
+         }
+         
+         File.WriteAllText(_serverLogFilePath, serverLogString);
+
+         try {
+            System.Diagnostics.Process.Start(_serverLogFilePath);
+         } catch (Exception e) {
+            log($"Error opening server log file. Message: {e.Message}");
+         }
+      }
+   }
+
+   internal static void copyServerLogToClipboard () {
+      if (Global.isLoggedInAsAdmin()) {
+         GUIUtility.systemCopyBuffer = serverLogString;
+      }
    }
 
    private static void log (string msg, string callingClass, string callingFunction, ChatInfo.Type type) {
@@ -271,6 +298,9 @@ public class D : MonoBehaviour {
 
    // Stores the contents of the current log in a string so that Web Players can submit bug reports
    protected static string _logString = "";
+
+   // Stores the name of the server log file on clients
+   protected static string _serverLogFilePath = "";
 
    #endregion
 }

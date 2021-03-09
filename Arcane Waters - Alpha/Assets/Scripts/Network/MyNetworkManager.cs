@@ -298,6 +298,9 @@ public class MyNetworkManager : NetworkManager
                // Send a Redirect message to the client
                RedirectMessage redirectMessage = new RedirectMessage(Global.netId, networkAddress, bestServer.networkedPort.Value);
                conn.Send(redirectMessage);
+
+               // Disconnect the player from this server
+               disconnectClient(conn, true);
                return;
             }
 
@@ -527,7 +530,7 @@ public class MyNetworkManager : NetworkManager
       disconnectClient(connection);
    }
 
-   public void disconnectClient (NetworkConnection conn) {
+   public void disconnectClient (NetworkConnection conn, bool forceFinishDisconnection = false) {
       if (conn == null) {
          return;
       }
@@ -545,7 +548,7 @@ public class MyNetworkManager : NetworkManager
          // Manage the voyage groups on user disconnection
          VoyageGroupManager.self.onUserDisconnectsFromServer(player.userId);
 
-         if (player.getPlayerShipEntity() != null) {
+         if (player.getPlayerShipEntity() != null && !forceFinishDisconnection) {
             // If the player is a ship, keep it in the server for a few seconds
             DisconnectionManager.self.addToDisconnectedUsers(data);
          } else {

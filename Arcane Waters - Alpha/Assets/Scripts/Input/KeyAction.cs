@@ -9,5 +9,6 @@ public enum KeyAction
    FireMainCannon = 5,
    SelectNextSeaTarget = 6,
    SpeedUp = 7,
-   PanCamera = 8
+   PanCamera = 8,
+   Reply = 9,
 }

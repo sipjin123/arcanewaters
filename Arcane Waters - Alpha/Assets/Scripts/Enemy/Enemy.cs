@@ -93,40 +93,40 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
 
       // Debug logs to catch a null reference haunting the server logs
       if (this.sortPoint == null) {
-         D.error("The sort point is not defined in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
+         Debug.LogError("The sort point is not defined in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
       }
 
       if (this.enemyType != Type.None && !Util.isBatch()) {
          if (!System.Enum.IsDefined(typeof(Enemy.Type), (int) this.enemyType)) {
-            D.error("The enemy type " + this.enemyType + " is not defined in the Enemy.Type enum (area " + areaKey + "). This should not happen and must be investigated.");
+            Debug.LogError("The enemy type " + this.enemyType + " is not defined in the Enemy.Type enum (area " + areaKey + "). This should not happen and must be investigated.");
          }
 
          if (bodyAnim == null) {
-            D.error("The bodyAnim is not defined in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
+            Debug.LogError("The bodyAnim is not defined in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
          }
 
          if (bodyAnim.GetComponent<SpriteSwap>() == null) {
-            D.error("Could not find the SpriteSwap component in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
+            Debug.LogError("Could not find the SpriteSwap component in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
          }
       }
 
       if (isBossType) {
          if (bossCollider == null) {
-            D.error("The bossCollider is not defined in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
+            Debug.LogError("The bossCollider is not defined in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
          }
 
          if (GetComponent<Rigidbody2D>() == null) {
-            D.error("Could not find the Rigidbody2D component in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
+            Debug.LogError("Could not find the Rigidbody2D component in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
          }
       }
 
       if (isServer) {
          if (GetComponent<Seeker>() == null) {
-            D.error("Could not find the Seeker component in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
+            Debug.LogError("Could not find the Seeker component in the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
          }
 
          if (AreaManager.self.getArea(areaKey) == null) {
-            D.error("The area was null when initializing the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
+            Debug.LogError("The area was null when initializing the enemy " + this.name + " in area " + areaKey + ". This should not happen and must be investigated.");
          }
       }
 

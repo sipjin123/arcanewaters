@@ -14,15 +14,25 @@ public class ItemCellInventory : ItemCell, IPointerDownHandler, IPointerEnterHan
 
    #endregion
 
+   public override void clear () {
+      base.clear();
+      hide();
+   }
+
+   public override void setCellForItem (Item item) {
+      base.setCellForItem(item);
+      show();
+   }
+
    public void OnPointerEnter (PointerEventData eventData) {
       if (_interactable) {
-         InventoryPanel.self.setStatModifiers(getItem());
+         onPointerEnter?.Invoke();
       }
    }
 
    public void OnPointerExit (PointerEventData eventData) {
       if (_interactable) {
-         InventoryPanel.self.clearStatModifiers();
+         onPointerExit?.Invoke();
       }
    }
 
@@ -47,7 +57,7 @@ public class ItemCellInventory : ItemCell, IPointerDownHandler, IPointerEnterHan
          // Check if the distance is large enough
          if (sqrDistance > DISTANCE_UNTIL_START_DRAG) {
             // Begin the drag process
-            InventoryPanel.self.tryGrabItem(this);
+            onDragStarted?.Invoke();
             break;
          }
          yield return null;
@@ -55,11 +65,11 @@ public class ItemCellInventory : ItemCell, IPointerDownHandler, IPointerEnterHan
    }
 
    public void show() {
-      canvasGroup.alpha = 1f;
+      Util.enableCanvasGroup(canvasGroup);
    }
 
    public void hide () {
-      canvasGroup.alpha = 0f;
+      Util.disableCanvasGroup(canvasGroup);
    }
 
    #region Private Variables

@@ -49,6 +49,8 @@ public class InputManager : MonoBehaviour
 
       // Camera panning
       _keybindings[KeyAction.PanCamera].primary = KeyCode.Mouse2;
+
+      _keybindings[KeyAction.Reply].primary = KeyCode.R;
    }
 
    public static bool isPressingDirection (Direction direction) {

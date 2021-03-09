@@ -47,9 +47,15 @@ public class ChatManager : MonoBehaviour
       _commandData.Add(new CommandData("/roll", "Rolls a die", sendRollToServer, parameterNames: new List<string>() { "max", "min" }));
       _commandData.Add(new CommandData("/whisper", "Sends a private message to a user", sendWhisperMessageToServer, parameterNames: new List<string>() { "userName", "message" }));
       _commandData.Add(new CommandData("/w", "Sends a private message to a user", sendWhisperMessageToServer, parameterNames: new List<string>() { "userName", "message" }));
+      _commandData.Add(new CommandData("/r", "Sends a private message to the last user that whispered to you", tryReply, parameterNames: new List<string>() { "message" }));
    }
 
    private void Update () {
+      if (InputManager.getKeyActionDown(KeyAction.Reply) && !chatPanel.inputField.isFocused && !chatPanel.nameInputField.isFocused && !string.IsNullOrEmpty(_lastWhisperSender)) {
+         chatPanel.inputField.text = "/whisper " + _lastWhisperSender + " ";
+         chatPanel.focusInputField();
+      }
+
       if (!isTyping()) {
          return;
       }
@@ -106,6 +112,10 @@ public class ChatManager : MonoBehaviour
       if (chatPanel != null) {
          chatPanel.addChatInfo(chatInfo);
       }
+
+      if (chatInfo.messageType == ChatInfo.Type.Whisper) {
+         noteWhisperReceived(chatInfo.sender);
+      }
    }
 
    public void sendEmoteMessageToServer (string message) {
@@ -130,7 +140,7 @@ public class ChatManager : MonoBehaviour
       sendMessageToServer(message, ChatInfo.Type.Whisper);
 
       // Add the whisper name to the history
-      _whisperNameHistory.Add(ChatPanel.self.nameInputField.text);
+      _sentWhisperNameHistory.Add(ChatPanel.self.nameInputField.text);
    }
 
    public void sendMessageToServer (string message, ChatInfo.Type chatType) {
@@ -445,7 +455,7 @@ public class ChatManager : MonoBehaviour
       }
 
       // Add recently messaged to possible names
-      foreach (string name in _whisperNameHistory) {
+      foreach (string name in _sentWhisperNameHistory) {
          if (!possibleNames.Contains(name)) {
             possibleNames.Add(name);
          }
@@ -461,12 +471,12 @@ public class ChatManager : MonoBehaviour
    }
 
    private void tryAutofillWhisperName () {
-      if (_numWhisperNamesAgo < 1 || _numWhisperNamesAgo > _whisperNameHistory.Count) {
+      if (_numWhisperNamesAgo < 1 || _numWhisperNamesAgo > _sentWhisperNameHistory.Count) {
          return;
       }
 
-      int indexInList = _whisperNameHistory.Count - _numWhisperNamesAgo;
-      chatPanel.nameInputField.text = _whisperNameHistory[indexInList];
+      int indexInList = _sentWhisperNameHistory.Count - _numWhisperNamesAgo;
+      chatPanel.nameInputField.text = _sentWhisperNameHistory[indexInList];
       chatPanel.nameInputField.MoveTextEnd(false);
    }
 
@@ -495,8 +505,8 @@ public class ChatManager : MonoBehaviour
          _numWhisperNamesAgo = 1;
       }
 
-      if (_numWhisperNamesAgo > _whisperNameHistory.Count) {
-         _numWhisperNamesAgo = _whisperNameHistory.Count;
+      if (_numWhisperNamesAgo > _sentWhisperNameHistory.Count) {
+         _numWhisperNamesAgo = _sentWhisperNameHistory.Count;
       }
 
       tryAutofillWhisperName();
@@ -504,6 +514,16 @@ public class ChatManager : MonoBehaviour
 
    private void resetWhisperNamesAgo () {
       _numWhisperNamesAgo = 0;
+   }
+
+   private void noteWhisperReceived (string sender) {
+      _lastWhisperSender = sender;
+   }
+
+   private void tryReply (string message) {
+      if (!string.IsNullOrEmpty(_lastWhisperSender)) {
+         sendWhisperMessageToServer(_lastWhisperSender + " " + message);
+      }
    }
 
    #region Private Variables
@@ -524,7 +544,10 @@ public class ChatManager : MonoBehaviour
    protected List<string> _sentMessageHistory = new List<string>();
 
    // A record of all names the user has sent a whisper to
-   protected List<string> _whisperNameHistory = new List<string>();
+   protected List<string> _sentWhisperNameHistory = new List<string>();
+
+   // A record of the last person to send us a whisper
+   protected string _lastWhisperSender;
 
    // How many messages ago we should autofill
    protected int _numMessagesAgo = 0;

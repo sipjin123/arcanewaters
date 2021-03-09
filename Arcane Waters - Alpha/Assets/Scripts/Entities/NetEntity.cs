@@ -1710,6 +1710,11 @@ public class NetEntity : NetworkBehaviour
             RedirectMessage redirectMessage = new RedirectMessage(this.netId, MyNetworkManager.self.networkAddress, newServer.networkedPort.Value);
             this.connectionToClient.Send(redirectMessage);
 
+            // If the player is warping to another server, it must be completely removed from this one
+            if (newServer.networkedPort.Value != ServerNetworkingManager.self.server.networkedPort.Value) {
+               MyNetworkManager.self.disconnectClient(connectionToClient, true);
+            }
+
             // Destroy the old Player object
             NetworkServer.DestroyPlayerForConnection(connectionToClient);
             NetworkServer.Destroy(entityObject);

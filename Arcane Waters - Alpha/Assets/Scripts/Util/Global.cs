@@ -146,6 +146,9 @@ public class Global
       return (Global.player != null && Global.player.isInBattle());
    }
 
+   public static bool isLoggedInAsAdmin () {
+      return (player && player.isAdmin());
+   }
 
    #region Private Variables
 
