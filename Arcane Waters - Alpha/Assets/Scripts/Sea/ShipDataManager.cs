@@ -37,8 +37,8 @@ public class ShipDataManager : MonoBehaviour {
       return returnData;
    }
 
-   public ShipData getShipData (Ship.Type shipType) {
-      if (!_shipData.Values.ToList().Exists(_=> _.shipType == shipType) && (int) shipType != -1) {
+   public ShipData getShipData (Ship.Type shipType, bool returnDefault = true) {
+      if (!_shipData.Values.ToList().Exists(_=> _.shipType == shipType) && (int) shipType != -1 && returnDefault) {
          D.debug("Failed to fetch ship data: {" + shipType + " : " + (int) shipType + "}");
          return _shipData.Values.ToList()[0];
       }

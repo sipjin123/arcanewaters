@@ -92,27 +92,31 @@ public class ShipyardScreen : Panel {
       // Clear out any old info
       rowsContainer.DestroyChildren();
 
-      foreach(ShipInfo shipInfo in shipList) { 
-         // Create a new row
-         ShipyardRow row = Instantiate(rowPrefab, rowsContainer.transform, false);
-         row.transform.SetParent(rowsContainer.transform, false);
+      foreach(ShipInfo shipInfo in shipList) {
+         ShipData shipData = ShipDataManager.self.getShipData(shipInfo.shipType, false);
+         if (shipData != null) {
+            // Create a new row
+            ShipyardRow row = Instantiate(rowPrefab, rowsContainer.transform, false);
+            row.transform.SetParent(rowsContainer.transform, false);
 
-         row.skillPrefabHolder.DestroyChildren();
-         foreach (int abilityId in shipInfo.shipAbilities.ShipAbilities) {
-            ShipUISkillTemplate template = Instantiate(row.skillPrefab, row.skillPrefabHolder.transform).GetComponent<ShipUISkillTemplate>();
-            EventTrigger eventTrigger = template.skillName.GetComponent<EventTrigger>();
-            Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerEnter, (e) => template.pointerEnter());
-            Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerExit, (e) => template.pointerExit());
+            row.skillPrefabHolder.DestroyChildren();
+            foreach (int abilityId in shipInfo.shipAbilities.ShipAbilities) {
+               ShipUISkillTemplate template = Instantiate(row.skillPrefab, row.skillPrefabHolder.transform).GetComponent<ShipUISkillTemplate>();
+               EventTrigger eventTrigger = template.skillName.GetComponent<EventTrigger>();
+               Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerEnter, (e) => template.pointerEnter());
+               Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerExit, (e) => template.pointerExit());
 
-            ShipAbilityData shipAbility = ShipAbilityManager.self.getAbility(abilityId);
-            template.skillName.text = shipAbility.abilityName;
-            template.shipAbilityData = shipAbility;
+               ShipAbilityData shipAbility = ShipAbilityManager.self.getAbility(abilityId);
+               template.skillName.text = shipAbility.abilityName;
+               template.shipAbilityData = shipAbility;
 
-            string iconPath = ShipAbilityManager.self.getAbility(abilityId).skillIconPath;
-            template.skillIcon.sprite = ImageManager.getSprite(iconPath);
+               string iconPath = ShipAbilityManager.self.getAbility(abilityId).skillIconPath;
+               template.skillIcon.sprite = ImageManager.getSprite(iconPath);
+            }
+            row.setRowForItem(shipInfo);
+         } else {
+            D.debug("Cannot create shop entry Ship: " + shipInfo.shipType + " not existing in data file");
          }
-
-         row.setRowForItem(shipInfo);
       }
    }
 

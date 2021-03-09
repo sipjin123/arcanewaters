@@ -50,6 +50,29 @@ public class AdventureItemRow : MonoBehaviour {
          iconShadow.sprite = icon.sprite;
          itemName.text = CraftingIngredients.getName(ingredientType);
       } else {
+         switch (item.category) {
+            case Item.Category.Weapon:
+               if (EquipmentXMLManager.self.getWeaponData(item.itemTypeId) == null) {
+                  D.debug("Weapon with ID: {" + item.itemTypeId + "} does not exist!");
+                  Destroy(gameObject);
+                  return;
+               }
+               break;
+            case Item.Category.Armor:
+               if (EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId) == null) {
+                  D.debug("Armor with ID: {" + item.itemTypeId + "} does not exist!");
+                  Destroy(gameObject);
+                  return;
+               }
+               break;
+            case Item.Category.Hats:
+               if (EquipmentXMLManager.self.getHatData(item.itemTypeId) == null) {
+                  D.debug("Hat with ID: {" + item.itemTypeId + "} does not exist!");
+                  Destroy(gameObject);
+                  return;
+               }
+               break;
+         }
          path = Item.isUsingEquipmentXML(item.category) ? item.iconPath : item.getIconPath(); 
          icon.sprite = ImageManager.getSprite(path);
          iconShadow.sprite = icon.sprite;
