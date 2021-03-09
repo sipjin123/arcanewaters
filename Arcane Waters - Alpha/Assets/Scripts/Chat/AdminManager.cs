@@ -100,9 +100,10 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("difficulty", "Enables the players to alter difficulty of current instance", requestDifficulty, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "difficultyLevel" }));
 
       // Log Commands for investigation
+      cm.addCommand(new CommandData("xml", "Logs the xml content of the specific manager", requestXmlLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "xmlType" }));
       cm.addCommand(new CommandData("screen_log", "Allows screen to log files using D.debug()", requestScreenLogs, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("log", "Enables isolated debug loggers", requestLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType", "isTrue" }));
-      
+
       List<Map> maps = MapManager.self.mapDataCache;
       List<string> mapNames = new List<string>();
       foreach (Map map in maps) {
@@ -275,7 +276,7 @@ public class AdminManager : NetworkBehaviour
    private void requestDifficulty (string parameters) {
       Cmd_SetDifficulty(parameters);
    }
-   
+
    [Command]
    protected void Cmd_SetDifficulty (string parameters) {
       if (!_player.isAdmin()) {
@@ -540,6 +541,9 @@ public class AdminManager : NetworkBehaviour
          case "combat":
             Global.displayLandCombatLogs = isEnabled;
             break;
+         case "sea":
+            Global.displaySeaCombatLogs = isEnabled;
+            break;
          case "warp":
             Global.displayWarpLogs = isEnabled;
             break;
@@ -556,7 +560,7 @@ public class AdminManager : NetworkBehaviour
             return;
       }
    }
-
+   
    [Command]
    protected void Cmd_RequestScreenLog () {
       if (!_player.isAdmin()) {
@@ -627,11 +631,31 @@ public class AdminManager : NetworkBehaviour
    private void requestSetShipHealth (string parameter) {
       Cmd_SetShipHealth(parameter);
    }
+   
+   private void requestXmlLogs (string parameter) {
+      string[] list = parameter.Split(' ');
+      if (list.Length > 0) {
+         string xmlType = list[0];
+
+         switch (xmlType) {
+            case "weapon":
+               foreach (WeaponStatData weapon in EquipmentXMLManager.self.weaponStatList) {
+                  D.debug("->Weapon:: Name{" + weapon.equipmentName + "} ID{" + weapon.sqlId + "}");
+               }
+               break;
+            case "armor":
+               foreach (ArmorStatData armor in EquipmentXMLManager.self.armorStatList) {
+                  D.debug("->Armor:: Name{" + armor.equipmentName + "} ID{" + armor.sqlId + "}");
+               }
+               break;
+         }
+      }
+   }
 
    private void requestScreenLogs () {
       Cmd_RequestScreenLog();
    }
-   
+
    private void requestWarpAnywhere () {
       Cmd_RequestWarpAnywhere();
    }
@@ -1987,6 +2011,16 @@ public class AdminManager : NetworkBehaviour
             D.warning(string.Format("The {0} item name ({1}) is duplicated.", category.ToString(), itemName));
          }
       }
+   }
+
+   [Command]
+   public void Cmd_GetServerLogString () {
+      Target_ReceiveServerLogString(connectionToClient, D.getLogString());
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveServerLogString (NetworkConnection connection, string serverLog) {
+      D.serverLogString = serverLog;
    }
 
    #region Private Variables
