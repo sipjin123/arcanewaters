@@ -15,9 +15,6 @@ public class InstanceManager : MonoBehaviour {
    // Self
    public static InstanceManager self;
 
-   // Cache only instance that is active on the client side, to be referenced to determine syncvar values such as checking if the area entites have successfully been initialized
-   public Instance clientInstance;
-
    #endregion
 
    private void Awake () {
@@ -392,6 +389,12 @@ public class InstanceManager : MonoBehaviour {
       }
 
       return false;
+   }
+
+   public Instance getClientInstance (int playerInstanceId) {
+      // TODO: Confirm if registering each instance on startup for each client is ideal than getting component in children, since instance registry only takes placer in server side(createNewInstance())
+      List<Instance> instances = GetComponentsInChildren<Instance>().ToList();
+      return instances.Find(_ => _.id == playerInstanceId);
    }
 
    public void removeEmptyInstance (Instance instance) {

@@ -331,12 +331,12 @@ public class MapManager : MonoBehaviour
          }
 
          // Wait for instance to generate
-         while (!InstanceManager.self.clientInstance) {
+         while (!InstanceManager.self.getClientInstance(Global.player.instanceId)) {
             yield return 0;
          }
 
          // Wait for instance to finish spawning the network entities 
-         Instance instance = InstanceManager.self.clientInstance;
+         Instance instance = InstanceManager.self.getClientInstance(Global.player.instanceId);
          while (!instance.isNetworkPrefabInstantiationFinished) {
             yield return 0;
          }
