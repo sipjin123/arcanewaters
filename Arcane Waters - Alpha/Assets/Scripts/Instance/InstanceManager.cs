@@ -392,7 +392,7 @@ public class InstanceManager : MonoBehaviour {
    }
 
    public Instance getClientInstance (int playerInstanceId) {
-      // TODO: Confirm if registering each instance on startup for each client is ideal than getting component in children, since instance registry only takes placer in server side(createNewInstance())
+      // TODO: Confirm if registering each instance on startup for each client is ideal than getting component in children, since instance registry only takes place in server side(createNewInstance())
       List<Instance> instances = GetComponentsInChildren<Instance>().ToList();
       return instances.Find(_ => _.id == playerInstanceId);
    }

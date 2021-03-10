@@ -326,6 +326,7 @@ public class MapManager : MonoBehaviour
 
       // Skip this process if its a server or if its a development/nonCloud build
       if (!(Mirror.NetworkServer.active && isCloudBuild)) {
+         // Check first if player exists
          while (Global.player == null) {
             yield return 0;
          }
@@ -335,8 +336,8 @@ public class MapManager : MonoBehaviour
             yield return 0;
          }
 
-         // Wait for instance to finish spawning the network entities 
-         Instance instance = InstanceManager.self.getClientInstance(Global.player.instanceId);
+         // Wait for instance to finish spawning the network entities
+         Instance instance = InstanceManager.self.getClientInstance(Global.player == null ? -1 : Global.player.instanceId);
          while (!instance.isNetworkPrefabInstantiationFinished) {
             yield return 0;
          }
