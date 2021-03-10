@@ -84,23 +84,8 @@ public class Global
    // Gets set to false if the player has already logged in successfully.
    public static bool isFirstLogin = true;
 
-   // If stats should be displayed on land combat
-   public static bool displayLandCombatLogs = false;
-
-   // If stats should be displayed on sea combat
-   public static bool displaySeaCombatLogs = false;
-
-   // If stats should be displayed on land combat for boss enemy
-   public static bool displayBossCombatLogs = false;
-
-   // If mining logs should be displayed
-   public static bool displayMiningLogs = false;
-
-   // If ability process should be logged
-   public static bool displayAbilityLogs = false;
-
-   // If warping and loading should be logged
-   public static bool displayWarpLogs = false;
+   // List of logs to show
+   public static List<D.ADMIN_LOG_TYPE> logTypesToShow = new List<D.ADMIN_LOG_TYPE>();
 
    // The default settings for networked vars in the server network
    public static NetworkedVarSettings defaultNetworkedVarSettings = new NetworkedVarSettings { WritePermission = NetworkedVarPermission.OwnerOnly, SendChannel = "Fragmented" };
@@ -144,6 +129,18 @@ public class Global
 
    public static bool isInBattle () {
       return (Global.player != null && Global.player.isInBattle());
+   }
+
+   public static void updateAdminLog (D.ADMIN_LOG_TYPE logType, bool isEnabled) {
+      if (isEnabled) {
+         if (!logTypesToShow.Contains(logType)) {
+            logTypesToShow.Add(logType);
+         }
+      } else {
+         if (logTypesToShow.Contains(logType)) {
+            logTypesToShow.Remove(logType);
+         }
+      }
    }
 
    public static bool isLoggedInAsAdmin () {

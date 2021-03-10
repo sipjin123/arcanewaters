@@ -539,19 +539,22 @@ public class AdminManager : NetworkBehaviour
    private void processLogAuthorization (string logType, bool isEnabled, string parameters) {
       switch (logType) {
          case "combat":
-            Global.displayLandCombatLogs = isEnabled;
+            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Combat, isEnabled);
             break;
          case "sea":
-            Global.displaySeaCombatLogs = isEnabled;
+            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Sea, isEnabled);
             break;
          case "warp":
-            Global.displayWarpLogs = isEnabled;
+            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Warp, isEnabled);
             break;
          case "boss":
-            Global.displayBossCombatLogs = isEnabled;
+            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Boss, isEnabled);
             break;
          case "mine":
-            Global.displayMiningLogs = isEnabled;
+            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Mine, isEnabled);
+            break;
+         case "ability":
+            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Ability, isEnabled);
             break;
          default:
             if (Util.isServerBuild()) {

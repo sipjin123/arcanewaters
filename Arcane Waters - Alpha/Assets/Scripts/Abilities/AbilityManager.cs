@@ -196,9 +196,7 @@ public class AbilityManager : MonoBehaviour
                timeToWait = BattleManager.TICK_INTERVAL + actionToExecute.actionEndTime - NetworkTime.time - animationLength;
 
                // TODO: Remove after fixing bug wherein Golem boss action is stuck for a long time
-               if (sourceBattler.enemyType == Enemy.Type.Golem_Boss && Global.displayBossCombatLogs) {
-                  D.debug("Source battler is attacking" + " : " + sourceBattler.enemyType + " Target is: " + targetBattler.enemyType+ " TimeToWait: " + timeToWait);
-               }
+               D.adminLog("Source battler is attacking" + " : " + sourceBattler.enemyType + " Target is: " + targetBattler.enemyType+ " TimeToWait: " + timeToWait, D.ADMIN_LOG_TYPE.Boss);
 
                sourceBattler.registerNewActionCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst), action.battleActionType);
                break;

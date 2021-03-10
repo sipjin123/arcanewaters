@@ -9,6 +9,16 @@ using System.IO;
 public class D : MonoBehaviour {
    #region Public Variables
 
+   public enum ADMIN_LOG_TYPE { 
+      None = 0,
+      Combat = 1,
+      Sea = 2,
+      Mine = 3,
+      Warp = 4,
+      Ability = 5,
+      Boss = 6
+   }
+
    // Any log files older than this will be deleted
    public static int HOURS_TO_KEEP_LOG_FILES = 72;
 
@@ -199,6 +209,13 @@ public class D : MonoBehaviour {
 
    public static void log (string msg) {
       log(msg, ChatInfo.Type.Log);
+   }
+
+   public static void adminLog (string text, ADMIN_LOG_TYPE logType) {
+      if (!Global.logTypesToShow.Contains(logType)) {
+         return;
+      }
+      log("[" + logType + "]" + text);
    }
 
    public static void editorLog (string text, Color color = new Color()) {

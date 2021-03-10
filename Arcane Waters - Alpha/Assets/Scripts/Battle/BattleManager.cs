@@ -170,14 +170,10 @@ public class BattleManager : MonoBehaviour {
       storeBattler(battler);
       if (teamType == Battle.TeamType.Attackers) {
          battle.attackers.Add(battler.userId);
-         if (Global.displayBossCombatLogs) {
-            D.debug("BATTLE_LOG::Adding battler Player as Attacker" + " UID: " + battler.userId + " Type: " + battler.enemyType + " AtkrCount: " + battle.attackers.Count);
-         }
+         D.adminLog("Adding battler Player as Attacker" + " UID: " + battler.userId + " Type: " + battler.enemyType + " AtkrCount: " + battle.attackers.Count, D.ADMIN_LOG_TYPE.Combat);
       } else if (teamType == Battle.TeamType.Defenders) {
          battle.defenders.Add(battler.userId);
-         if (Global.displayBossCombatLogs) {
-            D.debug("BATTLE_LOG::Adding battler Player as Defender" + " UID: " + battler.userId + " Type: " + battler.enemyType+ " DefrCount: " + battle.defenders.Count);
-         }
+         D.adminLog("Adding battler Player as Defender" + " UID: " + battler.userId + " Type: " + battler.enemyType + " DefrCount: " + battle.defenders.Count, D.ADMIN_LOG_TYPE.Combat);
       }
 
       // Assign the Battle ID to the Sync Var
@@ -198,14 +194,10 @@ public class BattleManager : MonoBehaviour {
       // Add the Battler to the Battle
       if (teamType == Battle.TeamType.Attackers) {
          battle.attackers.Add(battler.userId);
-         if (Global.displayBossCombatLogs) {
-            D.debug("BATTLE_LOG::Adding battler Enemy as Attacker" + " UID: " + battler.userId + " Type: " + battler.enemyType + " AtkrCount: " + battle.attackers.Count);
-         }
+         D.adminLog("Adding battler Enemy as Attacker" + " UID: " + battler.userId + " Type: " + battler.enemyType + " AtkrCount: " + battle.attackers.Count, D.ADMIN_LOG_TYPE.Boss);
       } else if (teamType == Battle.TeamType.Defenders) {
          battle.defenders.Add(battler.userId);
-         if (Global.displayBossCombatLogs) {
-            D.debug("BATTLE_LOG::Adding battler Enemy as Defender" + " UID: " + battler.userId + " Type: " + battler.enemyType + " DefrCount: " + battle.defenders.Count);
-         }
+         D.adminLog("Adding battler Enemy as Defender" + " UID: " + battler.userId + " Type: " + battler.enemyType + " DefrCount: " + battle.defenders.Count, D.ADMIN_LOG_TYPE.Boss);
       }
 
       // Assign the Battle ID to the Sync Var, causing movement to stop and facing direction to change
@@ -619,14 +611,12 @@ public class BattleManager : MonoBehaviour {
             target.animatingUntil = timeAttackEnds;
 
             // TODO: Remove after fixing bug wherein Golem boss action is stuck for a long time
-            if (source.enemyType == Enemy.Type.Golem_Boss && Global.displayBossCombatLogs) {
-               D.debug("Golem is attacking: "
-                  + " TimeToWait: " + (timeToWait)
-                  + " Cooldown: " + cooldownDuration
-                  + " AtkEnds: " + timeAttackEnds.ToString("f1")
-                  + " CurrTime: " + NetworkTime.time.ToString("f1") 
-                  + " Target: " + target.userId + " - " + target.enemyType);
-            }
+            D.adminLog("Golem is attacking: "
+               + " TimeToWait: " + (timeToWait)
+               + " Cooldown: " + cooldownDuration
+               + " AtkEnds: " + timeAttackEnds.ToString("f1")
+               + " CurrTime: " + NetworkTime.time.ToString("f1") 
+               + " Target: " + target.userId + " - " + target.enemyType, D.ADMIN_LOG_TYPE.Boss);
 
             // Wait to apply the effects of the action here on the server until the appointed time
             StartCoroutine(applyActionAfterDelay(timeToWait, action, isMultiTarget));

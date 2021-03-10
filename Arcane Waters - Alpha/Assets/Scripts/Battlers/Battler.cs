@@ -384,7 +384,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          StartCoroutine(CO_SelectEnemyBattler());
       }
 
-      if (Global.displayLandCombatLogs) {
+      if (Global.logTypesToShow.Contains(D.ADMIN_LOG_TYPE.Combat)) {
          // TODO: After observing multiplayer combat and confirmed that freezing on death anim is no longer occurring, remove this block
          debugLogCanvas.SetActive(true);
       }
@@ -432,7 +432,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       // This block is only enabled upon admin command and is double checked by the server if the user is an admin
       // TODO: After observing multiplayer combat and confirmed that freezing on death anim is no longer occurring, remove this block
-      if (Global.displayLandCombatLogs) {
+      if (Global.logTypesToShow.Contains(D.ADMIN_LOG_TYPE.Combat)) {
          string newMessage = "Dead" + " : " + isDead()
             + "\nCurHP: {" + health + "} DisHP: {" + displayedHealth + "}"
             + "\nAnim: " + _anims[0].currentAnimation;
@@ -1156,9 +1156,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       switch (globalAbilityData.abilityActionType) {
          case AbilityActionType.Melee:
             // TODO: Remove after fixing bug wherein Golem boss action is stuck for a long time
-            if (sourceBattler.enemyType == Enemy.Type.Golem_Boss && Global.displayBossCombatLogs) {
-               D.debug("Golem has started attacking" + " : " + NetworkTime.time.ToString("f1"));
-            }
+            D.adminLog("Golem has started attacking" + " : " + NetworkTime.time.ToString("f1"), D.ADMIN_LOG_TYPE.Boss);
             onBattlerAttackStart.Invoke();
 
             // Default all abilities to display as attacks
@@ -1273,18 +1271,16 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             }
 
             // TODO: Remove after fixing bug wherein first damage does not reduct display health bar
-            if (targetBattler != null) {
-               if (Global.displayLandCombatLogs && targetBattler.enemyType != Enemy.Type.PlayerBattler) {
-                  D.debug("UI"+ " : " + ((float) displayedHealth + " / " + getStartingHealth())+ " : " +(((float) displayedHealth / getStartingHealth())));
+            if (targetBattler != null && targetBattler.enemyType != Enemy.Type.PlayerBattler) {
+               D.adminLog("UI" + " : " + ((float) displayedHealth + " / " + getStartingHealth()) + " : " + (((float) displayedHealth / getStartingHealth())), D.ADMIN_LOG_TYPE.Combat);
 
-                  D.debug("Target: " + targetBattler.enemyType +
-                     " Difficulty: " + targetBattler.difficultyLevel +
-                     " Lvl: " + LevelUtil.levelForXp(targetBattler.XP)+
-                     "{ CurrHealth: " + targetBattler.displayedHealth +
-                     " - Receiving damage: " + action.damage +
-                     "} DataHealth: {" + targetBattler.health +
-                     "} ResultHealth: {" + (targetBattler.displayedHealth - action.damage)+ "}");
-               }
+               D.adminLog("Target: " + targetBattler.enemyType +
+                  " Difficulty: " + targetBattler.difficultyLevel +
+                  " Lvl: " + LevelUtil.levelForXp(targetBattler.XP) +
+                  "{ CurrHealth: " + targetBattler.displayedHealth +
+                  " - Receiving damage: " + action.damage +
+                  "} DataHealth: {" + targetBattler.health +
+                  "} ResultHealth: {" + (targetBattler.displayedHealth - action.damage) + "}", D.ADMIN_LOG_TYPE.Combat);
             }
 
             targetBattler.displayedHealth -= action.damage;
@@ -1333,9 +1329,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             onBattlerAttackEnd.Invoke();
 
             // TODO: Remove after fixing bug wherein Golem boss action is stuck for a long time
-            if (sourceBattler.enemyType == Enemy.Type.Golem_Boss && Global.displayBossCombatLogs) {
+            if (sourceBattler.enemyType == Enemy.Type.Golem_Boss) {
                actionDuration = NetworkTime.time - actionDuration;
-               D.debug("Golem has finished attacking" + " : " + NetworkTime.time.ToString("f1") + " Duration: " + actionDuration.ToString("f1"));
+               D.adminLog("Golem has finished attacking" + " : " + NetworkTime.time.ToString("f1") + " Duration: " + actionDuration.ToString("f1"), D.ADMIN_LOG_TYPE.Boss);
             }
             break;
          case AbilityActionType.Ranged:

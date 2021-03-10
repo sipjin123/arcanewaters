@@ -4034,10 +4034,7 @@ public class RPCManager : NetworkBehaviour
       ExplosionManager.createMiningParticle(oreNode.transform.position);
 
       if (oreNode.finishedMining()) {
-         if (Global.displayMiningLogs) {
-            D.debug("MINING_LOG::Player has finished mining, spawning collectable ores:{" + oreNode.id + "}");
-         }
-
+         D.adminLog("Player has finished mining, spawning collectable ores:{" + oreNode.id + "}", D.ADMIN_LOG_TYPE.Mine);
          int randomCount = Random.Range(1, 3);
 
          for (int i = 0; i < randomCount; i++) {
@@ -4060,9 +4057,7 @@ public class RPCManager : NetworkBehaviour
          D.debug("Error! Missing Ore Node:{" + oreId + "}");
          return;
       }
-      if (Global.displayMiningLogs) {
-         D.debug("MINING_LOG:: Generating mine effect for ore:{" + oreNode.id + "}");
-      }
+      D.adminLog("Generating mine effect for ore:{" + oreNode.id + "}", D.ADMIN_LOG_TYPE.Mine);
 
       GameObject oreBounce = Instantiate(PrefabsManager.self.oreDropPrefab, oreNode.transform);
       OreMineEffect oreMine = oreBounce.GetComponent<OreMineEffect>();
@@ -4781,9 +4776,7 @@ public class RPCManager : NetworkBehaviour
             WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponId);
             Weapon.Class weaponClass = weaponData == null ? Weapon.Class.Melee : weaponData.weaponClass;
             WeaponCategory weaponCategory = WeaponCategory.None;
-            if (Global.displayAbilityLogs) {
-               D.debug("Player {" + _player.userId + "} weapon is" + " : " + weaponClass);
-            }
+            D.adminLog("Player {" + _player.userId + "} weapon is" + " : " + weaponClass, D.ADMIN_LOG_TYPE.Ability);
 
             // Determine if the abilities match the current weapon type
             int validAbilities = 0;
@@ -4799,20 +4792,16 @@ public class RPCManager : NetworkBehaviour
                   || (weaponClass == Weapon.Class.Ranged && attackAbilityData.isProjectile())
                   || (weaponClass == Weapon.Class.Magic && attackAbilityData.isRum())) {
                      validAbilities++;
-                     if (Global.displayAbilityLogs) {
-                        D.debug("Valid Ability: " + basicAbilityData.itemName +
-                           " : " + basicAbilityData.itemID +
-                           " : " + basicAbilityData.abilityType +
-                           " : " + basicAbilityData.classRequirement);
-                     }
+                     D.adminLog("Valid Ability: " + basicAbilityData.itemName +
+                        " : " + basicAbilityData.itemID +
+                        " : " + basicAbilityData.abilityType +
+                        " : " + basicAbilityData.classRequirement, D.ADMIN_LOG_TYPE.Ability);
                   }
                } 
             }
 
             if (validAbilities < 1) {
-               if (Global.displayAbilityLogs) {
-                  D.debug("No valid ability assigned to player" + " : " + _player.userId);
-               }
+               D.adminLog("No valid ability assigned to player" + " : " + _player.userId, D.ADMIN_LOG_TYPE.Ability);
             }
 
             // If no abilities were fetched, create a clean new entry that will be overridden based on the user equipped weapon
@@ -4855,13 +4844,11 @@ public class RPCManager : NetworkBehaviour
                      equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.punchAbility());
                   }
 
-                  if (Global.displayAbilityLogs) {
-                     D.debug("New ability assigned to player: "
-                        + " Name: " + equippedAbilityList[0].name
-                        + " ID: " + equippedAbilityList[0].abilityID
-                        + " WepClass: " + weaponClass
-                        + " WepCateg: " + weaponCategory);
-                  }
+                  D.adminLog("New ability assigned to player: "
+                     + " Name: " + equippedAbilityList[0].name
+                     + " ID: " + equippedAbilityList[0].abilityID
+                     + " WepClass: " + weaponClass
+                     + " WepCateg: " + weaponCategory, D.ADMIN_LOG_TYPE.Ability);
                }
             }
 
@@ -4960,9 +4947,7 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveCombatLogFromServer (NetworkConnection connection, string message) {
-      if (Global.displayLandCombatLogs) {
-         D.debug("Combat: " + message);
-      }
+      D.adminLog("Combat: " + message, D.ADMIN_LOG_TYPE.Combat);
    }
 
    #region Abilities
@@ -5036,14 +5021,12 @@ public class RPCManager : NetworkBehaviour
                   }
 
                   if (battler != null) {
-                     if (Global.displayAbilityLogs) {
-                        foreach (BasicAbilityData basicAbility in basicAbilityList) {
-                           D.debug("Sending Overridden Ability Data to Player: " + battler.userId
-                              + "Name: " + basicAbility.itemName
-                              + " ID: " + basicAbility.itemID
-                              + " Type: " + basicAbility.abilityType
-                              + " Class: " + basicAbility.classRequirement);
-                        }
+                     foreach (BasicAbilityData basicAbility in basicAbilityList) {
+                        D.adminLog("Sending Overridden Ability Data to Player: " + battler.userId
+                           + "Name: " + basicAbility.itemName
+                           + " ID: " + basicAbility.itemID
+                           + " Type: " + basicAbility.abilityType
+                           + " Class: " + basicAbility.classRequirement, D.ADMIN_LOG_TYPE.Ability);
                      }
                      battler.setBattlerAbilities(basicAbilityList, BattlerType.PlayerControlled);
 
@@ -5082,14 +5065,12 @@ public class RPCManager : NetworkBehaviour
                   }
 
                   try {
-                     if (Global.displayAbilityLogs) {
-                        foreach (BasicAbilityData basicAbility in basicAbilityList) {
-                           D.debug("Sending RAW Ability Data to Player: " + battler.userId
-                              + "Name: " + basicAbility.itemName
-                              + " ID: " + basicAbility.itemID
-                              + " Type: " + basicAbility.abilityType
-                              + " Class: " + basicAbility.classRequirement);
-                        }
+                     foreach (BasicAbilityData basicAbility in basicAbilityList) {
+                        D.adminLog("Sending RAW Ability Data to Player: " + battler.userId
+                           + "Name: " + basicAbility.itemName
+                           + " ID: " + basicAbility.itemID
+                           + " Type: " + basicAbility.abilityType
+                           + " Class: " + basicAbility.classRequirement, D.ADMIN_LOG_TYPE.Ability);
                      }
                      battler.setBattlerAbilities(basicAbilityList, BattlerType.PlayerControlled);
 
@@ -5829,23 +5810,17 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_RequestWarp (string areaTarget, string spawnTarget) {
-      if (Global.displayWarpLogs) {
-         D.debug("Player {" + _player.userId + "} Warping to {" + spawnTarget + "}");
-      }
+      D.adminLog("Player {" + _player.userId + "} Warping to {" + spawnTarget + "}", D.ADMIN_LOG_TYPE.Warp);
       
       if (_player == null || _player.connectionToClient == null) {
-         if (Global.displayWarpLogs) {
-            D.debug("Player {" + _player.userId + "} Failed to warp due to missing reference");
-         }
+         D.adminLog("Player {" + _player.userId + "} Failed to warp due to missing reference", D.ADMIN_LOG_TYPE.Warp);
          Target_OnWarpFailed("Missing player or player connection");
       }
       
       Area area = AreaManager.self.getArea(_player.areaKey);
       if (area == null) {
          Debug.Log("Area was null: " + _player.areaKey);
-         if (Global.displayWarpLogs) {
-            D.debug("Player {" + _player.userId + "} Failed to warp due to missing area: {" + " : " + _player.areaKey + "}");
-         }
+         D.adminLog("Player {" + _player.userId + "} Failed to warp due to missing area: {" + " : " + _player.areaKey + "}", D.ADMIN_LOG_TYPE.Warp);
          Target_OnWarpFailed("Missing Area: " + _player.areaKey);
          return;
       }
@@ -5866,19 +5841,16 @@ public class RPCManager : NetworkBehaviour
             }
             return;
          }
-         if (Global.displayWarpLogs) {
-            D.debug("Checking " +
-               "WarpTo: {" + warp.areaTarget + "} " +
-               "IsNear: {" + (distanceToWarp < 2f) + "} " +
-               "AreaTarget: {" + areaTarget + "} " +
-               "WarpTarget: {" + warp.spawnTarget + "} " +
-               "CanUse?: {" + warp.canPlayerUseWarp(_player) + "}");
-         }
+
+         D.adminLog("Checking " +
+            "WarpTo: {" + warp.areaTarget + "} " +
+            "IsNear: {" + (distanceToWarp < 2f) + "} " +
+            "AreaTarget: {" + areaTarget + "} " +
+            "WarpTarget: {" + warp.spawnTarget + "} " +
+            "CanUse?: {" + warp.canPlayerUseWarp(_player) + "}", D.ADMIN_LOG_TYPE.Warp);
       }
 
-      if (Global.displayWarpLogs) {
-         D.debug("Player {" + _player.userId + "} Failed to warp since there is no warp nearby!");
-      }
+      D.adminLog("Player {" + _player.userId + "} Failed to warp since there is no warp nearby!", D.ADMIN_LOG_TYPE.Warp);
 
       // If no valid warp was found, let the player know so at least they're not stuck
       Target_OnWarpFailed("No valid warp nearby");
