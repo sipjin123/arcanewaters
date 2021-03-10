@@ -8,6 +8,9 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
    // The singleton instance
    public static PostSpotFader self;
 
+   // If this is initialized 
+   public bool isInitialized = false;
+
    #endregion
 
    protected override void Awake () {
@@ -56,8 +59,12 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
       _material.SetVector(_screenSizePropertyID, new Vector4(Screen.width, Screen.height));
       Graphics.Blit(source, destination, _material);
    }
-
+   
    public float fadeIn () {
+      if (!isInitialized) {
+         isInitialized = true;
+         CameraManager.defaultCamera.getPixelFadeEffect().fadeIn();
+      }
       _fadeTween?.Kill();
 
       recalibrateSpotPosition();
@@ -68,6 +75,10 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
    }
 
    public float fadeOut () {
+      if (!isInitialized) {
+         CameraManager.defaultCamera.getPixelFadeEffect().fadeOut();
+      }
+
       _fadeTween?.Kill();
 
       recalibrateSpotPosition();
