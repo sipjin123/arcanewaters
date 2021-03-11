@@ -164,6 +164,8 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                ArmorStatData fetchedArmorData = EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId);
                if (fetchedArmorData == null) {
                   D.debug("Failed to fetch Armor Data for: " + item.itemTypeId);
+                  Destroy(gameObject);
+                  return;
                } else {
                   icon.sprite = ImageManager.getSprite(fetchedArmorData.equipmentIconPath);
                }
@@ -171,6 +173,8 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                WeaponStatData fetchedWeaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
                if (fetchedWeaponData == null) {
                   D.debug("Failed to fetch Weapon Data for: " + item.itemTypeId);
+                  Destroy(gameObject);
+                  return;
                } else {
                   icon.sprite = ImageManager.getSprite(fetchedWeaponData.equipmentIconPath);
                }
@@ -178,6 +182,8 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                HatStatData fetchedHatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
                if (fetchedHatData == null) {
                   D.debug("Failed to fetch Hat Data for: " + item.itemTypeId);
+                  Destroy(gameObject);
+                  return;
                } else {
                   icon.sprite = ImageManager.getSprite(fetchedHatData.equipmentIconPath);
                }
