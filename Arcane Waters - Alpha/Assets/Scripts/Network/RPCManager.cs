@@ -5742,13 +5742,28 @@ public class RPCManager : NetworkBehaviour
          Target_OnWarpFailed("Missing player or player connection");
       }
       
-      Area area = AreaManager.self.getArea(_player.areaKey);
-      if (area == null) {
-         Debug.Log("Area was null: " + _player.areaKey);
-         D.adminLog("Player {" + _player.userId + "} Failed to warp due to missing area: {" + " : " + _player.areaKey + "}", D.ADMIN_LOG_TYPE.Warp);
-         Target_OnWarpFailed("Missing Area: " + _player.areaKey);
-         return;
+      StartCoroutine(waitForAreaLoad(areaTarget, spawnTarget));
+   }
+
+   private IEnumerator waitForAreaLoad (string areaTarget, string spawnTarget) {
+      // TODO: Confirm if this is needed
+      // If the area load exceeds this time, assume there was network related issue and trigger warp failure
+      float maxLoadingTime = 30;
+      float currentLoadTIme = 0;
+
+      while (AreaManager.self.getArea(_player.areaKey) == null) {
+         if (currentLoadTIme < maxLoadingTime) {
+            currentLoadTIme += Time.deltaTime;
+            yield return 0;
+         } else {
+            D.debug("Area failed to load: " + _player.areaKey + " wait time was " + currentLoadTIme + " seconds");
+            D.adminLog("Player {" + _player.userId + "} Failed to warp due to missing area: {" + " : " + _player.areaKey + "}", D.ADMIN_LOG_TYPE.Warp);
+            Target_OnWarpFailed("Missing Area: " + _player.areaKey);
+            yield break;
+         }
       }
+      D.adminLog("Waiting time for area{" + _player.areaKey + "} to load is: " + currentLoadTIme + " seconds", D.ADMIN_LOG_TYPE.Warp);
+      Area area = AreaManager.self.getArea(_player.areaKey);
 
       // Get the warps for the area the player is currently in
       List<Warp> warps = area.getWarps();
@@ -5764,7 +5779,7 @@ public class RPCManager : NetworkBehaviour
                warp.gameObject.SetActive(true);
                warp.startWarpForPlayer(_player);
             }
-            return;
+            yield break;
          }
 
          D.adminLog("Checking " +
