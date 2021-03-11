@@ -46,7 +46,7 @@ public class MerchantCropRow : MonoBehaviour {
    public Sprite diamondStarSprite;
 
    // The Sell button tooltip component
-   public GenericTooltipTrigger sellButtonTooltip;
+   public ToolTipComponent sellButtonTooltip;
 
    #endregion
 

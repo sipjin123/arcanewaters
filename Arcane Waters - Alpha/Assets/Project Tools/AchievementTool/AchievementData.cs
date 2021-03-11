@@ -42,7 +42,7 @@ public class AchievementData
 
    public AchievementData () { }
 
-#if IS_SERVER_BUILD
+   #if IS_SERVER_BUILD
 
    public AchievementData (MySqlDataReader dataReader) {
       this.actionType = (ActionType) DataUtil.getInt(dataReader, "actionTypeId");
@@ -55,7 +55,7 @@ public class AchievementData
       this.tier = DataUtil.getInt(dataReader, "tier");
    }
 
-#endif
+   #endif
 
    public AchievementData (ActionType actionType, string name, string description, string uniqueKey, int count, int typeId, int categoryId) {
       this.actionType = actionType;

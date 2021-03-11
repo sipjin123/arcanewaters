@@ -62,24 +62,24 @@ public class MyNetworkManager : NetworkManager
    public override void Awake () {
       self = this;
 
-#if FORCE_AMAZON_SERVER
+   #if FORCE_AMAZON_SERVER
       Debug.Log("FORCE_AMAZON_SERVER is defined, updating the Network Manager server override.");
       this.serverOverride = ServerType.AmazonVPC;
-#endif
-#if FORCE_AMAZON_SERVER_PROD
+   #endif
+   #if FORCE_AMAZON_SERVER_PROD
       Debug.Log("FORCE_AMAZON_SERVER_PROD is defined, updating the Network Manager server override.");
       this.serverOverride = ServerType.AmazonVPC;
-#endif
-#if FORCE_SYDNEY
+   #endif
+   #if FORCE_SYDNEY
       this.serverOverride = ServerType.AmazonSydney;
-#endif
-#if FORCE_LOCALHOST
+   #endif
+   #if FORCE_LOCALHOST
       this.serverOverride = ServerType.Localhost;
-#endif
+   #endif
 
-#if !FORCE_AMAZON_SERVER
+   #if !FORCE_AMAZON_SERVER
       Debug.Log("FORCE_AMAZON_SERVER is not defined.");
-#endif
+   #endif
 
       foreach (string arg in System.Environment.GetCommandLineArgs()) {
          if (arg.Contains("port=")) {
@@ -164,7 +164,7 @@ public class MyNetworkManager : NetworkManager
 
       // If this is the "Master" server, then start hosting the Server Network
       if (getCurrentPort() == Global.MASTER_SERVER_PORT) {
-         ServerNetworkingManager.get().StartHost(); 
+         ServerNetworkingManager.get().StartHost();
          processServerManagers();
       } else {
          processServerManagers();
@@ -260,7 +260,7 @@ public class MyNetworkManager : NetworkManager
          authenticatedUserId = data.userId;
          steamUserId = data.steamId;
       }
-      
+
       if (authenicatedAccountId <= 0 || authenticatedUserId <= 0) {
          ServerMessageManager.sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
          return;
@@ -280,8 +280,8 @@ public class MyNetworkManager : NetworkManager
          string previousAreaKey = userInfo.areaKey;
 
          // Get information about owned map
-         string baseMapAreaKey = previousAreaKey; 
-         DateTime chatSuspensionEndDate = DB_Main.getPlayerChatSuspensionEndDate(authenticatedUserId);
+         string baseMapAreaKey = previousAreaKey;
+
          int mapOwnerId = CustomMapManager.isUserSpecificAreaKey(previousAreaKey) ? CustomMapManager.getUserId(previousAreaKey) : -1;
          UserInfo ownerInfo = mapOwnerId < 0 ? null : (mapOwnerId == userInfo.userId ? userInfo : JsonUtility.FromJson<UserInfo>(DB_Main.getUserInfoJSON(mapOwnerId.ToString())));
 
@@ -315,10 +315,10 @@ public class MyNetworkManager : NetworkManager
             ClientConnectionData existingConnection = DisconnectionManager.self.getConnectionDataForUser(authenticatedUserId);
             if (existingConnection != null && existingConnection.isReconnecting) {
                userInfo.localPos = existingConnection.netEntity.transform.localPosition;
-               userInfo.facingDirection = (int)existingConnection.netEntity.facing;
+               userInfo.facingDirection = (int) existingConnection.netEntity.facing;
                shipInfo.health = existingConnection.netEntity.currentHealth;
 
-               DisconnectionManager.self.removeFromDisconnectedUsers(authenticatedUserId);              
+               DisconnectionManager.self.removeFromDisconnectedUsers(authenticatedUserId);
             }
 
             // Manage the voyage groups on user connection
@@ -367,10 +367,8 @@ public class MyNetworkManager : NetworkManager
 
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);
 
-            player.chatSuspensionEndDate = chatSuspensionEndDate;
-
             player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, userObjects.hat, shipInfo, guildInfo, guildRankInfo);
-       
+
             // Send SoundEffects to the Client
             List<SoundEffect> currentSoundEffects = SoundEffectManager.self.getAllSoundEffects();
             player.rpc.Target_ReceiveSoundEffects(player.connectionToClient, Util.serialize(currentSoundEffects));
@@ -405,7 +403,7 @@ public class MyNetworkManager : NetworkManager
                   // Send player the data of the background and their abilities
                   player.rpc.Target_ReceiveBackgroundInfo(player.connectionToClient, activeBattle.battleBoard.xmlID);
                   player.rpc.processPlayerAbilities((PlayerBodyEntity) player, new List<PlayerBodyEntity> { (PlayerBodyEntity) player });
-               } 
+               }
             }
 
             // Tell the player information about the Area we're going to send them to
@@ -425,6 +423,16 @@ public class MyNetworkManager : NetworkManager
                   }
                   player.rpc.Target_ReceiveAreaInfo(player.connectionToClient, previousAreaKey, baseMapAreaKey, AreaManager.self.getAreaVersion(baseMapAreaKey), mapPosition, customizationData, instance.biome);
                });
+            });
+
+            // Get player's mute info if exists, and send it to the client
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               PenaltyInfo muteInfo = DB_Main.getPenaltyInfoForAccount(player.accountId, PenaltyType.Mute);
+               if (muteInfo != null) {
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     player.Rpc_ReceiveMuteInfo(muteInfo);
+                  });
+               }
             });
 
             // Send any extra info as targeted RPCs
@@ -449,7 +457,7 @@ public class MyNetworkManager : NetworkManager
    public ClientConnectionData getConnectedClientDataForAccount (int accountId) {
       return _players.Values.FirstOrDefault(x => x.isAuthenticated() && x.accountId == accountId);
    }
-   
+
    public ClientConnectionData getConnectedClientDataForUser (int userId) {
       return _players.Values.FirstOrDefault(x => x.isAuthenticated() && x.userId == userId);
    }
@@ -522,7 +530,7 @@ public class MyNetworkManager : NetworkManager
 
    public override void OnServerDisconnect (NetworkConnection conn) {
       // Called on the server when a client disconnects
-      disconnectClient(conn);      
+      disconnectClient(conn);
    }
 
    public void disconnectClient (int accountId) {
@@ -570,7 +578,7 @@ public class MyNetworkManager : NetworkManager
    public static void noteAccountIdForConnection (int accountId, NetworkConnection conn) {
       // Keep track of the account ID that we're associating with this connection
       ClientConnectionData existingConnection = self.getConnectedClientDataForAccount(accountId);
-      
+
       _players[conn.connectionId].accountId = accountId;
 
       if (existingConnection != null && existingConnection.connectionId != conn.connectionId) {

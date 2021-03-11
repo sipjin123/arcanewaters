@@ -19,6 +19,13 @@ public class CharacterStyleGrid : MonoBehaviour
       toggleGroup = GetComponent<ToggleGroup>();
    }
 
+   private void Update () {
+      if (_isHairstyleChanged) {
+         toggleOffNonSelectedHairstyles();
+         _isHairstyleChanged = false;
+      }
+   }
+
    public void show () {
       // If the gameObject we want to disable isn't assigned in the inspector, we assume it's the one that contains this script
       if (gameObjectToDisable == null) {
@@ -127,15 +134,6 @@ public class CharacterStyleGrid : MonoBehaviour
    private IEnumerator CO_FinishSetUp () {
       yield return null;
 
-      // Disable the layout group to prevent them from changing positions when we reorder them
-      _layoutGroup = _layoutGroup ?? GetComponentInChildren<LayoutGroup>(true);
-
-      if (_layoutGroup != null) {
-         _layoutGroup.enabled = false;
-      }
-
-      yield return null;
-
       // Round the position of the icons so pixels don't get distorted
       foreach (CharacterPortrait portrait in _portraits) {
          portrait.transform.position = new Vector3Int((int) portrait.transform.position.x, (int) portrait.transform.position.y, (int) portrait.transform.position.z);
@@ -150,6 +148,39 @@ public class CharacterStyleGrid : MonoBehaviour
       toggleGroup.enabled = true;
    }
 
+   public void displayMaleHairstyles () {
+      _layoutGroup.enabled = true;
+      foreach (CharacterPortrait portrait in _portraits) {
+         HairLayer.Type type = portrait.characterStack.hairFrontLayer.getType();
+         if (type.ToString().Contains("Male")) {
+            portrait.gameObject.SetActive(true);
+         } else {
+            portrait.gameObject.SetActive(false);
+         }
+      }
+   }
+
+   public void displayFemaleHairstyles () {
+      _layoutGroup.enabled = true;
+      foreach (CharacterPortrait portrait in _portraits) {
+         HairLayer.Type type = portrait.characterStack.hairFrontLayer.getType();
+         if (type.ToString().Contains("Female")) {
+            portrait.gameObject.SetActive(true);
+         } else {
+            portrait.gameObject.SetActive(false);
+         }
+      }
+   }
+
+   public void toggleOffNonSelectedHairstyles () {
+      // Inactive portraits need to be manually toggled to unselected
+      foreach (CharacterPortrait charPortrait in _portraits) {
+         if (!charPortrait.gameObject.activeSelf) {
+            charPortrait.toggle.isOn = false;
+         }
+      }
+   }
+
    private void initializeHairStyles (List<HairLayer.Type> types) {
       foreach (HairLayer.Type type in types) {
          CharacterPortrait portrait = createPortrait();
@@ -160,8 +191,35 @@ public class CharacterStyleGrid : MonoBehaviour
          portrait.toggle.onValueChanged.AddListener((selected) => {
             if (selected) {
                CharacterCreationPanel.self.setHairType(type);
+
+               // Set gender based on chosen hair
+               Gender.Type chosenGender;
+               if (type.ToString().Contains("Female")) {
+                  chosenGender = Gender.Type.Female;
+               } else {
+                  chosenGender = Gender.Type.Male;
+               }
+               CharacterCreationPanel.self.setGender(chosenGender);
+
+               // After the gender is set, we need to update the other traits to match the gender
+               CharacterCreationPanel.self.refreshArmor();
+               CharacterCreationPanel.self.refreshBody();
+               CharacterCreationPanel.self.refreshEyes();
+
+               _isHairstyleChanged = true;
             }
          });
+
+         // Display default hairstyles
+         displayMaleHairstyles();
+
+         // Select the first active portrait in the list
+         foreach (CharacterPortrait charPortrait in _portraits) {
+            if (charPortrait.isActiveAndEnabled) {
+               charPortrait.toggle.isOn = true;
+               break;
+            }
+         }
       }
    }
 
@@ -255,6 +313,9 @@ public class CharacterStyleGrid : MonoBehaviour
 
    // The layout group
    private LayoutGroup _layoutGroup;
+
+   // Bool to track if the hairstyle was changed
+   private bool _isHairstyleChanged = false;
 
    #endregion
 }

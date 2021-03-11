@@ -29,13 +29,6 @@ public class DB_MainStub : MonoBehaviour
       return "";
    }
 
-   public static void mutePlayer (int userId, DateTime suspensionEnd) {
-   }
-
-   public static DateTime getPlayerChatSuspensionEndDate (int userId) {
-      return DateTime.Now;
-   }
-
    public static string userInventoryCount (string usrIdStr, string categoryFilterJSON, string itemIdsToExcludeJSON,
       string mustExcludeEquippedItemsStr) {
       return "0";
@@ -649,16 +642,24 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static BanInfo getBanInfoForAccount (int accountId) {
-      return new BanInfo();
+   public static List<PendingActionInfo> getPendingActions () {
+      return new List<PendingActionInfo>();
    }
 
-   public static void liftBanForAccount (int accountId) {
+   public static void completePendingAction (int pendingActionId) {
 
    }
 
-   public static BanInfo.BanStatus banAccountWithId (BanInfo banInfo) {
-      return BanInfo.BanStatus.None;
+   public static PenaltyInfo getPenaltyInfoForAccount (int accId, PenaltyType penaltyType) {
+      return new PenaltyInfo();
+   }
+
+   public static void liftPenaltyForAccount (int accId, PenaltyType penaltyType) {
+
+   }
+
+   public static PenaltyStatus penalizeAccount (PenaltyInfo penaltyInfo) {
+      return PenaltyStatus.None;
    }
 
    public static int getAccountId (string accountName, string accountPassword) {
@@ -1274,7 +1275,7 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
-   public static void storeLoginInfo (int usrId, int accId, string ipAddress, string machineIdent) {
+   public static void storeLoginInfo (int usrId, int accId, string usrName, string ipAddress, string machineIdent, int deploymentId) {
 
    }
 

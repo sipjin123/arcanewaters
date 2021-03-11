@@ -108,8 +108,21 @@ public class ChatManager : MonoBehaviour
       // Store it locally
       _chats.Add(chatInfo);
 
+      bool showMessage;
+
+      // If the sender is muted, we only show the message to itself
+      if (chatInfo.isSenderMuted) {
+         if (Global.player.userId == chatInfo.senderId) {
+            showMessage = true;
+         } else {
+            showMessage = false;
+         }
+      } else {
+         showMessage = true;
+      }
+
       // Show it in the chat panel
-      if (chatPanel != null) {
+      if (showMessage && chatPanel != null) {
          chatPanel.addChatInfo(chatInfo);
       }
 

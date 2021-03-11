@@ -209,28 +209,6 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_MutePlayer (int userId, float seconds) {
-      if (!_player.isAdmin()) {
-         D.warning("Non-admin players can't mute other players");
-         return;
-      }
-
-      DateTime suspensionEndDate = DateTime.Now.AddSeconds(seconds);
-      NetEntity mutedPlayer = EntityManager.self.getEntity(userId);
-      mutedPlayer.chatSuspensionEndDate = suspensionEndDate;
-
-      mutedPlayer.Target_ReceiveNormalChat($"You have been muted until {suspensionEndDate}", ChatInfo.Type.System);
-
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.mutePlayer(userId, suspensionEndDate);
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            ChatManager.self.addChat($"Player with userId {userId} has been muted until {suspensionEndDate}", ChatInfo.Type.System);
-         });
-      });
-   }
-
-   [Command]
    public void Cmd_RequestTeamCombatData () {
       // Checks if the user is an admin
       if (_player.isAdmin()) {
@@ -949,49 +927,45 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_SendChat (string message, ChatInfo.Type chatType) {
-      if (_player.isMuted()) {
-         // The player is muted and can't send messages
-         _player.Target_ReceiveNormalChat($"Your message could not be sent because you have been muted by a moderator.", ChatInfo.Type.System);
-         return;
-      }
-
       GuildIconData guildIconData = null;
+      string guildIconDataString = "";
+      bool muted = _player.isMuted();
+
       if (_player.guildId > 0) {
          guildIconData = new GuildIconData(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
       }
 
-      ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType, _player.entityName, "", _player.userId, guildIconData);
+      if (guildIconData != null) {
+         guildIconDataString = GuildIconData.guildIconDataToString(guildIconData);
+      }
+
+      ChatInfo chatInfo = new ChatInfo(0, message, DateTime.UtcNow, chatType, _player.entityName, "", _player.userId, guildIconData, _player.isStealthMuted);
 
       // Replace bad words
       message = BadWordManager.ReplaceAll(message);
 
+      // The player is muted (normal) and can't send messages. We notify the player about it
+      if (muted && !_player.isStealthMuted) {
+         _player.Target_ReceiveNormalChat($"Your message could not be sent because you have been muted until {Util.getTimeInEST(_player.muteExpirationDate)} EST.", ChatInfo.Type.System);
+         return;
+      }
+
       // Pass this message along to the relevant people
       if (chatType == ChatInfo.Type.Local || chatType == ChatInfo.Type.Emote) {
-         _player.Rpc_ChatWasSent(chatInfo.chatId, message, chatInfo.chatTime.ToBinary(), chatType, GuildIconData.guildIconDataToString(guildIconData));
-
-         // Store chat message in database
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, connectionToClient.address);
-         });
+         _player.Rpc_ChatWasSent(chatInfo.chatId, message, chatInfo.chatTime.ToBinary(), chatType, guildIconDataString, _player.isStealthMuted);
       } else if (chatType == ChatInfo.Type.Global) {
          ServerNetworkingManager.self.sendGlobalChatMessage(chatInfo);
-
-         // Store chat message in database
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, connectionToClient.address);
-         });
       } else if (chatType == ChatInfo.Type.Whisper) {
-         
          string[] inputParts = message.Split(' ');
          if (inputParts.Length < 2) {
             _player.Target_ReceiveNormalChat($"Your whisper does not contain a userName and a message", ChatInfo.Type.System);
             return;
          }
-         
+
          // Get the user name and message from the chat message
          string extractedUserName = inputParts[0];
          message = message.Remove(0, extractedUserName.Length + 1);
-      
+
          chatInfo.text = message;
          chatInfo.recipient = extractedUserName;
 
@@ -1004,20 +978,14 @@ public class RPCManager : NetworkBehaviour
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                if (destinationUserInfo == null) {
                   string errorMsg = "Recipient does not exist!";
-                  _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, errorMsg, "", "", chatInfo.chatTime.ToBinary(), ChatInfo.Type.Error, null, 0);
+                  _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, errorMsg, "", "", chatInfo.chatTime.ToBinary(), ChatInfo.Type.Error, null, 0, _player.isStealthMuted);
                   return;
                }
 
                ServerNetworkingManager.self.sendSpecialChatMessage(destinationUserInfo.userId, chatInfo);
-               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, extractedUserName, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.senderId);
-
-               // Store chat message in database
-               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-                  DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, connectionToClient.address);
-               });
+               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, extractedUserName, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.senderId, _player.isStealthMuted);
             });
          });
-         
       } else if (chatType == ChatInfo.Type.Group) {
          if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
             return;
@@ -1026,22 +994,12 @@ public class RPCManager : NetworkBehaviour
          foreach (int userId in voyageGroup.members) {
             ServerNetworkingManager.self.sendSpecialChatMessage(userId, chatInfo);
          }
-
-         // Store chat message in database
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, connectionToClient.address);
-         });
       } else if (chatType == ChatInfo.Type.Guild) {
          ServerNetworkingManager.self.sendGuildChatMessage(_player.guildId, chatInfo);
 
          if (_player.guildId == 0) {
             return;
          }
-
-         // Store chat message in database
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, connectionToClient.address);
-         });
       } else if (chatType == ChatInfo.Type.Officer) {
          if (!_player.canPerformAction(GuildPermission.OfficerChat)) {
             return;
@@ -1061,12 +1019,14 @@ public class RPCManager : NetworkBehaviour
                      ServerNetworkingManager.self.sendSpecialChatMessage(userInfo.userId, chatInfo);
                   }
                }
-
-               // Store chat message in database
-               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-                  DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, connectionToClient.address);
-               });
             });
+         });
+      }
+
+      // Store chat message in database, if the player is not muted
+      if (!_player.isStealthMuted) {
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, connectionToClient.address);
          });
       }
    }
@@ -1139,7 +1099,7 @@ public class RPCManager : NetworkBehaviour
          // Update the file access time if it exists
          string path = MapCache.getMapPath(areaKey, latestVersion);
          if (File.Exists(path) && !string.IsNullOrEmpty(path)) {
-            StartCoroutine(CO_UpdateFileTimestamp (path));
+            StartCoroutine(CO_UpdateFileTimestamp(path));
          }
 
          if (string.IsNullOrWhiteSpace(mapData)) {
@@ -3846,7 +3806,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   private void removeUserFromGroup(NetEntity playerToRemove) {
+   private void removeUserFromGroup (NetEntity playerToRemove) {
       if (playerToRemove == null) {
          D.warning("No player object found.");
          return;
@@ -5012,29 +4972,17 @@ public class RPCManager : NetworkBehaviour
                Battler battler = BattleManager.self.getBattler(entity.userId);
                if (equippedAbilityDataList.Count < 1) {
 
-                  List<BasicAbilityData> basicAbilityList = new List<BasicAbilityData>();
+                  List<int> basicAbilityIds = new List<int>();
                   foreach (AbilitySQLData temp in equippedAbilityList) {
-                     BasicAbilityData abilityData = AbilityManager.self.getAttackAbility(temp.abilityID);
-                     if (abilityData != null) {
-                        basicAbilityList.Add(abilityData);
-                     }
+                     basicAbilityIds.Add(temp.abilityID);
                   }
 
                   if (battler != null) {
-                     foreach (BasicAbilityData basicAbility in basicAbilityList) {
+                     foreach (int abilityId in basicAbilityIds) {
                         D.adminLog("Sending Overridden Ability Data to Player: " + battler.userId
-                           + "Name: " + basicAbility.itemName
-                           + " ID: " + basicAbility.itemID
-                           + " Type: " + basicAbility.abilityType
-                           + " Class: " + basicAbility.classRequirement, D.ADMIN_LOG_TYPE.Ability);
+                           + " ID: " + abilityId, D.ADMIN_LOG_TYPE.Ability);
                      }
-                     battler.setBattlerAbilities(basicAbilityList, BattlerType.PlayerControlled);
-
-                     if (battler.player is PlayerBodyEntity && battler.battle.isPvp) {
-                        Target_UpdateBattleAbilityUI(battler.player.connectionToClient, Util.serialize(equippedAbilityList), (int) weaponClass, validAbilities > 0);
-                     } else {
-                        Target_UpdateBattleAbilityUI(_player.connectionToClient, Util.serialize(equippedAbilityList), (int) weaponClass, validAbilities > 0);
-                     }
+                     battler.setBattlerAbilities(basicAbilityIds, BattlerType.PlayerControlled);
                   }
                } else {
                   // Sort by equipment slot index
@@ -5042,21 +4990,27 @@ public class RPCManager : NetworkBehaviour
 
                   // Set server data
                   List<BasicAbilityData> basicAbilityList = getAbilityRecord(equippedAbilityDataList.ToArray());
+                  List<int> basicAbilityIds = new List<int>();
+                  foreach (BasicAbilityData abilityData in basicAbilityList) {
+                     if (abilityData != null) {
+                        basicAbilityIds.Add(abilityData.itemID);
+                     }
+                  }
 
                   // Set the default ability if weapon mismatches the abilities
                   if (!playerHasValidAbilities) {
                      switch (weaponCategory) {
                         case WeaponCategory.None:
-                           basicAbilityList[0] = AbilityManager.self.punchAbility();
+                           basicAbilityIds[0] = AbilityManager.self.punchAbility().itemID;
                            break;
                         case WeaponCategory.Blade:
-                           basicAbilityList[0] = AbilityManager.self.slashAbility();
+                           basicAbilityIds[0] = AbilityManager.self.slashAbility().itemID;
                            break;
                         case WeaponCategory.Gun:
-                           basicAbilityList[0] = AbilityManager.self.shootAbility();
+                           basicAbilityIds[0] = AbilityManager.self.shootAbility().itemID;
                            break;
                         case WeaponCategory.Rum:
-                           basicAbilityList[0] = AbilityManager.self.throwRum();
+                           basicAbilityIds[0] = AbilityManager.self.throwRum().itemID;
                            break;
                         default:
                            D.debug("Invalid Weapon Category!");
@@ -5065,20 +5019,12 @@ public class RPCManager : NetworkBehaviour
                   }
 
                   try {
-                     foreach (BasicAbilityData basicAbility in basicAbilityList) {
+                     foreach (int abilityId in basicAbilityIds) {
                         D.adminLog("Sending RAW Ability Data to Player: " + battler.userId
-                           + "Name: " + basicAbility.itemName
-                           + " ID: " + basicAbility.itemID
-                           + " Type: " + basicAbility.abilityType
-                           + " Class: " + basicAbility.classRequirement, D.ADMIN_LOG_TYPE.Ability);
+                           + " ID: " + abilityId, D.ADMIN_LOG_TYPE.Ability);
                      }
-                     battler.setBattlerAbilities(basicAbilityList, BattlerType.PlayerControlled);
+                     battler.setBattlerAbilities(basicAbilityIds, BattlerType.PlayerControlled);
 
-                     if (battler.player is PlayerBodyEntity && battler.battle.isPvp) {
-                        Target_UpdateBattleAbilityUI(battler.player.connectionToClient, Util.serialize(equippedAbilityList), (int) weaponClass, validAbilities > 0);
-                     } else {
-                        Target_UpdateBattleAbilityUI(_player.connectionToClient, Util.serialize(equippedAbilityList), (int) weaponClass, validAbilities > 0);
-                     }
                   } catch {
                      D.debug("Cant add battler abilities for: " + battler);
                   }
@@ -5104,27 +5050,6 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_FinishedUpdatingAbility (NetworkConnection connection) {
       NubisDataFetcher.self.fetchUserAbilities();
-   }
-
-   [TargetRpc]
-   public void Target_UpdateBattleAbilityUI (NetworkConnection connection, string[] rawAttackAbilities, int weaponClass, bool hasValidAbilities) {
-      // Translate data
-      List<AbilitySQLData> attackAbilityDataList = Util.unserialize<AbilitySQLData>(rawAttackAbilities);
-
-      // Updates the combat UI 
-      BattleUIManager.self.setupAbilityUI(attackAbilityDataList.OrderBy(_ => _.equipSlotIndex).ToArray(), weaponClass, hasValidAbilities);
-   }
-
-   [ClientRpc]
-   public void Rpc_SyncBattlerAbilities (int[] abilityIds) {
-      if (_player == null) {
-         return;
-      }
-
-      Battler battler = BattleManager.self.getBattler(_player.userId);
-      if (battler != null) {
-         battler.syncAbilities(abilityIds);
-      }
    }
 
    #endregion

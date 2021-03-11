@@ -11,7 +11,8 @@ using MLAPI;
 using System.Linq;
 using MLAPI.Messaging;
 
-public class ServerNetworkingManager : MonoBehaviour {
+public class ServerNetworkingManager : MonoBehaviour
+{
    #region Public Variables
 
    // The server we have control of
@@ -214,15 +215,15 @@ public class ServerNetworkingManager : MonoBehaviour {
    }
 
    public void sendGlobalChatMessage (ChatInfo chatInfo) {
-      server.InvokeServerRpc(server.MasterServer_SendGlobalMessage, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData));
+      server.InvokeServerRpc(server.MasterServer_SendGlobalMessage, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.isSenderMuted);
    }
 
    public void sendGuildChatMessage (int guildId, ChatInfo chatInfo) {
-      server.InvokeServerRpc(server.MasterServer_SendGuildChatMessage, guildId, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData));
+      server.InvokeServerRpc(server.MasterServer_SendGuildChatMessage, guildId, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.isSenderMuted);
    }
 
    public void sendSpecialChatMessage (int userId, ChatInfo chatInfo) {
-      server.InvokeServerRpc(server.MasterServer_SendSpecialChatMessage, userId, chatInfo.chatId, chatInfo.messageType, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.recipient, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData));
+      server.InvokeServerRpc(server.MasterServer_SendSpecialChatMessage, userId, chatInfo.chatId, chatInfo.messageType, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.recipient, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.isSenderMuted);
    }
 
    public void sendConfirmationMessage (ConfirmMessage.Type confirmType, int userId, string customMessage = "") {

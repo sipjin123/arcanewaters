@@ -11,7 +11,8 @@ public class ChatInfo
    #region Public Variables
 
    // The Type of message
-   public enum Type {
+   public enum Type
+   {
       Local = 1,
       Whisper = 2,
       Log = 3,
@@ -58,13 +59,16 @@ public class ChatInfo
    // The data to construct the guild icon
    public GuildIconData guildIconData;
 
+   // Is the sender muted?
+   public bool isSenderMuted;
+
    #endregion
 
    public ChatInfo () {
 
    }
 
-   public ChatInfo (int chatId, string text, DateTime chatTime, Type messageType, string sender = "", string receiver = "", int senderId = 0, GuildIconData guildIconData = null) {
+   public ChatInfo (int chatId, string text, DateTime chatTime, Type messageType, string sender = "", string receiver = "", int senderId = 0, GuildIconData guildIconData = null, bool isSenderMuted = false) {
       this.chatId = chatId;
       this.text = text;
       this.chatTime = chatTime;
@@ -73,6 +77,7 @@ public class ChatInfo
       this.recipient = receiver;
       this.senderId = senderId;
       this.guildIconData = guildIconData;
+      this.isSenderMuted = isSenderMuted;
 
       // Fill in the sender for certain types of messages
       if (Util.isEmpty(sender)) {

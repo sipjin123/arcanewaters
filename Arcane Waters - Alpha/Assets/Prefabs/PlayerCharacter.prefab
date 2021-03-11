@@ -2352,8 +2352,8 @@ MonoBehaviour:
   enemyIcon: {fileID: 0}
   barBackgroundImage: {fileID: 0}
   barsBackgroundAlt: {fileID: 0}
-  shipHealthUnitPrefab: {fileID: 0}
-  healthUnitContainer: {fileID: 0}
+  shipHealthBlockPrefab: {fileID: 0}
+  healthBlockContainer: {fileID: 0}
 --- !u!1 &1972619128998838
 GameObject:
   m_ObjectHideFlags: 0

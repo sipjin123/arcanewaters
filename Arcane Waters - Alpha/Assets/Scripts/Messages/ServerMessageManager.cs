@@ -81,25 +81,23 @@ public class ServerMessageManager : MonoBehaviour
 
          // Prevent banned accounts from signing in
          if (accountId > 0) {
-            BanInfo banInfo = DB_Main.getBanInfoForAccount(accountId);
-
-            if (banInfo != null) {
-               // If the ban is currently expired
-               if (banInfo.hasBanExpired()) {
-                  DB_Main.liftBanForAccount(accountId);
-               } else {
-                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     sendError(ErrorMessage.Type.Banned, conn.connectionId, getBannedMessage(banInfo));
-                  });
-                  return;
-               }
+            PenaltyInfo banInfo = DB_Main.getPenaltyInfoForAccount(accountId, PenaltyType.Ban);
+            // If the ban isn't expired
+            if (banInfo != null && !banInfo.hasPenaltyExpired()) {
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  sendError(ErrorMessage.Type.Banned, conn.connectionId, getBannedMessage(banInfo));
+               });
+               return;
             }
          }
 
          // Get the user objects for the selected user ID
          UserObjects userObjects = null;
+         string selectedUsrName = "";
+
          if (selectedUserId > 0) {
             userObjects = DB_Main.getUserObjects(selectedUserId);
+            selectedUsrName = userObjects.userInfo.username;
          }
 
          if (accountId > 0) {
@@ -158,7 +156,7 @@ public class ServerMessageManager : MonoBehaviour
                // Storing login info
                UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                   if (conn != null && logInUserMessage.isFirstLogin) {
-                     DB_Main.storeLoginInfo(logInUserMessage.selectedUserId, accountId, conn.address, logInUserMessage.machineIdentifier ?? "");
+                     DB_Main.storeLoginInfo(logInUserMessage.selectedUserId, accountId, selectedUsrName, conn.address, logInUserMessage.machineIdentifier ?? "", logInUserMessage.deploymentId);
                   }
                });
 
@@ -218,24 +216,20 @@ public class ServerMessageManager : MonoBehaviour
       });
    }
 
-   public static string getBannedMessage (BanInfo banInfo) {
-      if (banInfo.hasBanExpired()) {
+   public static string getBannedMessage (PenaltyInfo penaltyInfo) {
+      if (penaltyInfo.hasPenaltyExpired()) {
          return "";
       }
 
-      string message = "";
+      string message;
 
-      switch (banInfo.banType) {
-         case BanInfo.Type.Temporary:
-            message = $"Your account has been suspended until {Util.getTimeInEST(banInfo.banEnd)} EST";
-            break;
-
-         case BanInfo.Type.Indefinite:
-            message = $"Your account has been suspended indefinitely";
-            break;
+      if (penaltyInfo.isTemporary()) {
+         message = $"Your account has been suspended until {Util.getTimeInEST(penaltyInfo.penaltyEnd)} EST";
+      } else {
+         message = $"Your account has been suspended indefinitely";
       }
 
-      message += $"\n\nReason: {banInfo.reason}";
+      message += $"\n\nReason: {penaltyInfo.penaltyReason}";
 
       return message;
    }
@@ -516,10 +510,10 @@ public class ServerMessageManager : MonoBehaviour
             // Keep track of the user ID that's been authenticated for this connection
             MyNetworkManager.noteUserIdForConnection(userId, steamUserId, conn);
 
-            // Storing login information
+            // Storing login info
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               if (conn != null && msg.isFirstLogin) {
-                  DB_Main.storeLoginInfo(userId, accountId, conn.address, msg.machineIdentifier ?? "");
+               if (conn != null) {
+                  DB_Main.storeLoginInfo(userInfo.userId, accountId, userInfo.username, conn.address, msg.machineIdentifier, msg.deploymentId);
                }
             });
 

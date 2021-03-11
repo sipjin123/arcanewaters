@@ -205,60 +205,6 @@ public class DB_Main : DB_MainStub
       return count.ToString();
    }
 
-   public static new void mutePlayer (int userId, DateTime suspensionEnd) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            // Declaration of table elements
-            "INSERT INTO arcane.user_chat_suspensions (userId, suspensionEnd) " +
-            "VALUES(@userId, @suspensionEnd) " +
-            "ON DUPLICATE KEY UPDATE suspensionEnd = @suspensionEnd", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-
-            cmd.Parameters.AddWithValue("@userId", userId);
-            cmd.Parameters.AddWithValue("@suspensionEnd", suspensionEnd);
-
-            DebugQuery(cmd);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
-   public static new DateTime getPlayerChatSuspensionEndDate (int userId) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.user_chat_suspensions WHERE (userID=@userID)", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@userID", userId);
-
-            DebugQuery(cmd);
-
-            cmd.ExecuteNonQuery();
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               if (dataReader.Read()) {
-                  DateTime endDate = dataReader.GetDateTime("suspensionEnd");
-                  return endDate;
-               } else {
-                  return DateTime.Now;
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-         return DateTime.Now;
-      }
-   }
-
    private static string getUserInventoryWhereClause (int userId, int[] categoryFilter,
       int[] itemIdsToExclude, bool mustExcludeEquippedItems) {
       StringBuilder clause = new StringBuilder();
@@ -5572,21 +5518,65 @@ public class DB_Main : DB_MainStub
       return accountId;
    }
 
-   public static new BanInfo getBanInfoForAccount (int accId) {
-      BanInfo banInfo = null;
+   public static new void completePendingAction (int pendingActionId) {
+      try {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE global.pending_actions SET completedAt = CURRENT_TIMESTAMP WHERE id = @id", conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@id", pendingActionId);
+
+            DebugQuery(cmd);
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception ex) {
+         D.error("MySQL Error: " + ex.ToString());
+      }
+   }
+
+   public static new List<PendingActionInfo> getPendingActions () {
+      List<PendingActionInfo> pendingActions = new List<PendingActionInfo>();
 
       try {
          using (MySqlConnection conn = getConnectionToDevGlobal())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM account_bans_v2 WHERE targetAccId = @targetAccId AND banLift IS NULL ORDER BY banStart DESC LIMIT 1;", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.pending_actions WHERE completedAt IS NULL", conn)) {
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
+
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  pendingActions.Add(new PendingActionInfo(dataReader));
+               }
+            }
+         }
+      } catch (Exception ex) {
+         D.error("MySQL Error: " + ex.ToString());
+      }
+
+      return pendingActions;
+   }
+
+   public static new PenaltyInfo getPenaltyInfoForAccount (int accId, PenaltyType penaltyType) {
+      PenaltyInfo penaltyInfo = null;
+
+      try {
+         string query = string.Format("SELECT * FROM account_penalties WHERE targetAccId = @targetAccId AND penaltyType IN ({0}) AND penaltyEnd > @penaltyEnd ORDER BY penaltyStart DESC LIMIT 1", string.Join(", ", PenaltyUtil.getPenaltiesList(penaltyType)));
+
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
+            conn.Open();
+            cmd.Prepare();
+
             cmd.Parameters.AddWithValue("@targetAccId", accId);
+            cmd.Parameters.AddWithValue("@penaltyEnd", DateTime.UtcNow);
 
             DebugQuery(cmd);
 
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  banInfo = new BanInfo(dataReader);
+                  penaltyInfo = new PenaltyInfo(dataReader);
                }
             }
          }
@@ -5594,17 +5584,20 @@ public class DB_Main : DB_MainStub
          D.error("MySQL Error: " + e.ToString());
       }
 
-      return banInfo;
+      return penaltyInfo;
    }
 
-   public static new void liftBanForAccount (int accId) {
+   public static new void liftPenaltyForAccount (int accId, PenaltyType penaltyType) {
       try {
+         string query = string.Format("UPDATE global.account_penalties SET penaltyEnd = CURRENT_TIMESTAMP WHERE targetAccId = @targetAccId AND penaltyType IN ({0}) AND penaltyEnd > @penaltyEnd", string.Join(", ", PenaltyUtil.getPenaltiesList(penaltyType)));
+
          using (MySqlConnection conn = getConnectionToDevGlobal())
-         using (MySqlCommand cmd = new MySqlCommand("UPDATE global.account_bans_v2 SET banLift = CURRENT_TIMESTAMP WHERE targetAccId=@targetAccId AND banLift IS NULL ORDER BY banStart DESC", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
             conn.Open();
 
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@targetAccId", accId);
+            cmd.Parameters.AddWithValue("@penaltyEnd", DateTime.UtcNow);
 
             DebugQuery(cmd);
             cmd.ExecuteNonQuery();
@@ -5614,38 +5607,43 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new BanInfo.BanStatus banAccountWithId (BanInfo banInfo) {
-      BanInfo.BanStatus status = BanInfo.BanStatus.None;
+   public static new PenaltyStatus penalizeAccount (PenaltyInfo penaltyInfo) {
+      PenaltyStatus status = PenaltyStatus.None;
 
-      if (banInfo.targetAccId < 0) {
-         D.error("Tried to ban an account with invalid accountId " + banInfo.targetAccId);
-         status = BanInfo.BanStatus.BanError;
+      if (penaltyInfo.targetAccId < 0) {
+         D.error($"Tried to {penaltyInfo.getAction()} an account with invalid accountId " + penaltyInfo.targetAccId);
+         status = PenaltyStatus.Error;
       } else {
-         BanInfo checkBanInfo = getBanInfoForAccount(banInfo.targetAccId);
+         PenaltyInfo checkPenaltyInfo = getPenaltyInfoForAccount(penaltyInfo.targetAccId, penaltyInfo.penaltyType);
 
          // First, we check if the account is already banned
-         if (checkBanInfo != null && !checkBanInfo.hasBanExpired()) {
-            D.error("Tried to ban an account already banned, accountId " + banInfo.targetAccId);
-            status = BanInfo.BanStatus.AlreadyBanned;
+         if (checkPenaltyInfo != null && !checkPenaltyInfo.hasPenaltyExpired()) {
+            D.error($"Tried to {penaltyInfo.getAction()} an account already {penaltyInfo.getPastAction()}, accountId " + penaltyInfo.targetAccId);
+            status = penaltyInfo.getAlreadyAppliedError();
          } else {
             // If the account doesn't have a current active ban
             try {
                using (MySqlConnection conn = getConnectionToDevGlobal())
-               using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.account_bans_v2 (sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, banType, banReason, banTime, banEnd) VALUES" +
-                  "(@sourceAccId, @sourceUsrId,  @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @banType, @banReason, @banTime, @banEnd)", conn)) {
+               using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.account_penalties (sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltyTime, penaltyEnd) VALUES" +
+                  "(@sourceAccId, @sourceUsrId,  @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltyTime, @penaltyEnd)", conn)) {
                   conn.Open();
                   cmd.Prepare();
 
-                  cmd.Parameters.AddWithValue("@sourceAccId", banInfo.sourceAccId);
-                  cmd.Parameters.AddWithValue("@sourceUsrId", banInfo.sourceUsrId);
-                  cmd.Parameters.AddWithValue("@sourceUsrName", banInfo.sourceUsrName);
-                  cmd.Parameters.AddWithValue("@targetAccId", banInfo.targetAccId);
-                  cmd.Parameters.AddWithValue("@targetUsrId", banInfo.targetUsrId);
-                  cmd.Parameters.AddWithValue("@targetUsrName", banInfo.targetUsrName);
-                  cmd.Parameters.AddWithValue("@banType", (int) banInfo.banType);
-                  cmd.Parameters.AddWithValue("@banReason", banInfo.reason);
-                  cmd.Parameters.AddWithValue("@banTime", banInfo.banTime);
-                  cmd.Parameters.AddWithValue("@banEnd", banInfo.banEnd);
+                  cmd.Parameters.AddWithValue("@sourceAccId", penaltyInfo.sourceAccId);
+                  cmd.Parameters.AddWithValue("@sourceUsrId", penaltyInfo.sourceUsrId);
+                  cmd.Parameters.AddWithValue("@sourceUsrName", penaltyInfo.sourceUsrName);
+                  cmd.Parameters.AddWithValue("@targetAccId", penaltyInfo.targetAccId);
+                  cmd.Parameters.AddWithValue("@targetUsrId", penaltyInfo.targetUsrId);
+                  cmd.Parameters.AddWithValue("@targetUsrName", penaltyInfo.targetUsrName);
+                  cmd.Parameters.AddWithValue("@penaltyType", (int) penaltyInfo.penaltyType);
+                  cmd.Parameters.AddWithValue("@penaltyReason", penaltyInfo.penaltyReason);
+                  cmd.Parameters.AddWithValue("@penaltyTime", penaltyInfo.penaltyTime);
+
+                  if (penaltyInfo.penaltyEnd > DateTime.MinValue) {
+                     cmd.Parameters.AddWithValue("@penaltyEnd", penaltyInfo.penaltyEnd);
+                  } else {
+                     cmd.Parameters.AddWithValue("@penaltyEnd", null);
+                  }
 
                   DebugQuery(cmd);
 
@@ -5653,7 +5651,7 @@ public class DB_Main : DB_MainStub
                }
             } catch (Exception e) {
                D.error("MySQL Error: " + e.ToString());
-               status = BanInfo.BanStatus.BanError;
+               status = PenaltyStatus.Error;
             }
          }
       }
@@ -9371,7 +9369,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void storeLoginInfo (int usrId, int accId, string ipAddress, string machineIdent) {
+   public static new void storeLoginInfo (int usrId, int accId, string usrName, string ipAddress, string machineIdent, int deploymentId) {
       // Storing Login info, only when usrId > 0 and accId > 0
       if (usrId > 0 && accId > 0) {
          // Getting the current time, in UTC
@@ -9381,13 +9379,15 @@ public class DB_Main : DB_MainStub
 
          try {
             using (MySqlConnection conn = getConnection())
-            using (MySqlCommand cmd = new MySqlCommand("INSERT INTO arcane.logins (usrId, accId, ipAddress, machineIdent, loginSource, loginTime) VALUES (@usrId, @accId, @ipAddress, @machineIdent, @loginSource, @loginTime);", conn)) {
+            using (MySqlCommand cmd = new MySqlCommand("INSERT INTO arcane.logins (usrId, usrName, accId, ipAddress, machineIdent, loginSource, deploymentId, loginTime) VALUES (@usrId, @usrName, @accId, @ipAddress, @machineIdent, @loginSource, @deploymentId, @loginTime);", conn)) {
                conn.Open();
                cmd.Prepare();
                cmd.Parameters.AddWithValue("@usrId", usrId);
+               cmd.Parameters.AddWithValue("@usrName", usrName);
                cmd.Parameters.AddWithValue("@accId", accId);
                cmd.Parameters.AddWithValue("@ipAddress", myAddress);
                cmd.Parameters.AddWithValue("@machineIdent", machineIdent);
+               cmd.Parameters.AddWithValue("@deploymentId", deploymentId);
                cmd.Parameters.AddWithValue("@loginSource", "game");
                cmd.Parameters.AddWithValue("@loginTime", currTime);
                DebugQuery(cmd);

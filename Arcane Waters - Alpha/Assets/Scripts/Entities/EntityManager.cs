@@ -55,6 +55,16 @@ public class EntityManager : MonoBehaviour
       return null;
    }
 
+   public NetEntity getEntityWithAccId (int accId) {
+      foreach (NetEntity entity in _entities.Values) {
+         if(entity.accountId == accId) {
+            return entity;
+         }
+      }
+
+      return null;
+   }
+
    public bool canUserBypassWarpRestrictions (int userId) {
       return _warpBypassingUsers.Contains(userId);
    }

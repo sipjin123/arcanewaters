@@ -221,6 +221,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public const float POST_CAST_DELAY = .13f;
 
    // Determines if the abilities have been initialized
+   [SyncVar]
    public bool battlerAbilitiesInitialized = false;
 
    // The location where the ui will snap to upon selection
@@ -500,36 +501,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             }
             selectedBattleBar.toggleDisplay(true);
 
-            List<BasicAbilityData> basicAbilityDataList = new List<BasicAbilityData>();
-            foreach (int id in battlerData.battlerAbilities.basicAbilityDataList) {
-               AttackAbilityData attackData = AbilityManager.self.getAttackAbility(id);
-               if (attackData != null) {
-                  basicAbilityDataList.Add(attackData);
-               }
-
-               BuffAbilityData buffData = AbilityManager.self.getBuffAbility(id);
-               if (buffData != null) {
-                  basicAbilityDataList.Add(buffData);
-               } 
-            }
-            foreach (int id in battlerData.battlerAbilities.attackAbilityDataList) {
-               AttackAbilityData attackData = AbilityManager.self.getAttackAbility(id);
-               if (attackData != null) {
-                  basicAbilityDataList.Add(attackData);
-               } else {
-                  D.debug("Failed to fetch attack ability from attack list" + " ID: " + id);
-               }
-            }
-            foreach (int id in battlerData.battlerAbilities.buffAbilityDataList) {
-               BuffAbilityData buffData = AbilityManager.self.getBuffAbility(id);
-               if (buffData != null) {
-                  basicAbilityDataList.Add(buffData);
-               } else {
-                  D.debug("Failed to fetch buff ability from buff list" + " ID: " + id);
-               }
-            }
-
-            setBattlerAbilities(basicAbilityDataList, battlerType);
+            setBattlerAbilities(new List<int>(battlerData.battlerAbilities.basicAbilityDataList), battlerType);
 
             // Extra cooldown time for AI controlled battlers, so they do not attack instantly
             this.cooldownEndTime = NetworkTime.time + 5f;
@@ -557,26 +529,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          setupEnemyStats();
 
          _hasInitializedStats = true;
-      }
-   }
-
-   public void syncAbilities () {
-      syncAbilities(basicAbilityIDList.ToArray());
-   }
-
-   public void syncAbilities (int[] abilityIds) {
-      if (battlerType == BattlerType.PlayerControlled) {
-         // Create new ability record to assign to this entity
-         List<BasicAbilityData> abilities = new List<BasicAbilityData>();
-
-         foreach (int basicID in abilityIds) {
-            BasicAbilityData basicData = AbilityManager.getAbility(basicID, AbilityType.Undefined);
-            if (basicData != null) {
-               abilities.Add(basicData);
-            }
-         }
-
-         setBattlerAbilities(abilities, battlerType);
       }
    }
 
@@ -718,52 +670,29 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
    }
 
-   public void setBattlerAbilities (List<BasicAbilityData> basicAbilityList, BattlerType battlerType) {
-      _battlerBasicAbilities.Clear();
-
-      // If there are no abilities set, assign the default abilities for all weapon types
-      if (basicAbilityList.Count == 0 && battlerType == BattlerType.PlayerControlled) {
-         _battlerBasicAbilities.Add(AbilityManager.self.shootAbility());
-         _battlerBasicAbilities.Add(AbilityManager.self.punchAbility());
-         _battlerBasicAbilities.Add(AbilityManager.self.slashAbility());
-         _battlerBasicAbilities.Add(AbilityManager.self.throwRum());
-      } else {
-         foreach (BasicAbilityData abilityData in basicAbilityList) {
-            if (abilityData != null) {
-               _battlerBasicAbilities.Add(abilityData);
-            } else {
-               D.debug("Basic Ability is Null!");
-            }
-         }
-      }
+   public void setBattlerAbilities (List<int> basicAbilityIds, BattlerType battlerType) {
 
       // Create initialized copies of the stances data.
       _balancedInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.balancedStance);
       _offenseInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.offenseStance);
       _defensiveInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.defenseStance);
 
-      battlerAbilitiesInitialized = true;
-
       if (!NetworkServer.active) {
          return;
       }
 
-      // Set the ability ids in the synced list - we can probably use only the synced list and remove _battlerBasicAbilities (needs some refactoring)
       basicAbilityIDList.Clear();
-      foreach (BasicAbilityData abilityData in basicAbilityList) {
-         if (abilityData != null) {
-            basicAbilityIDList.Add(abilityData.itemID);
-         }
+      basicAbilityIDList.AddRange(basicAbilityIds);
+
+      // If there are no abilities set, assign the default abilities for all weapon types
+      if (basicAbilityIDList.Count == 0 && battlerType == BattlerType.PlayerControlled) {
+         basicAbilityIDList.Add(AbilityManager.self.shootAbility().itemID);
+         basicAbilityIDList.Add(AbilityManager.self.punchAbility().itemID);
+         basicAbilityIDList.Add(AbilityManager.self.slashAbility().itemID);
+         basicAbilityIDList.Add(AbilityManager.self.throwRum().itemID);
       }
 
-      if (!Util.isServerNonHost()) {
-         return;
-      }
-
-      if (battlerType == BattlerType.PlayerControlled) {
-         // Ask the clients to recreate _battlerBasicAbilities from the basicAbilityIDList sync list
-         player.rpc.Rpc_SyncBattlerAbilities(basicAbilityIDList.ToArray());
-      }
+      battlerAbilitiesInitialized = true;
    }
 
    private void checkIfSpritesShouldFlip () {
@@ -1815,7 +1744,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
 
       yield return new WaitUntil(() => basicAbilityIDList.Count > 0);
-      syncAbilities();
+
+      if (_isClientBattler) {
+         BattleUIManager.self.setupAbilityUI();
+      }
    }
 
    #endregion
@@ -2315,11 +2247,21 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public BasicAbilityData getDefensiveStance () { return _defensiveInitializedStance; }
 
    // Ability Getters
-   public List<BasicAbilityData> getBasicAbilities () { return _battlerBasicAbilities; }
+   public List<BasicAbilityData> getBasicAbilities () {
+      List<BasicAbilityData> abilities = new List<BasicAbilityData>();
+
+      foreach (int abilityId in basicAbilityIDList) {
+         BasicAbilityData abilityData = AbilityManager.getAbility(abilityId, AbilityType.Undefined);
+         if (abilityData != null) {
+            abilities.Add(abilityData);
+         }
+      }
+      return abilities;
+   }
 
    public List<AttackAbilityData> getAttackAbilities () {
       List<AttackAbilityData> attackAbilities = new List<AttackAbilityData>();
-      foreach (BasicAbilityData basicData in _battlerBasicAbilities) {
+      foreach (BasicAbilityData basicData in getBasicAbilities()) {
          if (basicData.abilityType == AbilityType.Standard) {
             AttackAbilityData attackAbility = AbilityManager.self.getAttackAbility(basicData.itemID);
             if (attackAbility == null) {
@@ -2334,7 +2276,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public List<BuffAbilityData> getBuffAbilities () {
       List<BuffAbilityData> buffAbilities = new List<BuffAbilityData>();
-      foreach (BasicAbilityData basicData in _battlerBasicAbilities) {
+      foreach (BasicAbilityData basicData in getBasicAbilities()) {
          if (basicData.abilityType == AbilityType.BuffDebuff) {
             BuffAbilityData buffAbility = AbilityManager.self.getBuffAbility(basicData.itemID);
             if (buffAbility == null) {
@@ -2401,9 +2343,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // If the user can cast an ability
    [SerializeField]
    private bool _canCastAbility = true;
-
-   // Attack abilities that will be used in combat
-   [SerializeField] private List<BasicAbilityData> _battlerBasicAbilities = new List<BasicAbilityData>();
 
    // Battler data reference that will be initialized (ready to be used, use getBattlerData() )
    [SerializeField] private BattlerData _alteredBattlerData;

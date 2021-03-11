@@ -12,7 +12,10 @@ using System.Linq;
 /// Two step process:
 /// 1. Place this component on the game object needing a tooltip.
 /// 2. Manual enter a key/value in the xml file.
+/// Note: If the tooltip text is created dynamically at runtime, it will not be stored in the XML document.
+/// Instead, the text will be set in this script.
 /// </summary>
+
 
 [RequireComponent(typeof(EventTrigger))]
 public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
@@ -20,6 +23,16 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
    #region Public Variables
 
    // Possible positions for tooltip relative to UI element and opened panel
+   public enum Type
+   {
+      DictionaryEntry = 0,
+      ItemCellInventory = 1,
+      ItemCellIngredient = 2,
+      PerkElementTemplate = 3,
+      CreationPerkIcon = 4,
+      SellButton = 5
+   }
+   
    public enum TooltipPlacement
    {
       AutoPlacement = 0,
@@ -30,6 +43,9 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
    // Stores the desired tooltip placement
    public TooltipPlacement tooltipPlacement;
+
+   // Tooltip type
+   public Type tooltipType;
 
    // The content of the tooltip
    [HideInInspector]
@@ -67,26 +83,32 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
       string dictKeySuffix = null;
 
       // Check if the tooltip text is being created dynamically at runtime (if so, there will be no entry in the xml document)
-      if (this.GetComponent<ItemCellInventory>() != null){
+      if (tooltipType == Type.ItemCellInventory) {
          maxWidth = 250;
          TooltipHandler.self.callToolTip(_tooltipOwner, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
          return;
       }
 
-      if (this.GetComponent<ItemCellIngredient>() != null){
+      if (tooltipType == Type.ItemCellIngredient) {
          maxWidth = 250;
          TooltipHandler.self.callToolTip(_tooltipOwner, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
          return;
       }
 
-      if (this.GetComponent<PerkElementTemplate>() != null){
+      if (tooltipType == Type.PerkElementTemplate) {
          maxWidth = 220;
          TooltipHandler.self.callToolTip(_tooltipOwner, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
          return;
       }
 
-      if (this.GetComponent<CreationPerkIcon>() != null) {
+      if (tooltipType == Type.CreationPerkIcon) {
          maxWidth = 185;
+         TooltipHandler.self.callToolTip(_tooltipOwner, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
+         return;
+      }
+
+      if (tooltipType == Type.SellButton) {
+         maxWidth = 200;
          TooltipHandler.self.callToolTip(_tooltipOwner, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
          return;
       }

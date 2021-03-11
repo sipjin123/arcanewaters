@@ -212,19 +212,18 @@ public class PlayerShipEntity : ShipEntity
       }
 
       if (!isDead() && SeaManager.getAttackType() != Attack.Type.Air) {
-         if (_targetSelector != null) {
-            SeaEntity target = _targetSelector.getTarget();
-            if (target != null && hasReloaded() && InputManager.isFireCannonKeyDown()) {
-               Cmd_FireMainCannonAtTarget(target.gameObject, Vector2.zero, true, false, -1.0f, -1.0f, true);
-               TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
-            }
-         }
-
+         // Start charging attack with mouse
          if (InputManager.isFireCannonMouseDown() || (InputManager.isFireCannonMouse() && !_isChargingCannon)) {
             cannonAttackPressed();
+            _chargingWithMouse = true;
+
+            // Can only start charging with spacebar if we have a valid target
+         } else if (_targetSelector.getTarget() != null && (InputManager.getKeyActionDown(KeyAction.FireMainCannon) || (InputManager.getKeyAction(KeyAction.FireMainCannon) && !_isChargingCannon))) {
+            cannonAttackPressed();
+            _chargingWithMouse = false;
          }
 
-         if (InputManager.isFireCannonMouseUp()) {
+         if ((InputManager.isFireCannonMouseUp() && _chargingWithMouse) || (InputManager.getKeyActionUp(KeyAction.FireMainCannon) && !_chargingWithMouse)) {
             cannonAttackReleased();
          }
 
@@ -297,7 +296,6 @@ public class PlayerShipEntity : ShipEntity
             _targetCircle.updateCircle(true);
             break;
       }
-
    }
 
    private void cannonAttackReleased () {
@@ -311,7 +309,15 @@ public class PlayerShipEntity : ShipEntity
          case CannonAttackType.Normal:
             float normalCannonballDist = 0.5f + (cannonChargeAmount * 2.5f);
             float normalCannonballLifetime = normalCannonballDist / Attack.getSpeedModifier(Attack.Type.Cannon);
-            Cmd_FireMainCannonAtTarget(null, Util.getMousePos(), true, false, normalCannonballLifetime, -1.0f, true);
+
+            Vector2 targetPosition;
+            if (_chargingWithMouse) {
+               targetPosition = Util.getMousePos();
+            } else {
+               targetPosition = _targetSelector.getTarget().transform.position;
+            }
+
+            Cmd_FireMainCannonAtTarget(null, targetPosition, true, false, normalCannonballLifetime, -1.0f, true);
             targetArrowParent.gameObject.SetActive(false);
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
             break;
@@ -359,7 +365,24 @@ public class PlayerShipEntity : ShipEntity
 
       switch (_cannonAttackType) {
          case CannonAttackType.Normal:
-            float aimAngle = -Util.angle(Util.getMousePos() - transform.position);
+            float aimAngle;
+
+            // If firing with the mouse, aim using the mouse
+            if (_chargingWithMouse) {
+               aimAngle = -Util.angle(Util.getMousePos() - transform.position);
+               
+            } else {
+               // If we don't have a target to aim at, cancel attack
+               if (_targetSelector.getTarget() == null) {
+                  targetArrowParent.gameObject.SetActive(false);
+                  _shouldUpdateTargeting = false;
+                  _isChargingCannon = false;
+                  return;
+               }
+               // If firing with the keyboard, aim at our target automatically
+               aimAngle = -Util.angle(_targetSelector.getTarget().transform.position - transform.position);
+            }
+            
             targetArrowParent.rotation = Quaternion.Euler(0.0f, 0.0f, aimAngle);
             targetArrow.fillAmount = cannonChargeAmount;
             break;
@@ -951,6 +974,9 @@ public class PlayerShipEntity : ShipEntity
 
    // When the player last boosted
    private double _lastBoostTime = -3.0f;
+
+   // Whether the player is charging a shot with the mouse or keyboard
+   private bool _chargingWithMouse = false;
 
    #endregion
 }

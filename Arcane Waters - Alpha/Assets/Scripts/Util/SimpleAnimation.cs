@@ -283,13 +283,29 @@ public class SimpleAnimation : ClientMonoBehaviour {
    }
 
    protected void setSprite (Sprite sprite) {
-      if (_renderer != null) {
+      if (getRenderer() != null) {
          _renderer.sprite = sprite;
       }
 
-      if (_image != null) {
+      if (getImage() != null) {
          _image.sprite = sprite;
       }
+   }
+
+   protected Image getImage () {
+      if (_image == null) {
+         _image = GetComponent<Image>();
+      }
+
+      return _image;
+   }
+
+   protected SpriteRenderer getRenderer () {
+      if (_renderer == null) {
+         _renderer = GetComponent<SpriteRenderer>();
+      }
+
+      return _renderer;
    }
 
    protected float getTimePerFrame () {

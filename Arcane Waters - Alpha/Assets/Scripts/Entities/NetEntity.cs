@@ -80,8 +80,13 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public float desiredAngle;
 
-   // The DateTime at which the chat suspension ends
-   public DateTime chatSuspensionEndDate;
+   // The mute expiration date
+   [SyncVar]
+   public DateTime muteExpirationDate;
+
+   // Is this player stealth muted?
+   [SyncVar]
+   public bool isStealthMuted;
 
    // Convenient Network Identity reference so we aren't repeatedly calling GetComponent
    [HideInInspector]
@@ -290,9 +295,9 @@ public class NetEntity : NetworkBehaviour
 
          // This will allow the local host in unity editor to simulate time for features such as crops
          #if UNITY_EDITOR
-         if (Global.player != null && isServer) {
-            InvokeRepeating("requestServerTime", 0f, 1f);
-         }
+            if (Global.player != null && isServer) {
+               InvokeRepeating("requestServerTime", 0f, 1f);
+            }
          #endif
 
          // Fetch the perk points for this user
@@ -318,7 +323,7 @@ public class NetEntity : NetworkBehaviour
    public virtual PlayerShipEntity getPlayerShipEntity () {
       return null;
    }
-   
+
    public bool isPlayerEntity () {
       return getPlayerBodyEntity() || getPlayerShipEntity();
    }
@@ -500,8 +505,7 @@ public class NetEntity : NetworkBehaviour
 
    public bool isMuted () {
       // DateTime.Compare() returns a number < 0 if DateTime.Now is earlier than the chatSuspensionEndDate, 0 if the dates are equal or a number > 0 otherwise
-      int isEarlier = DateTime.Compare(DateTime.Now, chatSuspensionEndDate);
-
+      int isEarlier = DateTime.Compare(DateTime.UtcNow, muteExpirationDate);
       return isEarlier < 0;
    }
 
@@ -512,7 +516,7 @@ public class NetEntity : NetworkBehaviour
          isInvisible = false;
          return;
       }
-            
+
       isInvisible = !isInvisible;
 
       Rpc_OnInvisibilityUpdated(isInvisible);
@@ -554,7 +558,7 @@ public class NetEntity : NetworkBehaviour
       this.guildId = userInfo.guildId;
       if (guildRankInfo != null) {
          this.guildPermissions = guildRankInfo.permissions;
-      } 
+      }
 
       // Body
       this.gender = userInfo.gender;
@@ -721,6 +725,12 @@ public class NetEntity : NetworkBehaviour
       transform.position = position;
    }
 
+   [TargetRpc]
+   public void Target_LiftMute () {
+      muteExpirationDate = DateTime.MinValue;
+      isStealthMuted = false;
+   }
+
    public void requestAnimationPlay (Anim.Type animType, bool freezeAnim = false) {
       if (interactingAnimation) {
          return;
@@ -831,6 +841,12 @@ public class NetEntity : NetworkBehaviour
 
          yield return null;
       }
+   }
+
+   [ClientRpc]
+   public void Rpc_ReceiveMuteInfo (PenaltyInfo muteInfo) {
+      muteExpirationDate = muteInfo.penaltyEnd;
+      isStealthMuted = muteInfo.penaltyType == PenaltyType.StealthMute;
    }
 
    [ClientRpc]
@@ -1436,27 +1452,25 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveGlobalChat (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString) {
+   public void Target_ReceiveGlobalChat (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, bool isSenderMuted) {
       // Convert Json string back into a GuildIconData object and add to chatInfo
       GuildIconData guildIconData = JsonUtility.FromJson<GuildIconData>(guildIconDataString);
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), ChatInfo.Type.Global, senderName, "", senderUserId, guildIconData);
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), ChatInfo.Type.Global, senderName, "", senderUserId, guildIconData, isSenderMuted);
 
       // Add it to the Chat Manager
       ChatManager.self.addChatInfo(chatInfo);
    }
 
    [ClientRpc]
-   public void Rpc_ChatWasSent (int chatId, string message, long timestamp, ChatInfo.Type chatType, string guildIconDataString) {
+   public void Rpc_ChatWasSent (int chatId, string message, long timestamp, ChatInfo.Type chatType, string guildIconDataString, bool isSenderMuted) {
       GuildIconData guildIconData = JsonUtility.FromJson<GuildIconData>(guildIconDataString);
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, entityName, "", userId, guildIconData);
-
-      // Add it to the Chat Manager
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, entityName, "", userId, guildIconData, isSenderMuted);
       ChatManager.self.addChatInfo(chatInfo);
    }
 
    [TargetRpc]
-   public void Target_ReceiveSpecialChat (NetworkConnection conn, int chatId, string message, string senderName, string receiverName, long timestamp, ChatInfo.Type chatType, GuildIconData guildIconData, int senderId) {
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, senderName, receiverName, senderId, guildIconData);
+   public void Target_ReceiveSpecialChat (NetworkConnection conn, int chatId, string message, string senderName, string receiverName, long timestamp, ChatInfo.Type chatType, GuildIconData guildIconData, int senderId, bool isSenderMuted) {
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, senderName, receiverName, senderId, guildIconData, isSenderMuted);
 
       // Add it to the Chat Manager
       ChatManager.self.addChatInfo(chatInfo);
@@ -1798,7 +1812,7 @@ public class NetEntity : NetworkBehaviour
          return null;
       }
    }
-   
+
    public bool isBouncingOnWeb () {
       if (!_activeWeb) {
          return false;
@@ -1812,7 +1826,7 @@ public class NetEntity : NetworkBehaviour
       return (_isDoingHalfBounce) ? _activeWeb.getBounceDuration() / 2.0f : _activeWeb.getBounceDuration();
    }
 
-   public bool isInGroup() {
+   public bool isInGroup () {
       return VoyageGroupManager.isInGroup(this);
    }
 

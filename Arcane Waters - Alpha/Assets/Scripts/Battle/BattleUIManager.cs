@@ -174,92 +174,97 @@ public class BattleUIManager : MonoBehaviour {
       }
    }
 
-   public void setupAbilityUI (AbilitySQLData[] abilitydata, int weaponCategoryInt, bool hasValidAbilities) {
-      Weapon.Class weaponClass = (Weapon.Class) weaponCategoryInt;
+   public void setupAbilityUI () {
+      Weapon playerWeapon = _playerLocalBattler.weaponManager.getWeapon();
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(playerWeapon.id);
+      Weapon.Class weaponClass = (weaponData == null) ? Weapon.Class.Melee : weaponData.weaponClass;
+      
       int indexCounter = 0;
       int attackAbilityIndex = 0;
       int buffAbilityIndex = 0;
 
-      foreach (AbilitySQLData ability in abilitydata) {
-         D.adminLog("Received UI Ability"
-            + " ID: " + ability.abilityID
-            + " Name: " + ability.name
-            + " Index: " + ability.equipSlotIndex
-            + " Type: " + ability.abilityType, D.ADMIN_LOG_TYPE.Ability);
-      }
+      List<BasicAbilityData> abilityDataList = _playerLocalBattler.getBasicAbilities();
 
       foreach (AbilityButton abilityButton in abilityTargetButtons) {
-         if (indexCounter < abilitydata.Length) {
-            AbilityType abilityType = abilitydata[indexCounter].abilityType;
+         if (indexCounter < abilityDataList.Count) {
+            BasicAbilityData currentAbility = abilityDataList[indexCounter];
+
+            if (currentAbility == null) {
+               Debug.LogWarning("Missing Ability: " + abilityButton.abilityIndex);
+               continue;
+            }
+
+            AbilityType abilityType = currentAbility.abilityType;
+
             if (abilityType == AbilityType.Standard || abilityType == AbilityType.BuffDebuff) {
-               BasicAbilityData currentAbility = AbilityManager.getAbility(abilitydata[indexCounter].abilityID, abilityType);
-               if (currentAbility != null) {
-                  // Setup Button Display
-                  string iconPath = currentAbility.itemIconPath;
-                  Sprite skillSprite = ImageManager.getSprite(iconPath);
-                  if (abilityButton.abilityIcon != null) {
-                     abilityButton.abilityIcon.sprite = skillSprite;
-                  } else {
-                     D.editorLog("This ability does not have an icon", Color.red);
-                  }
-                  abilityButton.enableButton();
 
-                  // Setup Button Values 
-                  abilityButton.abilityIndex = indexCounter;
-                  abilityButton.setAbility(abilityType);
-                  if (abilityType == AbilityType.Standard) {
-                     abilityButton.abilityTypeIndex = attackAbilityIndex;
-                     attackAbilityIndex++;
-                  }
-                  if (abilityType == AbilityType.BuffDebuff) {
-                     abilityButton.abilityTypeIndex = buffAbilityIndex;
-                     buffAbilityIndex++;
-                  }
-
-                  // Button Click Setup
-                  abilityButton.getButton().onClick.RemoveAllListeners();
-                  abilityButton.getButton().onClick.AddListener(() => {
-                     deselectOtherAbilities();
-
-                     if (BattleSelectionManager.self.selectedBattler == null) {
-                        abilityButton.invalidButtonClick();
-                     } else {
-                        if (!abilityButton.cooldownImage.enabled) {
-                           if (abilityType == AbilityType.Standard) {
-                              attackPanel.requestAttackTarget(abilityButton.abilityTypeIndex);
-                           } else if (abilityType == AbilityType.BuffDebuff) {
-                              attackPanel.requestBuffTarget(abilityButton.abilityTypeIndex);
-                           }
-                        } else {
-                           abilityButton.invalidButtonClick();
-                        }
-                     }
-                  });
-
-                  abilityButton.enableButton();
-                  abilityButton.isInvalidAbility = false;
-                  if (indexCounter > 0 && !hasValidAbilities) {
-                     abilityButton.disableButton();
-                     abilityButton.isInvalidAbility = true;
-                  }
-
-                  if (weaponClass != currentAbility.classRequirement && currentAbility.itemID != AbilityManager.PUNCH_ID) {
-                     abilityButton.disableButton();
-                     abilityButton.isInvalidAbility = true; 
-                  }
-
-                  abilityButton.cancelButton.onClick.AddListener(() => {
-                     deselectOtherAbilities();
-
-                     if (BattleSelectionManager.self.selectedBattler == null) {
-                        abilityButton.invalidButtonClick();
-                     } else {
-                        attackPanel.cancelAbility(abilityType, abilityButton.abilityTypeIndex);
-                     }
-                  });
+               // Setup Button Display
+               string iconPath = currentAbility.itemIconPath;
+               Sprite skillSprite = ImageManager.getSprite(iconPath);
+               if (abilityButton.abilityIcon != null) {
+                  abilityButton.abilityIcon.sprite = skillSprite;
                } else {
-                  Debug.LogWarning("Missing Ability: " + abilityButton.abilityIndex);
+                  D.editorLog("This ability does not have an icon", Color.red);
                }
+               abilityButton.enableButton();
+
+               // Setup Button Values 
+               abilityButton.abilityIndex = indexCounter;
+               abilityButton.setAbility(abilityType);
+               if (abilityType == AbilityType.Standard) {
+                  abilityButton.abilityTypeIndex = attackAbilityIndex;
+                  attackAbilityIndex++;
+               }
+               if (abilityType == AbilityType.BuffDebuff) {
+                  abilityButton.abilityTypeIndex = buffAbilityIndex;
+                  buffAbilityIndex++;
+               }
+
+               // Button Click Setup
+               abilityButton.getButton().onClick.RemoveAllListeners();
+               abilityButton.getButton().onClick.AddListener(() => {
+                  deselectOtherAbilities();
+
+                  if (BattleSelectionManager.self.selectedBattler == null) {
+                     abilityButton.invalidButtonClick();
+                  } else {
+                     if (!abilityButton.cooldownImage.enabled) {
+                        if (abilityType == AbilityType.Standard) {
+                           attackPanel.requestAttackTarget(abilityButton.abilityTypeIndex);
+                        } else if (abilityType == AbilityType.BuffDebuff) {
+                           attackPanel.requestBuffTarget(abilityButton.abilityTypeIndex);
+                        }
+                     } else {
+                        abilityButton.invalidButtonClick();
+                     }
+                  }
+               });
+
+               abilityButton.enableButton();
+               abilityButton.isInvalidAbility = false;
+
+               bool isAbilityValid = (weaponClass == currentAbility.classRequirement);
+
+               if (indexCounter > 0 && !isAbilityValid) {
+                  abilityButton.disableButton();
+                  abilityButton.isInvalidAbility = true;
+               }
+
+               if (weaponClass != currentAbility.classRequirement && currentAbility.itemID != AbilityManager.PUNCH_ID) {
+                  abilityButton.disableButton();
+                  abilityButton.isInvalidAbility = true; 
+               }
+
+               abilityButton.cancelButton.onClick.AddListener(() => {
+                  deselectOtherAbilities();
+
+                  if (BattleSelectionManager.self.selectedBattler == null) {
+                     abilityButton.invalidButtonClick();
+                  } else {
+                     attackPanel.cancelAbility(abilityType, abilityButton.abilityTypeIndex);
+                  }
+               });
+
             } else {
                Debug.LogWarning("Undefined ability Type: " + abilityButton.abilityIndex);
             }
@@ -277,11 +282,6 @@ public class BattleUIManager : MonoBehaviour {
             abilityButton.gameObject.SetActive(false);
          }
          indexCounter++;
-      }
-
-      int abilityIndex = 0;
-      if (abilitydata.Length > 0) {
-         abilityIndex = abilitydata.Length - 1;
       }
 
       if (BattleSelectionManager.self.selectedBattler == null) {

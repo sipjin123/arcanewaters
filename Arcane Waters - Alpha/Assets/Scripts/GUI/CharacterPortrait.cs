@@ -25,6 +25,9 @@ public class CharacterPortrait : MonoBehaviour, IPointerEnterHandler, IPointerEx
    public Sprite combatBackground;
    public Sprite unknownBackground;
 
+   // The layout group for the portraits
+   public LayoutGroup layoutGroup;
+
    // Whether to use animations (size increase, overlay fading) on mouse enter/exit
    public bool useMouseEventAnimations = false;
 
@@ -52,6 +55,9 @@ public class CharacterPortrait : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
       // Set the default background
       updateBackground(null);
+
+      // Get reference to the layout group
+      layoutGroup = this.transform.parent.GetComponent<LayoutGroup>();
    }
 
    public void initializeComponents () {
@@ -108,6 +114,12 @@ public class CharacterPortrait : MonoBehaviour, IPointerEnterHandler, IPointerEx
          return;
       }
 
+      // Disable layout group so we can rearrange the portrait heirarchy
+      layoutGroup.enabled = false;
+
+      // Store the original position in the heirarchy
+      _portraitIndex = this.transform.GetSiblingIndex();
+
       // Move this icon to the bottom of the hierarchy so it's not covered by other icons
       transform.SetAsLastSibling();
 
@@ -136,6 +148,9 @@ public class CharacterPortrait : MonoBehaviour, IPointerEnterHandler, IPointerEx
       if (_shadow != null) {
          _shadow.enabled = true;
       }
+
+      // Return portrait to original heirachy position
+      this.transform.SetSiblingIndex(_portraitIndex);
    }
 
    #region Private Variables
@@ -148,6 +163,9 @@ public class CharacterPortrait : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
    // The shadow component
    private Shadow _shadow;
+
+   // The index of the portait in the list
+   private int _portraitIndex;
 
    #endregion
 }

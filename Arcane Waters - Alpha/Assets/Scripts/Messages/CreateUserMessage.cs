@@ -34,6 +34,9 @@ public class CreateUserMessage : NetworkMessage
    // The steam user id of the player
    public string steamUserId = "";
 
+   // The client's deployment Id
+   public int deploymentId;
+
    #endregion
 
    public CreateUserMessage () { }
@@ -42,7 +45,7 @@ public class CreateUserMessage : NetworkMessage
       this.netId = netId;
    }
 
-   public CreateUserMessage (uint netId, UserInfo userInfo, int armorType, string armorPalettes, Perk[] perks, string machineIdentifier, bool isFirstLogin, string steamUserId) {
+   public CreateUserMessage (uint netId, UserInfo userInfo, int armorType, string armorPalettes, Perk[] perks, string machineIdentifier, bool isFirstLogin, string steamUserId, int deploymentId) {
       this.netId = netId;
       this.userInfo = userInfo;
       this.armorType = armorType;
@@ -52,5 +55,6 @@ public class CreateUserMessage : NetworkMessage
       this.machineIdentifier = machineIdentifier;
       this.isFirstLogin = isFirstLogin;
       this.steamUserId = steamUserId;
+      this.deploymentId = deploymentId;
    }
 }

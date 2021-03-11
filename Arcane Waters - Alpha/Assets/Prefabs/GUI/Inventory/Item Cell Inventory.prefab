@@ -581,6 +581,15 @@ MonoBehaviour:
   doubleClickEvent:
     m_PersistentCalls:
       m_Calls: []
+  onPointerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onPointerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onDragStarted:
+    m_PersistentCalls:
+      m_Calls: []
   itemTypeId: 0
   itemSpriteId: 0
   itemCache:
@@ -640,7 +649,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
+  tooltipType: 1
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
 --- !u!1 &6629056621903581938
 GameObject:
   m_ObjectHideFlags: 0

@@ -71,7 +71,8 @@ GameObject:
   - component: {fileID: 4812881767024349223}
   - component: {fileID: 100028348909580310}
   - component: {fileID: 7914427158452578370}
-  - component: {fileID: 8488969065501606318}
+  - component: {fileID: 6128819913687849065}
+  - component: {fileID: 231643389334277493}
   m_Layer: 5
   m_Name: Sell Button
   m_TagString: Untagged
@@ -237,7 +238,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec62a95743df0494fb5297ea6b9d8e5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8488969065501606318
+--- !u!114 &6128819913687849065
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -246,12 +247,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 301667502917716037}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bbcc35a60a7c7854dbfd5a1175071135, type: 3}
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Delegates: []
+--- !u!114 &231643389334277493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 301667502917716037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipPlacement: 1
+  tooltipType: 5
   message: 
-  tooltipPlacement: 0
-  maxWidth: 300
+  maxWidth: 200
+  forceFitOnScreen: 0
 --- !u!1 &799411264156087659
 GameObject:
   m_ObjectHideFlags: 0
@@ -1049,7 +1065,7 @@ MonoBehaviour:
   bronzeStarSprite: {fileID: 21300000, guid: 7d8675df5b0393342b9b8d25c1f2f6a9, type: 3}
   silverStarSprite: {fileID: 21300000, guid: 6e6ed0727f5759e48b69f9928c63f9cd, type: 3}
   diamondStarSprite: {fileID: 21300000, guid: 16eac04aede25a04eacfd849878b1514, type: 3}
-  sellButtonTooltip: {fileID: 8488969065501606318}
+  sellButtonTooltip: {fileID: 231643389334277493}
 --- !u!1 &3115238347497300538
 GameObject:
   m_ObjectHideFlags: 0

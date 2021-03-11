@@ -194,9 +194,12 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
          _isCharacterCreationRejected = false;
 
+         // Getting the client's deploymentId
+         int deploymentId = Util.getDeploymentId();
+
          // Send the creation request to the server
          NetworkClient.Send(new CreateUserMessage(Global.netId,
-            _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalettes(), chosenPerks, SystemInfo.deviceName, Global.isFirstLogin, Global.lastSteamId));
+            _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalettes(), chosenPerks, SystemInfo.deviceName, Global.isFirstLogin, Global.lastSteamId, deploymentId));
 
          // Show loading screen until player warps to map
          StartCoroutine(showLoadingScreen());
@@ -346,6 +349,13 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       return _char != null ? _char.getUserInfo().gender : Gender.Type.Female;
    }
 
+   public void setGender (Gender.Type newGender) {
+      // Update the Info and apply it to the character
+      UserInfo info = _char.getUserInfo();
+      info.gender = newGender;
+      _char.setBodyLayers(info);
+   }
+
    public void genderSelected (int newGender) {
       Gender.Type gender = (Gender.Type) newGender;
 
@@ -362,7 +372,6 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       // The gender is special, in that we need to update the other options afterwards
       randomizeSelectedEyes();
-      randomizeSelectedHair();
       randomizeSelectedArmor();
 
       updateColorBoxes(info.gender);
@@ -384,10 +393,6 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       onEyeColorChanged();
 
       updateStyleIcons();
-
-      // Show the right toggle as enabled (without triggering the OnValueChanged event)
-      maleToggle.SetIsOnWithoutNotify(gender == Gender.Type.Male);
-      femaleToggle.SetIsOnWithoutNotify(gender == Gender.Type.Female);
 
       randomizeSelectedSkin();
    }
@@ -584,25 +589,21 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    public List<HairLayer.Type> getOrderedHairList () {
       List<HairLayer.Type> newList = new List<HairLayer.Type>();
 
-      // Do some custom sorting for the female
-      if (_char.genderType == Gender.Type.Female) {
-         newList.Add(HairLayer.Type.Female_Hair_1);
-         newList.Add(HairLayer.Type.Female_Hair_6);
-         newList.Add(HairLayer.Type.Female_Hair_7);
-         newList.Add(HairLayer.Type.Female_Hair_8);
-         newList.Add(HairLayer.Type.Female_Hair_9);
-         newList.Add(HairLayer.Type.Female_Hair_10);
-      }
+      // Add female hair styles to the list
+      newList.Add(HairLayer.Type.Female_Hair_1);
+      newList.Add(HairLayer.Type.Female_Hair_6);
+      newList.Add(HairLayer.Type.Female_Hair_7);
+      newList.Add(HairLayer.Type.Female_Hair_8);
+      newList.Add(HairLayer.Type.Female_Hair_9);
+      newList.Add(HairLayer.Type.Female_Hair_10);
 
-      // Do some custom sorting for the male
-      if (_char.genderType == Gender.Type.Male) {
-         newList.Add(HairLayer.Type.Male_Hair_1);
-         newList.Add(HairLayer.Type.Male_Hair_4);
-         newList.Add(HairLayer.Type.Male_Hair_5);
-         newList.Add(HairLayer.Type.Male_Hair_2);
-         newList.Add(HairLayer.Type.Male_Hair_8);
-         newList.Add(HairLayer.Type.Male_Hair_7);
-      }
+      // Add male hairstyles to the list
+      newList.Add(HairLayer.Type.Male_Hair_1);
+      newList.Add(HairLayer.Type.Male_Hair_4);
+      newList.Add(HairLayer.Type.Male_Hair_5);
+      newList.Add(HairLayer.Type.Male_Hair_2);
+      newList.Add(HairLayer.Type.Male_Hair_8);
+      newList.Add(HairLayer.Type.Male_Hair_7);
 
       return newList;
    }

@@ -32,6 +32,7 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
 
       ToolTipComponent tooltipComponent = gameObject.AddComponent<ToolTipComponent>();
       tooltipComponent.tooltipPlacement = ToolTipComponent.TooltipPlacement.LeftSideOfPanel;
+      tooltipComponent.tooltipType = ToolTipComponent.Type.PerkElementTemplate;
       tooltipComponent.message = _tooltipText + _tooltipAssignedPointsText;
    }
 

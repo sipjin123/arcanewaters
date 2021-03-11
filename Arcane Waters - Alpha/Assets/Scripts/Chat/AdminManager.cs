@@ -81,7 +81,8 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("free_weapon", "Gives you a weapon with a specified palette", freeWeapon, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "weaponName", "paletteName" }));
       cm.addCommand(new CommandData("get_all_hats", "Gives you all hats in the game", requestGetAllHats, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("learn", "Teaches your player a new ability", requestGiveAbility, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "abilityName" }));
-      cm.addCommand(new CommandData("mute", "Mutes a user", requestMutePlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username" }));
+      cm.addCommand(new CommandData("mute", "Mutes a player for [duration] minutes", requestMutePlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "duration", "reason" }));
+      cm.addCommand(new CommandData("stealth_mute", "Mutes a player for [duration] minutes without notifying", requestStealthMutePlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "duration", "reason" }));
       cm.addCommand(new CommandData("invisible", "Turns your player invisible", requestInvisibility, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("create_voyage", "Creates a new voyage map", createVoyageInstance, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "isPvp", "difficulty", "biome", "areaKey" }));
       cm.addCommand(new CommandData("ship_damage", "Sets your ship's damage", requestSetShipDamage, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "damage" }));
@@ -382,6 +383,7 @@ public class AdminManager : NetworkBehaviour
    [Command]
    private void Cmd_RequestPermanentPlayerBan (string parameters) {
       if (!_player.isAdmin()) {
+         D.warning("Requested command by non-admin");
          return;
       }
 
@@ -391,15 +393,16 @@ public class AdminManager : NetworkBehaviour
          string playerName = list[0];
          string reason = parameters.Replace(list[0] + " ", "");
 
-         BanInfo banInfo = new BanInfo(_player.accountId, _player.userId, _player.entityName, BanInfo.Type.Indefinite, DateTime.UtcNow, 0, reason);
-         banPlayer(playerName, banInfo);
+         PenaltyInfo penaltyInfo = new PenaltyInfo(_player.accountId, _player.userId, _player.entityName, PenaltyType.Ban, 0, reason);
+         penaltyInfo.penaltyEnd = DateTime.MinValue;
+         banPlayer(playerName, penaltyInfo);
       }
    }
 
    [ServerOnly]
-   protected void banPlayer (string playerName, BanInfo banInfo) {
-      if (banInfo.banType == BanInfo.Type.None) {
-         D.error("Invalid BanType: None");
+   protected void mutePlayer (string playerName, PenaltyInfo muteInfo) {
+      if (muteInfo.penaltyType == PenaltyType.None) {
+         D.error("Invalid PenaltyType: None");
          return;
       }
 
@@ -407,28 +410,82 @@ public class AdminManager : NetworkBehaviour
          var (accId, usrId, usrName) = DB_Main.getUserDataTuple(playerName);
 
          if (accId > 0) {
-            banInfo.targetAccId = accId;
-            banInfo.targetUsrId = usrId;
-            banInfo.targetUsrName = usrName;
+            if (accId == _player.accountId) {
+               _player.Target_ReceiveNormalChat("You can't mute yourself!", ChatInfo.Type.System);
+               return;
+            }
 
-            BanInfo.BanStatus status = DB_Main.banAccountWithId(banInfo);
+            muteInfo.targetAccId = accId;
+            muteInfo.targetUsrId = usrId;
+            muteInfo.targetUsrName = usrName;
+
+            PenaltyStatus status = DB_Main.penalizeAccount(muteInfo);
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               // If the player is successfully muted
+               if (status == PenaltyStatus.None) {
+                  _player.Target_ReceiveNormalChat($"Account for player {usrName} has been muted until {Util.getTimeInEST(muteInfo.penaltyEnd)} EST", ChatInfo.Type.System);
+
+                  NetEntity mutedPlayer = EntityManager.self.getEntity(usrId);
+                  if (mutedPlayer != null) {
+                     mutedPlayer.Rpc_ReceiveMuteInfo(muteInfo);
+
+                     if (muteInfo.penaltyType != PenaltyType.StealthMute) {
+                        mutedPlayer.Target_ReceiveNormalChat($"You have been muted until {Util.getTimeInEST(muteInfo.penaltyEnd)}", ChatInfo.Type.System);
+                     }
+                  }
+               } else if (status == PenaltyStatus.AlreadyMuted) {
+                  _player.Target_ReceiveNormalChat($"Account for player {usrName} is already muted", ChatInfo.Type.System);
+               } else {
+                  _player.Target_ReceiveNormalChat($"An error ocurred while trying to mute the account for player {playerName}", ChatInfo.Type.System);
+               }
+            });
+         } else {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               _player.Target_ReceiveNormalChat($"No account was found for player {playerName}.", ChatInfo.Type.System);
+            });
+         }
+      });
+   }
+
+   [ServerOnly]
+   protected void banPlayer (string playerName, PenaltyInfo penaltyInfo) {
+      if (penaltyInfo.penaltyType == PenaltyType.None) {
+         D.error("Invalid PenaltyType: None");
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         (int accId, int usrId, string usrName) = DB_Main.getUserDataTuple(playerName);
+
+         if (accId > 0) {
+            if (accId == _player.accountId) {
+               _player.Target_ReceiveNormalChat("You can't ban yourself!", ChatInfo.Type.System);
+               return;
+            }
+
+            penaltyInfo.targetAccId = accId;
+            penaltyInfo.targetUsrId = usrId;
+            penaltyInfo.targetUsrName = usrName;
+
+            PenaltyStatus status = DB_Main.penalizeAccount(penaltyInfo);
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                // If the player is successfully banned from the game
-               if (status == BanInfo.BanStatus.None) {
-                  if (banInfo.banType == BanInfo.Type.Temporary) {
-                     _player.Target_ReceiveNormalChat($"Account for player {usrName} has been temporarily banned until {Util.getTimeInEST(banInfo.banEnd)} EST", ChatInfo.Type.System);
-                  } else if (banInfo.banType == BanInfo.Type.Indefinite) {
+               if (status == PenaltyStatus.None) {
+                  if (penaltyInfo.isTemporary()) {
+                     _player.Target_ReceiveNormalChat($"Account for player {usrName} has been temporarily banned until {Util.getTimeInEST(penaltyInfo.penaltyEnd)} EST", ChatInfo.Type.System);
+                  } else {
                      _player.Target_ReceiveNormalChat($"Account for player {usrName} has been indefinitely banned", ChatInfo.Type.System);
                   }
 
                   NetEntity player = EntityManager.self.getEntityWithName(usrName);
                   if (player != null) {
-                     player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Banned, ServerMessageManager.getBannedMessage(banInfo)));
+                     player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Banned, ServerMessageManager.getBannedMessage(penaltyInfo)));
                      player.connectionToClient.Disconnect();
                   }
                   // If not...
-               } else if (status == BanInfo.BanStatus.AlreadyBanned) {
+               } else if (status == PenaltyStatus.AlreadyBanned) {
                   _player.Target_ReceiveNormalChat($"Account for player {usrName} is already banned", ChatInfo.Type.System);
                } else {
                   _player.Target_ReceiveNormalChat($"An error ocurred while trying to ban the account for player {playerName}", ChatInfo.Type.System);
@@ -443,8 +500,57 @@ public class AdminManager : NetworkBehaviour
    }
 
    [Command]
+   private void Cmd_RequestPlayerStealthMute (string parameters) {
+      if (!_player.isAdmin()) {
+         D.warning("Requested command by non-admin");
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+
+      // Make sure we have at least 2 params: name and duration. Reason is optional.
+      if (list.Length >= 2) {
+         string playerName = list[0];
+
+         if (!int.TryParse(list[1], out int minutes)) {
+            D.log($"Invalid paramters for /admin mute command: cannot parse {list[1]} to int.");
+         }
+
+         string reason = parameters.Replace($"{list[0]} {list[1]} ", "");
+
+         PenaltyInfo penaltyInfo = new PenaltyInfo(_player.accountId, _player.userId, _player.entityName, PenaltyType.StealthMute, minutes, reason);
+         mutePlayer(playerName, penaltyInfo);
+      }
+   }
+
+   [Command]
+   private void Cmd_RequestPlayerMute (string parameters) {
+      if (!_player.isAdmin()) {
+         D.warning("Requested command by non-admin");
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+
+      // Make sure we have at least 2 params: name and duration. Reason is optional.
+      if (list.Length >= 2) {
+         string playerName = list[0];
+
+         if (!int.TryParse(list[1], out int minutes)) {
+            D.log($"Invalid paramters for /admin mute command: cannot parse {list[1]} to int.");
+         }
+
+         string reason = parameters.Replace($"{list[0]} {list[1]} ", "");
+
+         PenaltyInfo penaltyInfo = new PenaltyInfo(_player.accountId, _player.userId, _player.entityName, PenaltyType.Mute, minutes, reason);
+         mutePlayer(playerName, penaltyInfo);
+      }
+   }
+
+   [Command]
    private void Cmd_RequestTemporaryPlayerBan (string parameters) {
       if (!_player.isAdmin()) {
+         D.warning("Requested command by non-admin");
          return;
       }
 
@@ -460,10 +566,9 @@ public class AdminManager : NetworkBehaviour
          }
 
          string reason = parameters.Replace($"{list[0]} {list[1]} ", "");
-         DateTime banEndDate = DateTime.UtcNow.AddMinutes(minutes);
 
-         BanInfo banInfo = new BanInfo(_player.accountId, _player.userId, _player.entityName, BanInfo.Type.Temporary, banEndDate, minutes, reason);
-         banPlayer(playerName, banInfo);
+         PenaltyInfo penaltyInfo = new PenaltyInfo(_player.accountId, _player.userId, _player.entityName, PenaltyType.Ban, minutes, reason);
+         banPlayer(playerName, penaltyInfo);
       }
    }
 
@@ -563,7 +668,7 @@ public class AdminManager : NetworkBehaviour
             return;
       }
    }
-   
+
    [Command]
    protected void Cmd_RequestScreenLog () {
       if (!_player.isAdmin()) {
@@ -664,27 +769,11 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestMutePlayer (string parameters) {
-      if (!_player.isAdmin()) {
-         return;
-      }
+      Cmd_RequestPlayerMute(parameters);
+   }
 
-      string[] list = parameters.Split(' ');
-      float seconds = 1;
-      string username = "";
-
-      try {
-         username = list[0];
-         seconds = float.Parse(list[1]);
-      } catch (System.Exception e) {
-         ChatManager.self.addChat("Invalid parameters. Correct use: /admin mute [player name] [seconds]", ChatInfo.Type.Error);
-         return;
-      }
-
-      NetEntity entity = EntityManager.self.getEntityWithName(username);
-
-      if (entity != null) {
-         Global.player.rpc.Cmd_MutePlayer(entity.userId, seconds);
-      }
+   private void requestStealthMutePlayer (string parameters) {
+      Cmd_RequestPlayerStealthMute(parameters);
    }
 
    private static void interactAnvil () {
