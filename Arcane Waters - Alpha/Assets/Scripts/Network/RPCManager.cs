@@ -4750,7 +4750,7 @@ public class RPCManager : NetworkBehaviour
                   AttackAbilityData attackAbilityData = AbilityManager.self.allAttackbilities.Find(_ => _.itemID == abilitySql.abilityID);
                   if ((weaponClass == Weapon.Class.Melee && attackAbilityData.isMelee())
                   || (weaponClass == Weapon.Class.Ranged && attackAbilityData.isProjectile())
-                  || (weaponClass == Weapon.Class.Magic && attackAbilityData.isRum())) {
+                  || (weaponClass == Weapon.Class.Rum && attackAbilityData.isRum())) {
                      validAbilities++;
                      D.adminLog("Valid Ability: " + basicAbilityData.itemName +
                         " : " + basicAbilityData.itemID +
@@ -4790,7 +4790,7 @@ public class RPCManager : NetworkBehaviour
                            weaponCategory = WeaponCategory.Gun;
                            equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.shootAbility());
                            break;
-                        case Weapon.Class.Magic:
+                        case Weapon.Class.Rum:
                            weaponCategory = WeaponCategory.Rum;
                            equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.throwRum());
                            break;
@@ -5305,7 +5305,7 @@ public class RPCManager : NetworkBehaviour
             }
 
             if (shopData == null) {
-               D.debug("Problem Fetching Shop Name!"+ " : " +shopName);
+               D.debug("Problem Fetching Shop Name!" + " : " + shopName);
             } else {
                string greetingText = shopData.shopGreetingText;
                _player.rpc.Target_ReceiveShopItems(_player.connectionToClient, gold, Util.serialize(sortedList), greetingText);

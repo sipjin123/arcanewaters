@@ -165,7 +165,7 @@ public class AttackAbilityData : BasicAbilityData
    }
 
    public bool isRum () {
-      return classRequirement == Weapon.Class.Magic;
+      return classRequirement == Weapon.Class.Rum;
    }
 
    public bool isCancel () {

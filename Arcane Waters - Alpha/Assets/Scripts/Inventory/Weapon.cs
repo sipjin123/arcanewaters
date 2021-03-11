@@ -28,7 +28,7 @@ public class Weapon : EquippableItem {
    public int actionTypeValue = 0;
 
    // The weapon Class
-   public enum Class { Any = 0, Melee = 1, Ranged = 2, Magic = 3 }
+   public enum Class { Any = 0, Melee = 1, Ranged = 2, Magic = 3 , Rum = 4}
 
    #endregion
 
