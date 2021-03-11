@@ -58,7 +58,8 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    public SeaMonsterBars seaMonsterBars;
 
    // The time an attack animation plays
-   public const float ATTACK_DURATION = .8f;// Old Value = .3f;
+   // TODO: Confirm if this needs to be in the web tool, this variable will result in the enemy holding its last animation frame after attack before moving again
+   public const float ATTACK_DURATION = .65f;// Old Value = .3f;
 
    // Determines if a minion is planning its own behavior
    public bool isMinionPlanning = false;
@@ -145,6 +146,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          // Cached animation speed
          cachedAnimSpeed = seaMonsterData.animationSpeedOverride;
          cachedAttackAnimSpeed = seaMonsterData.attackAnimationSpeed;
+
+         D.adminLog("SeaMonster: " + monsterType +
+            " AnimSpdNew: " + cachedAnimSpeed +
+            " AnimSpd: " + seaMonsterData.attackAnimationSpeed +
+            " AtknimSpd: " + cachedAttackAnimSpeed, D.ADMIN_LOG_TYPE.Sea);
 
          // Update animation of the sea monster sprite
          _simpleAnim.group = seaMonsterData.animGroup;
@@ -251,7 +257,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          _simpleAnim.stayAtLastFrame = true;
          isAttacking = true;
          _hasAttackAnimTriggered = true;
-         _attackEndAnimateTime = NetworkTime.time + ATTACK_DURATION;
+         _attackEndAnimateTime = NetworkTime.time + getAttackDuration();
       } else {
          if (isAttacking && (NetworkTime.time > _attackEndAnimateTime)) {
             _simpleAnim.modifyAnimSpeed(cachedAnimSpeed);
@@ -342,9 +348,14 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    public override void requestAnimationPlay (Anim.Type animType) {
       isAttacking = true;
-      _attackEndAnimateTime = NetworkTime.time + ATTACK_DURATION;
+      _attackEndAnimateTime = NetworkTime.time + getAttackDuration();
       _simpleAnim.modifyAnimSpeed(cachedAttackAnimSpeed);
       _simpleAnim.playAnimation(animType);
+   }
+
+   private float getAttackDuration () {
+      // Implement attack duration altering here
+      return ATTACK_DURATION;
    }
 
    public override void noteAttacker (uint netId) {
@@ -522,7 +533,10 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
                abilityId = shipAbility.abilityId;
             }
 
-            launchProjectile(targetEntity.transform.position, targetEntity.GetComponent<SeaEntity>(), abilityId, .2f, .4f);
+            // TODO: Confirm later on if this needs to be dynamic
+            float launchDelay = .4f; 
+            float projectileDelay = seaMonsterData.projectileDelay;
+            launchProjectile(targetEntity.transform.position, targetEntity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
          }
       }
 
@@ -684,7 +698,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       // Set attack animation trigger values on server side
       isAttacking = true;
       _attackStartAnimateTime = NetworkTime.time;
-      _attackEndAnimateTime = NetworkTime.time + ATTACK_DURATION;
+      _attackEndAnimateTime = NetworkTime.time + getAttackDuration();
 
       fireAtSpot(targetLoc, abilityId, attackDelay, launchDelay, spawnPosition);
    }

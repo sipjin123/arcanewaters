@@ -104,6 +104,9 @@ public class SeaMonsterEntityData
    // Overrides the scale of the ripples
    public float rippleScaleOverride = 1;
 
+   // The interval between animation start and the projectile launch
+   public float projectileDelay = 0.4f;
+
    // Max health of the sea monster
    public int maxHealth = 25;
 
@@ -131,7 +134,7 @@ public class SeaMonsterEntityData
    // The reference id of the loot group data
    public int lootGroupId = 0;
 
-   // The animation speed of the attack animation
+   // The animation speed of the attack animation (the lower, the faster)
    public float attackAnimationSpeed = .35f;
 
    // Sounds

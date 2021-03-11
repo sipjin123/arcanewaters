@@ -504,11 +504,24 @@ public class SeaEntity : NetEntity
          return;
       }
 
+      switch (this.facing) {
+         case Direction.North:
+            Rpc_TriggerAttackAnim(Anim.Type.Attack_North);
+            break;
+         case Direction.South:
+            Rpc_TriggerAttackAnim(Anim.Type.Attack_South);
+            break;
+         default:
+            Rpc_TriggerAttackAnim(Anim.Type.Attack_East);
+            break;
+      }
+
       switch (shipAbility.selectedAttackType) {
          case Attack.Type.Venom:
          case Attack.Type.Boulder:
             // Create networked projectile
-            fireTimedGenericProjectile(spawnPosition, spot, abilityId);
+            D.adminLog("Trigger timed projectile: " + shipAbility.selectedAttackType, D.ADMIN_LOG_TYPE.Sea);
+            fireTimedGenericProjectile(spawnPosition, spot, abilityId, launchDelay);
             break;
          case Attack.Type.Tentacle:
          case Attack.Type.Mini_Boulder:
@@ -539,6 +552,7 @@ public class SeaEntity : NetEntity
             }
             break;
          default:
+            D.adminLog("Trigger generic projectile at spot, Delay is: " + attackDelay, D.ADMIN_LOG_TYPE.Sea);
             StartCoroutine(CO_FireAtSpotSingle(spot, abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
             break;
       }
@@ -546,19 +560,6 @@ public class SeaEntity : NetEntity
       _lastAttackTime = NetworkTime.time;
       attackCounter++;
       Rpc_RegisterAttackTime(attackDelay);
-
-      // TODO: Remove this after animation fix
-      switch (this.facing) {
-         case Direction.North:
-            Rpc_TriggerAttackAnim(Anim.Type.Attack_North);
-            break;
-         case Direction.South:
-            Rpc_TriggerAttackAnim(Anim.Type.Attack_South);
-            break;
-         default:
-            Rpc_TriggerAttackAnim(Anim.Type.Attack_East);
-            break;
-      }
 
       Rpc_NoteAttack();
    }
@@ -579,12 +580,15 @@ public class SeaEntity : NetEntity
       }
 
       // Wait for the attack delay if any
-      if (attackDelay > 0) {
-         yield return new WaitForSeconds(attackDelay);
-      }
+      yield return new WaitForSeconds(attackDelay);
 
       // Prevent sea monsters from damaging other sea monsters
       bool targetPlayersOnly = this is SeaMonsterEntity;
+
+      D.adminLog("TimeNow:" + NetworkTime.time.ToString("f1") +
+         " AttackDelay:" + attackDelay +
+         " TimeToReachTarget:" + timeToReachTarget.ToString("f1") +
+         " LaunchDelay: " + launchDelay, D.ADMIN_LOG_TYPE.Sea);
 
       spawnProjectileAndIndicatorsOnClients(spot, abilityId, spawnPosition, launchDelay + timeToReachTarget);
       StartCoroutine(CO_CheckCircleForCollisions(this, launchDelay + timeToReachTarget, spot, attackType, targetPlayersOnly, 1f, currentImpactMagnitude, abilityId));
@@ -655,14 +659,14 @@ public class SeaEntity : NetEntity
                         damage = getDamageForShot((int)baseSkillDamage, distanceModifier);
 
                         // TODO: Observe damage formula on live build
-                        D.editorLog("Damage fetched for sea entity logic"
+                        D.adminLog("Damage fetched for sea entity logic"
                            + " DistanceDamage: " + damage
                            + " Computed: " + baseSkillDamage
                            + " Ability: " + abilityDamageModifier
                            + " Dist Modifier: " + distanceModifier
                            + " Name: " + getSeaAbility(abilityId).abilityName
                            + " ID: " + getSeaAbility(abilityId).abilityId
-                           + " Projectile ID: " + projectileData.projectileId, Color.cyan);
+                           + " Projectile ID: " + projectileData.projectileId, D.ADMIN_LOG_TYPE.Sea);
 
                      }
                      int targetHealthAfterDamage = targetEntity.currentHealth - damage;
@@ -748,7 +752,7 @@ public class SeaEntity : NetEntity
    }
 
    [Server]
-   private void fireTimedGenericProjectile (Vector2 startPos, Vector2 targetPos, int abilityId) {
+   private void fireTimedGenericProjectile (Vector2 startPos, Vector2 targetPos, int abilityId, float launchDelay) {
       if (isDead()) {
          return;
       }
@@ -775,7 +779,11 @@ public class SeaEntity : NetEntity
          Vector2 velocity = direction.normalized * abilityData.projectileSpeed;//NetworkedVenomProjectile.MOVE_SPEED;
 
          // Delay the firing a little bit to compensate for lag
-         double timeToStartFiring = NetworkTime.time + .150f;
+         double timeToStartFiring = NetworkTime.time + launchDelay + 0.150f;
+         D.adminLog("TimeNow:" + NetworkTime.time +
+            " TimeToFire:" + timeToStartFiring +
+            " Seconds:" + (NetworkTime.time - timeToStartFiring +
+            " LaunchDelay: " + launchDelay), D.ADMIN_LOG_TYPE.Sea);
 
          // Note the time at which we last successfully attacked
          _lastAttackTime = NetworkTime.time;
