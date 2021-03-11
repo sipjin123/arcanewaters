@@ -1328,7 +1328,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             if (weaponData == null) {
                sourceBattler.playAnim(Anim.Type.Finish_Attack);
             } else {
-               if (weaponData.weaponClass == Weapon.Class.Magic) {
+               if (weaponData.weaponClass == Weapon.Class.Magic || weaponData.weaponClass == Weapon.Class.Rum) {
                   sourceBattler.playAnim(Anim.Type.Throw_Projectile);
                } else {
                   sourceBattler.playAnim(Anim.Type.Finish_Attack);
@@ -1454,7 +1454,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Speed up animation then Animate Shoot clip for a Recoil Effect
             sourceBattler.modifyAnimSpeed(castAnimSpeed);
             sourceBattler.pauseAnim(false);
-            if (weaponData.weaponClass == Weapon.Class.Magic) {
+            if (weaponData.weaponClass == Weapon.Class.Magic || weaponData.weaponClass == Weapon.Class.Rum) {
                sourceBattler.playAnim(Anim.Type.Throw_Projectile);
             } else {
                sourceBattler.playAnim(Anim.Type.Finish_Attack);
