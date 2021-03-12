@@ -128,9 +128,11 @@ public class BattleSelectionManager : MonoBehaviour {
          bool selectedSameTeam = currentBattler.teamType == selectedBattler.teamType;
 
          if (selectedSameTeam) {
+            D.adminLog("Selected Ally", D.ADMIN_LOG_TYPE.Ability);
             enemySelection.SetActive(false);
             allySelection.SetActive(true);
          } else {
+            D.adminLog("Selected Enemy", D.ADMIN_LOG_TYPE.Ability);
             currentEnemySprite.sprite = selectedBattler.isBossType ? largeEnemyTarget : smallEnemyTarget;
             enemySelection.SetActive(true);
             allySelection.SetActive(false);

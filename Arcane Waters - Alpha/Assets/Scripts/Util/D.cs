@@ -215,7 +215,7 @@ public class D : MonoBehaviour {
       if (!Global.logTypesToShow.Contains(logType)) {
          return;
       }
-      log("[" + logType + "]" + text);
+      log("[" + logType.ToString().ToUpper() + "]" + text);
    }
 
    public static void editorLog (string text, Color color = new Color()) {

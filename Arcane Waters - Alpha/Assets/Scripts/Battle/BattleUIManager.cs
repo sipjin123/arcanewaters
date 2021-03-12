@@ -244,13 +244,26 @@ public class BattleUIManager : MonoBehaviour {
                abilityButton.isInvalidAbility = false;
 
                bool isAbilityValid = (weaponClass == currentAbility.classRequirement);
-
+               try {
+                  D.adminLog("ValidAbility: " + isAbilityValid +
+                     " AbilityName: " + currentAbility.itemName +
+                     " AbilityId: " + currentAbility.itemID +
+                     " AbilityClass: " + currentAbility.classRequirement +
+                     " PlayerWepID: " + playerWeapon.id +
+                     " PlayerWepTypeID: " + playerWeapon.itemTypeId +
+                     " WepName: " + weaponData.equipmentName +
+                     " WepClass: " + ((weaponData == null) ? "No Weapon Equipped" : weaponData.weaponClass.ToString()), D.ADMIN_LOG_TYPE.Ability);
+               } catch {
+                  D.debug("Failed to process weapon data!");
+               }
                if (indexCounter > 0 && !isAbilityValid) {
+                  D.adminLog("Exceed ability count!", D.ADMIN_LOG_TYPE.Ability);
                   abilityButton.disableButton();
                   abilityButton.isInvalidAbility = true;
                }
 
                if (weaponClass != currentAbility.classRequirement && currentAbility.itemID != AbilityManager.PUNCH_ID) {
+                  D.adminLog("Ability class does not match! WepClass:" + weaponClass + " AbilityClass: " + currentAbility.classRequirement, D.ADMIN_LOG_TYPE.Ability);
                   abilityButton.disableButton();
                   abilityButton.isInvalidAbility = true; 
                }
