@@ -195,8 +195,10 @@ public class D : MonoBehaviour {
          _lineCount++;
       }
 
-      if (ScreenLogger.self != null && ScreenLogger.isEnabled) {
-         ScreenLogger.self.displayLogMsg(msg);
+      if (type == ChatInfo.Type.Debug) {
+         if (ScreenLogger.self != null && ScreenLogger.isEnabled) {
+            ScreenLogger.self.displayLogMsg(msg);
+         }
       }
 
       // Keep track of the log as a string, for submitting bug reports
