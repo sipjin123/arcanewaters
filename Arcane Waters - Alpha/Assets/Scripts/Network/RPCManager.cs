@@ -5017,12 +5017,12 @@ public class RPCManager : NetworkBehaviour
                   }
 
                   try {
+                     string abilityString = "";
                      foreach (int abilityId in basicAbilityIds) {
-                        D.adminLog("Sending RAW Ability Data to Player: " + battler.userId
-                           + " ID: " + abilityId, D.ADMIN_LOG_TYPE.Ability);
+                        abilityString += abilityId + " : ";
                      }
+                     D.adminLog("Sending RAW Ability Data to Player: " + battler.userId + " ID: " + abilityString, D.ADMIN_LOG_TYPE.Ability);
                      battler.setBattlerAbilities(basicAbilityIds, BattlerType.PlayerControlled);
-
                   } catch {
                      D.debug("Cant add battler abilities for: " + battler);
                   }

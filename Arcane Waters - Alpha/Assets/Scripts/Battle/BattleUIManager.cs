@@ -175,10 +175,16 @@ public class BattleUIManager : MonoBehaviour {
    }
 
    public void setupAbilityUI () {
-      Weapon playerWeapon = _playerLocalBattler.weaponManager.getWeapon();
-      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(playerWeapon.id);
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(_playerLocalBattler.weaponManager.equipmentDataId);
       Weapon.Class weaponClass = (weaponData == null) ? Weapon.Class.Melee : weaponData.weaponClass;
-      
+      if (weaponData != null) {
+         D.adminLog("Weapon fetched is :: " + " Name: " + weaponData.equipmentName +
+            " ID: " + weaponData.sqlId +
+            " Unique Id: " + _playerLocalBattler.weaponManager.equippedWeaponId +
+            " SQL Id: " + _playerLocalBattler.weaponManager.equipmentDataId +
+            " Sprite Type: " + _playerLocalBattler.weaponManager.weaponType, D.ADMIN_LOG_TYPE.Ability);
+      }
+
       int indexCounter = 0;
       int attackAbilityIndex = 0;
       int buffAbilityIndex = 0;
@@ -245,20 +251,22 @@ public class BattleUIManager : MonoBehaviour {
                abilityButton.isInvalidAbility = false;
 
                bool isAbilityValid = (weaponClass == currentAbility.classRequirement);
-               try {
-                  D.adminLog("ValidAbility: " + isAbilityValid +
-                     " AbilityName: " + currentAbility.itemName +
-                     " AbilityId: " + currentAbility.itemID +
-                     " AbilityClass: " + currentAbility.classRequirement +
-                     " PlayerWepID: " + playerWeapon.id +
-                     " PlayerWepTypeID: " + playerWeapon.itemTypeId +
-                     " WepName: " + weaponData.equipmentName +
-                     " WepClass: " + ((weaponData == null) ? "No Weapon Equipped" : weaponData.weaponClass.ToString()), D.ADMIN_LOG_TYPE.Ability);
-               } catch {
-                  D.debug("Failed to process weapon data!");
+
+               // Log the cause of invalid weapon class if admin log is enabled
+               if (!isAbilityValid) {
+                  try {
+                     D.adminLog("ValidAbility: " + isAbilityValid +
+                        " AbilityName: " + currentAbility.itemName +
+                        " AbilityId: " + currentAbility.itemID +
+                        " AbilityClass: " + currentAbility.classRequirement +
+                        " WepName: " + weaponData.equipmentName +
+                        " WepClass: " + ((weaponData == null) ? "No Weapon Equipped" : weaponData.weaponClass.ToString()), D.ADMIN_LOG_TYPE.Ability);
+                  } catch {
+                     D.debug("Failed to process weapon data!");
+                  }
                }
+
                if (indexCounter > 0 && !isAbilityValid) {
-                  D.adminLog("Exceed ability count!", D.ADMIN_LOG_TYPE.Ability);
                   abilityButton.disableButton();
                   abilityButton.isInvalidAbility = true;
                }
