@@ -184,6 +184,7 @@ public class BattleUIManager : MonoBehaviour {
       int buffAbilityIndex = 0;
 
       List<BasicAbilityData> abilityDataList = _playerLocalBattler.getBasicAbilities();
+      _lastAbilityList = _playerLocalBattler.basicAbilityIDList.ToList();
 
       foreach (AbilityButton abilityButton in abilityTargetButtons) {
          if (indexCounter < abilityDataList.Count) {
@@ -314,6 +315,8 @@ public class BattleUIManager : MonoBehaviour {
       // Normally I would only update these values when needed (updating when action timer var is not full, or when the player received damage)
       // But for now I will just update them every frame
       if (_playerLocalBattler != null) {
+         updateAbilityButtons();
+
          if (Input.GetKeyDown(KeyCode.Alpha1)) {
             triggerAbilityByKey(0);
          } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
@@ -348,6 +351,21 @@ public class BattleUIManager : MonoBehaviour {
          }
 
          updateStanceGUI();
+      }
+   }
+
+   private void updateAbilityButtons () {
+      // If the abilities of the battler change, update the UI
+      if (_lastAbilityList.Count != _playerLocalBattler.basicAbilityIDList.Count) {
+         setupAbilityUI();
+         return;
+      }
+
+      for (int i = 0; i < _lastAbilityList.Count; i++) {
+         if (_lastAbilityList[i] != _playerLocalBattler.basicAbilityIDList[i]) {
+            setupAbilityUI();
+            return;
+         }
       }
    }
 
@@ -408,7 +426,7 @@ public class BattleUIManager : MonoBehaviour {
          // Simulate battle selection
          BattleSelectionManager.self.clickBattler(enemyBattlersAlive.ElementAt<Battler>(selectionId));
       } else if (enemyBattlersAlive.Count() == 1) {
-            BattleSelectionManager.self.clickBattler(enemyBattlersAlive.ElementAt<Battler>(0));
+         BattleSelectionManager.self.clickBattler(enemyBattlersAlive.ElementAt<Battler>(0));
       }
    }
 
@@ -575,6 +593,10 @@ public class BattleUIManager : MonoBehaviour {
                   playerBattleCG.Hide();
                   playerBattler.selectedBattleBar.toggleDisplay(false);
                });
+
+               // Auto select a random enemy at the beginning of the battle
+               BattleSelectionManager.self.selectedBattler = null;
+               BattleSelectionManager.self.clickBattler(BattleSelectionManager.self.getRandomTarget());
 
                _playerLocalBattler = playerBattler;
             } catch {
@@ -757,6 +779,9 @@ public class BattleUIManager : MonoBehaviour {
 
    // The types of abilities allowed for use by the player, used to update which abilites are enabled / disabled
    private AbilityType _currentAbilityType = AbilityType.Standard;
+
+   // The current abilities displayed by the ability buttons
+   private List<int> _lastAbilityList = new List<int>();
 
    #endregion
 }

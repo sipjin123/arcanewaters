@@ -6,6 +6,7 @@ using Mirror;
 using System.Linq;
 using System;
 using MapCreationTool.Serialization;
+using Mirror.Profiler;
 using NubisDataHandling;
 using MLAPI.Messaging;
 
@@ -37,6 +38,11 @@ public class AdminManager : NetworkBehaviour
       StartCoroutine(CO_AddCommands());
 
       StartCoroutine(CO_CreateItemNamesDictionary());
+
+      #if IS_SERVER_BUILD         
+         networkProfiler.MaxTicks = int.MaxValue;
+         networkProfiler.IsRecording = true;
+      #endif
    }
 
    private IEnumerator CO_AddCommands () {
@@ -104,6 +110,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("xml", "Logs the xml content of the specific manager", requestXmlLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "xmlType" }));
       cm.addCommand(new CommandData("screen_log", "Allows screen to log files using D.debug()", requestScreenLogs, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("log", "Enables isolated debug loggers", requestLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType", "isTrue" }));
+      cm.addCommand(new CommandData("network_profile", "Saves last 60 seconds of network profiling data", networkProfile, requiredPrefix: CommandType.Admin));
 
       List<Map> maps = MapManager.self.mapDataCache;
       List<string> mapNames = new List<string>();
@@ -272,6 +279,25 @@ public class AdminManager : NetworkBehaviour
       } else {
          _player.Target_FloatingMessage(_player.connectionToClient, "Invalid Parameters" + " : " + parameters);
       }
+   }
+   
+   
+   private readonly NetworkProfiler networkProfiler = new NetworkProfiler(60*60); // 60 seconds
+
+   private void networkProfile (string parameters) {
+      Cmd_NetworkProfile(parameters);
+   }
+
+   [Command]
+   protected void Cmd_NetworkProfile (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      networkProfiler.IsRecording = false;
+      string dumpFile = Application.dataPath + "/" + DateTime.Now.ToString("MM_dd_yyyy_HH_mm_ss") + "_dump.netdata";
+      networkProfiler.Save(dumpFile);
+      networkProfiler.IsRecording = true;
    }
 
    private void requestDifficulty (string parameters) {
@@ -1267,11 +1293,12 @@ public class AdminManager : NetworkBehaviour
                // Send confirmation back to the player who issued the command
                string message = "";
                if (adminFlag == 1) {
-                  message = string.Format("Admin privileges have been granted for {0}.", username);
+                  message = string.Format("Admin privileges have been granted to {0}.", username);
                } else {
-                  message = string.Format("Admin privileges have been removed for {0}.", username);
+                  message = string.Format("Admin privileges have been removed from {0}.", username);
                }
-               ChatManager.self.addChat(message, ChatInfo.Type.System);
+               ServerNetworkingManager.self.sendConfirmationMessage(ConfirmMessage.Type.General, userId, message);
+               ServerNetworkingManager.self.sendConfirmationMessage(ConfirmMessage.Type.General, _player.userId, message);
             });
 
          } else {

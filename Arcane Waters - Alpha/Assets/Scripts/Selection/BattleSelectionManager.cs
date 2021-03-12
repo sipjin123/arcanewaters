@@ -137,11 +137,6 @@ public class BattleSelectionManager : MonoBehaviour {
             enemySelection.SetActive(true);
             allySelection.SetActive(false);
          }
-
-         // Choose a random, selectable enemy to autotarget at the start of the battle
-         List<Battler> liveTargets = getLiveTargets();
-         selectedBattler = getLiveTargets().ElementAt<Battler>(Random.Range(0, liveTargets.Count));
-         selectionSprite.initialYaxis = selectedBattler.transform.position.y;
          selectedBattler.selectThis();
       }
    }
@@ -160,6 +155,13 @@ public class BattleSelectionManager : MonoBehaviour {
             return;
          }
       }
+   }
+
+   public Battler getRandomTarget () {
+      // Choose a random, selectable enemy to autotarget at the start of the battle
+      List<Battler> liveTargets = getLiveTargets();
+      Battler selectedBattler = getLiveTargets().ElementAt<Battler>(Random.Range(0, liveTargets.Count));
+      return selectedBattler;
    }
 
    public List<Battler> getLiveTargets () {

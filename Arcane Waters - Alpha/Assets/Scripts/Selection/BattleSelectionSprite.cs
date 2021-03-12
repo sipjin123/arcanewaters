@@ -47,16 +47,6 @@ public class BattleSelectionSprite : MonoBehaviour {
          Vector3 targetPosition = selectedBattler.transform.position;
          targetPosition.z -= .001f;
 
-         bool isBattlerJumping = selectedBattler.isJumping;
-
-         // Freeze y axis if the battler is not attacking
-         if (!isBattlerJumping) {
-            targetPosition.y = initialYaxis;
-         }
-
-         // Disabled sprite UI if the battler is jumping
-         spriteHolder.SetActive(!isBattlerJumping);
-
          this.transform.position = targetPosition + getOffset(selectedBattler);
 
          // Move the arrows around based on the orientation of our target

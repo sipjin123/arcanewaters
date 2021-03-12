@@ -1742,12 +1742,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          transform.SetParent(battle.transform);
          transform.position = battleSpot.transform.position;
       }
-
-      yield return new WaitUntil(() => basicAbilityIDList.Count > 0);
-
-      if (_isClientBattler) {
-         BattleUIManager.self.setupAbilityUI();
-      }
    }
 
    #endregion

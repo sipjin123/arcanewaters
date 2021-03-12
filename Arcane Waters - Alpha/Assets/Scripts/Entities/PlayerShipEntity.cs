@@ -214,13 +214,12 @@ public class PlayerShipEntity : ShipEntity
       if (!isDead() && SeaManager.getAttackType() != Attack.Type.Air) {
          // Start charging attack with mouse
          if (InputManager.isFireCannonMouseDown() || (InputManager.isFireCannonMouse() && !_isChargingCannon)) {
-            cannonAttackPressed();
             _chargingWithMouse = true;
-
+            cannonAttackPressed();
             // Can only start charging with spacebar if we have a valid target
          } else if (_targetSelector.getTarget() != null && (InputManager.getKeyActionDown(KeyAction.FireMainCannon) || (InputManager.getKeyAction(KeyAction.FireMainCannon) && !_isChargingCannon))) {
-            cannonAttackPressed();
             _chargingWithMouse = false;
+            cannonAttackPressed();
          }
 
          if ((InputManager.isFireCannonMouseUp() && _chargingWithMouse) || (InputManager.getKeyActionUp(KeyAction.FireMainCannon) && !_chargingWithMouse)) {
@@ -370,7 +369,6 @@ public class PlayerShipEntity : ShipEntity
             // If firing with the mouse, aim using the mouse
             if (_chargingWithMouse) {
                aimAngle = -Util.angle(Util.getMousePos() - transform.position);
-               
             } else {
                // If we don't have a target to aim at, cancel attack
                if (_targetSelector.getTarget() == null) {
