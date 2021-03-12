@@ -727,6 +727,18 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveItemShortcuts (NetworkConnection connection, ItemShortcutInfo[] shortcuts) {
+      int shortcutLengh = shortcuts.Length;
+      for (int i = 0; i < shortcutLengh; i++) {
+         ItemShortcutInfo itemShortcut = shortcuts[i];
+         WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(itemShortcut.item.itemTypeId);
+         if (weaponData == null) {
+            D.debug("Weapon data is null for item type: {" + itemShortcut.item.itemTypeId + "} disabling shortcut item");
+
+            // Override item to blank if it does not exist in the xml managers, meaning its probably disabled in the database
+            shortcuts[i].item.itemTypeId = 0;
+            shortcuts[i].item.id = -1;
+         }
+      }
       PanelManager.self.itemShortcutPanel.updatePanelWithShortcuts(shortcuts);
    }
 

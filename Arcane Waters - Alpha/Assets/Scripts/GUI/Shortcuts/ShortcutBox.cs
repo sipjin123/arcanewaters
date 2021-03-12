@@ -85,12 +85,14 @@ public class ShortcutBox : MonoBehaviour, IPointerClickHandler
       _itemCell = Instantiate(itemCellPrefab, itemCellContainer.transform, false);
       _itemCell.setCellForItem(item);
 
-      _itemCell.disablePointerEvents();
-      _itemCell.hideBackground();
-      _itemCell.hideItemCount();
-      _itemCell.hideSelectedBox();
+      if (item.itemTypeId != 0 && item.id != 0) {
+         _itemCell.disablePointerEvents();
+         _itemCell.hideBackground();
+         _itemCell.hideItemCount();
+         _itemCell.hideSelectedBox();
 
-      toolTipText.SetText(_itemCell.getItem().getName());
+         toolTipText.SetText(_itemCell.getItem().getName());
+      }
    }
 
    public void clear () {

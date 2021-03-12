@@ -573,7 +573,7 @@ public class NetEntity : NetworkBehaviour
          if (weaponStatData != null) {
             weapon.data = WeaponStatData.serializeWeaponStatData(weaponStatData);
          } else {
-            D.debug("Weapon was null! error here");
+            D.debug("Weapon was null {" + weapon.itemTypeId + "}. User equipped weapon is not available");
          }
       }
 
@@ -582,7 +582,7 @@ public class NetEntity : NetworkBehaviour
          if (armorStatData != null) {
             armor.data = ArmorStatData.serializeArmorStatData(armorStatData);
          } else {
-            D.debug("Armor was null! error here");
+            D.debug("Armor was null {" + armor.itemTypeId + "}. User equipped armor is not available");
          }
       }
 
@@ -591,7 +591,7 @@ public class NetEntity : NetworkBehaviour
          if (hatStatData != null) {
             hat.data = HatStatData.serializeHatStatData(hatStatData);
          } else {
-            D.debug("Hat was null! error here");
+            D.debug("Hat was null {" + hat.itemTypeId + "}. User equipped hat is not available");
          }
       }
    }
