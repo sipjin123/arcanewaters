@@ -594,7 +594,6 @@ public class RPCManager : NetworkBehaviour
 
       // Make sure they didn't already open it
       if (chest.userIds.Contains(_player.userId)) {
-         D.warning("Player already opened this chest!");
          return;
       }
 
@@ -4247,7 +4246,6 @@ public class RPCManager : NetworkBehaviour
 
       // Make sure they didn't already open it
       if (chest.userIds.Contains(_player.userId)) {
-         D.warning("Player already opened this chest!");
          return;
       }
 
