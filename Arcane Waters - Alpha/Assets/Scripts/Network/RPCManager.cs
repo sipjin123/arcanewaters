@@ -4415,7 +4415,11 @@ public class RPCManager : NetworkBehaviour
    public void Cmd_InviteToPvp (int inviteeUserId) {
       BodyEntity inviteeEntity = BodyManager.self.getBody(inviteeUserId);
       if (inviteeEntity != null) {
-         inviteeEntity.rpc.Target_ReceivePvpInvite(inviteeEntity.connectionToClient, _player.userId, _player.entityName);
+         if (inviteeEntity.areaKey == _player.areaKey) {
+            inviteeEntity.rpc.Target_ReceivePvpInvite(inviteeEntity.connectionToClient, _player.userId, _player.entityName);
+         } else {
+            _player.Target_ReceiveNormalChat("Failed to invite player, player is in a different area!", ChatInfo.Type.System);
+         }
       } else {
          D.debug("Cant find Invitee user: " + inviteeUserId);
       }
@@ -4425,15 +4429,24 @@ public class RPCManager : NetworkBehaviour
    public void Target_ReceivePvpInvite (NetworkConnection connection, int inviterUserId, string inviterName) {
       PvpInviteScreen.self.activate(inviterName);
       PvpInviteScreen.self.acceptButton.onClick.AddListener(() => {
-         Cmd_AcceptPvpInvite(inviterUserId);
+         Global.player.rpc.Cmd_AcceptPvpInvite(inviterUserId);
          PvpInviteScreen.self.hide();
          PvpInviteScreen.self.acceptButton.onClick.RemoveAllListeners();
       });
 
       PvpInviteScreen.self.refuseButton.onClick.AddListener(() => {
+         Cmd_RefusePvpInvite(inviterUserId);
          PvpInviteScreen.self.hide();
          PvpInviteScreen.self.refuseButton.onClick.RemoveAllListeners();
       });
+   }
+
+   [Command]
+   public void Cmd_RefusePvpInvite (int inviterUserId) {
+      BodyEntity inviterUser = BodyManager.self.getBody(inviterUserId);
+      if (inviterUser != null) {
+         inviterUser.Target_ReceiveNormalChat("Player {" + inviterUser.entityName + "} refused your pvp invite.", ChatInfo.Type.System);
+      }
    }
 
    [Command]
@@ -4441,10 +4454,20 @@ public class RPCManager : NetworkBehaviour
       List<BattlerInfo> rightBattlersInfo = new List<BattlerInfo>();
       List<BattlerInfo> leftBattlersInfo = new List<BattlerInfo>();
 
-      BodyEntity inviteeEntity = BodyManager.self.getBody(inviterUserId);
+      BodyEntity inviterEntity = BodyManager.self.getBody(inviterUserId);
+      if (inviterEntity == null) {
+         _player.Target_ReceiveNormalChat("Failed to initiate pvp, players are in a different area!", ChatInfo.Type.System);
+         return;
+      }
+      if (inviterEntity.areaKey != _player.areaKey) {
+         _player.Target_ReceiveNormalChat("Failed to initiate pvp, players are in a different area!", ChatInfo.Type.System);
+         inviterEntity.Target_ReceiveNormalChat("Failed to initiate pvp, players are in a different area!", ChatInfo.Type.System);
+         return;
+      }
+
       BattlerInfo newInfo = new BattlerInfo {
          enemyType = Enemy.Type.PlayerBattler,
-         battlerName = inviteeEntity.entityName,
+         battlerName = inviterEntity.entityName,
          battlerType = BattlerType.PlayerControlled
       };
       leftBattlersInfo.Add(newInfo);
