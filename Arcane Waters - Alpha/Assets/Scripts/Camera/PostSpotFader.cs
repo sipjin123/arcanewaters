@@ -8,8 +8,8 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
    // The singleton instance
    public static PostSpotFader self;
 
-   // If this is initialized 
-   public bool isInitialized = false;
+   // If the post spot fader is being triggered from character selection screen 
+   public bool isLoggingIn = false;
 
    #endregion
 
@@ -61,8 +61,9 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
    }
    
    public float fadeIn () {
-      if (!isInitialized) {
-         isInitialized = true;
+      if (isLoggingIn) {
+         // Set is logging in as false to when changine scenes, pixel fade effect will no longer trigger
+         isLoggingIn = false;
          CameraManager.defaultCamera.getPixelFadeEffect().fadeIn();
       }
       _fadeTween?.Kill();
@@ -75,7 +76,7 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
    }
 
    public float fadeOut () {
-      if (!isInitialized) {
+      if (isLoggingIn) {
          CameraManager.defaultCamera.getPixelFadeEffect().fadeOut();
       }
 

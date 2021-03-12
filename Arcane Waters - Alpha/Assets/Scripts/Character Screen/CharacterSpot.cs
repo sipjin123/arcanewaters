@@ -79,8 +79,8 @@ public class CharacterSpot : ClientMonoBehaviour {
       // Now go ahead and call ClientScene.AddPlayer() along with our currently selected user ID
       ClientManager.sendAccountNameAndUserId();
 
-      // Set post spot fader to be disabled every character login so that pixel camera effect can trigger every login
-      PostSpotFader.self.isInitialized = false;
+      // Set post spot fader to isLoggingIn every character login so that pixel camera effect can trigger every login
+      PostSpotFader.self.isLoggingIn = true;
 
       // Show loading screen until player warps to map
       PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, PostSpotFader.self, PostSpotFader.self);
