@@ -65,12 +65,13 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
          // Set is logging in as false to when changine scenes, pixel fade effect will no longer trigger
          isLoggingIn = false;
          CameraManager.defaultCamera.getPixelFadeEffect().fadeIn();
+      } else {
+         _fadeTween?.Kill();
+
+         recalibrateSpotPosition();
+
+         _fadeTween = DOTween.To(() => _effectProgress, (x) => _effectProgress = x, 1, _fadeInDuration);
       }
-      _fadeTween?.Kill();
-
-      recalibrateSpotPosition();
-
-      _fadeTween = DOTween.To(() => _effectProgress, (x) => _effectProgress = x, 1, _fadeInDuration);
 
       return _fadeInDuration;
    }
@@ -78,13 +79,13 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
    public float fadeOut () {
       if (isLoggingIn) {
          CameraManager.defaultCamera.getPixelFadeEffect().fadeOut();
+      } else {
+         _fadeTween?.Kill();
+
+         recalibrateSpotPosition();
+
+         _fadeTween = DOTween.To(() => _effectProgress, (x) => _effectProgress = x, 0, _fadeOutDuration).SetEase(Ease.OutSine);
       }
-
-      _fadeTween?.Kill();
-
-      recalibrateSpotPosition();
-
-      _fadeTween = DOTween.To(() => _effectProgress, (x) => _effectProgress = x, 0, _fadeOutDuration).SetEase(Ease.OutSine);
 
       return _fadeOutDuration;
    }
