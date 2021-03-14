@@ -231,6 +231,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [SyncVar]
    public bool isBossType;
 
+   // Is pvp battler
+   [SyncVar]
+   public bool isPvp;
+
    // Caches the sizes of the monsters in pixel for offset purposes
    public const float LARGE_MONSTER_SIZE = 140;
    public const float LARGE_MONSTER_OFFSET = .25f;
@@ -312,11 +316,16 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             updateSprites();
          }
 
-         if (enemyType != Enemy.Type.PlayerBattler || (enemyType == Enemy.Type.PlayerBattler && !isLocalBattler())) {
-            // Monster battlers are selectable
+         // If is a monster or a pvp opponent
+         if (enemyType != Enemy.Type.PlayerBattler || (isPvp && enemyType == Enemy.Type.PlayerBattler && !isLocalBattler())) {
             onBattlerSelect.AddListener(() => {
                // Enable all offensive abilities
                BattleUIManager.self.setAbilityType(AbilityType.Standard);
+            });
+         } else {
+            onBattlerSelect.AddListener(() => {
+               // Enable all buff abilities
+               BattleUIManager.self.setAbilityType(AbilityType.BuffDebuff);
             });
          }
       }
@@ -341,7 +350,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          BattleUIManager.self.prepareBattleUI();
       } else {
          // This will allow the Ability UI to be triggered when an ally is selected (used for ally target abilities such as Heal and other Buffs)
-         if (enemyType == Enemy.Type.PlayerBattler && isLocalPlayer) {
+         if (enemyType == Enemy.Type.PlayerBattler && isLocalBattler()) {
             onBattlerSelect.AddListener(() => {
                Battler allyBattler = this;
 
@@ -879,7 +888,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          BattleUIManager.self.initializeAbilityCooldown(AbilityType.BuffDebuff, battleAction.abilityInventoryIndex);
       }
 
-      float attackDuration = (float)(cooldownEndTime - NetworkTime.time);
+      float attackDuration = (float) (cooldownEndTime - NetworkTime.time);
       triggerAbilityCooldown(AbilityType.BuffDebuff, battleAction.abilityInventoryIndex, attackDuration);
 
       switch (globalAbilityData.buffActionType) {

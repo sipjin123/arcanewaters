@@ -179,6 +179,9 @@ public class BattleManager : MonoBehaviour {
       // Assign the Battle ID to the Sync Var
       player.battleId = battle.battleId;
 
+      // Note that this battler is in a pvp or not
+      battler.isPvp = battle.isPvp;
+
       // Registers the action of combat entry to the achievement database for recording
       AchievementManager.registerUserAchievement(player, ActionType.EnterCombat);
 

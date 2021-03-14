@@ -132,7 +132,8 @@ public class BattleUIManager : MonoBehaviour {
       }
 
       foreach (AbilityButton abilityButton in abilityTargetButtons) {
-         if (abilityButton.abilityType == abilityType && doesAttackMatchStance(abilityButton, playerStance) && !abilityButton.cooldownImage.enabled) {
+         bool doesStanceMatch = doesAttackMatchStance(abilityButton, playerStance);
+         if (abilityButton.abilityType == abilityType && doesStanceMatch && !abilityButton.cooldownImage.enabled) {
             abilityButton.enableButton();
          } else {
             abilityButton.disableButton();
@@ -156,7 +157,7 @@ public class BattleUIManager : MonoBehaviour {
    }
 
    private void triggerAbilityByKey (int keySlot) {
-      AbilityButton selectedButton = abilityTargetButtons.ToList().Find(_=>_.abilityIndex == keySlot);
+      AbilityButton selectedButton = abilityTargetButtons.ToList().Find(_ => _.abilityIndex == keySlot);
       if (selectedButton != null) {
          if (selectedButton.isEnabled && BattleSelectionManager.self.selectedBattler != null) {
             if (BattleManager.self.getPlayerBattler().canCastAbility()) {
@@ -267,14 +268,15 @@ public class BattleUIManager : MonoBehaviour {
                }
 
                if (indexCounter > 0 && !isAbilityValid) {
+                  D.adminLog("Disabled because Invalid! " + currentAbility.itemName + " : " + currentAbility.itemID + " : " + currentAbility.abilityType, D.ADMIN_LOG_TYPE.Ability);
                   abilityButton.disableButton();
                   abilityButton.isInvalidAbility = true;
                }
 
                if (weaponClass != currentAbility.classRequirement && currentAbility.itemID != AbilityManager.PUNCH_ID) {
-                  D.adminLog("Ability class does not match! WepClass:" + weaponClass + " AbilityClass: " + currentAbility.classRequirement, D.ADMIN_LOG_TYPE.Ability);
+                  D.adminLog("Class Requirement does not match! WepClass:" + weaponClass + " AbilityClass: " + currentAbility.classRequirement, D.ADMIN_LOG_TYPE.Ability);
                   abilityButton.disableButton();
-                  abilityButton.isInvalidAbility = true; 
+                  abilityButton.isInvalidAbility = true;
                }
 
                abilityButton.cancelButton.onClick.AddListener(() => {
@@ -307,7 +309,7 @@ public class BattleUIManager : MonoBehaviour {
       }
 
       if (BattleSelectionManager.self.selectedBattler == null) {
-         updateButtons(AbilityType.Undefined, (int)Battler.Stance.Balanced);
+         updateButtons(AbilityType.Undefined, (int) Battler.Stance.Balanced);
       } else {
          BattleSelectionManager.self.selectedBattler.selectThis();
       }
@@ -489,7 +491,7 @@ public class BattleUIManager : MonoBehaviour {
       updateButtons(_currentAbilityType, newStance);
    }
 
-   private bool doesAttackMatchStance (AbilityButton button, Battler.Stance stance) {
+   private bool doesAttackMatchStance (AbilityButton button, Battler.Stance stance, bool logData = false) {
       AbilityType abilityType = button.abilityType;
       int abilityTypeIndex = button.abilityTypeIndex;
       BasicAbilityData abilityData = null;
@@ -497,19 +499,25 @@ public class BattleUIManager : MonoBehaviour {
       if (abilityType == AbilityType.Standard) {
          if (_playerLocalBattler.getAttackAbilities().Count > 0) {
             abilityData = _playerLocalBattler.getAttackAbilities()[abilityTypeIndex];
+            if (logData) {
+               D.adminLog("Ability Attack data is" + " : " + abilityData.itemName + " : " + abilityData.allowedStances.Length, D.ADMIN_LOG_TYPE.Ability);
+            }
          } else {
-            D.debug("The local battler {" + _playerLocalBattler.userId + "} has no attack abilities registered to it!");  
+            D.debug("The local battler {" + _playerLocalBattler.userId + "} has no attack abilities registered to it!");
          }
       } else if (abilityType == AbilityType.BuffDebuff) {
          if (_playerLocalBattler.getBuffAbilities().Count > 0) {
             abilityData = _playerLocalBattler.getBuffAbilities()[abilityTypeIndex];
+            if (logData) {
+               D.adminLog("Ability Buff data is" + " : " + abilityData.itemName + " : " + abilityData.allowedStances.Length, D.ADMIN_LOG_TYPE.Ability);
+            }
          }
       }
 
       if (abilityData != null) {
          if (abilityData.allowedStances.Contains(stance)) {
             return true;
-         } 
+         }
       }
 
       return false;
@@ -671,7 +679,7 @@ public class BattleUIManager : MonoBehaviour {
    }
 
    private Button getActiveStanceButton () {
-      return stanceButtons[(int)_playerLocalBattler.stance];
+      return stanceButtons[(int) _playerLocalBattler.stance];
    }
 
    private Image getActiveStanceImage () {
@@ -708,7 +716,7 @@ public class BattleUIManager : MonoBehaviour {
       damageText.setDamageAmount(action.damage, action.wasCritical, action.wasBlocked);
       damageText.transform.position = damageSpawnPosition;
       damageText.transform.SetParent(EffectManager.self.transform, false);
-      damageText.name = "DamageText_"+ abilityData.elementType;
+      damageText.name = "DamageText_" + abilityData.elementType;
 
       // The damage text should be on the same layer as the target's Battle Spot
       damageText.gameObject.layer = spot.gameObject.layer;
