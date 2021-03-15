@@ -20,6 +20,10 @@ public class WeaponStatData : EquipmentStatData
    [XmlElement(Namespace = "ProjectileSprite")]
    public string projectileSprite = "";
 
+   // Directory of the action sfx
+   [XmlElement(Namespace = "ActionSFX")]
+   public string actionSfxDirectory = "";
+
    // The damage of the weapon
    public int weaponBaseDamage = 0;
 
