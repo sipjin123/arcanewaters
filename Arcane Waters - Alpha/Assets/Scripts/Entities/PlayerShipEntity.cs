@@ -163,6 +163,7 @@ public class PlayerShipEntity : ShipEntity
       if (isDead()) {
          _targetCone.gameObject.SetActive(false);
          _targetCircle.gameObject.SetActive(false);
+         targetArrowParent.gameObject.SetActive(false);
       }
 
       updateSpeedUpDisplay();

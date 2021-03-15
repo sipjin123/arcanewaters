@@ -45,6 +45,17 @@ public class AreaManager : MonoBehaviour
       }
    }
 
+   public void receiveMapDataFromServerZip (List<Map> mapDataList) {
+      // Servers and hosts get the complete map data from the DB
+      if (NetworkServer.active) {
+         return;
+      }
+
+      foreach (Map map in mapDataList) {
+         storeAreaInfo(map);
+      }
+   }
+
    public void storeAreaInfo (Map map) {
       if (!_areaKeyToMapInfo.ContainsKey(map.name)) {
          _areaKeyToMapInfo.Add(map.name, map);
@@ -163,6 +174,10 @@ public class AreaManager : MonoBehaviour
 
    public List<string> getAreaKeys () {
       return new List<string>(_areaKeyToMapInfo.Keys);
+   }
+
+   public List<Map> getAllMapInfo () {
+      return _areaKeyToMapInfo.Values.ToList();
    }
 
    public Map getMapInfo (string areaKey) {

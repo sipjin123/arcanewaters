@@ -364,6 +364,10 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       }
 
       Instance instance = InstanceManager.self.getInstance(instanceId);
+      if (instance == null) {
+         return;
+      }
+
       float degreesToDot = aggroConeDegrees / 90.0f;
 
       foreach (NetworkBehaviour iBehaviour in instance.getEntities()) {

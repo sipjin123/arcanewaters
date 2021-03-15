@@ -21,17 +21,10 @@ public class MapManager : MonoBehaviour
    // Convenient self reference
    public static MapManager self;
 
-   // The map data cache provided by the server zip file
-   public List<Map> mapDataCache = new List<Map>();
-
    #endregion
 
    private void Awake () {
       self = this;
-   }
-
-   public void receiveMapDataFromServerZip (List<Map> mapKeyDataList) {
-      mapDataCache = mapKeyDataList;
    }
 
    public void createLiveMap (string areaKey) {

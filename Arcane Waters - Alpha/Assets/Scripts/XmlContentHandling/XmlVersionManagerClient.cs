@@ -835,7 +835,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
                   message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
                }
             }
-            MapManager.self.receiveMapDataFromServerZip(mapKeyDataList);
+            AreaManager.self.receiveMapDataFromServerZip(mapKeyDataList);
             break;
       }
 

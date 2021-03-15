@@ -124,8 +124,8 @@ namespace NubisDataHandling {
             auctionList = Util.xmlLoad<List<AuctionItemData>>(listTask.Result);
             totalAuctionCount = int.Parse(totalCountTask.Result);
             userInfo = JsonConvert.DeserializeObject<UserInfo>(userInfoTask.Result);
-         } catch {
-            D.debug("Something went wrong with nubis fetching: " + nameof(DB_Main.getAuctionList));
+         } catch (Exception e) {
+            D.error("Something went wrong with nubis fetching: " + nameof(DB_Main.getAuctionList) + ".\n" + e.ToString());
          }
 
          // Update the panel with the results
@@ -453,6 +453,43 @@ namespace NubisDataHandling {
 
          // Update the Skill Panel with the abilities we received from the server
          panel.receiveDataFromServer(abilityList.ToArray());
+      }
+
+      #endregion
+
+      #region Server History
+
+      public async void getServerHistory (int maxRows, DateTime startDate) {
+         // Serialize input parameters
+         string startDateString = startDate.ToBinary().ToString();
+
+         // Call the functions
+         Task<string> isServerOnlineTask = NubisClient.call(nameof(DB_Main.isServerOnline));
+         Task<string> serverHistoryListTask = NubisClient.call(nameof(DB_Main.getServerHistoryList), startDateString, maxRows.ToString());
+
+         await Task.WhenAll(isServerOnlineTask, serverHistoryListTask);
+
+         //Parse the received data
+         if (!bool.TryParse(isServerOnlineTask.Result, out bool isServerOnline)) {
+            isServerOnline = false;
+         }
+         List<ServerHistoryInfo> serverHistoryList = JsonConvert.DeserializeObject<List<ServerHistoryInfo>>(serverHistoryListTask.Result);
+
+         ServerStatusPanel.self.updatePanelWithServerHistory(isServerOnline, serverHistoryList);
+      }
+
+      public async void checkServerOnlineForClientLogin (bool isSteam) {
+         string isOnlineString = await NubisClient.call(nameof(DB_Main.isServerOnline));
+
+         if (!bool.TryParse(isOnlineString, out bool isOnline)) {
+            isOnline = false;
+         }
+
+         if (isOnline) {
+            TitleScreen.self.startUpNetworkClient(isSteam);
+         } else {
+            TitleScreen.self.displayError(ErrorMessage.Type.ServerOffline);
+         }
       }
 
       #endregion

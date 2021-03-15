@@ -215,6 +215,9 @@ public class MyNetworkManager : NetworkManager
 
       // Start the friend list management
       FriendListManager.self.startFriendListManagement();
+
+      // Log the server start time
+      ServerHistoryManager.self.onServerStart();
    }
 
    private void initializeXmlData () {
@@ -244,6 +247,8 @@ public class MyNetworkManager : NetworkManager
       DisconnectionManager.self.clearDisconnectedUsers();
 
       MessageManager.unregisterServerHandlers();
+
+      ServerHistoryManager.self.onServerStop();
 
       // Stop any servers or clients on the Server Network
       ServerNetworkingManager.get().StopHost();

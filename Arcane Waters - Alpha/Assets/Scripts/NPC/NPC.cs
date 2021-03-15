@@ -714,6 +714,9 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          animalPettingController.stopAnimalPetting();
          Destroy(animalPettingController);
       }
+
+      // Make sure that server can update this pet again
+      isUnderExternalControl = false;
    }
 
    #region Private Variables

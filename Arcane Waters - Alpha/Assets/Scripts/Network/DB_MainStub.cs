@@ -1219,6 +1219,20 @@ public class DB_MainStub : MonoBehaviour
       return false;
    }
 
+   public static void createServerHistoryEvent (DateTime eventDate, ServerHistoryInfo.EventType eventType, int serverVersion) {
+   }
+
+   public static List<ServerHistoryInfo> getServerHistoryList (string startDateString, string maxRowsString) {
+      return null;
+   }
+
+   public static string isServerOnline () {
+      return null;
+   }
+
+   public static void pruneServerHistory (DateTime untilDate) {
+   }
+
    protected static bool setMetric (string machineId, string serverAddress, string serverPort, string keySuffix, string value) {
       return false;
    }

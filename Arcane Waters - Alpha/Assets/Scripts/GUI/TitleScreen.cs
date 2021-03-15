@@ -133,6 +133,15 @@ public class TitleScreen : MonoBehaviour {
       }
    }
 
+   public void onLoginButtonPressed (bool isSteam) {
+      if (ServerHistoryManager.self.isServerHistoryActive()) {
+         // Check if the server is online by looking at the boot history using Nubis
+         NubisDataFetcher.self.checkServerOnlineForClientLogin(isSteam);
+      } else {
+         startUpNetworkClient(isSteam);
+      }
+   }
+
    public void startUpNetworkClient (bool isSteam) {
       // Stop the client in case we're already connected to the server
       MyNetworkManager.self.StopClient();
@@ -182,6 +191,9 @@ public class TitleScreen : MonoBehaviour {
             break;
          case ErrorMessage.Type.AlreadyOnline:
             PanelManager.self.noticeScreen.show("Your account has been disconnected because you logged in somewhere else.");
+            break;
+         case ErrorMessage.Type.ServerOffline:
+            PanelManager.self.noticeScreen.show("The server is offline.");
             break;
          default:
             if (message != null) {

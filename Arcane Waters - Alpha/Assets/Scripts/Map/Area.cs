@@ -307,10 +307,17 @@ public class Area : MonoBehaviour
          return customMapManager.typeDisplayName;
       }
 
-      // Check if we have this map cached and check if it has a display name set
+      // Check if we have this map cached
       Map map = AreaManager.self.getMapInfo(areaKey);
-      if (map != null && map.displayName != null) {
-         return Util.toTitleCase(map.displayName);
+      if (map != null) {
+         // Display a special name for league maps
+         if (map.specialType == SpecialType.League) {
+            return "Leagues";
+         } else if (map.specialType == SpecialType.LeagueLobby) {
+            return "League Lobby";
+         } else if (map.displayName != null) {
+            return Util.toTitleCase(map.displayName);
+         }
       }
 
       // Otherwise, use default name

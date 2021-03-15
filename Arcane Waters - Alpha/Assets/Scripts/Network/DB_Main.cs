@@ -2220,26 +2220,24 @@ public class DB_Main : DB_MainStub
 
          using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
             while (dataReader.Read()) {
-               if (dataReader.Read()) {
-                  try {
-                     int id = dataReader.GetInt32("id");
-                     string name = dataReader.GetString("name");
-                     string displayName = dataReader.GetString("displayName");
-                     int specialType = dataReader.GetInt32("specialType");
-                     int sourceMapId = dataReader.GetInt32("sourceMapId");
-                     int weatherEffectType = dataReader.GetInt32("weatherEffectType");
-                     int biome = dataReader.GetInt32("biome");
+               try {
+                  int id = dataReader.GetInt32("id");
+                  string name = dataReader.GetString("name");
+                  string displayName = dataReader.GetString("displayName");
+                  int specialType = dataReader.GetInt32("specialType");
+                  int sourceMapId = dataReader.GetInt32("sourceMapId");
+                  int weatherEffectType = dataReader.GetInt32("weatherEffectType");
+                  int biome = dataReader.GetInt32("biome");
 
-                     content += id + "[space]" +
-                        name + "[space]" +
-                        displayName + "[space]" +
-                        specialType + "[space]" +
-                        sourceMapId + "[space]" +
-                        weatherEffectType + "[space]" +
-                        biome + "[next]\n";
-                  } catch {
-                     D.debug("Skipping map data due to invalid entry");
-                  }
+                  content += id + "[space]" +
+                     name + "[space]" +
+                     displayName + "[space]" +
+                     specialType + "[space]" +
+                     sourceMapId + "[space]" +
+                     weatherEffectType + "[space]" +
+                     biome + "[next]\n";
+               } catch {
+                  D.debug("Skipping map data due to invalid entry");
                }
             }
             return content;
@@ -5852,19 +5850,31 @@ public class DB_Main : DB_MainStub
                      userObjects.userInfo = new UserInfo(dataReader);
                      userObjects.shipInfo = new ShipInfo(dataReader);
                      userObjects.guildInfo = new GuildInfo(dataReader);
+
+                     // If the user has a guildId
                      if (userObjects.guildInfo.guildId != 0) {
                         try {
-                           userObjects.guildRankInfo = new GuildRankInfo(dataReader);
+                           // We get the current user gldRankId
+                           int guildRankId = dataReader.GetInt32("gldRankId");
+
+                           // Getting the user's guild rank info, only if guildRankId is not for leader (0)
+                           if (guildRankId > 0) {
+                              try {
+                                 userObjects.guildRankInfo = new GuildRankInfo(dataReader);
+                              } catch {
+                                 D.error("Needs Investigation! Failed to process Guild Rank Info!");
+                                 userObjects.guildRankInfo = new GuildRankInfo {
+                                    guildId = -1,
+                                    id = -1,
+                                    permissions = -1,
+                                    rankId = -1,
+                                    rankName = "",
+                                    rankPriority = -1
+                                 };
+                              }
+                           }
                         } catch {
-                           D.error("Needs Investigation! Failed to process Guild Rank Info!");
-                           userObjects.guildRankInfo = new GuildRankInfo {
-                              guildId = -1,
-                              id = -1,
-                              permissions = -1,
-                              rankId = -1,
-                              rankName = "",
-                              rankPriority = -1
-                           };
+                           D.error("The player is in a guild, but doesn't have a rank");
                         }
                      }
                      userObjects.armor = getArmor(dataReader);
@@ -7611,7 +7621,7 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM guild_ranks JOIN users ON guild_ranks.id=users.gldRankId WHERE users.usrId=@userId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT users.gldRankId, guild_ranks.rankId, guild_ranks.permissions FROM users LEFT JOIN guild_ranks ON guild_ranks.id = users.gldRankId WHERE users.usrId=@userId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userId", userId);
@@ -7620,7 +7630,14 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  permissions = dataReader.GetInt32("permissions");
+                  int gldRankId = dataReader.GetInt32("gldRankId");
+
+                  if (gldRankId > 0) {
+                     permissions = dataReader.GetInt32("permissions");
+                  } else {
+                     permissions = int.MaxValue;
+                  }
+
                   return permissions;
                }
             }
@@ -7637,7 +7654,7 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM guild_ranks JOIN users ON guild_ranks.id=users.gldRankId WHERE users.usrId=@userId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT users.gldRankId, guild_ranks.rankId FROM users LEFT JOIN guild_ranks ON guild_ranks.id = users.gldRankId WHERE users.usrId=@userId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userId", userId);
@@ -7646,7 +7663,14 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  rankId = dataReader.GetInt32("rankId");
+                  int gldRankId = dataReader.GetInt32("gldRankId");
+
+                  if (gldRankId > 0) {
+                     rankId = dataReader.GetInt32("rankId");
+                  } else {
+                     rankId = gldRankId;
+                  }
+
                   return rankId;
                }
             }
@@ -8286,6 +8310,116 @@ public class DB_Main : DB_MainStub
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
          return false;
+      }
+   }
+
+   public static new void createServerHistoryEvent (DateTime eventDate, ServerHistoryInfo.EventType eventType, int serverVersion) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO server_history(eventDate, eventType, serverVersion) " +
+            "VALUES (@eventDate, @eventType, @serverVersion)", conn)) {
+
+               conn.Open();
+               cmd.Prepare();
+               cmd.Parameters.AddWithValue("@eventDate", eventDate);
+               cmd.Parameters.AddWithValue("@eventType", (int) eventType);
+               cmd.Parameters.AddWithValue("@serverVersion", serverVersion);
+               DebugQuery(cmd);
+
+               // Execute the command
+               cmd.ExecuteNonQuery();
+            }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new string getServerHistoryList (string startDateString, string maxRowsString) {
+      // Parse the input parameters
+      DateTime startDate = DateTime.UtcNow - new TimeSpan(1, 0, 0, 0);
+      if (long.TryParse(startDateString, out long startDateBinary)) {
+         startDate = DateTime.FromBinary(startDateBinary);
+      }
+
+      int maxRows = 10;
+      int.TryParse(maxRowsString, out maxRows);
+
+      List<ServerHistoryInfo> eventList = new List<ServerHistoryInfo>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM server_history WHERE eventDate>=@startDate ORDER BY eventDate DESC LIMIT @maxRows", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@startDate", startDate);
+            cmd.Parameters.AddWithValue("@maxRows", maxRows);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  ServerHistoryInfo row = new ServerHistoryInfo(dataReader);
+                  eventList.Add(row);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return JsonConvert.SerializeObject(eventList);
+   }
+
+   public static new string isServerOnline () {
+      bool isOnline = false;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT eventType FROM server_history WHERE eventType IN (@eventTypeStart, @eventTypeStop) ORDER BY eventDate DESC LIMIT 1", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@eventTypeStart", (int) ServerHistoryInfo.EventType.ServerStart);
+            cmd.Parameters.AddWithValue("@eventTypeStop", (int) ServerHistoryInfo.EventType.ServerStop);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  ServerHistoryInfo.EventType eventType = (ServerHistoryInfo.EventType) DataUtil.getInt(dataReader, "eventType");
+                  if (eventType == ServerHistoryInfo.EventType.ServerStart) {
+                     isOnline = true;
+                  } else {
+                     isOnline = false;
+                  }
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return isOnline.ToString();
+   }
+
+   public static new void pruneServerHistory (DateTime untilDate) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "DELETE FROM server_history WHERE eventDate<@untilDate", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@untilDate", untilDate);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
       }
    }
 

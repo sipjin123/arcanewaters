@@ -1673,6 +1673,7 @@ MonoBehaviour:
   maxHealth: 1000
   XP: 0
   desiredAngle: 0
+  isStealthMuted: 0
   netIdent: {fileID: 0}
   rpc: {fileID: 0}
   cropManager: {fileID: 0}
@@ -1873,6 +1874,7 @@ MonoBehaviour:
     weaponType: 0
     weaponClass: 0
     projectileSprite: 
+    actionSfxDirectory: 
     weaponBaseDamage: 0
     weaponDamageFire: 0
     weaponDamageWater: 0

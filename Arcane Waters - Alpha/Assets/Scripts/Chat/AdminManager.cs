@@ -105,6 +105,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("lose", "Kills player in a land battle", requestLose, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("win", "Kills all of the enemies in a land battle", requestWin, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("difficulty", "Enables the players to alter difficulty of current instance", requestDifficulty, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "difficultyLevel" }));
+      cm.addCommand(new CommandData("throw_errors", "Throws various errors and warnings on the server to test the logger tool", requestThrowTestErrors, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "message" }));
 
       // Log Commands for investigation
       cm.addCommand(new CommandData("xml", "Logs the xml content of the specific manager", requestXmlLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "xmlType" }));
@@ -112,7 +113,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("log", "Enables isolated debug loggers", requestLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType", "isTrue" }));
       cm.addCommand(new CommandData("network_profile", "Saves last 60 seconds of network profiling data", networkProfile, requiredPrefix: CommandType.Admin));
 
-      List<Map> maps = MapManager.self.mapDataCache;
+      List<Map> maps = AreaManager.self.getAllMapInfo();
       List<string> mapNames = new List<string>();
       foreach (Map map in maps) {
          mapNames.Add(map.name);
@@ -329,6 +330,24 @@ public class AdminManager : NetworkBehaviour
             _player.rpc.Target_ReceiveNoticeFromServer(_player.connectionToClient, message);
          }
       }
+   }
+
+   private void requestThrowTestErrors (string parameters) {
+      Cmd_ThrowTestErrors(parameters);
+   }
+
+   [Command]
+   protected void Cmd_ThrowTestErrors (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      D.error("[TEST-LOG] [D.error] " + parameters);
+      D.warning("[TEST-LOG] [D.warning] " + parameters);
+      D.log("[TEST-LOG] [D.log] " + parameters);
+      Debug.LogError("[TEST-LOG] [Debug.LogError] " + parameters);
+      Debug.LogWarning("[TEST-LOG] [Debug.LogWarning] " + parameters);
+      Debug.Log("[TEST-LOG] [Debug.Log] " + parameters);
    }
 
    [Command]

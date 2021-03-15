@@ -52,6 +52,12 @@ public class VoyageGroupManager : MonoBehaviour
                return;
             }
 
+            // Check if the invitee is already in a group
+            if (tryGetGroupByUser(inviteeInfo.userId, out VoyageGroupInfo inviteeVoyageGroup)) {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, player, "The player " + inviteeName + " is already in a group!");
+               return;
+            }
+
             StartCoroutine(CO_InviteUserToGroup(player, inviteeInfo));
          });
       });

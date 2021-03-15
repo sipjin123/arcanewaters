@@ -55,7 +55,7 @@ public class GuildMemberRow : MonoBehaviour, IPointerClickHandler
       _userName = userInfo.username;
       memberName.text = userInfo.username;
       memberLevel.text = LevelUtil.levelForXp(userInfo.XP).ToString();
-      memberZone.text = userInfo.areaKey;
+      memberZone.text = Area.getName(userInfo.areaKey);
 
       if (userInfo.guildRankId == 0) {
          memberRankName.text = "Leader";
