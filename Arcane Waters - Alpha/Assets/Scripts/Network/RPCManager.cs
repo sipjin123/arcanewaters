@@ -727,8 +727,8 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveItemShortcuts (NetworkConnection connection, ItemShortcutInfo[] shortcuts) {
-      int shortcutLengh = shortcuts.Length;
-      for (int i = 0; i < shortcutLengh; i++) {
+      int shortcutLenght = shortcuts.Length;
+      for (int i = 0; i < shortcutLenght; i++) {
          ItemShortcutInfo itemShortcut = shortcuts[i];
          WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(itemShortcut.item.itemTypeId);
          if (weaponData == null) {
@@ -4457,7 +4457,7 @@ public class RPCManager : NetworkBehaviour
    public void Cmd_RefusePvpInvite (int inviterUserId) {
       BodyEntity inviterUser = BodyManager.self.getBody(inviterUserId);
       if (inviterUser != null) {
-         inviterUser.Target_ReceiveNormalChat("Player {" + inviterUser.entityName + "} refused your pvp invite.", ChatInfo.Type.System);
+         inviterUser.Target_ReceiveNormalChat("{" + inviterUser.entityName + "} refused your invite.", ChatInfo.Type.System);
       }
    }
 
@@ -4468,12 +4468,12 @@ public class RPCManager : NetworkBehaviour
 
       BodyEntity inviterEntity = BodyManager.self.getBody(inviterUserId);
       if (inviterEntity == null) {
-         _player.Target_ReceiveNormalChat("Failed to initiate pvp, players are in a different area!", ChatInfo.Type.System);
+         _player.Target_ReceiveNormalChat("Failed to initiate battle, players are in a different area!", ChatInfo.Type.System);
          return;
       }
       if (inviterEntity.areaKey != _player.areaKey) {
-         _player.Target_ReceiveNormalChat("Failed to initiate pvp, players are in a different area!", ChatInfo.Type.System);
-         inviterEntity.Target_ReceiveNormalChat("Failed to initiate pvp, players are in a different area!", ChatInfo.Type.System);
+         _player.Target_ReceiveNormalChat("Failed to initiate battle, players are in a different area!", ChatInfo.Type.System);
+         inviterEntity.Target_ReceiveNormalChat("Failed to initiate battle, players are in a different area!", ChatInfo.Type.System);
          return;
       }
 
@@ -5785,27 +5785,27 @@ public class RPCManager : NetworkBehaviour
          Target_OnWarpFailed("Missing player or player connection");
       }
       
-      StartCoroutine(waitForAreaLoad(areaTarget, spawnTarget));
+      StartCoroutine(CO_WaitForAreaLoad(areaTarget, spawnTarget));
    }
 
-   private IEnumerator waitForAreaLoad (string areaTarget, string spawnTarget) {
+   private IEnumerator CO_WaitForAreaLoad (string areaTarget, string spawnTarget) {
       // TODO: Confirm if this is needed
       // If the area load exceeds this time, assume there was network related issue and trigger warp failure
       float maxLoadingTime = 30;
-      float currentLoadTIme = 0;
+      float currentLoadTime = 0;
 
       while (AreaManager.self.getArea(_player.areaKey) == null) {
-         if (currentLoadTIme < maxLoadingTime) {
-            currentLoadTIme += Time.deltaTime;
+         if (currentLoadTime < maxLoadingTime) {
+            currentLoadTime += Time.deltaTime;
             yield return 0;
          } else {
-            D.debug("Area failed to load: " + _player.areaKey + " wait time was " + currentLoadTIme + " seconds");
+            D.debug("Area failed to load: " + _player.areaKey + " wait time was " + currentLoadTime + " seconds");
             D.adminLog("Player {" + _player.userId + "} Failed to warp due to missing area: {" + " : " + _player.areaKey + "}", D.ADMIN_LOG_TYPE.Warp);
             Target_OnWarpFailed("Missing Area: " + _player.areaKey);
             yield break;
          }
       }
-      D.adminLog("Waiting time for area{" + _player.areaKey + "} to load is: " + currentLoadTIme + " seconds", D.ADMIN_LOG_TYPE.Warp);
+      D.adminLog("Waiting time for area{" + _player.areaKey + "} to load is: " + currentLoadTime + " seconds", D.ADMIN_LOG_TYPE.Warp);
       Area area = AreaManager.self.getArea(_player.areaKey);
 
       // Get the warps for the area the player is currently in
