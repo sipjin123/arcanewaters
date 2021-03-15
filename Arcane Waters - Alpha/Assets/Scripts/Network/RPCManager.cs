@@ -4769,7 +4769,13 @@ public class RPCManager : NetworkBehaviour
             WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponId);
             Weapon.Class weaponClass = weaponData == null ? Weapon.Class.Melee : weaponData.weaponClass;
             WeaponCategory weaponCategory = WeaponCategory.None;
-            D.adminLog("Player {" + _player.userId + "} weapon is" + " : " + weaponClass, D.ADMIN_LOG_TYPE.Ability);
+
+            int sqlId = weaponData == null ? 0 : weaponData.sqlId;
+            string weaponName = weaponData == null ? "none" : weaponData.equipmentName;
+            D.adminLog("Player {" + _player.userId + "} weapon is" +
+               " Sql: " + sqlId +
+               " Name: " + weaponName +
+               " Class: " + weaponClass, D.ADMIN_LOG_TYPE.Ability);
 
             // Determine if the abilities match the current weapon type
             int validAbilities = 0;
@@ -5056,7 +5062,7 @@ public class RPCManager : NetworkBehaviour
                      foreach (int abilityId in basicAbilityIds) {
                         abilityString += abilityId + " : ";
                      }
-                     D.adminLog("Sending RAW Ability Data to Player: " + battler.userId + " ID: " + abilityString, D.ADMIN_LOG_TYPE.Ability);
+                     D.adminLog("Sending RAW Ability Data to Player: {" + battler.userId + "} ID: {" + abilityString+ "}", D.ADMIN_LOG_TYPE.Ability);
                      battler.setBattlerAbilities(basicAbilityIds, BattlerType.PlayerControlled);
                   } catch {
                      D.debug("Cant add battler abilities for: " + battler);
@@ -5429,6 +5435,10 @@ public class RPCManager : NetworkBehaviour
             }
             if (body != null) {
                body.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames);
+               D.adminLog("Player {" + body.userId + "} is equipping item" + 
+                  "} ID: {" + weapon.id + 
+                  "} TypeId: {" + weapon.itemTypeId + 
+                  "} Name: {" + weapon.getName()+ "}", D.ADMIN_LOG_TYPE.Equipment);
 
                // Update the battler entity if the user is in battle
                if (body.isInBattle()) {

@@ -109,6 +109,10 @@ public class WeaponManager : EquipmentManager {
       // Update the sprites for the new weapon type
       int newType = weaponData == null ? 0 : weaponData.weaponType;
       updateSprites(newType, newPalettes);
+      D.adminLog("Equipped weapon" + " SQL: {" + weaponData.sqlId +
+         "} Name: {" + weaponData.equipmentName +
+         "} Type: {" + weaponData.weaponType +
+         "} Class: {" + weaponData.weaponClass+ "}", D.ADMIN_LOG_TYPE.Equipment);
 
       // Play a sound
       SoundManager.create3dSound("equip_", this.transform.position, 2);

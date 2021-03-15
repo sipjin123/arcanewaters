@@ -930,6 +930,7 @@ public class BattleManager : MonoBehaviour {
    public void onPlayerEquipItem (PlayerBodyEntity playerBody) {
       Battler battler = getBattler(playerBody.userId);
       if (battler != null) {
+         D.adminLog("Player {" + battler.userId + "} has equipped item", D.ADMIN_LOG_TYPE.Equipment);
          assignBattlerSyncData(battler, playerBody);
          playerBody.rpc.processPlayerAbilities(playerBody, new List<PlayerBodyEntity>() { playerBody });
       }

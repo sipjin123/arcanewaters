@@ -178,7 +178,12 @@ public class EffectManager : MonoBehaviour {
       List<Sprite> hitSprites = new List<Sprite>();
       foreach (string path in ability.hitSpritesPath) {
          if (!string.IsNullOrEmpty(path)) {
-            foreach (Sprite sprite in ImageManager.getSprites(path)) {
+            Sprite[] spritePath = ImageManager.getSprites(path);
+            if (spritePath.Length <= 1) {
+               D.debug("Could not get sprites for ability" + " : " + ability.itemName);
+            }
+
+            foreach (Sprite sprite in spritePath) {
                hitSprites.Add(sprite);
             }
          }
