@@ -4778,7 +4778,10 @@ public class RPCManager : NetworkBehaviour
                " Class: " + weaponClass, D.ADMIN_LOG_TYPE.Ability);
 
             // Determine if the abilities match the current weapon type
-            int validAbilities = 0;
+            int validOffenseAbilities = 0;
+            int validBuffAbilities = 0;
+            const int MAX_ABILITIES = 5;
+            List<int> invalidSlot = new List<int> { 1, 2, 3, 4, 5 };
             List<AbilitySQLData> equippedAbilityList = abilityDataList.FindAll(_ => _.equipSlotIndex >= 0);
             foreach (AbilitySQLData abilitySql in equippedAbilityList) {
                BasicAbilityData basicAbilityData = AbilityManager.self.allGameAbilities.Find(_ => _.itemID == abilitySql.abilityID);
@@ -4790,22 +4793,35 @@ public class RPCManager : NetworkBehaviour
                   if ((weaponClass == Weapon.Class.Melee && attackAbilityData.isMelee())
                   || (weaponClass == Weapon.Class.Ranged && attackAbilityData.isProjectile())
                   || (weaponClass == Weapon.Class.Rum && attackAbilityData.isRum())) {
-                     validAbilities++;
-                     D.adminLog("Valid Ability: " + basicAbilityData.itemName +
-                        " : " + basicAbilityData.itemID +
-                        " : " + basicAbilityData.abilityType +
-                        " : " + basicAbilityData.classRequirement, D.ADMIN_LOG_TYPE.Ability);
+                     validOffenseAbilities++;
+                     D.adminLog("Valid Ability:: " +
+                        " Name: {" + basicAbilityData.itemName +
+                        "} ID: {" + basicAbilityData.itemID +
+                        "} Type: {" + basicAbilityData.abilityType +
+                        "} Slot: {" + abilitySql.equipSlotIndex +
+                        "} Class: {" + basicAbilityData.classRequirement + "}", D.ADMIN_LOG_TYPE.Ability);
+                     invalidSlot.Remove(abilitySql.equipSlotIndex);
                   }
-               } 
+               } else if (basicAbilityData.abilityType == AbilityType.BuffDebuff) {
+                  BuffAbilityData buffAbilityData = AbilityManager.self.allBuffAbilities.Find(_ => _.itemID == abilitySql.abilityID);
+                  if (weaponClass == Weapon.Class.Rum && buffAbilityData.isRum()) {
+                     validBuffAbilities++;
+                     invalidSlot.Remove(abilitySql.equipSlotIndex);
+                  }
+               }
             }
 
-            if (validAbilities < 1) {
-               D.adminLog("No valid ability assigned to player" + " : " + _player.userId, D.ADMIN_LOG_TYPE.Ability);
+            if (validOffenseAbilities < 1) {
+               D.adminLog("No valid Attack ability assigned to player" + " : " + _player.userId, D.ADMIN_LOG_TYPE.Ability);
+            }
+
+            if (validBuffAbilities < 1) {
+               D.adminLog("No valid Buff ability assigned to player" + " : " + _player.userId, D.ADMIN_LOG_TYPE.Ability);
             }
 
             // If no abilities were fetched, create a clean new entry that will be overridden based on the user equipped weapon
             if (equippedAbilityList.Count < 1) {
-               validAbilities = 0;
+               validOffenseAbilities = 0;
                equippedAbilityList = new List<AbilitySQLData>();
                equippedAbilityList.Add(new AbilitySQLData {
                   abilityID = -1,
@@ -4814,7 +4830,7 @@ public class RPCManager : NetworkBehaviour
             }
 
             // Override ability if no ability matches the weapon type ex:{all melee abilities but user has gun weapon}
-            if (validAbilities < 1) {
+            if (validOffenseAbilities < 1) {
                if (weaponId < 1) {
                   weaponCategory = WeaponCategory.None;
                   equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.punchAbility());
@@ -4831,7 +4847,11 @@ public class RPCManager : NetworkBehaviour
                            break;
                         case Weapon.Class.Rum:
                            weaponCategory = WeaponCategory.Rum;
-                           equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.throwRum());
+                           if (equippedAbilityList.Count < MAX_ABILITIES) {
+                              equippedAbilityList.Add(AbilitySQLData.TranslateBasicAbility(AbilityManager.self.throwRum()));
+                           } else {
+                              equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.throwRum());
+                           }
                            break;
                         default:
                            weaponCategory = WeaponCategory.None;
@@ -4850,9 +4870,37 @@ public class RPCManager : NetworkBehaviour
                      + " WepCateg: " + weaponCategory, D.ADMIN_LOG_TYPE.Ability);
                }
             }
+            D.adminLog("ValidBuffs: {" + validBuffAbilities + "} ValidAttacks: {" + validOffenseAbilities + "} WeaponCategory: {" + weaponCategory + "}", D.ADMIN_LOG_TYPE.Ability);
+
+            // Make sure that if the user is equipping a Rum weapon, assign both buff and attack ability
+            if (validBuffAbilities < 1 && weaponClass == Weapon.Class.Rum) {
+               int firstInvalidSlot = invalidSlot[0] - 1;
+               string slots = "";
+               foreach (int abilitySlot in invalidSlot) {
+                  slots += " : " + abilitySlot;
+               }
+               D.adminLog("Ability slots:: " + slots, D.ADMIN_LOG_TYPE.Ability);
+
+               if (equippedAbilityList.Count < MAX_ABILITIES) {
+                  equippedAbilityList.Add(AbilitySQLData.TranslateBasicAbility(AbilityManager.self.healingRum()));
+               } else {
+                  equippedAbilityList[firstInvalidSlot] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.healingRum());
+               }
+            }
+
+            // Update the inventory slot index
+            foreach (AbilitySQLData equippedAbility in equippedAbilityList) {
+               if (equippedAbility.equipSlotIndex < 1) {
+                  equippedAbility.equipSlotIndex = invalidSlot[0];
+                  invalidSlot.RemoveAt(0);
+               }
+            }
+
+            // Make sure no invalid abilities are part of the ability list to be sent
+            equippedAbilityList.RemoveAll(_=>_.abilityID < 1);
 
             // Provides all the abilities for the players in the party
-            setupAbilitiesForPlayers(bodyEntities, equippedAbilityList, weaponClass, validAbilities, validAbilities > 0, weaponCategory);
+            setupAbilitiesForPlayers(bodyEntities, equippedAbilityList, weaponClass, validOffenseAbilities, validOffenseAbilities > 0, weaponCategory);
          });
       });
    }
