@@ -59,18 +59,28 @@ public class ArmorManager : EquipmentManager {
 
       if (armorType == 0) {
          armorLayer.gameObject.SetActive(false);
+
+         // Sync up all our animations
+         if (_body != null) {
+            _body.restartAnimations();
+         }
       } else {
          // Set the correct sheet for our gender and armor type
          armorLayer.gameObject.SetActive(true);
+
+         // Wait for the coroutine for texture swap to finish before triggering restart animation
+         armorLayer.textureSwappedEvent.AddListener(() => {
+            // Sync up all our animations
+            if (_body != null) {
+               _body.restartAnimations();
+            }
+            armorLayer.textureSwappedEvent.RemoveAllListeners();
+         });
+
          armorLayer.setType(gender, armorType);
 
          // Update our Material
          armorLayer.recolor(palettes);
-      }
-
-      // Sync up all our animations
-      if (_body != null) {
-         _body.restartAnimations();
       }
    }
 

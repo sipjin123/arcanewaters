@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.Events;
 
 public enum Layer {
    Body = 100, Eyes = 101, Hair = 102, Armor = 103, Weapon = 104,
@@ -11,6 +12,9 @@ public enum Layer {
 
 public class SpriteLayer : RecoloredSprite {
    #region Public Variables
+
+   // Event triggered when texture is finished swapping
+   public UnityEvent textureSwappedEvent = new UnityEvent();
 
    #endregion
 
@@ -41,6 +45,7 @@ public class SpriteLayer : RecoloredSprite {
       if (animation != null) {
          animation.setNewTexture(newTexture);
       }
+      textureSwappedEvent.Invoke();
    }
 
    protected IEnumerator CO_SwapTexture (Texture2D newTexture) {
@@ -66,6 +71,7 @@ public class SpriteLayer : RecoloredSprite {
       if (_renderer != null) {
          _renderer.enabled = true;
       }
+      textureSwappedEvent.Invoke();
    }
 
    protected PlayerBodyEntity getPlayer () {
