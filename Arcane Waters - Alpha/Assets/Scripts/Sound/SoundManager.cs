@@ -374,7 +374,7 @@ public class SoundManager : MonoBehaviour {
 
    protected static AudioSource createAudioSource (Vector3 pos) {
       // Get the Z position of the currently active camera
-      float posZ = Global.isInBattle() ? BattleCamera.self.getCamera().transform.position.z : Camera.main.transform.position.z;
+      float posZ = AudioListenerManager.self.getActiveListener().transform.position.z;
       pos = new Vector3(pos.x, pos.y, posZ);
 
       // Create a Game Object and audio source to play the clip
@@ -394,7 +394,7 @@ public class SoundManager : MonoBehaviour {
       }
 
       // Get the Z position of the currently active camera
-      float posZ = Global.isInBattle() ? BattleCamera.self.getCamera().transform.position.z : Camera.main.transform.position.z;
+      float posZ = AudioListenerManager.self.getActiveListener().transform.position.z;
       pos = new Vector3(pos.x, pos.y, posZ);
 
       // Create a Game Object and audio source to play the clip

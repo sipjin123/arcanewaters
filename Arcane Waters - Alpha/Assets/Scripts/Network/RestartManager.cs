@@ -87,6 +87,10 @@ public class RestartManager : MonoBehaviour
                   player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Kicked, $"You were disconnected.\n\n Reason: Server is currently rebooting"));
                }
             }
+
+            // Log the server stop event
+            ServerHistoryManager.self.onServerStop();
+
             break;
          } else if (currSeconds < 9.0f) {
             yield return new WaitForSecondsRealtime(0.5f);

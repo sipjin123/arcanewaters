@@ -1200,6 +1200,7 @@ public class Util : MonoBehaviour
 
       // Activate the Title Screen camera
       Util.activateVirtualCamera(TitleScreen.self.virtualCamera);
+      ServerStatusPanel.self.refreshPanel();
 
       // Clear out our saved data
       Global.lastUsedAccountName = "";

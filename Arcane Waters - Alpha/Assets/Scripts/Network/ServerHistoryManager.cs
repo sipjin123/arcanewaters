@@ -26,7 +26,7 @@ public class ServerHistoryManager : MonoBehaviour
 
    [Server]
    public void onServerStart () {
-      if (!isServerHistoryActive()) {
+      if (!isServerHistoryActive() || MyNetworkManager.getCurrentPort() != Global.MASTER_SERVER_PORT) {
          return;
       }
       
@@ -44,7 +44,7 @@ public class ServerHistoryManager : MonoBehaviour
 
    [Server]
    public void onServerStop () {
-      if (!isServerHistoryActive()) {
+      if (!isServerHistoryActive() || MyNetworkManager.getCurrentPort() != Global.MASTER_SERVER_PORT) {
          return;
       }
 

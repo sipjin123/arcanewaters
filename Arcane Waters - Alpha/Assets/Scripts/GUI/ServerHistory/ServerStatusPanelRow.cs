@@ -5,14 +5,13 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 using UnityEngine.EventSystems;
-using TMPro;
 
 public class ServerStatusPanelRow : MonoBehaviour
 {
    #region Public Variables
 
    // The text component of the line
-   public TextMeshProUGUI eventLine;
+   public Text eventLine;
    
    #endregion
 

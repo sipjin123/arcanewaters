@@ -124,6 +124,9 @@ public class PlayerShipEntity : ShipEntity
          _movementAudioSource.gameObject.AddComponent<MatchCameraZ>();
          _movementAudioSource.volume = 0f;
 
+         // Get a reference to our audio listener
+         _audioListener = GetComponent<AudioListener>();
+
          // Notify UI panel to display the current skills this ship has
          rpc.Cmd_RequestShipAbilities(shipId);
          Cmd_RequestAbilityList();
@@ -204,6 +207,8 @@ public class PlayerShipEntity : ShipEntity
       if (!Util.isGeneralInputAllowed() || isDisabled || !isLocalPlayer) {
          return;
       }
+
+      checkAudioListener();
 
       if (InputManager.isLeftClickKeyPressed() && !PanelManager.self.hasPanelInLinkedList()) {
          NetEntity ship = getClickedBody();
@@ -927,6 +932,27 @@ public class PlayerShipEntity : ShipEntity
       return (timeSinceBoost < boostCooldown);
    }
 
+   private void checkAudioListener () {
+      if (AudioListenerManager.self.getActiveListener() != _audioListener) {
+         AudioListenerManager.self.setActiveListener(_audioListener);
+      }
+   }
+
+   private void OnDisable () {
+      // If we are the local player, activate the camera's audio listener
+      if (isLocalPlayer && !ClientManager.isApplicationQuitting) {
+         if (!_audioListener) {
+            _audioListener = GetComponent<AudioListener>();
+         }
+
+         if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getAudioListener() != null) {
+            AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener());
+         } else {
+            D.error("Couldn't switch audio listener back to main camera");
+         }
+      }
+   }
+
    #region Private Variables
 
    // Our ship movement sound
@@ -976,6 +1002,9 @@ public class PlayerShipEntity : ShipEntity
 
    // Whether the player is charging a shot with the mouse or keyboard
    private bool _chargingWithMouse = false;
+
+   // A reference to the audio listener that follows the ship
+   private AudioListener _audioListener;
 
    #endregion
 }

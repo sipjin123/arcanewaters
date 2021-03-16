@@ -75,6 +75,11 @@ public class ChatManager : MonoBehaviour
             changeWhisperNamesAgo(increment: false);
          }
       }
+
+      if (_shouldUpdateAutoCompletes && !typedRecently()) {
+         tryAutoCompleteChatCommand();
+         _shouldUpdateAutoCompletes = false;
+      }
    }
 
    public void removeAdminCommands () {
@@ -284,11 +289,14 @@ public class ChatManager : MonoBehaviour
 
    public void onChatInputValuechanged (string inputString) {
       Global.player.admin.tryAutoCompleteForGetItemCommand(inputString);
-      tryAutoCompleteChatCommand();
+      _shouldUpdateAutoCompletes = true;
 
       if (Util.isEmpty(inputString)) {
          resetMessagesAgo();
+         tryAutoCompleteChatCommand();
       }
+
+      _lastTypeTime = (float) NetworkTime.time;
    }
 
    public void onWhisperNameInputValueChanged (string inputString) {
@@ -539,6 +547,11 @@ public class ChatManager : MonoBehaviour
       }
    }
 
+   private bool typedRecently () {
+      float timeSinceTyping = (float) (NetworkTime.time - _lastTypeTime);
+      return timeSinceTyping < AUTO_COMPLETE_SHOW_DELAY;
+   }
+
    #region Private Variables
 
    // A list of the data for all available chat commands
@@ -567,6 +580,15 @@ public class ChatManager : MonoBehaviour
 
    // How many whisper names ago we should autofill
    protected int _numWhisperNamesAgo = 0;
+
+   // When we last typed
+   protected float _lastTypeTime = 0.0f;
+
+   // How long we have to have a break in typing for auto-completes to show
+   protected const float AUTO_COMPLETE_SHOW_DELAY = 0.3f;
+
+   // Flag telling us when we should update auto-completes
+   protected bool _shouldUpdateAutoCompletes = false;
 
    #endregion
 }

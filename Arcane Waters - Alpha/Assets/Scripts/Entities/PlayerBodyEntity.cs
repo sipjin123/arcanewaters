@@ -138,7 +138,11 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             _audioListener = GetComponent<AudioListener>();
          }
 
-         AudioListenerManager.self.setActiveListener(Camera.main.GetComponent<AudioListener>());
+         if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getAudioListener() != null) {
+            AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener());
+         } else {
+            D.error("Couldn't switch audio listener back to main camera");
+         }
       }
    }
 
@@ -699,7 +703,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       setDropShadowScale(tShadow);
    }
 
-   private void checkAudioListener () {
+   private void checkAudioListener () {      
       // If the player is in battle
       if (CameraManager.battleCamera.getCamera().isActiveAndEnabled) {
          // If the listener hasn't been switched, switch it
