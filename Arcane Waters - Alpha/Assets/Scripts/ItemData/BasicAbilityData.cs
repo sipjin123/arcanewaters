@@ -141,6 +141,18 @@ public class BasicAbilityData : BattleItemData
       }
    }
 
+   public bool isMelee () {
+      return classRequirement == Weapon.Class.Melee;
+   }
+
+   public bool isProjectile () {
+      return classRequirement == Weapon.Class.Ranged;
+   }
+
+   public bool isRum () {
+      return classRequirement == Weapon.Class.Rum;
+   }
+
    public bool isReadyForUseBy (Battler sourceBattler) {
       if (abilityType == AbilityType.Standard) {
 

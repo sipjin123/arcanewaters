@@ -152,20 +152,8 @@ public class AttackAbilityData : BasicAbilityData
       return Anim.Type.Attack_East;
    }
 
-   public bool isMelee () {
-      return classRequirement == Weapon.Class.Melee;
-   }
-
    public bool isHeal () {
       return abilityType.Equals(Element.Heal);
-   }
-
-   public bool isProjectile () {
-      return classRequirement == Weapon.Class.Ranged;
-   }
-
-   public bool isRum () {
-      return classRequirement == Weapon.Class.Rum;
    }
 
    public bool isCancel () {

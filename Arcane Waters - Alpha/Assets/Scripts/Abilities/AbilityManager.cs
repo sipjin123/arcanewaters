@@ -31,6 +31,9 @@ public class AbilityManager : MonoBehaviour
    // The id of the rum ability
    public static int RUM_ID = 88;
 
+   // The id of the healing rum ability
+   public static int HEALING_RUM_ID = 89;
+
    // A convenient self reference
    public static AbilityManager self;
 
@@ -63,6 +66,10 @@ public class AbilityManager : MonoBehaviour
 
    public AttackAbilityData throwRum () {
       return allAttackbilities.Find(_ => _.itemID == RUM_ID);
+   }
+
+   public BuffAbilityData healingRum () {
+      return allBuffAbilities.Find(_ => _.itemID == HEALING_RUM_ID);
    }
 
    public void initializeAbilities () {
