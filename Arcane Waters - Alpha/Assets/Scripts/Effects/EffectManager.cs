@@ -166,8 +166,6 @@ public class EffectManager : MonoBehaviour {
 
    // Used for executing a VFX in the target battler
    public static void playCombatAbilityVFX (Battler attacker, Battler target, BattleAction action, Vector2 targetPos, BattleActionType actionType) {
-      int attackerWeapon = attacker.weaponManager.weaponType;
-
       BasicAbilityData ability = new BasicAbilityData();
       if (actionType == BattleActionType.Attack) {
          ability = attacker.getAttackAbilities()[action.abilityInventoryIndex];

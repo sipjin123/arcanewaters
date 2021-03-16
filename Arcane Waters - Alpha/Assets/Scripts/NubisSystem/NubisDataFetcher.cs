@@ -240,7 +240,7 @@ namespace NubisDataHandling {
          }
 
          if (inventoryBundle == null) {
-            D.debug("Inventory bundle is not existing!");
+            D.debug("Inventory bundle is not existing!"+ " : " + inventoryBundleString);
             return;
          }
 

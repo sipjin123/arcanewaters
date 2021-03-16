@@ -263,7 +263,7 @@ public class BattleUIManager : MonoBehaviour {
                         "} WepName: {" + weaponData.equipmentName +
                         "} WepClass: {" + ((weaponData == null) ? "No Weapon Equipped" : weaponData.weaponClass.ToString())+ "}", D.ADMIN_LOG_TYPE.Ability);
                   } catch {
-                     D.debug("Failed to process weapon data!");
+                     D.debug("Failed to process weapon data! WeaponID: " + _playerLocalBattler.weaponManager.equipmentDataId);
                   }
                }
 
