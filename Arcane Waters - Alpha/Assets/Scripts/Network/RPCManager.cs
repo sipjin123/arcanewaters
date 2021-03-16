@@ -5057,64 +5057,20 @@ public class RPCManager : NetworkBehaviour
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                List<AbilitySQLData> equippedAbilityDataList = abilityDataList.FindAll(_ => _.equipSlotIndex >= 0);
                Battler battler = BattleManager.self.getBattler(entity.userId);
-               if (equippedAbilityDataList.Count < 1) {
 
-                  List<int> basicAbilityIds = new List<int>();
-                  foreach (AbilitySQLData temp in equippedAbilityList) {
-                     basicAbilityIds.Add(temp.abilityID);
-                  }
 
-                  if (battler != null) {
-                     foreach (int abilityId in basicAbilityIds) {
-                        D.adminLog("Sending Overridden Ability Data to Player: " + battler.userId
-                           + " ID: " + abilityId, D.ADMIN_LOG_TYPE.Ability);
-                     }
-                     battler.setBattlerAbilities(basicAbilityIds, BattlerType.PlayerControlled);
-                  }
-               } else {
-                  // Sort by equipment slot index
-                  equippedAbilityDataList = equippedAbilityDataList.OrderBy(_ => _.equipSlotIndex).ToList();
+               List<int> basicAbilityIds = new List<int>();
+               foreach (AbilitySQLData temp in equippedAbilityList) {
+                  basicAbilityIds.Add(temp.abilityID);
+               }
 
-                  // Set server data
-                  List<BasicAbilityData> basicAbilityList = getAbilityRecord(equippedAbilityDataList.ToArray());
-                  List<int> basicAbilityIds = new List<int>();
-                  foreach (BasicAbilityData abilityData in basicAbilityList) {
-                     if (abilityData != null) {
-                        basicAbilityIds.Add(abilityData.itemID);
-                     }
+               if (battler != null) {
+                  string abilityStrList = "";
+                  foreach (int abilityId in basicAbilityIds) {
+                     abilityStrList += " : " + abilityId;
                   }
-
-                  // Set the default ability if weapon mismatches the abilities
-                  if (!playerHasValidAbilities) {
-                     switch (weaponCategory) {
-                        case WeaponCategory.None:
-                           basicAbilityIds[0] = AbilityManager.self.punchAbility().itemID;
-                           break;
-                        case WeaponCategory.Blade:
-                           basicAbilityIds[0] = AbilityManager.self.slashAbility().itemID;
-                           break;
-                        case WeaponCategory.Gun:
-                           basicAbilityIds[0] = AbilityManager.self.shootAbility().itemID;
-                           break;
-                        case WeaponCategory.Rum:
-                           basicAbilityIds[0] = AbilityManager.self.throwRum().itemID;
-                           break;
-                        default:
-                           D.debug("Invalid Weapon Category!");
-                           break;
-                     }
-                  }
-
-                  try {
-                     string abilityString = "";
-                     foreach (int abilityId in basicAbilityIds) {
-                        abilityString += abilityId + " : ";
-                     }
-                     D.adminLog("Sending RAW Ability Data to Player: {" + battler.userId + "} ID: {" + abilityString+ "}", D.ADMIN_LOG_TYPE.Ability);
-                     battler.setBattlerAbilities(basicAbilityIds, BattlerType.PlayerControlled);
-                  } catch {
-                     D.debug("Cant add battler abilities for: " + battler);
-                  }
+                  D.adminLog("Sending Overridden Ability Data to Player: " + battler.userId + " ID" + abilityStrList, D.ADMIN_LOG_TYPE.Ability);
+                  battler.setBattlerAbilities(basicAbilityIds, BattlerType.PlayerControlled);
                }
             });
          }
