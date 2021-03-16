@@ -514,12 +514,21 @@ public class SoundManager : MonoBehaviour {
          return;
       }
 
-      AudioSource audioSource = Instantiate(PrefabsManager.self.sound3dPrefab, position, Quaternion.identity);
-      audioSource.transform.SetParent(self.transform, true);
       string path = "Sound/Effects/" + audioClipName;
       if (countToChooseFrom > 1) {
          path += Random.Range(1, countToChooseFrom + 1);
       }
+      create3dSoundWithPath(path, position);
+   }
+
+   public static void create3dSoundWithPath (string audioClipName, Vector3 position) {
+      if (Util.isBatch()) {
+         return;
+      }
+      string path = audioClipName.Replace(".ogg", "");
+
+      AudioSource audioSource = Instantiate(PrefabsManager.self.sound3dPrefab, position, Quaternion.identity);
+      audioSource.transform.SetParent(self.transform, true);
       audioSource.clip = Resources.Load<AudioClip>(path);
 
       // Play the clip

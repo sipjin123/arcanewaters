@@ -48,6 +48,12 @@ public class FarmingTrigger : MonoBehaviour {
 
       yield return new WaitForSeconds(.1f);
 
+      // Play weapon SFX upon triggering animation
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(bodyEntity.weaponManager.equipmentDataId);
+      if (weaponData != null && weaponData.actionSfxDirectory.Length > 1) {
+         SoundManager.create3dSoundWithPath(weaponData.actionSfxDirectory, transform.position);
+      }
+
       Weapon.ActionType currentActionType = bodyEntity.weaponManager.actionType;
       Collider2D currentCollider = coneCollider;
 
