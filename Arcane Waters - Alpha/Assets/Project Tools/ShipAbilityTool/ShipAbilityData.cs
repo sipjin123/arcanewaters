@@ -63,9 +63,6 @@ public class ShipAbilityData
    // The sfx of the casting effect
    public string castSFXPath = "";
 
-   // The sfx of the collision effect
-   public string collisionSFXPath = "";
-
    // Type of casting if toward a target or self
    public ShipCastType shipCastType;
 

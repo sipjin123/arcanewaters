@@ -188,11 +188,6 @@ public class ShipAbilityPanel : MonoBehaviour {
       _abilityTypeSlider.value = (int)shipAbilityData.seaEntityAbilityType;
       _abilityTypeText.text = shipAbilityData.seaEntityAbilityType.ToString();
 
-      _hitAudioText.text = shipAbilityData.collisionSFXPath;
-      _castAudioText.text = shipAbilityData.castSFXPath;
-      if (shipAbilityData.collisionSFXPath != "") {
-         _hitAudio = AudioClipManager.self.getAudioClipData(shipAbilityData.collisionSFXPath).audioClip;
-      }
       if (shipAbilityData.castSFXPath != "") {
          _castAudio = AudioClipManager.self.getAudioClipData(shipAbilityData.castSFXPath).audioClip;
       }
@@ -224,7 +219,6 @@ public class ShipAbilityPanel : MonoBehaviour {
       abilityData.collisionSpritePath = _skillHitText.text;
 
       abilityData.castSFXPath = _castAudioText.text;
-      abilityData.collisionSFXPath = _hitAudioText.text;
 
       abilityData.hasArch = _hasArch.isOn;
       abilityData.hasTrail = _hasTrail.isOn;

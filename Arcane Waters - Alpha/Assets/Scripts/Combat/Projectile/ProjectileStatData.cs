@@ -22,6 +22,14 @@ public class ProjectileStatData  {
    // The path of the projectile sprite
    public string projectileSpritePath;
 
+   // The sfx directories when colliding with various terrains
+   public string defaultHitSFX = "";
+   public string waterHitSFX = "";
+   public string landHitSFX = "";
+   public float defaultHitVol = 1;
+   public float waterHitVol = 1;
+   public float landHitVol = 1;
+
    // If the projectile is a still sprite or animated
    public bool isAnimating;
 
