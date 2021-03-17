@@ -1152,7 +1152,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Pause for a moment after reaching our destination
             yield return new WaitForSeconds(PAUSE_LENGTH);
-
+            
             if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
                sourceBattler.playAnim(Anim.Type.Punch);
             } else {
@@ -1160,6 +1160,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                   sourceBattler.playAnim(attackerAbility.getAnimation());
                } else {
                   if (abilityDataReference.useSpecialAnimation) {
+                     sourceBattler.modifyAnimSpeed(.125f);
                      sourceBattler.playAnim(Anim.Type.SpecialAnimation);
                   } else {
                      sourceBattler.playAnim(Anim.Type.Ready_Attack);
@@ -1167,15 +1168,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                }
             }
 
+            // Special animation delay interval when casting special animation vfx 
+            yield return new WaitForSeconds(sourceBattler.getPreContactLength());
+
             if (abilityDataReference.useSpecialAnimation) {
                // Render a special attack vfx sprite upon casting special animation
                Vector2 newEffectPost = new Vector2(sourceBattler.getCorePosition().x - .35f, sourceBattler.getCorePosition().y + .5f);
                EffectManager.playCastAbilityVFX(sourceBattler, action, newEffectPost, BattleActionType.Attack);
             }
-
-            // Apply the damage at the correct time in the swing animation
-            yield return new WaitForSeconds(sourceBattler.getPreContactLength());
-
+            
             if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
                sourceBattler.playAnim(Anim.Type.Battle_East);
             } else {
@@ -1199,7 +1200,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                // Make the target sprite display its "Hit" animation
                targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action, attackerAbility));
             }
-
+            
             // Simulate the collision effect of the attack towards the target battler
             yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action, attackerAbility));
 
@@ -1245,6 +1246,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
                // Wait for a moment after we reach our jump destination
                yield return new WaitForSeconds(PAUSE_LENGTH);
+            }
+
+            // Wait for special animation to finish
+            if (abilityDataReference.useSpecialAnimation) {
+               // TODO: In the future, setup a dynamic way of handling special animation duration using web tool
+               // (golem special attack animation approximately ends after 2 seconds excluding the time elapsed upon trigger [20 frames * .125 milliseconds])
+               yield return new WaitForSeconds(2);
             }
 
             // Switch back to our battle stance
