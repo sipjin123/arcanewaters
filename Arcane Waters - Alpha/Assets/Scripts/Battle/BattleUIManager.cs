@@ -726,12 +726,12 @@ public class BattleUIManager : MonoBehaviour {
 
       // If the attack was blocked, show some cool text
       if (action.wasBlocked) {
-         createBlockBattleText(damagedBattler);
+         createBlockBattleText(damagedBattler, damageText.transform.position.z + 0.01f);
       }
 
       // If the attack was a critical, show some cool text
       if (action.wasCritical) {
-         createCriticalBattleText(damagedBattler);
+         createCriticalBattleText(damagedBattler, damageText.transform.position.z + 0.01f);
       }
 
       // Make note of the time at which we were last damaged
@@ -761,16 +761,22 @@ public class BattleUIManager : MonoBehaviour {
       buffedBattler.lastDamagedTime = Time.time;
    }
 
-   private void createBlockBattleText (Battler battler) {
-      GameObject battleTextInstance = Instantiate(PrefabsManager.self.battleTextPrefab);
-      battleTextInstance.transform.SetParent(battler.transform, false);
-      battleTextInstance.GetComponentInChildren<BattleText>().customizeTextForBlock();
+   private void createBlockBattleText (Battler battler, float zValue) {
+      GameObject blockEffect = Instantiate(PrefabsManager.self.blockPrefab, EffectManager.self.transform);
+      blockEffect.transform.SetParent(battler.transform, false);
+      Vector3 effectPosition = blockEffect.transform.position;
+      effectPosition.z = zValue;
+      blockEffect.transform.position = effectPosition;
+      Destroy(blockEffect, 2.0f);
    }
 
-   private void createCriticalBattleText (Battler battler) {
-      GameObject battleTextInstance = Instantiate(PrefabsManager.self.battleTextPrefab);
-      battleTextInstance.transform.SetParent(battler.transform, false);
-      battleTextInstance.GetComponentInChildren<BattleText>().customizeTextForCritical();
+   private void createCriticalBattleText (Battler battler, float zValue) {
+      GameObject critEffect = Instantiate(PrefabsManager.self.critPrefab, EffectManager.self.transform);
+      critEffect.transform.SetParent(battler.transform, false);
+      Vector3 effectPosition = critEffect.transform.position;
+      effectPosition.z = zValue;
+      critEffect.transform.position = effectPosition;
+      Destroy(critEffect, 2.0f);
    }
 
    #endregion

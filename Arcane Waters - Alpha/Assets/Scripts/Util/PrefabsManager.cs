@@ -173,6 +173,12 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use to show effects after petting animal
    public GameObject pettingAnimatorPrefab;
 
+   // A reference to the crit effect prefab
+   public GameObject critPrefab;
+
+   // A reference to the block effect prefab
+   public GameObject blockPrefab;
+
    // Self
    public static PrefabsManager self;
 

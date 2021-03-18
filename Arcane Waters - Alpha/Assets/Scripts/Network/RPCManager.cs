@@ -950,7 +950,7 @@ public class RPCManager : NetworkBehaviour
          guildIconDataString = GuildIconData.guildIconDataToString(guildIconData);
       }
 
-      ChatInfo chatInfo = new ChatInfo(0, message, DateTime.UtcNow, chatType, _player.entityName, "", _player.userId, guildIconData, _player.isStealthMuted);
+      ChatInfo chatInfo = new ChatInfo(0, message, DateTime.UtcNow, chatType, _player.entityName, "", _player.userId, guildIconData, _player.isStealthMuted, _player.isAdmin());
 
       // Replace bad words
       message = BadWordManager.ReplaceAll(message);
@@ -963,7 +963,7 @@ public class RPCManager : NetworkBehaviour
 
       // Pass this message along to the relevant people
       if (chatType == ChatInfo.Type.Local || chatType == ChatInfo.Type.Emote) {
-         _player.Rpc_ChatWasSent(chatInfo.chatId, message, chatInfo.chatTime.ToBinary(), chatType, guildIconDataString, _player.isStealthMuted);
+         _player.Rpc_ChatWasSent(chatInfo.chatId, message, chatInfo.chatTime.ToBinary(), chatType, guildIconDataString, _player.isStealthMuted, _player.isAdmin());
       } else if (chatType == ChatInfo.Type.Global) {
          ServerNetworkingManager.self.sendGlobalChatMessage(chatInfo);
       } else if (chatType == ChatInfo.Type.Whisper) {

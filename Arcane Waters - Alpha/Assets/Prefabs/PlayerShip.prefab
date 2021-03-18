@@ -984,6 +984,7 @@ GameObject:
   - component: {fileID: 25324}
   - component: {fileID: -573325106903764786}
   - component: {fileID: -8173071070013123805}
+  - component: {fileID: 1244398974056235960}
   m_Layer: 8
   m_Name: PlayerShip
   m_TagString: Untagged
@@ -1050,6 +1051,7 @@ MonoBehaviour:
   maxHealth: 1000
   XP: 0
   desiredAngle: 0
+  isStealthMuted: 0
   netIdent: {fileID: 0}
   rpc: {fileID: 0}
   cropManager: {fileID: 0}
@@ -1176,6 +1178,7 @@ MonoBehaviour:
   targetArrowParent: {fileID: 8246119289816141062}
   targetArrow: {fileID: 5679710326579033152}
   guildIconGO: {fileID: 4096400083106487280}
+  shipInformationDisplay: {fileID: 7821177879126347252}
 --- !u!50 &20007
 Rigidbody2D:
   serializedVersion: 4
@@ -1388,6 +1391,14 @@ MonoBehaviour:
   snapPositionThreshold: 0.5
   clientAuthority: 0
   lastVelocityTime: 0
+--- !u!81 &1244398974056235960
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 16787}
+  m_Enabled: 0
 --- !u!1 &16792
 GameObject:
   m_ObjectHideFlags: 0
@@ -2850,6 +2861,7 @@ GameObject:
   - component: {fileID: 1667047726660363476}
   - component: {fileID: 57760468787661540}
   - component: {fileID: 406697578855727983}
+  - component: {fileID: 7821177879126347252}
   m_Layer: 0
   m_Name: Ship Info Container
   m_TagString: Untagged
@@ -2938,6 +2950,18 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!225 &7821177879126347252
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3204083076059229502}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3226341960060067623
 GameObject:
   m_ObjectHideFlags: 0
@@ -5225,9 +5249,9 @@ RectTransform:
   m_Father: {fileID: 4744055780203672023}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 28.52634, y: -8}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1254859211242649525
@@ -6769,15 +6793,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d30416cd843e7e846a649c9fdacb75e2, type: 3}
---- !u!4 &3528694981534091233 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1990597497093218664, guid: d30416cd843e7e846a649c9fdacb75e2,
-    type: 3}
-  m_PrefabInstance: {fileID: 3123374448880576137}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3318682353992999856 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 384530586105201977, guid: d30416cd843e7e846a649c9fdacb75e2,
+    type: 3}
+  m_PrefabInstance: {fileID: 3123374448880576137}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3528694981534091233 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1990597497093218664, guid: d30416cd843e7e846a649c9fdacb75e2,
     type: 3}
   m_PrefabInstance: {fileID: 3123374448880576137}
   m_PrefabAsset: {fileID: 0}
@@ -6905,6 +6929,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c20705c7cd1fef48a41c790991d9d6b, type: 3}
+--- !u!224 &7802847736162781427 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 5153975776215992002, guid: 5c20705c7cd1fef48a41c790991d9d6b,
+    type: 3}
+  m_PrefabInstance: {fileID: 3156971687042551345}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2739385863978472055 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 994048568535473222, guid: 5c20705c7cd1fef48a41c790991d9d6b,
@@ -6917,12 +6947,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d57bd3865ece73142a8e669afaf93059, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &7802847736162781427 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 5153975776215992002, guid: 5c20705c7cd1fef48a41c790991d9d6b,
-    type: 3}
-  m_PrefabInstance: {fileID: 3156971687042551345}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3433831078024997768
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -5533,14 +5533,17 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new List<PendingActionInfo> getPendingActions () {
+   public static new List<PendingActionInfo> getPendingActions (PendingActionServerType serverType) {
       List<PendingActionInfo> pendingActions = new List<PendingActionInfo>();
 
       try {
          using (MySqlConnection conn = getConnectionToDevGlobal())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.pending_actions WHERE completedAt IS NULL", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.pending_actions WHERE completedAt IS NULL AND serverType = @serverType", conn)) {
             conn.Open();
             cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@serverType", (int) serverType);
+
             DebugQuery(cmd);
 
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -8320,16 +8323,16 @@ public class DB_Main : DB_MainStub
             "INSERT INTO server_history(eventDate, eventType, serverVersion) " +
             "VALUES (@eventDate, @eventType, @serverVersion)", conn)) {
 
-               conn.Open();
-               cmd.Prepare();
-               cmd.Parameters.AddWithValue("@eventDate", eventDate);
-               cmd.Parameters.AddWithValue("@eventType", (int) eventType);
-               cmd.Parameters.AddWithValue("@serverVersion", serverVersion);
-               DebugQuery(cmd);
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@eventDate", eventDate);
+            cmd.Parameters.AddWithValue("@eventType", (int) eventType);
+            cmd.Parameters.AddWithValue("@serverVersion", serverVersion);
+            DebugQuery(cmd);
 
-               // Execute the command
-               cmd.ExecuteNonQuery();
-            }
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }

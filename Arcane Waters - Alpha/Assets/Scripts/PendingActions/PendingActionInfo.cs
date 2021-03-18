@@ -49,3 +49,10 @@ public enum PendingActionType
    LiftMute = 3,
    LiftBan = 4
 }
+
+public enum PendingActionServerType
+{
+   Localhost = 0,
+   Development = 1,
+   Production = 2
+}

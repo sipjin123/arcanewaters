@@ -96,15 +96,15 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ServerRPC]
-   public void MasterServer_SendGlobalMessage (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, bool isSenderMuted) {
-      InvokeClientRpcOnEveryone(Server_ReceiveGlobalChatMessage, chatId, message, timestamp, senderName, senderUserId, guildIconDataString, isSenderMuted);
+   public void MasterServer_SendGlobalMessage (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, bool isSenderMuted, bool isSenderAdmin) {
+      InvokeClientRpcOnEveryone(Server_ReceiveGlobalChatMessage, chatId, message, timestamp, senderName, senderUserId, guildIconDataString, isSenderMuted, isSenderAdmin);
    }
 
    [ClientRPC]
-   public void Server_ReceiveGlobalChatMessage (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, bool isSenderMuted) {
+   public void Server_ReceiveGlobalChatMessage (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, bool isSenderMuted, bool isSenderAdmin) {
       // Send the chat message to all users connected to this server
       foreach (NetEntity netEntity in MyNetworkManager.getPlayers()) {
-         netEntity.Target_ReceiveGlobalChat(chatId, message, timestamp, senderName, senderUserId, guildIconDataString, isSenderMuted);
+         netEntity.Target_ReceiveGlobalChat(chatId, message, timestamp, senderName, senderUserId, guildIconDataString, isSenderMuted, isSenderAdmin);
       }
    }
 

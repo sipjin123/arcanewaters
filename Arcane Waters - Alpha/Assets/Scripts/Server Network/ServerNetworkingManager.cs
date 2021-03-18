@@ -215,7 +215,7 @@ public class ServerNetworkingManager : MonoBehaviour
    }
 
    public void sendGlobalChatMessage (ChatInfo chatInfo) {
-      server.InvokeServerRpc(server.MasterServer_SendGlobalMessage, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.isSenderMuted);
+      server.InvokeServerRpc(server.MasterServer_SendGlobalMessage, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.isSenderMuted, chatInfo.isSenderAdmin);
    }
 
    public void sendGuildChatMessage (int guildId, ChatInfo chatInfo) {

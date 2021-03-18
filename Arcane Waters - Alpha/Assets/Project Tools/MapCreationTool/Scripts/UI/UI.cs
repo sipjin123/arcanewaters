@@ -247,11 +247,14 @@ namespace MapCreationTool
          Vector2Int dropdownSize = new Vector2Int(boardSizes[boardSizeDropdown.value], boardSizes[boardSizeDropdown.value]);
 
          if (Tools.boardSize != dropdownSize) {
-            yesNoDialog.displayIfMapStateModified(
-             "Board size change",
-             "Are you sure you want to change the size of the board?\nAll unsaved progress will be permanently lost.",
-             () => Tools.changeBoardSize(dropdownSize),
-             updateAllUI);
+            // Commented out dialog; Instead - just change size without losing data until user leaves
+            Tools.changeBoardSize(dropdownSize);
+
+            //yesNoDialog.displayIfMapStateModified(
+            // "Board size change",
+            // "Are you sure you want to change the size of the board?\nAll unsaved progress will be permanently lost.",
+            // () => Tools.changeBoardSize(dropdownSize),
+            // updateAllUI);
          }
       }
 

@@ -642,7 +642,7 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static List<PendingActionInfo> getPendingActions () {
+   public static List<PendingActionInfo> getPendingActions (PendingActionServerType serverType) {
       return new List<PendingActionInfo>();
    }
 

@@ -88,9 +88,11 @@ namespace MapCreationTool
       }
 
       private void boardSizeChanged (Vector2Int from, Vector2Int to) {
-         changeBoard(BoardChange.calculateClearAllChange(layers, placedPrefabs, currentSelection));
+         // Commented out functions creates new board; Instead - just change size
+
+         //changeBoard(BoardChange.calculateClearAllChange(layers, placedPrefabs, currentSelection));
          setBoardSize(to);
-         changeLoadedVersion(null);
+         //changeLoadedVersion(null);
       }
 
       private void editorTypeChanged (EditorType from, EditorType to) {

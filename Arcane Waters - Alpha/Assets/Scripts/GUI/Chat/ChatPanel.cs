@@ -123,6 +123,7 @@ public class ChatPanel : MonoBehaviour {
    public Color whisperNameColor, whisperMessageColor, whisperReceiverNameColor, whisperReceiverMessageColor;
    public Color groupNameLocalColor, groupMessageLocalColor, groupNameOtherColor, groupMessageOtherColor;
    public Color guildChatLocalColor, guildChatOtherColor, officerChatLocalColor, officerChatOtherColor;
+   public Color adminNameColor;
 
    #endregion
 
@@ -471,8 +472,18 @@ public class ChatPanel : MonoBehaviour {
             messageSource = isLocalPlayer ? ("You whispered to " + chatInfo.recipient) : (chatInfo.sender + " whispers");
          }
 
-         string stringFormat = chatInfo.messageType == ChatInfo.Type.Global ? "<color={0}>[GLOBAL] {1}:</color> <color={2}>{3}</color>" : "<color={0}>{1}:</color> <color={2}>{3}</color>";
-         chatLine.text.text = string.Format(stringFormat, getSenderNameColor(chatInfo.messageType, isLocalPlayer), messageSource, getColorString(chatInfo.messageType, isLocalPlayer), chatInfo.text);
+         // If the message is from an Admin, set color of message to Admin color
+         string colorAsString;
+         string stringFormat;
+         if (chatInfo.isSenderAdmin) {
+            colorAsString = "#" + ColorUtility.ToHtmlStringRGBA(adminNameColor);
+            stringFormat = "<color={0}>[ADMIN] {1}:</color> <color={2}>{3}</color>";
+            chatLine.text.text = string.Format(stringFormat, colorAsString, messageSource, colorAsString, chatInfo.text);
+         } else {
+            colorAsString = getSenderNameColor(chatInfo.messageType, isLocalPlayer);
+            stringFormat = chatInfo.messageType == ChatInfo.Type.Global ? "<color={0}>[GLOBAL] {1}:</color> <color={2}>{3}</color>" : "<color={0}>{1}:</color> <color={2}>{3}</color>";
+            chatLine.text.text = string.Format(stringFormat, colorAsString, messageSource, colorAsString, chatInfo.text);
+         }
       }
 
       // In minimized mode, keep the scrollbar at the bottom

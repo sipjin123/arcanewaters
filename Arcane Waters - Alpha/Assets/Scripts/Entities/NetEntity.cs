@@ -1452,19 +1452,19 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveGlobalChat (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, bool isSenderMuted) {
+   public void Target_ReceiveGlobalChat (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, bool isSenderMuted, bool isSenderAdmin) {
       // Convert Json string back into a GuildIconData object and add to chatInfo
       GuildIconData guildIconData = JsonUtility.FromJson<GuildIconData>(guildIconDataString);
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), ChatInfo.Type.Global, senderName, "", senderUserId, guildIconData, isSenderMuted);
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), ChatInfo.Type.Global, senderName, "", senderUserId, guildIconData, isSenderMuted, isSenderAdmin);
 
       // Add it to the Chat Manager
       ChatManager.self.addChatInfo(chatInfo);
    }
 
    [ClientRpc]
-   public void Rpc_ChatWasSent (int chatId, string message, long timestamp, ChatInfo.Type chatType, string guildIconDataString, bool isSenderMuted) {
+   public void Rpc_ChatWasSent (int chatId, string message, long timestamp, ChatInfo.Type chatType, string guildIconDataString, bool isSenderMuted, bool isSenderAdmin) {
       GuildIconData guildIconData = JsonUtility.FromJson<GuildIconData>(guildIconDataString);
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, entityName, "", userId, guildIconData, isSenderMuted);
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, entityName, "", userId, guildIconData, isSenderMuted, isSenderAdmin);
       ChatManager.self.addChatInfo(chatInfo);
    }
 

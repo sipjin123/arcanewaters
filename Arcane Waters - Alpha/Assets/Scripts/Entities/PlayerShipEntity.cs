@@ -90,6 +90,9 @@ public class PlayerShipEntity : ShipEntity
    // GameObject containing the guildicon
    public GameObject guildIconGO;
 
+   // Canvas Group for ship display information
+   public CanvasGroup shipInformationDisplay;
+
    // The different flags the ship can display
    public enum Flag
    {
@@ -117,6 +120,9 @@ public class PlayerShipEntity : ShipEntity
             spriteRender.enabled = false;
          }
       }
+
+      // Ship names will be on display at all times
+      showEntityName();
 
       if (isLocalPlayer) {
          // Create a ship movement sound for our own ship
@@ -148,9 +154,6 @@ public class PlayerShipEntity : ShipEntity
 
       _targetCircle.gameObject.SetActive(false);
       _targetCone.gameObject.SetActive(false);
-
-      // Ship names will be on display at all times
-      showEntityName();
    }
 
    protected override void updateSprites () {
@@ -836,6 +839,8 @@ public class PlayerShipEntity : ShipEntity
          yield break;
       }
 
+      shipInformationDisplay.alpha = 0;
+
       invulnerable = true;
       _clickableBox.gameObject.SetActive(false);
 
@@ -853,6 +858,8 @@ public class PlayerShipEntity : ShipEntity
 
       invulnerable = false;
       _clickableBox.gameObject.SetActive(true);
+
+      shipInformationDisplay.alpha = 1;
 
       if (!isDead()) {
          foreach (Collider2D c in GetComponents<Collider2D>()) {

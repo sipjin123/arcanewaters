@@ -176,7 +176,7 @@ public class TitleScreen : MonoBehaviour {
 
       switch (errorType) {
          case ErrorMessage.Type.ClientOutdated:
-            if (Global.isSteamLogin) {
+            if (SteamManager.Initialized) {
                PanelManager.self.noticeScreen.show($"Please update your client to log in!");
             } else {
                PanelManager.self.noticeScreen.show($"Please download the new version <link=\"{ downloadNewVersionLink }\"><u>here</u></link>");

@@ -155,6 +155,8 @@ public class ServerCannonBall : NetworkBehaviour {
             return;
          }
 
+         _hitEnemy = true;
+
          ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(_abilityData.projectileId);
          int projectileBaseDamage = (int) projectileData.projectileDamage;
          int shipDamageMultiplier = (int) (sourceEntity.damage * projectileBaseDamage);
@@ -272,6 +274,10 @@ public class ServerCannonBall : NetworkBehaviour {
 
    // Whether this will play a firing sound effect
    private bool _playFiringSound = true;
+
+   // True if this cannonball hit an enemy
+   [SyncVar]
+   private bool _hitEnemy = false;
 
    #endregion
 

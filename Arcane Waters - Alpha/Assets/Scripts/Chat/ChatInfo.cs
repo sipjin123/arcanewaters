@@ -44,6 +44,9 @@ public class ChatInfo
    // The name of the person who will receive the message
    public string recipient;
 
+   // Bool to keep track if the sender has admin privileges
+   public bool isSenderAdmin;
+
    // The user ID of the sender
    public int senderId;
 
@@ -68,7 +71,7 @@ public class ChatInfo
 
    }
 
-   public ChatInfo (int chatId, string text, DateTime chatTime, Type messageType, string sender = "", string receiver = "", int senderId = 0, GuildIconData guildIconData = null, bool isSenderMuted = false) {
+   public ChatInfo (int chatId, string text, DateTime chatTime, Type messageType, string sender = "", string receiver = "", int senderId = 0, GuildIconData guildIconData = null, bool isSenderMuted = false, bool isSenderAdmin = false) {
       this.chatId = chatId;
       this.text = text;
       this.chatTime = chatTime;
@@ -78,6 +81,7 @@ public class ChatInfo
       this.senderId = senderId;
       this.guildIconData = guildIconData;
       this.isSenderMuted = isSenderMuted;
+      this.isSenderAdmin = isSenderAdmin;
 
       // Fill in the sender for certain types of messages
       if (Util.isEmpty(sender)) {
