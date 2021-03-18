@@ -17,7 +17,8 @@ public class D : MonoBehaviour {
       Warp = 4,
       Ability = 5,
       Boss = 6,
-      Equipment = 7
+      Equipment = 7,
+      CustomMap = 8
    }
 
    // Any log files older than this will be deleted

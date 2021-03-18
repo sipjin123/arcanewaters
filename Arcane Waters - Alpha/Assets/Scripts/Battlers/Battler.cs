@@ -1173,7 +1173,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             if (abilityDataReference.useSpecialAnimation) {
                // Render a special attack vfx sprite upon casting special animation
-               Vector2 newEffectPost = new Vector2(sourceBattler.getCorePosition().x - .35f, sourceBattler.getCorePosition().y + .5f);
+               Vector2 newEffectPost = new Vector2(sourceBattler.getCorePosition().x + .1f, sourceBattler.getCorePosition().y + .4f);
                EffectManager.playCastAbilityVFX(sourceBattler, action, newEffectPost, BattleActionType.Attack);
             }
             
