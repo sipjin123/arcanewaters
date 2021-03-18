@@ -208,13 +208,41 @@ public class ServerCannonBall : NetworkBehaviour {
 
       bool hitLand = Util.hasLandTile(transform.position);
 
+      bool playDefaultSFX = false;
+      ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(_abilityData.projectileId);
+      if (projectileData == null) {
+         playDefaultSFX = true;
+      } else {
+         if (hitLand || _hitEnemy) {
+            if (projectileData.landHitSFX.Length < 1) {
+               playDefaultSFX = true;
+            } else {
+               playDefaultSFX = false;
+            }
+         } else {
+            if (projectileData.waterHitSFX.Length < 1) {
+               playDefaultSFX = true;
+            } else {
+               playDefaultSFX = false;
+            }
+         }
+      }
+
       // Plays SFX and VFX for land collision
-      if (hitLand) {
+      if (hitLand || _hitEnemy) {
          Instantiate(PrefabsManager.self.requestCannonSmokePrefab(_impactMagnitude), transform.position, Quaternion.identity);
-         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
+         if (playDefaultSFX) {
+            SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position, true);
+         } else {
+            SoundManager.create3dSoundWithPath(projectileData.landHitSFX, transform.position, projectileData.landHitVol);
+         }
       } else {
          Instantiate(PrefabsManager.self.requestCannonSplashPrefab(_impactMagnitude), transform.position, Quaternion.identity);
-         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position);
+         if (playDefaultSFX) {
+            SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position, true);
+         } else {
+            SoundManager.create3dSoundWithPath(projectileData.waterHitSFX, transform.position, projectileData.waterHitVol);
+         }
       }
    }
 

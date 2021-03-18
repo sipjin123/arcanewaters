@@ -334,10 +334,10 @@ public class SoundManager : MonoBehaviour {
       }
    }
 
-   public static AudioSource playEnvironmentClipAtPoint (Type type, Vector3 pos) {
+   public static AudioSource playEnvironmentClipAtPoint (Type type, Vector3 pos, bool logInfo = false) {
       AudioSource source = playClipAtPoint(type, pos);
-      applySoundEffectSettings(source, type);
-
+      applySoundEffectSettings(source, type, logInfo);
+      
       return source;
    }
 
@@ -431,7 +431,7 @@ public class SoundManager : MonoBehaviour {
       return source;
    }
 
-   protected static void applySoundEffectSettings (AudioSource source, Type type) {
+   protected static void applySoundEffectSettings (AudioSource source, Type type, bool logInfo = false) {
       if (source == null) {
          return;
       }
@@ -448,6 +448,11 @@ public class SoundManager : MonoBehaviour {
       source.minDistance = .5f;
       source.maxDistance = 3f;
       source.spread = 90f;
+
+      if (logInfo) {
+         D.debug("Vol: " + source.volume);
+         D.debug("Spatial: " + source.spatialBlend);
+      }
    }
 
    protected static void applySoundEffectSettings (AudioSource source) {
@@ -521,7 +526,7 @@ public class SoundManager : MonoBehaviour {
       create3dSoundWithPath(path, position);
    }
 
-   public static void create3dSoundWithPath (string audioClipName, Vector3 position) {
+   public static void create3dSoundWithPath (string audioClipName, Vector3 position, float volume = -1) {
       if (Util.isBatch()) {
          return;
       }
@@ -530,12 +535,17 @@ public class SoundManager : MonoBehaviour {
       AudioSource audioSource = Instantiate(PrefabsManager.self.sound3dPrefab, position, Quaternion.identity);
       audioSource.transform.SetParent(self.transform, true);
       audioSource.clip = Resources.Load<AudioClip>(path);
+      if (volume > 0) {
+         audioSource.volume = volume;
+      }
 
       // Play the clip
       audioSource.Play();
 
       // Destroy after the clip finishes
-      Destroy(audioSource.gameObject, audioSource.clip.length);
+      if (audioSource && audioSource.gameObject && audioSource.clip) {
+         Destroy(audioSource.gameObject, audioSource.clip.length);
+      }
    }
 
    protected IEnumerator transitionBackgroundMusic (Type type) {
