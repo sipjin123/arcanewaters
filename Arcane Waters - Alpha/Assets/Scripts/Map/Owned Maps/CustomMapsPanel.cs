@@ -54,6 +54,7 @@ public class CustomMapsPanel : Panel
    }
 
    public void selectBaseMap (int baseMapId) {
+      D.adminLog("Player has selected map {" + baseMapId + "} as custom map", D.ADMIN_LOG_TYPE.CustomMap);
       Global.player.rpc.Cmd_SetCustomMapBaseMap(_customMapManager.mapTypeAreaKey, baseMapId, _warpAfterSelecting);
 
       foreach (BaseMapEntry entry in mapBaseContainer.GetComponentsInChildren<BaseMapEntry>()) {

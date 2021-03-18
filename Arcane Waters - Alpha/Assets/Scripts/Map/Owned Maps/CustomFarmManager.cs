@@ -29,6 +29,9 @@ public class CustomFarmManager : CustomMapManager
          // Otherwise, show panel for selecting the layout
          denyWarpHandler = (player) => {
             if (player.isServer) {
+               foreach (MapCreationTool.Serialization.Map relatedMap in getRelatedMaps()) {
+                  D.adminLog("Server CustomFarmMngr: Related custom map is" + " : " + relatedMap.name + " : " + relatedMap.displayName + " : " + relatedMap.id, D.ADMIN_LOG_TYPE.CustomMap);
+               }
                player.rpc.Target_ShowCustomMapPanel(mapTypeAreaKey, true, getRelatedMaps());
             } else {
                player.rpc.Cmd_RequestCustomMapPanelClient(mapTypeAreaKey, true);

@@ -5601,6 +5601,9 @@ public class RPCManager : NetworkBehaviour
       }
 
       if (AreaManager.self.tryGetCustomMapManager(customMapType, out CustomMapManager manager)) {
+         foreach (Map relatedMap in manager.getRelatedMaps()) {
+            D.adminLog("Client: Related custom map is" + " : " + relatedMap.name + " : " + relatedMap.displayName + " : " + relatedMap.id, D.ADMIN_LOG_TYPE.CustomMap);
+         }
          PanelManager.self.get<CustomMapsPanel>(Panel.Type.CustomMaps).displayFor(manager, warpAfterSelecting);
       } else {
          D.error($"Cannot find custom map manager for key: { customMapType }");
@@ -5610,8 +5613,11 @@ public class RPCManager : NetworkBehaviour
    [Command]
    public void Cmd_RequestCustomMapPanelClient (string customMapType, bool warpAfterSelecting) {
       if (!AreaManager.self.tryGetCustomMapManager(customMapType, out CustomMapManager manager)) {
-         D.debug("Custom map manager cant fetch custom map for: " + customMapType);
+         D.adminLog("Custom map manager cant fetch custom map for: " + customMapType, D.ADMIN_LOG_TYPE.CustomMap);
          return;
+      }
+      foreach (Map relatedMap in manager.getRelatedMaps()) {
+         D.adminLog("Server RpcMngr: Related custom map is" + " : " + relatedMap.name + " : " + relatedMap.displayName + " : " + relatedMap.id, D.ADMIN_LOG_TYPE.CustomMap);
       }
 
       _player.rpc.Target_ShowCustomMapPanel(customMapType, warpAfterSelecting, manager.getRelatedMaps());
@@ -5619,13 +5625,21 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public async void Cmd_SetCustomMapBaseMap (string customMapKey, int baseMapId, bool warpIntoAfterSetting) {
+      D.adminLog("Player {" + _player.userId + "} has selected map {" + baseMapId + " : " + customMapKey + "} as custom map", D.ADMIN_LOG_TYPE.CustomMap);
+
       // Check if this is a custom map key
       if (!AreaManager.self.tryGetCustomMapManager(customMapKey, out CustomMapManager manager)) {
+         string errorMsg = "Failed to get map key from custom map manager {" + customMapKey + "}";
+         D.debug(errorMsg);
+         _player.rpc.Target_ReceiveNoticeFromServer(_player.connectionToClient, errorMsg);
          return;
       }
 
       // Check if this type of custom map has this base map
       if (!manager.getRelatedMaps().Any(m => m.id == baseMapId)) {
+         string errorMsg = "Failed to process map, map manager does not have map id {" + baseMapId + "}";
+         D.debug(errorMsg);
+         _player.rpc.Target_ReceiveNoticeFromServer(_player.connectionToClient, errorMsg);
          return;
       }
 
