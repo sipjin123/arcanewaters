@@ -52,23 +52,23 @@ public class AbilityManager : MonoBehaviour
       self = this;
    }
 
-   public AttackAbilityData punchAbility () {
+   public AttackAbilityData getPunchAbility () {
       return allAttackbilities.Find(_ => _.itemID == PUNCH_ID);
    }
 
-   public AttackAbilityData slashAbility () {
+   public AttackAbilityData getSlashAbility () {
       return allAttackbilities.Find(_ => _.itemID == SLASH_ID);
    }
 
-   public AttackAbilityData shootAbility () {
+   public AttackAbilityData getShootAbility () {
       return allAttackbilities.Find(_ => _.itemID == SHOOT_ID);
    }
 
-   public AttackAbilityData throwRum () {
+   public AttackAbilityData getThrowRumAbility () {
       return allAttackbilities.Find(_ => _.itemID == RUM_ID);
    }
 
-   public BuffAbilityData healingRum () {
+   public BuffAbilityData getHealingRumAbility () {
       return allBuffAbilities.Find(_ => _.itemID == HEALING_RUM_ID);
    }
 

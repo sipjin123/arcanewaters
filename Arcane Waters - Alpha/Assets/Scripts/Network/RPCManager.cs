@@ -727,8 +727,8 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveItemShortcuts (NetworkConnection connection, ItemShortcutInfo[] shortcuts) {
-      int shortcutLenght = shortcuts.Length;
-      for (int i = 0; i < shortcutLenght; i++) {
+      int shortcutLength = shortcuts.Length;
+      for (int i = 0; i < shortcutLength; i++) {
          ItemShortcutInfo itemShortcut = shortcuts[i];
          WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(itemShortcut.item.itemTypeId);
          if (weaponData == null) {
@@ -4833,34 +4833,34 @@ public class RPCManager : NetworkBehaviour
             if (validOffenseAbilities < 1) {
                if (weaponId < 1) {
                   weaponCategory = WeaponCategory.None;
-                  equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.punchAbility());
+                  equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getPunchAbility());
                } else {
                   if (weaponData != null) {
                      switch (weaponClass) {
                         case Weapon.Class.Melee:
                            weaponCategory = WeaponCategory.Blade;
-                           equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.slashAbility());
+                           equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getSlashAbility());
                            break;
                         case Weapon.Class.Ranged:
                            weaponCategory = WeaponCategory.Gun;
-                           equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.shootAbility());
+                           equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getShootAbility());
                            break;
                         case Weapon.Class.Rum:
                            weaponCategory = WeaponCategory.Rum;
                            if (equippedAbilityList.Count < MAX_ABILITIES) {
-                              equippedAbilityList.Add(AbilitySQLData.TranslateBasicAbility(AbilityManager.self.throwRum()));
+                              equippedAbilityList.Add(AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getThrowRumAbility()));
                            } else {
-                              equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.throwRum());
+                              equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getThrowRumAbility());
                            }
                            break;
                         default:
                            weaponCategory = WeaponCategory.None;
-                           equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.punchAbility());
+                           equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getPunchAbility());
                            break;
                      }
                   } else {
                      weaponCategory = WeaponCategory.None;
-                     equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.punchAbility());
+                     equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getPunchAbility());
                   }
 
                   D.adminLog("New ability assigned to player: "
@@ -4882,9 +4882,9 @@ public class RPCManager : NetworkBehaviour
                D.adminLog("Ability slots:: " + slots, D.ADMIN_LOG_TYPE.Ability);
 
                if (equippedAbilityList.Count < MAX_ABILITIES) {
-                  equippedAbilityList.Add(AbilitySQLData.TranslateBasicAbility(AbilityManager.self.healingRum()));
+                  equippedAbilityList.Add(AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getHealingRumAbility()));
                } else {
-                  equippedAbilityList[firstInvalidSlot] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.healingRum());
+                  equippedAbilityList[firstInvalidSlot] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getHealingRumAbility());
                }
             }
 
@@ -4907,7 +4907,7 @@ public class RPCManager : NetworkBehaviour
 
    private List<AbilitySQLData> modifiedUnarmedAbilityList () {
       List<AbilitySQLData> newAbilityList = new List<AbilitySQLData>();
-      AbilitySQLData abilitySql = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.punchAbility());
+      AbilitySQLData abilitySql = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getPunchAbility());
       abilitySql.equipSlotIndex = 0;
       newAbilityList.Add(abilitySql);
 
@@ -5129,14 +5129,14 @@ public class RPCManager : NetworkBehaviour
             try {
                abilityData = sourceBattler.getAttackAbilities()[abilityInventoryIndex];
             } catch {
-               abilityData = AbilityManager.self.punchAbility();
+               abilityData = AbilityManager.self.getPunchAbility();
             }
          } else {
             // Get the ability from the battler abilities.
             abilityData = sourceBattler.getBuffAbilities()[abilityInventoryIndex];
          }
       } else {
-         abilityData = AbilityManager.self.punchAbility();
+         abilityData = AbilityManager.self.getPunchAbility();
       }
 
       foreach (Battler participant in battle.getParticipants()) {

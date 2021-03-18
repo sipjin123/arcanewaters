@@ -460,7 +460,7 @@ public class BattleManager : MonoBehaviour {
          }
       } else {
          D.editorLog("Enemy: " + source.battlerType + " has no proper ability assigned", Color.red);
-         abilityData = AbilityManager.self.punchAbility();
+         abilityData = AbilityManager.self.getPunchAbility();
       }
       
       if (abilityType == AbilityType.Standard) {
@@ -499,7 +499,7 @@ public class BattleManager : MonoBehaviour {
          if (source.enemyType == Enemy.Type.PlayerBattler) {
             D.debug("Ability is set to punch! " + source.getAttackAbilities().Count + " : " + source.getBasicAbilities().Count + " : " + abilityType + " : " + abilityInventoryIndex);
          }
-         abilityData = AbilityManager.self.punchAbility();
+         abilityData = AbilityManager.self.getPunchAbility();
       }
 
       bool wasBlocked = false;

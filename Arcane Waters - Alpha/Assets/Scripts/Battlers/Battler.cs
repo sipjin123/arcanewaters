@@ -695,10 +695,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       // If there are no abilities set, assign the default abilities for all weapon types
       if (basicAbilityIDList.Count == 0 && battlerType == BattlerType.PlayerControlled) {
-         basicAbilityIDList.Add(AbilityManager.self.shootAbility().itemID);
-         basicAbilityIDList.Add(AbilityManager.self.punchAbility().itemID);
-         basicAbilityIDList.Add(AbilityManager.self.slashAbility().itemID);
-         basicAbilityIDList.Add(AbilityManager.self.throwRum().itemID);
+         basicAbilityIDList.Add(AbilityManager.self.getShootAbility().itemID);
+         basicAbilityIDList.Add(AbilityManager.self.getPunchAbility().itemID);
+         basicAbilityIDList.Add(AbilityManager.self.getSlashAbility().itemID);
+         basicAbilityIDList.Add(AbilityManager.self.getThrowRumAbility().itemID);
       }
 
       battlerAbilitiesInitialized = true;

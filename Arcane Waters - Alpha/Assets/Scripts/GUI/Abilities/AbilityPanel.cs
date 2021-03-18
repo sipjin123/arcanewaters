@@ -166,7 +166,7 @@ public class AbilityPanel : Panel {
       emptyHandSkillHolder.DestroyChildren();
       if (!userHasWeapon()) {
          AbilitySlot abilitySlot = Instantiate(abilitySlotPrefab, emptyHandSkillHolder.transform, false);
-         AttackAbilityData punchAbility = AbilityManager.self.punchAbility();
+         AttackAbilityData punchAbility = AbilityManager.self.getPunchAbility();
          abilitySlot.setSlotForAbilityData(punchAbility.itemID, punchAbility, punchAbility.itemDescription);
          abilitySlot.GetComponent<AbilitySlot>().disableGrab = true;
       }
