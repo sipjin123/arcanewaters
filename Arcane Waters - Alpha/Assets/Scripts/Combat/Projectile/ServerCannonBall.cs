@@ -13,6 +13,10 @@ public class ServerCannonBall : NetworkBehaviour {
    [SyncVar]
    public Vector2 projectileVelocity;
 
+   // The projectile id
+   [SyncVar]
+   public int projectileId;
+
    #endregion
 
    private void Awake () {
@@ -51,6 +55,7 @@ public class ServerCannonBall : NetworkBehaviour {
       _statusType = statusType;
       _statusDuration = statusDuration;
       _playFiringSound = playFiringSound;
+      projectileId = _abilityData.projectileId;
 
       this.projectileVelocity = velocity;
 
@@ -71,6 +76,7 @@ public class ServerCannonBall : NetworkBehaviour {
       _statusType = statusType;
       _statusDuration = statusDuration;
       _playFiringSound = playFiringSound;
+      projectileId = _abilityData.projectileId;
 
       this.projectileVelocity = velocity;
 
@@ -209,7 +215,7 @@ public class ServerCannonBall : NetworkBehaviour {
       bool hitLand = Util.hasLandTile(transform.position);
 
       bool playDefaultSFX = false;
-      ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(_abilityData.projectileId);
+      ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(projectileId);
       if (projectileData == null) {
          playDefaultSFX = true;
       } else {
