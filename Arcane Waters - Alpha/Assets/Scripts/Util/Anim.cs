@@ -35,7 +35,8 @@ public class Anim : MonoBehaviour {
       Pet_South = 30,
       Throw_Projectile = 31,
       Toast = 32,
-      SpecialAnimation = 33
+      SpecialAnimation = 33,
+      SpecialAnimationReady = 34
    }
 
    // The different animation groups
@@ -69,6 +70,7 @@ public class Anim : MonoBehaviour {
          case Type.Finish_Attack:
          case Type.Play_Once:
          case Type.Punch:
+         case Type.SpecialAnimationReady:
          case Type.SpecialAnimation:
             return true;
          default:

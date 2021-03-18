@@ -1152,7 +1152,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Pause for a moment after reaching our destination
             yield return new WaitForSeconds(PAUSE_LENGTH);
-            
+
+            const float SPECIAL_ATTACK_READY_TIME = .2f;
             if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
                sourceBattler.playAnim(Anim.Type.Punch);
             } else {
@@ -1160,8 +1161,16 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                   sourceBattler.playAnim(attackerAbility.getAnimation());
                } else {
                   if (abilityDataReference.useSpecialAnimation) {
-                     sourceBattler.modifyAnimSpeed(.125f);
+                     // Set the windup special animation speed
+                     sourceBattler.modifyAnimSpeed(.1f);
+                     sourceBattler.playAnim(Anim.Type.SpecialAnimationReady);
+
+                     yield return new WaitForSeconds(SPECIAL_ATTACK_READY_TIME);
+
+                     // End of special animation is faster than the windup time
+                     sourceBattler.modifyAnimSpeed(.03f);
                      sourceBattler.playAnim(Anim.Type.SpecialAnimation);
+                     sourceBattler.pauseAnim(false);
                   } else {
                      sourceBattler.playAnim(Anim.Type.Ready_Attack);
                   }
@@ -1169,7 +1178,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             }
 
             // Special animation delay interval when casting special animation vfx 
-            yield return new WaitForSeconds(sourceBattler.getPreContactLength());
+            yield return new WaitForSeconds(sourceBattler.getPreContactLength() - SPECIAL_ATTACK_READY_TIME);
 
             if (abilityDataReference.useSpecialAnimation) {
                // Render a special attack vfx sprite upon casting special animation
@@ -1251,8 +1260,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Wait for special animation to finish
             if (abilityDataReference.useSpecialAnimation) {
                // TODO: In the future, setup a dynamic way of handling special animation duration using web tool
-               // (golem special attack animation approximately ends after 2 seconds excluding the time elapsed upon trigger [20 frames * .125 milliseconds])
-               yield return new WaitForSeconds(2);
+               // (golem special attack animation approximately ends after .5 seconds excluding the time elapsed upon trigger [20 frames * .05 milliseconds])
+               sourceBattler.modifyAnimSpeed(.2f);
+               yield return new WaitForSeconds(.5f);
+               sourceBattler.modifyAnimSpeed(-1);
             }
 
             // Switch back to our battle stance
