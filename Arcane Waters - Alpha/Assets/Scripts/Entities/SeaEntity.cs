@@ -338,10 +338,7 @@ public class SeaEntity : NetEntity
                Instantiate(PrefabsManager.self.requestCannonExplosionPrefab(currentImpactMagnitude), pos, Quaternion.identity);
             } else {
                EffectManager.createDynamicEffect(shipData.collisionSpritePath, pos, shipData.abilitySpriteFXPerFrame);
-               AudioClip clip = AudioClipManager.self.getAudioClipData(shipData.collisionSFXPath).audioClip;
-               if (clip != null) {
-                  SoundManager.playClipAtPoint(clip, Camera.main.transform.position);
-               }
+               // TODO: Add sfx here for ability collision
             }
          }
 
