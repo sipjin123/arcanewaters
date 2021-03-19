@@ -123,7 +123,7 @@ public class OfflineCharacter : ClientMonoBehaviour {
       if (armorData != null) {
          setArmor(armorData.armorType, armorData.palettes, ArmorStatData.serializeArmorStatData(armorData));
       } else {
-         D.debug("Armor data is null: {" + armor.itemTypeId + "}");
+         D.debug("Armor data is null: {" + armor.itemTypeId + "} ArmorContentCount: {" + EquipmentXMLManager.self.armorStatList.Count + "}");
       }
 
       HatStatData hatData = EquipmentXMLManager.self.getHatData(hat.itemTypeId);
