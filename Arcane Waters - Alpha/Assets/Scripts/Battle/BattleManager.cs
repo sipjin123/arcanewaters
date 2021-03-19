@@ -179,9 +179,6 @@ public class BattleManager : MonoBehaviour {
       // Assign the Battle ID to the Sync Var
       player.battleId = battle.battleId;
 
-      // Note that this battler is in a pvp or not
-      battler.isPvp = battle.isPvp;
-
       // Registers the action of combat entry to the achievement database for recording
       AchievementManager.registerUserAchievement(player, ActionType.EnterCombat);
 
@@ -273,9 +270,13 @@ public class BattleManager : MonoBehaviour {
    protected Battler createBattlerForPlayer (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType) {
       // We need to make a new one
       Battler battler = Instantiate(baseBattlerPrefab);
+
+      // Note that this battler is in a pvp or not
+      battler.isPvp = battle.isPvp;
       battler = assignBattlerData(battle, battler, player, teamType);
       battler.health = battler.getStartingHealth(Enemy.Type.PlayerBattler);
-      
+      battler.enemyType = Enemy.Type.PlayerBattler;
+
       // Figure out which Battle Spot we should be placed in
       battler.boardPosition = battle.getTeam(teamType).Count + 1;
       BattleSpot battleSpot = battle.battleBoard.getSpot(teamType, battler.boardPosition);
@@ -362,6 +363,10 @@ public class BattleManager : MonoBehaviour {
       Battler battler = Instantiate(enemyPrefab);
       battler.biomeType = battle.biomeType;
       battler.enemyType = overrideType;
+
+      // Note that this battler is in a pvp or not
+      battler.isPvp = battle.isPvp;
+
       battler.isBossType = data.isBossType;
       battler.name = data.enemyName;
       battler.companionId = companionId;

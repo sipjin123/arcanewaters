@@ -136,6 +136,15 @@ public class BattleUIManager : MonoBehaviour {
          if (abilityButton.abilityType == abilityType && doesStanceMatch && !abilityButton.cooldownImage.enabled) {
             abilityButton.enableButton();
          } else {
+            if (abilityType != AbilityType.Undefined) {
+               D.adminLog("Disabled Ability Button :: " +
+                  " Index: " + abilityButton.abilityIndex +
+                  " TypeIndex: " + abilityButton.abilityTypeIndex +
+                  " ButtonType: " + abilityButton.abilityType +
+                  " AbilityType: " + abilityType +
+                  " Match: " + doesStanceMatch, D.ADMIN_LOG_TYPE.Ability);
+            }
+
             abilityButton.disableButton();
          }
       }
