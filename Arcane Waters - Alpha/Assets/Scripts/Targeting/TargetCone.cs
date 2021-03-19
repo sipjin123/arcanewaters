@@ -36,8 +36,6 @@ public class TargetCone : MonoBehaviour {
    public void updateCone (bool updateInputs) {
       if (updateInputs) {
          _toMouse = Util.getMousePos() - transform.position;
-         float mouseDist = _toMouse.magnitude;
-         float mouseDistClamped = Mathf.Clamp(mouseDist, coneInnerRadius, coneOuterRadius);
          _toMouse = _toMouse.normalized;
       }
 

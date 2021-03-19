@@ -459,7 +459,6 @@ public class SeaEntity : NetEntity
       if (!Util.isEmpty(this.entityName)) {
          entityNameGO.SetActive(true);
          entityNameGO.GetComponentInChildren<TextMeshProUGUI>(true).text = this.entityName;
-         entityNameGO.SetActive(false);
       }
    }
 

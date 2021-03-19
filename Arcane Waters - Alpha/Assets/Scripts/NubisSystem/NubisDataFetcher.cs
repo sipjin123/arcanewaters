@@ -473,7 +473,16 @@ namespace NubisDataHandling {
          if (!bool.TryParse(isServerOnlineTask.Result, out bool isServerOnline)) {
             isServerOnline = false;
          }
-         List<ServerHistoryInfo> serverHistoryList = JsonConvert.DeserializeObject<List<ServerHistoryInfo>>(serverHistoryListTask.Result);
+         List<ServerHistoryInfo> serverHistoryList = null;
+         try {
+            serverHistoryList = JsonConvert.DeserializeObject<List<ServerHistoryInfo>>(serverHistoryListTask.Result);
+         } catch (Exception e) {
+            D.debug("Failed to fetch the server history.\n" + e.ToString());
+         }
+
+         if (serverHistoryList == null) {
+            serverHistoryList = new List<ServerHistoryInfo>();
+         }
 
          ServerStatusPanel.self.updatePanelWithServerHistory(isServerOnline, serverHistoryList);
       }

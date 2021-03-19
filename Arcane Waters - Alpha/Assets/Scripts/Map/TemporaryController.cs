@@ -28,6 +28,7 @@ public abstract class TemporaryController : ClientMonoBehaviour
          hasMovement = !isNpc
       };
       _puppets.Add(puppet);
+      D.debug(string.Format("Added puppet userId {0} to temporary controller type {1}", entity.userId, this.GetType()));
 
       // Disable collider for the entity
       if (puppet.entity.isLocalPlayer) {

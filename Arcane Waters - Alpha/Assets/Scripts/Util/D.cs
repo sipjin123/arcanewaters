@@ -162,6 +162,14 @@ public class D : MonoBehaviour {
       prefix = (type == ChatInfo.Type.Warning) ? "[WARNING] " + prefix : prefix;
       prefix = (type == ChatInfo.Type.Error) ? "[ERROR] " + prefix : prefix;
 
+      // Send messages to Logger
+      if (type == ChatInfo.Type.Warning) {
+         LoggerManager.self.AddMessage(prefix + msg, "", LogType.Warning);
+      }
+      if (type == ChatInfo.Type.Error) {
+         LoggerManager.self.AddMessage(prefix + msg, "", LogType.Error);
+      }
+
       // Maybe write it to a client log file
       if (writeThisToFile && !Util.isEmpty(_logFilePath)) {
          using (StreamWriter file = new StreamWriter(@"" + _logFilePath, true)) {

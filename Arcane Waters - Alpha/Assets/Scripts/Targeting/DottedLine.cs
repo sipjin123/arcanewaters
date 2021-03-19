@@ -62,8 +62,8 @@ public class DottedLine : MonoBehaviour {
       }
 
       // Override ending dot
-      if (endDotOverride && _lineSegments.Count > 1) {
-         _lineSegments[_lineSegments.Count - 1].GetComponent<SpriteRenderer>().sprite = endDotOverride;
+      if (endDotOverride && _lineSegmentRenderers.Count > 1) {
+         _lineSegmentRenderers[_lineSegmentRenderers.Count - 1].sprite = endDotOverride;
       }
    }
 

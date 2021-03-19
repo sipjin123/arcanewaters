@@ -5,8 +5,10 @@ using UnityEngine.UI;
 using Mirror;
 using MiniJSON;
 using SteamLoginSystem;
+using UnityEngine.Networking;
 
-public class BugReportManager : MonoBehaviour {
+public class BugReportManager : MonoBehaviour
+{
    #region Public Variables
 
    // Self
@@ -108,7 +110,7 @@ public class BugReportManager : MonoBehaviour {
          frameCount++;
          yield return null;
       }
-      int fps = Mathf.FloorToInt(((float)frameCount) / totalTime);
+      int fps = Mathf.FloorToInt(((float) frameCount) / totalTime);
 
       string screenResolution = Screen.currentResolution.ToString();
       string operatingSystem = SystemInfo.operatingSystem;
@@ -116,49 +118,87 @@ public class BugReportManager : MonoBehaviour {
 
       int width = Screen.width;
       int height = Screen.height;
-      int maxPacketSize = Transport.activeTransport.GetMaxPacketSize();
+      //int maxPacketSize = Transport.activeTransport.GetMaxPacketSize();
 
       addMetaDataToBugReport(ref bugReport);
 
       // Getting deploymentId on client side
       int deploymentId = Util.getDeploymentId();
 
-      Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, new byte[0], screenResolution, operatingSystem, steamState, deploymentId);
+      // Getting player area
+      string playerPosition = AreaManager.self.getArea(player.areaKey) + ": (" + player.gameObject.transform.position.x.ToString() + "; " + player.gameObject.transform.position.y.ToString() + ")";
 
-      // Find image quality of size small enough to send through Mirror Networking      
+      // Getting the screenshot
       Texture2D standardTex = takeScreenshot(width, height);
-      _screenshotBytes = standardTex.EncodeToPNG();
-      if (_screenshotBytes.Length < maxPacketSize) {
-         // Full quality image
-      } else {
-         // Skip every other row and column (no quality loss except minimap and fonts, because assets are using 200% scale)
-         Texture2D skippedRowsTex = removeEvenRowsAndColumns(standardTex);
-         _screenshotBytes = skippedRowsTex.EncodeToPNG();
-         if (_screenshotBytes.Length < maxPacketSize) {
-            // Full quality with removed rows and columns
-         } else {
-            // Try to use texture with skipped rows/columns with lower resolution and quality (JPG)
-            int quality = 100;
-            while (quality >= 0) {
-               quality = Mathf.Max(1, quality);
-               skippedRowsTex = removeEvenRowsAndColumns(standardTex);
-               _screenshotBytes = skippedRowsTex.EncodeToJPG(quality);
-               if (_screenshotBytes.Length < maxPacketSize) {
-                  break;
-               }
 
-               if (quality <= 1) {
-                  D.error("Something went wrong. Bug report system need to be investigated!");
-               }
-               quality -= 5;
-            }
-         }
+      // Sending the request to Web Tools
+      List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
+
+      // Adding bug report data as form data
+      formData.Add(new MultipartFormDataSection("secretToken", secretToken));
+      formData.Add(new MultipartFormDataSection("userId", player.userId.ToString()));
+      formData.Add(new MultipartFormDataSection("username", player.entityName));
+      formData.Add(new MultipartFormDataSection("accId", player.accountId.ToString()));
+      formData.Add(new MultipartFormDataSection("subject", subjectString));
+      formData.Add(new MultipartFormDataSection("log", bugReport));
+      formData.Add(new MultipartFormDataSection("ping", ping.ToString()));
+      formData.Add(new MultipartFormDataSection("fps", fps.ToString()));
+      formData.Add(new MultipartFormDataSection("resolution", screenResolution));
+      formData.Add(new MultipartFormDataSection("operatingSystem", operatingSystem));
+      formData.Add(new MultipartFormDataSection("steamState", steamState));
+      formData.Add(new MultipartFormDataSection("deploymentId", deploymentId.ToString()));
+      formData.Add(new MultipartFormDataSection("playerPosition", playerPosition));
+
+      // Adding the screenshot as a form file
+      formData.Add(new MultipartFormFileSection(standardTex.EncodeToPNG()));
+
+      UnityWebRequest www = UnityWebRequest.Post("https://tools.arcanewaters.com/api/tasks/submit", formData);
+      yield return www.SendWebRequest();
+
+      if (www.responseCode == 201) {
+         ChatManager.self.addChat("Bug report submitted successfully, thanks!", ChatInfo.Type.System);
+      } else {
+         D.error("Could not submit bug report, needs investigation");
       }
+
+      // Not using the server
+      //Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, new byte[0], screenResolution, operatingSystem, steamState, deploymentId);
+
+      // Not compressing the screenshots, for now
+      //// Find image quality of size small enough to send through Mirror Networking      
+      //Texture2D standardTex = takeScreenshot(width, height);
+      //_screenshotBytes = standardTex.EncodeToPNG();
+      //if (_screenshotBytes.Length < maxPacketSize) {
+      //   // Full quality image
+      //} else {
+      //   // Skip every other row and column (no quality loss except minimap and fonts, because assets are using 200% scale)
+      //   Texture2D skippedRowsTex = removeEvenRowsAndColumns(standardTex);
+      //   _screenshotBytes = skippedRowsTex.EncodeToPNG();
+      //   if (_screenshotBytes.Length < maxPacketSize) {
+      //      // Full quality with removed rows and columns
+      //   } else {
+      //      // Try to use texture with skipped rows/columns with lower resolution and quality (JPG)
+      //      int quality = 100;
+      //      while (quality >= 0) {
+      //         quality = Mathf.Max(1, quality);
+      //         skippedRowsTex = removeEvenRowsAndColumns(standardTex);
+      //         _screenshotBytes = skippedRowsTex.EncodeToJPG(quality);
+      //         if (_screenshotBytes.Length < maxPacketSize) {
+      //            break;
+      //         }
+
+      //         if (quality <= 1) {
+      //            D.error("Something went wrong. Bug report system need to be investigated!");
+      //         }
+      //         quality -= 5;
+      //      }
+      //   }
+      //}
 
       _lastBugReportTime[Global.player.userId] = Time.time;
    }
 
-   private bool addMetaDataToBugReport(ref string bugReport) {
+   private bool addMetaDataToBugReport (ref string bugReport) {
       // Make sure the bug report file hasn't grown too large
       if (System.Text.Encoding.Unicode.GetByteCount(bugReport) > MAX_BYTES) {
          int diff = (System.Text.Encoding.Unicode.GetByteCount(bugReport) - MAX_BYTES) / 2 + 1;
@@ -173,7 +213,7 @@ public class BugReportManager : MonoBehaviour {
       return true;
    }
 
-   private Texture2D removeEvenRowsAndColumns(Texture2D tex) {
+   private Texture2D removeEvenRowsAndColumns (Texture2D tex) {
       List<Color[]> listColors = new List<Color[]>();
       List<Color> finalColors = new List<Color>();
 
@@ -262,6 +302,9 @@ public class BugReportManager : MonoBehaviour {
 
    // Stored screenshot to send after confirmation of bug report
    protected byte[] _screenshotBytes;
+
+   // Secret token used for submitting bug reports
+   protected const string secretToken = "arcane_bug_reports_vjk53fx";
 
    #endregion
 }

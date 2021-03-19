@@ -19,6 +19,7 @@ using System.Xml;
 using System.Globalization;
 using UnityEngine.Events;
 using MapCustomization;
+using System.Net;
 
 public class Util : MonoBehaviour
 {
@@ -94,11 +95,11 @@ public class Util : MonoBehaviour
    }
 
    public static Texture2D getScreenshot () {
-      #if UNITY_EDITOR
-         if (!Application.isPlaying) {
-            D.error("Screenshots can only be taken in playmode.");
-         }
-      #endif
+#if UNITY_EDITOR
+      if (!Application.isPlaying) {
+         D.error("Screenshots can only be taken in playmode.");
+      }
+#endif
 
       // Prepare data
       int width = Screen.width;
@@ -534,9 +535,9 @@ public class Util : MonoBehaviour
    public static bool isServerBuild () {
       bool isServerBuild = false;
 
-      #if IS_SERVER_BUILD
-         isServerBuild = true;
-      #endif
+#if IS_SERVER_BUILD
+      isServerBuild = true;
+#endif
 
       return isServerBuild;
    }
@@ -576,9 +577,9 @@ public class Util : MonoBehaviour
    }
 
    public static bool isCloudBuild () {
-      #if CLOUD_BUILD
+#if CLOUD_BUILD
       return true;
-      #endif
+#endif
       return false;
    }
 
@@ -662,7 +663,7 @@ public class Util : MonoBehaviour
    }
 
    public static void tryToRunInServerBackground (Action action) {
-      #if IS_SERVER_BUILD
+#if IS_SERVER_BUILD
 
       // If Unity is shutting down, we can't create new background threads
       if (ClientManager.isApplicationQuitting) {
@@ -675,7 +676,7 @@ public class Util : MonoBehaviour
          action();
       });
 
-      #endif
+#endif
    }
 
    public static string removeNumbers (string input) {
@@ -709,23 +710,23 @@ public class Util : MonoBehaviour
    }
 
    public static string createSalt (string UserName) {
-      #if IS_SERVER_BUILD
-         Rfc2898DeriveBytes hasher = new Rfc2898DeriveBytes(UserName.ToLower(),
-            System.Text.Encoding.Default.GetBytes("saltmZ8HxZEL7PTsalt"), 1000);
-         return System.Convert.ToBase64String(hasher.GetBytes(25));
-      #else
+#if IS_SERVER_BUILD
+      Rfc2898DeriveBytes hasher = new Rfc2898DeriveBytes(UserName.ToLower(),
+         System.Text.Encoding.Default.GetBytes("saltmZ8HxZEL7PTsalt"), 1000);
+      return System.Convert.ToBase64String(hasher.GetBytes(25));
+#else
          return "";
-      #endif
+#endif
    }
 
    public static string hashPassword (string Salt, string Password) {
-      #if IS_SERVER_BUILD
-         Rfc2898DeriveBytes Hasher = new Rfc2898DeriveBytes(Password,
-                  System.Text.Encoding.Default.GetBytes(Salt), 1000);
-         return System.Convert.ToBase64String(Hasher.GetBytes(25));
-      #else
+#if IS_SERVER_BUILD
+      Rfc2898DeriveBytes Hasher = new Rfc2898DeriveBytes(Password,
+               System.Text.Encoding.Default.GetBytes(Salt), 1000);
+      return System.Convert.ToBase64String(Hasher.GetBytes(25));
+#else
          return "";
-      #endif
+#endif
    }
 
    public static string UppercaseFirst (string s) {
@@ -874,9 +875,9 @@ public class Util : MonoBehaviour
                   // Database server - not mandatory
                   line = reader.ReadLine();
                   if (line != null) {
-                     #if IS_SERVER_BUILD
+#if IS_SERVER_BUILD
                      DB_Main.setServer(line);
-                     #endif
+#endif
                   }
                }
 
@@ -1290,6 +1291,19 @@ public class Util : MonoBehaviour
       int ping = isConnected ? (int) (NetworkTime.rtt * 1000) : 0;
 
       return ping;
+   }
+
+   // Function to get the IP Address of the client, client-side
+   public static string getLocalIPAddress () {
+      IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
+
+      foreach (IPAddress ip in host.AddressList) {
+         if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork || ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6) {
+            return ip.ToString();
+         }
+      }
+
+      throw new Exception("No network adapters with an IPv4 or IPv6 address in the system!");
    }
 
    // A Random instance we can use for generating random numbers

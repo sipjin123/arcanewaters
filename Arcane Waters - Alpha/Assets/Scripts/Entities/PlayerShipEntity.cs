@@ -81,12 +81,6 @@ public class PlayerShipEntity : ShipEntity
    // A reference to the player's lifeboat object
    public GameObject lifeboat;
 
-   // The parent of the player ship's target arrow, used to rotate the arrow
-   public Transform targetArrowParent;
-
-   // The filled target arrow image used for showing the player's charge amount
-   public Image targetArrow;
-
    // GameObject containing the guildicon
    public GameObject guildIconGO;
 
@@ -148,12 +142,15 @@ public class PlayerShipEntity : ShipEntity
       // Create targeting objects
       GameObject targetCirclePrefab = Resources.Load<GameObject>("Prefabs/Targeting/TargetCircle");
       GameObject targetConePrefab = Resources.Load<GameObject>("Prefabs/Targeting/TargetConeDots");
+      GameObject cannonTargeterPrefab = Resources.Load<GameObject>("Prefabs/Targeting/CannonTargeter");
 
       _targetCircle = Instantiate(targetCirclePrefab, transform.parent).GetComponent<TargetCircle>();
       _targetCone = Instantiate(targetConePrefab, transform.parent).GetComponent<TargetCone>();
+      _cannonTargeter = Instantiate(cannonTargeterPrefab, transform.parent).GetComponent<CannonTargeter>();
 
       _targetCircle.gameObject.SetActive(false);
       _targetCone.gameObject.SetActive(false);
+      _cannonTargeter.gameObject.SetActive(false);
    }
 
    protected override void updateSprites () {
@@ -166,10 +163,11 @@ public class PlayerShipEntity : ShipEntity
    protected override void Update () {
       base.Update();
 
+      // Hide targeting UI when dead
       if (isDead()) {
          _targetCone.gameObject.SetActive(false);
          _targetCircle.gameObject.SetActive(false);
-         targetArrowParent.gameObject.SetActive(false);
+         _cannonTargeter.gameObject.SetActive(false);
       }
 
       updateSpeedUpDisplay();
@@ -290,8 +288,9 @@ public class PlayerShipEntity : ShipEntity
 
       switch (_cannonAttackType) {
          case CannonAttackType.Normal:
-            targetArrowParent.gameObject.SetActive(true);
+            _cannonTargeter.gameObject.SetActive(true);
             updateTargeting();
+            _cannonTargeter.updateTargeter();
             break;
          case CannonAttackType.Cone:
             _targetCone.gameObject.SetActive(true);
@@ -311,44 +310,39 @@ public class PlayerShipEntity : ShipEntity
          return;
       }
 
-      float cannonChargeAmount = Mathf.Clamp01((float)(NetworkTime.time - _cannonChargeStartTime));
-
       switch (_cannonAttackType) {
          case CannonAttackType.Normal:
-            float normalCannonballDist = 0.5f + (cannonChargeAmount * 2.5f);
-            float normalCannonballLifetime = normalCannonballDist / Attack.getSpeedModifier(Attack.Type.Cannon);
-
+            float normalCannonballLifetime = getCannonballLifetime();
             Vector2 targetPosition;
+
             if (_chargingWithMouse) {
                targetPosition = Util.getMousePos();
             } else {
                targetPosition = _targetSelector.getTarget().transform.position;
             }
 
-            Cmd_FireMainCannonAtTarget(null, targetPosition, true, false, normalCannonballLifetime, -1.0f, true);
-            targetArrowParent.gameObject.SetActive(false);
+            Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), targetPosition, true, true);
+            _cannonTargeter.targetingConfirmed(() => _shouldUpdateTargeting = true);
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
             break;
          case CannonAttackType.Cone:
             Vector2 toMouse = Util.getMousePos() - transform.position;
             Vector2 pos = transform.position;
 
-            float cannonballDist = 1.5f + (cannonChargeAmount * 1.5f);
-            float cannonballLifetime = cannonballDist / Attack.getSpeedModifier(Attack.Type.Cannon);
-
-            float rotAngle = (40.0f - (cannonChargeAmount * 25.0f)) / 2.0f;
+            float cannonballLifetime = getCannonballLifetime();
+            float rotAngle = (40.0f - (getCannonChargeAmount() * 25.0f)) / 2.0f;
 
             // Fire cone of cannonballs
-            Cmd_FireMainCannonAtTarget(null, pos + ExtensionsUtil.Rotate(toMouse, rotAngle), false, false, cannonballLifetime, -1.0f, true);
-            Cmd_FireMainCannonAtTarget(null, Util.getMousePos(), false, false, cannonballLifetime, -1.0f, false);
-            Cmd_FireMainCannonAtTarget(null, pos + ExtensionsUtil.Rotate(toMouse, -rotAngle), false, false, cannonballLifetime, -1.0f, false);
+            Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), pos + ExtensionsUtil.Rotate(toMouse, rotAngle), false, true);
+            Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), Util.getMousePos(), false, false);
+            Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), pos + ExtensionsUtil.Rotate(toMouse, -rotAngle), false, false);
 
             _shouldUpdateTargeting = false;
             _targetCone.targetingConfirmed(() => _shouldUpdateTargeting = true);
 
             break;
          case CannonAttackType.Circle:
-            float circleRadius = (0.625f - (cannonChargeAmount * 0.125f));
+            float circleRadius = (0.625f - (getCannonChargeAmount() * 0.125f));
             _shouldUpdateTargeting = false;
             _targetCircle.targetingConfirmed(() => {
                _shouldUpdateTargeting = true;
@@ -369,33 +363,39 @@ public class PlayerShipEntity : ShipEntity
          return;
       }
 
-      float cannonChargeAmount = Mathf.Clamp01((float) (NetworkTime.time - _cannonChargeStartTime));
-
       switch (_cannonAttackType) {
          case CannonAttackType.Normal:
-            float aimAngle;
+
+            Vector2 fireDir;
 
             // If firing with the mouse, aim using the mouse
             if (_chargingWithMouse) {
-               aimAngle = -Util.angle(Util.getMousePos() - transform.position);
+               fireDir = Util.getMousePos() - transform.position;
             } else {
                // If we don't have a target to aim at, cancel attack
                if (_targetSelector.getTarget() == null) {
-                  targetArrowParent.gameObject.SetActive(false);
+                  _cannonTargeter.gameObject.SetActive(false);
                   _shouldUpdateTargeting = false;
                   _isChargingCannon = false;
                   return;
                }
                // If firing with the keyboard, aim at our target automatically
-               aimAngle = -Util.angle(_targetSelector.getTarget().transform.position - transform.position);
+               fireDir = _targetSelector.getTarget().transform.position - transform.position;
             }
-            
-            targetArrowParent.rotation = Quaternion.Euler(0.0f, 0.0f, aimAngle);
-            targetArrow.fillAmount = cannonChargeAmount;
+
+            // Update cannon targeter parameters
+            Vector2 targetPoint = (Vector2)transform.position + fireDir.normalized * getCannonballDistance();
+            _cannonTargeter.setTarget(targetPoint);
+            _cannonTargeter.parabolaHeight = getCannonballApex();
+            _cannonTargeter.transform.position = transform.position;
+            _cannonTargeter.chargeAmount = getCannonChargeAmount();
+            _cannonTargeter.updateTargeter();
+
             break;
          case CannonAttackType.Cone:
-            _targetCone.coneHalfAngle = (40.0f - (cannonChargeAmount * 25.0f)) / 2.0f;
-            _targetCone.coneOuterRadius = 1.5f + (cannonChargeAmount * 1.5f);
+            // Update target cone parameters
+            _targetCone.coneHalfAngle = (40.0f - (getCannonChargeAmount() * 25.0f)) / 2.0f;
+            _targetCone.coneOuterRadius = getCannonballDistance();
             _targetCone.transform.position = transform.position;
             _targetCone.updateCone(true);
 
@@ -418,7 +418,8 @@ public class PlayerShipEntity : ShipEntity
 
             break;
          case CannonAttackType.Circle:
-            float circleRadius = (0.625f - (cannonChargeAmount * 0.125f));
+            // Update target circle parameters
+            float circleRadius = (0.625f - (getCannonChargeAmount() * 0.125f));
             _targetCircle.scaleCircle(circleRadius * 2.0f);
             _targetCircle.updateCircle(true);
 
@@ -448,11 +449,9 @@ public class PlayerShipEntity : ShipEntity
          Vector3 toEndPos = endPos - transform.position;
          toEndPos.z = 0.0f;
          float dist = toEndPos.magnitude;
-
          lifetime = Mathf.Lerp(2.0f, 3.0f, dist / 5.0f);
-         float speed = dist / lifetime;
 
-         Cmd_FireMainCannonAtTarget(null, endPos, false, true, lifetime, speed, true);
+         Cmd_FireSpecialCannonAtTarget(null, endPos, lifetime, false, true);
          yield return new WaitForSeconds(0.2f);
       }
 
@@ -467,7 +466,7 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Command]
-   protected void Cmd_FireMainCannonAtTarget (GameObject target, Vector2 requestedTargetPoint, bool checkReload, bool isLobbed, float lifetime, float speedOverride, bool playSound) {
+   protected void Cmd_FireMainCannonAtTarget (GameObject target, float chargeAmount, Vector2 requestedTargetPoint, bool checkReload, bool playSound) {
       if (isDead() || (checkReload && !hasReloaded())) {
          return;
       }
@@ -476,13 +475,32 @@ public class PlayerShipEntity : ShipEntity
 
       _lastAttackTime = NetworkTime.time;
       
+      Vector2 targetPosition = (target == null) ? requestedTargetPoint : (Vector2) target.transform.position;
+      Vector2 fireDirection = (targetPosition - (Vector2) transform.position).normalized;
+
+      // Firing the cannon is considered a PvP action
+      hasEnteredPvP = true;
+	  
+      fireCannonBallAtTarget(fireDirection, chargeAmount, playSound);
+   }
+
+   [Command]
+   protected void Cmd_FireSpecialCannonAtTarget (GameObject target, Vector2 requestedTargetPoint, float lifetime, bool checkReload, bool playSound) {
+      if (isDead() || (checkReload && !hasReloaded())) {
+         return;
+      }
+
+      Rpc_NoteAttack();
+
+      _lastAttackTime = NetworkTime.time;
+
       Vector2 startPosition = transform.position;
       Vector2 targetPosition = (target == null) ? requestedTargetPoint : (Vector2) target.transform.position;
 
       // Firing the cannon is considered a PvP action
       hasEnteredPvP = true;
-	  
-      fireCannonBallAtTarget(startPosition, targetPosition, isLobbed, lifetime, speedOverride, playSound);
+
+      fireSpecialCannonBallAtTarget(startPosition, targetPosition, lifetime, playSound);
    }
 
    [Command]
@@ -539,6 +557,10 @@ public class PlayerShipEntity : ShipEntity
          Destroy(_targetCircle.gameObject);
       }
 
+      if (_cannonTargeter != null && _cannonTargeter.gameObject != null) {
+         Destroy(_cannonTargeter.gameObject);
+      }
+
       // Handle OnDestroy logic in a separate method so it can be correctly stripped
       onBeingDestroyedServer();
    }
@@ -561,13 +583,9 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Server]
-   public void fireCannonBallAtTarget (Vector2 startPosition, Vector2 endPosition, bool isLobbed, float lifetime = -1.0f, float speedOverride = -1.0f, bool playSound = true) {
-      // Calculate the direction of the ball
-      Vector2 direction = endPosition - startPosition;
-      direction.Normalize();
-
+   public void fireCannonBallAtTarget (Vector2 fireDirection, float chargeAmount, bool playSound = true) {
       // Create the cannon ball object from the prefab
-      ServerCannonBall netBall = Instantiate(PrefabsManager.self.serverCannonBallPrefab, startPosition, Quaternion.identity);
+      ServerCannonBall netBall = Instantiate(PrefabsManager.self.serverCannonBallPrefab, transform.position, Quaternion.identity);
 
       int abilityId = -1;
       if (shipAbilities.Count > 0) {
@@ -577,16 +595,43 @@ public class PlayerShipEntity : ShipEntity
          }
       }
 
-      // If no speed override, use the default attack speed
-      float speed = (speedOverride > 0.0f) ? speedOverride : Attack.getSpeedModifier(Attack.Type.Cannon);
-      Vector2 velocity = direction * speed;
+      // Calculate cannonball variables
+      Vector2 velocity = fireDirection * Attack.getSpeedModifier(Attack.Type.Cannon);
+      float lobHeight = getCannonballApex(chargeAmount);
+      float damageModifier = Attack.getDamageModifier(Attack.Type.Cannon);
+      float lifetime = getCannonballLifetime(chargeAmount);
 
-      if (isLobbed) {
-         float lobHeight = Mathf.Clamp(1.0f / speed, 0.3f, 1.0f);
-         netBall.initLob(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, startPosition, velocity, lobHeight, damageMultiplier: Attack.getDamageModifier(Attack.Type.Cannon), lifetime: lifetime, statusType: cannonEffectType, statusDuration: 3.0f, playFiringSound: playSound);
-      } else {
-         netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, startPosition, velocity, damageMultiplier: Attack.getDamageModifier(Attack.Type.Cannon), lifetime: lifetime, statusType: cannonEffectType, statusDuration: 3.0f, playFiringSound: playSound);
+      // Setup cannonball
+      netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, false, damageMultiplier: damageModifier, statusType: cannonEffectType,
+         playFiringSound: playSound, lifetime: lifetime);
+
+      NetworkServer.Spawn(netBall.gameObject);
+   }
+
+   [Server]
+   public void fireSpecialCannonBallAtTarget (Vector2 startPosition, Vector2 endPosition, float lifetime, bool playSound) {
+      // Create the cannon ball object from the prefab
+      ServerCannonBall netBall = Instantiate(PrefabsManager.self.serverCannonBallPrefab, transform.position, Quaternion.identity);
+
+      int abilityId = -1;
+      if (shipAbilities.Count > 0) {
+         ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(shipAbilities[0]);
+         if (shipAbilityData != null) {
+            abilityId = shipAbilityData.abilityId;
+         }
       }
+
+      // Calculate cannonball variables
+      Vector2 toEndPos = endPosition - startPosition;
+      float dist = toEndPos.magnitude;
+      float speed = dist / lifetime;
+      float lobHeight = Mathf.Clamp(1.0f / speed, 0.3f, 1.0f);
+      Vector2 velocity = speed * toEndPos.normalized;
+      float damageModifier = Attack.getDamageModifier(Attack.Type.Cannon);
+
+      // Setup cannonball
+      netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, true, damageMultiplier: damageModifier, statusType: cannonEffectType,
+         playFiringSound: playSound, lifetime: lifetime);
 
       NetworkServer.Spawn(netBall.gameObject);
    }
@@ -945,6 +990,34 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
+   private float getCannonballDistance (float chargeAmount = -1.0f) {
+      if (chargeAmount < 0.0f) {
+         chargeAmount = getCannonChargeAmount();
+      }
+      
+      return (0.5f + (chargeAmount * 2.5f));
+   }
+
+   private float getCannonballLifetime (float chargeAmount = -1.0f) {
+      if (chargeAmount < 0.0f) {
+         chargeAmount = getCannonChargeAmount();
+      }
+
+      return (getCannonballDistance(chargeAmount) / Attack.getSpeedModifier(Attack.Type.Cannon));
+   }
+
+   private float getCannonballApex (float chargeAmount = -1.0f) {
+      if (chargeAmount < 0.0f) {
+         chargeAmount = getCannonChargeAmount();
+      }
+
+      return chargeAmount / 4.0f;
+   }
+
+   private float getCannonChargeAmount () {
+      return Mathf.Clamp01((float) (NetworkTime.time - _cannonChargeStartTime));
+   }
+
    private void OnDisable () {
       // If we are the local player, activate the camera's audio listener
       if (isLocalPlayer && !ClientManager.isApplicationQuitting) {
@@ -995,11 +1068,14 @@ public class PlayerShipEntity : ShipEntity
    // If the targeting indicators should update with the player's inputs
    private bool _shouldUpdateTargeting = true;
 
-   // Reference to the object used to target circular player attacks
+   // A reference to the object used to target circular player attacks
    private TargetCircle _targetCircle;
 
-   // Reference to the object used to target conical player attacks
+   // A reference to the object used to target conical player attacks
    private TargetCone _targetCone;
+
+   // A reference to the object used to target the player's regular cannon attack
+   private CannonTargeter _cannonTargeter;
 
    // The current flag being displayed by the ship
    private Flag _currentFlag = Flag.None;
