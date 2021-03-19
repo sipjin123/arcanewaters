@@ -23,11 +23,6 @@ public class EquipmentXMLManager : MonoBehaviour {
    // References to all the hat data
    public List<HatStatData> hatStatList { get { return _hatStatList.Values.ToList(); } }
 
-   // Display list for editor reviewing
-   public List<WeaponStatData> weaponStatData = new List<WeaponStatData>();
-   public List<ArmorStatData> armorStatData = new List<ArmorStatData>();
-   public List<HatStatData> hatStatData = new List<HatStatData>();
-
    // Determines how many equipment set has been loaded
    public int equipmentLoadCounter = 0;
 
@@ -95,7 +90,7 @@ public class EquipmentXMLManager : MonoBehaviour {
       _weaponStatList = new Dictionary<int, WeaponStatData>();
       _armorStatList = new Dictionary<int, ArmorStatData>();
       _hatStatList = new Dictionary<int, HatStatData>();
-      hatStatData = new List<HatStatData>();
+      _hatStatData = new List<HatStatData>();
 
       List<XMLPair> rawWeaponXml = DB_Main.getEquipmentXML(EquipmentType.Weapon);
       foreach (XMLPair xmlPair in rawWeaponXml) {
@@ -108,7 +103,7 @@ public class EquipmentXMLManager : MonoBehaviour {
                // Save the data in the memory cache
                if (!_weaponStatList.ContainsKey(xmlPair.xmlId) && xmlPair.isEnabled) {
                   _weaponStatList.Add(xmlPair.xmlId, rawData);
-                  weaponStatData.Add(rawData);
+                  _weaponStatData.Add(rawData);
                }
             } catch {
                D.editorLog("Failed to translate data: " + xmlPair.rawXmlData, Color.red);
@@ -126,7 +121,7 @@ public class EquipmentXMLManager : MonoBehaviour {
             // Save the data in the memory cache
             if (!_armorStatList.ContainsKey(xmlPair.xmlId) && xmlPair.isEnabled) {
                _armorStatList.Add(xmlPair.xmlId, rawData);
-               armorStatData.Add(rawData);
+               _armorStatData.Add(rawData);
             }
          }
       }
@@ -142,7 +137,7 @@ public class EquipmentXMLManager : MonoBehaviour {
             // Save the data in the memory cache
             if (!_hatStatList.ContainsKey(uniqueID) && xmlPair.isEnabled) {
                _hatStatList.Add(uniqueID, rawData);
-               hatStatData.Add(rawData);
+               _hatStatData.Add(rawData);
             }
          }
       }
@@ -157,7 +152,7 @@ public class EquipmentXMLManager : MonoBehaviour {
          // Save the data in the memory cache
          if (!_weaponStatList.ContainsKey(uniqueID)) {
             _weaponStatList.Add(uniqueID, rawData);
-            weaponStatData.Add(rawData);
+            _weaponStatData.Add(rawData);
          }
       }
       finishedLoading();
@@ -170,7 +165,7 @@ public class EquipmentXMLManager : MonoBehaviour {
          // Save the data in the memory cache
          if (!_armorStatList.ContainsKey(uniqueID)) {
             _armorStatList.Add(uniqueID, rawData);
-            armorStatData.Add(rawData);
+            _armorStatData.Add(rawData);
          }
       }
       finishedLoading();
@@ -183,7 +178,7 @@ public class EquipmentXMLManager : MonoBehaviour {
          // Save the data in the memory cache
          if (!_hatStatList.ContainsKey(uniqueID)) {
             _hatStatList.Add(uniqueID, rawData);
-            hatStatData.Add(rawData);
+            _hatStatData.Add(rawData);
          }
       }
       finishedLoading();
@@ -194,9 +189,9 @@ public class EquipmentXMLManager : MonoBehaviour {
       _armorStatList = new Dictionary<int, ArmorStatData>();
       _hatStatList = new Dictionary<int, HatStatData>();
 
-      weaponStatData.Clear();
-      armorStatData.Clear();
-      hatStatData.Clear();
+      _weaponStatData.Clear();
+      _armorStatData.Clear();
+      _hatStatData.Clear();
    }
 
    public List<WeaponStatData> requestWeaponList (List<int> xmlIDList) {
@@ -511,6 +506,14 @@ public class EquipmentXMLManager : MonoBehaviour {
    }
 
    #region Private Variables
+
+   // Display list for editor reviewing
+   [SerializeField]
+   private List<WeaponStatData> _weaponStatData = new List<WeaponStatData>();
+   [SerializeField]
+   private List<ArmorStatData> _armorStatData = new List<ArmorStatData>();
+   [SerializeField]
+   private List<HatStatData> _hatStatData = new List<HatStatData>();
 
    // Stores the list of all weapon data
    private Dictionary<int, WeaponStatData> _weaponStatList = new Dictionary<int, WeaponStatData>();

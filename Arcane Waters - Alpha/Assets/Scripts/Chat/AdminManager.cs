@@ -2023,7 +2023,7 @@ public class AdminManager : NetworkBehaviour
          }
 
          // Create all the hats
-         foreach (HatStatData hatData in EquipmentXMLManager.self.hatStatData) {
+         foreach (HatStatData hatData in EquipmentXMLManager.self.hatStatList) {
             if (hatData.hatType != 0) {
                if (createItemIfNotExistOrReplenishStack(Item.Category.Hats, hatData.hatType, 1)) {
                   hatCount++;
