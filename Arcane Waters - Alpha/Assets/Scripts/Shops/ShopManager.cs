@@ -409,11 +409,11 @@ public class ShopManager : MonoBehaviour {
          default:
             // TODO: Find alternatives to determine these entries
             return new List<WeightedItem<int>>() {
-               WeightedItem.Create(.60f, 1),//Weapon.Type.Sword_2),
-               WeightedItem.Create(.30f, 2), //Weapon.Type.Sword_3),
-               WeightedItem.Create(.5f, 3),//Weapon.Type.Gun_2),
-               WeightedItem.Create(.4f, 4),//Weapon.Type.Gun_3),
-               WeightedItem.Create(.1f, 5),//Weapon.Type.Sword_1),
+               WeightedItem.Create(.60f, EquipmentXMLManager.self.weaponStatList[1].sqlId), // Steel Sword
+               WeightedItem.Create(.30f, EquipmentXMLManager.self.weaponStatList[3].sqlId), // Lance Steel
+               WeightedItem.Create(.5f, EquipmentXMLManager.self.weaponStatList[4].sqlId), // Steel Mace
+               WeightedItem.Create(.4f, EquipmentXMLManager.self.weaponStatList[5].sqlId), // Golden Star
+               WeightedItem.Create(.1f, EquipmentXMLManager.self.weaponStatList[6].sqlId), // Rune Blade
          };
       }
    }
