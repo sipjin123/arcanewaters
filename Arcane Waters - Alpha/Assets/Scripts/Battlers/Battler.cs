@@ -1213,6 +1213,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Simulate the collision effect of the attack towards the target battler
             yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action, attackerAbility));
 
+            Coroutine shakeCoroutine = null;
+            if (attackerAbility.useSpecialAnimation) {
+               shakeCoroutine = targetBattler.StartCoroutine(targetBattler.animateShake());
+            }
+
             // If either sprite is owned by the client, play a camera shake
             if (Util.isPlayer(sourceBattler.userId) || Util.isPlayer(targetBattler.userId)) {
                BattleCamera.self.shakeCamera(.25f);
@@ -1260,10 +1265,17 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Wait for special animation to finish
             if (abilityDataReference.useSpecialAnimation) {
                // TODO: In the future, setup a dynamic way of handling special animation duration using web tool
-               // (golem special attack animation approximately ends after .5 seconds excluding the time elapsed upon trigger [20 frames * .05 milliseconds])
+               // (golem special attack animation approximately ends after 1.5 seconds excluding the time elapsed upon trigger [20 frames * .5 milliseconds])
                sourceBattler.modifyAnimSpeed(.2f);
                yield return new WaitForSeconds(.5f);
-               yield return new WaitForSeconds(1);
+
+               // Setup target to un-freeze hit animation
+               if (shakeCoroutine != null) {
+                  targetBattler.playAnim(Anim.Type.Battle_East);
+                  targetBattler.StopCoroutine(shakeCoroutine);
+               }
+
+               yield return new WaitForSeconds(1.0f);
                sourceBattler.modifyAnimSpeed(-1);
             }
 
@@ -1615,7 +1627,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             Coroutine shakeCoroutine = targetBattler.StartCoroutine(targetBattler.animateShake());
             yield return new WaitForSeconds(SHAKE_LENGTH);
             targetBattler.StopCoroutine(shakeCoroutine);
-            targetBattler.playAnim(Anim.Type.Battle_East);
+            if (!abilityData.useSpecialAnimation) {
+               targetBattler.playAnim(Anim.Type.Battle_East);
+            }
          } else if (abilityDataReference.hasKnockBack) {
             // Move the sprite back and forward to simulate knockback
             targetBattler.playAnim(Anim.Type.Hurt_East);
@@ -1707,7 +1721,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       ability.playHitClipAtTarget(transform);
 
       // Return to battle idle
-      playAnim(Anim.Type.Battle_East);
+      if (!ability.useSpecialAnimation) {
+         playAnim(Anim.Type.Battle_East);
+      }
    }
 
    private IEnumerator animateShake () {
