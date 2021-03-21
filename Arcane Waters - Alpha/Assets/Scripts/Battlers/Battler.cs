@@ -1162,13 +1162,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                } else {
                   if (abilityDataReference.useSpecialAnimation) {
                      // Set the windup special animation speed
-                     sourceBattler.modifyAnimSpeed(.1f);
+                     sourceBattler.modifyAnimSpeed(.5f);
                      sourceBattler.playAnim(Anim.Type.SpecialAnimationReady);
 
                      yield return new WaitForSeconds(SPECIAL_ATTACK_READY_TIME);
 
                      // End of special animation is faster than the windup time
-                     sourceBattler.modifyAnimSpeed(.03f);
+                     sourceBattler.modifyAnimSpeed(.2f);
                      sourceBattler.playAnim(Anim.Type.SpecialAnimation);
                      sourceBattler.pauseAnim(false);
                   } else {
@@ -1263,6 +1263,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                // (golem special attack animation approximately ends after .5 seconds excluding the time elapsed upon trigger [20 frames * .05 milliseconds])
                sourceBattler.modifyAnimSpeed(.2f);
                yield return new WaitForSeconds(.5f);
+               yield return new WaitForSeconds(1);
                sourceBattler.modifyAnimSpeed(-1);
             }
 
