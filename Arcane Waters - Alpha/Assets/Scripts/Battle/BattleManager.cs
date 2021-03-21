@@ -547,8 +547,8 @@ public class BattleManager : MonoBehaviour {
             float damage = sourceDamageElement + attackAbilityData.baseDamage * attackAbilityData.getModifier;
 
             if (source.enemyType != Enemy.Type.PlayerBattler && source.battlerType == BattlerType.AIEnemyControlled) {
-               // Setup damage multiplier based on difficulty, additional damage {Easy: Dmg+20% / Medium: Dmg+40% / Hard: Dmg+60%} 
-               float addedDamageForDifficulty = (damage * (battle.difficultyLevel * .2f));
+               // Setup damage multiplier based on difficulty, additional damage {Easy: Dmg+10% / Medium: Dmg+20% / Hard: Dmg+30%} 
+               float addedDamageForDifficulty = (damage * (battle.difficultyLevel * .1f));
                damage += addedDamageForDifficulty;
             }
 
