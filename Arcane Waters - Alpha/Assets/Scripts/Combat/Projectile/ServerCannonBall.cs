@@ -42,7 +42,6 @@ public class ServerCannonBall : NetworkBehaviour {
       _startTime = NetworkTime.time;
    }
 
-   [Server]
    public void init (uint creatorID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 velocity, float lobHeight, bool highShot,
       Status.Type statusType = Status.Type.None, float statusDuration = 3.0f, float lifetime = -1.0f, float damageMultiplier = 1.0f, bool playFiringSound = true) {
 
