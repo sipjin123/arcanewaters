@@ -263,17 +263,15 @@ public class BattleUIManager : MonoBehaviour {
                bool isAbilityValid = (weaponClass == currentAbility.classRequirement);
 
                // Log the cause of invalid weapon class if admin log is enabled
-               if (!isAbilityValid) {
-                  try {
-                     D.adminLog("ValidAbility: {" + isAbilityValid +
-                        "} AbilityName: {" + currentAbility.itemName +
-                        "} AbilityId: {" + currentAbility.itemID +
-                        "} AbilityClass: {" + currentAbility.classRequirement +
-                        "} WepName: {" + weaponData.equipmentName +
-                        "} WepClass: {" + ((weaponData == null) ? "No Weapon Equipped" : weaponData.weaponClass.ToString())+ "}", D.ADMIN_LOG_TYPE.Ability);
-                  } catch {
-                     D.debug("Failed to process weapon data! WeaponID: " + _playerLocalBattler.weaponManager.equipmentDataId);
-                  }
+               try {
+                  D.adminLog("ValidAbility: {" + isAbilityValid +
+                     "} AbilityName: {" + currentAbility.itemName +
+                     "} AbilityId: {" + currentAbility.itemID +
+                     "} AbilityClass: {" + currentAbility.classRequirement +
+                     "} WepName: {" + weaponData.equipmentName +
+                     "} WepClass: {" + ((weaponData == null) ? "No Weapon Equipped" : weaponData.weaponClass.ToString()) + "}", D.ADMIN_LOG_TYPE.Ability);
+               } catch {
+                  D.debug("Failed to process weapon data! WeaponID: " + _playerLocalBattler.weaponManager.equipmentDataId);
                }
 
                if (indexCounter > 0 && !isAbilityValid) {

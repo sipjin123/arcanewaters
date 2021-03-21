@@ -4828,47 +4828,61 @@ public class RPCManager : NetworkBehaviour
                   name = "",
                });
             }
+            bool overrideFirstAbility = validOffenseAbilities < 1;
 
             // Override ability if no ability matches the weapon type ex:{all melee abilities but user has gun weapon}
-            if (validOffenseAbilities < 1) {
-               if (weaponId < 1) {
-                  weaponCategory = WeaponCategory.None;
-                  equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getPunchAbility());
-               } else {
-                  if (weaponData != null) {
-                     switch (weaponClass) {
-                        case Weapon.Class.Melee:
-                           weaponCategory = WeaponCategory.Blade;
+            if (weaponId < 1 && overrideFirstAbility) {
+               D.adminLog("Overriding first ability slot as Punch Ability, No weapon equipped", D.ADMIN_LOG_TYPE.Ability);
+               weaponCategory = WeaponCategory.None;
+               equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getPunchAbility());
+            } else {
+               if (weaponData != null) {
+                  switch (weaponClass) {
+                     case Weapon.Class.Melee:
+                        weaponCategory = WeaponCategory.Blade;
+                        if (overrideFirstAbility) {
+                           D.adminLog("Overriding first ability slot as Slash Ability", D.ADMIN_LOG_TYPE.Ability);
                            equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getSlashAbility());
-                           break;
-                        case Weapon.Class.Ranged:
-                           weaponCategory = WeaponCategory.Gun;
+                        }
+                        break;
+                     case Weapon.Class.Ranged:
+                        weaponCategory = WeaponCategory.Gun;
+                        if (overrideFirstAbility) {
+                           D.adminLog("Overriding first ability slot as Shoot Ability", D.ADMIN_LOG_TYPE.Ability);
                            equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getShootAbility());
-                           break;
-                        case Weapon.Class.Rum:
-                           weaponCategory = WeaponCategory.Rum;
+                        }
+                        break;
+                     case Weapon.Class.Rum:
+                        weaponCategory = WeaponCategory.Rum;
+                        if (overrideFirstAbility) {
                            if (equippedAbilityList.Count < MAX_ABILITIES) {
+                              D.adminLog("Adding new ability slot, Rum Ability", D.ADMIN_LOG_TYPE.Ability);
                               equippedAbilityList.Add(AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getThrowRumAbility()));
                            } else {
+                              D.adminLog("Overriding first ability slot as Rum Ability", D.ADMIN_LOG_TYPE.Ability);
                               equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getThrowRumAbility());
                            }
-                           break;
-                        default:
-                           weaponCategory = WeaponCategory.None;
+                        }
+                        break;
+                     default:
+                        weaponCategory = WeaponCategory.None;
+                        if (overrideFirstAbility) {
+                           D.adminLog("Overriding first ability slot as Punch Ability, Unrecognized category", D.ADMIN_LOG_TYPE.Ability);
                            equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getPunchAbility());
-                           break;
-                     }
-                  } else {
-                     weaponCategory = WeaponCategory.None;
-                     equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getPunchAbility());
+                        }
+                        break;
                   }
-
-                  D.adminLog("New ability assigned to player: "
-                     + " Name: " + equippedAbilityList[0].name
-                     + " ID: " + equippedAbilityList[0].abilityID
-                     + " WepClass: " + weaponClass
-                     + " WepCateg: " + weaponCategory, D.ADMIN_LOG_TYPE.Ability);
+               } else {
+                  D.adminLog("Overriding first ability slot as Punch Ability, Missing weapon data for {" + weaponId + "}", D.ADMIN_LOG_TYPE.Ability);
+                  weaponCategory = WeaponCategory.None;
+                  equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getPunchAbility());
                }
+
+               D.adminLog("New ability assigned to player: "
+                  + " Name: " + equippedAbilityList[0].name
+                  + " ID: " + equippedAbilityList[0].abilityID
+                  + " WepClass: " + weaponClass
+                  + " WepCateg: " + weaponCategory, D.ADMIN_LOG_TYPE.Ability);
             }
             D.adminLog("ValidBuffs: {" + validBuffAbilities + "} ValidAttacks: {" + validOffenseAbilities + "} WeaponCategory: {" + weaponCategory + "}", D.ADMIN_LOG_TYPE.Ability);
 
@@ -4882,8 +4896,10 @@ public class RPCManager : NetworkBehaviour
                D.adminLog("Ability slots:: " + slots, D.ADMIN_LOG_TYPE.Ability);
 
                if (equippedAbilityList.Count < MAX_ABILITIES) {
+                  D.adminLog("Added Buff Ability in slots:: " + slots, D.ADMIN_LOG_TYPE.Ability);
                   equippedAbilityList.Add(AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getHealingRumAbility()));
                } else {
+                  D.adminLog("Override Buff Ability in index {" + firstInvalidSlot + "} in slots:: " + slots, D.ADMIN_LOG_TYPE.Ability);
                   equippedAbilityList[firstInvalidSlot] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getHealingRumAbility());
                }
             }
@@ -4891,6 +4907,11 @@ public class RPCManager : NetworkBehaviour
             // Update the inventory slot index
             foreach (AbilitySQLData equippedAbility in equippedAbilityList) {
                if (equippedAbility.equipSlotIndex < 1) {
+                  D.adminLog("Updating Ability Slot"
+                     + " :: {Name:" + equippedAbility.name + " | Slot: "
+                     + equippedAbility.equipSlotIndex + "} as Slot ::  "
+                     + invalidSlot[0], D.ADMIN_LOG_TYPE.Ability);
+
                   equippedAbility.equipSlotIndex = invalidSlot[0];
                   invalidSlot.RemoveAt(0);
                }
@@ -5067,7 +5088,8 @@ public class RPCManager : NetworkBehaviour
                if (battler != null) {
                   string abilityStrList = "";
                   foreach (int abilityId in basicAbilityIds) {
-                     abilityStrList += " : " + abilityId;
+                     BasicAbilityData abilityInfo = AbilityManager.self.allGameAbilities.Find(_ => _.itemID == abilityId);
+                     abilityStrList += " : {ID: " + abilityId + " | Name: " + abilityInfo == null ? "Null" : abilityInfo.itemName + "}";
                   }
                   D.adminLog("Sending Overridden Ability Data to Player: " + battler.userId + " ID" + abilityStrList, D.ADMIN_LOG_TYPE.Ability);
                   battler.setBattlerAbilities(basicAbilityIds, BattlerType.PlayerControlled);
