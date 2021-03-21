@@ -1205,7 +1205,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                // Play an appropriate attack animation effect
                effectPosition = targetBattler.getMagicGroundPosition() + new Vector2(0f, .25f);
                EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
-
+               
                // Make the target sprite display its "Hit" animation
                targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action, attackerAbility));
             }
@@ -1728,6 +1728,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    private IEnumerator animateShake () {
       float startTime = Time.time;
+      const float shakeIntensity = 0.01f; // Original Value = 0.03f;
       Vector2 startPos = this.battleSpot.transform.position;
 
       // If the client's player is the target of this shake, then also shake the camera
@@ -1741,8 +1742,17 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          // We want the offset to be 0 at the beginning and end, and 1 at the middle
          float degrees = (timePassed / SHAKE_LENGTH) * 1800;
+
          float radians = degrees * Mathf.Deg2Rad;
-         float xOffset = Mathf.Sin(radians) * .03f;
+         float xOffset = Mathf.Sin(radians) * shakeIntensity;
+
+         // For logging shake formula
+         /*
+         D.debug("Degrees: " + degrees.ToString("f2")
+            + " Deg: " + (timePassed / SHAKE_LENGTH).ToString("f2")
+            + " Rad: " + radians.ToString("f2")
+            + " Offset: " + xOffset.ToString("f3"));
+         */
 
          // Add a positional offset to our starting position
          transform.position = new Vector3(
