@@ -112,6 +112,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("screen_log", "Allows screen to log files using D.debug()", requestScreenLogs, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("log", "Enables isolated debug loggers", requestLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType", "isTrue" }));
       cm.addCommand(new CommandData("network_profile", "Saves last 60 seconds of network profiling data", networkProfile, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("password", "Temporary bypass ", overridePassword, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "accountid", "newpassword" }));
 
       List<Map> maps = AreaManager.self.getAllMapInfo();
       List<string> mapNames = new List<string>();
@@ -287,6 +288,39 @@ public class AdminManager : NetworkBehaviour
 
    private void networkProfile (string parameters) {
       Cmd_NetworkProfile(parameters);
+   }
+
+   private void overridePassword (string parameters) {
+      Cmd_OverridePassword(parameters);
+   }
+
+   [Command]
+   protected void Cmd_OverridePassword (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+
+      if (list.Length > 0) {
+         string accountName = list[0];
+         string newPassword = "test";
+         if (list[1].Length > 1) {
+            newPassword = list[1];
+         }
+
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            if (!Global.accountOverrides.ContainsKey(accountName)) {
+               Global.accountOverrides.Add(accountName, newPassword);
+            }
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               string message = "New password was set for account {" + accountName + "} " + newPassword;
+               D.debug(message);
+               _player.rpc.Target_ReceiveNoticeFromServer(_player.connectionToClient, message);
+            });
+         });
+      }
    }
 
    [Command]

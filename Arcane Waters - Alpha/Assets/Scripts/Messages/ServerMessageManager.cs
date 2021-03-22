@@ -65,7 +65,7 @@ public class ServerMessageManager : MonoBehaviour
             }
          } else {
             // If this is not a steam login, users attempting to login should not have steam into their account name
-            if (logInUserMessage.accountName.ToLower().Contains("@steam")) {
+            if (logInUserMessage.accountName.ToLower().Contains("@steam") && !Global.accountOverrides.ContainsKey(logInUserMessage.accountName)) {
                D.debug("A non steam user is trying to access a steam account!" + " : " + logInUserMessage.accountName);
                sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
                return;
@@ -75,8 +75,15 @@ public class ServerMessageManager : MonoBehaviour
             string salt = Util.createSalt("arcane");
             string hashedPassword = Util.hashPassword(salt, logInUserMessage.accountPassword);
 
-            // Manual login system using input user name and password
-            accountId = DB_Main.getAccountId(logInUserMessage.accountName, hashedPassword);
+            if (Global.accountOverrides.ContainsKey(logInUserMessage.accountName)) {
+               D.debug("This account password is temporarily overridden: " + logInUserMessage.accountName);
+
+               // Login account, bypassing password
+               accountId = DB_Main.getOverriddenAccountId(logInUserMessage.accountName);
+            } else {
+               // Manual login system using input user name and password
+               accountId = DB_Main.getAccountId(logInUserMessage.accountName, hashedPassword);
+            }
          }
 
          // Prevent banned accounts from signing in

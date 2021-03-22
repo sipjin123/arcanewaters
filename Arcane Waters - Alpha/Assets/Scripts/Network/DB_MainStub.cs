@@ -666,6 +666,10 @@ public class DB_MainStub : MonoBehaviour
       return -1;
    }
 
+   public static int getOverriddenAccountId (string accountName) {
+      return -1;
+   }
+
    public static int getSteamAccountId (string accountName) {
       return -1;
    }
