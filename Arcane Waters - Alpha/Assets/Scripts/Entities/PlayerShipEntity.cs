@@ -118,6 +118,12 @@ public class PlayerShipEntity : ShipEntity
       // Ship names will be on display at all times
       showEntityName();
 
+      // Ship Guild Icons to be displayed at all times
+      if (this.guildId > 0) {
+         updateGuildIconSprites();
+         showGuildIcon();
+      }
+
       if (isLocalPlayer) {
          // Create a ship movement sound for our own ship
          _movementAudioSource = SoundManager.createLoopedAudio(SoundManager.Type.Ship_Movement, this.transform);
@@ -321,7 +327,7 @@ public class PlayerShipEntity : ShipEntity
                targetPosition = _targetSelector.getTarget().transform.position;
             }
 
-            Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), targetPosition, true, true);
+            Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), _cannonTargeter.barrelSocket.position, targetPosition, true, true);
             _cannonTargeter.targetingConfirmed(() => _shouldUpdateTargeting = true);
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
             break;
@@ -333,9 +339,9 @@ public class PlayerShipEntity : ShipEntity
             float rotAngle = (40.0f - (getCannonChargeAmount() * 25.0f)) / 2.0f;
 
             // Fire cone of cannonballs
-            Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), pos + ExtensionsUtil.Rotate(toMouse, rotAngle), false, true);
-            Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), Util.getMousePos(), false, false);
-            Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), pos + ExtensionsUtil.Rotate(toMouse, -rotAngle), false, false);
+            Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, rotAngle), false, true);
+            Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, Util.getMousePos(), false, false);
+            Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, -rotAngle), false, false);
 
             _shouldUpdateTargeting = false;
             _targetCone.targetingConfirmed(() => _shouldUpdateTargeting = true);
@@ -384,7 +390,7 @@ public class PlayerShipEntity : ShipEntity
             }
 
             // Update cannon targeter parameters
-            Vector2 targetPoint = (Vector2)transform.position + fireDir.normalized * getCannonballDistance();
+            Vector2 targetPoint = (Vector2)_cannonTargeter.barrelSocket.position + fireDir.normalized * getCannonballDistance();
             _cannonTargeter.setTarget(targetPoint);
             _cannonTargeter.parabolaHeight = getCannonballApex();
             _cannonTargeter.transform.position = transform.position;
@@ -466,7 +472,7 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Command]
-   protected void Cmd_FireMainCannonAtTarget (GameObject target, float chargeAmount, Vector2 requestedTargetPoint, bool checkReload, bool playSound) {
+   protected void Cmd_FireMainCannonAtTarget (GameObject target, float chargeAmount, Vector3 spawnPosition, Vector2 requestedTargetPoint, bool checkReload, bool playSound) {
       if (isDead() || (checkReload && !hasReloaded())) {
          return;
       }
@@ -481,7 +487,7 @@ public class PlayerShipEntity : ShipEntity
       // Firing the cannon is considered a PvP action
       hasEnteredPvP = true;
 	  
-      fireCannonBallAtTarget(fireDirection, chargeAmount, playSound);
+      fireCannonBallAtTarget(spawnPosition, fireDirection, chargeAmount, playSound);
    }
 
    [Command]
@@ -583,9 +589,9 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Server]
-   public void fireCannonBallAtTarget (Vector2 fireDirection, float chargeAmount, bool playSound = true) {
+   public void fireCannonBallAtTarget (Vector3 spawnPosition, Vector2 fireDirection, float chargeAmount, bool playSound = true) {
       // Create the cannon ball object from the prefab
-      ServerCannonBall netBall = Instantiate(PrefabsManager.self.serverCannonBallPrefab, transform.position, Quaternion.identity);
+      ServerCannonBall netBall = Instantiate(PrefabsManager.self.serverCannonBallPrefab, spawnPosition, Quaternion.identity);
 
       int abilityId = -1;
       if (shipAbilities.Count > 0) {
@@ -595,15 +601,17 @@ public class PlayerShipEntity : ShipEntity
          }
       }
 
+      bool isCritical = (chargeAmount >= 0.8f && chargeAmount <= 0.99f);
+      float critModifier = (isCritical) ? 1.5f : 1.0f;
+
       // Calculate cannonball variables
-      Vector2 velocity = fireDirection * Attack.getSpeedModifier(Attack.Type.Cannon);
+      Vector2 velocity = fireDirection * Attack.getSpeedModifier(Attack.Type.Cannon) * critModifier;
       float lobHeight = getCannonballApex(chargeAmount);
-      float damageModifier = Attack.getDamageModifier(Attack.Type.Cannon);
-      float lifetime = getCannonballLifetime(chargeAmount);
+      float lifetime = getCannonballLifetime(chargeAmount) / critModifier;
 
       // Setup cannonball
-      netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, false, damageMultiplier: damageModifier, statusType: cannonEffectType,
-         playFiringSound: playSound, lifetime: lifetime);
+      netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, false, statusType: cannonEffectType,
+         playFiringSound: playSound, lifetime: lifetime, isCrit: isCritical);
 
       NetworkServer.Spawn(netBall.gameObject);
    }
@@ -627,10 +635,9 @@ public class PlayerShipEntity : ShipEntity
       float speed = dist / lifetime;
       float lobHeight = Mathf.Clamp(1.0f / speed, 0.3f, 1.0f);
       Vector2 velocity = speed * toEndPos.normalized;
-      float damageModifier = Attack.getDamageModifier(Attack.Type.Cannon);
 
       // Setup cannonball
-      netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, true, damageMultiplier: damageModifier, statusType: cannonEffectType,
+      netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, true, statusType: cannonEffectType,
          playFiringSound: playSound, lifetime: lifetime);
 
       NetworkServer.Spawn(netBall.gameObject);
@@ -866,7 +873,7 @@ public class PlayerShipEntity : ShipEntity
 
       // Apply the damage
       target.currentHealth -= damage;
-      target.Rpc_ShowExplosion(source.netId, target.transform.position, damage, attackType);
+      target.Rpc_ShowExplosion(source.netId, target.transform.position, damage, attackType, false);
       target.noteAttacker(source);
    }
 

@@ -1175,8 +1175,6 @@ MonoBehaviour:
   shipBoostSpriteSwapFront: {fileID: 8177799164720691564}
   shipBoostSpriteSwapBack: {fileID: 4726464375513170578}
   lifeboat: {fileID: 3318682353992999856}
-  targetArrowParent: {fileID: 8246119289816141062}
-  targetArrow: {fileID: 5679710326579033152}
   guildIconGO: {fileID: 4096400083106487280}
   shipInformationDisplay: {fileID: 7821177879126347252}
 --- !u!50 &20007
@@ -3298,6 +3296,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3818411268491299394}
+  - component: {fileID: 4753144764082360494}
   m_Layer: 0
   m_Name: Guild Icon Container
   m_TagString: Untagged
@@ -3323,8 +3322,28 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 16, y: 16}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &4753144764082360494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4096400083106487280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: 16
+  m_PreferredHeight: 16
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &4325010638897548777
 GameObject:
   m_ObjectHideFlags: 0
@@ -4631,8 +4650,8 @@ MonoBehaviour:
   m_Spacing: 3
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
   m_ChildScaleWidth: 1
   m_ChildScaleHeight: 1
 --- !u!1 &6802534945092885827
@@ -6170,7 +6189,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 16, y: 16}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &6997740118399258924
 CanvasRenderer:
@@ -6701,12 +6720,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4bc53f6d1c2dbe444ba4d9cd276b0a23, type: 3}
---- !u!224 &2872083525666463053 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 3792861630930390434, guid: 4bc53f6d1c2dbe444ba4d9cd276b0a23,
-    type: 3}
-  m_PrefabInstance: {fileID: 1403226637596184815}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &5551809496225748552 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6805711320569366183, guid: 4bc53f6d1c2dbe444ba4d9cd276b0a23,
@@ -6719,6 +6732,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3c92048c62ffc34587fc92d8c058731, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &2872083525666463053 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3792861630930390434, guid: 4bc53f6d1c2dbe444ba4d9cd276b0a23,
+    type: 3}
+  m_PrefabInstance: {fileID: 1403226637596184815}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3123374448880576137
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6812,10 +6831,25 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3818411268491299394}
     m_Modifications:
+    - target: {fileID: 994048568535473222, guid: 5c20705c7cd1fef48a41c790991d9d6b,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2708007673814863215, guid: 5c20705c7cd1fef48a41c790991d9d6b,
         type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4057386204052805271, guid: 5c20705c7cd1fef48a41c790991d9d6b,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4057386204052805271, guid: 5c20705c7cd1fef48a41c790991d9d6b,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 5153975776215992002, guid: 5c20705c7cd1fef48a41c790991d9d6b,
         type: 3}
@@ -6927,14 +6961,23 @@ PrefabInstance:
       propertyPath: m_Name
       value: Guild Icon Small
       objectReference: {fileID: 0}
+    - target: {fileID: 5642681577568405534, guid: 5c20705c7cd1fef48a41c790991d9d6b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6954952714548661877, guid: 5c20705c7cd1fef48a41c790991d9d6b,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6954952714548661877, guid: 5c20705c7cd1fef48a41c790991d9d6b,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c20705c7cd1fef48a41c790991d9d6b, type: 3}
---- !u!224 &7802847736162781427 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 5153975776215992002, guid: 5c20705c7cd1fef48a41c790991d9d6b,
-    type: 3}
-  m_PrefabInstance: {fileID: 3156971687042551345}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2739385863978472055 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 994048568535473222, guid: 5c20705c7cd1fef48a41c790991d9d6b,
@@ -6942,11 +6985,17 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 3156971687042551345}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d57bd3865ece73142a8e669afaf93059, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &7802847736162781427 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 5153975776215992002, guid: 5c20705c7cd1fef48a41c790991d9d6b,
+    type: 3}
+  m_PrefabInstance: {fileID: 3156971687042551345}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3433831078024997768
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -24,6 +24,12 @@ public class CannonTargeter : MonoBehaviour {
    // A reference to the sprite renderer of the charge up effect, used to change its color
    public SpriteRenderer chargeRenderer;
 
+   // A reference to a tranform point at the barrel of the cannon
+   public Transform barrelSocket;
+
+   // The color of the targeter over its lifetime
+   public Gradient targeterColor;
+
    // How far the player has charged up their cannon
    [HideInInspector]
    public float chargeAmount;
@@ -42,12 +48,15 @@ public class CannonTargeter : MonoBehaviour {
       // Update target positions
       dottedParabola.parabolaEnd.position = _targetPosition;
       dottedLine.lineEnd.position = _targetPosition;
+      dottedParabola.parabolaStart.position = barrelSocket.position;
+      dottedLine.lineStart.position = barrelSocket.position;
       
       // Update components
       dottedParabola.parabolaHeight = parabolaHeight;
       dottedParabola.updateParabola();
       dottedLine.updateLine();
       updateAnimator();
+      updateColor();
    }
 
    public void targetingConfirmed (Action onTargetingComplete) {
@@ -60,6 +69,10 @@ public class CannonTargeter : MonoBehaviour {
       Vector2 toTarget = _targetPosition - transform.position;
       float aimAngle = -Util.angle(toTarget);
       animatorParent.rotation = Quaternion.Euler(0.0f, 0.0f, aimAngle);
+   }
+
+   private void updateColor () {
+      dottedParabola.setParabolaColor(targeterColor.Evaluate(chargeAmount));
    }
 
    private IEnumerator CO_OnTargetingConfirmed (Action onTargetingComplete) {

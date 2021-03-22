@@ -244,7 +244,7 @@ public class NetworkedProjectile : MonoBehaviour {
          hitEntity.Rpc_NetworkProjectileDamage(_creatorNetId, attackType, circleCollider.transform.position);
 
          // Have the server tell the clients where the explosion occurred
-         hitEntity.Rpc_ShowExplosion(sourceEntity.netId, hitEntity.transform.position, totalDamage, attackType);
+         hitEntity.Rpc_ShowExplosion(sourceEntity.netId, hitEntity.transform.position, totalDamage, attackType, false);
       }
       _hasCollided = true;
 

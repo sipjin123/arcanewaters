@@ -200,7 +200,7 @@ public class SeaEntity : NetEntity
 
                   int damage = (int) (projectilData.projectileDamage * Attack.getDamageModifier(Attack.Type.Shock_Ball));
                   seaEntity.currentHealth -= damage;
-                  seaEntity.Rpc_ShowExplosion(attackerNetId, collidedEntity.transform.position, damage, Attack.Type.None);
+                  seaEntity.Rpc_ShowExplosion(attackerNetId, collidedEntity.transform.position, damage, Attack.Type.None, false);
 
                   // Registers the action electrocuted to the userID to the achievement database for recording
                   AchievementManager.registerUserAchievement(seaEntity, ActionType.Electrocuted);
@@ -313,7 +313,7 @@ public class SeaEntity : NetEntity
    }
 
    [ClientRpc]
-   public void Rpc_ShowExplosion (uint attackerNetId, Vector2 pos, int damage, Attack.Type attackType) {
+   public void Rpc_ShowExplosion (uint attackerNetId, Vector2 pos, int damage, Attack.Type attackType, bool isCrit) {
       _lastDamagedTime = NetworkTime.time;
 
       if (attackType == Attack.Type.None) {
@@ -345,6 +345,11 @@ public class SeaEntity : NetEntity
          // Show the damage text
          ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(attackType), pos, Quaternion.identity);
          damageText.setDamage(damage);
+
+         if (isCrit) {
+            GameObject critEffect = Instantiate(PrefabsManager.self.shipCritPrefab, pos, Quaternion.identity);
+            Destroy(critEffect, 2.0f);
+         }
 
          noteAttacker(attackerNetId);
 
@@ -703,13 +708,13 @@ public class SeaEntity : NetEntity
                      }
 
                      targetEntity.currentHealth -= damage;
-                     targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, damage, attackType);
+                     targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, damage, attackType, false);
 
                      if (attackType == Attack.Type.Shock_Ball) {
                         chainLightning(attacker.netId, targetEntity.transform.position, targetEntity.netId);
                      }
                   } else {
-                     targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, (int)damage, Attack.Type.None);
+                     targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, (int)damage, Attack.Type.None, false);
                   }
                   targetEntity.noteAttacker(attacker);
 

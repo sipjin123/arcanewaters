@@ -49,7 +49,7 @@ public class NetworkedCannonBall : NetworkedProjectile
          StatusManager.self.create(Status.Type.Slowed, 3f, hitEntity.netId);
 
          // Have the server tell the clients where the explosion occurred
-         hitEntity.Rpc_ShowExplosion(sourceEntity.netId, circleCollider.transform.position, damage, Attack.Type.Cannon);
+         hitEntity.Rpc_ShowExplosion(sourceEntity.netId, circleCollider.transform.position, damage, Attack.Type.Cannon, false);
 
          // Registers Damage throughout the clients
          hitEntity.Rpc_NetworkProjectileDamage(_creatorNetId, attackType, circleCollider.transform.position);

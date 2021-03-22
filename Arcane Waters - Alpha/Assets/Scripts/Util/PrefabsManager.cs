@@ -179,6 +179,9 @@ public class PrefabsManager : MonoBehaviour {
    // A reference to the block effect prefab
    public GameObject blockPrefab;
 
+   // A reference to the ship crit effect prefab
+   public GameObject shipCritPrefab;
+
    // Self
    public static PrefabsManager self;
 

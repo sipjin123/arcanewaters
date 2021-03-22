@@ -125,6 +125,23 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          _audioListener = GetComponent<AudioListener>();
          AudioListenerManager.self.setActiveListener(_audioListener);
       }
+
+      // Retrieve the current sprites for the guild icon
+      updateGuildIconSprites();
+
+      // On start, hide guild icon for land players unless the toggle is set in Options Panel
+      if (OptionsPanel.self.displayGuildIconsToggle.isOn == true) {
+         this.showGuildIcon();
+      } else {
+         this.hideGuildIcon();
+      }
+
+      // On start, hide entity name for land players unless the toggle is set in Options Panel
+      if (OptionsPanel.self.displayPlayersNameToggle.isOn == true) {
+         this.showEntityName();
+      } else {
+         this.hideEntityName();
+      }
    }
 
    public override PlayerBodyEntity getPlayerBodyEntity () {
@@ -191,6 +208,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       showEntityName();
 
       if (guildIcon != null) {
+         updateGuildIconSprites();
          showGuildIcon();
       }
    }

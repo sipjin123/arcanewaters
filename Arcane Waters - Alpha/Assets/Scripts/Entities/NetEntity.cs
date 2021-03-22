@@ -313,7 +313,6 @@ public class NetEntity : NetworkBehaviour
 
       // Routinely clean the attackers set
       InvokeRepeating("cleanAttackers", 0f, 1f);
-
    }
 
    public virtual PlayerBodyEntity getPlayerBodyEntity () {
@@ -332,8 +331,7 @@ public class NetEntity : NetworkBehaviour
       base.OnStartClient();
 
       updateInvisibilityAlpha(isInvisible);
-      updatePlayerNameDisplay();
-      updateGuildIconDisplay();
+      
 
       if (isPlayerEntity()) {
          nameText.text = this.entityName;
@@ -606,7 +604,8 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
-   public void updateGuildIconDisplay () {
+   public void updateGuildIconSprites () {
+      // Assign sprites
       if (!string.IsNullOrEmpty(this.guildIconBackground)) {
          this.guildIcon.setBackground(this.guildIconBackground, this.guildIconBackPalettes);
       }
@@ -616,14 +615,11 @@ public class NetEntity : NetworkBehaviour
       if (!string.IsNullOrEmpty(this.guildIconSigil)) {
          this.guildIcon.setSigil(this.guildIconSigil, this.guildIconSigilPalettes);
       }
-
-      LandGuildIconShowHide();
-
-      ShipGuildIconShowHide();
    }
 
    [ClientRpc]
-   public void Rpc_UpdateGuildIconDisplay (string background, string backgroundPalette, string border, string sigil, string sigilPalette) {
+   public void Rpc_UpdateGuildIconSprites (string background, string backgroundPalette, string border, string sigil, string sigilPalette) {
+      // Assign sprites
       if (!string.IsNullOrEmpty(background)) {
          this.guildIcon.setBackground(background, backgroundPalette);
       } else {
@@ -639,41 +635,17 @@ public class NetEntity : NetworkBehaviour
       } else {
          this.guildIcon.setSigil(null, null);
       }
-
-      LandGuildIconShowHide();
-
-      ShipGuildIconShowHide();
-   }
-
-   public void ShipGuildIconShowHide () {
-      // Disable/Enable guildicon game object to properly center icons on screen
-      if (this is PlayerShipEntity) {
-         if (guildId > 0) {
-            this.getPlayerShipEntity().guildIconGO.SetActive(true);
-         } else {
-            this.getPlayerShipEntity().guildIconGO.SetActive(false);
-         }
-      }
-   }
-
-   public void LandGuildIconShowHide () {
-      // Turn guild icon on/off for land character
-      if (this is PlayerBodyEntity) {
-         if (OptionsPanel.allGuildIconsShowing) {
-            showGuildIcon();
-         } else {
-            hideGuildIcon();
-         }
-      }
    }
 
    public void showGuildIcon () {
-      if (guildId > 0) {
-         CanvasGroup guildIconCanvasGroup = guildIcon.canvasGroup;
-         guildIconCanvasGroup.alpha = 1f;
-         guildIconCanvasGroup.interactable = true;
-         guildIconCanvasGroup.blocksRaycasts = true;
+      if (this is PlayerShipEntity) {
+         this.getPlayerShipEntity().guildIconGO.SetActive(true);
       }
+
+      CanvasGroup guildIconCanvasGroup = guildIcon.canvasGroup;
+      guildIconCanvasGroup.alpha = 1f;
+      guildIconCanvasGroup.interactable = true;
+      guildIconCanvasGroup.blocksRaycasts = true;
    }
 
    public void hideGuildIcon () {
@@ -681,6 +653,10 @@ public class NetEntity : NetworkBehaviour
       guildIconCanvasGroup.alpha = 0f;
       guildIconCanvasGroup.interactable = false;
       guildIconCanvasGroup.blocksRaycasts = false;
+
+      if (this is PlayerShipEntity) {
+         this.getPlayerShipEntity().guildIconGO.SetActive(false);
+      }
    }
 
    public void showEntityName () {

@@ -148,7 +148,10 @@ public class RollingTextFade : ClientMonoBehaviour {
             bool wasSpaceBar = textInfo.characterInfo[currentCharacter].character == ' ';
 
             // Play a sound
-            SoundManager.play2DClip(SoundManager.Type.Character_Type_3);
+            if (Time.time - _soundTimeStamp > Random.Range(TYPING_SOUND_DELAY - TYPING_SOUND_RANGE_OFFSET, TYPING_SOUND_DELAY + TYPING_SOUND_RANGE_OFFSET)) {
+               SoundManager.play2DClip(SoundManager.Type.Character_Type_3);
+               _soundTimeStamp = Time.time;
+            }
 
             if (currentCharacter + 1 < characterCount) currentCharacter += 1;
 
@@ -166,6 +169,15 @@ public class RollingTextFade : ClientMonoBehaviour {
 
    // The original color of our text
    protected Color _originalColor;
+
+   // Delay between the typing sound
+   protected float TYPING_SOUND_DELAY = 0.15f;
+
+   // Offset to create a randon range for the sound delay
+   protected float TYPING_SOUND_RANGE_OFFSET = 0.02f;
+
+   // Timestamp of when the typing sound was last played
+   protected float _soundTimeStamp = 0.0f;
 
    // How long we wait after each character is revealed
    protected float _delayPerCharacter = DEFAULT_DELAY;

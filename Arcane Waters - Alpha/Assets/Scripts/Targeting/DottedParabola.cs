@@ -69,7 +69,7 @@ public class DottedParabola : MonoBehaviour {
       // Position the middle dots
       if (_parabolaSegments.Count > 2) {
          // Get the vector from the player to their target
-         Vector2 toTarget = parabolaEnd.position - transform.position;
+         Vector2 toTarget = parabolaEnd.position - parabolaStart.position;
          
          // Calculate the distance between dots
          float segmentDist = 1.0f / (_parabolaSegments.Count - 1);
@@ -82,7 +82,7 @@ public class DottedParabola : MonoBehaviour {
 
             offset += h * Vector2.up;
 
-            _parabolaSegments[i].transform.position = transform.position + new Vector3(offset.x, offset.y, 0.0f);
+            _parabolaSegments[i].transform.position = parabolaStart.position + new Vector3(offset.x, offset.y, 0.0f);
          }
       }
    }

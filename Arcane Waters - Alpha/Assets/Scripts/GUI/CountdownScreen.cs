@@ -79,7 +79,7 @@ public class CountdownScreen : MonoBehaviour
    #region Private Variables
 
    // The number of seconds the panel will show, even if the user is pressing keys
-   private static float DELAY_BEFORE_INPUT_INTERRUPTION = 1f;
+   private static float DELAY_BEFORE_INPUT_INTERRUPTION = 2f;
 
    // The time since the countdown started
    private float _timePassed = 0f;

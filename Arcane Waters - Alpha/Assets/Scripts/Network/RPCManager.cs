@@ -2935,7 +2935,7 @@ public class RPCManager : NetworkBehaviour
                _player.guildIconBackPalettes = iconBackPalettes;
                _player.guildIconSigil = iconSigil;
                _player.guildIconSigilPalettes = iconSigilPalettes;
-               _player.Rpc_UpdateGuildIconDisplay(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
+               _player.Rpc_UpdateGuildIconSprites(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
             });
 
          } else {
@@ -2981,7 +2981,7 @@ public class RPCManager : NetworkBehaviour
             _player.guildIconBackPalettes = null;
             _player.guildIconSigil = null;
             _player.guildIconSigilPalettes = null;
-            _player.Rpc_UpdateGuildIconDisplay(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
+            _player.Rpc_UpdateGuildIconSprites(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
 
             // Delete the guild if it has no more members
             GuildManager.self.deleteGuildIfEmpty(guildId);
@@ -3226,7 +3226,7 @@ public class RPCManager : NetworkBehaviour
                _player.guildIconBackPalettes = null;
                _player.guildIconSigil = null;
                _player.guildIconSigilPalettes = null;
-               _player.Rpc_UpdateGuildIconDisplay(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
+               _player.Rpc_UpdateGuildIconSprites(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
 
                // Remove past invite from kicked player. If he was kicked by accident, he can be invited back immediately
                GuildManager.self.removePastInvite(_player, userToKickId, DB_Main.getGuildInfo(_player.guildId));
@@ -3758,6 +3758,7 @@ public class RPCManager : NetworkBehaviour
       // Verify the validity of the request
       if (!VoyageGroupManager.self.tryGetGroupById(destinationGroupId, out VoyageGroupInfo destinationGroup)) {
          sendError("The group does not exist!");
+         return;
       }
 
       if (VoyageGroupManager.isGroupFull(destinationGroup)) {
@@ -3771,6 +3772,7 @@ public class RPCManager : NetworkBehaviour
             return;
          } else {
             sendError("You must leave your current group before joining another!");
+            return;
          }
       }
 

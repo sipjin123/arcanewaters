@@ -132,7 +132,7 @@ public class GuildManager : MonoBehaviour {
             recipient.guildIconBackPalettes = guildInfo.iconBackPalettes;
             recipient.guildIconSigil = guildInfo.iconSigil;
             recipient.guildIconSigilPalettes = guildInfo.iconSigilPalettes;
-            recipient.Rpc_UpdateGuildIconDisplay(recipient.guildIconBackground, recipient.guildIconBackPalettes, recipient.guildIconBorder, recipient.guildIconSigil, recipient.guildIconSigilPalettes);
+            recipient.Rpc_UpdateGuildIconSprites(recipient.guildIconBackground, recipient.guildIconBackPalettes, recipient.guildIconBorder, recipient.guildIconSigil, recipient.guildIconSigilPalettes);
          });
       });
    }

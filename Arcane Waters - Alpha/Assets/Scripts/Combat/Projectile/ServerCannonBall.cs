@@ -43,7 +43,7 @@ public class ServerCannonBall : NetworkBehaviour {
    }
 
    public void init (uint creatorID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 velocity, float lobHeight, bool highShot,
-      Status.Type statusType = Status.Type.None, float statusDuration = 3.0f, float lifetime = -1.0f, float damageMultiplier = 1.0f, bool playFiringSound = true) {
+      Status.Type statusType = Status.Type.None, float statusDuration = 3.0f, float lifetime = -1.0f, bool playFiringSound = true, bool isCrit = false) {
 
       _startTime = NetworkTime.time;
       _creatorNetId = creatorID;
@@ -51,13 +51,13 @@ public class ServerCannonBall : NetworkBehaviour {
       _impactMagnitude = impactType;
       _abilityData = ShipAbilityManager.self.getAbility(abilityId);
       _lifetime = lifetime > 0 ? lifetime : DEFAULT_LIFETIME;
-      _damageMultiplier = damageMultiplier;
       _lobHeight = lobHeight;
       _statusType = statusType;
       _statusDuration = statusDuration;
       _playFiringSound = playFiringSound;
       projectileId = _abilityData.projectileId;
       _distance = velocity.magnitude * _lifetime;
+      _isCrit = isCrit;
 
       this.projectileVelocity = velocity;
 
@@ -132,29 +132,31 @@ public class ServerCannonBall : NetworkBehaviour {
          return;
       }
 
+      // Ship process if the owner of the projectile and the collided entity has the same voyage, this prevents friendly fire
+      if ((sourceEntity.voyageGroupId > 0 || hitEntity.voyageGroupId > 0) && (sourceEntity.voyageGroupId == hitEntity.voyageGroupId)) {
+         return;
+      }
+
       _hasCollided = true;
 
       // The Server will handle applying damage
       if (isServer) {
-         // Ship process if the owner of the projectile and the collided entity has the same voyage, this prevents friendly fire
-         if ((sourceEntity.voyageGroupId > 0 || hitEntity.voyageGroupId > 0) && (sourceEntity.voyageGroupId == hitEntity.voyageGroupId)) {
-            return;
-         }
-
          _hitEnemy = true;
+         Rpc_NotifyHitEnemy();
 
          ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(_abilityData.projectileId);
          int projectileBaseDamage = (int) projectileData.projectileDamage;
-         int shipDamageMultiplier = (int) (sourceEntity.damage * projectileBaseDamage);
-         int abilityDamageMultiplier = (int) (_abilityData.damageModifier * projectileBaseDamage);
-         int totalDamage = projectileBaseDamage + shipDamageMultiplier + abilityDamageMultiplier;
+         int shipDamage = (int) (sourceEntity.damage * projectileBaseDamage);
+         int abilityDamage = (int) (_abilityData.damageModifier * projectileBaseDamage);
+         int critDamage = (int) (_isCrit ? projectileBaseDamage * 0.5f : 0.0f);
+         int totalDamage = projectileBaseDamage + shipDamage + abilityDamage + critDamage;
          hitEntity.currentHealth -= totalDamage;
 
          // TODO: Observe damage formula on live build
          D.adminLog("Total damage of network Cannonball is" + " : " + totalDamage +
             " Projectile: " + projectileBaseDamage +
-            " Ship: " + shipDamageMultiplier + " Dmg: {" + (sourceEntity.damage * 100) + "%}" +
-            " Ability: " + abilityDamageMultiplier + "Dmg: {" + (_abilityData.damageModifier * 100) + "%}", D.ADMIN_LOG_TYPE.Sea);
+            " Ship: " + shipDamage + " Dmg: {" + (sourceEntity.damage * 100) + "%}" +
+            " Ability: " + abilityDamage + "Dmg: {" + (_abilityData.damageModifier * 100) + "%}", D.ADMIN_LOG_TYPE.Sea);
 
          // Apply the status effect
          if (_statusType != Status.Type.None) {
@@ -162,7 +164,7 @@ public class ServerCannonBall : NetworkBehaviour {
          }
 
          // Have the server tell the clients where the explosion occurred
-         hitEntity.Rpc_ShowExplosion(sourceEntity.netId, transform.position, totalDamage, Attack.Type.Cannon);
+         hitEntity.Rpc_ShowExplosion(sourceEntity.netId, transform.position, totalDamage, Attack.Type.Cannon, _isCrit);
 
          // Registers Damage throughout the clients
          hitEntity.Rpc_NetworkProjectileDamage(_creatorNetId, Attack.Type.Cannon, transform.position);
@@ -184,6 +186,11 @@ public class ServerCannonBall : NetworkBehaviour {
       }
 
       NetworkServer.Destroy(gameObject);
+   }
+
+   [ClientRpc]
+   private void Rpc_NotifyHitEnemy () {
+      _hitEnemy = true;
    }
 
    private void OnDestroy () {
@@ -257,9 +264,6 @@ public class ServerCannonBall : NetworkBehaviour {
    // The instance id for this projectile
    protected int _instanceId;
 
-   // The damage multiplier of this projectile considering the current travel force
-   protected float _damageMultiplier = 1;
-
    // Determines the impact level of this projectile
    protected Attack.ImpactMagnitude _impactMagnitude = Attack.ImpactMagnitude.None;
 
@@ -294,8 +298,10 @@ public class ServerCannonBall : NetworkBehaviour {
    private bool _playFiringSound = true;
 
    // True if this cannonball hit an enemy
-   [SyncVar]
    private bool _hitEnemy = false;
+
+   // Whether this cannonball will deal critical damage
+   private bool _isCrit = false;
 
    #endregion
 

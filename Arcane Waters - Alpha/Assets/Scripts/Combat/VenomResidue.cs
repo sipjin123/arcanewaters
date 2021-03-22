@@ -34,7 +34,7 @@ public class VenomResidue : MonoBehaviour {
          if (targetEntities.Count > 0) {
             foreach (SeaEntity seaEntity in targetEntities) {
                seaEntity.currentHealth -= damagePerSec;
-               seaEntity.Rpc_ShowExplosion(creatorNetId, seaEntity.transform.position, damagePerSec, Attack.Type.Venom);
+               seaEntity.Rpc_ShowExplosion(creatorNetId, seaEntity.transform.position, damagePerSec, Attack.Type.Venom, false);
                seaEntity.Rpc_AttachEffect(damagePerSec, Attack.Type.Venom);
             }
          }

@@ -183,6 +183,7 @@ public class OptionsPanel : Panel
          // Display the guild icons of all the players
          foreach (NetEntity entity in EntityManager.self.getAllEntities()) {
             if ((entity.guildId > 0) && (entity is PlayerBodyEntity)) {
+               entity.updateGuildIconSprites();
                entity.showGuildIcon();
             }
             allGuildIconsShowing = true;

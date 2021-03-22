@@ -134,24 +134,26 @@ public class VoyageGroupPanel : ClientMonoBehaviour
          return;
       }
 
-      PanelManager.self.showConfirmationPanel("Are you sure you want to leave the voyage group?",
-         () => {
-            // Initialize the countdown screen
-            PanelManager.self.countdownScreen.cancelButton.onClick.RemoveAllListeners();
-            PanelManager.self.countdownScreen.onCountdownEndEvent.RemoveAllListeners();
-            PanelManager.self.countdownScreen.cancelButton.onClick.AddListener(() => PanelManager.self.countdownScreen.hide());
-            PanelManager.self.countdownScreen.onCountdownEndEvent.AddListener(() => onLeaveCountdownEnd());
-            PanelManager.self.countdownScreen.customText.text = "Leaving Voyage Group in";
+      if (VoyageManager.isTreasureSiteArea(Global.player.areaKey) || VoyageManager.isVoyageOrLeagueArea(Global.player.areaKey)) {
+         // Outside of safe areas, start a leave countdown
+         PanelManager.self.countdownScreen.cancelButton.onClick.RemoveAllListeners();
+         PanelManager.self.countdownScreen.onCountdownEndEvent.RemoveAllListeners();
+         PanelManager.self.countdownScreen.cancelButton.onClick.AddListener(() => PanelManager.self.countdownScreen.hide());
+         PanelManager.self.countdownScreen.onCountdownEndEvent.AddListener(() => onLeaveCountdownEnd());
+         PanelManager.self.countdownScreen.customText.text = "Leaving Voyage Group in";
 
-            // Start the countdown
-            PanelManager.self.countdownScreen.seconds = LEAVING_COUNTDOWN_SECONDS;
-            PanelManager.self.countdownScreen.show();
+         // Start the countdown
+         PanelManager.self.countdownScreen.seconds = LEAVING_COUNTDOWN_SECONDS;
+         PanelManager.self.countdownScreen.show();
+      } else {
+         // In safe areas, ask confirmation and leave without countdown
+         PanelManager.self.showConfirmationPanel("Are you sure you want to leave the voyage group?", () => onLeaveCountdownEnd());
+      }
 
-            // Close the current voyage panel if it is open
-            if (PanelManager.self.get(Panel.Type.ReturnToCurrentVoyagePanel).isShowing()) {
-               PanelManager.self.unlinkPanel();
-            }
-         });
+      // Close the current voyage panel if it is open
+      if (PanelManager.self.get(Panel.Type.ReturnToCurrentVoyagePanel).isShowing()) {
+         PanelManager.self.unlinkPanel();
+      }
    }
 
    public void onLeaveCountdownEnd () {
