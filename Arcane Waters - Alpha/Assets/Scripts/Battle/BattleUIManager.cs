@@ -50,9 +50,6 @@ public class BattleUIManager : MonoBehaviour {
    public Slider playerHealthBar;
    public Slider playerApBar;
 
-   // UI element that shows the username in the battle UI
-   public TextMeshProUGUI usernameText;
-
    // Used for showing features that are not in place.
    public GameObject debugWIPFrame;
 
@@ -642,8 +639,7 @@ public class BattleUIManager : MonoBehaviour {
       setRectToScreenPosition(mainPlayerRect, playerBattler.battleSpot.transform.position, pointOffset);
 
       playerBattler.selectedBattleBar.toggleDisplay(false);
-      usernameText.text = Global.player.entityName;
-      usernameText.gameObject.SetActive(true);
+
       if (showAbilities) {
          playerBattleCG.Show();
 

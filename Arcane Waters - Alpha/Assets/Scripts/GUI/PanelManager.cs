@@ -113,6 +113,8 @@ public class PanelManager : MonoBehaviour {
          BottomBar.self.toggleAbilityPanel();
       } else if (Input.GetKeyDown(KeyCode.K)) {
          BottomBar.self.toggleMailPanel();
+      } else if (Input.GetKeyDown(KeyCode.F12)) {
+         ((AdminVoyagePanel) get(Panel.Type.AdminVoyage)).togglePanel();
       }
    }
 

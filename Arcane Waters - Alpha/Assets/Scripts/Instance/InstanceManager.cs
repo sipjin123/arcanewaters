@@ -311,6 +311,18 @@ public class InstanceManager : MonoBehaviour {
       return voyages;
    }
 
+   public List<Instance> getTreasureSiteInstancesLinkedToVoyages () {
+      List<Instance> voyages = new List<Instance>();
+
+      foreach (Instance instance in _instances.Values) {
+         if (VoyageManager.isTreasureSiteArea(instance.areaKey) && instance.voyageId > 0) {
+            voyages.Add(instance);
+         }
+      }
+
+      return voyages;
+   }
+
    public bool tryGetVoyageInstance (int voyageId, out Instance instance) {
       instance = null;
 

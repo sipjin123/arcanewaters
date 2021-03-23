@@ -29,6 +29,9 @@ public class NetworkedServer : NetworkedBehaviour
    // The voyage instances hosted in this server
    public NetworkedList<Voyage> voyages = new NetworkedList<Voyage>(Global.defaultNetworkedVarSettings);
 
+   // The treasure site instances hosted in this server
+   public NetworkedList<Voyage> treasureSites = new NetworkedList<Voyage>(Global.defaultNetworkedVarSettings);
+
    // A listing of open area types on this server
    public NetworkedList<string> openAreas = new NetworkedList<string>(Global.defaultNetworkedVarSettings);
 
@@ -70,6 +73,7 @@ public class NetworkedServer : NetworkedBehaviour
 
    private void updateVoyageInstances () {
       voyages.Clear();
+      treasureSites.Clear();
 
       // Get the number of groups in all voyage instances
       Dictionary<int, int> allGroupCount = VoyageGroupManager.self.getGroupCountInAllVoyages();
@@ -78,13 +82,23 @@ public class NetworkedServer : NetworkedBehaviour
          allGroupCount.TryGetValue(instance.voyageId, out int groupCount);
          addNewVoyageInstance(instance, groupCount);
       }
+
+      // Get the treasure site instances that are linked to a voyage
+      foreach (Instance instance in InstanceManager.self.getTreasureSiteInstancesLinkedToVoyages()) {
+         allGroupCount.TryGetValue(instance.voyageId, out int groupCount);
+         addNewVoyageInstance(treasureSites, instance, groupCount);
+      }
    }
 
    public void addNewVoyageInstance (Instance instance, int groupCount) {
-      Voyage voyage = new Voyage(instance.voyageId, instance.areaKey, Area.getName(instance.areaKey), instance.difficulty, instance.biome, instance.isPvP,
+      addNewVoyageInstance(voyages, instance, groupCount);
+   }
+
+   public void addNewVoyageInstance (NetworkedList<Voyage> voyageList, Instance instance, int groupCount) {
+      Voyage voyage = new Voyage(instance.voyageId, instance.id, instance.areaKey, Area.getName(instance.areaKey), instance.difficulty, instance.biome, instance.isPvP,
             instance.isLeague, instance.leagueIndex, instance.leagueRandomSeed, instance.creationDate, instance.treasureSiteCount, instance.capturedTreasureSiteCount, instance.aliveNPCEnemiesCount,
-            instance.getTotalNPCEnemyCount(), groupCount);
-      voyages.Add(voyage);
+            instance.getTotalNPCEnemyCount(), groupCount, instance.getPlayerCount());
+      voyageList.Add(voyage);
    }
 
    public bool isMasterServer () {
@@ -376,6 +390,44 @@ public class NetworkedServer : NetworkedBehaviour
       NetEntity adminEntity = EntityManager.self.getEntity(adminUserId);
       if (adminEntity != null) {
          adminEntity.admin.returnUserLocationForAdminGoto(location);
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_GetUsersInInstanceForAdminVoyagePanel (int voyageId, int instanceId, int callerUserId) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerHostingVoyage(voyageId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_GetUsersInInstanceForAdminVoyagePanel, voyageId, instanceId, callerUserId);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_GetUsersInInstanceForAdminVoyagePanel (int voyageId, int instanceId, int callerUserId) {
+      List<int> userIdList;
+
+      Instance instance = InstanceManager.self.getInstance(instanceId);
+      if (instance != null) {
+         userIdList = instance.getPlayerUserIds();
+      } else {
+         userIdList = new List<int>();
+      }
+
+      InvokeServerRpc(MasterServer_ReturnUsersInInstanceForAdminVoyagePanel, callerUserId, userIdList.ToArray());
+   }
+
+   [ServerRPC]
+   public void MasterServer_ReturnUsersInInstanceForAdminVoyagePanel (int callerUserId, int[] userIdArray) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(callerUserId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_ReturnUsersInInstanceForAdminVoyagePanel, callerUserId, userIdArray);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_ReturnUsersInInstanceForAdminVoyagePanel (int callerUserId, int[] userIdArray) {
+      NetEntity callerPlayer = EntityManager.self.getEntity(callerUserId);
+      if (callerPlayer != null) {
+         callerPlayer.rpc.returnUsersInInstanceForAdminVoyagePanel(userIdArray);
       }
    }
 

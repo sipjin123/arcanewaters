@@ -36,6 +36,9 @@ public class Voyage
    // The unique id of the voyage
    public int voyageId;
 
+   // The id of the instance
+   public int instanceId;
+
    // The key of the area the voyage is set in
    public string areaKey;
 
@@ -75,6 +78,9 @@ public class Voyage
    // The number of groups in the voyage instance
    public int groupCount = 0;
 
+   // The number of players in the voyage instance
+   public int playerCount = 0;
+
    // The biome of the area the voyage is set in
    public Biome.Type biome = Biome.Type.None;
 
@@ -84,10 +90,11 @@ public class Voyage
 
    }
 
-   public Voyage (int voyageId, string areaKey, string areaName, int difficulty, Biome.Type biome, bool isPvP,
+   public Voyage (int voyageId, int instanceId, string areaKey, string areaName, int difficulty, Biome.Type biome, bool isPvP,
       bool isLeague, int leagueIndex, int leagueRandomSeed, long creationDate, int treasureSiteCount, int capturedTreasureSiteCount, int aliveNPCEnemyCount, 
-      int totalNPCEnemyCount, int groupCount) {
+      int totalNPCEnemyCount, int groupCount, int playerCount) {
       this.voyageId = voyageId;
+      this.instanceId = instanceId;
       this.areaKey = areaKey;
       this.areaName = areaName;
       this.difficulty = difficulty;
@@ -102,6 +109,7 @@ public class Voyage
       this.aliveNPCEnemyCount = aliveNPCEnemyCount;
       this.totalNPCEnemyCount = totalNPCEnemyCount;
       this.groupCount = groupCount;
+      this.playerCount = playerCount;
    }
 
    public static Difficulty getDifficultyEnum (int difficulty) {

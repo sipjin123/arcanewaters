@@ -834,6 +834,27 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
+   public void Target_ReceiveAdminVoyageInstanceList (NetworkConnection connection, Voyage[] voyageArray) {
+      List<Voyage> voyageList = new List<Voyage>(voyageArray);
+
+      // Make sure the panel is showing
+      PanelManager.self.linkIfNotShowing(Panel.Type.AdminVoyage);
+
+      // Pass the data to the panel
+      AdminVoyagePanel panel = (AdminVoyagePanel) PanelManager.self.get(Panel.Type.AdminVoyage);
+      panel.receiveVoyageInstancesFromServer(voyageList);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveUserInfoListForAdminVoyagePanel (NetworkConnection connection, UserInfo[] userInfoArray) {
+      List<UserInfo> userInfoList = new List<UserInfo>(userInfoArray);
+
+      // Pass the data to the panel
+      AdminVoyagePanel panel = (AdminVoyagePanel) PanelManager.self.get(Panel.Type.AdminVoyage);
+      panel.adminVoyageInfoPanel.updatePanelWithUserList(userInfoList);
+   }
+
+   [TargetRpc]
    public void Target_ReceiveCurrentVoyageInstance (NetworkConnection connection, Voyage voyage) {
       // Make sure the panel is showing
       PanelManager.self.linkIfNotShowing(Panel.Type.ReturnToCurrentVoyagePanel);
@@ -3523,6 +3544,88 @@ public class RPCManager : NetworkBehaviour
 
       // Send the list to the client
       Target_ReceiveVoyageInstanceList(_player.connectionToClient, VoyageManager.self.getAllOpenVoyageInstances().ToArray());
+   }
+
+   [Command]
+   public void Cmd_RequestAdminVoyageListFromServer () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      // Get both the main voyage instances and the linked treasure site instances
+      List<Voyage> voyages = VoyageManager.self.getAllVoyages();
+      voyages.AddRange(VoyageManager.self.getAllTreasureSiteInstancesLinkedToVoyages());
+
+      // Send the list to the client
+      Target_ReceiveAdminVoyageInstanceList(_player.connectionToClient, voyages.ToArray());
+   }
+
+   [Command]
+   public void Cmd_RequestUserListForAdminVoyageInfoPanelFromServer (int voyageId, int instanceId) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      // Ask the list of users in the instance to the server network
+      ServerNetworkingManager.self.getUsersInInstanceForAdminVoyagePanel(voyageId, instanceId, _player.userId);
+   }
+
+   [Server]
+   public void returnUsersInInstanceForAdminVoyagePanel (int[] userIdArray) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      // Read the users info in DB and send it to the client
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<UserInfo> userInfoList = DB_Main.getUserInfoList(userIdArray);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveUserInfoListForAdminVoyagePanel(_player.connectionToClient, userInfoList.ToArray());
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_WarpAdminToVoyageInstanceAsGhost (int voyageId, string areaKey) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      // Check the validity of the request
+      if (!VoyageManager.self.tryGetVoyage(voyageId, out Voyage voyage)) {
+         sendError("This voyage is not available anymore!");
+         return;
+      }
+
+      // Always place the admin in a new group
+      if (VoyageGroupManager.self.tryGetGroupById(_player.voyageGroupId, out VoyageGroupInfo voyageGroup)) {
+         VoyageGroupManager.self.removeUserFromGroup(voyageGroup, _player);
+      }
+      VoyageGroupManager.self.createGroup(_player, voyageId, true);
+
+      // Warp the admin to the voyage map
+      _player.spawnInNewMap(voyageId, areaKey, Direction.South);
    }
 
    [Command]

@@ -345,7 +345,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          BattleUIManager.self.selectionId = 0;
          CameraManager.enableBattleDisplay();
 
-         BattleUIManager.self.usernameText.text = Global.player.entityName;
          BattleUIManager.self.setLocalBattler(this);
          BattleUIManager.self.prepareBattleUI();
       } else {
@@ -358,9 +357,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                BattleUIManager.self.setRectToScreenPosition(BattleUIManager.self.mainPlayerRect, allyBattler.battleSpot.transform.position, pointOffset);
 
                BattleUIManager.self.playerBattleCG.Show();
-               BattleUIManager.self.usernameText.gameObject.SetActive(true);
-               BattleUIManager.self.usernameText.text = BodyManager.self.getBody(allyBattler.userId).nameText.text;
-               selectedBattleBar.toggleDisplay(false);
 
                // Enable all buff abilities
                BattleUIManager.self.setAbilityType(AbilityType.BuffDebuff);
@@ -368,7 +364,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             onBattlerDeselect.AddListener(() => {
                BattleUIManager.self.playerBattleCG.Hide();
-               selectedBattleBar.toggleDisplay(false);
             });
          } 
       }
@@ -667,7 +662,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          }
 
          if (hoverPlayerNames) {
-            BattleUIManager.self.usernameText.gameObject.SetActive(false);
             selectedBattleBar.toggleDisplay(isMouseHovering());
          } else {
             selectedBattleBar.toggleDisplay(false);

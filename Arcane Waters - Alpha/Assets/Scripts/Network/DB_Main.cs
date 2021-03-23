@@ -6006,6 +6006,49 @@ public class DB_Main : DB_MainStub
       return userInfo;
    }
 
+   public static new List<UserInfo> getUserInfoList (int[] userIdArray) {
+      List<UserInfo> userList = new List<UserInfo>();
+      if (userIdArray.Length <= 0) {
+         return userList;
+      }
+
+      // Build the IN clause containing the list of user ids
+      StringBuilder inClause = new StringBuilder();
+      inClause.Append("(");
+      foreach (int userId in userIdArray) {
+         inClause.Append(userId + ", ");
+      }
+
+      // Delete the last ", "
+      inClause.Length = inClause.Length - 2;
+
+      inClause.Append(") ");
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users " +
+            "JOIN global.accounts USING (accId) " +
+            "LEFT JOIN guilds ON (users.gldId = guilds.gldId) " +
+            "WHERE usrId IN " + inClause, conn)) {
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+            
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  UserInfo info = new UserInfo(dataReader);
+                  userList.Add(info);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return userList;
+   }
+
    public static new Stats getStats (int userId) {
       Stats stats = new Stats(userId);
 

@@ -214,6 +214,19 @@ public class Instance : NetworkBehaviour
       return newEntityList;
    }
 
+   public List<int> getPlayerUserIds () {
+      List<int> userIdList = new List<int>();
+
+      foreach (NetworkBehaviour entity in entities) {
+         NetEntity netEntity = entity as NetEntity;
+         if (netEntity != null && netEntity.isPlayerEntity()) {
+            userIdList.Add(netEntity.userId);
+         }
+      }
+
+      return userIdList;
+   }
+
    public int getMaxPlayers () {
       if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
          if (customMapManager is CustomFarmManager || customMapManager is CustomHouseManager) {

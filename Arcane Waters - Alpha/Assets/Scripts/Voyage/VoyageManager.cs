@@ -137,6 +137,20 @@ public class VoyageManager : MonoBehaviour {
    }
 
    [Server]
+   public List<Voyage> getAllTreasureSiteInstancesLinkedToVoyages () {
+      List<Voyage> voyages = new List<Voyage>();
+
+      // Get all the voyages we know about in all the servers we know about
+      foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
+         foreach (Voyage voyage in server.treasureSites) {
+            voyages.Add(voyage);
+         }
+      }
+
+      return voyages;
+   }
+
+   [Server]
    public List<Voyage> getAllOpenVoyageInstances () {
       // Get the number of groups in all voyage instances
       Dictionary<int, int> allGroupCount = VoyageGroupManager.self.getGroupCountInAllVoyages();

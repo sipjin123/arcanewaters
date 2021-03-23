@@ -791,6 +791,10 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static List<UserInfo> getUserInfoList (int[] userIdArray) {
+      return null;
+   }
+
    public static ShipInfo getShipInfo (int userId) {
       return null;
    }

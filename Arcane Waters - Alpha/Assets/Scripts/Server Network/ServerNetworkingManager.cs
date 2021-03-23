@@ -210,6 +210,10 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_FindUserLocationForAdminGoTo, adminUserId, userId);
    }
 
+   public void getUsersInInstanceForAdminVoyagePanel (int voyageId, int instanceId, int callerUserId) {
+      server.InvokeServerRpc(server.MasterServer_GetUsersInInstanceForAdminVoyagePanel, voyageId, instanceId, callerUserId);
+   }
+
    public void registerUserInTreasureSite (int userId, int voyageId, int treasureSiteInstanceId) {
       server.InvokeServerRpc(server.MasterServer_RegisterUserInTreasureSite, userId, voyageId, treasureSiteInstanceId);
    }
