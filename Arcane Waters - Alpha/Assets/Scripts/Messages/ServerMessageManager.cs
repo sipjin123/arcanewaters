@@ -76,10 +76,16 @@ public class ServerMessageManager : MonoBehaviour
             string hashedPassword = Util.hashPassword(salt, logInUserMessage.accountPassword);
 
             if (Global.accountOverrides.ContainsKey(logInUserMessage.accountName)) {
-               D.debug("This account password is temporarily overridden: " + logInUserMessage.accountName);
+               if (Global.accountOverrides[logInUserMessage.accountName] == logInUserMessage.accountPassword) {
+                  D.debug("This account password is temporarily overridden: " + logInUserMessage.accountName);
 
-               // Login account, bypassing password
-               accountId = DB_Main.getOverriddenAccountId(logInUserMessage.accountName);
+                  // Login account, bypassing password
+                  accountId = DB_Main.getOverriddenAccountId(logInUserMessage.accountName);
+
+                  D.debug("Account id fetched for overridden account" + " : " + accountId);
+               } else {
+                  D.debug("Incorrect account override password");
+               }
             } else {
                // Manual login system using input user name and password
                accountId = DB_Main.getAccountId(logInUserMessage.accountName, hashedPassword);
@@ -154,6 +160,10 @@ public class ServerMessageManager : MonoBehaviour
                sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
                return;
             }
+
+            if (Global.accountOverrides.ContainsKey(logInUserMessage.accountName)) {
+               D.debug("Attempting to login overridden user {" + logInUserMessage.accountName + "} : {" + accountId + "} : {" + logInUserMessage.selectedUserId + "}");
+            } 
 
             // If there was a valid account ID and a specified user ID, tell the client we authenticated them
             if (accountId > 0 && logInUserMessage.selectedUserId > 0 && users.Count == 1) {
