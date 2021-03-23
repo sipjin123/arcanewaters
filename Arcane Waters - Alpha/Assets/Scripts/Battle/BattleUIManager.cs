@@ -192,7 +192,9 @@ public class BattleUIManager : MonoBehaviour {
             "} ID: {" + weaponData.sqlId +
             "} Unique Id: {" + _playerLocalBattler.weaponManager.equippedWeaponId +
             "} SQL Id: {" + _playerLocalBattler.weaponManager.equipmentDataId +
-            "} Sprite Type: {" + _playerLocalBattler.weaponManager.weaponType+ "}", D.ADMIN_LOG_TYPE.Ability);
+            "} Sprite Type: {" + _playerLocalBattler.weaponManager.weaponType + "}", D.ADMIN_LOG_TYPE.Ability);
+      } else {
+         D.adminLog("Can process ability info, weapon data is missing: {" + _playerLocalBattler.weaponManager.equipmentDataId + "}", D.ADMIN_LOG_TYPE.Ability);
       }
 
       int indexCounter = 0;
@@ -264,7 +266,7 @@ public class BattleUIManager : MonoBehaviour {
 
                // Log the cause of invalid weapon class if admin log is enabled
                try {
-                  D.adminLog("ValidAbility: {" + isAbilityValid +
+                  D.adminLog("--> ValidAbility: {" + isAbilityValid +
                      "} AbilityName: {" + currentAbility.itemName +
                      "} AbilityId: {" + currentAbility.itemID +
                      "} AbilityClass: {" + currentAbility.classRequirement +
