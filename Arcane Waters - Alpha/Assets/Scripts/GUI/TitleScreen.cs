@@ -195,6 +195,9 @@ public class TitleScreen : MonoBehaviour {
          case ErrorMessage.Type.ServerOffline:
             PanelManager.self.noticeScreen.show("The server is offline.");
             break;
+         case ErrorMessage.Type.SteamWebOffline:
+            PanelManager.self.noticeScreen.show("Unable to connect to server, please try again later.");
+            break;
          default:
             if (message != null) {
                PanelManager.self.noticeScreen.show(message.customMessage);

@@ -74,6 +74,7 @@ public class ClientMessageManager : MonoBehaviour {
       }
 
       switch (msg.errorType) {
+         case ErrorMessage.Type.SteamWebOffline:
          case ErrorMessage.Type.FailedUserOrPass:
          case ErrorMessage.Type.AlreadyOnline:
          case ErrorMessage.Type.Banned:

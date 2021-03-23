@@ -76,6 +76,8 @@ namespace SteamLoginSystem
          yield return www.SendWebRequest();
          if (www.isNetworkError || www.isHttpError) {
             D.debug("Network Error Has been Triggered! " + www.error);
+            D.debug("Error! Steam Web API Seems to be down!");
+            ServerMessageManager.sendError(ErrorMessage.Type.SteamWebOffline, connectionId);
          } else {
             string rawData = www.downloadHandler.text;
             rawData = rawData.Replace("params", "newParams");
