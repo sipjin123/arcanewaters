@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using UnityEngine.EventSystems;
 using TMPro;
+using UnityEngine.InputSystem;
 
 public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHandler
 {
@@ -224,15 +225,15 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    private void handleShortcutsInput () {
       // We should move these to the InputManager
-      if (Input.GetKeyDown(KeyCode.Alpha1)) {
+      if (Keyboard.current.digit1Key.wasPressedThisFrame) {
          PanelManager.self.itemShortcutPanel.activateShortcut(1);
-      } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
+      } else if (Keyboard.current.digit2Key.wasPressedThisFrame) {
          PanelManager.self.itemShortcutPanel.activateShortcut(2);
-      } else if (Input.GetKeyDown(KeyCode.Alpha3)) {
+      } else if (Keyboard.current.digit3Key.wasPressedThisFrame) {
          PanelManager.self.itemShortcutPanel.activateShortcut(3);
-      } else if (Input.GetKeyDown(KeyCode.Alpha4)) {
+      } else if (Keyboard.current.digit4Key.wasPressedThisFrame) {
          PanelManager.self.itemShortcutPanel.activateShortcut(4);
-      } else if (Input.GetKeyDown(KeyCode.Alpha5)) {
+      } else if (Keyboard.current.digit5Key.wasPressedThisFrame) {
          PanelManager.self.itemShortcutPanel.activateShortcut(5);
       }
    }
@@ -407,7 +408,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private bool canSprint () {
-      return ((Global.sprintConstantly || Input.GetKey(KeyCode.LeftShift)) && !isWithinEnemyRadius && getVelocity().magnitude > MOVING_MAGNITUDE);
+      return ((Global.sprintConstantly || Keyboard.current.leftShiftKey.isPressed) && !isWithinEnemyRadius && getVelocity().magnitude > MOVING_MAGNITUDE);
    }
 
    private void processActionLogic () {
@@ -539,7 +540,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private void tryInteractAnimation () {
-      Direction newDirection = forceLookAt(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+      Direction newDirection = forceLookAt(Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue()));
 
       if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
          || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {

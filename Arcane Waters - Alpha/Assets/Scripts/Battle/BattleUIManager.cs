@@ -7,6 +7,7 @@ using UnityEngine.Events;
 using System.Linq;
 using TMPro;
 using DG.Tweening;
+using UnityEngine.InputSystem;
 
 public class BattleUIManager : MonoBehaviour {
    #region Public Variables
@@ -333,25 +334,25 @@ public class BattleUIManager : MonoBehaviour {
       if (_playerLocalBattler != null) {
          updateAbilityButtons();
 
-         if (Input.GetKeyDown(KeyCode.Alpha1)) {
+         if (Keyboard.current.digit1Key.wasPressedThisFrame) {
             triggerAbilityByKey(0);
-         } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
+         } else if (Keyboard.current.digit2Key.wasPressedThisFrame) {
             triggerAbilityByKey(1);
-         } else if (Input.GetKeyDown(KeyCode.Alpha3)) {
+         } else if (Keyboard.current.digit3Key.wasPressedThisFrame) {
             triggerAbilityByKey(2);
-         } else if (Input.GetKeyDown(KeyCode.Alpha4)) {
+         } else if (Keyboard.current.digit4Key.wasPressedThisFrame) {
             triggerAbilityByKey(3);
-         } else if (Input.GetKeyDown(KeyCode.Alpha5)) {
+         } else if (Keyboard.current.digit5Key.wasPressedThisFrame) {
             triggerAbilityByKey(4);
-         } else if (Input.GetKeyDown(KeyCode.Tab)) {
+         } else if (Keyboard.current.tabKey.wasPressedThisFrame) {
             selectNextTarget();
          }
 
-         if (Input.GetKeyDown(KeyCode.F1)) {
+         if (Keyboard.current.f1Key.wasPressedThisFrame) {
             changeBattleStance((int) Battler.Stance.Defense);
-         } else if (Input.GetKeyDown(KeyCode.F2)) {
+         } else if (Keyboard.current.f2Key.wasPressedThisFrame) {
             changeBattleStance((int) Battler.Stance.Balanced);
-         } else if (Input.GetKeyDown(KeyCode.F3)) {
+         } else if (Keyboard.current.f3Key.wasPressedThisFrame) {
             changeBattleStance((int) Battler.Stance.Attack);
          }
 

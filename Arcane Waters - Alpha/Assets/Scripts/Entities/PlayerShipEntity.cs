@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 using DG.Tweening;
+using UnityEngine.InputSystem;
 
 public class PlayerShipEntity : ShipEntity
 {
@@ -239,14 +240,16 @@ public class PlayerShipEntity : ShipEntity
             cannonAttackReleased();
          }
 
-         if (Input.GetKey(KeyCode.X) && Input.GetKeyDown(KeyCode.F10)) {
-            _cannonAttackType = (CannonAttackType)(((int)_cannonAttackType + 1) % 3);
-            ChatPanel.self.addChatInfo(new ChatInfo(0, "Changed ship attack type to: " + _cannonAttackType.ToString(), System.DateTime.Now, ChatInfo.Type.System));
-         }
+         if (Keyboard.current.xKey.isPressed) {
+            if (Keyboard.current.f10Key.wasPressedThisFrame) {
+               _cannonAttackType = (CannonAttackType) (((int) _cannonAttackType + 1) % 3);
+               ChatPanel.self.addChatInfo(new ChatInfo(0, "Changed ship attack type to: " + _cannonAttackType.ToString(), System.DateTime.Now, ChatInfo.Type.System));
+            }
 
-         if (Input.GetKey(KeyCode.X) && Input.GetKeyDown(KeyCode.F11)) {
-            Status.Type newStatusType = (Status.Type) (((int) cannonEffectType + 1) % System.Enum.GetValues(typeof(Status.Type)).Length);
-            Cmd_ChangeCannonEffectType();
+            if (Keyboard.current.f11Key.wasPressedThisFrame) {
+               Status.Type newStatusType = (Status.Type) (((int) cannonEffectType + 1) % System.Enum.GetValues(typeof(Status.Type)).Length);
+               Cmd_ChangeCannonEffectType();
+            }
          }
       }
 

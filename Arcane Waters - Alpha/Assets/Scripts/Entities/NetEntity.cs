@@ -7,6 +7,7 @@ using Cinemachine;
 using TMPro;
 using System.Linq;
 using System;
+using UnityEngine.InputSystem;
 
 public class NetEntity : NetworkBehaviour
 {
@@ -421,13 +422,13 @@ public class NetEntity : NetworkBehaviour
       _previousAreaKey = this.areaKey;
 
       // Display players' name when ALT key is pressed
-      if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) {
+      if (Keyboard.current.leftAltKey.isPressed || Keyboard.current.rightAltKey.isPressed) {
          if (this is PlayerBodyEntity) {
             showEntityName();
             showGuildIcon();
          }
       }
-      if (Input.GetKeyUp(KeyCode.LeftAlt) || Input.GetKeyUp(KeyCode.RightAlt)) {
+      if (Keyboard.current.leftAltKey.wasReleasedThisFrame || Keyboard.current.rightAltKey.wasReleasedThisFrame) {
          if (this is PlayerBodyEntity) {
             if (!OptionsPanel.allPlayersNameShowing) {
                hideEntityName();
@@ -852,7 +853,7 @@ public class NetEntity : NetworkBehaviour
       // Admin move speed overrides all modifiers
       // Debug speed boost for Admin users only
       int moveSpeedModifier = 1;
-      if (Input.GetKey(KeyCode.LeftShift) && isAdmin() && this is PlayerShipEntity && shipSpeedupFlag) {
+      if (Keyboard.current.leftShiftKey.isPressed && isAdmin() && this is PlayerShipEntity && shipSpeedupFlag) {
          moveSpeedModifier = 2;
       }
 
