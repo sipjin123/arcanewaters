@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.InputSystem;
 
 public class QuestDataToolPanel : MonoBehaviour {
    #region Public Variables
@@ -108,14 +109,14 @@ public class QuestDataToolPanel : MonoBehaviour {
    private void Update () {
       if (selectedDialogueTemplate != null) {
          Vector2 pos;
-         RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, Input.mousePosition, canvas.worldCamera, out pos);
+         RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, Mouse.current.position.ReadValue(), canvas.worldCamera, out pos);
          draggedNodeInfo.transform.position = canvas.transform.TransformPoint(pos);
       }
    }
 
    private void LateUpdate () {
       if (selectedDialogueTemplate != null) {
-         if (Input.GetKeyUp(KeyCode.Mouse0)) {
+         if (Mouse.current.leftButton.wasReleasedThisFrame) {
             if (hoveredDialogueTemplate != null) {
                if (hoveredDialogueTemplate != selectedDialogueTemplate) {
                   selectedDialogueTemplate.transform.SetSiblingIndex(hoveredDialogueTemplate.transform.GetSiblingIndex());

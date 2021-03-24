@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 namespace MapCreationTool
 {
@@ -57,12 +58,12 @@ namespace MapCreationTool
 
       private void Update () {
          // Check from scrolling
-         if (isHovering && Input.mouseScrollDelta.y != 0) {
-            PointerScroll.Invoke(lastHoverPosition.Value, Input.mouseScrollDelta.y);
+         if (isHovering && Mouse.current.scroll.y.ReadValue() != 0) {
+            PointerScroll.Invoke(lastHoverPosition.Value, Mouse.current.scroll.y.ReadValue());
          }
 
          // Check for movement
-         Vector2 mPos = MainCamera.stwp(Input.mousePosition);
+         Vector2 mPos = MainCamera.stwp(Mouse.current.position.ReadValue());
          if (isHovering && (Vector2) lastHoverPosition.Value != mPos) {
             lastHoverPosition = mPos;
             if (!draggingFrom.HasValue) {

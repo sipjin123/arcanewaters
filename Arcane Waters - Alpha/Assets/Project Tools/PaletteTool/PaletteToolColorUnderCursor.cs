@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.InputSystem;
 
 public class PaletteToolColorUnderCursor : MonoBehaviour {
    #region Public Variables
@@ -34,15 +35,15 @@ public class PaletteToolColorUnderCursor : MonoBehaviour {
          tex.ReadPixels(new Rect(0, 0, source.width, source.height), 0, 0);
          tex.Apply();
 
-         Color color = tex.GetPixel((int) Input.mousePosition.x, (int) Input.mousePosition.y);
+         Color color = tex.GetPixel((int) Mouse.current.position.ReadValue().x, (int) Mouse.current.position.ReadValue().y);
          Destroy(tex);
 
          paletteToolManager.updatePickingColorFromSprite(color);
 
-         if (Input.GetKey(KeyCode.Mouse0)) {
+         if (Mouse.current.leftButton.isPressed) {
             paletteToolManager.finalizePickingColorFromSprite();
             _isActive = false;
-         } else if (Input.GetKey(KeyCode.Mouse1)) {
+         } else if (Mouse.current.rightButton.isPressed) {
             paletteToolManager.finalizePickingColorFromSprite(true, _colorBeforeChanges);
             _isActive = false;
          }

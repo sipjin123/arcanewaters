@@ -2,6 +2,7 @@
 using System.Linq;
 using MapCreationTool.PaletteTilesData;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 
 namespace MapCreationTool
@@ -66,7 +67,7 @@ namespace MapCreationTool
 
       private void dragCell (Vector3Int from, Vector3Int to) {
          if (stroke.tileGroup != null) {
-            if (Input.GetKey(KeyCode.LeftShift)) {
+            if (Keyboard.current.leftShiftKey.isPressed) {
                if (!hasPaintStarted) {
                   if (Mathf.Abs(from.x - to.x) > Mathf.Abs(from.y - to.y)) {
                      isHorizontal = true;

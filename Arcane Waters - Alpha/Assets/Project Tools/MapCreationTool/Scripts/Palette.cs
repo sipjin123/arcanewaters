@@ -4,6 +4,7 @@ using MapCreationTool.UndoSystem;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 
 namespace MapCreationTool
@@ -84,11 +85,11 @@ namespace MapCreationTool
 
       private void Update () {
          if (pointerHovering) {
-            if (Input.mouseScrollDelta.y != 0) {
-               pointerScroll(Input.mouseScrollDelta.y);
+            if (Mouse.current.scroll.y.ReadValue() != 0) {
+               pointerScroll(Mouse.current.scroll.y.ReadValue());
             }
 
-            updateToolTip(Input.mousePosition);
+            updateToolTip(Mouse.current.position.ReadValue());
          }
       }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 namespace BackgroundTool
 {
@@ -49,7 +50,7 @@ namespace BackgroundTool
          if (!EventSystem.current.IsPointerOverGameObject() &&
             EventSystem.current.currentSelectedGameObject == null &&
             !ImageManipulator.self.disableHighlighting) {
-            Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 pos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             pos.z = 0;
             dragCounter = 0;
 
@@ -64,7 +65,7 @@ namespace BackgroundTool
          if (isDragging && !ImageManipulator.self.disableHighlighting) {
             dragCounter += Time.deltaTime;
             if (dragCounter >= holdTimerMax) {
-               Vector3 currentPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+               Vector3 currentPos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
                Vector3 selectionAreaSize = currentPos - startPosition;
                selectionAreaSize.x *= 100;
                selectionAreaSize.y *= 100;
@@ -91,7 +92,7 @@ namespace BackgroundTool
          if (isDragging) {
             List<SpriteTemplate> spawnedSpriteList = new List<SpriteTemplate>();
             List<SpriteSelectionTemplate> spriteSelectionList = new List<SpriteSelectionTemplate>();
-            endPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            endPosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             dragCounter = 0;
 
             Vector3 lowerLeftPos = new Vector3(Mathf.Min(startPosition.x, endPosition.x), Mathf.Min(startPosition.y, endPosition.y), 0);

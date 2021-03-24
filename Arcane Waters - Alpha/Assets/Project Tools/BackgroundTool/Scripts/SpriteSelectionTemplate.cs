@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 using static BackgroundTool.ImageLoader;
+using UnityEngine.InputSystem;
 
 namespace BackgroundTool
 {
@@ -31,7 +32,7 @@ namespace BackgroundTool
 
       public void OnMouseDown () {
          if (!ImageManipulator.self.isDragging) {
-            bool withinRectTrans = RectTransformUtility.RectangleContainsScreenPoint(ImageManipulator.self.rectReference, new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+            bool withinRectTrans = RectTransformUtility.RectangleContainsScreenPoint(ImageManipulator.self.rectReference, new Vector2(Mouse.current.position.ReadValue().x, Mouse.current.position.ReadValue().y));
             if (withinRectTrans) {
                spriteIcon.color = Color.white;
                List<SpriteSelectionTemplate> spriteSelectionTemp = new List<SpriteSelectionTemplate>();
@@ -42,7 +43,7 @@ namespace BackgroundTool
       }
 
       public void OnMouseEnter () {
-         bool withinRectTrans = RectTransformUtility.RectangleContainsScreenPoint(ImageManipulator.self.rectReference, new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+         bool withinRectTrans = RectTransformUtility.RectangleContainsScreenPoint(ImageManipulator.self.rectReference, new Vector2(Mouse.current.position.ReadValue().x, Mouse.current.position.ReadValue().y));
          if (withinRectTrans) {
             spriteIcon.color = Color.blue;
          } else {

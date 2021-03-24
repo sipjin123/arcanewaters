@@ -53,6 +53,7 @@ namespace MapCreationTool
       }
 
       private void Update () {
+         // TODO: Check what this feature does after input manager upgrade
          if (onAnyKey != null) {
             foreach (KeyCode keyCode in Enum.GetValues(typeof(KeyCode))) {
                if (Input.GetKeyDown(keyCode)) {

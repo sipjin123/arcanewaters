@@ -4,6 +4,7 @@ using MapCreationTool.PaletteTilesData;
 using MapCreationTool.Serialization;
 using MapCreationTool.UndoSystem;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 
 namespace MapCreationTool
@@ -569,7 +570,7 @@ namespace MapCreationTool
                hoveredPrefab.setHighlight(false, false, true);
             } else {
                brushOutline.enabled = true;
-               brushOutline.transform.position = cellToWorldCenter(worldToCell(MainCamera.stwp(Input.mousePosition)));
+               brushOutline.transform.position = cellToWorldCenter(worldToCell(MainCamera.stwp(Mouse.current.position.ReadValue())));
                brushOutline.size = Vector2.one;
                brushOutline.color = Color.red;
             }
@@ -579,7 +580,7 @@ namespace MapCreationTool
             if (!brushOutline.enabled)
                return;
 
-            Vector3 wp = MainCamera.stwp(Input.mousePosition);
+            Vector3 wp = MainCamera.stwp(Mouse.current.position.ReadValue());
             Bounds bounds = new Bounds {
                min = new Vector3(Mathf.Min(wp.x, DrawBoardEvents.draggingFrom.Value.x), Mathf.Min(wp.y, DrawBoardEvents.draggingFrom.Value.y), 0),
                max = new Vector3(Mathf.Max(wp.x, DrawBoardEvents.draggingFrom.Value.x), Mathf.Max(wp.y, DrawBoardEvents.draggingFrom.Value.y), 0)
@@ -601,7 +602,7 @@ namespace MapCreationTool
             if (!brushOutline.enabled)
                return;
 
-            brushOutline.transform.position = cellToWorldCenter(worldToCell(MainCamera.stwp(Input.mousePosition)));
+            brushOutline.transform.position = cellToWorldCenter(worldToCell(MainCamera.stwp(Mouse.current.position.ReadValue())));
 
             if (Tools.tileGroup == null)
                brushOutline.size = Vector2.one;
@@ -652,7 +653,7 @@ namespace MapCreationTool
       }
 
       public PlacedPrefab getHoveredPrefab (Vector3? mousePostion = null) {
-         Vector2 pointerPos = mousePostion ?? MainCamera.stwp(Input.mousePosition);
+         Vector2 pointerPos = mousePostion ?? MainCamera.stwp(Mouse.current.position.ReadValue());
          PlacedPrefab target = null;
          float minZ = float.MaxValue;
 

@@ -6,6 +6,7 @@ using System.Linq;
 using MapCreationTool.Serialization;
 using MapCreationTool.UndoSystem;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace MapCreationTool
 {
@@ -196,9 +197,9 @@ namespace MapCreationTool
 
 
       private void Update () {
-         if (Input.GetKeyDown(KeyCode.Z) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))) {
+         if (Keyboard.current.zKey.wasPressedThisFrame && (Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed)) {
             Undo.doUndo();
-         } else if (Input.GetKeyDown(KeyCode.Y) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))) {
+         } else if (Keyboard.current.yKey.wasPressedThisFrame && (Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed)) {
             Undo.doRedo();
          }
 
