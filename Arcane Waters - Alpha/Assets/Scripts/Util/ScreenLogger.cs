@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 // This class is uses for reviewing logs when running multiple clients in one machine, instead of reviewing text file this feature allows on screen log review
@@ -30,6 +31,7 @@ public class ScreenLogger : MonoBehaviour {
       self = this;
       isEnabled = false;
       canvasObj.SetActive(false);
+      D.debug("Screen Logger v1");
 
       if (!Util.isCloudBuild()) {
          isEnabled = true;
@@ -61,14 +63,14 @@ public class ScreenLogger : MonoBehaviour {
          return;
       }
 
-      if (Input.GetKey(KeyCode.LeftAlt)) {
+      if (Keyboard.current.leftAltKey.isPressed) {
          // Displays log screen when holding left and Q button
-         if (Input.GetKeyDown(KeyCode.Q)) {
+         if (Keyboard.current.qKey.wasPressedThisFrame) {
             canvasObj.SetActive(!canvasObj.activeSelf);
          }
 
          // Clears log screen when holding left and T button
-         if (Input.GetKeyDown(KeyCode.R) && canvasObj.activeSelf) {
+         if (Keyboard.current.rKey.wasPressedThisFrame && canvasObj.activeSelf) {
             clearLog();
          }
       }

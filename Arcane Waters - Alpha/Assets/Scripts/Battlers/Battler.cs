@@ -5,6 +5,7 @@ using System.Linq;
 using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -2161,7 +2162,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    private bool isMouseHovering () {
-      Vector3 mouseLocation = BattleCamera.self.getCamera().ScreenToWorldPoint(Input.mousePosition);
+      Vector3 mouseLocation = BattleCamera.self.getCamera().ScreenToWorldPoint(Mouse.current.position.ReadValue());
 
       // We don't care about the Z location for the purpose of Contains(), so make the click Z match the bounds Z
       mouseLocation.z = clickBox.bounds.center.z;

@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System;
+using UnityEngine.InputSystem.Controls;
+using UnityEngine.InputSystem;
 
 [Serializable]
 public class BoundKeyAction
@@ -13,10 +15,10 @@ public class BoundKeyAction
    public KeyAction action;
 
    // The primary key for performing this action
-   public KeyCode primary;
+   public ButtonControl primary = null;
 
    // The secondary key for performing this action
-   public KeyCode secondary;
+   public ButtonControl secondary = null;
 
    #endregion
 
@@ -24,11 +26,11 @@ public class BoundKeyAction
       if (PlayerPrefs.HasKey(LOCAL_SAVE_KEY + (int) action)) {
          BoundKeyAction savedAction = JsonUtility.FromJson<BoundKeyAction>(PlayerPrefs.GetString(LOCAL_SAVE_KEY + (int) action));
 
-         if (savedAction.primary != KeyCode.None) {
+         if (savedAction.primary != null) {
             primary = savedAction.primary;
          }
 
-         if (savedAction.secondary != KeyCode.None) {
+         if (savedAction.secondary != null) {
             secondary = savedAction.secondary;
          }
       }

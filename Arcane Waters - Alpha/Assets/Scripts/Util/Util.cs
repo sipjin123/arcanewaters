@@ -20,6 +20,7 @@ using System.Globalization;
 using UnityEngine.Events;
 using MapCustomization;
 using System.Net;
+using UnityEngine.InputSystem;
 
 public class Util : MonoBehaviour
 {
@@ -231,7 +232,7 @@ public class Util : MonoBehaviour
          _mainCamera = Camera.main;
       }
 
-      Vector3 worldPos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
+      Vector3 worldPos = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
       worldPos.z = 0f;
       return worldPos;
    }

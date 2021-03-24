@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using MapCreationTool.Serialization;
 using System;
+using UnityEngine.InputSystem;
 
 public class Discovery : NetworkBehaviour
 {
@@ -70,7 +71,7 @@ public class Discovery : NetworkBehaviour
       _outline.setVisibility(_isLocalPlayerInside || isMouseOver);
 
       if (_isLocalPlayerInside || isMouseOver) {
-         if (InputManager.isActionKeyPressed() || (Input.GetMouseButtonUp(0) && isMouseOver)) {
+         if (InputManager.isActionKeyPressed() || (Mouse.current.leftButton.wasReleasedThisFrame && isMouseOver)) {
             openDiscoveryPanel();
          }
       }

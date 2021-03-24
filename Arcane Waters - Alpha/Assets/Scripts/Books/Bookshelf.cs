@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 using MapCreationTool.Serialization;
+using UnityEngine.InputSystem;
 
 public class Bookshelf : MonoBehaviour, IMapEditorDataReceiver {
    #region Public Variables
@@ -28,7 +29,7 @@ public class Bookshelf : MonoBehaviour, IMapEditorDataReceiver {
 
       handleSpriteOutline();
 
-      if (_isMouseOver && Input.GetMouseButtonUp(0)) {
+      if (_isMouseOver && Mouse.current.leftButton.wasReleasedThisFrame) {
          openBookReaderPanel();
       }
       

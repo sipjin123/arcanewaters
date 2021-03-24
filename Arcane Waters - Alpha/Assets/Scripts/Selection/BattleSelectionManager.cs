@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using System.Linq;
+using UnityEngine.InputSystem;
 
 public class BattleSelectionManager : MonoBehaviour {
    #region Public Variables
@@ -40,13 +41,13 @@ public class BattleSelectionManager : MonoBehaviour {
       }
 
       // Whenever a mouse-click ends, check if it was on a Battle sprite
-      if (Input.GetMouseButtonUp(0) && !Util.isButtonClick() && Global.isInBattle()) {
+      if (Mouse.current.leftButton.wasReleasedThisFrame && !Util.isButtonClick() && Global.isInBattle()) {
          if (Global.player == null || !(Global.player is PlayerBodyEntity)) {
             return;
          }
 
          // Check where on the screen this click was
-         Vector3 clickLocation = BattleCamera.self.getCamera().ScreenToWorldPoint(Input.mousePosition);
+         Vector3 clickLocation = BattleCamera.self.getCamera().ScreenToWorldPoint(Mouse.current.position.ReadValue());
          clickedArea(clickLocation);
       }
    }

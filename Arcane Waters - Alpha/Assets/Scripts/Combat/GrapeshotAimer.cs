@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.InputSystem;
 
 public class GrapeshotAimer : ClientMonoBehaviour {
    #region Public Variables
@@ -14,7 +15,7 @@ public class GrapeshotAimer : ClientMonoBehaviour {
 
    private void Update () {
       // Check if the right mouse is being held down for the grapeshot attack
-      bool rightMouseDown = Input.GetMouseButton(1);
+      bool rightMouseDown = Mouse.current.rightButton.isPressed;
       // Can't do anything until we have a player
       if (Global.player == null || !(Global.player is SeaEntity)) {
          return;

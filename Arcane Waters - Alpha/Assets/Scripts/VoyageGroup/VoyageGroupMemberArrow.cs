@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using TMPro;
+using UnityEngine.InputSystem;
 
 public class VoyageGroupMemberArrow : MonoBehaviour
 {
@@ -42,7 +43,7 @@ public class VoyageGroupMemberArrow : MonoBehaviour
          return;
       }
 
-      if (!Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt) && !_cell.isMouseOver()) {
+      if (!Keyboard.current.leftAltKey.isPressed && !Keyboard.current.rightAltKey.isPressed && !_cell.isMouseOver()) {
          return;
       }
 

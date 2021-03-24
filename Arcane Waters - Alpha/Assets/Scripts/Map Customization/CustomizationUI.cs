@@ -4,6 +4,7 @@ using MapCustomization;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 namespace MapCustomization
 {
@@ -42,9 +43,9 @@ namespace MapCustomization
       private void Update () {
          if (!_isShowing || isLoading) return;
 
-         Vector2 pointerPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+         Vector2 pointerPos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 
-         if (!Input.GetMouseButton(0)) {
+         if (!Mouse.current.leftButton.isPressed) {
             MapCustomizationManager.pointerHover(pointerPos);
          } else {
             MapCustomizationManager.pointerDrag(pointerPos - _lastPointerPos);
@@ -52,7 +53,7 @@ namespace MapCustomization
 
          _lastPointerPos = pointerPos;
 
-         if (Input.GetKey(KeyCode.Delete)) {
+         if (Keyboard.current.deleteKey.isPressed) {
             MapCustomizationManager.keyDelete();
          }
       }
