@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
+using UnityEngine.InputSystem;
+using UnityEngine.Events;
+using UnityEngine.InputSystem.Controls;
 
 public class InputManager : MonoBehaviour
 {
@@ -11,6 +14,9 @@ public class InputManager : MonoBehaviour
 
    // Singleton instance
    public static InputManager self;
+
+   // Input Master reference
+   public InputMaster inputMaster;
 
    #endregion
 
@@ -23,6 +29,26 @@ public class InputManager : MonoBehaviour
       foreach (BoundKeyAction boundKeyAction in _keybindings.Values) {
          boundKeyAction.loadLocal();
       }
+
+      initializeInputMaster();
+   }
+
+   private void initializeInputMaster () {
+      // TODO: Setup all gamepad action keybindings here after stabilizing the project by overridding all scripts referencing legacy input system
+      inputMaster = new InputMaster();
+      inputMaster.Player.Jump.performed += func => jumpAction();
+      inputMaster.Player.Interact.performed += func => interactAction();
+      inputMaster.Player.Move.performed += func => moveAction(func.ReadValue<Vector2>());
+      inputMaster.Player.Move.canceled += func => moveAction(new Vector2(0, 0));
+   }
+
+   private void jumpAction () {
+   }
+
+   private void interactAction () {
+   }
+
+   private void moveAction (Vector2 moveFactor) {
    }
 
    private void loadDefaultKeybindings () {
@@ -33,24 +59,24 @@ public class InputManager : MonoBehaviour
       }
 
       // Set movement keys
-      _keybindings[KeyAction.MoveUp].primary = KeyCode.W;
-      _keybindings[KeyAction.MoveRight].primary = KeyCode.D;
-      _keybindings[KeyAction.MoveDown].primary = KeyCode.S;
-      _keybindings[KeyAction.MoveLeft].primary = KeyCode.A;
-      _keybindings[KeyAction.MoveUp].secondary = KeyCode.UpArrow;
-      _keybindings[KeyAction.MoveRight].secondary = KeyCode.RightArrow;
-      _keybindings[KeyAction.MoveDown].secondary = KeyCode.DownArrow;
-      _keybindings[KeyAction.MoveLeft].secondary = KeyCode.LeftArrow;
-      _keybindings[KeyAction.SpeedUp].primary = KeyCode.LeftShift;
+      _keybindings[KeyAction.MoveUp].primary = Keyboard.current.wKey;
+      _keybindings[KeyAction.MoveRight].primary = Keyboard.current.dKey;
+      _keybindings[KeyAction.MoveDown].primary = Keyboard.current.sKey;
+      _keybindings[KeyAction.MoveLeft].primary = Keyboard.current.aKey;
+      _keybindings[KeyAction.MoveUp].secondary = Keyboard.current.upArrowKey;
+      _keybindings[KeyAction.MoveRight].secondary = Keyboard.current.rightArrowKey;
+      _keybindings[KeyAction.MoveDown].secondary = Keyboard.current.downArrowKey;
+      _keybindings[KeyAction.MoveLeft].secondary = Keyboard.current.leftArrowKey;
+      _keybindings[KeyAction.SpeedUp].primary = Keyboard.current.leftShiftKey;
 
       // Set sea battle keys
-      _keybindings[KeyAction.FireMainCannon].primary = KeyCode.Space;
-      _keybindings[KeyAction.SelectNextSeaTarget].primary = KeyCode.Tab;
+      _keybindings[KeyAction.FireMainCannon].primary = Keyboard.current.spaceKey;
+      _keybindings[KeyAction.SelectNextSeaTarget].primary = Keyboard.current.tabKey;
 
       // Camera panning
-      _keybindings[KeyAction.PanCamera].primary = KeyCode.Mouse2;
+      _keybindings[KeyAction.PanCamera].primary = Mouse.current.middleButton;
 
-      _keybindings[KeyAction.Reply].primary = KeyCode.R;
+      _keybindings[KeyAction.Reply].primary = Keyboard.current.rKey;
    }
 
    public static bool isPressingDirection (Direction direction) {
@@ -78,8 +104,8 @@ public class InputManager : MonoBehaviour
 
    public static bool getKeyAction (KeyAction action) {
       if (self._keybindings.TryGetValue(action, out BoundKeyAction boundAction)) {
-         bool primary = Input.GetKey(boundAction.primary) && !isKeyDisabled(boundAction.primary);
-         bool secondary = Input.GetKey(boundAction.secondary) && !isKeyDisabled(boundAction.secondary);
+         bool primary = boundAction.primary != null && boundAction.primary.isPressed && (!isKeyDisabled(boundAction.primary));
+         bool secondary = boundAction.secondary != null && boundAction.secondary.isPressed && !isKeyDisabled(boundAction.secondary);
          return primary || secondary;
       }
 
@@ -88,8 +114,8 @@ public class InputManager : MonoBehaviour
 
    public static bool getKeyActionDown (KeyAction action) {
       if (self._keybindings.TryGetValue(action, out BoundKeyAction boundAction)) {
-         bool primary = Input.GetKeyDown(boundAction.primary) && !isKeyDisabled(boundAction.primary);
-         bool secondary = Input.GetKeyDown(boundAction.secondary) && !isKeyDisabled(boundAction.secondary);
+         bool primary = boundAction.primary != null && boundAction.primary.wasPressedThisFrame && !isKeyDisabled(boundAction.primary);
+         bool secondary = boundAction.secondary != null && boundAction.secondary.wasPressedThisFrame && !isKeyDisabled(boundAction.secondary);
          return primary || secondary;
       }
 
@@ -98,8 +124,8 @@ public class InputManager : MonoBehaviour
 
    public static bool getKeyActionUp (KeyAction action) {
       if (self._keybindings.TryGetValue(action, out BoundKeyAction boundAction)) {
-         bool primary = Input.GetKeyUp(boundAction.primary) && !isKeyDisabled(boundAction.primary);
-         bool secondary = Input.GetKeyUp(boundAction.secondary) && !isKeyDisabled(boundAction.secondary);
+         bool primary = boundAction.primary != null && boundAction.primary.wasReleasedThisFrame && !isKeyDisabled(boundAction.primary);
+         bool secondary = boundAction.secondary != null && boundAction.secondary.wasReleasedThisFrame && !isKeyDisabled(boundAction.secondary);
          return primary || secondary;
       }
 
@@ -136,7 +162,7 @@ public class InputManager : MonoBehaviour
 
    public static bool isLeftClickKeyPressed () {
       if (isActionInputEnabled()) {
-         return Input.GetKeyDown(KeyCode.Mouse0);
+         return Mouse.current.leftButton.wasPressedThisFrame;
       }
 
       return false;
@@ -145,7 +171,7 @@ public class InputManager : MonoBehaviour
    public static bool isRightClickKeyPressed () {
       if (isActionInputEnabled()) {
          // Define the set of keys that we want to allow as "action" keys
-         return Input.GetKeyDown(KeyCode.Mouse1);
+         return Mouse.current.rightButton.wasPressedThisFrame;
       }
 
       return false;
@@ -154,7 +180,7 @@ public class InputManager : MonoBehaviour
    public static bool isActionKeyPressed () {
       if (isActionInputEnabled()) {
          // Define the set of keys that we want to allow as "action" keys
-         return Input.GetKeyDown(KeyCode.E);
+         return Keyboard.current.eKey.wasPressedThisFrame;
       }
 
       return false;
@@ -163,7 +189,7 @@ public class InputManager : MonoBehaviour
    public static bool isJumpKeyPressed () {
       if (isActionInputEnabled()) {
          // Define the set of keys that we want to allow as "action" keys
-         return Input.GetKeyDown(KeyCode.Space);
+         return Keyboard.current.spaceKey.wasPressedThisFrame;
       } 
 
       return false;
@@ -179,7 +205,7 @@ public class InputManager : MonoBehaviour
 
    public static bool isFireCannonMouseDown () {
       if (isActionInputEnabled()) {
-         return Input.GetMouseButtonDown((int)MouseButton.Right);
+         return Mouse.current.rightButton.wasPressedThisFrame;
       }
 
       return false;
@@ -187,7 +213,7 @@ public class InputManager : MonoBehaviour
 
    public static bool isFireCannonMouse () {
       if (isActionInputEnabled()) {
-         return Input.GetMouseButton((int) MouseButton.Right);
+         return Mouse.current.rightButton.isPressed;
       }
 
       return false;
@@ -195,7 +221,7 @@ public class InputManager : MonoBehaviour
 
    public static bool isFireCannonMouseUp () {
       if (isActionInputEnabled()) {
-         return Input.GetMouseButtonUp((int) MouseButton.Right);
+         return Mouse.current.rightButton.wasReleasedThisFrame;
       }
 
       return false;
@@ -239,18 +265,18 @@ public class InputManager : MonoBehaviour
       return true;
    }
 
-   public static void setBindingKey (KeyAction action, KeyCode key, bool isPrimary) {
+   public static void setBindingKey (KeyAction action, ButtonControl key, bool isPrimary) {
       // Unbind any actions that uses this key
       foreach (BoundKeyAction boundKeyAction in self._keybindings.Values) {
          bool changed = false;
 
          if (boundKeyAction.primary == key) {
-            boundKeyAction.primary = KeyCode.None;
+            boundKeyAction.primary = null;
             changed = true;
          }
 
          if (boundKeyAction.secondary == key) {
-            boundKeyAction.secondary = KeyCode.None;
+            boundKeyAction.secondary = null;
             changed = true;
          }
 
@@ -285,20 +311,20 @@ public class InputManager : MonoBehaviour
    }
 
    public static Vector2 getCameraPanningAxis () {
-      return new Vector2(Input.mousePosition.x / Screen.width, Input.mousePosition.y / Screen.height);
+      return new Vector2(Mouse.current.position.ReadValue().x / Screen.width, Mouse.current.position.ReadValue().y / Screen.height);
    }
 
-   private static bool isKeyDisabled (KeyCode keyCode) {
+   private static bool isKeyDisabled (ButtonControl keyCode) {
       return self._disabledKeys.Contains(keyCode);
    }
 
-   public static void disableKey (KeyCode keyCode) {
+   public static void disableKey (ButtonControl keyCode) {
       if (!self._disabledKeys.Contains(keyCode)) {
          self._disabledKeys.Add(keyCode);
       }
    }
 
-   public static void enableKey (KeyCode keyCode) {
+   public static void enableKey (ButtonControl keyCode) {
       if (self._disabledKeys.Contains(keyCode)) {
          self._disabledKeys.Remove(keyCode);
       }
@@ -310,7 +336,7 @@ public class InputManager : MonoBehaviour
    private Dictionary<KeyAction, BoundKeyAction> _keybindings = new Dictionary<KeyAction, BoundKeyAction>();
 
    // A list of keys that will be ignored when getting inputs
-   private List<KeyCode> _disabledKeys = new List<KeyCode>();
+   private List<ButtonControl> _disabledKeys = new List<ButtonControl>();
 
    #endregion
 }
