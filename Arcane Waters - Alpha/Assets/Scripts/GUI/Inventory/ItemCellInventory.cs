@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class ItemCellInventory : ItemCell, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
 {
@@ -41,7 +42,7 @@ public class ItemCellInventory : ItemCell, IPointerDownHandler, IPointerEnterHan
          if (eventData.button == PointerEventData.InputButton.Left) {
             // Wait until the mouse has moved a little before start dragging
             // This is to avoid interference with double click
-            StartCoroutine(trackDrag(Input.mousePosition));
+            StartCoroutine(trackDrag(Mouse.current.position.ReadValue()));
          }
       }
    }
@@ -50,9 +51,9 @@ public class ItemCellInventory : ItemCell, IPointerDownHandler, IPointerEnterHan
       float sqrDistance = 0;
 
       // Check if the mouse left button is still pressed
-      while (Input.GetMouseButton(0)) {
+      while (Mouse.current.leftButton.isPressed) {
          // Calculate the squared distance between the mouse click and the current mouse position
-         sqrDistance = Vector3.SqrMagnitude(Input.mousePosition - clickPosition);
+         sqrDistance = Vector3.SqrMagnitude((Vector3)Mouse.current.position.ReadValue() - clickPosition);
 
          // Check if the distance is large enough
          if (sqrDistance > DISTANCE_UNTIL_START_DRAG) {

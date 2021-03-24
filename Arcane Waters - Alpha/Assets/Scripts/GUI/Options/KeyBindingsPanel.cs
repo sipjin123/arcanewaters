@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System;
 using SubjectNerd.Utilities;
+using UnityEngine.InputSystem.Controls;
+using UnityEngine.InputSystem;
 
 public class KeyBindingsPanel : Panel
 {
@@ -62,9 +64,9 @@ public class KeyBindingsPanel : Panel
       base.Update();
 
       if (_waitingEntry != null) {
-         if (Input.anyKeyDown) {
-            foreach (KeyCode key in Enum.GetValues(typeof(KeyCode))) {
-               if (Input.GetKeyDown(key)) {
+         if (Keyboard.current.anyKey.wasPressedThisFrame) {
+            foreach (ButtonControl key in Enum.GetValues(typeof(ButtonControl))) {
+               if (key.isPressed) {
                   // Set the binding
                   InputManager.setBindingKey(_waitingEntry.action, key, _waitingForPrimary);
 

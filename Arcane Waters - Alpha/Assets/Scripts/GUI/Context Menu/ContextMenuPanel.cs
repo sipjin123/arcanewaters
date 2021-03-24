@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Text;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 
 public class ContextMenuPanel : MonoBehaviour
 {
@@ -30,7 +31,7 @@ public class ContextMenuPanel : MonoBehaviour
    #endregion
 
    public void show(string title) {
-      show(title, Input.mousePosition);
+      show(title, Mouse.current.position.ReadValue());
    }
 
    public void show (string title, Vector3 position) {
@@ -95,12 +96,12 @@ public class ContextMenuPanel : MonoBehaviour
          hide();
       }
 
-      if (InputManager.isLeftClickKeyPressed() || InputManager.isRightClickKeyPressed()) {
+      if (Mouse.current.leftButton.isPressed || Mouse.current.rightButton.isPressed) {
          // Hide the menu if a mouse button is clicked and the pointer is not over any button
-         if (!RectTransformUtility.RectangleContainsScreenPoint(buttonsRectTransform, Input.mousePosition)) {
+         if (!RectTransformUtility.RectangleContainsScreenPoint(buttonsRectTransform, Mouse.current.position.ReadValue())) {
             hide();
          }
-      } else if (Input.anyKeyDown) {
+      } else if (Keyboard.current.anyKey.isPressed) {
          hide();
       }
    }

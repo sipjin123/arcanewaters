@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.InputSystem;
 
 public class GrabbedAbility : MonoBehaviour {
    #region Public Variables
@@ -13,22 +14,22 @@ public class GrabbedAbility : MonoBehaviour {
       gameObject.SetActive(true);
 
       // Place under the mouse
-      transform.position = Input.mousePosition;
+      transform.position = Mouse.current.position.ReadValue();
    }
 
    public void Update () {
       // Follow the mouse
-      transform.position = Input.mousePosition;
+      transform.position = Mouse.current.position.ReadValue();
 
       // Stop grabbing when the right click button is pressed
-      if (Input.GetMouseButtonDown(1)) {
+      if (Mouse.current.rightButton.isPressed) {
          AbilityPanel.self.stopGrabbingAbility();
          return;
       }
 
       // When the left click button is released, try to drop the ability
-      if (!Input.GetMouseButton(0)) {
-         AbilityPanel.self.tryDropGrabbedAbility(Input.mousePosition);
+      if (!Mouse.current.leftButton.isPressed) {
+         AbilityPanel.self.tryDropGrabbedAbility(Mouse.current.position.ReadValue());
          return;
       }
    }

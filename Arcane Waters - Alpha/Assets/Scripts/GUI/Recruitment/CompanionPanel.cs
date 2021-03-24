@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.InputSystem;
 
 public class CompanionPanel : Panel {
    #region Public Variables
@@ -48,10 +49,10 @@ public class CompanionPanel : Panel {
    public override void Update () {
       base.Update();
       if (grabbedCompanionTemplate != null) {
-         grabbedCompanionTemplate.transform.position = Input.mousePosition;
+         grabbedCompanionTemplate.transform.position = Mouse.current.position.ReadValue();
 
-         if (Input.GetMouseButtonDown(0) && startDrag) {
-            dropTemplateToZone(Input.mousePosition);
+         if (Mouse.current.leftButton.wasPressedThisFrame && startDrag) {
+            dropTemplateToZone(Mouse.current.position.ReadValue());
          }
       }
    }

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 using NubisDataHandling;
+using UnityEngine.InputSystem;
 
 public class TitleScreen : MonoBehaviour {
    #region Public Variables
@@ -96,13 +97,18 @@ public class TitleScreen : MonoBehaviour {
       float currentAlpha = _canvasGroup.alpha;
 
       if (isActive) {
+         if (Keyboard.current.enterKey.wasPressedThisFrame) { 
+         D.debug("HEY ENTER WAS PRESSED!");
+
+         }
+
          // If they press Enter in the password field, activate the Play button
-         if (Input.GetKeyDown(KeyCode.Return) && Util.isSelected(passwordInputField) && passwordInputField.text != "" && passwordInputField.text.Length > 0 && accountInputField.text.Length > 0) {
+         if (Keyboard.current.enterKey.wasPressedThisFrame && Util.isSelected(passwordInputField) && passwordInputField.text != "" && passwordInputField.text.Length > 0 && accountInputField.text.Length > 0) {
             Util.clickButton(loginButton);
          }
 
          // Check for an assortment of keys
-         bool moveToNextField = Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.DownArrow);
+         bool moveToNextField = Keyboard.current.tabKey.wasPressedThisFrame || Keyboard.current.enterKey.wasPressedThisFrame || Keyboard.current.downArrowKey.wasPressedThisFrame;
 
          // If we're in the account field, let us move to the password field
          if (moveToNextField && Util.isSelected(accountInputField)) {

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 using TMPro;
+using UnityEngine.InputSystem;
 
 public class VoyageStatusPanel : ClientMonoBehaviour
 {
@@ -94,7 +95,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       show();
 
       // Collapse the panel if the mouse is not over it
-      if (RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, Input.mousePosition)) {
+      if (RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, Mouse.current.position.ReadValue())) {
          collapsingContainer.SetActive(true);
       } else {
          collapsingContainer.SetActive(false);

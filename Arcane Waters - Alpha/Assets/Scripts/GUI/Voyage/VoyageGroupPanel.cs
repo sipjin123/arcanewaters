@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.InputSystem;
 
 public class VoyageGroupPanel : ClientMonoBehaviour
 {
@@ -62,7 +63,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       show();
 
       // Display the X button only if the mouse is over the defined zone
-      if (RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, Input.mousePosition)) {
+      if (RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, Mouse.current.position.ReadValue())) {
          xButton.gameObject.SetActive(true);
       } else {
          xButton.gameObject.SetActive(false);

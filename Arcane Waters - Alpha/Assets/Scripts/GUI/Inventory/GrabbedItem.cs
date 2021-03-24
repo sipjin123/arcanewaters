@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class GrabbedItem : MonoBehaviour
 {
@@ -25,22 +26,22 @@ public class GrabbedItem : MonoBehaviour
       recoloredSprite.recolor(item.paletteNames);
 
       // Place under the mouse
-      transform.position = Input.mousePosition;
+      transform.position = Mouse.current.position.ReadValue();
    }
 
    public void Update () {
       // Follow the mouse
-      transform.position = Input.mousePosition;
+      transform.position = Mouse.current.position.ReadValue();
 
       // Stop grabbing when the right click button is pressed
-      if (Input.GetMouseButtonDown(1)) {
+      if (Mouse.current.rightButton.wasPressedThisFrame) {
          InventoryPanel.self.stopGrabbingItem();
          return;
       }
 
       // When the left click button is released, try to drop the item
-      if (!Input.GetMouseButton(0)) {
-         InventoryPanel.self.tryDropGrabbedItem(Input.mousePosition);
+      if (!Mouse.current.leftButton.isPressed) {
+         InventoryPanel.self.tryDropGrabbedItem(Mouse.current.position.ReadValue());
          return;
       }
    }

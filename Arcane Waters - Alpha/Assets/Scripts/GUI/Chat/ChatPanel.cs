@@ -6,6 +6,7 @@ using Mirror;
 using UnityEngine.EventSystems;
 using System;
 using System.Linq;
+using UnityEngine.InputSystem;
 
 public class ChatPanel : MonoBehaviour {
    #region Public Variables
@@ -155,6 +156,8 @@ public class ChatPanel : MonoBehaviour {
    }
 
    void Update () {
+      processGuiInpufield();
+
       if (!shouldShowChat()) {
          mainContainer.SetActive(false);
          return;
@@ -167,7 +170,7 @@ public class ChatPanel : MonoBehaviour {
       choosingChatType.GetComponent<RectTransform>().position = toolbarRect.position;
 
       // Focus the chat window if the forward slash key is released
-      if ((Input.GetKeyUp(KeyCode.Slash))) {
+      if ((Keyboard.current.slashKey.wasReleasedThisFrame)) {
 
          if (!wasJustFocused() && !nameInputField.isFocused) {
             inputField.text = "/";
@@ -181,7 +184,7 @@ public class ChatPanel : MonoBehaviour {
       chatModeText.text = getChatModeString();
 
       // Any time the mouse button is released, reset the scroll click boolean
-      if (Input.GetMouseButtonUp(0)) {
+      if (Mouse.current.leftButton.wasReleasedThisFrame) {
          _isScrolling = false;
       }
 
@@ -196,15 +199,16 @@ public class ChatPanel : MonoBehaviour {
       }
 
       // Enable resizing mode when clicking the resize handle
-      if (Input.GetMouseButtonDown(0) && _mode != Mode.Minimized && RectTransformUtility.RectangleContainsScreenPoint(resizeHandleZone, Input.mousePosition)) {
+      Vector2 mousePosition = Mouse.current.position.ReadValue();
+      if (Mouse.current.leftButton.wasPressedThisFrame && _mode != Mode.Minimized && RectTransformUtility.RectangleContainsScreenPoint(resizeHandleZone, mousePosition)) {
          _isResizing = true;
-         _resizingStartDeltaX = Input.mousePosition.x - (messageBackgroundRect.anchoredPosition.x + messageBackgroundRect.sizeDelta.x);
+         _resizingStartDeltaX = mousePosition.x - (messageBackgroundRect.anchoredPosition.x + messageBackgroundRect.sizeDelta.x);
       }
 
       // Maintain the resize mode while the mouse button is held
-      if (Input.GetMouseButton(0)) {
+      if (Mouse.current.leftButton.isPressed) {
          if (_isResizing) {
-            float targetWidth = Input.mousePosition.x - _resizingStartDeltaX - messageBackgroundRect.anchoredPosition.x;
+            float targetWidth = mousePosition.x - _resizingStartDeltaX - messageBackgroundRect.anchoredPosition.x;
             targetWidth = Mathf.Clamp(targetWidth, MIN_WIDTH, MAX_WIDTH);
             messageBackgroundRect.sizeDelta = new Vector2(targetWidth, messageBackgroundRect.sizeDelta.y);
          }
@@ -231,7 +235,7 @@ public class ChatPanel : MonoBehaviour {
             break;
          case Mode.Normal:
             // Display the toolbar if the mouse is over the panel
-            if (RectTransformUtility.RectangleContainsScreenPoint(messagePanelHoveringZone, Input.mousePosition)) {
+            if (RectTransformUtility.RectangleContainsScreenPoint(messagePanelHoveringZone, Mouse.current.position.ReadValue())) {
                animateToolbarAlpha(1f);
             } else {
                // Keep toolbar visible when chat type panel is opened
@@ -303,7 +307,7 @@ public class ChatPanel : MonoBehaviour {
             SMOOTH_TIME, float.MaxValue, Time.deltaTime));
    }
 
-   void OnGUI () {
+   void processGuiInpufield () {
       // If the input field has just gained / lost focus, call appropriate events
       if (inputField.isFocused && !_isInputFocused) {
          ChatManager.self.onChatGainedFocus();
@@ -350,13 +354,13 @@ public class ChatPanel : MonoBehaviour {
          }
       }
 
-      if (nameInputField.isFocused && Input.GetKeyDown(KeyCode.Tab)) {
+      if (nameInputField.isFocused && Keyboard.current.tabKey.wasPressedThisFrame) {
          inputField.Select();
       }
 
       // Activate the input field when enter is pressed and the field is unfocused, except if the
       // player is writing a mail      
-      if (Input.GetKeyDown(KeyCode.Return) && !((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail()) {
+      if (Keyboard.current.enterKey.wasPressedThisFrame && !((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail()) {
          if (!wasJustFocused()) {
 
             if (Global.player != null) {

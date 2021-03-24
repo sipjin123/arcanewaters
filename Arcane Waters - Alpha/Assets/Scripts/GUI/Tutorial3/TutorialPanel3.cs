@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using System;
 using System.Linq;
 using TMPro;
+using UnityEngine.InputSystem;
 
 public class TutorialPanel3 : MonoBehaviour
 {
@@ -182,7 +183,7 @@ public class TutorialPanel3 : MonoBehaviour
 
                // In NPC Speech mode, display the navigation row only if the mouse is over the panel
                if (_isNavigationRowVisible
-                  || RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, Input.mousePosition)) {
+                  || RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, Mouse.current.position.ReadValue())) {
                   navigationRowCanvasGroup.interactable = true;
                   navigationRowCanvasGroup.blocksRaycasts = true;
                   navigationRowCanvasGroup.alpha += FADE_SPEED * Time.deltaTime;
@@ -197,8 +198,8 @@ public class TutorialPanel3 : MonoBehaviour
          }
 
          // If the user clicks on the NPC face or text, fully write the text right away
-         if (Input.GetMouseButtonDown(0)
-            && RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, Input.mousePosition)) {
+         if (Mouse.current.leftButton.wasPressedThisFrame
+            && RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, Mouse.current.position.ReadValue())) {
             AutoTyper.FinishText(npcSpeechText);
          }
       }

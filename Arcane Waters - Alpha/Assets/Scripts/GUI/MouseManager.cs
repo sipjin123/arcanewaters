@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class MouseManager : ClientMonoBehaviour
 {
@@ -35,21 +36,21 @@ public class MouseManager : ClientMonoBehaviour
 
       // Let the box know if it's been clicked
       if (_boxBeingHovered != null) {
-         if (Input.GetMouseButtonDown(0)) {
+         if (Mouse.current.leftButton.wasPressedThisFrame) {
             _boxBeingHovered.onMouseButtonDown(MouseButton.Left);
-         } else if (Input.GetMouseButtonUp(0)) {
+         } else if (Mouse.current.leftButton.wasReleasedThisFrame) {
             _boxBeingHovered.onMouseButtonUp(MouseButton.Left);
          }
 
-         if (Input.GetMouseButtonDown(1)) {
+         if (Mouse.current.rightButton.wasPressedThisFrame) {
             _boxBeingHovered.onMouseButtonDown(MouseButton.Right);
-         } else if (Input.GetMouseButtonUp(1)) {
+         } else if (Mouse.current.rightButton.wasReleasedThisFrame) {
             _boxBeingHovered.onMouseButtonUp(MouseButton.Right);
          }
       }
 
       // Determine our mouse texture based on whether or not we're pressing a button
-      bool isPressing = Input.GetMouseButton(0) || Input.GetMouseButton(1);
+      bool isPressing = Mouse.current.leftButton.isPressed || Mouse.current.rightButton.isPressed;
       Vector2 hotSpot = isOverInteractableObject ? handHotSpot : normalHotSpot;
       Texture2D texToUse = defaultCursorTexture;
 
