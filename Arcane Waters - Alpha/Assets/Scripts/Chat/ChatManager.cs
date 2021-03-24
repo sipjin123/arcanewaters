@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 using TMPro;
 using System.Text;
 using System;
+using UnityEngine.InputSystem;
 
 public class ChatManager : MonoBehaviour
 {
@@ -60,7 +61,7 @@ public class ChatManager : MonoBehaviour
          return;
       }
 
-      if (Input.GetKeyDown(KeyCode.UpArrow)) {
+      if (Keyboard.current.upArrowKey.wasPressedThisFrame) {
          if (ChatPanel.self.inputField.isFocused) {
             changeNumMessagesAgo(increment: true);
          } else if (ChatPanel.self.nameInputField.isFocused) {
@@ -68,7 +69,7 @@ public class ChatManager : MonoBehaviour
          }
       }
 
-      if (Input.GetKeyDown(KeyCode.DownArrow)) {
+      if (Keyboard.current.downArrowKey.wasPressedThisFrame) {
          if (ChatPanel.self.inputField.isFocused) {
             changeNumMessagesAgo(increment: false);
          } else if (ChatPanel.self.nameInputField.isFocused) {

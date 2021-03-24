@@ -9,6 +9,7 @@ using MapCreationTool.Serialization;
 using Mirror.Profiler;
 using NubisDataHandling;
 using MLAPI.Messaging;
+using UnityEngine.InputSystem;
 
 public class AdminManager : NetworkBehaviour
 {
@@ -152,10 +153,10 @@ public class AdminManager : NetworkBehaviour
       }
 
       // Move player to position on certain key combination
-      if (_player.isLocalPlayer && _player.isAdmin() && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetMouseButtonDown(0)) {
+      if (_player.isLocalPlayer && _player.isAdmin() && (Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed) && Mouse.current.leftButton.wasPressedThisFrame) {
          Area area = _player.areaKey == null ? null : AreaManager.self.getArea(_player.areaKey);
          if (!_player.isInBattle() && area != null) {
-            Vector2 wPos = CameraManager.defaultCamera.getCamera().ScreenToWorldPoint(Input.mousePosition);
+            Vector2 wPos = CameraManager.defaultCamera.getCamera().ScreenToWorldPoint(Mouse.current.position.ReadValue());
             warpToPosition(area.transform.InverseTransformPoint(wPos));
          }
       }

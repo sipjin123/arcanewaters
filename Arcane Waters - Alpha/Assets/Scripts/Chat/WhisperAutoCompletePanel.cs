@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.InputSystem;
 
 public class WhisperAutoCompletePanel : MonoBehaviour {
    #region Public Variables
@@ -34,7 +35,7 @@ public class WhisperAutoCompletePanel : MonoBehaviour {
          return;
       }
 
-      if (Input.GetKeyDown(KeyCode.Return)) {
+      if (Keyboard.current.enterKey.wasPressedThisFrame) {
          onEnterPressed();
       }
    }
@@ -93,13 +94,13 @@ public class WhisperAutoCompletePanel : MonoBehaviour {
       // If there are no auto-completes, disable all
       if (_autoCompleteNames == null || _autoCompleteNames.Count == 0) {
          scrollViewContainer.SetActive(false);
-         InputManager.enableKey(KeyCode.UpArrow);
-         InputManager.enableKey(KeyCode.DownArrow);
+         InputManager.enableKey(Keyboard.current.upArrowKey);
+         InputManager.enableKey(Keyboard.current.downArrowKey);
          return;
       }
 
-      InputManager.disableKey(KeyCode.UpArrow);
-      InputManager.disableKey(KeyCode.DownArrow);
+      InputManager.disableKey(Keyboard.current.upArrowKey);
+      InputManager.disableKey(Keyboard.current.downArrowKey);
 
       scrollViewContainer.SetActive(true);
 

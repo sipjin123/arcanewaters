@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using TMPro;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
    #region Public Variables
@@ -113,7 +114,7 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
 
    public void OnPointerEnter (UnityEngine.EventSystems.PointerEventData eventData) {
       // Don't trigger PointerEnter events if the mouse hasn't moved, to avoid triggering on objects enabled under the mouse
-      if (Input.mousePosition == ChatManager.self.autoCompletePanel.lastMousePos) {
+      if (Mouse.current.position.ReadValue() == ChatManager.self.autoCompletePanel.lastMousePos) {
          return;
       }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
+using UnityEngine.InputSystem;
 
 public class AutoCompletePanel : MonoBehaviour {
    #region Public Variables
@@ -21,7 +22,7 @@ public class AutoCompletePanel : MonoBehaviour {
    public bool inputFieldFocused = false;
 
    // Where the mouse was last frame
-   public Vector3 lastMousePos = Vector3.zero;
+   public Vector2 lastMousePos = Vector2.zero;
 
    #endregion
 
@@ -42,13 +43,13 @@ public class AutoCompletePanel : MonoBehaviour {
          return;
       }
 
-      if (Input.GetKeyDown(KeyCode.Return)) {
+      if (Keyboard.current.enterKey.wasPressedThisFrame) {
          onEnterPressed();
       }
    }
 
    private void LateUpdate () {
-      lastMousePos = Input.mousePosition;
+      lastMousePos = Mouse.current.position.ReadValue();
    }
 
    private void onScrolled (Vector2 pos) {
@@ -153,13 +154,13 @@ public class AutoCompletePanel : MonoBehaviour {
       // If there are no auto-completes, disable all
       if (_autoCompleteCommands == null || _autoCompleteCommands.Count == 0) {
          scrollViewContainer.SetActive(false);
-         InputManager.enableKey(KeyCode.UpArrow);
-         InputManager.enableKey(KeyCode.DownArrow);
+         InputManager.enableKey(Keyboard.current.upArrowKey);
+         InputManager.enableKey(Keyboard.current.downArrowKey);
          return;
       }
 
-      InputManager.disableKey(KeyCode.UpArrow);
-      InputManager.disableKey(KeyCode.DownArrow);
+      InputManager.disableKey(Keyboard.current.upArrowKey);
+      InputManager.disableKey(Keyboard.current.downArrowKey);
 
       scrollViewContainer.SetActive(true);
 
