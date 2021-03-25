@@ -49,7 +49,7 @@ public class AutoCompletePanel : MonoBehaviour {
    }
 
    private void LateUpdate () {
-      lastMousePos = KeyUtils.getMousePosition();
+      lastMousePos = MouseUtils.mousePosition;
    }
 
    private void onScrolled (Vector2 pos) {
