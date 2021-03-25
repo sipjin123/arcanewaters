@@ -26,22 +26,22 @@ public class GrabbedItem : MonoBehaviour
       recoloredSprite.recolor(item.paletteNames);
 
       // Place under the mouse
-      transform.position = KeyUtils.getMousePosition();
+      transform.position = MouseUtils.mousePosition;
    }
 
    public void Update () {
       // Follow the mouse
-      transform.position = KeyUtils.getMousePosition();
+      transform.position = MouseUtils.mousePosition;
 
       // Stop grabbing when the right click button is pressed
-      if (KeyUtils.isRightButtonPressedDown()) {
+      if (KeyUtils.GetButtonDown(MouseButton.Right)) {
          InventoryPanel.self.stopGrabbingItem();
          return;
       }
 
       // When the left click button is released, try to drop the item
-      if (!KeyUtils.isLeftButtonPressed()) {
-         InventoryPanel.self.tryDropGrabbedItem(KeyUtils.getMousePosition());
+      if (!KeyUtils.GetButton(MouseButton.Left)) {
+         InventoryPanel.self.tryDropGrabbedItem(MouseUtils.mousePosition);
          return;
       }
    }

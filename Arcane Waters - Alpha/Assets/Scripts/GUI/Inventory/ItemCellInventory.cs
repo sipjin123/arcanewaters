@@ -42,7 +42,7 @@ public class ItemCellInventory : ItemCell, IPointerDownHandler, IPointerEnterHan
          if (eventData.button == PointerEventData.InputButton.Left) {
             // Wait until the mouse has moved a little before start dragging
             // This is to avoid interference with double click
-            StartCoroutine(trackDrag(KeyUtils.getMousePosition()));
+            StartCoroutine(trackDrag(MouseUtils.mousePosition));
          }
       }
    }
@@ -51,9 +51,9 @@ public class ItemCellInventory : ItemCell, IPointerDownHandler, IPointerEnterHan
       float sqrDistance = 0;
 
       // Check if the mouse left button is still pressed
-      while (KeyUtils.isLeftButtonPressed()) {
+      while (KeyUtils.GetButton(MouseButton.Left)) {
          // Calculate the squared distance between the mouse click and the current mouse position
-         sqrDistance = Vector3.SqrMagnitude((Vector3)KeyUtils.getMousePosition() - clickPosition);
+         sqrDistance = Vector3.SqrMagnitude((Vector3)MouseUtils.mousePosition - clickPosition);
 
          // Check if the distance is large enough
          if (sqrDistance > DISTANCE_UNTIL_START_DRAG) {

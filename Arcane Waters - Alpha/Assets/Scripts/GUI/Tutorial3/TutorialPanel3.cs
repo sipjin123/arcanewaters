@@ -183,7 +183,7 @@ public class TutorialPanel3 : MonoBehaviour
 
                // In NPC Speech mode, display the navigation row only if the mouse is over the panel
                if (_isNavigationRowVisible
-                  || RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, KeyUtils.getMousePosition())) {
+                  || RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, MouseUtils.mousePosition)) {
                   navigationRowCanvasGroup.interactable = true;
                   navigationRowCanvasGroup.blocksRaycasts = true;
                   navigationRowCanvasGroup.alpha += FADE_SPEED * Time.deltaTime;
@@ -198,8 +198,8 @@ public class TutorialPanel3 : MonoBehaviour
          }
 
          // If the user clicks on the NPC face or text, fully write the text right away
-         if (KeyUtils.isLeftButtonPressedDown()
-            && RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, KeyUtils.getMousePosition())) {
+         if (KeyUtils.GetButtonDown(MouseButton.Left)
+            && RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, MouseUtils.mousePosition)) {
             AutoTyper.FinishText(npcSpeechText);
          }
       }

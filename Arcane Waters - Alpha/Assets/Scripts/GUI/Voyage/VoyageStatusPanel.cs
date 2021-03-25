@@ -95,7 +95,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       show();
 
       // Collapse the panel if the mouse is not over it
-      if (RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, KeyUtils.getMousePosition())) {
+      if (RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, MouseUtils.mousePosition)) {
          collapsingContainer.SetActive(true);
       } else {
          collapsingContainer.SetActive(false);

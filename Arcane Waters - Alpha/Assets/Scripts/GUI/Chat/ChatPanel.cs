@@ -184,7 +184,7 @@ public class ChatPanel : MonoBehaviour {
       chatModeText.text = getChatModeString();
 
       // Any time the mouse button is released, reset the scroll click boolean
-      if (KeyUtils.isLeftButtonPressedUp()) {
+      if (KeyUtils.GetButtonUp(MouseButton.Left)) {
          _isScrolling = false;
       }
 
@@ -199,14 +199,14 @@ public class ChatPanel : MonoBehaviour {
       }
 
       // Enable resizing mode when clicking the resize handle
-      Vector2 mousePosition = KeyUtils.getMousePosition();
-      if (KeyUtils.isLeftButtonPressedDown() && _mode != Mode.Minimized && RectTransformUtility.RectangleContainsScreenPoint(resizeHandleZone, mousePosition)) {
+      Vector2 mousePosition = MouseUtils.mousePosition;
+      if (KeyUtils.GetButtonDown(MouseButton.Left) && _mode != Mode.Minimized && RectTransformUtility.RectangleContainsScreenPoint(resizeHandleZone, mousePosition)) {
          _isResizing = true;
          _resizingStartDeltaX = mousePosition.x - (messageBackgroundRect.anchoredPosition.x + messageBackgroundRect.sizeDelta.x);
       }
 
       // Maintain the resize mode while the mouse button is held
-      if (KeyUtils.isLeftButtonPressed()) {
+      if (KeyUtils.GetButton(MouseButton.Left)) {
          if (_isResizing) {
             float targetWidth = mousePosition.x - _resizingStartDeltaX - messageBackgroundRect.anchoredPosition.x;
             targetWidth = Mathf.Clamp(targetWidth, MIN_WIDTH, MAX_WIDTH);
@@ -235,7 +235,7 @@ public class ChatPanel : MonoBehaviour {
             break;
          case Mode.Normal:
             // Display the toolbar if the mouse is over the panel
-            if (RectTransformUtility.RectangleContainsScreenPoint(messagePanelHoveringZone, KeyUtils.getMousePosition())) {
+            if (RectTransformUtility.RectangleContainsScreenPoint(messagePanelHoveringZone, MouseUtils.mousePosition)) {
                animateToolbarAlpha(1f);
             } else {
                // Keep toolbar visible when chat type panel is opened

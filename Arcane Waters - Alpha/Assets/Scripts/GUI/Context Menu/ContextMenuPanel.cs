@@ -31,7 +31,7 @@ public class ContextMenuPanel : MonoBehaviour
    #endregion
 
    public void show(string title) {
-      show(title, KeyUtils.getMousePosition());
+      show(title, MouseUtils.mousePosition);
    }
 
    public void show (string title, Vector3 position) {
@@ -96,9 +96,9 @@ public class ContextMenuPanel : MonoBehaviour
          hide();
       }
 
-      if (KeyUtils.isLeftButtonPressed() || KeyUtils.isRightButtonPressed()) {
+      if (KeyUtils.GetButton(MouseButton.Left) || KeyUtils.GetButton(MouseButton.Right)) {
          // Hide the menu if a mouse button is clicked and the pointer is not over any button
-         if (!RectTransformUtility.RectangleContainsScreenPoint(buttonsRectTransform, KeyUtils.getMousePosition())) {
+         if (!RectTransformUtility.RectangleContainsScreenPoint(buttonsRectTransform, MouseUtils.mousePosition)) {
             hide();
          }
       } else if (Keyboard.current.anyKey.isPressed) {
