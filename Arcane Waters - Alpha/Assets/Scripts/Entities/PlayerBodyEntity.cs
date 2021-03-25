@@ -295,7 +295,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
          // Stops the jumping and triggers a smoke effect with sound
          if (lerpValue >= 1) {
-            Instantiate(PrefabsManager.self.requestCannonSmokePrefab(Attack.ImpactMagnitude.None), this.sortPoint.transform.position, Quaternion.identity);
+            Instantiate(PrefabsManager.self.poofPrefab, this.sortPoint.transform.position, Quaternion.identity);
             SoundManager.create3dSound("ledge", this.sortPoint.transform.position);
             isJumpingOver = false;
          }

@@ -182,6 +182,9 @@ public class PrefabsManager : MonoBehaviour {
    // A reference to the ship crit effect prefab
    public GameObject shipCritPrefab;
 
+   // A reference to the poof effect prefab
+   public GameObject poofPrefab;
+
    // Self
    public static PrefabsManager self;
 

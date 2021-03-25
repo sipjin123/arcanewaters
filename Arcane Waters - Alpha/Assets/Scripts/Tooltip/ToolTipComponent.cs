@@ -30,7 +30,8 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
       ItemCellIngredient = 2,
       PerkElementTemplate = 3,
       CreationPerkIcon = 4,
-      SellButton = 5
+      SellButton = 5,
+      DynamicText = 6
    }
    
    public enum TooltipPlacement
@@ -59,14 +60,20 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
    #endregion
 
+   public bool isActive () {
+      return _isActive;
+   }
+
    public void OnPointerExit (PointerEventData pointerEventData) {
       TooltipHandler.self.cancelToolTip();
+      _isActive = false;
    }
 
    public void OnPointerEnter (PointerEventData pointerEventData) {
       // Variable to store the panel gameObject
       _panelRoot = this.gameObject;
       _tooltipOwner = this.gameObject;
+      _isActive = true;
 
       // Traverse up the parents looking for sprite with panel image
       Transform currentParent = transform.parent;
@@ -113,6 +120,12 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
          return;
       }
 
+      if (tooltipType == Type.DynamicText) {
+         // Do not modify maxWidth value here - it is being set directly by user
+         TooltipHandler.self.callToolTip(_tooltipOwner, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
+         return;
+      }
+
       // Create the key needed to find the tooltip in the dictionary
       if ((this.GetComponent<Image>() != null) && (this.GetComponent<Image>().sprite != null)) {
          dictKeySuffix = this.GetComponent<Image>().sprite.name;
@@ -139,6 +152,9 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
    // The gameobject that the tooltip belongs to
    private GameObject _tooltipOwner;
+
+   // Determine whether tooltip is being shown now
+   private bool _isActive = false;
 
    #endregion
 }

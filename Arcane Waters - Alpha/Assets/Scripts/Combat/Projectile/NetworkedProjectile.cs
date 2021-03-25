@@ -74,7 +74,7 @@ public class NetworkedProjectile : MonoBehaviour {
       if (attackType == Attack.Type.Cannon) {
          // Create a cannon smoke effect at our creation point
          Vector2 offset = this.body.velocity.normalized * .1f;
-         Instantiate(PrefabsManager.self.requestCannonSmokePrefab(_impactMagnitude), (Vector2) this.transform.position + offset, Quaternion.identity);
+         Instantiate(PrefabsManager.self.poofPrefab, (Vector2) this.transform.position + offset, Quaternion.identity);
 
          // If it was our ship, shake the camera
          if (Global.player != null && _creatorNetId == Global.player.netId) {

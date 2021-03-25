@@ -98,10 +98,16 @@ public class QuickLaunchPanel : MonoBehaviour {
          if (hostToggle.isOn) {
             MyNetworkManager.self.StartHost();
          } else if (clientToggle.isOn) {
-            MyNetworkManager.self.StartClient();
+            IScreenFader fader = CameraManager.defaultCamera.getPixelFadeEffect();
+            PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.Login, fader, fader);
+
+            LoadingUtil.executeAfterFade(() => {
+               MyNetworkManager.self.StartClient();
+            });
          } else if (serverToggle.isOn) {
             MyNetworkManager.self.StartServer();
          }
+         
       } else {
          titleScreen.displayError(ErrorMessage.Type.FailedUserOrPass);
       }

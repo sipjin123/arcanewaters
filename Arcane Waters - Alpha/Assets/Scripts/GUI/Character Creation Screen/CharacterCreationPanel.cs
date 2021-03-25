@@ -201,17 +201,18 @@ public class CharacterCreationPanel : ClientMonoBehaviour
          NetworkClient.Send(new CreateUserMessage(Global.netId,
             _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalettes(), chosenPerks, SystemInfo.deviceName, Global.isFirstLogin, Global.lastSteamId, deploymentId));
 
-         // Show loading screen until player warps to map
-         StartCoroutine(showLoadingScreen());
+         hideWithTransition();
+         CharacterCreationSpotFader.self.fadeOutColor();
+         PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.CharacterCreation, PostSpotFader.self, PostSpotFader.self);
+
+         LoadingUtil.executeAfterFade(() => {
+            // Show loading screen until player warps to map
+            StartCoroutine(CO_WaitForCreationConfirmation());
+         });
       });
    }
 
-   private IEnumerator showLoadingScreen () {
-      hideWithTransition();
-      CharacterCreationSpotFader.self.fadeOutColor();
-
-      PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.CharacterCreation, PostSpotFader.self, PostSpotFader.self);
-
+   private IEnumerator CO_WaitForCreationConfirmation () {
       while (Global.player == null || AreaManager.self.getArea(Area.STARTING_TOWN) == null || Global.player.transform.parent != AreaManager.self.getArea(Area.STARTING_TOWN).userParent) {
          if (_isCharacterCreationRejected) {
             yield break;

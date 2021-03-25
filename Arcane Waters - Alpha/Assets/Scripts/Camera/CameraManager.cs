@@ -77,8 +77,6 @@ public class CameraManager : ClientMonoBehaviour {
       _quakeEffect = GetComponent<CameraFilterPack_FX_EarthQuake>();
       _screenResolution = new Vector2(Screen.width, Screen.height);
       _isFullscreen = Screen.fullScreen;
-
-      MyNetworkManager.self.clientStarting += onClientStarting;
    }
 
    private void Update () {
@@ -147,17 +145,6 @@ public class CameraManager : ClientMonoBehaviour {
       }
 
       return false;
-   }
-
-   private void OnDestroy () {
-      MyNetworkManager.self.clientStarting -= onClientStarting;
-   }
-
-   private void onClientStarting () {
-      // Fade out screen and show loading progress
-      // Get fade effect
-      IScreenFader fader = defaultCamera.getPixelFadeEffect();
-      PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.Login, fader, fader);
    }
 
    private void LateUpdate () {

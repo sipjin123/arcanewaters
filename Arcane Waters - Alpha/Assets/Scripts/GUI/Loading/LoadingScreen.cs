@@ -71,8 +71,10 @@ public class LoadingScreen : MonoBehaviour
 
       // If we have a fade out effect, display it
       if (fadeOutEffect != null) {
+         Global.isScreenTransitioning = true;
          float fadeTime = fadeOutEffect.fadeOut() + ADDITIONAL_WAIT_TIME;
          yield return new WaitForSeconds(fadeTime);
+         Global.isScreenTransitioning = false;
       }
 
       // Blacken the screen
@@ -130,6 +132,7 @@ public class LoadingScreen : MonoBehaviour
       mainCanvasGroup.blocksRaycasts = false;
       mainCanvasGroup.interactable = false;
       _isShowing = false;
+      Global.isScreenTransitioning = false;
 
       // If we have a fade in effect, show it
       if (fadeInEffect != null) {

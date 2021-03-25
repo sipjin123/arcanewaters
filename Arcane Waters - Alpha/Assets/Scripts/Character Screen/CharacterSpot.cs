@@ -65,25 +65,27 @@ public class CharacterSpot : ClientMonoBehaviour {
       // Turn off buttons until we receive a response from the server
       CharacterScreen.self.canvasGroup.interactable = false;
 
-      // Update our currently selected user ID
-      Global.currentlySelectedUserId = character.userId;
-
-      // Cache the user info
-      Global.setUserObject(new UserObjects {
-         userInfo = character.getUserInfo(),
-         weapon = character.getWeapon(),
-         armor = character.getArmor(),
-         hat = character.getHat()
-      });
-
-      // Now go ahead and call ClientScene.AddPlayer() along with our currently selected user ID
-      ClientManager.sendAccountNameAndUserId();
-
       // Set post spot fader to isLoggingIn every character login so that pixel camera effect can trigger every login
       PostSpotFader.self.isLoggingIn = true;
 
       // Show loading screen until player warps to map
       PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, PostSpotFader.self, PostSpotFader.self);
+
+      LoadingUtil.executeAfterFade(() => {
+         // Update our currently selected user ID
+         Global.currentlySelectedUserId = character.userId;
+
+         // Cache the user info
+         Global.setUserObject(new UserObjects {
+            userInfo = character.getUserInfo(),
+            weapon = character.getWeapon(),
+            armor = character.getArmor(),
+            hat = character.getHat()
+         });
+
+         // Now go ahead and call ClientScene.AddPlayer() along with our currently selected user ID
+         ClientManager.sendAccountNameAndUserId();
+      });
    }
 
    public void deleteButtonWasPressed () {

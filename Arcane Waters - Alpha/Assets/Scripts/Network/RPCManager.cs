@@ -1450,8 +1450,8 @@ public class RPCManager : NetworkBehaviour
 
    [ClientRpc]
    public void Rpc_PlayWarpEffect (Vector3 position) {
-      // The local player plays this effect locally, no need to play it twice
-      if (!_player.isLocalPlayer) {
+      // Only play the effect locally if the player is in their ship
+      if (!_player.isLocalPlayer || _player.getPlayerBodyEntity() == null) {
          EffectManager.self.create(Effect.Type.Cannon_Smoke, position);
       }
    }
@@ -2914,6 +2914,21 @@ public class RPCManager : NetworkBehaviour
    }
 
    #region Guilds
+
+   [Command]
+   public void Cmd_GetGuildNameInGuildIconTooltip (int guildId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         GuildInfo guildInfo = DB_Main.getGuildInfo(guildId);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_GetGuildNameInGuildIconTooltip(_player.connectionToClient, guildInfo);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_GetGuildNameInGuildIconTooltip(NetworkConnection connection, GuildInfo guildInfo) {
+      GuildIcon.tooltippedIconRef.setGuildName(guildInfo.guildName);
+   }
 
    [Command]
    public void Cmd_CreateGuild (string guildName, string iconBorder, string iconBackground, string iconSigil,

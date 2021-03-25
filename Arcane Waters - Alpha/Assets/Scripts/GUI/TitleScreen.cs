@@ -147,9 +147,14 @@ public class TitleScreen : MonoBehaviour {
       // Stop the client in case we're already connected to the server
       MyNetworkManager.self.StopClient();
 
-      if (isSteam || (!isSteam && passwordInputField.text.Length > 0 && accountInputField.text.Length > 0)) {      
-         // Start up the Network Client, which triggers the rest of the login process
-         MyNetworkManager.self.StartClient();
+      if (isSteam || (!isSteam && passwordInputField.text.Length > 0 && accountInputField.text.Length > 0)) {
+         IScreenFader fader = CameraManager.defaultCamera.getPixelFadeEffect();
+         PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.Login, fader, fader);
+
+         LoadingUtil.executeAfterFade(() => {
+            // Start up the Network Client, which triggers the rest of the login process
+            MyNetworkManager.self.StartClient();
+         });
       } else {
          displayError(ErrorMessage.Type.FailedUserOrPass);
       }

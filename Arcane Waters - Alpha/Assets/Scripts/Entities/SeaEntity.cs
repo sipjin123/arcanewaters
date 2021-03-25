@@ -285,7 +285,7 @@ public class SeaEntity : NetEntity
       // Create a cannon smoke effect
       Vector2 direction = endPos - startPos;
       Vector2 offset = direction.normalized * .1f;
-      Instantiate(PrefabsManager.self.requestCannonSmokePrefab(currentImpactMagnitude), startPos + offset, Quaternion.identity);
+      Instantiate(PrefabsManager.self.poofPrefab, startPos + offset, Quaternion.identity);
 
       // If it was our ship, shake the camera
       if (isLocalPlayer) {
@@ -299,7 +299,7 @@ public class SeaEntity : NetEntity
       Vector2 direction = target.transform.position - source.transform.position;
       Vector3 offset = direction.normalized * .1f;
       Vector3 startPos = source.transform.position + offset;
-      Instantiate(PrefabsManager.self.requestCannonSmokePrefab(currentImpactMagnitude), startPos, Quaternion.identity);
+      Instantiate(PrefabsManager.self.poofPrefab, startPos, Quaternion.identity);
 
       // Create a cannon ball
       GenericSeaProjectile ball = Instantiate(PrefabsManager.self.seaEntityProjectile, startPos, Quaternion.identity);

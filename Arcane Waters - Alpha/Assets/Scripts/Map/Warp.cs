@@ -65,10 +65,12 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
          D.adminLog("Sending warp request to server", D.ADMIN_LOG_TYPE.Warp);
          player.setupForWarpClient();
-         Global.player.rpc.Cmd_RequestWarp(areaTarget, spawnTarget);
 
          if (PanelManager.self.loadingScreen != null) {
             PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, PostSpotFader.self, PostSpotFader.self);
+            LoadingUtil.executeAfterFade(() => Global.player.rpc.Cmd_RequestWarp(areaTarget, spawnTarget));
+         } else {
+            Global.player.rpc.Cmd_RequestWarp(areaTarget, spawnTarget);
          }
       } else {
          D.adminLog("Failed to warp! " +

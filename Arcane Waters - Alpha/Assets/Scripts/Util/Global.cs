@@ -84,6 +84,9 @@ public class Global
    // Gets set to false if the player has already logged in successfully.
    public static bool isFirstLogin = true;
 
+   // Gets set to true when the screen is transitioning, to block loading while the screen is transitioning
+   public static bool isScreenTransitioning = false;
+
    // List of logs to show
    public static List<D.ADMIN_LOG_TYPE> logTypesToShow = new List<D.ADMIN_LOG_TYPE>();
 

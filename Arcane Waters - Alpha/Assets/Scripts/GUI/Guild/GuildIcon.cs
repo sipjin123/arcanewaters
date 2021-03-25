@@ -34,7 +34,10 @@ public class GuildIcon : MonoBehaviour
    public CanvasGroup canvasGroup;
 
    // The tooltip displayed when hovering the icon
-   public Tooltipped tooltip;
+   public ToolTipComponent tooltip;
+
+   // Reference to the tooltipped icon which user is currently interacting with
+   public static GuildIcon tooltippedIconRef;
 
    #endregion
 
@@ -47,12 +50,30 @@ public class GuildIcon : MonoBehaviour
    public void initialize (GuildInfo guildInfo) {
       if (guildInfo != null && guildInfo.guildId > 0) {
          show();
-         tooltip.text = guildInfo.guildName;
          setBorder(guildInfo.iconBorder);
          setBackground(guildInfo.iconBackground, guildInfo.iconBackPalettes);
          setSigil(guildInfo.iconSigil, guildInfo.iconSigilPalettes);
+
+         tooltip.message = guildInfo.guildName;
+         tooltip.tooltipType = ToolTipComponent.Type.DynamicText;
+
+         // Download guild name from database if passed guildName was empty
+         if (tooltip.message == "" || tooltip.message == null) {
+            tooltippedIconRef = this;
+            tooltip.message = "...";
+            if (Global.player) {
+               Global.player.rpc.Cmd_GetGuildNameInGuildIconTooltip(guildInfo.guildId);
+            }
+         }
       } else {
          hide();
+      }
+   }
+
+   public void setGuildName(string name) {
+      tooltip.message = name;
+      if (tooltip.isActive()) {
+         tooltip.OnPointerEnter(null);
       }
    }
 

@@ -30,8 +30,7 @@ public class ServerCannonBall : NetworkBehaviour {
             SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Cannon_1, this.transform.position);
          }
 
-         // Create a cannon smoke effect
-         Instantiate(PrefabsManager.self.requestCannonSmokePrefab(Attack.ImpactMagnitude.Normal), transform.position, Quaternion.identity);
+         Instantiate(PrefabsManager.self.poofPrefab, transform.position, Quaternion.identity);
       }
    }
 
