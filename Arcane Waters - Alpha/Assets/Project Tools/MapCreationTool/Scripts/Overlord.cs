@@ -197,9 +197,9 @@ namespace MapCreationTool
 
 
       private void Update () {
-         if (Keyboard.current.zKey.wasPressedThisFrame && (Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed)) {
+         if (KeyUtils.GetKeyDown(Key.Z) && (KeyUtils.GetKey(Key.LeftCtrl) || KeyUtils.GetKey(Key.RightCtrl))) {
             Undo.doUndo();
-         } else if (Keyboard.current.yKey.wasPressedThisFrame && (Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed)) {
+         } else if (KeyUtils.GetKeyDown(Key.Y) && (KeyUtils.GetKey(Key.LeftCtrl) || KeyUtils.GetKey(Key.RightCtrl))) {
             Undo.doRedo();
          }
 

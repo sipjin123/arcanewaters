@@ -67,7 +67,7 @@ namespace MapCreationTool
 
       private void dragCell (Vector3Int from, Vector3Int to) {
          if (stroke.tileGroup != null) {
-            if (Keyboard.current.leftShiftKey.isPressed) {
+            if (KeyUtils.GetKey(Key.LeftShift)) {
                if (!hasPaintStarted) {
                   if (Mathf.Abs(from.x - to.x) > Mathf.Abs(from.y - to.y)) {
                      isHorizontal = true;

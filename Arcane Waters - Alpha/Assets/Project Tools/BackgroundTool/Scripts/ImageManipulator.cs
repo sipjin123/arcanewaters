@@ -289,7 +289,7 @@ namespace BackgroundTool
       #endregion
 
       private void Update () {
-         if (Keyboard.current.deleteKey.wasPressedThisFrame) {
+         if (KeyUtils.GetKeyDown(Key.Delete)) {
             deleteSpriteTemplate.onClick.Invoke();
          }
 
