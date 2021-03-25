@@ -27,7 +27,7 @@ public class RollingTextFade : ClientMonoBehaviour {
 
    private void Update () {
       // If the player clicks the mouse while we're fading in, then finish up
-      if (Mouse.current.leftButton.wasPressedThisFrame) {
+      if (KeyUtils.isLeftButtonPressedDown()) {
          _delayPerCharacter = .01f;
       }
    }

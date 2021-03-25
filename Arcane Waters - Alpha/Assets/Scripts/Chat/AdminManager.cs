@@ -153,10 +153,10 @@ public class AdminManager : NetworkBehaviour
       }
 
       // Move player to position on certain key combination
-      if (_player.isLocalPlayer && _player.isAdmin() && (Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed) && Mouse.current.leftButton.wasPressedThisFrame) {
+      if (_player.isLocalPlayer && _player.isAdmin() && (Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed) && KeyUtils.isLeftButtonPressedDown()) {
          Area area = _player.areaKey == null ? null : AreaManager.self.getArea(_player.areaKey);
          if (!_player.isInBattle() && area != null) {
-            Vector2 wPos = CameraManager.defaultCamera.getCamera().ScreenToWorldPoint(Mouse.current.position.ReadValue());
+            Vector2 wPos = CameraManager.defaultCamera.getCamera().ScreenToWorldPoint(KeyUtils.getMousePosition());
             warpToPosition(area.transform.InverseTransformPoint(wPos));
          }
       }

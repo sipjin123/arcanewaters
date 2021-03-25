@@ -114,7 +114,7 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
 
    public void OnPointerEnter (UnityEngine.EventSystems.PointerEventData eventData) {
       // Don't trigger PointerEnter events if the mouse hasn't moved, to avoid triggering on objects enabled under the mouse
-      if (Mouse.current.position.ReadValue() == ChatManager.self.autoCompletePanel.lastMousePos) {
+      if (KeyUtils.getMousePosition() == ChatManager.self.autoCompletePanel.lastMousePos) {
          return;
       }
 

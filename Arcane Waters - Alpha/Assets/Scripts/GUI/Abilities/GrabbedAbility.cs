@@ -14,12 +14,12 @@ public class GrabbedAbility : MonoBehaviour {
       gameObject.SetActive(true);
 
       // Place under the mouse
-      transform.position = Mouse.current.position.ReadValue();
+      transform.position = KeyUtils.getMousePosition();
    }
 
    public void Update () {
       // Follow the mouse
-      transform.position = Mouse.current.position.ReadValue();
+      transform.position = KeyUtils.getMousePosition();
 
       // Stop grabbing when the right click button is pressed
       if (Mouse.current.rightButton.isPressed) {
@@ -28,8 +28,8 @@ public class GrabbedAbility : MonoBehaviour {
       }
 
       // When the left click button is released, try to drop the ability
-      if (!Mouse.current.leftButton.isPressed) {
-         AbilityPanel.self.tryDropGrabbedAbility(Mouse.current.position.ReadValue());
+      if (!KeyUtils.isLeftButtonPressed()) {
+         AbilityPanel.self.tryDropGrabbedAbility(KeyUtils.getMousePosition());
          return;
       }
    }

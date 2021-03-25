@@ -36,21 +36,21 @@ public class MouseManager : ClientMonoBehaviour
 
       // Let the box know if it's been clicked
       if (_boxBeingHovered != null) {
-         if (Mouse.current.leftButton.wasPressedThisFrame) {
+         if (KeyUtils.isLeftButtonPressedDown()) {
             _boxBeingHovered.onMouseButtonDown(MouseButton.Left);
-         } else if (Mouse.current.leftButton.wasReleasedThisFrame) {
+         } else if (KeyUtils.isLeftButtonPressedUp()) {
             _boxBeingHovered.onMouseButtonUp(MouseButton.Left);
          }
-
-         if (Mouse.current.rightButton.wasPressedThisFrame) {
+         
+         if (KeyUtils.isRightButtonPressedDown()) {
             _boxBeingHovered.onMouseButtonDown(MouseButton.Right);
-         } else if (Mouse.current.rightButton.wasReleasedThisFrame) {
+         } else if (KeyUtils.isRightButtonPressedUp()) {
             _boxBeingHovered.onMouseButtonUp(MouseButton.Right);
          }
       }
 
       // Determine our mouse texture based on whether or not we're pressing a button
-      bool isPressing = Mouse.current.leftButton.isPressed || Mouse.current.rightButton.isPressed;
+      bool isPressing = KeyUtils.isLeftButtonPressed() || KeyUtils.isRightButtonPressed();
       Vector2 hotSpot = isOverInteractableObject ? handHotSpot : normalHotSpot;
       Texture2D texToUse = defaultCursorTexture;
 

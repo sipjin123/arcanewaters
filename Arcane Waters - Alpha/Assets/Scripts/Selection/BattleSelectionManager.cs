@@ -41,13 +41,13 @@ public class BattleSelectionManager : MonoBehaviour {
       }
 
       // Whenever a mouse-click ends, check if it was on a Battle sprite
-      if (Mouse.current.leftButton.wasReleasedThisFrame && !Util.isButtonClick() && Global.isInBattle()) {
+      if (KeyUtils.isLeftButtonPressedUp() && !Util.isButtonClick() && Global.isInBattle()) {
          if (Global.player == null || !(Global.player is PlayerBodyEntity)) {
             return;
          }
 
          // Check where on the screen this click was
-         Vector3 clickLocation = BattleCamera.self.getCamera().ScreenToWorldPoint(Mouse.current.position.ReadValue());
+         Vector3 clickLocation = BattleCamera.self.getCamera().ScreenToWorldPoint(KeyUtils.getMousePosition());
          clickedArea(clickLocation);
       }
    }

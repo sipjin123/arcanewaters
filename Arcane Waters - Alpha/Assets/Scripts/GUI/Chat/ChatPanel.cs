@@ -156,7 +156,7 @@ public class ChatPanel : MonoBehaviour {
    }
 
    void Update () {
-      processGuiInpufield();
+      processGuiInputfield();
 
       if (!shouldShowChat()) {
          mainContainer.SetActive(false);
@@ -184,7 +184,7 @@ public class ChatPanel : MonoBehaviour {
       chatModeText.text = getChatModeString();
 
       // Any time the mouse button is released, reset the scroll click boolean
-      if (Mouse.current.leftButton.wasReleasedThisFrame) {
+      if (KeyUtils.isLeftButtonPressedUp()) {
          _isScrolling = false;
       }
 
@@ -199,14 +199,14 @@ public class ChatPanel : MonoBehaviour {
       }
 
       // Enable resizing mode when clicking the resize handle
-      Vector2 mousePosition = Mouse.current.position.ReadValue();
-      if (Mouse.current.leftButton.wasPressedThisFrame && _mode != Mode.Minimized && RectTransformUtility.RectangleContainsScreenPoint(resizeHandleZone, mousePosition)) {
+      Vector2 mousePosition = KeyUtils.getMousePosition();
+      if (KeyUtils.isLeftButtonPressedDown() && _mode != Mode.Minimized && RectTransformUtility.RectangleContainsScreenPoint(resizeHandleZone, mousePosition)) {
          _isResizing = true;
          _resizingStartDeltaX = mousePosition.x - (messageBackgroundRect.anchoredPosition.x + messageBackgroundRect.sizeDelta.x);
       }
 
       // Maintain the resize mode while the mouse button is held
-      if (Mouse.current.leftButton.isPressed) {
+      if (KeyUtils.isLeftButtonPressed()) {
          if (_isResizing) {
             float targetWidth = mousePosition.x - _resizingStartDeltaX - messageBackgroundRect.anchoredPosition.x;
             targetWidth = Mathf.Clamp(targetWidth, MIN_WIDTH, MAX_WIDTH);
@@ -235,7 +235,7 @@ public class ChatPanel : MonoBehaviour {
             break;
          case Mode.Normal:
             // Display the toolbar if the mouse is over the panel
-            if (RectTransformUtility.RectangleContainsScreenPoint(messagePanelHoveringZone, Mouse.current.position.ReadValue())) {
+            if (RectTransformUtility.RectangleContainsScreenPoint(messagePanelHoveringZone, KeyUtils.getMousePosition())) {
                animateToolbarAlpha(1f);
             } else {
                // Keep toolbar visible when chat type panel is opened
@@ -307,7 +307,7 @@ public class ChatPanel : MonoBehaviour {
             SMOOTH_TIME, float.MaxValue, Time.deltaTime));
    }
 
-   void processGuiInpufield () {
+   void processGuiInputfield () {
       // If the input field has just gained / lost focus, call appropriate events
       if (inputField.isFocused && !_isInputFocused) {
          ChatManager.self.onChatGainedFocus();

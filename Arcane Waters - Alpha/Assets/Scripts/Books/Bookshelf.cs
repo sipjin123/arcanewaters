@@ -29,7 +29,7 @@ public class Bookshelf : MonoBehaviour, IMapEditorDataReceiver {
 
       handleSpriteOutline();
 
-      if (_isMouseOver && Mouse.current.leftButton.wasReleasedThisFrame) {
+      if (_isMouseOver && KeyUtils.isLeftButtonPressedUp()) {
          openBookReaderPanel();
       }
       

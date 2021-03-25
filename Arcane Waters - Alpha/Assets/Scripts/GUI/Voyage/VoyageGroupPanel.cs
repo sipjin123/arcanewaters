@@ -63,7 +63,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       show();
 
       // Display the X button only if the mouse is over the defined zone
-      if (RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, Mouse.current.position.ReadValue())) {
+      if (RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, KeyUtils.getMousePosition())) {
          xButton.gameObject.SetActive(true);
       } else {
          xButton.gameObject.SetActive(false);

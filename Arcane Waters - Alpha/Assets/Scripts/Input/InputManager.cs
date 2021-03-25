@@ -4,6 +4,7 @@ using System;
 using UnityEngine.InputSystem;
 using UnityEngine.Events;
 using UnityEngine.InputSystem.Controls;
+using System.Linq;
 
 public class InputManager : MonoBehaviour
 {
@@ -311,7 +312,7 @@ public class InputManager : MonoBehaviour
    }
 
    public static Vector2 getCameraPanningAxis () {
-      return new Vector2(Mouse.current.position.ReadValue().x / Screen.width, Mouse.current.position.ReadValue().y / Screen.height);
+      return new Vector2(KeyUtils.getMousePosition().x / Screen.width, KeyUtils.getMousePosition().y / Screen.height);
    }
 
    private static bool isKeyDisabled (ButtonControl keyCode) {

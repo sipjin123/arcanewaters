@@ -232,7 +232,7 @@ public class Util : MonoBehaviour
          _mainCamera = Camera.main;
       }
 
-      Vector3 worldPos = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+      Vector3 worldPos = _mainCamera.ScreenToWorldPoint(KeyUtils.getMousePosition());
       worldPos.z = 0f;
       return worldPos;
    }

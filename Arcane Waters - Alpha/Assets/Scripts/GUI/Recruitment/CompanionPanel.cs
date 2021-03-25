@@ -49,10 +49,10 @@ public class CompanionPanel : Panel {
    public override void Update () {
       base.Update();
       if (grabbedCompanionTemplate != null) {
-         grabbedCompanionTemplate.transform.position = Mouse.current.position.ReadValue();
+         grabbedCompanionTemplate.transform.position = KeyUtils.getMousePosition();
 
-         if (Mouse.current.leftButton.wasPressedThisFrame && startDrag) {
-            dropTemplateToZone(Mouse.current.position.ReadValue());
+         if (KeyUtils.isLeftButtonPressedDown() && startDrag) {
+            dropTemplateToZone(KeyUtils.getMousePosition());
          }
       }
    }
