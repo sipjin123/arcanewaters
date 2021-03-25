@@ -53,7 +53,7 @@ namespace MapCustomization
 
          _lastPointerPos = pointerPos;
 
-         if (Keyboard.current.deleteKey.isPressed) {
+         if (KeyUtils.GetKey(Key.Delete)) {
             MapCustomizationManager.keyDelete();
          }
       }

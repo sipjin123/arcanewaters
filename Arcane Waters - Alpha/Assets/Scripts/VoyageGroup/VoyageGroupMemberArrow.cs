@@ -43,7 +43,7 @@ public class VoyageGroupMemberArrow : MonoBehaviour
          return;
       }
 
-      if (!Keyboard.current.leftAltKey.isPressed && !Keyboard.current.rightAltKey.isPressed && !_cell.isMouseOver()) {
+      if (!KeyUtils.GetKey(Key.LeftAlt) && !KeyUtils.GetKey(Key.RightAlt) && !_cell.isMouseOver()) {
          return;
       }
 

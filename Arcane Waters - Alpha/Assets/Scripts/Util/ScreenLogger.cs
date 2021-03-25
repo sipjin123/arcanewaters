@@ -63,14 +63,14 @@ public class ScreenLogger : MonoBehaviour {
          return;
       }
 
-      if (Keyboard.current.leftAltKey.isPressed) {
+      if (KeyUtils.GetKey(Key.LeftAlt)) {
          // Displays log screen when holding left and Q button
-         if (Keyboard.current.qKey.wasPressedThisFrame) {
+         if (KeyUtils.GetKeyDown(Key.Q)) {
             canvasObj.SetActive(!canvasObj.activeSelf);
          }
 
          // Clears log screen when holding left and T button
-         if (Keyboard.current.rKey.wasPressedThisFrame && canvasObj.activeSelf) {
+         if (KeyUtils.GetKeyDown(Key.R) && canvasObj.activeSelf) {
             clearLog();
          }
       }
