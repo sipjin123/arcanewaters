@@ -17,7 +17,7 @@ public class TiltWindow : MonoBehaviour
 
 	void Update ()
 	{
-		Vector3 pos = Mouse.current.position.ReadValue();
+		Vector3 pos = KeyUtils.getMousePosition();
 
 		float halfWidth = Screen.width * 0.5f;
 		float halfHeight = Screen.height * 0.5f;

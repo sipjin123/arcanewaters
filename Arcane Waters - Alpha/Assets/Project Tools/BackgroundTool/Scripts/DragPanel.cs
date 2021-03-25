@@ -50,7 +50,7 @@ namespace BackgroundTool
          if (!EventSystem.current.IsPointerOverGameObject() &&
             EventSystem.current.currentSelectedGameObject == null &&
             !ImageManipulator.self.disableHighlighting) {
-            Vector3 pos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+            Vector3 pos = Camera.main.ScreenToWorldPoint(KeyUtils.getMousePosition());
             pos.z = 0;
             dragCounter = 0;
 
@@ -65,7 +65,7 @@ namespace BackgroundTool
          if (isDragging && !ImageManipulator.self.disableHighlighting) {
             dragCounter += Time.deltaTime;
             if (dragCounter >= holdTimerMax) {
-               Vector3 currentPos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+               Vector3 currentPos = Camera.main.ScreenToWorldPoint(KeyUtils.getMousePosition());
                Vector3 selectionAreaSize = currentPos - startPosition;
                selectionAreaSize.x *= 100;
                selectionAreaSize.y *= 100;
@@ -92,7 +92,7 @@ namespace BackgroundTool
          if (isDragging) {
             List<SpriteTemplate> spawnedSpriteList = new List<SpriteTemplate>();
             List<SpriteSelectionTemplate> spriteSelectionList = new List<SpriteSelectionTemplate>();
-            endPosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+            endPosition = Camera.main.ScreenToWorldPoint(KeyUtils.getMousePosition());
             dragCounter = 0;
 
             Vector3 lowerLeftPos = new Vector3(Mathf.Min(startPosition.x, endPosition.x), Mathf.Min(startPosition.y, endPosition.y), 0);

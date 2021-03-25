@@ -35,12 +35,12 @@ public class PaletteToolColorUnderCursor : MonoBehaviour {
          tex.ReadPixels(new Rect(0, 0, source.width, source.height), 0, 0);
          tex.Apply();
 
-         Color color = tex.GetPixel((int) Mouse.current.position.ReadValue().x, (int) Mouse.current.position.ReadValue().y);
+         Color color = tex.GetPixel((int) KeyUtils.getMousePosition().x, (int) KeyUtils.getMousePosition().y);
          Destroy(tex);
 
          paletteToolManager.updatePickingColorFromSprite(color);
 
-         if (Mouse.current.leftButton.isPressed) {
+         if (KeyUtils.isLeftButtonPressed()) {
             paletteToolManager.finalizePickingColorFromSprite();
             _isActive = false;
          } else if (Mouse.current.rightButton.isPressed) {

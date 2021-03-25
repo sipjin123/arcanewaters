@@ -109,14 +109,14 @@ public class QuestDataToolPanel : MonoBehaviour {
    private void Update () {
       if (selectedDialogueTemplate != null) {
          Vector2 pos;
-         RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, Mouse.current.position.ReadValue(), canvas.worldCamera, out pos);
+         RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, KeyUtils.getMousePosition(), canvas.worldCamera, out pos);
          draggedNodeInfo.transform.position = canvas.transform.TransformPoint(pos);
       }
    }
 
    private void LateUpdate () {
       if (selectedDialogueTemplate != null) {
-         if (Mouse.current.leftButton.wasReleasedThisFrame) {
+         if (KeyUtils.isLeftButtonPressedUp()) {
             if (hoveredDialogueTemplate != null) {
                if (hoveredDialogueTemplate != selectedDialogueTemplate) {
                   selectedDialogueTemplate.transform.SetSiblingIndex(hoveredDialogueTemplate.transform.GetSiblingIndex());

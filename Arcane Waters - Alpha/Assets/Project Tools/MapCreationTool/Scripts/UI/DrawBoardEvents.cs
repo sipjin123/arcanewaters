@@ -63,7 +63,7 @@ namespace MapCreationTool
          }
 
          // Check for movement
-         Vector2 mPos = MainCamera.stwp(Mouse.current.position.ReadValue());
+         Vector2 mPos = MainCamera.stwp(KeyUtils.getMousePosition());
          if (isHovering && (Vector2) lastHoverPosition.Value != mPos) {
             lastHoverPosition = mPos;
             if (!draggingFrom.HasValue) {
