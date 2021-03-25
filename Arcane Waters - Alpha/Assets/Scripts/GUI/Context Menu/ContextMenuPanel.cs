@@ -96,7 +96,7 @@ public class ContextMenuPanel : MonoBehaviour
          hide();
       }
 
-      if (KeyUtils.isLeftButtonPressed() || Mouse.current.rightButton.isPressed) {
+      if (KeyUtils.isLeftButtonPressed() || KeyUtils.isRightButtonPressed()) {
          // Hide the menu if a mouse button is clicked and the pointer is not over any button
          if (!RectTransformUtility.RectangleContainsScreenPoint(buttonsRectTransform, KeyUtils.getMousePosition())) {
             hide();

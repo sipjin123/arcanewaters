@@ -329,7 +329,7 @@ namespace BackgroundTool
          }
 
          // Cancel spawn sprite mode
-         if (Mouse.current.rightButton.wasPressedThisFrame) {
+         if (KeyUtils.isRightButtonPressedDown()) {
             if (isSpawning) {
                isSpawning = false;
                foreach (DraggableContent draggableContent in draggedObjList) {

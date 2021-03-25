@@ -34,7 +34,7 @@ public class GrabbedItem : MonoBehaviour
       transform.position = KeyUtils.getMousePosition();
 
       // Stop grabbing when the right click button is pressed
-      if (Mouse.current.rightButton.wasPressedThisFrame) {
+      if (KeyUtils.isRightButtonPressedDown()) {
          InventoryPanel.self.stopGrabbingItem();
          return;
       }

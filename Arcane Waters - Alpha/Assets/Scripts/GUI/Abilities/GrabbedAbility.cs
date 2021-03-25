@@ -22,7 +22,7 @@ public class GrabbedAbility : MonoBehaviour {
       transform.position = KeyUtils.getMousePosition();
 
       // Stop grabbing when the right click button is pressed
-      if (Mouse.current.rightButton.isPressed) {
+      if (KeyUtils.isRightButtonPressed()) {
          AbilityPanel.self.stopGrabbingAbility();
          return;
       }

@@ -43,7 +43,7 @@ public class PaletteToolColorUnderCursor : MonoBehaviour {
          if (KeyUtils.isLeftButtonPressed()) {
             paletteToolManager.finalizePickingColorFromSprite();
             _isActive = false;
-         } else if (Mouse.current.rightButton.isPressed) {
+         } else if (KeyUtils.isRightButtonPressed()) {
             paletteToolManager.finalizePickingColorFromSprite(true, _colorBeforeChanges);
             _isActive = false;
          }

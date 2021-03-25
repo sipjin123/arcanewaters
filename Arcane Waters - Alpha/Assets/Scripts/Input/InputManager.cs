@@ -163,7 +163,7 @@ public class InputManager : MonoBehaviour
 
    public static bool isLeftClickKeyPressed () {
       if (isActionInputEnabled()) {
-         return Mouse.current.leftButton.wasPressedThisFrame;
+         return KeyUtils.isLeftButtonPressedDown();
       }
 
       return false;
@@ -172,7 +172,7 @@ public class InputManager : MonoBehaviour
    public static bool isRightClickKeyPressed () {
       if (isActionInputEnabled()) {
          // Define the set of keys that we want to allow as "action" keys
-         return Mouse.current.rightButton.wasPressedThisFrame;
+         return KeyUtils.isRightButtonPressedDown();
       }
 
       return false;
@@ -206,7 +206,7 @@ public class InputManager : MonoBehaviour
 
    public static bool isFireCannonMouseDown () {
       if (isActionInputEnabled()) {
-         return Mouse.current.rightButton.wasPressedThisFrame;
+         return KeyUtils.isRightButtonPressedDown();
       }
 
       return false;
@@ -214,7 +214,7 @@ public class InputManager : MonoBehaviour
 
    public static bool isFireCannonMouse () {
       if (isActionInputEnabled()) {
-         return Mouse.current.rightButton.isPressed;
+         return KeyUtils.isRightButtonPressed();
       }
 
       return false;
@@ -222,7 +222,7 @@ public class InputManager : MonoBehaviour
 
    public static bool isFireCannonMouseUp () {
       if (isActionInputEnabled()) {
-         return Mouse.current.rightButton.wasReleasedThisFrame;
+         return KeyUtils.isRightButtonPressedUp();
       }
 
       return false;
