@@ -192,7 +192,7 @@ public class BattleUIManager : MonoBehaviour {
             "} SQL Id: {" + _playerLocalBattler.weaponManager.equipmentDataId +
             "} Sprite Type: {" + _playerLocalBattler.weaponManager.weaponType + "}", D.ADMIN_LOG_TYPE.Ability);
       } else {
-         D.adminLog("Can process ability info, weapon data is missing: {" + _playerLocalBattler.weaponManager.equipmentDataId + "}", D.ADMIN_LOG_TYPE.Ability);
+         D.adminLog("Cant process ability info, weapon data is missing: {" + _playerLocalBattler.weaponManager.equipmentDataId + "}", D.ADMIN_LOG_TYPE.Ability);
       }
 
       int indexCounter = 0;

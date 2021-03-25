@@ -113,7 +113,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("screen_log", "Allows screen to log files using D.debug()", requestScreenLogs, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("log", "Enables isolated debug loggers", requestLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType", "isTrue" }));
       cm.addCommand(new CommandData("network_profile", "Saves last 60 seconds of network profiling data", networkProfile, requiredPrefix: CommandType.Admin));
-      cm.addCommand(new CommandData("password", "Temporary bypass ", overridePassword, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "accountid", "newpassword" }));
+      cm.addCommand(new CommandData("password", "Temporary access any account using temporary password", overridePassword, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "accountName", "tempPassword" }));
 
       List<Map> maps = AreaManager.self.getAllMapInfo();
       List<string> mapNames = new List<string>();
@@ -305,22 +305,19 @@ public class AdminManager : NetworkBehaviour
 
       if (list.Length > 0) {
          string accountName = list[0];
-         string newPassword = "test";
+         string tempPassword = "test";
          if (list[1].Length > 1) {
-            newPassword = list[1];
+            tempPassword = list[1];
          }
 
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            if (!Global.accountOverrides.ContainsKey(accountName)) {
-               Global.accountOverrides.Add(accountName, newPassword);
-            }
+         if (!Global.accountOverrides.ContainsKey(accountName)) {
+            Global.accountOverrides.Add(accountName, tempPassword);
+         }
 
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               string message = "New password was set for account {" + accountName + "} " + newPassword;
-               D.debug(message);
-               _player.rpc.Target_ReceiveNoticeFromServer(_player.connectionToClient, message);
-            });
-         });
+         // Send message notification to server and client admin
+         string message = "New password was set for account {" + accountName + "} " + tempPassword;
+         D.debug(message);
+         _player.rpc.Target_ReceiveNoticeFromServer(_player.connectionToClient, message);
       }
    }
 
