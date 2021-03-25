@@ -15,7 +15,7 @@ public class GrapeshotAimer : ClientMonoBehaviour {
 
    private void Update () {
       // Check if the right mouse is being held down for the grapeshot attack
-      bool rightMouseDown = KeyUtils.isRightButtonPressed();
+      bool rightMouseDown = KeyUtils.GetButton(MouseButton.Right);
       // Can't do anything until we have a player
       if (Global.player == null || !(Global.player is SeaEntity)) {
          return;

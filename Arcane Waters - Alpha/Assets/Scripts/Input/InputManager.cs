@@ -163,7 +163,7 @@ public class InputManager : MonoBehaviour
 
    public static bool isLeftClickKeyPressed () {
       if (isActionInputEnabled()) {
-         return KeyUtils.isLeftButtonPressedDown();
+         return KeyUtils.GetButtonDown(MouseButton.Left);
       }
 
       return false;
@@ -172,7 +172,7 @@ public class InputManager : MonoBehaviour
    public static bool isRightClickKeyPressed () {
       if (isActionInputEnabled()) {
          // Define the set of keys that we want to allow as "action" keys
-         return KeyUtils.isRightButtonPressedDown();
+         return KeyUtils.GetButtonDown(MouseButton.Right);
       }
 
       return false;
@@ -206,7 +206,7 @@ public class InputManager : MonoBehaviour
 
    public static bool isFireCannonMouseDown () {
       if (isActionInputEnabled()) {
-         return KeyUtils.isRightButtonPressedDown();
+         return KeyUtils.GetButtonDown(MouseButton.Right);
       }
 
       return false;
@@ -214,7 +214,7 @@ public class InputManager : MonoBehaviour
 
    public static bool isFireCannonMouse () {
       if (isActionInputEnabled()) {
-         return KeyUtils.isRightButtonPressed();
+         return KeyUtils.GetButton(MouseButton.Right);
       }
 
       return false;
@@ -222,7 +222,7 @@ public class InputManager : MonoBehaviour
 
    public static bool isFireCannonMouseUp () {
       if (isActionInputEnabled()) {
-         return KeyUtils.isRightButtonPressedUp();
+         return KeyUtils.GetButtonUp(MouseButton.Right);
       }
 
       return false;
@@ -312,7 +312,7 @@ public class InputManager : MonoBehaviour
    }
 
    public static Vector2 getCameraPanningAxis () {
-      return new Vector2(KeyUtils.getMousePosition().x / Screen.width, KeyUtils.getMousePosition().y / Screen.height);
+      return new Vector2(MouseUtils.mousePosition.x / Screen.width, MouseUtils.mousePosition.y / Screen.height);
    }
 
    private static bool isKeyDisabled (ButtonControl keyCode) {

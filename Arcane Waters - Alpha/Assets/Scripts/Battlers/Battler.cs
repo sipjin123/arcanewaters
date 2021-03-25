@@ -2162,7 +2162,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    private bool isMouseHovering () {
-      Vector3 mouseLocation = BattleCamera.self.getCamera().ScreenToWorldPoint(KeyUtils.getMousePosition());
+      Vector3 mouseLocation = BattleCamera.self.getCamera().ScreenToWorldPoint(MouseUtils.mousePosition);
 
       // We don't care about the Z location for the purpose of Contains(), so make the click Z match the bounds Z
       mouseLocation.z = clickBox.bounds.center.z;

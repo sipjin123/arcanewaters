@@ -540,7 +540,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private void tryInteractAnimation () {
-      Direction newDirection = forceLookAt(Camera.main.ScreenToWorldPoint(KeyUtils.getMousePosition()));
+      Direction newDirection = forceLookAt(Camera.main.ScreenToWorldPoint(MouseUtils.mousePosition));
 
       if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
          || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {

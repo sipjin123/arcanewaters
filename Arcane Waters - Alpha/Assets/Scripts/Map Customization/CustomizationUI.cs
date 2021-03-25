@@ -43,9 +43,9 @@ namespace MapCustomization
       private void Update () {
          if (!_isShowing || isLoading) return;
 
-         Vector2 pointerPos = Camera.main.ScreenToWorldPoint(KeyUtils.getMousePosition());
+         Vector2 pointerPos = Camera.main.ScreenToWorldPoint(MouseUtils.mousePosition);
 
-         if (!KeyUtils.isLeftButtonPressed()) {
+         if (!KeyUtils.GetButton(MouseButton.Left)) {
             MapCustomizationManager.pointerHover(pointerPos);
          } else {
             MapCustomizationManager.pointerDrag(pointerPos - _lastPointerPos);
