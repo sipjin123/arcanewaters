@@ -60,24 +60,24 @@ public class InputManager : MonoBehaviour
       }
 
       // Set movement keys
-      _keybindings[KeyAction.MoveUp].primary = Keyboard.current.wKey;
-      _keybindings[KeyAction.MoveRight].primary = Keyboard.current.dKey;
-      _keybindings[KeyAction.MoveDown].primary = Keyboard.current.sKey;
-      _keybindings[KeyAction.MoveLeft].primary = Keyboard.current.aKey;
-      _keybindings[KeyAction.MoveUp].secondary = Keyboard.current.upArrowKey;
-      _keybindings[KeyAction.MoveRight].secondary = Keyboard.current.rightArrowKey;
-      _keybindings[KeyAction.MoveDown].secondary = Keyboard.current.downArrowKey;
-      _keybindings[KeyAction.MoveLeft].secondary = Keyboard.current.leftArrowKey;
-      _keybindings[KeyAction.SpeedUp].primary = Keyboard.current.leftShiftKey;
+      _keybindings[KeyAction.MoveUp].primary = Keyboard.current[Key.W];
+      _keybindings[KeyAction.MoveRight].primary = Keyboard.current[Key.D];
+      _keybindings[KeyAction.MoveDown].primary = Keyboard.current[Key.S];
+      _keybindings[KeyAction.MoveLeft].primary = Keyboard.current[Key.A];
+      _keybindings[KeyAction.MoveUp].secondary = Keyboard.current[Key.UpArrow];
+      _keybindings[KeyAction.MoveRight].secondary = Keyboard.current[Key.RightArrow];
+      _keybindings[KeyAction.MoveDown].secondary = Keyboard.current[Key.DownArrow];
+      _keybindings[KeyAction.MoveLeft].secondary = Keyboard.current[Key.LeftArrow];
+      _keybindings[KeyAction.SpeedUp].primary = Keyboard.current[Key.LeftShift];
 
       // Set sea battle keys
-      _keybindings[KeyAction.FireMainCannon].primary = Keyboard.current.spaceKey;
-      _keybindings[KeyAction.SelectNextSeaTarget].primary = Keyboard.current.tabKey;
+      _keybindings[KeyAction.FireMainCannon].primary = Keyboard.current[Key.Space];
+      _keybindings[KeyAction.SelectNextSeaTarget].primary = Keyboard.current[Key.Tab];
 
       // Camera panning
       _keybindings[KeyAction.PanCamera].primary = Mouse.current.middleButton;
 
-      _keybindings[KeyAction.Reply].primary = Keyboard.current.rKey;
+      _keybindings[KeyAction.Reply].primary = Keyboard.current[Key.R];
    }
 
    public static bool isPressingDirection (Direction direction) {
@@ -181,7 +181,7 @@ public class InputManager : MonoBehaviour
    public static bool isActionKeyPressed () {
       if (isActionInputEnabled()) {
          // Define the set of keys that we want to allow as "action" keys
-         return Keyboard.current.eKey.wasPressedThisFrame;
+         return KeyUtils.GetKeyDown(Key.E);
       }
 
       return false;
@@ -190,7 +190,7 @@ public class InputManager : MonoBehaviour
    public static bool isJumpKeyPressed () {
       if (isActionInputEnabled()) {
          // Define the set of keys that we want to allow as "action" keys
-         return Keyboard.current.spaceKey.wasPressedThisFrame;
+         return KeyUtils.GetKeyDown(Key.Space);
       } 
 
       return false;

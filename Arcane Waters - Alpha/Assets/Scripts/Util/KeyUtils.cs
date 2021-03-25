@@ -3,15 +3,15 @@ using UnityEngine.InputSystem;
 
 public static class KeyUtils {
    // Keyboard keys
-   public static bool isKeyPressed (Key key) {
+   public static bool GetKey (Key key) {
       return Keyboard.current[key].isPressed;
    }
 
-   public static bool isKeyPressedDown (Key key) {
+   public static bool GetKeyDown (Key key) {
       return Keyboard.current[key].wasPressedThisFrame;
    }
 
-   public static bool isKeyPressedUp (Key key) {
+   public static bool GetKeyUp (Key key) {
       return Keyboard.current[key].wasReleasedThisFrame;
    }
 
