@@ -2,7 +2,9 @@
 using UnityEngine.InputSystem;
 
 public static class KeyUtils {
-   // Keyboard keys
+
+   #region Keyboard keys
+
    public static bool GetKey (Key key) {
       return Keyboard.current[key].isPressed;
    }
@@ -15,34 +17,43 @@ public static class KeyUtils {
       return Keyboard.current[key].wasReleasedThisFrame;
    }
 
-   // Left mouse button
-   public static bool isLeftButtonPressed () {
-      return Mouse.current.leftButton.isPressed;
+   #endregion
+
+
+   #region Mouse keys
+
+   public static bool GetButton (MouseButton mouseButtonKey) {
+      switch (mouseButtonKey) {
+         case MouseButton.Left:
+            return Mouse.current.leftButton.isPressed;
+         case MouseButton.Right:
+            return Mouse.current.rightButton.isPressed;
+      }
+
+      return false;
    }
 
-   public static bool isLeftButtonPressedDown () {
-      return Mouse.current.leftButton.wasPressedThisFrame;
+   public static bool GetButtonDown (MouseButton mouseButtonKey) {
+      switch (mouseButtonKey) {
+         case MouseButton.Left:
+            return Mouse.current.leftButton.wasPressedThisFrame;
+         case MouseButton.Right:
+            return Mouse.current.rightButton.wasPressedThisFrame;
+      }
+
+      return false;
    }
 
-   public static bool isLeftButtonPressedUp () {
-      return Mouse.current.leftButton.wasReleasedThisFrame;
+   public static bool GetButtonUp (MouseButton mouseButtonKey) {
+      switch (mouseButtonKey) {
+         case MouseButton.Left:
+            return Mouse.current.leftButton.wasReleasedThisFrame;
+         case MouseButton.Right:
+            return Mouse.current.rightButton.wasReleasedThisFrame;
+      }
+
+      return false;
    }
 
-   // Right mouse button
-   public static bool isRightButtonPressed () {
-      return Mouse.current.rightButton.isPressed;
-   }
-
-   public static bool isRightButtonPressedDown () {
-      return Mouse.current.rightButton.wasPressedThisFrame;
-   }
-
-   public static bool isRightButtonPressedUp () {
-      return Mouse.current.rightButton.wasReleasedThisFrame;
-   }
-
-   // Mouse Utilities
-   public static Vector2 getMousePosition () {
-      return Mouse.current.position.ReadValue();
-   }
+   #endregion
 }
