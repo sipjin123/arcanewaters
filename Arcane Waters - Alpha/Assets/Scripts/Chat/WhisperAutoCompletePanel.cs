@@ -35,7 +35,7 @@ public class WhisperAutoCompletePanel : MonoBehaviour {
          return;
       }
 
-      if (Keyboard.current.enterKey.wasPressedThisFrame) {
+      if (KeyUtils.GetKeyDown(Key.Enter)) {
          onEnterPressed();
       }
    }

@@ -64,7 +64,7 @@ public class PanelManager : MonoBehaviour {
       }
 
       // Let us easily close panels with the Escape key
-      if (Keyboard.current.escapeKey.wasReleasedThisFrame) {
+      if (KeyUtils.GetKeyUp(Key.Escape)) {
          // Hide tooltips before closing the panel
          hideToolTips();
 
@@ -96,27 +96,27 @@ public class PanelManager : MonoBehaviour {
       // TODO: Setup gamepad keybindings here using actions instead of keyboard keys
 
       // Bottom button panels
-      if (Keyboard.current.iKey.wasPressedThisFrame) {
+      if (KeyUtils.GetKeyDown(Key.I)) {
          BottomBar.self.toggleInventoryPanel();
-      } else if (Keyboard.current.gKey.wasPressedThisFrame) {
+      } else if (KeyUtils.GetKeyDown(Key.G)) {
          BottomBar.self.toggleGuildPanel();
-      } else if (Keyboard.current.lKey.wasPressedThisFrame) {
+      } else if (KeyUtils.GetKeyDown(Key.L)) {
          BottomBar.self.toggleShipsPanel();
-      } else if (Keyboard.current.oKey.wasPressedThisFrame) {
+      } else if (KeyUtils.GetKeyDown(Key.O)) {
          BottomBar.self.toggleOptionsPanel();
-      } else if (Keyboard.current.mKey.wasPressedThisFrame) {
+      } else if (KeyUtils.GetKeyDown(Key.M)) {
          BottomBar.self.toggleMapPanel();
-      } else if (Keyboard.current.tKey.wasPressedThisFrame) {
+      } else if (KeyUtils.GetKeyDown(Key.T)) {
          BottomBar.self.toggleTradeHistoryPanel();
-      } else if (Keyboard.current.bKey.wasPressedThisFrame) {
+      } else if (KeyUtils.GetKeyDown(Key.B)) {
          BottomBar.self.toggleLeaderBoardsPanel();
-      } else if (Keyboard.current.fKey.wasPressedThisFrame) {
+      } else if (KeyUtils.GetKeyDown(Key.F)) {
          BottomBar.self.toggleFriendListPanel();
-      } else if (Keyboard.current.uKey.wasPressedThisFrame) {
+      } else if (KeyUtils.GetKeyDown(Key.U)) {
          BottomBar.self.toggleAbilityPanel();
-      } else if (Keyboard.current.kKey.wasPressedThisFrame) {
+      } else if (KeyUtils.GetKeyDown(Key.K)) {
          BottomBar.self.toggleMailPanel();
-      } else if (Keyboard.current.f12Key.wasPressedThisFrame) {
+      } else if (KeyUtils.GetKeyDown(Key.F12)) {
          ((AdminVoyagePanel) get(Panel.Type.AdminVoyage)).togglePanel();
       }
    }

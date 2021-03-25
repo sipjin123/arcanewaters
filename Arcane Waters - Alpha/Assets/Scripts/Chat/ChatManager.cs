@@ -61,7 +61,7 @@ public class ChatManager : MonoBehaviour
          return;
       }
 
-      if (Keyboard.current.upArrowKey.wasPressedThisFrame) {
+      if (KeyUtils.GetKeyDown(Key.UpArrow)) {
          if (ChatPanel.self.inputField.isFocused) {
             changeNumMessagesAgo(increment: true);
          } else if (ChatPanel.self.nameInputField.isFocused) {
@@ -69,7 +69,7 @@ public class ChatManager : MonoBehaviour
          }
       }
 
-      if (Keyboard.current.downArrowKey.wasPressedThisFrame) {
+      if (KeyUtils.GetKeyDown(Key.DownArrow)) {
          if (ChatPanel.self.inputField.isFocused) {
             changeNumMessagesAgo(increment: false);
          } else if (ChatPanel.self.nameInputField.isFocused) {

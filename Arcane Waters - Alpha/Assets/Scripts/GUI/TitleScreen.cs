@@ -97,18 +97,13 @@ public class TitleScreen : MonoBehaviour {
       float currentAlpha = _canvasGroup.alpha;
 
       if (isActive) {
-         if (Keyboard.current.enterKey.wasPressedThisFrame) { 
-         D.debug("HEY ENTER WAS PRESSED!");
-
-         }
-
          // If they press Enter in the password field, activate the Play button
-         if (Keyboard.current.enterKey.wasPressedThisFrame && Util.isSelected(passwordInputField) && passwordInputField.text != "" && passwordInputField.text.Length > 0 && accountInputField.text.Length > 0) {
+         if (KeyUtils.GetKeyDown(Key.Enter) && Util.isSelected(passwordInputField) && passwordInputField.text != "" && passwordInputField.text.Length > 0 && accountInputField.text.Length > 0) {
             Util.clickButton(loginButton);
          }
 
          // Check for an assortment of keys
-         bool moveToNextField = Keyboard.current.tabKey.wasPressedThisFrame || Keyboard.current.enterKey.wasPressedThisFrame || Keyboard.current.downArrowKey.wasPressedThisFrame;
+         bool moveToNextField = KeyUtils.GetKeyDown(Key.Tab) || KeyUtils.GetKeyDown(Key.Enter) || KeyUtils.GetKeyDown(Key.DownArrow);
 
          // If we're in the account field, let us move to the password field
          if (moveToNextField && Util.isSelected(accountInputField)) {

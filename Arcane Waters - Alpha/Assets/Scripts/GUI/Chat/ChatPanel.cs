@@ -170,7 +170,7 @@ public class ChatPanel : MonoBehaviour {
       choosingChatType.GetComponent<RectTransform>().position = toolbarRect.position;
 
       // Focus the chat window if the forward slash key is released
-      if ((Keyboard.current.slashKey.wasReleasedThisFrame)) {
+      if (KeyUtils.GetKeyUp(Key.Slash)) {
 
          if (!wasJustFocused() && !nameInputField.isFocused) {
             inputField.text = "/";
@@ -354,13 +354,13 @@ public class ChatPanel : MonoBehaviour {
          }
       }
 
-      if (nameInputField.isFocused && Keyboard.current.tabKey.wasPressedThisFrame) {
+      if (nameInputField.isFocused && KeyUtils.GetKeyDown(Key.Tab)) {
          inputField.Select();
       }
 
       // Activate the input field when enter is pressed and the field is unfocused, except if the
       // player is writing a mail      
-      if (Keyboard.current.enterKey.wasPressedThisFrame && !((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail()) {
+      if (KeyUtils.GetKeyDown(Key.Enter) && !((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail()) {
          if (!wasJustFocused()) {
 
             if (Global.player != null) {
