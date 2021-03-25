@@ -15,10 +15,8 @@ public class AsyncDBTest : MonoBehaviour
       GUI.TextField(new Rect(Vector2.zero, new Vector2(400, 600)), Time.time + Environment.NewLine + string.Join(Environment.NewLine, events));
    }
 
-   private void Update () {
-      if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.S)) {
-         testMethod();
-      }
+   private void Start () {
+      testMethod();
    }
 
    private async void testMethod () {
