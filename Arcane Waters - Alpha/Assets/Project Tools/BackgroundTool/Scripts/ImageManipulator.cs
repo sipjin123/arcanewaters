@@ -161,7 +161,7 @@ namespace BackgroundTool
       public void beginDragSelectionGroup (List<SpriteSelectionTemplate> spriteTempGroup, bool isSingleDrag) {
          singleDrag = isSingleDrag;
          resetDraggedGroup();
-         Vector3 pos = _mainCam.ScreenToWorldPoint(KeyUtils.getMousePosition());
+         Vector3 pos = _mainCam.ScreenToWorldPoint(MouseUtils.mousePosition);
 
          foreach (SpriteSelectionTemplate spriteTemp in spriteTempGroup) {
             SpriteTemplate spawnedSprite = createInstance(spriteTemp.spriteIcon.sprite, spriteTemp.spritePath, false, spriteTemp.contentCategory).GetComponent<SpriteTemplate>();
@@ -201,7 +201,7 @@ namespace BackgroundTool
       public void beginDragSpawnedGroup (List<SpriteTemplate> spriteTempGroup, bool isSingleDrag) {
          singleDrag = isSingleDrag;
          resetDraggedGroup();
-         Vector3 pos = _mainCam.ScreenToWorldPoint(KeyUtils.getMousePosition());
+         Vector3 pos = _mainCam.ScreenToWorldPoint(MouseUtils.mousePosition);
 
          foreach (SpriteTemplate spriteTemp in spriteTempGroup) {
             Vector3 initOffset = spriteTemp.transform.localPosition - pos;
@@ -294,11 +294,11 @@ namespace BackgroundTool
          }
 
          bool dragSpawnableGroup = draggedObjList.Count > 0 && isDragging;
-         bool dragHighlightedSpawnedGroup = !isSpawning && draggedObjList.Count > 0 && KeyUtils.isLeftButtonPressed() && isHoveringHighlight;
+         bool dragHighlightedSpawnedGroup = !isSpawning && draggedObjList.Count > 0 && KeyUtils.GetButton(MouseButton.Left) && isHoveringHighlight;
 
          // Cache initial mouse position upon click
-         if (dragHighlightedSpawnedGroup && KeyUtils.isLeftButtonPressedDown()) {
-            Vector3 pos = _mainCam.ScreenToWorldPoint(KeyUtils.getMousePosition());
+         if (dragHighlightedSpawnedGroup && KeyUtils.GetButtonDown(MouseButton.Left)) {
+            Vector3 pos = _mainCam.ScreenToWorldPoint(MouseUtils.mousePosition);
             foreach (DraggableContent draggableContent in draggedObjList) {
                Vector3 initOffset = draggableContent.cachedSpriteTemplate.transform.localPosition - pos;
                draggableContent.spriteOffset = initOffset;
@@ -307,7 +307,7 @@ namespace BackgroundTool
 
          // Drag sprite objects only if a spawnable group is active or a highlighted spawn group
          if (dragSpawnableGroup || dragHighlightedSpawnedGroup) {
-            Vector3 mousePos = _mainCam.ScreenToWorldPoint(KeyUtils.getMousePosition());
+            Vector3 mousePos = _mainCam.ScreenToWorldPoint(MouseUtils.mousePosition);
 
             foreach (DraggableContent draggableContent in draggedObjList) {
                if (!draggableContent.cachedSpriteTemplate.spriteData.isLocked) {
@@ -322,14 +322,14 @@ namespace BackgroundTool
                }
             }
 
-            if (KeyUtils.isLeftButtonPressedDown() && !singleDrag && !dragHighlightedSpawnedGroup) {
+            if (KeyUtils.GetButtonDown(MouseButton.Left) && !singleDrag && !dragHighlightedSpawnedGroup) {
                isHoveringHighlight = false;
                endClick();
             }
          }
 
          // Cancel spawn sprite mode
-         if (KeyUtils.isRightButtonPressedDown()) {
+         if (KeyUtils.GetButtonDown(MouseButton.Right)) {
             if (isSpawning) {
                isSpawning = false;
                foreach (DraggableContent draggableContent in draggedObjList) {
@@ -410,7 +410,7 @@ namespace BackgroundTool
          // Only snap to mouse when creating from sprite panel
          if (newSpritedata == null) {
             creationPanel.SetActive(false);
-            Vector3 pos = _mainCam.ScreenToWorldPoint(KeyUtils.getMousePosition());
+            Vector3 pos = _mainCam.ScreenToWorldPoint(MouseUtils.mousePosition);
             spriteTemplate.transform.localPosition = new Vector3(pos.x, pos.y, -1);
             spriteTemplate.createdFromPanel = true;
             spriteTemplate.highlightObj(false);

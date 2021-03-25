@@ -570,7 +570,7 @@ namespace MapCreationTool
                hoveredPrefab.setHighlight(false, false, true);
             } else {
                brushOutline.enabled = true;
-               brushOutline.transform.position = cellToWorldCenter(worldToCell(MainCamera.stwp(KeyUtils.getMousePosition())));
+               brushOutline.transform.position = cellToWorldCenter(worldToCell(MainCamera.stwp(MouseUtils.mousePosition)));
                brushOutline.size = Vector2.one;
                brushOutline.color = Color.red;
             }
@@ -580,7 +580,7 @@ namespace MapCreationTool
             if (!brushOutline.enabled)
                return;
 
-            Vector3 wp = MainCamera.stwp(KeyUtils.getMousePosition());
+            Vector3 wp = MainCamera.stwp(MouseUtils.mousePosition);
             Bounds bounds = new Bounds {
                min = new Vector3(Mathf.Min(wp.x, DrawBoardEvents.draggingFrom.Value.x), Mathf.Min(wp.y, DrawBoardEvents.draggingFrom.Value.y), 0),
                max = new Vector3(Mathf.Max(wp.x, DrawBoardEvents.draggingFrom.Value.x), Mathf.Max(wp.y, DrawBoardEvents.draggingFrom.Value.y), 0)
@@ -602,7 +602,7 @@ namespace MapCreationTool
             if (!brushOutline.enabled)
                return;
 
-            brushOutline.transform.position = cellToWorldCenter(worldToCell(MainCamera.stwp(KeyUtils.getMousePosition())));
+            brushOutline.transform.position = cellToWorldCenter(worldToCell(MainCamera.stwp(MouseUtils.mousePosition)));
 
             if (Tools.tileGroup == null)
                brushOutline.size = Vector2.one;
@@ -653,7 +653,7 @@ namespace MapCreationTool
       }
 
       public PlacedPrefab getHoveredPrefab (Vector3? mousePostion = null) {
-         Vector2 pointerPos = mousePostion ?? MainCamera.stwp(KeyUtils.getMousePosition());
+         Vector2 pointerPos = mousePostion ?? MainCamera.stwp(MouseUtils.mousePosition);
          PlacedPrefab target = null;
          float minZ = float.MaxValue;
 

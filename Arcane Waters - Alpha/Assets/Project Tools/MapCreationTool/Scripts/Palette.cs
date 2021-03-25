@@ -89,7 +89,7 @@ namespace MapCreationTool
                pointerScroll(Mouse.current.scroll.y.ReadValue());
             }
 
-            updateToolTip(KeyUtils.getMousePosition());
+            updateToolTip(MouseUtils.mousePosition);
          }
       }
 

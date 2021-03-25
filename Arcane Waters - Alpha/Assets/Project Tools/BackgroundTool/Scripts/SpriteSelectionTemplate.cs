@@ -32,7 +32,7 @@ namespace BackgroundTool
 
       public void OnMouseDown () {
          if (!ImageManipulator.self.isDragging) {
-            bool withinRectTrans = RectTransformUtility.RectangleContainsScreenPoint(ImageManipulator.self.rectReference, new Vector2(KeyUtils.getMousePosition().x, KeyUtils.getMousePosition().y));
+            bool withinRectTrans = RectTransformUtility.RectangleContainsScreenPoint(ImageManipulator.self.rectReference, new Vector2(MouseUtils.mousePosition.x, MouseUtils.mousePosition.y));
             if (withinRectTrans) {
                spriteIcon.color = Color.white;
                List<SpriteSelectionTemplate> spriteSelectionTemp = new List<SpriteSelectionTemplate>();
@@ -43,7 +43,7 @@ namespace BackgroundTool
       }
 
       public void OnMouseEnter () {
-         bool withinRectTrans = RectTransformUtility.RectangleContainsScreenPoint(ImageManipulator.self.rectReference, new Vector2(KeyUtils.getMousePosition().x, KeyUtils.getMousePosition().y));
+         bool withinRectTrans = RectTransformUtility.RectangleContainsScreenPoint(ImageManipulator.self.rectReference, new Vector2(MouseUtils.mousePosition.x, MouseUtils.mousePosition.y));
          if (withinRectTrans) {
             spriteIcon.color = Color.blue;
          } else {
