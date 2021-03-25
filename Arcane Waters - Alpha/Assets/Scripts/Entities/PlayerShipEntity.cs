@@ -240,13 +240,13 @@ public class PlayerShipEntity : ShipEntity
             cannonAttackReleased();
          }
 
-         if (Keyboard.current.xKey.isPressed) {
-            if (Keyboard.current.f10Key.wasPressedThisFrame) {
+         if (KeyUtils.GetKey(Key.X)) {
+            if (KeyUtils.GetKeyDown(Key.F10)) {
                _cannonAttackType = (CannonAttackType) (((int) _cannonAttackType + 1) % 3);
                ChatPanel.self.addChatInfo(new ChatInfo(0, "Changed ship attack type to: " + _cannonAttackType.ToString(), System.DateTime.Now, ChatInfo.Type.System));
             }
 
-            if (Keyboard.current.f11Key.wasPressedThisFrame) {
+            if (KeyUtils.GetKeyDown(Key.F11)) {
                Status.Type newStatusType = (Status.Type) (((int) cannonEffectType + 1) % System.Enum.GetValues(typeof(Status.Type)).Length);
                Cmd_ChangeCannonEffectType();
             }

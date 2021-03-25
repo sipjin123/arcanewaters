@@ -225,15 +225,15 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    private void handleShortcutsInput () {
       // We should move these to the InputManager
-      if (Keyboard.current.digit1Key.wasPressedThisFrame) {
+      if (KeyUtils.GetKeyDown(Key.Digit1)) {
          PanelManager.self.itemShortcutPanel.activateShortcut(1);
-      } else if (Keyboard.current.digit2Key.wasPressedThisFrame) {
+      } else if (KeyUtils.GetKeyDown(Key.Digit2)) {
          PanelManager.self.itemShortcutPanel.activateShortcut(2);
-      } else if (Keyboard.current.digit3Key.wasPressedThisFrame) {
+      } else if (KeyUtils.GetKeyDown(Key.Digit3)) {
          PanelManager.self.itemShortcutPanel.activateShortcut(3);
-      } else if (Keyboard.current.digit4Key.wasPressedThisFrame) {
+      } else if (KeyUtils.GetKeyDown(Key.Digit4)) {
          PanelManager.self.itemShortcutPanel.activateShortcut(4);
-      } else if (Keyboard.current.digit5Key.wasPressedThisFrame) {
+      } else if (KeyUtils.GetKeyDown(Key.Digit5)) {
          PanelManager.self.itemShortcutPanel.activateShortcut(5);
       }
    }
@@ -408,7 +408,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private bool canSprint () {
-      return ((Global.sprintConstantly || Keyboard.current.leftShiftKey.isPressed) && !isWithinEnemyRadius && getVelocity().magnitude > MOVING_MAGNITUDE);
+      return ((Global.sprintConstantly || KeyUtils.GetKey(Key.LeftShift)) && !isWithinEnemyRadius && getVelocity().magnitude > MOVING_MAGNITUDE);
    }
 
    private void processActionLogic () {

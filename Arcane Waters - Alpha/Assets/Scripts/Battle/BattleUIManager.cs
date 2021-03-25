@@ -334,25 +334,25 @@ public class BattleUIManager : MonoBehaviour {
       if (_playerLocalBattler != null) {
          updateAbilityButtons();
 
-         if (Keyboard.current.digit1Key.wasPressedThisFrame) {
+         if (KeyUtils.GetKeyDown(Key.Digit1)) {
             triggerAbilityByKey(0);
-         } else if (Keyboard.current.digit2Key.wasPressedThisFrame) {
+         } else if (KeyUtils.GetKeyDown(Key.Digit2)) {
             triggerAbilityByKey(1);
-         } else if (Keyboard.current.digit3Key.wasPressedThisFrame) {
+         } else if (KeyUtils.GetKeyDown(Key.Digit3)) {
             triggerAbilityByKey(2);
-         } else if (Keyboard.current.digit4Key.wasPressedThisFrame) {
+         } else if (KeyUtils.GetKeyDown(Key.Digit4)) {
             triggerAbilityByKey(3);
-         } else if (Keyboard.current.digit5Key.wasPressedThisFrame) {
+         } else if (KeyUtils.GetKeyDown(Key.Digit5)) {
             triggerAbilityByKey(4);
-         } else if (Keyboard.current.tabKey.wasPressedThisFrame) {
+         } else if (KeyUtils.GetKeyDown(Key.Tab)) {
             selectNextTarget();
          }
 
-         if (Keyboard.current.f1Key.wasPressedThisFrame) {
+         if (KeyUtils.GetKeyDown(Key.F1)) {
             changeBattleStance((int) Battler.Stance.Defense);
-         } else if (Keyboard.current.f2Key.wasPressedThisFrame) {
+         } else if (KeyUtils.GetKeyDown(Key.F2)) {
             changeBattleStance((int) Battler.Stance.Balanced);
-         } else if (Keyboard.current.f3Key.wasPressedThisFrame) {
+         } else if (KeyUtils.GetKeyDown(Key.F3)) {
             changeBattleStance((int) Battler.Stance.Attack);
          }
 

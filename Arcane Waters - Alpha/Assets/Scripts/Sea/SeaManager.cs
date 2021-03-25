@@ -56,75 +56,75 @@ public class SeaManager : MonoBehaviour {
       }
 
       // Allow pressing F1 through F3 to change the combat mode
-      if (Keyboard.current.digit1Key.wasPressedThisFrame) {
+      if (KeyUtils.GetKeyDown(Key.Digit1)) {
          selectedAbilityId = CannonPanel.self.getAbilityId(0);
       }
 
-      if (Keyboard.current.digit2Key.wasPressedThisFrame) {
+      if (KeyUtils.GetKeyDown(Key.Digit2)) {
          selectedAbilityId = CannonPanel.self.getAbilityId(1);
       }
 
-      if (Keyboard.current.digit3Key.wasPressedThisFrame) {
+      if (KeyUtils.GetKeyDown(Key.Digit3)) {
          selectedAbilityId = CannonPanel.self.getAbilityId(2);
       }
 
       // Allow pressing F1 through F2 to change the move mode
-      //if (Keyboard.current.f1Key.wasReleasedThisFrame) {
+      //if (KeyUtils.isKeyPressedUp(Key.F1)) {
       //   Global.player.Cmd_ChangeMass(false);
       //   moveMode = MoveMode.Instant;
       //}
-      //if (Keyboard.current.f2Key.wasReleasedThisFrame) {
+      //if (KeyUtils.isKeyPressedUp(Key.F2)) {
       //   Global.player.Cmd_ChangeMass(false);
       //   moveMode = MoveMode.Delay;
       //}
-      //if (Keyboard.current.f3Key.wasReleasedThisFrame) {
+      //if (KeyUtils.isKeyPressedUp(Key.F3)) {
       //   Global.player.Cmd_ChangeMass(true);
       //}
-      //if (Keyboard.current.f4Key.wasReleasedThisFrame) {
+      //if (KeyUtils.isKeyPressedUp(Key.F4)) {
       //   Global.player.Cmd_ChangeMass(true);
       //   moveMode = MoveMode.Arrows;
       //}
-      //if (Keyboard.current.f5Key.wasReleasedThisFrame) {
+      //if (KeyUtils.isKeyPressedUp(Key.F5)) {
       //   Global.player.Cmd_SetServerAuthoritativeMode();
       //   moveMode = MoveMode.ServerAuthoritative;
       //}
-      //if (Keyboard.current.f6Key.wasReleasedThisFrame) {
+      //if (KeyUtils.isKeyPressedUp(Key.F6)) {
       //   Global.player.Cmd_ToggleVelocityDrivenTransform();
       //}
 
-      if (Keyboard.current.zKey.isPressed) {
+      if (KeyUtils.GetKey(Key.Z)) {
          // Allow spawning a horror
-         if (Keyboard.current.f1Key.wasReleasedThisFrame && Global.player is SeaEntity) {
+         if (KeyUtils.GetKeyUp(Key.F1) && Global.player is SeaEntity) {
             Global.player.rpc.Cmd_SpawnBossParent(Util.getMousePos(), SeaMonsterEntity.Type.Horror);
          }
 
          // Allow spawning a Worm
-         if (Keyboard.current.f2Key.wasReleasedThisFrame && Global.player is SeaEntity) {
+         if (KeyUtils.GetKeyUp(Key.F2) && Global.player is SeaEntity) {
             Global.player.rpc.Cmd_SpawnSeaMonster(Util.getMousePos(), SeaMonsterEntity.Type.Worm);
          }
 
          // Allow spawning a Giant
-         if (Keyboard.current.f3Key.wasReleasedThisFrame && Global.player is SeaEntity) {
+         if (KeyUtils.GetKeyUp(Key.F3) && Global.player is SeaEntity) {
             Global.player.rpc.Cmd_SpawnSeaMonster(Util.getMousePos(), SeaMonsterEntity.Type.Reef_Giant);
          }
 
          // Allow spawning a Fishman
-         if (Keyboard.current.f4Key.wasReleasedThisFrame && Global.player is SeaEntity) {
+         if (KeyUtils.GetKeyUp(Key.F4) && Global.player is SeaEntity) {
             Global.player.rpc.Cmd_SpawnSeaMonster(Util.getMousePos(), SeaMonsterEntity.Type.Fishman);
          }
          
          // Allow spawning a Sea Mine
-         if (Keyboard.current.f5Key.wasReleasedThisFrame && Global.player is SeaEntity) {
+         if (KeyUtils.GetKeyUp(Key.F5) && Global.player is SeaEntity) {
             Global.player.rpc.Cmd_SpawnSeaMine(Util.getMousePos());
          }
 
          // Allow spawning a pirate ship
-         if (Keyboard.current.f9Key.wasReleasedThisFrame && Global.player is SeaEntity) {
+         if (KeyUtils.GetKeyUp(Key.F9) && Global.player is SeaEntity) {
             Global.player.rpc.Cmd_SpawnPirateShip(Util.getMousePos(), BotShipEntity.PIRATES_GUILD_ID);
          }
 
          // Allow spawning a privateer ship
-         if (Keyboard.current.f10Key.wasReleasedThisFrame && Global.player is SeaEntity) {
+         if (KeyUtils.GetKeyUp(Key.F10) && Global.player is SeaEntity) {
             Global.player.rpc.Cmd_SpawnPirateShip(Util.getMousePos(), BotShipEntity.PRIVATEERS_GUILD_ID);
          }
       }

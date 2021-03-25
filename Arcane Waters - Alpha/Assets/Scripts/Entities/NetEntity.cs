@@ -422,13 +422,13 @@ public class NetEntity : NetworkBehaviour
       _previousAreaKey = this.areaKey;
 
       // Display players' name when ALT key is pressed
-      if (Keyboard.current.leftAltKey.isPressed || Keyboard.current.rightAltKey.isPressed) {
+      if (KeyUtils.GetKey(Key.LeftAlt) || KeyUtils.GetKey(Key.RightAlt)) {
          if (this is PlayerBodyEntity) {
             showEntityName();
             showGuildIcon();
          }
       }
-      if (Keyboard.current.leftAltKey.wasReleasedThisFrame || Keyboard.current.rightAltKey.wasReleasedThisFrame) {
+      if (KeyUtils.GetKeyUp(Key.LeftAlt) || KeyUtils.GetKeyUp(Key.RightAlt)) {
          if (this is PlayerBodyEntity) {
             if (!OptionsPanel.allPlayersNameShowing) {
                hideEntityName();
@@ -853,7 +853,7 @@ public class NetEntity : NetworkBehaviour
       // Admin move speed overrides all modifiers
       // Debug speed boost for Admin users only
       int moveSpeedModifier = 1;
-      if (Keyboard.current.leftShiftKey.isPressed && isAdmin() && this is PlayerShipEntity && shipSpeedupFlag) {
+      if (KeyUtils.GetKey(Key.LeftShift) && isAdmin() && this is PlayerShipEntity && shipSpeedupFlag) {
          moveSpeedModifier = 2;
       }
 
