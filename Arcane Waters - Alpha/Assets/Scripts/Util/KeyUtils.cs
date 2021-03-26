@@ -10,11 +10,7 @@ public static class KeyUtils {
          return false;
       }
 
-      #if !(IS_SERVER_BUILD && CLOUD_BUILD)
       return Keyboard.current[key].isPressed;
-      #else
-      return false;
-      #endif
    }
 
    public static bool GetKeyDown (Key key) {
@@ -22,11 +18,7 @@ public static class KeyUtils {
          return false;
       }
 
-      #if !(IS_SERVER_BUILD && CLOUD_BUILD)
       return Keyboard.current[key].wasPressedThisFrame;
-      #else
-      return false;
-      #endif
    }
 
    public static bool GetKeyUp (Key key) {
@@ -34,11 +26,7 @@ public static class KeyUtils {
          return false;
       }
 
-      #if !(IS_SERVER_BUILD && CLOUD_BUILD)
       return Keyboard.current[key].wasReleasedThisFrame;
-      #else
-      return false;
-      #endif
    }
 
    #endregion
@@ -50,14 +38,12 @@ public static class KeyUtils {
          return false;
       }
 
-      #if !(IS_SERVER_BUILD && CLOUD_BUILD)
       switch (mouseButtonKey) {
          case MouseButton.Left:
             return Mouse.current.leftButton.isPressed;
          case MouseButton.Right:
             return Mouse.current.rightButton.isPressed;
       }
-      #endif
       return false;
    }
 
@@ -66,15 +52,12 @@ public static class KeyUtils {
          return false;
       }
 
-      #if !(IS_SERVER_BUILD && CLOUD_BUILD)
       switch (mouseButtonKey) {
          case MouseButton.Left:
             return Mouse.current.leftButton.wasPressedThisFrame;
          case MouseButton.Right:
             return Mouse.current.rightButton.wasPressedThisFrame;
       }
-      #endif
-
       return false;
    }
 
@@ -83,15 +66,12 @@ public static class KeyUtils {
          return false;
       }
 
-      #if !(IS_SERVER_BUILD && CLOUD_BUILD)
       switch (mouseButtonKey) {
          case MouseButton.Left:
             return Mouse.current.leftButton.wasReleasedThisFrame;
          case MouseButton.Right:
             return Mouse.current.rightButton.wasReleasedThisFrame;
       }
-      #endif
-
       return false;
    }
 

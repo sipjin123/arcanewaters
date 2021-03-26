@@ -34,15 +34,15 @@ public class InputManager : MonoBehaviour
 
    private void initializeInputMaster () {
       #if IS_SERVER_BUILD && CLOUD_BUILD
-      D.debug("This is a server build, input system will be disabled!");
+      D.debug("InputSystem::This is a server build, input system will be disabled!");
+      #else
+      D.debug("InputSystem::This is a client build, input system will be enabled!");
       #endif
 
       #if !(IS_SERVER_BUILD && CLOUD_BUILD)
       if (Util.isBatch()) {
          return;
       }
-
-      D.debug("Keybind new input system");
 
       // TODO: Setup all gamepad action keybindings here after stabilizing the project by overridding all scripts referencing legacy input system
       inputMaster = new InputMaster();
