@@ -96,6 +96,10 @@ public class ContextMenuPanel : MonoBehaviour
          hide();
       }
 
+      if (Util.isBatch()) {
+         return;
+      }
+
       if (KeyUtils.GetButton(MouseButton.Left) || KeyUtils.GetButton(MouseButton.Right)) {
          // Hide the menu if a mouse button is clicked and the pointer is not over any button
          if (!RectTransformUtility.RectangleContainsScreenPoint(buttonsRectTransform, MouseUtils.mousePosition)) {
