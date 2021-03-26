@@ -23,7 +23,7 @@ public class TextMeshProLinkOpener : MonoBehaviour, IPointerClickHandler {
    #endregion
 
    public void OnPointerClick (PointerEventData eventData) {
-      int linkIndex = TMP_TextUtilities.FindIntersectingLink(text, Input.mousePosition, null);
+      int linkIndex = TMP_TextUtilities.FindIntersectingLink(text, MouseUtils.mousePosition, null);
       if (linkIndex != -1) {
          // The link was clicked
          TMP_LinkInfo linkInfo = text.textInfo.linkInfo[linkIndex];
@@ -35,8 +35,8 @@ public class TextMeshProLinkOpener : MonoBehaviour, IPointerClickHandler {
 
    void Update () {
       // Is the cursor in the correct region (above the text area) and furthermore, in the link region?
-      bool isHoveringOver = TMP_TextUtilities.IsIntersectingRectTransform(text.rectTransform, Input.mousePosition, null);
-      int linkIndex = isHoveringOver ? TMP_TextUtilities.FindIntersectingLink(text, Input.mousePosition, null) : -1;
+      bool isHoveringOver = TMP_TextUtilities.IsIntersectingRectTransform(text.rectTransform, MouseUtils.mousePosition, null);
+      int linkIndex = isHoveringOver ? TMP_TextUtilities.FindIntersectingLink(text, MouseUtils.mousePosition, null) : -1;
 
       // Clear previous link selection if one existed.
       if (_currentLink != -1 && linkIndex != _currentLink) {
