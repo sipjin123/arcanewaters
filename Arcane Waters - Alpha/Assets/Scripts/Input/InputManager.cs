@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine.InputSystem;
-using UnityEngine.Events;
 using UnityEngine.InputSystem.Controls;
-using System.Linq;
 
 public class InputManager : MonoBehaviour
 {
@@ -35,18 +33,34 @@ public class InputManager : MonoBehaviour
    }
 
    private void initializeInputMaster () {
+      #if IS_SERVER_BUILD && CLOUD_BUILD
+      D.debug("This is a server build, input system will be disabled!");
+      #endif
+
+      #if !(IS_SERVER_BUILD && CLOUD_BUILD)
+      if (Util.isBatch()) {
+         return;
+      }
+
+      D.debug("Keybind new input system");
+
       // TODO: Setup all gamepad action keybindings here after stabilizing the project by overridding all scripts referencing legacy input system
       inputMaster = new InputMaster();
+
+      inputMaster.Player.Enable();
       inputMaster.Player.Jump.performed += func => jumpAction();
       inputMaster.Player.Interact.performed += func => interactAction();
       inputMaster.Player.Move.performed += func => moveAction(func.ReadValue<Vector2>());
       inputMaster.Player.Move.canceled += func => moveAction(new Vector2(0, 0));
+      #endif
    }
 
    private void jumpAction () {
+      D.adminLog("Jump!", D.ADMIN_LOG_TYPE.Gamepad);
    }
 
    private void interactAction () {
+      D.adminLog("Interact!", D.ADMIN_LOG_TYPE.Gamepad);
    }
 
    private void moveAction (Vector2 moveFactor) {
