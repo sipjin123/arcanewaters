@@ -81,8 +81,11 @@ public class EquipmentXMLManager : MonoBehaviour {
    }
 
    private void finishedLoading () {
-      loadedAllEquipment = true;
-      finishedDataSetup.Invoke();
+      equipmentLoadCounter++;
+      if (equipmentLoadCounter >= 3) {
+         loadedAllEquipment = true;
+         finishedDataSetup.Invoke();
+      }
    }
 
    public void initializeDataCache () {

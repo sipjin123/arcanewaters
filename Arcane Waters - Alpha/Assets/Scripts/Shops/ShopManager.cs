@@ -18,6 +18,9 @@ public class ShopManager : MonoBehaviour {
    // Default Shop Name
    public static string DEFAULT_SHOP_NAME = "None";
 
+   // If this is initialized
+   public bool hasInitialized;
+
    #endregion
 
    private void Awake () {
@@ -39,12 +42,17 @@ public class ShopManager : MonoBehaviour {
       }
 
       // TODO: Confirm if palette swap manager is still needed for shop initialization
-      if (ShopXMLManager.self.hasInitialized && EquipmentXMLManager.self.loadedAllEquipment) {// && PaletteSwapManager.self.getPaletteList().Count > 0) {
+      if (ShopXMLManager.self.hasInitialized && EquipmentXMLManager.self.loadedAllEquipment && !hasInitialized) {// && PaletteSwapManager.self.getPaletteList().Count > 0) {
+         hasInitialized = true;
+
          // Routinely change out the items
          InvokeRepeating(nameof(generateItemsFromXML), 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
 
          // Initialize the crop offers
          initializeCropOffers();
+      } else {
+         D.debug("ShopInit: {" + ShopXMLManager.self.hasInitialized +
+            "} ::: EquipInit: {" + EquipmentXMLManager.self.loadedAllEquipment + " : " + EquipmentXMLManager.self.equipmentLoadCounter + "}");
       }
    }
 
@@ -70,6 +78,9 @@ public class ShopManager : MonoBehaviour {
          return;
       }
 
+      // TODO: Remove after bugfix confirmation
+      D.debug("============================= Generate shop items from xml =============================");
+
       // Generate items for each of the areas
       foreach (string areaKey in AreaManager.self.getAreaKeys()) {
          Biome.Type biomeType = AreaManager.self.getDefaultBiome(areaKey);
@@ -82,11 +93,25 @@ public class ShopManager : MonoBehaviour {
             Item item = null;
 
             if (UnityEngine.Random.Range(0f, 1f) > .5f) {
-               int weaponType = getPossibleWeapons(biomeType).ChooseByRandom();
-               item = Weapon.generateRandom(_itemId++, weaponType);
+               List<WeightedItem<int>> weaponsGenerated = getPossibleWeapons(biomeType);
+               if (weaponsGenerated.Count > 0) {
+                  int weaponType = weaponsGenerated.ChooseByRandom();
+                  item = Weapon.generateRandom(_itemId++, weaponType);
+               } else {
+                  // TODO: Remove after bugfix confirmation
+                  D.debug("========= NO weapon generated for biome: " + biomeType);
+                  item = Weapon.generateRandom(_itemId++, 1);
+               }
             } else {
-               int armorType = EquipmentXMLManager.self.armorStatList.ChooseRandom().armorType;
-               item = Armor.generateRandom(_itemId++, armorType);
+               List<WeightedItem<int>> armorsGenerated = getPossibleArmor(biomeType);
+               if (armorsGenerated.Count > 0) {
+                  int armorType = armorsGenerated.ChooseByRandom();
+                  item = Armor.generateRandom(_itemId++, armorType);
+               } else {
+                  // TODO: Remove after bugfix confirmation
+                  D.debug("========= NO armor generated for biome: " + biomeType);
+                  item = Armor.generateRandom(_itemId++, 1);
+               }
             }
 
             // Store the item
@@ -407,14 +432,26 @@ public class ShopManager : MonoBehaviour {
    protected List<WeightedItem<int>> getPossibleWeapons (Biome.Type biomeType) {
       switch (biomeType) {
          default:
+            // TODO: Remove after bugfix confirmation 
+            /*
+            D.debug("Fetching possible weapons from biome: {" + biomeType + "}" + " TotalWeapons: {" + EquipmentXMLManager.self.weaponStatList.Count + "}");
+            string shopItemText = "";
+            for (int i = 1; i <= 6; i++) {
+               shopItemText += "Item: " + EquipmentXMLManager.self.weaponStatList[i].sqlId + " | ";
+            }
+            D.debug("Generated weapon set: {" + shopItemText + "}");
+            */
+
             // TODO: Find alternatives to determine these entries
-            return new List<WeightedItem<int>>() {
-               WeightedItem.Create(.60f, EquipmentXMLManager.self.weaponStatList[1].sqlId), // Steel Sword
-               WeightedItem.Create(.30f, EquipmentXMLManager.self.weaponStatList[3].sqlId), // Lance Steel
-               WeightedItem.Create(.5f, EquipmentXMLManager.self.weaponStatList[4].sqlId), // Steel Mace
-               WeightedItem.Create(.4f, EquipmentXMLManager.self.weaponStatList[5].sqlId), // Golden Star
-               WeightedItem.Create(.1f, EquipmentXMLManager.self.weaponStatList[6].sqlId), // Rune Blade
-         };
+            // TODO: Confirm with sir mike if these "Weighted Items" are still being used
+            List<WeightedItem<int>> returnList = new List<WeightedItem<int>>();
+            returnList.Add(WeightedItem.Create(.60f, EquipmentXMLManager.self.weaponStatList[1].sqlId));// Steel Sword
+            returnList.Add(WeightedItem.Create(.30f, EquipmentXMLManager.self.weaponStatList[3].sqlId)); // Lance Steel
+            returnList.Add(WeightedItem.Create(.5f, EquipmentXMLManager.self.weaponStatList[4].sqlId)); // Steel Mace
+            returnList.Add(WeightedItem.Create(.4f, EquipmentXMLManager.self.weaponStatList[5].sqlId)); // Golden Star
+            returnList.Add(WeightedItem.Create(.1f, EquipmentXMLManager.self.weaponStatList[6].sqlId)); // Rune Blade
+
+            return returnList;
       }
    }
 
