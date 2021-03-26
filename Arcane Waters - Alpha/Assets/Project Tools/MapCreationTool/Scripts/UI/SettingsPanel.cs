@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace MapCreationTool
@@ -23,7 +24,7 @@ namespace MapCreationTool
 
       private Dictionary<Keybindings.Command, BindingListEntry> commandEntries = new Dictionary<Keybindings.Command, BindingListEntry>();
 
-      private Action<KeyCode> onAnyKey;
+      private Action<Key> onAnyKey;
 
       protected override void Awake () {
          base.Awake();
@@ -55,8 +56,8 @@ namespace MapCreationTool
       private void Update () {
          // TODO: Check what this feature does after input manager upgrade
          if (onAnyKey != null) {
-            foreach (KeyCode keyCode in Enum.GetValues(typeof(KeyCode))) {
-               if (Input.GetKeyDown(keyCode)) {
+            foreach (Key keyCode in Enum.GetValues(typeof(Key))) {
+               if (Keyboard.current[keyCode].isPressed) {
                   onAnyKey(keyCode);
                   break;
                }
@@ -83,7 +84,7 @@ namespace MapCreationTool
          };
       }
 
-      private void setBind (Keybindings.Command command, KeyCode keyCode, bool primary) {
+      private void setBind (Keybindings.Command command, Key keyCode, bool primary) {
          Settings.keybindings.setKey(command, keyCode, primary);
          Settings.save();
       }

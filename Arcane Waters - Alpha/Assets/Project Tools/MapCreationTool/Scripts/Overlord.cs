@@ -116,8 +116,8 @@ namespace MapCreationTool
          foreach (Keybindings.Command command in Enum.GetValues(typeof(Keybindings.Command))) {
             Keybindings.Keybinding bind = new Keybindings.Keybinding {
                command = command,
-               primary = KeyCode.None,
-               secondary = KeyCode.None
+               primary = Key.None,
+               secondary = Key.None
             };
 
             if (defined.Any(d => d.command == command)) {

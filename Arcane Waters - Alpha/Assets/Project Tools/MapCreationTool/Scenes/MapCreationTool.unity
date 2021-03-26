@@ -1091,43 +1091,43 @@ MonoBehaviour:
   loadCover: {fileID: 37622380}
   defaultKeybindings:
   - command: 0
-    primary: 276
+    primary: 61
     secondary: 0
   - command: 1
-    primary: 275
+    primary: 62
     secondary: 0
   - command: 2
-    primary: 273
+    primary: 63
     secondary: 0
   - command: 3
-    primary: 274
+    primary: 64
     secondary: 0
   - command: 4
-    primary: 270
+    primary: 14
     secondary: 0
   - command: 5
-    primary: 269
+    primary: 13
     secondary: 0
   - command: 6
-    primary: 113
+    primary: 31
     secondary: 0
   - command: 7
-    primary: 119
+    primary: 37
     secondary: 0
   - command: 8
-    primary: 101
+    primary: 19
     secondary: 0
   - command: 9
-    primary: 114
+    primary: 32
     secondary: 0
   - command: 10
-    primary: 116
+    primary: 34
     secondary: 0
   - command: 11
-    primary: 306
+    primary: 55
     secondary: 0
   - command: 12
-    primary: 308
+    primary: 53
     secondary: 0
 --- !u!4 &147622740
 Transform:
