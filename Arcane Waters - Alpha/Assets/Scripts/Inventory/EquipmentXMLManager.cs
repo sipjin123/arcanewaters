@@ -35,6 +35,9 @@ public class EquipmentXMLManager : MonoBehaviour {
    // Determines if data setup is done
    public UnityEvent finishedDataSetup = new UnityEvent();
 
+   // The number of equipment types that needs to be set {Weapon/Armor/Hat}
+   public const int TOTAL_EQUIPMENT_TYPES = 3;
+
    #endregion
 
    private void Awake () {
@@ -82,7 +85,7 @@ public class EquipmentXMLManager : MonoBehaviour {
 
    private void finishedLoading () {
       equipmentLoadCounter++;
-      if (equipmentLoadCounter >= 3) {
+      if (equipmentLoadCounter >= TOTAL_EQUIPMENT_TYPES) {
          loadedAllEquipment = true;
          finishedDataSetup.Invoke();
       }
@@ -144,7 +147,7 @@ public class EquipmentXMLManager : MonoBehaviour {
             }
          }
       }
-
+      equipmentLoadCounter = TOTAL_EQUIPMENT_TYPES;
       finishedLoading();
    }
 

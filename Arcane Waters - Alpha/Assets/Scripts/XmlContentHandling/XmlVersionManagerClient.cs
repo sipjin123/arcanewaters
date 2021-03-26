@@ -439,8 +439,8 @@ public class XmlVersionManagerClient : MonoBehaviour {
                      D.debug("Skip add entry for Armor:" + dataId);
                   }
                }
-               EquipmentXMLManager.self.receiveArmorDataFromZipData(armorList);
             }
+            EquipmentXMLManager.self.receiveArmorDataFromZipData(armorList);
             break;
          case EditorToolType.Equipment_Weapon:
             List<WeaponStatData> weaponList = new List<WeaponStatData>();
