@@ -31,7 +31,8 @@ public class ScreenLogger : MonoBehaviour {
       self = this;
       isEnabled = false;
       canvasObj.SetActive(false);
-      D.debug("Screen Logger v1");
+
+      D.debug("Screen Logger v4");
 
       if (!Util.isCloudBuild()) {
          isEnabled = true;

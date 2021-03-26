@@ -726,6 +726,9 @@ public class AdminManager : NetworkBehaviour
 
    private void processLogAuthorization (string logType, bool isEnabled, string parameters) {
       switch (logType) {
+         case "gamepad":
+            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Gamepad, isEnabled);
+            break;
          case "combat":
             Global.updateAdminLog(D.ADMIN_LOG_TYPE.Combat, isEnabled);
             break;
