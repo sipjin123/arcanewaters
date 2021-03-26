@@ -23,7 +23,7 @@ public class MouseManager : ClientMonoBehaviour
    public static MouseManager self;
 
    // Pointer event for mouse hover
-   PointerEventData m_PointerEventData;
+   public PointerEventData pointerEventData;
 
    #endregion
 
@@ -72,12 +72,12 @@ public class MouseManager : ClientMonoBehaviour
       _boxBeingHovered = null;
       GameObject gameObjectUnderMouse = null;
  
-      m_PointerEventData = new PointerEventData(EventSystem.current);
-      m_PointerEventData.position = MouseUtils.mousePosition;
+      pointerEventData = new PointerEventData(EventSystem.current);
+      pointerEventData.position = MouseUtils.mousePosition;
 
-      //Create a list of Raycast Results
+      // Create a list of Raycast Results
       List<RaycastResult> results = new List<RaycastResult>();
-      EventSystem.current.RaycastAll(m_PointerEventData, results);
+      EventSystem.current.RaycastAll(pointerEventData, results);
 
       // Search for clickable box
       foreach (RaycastResult result in results) {
