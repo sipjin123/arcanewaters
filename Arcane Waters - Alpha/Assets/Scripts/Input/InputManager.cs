@@ -39,7 +39,6 @@ public class InputManager : MonoBehaviour
       D.debug("InputSystem::This is a client build, input system will be enabled!");
       #endif
 
-      #if !(IS_SERVER_BUILD && CLOUD_BUILD)
       if (Util.isBatch()) {
          return;
       }
@@ -52,7 +51,6 @@ public class InputManager : MonoBehaviour
       inputMaster.Player.Interact.performed += func => interactAction();
       inputMaster.Player.Move.performed += func => moveAction(func.ReadValue<Vector2>());
       inputMaster.Player.Move.canceled += func => moveAction(new Vector2(0, 0));
-      #endif
    }
 
    private void jumpAction () {

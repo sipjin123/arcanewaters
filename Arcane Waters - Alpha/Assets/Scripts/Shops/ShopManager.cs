@@ -44,6 +44,7 @@ public class ShopManager : MonoBehaviour {
       // TODO: Confirm if palette swap manager is still needed for shop initialization
       if (ShopXMLManager.self.hasInitialized && EquipmentXMLManager.self.loadedAllEquipment && !hasInitialized) {// && PaletteSwapManager.self.getPaletteList().Count > 0) {
          hasInitialized = true;
+         D.debug("ShopInit Successful!");
 
          // Routinely change out the items
          InvokeRepeating(nameof(generateItemsFromXML), 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
@@ -432,24 +433,17 @@ public class ShopManager : MonoBehaviour {
    protected List<WeightedItem<int>> getPossibleWeapons (Biome.Type biomeType) {
       switch (biomeType) {
          default:
-            // TODO: Remove after bugfix confirmation 
-            /*
-            D.debug("Fetching possible weapons from biome: {" + biomeType + "}" + " TotalWeapons: {" + EquipmentXMLManager.self.weaponStatList.Count + "}");
-            string shopItemText = "";
-            for (int i = 1; i <= 6; i++) {
-               shopItemText += "Item: " + EquipmentXMLManager.self.weaponStatList[i].sqlId + " | ";
-            }
-            D.debug("Generated weapon set: {" + shopItemText + "}");
-            */
-
             // TODO: Find alternatives to determine these entries
             // TODO: Confirm with sir mike if these "Weighted Items" are still being used
             List<WeightedItem<int>> returnList = new List<WeightedItem<int>>();
-            returnList.Add(WeightedItem.Create(.60f, EquipmentXMLManager.self.weaponStatList[1].sqlId));// Steel Sword
-            returnList.Add(WeightedItem.Create(.30f, EquipmentXMLManager.self.weaponStatList[3].sqlId)); // Lance Steel
-            returnList.Add(WeightedItem.Create(.5f, EquipmentXMLManager.self.weaponStatList[4].sqlId)); // Steel Mace
-            returnList.Add(WeightedItem.Create(.4f, EquipmentXMLManager.self.weaponStatList[5].sqlId)); // Golden Star
-            returnList.Add(WeightedItem.Create(.1f, EquipmentXMLManager.self.weaponStatList[6].sqlId)); // Rune Blade
+
+            if (EquipmentXMLManager.self.weaponStatList != null && EquipmentXMLManager.self.weaponStatList.Count >= 5) {
+               returnList.Add(WeightedItem.Create(.60f, EquipmentXMLManager.self.weaponStatList[1].sqlId));// Steel Sword
+               returnList.Add(WeightedItem.Create(.30f, EquipmentXMLManager.self.weaponStatList[3].sqlId)); // Lance Steel
+               returnList.Add(WeightedItem.Create(.5f, EquipmentXMLManager.self.weaponStatList[4].sqlId)); // Steel Mace
+               returnList.Add(WeightedItem.Create(.4f, EquipmentXMLManager.self.weaponStatList[5].sqlId)); // Golden Star
+               returnList.Add(WeightedItem.Create(.1f, EquipmentXMLManager.self.weaponStatList[6].sqlId)); // Rune Blade
+            }
 
             return returnList;
       }
