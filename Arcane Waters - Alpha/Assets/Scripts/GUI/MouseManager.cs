@@ -22,11 +22,13 @@ public class MouseManager : ClientMonoBehaviour
    // Self
    public static MouseManager self;
 
+   // Pointer event for mouse hover
+   PointerEventData m_PointerEventData;
+
    #endregion
 
    protected override void Awake () {
       base.Awake();
-
       self = this;
    }
 
@@ -68,7 +70,22 @@ public class MouseManager : ClientMonoBehaviour
 
    public bool isMouseOverSomething () {
       _boxBeingHovered = null;
-      GameObject gameObjectUnderMouse = StandaloneInputModuleV2.self.getGameObjectUnderPointer();
+      GameObject gameObjectUnderMouse = null;
+ 
+      m_PointerEventData = new PointerEventData(EventSystem.current);
+      m_PointerEventData.position = MouseUtils.mousePosition;
+
+      //Create a list of Raycast Results
+      List<RaycastResult> results = new List<RaycastResult>();
+      EventSystem.current.RaycastAll(m_PointerEventData, results);
+
+      // Search for clickable box
+      foreach (RaycastResult result in results) {
+         if (result.gameObject.GetComponent<ClickableBox>()) {
+            gameObjectUnderMouse = result.gameObject;
+         }
+      }
+
       if (gameObjectUnderMouse == null) {
          return false;
       }
