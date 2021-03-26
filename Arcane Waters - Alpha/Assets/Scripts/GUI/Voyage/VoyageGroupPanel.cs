@@ -135,7 +135,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
          return;
       }
 
-      if (VoyageManager.isTreasureSiteArea(Global.player.areaKey) || VoyageManager.isVoyageOrLeagueArea(Global.player.areaKey)) {
+      if (!Global.player.isGhost && (VoyageManager.isTreasureSiteArea(Global.player.areaKey) || VoyageManager.isVoyageOrLeagueArea(Global.player.areaKey))) {
          // Outside of safe areas, start a leave countdown
          PanelManager.self.countdownScreen.cancelButton.onClick.RemoveAllListeners();
          PanelManager.self.countdownScreen.onCountdownEndEvent.RemoveAllListeners();
@@ -147,7 +147,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
          PanelManager.self.countdownScreen.seconds = LEAVING_COUNTDOWN_SECONDS;
          PanelManager.self.countdownScreen.show();
       } else {
-         // In safe areas, ask confirmation and leave without countdown
+         // In safe areas or in ghost mode, ask confirmation and leave without countdown
          PanelManager.self.showConfirmationPanel("Are you sure you want to leave the voyage group?", () => onLeaveCountdownEnd());
       }
 

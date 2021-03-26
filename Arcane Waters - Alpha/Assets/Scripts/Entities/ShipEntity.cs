@@ -138,7 +138,7 @@ public class ShipEntity : SeaEntity
 
       // Increase or decrease our speed based on the settings for this ship
       float calculatedSpeed = baseSpeed * (this.speed / 100f);
-      if (calculatedSpeed > MAX_SHIP_SPEED) {
+      if (calculatedSpeed > MAX_SHIP_SPEED && !isGhost) {
          calculatedSpeed = MAX_SHIP_SPEED;
       }
       return calculatedSpeed;

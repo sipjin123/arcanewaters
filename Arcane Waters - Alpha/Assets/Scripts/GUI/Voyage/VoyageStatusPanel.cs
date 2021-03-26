@@ -50,6 +50,9 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    // The ping
    public TextMeshProUGUI pingText;
 
+   // The image of the expand button
+   public Image expandButtonImage;
+
    // The icons for PvP and PvE modes
    public Sprite pvpIcon;
    public Sprite pveIcon;
@@ -61,6 +64,10 @@ public class VoyageStatusPanel : ClientMonoBehaviour
 
    // The animation for our ping icon
    public SimpleAnimation pingAnimation;
+
+   // The expand and collapse sprites
+   public Sprite expandButtonSprite;
+   public Sprite collapseButtonSprite;
 
    // The statuses that are only relevant in voyage instances or league instances (common statuses should not be set here)
    public GameObject[] voyageStatuses = new GameObject[0];
@@ -95,7 +102,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       show();
 
       // Collapse the panel if the mouse is not over it
-      if (RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, MouseUtils.mousePosition)) {
+      if (_isAlwaysExpanded || RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, MouseUtils.mousePosition)) {
          collapsingContainer.SetActive(true);
       } else {
          collapsingContainer.SetActive(false);
@@ -192,6 +199,15 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       playerCountTownText.text = "?/?";
    }
 
+   public void onExpandButtonPressed () {
+      _isAlwaysExpanded = !_isAlwaysExpanded;
+      if (_isAlwaysExpanded) {
+         expandButtonImage.sprite = collapseButtonSprite;
+      } else {
+         expandButtonImage.sprite = expandButtonSprite;
+      }
+   }
+
    public void show () {
       if (this.canvasGroup.alpha < 1f) {
          this.canvasGroup.alpha = 1f;
@@ -215,6 +231,9 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    }
 
    #region Private Variables
+
+   // Gets set to true when the panel is constantly expanded
+   private bool _isAlwaysExpanded = false;
 
    #endregion
 }

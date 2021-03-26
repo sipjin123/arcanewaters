@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System.Linq;
 using System;
+using System.IO;
 using MapCreationTool.Serialization;
 using Mirror.Profiler;
 using NubisDataHandling;
@@ -327,8 +328,13 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
+      string dumpsDirPath = Application.persistentDataPath + "/networkprofiler/";
+      if (!Directory.Exists(dumpsDirPath)) {
+         Directory.CreateDirectory(dumpsDirPath);
+      }
+      string dumpFile = dumpsDirPath + DateTime.Now.ToString("MM_dd_yyyy_HH_mm_ss") + "_dump.netdata";
+      
       networkProfiler.IsRecording = false;
-      string dumpFile = Application.dataPath + "/" + DateTime.Now.ToString("MM_dd_yyyy_HH_mm_ss") + "_dump.netdata";
       networkProfiler.Save(dumpFile);
       networkProfiler.IsRecording = true;
    }
@@ -1834,10 +1840,10 @@ public class AdminManager : NetworkBehaviour
       // Set position locally only if the player isn't a ShipEntity. Ships' positions are controlled by the server.
       if (_player.getPlayerBodyEntity() != null) {
          _player.transform.localPosition = localPosition;
-      }
 
-      // Show a smoke effect in the new position
-      EffectManager.show(Effect.Type.Cannon_Smoke, _player.transform.position);
+         // Show a smoke effect in the new position
+         EffectManager.show(Effect.Type.Cannon_Smoke, _player.transform.position);
+      }
 
       // Set it in the server
       Cmd_WarpToPosition(localPosition);
@@ -1857,7 +1863,7 @@ public class AdminManager : NetworkBehaviour
       Area area = _player.areaKey == null ? null : AreaManager.self.getArea(_player.areaKey);
       if (area != null) {
          _player.transform.localPosition = localPosition;
-         _player.rpc.Rpc_PlayWarpEffect(localPosition);
+         _player.rpc.Rpc_PlayWarpEffect(_player.transform.position);
       }
    }
 

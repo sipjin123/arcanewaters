@@ -106,12 +106,12 @@ public class VoyageGroupManager : MonoBehaviour
    }
 
    [Server]
-   public void createGroup (NetEntity player, int voyageId, bool isPrivate) {
-      StartCoroutine(CO_CreateGroup(player, voyageId, isPrivate));
+   public void createGroup (NetEntity player, int voyageId, bool isPrivate, bool isGhost = false) {
+      StartCoroutine(CO_CreateGroup(player, voyageId, isPrivate, isGhost));
    }
 
    [Server]
-   private IEnumerator CO_CreateGroup (NetEntity player, int voyageId, bool isPrivate) {
+   private IEnumerator CO_CreateGroup (NetEntity player, int voyageId, bool isPrivate, bool isGhost = false) {
       int userId = player.userId;
 
       // To avoid duplicate group ids, only the master server generates new ones
@@ -121,7 +121,7 @@ public class VoyageGroupManager : MonoBehaviour
          yield return null;
       }
       
-      VoyageGroupInfo voyageGroup = new VoyageGroupInfo(response.Value, voyageId, DateTime.UtcNow, !isPrivate, isPrivate);
+      VoyageGroupInfo voyageGroup = new VoyageGroupInfo(response.Value, voyageId, DateTime.UtcNow, !isPrivate, isPrivate, isGhost);
       voyageGroup.members.Add(userId);
 
       // Store the group in our server
@@ -325,6 +325,11 @@ public class VoyageGroupManager : MonoBehaviour
 
    [Server]
    public static bool isGroupFull (VoyageGroupInfo voyageGroup) {
+      // Ghost groups have a single member
+      if (voyageGroup.isGhost) {
+         return true;
+      }
+
       if (voyageGroup.voyageId <= 0) {
          // If the group has not joined a voyage, the limit is the maximum
          if (voyageGroup.members.Count >= Voyage.MAX_PLAYERS_PER_GROUP_HARD) {

@@ -24,20 +24,20 @@ public class TreasureSiteLeague : TreasureSite
          Instance instance = InstanceManager.self.getInstance(instanceId);
 
          // When all enemies in the instance are defeated, set the site as captured
-         if (status != Status.Captured && instance.aliveNPCEnemiesCount <= 0) {
+         if (status != Status.Captured && instance.aliveNPCEnemiesCount == 0) {
             capturePoints = 1;
             status = Status.Captured;
             
             // Play the captured animation
             _animator.SetBool("captured", true);
-         } else if (status != Status.Idle && instance.aliveNPCEnemiesCount > 0) {
+         } else if (status != Status.Idle && instance.aliveNPCEnemiesCount != 0) {
             capturePoints = 0;
             status = Status.Idle;
          }
 
          // Check if the enemies inside the treasure site instance have been defeated
          Instance treasureSiteInstance = InstanceManager.self.getInstance(destinationInstanceId);
-         if (treasureSiteInstance == null || treasureSiteInstance.aliveNPCEnemiesCount > 0) {
+         if (treasureSiteInstance == null || treasureSiteInstance.aliveNPCEnemiesCount != 0) {
             isClearedOfEnemies = false;
          } else {
             isClearedOfEnemies = true;

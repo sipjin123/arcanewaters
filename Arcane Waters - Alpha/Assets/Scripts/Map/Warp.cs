@@ -320,7 +320,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       Instance instance = player.getInstance();
       if (instance != null && instance.isLeague) {
          // Check that all sea enemies in the instance are defeated
-         if (instance.aliveNPCEnemiesCount > 0) {
+         if (instance.aliveNPCEnemiesCount != 0) {
             return false;
          }
 

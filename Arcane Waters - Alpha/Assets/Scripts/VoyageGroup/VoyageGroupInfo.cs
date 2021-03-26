@@ -25,6 +25,9 @@ public class VoyageGroupInfo
    // Gets set to true when the group is private
    public bool isPrivate;
 
+   // Gets set to true when the group members must be invisible and untouchable (used by admins)
+   public bool isGhost;
+
    // The userId of the members
    public List<int> members = new List<int>();
 
@@ -32,12 +35,13 @@ public class VoyageGroupInfo
 
    public VoyageGroupInfo () { }
 
-   public VoyageGroupInfo (int groupId, int voyageId, DateTime creationDate, bool isQuickmatchEnabled, bool isPrivate) {
+   public VoyageGroupInfo (int groupId, int voyageId, DateTime creationDate, bool isQuickmatchEnabled, bool isPrivate, bool isGhost) {
       this.groupId = groupId;
       this.voyageId = voyageId;
       this.creationDate = creationDate.ToBinary();
       this.isQuickmatchEnabled = isQuickmatchEnabled;
       this.isPrivate = isPrivate;
+      this.isGhost = isGhost;
    }
 
    #region Private Variables

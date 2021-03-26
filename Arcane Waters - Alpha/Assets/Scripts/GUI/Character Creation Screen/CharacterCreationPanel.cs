@@ -99,6 +99,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
          // Only enable the "next" button if the name is valid
          nextButton.interactable = NameUtil.isValid(name);
       });
+      nameText.characterLimit = NameUtil.MAX_NAME_LENGTH;
 
       hide();
    }

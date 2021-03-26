@@ -367,7 +367,9 @@ public class MyNetworkManager : NetworkManager
             player.facing = (Direction) userInfo.facingDirection;
             player.desiredAngle = DirectionUtil.getAngle(player.facing);
             player.XP = userInfo.XP;
+            player.adminFlag = userInfo.adminFlag;
             player.voyageGroupId = voyageGroupInfo != null ? voyageGroupInfo.groupId : -1;
+            player.isGhost = voyageGroupInfo != null ? voyageGroupInfo.isGhost : false;
             InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);
 
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);

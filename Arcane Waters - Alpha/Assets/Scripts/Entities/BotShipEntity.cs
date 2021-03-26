@@ -378,6 +378,11 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             continue;
          }
 
+         // Ignore admins in ghost mode
+         if (iEntity.isGhost) {
+            continue;
+         }
+
          // Reset the z axis value to ensure the square magnitude is not compromised by the z axis
          Vector3 currentPosition = transform.position;
          currentPosition.z = 0;

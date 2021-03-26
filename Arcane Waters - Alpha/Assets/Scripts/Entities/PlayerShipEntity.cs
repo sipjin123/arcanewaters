@@ -225,7 +225,7 @@ public class PlayerShipEntity : ShipEntity
          }
       }
 
-      if (!isDead() && SeaManager.getAttackType() != Attack.Type.Air) {
+      if (!isDead() && !isGhost && SeaManager.getAttackType() != Attack.Type.Air) {
          // Start charging attack with mouse
          if (InputManager.isFireCannonMouseDown() || (InputManager.isFireCannonMouse() && !_isChargingCannon)) {
             _chargingWithMouse = true;
@@ -890,7 +890,7 @@ public class PlayerShipEntity : ShipEntity
    }
 
    protected IEnumerator CO_TemporarilyDisableShip () {
-      if (!isDisabled) {
+      if (!isDisabled || isGhost) {
          yield break;
       }
 

@@ -48,7 +48,7 @@ public class Instance : NetworkBehaviour
 
    // The number of alive npc enemies in the instance (sea or land enemies)
    [SyncVar]
-   public int aliveNPCEnemiesCount = 0;
+   public int aliveNPCEnemiesCount = -1;
 
    // For the number of treasure sites in the instance
    [SyncVar]
@@ -317,7 +317,7 @@ public class Instance : NetworkBehaviour
    }
 
    private void countAliveEnemies () {
-      if (!NetworkServer.active) {
+      if (!NetworkServer.active || !isNetworkPrefabInstantiationFinished) {
          return;
       }
 

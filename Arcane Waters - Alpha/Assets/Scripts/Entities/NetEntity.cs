@@ -159,6 +159,10 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public int voyageGroupId = -1;
 
+   // Gets set to true when the entity is invisible and untouchable
+   [SyncVar]
+   public bool isGhost = false;
+
    // Gets set to true when the player can be attacked by other players in PvP areas
    [SyncVar]
    public bool hasEnteredPvP = false;
@@ -224,6 +228,9 @@ public class NetEntity : NetworkBehaviour
    public static float SPEEDUP_MULTIPLIER_SHIP = 1.5f;
    public static float MAX_SHIP_SPEED = 150;
    public static float SPEEDUP_MULTIPLIER_LAND = 1.5f;
+
+   // The speed multiplier when in ghost mode
+   public static float GHOST_SPEED_MULTIPLIER = 6f;
 
    // If this unit is being controlled by another script
    public bool isUnderExternalControl;
@@ -312,6 +319,11 @@ public class NetEntity : NetworkBehaviour
          }
       }
 
+      // Set invisible and disable colliders if the entity is in ghost mode
+      if (this.isGhost) {
+         enterGhostMode();
+      }
+
       // Routinely clean the attackers set
       InvokeRepeating("cleanAttackers", 0f, 1f);
    }
@@ -332,7 +344,7 @@ public class NetEntity : NetworkBehaviour
       base.OnStartClient();
 
       updateInvisibilityAlpha(isInvisible);
-      
+
 
       if (isPlayerEntity()) {
          nameText.text = this.entityName;
@@ -527,6 +539,11 @@ public class NetEntity : NetworkBehaviour
    }
 
    private void updateInvisibilityAlpha (bool isInvisible) {
+      // Overwrite the visibility in ghost mode
+      if (isGhost) {
+         isInvisible = true;
+      }
+
       if (Global.player == null || !Global.player.isAdmin()) {
          Util.setAlphaInShader(gameObject, isInvisible ? 0.0f : 1.0f);
          setCanvasVisibility(!isInvisible);
@@ -541,6 +558,21 @@ public class NetEntity : NetworkBehaviour
       Canvas[] canvases = GetComponentsInChildren<Canvas>(true);
       foreach (Canvas canvas in canvases) {
          canvas.enabled = isVisible;
+      }
+   }
+
+   protected virtual void enterGhostMode () {
+      updateInvisibilityAlpha(true);
+
+      // Admins can click on other ghost admins
+      if (Global.player == null || !Global.player.isAdmin()) {
+         _clickableBox.gameObject.SetActive(false);
+      } else {
+         _clickableBox.gameObject.SetActive(true);
+      }
+
+      foreach (Collider2D c in GetComponentsInChildren<Collider2D>()) {
+         c.enabled = false;
       }
    }
 
@@ -858,7 +890,11 @@ public class NetEntity : NetworkBehaviour
       }
 
       float perkMultiplier = PerkManager.self.getPerkMultiplier(Perk.Category.WalkingSpeed);
-      return (baseSpeed * modifier) * moveSpeedModifier * perkMultiplier;
+
+      // Add a speed multiplier when in ghost mode 
+      float ghostMultiplier = isGhost ? GHOST_SPEED_MULTIPLIER : 1;
+
+      return (baseSpeed * modifier) * moveSpeedModifier * perkMultiplier * ghostMultiplier;
    }
 
    public virtual void handleSpriteOutline () {

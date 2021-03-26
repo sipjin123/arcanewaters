@@ -1451,7 +1451,7 @@ public class RPCManager : NetworkBehaviour
    [ClientRpc]
    public void Rpc_PlayWarpEffect (Vector3 position) {
       // Only play the effect locally if the player is in their ship
-      if (!_player.isLocalPlayer || _player.getPlayerBodyEntity() == null) {
+      if (!_player.isInvisible && !_player.isGhost && (!_player.isLocalPlayer || _player.getPlayerBodyEntity() == null)) {
          EffectManager.self.create(Effect.Type.Cannon_Smoke, position);
       }
    }
@@ -3637,7 +3637,7 @@ public class RPCManager : NetworkBehaviour
       if (VoyageGroupManager.self.tryGetGroupById(_player.voyageGroupId, out VoyageGroupInfo voyageGroup)) {
          VoyageGroupManager.self.removeUserFromGroup(voyageGroup, _player);
       }
-      VoyageGroupManager.self.createGroup(_player, voyageId, true);
+      VoyageGroupManager.self.createGroup(_player, voyageId, true, true);
 
       // Warp the admin to the voyage map
       _player.spawnInNewMap(voyageId, areaKey, Direction.South);
@@ -3950,8 +3950,8 @@ public class RPCManager : NetworkBehaviour
 
       VoyageGroupManager.self.removeUserFromGroup(voyageGroup, playerToRemove);
 
-      // If the player is in a voyage area, warp him to the starting town
-      if (VoyageManager.isVoyageOrLeagueArea(playerToRemove.areaKey) || VoyageManager.isTreasureSiteArea(playerToRemove.areaKey)) {
+      // If the player is in a voyage area or is in ghost mode, warp him to the starting town
+      if (VoyageManager.isVoyageOrLeagueArea(playerToRemove.areaKey) || VoyageManager.isTreasureSiteArea(playerToRemove.areaKey) || playerToRemove.isGhost) {
          playerToRemove.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
       }
    }

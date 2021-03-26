@@ -52,7 +52,7 @@ public class WeaponManager : EquipmentManager {
 
       // If we don't have anything equipped, turn off the animated sprite
       foreach (WeaponLayer weaponLayer in weaponsLayers) {
-         Util.setAlpha(weaponLayer.getRenderer().material, (hasWeapon() ? bodySprite.color.a : 0f));
+         Util.setAlpha(weaponLayer.getRenderer().material, (hasWeapon() ? bodySprite.material.GetColor("_Color").a : 0f));
       }
    }
 
