@@ -20,7 +20,8 @@ public class D : MonoBehaviour {
       Equipment = 7,
       CustomMap = 8,
       LoggerManager = 9,
-      Gamepad = 10
+      Gamepad = 10,
+      Initialization = 11
    }
 
    // Any log files older than this will be deleted

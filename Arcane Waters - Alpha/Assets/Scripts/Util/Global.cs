@@ -141,6 +141,7 @@ public class Global
    }
 
    public static void updateAdminLog (D.ADMIN_LOG_TYPE logType, bool isEnabled) {
+      D.debug("Log type {" + logType + "} is {" + isEnabled + "}");
       if (isEnabled) {
          if (!logTypesToShow.Contains(logType)) {
             logTypesToShow.Add(logType);

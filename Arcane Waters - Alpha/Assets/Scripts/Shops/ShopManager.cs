@@ -44,16 +44,12 @@ public class ShopManager : MonoBehaviour {
       // TODO: Confirm if palette swap manager is still needed for shop initialization
       if (ShopXMLManager.self.hasInitialized && EquipmentXMLManager.self.loadedAllEquipment && !hasInitialized) {// && PaletteSwapManager.self.getPaletteList().Count > 0) {
          hasInitialized = true;
-         D.debug("ShopInit Successful!");
 
          // Routinely change out the items
          InvokeRepeating(nameof(generateItemsFromXML), 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
 
          // Initialize the crop offers
          initializeCropOffers();
-      } else {
-         D.debug("ShopInit: {" + ShopXMLManager.self.hasInitialized +
-            "} ::: EquipInit: {" + EquipmentXMLManager.self.loadedAllEquipment + " : " + EquipmentXMLManager.self.equipmentLoadCounter + "}");
       }
    }
 
@@ -78,9 +74,6 @@ public class ShopManager : MonoBehaviour {
       if (_items.Count > 0 && UnityEngine.Random.Range(0f, 1f) <= .75f) {
          return;
       }
-
-      // TODO: Remove after bugfix confirmation
-      D.debug("============================= Generate shop items from xml =============================");
 
       // Generate items for each of the areas
       foreach (string areaKey in AreaManager.self.getAreaKeys()) {
