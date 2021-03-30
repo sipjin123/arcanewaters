@@ -14,7 +14,9 @@ public class LoadingUtil : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      D.adminLog("LoadingUtil.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
+      D.adminLog("LoadingUtil.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public static void executeAfterFade (Action action) {

@@ -34,9 +34,11 @@ public class AttackManager : ClientMonoBehaviour {
    #endregion
 
    protected override void Awake () {
+      D.adminLog("AttackManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       base.Awake();
       self = this;
       nextShotIndicator.SetActive(false);
+      D.adminLog("AttackManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    void Update () {

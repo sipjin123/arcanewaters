@@ -17,7 +17,9 @@ public class PrefabSpawner : MonoBehaviour
    #endregion
 
    void Awake () {
+      D.adminLog("PrefabSpawner.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       spawnPrefabs();
+      D.adminLog("PrefabSpawner.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    protected void spawnPrefabs () {

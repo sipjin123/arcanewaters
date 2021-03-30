@@ -17,10 +17,12 @@ public class VoyageManager : MonoBehaviour {
    #endregion
 
    void Awake () {
+      D.adminLog("VoyageManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
 
       // Randomize the starting value of the PvP parameter
       _isNewVoyagePvP = UnityEngine.Random.Range(0, 2) == 0;
+      D.adminLog("VoyageManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public void startVoyageManagement () {

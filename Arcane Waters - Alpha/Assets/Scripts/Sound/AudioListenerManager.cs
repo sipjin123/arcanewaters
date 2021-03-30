@@ -16,9 +16,11 @@ public class AudioListenerManager : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      D.adminLog("AudioListenerManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
       AudioListener startingListener = FindObjectOfType<AudioListener>();
       setActiveListener(startingListener);
+      D.adminLog("AudioListenerManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
    
    public void setActiveListener (AudioListener newListener) {

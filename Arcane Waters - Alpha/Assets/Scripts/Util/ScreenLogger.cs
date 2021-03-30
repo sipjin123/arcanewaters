@@ -28,6 +28,7 @@ public class ScreenLogger : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      D.adminLog("ScreenLogger.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
       isEnabled = false;
       canvasObj.SetActive(false);
@@ -37,6 +38,7 @@ public class ScreenLogger : MonoBehaviour {
       if (!Util.isCloudBuild()) {
          isEnabled = true;
       }
+      D.adminLog("ScreenLogger.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public void adminActivateLogger () {

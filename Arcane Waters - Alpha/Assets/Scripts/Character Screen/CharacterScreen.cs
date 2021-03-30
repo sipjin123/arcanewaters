@@ -51,6 +51,7 @@ public class CharacterScreen : MonoBehaviour
    #endregion
 
    private void Awake () {
+      D.adminLog("CharacterScreen.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
 
       // Look up components
@@ -62,6 +63,7 @@ public class CharacterScreen : MonoBehaviour
       }
 
       myCamera = virtualCam.GetComponent<MyCamera>();
+      D.adminLog("CharacterScreen.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    private void Start () {

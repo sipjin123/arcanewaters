@@ -115,6 +115,7 @@ public class SoundManager : MonoBehaviour {
    #endregion
 
    void Awake () {
+      D.adminLog("SoundManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
 
       // Load the saved values if there are any
@@ -133,6 +134,7 @@ public class SoundManager : MonoBehaviour {
 
       // Look up the background music for the Title Screen, if we have any
       setBackgroundMusic(Type.Intro_Music);
+      D.adminLog("SoundManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public void Start () {

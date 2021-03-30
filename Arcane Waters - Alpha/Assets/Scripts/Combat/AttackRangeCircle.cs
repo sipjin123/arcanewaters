@@ -24,11 +24,13 @@ public class AttackRangeCircle : MonoBehaviour
    #endregion
 
    public void Awake() {
+      D.adminLog("AttackRangeCircle.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       // Get the material
       _circleMaterial = meshRenderer.material;
 
       // Store the base color
       _circleColor = _circleMaterial.GetColor("_Color");
+      D.adminLog("AttackRangeCircle.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public void update() {

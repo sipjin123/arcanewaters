@@ -10,9 +10,11 @@ public class AmbienceManager : ClientMonoBehaviour
    #endregion
 
    protected override void Awake () {
+      D.adminLog("AmbienceManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       base.Awake();
 
       self = this;
+      D.adminLog("AmbienceManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    protected void Start () {

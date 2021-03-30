@@ -13,6 +13,7 @@ public class BotManager : MonoBehaviour {
    #endregion
 
    void Awake () {
+      D.adminLog("BotManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
 
       // Store references to all of our spots
@@ -23,6 +24,7 @@ public class BotManager : MonoBehaviour {
          list.Add(spot);
          _spots[areaKey] = list;
       }
+      D.adminLog("BotManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public List<BotSpot> getSpots (string areaKey) {

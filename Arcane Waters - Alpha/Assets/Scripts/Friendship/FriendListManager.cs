@@ -21,8 +21,10 @@ public class FriendListManager : MonoBehaviour {
    #endregion
 
    void Awake () {
+      D.adminLog("FriendListManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
       _pendingRequestsLastCheckTime = DateTime.UtcNow;
+      D.adminLog("FriendListManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public void startFriendListManagement () {

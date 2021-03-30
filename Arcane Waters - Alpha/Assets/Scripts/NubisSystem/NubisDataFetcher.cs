@@ -68,8 +68,10 @@ namespace NubisDataHandling {
       #endregion
 
       private void Awake () {
+         D.adminLog("NubisDataFetcher.Awake...", D.ADMIN_LOG_TYPE.Initialization);
          self = this;
          webDirectory = "http://" + Global.getAddress(MyNetworkManager.ServerType.AmazonVPC) + ":7900/";
+         D.adminLog("NubisDataFetcher.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
       }
 
       public static int getSlotIndex () {

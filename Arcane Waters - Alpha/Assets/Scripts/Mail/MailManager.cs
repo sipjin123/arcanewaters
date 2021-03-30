@@ -24,8 +24,10 @@ public class MailManager : MonoBehaviour
    #endregion
 
    public void Awake () {
+      D.adminLog("MailManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
       _unreadMailsLastCheckTime = DateTime.UtcNow;
+      D.adminLog("MailManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public void startMailManagement () {

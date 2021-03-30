@@ -23,9 +23,11 @@ public class TooltipManager : ClientMonoBehaviour {
    #endregion
 
    protected override void Awake () {
+      D.adminLog("TooltipManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       base.Awake();
 
       self = this;
+      D.adminLog("TooltipManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
  
    public void keepToolTipOnScreen (RectTransform toolTipRect) {

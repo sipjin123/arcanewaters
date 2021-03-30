@@ -17,9 +17,11 @@ public class SpriteOutlineManager : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      D.adminLog("SpriteOutlineManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
 
       _quadPool = new Pool<SpriteOutlineRenderer>(outlineQuadPrefab);
+      D.adminLog("SpriteOutlineManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public void addOutlinedSprite (SpriteOutline shaderSpriteOutline) {

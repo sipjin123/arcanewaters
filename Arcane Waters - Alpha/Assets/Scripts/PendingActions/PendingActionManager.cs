@@ -12,8 +12,10 @@ public class PendingActionManager : MonoBehaviour
 
    [ServerOnly]
    private void Start () {
+      D.adminLog("PendingActionManager.Start...", D.ADMIN_LOG_TYPE.Initialization);
       D.log("This is a Server build, proceeding to check for pending actions each 5 seconds");
       InvokeRepeating("checkForPendingActions", 0, 10f);
+      D.adminLog("PendingActionManager.Start: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    [ServerOnly]

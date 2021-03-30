@@ -20,6 +20,7 @@ public class InputManager : MonoBehaviour
    #endregion
 
    private void Awake () {
+      D.adminLog("InputManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
 
       loadDefaultKeybindings();
@@ -30,6 +31,7 @@ public class InputManager : MonoBehaviour
       }
 
       initializeInputMaster();
+      D.adminLog("InputManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    private void initializeInputMaster () {

@@ -29,11 +29,13 @@ public class ChatManager : MonoBehaviour
    #endregion
 
    void Awake () {
+      D.adminLog("ChatManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
 
       // Setup auto-complete panel
       GameObject optionsPanel = Instantiate(Resources.Load<GameObject>("Prefabs/Auto-completes/Auto-complete Section"), chatPanel.inputField.transform.parent.parent);
       autoCompletePanel = optionsPanel.GetComponentInChildren<AutoCompletePanel>();
+      D.adminLog("ChatManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    private void Start () {

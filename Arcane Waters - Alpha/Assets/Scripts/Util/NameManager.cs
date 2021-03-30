@@ -19,6 +19,7 @@ public class NameManager : MonoBehaviour {
    #endregion
 
    void Awake () {
+      D.adminLog("NameManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
 
       // Generate our lists of random names
@@ -30,6 +31,7 @@ public class NameManager : MonoBehaviour {
       HashSet<string> femaleSet = new HashSet<string>(_femaleNames);
       femaleSet.ExceptWith(maleSet);
       _femaleNames = new List<string>(femaleSet);
+      D.adminLog("NameManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public string getRandomName (Gender.Type genderType, string areaKey, NPC.Type npcType) {

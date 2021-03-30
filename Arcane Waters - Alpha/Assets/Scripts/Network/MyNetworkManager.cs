@@ -60,6 +60,7 @@ public class MyNetworkManager : NetworkManager
    #endregion
 
    public override void Awake () {
+      D.adminLog("MyNetworkManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
 
    #if FORCE_AMAZON_SERVER
@@ -104,6 +105,7 @@ public class MyNetworkManager : NetworkManager
       }
 
       base.Awake();
+      D.adminLog("MyNetworkManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    /*private void Start () {

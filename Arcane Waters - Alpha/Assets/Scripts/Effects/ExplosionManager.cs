@@ -34,9 +34,11 @@ public class ExplosionManager : ClientMonoBehaviour {
    #endregion
 
    protected override void Awake () {
+      D.adminLog("ExplosionManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       base.Awake();
 
       self = this;
+      D.adminLog("ExplosionManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public static void createExplosion (Vector2 position, int particleCount = 12, float minForce = 60f, float maxForce = 90f) {

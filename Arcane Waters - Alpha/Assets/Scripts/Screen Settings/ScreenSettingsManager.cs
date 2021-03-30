@@ -46,6 +46,7 @@ public class ScreenSettingsManager : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      D.adminLog("ScreenSettingsManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
 
       // Cache this resolution at the very start to determine the monitor resolution
@@ -72,6 +73,7 @@ public class ScreenSettingsManager : MonoBehaviour {
          height = MIN_HEIGHT;
          setResolution(width, height, refreshRate);
       }
+      D.adminLog("ScreenSettingsManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public static void setFullscreenMode (FullScreenMode screenMode) {

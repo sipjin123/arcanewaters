@@ -21,11 +21,13 @@ public class AttackTrajectory : MonoBehaviour
    #endregion
 
    private void Awake () {
+      D.adminLog("AttackTrajectory.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       // Instantiates the dots
       _allDots = new AttackTrajectoryDot[POSITIONS_COUNT + 1];
       for (int i = 0; i < _allDots.Length; i++) {
          _allDots[i] = Instantiate(dotPrefab, transform, false);
       }
+      D.adminLog("AttackTrajectory.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public void draw (Vector2 startPos, Vector2 endPos, Color lineColor, float maxRange) {

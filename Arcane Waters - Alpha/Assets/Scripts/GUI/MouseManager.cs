@@ -28,8 +28,10 @@ public class MouseManager : ClientMonoBehaviour
    #endregion
 
    protected override void Awake () {
+      D.adminLog("MouseManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       base.Awake();
       self = this;
+      D.adminLog("MouseManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    private void Update () {

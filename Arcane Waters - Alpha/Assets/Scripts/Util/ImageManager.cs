@@ -76,6 +76,7 @@ public class ImageManager : ClientMonoBehaviour {
    #endregion
 
    protected override void Awake () {
+      D.adminLog("ImageManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       if (self == null) {
          base.Awake();
 
@@ -84,6 +85,7 @@ public class ImageManager : ClientMonoBehaviour {
          _dataByTexture = new Dictionary<Texture2D, Sprite[]>();
          _dataByPath = new Dictionary<string, List<ImageData>>();
       }
+      D.adminLog("ImageManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public static Sprite getSprite (string path) {

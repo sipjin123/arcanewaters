@@ -21,8 +21,11 @@ public class LoggerManager : MonoBehaviour {
    #endregion
 
    void Awake () {
+      // WARNING: Never use D.warning or D.error! It will cause recursion!
+      D.adminLog("LoggerManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
       Init();
+      D.adminLog("LoggerManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
       // AddMessage("message text test", "stack trace", LogType.Error);
       // AddMessage("message text test", "stack trace 2", LogType.Error);
    }

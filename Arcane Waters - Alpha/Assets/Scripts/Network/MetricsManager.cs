@@ -19,8 +19,10 @@ namespace Assets.Scripts.Network
       #endregion
 
       private void Awake () {
+         D.adminLog("MetricsManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
          startTime = DateTime.UtcNow;
          InvokeRepeating("updateMetrics", 0.0f, UpdateFrequencySecs);
+         D.adminLog("MetricsManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
       }
 
       private void updateMetrics () {

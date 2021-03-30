@@ -97,6 +97,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      D.adminLog("XmlVersionManagerServer.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       #if IS_SERVER_BUILD && CLOUD_BUILD
       forceDisable = false;
       D.debug("This is a Server build and a Cloud build, proceed to process xml zip setup");
@@ -115,6 +116,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
       }
       confirmTextFiles();
       self = this;
+      D.adminLog("XmlVersionManagerServer.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public void confirmTextFiles () {

@@ -13,10 +13,12 @@ public class RestartManager : MonoBehaviour
    #endregion
 
    private void Awake () {
+      D.adminLog("RestartManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       // Continually check if a Restart has been scheduled in the database
       InvokeRepeating("checkPendingServerRestarts", 0.0f, 60.0f);
 
       self = this;
+      D.adminLog("RestartManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public void onScheduledServerRestart(DateTime dateTime) {

@@ -29,6 +29,7 @@ public class ClientManager : MonoBehaviour
    #endregion
 
    void Awake () {
+      D.adminLog("ClientManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
 
       // Standalone players will eat up all possible CPU unless we set these
@@ -37,6 +38,7 @@ public class ClientManager : MonoBehaviour
 
       // Routinely clear out any unused assets to reduce memory usage
       InvokeRepeating("unloadUnusedAssets", 0f, 300);
+      D.adminLog("ClientManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    void Start () {

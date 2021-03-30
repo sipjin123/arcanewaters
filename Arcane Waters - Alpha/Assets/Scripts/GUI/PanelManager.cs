@@ -39,6 +39,7 @@ public class PanelManager : MonoBehaviour {
    #endregion
 
    void Awake () {
+      D.adminLog("PanelManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
       self = this;
 
       foreach (Panel panel in panelStack) {
@@ -47,6 +48,7 @@ public class PanelManager : MonoBehaviour {
          // Store references to the Canvas Groups
          panel.canvasGroup = panel.GetComponent<CanvasGroup>();
       }
+      D.adminLog("PanelManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    void Start () {
