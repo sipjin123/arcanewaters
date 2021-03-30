@@ -143,6 +143,12 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       } else {
          this.hideEntityName();
       }
+
+      // Gamepad action trigger
+      InputManager.self.inputMaster.Player.Interact.performed += func => triggerInteractAction();
+
+      // Gamepad jump trigger
+      InputManager.self.inputMaster.Player.Jump.performed += func => triggerJumpAction();
    }
 
    public override PlayerBodyEntity getPlayerBodyEntity () {
@@ -302,7 +308,13 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          return;
       }
 
-      if (InputManager.isJumpKeyPressed() && !isJumpCoolingDown() && isLocalPlayer && !isBouncingOnWeb()) {
+      if (InputManager.isJumpKeyPressed()) {
+         triggerJumpAction();
+      }
+   }
+
+   private void triggerJumpAction () {
+      if (!isJumpCoolingDown() && isLocalPlayer && !isBouncingOnWeb()) {
          // If we are in a spider web  trigger, and facing the right way, jump onto the spider web
          if (collidingSpiderWebTrigger != null && collidingSpiderWebTrigger.isFacingWeb(facing)) {
             collidingSpiderWebTrigger.onPlayerJumped(this);
@@ -424,18 +436,21 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       if (InputManager.isRightClickKeyPressed()) {
-         
-         // First check under the mouse
-         bool foundInteractable = tryInteractUnderMouse();
-         
-         // If no interactables under the mouse, check in a radius
-         if (!foundInteractable) {
-            foundInteractable = tryInteractNearby();
-         }
+         triggerInteractAction();  
+      }
+   }
 
-         if (!foundInteractable && !isMoving()) {
-            tryInteractAnimation();
-         }
+   private void triggerInteractAction () {
+      // First check under the mouse
+      bool foundInteractable = tryInteractUnderMouse();
+
+      // If no interactables under the mouse, check in a radius
+      if (!foundInteractable) {
+         foundInteractable = tryInteractNearby();
+      }
+
+      if (!foundInteractable && !isMoving()) {
+         tryInteractAnimation();
       }
    }
 
