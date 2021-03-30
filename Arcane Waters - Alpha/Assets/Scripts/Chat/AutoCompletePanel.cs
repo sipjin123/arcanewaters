@@ -154,13 +154,13 @@ public class AutoCompletePanel : MonoBehaviour {
       // If there are no auto-completes, disable all
       if (_autoCompleteCommands == null || _autoCompleteCommands.Count == 0) {
          scrollViewContainer.SetActive(false);
-         InputManager.enableKey(Keyboard.current.upArrowKey);
-         InputManager.enableKey(Keyboard.current.downArrowKey);
+         InputManager.enableKey(Key.UpArrow);
+         InputManager.enableKey(Key.DownArrow);
          return;
       }
 
-      InputManager.disableKey(Keyboard.current.upArrowKey);
-      InputManager.disableKey(Keyboard.current.downArrowKey);
+      InputManager.disableKey(Key.UpArrow);
+      InputManager.disableKey(Key.DownArrow);
 
       scrollViewContainer.SetActive(true);
 

@@ -8431,8 +8431,8 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  ServerHistoryInfo row = new ServerHistoryInfo(dataReader);
-                  eventList.Add(row);
+                  //ServerHistoryInfo row = new ServerHistoryInfo(dataReader);
+                  //eventList.Add(row);
                }
             }
          }
@@ -10733,7 +10733,7 @@ public class DB_Main : DB_MainStub
 
    // Some development tables must be accessible from any build
    private static string _globalDatabase = "global";
-   private static string _remoteServerDev = "ruby.arcanewaters.com";
+   private static string _remoteServerDev = "dev-temp6.c1whxibm6zeb.us-east-2.rds.amazonaws.com";//"ruby.arcanewaters.com";
    private static string _uidDev = "userAdKmE";
    private static string _passwordDev = "HEqbVDsvvCza5n4N";
 

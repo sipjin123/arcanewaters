@@ -80,41 +80,50 @@ public class LoggerManager : MonoBehaviour {
       // don't catch editor logs if not enabled
       if (Application.isEditor && !catchEditorLogs) return;
       // skip all LoggerManager messages to avoid recursion
-      if (stackTrace.Contains("LoggerManager.cs")) return; 
+      if (stackTrace.Contains("LoggerManager.cs")) return;
       // skip messages with exclude patterns
-      if (IsPatternPresent(excludePatterns, logString)) return; 
-      
-      Dictionary <string, string> messageData = new Dictionary<string, string>();
+      if (IsPatternPresent(excludePatterns, logString)) return;
 
-      messageData["deploymentId"] = deploymentId;
-      messageData["message"] = logString;
-      messageData["stackTrace"] = stackTrace;
-      messageData["messageType"] = type.ToString();
-      
-      #if IS_SERVER_BUILD
-      messageData["appType"] = "server";
-      #else
-      messageData["appType"] = "client";
-      #endif
-      #if IS_MASTER_TOOL
-      messageData["appType"] = "mastertool";
-      #endif
-      #if NUBIS
-      messageData["appType"] = "nubis";
-      #endif
-      #if ARCANE_WATERS_WEBSITE
-      messageData["appType"] = "website";
-      #endif
+      try
+      {
+         Dictionary<string, string> messageData = new Dictionary<string, string>();
 
-      messageData["systemInfo"] = SystemInfo.operatingSystem;
-      messageData["host"] = Dns.GetHostName();
+         messageData.Add("deploymentId", deploymentId);
+         messageData.Add("message", logString);
+         messageData.Add("stackTrace", stackTrace);
+         messageData.Add("messageType", type.ToString());
 
-      messageData["datetime"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-      messageData["milliseconds"] = DateTime.UtcNow.Millisecond.ToString();
-      messageData["version"] = VERSION;
+#if IS_SERVER_BUILD
+         messageData.Add("appType" , "server");
+#else
+         messageData.Add("appType", "client");
+#endif
+#if IS_MASTER_TOOL
+      messageData.Add("appType" , "mastertool");
+#endif
+#if NUBIS
+         messageData.Add("appType" , "nubis");
+#endif
+#if ARCANE_WATERS_WEBSITE
+      messageData.Add("appType" , "website");
+#endif
 
-      // add to event queue
-      StoreMessage(messageData);
+         messageData.Add("systemInfo", SystemInfo.operatingSystem);
+         messageData.Add("host", Dns.GetHostName());
+
+         messageData.Add("datetime", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"));
+         messageData.Add("milliseconds", DateTime.UtcNow.Millisecond.ToString());
+         messageData.Add("version", VERSION);
+
+         // add to event queue
+         StoreMessage(messageData);
+      }
+      catch (Exception ex)
+      {
+         // WARNING: Never use D.warning or D.error! It will cause recursion!
+         D.debug(ex.Message);
+         D.debug(ex.StackTrace);
+      }
    }
 
    bool IsPatternPresent(string[] patterns, string message) {

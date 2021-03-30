@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public abstract class TemporaryController : ClientMonoBehaviour
+public abstract class TemporaryController : MonoBehaviour
 {
    #region Public Variables
 
@@ -28,7 +28,6 @@ public abstract class TemporaryController : ClientMonoBehaviour
          hasMovement = !isNpc
       };
       _puppets.Add(puppet);
-      D.debug(string.Format("Added puppet userId {0} to temporary controller type {1}. Controller GO Active? {2}. Script active? {3}", entity.userId, this.GetType(), gameObject.activeInHierarchy, this.enabled));
 
       // Disable collider for the entity
       if (puppet.entity.isLocalPlayer) {
@@ -45,12 +44,6 @@ public abstract class TemporaryController : ClientMonoBehaviour
    }
 
    private void FixedUpdate () {
-      // TEMP DEBUG
-      if (_puppets.Count > 0 && _puppets[0].entity != null && _puppets[0].entity.entityName.StartsWith("Victor")) {
-         D.debug(string.Format("TemporaryController FixedUpdate has {0} puppets", _puppets.Count));
-      }
-      // TEMP DEBUG
-
       // We iterate backwards, so to not get disturbed by puppets being removed from the list
       for (int i = _puppets.Count - 1; i >= 0; i--) {
          // Update any data we need for controlling the entity
@@ -64,7 +57,6 @@ public abstract class TemporaryController : ClientMonoBehaviour
    }
 
    protected void endControl (ControlData puppet) {
-      D.debug(string.Format("endControl for puppet {0}", puppet.entity == null ? "?" : puppet.entity.entityName));
       _puppets.Remove(puppet);
 
       // Reenable collider for entity

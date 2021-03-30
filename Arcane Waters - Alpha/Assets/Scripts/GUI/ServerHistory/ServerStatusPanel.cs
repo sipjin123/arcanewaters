@@ -22,9 +22,16 @@ public class ServerStatusPanel : ClientMonoBehaviour
    // The container of the event rows
    public GameObject rowContainer;
 
+   // The collapsable container
+   public GameObject collapsableContainer;
+
    // The containers of the server statuses
    public GameObject serverOnlineGO;
    public GameObject serverOfflineGO;
+
+   // The expand and collapse buttons
+   public GameObject expandButton;
+   public GameObject collapseButton;
 
    // The canvas group
    public CanvasGroup canvasGroup;
@@ -55,6 +62,9 @@ public class ServerStatusPanel : ClientMonoBehaviour
       rowContainer.DestroyChildren();
       serverOnlineGO.SetActive(false);
       serverOfflineGO.SetActive(false);
+      collapsableContainer.SetActive(false);
+      expandButton.SetActive(true);
+      collapseButton.SetActive(false);
 
       refreshPanel();
       InvokeRepeating(nameof(refreshPanelIfActive), 30f, 30f);
@@ -74,7 +84,9 @@ public class ServerStatusPanel : ClientMonoBehaviour
       }
 
       DateTime startDate = DateTime.UtcNow - new TimeSpan(HISTORY_HOURS, 0, 0);
-      NubisDataFetcher.self.getServerHistory(HISTORY_ROWS, startDate);
+
+      StartCoroutine(WebToolsManager.self.CO_GetServerHistory(HISTORY_ROWS, startDate));
+      //NubisDataFetcher.self.getServerHistory(HISTORY_ROWS, startDate);
    }
 
    public void updatePanelWithServerHistory (bool isServerOnline, List<ServerHistoryInfo> historyList) {
@@ -92,6 +104,18 @@ public class ServerStatusPanel : ClientMonoBehaviour
          serverOnlineGO.SetActive(false);
          serverOfflineGO.SetActive(true);
       }
+   }
+
+   public void onExpandButtonPressed () {
+      collapsableContainer.SetActive(true);
+      expandButton.SetActive(false);
+      collapseButton.SetActive(true);
+   }
+
+   public void onCollapseButtonPressed () {
+      collapsableContainer.SetActive(false);
+      expandButton.SetActive(true);
+      collapseButton.SetActive(false);
    }
 
    #region Private Variables

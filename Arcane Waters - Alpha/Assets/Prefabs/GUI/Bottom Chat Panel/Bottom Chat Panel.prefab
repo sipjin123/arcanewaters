@@ -13629,6 +13629,7 @@ MonoBehaviour:
   expandChatTypesButtons: {fileID: 212446025034899959}
   resizeHandleZone: {fileID: 6553449199707257473}
   whisperAutoCompletePanel: {fileID: 96025021642069725}
+  chatBubbleFont: {fileID: 11400000, guid: f05e9c7d6fe58044a84b191658c875d5, type: 2}
   enemySpeechColor: {r: 1, g: 0.36862746, b: 0.36862746, a: 1}
   playerSpeechColor: {r: 1, g: 0.9372549, b: 0.5921569, a: 1}
   otherPlayerSpeechColor: {r: 0.6901961, g: 0.9372549, b: 1, a: 1}

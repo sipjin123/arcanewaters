@@ -20,6 +20,9 @@ public class ShipSizeSpritePair {
 
    // The speed boost sprites
    public Sprite speedBoostSpriteFront, speedBoostSpriteBack;
+
+   // The boost circle sprites
+   public Sprite boostCircleOutline, boostCircleFill;
 }
 
 [Serializable]

@@ -42,7 +42,23 @@ public class D : MonoBehaviour {
 
    #endregion
 
+   private static void OnLogMessageReceived(string logString, string stackTrace, LogType type)
+   {
+      if (type == LogType.Exception)
+      {
+         error(logString);
+         error(stackTrace);
+      }
+      else
+      {
+         log(logString);
+         log(stackTrace);
+      }
+   }
+
    public void Awake () {
+      D.adminLog("D.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+
       // For now, we can't write to file in the web player
       if (Application.isMobilePlatform) {
          WRITE_TO_FILE = false;
@@ -84,15 +100,20 @@ public class D : MonoBehaviour {
 
          // Log the startup time
          debug(appName + " started.");
+
+         // Application.logMessageReceived -= OnLogMessageReceived;
+         // Application.logMessageReceived += OnLogMessageReceived;
+
       }
+      D.adminLog("D.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    void OnEnable () {
-      Application.logMessageReceived += HandleUnityLog;
+      // Application.logMessageReceived += HandleUnityLog;
    }
 
    void OnDisable () {
-      Application.logMessageReceived -= HandleUnityLog;
+      // Application.logMessageReceived -= HandleUnityLog;
    }
 
    void HandleUnityLog (string logString, string stackTrace, LogType type) {
@@ -164,12 +185,13 @@ public class D : MonoBehaviour {
       prefix = (type == ChatInfo.Type.Warning) ? "[WARNING] " + prefix : prefix;
       prefix = (type == ChatInfo.Type.Error) ? "[ERROR] " + prefix : prefix;
 
+      // WARNING: Never send other types to logger than D.warning or D.error! it will cause recursion!
       // Send messages to Logger
       if (type == ChatInfo.Type.Warning) {
-         LoggerManager.self.AddMessage(prefix + msg, "", LogType.Warning);
+         //LoggerManager.self.AddMessage(prefix + msg, "", LogType.Warning);
       }
       if (type == ChatInfo.Type.Error) {
-         LoggerManager.self.AddMessage(prefix + msg, "", LogType.Error);
+         //LoggerManager.self.AddMessage(prefix + msg, "", LogType.Error);
       }
 
       // Maybe write it to a client log file

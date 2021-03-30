@@ -87,6 +87,9 @@ public class Global
    // Gets set to true when the screen is transitioning, to block loading while the screen is transitioning
    public static bool isScreenTransitioning = false;
 
+   // Gets set to false when Nubis requests are executed as Mirror requests instead
+   public static bool isUsingNubis = true;
+
    // List of logs to show
    public static List<D.ADMIN_LOG_TYPE> logTypesToShow = new List<D.ADMIN_LOG_TYPE>();
 

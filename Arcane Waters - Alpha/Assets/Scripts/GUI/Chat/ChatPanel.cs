@@ -115,6 +115,9 @@ public class ChatPanel : MonoBehaviour {
    // A reference to the whisper auto-complete panel
    public WhisperAutoCompletePanel whisperAutoCompletePanel;
 
+   // Font that is being used for local chat in the form of bubble
+   public TMPro.TMP_FontAsset chatBubbleFont;
+
    // Self
    public static ChatPanel self;
 
@@ -182,6 +185,15 @@ public class ChatPanel : MonoBehaviour {
 
       // Modify the chat mode button based on our current selection
       chatModeText.text = getChatModeString();
+
+      // Remove ASCII characters which aren't present in TMP font
+      for (int i = inputField.text.Length - 1; i >= 0; i--) {
+         char c = inputField.text[i];
+
+         if (!chatBubbleFont.HasCharacter(c)) {
+            inputField.text = inputField.text.Remove(i, 1);
+         }
+      }
 
       // Any time the mouse button is released, reset the scroll click boolean
       if (KeyUtils.GetButtonUp(MouseButton.Left)) {
@@ -327,8 +339,7 @@ public class ChatPanel : MonoBehaviour {
       _isNameInputFocused = nameInputField.isFocused;
 
       // Submit the field when enter is pressed and the field is focused
-      if (inputField.isFocused && Input.GetKeyDown(KeyCode.Return)) {
-
+      if ((Time.time - _lastFocusTime) < .05f && KeyUtils.GetKeyDown(Key.Enter)) {
          if (inputField.text != "") {
             // Send the message off to the server for processing
             string message = inputField.text;

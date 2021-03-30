@@ -24,7 +24,7 @@ public class ServerHistoryInfo
    }
 
    // The date of the event
-   public long eventDate;
+   public DateTime eventDate;
 
    // The event type
    public EventType eventType;
@@ -38,11 +38,11 @@ public class ServerHistoryInfo
 
 #if IS_SERVER_BUILD
 
-   public ServerHistoryInfo (MySqlDataReader dataReader) {
-      this.eventDate = DataUtil.getDateTime(dataReader, "eventDate").ToBinary();
-      this.eventType = (EventType) DataUtil.getInt(dataReader, "eventType");
-      this.serverVersion = DataUtil.getInt(dataReader, "serverVersion");
-   }
+   //public ServerHistoryInfo (MySqlDataReader dataReader) {
+   //   this.eventDate = DataUtil.getDateTime(dataReader, "eventDate").ToBinary();
+   //   this.eventType = (EventType) DataUtil.getInt(dataReader, "eventType");
+   //   this.serverVersion = DataUtil.getInt(dataReader, "serverVersion");
+   //}
 
 #endif
 

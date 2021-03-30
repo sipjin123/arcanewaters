@@ -1403,13 +1403,9 @@ public class NetEntity : NetworkBehaviour
       }
 
       _temporaryControllers.Add(controller);
-      D.debug(string.Format("Added temporary controller to entity {0}, controller type {1}, controller count {2} ", userId, controller.GetType(), _temporaryControllers.Count));
-      if (isServer) {
-         Target_ReceiveDebugLogs(string.Format("Adding controller to entity {0}. Controller count {1}", userId, _temporaryControllers.Count));
-      }
+
       if (hasAuthority) {
          Cmd_TemporaryControlRequested(controller.transform.localPosition.x, controller.transform.localPosition.y);
-         D.debug("Sending command to request control of entity: " + userId);
       }
 
       if (isServer && isClient) {
@@ -1427,12 +1423,10 @@ public class NetEntity : NetworkBehaviour
 
    public void giveBackControl (TemporaryController controller) {
       bool willBeChanges = _temporaryControllers.Count > 0 && _temporaryControllers[0] == controller;
-      D.debug("Giving back control of entity " + userId + ", controller count " + _temporaryControllers.Count + ", will be changes " + willBeChanges);
 
       _temporaryControllers.RemoveAll(c => c == controller);
 
       if (willBeChanges && _temporaryControllers.Count > 0) {
-         D.debug("Entity still has controllers " + _temporaryControllers.Count);
          _temporaryControllers[0].controlGranted(this);
       }
    }
@@ -1441,18 +1435,10 @@ public class NetEntity : NetworkBehaviour
    public void Cmd_TemporaryControlRequested (float controllerPosX, float controllerPosY) {
       Vector2 controllerLocalPosition = new Vector2(controllerPosX, controllerPosY);
       TemporaryController con = AreaManager.self.getArea(areaKey).getTemporaryControllerAtPosition(controllerLocalPosition);
-      Target_ReceiveDebugLogs(string.Format("Received temporary control request. Controller at coordinates ({0}, {1}) found? {2}. Already has controller? {3}", controllerPosX, controllerPosY, con != null, con == null ? false : hasScheduledController(con)));
-      D.debug("Server received command for temporary control");
       if (con != null && !hasScheduledController(con)) {
-         D.debug("Server also passed along Rpc for temp control");
          requestControl(con);
          rpc.Rpc_TemporaryControlRequested(controllerLocalPosition);
       }
-   }
-
-   [TargetRpc]
-   public void Target_ReceiveDebugLogs (string message) {
-      D.debug("From Server: " + message);
    }
 
    public void noteWebBounce (TemporaryController con) {

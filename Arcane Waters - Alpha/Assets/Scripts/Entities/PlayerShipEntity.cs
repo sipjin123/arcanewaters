@@ -76,8 +76,11 @@ public class PlayerShipEntity : ShipEntity
    // The anim reference indicating ship boost meter is full
    public Animator maxBoostEffectAnimation;
 
-   // Reference to the sprite swap
+   // References to sprite swaps fo the player's boost effect sprites
    public SpriteSwap shipBoostSpriteSwapFront, shipBoostSpriteSwapBack;
+
+   // References to sprite swaps for the player's boost circle
+   public SpriteSwap boostCircleOutlineSpriteSwap, boostCircleFillSpriteSwap;
 
    // A reference to the player's lifeboat object
    public GameObject lifeboat;
@@ -88,9 +91,23 @@ public class PlayerShipEntity : ShipEntity
    // Canvas Group for ship display information
    public CanvasGroup shipInformationDisplay;
 
+   // A reference to the sprite group for the boost timing sprites
+   public SpriteGroup boostTimingSprites;
+
+   // A reference to the transform containing the boost fill circle
+   public Transform boostFillCircleParent;
+
+   // A reference to the boost cooldown bar outline image
+   public Image boostCooldownBarOutline;
+
+   // A reference to the sprite renderer for the boost fill circle
+   public SpriteRenderer boostFillCircle;
+
+   // A reference to the rect transform for the boost bar's parent
+   public RectTransform boostBarParent;
+
    // The different flags the ship can display
-   public enum Flag
-   {
+   public enum Flag {
       None = 0,
       White = 1,
       Group = 2
@@ -110,10 +127,6 @@ public class PlayerShipEntity : ShipEntity
       // Player ships spawn hidden and invulnerable, until the client finishes loading the area
       if (isDisabled) {
          StartCoroutine(CO_TemporarilyDisableShip());
-      } else {
-         foreach (SpriteRenderer spriteRender in speedUpEffectHolders) {
-            spriteRender.enabled = false;
-         }
       }
 
       // Ship names will be on display at all times
@@ -139,6 +152,26 @@ public class PlayerShipEntity : ShipEntity
          Cmd_RequestAbilityList();
 
          _targetSelector = GetComponentInChildren<PlayerTargetSelector>();
+         boostTimingSprites.gameObject.SetActive(true);
+         boostTimingSprites.alpha = 0.0f;
+
+         // Position the boost bar based on ship size
+         Vector2 boostBarParentPos = boostBarParent.anchoredPosition;
+         switch (shipSize) {
+            case ShipSize.Medium:
+               boostBarParentPos.y = -27.0f;
+               break;
+            case ShipSize.Large:
+               boostBarParentPos.y = -40.0f;
+               break;
+            default:
+            case ShipSize.Small:
+               boostBarParentPos.y = -25.0f;
+               break;
+         }
+
+         boostBarParent.anchoredPosition = boostBarParentPos;
+
       } else if (isServer) {
          _movementInputDirection = Vector2.zero;
       } else {
@@ -165,6 +198,8 @@ public class PlayerShipEntity : ShipEntity
 
       shipBoostSpriteSwapFront.newTexture = _shipBoostSpritesFront;
       shipBoostSpriteSwapBack.newTexture = _shipBoostSpritesBack;
+      boostCircleOutlineSpriteSwap.newTexture = _boostCircleOutline;
+      boostCircleFillSpriteSwap.newTexture = _boostCircleFill;
    }
 
    protected override void Update () {
@@ -175,6 +210,7 @@ public class PlayerShipEntity : ShipEntity
          _targetCone.gameObject.SetActive(false);
          _targetCircle.gameObject.SetActive(false);
          _cannonTargeter.gameObject.SetActive(false);
+         boostTimingSprites.gameObject.SetActive(false);
       }
 
       updateSpeedUpDisplay();
@@ -253,19 +289,7 @@ public class PlayerShipEntity : ShipEntity
          }
       }
 
-      // Speed ship boost feature
-      if (InputManager.isSpeedUpKeyPressed() && !isBoostCoolingDown() && isLocalPlayer) {
-         // If the player is pressing a direction, boost them that way, otherwise boost them the way they are facing
-         Vector2 boostDirection = InputManager.getMovementInput();
-         if (boostDirection.magnitude < 0.1f) {
-            boostDirection = Util.getDirectionFromFacing(facing);
-         }
-         Cmd_RequestServerAddBoostForce(boostDirection, ForceMode2D.Impulse);
-         _lastBoostTime = NetworkTime.time;
-
-         // Trigger the tutorial
-         TutorialManager3.self.tryCompletingStep(TutorialTrigger.ShipSpeedUp);
-      }
+      boostUpdate();
    }
 
    private void LateUpdate () {
@@ -284,6 +308,40 @@ public class PlayerShipEntity : ShipEntity
             Vector2 targetVelocity = _movementInputDirection * getMoveSpeed() * Time.fixedDeltaTime;
             _body.velocity = Vector2.SmoothDamp(_body.velocity, targetVelocity, ref _shipDampVelocity, 0.5f);
          }
+      }
+   }
+
+   private void boostUpdate () {
+      // Begin charging boost
+      if (InputManager.isSpeedUpKeyPressed() && !isBoostCoolingDown()) {
+         _boostChargeStartTime = NetworkTime.time;
+         boostTimingSprites.alpha = 1.0f;
+         _isChargingBoost = true;
+         // Activate boost
+      } else if (InputManager.isSpeedUpKeyReleased() && !isBoostCoolingDown() && _isChargingBoost) {
+
+         // If the player is pressing a direction, boost them that way, otherwise boost them the way they are facing
+         Vector2 boostDirection = InputManager.getMovementInput();
+         if (boostDirection.magnitude < 0.1f) {
+            boostDirection = Util.getDirectionFromFacing(facing);
+         }
+
+         Cmd_RequestServerAddBoostForce(boostDirection, getBoostChargeAmount());
+         _lastBoostTime = NetworkTime.time;
+         Cmd_NoteBoost();
+
+         _boostCircleTween?.Rewind();
+         _boostCircleTween = DOTween.To(() => boostTimingSprites.alpha, (x) => boostTimingSprites.alpha = x, 0.0f, 0.25f);
+         _isChargingBoost = false;
+
+         // Trigger the tutorial
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.ShipSpeedUp);
+      }
+
+      if (!isBoostCoolingDown() && _isChargingBoost) {
+         // Update the boost-timing circle
+         boostFillCircleParent.localScale = (Vector3.one * 0.5f) + (Vector3.one * 0.5f * getBoostChargeAmount());
+         boostFillCircle.color = GradientManager.self.shipBoostCircleColor.Evaluate(getBoostChargeAmount());
       }
    }
 
@@ -363,7 +421,7 @@ public class PlayerShipEntity : ShipEntity
 
             break;
       }
-            
+
       _isChargingCannon = false;
    }
 
@@ -393,7 +451,7 @@ public class PlayerShipEntity : ShipEntity
             }
 
             // Update cannon targeter parameters
-            Vector2 targetPoint = (Vector2)_cannonTargeter.barrelSocket.position + fireDir.normalized * getCannonballDistance();
+            Vector2 targetPoint = (Vector2) _cannonTargeter.barrelSocket.position + fireDir.normalized * getCannonballDistance();
             _cannonTargeter.setTarget(targetPoint);
             _cannonTargeter.parabolaHeight = getCannonballApex();
             _cannonTargeter.transform.position = transform.position;
@@ -435,7 +493,7 @@ public class PlayerShipEntity : ShipEntity
             // Check for enemies inside circle
             Collider2D[] circleHits = Physics2D.OverlapCircleAll(Util.getMousePos(), circleRadius, LayerMask.GetMask(LayerUtil.SHIPS));
             bool enemyInCircle = false;
-            foreach(Collider2D hit in circleHits) {
+            foreach (Collider2D hit in circleHits) {
                if (hit.GetComponent<BotShipEntity>()) {
                   enemyInCircle = true;
                   break;
@@ -483,13 +541,13 @@ public class PlayerShipEntity : ShipEntity
       Rpc_NoteAttack();
 
       _lastAttackTime = NetworkTime.time;
-      
+
       Vector2 targetPosition = (target == null) ? requestedTargetPoint : (Vector2) target.transform.position;
       Vector2 fireDirection = (targetPosition - (Vector2) transform.position).normalized;
 
       // Firing the cannon is considered a PvP action
       hasEnteredPvP = true;
-	  
+
       fireCannonBallAtTarget(spawnPosition, fireDirection, chargeAmount, playSound);
    }
 
@@ -530,13 +588,16 @@ public class PlayerShipEntity : ShipEntity
 
    [TargetRpc]
    public void Target_NotifyCannonEffectChange (NetworkConnection connection, int newStatusEffect) {
-      ChatPanel.self.addChatInfo(new ChatInfo(0, "Changed status type to: " + ((Status.Type)newStatusEffect).ToString(), System.DateTime.Now, ChatInfo.Type.System));
+      ChatPanel.self.addChatInfo(new ChatInfo(0, "Changed status type to: " + ((Status.Type) newStatusEffect).ToString(), System.DateTime.Now, ChatInfo.Type.System));
    }
 
    private void updateSpeedUpDisplay () {
-      const float FAST_SPEED = 0.5f;
+      float timeSinceBoost = (float) (NetworkTime.time - _lastBoostTime);
+      float normalisedWakeTimeSinceBoost = timeSinceBoost / BOOST_WAKE_TIME;
       foreach (SpriteRenderer renderer in speedUpEffectHolders) {
-         renderer.enabled = (_body.velocity.magnitude > FAST_SPEED);
+         Color rendererColor = renderer.color;
+         rendererColor.a = GradientManager.self.shipBoostWakeAlpha.Evaluate(normalisedWakeTimeSinceBoost);
+         renderer.color = rendererColor;
       }
 
       if (!isLocalPlayer) {
@@ -544,12 +605,12 @@ public class PlayerShipEntity : ShipEntity
          return;
       }
 
-      bool isOn = isBoostCoolingDown();
-      
-      if (isOn) {
-         float timeSinceBoost = (float)(NetworkTime.time - _lastBoostTime);
+      if (isBoostCoolingDown()) {
          speedupGUI.enabled = true;
-         speedUpBar.fillAmount = timeSinceBoost / boostCooldown;
+         float normalisedTimeSinceBoost = Mathf.Clamp01(timeSinceBoost / boostCooldown);
+         speedUpBar.fillAmount = normalisedTimeSinceBoost;
+         boostCooldownBarOutline.color = GradientManager.self.shipBoostCooldownBarOutlineColor.Evaluate(normalisedTimeSinceBoost);
+         speedUpBar.color = GradientManager.self.shipBoostCooldownBarColor.Evaluate(normalisedTimeSinceBoost);
       } else {
          speedupGUI.enabled = false;
       }
@@ -751,12 +812,17 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Command]
-   protected void Cmd_RequestServerAddBoostForce (Vector2 direction, ForceMode2D mode) {
+   protected void Cmd_RequestServerAddBoostForce (Vector2 direction, float chargeAmount) {
       if (isBoostCoolingDown()) {
          return;
       }
 
-      _body.AddForce(direction.normalized * boostForce, mode);
+      bool isWellTimed = (chargeAmount > 0.8f && chargeAmount < 0.99f);
+
+      // A well-timed boost gives you the force of a fully-charged boost + 50%
+      float finalBoostForce = (isWellTimed) ? boostForce * 1.5f : boostForce * chargeAmount;
+
+      _body.AddForce(direction.normalized * finalBoostForce, ForceMode2D.Impulse);
       _lastBoostTime = NetworkTime.time;
    }
 
@@ -885,7 +951,7 @@ public class PlayerShipEntity : ShipEntity
 
       // If we don't currently have a target selected, assign the attacker as our new target
       if (isLocalPlayer && !isDead() && _targetSelector.getTarget() == null) {
-         SelectionManager.self.setSelectedEntity((SeaEntity)entity);
+         SelectionManager.self.setSelectedEntity((SeaEntity) entity);
       }
    }
 
@@ -923,10 +989,6 @@ public class PlayerShipEntity : ShipEntity
 
          foreach (SpriteRenderer renderer in _renderers) {
             renderer.enabled = true;
-         }
-
-         foreach (SpriteRenderer spriteRender in speedUpEffectHolders) {
-            spriteRender.enabled = false;
          }
       }
    }
@@ -1004,7 +1066,7 @@ public class PlayerShipEntity : ShipEntity
       if (chargeAmount < 0.0f) {
          chargeAmount = getCannonChargeAmount();
       }
-      
+
       return (0.5f + (chargeAmount * 2.5f));
    }
 
@@ -1025,7 +1087,25 @@ public class PlayerShipEntity : ShipEntity
    }
 
    private float getCannonChargeAmount () {
-      return Mathf.Clamp01((float) (NetworkTime.time - _cannonChargeStartTime));
+      // Returns the normalised charge amount of the cannon
+      return Mathf.Clamp01((float) (NetworkTime.time - _cannonChargeStartTime) / CANNON_CHARGE_TIME);
+   }
+
+   private float getBoostChargeAmount () {
+      // Returns the normalised charge amount of the boost
+      return Mathf.Clamp01((float) (NetworkTime.time - _boostChargeStartTime) / BOOST_CHARGE_TIME);
+   }
+
+   [Command]
+   private void Cmd_NoteBoost () {
+      Rpc_NoteBoost();
+   }
+
+   [ClientRpc]
+   private void Rpc_NoteBoost () {
+      if (!isLocalPlayer) {
+         _lastBoostTime = NetworkTime.time;
+      }
    }
 
    private void OnDisable () {
@@ -1070,7 +1150,7 @@ public class PlayerShipEntity : ShipEntity
    private CannonAttackType _cannonAttackType = CannonAttackType.Normal;
 
    // When the player started charging their cannon
-   private double _cannonChargeStartTime = 0.0f;
+   private double _cannonChargeStartTime = -3.0f;
 
    // Is the player currently charging up a cannon attack
    private bool _isChargingCannon = false;
@@ -1093,11 +1173,29 @@ public class PlayerShipEntity : ShipEntity
    // When the player last boosted
    private double _lastBoostTime = -3.0f;
 
+   // When the player began charging their boost
+   private double _boostChargeStartTime = -3.0f;
+
    // Whether the player is charging a shot with the mouse or keyboard
    private bool _chargingWithMouse = false;
 
    // A reference to the audio listener that follows the ship
    private AudioListener _audioListener;
+
+   // How long it takes to charge up the ship's cannon
+   private const float CANNON_CHARGE_TIME = 1.0f;
+
+   // How long is takes to charge up the ship's boost
+   private const float BOOST_CHARGE_TIME = 0.5f;
+
+   // How long the boost wake effects show for after boosting
+   private const float BOOST_WAKE_TIME = 1.0f;
+
+   // A reference to the active tween for the boost circle
+   private Tween _boostCircleTween;
+
+   // Set to true when the player is charging their boost
+   private bool _isChargingBoost = false;
 
    #endregion
 }

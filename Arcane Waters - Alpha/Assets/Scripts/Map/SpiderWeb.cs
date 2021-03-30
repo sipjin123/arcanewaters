@@ -28,8 +28,7 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
 
    #endregion
 
-   protected override void Awake () {
-      base.Awake();
+   protected void Awake () {
       jumpUpTrigger.web = this;
       jumpDownTrigger.web = this;
       jumpUpTrigger.bounceDirection = Direction.North;
@@ -210,12 +209,6 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
       }
 
       AnimationCurve moveCurve = (isContinuingWebBounce(puppet)) ? movementCurveHalf : movementCurve;
-
-      // TEMP DEBUG
-      if (puppet.entity != null && puppet.entity.entityName.StartsWith("Victor")) {
-         D.debug(string.Format("controlUpdate for entity {0}, time {1}, last key time {2}", puppet.entity.entityName, puppet.time, moveCurve.keys.Last().time));
-      }
-      // TEMP DEBUG
 
       // End control if time has run out
       if (puppet.time >= moveCurve.keys.Last().time) {

@@ -27,8 +27,8 @@ public class ServerMessageManager : MonoBehaviour
          minClientGameVersion = GameVersionManager.self.minClientGameVersionWin;
       }
 
-      // Make sure they are not currently being redirected to another server
-      if (!logInUserMessage.isRedirecting) {
+      // Only check the client version at login, not when warping between areas or servers
+      if (logInUserMessage.isFirstLogin) {
          // Make sure they have the required game version
          if (logInUserMessage.clientGameVersion < minClientGameVersion) {
             string msg = string.Format("Refusing login for {0}, client version {1}, the current version in the cloud is {2}", logInUserMessage.accountName, logInUserMessage.clientGameVersion, minClientGameVersion);

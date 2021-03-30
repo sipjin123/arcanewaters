@@ -6073,8 +6073,6 @@ public class RPCManager : NetworkBehaviour
 
    [ClientRpc]
    public void Rpc_TemporaryControlRequested (Vector2 controllerLocalPosition) {
-      D.debug(string.Format("Client: {0} noted bounce time of client: {1}, isLocalPlayer = {2}", Global.player.userId, _player.userId, isLocalPlayer));
-
       // If we are the local player, we don't do anything, the control was handled locally
       if (isLocalPlayer) {
          return;
@@ -6082,6 +6080,107 @@ public class RPCManager : NetworkBehaviour
 
       TemporaryController con = AreaManager.self.getArea(_player.areaKey).getTemporaryControllerAtPosition(controllerLocalPosition);
       _player.noteWebBounce(con);
+   }
+
+   [Command]
+   public void Cmd_RequestDBData (int requestId, string functionName, string[] parameters) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         string result = "";
+
+         if (string.Equals(functionName, "NubisDirect-getUserInventoryPage", StringComparison.OrdinalIgnoreCase)) {
+            result = getUserInventoryPage(parameters[0], parameters[1], parameters[2], parameters[3]);
+         } else {
+            // Execute the DB query
+            result = (string) typeof(DB_Main).GetMethod(functionName).Invoke(null, parameters);
+         }
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Transform to a byte array
+            byte[] bytes = Encoding.ASCII.GetBytes(result);
+
+            // Send the result to the client
+            Target_ReceiveDBDataForClientDBRequest(_player.connectionToClient, requestId, bytes);
+         });
+      });
+   }
+
+   // Must be called from the background thread!
+   [Server]
+   public static string getUserInventoryPage (string userIdStr, string categoryFilterJSON,
+      string currentPageStr, string itemsPerPageStr) {
+
+      if (int.TryParse(itemsPerPageStr, out int itemsPerPage) && itemsPerPage > 200) {
+         D.debug("Requesting too many items per page.");
+         return string.Empty;
+      }
+
+      // Process user info
+      UserInfo newUserInfo = new UserInfo();
+      try {
+         newUserInfo = JsonConvert.DeserializeObject<UserInfo>(DB_Main.getUserInfoJSON(userIdStr));
+         if (newUserInfo == null) {
+            D.debug("Something went wrong with Nubis Data Fetch!");
+         }
+      } catch {
+         D.debug("Failed to deserialize user info! {" + userIdStr + "}");
+      }
+
+      // Process guild info
+      GuildInfo guildInfo = new GuildInfo();
+      if (newUserInfo.guildId > 0) {
+         string temp = DB_Main.getGuildInfoJSON(newUserInfo.guildId);
+         try {
+            guildInfo = JsonConvert.DeserializeObject<GuildInfo>(temp);
+            if (guildInfo == null) {
+               D.debug("Something went wrong with guild info data fetch for user {" + userIdStr + "}");
+            }
+         } catch {
+            D.debug("Failed to deserialize guild info! {" + userIdStr + "}");
+         }
+      }
+
+      // Process user equipped items
+      string equippedItemContent = DB_Main.fetchEquippedItems(userIdStr);
+      EquippedItemData equippedItemData = EquippedItems.processEquippedItemData(equippedItemContent);
+      Item equippedWeapon = equippedItemData.weaponItem;
+      Item equippedArmor = equippedItemData.armorItem;
+      Item equippedHat = equippedItemData.hatItem;
+
+      // Create an empty item id filter
+      int[] itemIdsToExclude = new int[0];
+      string itemIdsToExcludeJSON = JsonConvert.SerializeObject(itemIdsToExclude);
+
+      string itemCountResponse = DB_Main.userInventoryCount(userIdStr, categoryFilterJSON, itemIdsToExcludeJSON, "1");
+      if (!int.TryParse(itemCountResponse, out int itemCount)) {
+         D.editorLog("Failed to parse: " + itemCountResponse);
+         itemCount = 0;
+      }
+
+      string inventoryData = DB_Main.userInventory(userIdStr, categoryFilterJSON, itemIdsToExcludeJSON, "1",
+         currentPageStr, itemsPerPageStr);
+
+      InventoryBundle bundle = new InventoryBundle {
+         inventoryData = inventoryData,
+         equippedHat = equippedHat,
+         equippedArmor = equippedArmor,
+         equippedWeapon = equippedWeapon,
+         user = newUserInfo,
+         guildInfo = guildInfo,
+         totalItemCount = itemCount
+      };
+      return JsonConvert.SerializeObject(bundle, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveDBDataForClientDBRequest (NetworkConnection connection, int requestId, byte[] data) {
+      ClientDBRequestManager.receiveRequestData(requestId, data);
    }
 
    #region Private Variables

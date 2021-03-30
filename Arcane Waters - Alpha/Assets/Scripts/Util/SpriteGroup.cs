@@ -19,14 +19,20 @@ public class SpriteGroup : ClientMonoBehaviour {
             _sprites.Add(renderer);
          }
       }
+
+      updateAlpha(false);
    }
 
    void Update () {
+      updateAlpha(true);
+   }
+
+   private void updateAlpha (bool checkValueChange) {
       // Clamp our alpha
       alpha = Mathf.Clamp(alpha, 0f, 1f);
 
       // If the alpha setting has changed, apply it to all sprites
-      if (alpha != _previousAlpha) {
+      if (alpha != _previousAlpha || !checkValueChange) {
          foreach (SpriteRenderer renderer in _sprites) {
             Util.setAlpha(renderer, alpha);
          }

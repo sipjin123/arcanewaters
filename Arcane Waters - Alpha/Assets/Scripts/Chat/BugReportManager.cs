@@ -135,7 +135,7 @@ public class BugReportManager : MonoBehaviour
       List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
 
       // Adding bug report data as form data
-      formData.Add(new MultipartFormDataSection("secretToken", secretToken));
+      //formData.Add(new MultipartFormDataSection("secretToken", secretToken));
       formData.Add(new MultipartFormDataSection("userId", player.userId.ToString()));
       formData.Add(new MultipartFormDataSection("username", player.entityName));
       formData.Add(new MultipartFormDataSection("accId", player.accountId.ToString()));
@@ -152,7 +152,11 @@ public class BugReportManager : MonoBehaviour
       // Adding the screenshot as a form file
       formData.Add(new MultipartFormFileSection(standardTex.EncodeToPNG()));
 
-      UnityWebRequest www = UnityWebRequest.Post("https://tools.arcanewaters.com/api/tasks/submit", formData);
+      UnityWebRequest www = UnityWebRequest.Post(WebToolsUtil.BUG_REPORT_SUBMIT, formData);
+
+      // We need to set the GameToken header
+      www.SetRequestHeader(WebToolsUtil.GAME_TOKEN_HEADER, WebToolsUtil.GAME_TOKEN);
+
       yield return www.SendWebRequest();
 
       if (www.responseCode == 201) {
@@ -160,40 +164,6 @@ public class BugReportManager : MonoBehaviour
       } else {
          D.error("Could not submit bug report, needs investigation");
       }
-
-      // Not using the server
-      //Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, new byte[0], screenResolution, operatingSystem, steamState, deploymentId);
-
-      // Not compressing the screenshots, for now
-      //// Find image quality of size small enough to send through Mirror Networking      
-      //Texture2D standardTex = takeScreenshot(width, height);
-      //_screenshotBytes = standardTex.EncodeToPNG();
-      //if (_screenshotBytes.Length < maxPacketSize) {
-      //   // Full quality image
-      //} else {
-      //   // Skip every other row and column (no quality loss except minimap and fonts, because assets are using 200% scale)
-      //   Texture2D skippedRowsTex = removeEvenRowsAndColumns(standardTex);
-      //   _screenshotBytes = skippedRowsTex.EncodeToPNG();
-      //   if (_screenshotBytes.Length < maxPacketSize) {
-      //      // Full quality with removed rows and columns
-      //   } else {
-      //      // Try to use texture with skipped rows/columns with lower resolution and quality (JPG)
-      //      int quality = 100;
-      //      while (quality >= 0) {
-      //         quality = Mathf.Max(1, quality);
-      //         skippedRowsTex = removeEvenRowsAndColumns(standardTex);
-      //         _screenshotBytes = skippedRowsTex.EncodeToJPG(quality);
-      //         if (_screenshotBytes.Length < maxPacketSize) {
-      //            break;
-      //         }
-
-      //         if (quality <= 1) {
-      //            D.error("Something went wrong. Bug report system need to be investigated!");
-      //         }
-      //         quality -= 5;
-      //      }
-      //   }
-      //}
 
       _lastBugReportTime[Global.player.userId] = Time.time;
    }
@@ -304,7 +274,7 @@ public class BugReportManager : MonoBehaviour
    protected byte[] _screenshotBytes;
 
    // Secret token used for submitting bug reports
-   protected const string secretToken = "arcane_bug_reports_vjk53fx";
+   //protected const string secretToken = "arcane_game_vjk53fx";
 
    #endregion
 }

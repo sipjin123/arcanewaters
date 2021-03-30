@@ -11,6 +11,7 @@ using Mirror.Profiler;
 using NubisDataHandling;
 using MLAPI.Messaging;
 using UnityEngine.InputSystem;
+using System.Text;
 
 public class AdminManager : NetworkBehaviour
 {
@@ -108,6 +109,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("win", "Kills all of the enemies in a land battle", requestWin, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("difficulty", "Enables the players to alter difficulty of current instance", requestDifficulty, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "difficultyLevel" }));
       cm.addCommand(new CommandData("throw_errors", "Throws various errors and warnings on the server to test the logger tool", requestThrowTestErrors, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "message" }));
+      cm.addCommand(new CommandData("toggle_nubis", "Enable or disable the usage of the Nubis server for this client", toggleNubis, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "isEnabled" }));
 
       // Log Commands for investigation
       cm.addCommand(new CommandData("xml", "Logs the xml content of the specific manager", requestXmlLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "xmlType" }));
@@ -386,6 +388,24 @@ public class AdminManager : NetworkBehaviour
       Debug.LogError("[TEST-LOG] [Debug.LogError] " + parameters);
       Debug.LogWarning("[TEST-LOG] [Debug.LogWarning] " + parameters);
       Debug.Log("[TEST-LOG] [Debug.Log] " + parameters);
+   }
+
+   private void toggleNubis (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      if (int.TryParse(parameters, out int isEnabledInt)) {
+         if (isEnabledInt > 0) {
+            Global.isUsingNubis = true;
+            ChatManager.self.addChat("Nubis has been enabled", ChatInfo.Type.System);
+         } else {
+            Global.isUsingNubis = false;
+            ChatManager.self.addChat("Nubis has been disabled", ChatInfo.Type.System);
+         }
+      } else {
+         ChatManager.self.addChat("Could not parse the isEnabled parameter (only 0 or 1 values allowed): " + parameters, ChatInfo.Type.Error);
+      }
    }
 
    [Command]
@@ -2194,12 +2214,15 @@ public class AdminManager : NetworkBehaviour
 
    [Command]
    public void Cmd_GetServerLogString () {
-      Target_ReceiveServerLogString(connectionToClient, D.getLogString());
+      // Transform into a byte array to avoid the 'buffer is too small' error
+      byte[] data = Encoding.ASCII.GetBytes(D.getLogString());
+
+      Target_ReceiveServerLogString(connectionToClient, data);
    }
 
    [TargetRpc]
-   public void Target_ReceiveServerLogString (NetworkConnection connection, string serverLog) {
-      D.serverLogString = serverLog;
+   public void Target_ReceiveServerLogString (NetworkConnection connection, byte[] serverLogData) {
+      D.serverLogString = Encoding.ASCII.GetString(serverLogData);
    }
 
    #region Private Variables

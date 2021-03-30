@@ -346,10 +346,14 @@ public class ShipEntity : SeaEntity
       if (shipSizeSpriteCache.shipSize != ShipSize.None) {
          _shipBoostSpritesFront = shipSizeSpriteCache.speedBoostSpriteFront.texture;
          _shipBoostSpritesBack = shipSizeSpriteCache.speedBoostSpriteBack.texture;
+         _boostCircleOutline = shipSizeSpriteCache.boostCircleOutline.texture;
+         _boostCircleFill = shipSizeSpriteCache.boostCircleFill.texture;
       } else {
          shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);
          _shipBoostSpritesFront = shipSizeSpriteCache.speedBoostSpriteFront.texture;
          _shipBoostSpritesBack = shipSizeSpriteCache.speedBoostSpriteBack.texture;
+         _boostCircleOutline = shipSizeSpriteCache.boostCircleOutline.texture;
+         _boostCircleFill = shipSizeSpriteCache.boostCircleFill.texture;
       }
 
       // Set the initial idle sprites
@@ -381,6 +385,9 @@ public class ShipEntity : SeaEntity
    protected Texture2D _ripplesMovingSprites;
    protected Texture2D _shipBoostSpritesFront, _shipBoostSpritesBack;
    protected Texture2D _shipSprites;
+
+   // Boost circle sprites
+   protected Texture2D _boostCircleOutline, _boostCircleFill;
 
    #endregion
 }
