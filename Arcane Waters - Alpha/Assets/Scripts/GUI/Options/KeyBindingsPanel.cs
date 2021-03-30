@@ -65,14 +65,16 @@ public class KeyBindingsPanel : Panel
 
       if (_waitingEntry != null) {
          if (Keyboard.current.anyKey.wasPressedThisFrame) {
-            foreach (ButtonControl key in Enum.GetValues(typeof(ButtonControl))) {
-               if (key.isPressed) {
-                  // Set the binding
-                  InputManager.setBindingKey(_waitingEntry.action, key, _waitingForPrimary);
+            foreach (Key key in Enum.GetValues(typeof(Key))) {
+               if (key != Key.None) { 
+                  if (KeyUtils.GetKeyDown(key)) {
+                     // Set the binding
+                     InputManager.setBindingKey(_waitingEntry.action, key, _waitingForPrimary);
 
-                  inputBlocker.SetActive(false);
-                  _waitingEntry = null;
-                  break;
+                     inputBlocker.SetActive(false);
+                     _waitingEntry = null;
+                     break;
+                  }
                }
             }
          }

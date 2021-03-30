@@ -9,16 +9,16 @@ public class BoundKeyAction
    #region Public Variables
 
    // Key for saving action locally
-   public const string LOCAL_SAVE_KEY = "keybindings_action";
+   public const string LOCAL_SAVE_KEY = "keybindings_actionv2";
 
    // The type of action we are binding
    public KeyAction action;
 
    // The primary key for performing this action
-   public ButtonControl primary = null;
+   public Key primary = Key.None;
 
    // The secondary key for performing this action
-   public ButtonControl secondary = null;
+   public Key secondary = Key.None;
 
    #endregion
 
@@ -26,11 +26,11 @@ public class BoundKeyAction
       if (PlayerPrefs.HasKey(LOCAL_SAVE_KEY + (int) action)) {
          BoundKeyAction savedAction = JsonUtility.FromJson<BoundKeyAction>(PlayerPrefs.GetString(LOCAL_SAVE_KEY + (int) action));
 
-         if (savedAction.primary != null) {
+         if (savedAction.primary != Key.None) {
             primary = savedAction.primary;
          }
 
-         if (savedAction.secondary != null) {
+         if (savedAction.secondary != Key.None) {
             secondary = savedAction.secondary;
          }
       }

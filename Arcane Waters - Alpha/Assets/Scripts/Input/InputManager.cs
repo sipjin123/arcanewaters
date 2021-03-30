@@ -17,6 +17,12 @@ public class InputManager : MonoBehaviour
    // Input Master reference
    public InputMaster inputMaster;
 
+   // The joystick values for gamepad controls
+   public Vector2 joystickNavigation;
+
+   // The axis value that determines the joystick is active
+   public const float JOYSTICK_ACTIVE_VALUE = .05f;
+
    #endregion
 
    private void Awake () {
@@ -64,6 +70,7 @@ public class InputManager : MonoBehaviour
    }
 
    private void moveAction (Vector2 moveFactor) {
+      joystickNavigation = moveFactor;
    }
 
    private void loadDefaultKeybindings () {
@@ -74,44 +81,49 @@ public class InputManager : MonoBehaviour
       }
 
       // Set movement keys
-      _keybindings[KeyAction.MoveUp].primary = Keyboard.current[Key.W];
-      _keybindings[KeyAction.MoveRight].primary = Keyboard.current[Key.D];
-      _keybindings[KeyAction.MoveDown].primary = Keyboard.current[Key.S];
-      _keybindings[KeyAction.MoveLeft].primary = Keyboard.current[Key.A];
-      _keybindings[KeyAction.MoveUp].secondary = Keyboard.current[Key.UpArrow];
-      _keybindings[KeyAction.MoveRight].secondary = Keyboard.current[Key.RightArrow];
-      _keybindings[KeyAction.MoveDown].secondary = Keyboard.current[Key.DownArrow];
-      _keybindings[KeyAction.MoveLeft].secondary = Keyboard.current[Key.LeftArrow];
-      _keybindings[KeyAction.SpeedUp].primary = Keyboard.current[Key.LeftShift];
+      _keybindings[KeyAction.MoveUp].primary = Key.W;
+      _keybindings[KeyAction.MoveRight].primary = Key.D;
+      _keybindings[KeyAction.MoveDown].primary = Key.S;
+      _keybindings[KeyAction.MoveLeft].primary = Key.A;
+      _keybindings[KeyAction.MoveUp].secondary = Key.UpArrow;
+      _keybindings[KeyAction.MoveRight].secondary = Key.RightArrow;
+      _keybindings[KeyAction.MoveDown].secondary = Key.DownArrow;
+      _keybindings[KeyAction.MoveLeft].secondary = Key.LeftArrow;
+      _keybindings[KeyAction.SpeedUp].primary = Key.LeftShift;
 
       // Set sea battle keys
-      _keybindings[KeyAction.FireMainCannon].primary = Keyboard.current[Key.Space];
-      _keybindings[KeyAction.SelectNextSeaTarget].primary = Keyboard.current[Key.Tab];
+      _keybindings[KeyAction.FireMainCannon].primary = Key.Space;
+      _keybindings[KeyAction.SelectNextSeaTarget].primary = Key.Tab;
 
+      // TODO: Setup mouse button key bindings
       // Camera panning
-      _keybindings[KeyAction.PanCamera].primary = Mouse.current.middleButton;
+      //_keybindings[KeyAction.PanCamera].primary = Mouse.current.middleButton;
 
-      _keybindings[KeyAction.Reply].primary = Keyboard.current[Key.R];
+      _keybindings[KeyAction.Reply].primary = Key.R;
    }
 
    public static bool isPressingDirection (Direction direction) {
       switch (direction) {
          case Direction.North:
-            return getKeyAction(KeyAction.MoveUp);
+            return getKeyAction(KeyAction.MoveUp) || self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE;
          case Direction.East:
-            return getKeyAction(KeyAction.MoveRight);
+            return getKeyAction(KeyAction.MoveRight) || self.joystickNavigation.x > JOYSTICK_ACTIVE_VALUE;
          case Direction.South:
-            return getKeyAction(KeyAction.MoveDown);
+            return getKeyAction(KeyAction.MoveDown) || self.joystickNavigation.y < -JOYSTICK_ACTIVE_VALUE;
          case Direction.West:
-            return getKeyAction(KeyAction.MoveLeft);
+            return getKeyAction(KeyAction.MoveLeft) || self.joystickNavigation.x < -JOYSTICK_ACTIVE_VALUE;
          case Direction.NorthEast:
-            return isPressingDirection(Direction.North) && isPressingDirection(Direction.East);
+            return (self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE && self.joystickNavigation.x > JOYSTICK_ACTIVE_VALUE) 
+               || (isPressingDirection(Direction.North) && isPressingDirection(Direction.East));
          case Direction.SouthEast:
-            return isPressingDirection(Direction.South) && isPressingDirection(Direction.East);
+            return (self.joystickNavigation.y < -JOYSTICK_ACTIVE_VALUE && self.joystickNavigation.x > JOYSTICK_ACTIVE_VALUE) 
+               || (isPressingDirection(Direction.South) && isPressingDirection(Direction.East));
          case Direction.SouthWest:
-            return isPressingDirection(Direction.South) && isPressingDirection(Direction.West);
+            return (self.joystickNavigation.y < -JOYSTICK_ACTIVE_VALUE && self.joystickNavigation.x < -JOYSTICK_ACTIVE_VALUE) 
+               || (isPressingDirection(Direction.South) && isPressingDirection(Direction.West));
          case Direction.NorthWest:
-            return isPressingDirection(Direction.North) && isPressingDirection(Direction.West);
+            return (self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE && self.joystickNavigation.x < -JOYSTICK_ACTIVE_VALUE)
+               || (isPressingDirection(Direction.North) && isPressingDirection(Direction.West));
       }
 
       return false;
@@ -119,8 +131,8 @@ public class InputManager : MonoBehaviour
 
    public static bool getKeyAction (KeyAction action) {
       if (self._keybindings.TryGetValue(action, out BoundKeyAction boundAction)) {
-         bool primary = boundAction.primary != null && boundAction.primary.isPressed && (!isKeyDisabled(boundAction.primary));
-         bool secondary = boundAction.secondary != null && boundAction.secondary.isPressed && !isKeyDisabled(boundAction.secondary);
+         bool primary = boundAction.primary != Key.None && KeyUtils.GetKey(boundAction.primary) && (!isKeyDisabled(boundAction.primary));
+         bool secondary = boundAction.secondary != Key.None && KeyUtils.GetKey(boundAction.secondary) && !isKeyDisabled(boundAction.secondary);
          return primary || secondary;
       }
 
@@ -129,8 +141,8 @@ public class InputManager : MonoBehaviour
 
    public static bool getKeyActionDown (KeyAction action) {
       if (self._keybindings.TryGetValue(action, out BoundKeyAction boundAction)) {
-         bool primary = boundAction.primary != null && boundAction.primary.wasPressedThisFrame && !isKeyDisabled(boundAction.primary);
-         bool secondary = boundAction.secondary != null && boundAction.secondary.wasPressedThisFrame && !isKeyDisabled(boundAction.secondary);
+         bool primary = boundAction.primary != Key.None && KeyUtils.GetKeyDown(boundAction.primary) && !isKeyDisabled(boundAction.primary);
+         bool secondary = boundAction.secondary != Key.None && KeyUtils.GetKeyDown(boundAction.secondary) && !isKeyDisabled(boundAction.secondary);
          return primary || secondary;
       }
 
@@ -139,8 +151,8 @@ public class InputManager : MonoBehaviour
 
    public static bool getKeyActionUp (KeyAction action) {
       if (self._keybindings.TryGetValue(action, out BoundKeyAction boundAction)) {
-         bool primary = boundAction.primary != null && boundAction.primary.wasReleasedThisFrame && !isKeyDisabled(boundAction.primary);
-         bool secondary = boundAction.secondary != null && boundAction.secondary.wasReleasedThisFrame && !isKeyDisabled(boundAction.secondary);
+         bool primary = boundAction.primary != Key.None && KeyUtils.GetKeyUp(boundAction.primary) && !isKeyDisabled(boundAction.primary);
+         bool secondary = boundAction.secondary != Key.None && KeyUtils.GetKeyUp(boundAction.secondary) && !isKeyDisabled(boundAction.secondary);
          return primary || secondary;
       }
 
@@ -150,9 +162,9 @@ public class InputManager : MonoBehaviour
    public static int getHorizontalAxis () {
       int axis = 0;
 
-      if (getKeyAction(KeyAction.MoveLeft)) {
+      if (getKeyAction(KeyAction.MoveLeft) || self.joystickNavigation.x < -JOYSTICK_ACTIVE_VALUE) {
          axis = -1;
-      } else if (getKeyAction(KeyAction.MoveRight)) {
+      } else if (getKeyAction(KeyAction.MoveRight) || self.joystickNavigation.x > JOYSTICK_ACTIVE_VALUE) {
          axis = 1;
       }
 
@@ -162,9 +174,9 @@ public class InputManager : MonoBehaviour
    public static int getVerticalAxis () {
       int axis = 0;
 
-      if (getKeyAction(KeyAction.MoveUp)) {
+      if (getKeyAction(KeyAction.MoveUp) || self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE) {
          axis = 1;
-      } else if (getKeyAction(KeyAction.MoveDown)) {
+      } else if (getKeyAction(KeyAction.MoveDown) || self.joystickNavigation.y < -JOYSTICK_ACTIVE_VALUE) {
          axis = -1;
       }
 
@@ -258,6 +270,14 @@ public class InputManager : MonoBehaviour
       return false;
    }
 
+   public static bool isSpeedUpKeyDown () {
+      if (isActionInputEnabled()) {
+         return getKeyAction(KeyAction.SpeedUp);
+      }
+
+      return false;
+   }
+
    public static bool isSpeedUpKeyReleased () {
       if (isActionInputEnabled()) {
          return getKeyActionUp(KeyAction.SpeedUp);
@@ -280,18 +300,18 @@ public class InputManager : MonoBehaviour
       return true;
    }
 
-   public static void setBindingKey (KeyAction action, ButtonControl key, bool isPrimary) {
+   public static void setBindingKey (KeyAction action, Key key, bool isPrimary) {
       // Unbind any actions that uses this key
       foreach (BoundKeyAction boundKeyAction in self._keybindings.Values) {
          bool changed = false;
 
          if (boundKeyAction.primary == key) {
-            boundKeyAction.primary = null;
+            boundKeyAction.primary = Key.None;
             changed = true;
          }
 
          if (boundKeyAction.secondary == key) {
-            boundKeyAction.secondary = null;
+            boundKeyAction.secondary = Key.None;
             changed = true;
          }
 
@@ -329,17 +349,17 @@ public class InputManager : MonoBehaviour
       return new Vector2(MouseUtils.mousePosition.x / Screen.width, MouseUtils.mousePosition.y / Screen.height);
    }
 
-   private static bool isKeyDisabled (ButtonControl keyCode) {
+   private static bool isKeyDisabled (Key keyCode) {
       return self._disabledKeys.Contains(keyCode);
    }
 
-   public static void disableKey (ButtonControl keyCode) {
+   public static void disableKey (Key keyCode) {
       if (!self._disabledKeys.Contains(keyCode)) {
          self._disabledKeys.Add(keyCode);
       }
    }
 
-   public static void enableKey (ButtonControl keyCode) {
+   public static void enableKey (Key keyCode) {
       if (self._disabledKeys.Contains(keyCode)) {
          self._disabledKeys.Remove(keyCode);
       }
@@ -351,7 +371,7 @@ public class InputManager : MonoBehaviour
    private Dictionary<KeyAction, BoundKeyAction> _keybindings = new Dictionary<KeyAction, BoundKeyAction>();
 
    // A list of keys that will be ignored when getting inputs
-   private List<ButtonControl> _disabledKeys = new List<ButtonControl>();
+   private List<Key> _disabledKeys = new List<Key>();
 
    #endregion
 }

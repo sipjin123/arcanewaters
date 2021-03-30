@@ -10,7 +10,17 @@ public static class KeyUtils {
          return false;
       }
 
-      return Keyboard.current[key].isPressed;
+      if (key == Key.None) {
+         return false;
+      }
+
+      try {
+         return Keyboard.current[key].isPressed;
+      } catch {
+         // TODO: Remove after input system polishing
+         D.debug("Invalid key to press: " + key);
+         return false;
+      }
    }
 
    public static bool GetKeyDown (Key key) {
@@ -18,7 +28,17 @@ public static class KeyUtils {
          return false;
       }
 
-      return Keyboard.current[key].wasPressedThisFrame;
+      if (key == Key.None) {
+         return false;
+      }
+
+      try {
+         return Keyboard.current[key].wasPressedThisFrame;
+      } catch {
+         // TODO: Remove after input system polishing
+         D.debug("Invalid key to press down: " + key);
+         return false;
+      }
    }
 
    public static bool GetKeyUp (Key key) {
@@ -26,7 +46,17 @@ public static class KeyUtils {
          return false;
       }
 
-      return Keyboard.current[key].wasReleasedThisFrame;
+      if (key == Key.None) {
+         return false;
+      }
+
+      try {
+         return Keyboard.current[key].wasReleasedThisFrame;
+      } catch {
+         // TODO: Remove after input system polishing
+         D.debug("Invalid key to release: " + key);
+         return false;
+      }
    }
 
    #endregion

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
 
@@ -32,11 +33,11 @@ public class KeybindingsEntry : ClientMonoBehaviour
       return this;
    }
 
-   public void setPrimary (ButtonControl key) {
+   public void setPrimary (Key key) {
       _primaryText.text = key.ToString();
    }
 
-   public void setSecondary (ButtonControl key) {
+   public void setSecondary (Key key) {
       _secondaryText.text = key.ToString();
    }
 
