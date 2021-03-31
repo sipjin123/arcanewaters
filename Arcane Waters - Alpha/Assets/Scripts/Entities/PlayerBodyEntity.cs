@@ -145,7 +145,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       // Gamepad action trigger
-      InputManager.self.inputMaster.Player.Interact.performed += func => triggerInteractAction();
+      InputManager.self.inputMaster.Player.Interact.performed += func => triggerInteractAction(false);
 
       // Gamepad jump trigger
       InputManager.self.inputMaster.Player.Jump.performed += func => triggerJumpAction();
@@ -440,7 +440,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
    }
 
-   private void triggerInteractAction () {
+   private void triggerInteractAction (bool faceMouseDirection = true) {
       // First check under the mouse
       bool foundInteractable = tryInteractUnderMouse();
 
@@ -450,7 +450,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       if (!foundInteractable && !isMoving()) {
-         tryInteractAnimation();
+         tryInteractAnimation(faceMouseDirection);
       }
    }
 
@@ -554,7 +554,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       return foundInteractable;
    }
 
-   private void tryInteractAnimation () {
+   private void tryInteractAnimation (bool faceMouseDirection = true) {
       Direction newDirection = forceLookAt(Camera.main.ScreenToWorldPoint(MouseUtils.mousePosition));
 
       if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast

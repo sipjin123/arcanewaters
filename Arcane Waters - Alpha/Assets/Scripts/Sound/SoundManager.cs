@@ -450,11 +450,6 @@ public class SoundManager : MonoBehaviour {
       source.minDistance = .5f;
       source.maxDistance = 3f;
       source.spread = 90f;
-
-      if (logInfo) {
-         D.debug("Vol: " + source.volume);
-         D.debug("Spatial: " + source.spatialBlend);
-      }
    }
 
    protected static void applySoundEffectSettings (AudioSource source) {
