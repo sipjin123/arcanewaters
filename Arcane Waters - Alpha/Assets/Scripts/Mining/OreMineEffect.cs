@@ -59,15 +59,21 @@ public class OreMineEffect : MonoBehaviour {
    }
 
    public void endAnim () {
-      GameObject spawnedObj = Instantiate(PrefabsManager.self.orePickupPrefab, oreNode.transform);
-      OrePickup orePickup = spawnedObj.GetComponent<OrePickup>();
-      orePickup.initData(ownerId, voyageGroupId, oreEffectId, oreNode, spriteRender.sprite, animatingObj.rotation);
-      oreNode.orePickupCollection.Add(oreEffectId, orePickup);
+      if (!oreNode.orePickupCollection.ContainsKey(oreEffectId)) {
+         GameObject spawnedObj = Instantiate(PrefabsManager.self.orePickupPrefab, oreNode.transform);
+         OrePickup orePickup = spawnedObj.GetComponent<OrePickup>();
+         orePickup.initData(ownerId, voyageGroupId, oreEffectId, oreNode, spriteRender.sprite, animatingObj.rotation);
 
-      orePickup.spriteRender.sprite = OreManager.self.getSprite(oreNode.oreType);
-      spawnedObj.transform.position = animatingObj.position;
-      spawnedObj.transform.localScale = new Vector3(transform.localScale.x, 1, 1);
-      gameObject.SetActive(false);
+         oreNode.orePickupCollection.Add(oreEffectId, orePickup);
+
+         orePickup.spriteRender.sprite = OreManager.self.getSprite(oreNode.oreType);
+         spawnedObj.transform.position = animatingObj.position;
+         spawnedObj.transform.localScale = new Vector3(transform.localScale.x, 1, 1);
+         gameObject.SetActive(false);
+      } else {
+         D.debug("Error here! Ore pickup collection already contains {" + oreEffectId + "}");
+      }
+      
       Destroy(this.gameObject);
    }
 

@@ -4133,6 +4133,8 @@ public class RPCManager : NetworkBehaviour
             float angleOffset = Random.Range(-25, 25);
             processClientMineEffect(oreId, oreNode.transform.position, DirectionUtil.getDirectionFromPoint(startingPosition, endPosition), angleOffset, randomSpeed, i, _player.userId, _player.voyageGroupId);
          }
+      } else {
+         D.adminLog("Player successfully interacted ore {" + oreNode.id + "} Mining is not Finished: {" + oreNode.interactCount + "}", D.ADMIN_LOG_TYPE.Mine);
       }
    }
 

@@ -76,6 +76,7 @@ public class MiningTrigger : MonoBehaviour
                   OreNode oreNode = hit.collider.GetComponent<OreNode>();
                   if (!oreNode.hasBeenMined() && !oreIdsInteracted.Exists(_ => _ == oreNode.id) && !oreNode.finishedMining()) {
                      if (oreNode.voyageId > 0) {
+                        D.adminLog("Player attempting to mine ore {" + oreNode.id + "}", D.ADMIN_LOG_TYPE.Mine);
                         bodyEntity.rpc.Cmd_InteractOre(oreNode.id, transform.position, oreNode.transform.position);
                         oreIdsInteracted.Add(oreNode.id);
                      } else {
