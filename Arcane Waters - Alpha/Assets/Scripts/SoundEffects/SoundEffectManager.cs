@@ -94,7 +94,7 @@ public class SoundEffectManager : MonoBehaviour
                return;
             }
             effect.calibrateSource(source);
-
+            source.volume = effect.minVolume;
             source.loop = false;
             source.Play();
          }
@@ -109,6 +109,7 @@ public class SoundEffectManager : MonoBehaviour
       AudioSource audioSource = Instantiate(PrefabsManager.self.sound3dPrefab, target.position, Quaternion.identity);
       audioSource.transform.SetParent(target, true);
       audioSource.clip = effect.clip;
+      audioSource.volume = effect.minVolume;
       audioSource.Play();
 
       // Destroy object after clip finishes playing
