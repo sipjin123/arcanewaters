@@ -144,11 +144,17 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          this.hideEntityName();
       }
 
-      // Gamepad action trigger
-      InputManager.self.inputMaster.Player.Interact.performed += func => triggerInteractAction(false);
+      if (isLocalPlayer) {
+         // Gamepad action trigger
+         InputManager.self.inputMaster.Player.Interact.performed += func => triggerInteractAction(false);
 
-      // Gamepad jump trigger
-      InputManager.self.inputMaster.Player.Jump.performed += func => triggerJumpAction();
+         // Gamepad jump trigger
+         InputManager.self.inputMaster.Player.Jump.performed += func => {
+            if (InputManager.isActionInputEnabled()) {
+               triggerJumpAction();
+            }
+         };
+      }
    }
 
    public override PlayerBodyEntity getPlayerBodyEntity () {
