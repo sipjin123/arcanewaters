@@ -130,8 +130,7 @@ public class BattleUIManager : MonoBehaviour {
       }
 
       foreach (AbilityButton abilityButton in abilityTargetButtons) {
-         bool doesStanceMatch = doesAttackMatchStance(abilityButton, playerStance);
-         if (abilityButton.abilityType == abilityType && doesStanceMatch && !abilityButton.cooldownImage.enabled) {
+         if (abilityButton.abilityType == abilityType && !abilityButton.cooldownImage.enabled) {
             abilityButton.enableButton();
          } else {
             if (abilityType != AbilityType.Undefined) {
@@ -139,8 +138,7 @@ public class BattleUIManager : MonoBehaviour {
                   " Index: " + abilityButton.abilityIndex +
                   " TypeIndex: " + abilityButton.abilityTypeIndex +
                   " ButtonType: " + abilityButton.abilityType +
-                  " AbilityType: " + abilityType +
-                  " Match: " + doesStanceMatch, D.ADMIN_LOG_TYPE.Ability);
+                  " AbilityType: " + abilityType, D.ADMIN_LOG_TYPE.Ability);
             }
 
             abilityButton.disableButton();
@@ -165,6 +163,16 @@ public class BattleUIManager : MonoBehaviour {
 
    private void triggerAbilityByKey (int keySlot) {
       AbilityButton selectedButton = abilityTargetButtons.ToList().Find(_ => _.abilityIndex == keySlot);
+
+      // If player is using keys 1-5 to attack with no target selected, then select a random target
+      if (BattleSelectionManager.self.selectedBattler == null) {
+         try {
+            BattleSelectionManager.self.clickBattler(BattleSelectionManager.self.getRandomTarget());
+         } catch {
+            D.debug("Unable to find an opponent to target");
+         }
+      }
+
       if (selectedButton != null) {
          if (selectedButton.isEnabled && BattleSelectionManager.self.selectedBattler != null) {
             if (BattleManager.self.getPlayerBattler().canCastAbility()) {
@@ -276,13 +284,13 @@ public class BattleUIManager : MonoBehaviour {
 
                if (indexCounter > 0 && !isAbilityValid) {
                   D.adminLog("Disabled because Invalid! " + currentAbility.itemName + " : " + currentAbility.itemID + " : " + currentAbility.abilityType, D.ADMIN_LOG_TYPE.Ability);
-                  abilityButton.disableButton();
+                  abilityButton.clearButton();
                   abilityButton.isInvalidAbility = true;
                }
 
                if (weaponClass != currentAbility.classRequirement && currentAbility.itemID != AbilityManager.PUNCH_ID) {
                   D.adminLog("Class Requirement does not match! WepClass:" + weaponClass + " AbilityClass: " + currentAbility.classRequirement, D.ADMIN_LOG_TYPE.Ability);
-                  abilityButton.disableButton();
+                  abilityButton.clearButton();
                   abilityButton.isInvalidAbility = true;
                }
 
@@ -304,13 +312,7 @@ public class BattleUIManager : MonoBehaviour {
             abilityButton.enabled = true;
          } else {
             // Disable skill button if equipped abilities does not reach 5 (max abilities in combat)
-            abilityButton.abilityIndex = -1;
-            abilityButton.abilityTypeIndex = -1;
-            abilityButton.abilityType = AbilityType.Undefined;
-            abilityButton.abilityIcon.sprite = null;
-            abilityButton.disableButton();
-            abilityButton.enabled = false;
-            abilityButton.gameObject.SetActive(false);
+            abilityButton.clearButton();
          }
          indexCounter++;
       }

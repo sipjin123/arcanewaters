@@ -4901,7 +4901,7 @@ public class RPCManager : NetworkBehaviour
             int validOffenseAbilities = 0;
             int validBuffAbilities = 0;
             const int MAX_ABILITIES = 5;
-            List<int> invalidSlot = new List<int> { 1, 2, 3, 4, 5 };
+            List<int> invalidSlot = new List<int> { 0, 1, 2, 3, 4, 5 };
             List<AbilitySQLData> equippedAbilityList = abilityDataList.FindAll(_ => _.equipSlotIndex >= 0);
             foreach (AbilitySQLData abilitySql in equippedAbilityList) {
                BasicAbilityData basicAbilityData = AbilityManager.self.allGameAbilities.Find(_ => _.itemID == abilitySql.abilityID);
@@ -5043,21 +5043,29 @@ public class RPCManager : NetworkBehaviour
                }
             }
 
-            // Update the inventory slot index
-            foreach (AbilitySQLData equippedAbility in equippedAbilityList) {
-               if (equippedAbility.equipSlotIndex < 1) {
-                  D.adminLog("--> Updating Ability Slot"
-                     + " :: Name:{" + equippedAbility.name + "} :: Slot: {"
-                     + equippedAbility.equipSlotIndex + "} as new Slot :: {"
-                     + invalidSlot[0] + "}", D.ADMIN_LOG_TYPE.Ability);
+            // Make sure no invalid abilities are part of the ability list to be sent
+            foreach (AbilitySQLData ability in equippedAbilityList.FindAll(_=>_.abilityID < 1)) {
+               D.adminLog("Removing Ability due to invaid slot id :: Name: " + ability.name
+                  + " ID: " + ability.abilityID
+                  + " Type: " + ability.abilityType, D.ADMIN_LOG_TYPE.Ability);
+            }
+            equippedAbilityList.RemoveAll(_=>_.abilityID < 1);
 
-                  equippedAbility.equipSlotIndex = invalidSlot[0];
-                  invalidSlot.RemoveAt(0);
+            // Cache the invalid abilities that will be discarded
+            List<int> discardedAbilities = new List<int>();
+            int equipmentCount = equippedAbilityList.Count;
+            for (int i = 0; i < equipmentCount; i++) {
+               int currEquipSlot = equippedAbilityList[i].equipSlotIndex;
+               if (invalidSlot.Contains(currEquipSlot)) {
+                  discardedAbilities.Add(currEquipSlot);
                }
             }
 
-            // Make sure no invalid abilities are part of the ability list to be sent
-            equippedAbilityList.RemoveAll(_=>_.abilityID < 1);
+            for (int i = 0; i < discardedAbilities.Count; i++) {
+               AbilitySQLData invalidAbility = equippedAbilityList.Find(_ => _.equipSlotIndex == discardedAbilities[i]);
+               D.adminLog("This is an invalid ability, removing now {" + invalidAbility.equipSlotIndex + "}", D.ADMIN_LOG_TYPE.Ability);
+               equippedAbilityList.Remove(invalidAbility);
+            }
 
             // Provides all the abilities for the players in the party
             setupAbilitiesForPlayers(bodyEntities, equippedAbilityList, weaponClass, validOffenseAbilities, validOffenseAbilities > 0, weaponCategory);

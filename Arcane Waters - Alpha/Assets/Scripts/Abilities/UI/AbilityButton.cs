@@ -222,6 +222,16 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
       isEnabled = false;
    }
 
+   public void clearButton () {
+      abilityIndex = -1;
+      abilityTypeIndex = -1;
+      abilityType = AbilityType.Undefined;
+      abilityIcon.sprite = ImageManager.self.blankSprite;
+      disableButton();
+      enabled = false;
+      gameObject.SetActive(false);
+   }
+
    public Button getButton () {
       return abilityButton;
    }
