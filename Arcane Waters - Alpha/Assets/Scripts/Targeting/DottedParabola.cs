@@ -51,7 +51,7 @@ public class DottedParabola : MonoBehaviour {
 
       // Override end dot
       if (endDotOverride && _parabolaSegmentRenderers.Count > 1) {
-         _parabolaSegmentRenderers[_parabolaSegmentRenderers.Count - 1].sprite = endDotOverride;
+         // _parabolaSegmentRenderers[_parabolaSegmentRenderers.Count - 1].sprite = endDotOverride;
       }
    }
 

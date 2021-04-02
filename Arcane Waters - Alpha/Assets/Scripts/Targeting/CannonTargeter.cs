@@ -40,6 +40,10 @@ public class CannonTargeter : MonoBehaviour {
 
    #endregion
 
+   public void Start () {
+      chargeRenderer.enabled = false;
+   }
+
    public void setTarget (Vector3 targetPosition) {
       _targetPosition = targetPosition;
    }

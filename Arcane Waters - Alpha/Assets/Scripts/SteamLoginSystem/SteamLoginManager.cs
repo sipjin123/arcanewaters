@@ -72,14 +72,14 @@ namespace SteamLoginSystem
          string clientBuildState = "";
 
          // Check build state
-         if (Util.getJenkinsBuildId().StartsWith(Util.DEVELOPMENT_BUILD)) {
+         if (Util.getJenkinsBuildTitle().StartsWith(Util.DEVELOPMENT_BUILD)) {
             clientBuildState = "Development";
-         } else if (Util.getJenkinsBuildId().StartsWith(Util.PRODUCTION_BUILD)) {
+         } else if (Util.getJenkinsBuildTitle().StartsWith(Util.PRODUCTION_BUILD)) {
             clientBuildState = "Production";
-         } else if (Util.getJenkinsBuildId().StartsWith(Util.STANDALONE_BUILD)) {
+         } else if (Util.getJenkinsBuildTitle().StartsWith(Util.STANDALONE_BUILD)) {
             clientBuildState = "Standalone";
          } else {
-            clientBuildState = "Undefined {" + Util.getJenkinsBuildId() + "}";
+            clientBuildState = "Undefined {" + Util.getJenkinsBuildTitle() + "}";
          }
 
          // Check steam state

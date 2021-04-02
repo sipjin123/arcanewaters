@@ -1054,7 +1054,7 @@ public class Util : MonoBehaviour
             gameVersion = int.Parse(getJenkinsBuildIdNumber());
          } catch {
             gameVersion = 0;
-            D.debug("Failed to get game version properly" + " : " + getJenkinsBuildId() + " : " + getJenkinsBuildIdNumber());
+            D.debug("Failed to get game version properly" + " : " + getJenkinsBuildTitle() + " : " + getJenkinsBuildIdNumber());
          }
       }
 
@@ -1062,7 +1062,7 @@ public class Util : MonoBehaviour
    }
 
    public static string getFormattedGameVersion () {
-      return getJenkinsBuildId();
+      return getJenkinsBuildTitle();
    }
 
    public static int getDeploymentId () {
@@ -1120,59 +1120,40 @@ public class Util : MonoBehaviour
       return branchType;
    }
 
-   public static string getJenkinsBuildId () {
+   public static string getJenkinsBuildTitle () {
       // Declare local variables
-      string jenkinsBuildId = null;
-      string buildName;
-      int index = -1;
+      string buildName = null;
 
       // Get data from config file
       TextAsset jenkinsBuildConfigAsset = Resources.Load<TextAsset>("config");
       Dictionary<string, object> jenkinsBuildConfig = MiniJSON.Json.Deserialize(jenkinsBuildConfigAsset.text) as Dictionary<string, object>;
-      buildName = jenkinsBuildConfig["name"].ToString();
 
       if (jenkinsBuildConfig != null && jenkinsBuildConfig.ContainsKey("name")) {
-         // Remove leading text until the first hyphen is encountered (i.e. "ArcaneWaters-")
-         if (buildName.Contains("-")) {
-            index = buildName.IndexOf("-");
-         }
+         buildName = jenkinsBuildConfig["name"].ToString();
       }
 
-      if (jenkinsBuildConfig.ContainsKey("buildId")) {
-         jenkinsBuildId = buildName.Substring(index + 1) + "-" + jenkinsBuildConfig["buildId"].ToString();
-      } else {
-         jenkinsBuildId = buildName.Substring(index + 1);
-      }
+      string buildNumber = (getJenkinsBuildIdNumber() != null) ? "-" + getJenkinsBuildIdNumber() : "";
+      string jenkinsBuildId = buildName + buildNumber;
       return jenkinsBuildId;
    }
 
    public static string getJenkinsBuildIdNumber () {
       // Declare local variables
-      string jenkinsBuildId = null;
-      string buildName;
+      string jenkinsBuildIdNumber = null;
 
       try {
          TextAsset deploymentConfigAsset = Resources.Load<TextAsset>("config");
          Dictionary<string, object> deploymentConfig = MiniJSON.Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string, object>;
 
-         if (deploymentConfig != null && deploymentConfig.ContainsKey("name")) {
-            buildName = getJenkinsBuildId();
-
-            // Remove leading text until the last hyphen is encountered (i.e. "ArcaneWaters-")
-            if (buildName.Contains("-")) {
-               string[] xmlSubGroup = buildName.Split(new string[] { "-" }, StringSplitOptions.None);
-
-               // The last index is the build number
-               jenkinsBuildId = xmlSubGroup[xmlSubGroup.Length - 1];
-            } else {
-               D.debug("Invalid naming convention! " + buildName);
-            }
+         if (deploymentConfig != null && deploymentConfig.ContainsKey("buildId")) {
+            jenkinsBuildIdNumber = deploymentConfig["buildId"].ToString();
+         } else {
          }
       } catch {
-         D.debug("Failed to get jenkins build id");
+         D.debug("Failed to get jenkins build id number");
       }
 
-      return jenkinsBuildId;
+      return jenkinsBuildIdNumber;
    }
 
    // Convert UTC time to EST

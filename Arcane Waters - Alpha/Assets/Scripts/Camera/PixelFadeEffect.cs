@@ -85,6 +85,14 @@ public class PixelFadeEffect : MonoBehaviour, IScreenFader {
       return CameraFilterPack_Pixel_Pixelisation.ChangePixel;
    }
 
+   public float getFadeInDuration () {
+      return FADE_IN_DURATION;
+   }
+
+   public float getFadeOutDuration () {
+      return FADE_OUT_DURATION;
+   }
+
    #region Private Variables
 
    // Our minimum pixel amount

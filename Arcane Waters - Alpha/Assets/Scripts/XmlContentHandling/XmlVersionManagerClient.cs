@@ -94,7 +94,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
          // Add progress to loading screen if it is showing already
          if (PanelManager.self.loadingScreen.isShowing()) {
-            PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.XmlExtraction, CameraManager.defaultCamera.getPixelFadeEffect(), CameraManager.defaultCamera.getPixelFadeEffect());
+            PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.XmlExtraction);
             updateLoadingProgress();
          }
 

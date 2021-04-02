@@ -98,8 +98,7 @@ public class QuickLaunchPanel : MonoBehaviour {
          if (hostToggle.isOn) {
             MyNetworkManager.self.StartHost();
          } else if (clientToggle.isOn) {
-            IScreenFader fader = CameraManager.defaultCamera.getPixelFadeEffect();
-            PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.Login, fader, fader);
+            PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.Login);
 
             LoadingUtil.executeAfterFade(() => {
                MyNetworkManager.self.StartClient();

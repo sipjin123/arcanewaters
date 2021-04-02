@@ -148,27 +148,10 @@ public class CharacterStyleGrid : MonoBehaviour
       toggleGroup.enabled = true;
    }
 
-   public void displayMaleHairstyles () {
+   public void displayHairstyles () {
       _layoutGroup.enabled = true;
       foreach (CharacterPortrait portrait in _portraits) {
-         HairLayer.Type type = portrait.characterStack.hairFrontLayer.getType();
-         if (type.ToString().Contains("Male")) {
-            portrait.gameObject.SetActive(true);
-         } else {
-            portrait.gameObject.SetActive(false);
-         }
-      }
-   }
-
-   public void displayFemaleHairstyles () {
-      _layoutGroup.enabled = true;
-      foreach (CharacterPortrait portrait in _portraits) {
-         HairLayer.Type type = portrait.characterStack.hairFrontLayer.getType();
-         if (type.ToString().Contains("Female")) {
-            portrait.gameObject.SetActive(true);
-         } else {
-            portrait.gameObject.SetActive(false);
-         }
+         portrait.gameObject.SetActive(true);
       }
    }
 
@@ -211,7 +194,7 @@ public class CharacterStyleGrid : MonoBehaviour
          });
 
          // Display default hairstyles
-         displayMaleHairstyles();
+         displayHairstyles();
 
          // Select the first active portrait in the list
          foreach (CharacterPortrait charPortrait in _portraits) {

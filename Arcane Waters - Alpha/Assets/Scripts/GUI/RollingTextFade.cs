@@ -92,8 +92,8 @@ public class RollingTextFade : ClientMonoBehaviour {
             int characterCount = textInfo.characterCount;
 
             for (int i = startingCharacterRange; i < currentCharacter + 1; i++) {
-               // Skip characters that are not visible
-               if (!textInfo.characterInfo[i].isVisible) {
+               // Skip characters that are not visible, unless we're on the final character
+               if (!textInfo.characterInfo[i].isVisible && i != currentCharacter) {
                   continue;
                }
 

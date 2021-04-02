@@ -78,10 +78,12 @@ public class BottomBar : MonoBehaviour {
 
    public void toggleMapPanel () {
       OverworldScreen panel = (OverworldScreen) PanelManager.self.get(Panel.Type.Overworld);
-
+      
       // If the panel is not showing, send a request to the server to get our exploration data
       if (!panel.isShowing()) {
-         PanelManager.self.togglePanel(Panel.Type.Overworld);
+         if (Global.player != null) {
+            PanelManager.self.togglePanel(Panel.Type.Overworld);
+         }
       } else {
          PanelManager.self.togglePanel(Panel.Type.Overworld);
       }

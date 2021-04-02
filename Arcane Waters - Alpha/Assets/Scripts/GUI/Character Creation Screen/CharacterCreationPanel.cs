@@ -204,7 +204,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
          hideWithTransition();
          CharacterCreationSpotFader.self.fadeOutColor();
-         PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.CharacterCreation, PostSpotFader.self, PostSpotFader.self);
+         PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.CharacterCreation);
 
          LoadingUtil.executeAfterFade(() => {
             // Show loading screen until player warps to map
@@ -230,11 +230,10 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       hide();
 
       CharacterCreationSpotFader.self.fadeOutColor();
-
-      float fadeOutDuration = PostSpotFader.self.fadeOut();
+      float fadeOutDuration = PanelManager.self.loadingScreen.getFader().getFadeOutDuration();
 
       // Show loading screen while starting map is being created
-      PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, CameraManager.defaultCamera.getPixelFadeEffect(), PostSpotFader.self);
+      PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation);
 
       // Return camera to its original position after the fadeout
       CharacterScreen.self.myCamera.setDefaultSettings(fadeOutDuration + 0.5f);

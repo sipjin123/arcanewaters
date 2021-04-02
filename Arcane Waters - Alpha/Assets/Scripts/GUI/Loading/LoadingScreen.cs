@@ -31,7 +31,11 @@ public class LoadingScreen : MonoBehaviour
 
    #endregion
 
-   public void show (LoadingType loadingType, IScreenFader fadeOutEffect, IScreenFader fadeInEffect) {
+   private void Awake () {
+      _pixelEffectFader = CameraManager.defaultCamera.getPixelFadeEffect();
+   }
+
+   public void show (LoadingType loadingType) {
       _loadingProcesses.Add(new LoadingProcess { type = loadingType, progress = 0 });
 
       if (!_isShowing) {
@@ -46,7 +50,7 @@ public class LoadingScreen : MonoBehaviour
          elementsCanvasGroup.alpha = 0f;
          loadingFinishedMessage.enabled = false;
 
-         StartCoroutine(CO_Show(fadeOutEffect, fadeInEffect));
+         StartCoroutine(CO_Show(_pixelEffectFader, _pixelEffectFader));
       }
    }
 
@@ -149,6 +153,10 @@ public class LoadingScreen : MonoBehaviour
       return _loadingProcesses.Count == 0 ? 1f : _loadingProcesses.Min(lp => lp.progress);
    }
 
+   public IScreenFader getFader () {
+      return _pixelEffectFader;
+   }
+
    #region Private Variables
 
    // List of processes that require the loading screen at a given point of time
@@ -166,6 +174,9 @@ public class LoadingScreen : MonoBehaviour
 
    // Some extra time to wait after a fade transition ended
    private const float ADDITIONAL_WAIT_TIME = 0.25f;
+
+   // A reference to the screen fader used for transitions
+   private IScreenFader _pixelEffectFader;
 
    [Serializable]
    public class LoadingProcess

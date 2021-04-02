@@ -113,6 +113,14 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
       _material.SetVector(_spotPositionPropertyID, _spotScreenPosition);
    }
 
+   public float getFadeInDuration () {
+      return _fadeInDuration;
+   }
+
+   public float getFadeOutDuration () {
+      return _fadeOutDuration;
+   }
+
    #region Private Variables
 
    // The progress of the effect

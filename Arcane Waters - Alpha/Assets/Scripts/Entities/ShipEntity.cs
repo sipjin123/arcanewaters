@@ -343,17 +343,19 @@ public class ShipEntity : SeaEntity
       ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesStillSprites;
       
       // Cache ship boost sprite
-      if (shipSizeSpriteCache.shipSize != ShipSize.None) {
-         _shipBoostSpritesFront = shipSizeSpriteCache.speedBoostSpriteFront.texture;
-         _shipBoostSpritesBack = shipSizeSpriteCache.speedBoostSpriteBack.texture;
-         _boostCircleOutline = shipSizeSpriteCache.boostCircleOutline.texture;
-         _boostCircleFill = shipSizeSpriteCache.boostCircleFill.texture;
-      } else {
-         shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);
-         _shipBoostSpritesFront = shipSizeSpriteCache.speedBoostSpriteFront.texture;
-         _shipBoostSpritesBack = shipSizeSpriteCache.speedBoostSpriteBack.texture;
-         _boostCircleOutline = shipSizeSpriteCache.boostCircleOutline.texture;
-         _boostCircleFill = shipSizeSpriteCache.boostCircleFill.texture;
+      if (!(this is BotShipEntity)) {
+         if (shipSizeSpriteCache.shipSize != ShipSize.None) {
+            _shipBoostSpritesFront = shipSizeSpriteCache.speedBoostSpriteFront.texture;
+            _shipBoostSpritesBack = shipSizeSpriteCache.speedBoostSpriteBack.texture;
+            _boostCircleOutline = shipSizeSpriteCache.boostCircleOutline.texture;
+            _boostCircleFill = shipSizeSpriteCache.boostCircleFill.texture;
+         } else {
+            shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);
+            _shipBoostSpritesFront = shipSizeSpriteCache.speedBoostSpriteFront.texture;
+            _shipBoostSpritesBack = shipSizeSpriteCache.speedBoostSpriteBack.texture;
+            _boostCircleOutline = shipSizeSpriteCache.boostCircleOutline.texture;
+            _boostCircleFill = shipSizeSpriteCache.boostCircleFill.texture;
+         }
       }
 
       // Set the initial idle sprites

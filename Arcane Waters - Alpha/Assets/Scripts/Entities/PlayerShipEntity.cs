@@ -389,6 +389,7 @@ public class PlayerShipEntity : ShipEntity
             }
 
             Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), _cannonTargeter.barrelSocket.position, targetPosition, true, true);
+            _shouldUpdateTargeting = false;
             _cannonTargeter.targetingConfirmed(() => _shouldUpdateTargeting = true);
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
             break;

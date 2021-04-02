@@ -189,10 +189,10 @@ public class D : MonoBehaviour {
       // WARNING: Never send other types to logger than D.warning or D.error! it will cause recursion!
       // Send messages to Logger
       if (type == ChatInfo.Type.Warning) {
-         //LoggerManager.self.AddMessage(prefix + msg, "", LogType.Warning);
+         if (LoggerManager.self) LoggerManager.self.AddMessage(prefix + msg, "", LogType.Warning);
       }
       if (type == ChatInfo.Type.Error) {
-         //LoggerManager.self.AddMessage(prefix + msg, "", LogType.Error);
+         if (LoggerManager.self) LoggerManager.self.AddMessage(prefix + msg, "", LogType.Error);
       }
 
       // Maybe write it to a client log file

@@ -69,7 +69,7 @@ public class CharacterSpot : ClientMonoBehaviour {
       PostSpotFader.self.isLoggingIn = true;
 
       // Show loading screen until player warps to map
-      PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, PostSpotFader.self, PostSpotFader.self);
+      PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation);
 
       LoadingUtil.executeAfterFade(() => {
          // Update our currently selected user ID

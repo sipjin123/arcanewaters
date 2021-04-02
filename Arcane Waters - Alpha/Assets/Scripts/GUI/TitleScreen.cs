@@ -148,8 +148,7 @@ public class TitleScreen : MonoBehaviour {
       MyNetworkManager.self.StopClient();
 
       if (isSteam || (!isSteam && passwordInputField.text.Length > 0 && accountInputField.text.Length > 0)) {
-         IScreenFader fader = CameraManager.defaultCamera.getPixelFadeEffect();
-         PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.Login, fader, fader);
+         PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.Login);
 
          LoadingUtil.executeAfterFade(() => {
             // Start up the Network Client, which triggers the rest of the login process
