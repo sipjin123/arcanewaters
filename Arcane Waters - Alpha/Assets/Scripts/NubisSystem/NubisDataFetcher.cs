@@ -453,6 +453,11 @@ namespace NubisDataHandling {
          // Fetch content from Nubis
          List<AbilitySQLData> abilityList = await NubisClient.callJSONList<List<AbilitySQLData>>(nameof(DB_Main.userAbilities), userId, (int) AbilityEquipStatus.ALL);
 
+         if (abilityList == null || abilityList.Count < 1) {
+            D.debug("Failed to fetch Nubis abilities");
+            return;
+         }
+
          // Update the Skill Panel with the abilities we received from the server
          panel.receiveDataFromServer(abilityList.ToArray());
       }

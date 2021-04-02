@@ -1148,6 +1148,9 @@ public class Util : MonoBehaviour
          if (deploymentConfig != null && deploymentConfig.ContainsKey("buildId")) {
             jenkinsBuildIdNumber = deploymentConfig["buildId"].ToString();
          } else {
+            #if !UNITY_EDITOR
+            D.debug("Invalid naming convention! {" + deploymentConfigAsset.text + "}");
+            #endif
          }
       } catch {
          D.debug("Failed to get jenkins build id number");

@@ -752,6 +752,9 @@ public class AdminManager : NetworkBehaviour
          case "combat":
             Global.updateAdminLog(D.ADMIN_LOG_TYPE.Combat, isEnabled);
             break;
+         case "crop":
+            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Crop, isEnabled);
+            break;
          case "sea":
             Global.updateAdminLog(D.ADMIN_LOG_TYPE.Sea, isEnabled);
             break;
@@ -766,6 +769,9 @@ public class AdminManager : NetworkBehaviour
             break;
          case "ability":
             Global.updateAdminLog(D.ADMIN_LOG_TYPE.Ability, isEnabled);
+            break;
+         case "quest":
+            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Quest, isEnabled);
             break;
          default:
             if (Util.isServerBuild()) {

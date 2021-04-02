@@ -161,6 +161,7 @@ public class EquipmentXMLManager : MonoBehaviour {
             _weaponStatData.Add(rawData);
          }
       }
+      D.debug("EquipmentXML :: Received a total of {" + _weaponStatData.Count + "} weapon data");
       finishedLoading();
    }
 
@@ -174,6 +175,7 @@ public class EquipmentXMLManager : MonoBehaviour {
             _armorStatData.Add(rawData);
          }
       }
+      D.debug("EquipmentXML :: Received a total of {" + _armorStatData.Count + "} armor data");
       finishedLoading();
    }
 
@@ -187,6 +189,7 @@ public class EquipmentXMLManager : MonoBehaviour {
             _hatStatData.Add(rawData);
          }
       }
+      D.debug("EquipmentXML :: Received a total of {" + _hatStatData.Count + "} hat data");
       finishedLoading();
    }
 
