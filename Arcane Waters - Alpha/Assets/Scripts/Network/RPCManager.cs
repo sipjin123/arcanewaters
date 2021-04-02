@@ -1743,6 +1743,8 @@ public class RPCManager : NetworkBehaviour
          questData = NPCQuestManager.self.getQuestData(NPCQuestManager.BLANK_QUEST_ID);
          D.debug("Using a blank quest template due to npc data (" + npcId + ") having no assigned quest id");
       }
+      D.adminLog("Player {" + _player.userId + "} requesting quest info from :{" + npcData.name + "} using quest {" + questData.questGroupName + "}", D.ADMIN_LOG_TYPE.Quest);
+
       List<QuestDataNode> xmlQuestNodeList = new List<QuestDataNode>(questData.questDataNodes);
       List<QuestDataNode> removeNodeList = new List<QuestDataNode>();
 
@@ -1761,9 +1763,16 @@ public class RPCManager : NetworkBehaviour
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (databaseQuestStatusList.Count > 0) {
                QuestStatusInfo highestQuestNodeValue = databaseQuestStatusList.OrderByDescending(_ => _.questNodeId).ToList()[0];
+
+               D.adminLog("Total nodes to check :{" + xmlQuestNodeList.Count + "}", D.ADMIN_LOG_TYPE.Quest);
                foreach (QuestDataNode xmlQuestNode in xmlQuestNodeList) {
                   // Remove node if friendship level requirement is insufficient
                   if (xmlQuestNode.friendshipLevelRequirement > friendshipLevel) {
+                     D.adminLog("Removing quest from list to send to player due to insufficient level:: " +
+                        "NodeID:{" + xmlQuestNode.questDataNodeId + "} " +
+                        "NodeTitle:{" + xmlQuestNode.questNodeTitle + "} " +
+                        "Current:{" + friendshipLevel + "} " +
+                        "Required:{" + xmlQuestNode.friendshipLevelRequirement + "}", D.ADMIN_LOG_TYPE.Quest);
                      removeNodeList.Add(xmlQuestNode);
                   }
 
@@ -2001,6 +2010,7 @@ public class RPCManager : NetworkBehaviour
                Target_ReceiveProcessRewardToggle(_player.connectionToClient);
                bool hasCompletedAllQuests = true;
 
+               List<QuestStatusInfo> incompleteQuestList = new List<QuestStatusInfo>();
                int totalQuestNodes = questData.questDataNodes.Length;
                if (totalQuestStatus.Count < totalQuestNodes) {
                   hasCompletedAllQuests = false;
@@ -2009,14 +2019,20 @@ public class RPCManager : NetworkBehaviour
                   foreach (QuestStatusInfo questStat in totalQuestStatus) {
                      QuestDataNode questNodeReference = questData.questDataNodes.ToList().Find(_ => _.questDataNodeId == questStat.questNodeId);
                      if (questStat.questDialogueId < questNodeReference.questDialogueNodes.Length) {
-                        hasCompletedAllQuests = false;
-                        break;
+                        D.adminLog("-->This quest is not complete yet", D.ADMIN_LOG_TYPE.Quest);
+                        incompleteQuestList.Add(questStat);
                      } 
+                  }
+
+                  if (incompleteQuestList.Count > 0) {
+                     hasCompletedAllQuests = false;
                   }
                }
 
                if (hasCompletedAllQuests) {
                   Target_RemoveQuestNotice(_player.connectionToClient, npcId);
+               } else {
+                  D.adminLog("Player has not completed all quests, remaining:{" + incompleteQuestList.Count + "}", D.ADMIN_LOG_TYPE.Quest);
                }
 
                if (questDialogue.itemRewards != null) {
