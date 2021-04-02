@@ -58,8 +58,8 @@ namespace MapCreationTool
 
       private void Update () {
          // Check from scrolling
-         if (isHovering && Mouse.current.scroll.y.ReadValue() != 0) {
-            PointerScroll.Invoke(lastHoverPosition.Value, Mouse.current.scroll.y.ReadValue());
+         if (isHovering && MouseUtils.mouseScrollY != 0) {
+            PointerScroll.Invoke(lastHoverPosition.Value, MouseUtils.mouseScrollY * .5f);
          }
 
          // Check for movement

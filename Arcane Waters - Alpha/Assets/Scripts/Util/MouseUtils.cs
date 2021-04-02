@@ -11,4 +11,14 @@ public static class MouseUtils {
          return Mouse.current.position.ReadValue();
       }
    }
+
+   public static float mouseScrollY {
+      get {
+         if (Util.isBatch()) {
+            return 0;
+         }
+
+         return Mouse.current.scroll.y.ReadValue() * Time.deltaTime;
+      }
+   }
 }
