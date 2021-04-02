@@ -46,7 +46,7 @@ namespace NubisDataHandling {
    public class XmlVersionEvent : UnityEvent<int> { 
    }
 
-   public class NubisDataFetcher : MonoBehaviour {
+   public class NubisDataFetcher : GenericGameManager {
 
       #region Public Variables
 
@@ -67,11 +67,10 @@ namespace NubisDataHandling {
 
       #endregion
 
-      private void Awake () {
-         D.adminLog("NubisDataFetcher.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+      protected override void Awake () {
+         base.Awake();
          self = this;
          webDirectory = "http://" + Global.getAddress(MyNetworkManager.ServerType.AmazonVPC) + ":7900/";
-         D.adminLog("NubisDataFetcher.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
       }
 
       public static int getSlotIndex () {

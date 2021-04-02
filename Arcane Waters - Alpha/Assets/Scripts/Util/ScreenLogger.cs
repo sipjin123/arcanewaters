@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 // This class is uses for reviewing logs when running multiple clients in one machine, instead of reviewing text file this feature allows on screen log review
 // This class cannot be accessed if it is cloud build, it can be overridden by admin manager if the user is admin which is checked by the server
-public class ScreenLogger : MonoBehaviour {
+public class ScreenLogger : GenericGameManager {
    #region Public Variables
 
    // If logger is enabled
@@ -27,8 +27,8 @@ public class ScreenLogger : MonoBehaviour {
 
    #endregion
 
-   private void Awake () {
-      D.adminLog("ScreenLogger.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       self = this;
       isEnabled = false;
       canvasObj.SetActive(false);
@@ -38,7 +38,6 @@ public class ScreenLogger : MonoBehaviour {
       if (!Util.isCloudBuild()) {
          isEnabled = true;
       }
-      D.adminLog("ScreenLogger.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public void adminActivateLogger () {

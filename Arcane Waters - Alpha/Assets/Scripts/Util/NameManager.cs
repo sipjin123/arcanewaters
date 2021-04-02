@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-public class NameManager : MonoBehaviour {
+public class NameManager : GenericGameManager {
    #region Public Variables
 
    // The text file with male names
@@ -18,8 +18,8 @@ public class NameManager : MonoBehaviour {
 
    #endregion
 
-   void Awake () {
-      D.adminLog("NameManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       self = this;
 
       // Generate our lists of random names
@@ -31,7 +31,6 @@ public class NameManager : MonoBehaviour {
       HashSet<string> femaleSet = new HashSet<string>(_femaleNames);
       femaleSet.ExceptWith(maleSet);
       _femaleNames = new List<string>(femaleSet);
-      D.adminLog("NameManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public string getRandomName (Gender.Type genderType, string areaKey, NPC.Type npcType) {

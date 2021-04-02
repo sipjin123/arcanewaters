@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class AttackTrajectory : MonoBehaviour
-{
+public class AttackTrajectory : GenericGameManager {
    #region Public Variables
 
    // The number of points used to draw the line
@@ -20,14 +19,13 @@ public class AttackTrajectory : MonoBehaviour
 
    #endregion
 
-   private void Awake () {
-      D.adminLog("AttackTrajectory.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       // Instantiates the dots
       _allDots = new AttackTrajectoryDot[POSITIONS_COUNT + 1];
       for (int i = 0; i < _allDots.Length; i++) {
          _allDots[i] = Instantiate(dotPrefab, transform, false);
       }
-      D.adminLog("AttackTrajectory.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public void draw (Vector2 startPos, Vector2 endPos, Color lineColor, float maxRange) {

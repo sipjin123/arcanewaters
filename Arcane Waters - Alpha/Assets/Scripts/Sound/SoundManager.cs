@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Audio;
 
-public class SoundManager : MonoBehaviour {
+public class SoundManager : GenericGameManager {
    #region Public Variables
 
    // The minimum amount of time we'll wait between playing the same clip
@@ -114,8 +114,8 @@ public class SoundManager : MonoBehaviour {
 
    #endregion
 
-   void Awake () {
-      D.adminLog("SoundManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       self = this;
 
       // Load the saved values if there are any
@@ -134,7 +134,6 @@ public class SoundManager : MonoBehaviour {
 
       // Look up the background music for the Title Screen, if we have any
       setBackgroundMusic(Type.Intro_Music);
-      D.adminLog("SoundManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public void Start () {

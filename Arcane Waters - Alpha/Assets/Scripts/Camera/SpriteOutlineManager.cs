@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 
-public class SpriteOutlineManager : MonoBehaviour {
+public class SpriteOutlineManager : GenericGameManager {
    #region Public Variables
 
    // Self
@@ -13,15 +13,14 @@ public class SpriteOutlineManager : MonoBehaviour {
 
    // The prefab we use for outline quads
    public SpriteOutlineRenderer outlineQuadPrefab;
-   
+
    #endregion
 
-   private void Awake () {
-      D.adminLog("SpriteOutlineManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       self = this;
 
       _quadPool = new Pool<SpriteOutlineRenderer>(outlineQuadPrefab);
-      D.adminLog("SpriteOutlineManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public void addOutlinedSprite (SpriteOutline shaderSpriteOutline) {

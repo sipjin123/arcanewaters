@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
-public class PanelManager : MonoBehaviour {
+public class PanelManager : GenericGameManager {
    #region Public Variables
 
    // The stack of panels we want to manage (generally optional panels that can be discarded at any time)
@@ -38,8 +38,8 @@ public class PanelManager : MonoBehaviour {
 
    #endregion
 
-   void Awake () {
-      D.adminLog("PanelManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       self = this;
 
       foreach (Panel panel in panelStack) {
@@ -48,7 +48,6 @@ public class PanelManager : MonoBehaviour {
          // Store references to the Canvas Groups
          panel.canvasGroup = panel.GetComponent<CanvasGroup>();
       }
-      D.adminLog("PanelManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    void Start () {

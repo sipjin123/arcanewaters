@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 
-public class FriendListManager : MonoBehaviour {
+public class FriendListManager : GenericGameManager {
 
    #region Public Variables
 
@@ -20,11 +20,10 @@ public class FriendListManager : MonoBehaviour {
 
    #endregion
 
-   void Awake () {
-      D.adminLog("FriendListManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       self = this;
       _pendingRequestsLastCheckTime = DateTime.UtcNow;
-      D.adminLog("FriendListManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public void startFriendListManagement () {

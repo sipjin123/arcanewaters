@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 
-public class OptionsManager : MonoBehaviour {
+public class OptionsManager : GenericGameManager {
    #region Public Variables
 
    // Player pref key for gui scale
@@ -40,8 +40,8 @@ public class OptionsManager : MonoBehaviour {
 
    #endregion
 
-   private void Awake () {
-      D.adminLog("OptionsManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       self = this;
 
       GUIScale = PlayerPrefs.GetInt(PREF_GUI_SCALE, DEFAULT_GUI_SCALE);
@@ -54,7 +54,6 @@ public class OptionsManager : MonoBehaviour {
       PlayerPrefs.SetInt(PREF_MINIMAP_SCALE, Mathf.RoundToInt(minimapScale));
 
       Global.sprintConstantly = PlayerPrefs.GetInt(OptionsManager.PREF_SPRINT_CONSTANTLY, 0) == 1 ? true : false;
-      D.adminLog("OptionsManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    private void Start () {

@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class AttackCircleAimCursor : MonoBehaviour
-{
+public class AttackCircleAimCursor : GenericGameManager {
    #region Public Variables
 
    // The renderer of the cursor
@@ -16,12 +15,11 @@ public class AttackCircleAimCursor : MonoBehaviour
 
    #endregion
 
-   private void Awake () {
-      D.adminLog("AttackCircleAimCursor.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       _entitiesUnderCursor = new HashSet<NetEntity>();
       _collider = GetComponent<Collider2D>();
       _animator = GetComponent<Animator>();
-      D.adminLog("AttackCircleAimCursor.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public void OnTriggerEnter2D (Collider2D other) {

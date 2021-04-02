@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class AudioListenerManager : MonoBehaviour {
+public class AudioListenerManager : GenericGameManager {
    #region Public Variables
 
    // A static reference to the single instance of this class
@@ -15,12 +15,11 @@ public class AudioListenerManager : MonoBehaviour {
 
    #endregion
 
-   private void Awake () {
-      D.adminLog("AudioListenerManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       self = this;
       AudioListener startingListener = FindObjectOfType<AudioListener>();
       setActiveListener(startingListener);
-      D.adminLog("AudioListenerManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
    
    public void setActiveListener (AudioListener newListener) {

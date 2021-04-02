@@ -5,8 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 
-public class MailManager : MonoBehaviour
-{
+public class MailManager : GenericGameManager {
    #region Public Variables
 
    // The maximum number of items attached to a mail
@@ -23,11 +22,10 @@ public class MailManager : MonoBehaviour
 
    #endregion
 
-   public void Awake () {
-      D.adminLog("MailManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       self = this;
       _unreadMailsLastCheckTime = DateTime.UtcNow;
-      D.adminLog("MailManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public void startMailManagement () {

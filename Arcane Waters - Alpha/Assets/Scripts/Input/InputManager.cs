@@ -4,8 +4,7 @@ using System;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 
-public class InputManager : MonoBehaviour
-{
+public class InputManager : GenericGameManager {
    #region Public Variables
 
    // Event that is triggered when a binding changes
@@ -25,8 +24,8 @@ public class InputManager : MonoBehaviour
 
    #endregion
 
-   private void Awake () {
-      D.adminLog("InputManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       self = this;
 
       loadDefaultKeybindings();
@@ -37,7 +36,6 @@ public class InputManager : MonoBehaviour
       }
 
       initializeInputMaster();
-      D.adminLog("InputManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    private void initializeInputMaster () {

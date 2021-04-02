@@ -7,8 +7,7 @@ using MapCreationTool;
 using UnityThreading;
 using System;
 
-public class PrefabSpawner : MonoBehaviour
-{
+public class PrefabSpawner : GenericGameManager {
    #region Public Variables
 
    // A list of prefabs we want to auto-spawn at startup
@@ -16,10 +15,9 @@ public class PrefabSpawner : MonoBehaviour
 
    #endregion
 
-   void Awake () {
-      D.adminLog("PrefabSpawner.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       spawnPrefabs();
-      D.adminLog("PrefabSpawner.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    protected void spawnPrefabs () {

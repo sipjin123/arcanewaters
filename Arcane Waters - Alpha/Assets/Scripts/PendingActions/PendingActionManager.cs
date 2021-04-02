@@ -4,18 +4,16 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class PendingActionManager : MonoBehaviour
-{
+public class PendingActionManager : GenericGameManager {
    #region Public Variables
 
    #endregion
 
    [ServerOnly]
-   private void Start () {
-      D.adminLog("PendingActionManager.Start...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       D.log("This is a Server build, proceeding to check for pending actions each 5 seconds");
       InvokeRepeating("checkForPendingActions", 0, 10f);
-      D.adminLog("PendingActionManager.Start: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    [ServerOnly]

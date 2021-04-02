@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 
-public class LoadingUtil : MonoBehaviour {
+public class LoadingUtil : GenericGameManager {
    #region Public Variables
 
    // Singleton instance
@@ -13,10 +13,9 @@ public class LoadingUtil : MonoBehaviour {
 
    #endregion
 
-   private void Awake () {
-      D.adminLog("LoadingUtil.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       self = this;
-      D.adminLog("LoadingUtil.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public static void executeAfterFade (Action action) {

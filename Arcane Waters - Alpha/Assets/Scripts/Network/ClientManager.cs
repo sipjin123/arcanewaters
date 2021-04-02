@@ -7,8 +7,7 @@ using Steamworks;
 using SteamLoginSystem;
 using System.Text;
 
-public class ClientManager : MonoBehaviour
-{
+public class ClientManager : GenericGameManager {
    #region Public Variables
 
    // Gets set to true when the Application is shutting down
@@ -28,8 +27,8 @@ public class ClientManager : MonoBehaviour
 
    #endregion
 
-   void Awake () {
-      D.adminLog("ClientManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       self = this;
 
       // Standalone players will eat up all possible CPU unless we set these
@@ -38,7 +37,6 @@ public class ClientManager : MonoBehaviour
 
       // Routinely clear out any unused assets to reduce memory usage
       InvokeRepeating("unloadUnusedAssets", 0f, 300);
-      D.adminLog("ClientManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    void Start () {

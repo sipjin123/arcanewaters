@@ -9,8 +9,7 @@ using System.Text;
 using System;
 using UnityEngine.InputSystem;
 
-public class ChatManager : MonoBehaviour
-{
+public class ChatManager : GenericGameManager {
    #region Public Variables
 
    // The Chat Panel, need to have direct reference in case something gets logged during Awake()
@@ -28,14 +27,13 @@ public class ChatManager : MonoBehaviour
 
    #endregion
 
-   void Awake () {
-      D.adminLog("ChatManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       self = this;
 
       // Setup auto-complete panel
       GameObject optionsPanel = Instantiate(Resources.Load<GameObject>("Prefabs/Auto-completes/Auto-complete Section"), chatPanel.inputField.transform.parent.parent);
       autoCompletePanel = optionsPanel.GetComponentInChildren<AutoCompletePanel>();
-      D.adminLog("ChatManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    private void Start () {

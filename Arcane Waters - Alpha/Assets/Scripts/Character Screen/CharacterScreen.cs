@@ -5,8 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using Cinemachine;
 
-public class CharacterScreen : MonoBehaviour
-{
+public class CharacterScreen : GenericGameManager {
    #region Public Variables
 
    // Our virtual camera
@@ -50,8 +49,8 @@ public class CharacterScreen : MonoBehaviour
 
    #endregion
 
-   private void Awake () {
-      D.adminLog("CharacterScreen.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       self = this;
 
       // Look up components
@@ -63,7 +62,6 @@ public class CharacterScreen : MonoBehaviour
       }
 
       myCamera = virtualCam.GetComponent<MyCamera>();
-      D.adminLog("CharacterScreen.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    private void Start () {

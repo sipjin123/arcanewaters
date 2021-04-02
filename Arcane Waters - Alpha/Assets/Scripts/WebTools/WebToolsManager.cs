@@ -7,8 +7,7 @@ using System;
 using UnityEngine.Networking;
 using Newtonsoft.Json;
 
-public class WebToolsManager : MonoBehaviour
-{
+public class WebToolsManager : GenericGameManager {
    #region Public Variables
 
    // Self
@@ -16,10 +15,9 @@ public class WebToolsManager : MonoBehaviour
 
    #endregion
 
-   private void Awake () {
-      D.adminLog("WebToolsManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       self = this;
-      D.adminLog("WebToolsManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    #region Server History
