@@ -1,10 +1,8 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Events;
-using UnityEngine.UIElements;
 
 public class Battle : NetworkBehaviour {
    #region Public Variables

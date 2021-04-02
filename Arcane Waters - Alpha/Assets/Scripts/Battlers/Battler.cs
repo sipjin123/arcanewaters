@@ -5,7 +5,6 @@ using System.Linq;
 using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 

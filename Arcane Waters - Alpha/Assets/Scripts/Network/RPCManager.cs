@@ -4684,7 +4684,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       Instance battleInstance = InstanceManager.self.getInstance(_player.instanceId);
-      int attackerCount = attackers.Length < 1 ? 1 : attackers.Length;
+      int attackerCount = 1;
       List<BattlerInfo> modifiedDefenderList = defenders.ToList();
 
       // Cache the possible enemy roster
@@ -4712,7 +4712,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // This block will handle the randomizing of the enemy count 
-      int maximumEnemyCount = (attackerCount * 2);
+      int maximumEnemyCount = attackerCount;
       if (maximumEnemyCount > Battle.MAX_ENEMY_COUNT) {
          maximumEnemyCount = Battle.MAX_ENEMY_COUNT;
       }
@@ -4748,6 +4748,10 @@ public class RPCManager : NetworkBehaviour
                if (!battlerData.isSupportType) {
                   combatantCount++;
                }
+            }
+
+            if (modifiedDefenderList.Count >= attackerCount) {
+               break;
             }
          }
       }
