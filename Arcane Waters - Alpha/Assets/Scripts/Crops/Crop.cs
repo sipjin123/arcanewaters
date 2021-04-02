@@ -131,12 +131,21 @@ public class Crop : ClientMonoBehaviour {
       return (this.growthLevel >= getMaxGrowthLevel());
    }
 
-   public bool isReadyForWater () {
+   public bool isReadyForWater (bool logWaterCropData = false) {
       if (isMaxLevel()) {
          return false;
       }
 
-      return (TimeManager.self.getLastServerUnixTimestamp() - lastWaterTimestamp) > this.waterInterval;
+      bool isPlantReadyToBeWatered = (TimeManager.self.getLastServerUnixTimestamp() - lastWaterTimestamp) > this.waterInterval;
+
+      if (logWaterCropData && isPlantReadyToBeWatered) {
+         D.debug("Plant is ready to be watered: {" 
+            + TimeManager.self.getLastServerUnixTimestamp() 
+            + " - " + lastWaterTimestamp 
+            + "} > {" + this.waterInterval + "}");
+      }
+
+      return isPlantReadyToBeWatered;
    }
 
    public static int getXP (Crop.Type cropType) {

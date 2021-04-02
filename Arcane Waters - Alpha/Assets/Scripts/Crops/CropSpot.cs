@@ -51,7 +51,8 @@ public class CropSpot : MonoBehaviour {
       }
 
       // If the player tried to water this spot holding the watering pot, maybe water something
-      if (this.crop != null && (Global.player as PlayerBodyEntity).weaponManager.actionType == Weapon.ActionType.WaterCrop && !this.crop.isMaxLevel() && crop.isReadyForWater()) {
+      if (this.crop != null && (Global.player as PlayerBodyEntity).weaponManager.actionType == Weapon.ActionType.WaterCrop && !this.crop.isMaxLevel() && crop.isReadyForWater(true)) {
+         D.adminLog("Client is trying to water crop", D.ADMIN_LOG_TYPE.Crop);
          Global.player.Cmd_WaterCrop(this.cropNumber);
       }
    }

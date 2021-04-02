@@ -164,6 +164,9 @@ public class CropManager : NetworkBehaviour {
       }
 
       cropInfo = getUpdatedCropInfo(quickGrow, cropInfo);
+      D.adminLog("Player {" + _player.userId + "} just finished interacting with crop Level:{"
+         + cropInfo.growthLevel + "} IsMax:{"
+         + cropInfo.isMaxLevel() + "}", D.ADMIN_LOG_TYPE.Crop);
 
       // Send the new Crop to the player
       this.Target_ReceiveCrop(_player.connectionToClient, cropInfo, justGrew);
@@ -187,7 +190,7 @@ public class CropManager : NetworkBehaviour {
 
       // Make sure it's ready for water
       if (!cropToWater.isReadyForWater()) {
-         D.error("Crop isn't ready for water: " + cropNumber);
+         D.error("Player {" + _player.userId + "} trying to water Crop, crop isn't ready for water: " + cropNumber);
          return;
       }
 
@@ -196,6 +199,9 @@ public class CropManager : NetworkBehaviour {
          D.error("Crop can't grow any more: " + cropNumber);
          return;
       }
+
+      double waterProcessDuration = NetworkTime.time;
+      D.adminLog("Processing water crop for player {" + _player.userId + "}", D.ADMIN_LOG_TYPE.Crop);
 
       // Update it in the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -217,6 +223,12 @@ public class CropManager : NetworkBehaviour {
 
             // Registers the watering action to the achievement database for recording
             AchievementManager.registerUserAchievement(_player, ActionType.WaterCrop);
+
+            D.adminLog("Sending water crop for player {"
+               + _player.userId
+               + "} StartTime:{" + waterProcessDuration.ToString("f1")
+               + "} EndTime:{" + NetworkTime.time.ToString("f1") + "} Duration is:{"
+               + (NetworkTime.time - waterProcessDuration).ToString("f1") + "}", D.ADMIN_LOG_TYPE.Crop);
 
             sendCropsToPlayer(cropToWater, harvestCropAchievements, true);
          });
@@ -493,6 +505,10 @@ public class CropManager : NetworkBehaviour {
       if (cropInfo.isMaxLevel()) {
          TutorialManager3.self.tryCompletingStep(TutorialTrigger.CropGrewToMaxLevel);
       }
+
+      D.adminLog("Player {" + _player.userId + "} just finished interacting with crop Level:{"
+     + cropInfo.growthLevel + "} IsMax:{"
+     + cropInfo.isMaxLevel() + "}", D.ADMIN_LOG_TYPE.Crop);
 
       createCrop(cropInfo, justGrew, true);
    }
