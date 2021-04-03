@@ -86,7 +86,7 @@ namespace MapCreationTool
       private void Update () {
          if (pointerHovering) {
             if (MouseUtils.mouseScrollY != 0) {
-               pointerScroll(MouseUtils.mouseScrollY * .5f);
+               pointerScroll(MouseUtils.mouseScrollY);
             }
 
             updateToolTip(MouseUtils.mousePosition);

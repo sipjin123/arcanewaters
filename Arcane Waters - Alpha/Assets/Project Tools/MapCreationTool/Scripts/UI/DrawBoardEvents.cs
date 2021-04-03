@@ -59,7 +59,7 @@ namespace MapCreationTool
       private void Update () {
          // Check from scrolling
          if (isHovering && MouseUtils.mouseScrollY != 0) {
-            PointerScroll.Invoke(lastHoverPosition.Value, MouseUtils.mouseScrollY * .5f);
+            PointerScroll.Invoke(lastHoverPosition.Value, MouseUtils.mouseScrollY);
          }
 
          // Check for movement

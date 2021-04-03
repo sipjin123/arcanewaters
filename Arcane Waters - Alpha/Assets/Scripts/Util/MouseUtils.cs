@@ -18,7 +18,13 @@ public static class MouseUtils {
             return 0;
          }
 
-         return Mouse.current.scroll.y.ReadValue() * Time.deltaTime;
+         if (Mouse.current.scroll.y.ReadValue() > 0) {
+            return 1;
+         }  else if (Mouse.current.scroll.y.ReadValue() < 0) {
+            return -1;
+         }
+
+         return 0;
       }
    }
 }
