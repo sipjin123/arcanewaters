@@ -181,6 +181,7 @@ GameObject:
   - component: {fileID: 3673105040696588041}
   - component: {fileID: 7104599030871169942}
   - component: {fileID: 1873443336555046816}
+  - component: {fileID: 5284601149676484247}
   m_Layer: 5
   m_Name: Icon
   m_TagString: Untagged
@@ -234,9 +235,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7141b3ba3eae66343a58d086d70e844d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ba0cd60217fa4414fa89df2a9dd725f1, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -270,7 +271,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
+  tooltipType: 0
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
+--- !u!114 &5284601149676484247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 514405334056756631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 20
+  m_MinHeight: 20
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &610402521287734888
 GameObject:
   m_ObjectHideFlags: 0
@@ -462,6 +486,7 @@ GameObject:
   - component: {fileID: 7185460467033799200}
   - component: {fileID: 6285912302385153688}
   - component: {fileID: 115549569894470900}
+  - component: {fileID: 6980380622933933768}
   m_Layer: 5
   m_Name: Icon
   m_TagString: Untagged
@@ -515,9 +540,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 883c693b4384fbd4f96bb4a2643b4a81, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e2df669cb1b03264a85922665252e7f4, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -551,7 +576,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
+  tooltipType: 0
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
+--- !u!114 &6980380622933933768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097833112421108510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 20
+  m_MinHeight: 20
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &1213745465281542868
 GameObject:
   m_ObjectHideFlags: 0
@@ -890,6 +938,36 @@ MonoBehaviour:
   iconImage: {fileID: 4312411752861071361}
   abilityName: 
   abilityInfo: 
+  shipAbilityData:
+    abilityId: 0
+    abilityName: 
+    seaEntityAbilityType: 0
+    selectedAttackType: 0
+    abilityDescription: 
+    shipTypeVariety: 0
+    levelRequirement: 0
+    damageModifier: 0
+    abilitySpriteFXPerFrame: 0.06
+    coolDown: 0
+    projectileSpeed: 0
+    skillIconPath: 
+    projectileSpritePath: 
+    castSpritePath: 
+    collisionSpritePath: 
+    castSFXPath: 
+    shipCastType: 0
+    shipCastCollisionType: 0
+    shipAbilityEffect: 0
+    impactMagnitude: 0
+    hasArch: 0
+    syncHeightToArch: 1
+    hasTrail: 0
+    lifeTime: 1
+    splitsAfterAttackCap: 0
+    splitAttackCap: -1
+    statusType: 0
+    statusDuration: 1
+    projectileId: 0
 --- !u!114 &5718009342643385712
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -916,7 +994,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
+  tooltipType: 0
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
 --- !u!1 &1990528002317072319
 GameObject:
   m_ObjectHideFlags: 0
@@ -1662,6 +1743,7 @@ GameObject:
   - component: {fileID: 3024398808567261955}
   - component: {fileID: 4631962918906744719}
   - component: {fileID: 3303910972113058106}
+  - component: {fileID: 3545763483369052034}
   m_Layer: 5
   m_Name: Icon
   m_TagString: Untagged
@@ -1715,9 +1797,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7a4b784ce89dd4542a8fab2d44189d7b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: caf1ed95b8eb84b47a347847799c6906, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -1751,7 +1833,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
+  tooltipType: 0
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
+--- !u!114 &3545763483369052034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2831942903104368681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 20
+  m_MinHeight: 20
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &2872798982210479641
 GameObject:
   m_ObjectHideFlags: 0
@@ -1765,6 +1870,7 @@ GameObject:
   - component: {fileID: 1340190544084404766}
   - component: {fileID: 8304476111517415541}
   - component: {fileID: 9127877875789093537}
+  - component: {fileID: 8614426869494915310}
   m_Layer: 5
   m_Name: Icon
   m_TagString: Untagged
@@ -1818,9 +1924,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4930571054588cc4db58a5b0502c0bd1, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2c79f911a8b5df94ea1714028e318563, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -1854,7 +1960,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
+  tooltipType: 0
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
+--- !u!114 &8614426869494915310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2872798982210479641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 20
+  m_MinHeight: 20
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &3336592232075829751
 GameObject:
   m_ObjectHideFlags: 0
@@ -2306,6 +2435,36 @@ MonoBehaviour:
   iconImage: {fileID: 5776159989455694234}
   abilityName: 
   abilityInfo: 
+  shipAbilityData:
+    abilityId: 0
+    abilityName: 
+    seaEntityAbilityType: 0
+    selectedAttackType: 0
+    abilityDescription: 
+    shipTypeVariety: 0
+    levelRequirement: 0
+    damageModifier: 0
+    abilitySpriteFXPerFrame: 0.06
+    coolDown: 0
+    projectileSpeed: 0
+    skillIconPath: 
+    projectileSpritePath: 
+    castSpritePath: 
+    collisionSpritePath: 
+    castSFXPath: 
+    shipCastType: 0
+    shipCastCollisionType: 0
+    shipAbilityEffect: 0
+    impactMagnitude: 0
+    hasArch: 0
+    syncHeightToArch: 1
+    hasTrail: 0
+    lifeTime: 1
+    splitsAfterAttackCap: 0
+    splitAttackCap: -1
+    statusType: 0
+    statusDuration: 1
+    projectileId: 0
 --- !u!114 &769107374891920431
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2332,7 +2491,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
+  tooltipType: 0
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
 --- !u!1 &4520231153591064267
 GameObject:
   m_ObjectHideFlags: 0
@@ -2346,6 +2508,7 @@ GameObject:
   - component: {fileID: 5655261998288758279}
   - component: {fileID: 2343214638271469810}
   - component: {fileID: 1447610622582249042}
+  - component: {fileID: 6365086315136432234}
   m_Layer: 5
   m_Name: Icon
   m_TagString: Untagged
@@ -2399,9 +2562,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a59beee689e78bb48bad928a1ac9852e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8d93e20e7fcad4e4383626d2958f776c, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -2435,7 +2598,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
+  tooltipType: 0
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
+--- !u!114 &6365086315136432234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4520231153591064267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 20
+  m_MinHeight: 20
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &4952166506624609910
 GameObject:
   m_ObjectHideFlags: 0
@@ -2701,6 +2887,7 @@ GameObject:
   - component: {fileID: 1826644711724972288}
   - component: {fileID: 1090558981573906560}
   - component: {fileID: 6602629813541680538}
+  - component: {fileID: 7474801864983912515}
   m_Layer: 5
   m_Name: Icon
   m_TagString: Untagged
@@ -2754,9 +2941,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 313edf820008b484faa074043c41bb95, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5b7a73c6a76f79446bcf787c5602874b, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -2790,7 +2977,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
+  tooltipType: 0
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
+--- !u!114 &7474801864983912515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5354678391262733115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 20
+  m_MinHeight: 20
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &6348806750173531692
 GameObject:
   m_ObjectHideFlags: 0
@@ -3367,6 +3577,36 @@ MonoBehaviour:
   iconImage: {fileID: 2748592391909573932}
   abilityName: 
   abilityInfo: 
+  shipAbilityData:
+    abilityId: 0
+    abilityName: 
+    seaEntityAbilityType: 0
+    selectedAttackType: 0
+    abilityDescription: 
+    shipTypeVariety: 0
+    levelRequirement: 0
+    damageModifier: 0
+    abilitySpriteFXPerFrame: 0.06
+    coolDown: 0
+    projectileSpeed: 0
+    skillIconPath: 
+    projectileSpritePath: 
+    castSpritePath: 
+    collisionSpritePath: 
+    castSFXPath: 
+    shipCastType: 0
+    shipCastCollisionType: 0
+    shipAbilityEffect: 0
+    impactMagnitude: 0
+    hasArch: 0
+    syncHeightToArch: 1
+    hasTrail: 0
+    lifeTime: 1
+    splitsAfterAttackCap: 0
+    splitAttackCap: -1
+    statusType: 0
+    statusDuration: 1
+    projectileId: 0
 --- !u!114 &4946205544530012781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3393,7 +3633,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
+  tooltipType: 0
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
 --- !u!1 &8414355488210478738
 GameObject:
   m_ObjectHideFlags: 0
@@ -3463,6 +3706,7 @@ GameObject:
   - component: {fileID: 4937021326811308061}
   - component: {fileID: 3951252929270923640}
   - component: {fileID: 2421992437211759082}
+  - component: {fileID: 8038065594051826617}
   m_Layer: 5
   m_Name: Icon
   m_TagString: Untagged
@@ -3516,9 +3760,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5839e91011eeb324b9ccb42688a215b5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3de58e00dbdac4540801b0566e839315, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -3552,7 +3796,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
+  tooltipType: 0
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
+--- !u!114 &8038065594051826617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8508485694491445261}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 20
+  m_MinHeight: 20
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &8857106399614669469
 GameObject:
   m_ObjectHideFlags: 0
@@ -3982,7 +4249,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
+  tooltipType: 0
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
 --- !u!1 &9109563995855399013
 GameObject:
   m_ObjectHideFlags: 0
