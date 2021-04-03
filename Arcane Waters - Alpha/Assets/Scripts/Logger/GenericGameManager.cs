@@ -1,8 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
 
 public class GenericGameManager : MonoBehaviour {
    #region Public Variables
@@ -10,7 +6,7 @@ public class GenericGameManager : MonoBehaviour {
    #endregion
 
    protected virtual void Awake () {
-      D.debug(GetType().ToString() + ".Awake");
+      D.adminLog(GetType().ToString() + ".Awake", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    #region Private Variables

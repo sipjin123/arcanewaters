@@ -7,7 +7,7 @@ using UnityEngine.Events;
 using System;
 using System.Linq;
 
-public class PaletteSwapManager : MonoBehaviour {
+public class PaletteSwapManager : GenericGameManager {
    #region Public Variables
 
    // Singleton reference
@@ -31,8 +31,8 @@ public class PaletteSwapManager : MonoBehaviour {
 
    #endregion
 
-   private void Awake () {
-      D.adminLog("PaletteSwapManager.Awake...", D.ADMIN_LOG_TYPE.Initialization);
+   protected override void Awake () {
+      base.Awake();
       if (self == null) {
          self = this;
 
@@ -41,7 +41,6 @@ public class PaletteSwapManager : MonoBehaviour {
       } else {
          Destroy(this);
       }
-      D.adminLog("PaletteSwapManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
    public void updateData () {
