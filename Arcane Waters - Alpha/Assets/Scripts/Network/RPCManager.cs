@@ -275,6 +275,16 @@ public class RPCManager : NetworkBehaviour
    public void Target_RemoveQuestNotice (NetworkConnection connection, int npcId) {
       NPC npc = NPCManager.self.getNPC(npcId);
       npc.questNotice.SetActive(false);
+      npc.insufficientQuestNotice.SetActive(false);
+   }
+
+   [TargetRpc]
+   public void Target_ToggleInsufficientQuestNotice (NetworkConnection connection, int npcId, bool isActive) {
+      NPC npc = NPCManager.self.getNPC(npcId);
+      if (isActive) {
+         npc.questNotice.SetActive(false);
+      }
+      npc.insufficientQuestNotice.SetActive(isActive);
    }
 
    [TargetRpc]
@@ -1743,10 +1753,11 @@ public class RPCManager : NetworkBehaviour
          questData = NPCQuestManager.self.getQuestData(NPCQuestManager.BLANK_QUEST_ID);
          D.debug("Using a blank quest template due to npc data (" + npcId + ") having no assigned quest id");
       }
-      D.adminLog("Player {" + _player.userId + "} requesting quest info from :{" + npcData.name + "} using quest {" + questData.questGroupName + "}", D.ADMIN_LOG_TYPE.Quest);
+      D.adminLog("Player {" + _player.userId + "} requesting quest info from :{" + npcData.npcId + ":" + npcData.name + "} using quest {" + questData.questGroupName + "}", D.ADMIN_LOG_TYPE.Quest);
 
       List<QuestDataNode> xmlQuestNodeList = new List<QuestDataNode>(questData.questDataNodes);
       List<QuestDataNode> removeNodeList = new List<QuestDataNode>();
+      List<QuestDataNode> insufficientLevelNodeList = new List<QuestDataNode>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
@@ -1774,6 +1785,7 @@ public class RPCManager : NetworkBehaviour
                         "Current:{" + friendshipLevel + "} " +
                         "Required:{" + xmlQuestNode.friendshipLevelRequirement + "}", D.ADMIN_LOG_TYPE.Quest);
                      removeNodeList.Add(xmlQuestNode);
+                     insufficientLevelNodeList.Add(xmlQuestNode);
                   }
 
                   QuestStatusInfo databaseQuestStatus = databaseQuestStatusList.Find(_ => _.questNodeId == xmlQuestNode.questDataNodeId);
@@ -2011,6 +2023,7 @@ public class RPCManager : NetworkBehaviour
                bool hasCompletedAllQuests = true;
 
                List<QuestStatusInfo> incompleteQuestList = new List<QuestStatusInfo>();
+               List<QuestStatusInfo> insufficientQuestList = new List<QuestStatusInfo>();
                int totalQuestNodes = questData.questDataNodes.Length;
                if (totalQuestStatus.Count < totalQuestNodes) {
                   hasCompletedAllQuests = false;
@@ -2020,7 +2033,14 @@ public class RPCManager : NetworkBehaviour
                      QuestDataNode questNodeReference = questData.questDataNodes.ToList().Find(_ => _.questDataNodeId == questStat.questNodeId);
                      if (questStat.questDialogueId < questNodeReference.questDialogueNodes.Length) {
                         D.adminLog("-->This quest is not complete yet", D.ADMIN_LOG_TYPE.Quest);
-                        incompleteQuestList.Add(questStat);
+                        if (friendshipLevel >= questNodeReference.friendshipLevelRequirement) {
+                           incompleteQuestList.Add(questStat);
+                        } else {
+                           insufficientQuestList.Add(questStat);
+                           D.debug("Will not mark as incomplete, level requirement is not enough! " +
+                              "Current: {" + friendshipLevel + "} " +
+                              "Required: {" + questNodeReference.friendshipLevelRequirement + "}");
+                        }
                      } 
                   }
 
@@ -2030,9 +2050,20 @@ public class RPCManager : NetworkBehaviour
                }
 
                if (hasCompletedAllQuests) {
+                  D.adminLog("Player has completed all quests, no more remaining:{" + incompleteQuestList.Count + "}", D.ADMIN_LOG_TYPE.Quest);
                   Target_RemoveQuestNotice(_player.connectionToClient, npcId);
                } else {
-                  D.adminLog("Player has not completed all quests, remaining:{" + incompleteQuestList.Count + "}", D.ADMIN_LOG_TYPE.Quest);
+                  D.adminLog("Player has NOT completed all quests, remaining:{" + incompleteQuestList.Count + "}", D.ADMIN_LOG_TYPE.Quest);
+               }
+
+               if (incompleteQuestList.Count < 1) {
+                  if (insufficientQuestList.Count > 1) {
+                     D.adminLog("Player has not completed all quests but does not meet the friendship level, remaining:{" + insufficientQuestList.Count + "}", D.ADMIN_LOG_TYPE.Quest);
+                     Target_ToggleInsufficientQuestNotice(_player.connectionToClient, npcId, true);
+                  } else {
+                     D.adminLog("Player has no pending quest that exceeds friendship level, remaining:{" + insufficientQuestList.Count + "}", D.ADMIN_LOG_TYPE.Quest);
+                     Target_ToggleInsufficientQuestNotice(_player.connectionToClient, npcId, false);
+                  }
                }
 
                if (questDialogue.itemRewards != null) {
@@ -2298,24 +2329,44 @@ public class RPCManager : NetworkBehaviour
       }
       IEnumerable<NPCData> npcDataInArea = NPCManager.self.getNPCDataInArea(_player.areaKey).Where(c => c.questId > 0);
       List<int> npcIdList = new List<int>();
+      List<int> lockedNpcIdList = new List<int>();
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          foreach (NPCData npcData in npcDataInArea) {
             List<QuestStatusInfo> databaseQuestStatus = DB_Main.getQuestStatuses(npcData.npcId, _player.userId);
             QuestData questData = NPCQuestManager.self.getQuestData(npcData.questId);
-
+            int friendshipLevel = DB_Main.getFriendshipLevel(npcData.npcId, _player.userId);
             if (questData != null) {
                // If there is no registered quest in the database, and if there are quest nodes for this NPC, add to quest notice
                if (databaseQuestStatus.Count < 1 && questData.questDataNodes.Length > 0) {
                   if (!npcIdList.Contains(npcData.npcId)) {
+                     // Enable Logs if there are quest process related issues
+                     //D.adminLog("Add because status is less than nodes", D.ADMIN_LOG_TYPE.Quest);
                      npcIdList.Add(npcData.npcId);
+                  } else {
+                     //D.adminLog("Skip because status is less than nodes", D.ADMIN_LOG_TYPE.Quest);
                   }
                } else {
                   foreach (QuestStatusInfo questStatus in databaseQuestStatus) {
+                     // If progressed dialogue is less than the end point dialogue
                      if (questStatus.questDialogueId < questData.questDataNodes[questStatus.questNodeId].questDialogueNodes.Length) {
-                        if (!npcIdList.Contains(npcData.npcId)) {
-                           npcIdList.Add(npcData.npcId);
+                        // If friendship level meets, add to npc list
+                        if (friendshipLevel >= questData.questDataNodes[questStatus.questNodeId].friendshipLevelRequirement) {
+                           if (!npcIdList.Contains(npcData.npcId)) {
+                              // Enable Logs if there are quest process related issues
+                              //D.debug("Adding Npc {" + npcData.npcId + "} here because quest is not finished");
+                              npcIdList.Add(npcData.npcId);
+                           }
+                        } else {
+                           if (!lockedNpcIdList.Contains(npcData.npcId)) {
+                              //D.debug("Adding InvalidNpc {"+ npcData.npcId + "} here because friendship level is not enough");
+                              lockedNpcIdList.Add(npcData.npcId);
+                           }
+                           if (npcIdList.Contains(npcData.npcId)) {
+                              //D.debug("Removing {" + npcData.npcId + "} from list because friendship level is not enough!");
+                              npcIdList.Remove(npcData.npcId);
+                           }
                         }
                      }
                   }
@@ -2328,7 +2379,11 @@ public class RPCManager : NetworkBehaviour
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (_player != null && _player.connectionToClient != null) {
+               // This displays all the npc's that have available quest for the player
                Target_ReceiveQuestNotifications(_player.connectionToClient, npcIdList.ToArray());
+
+               // This displays all the npc's that have available quest for the player but needs to have conditions unlocked such as friendship level, etc...
+               Target_ReceiveInsufficientQuestNotifications(_player.connectionToClient, lockedNpcIdList.ToArray());
             }
          });
       });
@@ -2339,6 +2394,14 @@ public class RPCManager : NetworkBehaviour
       foreach (int npcId in npcIds) {
          NPC npcEntity = NPCManager.self.getNPC(npcId);
          npcEntity.questNotice.SetActive(true);
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveInsufficientQuestNotifications (NetworkConnection connection, int[] npcIds) {
+      foreach (int npcId in npcIds) {
+         NPC npcEntity = NPCManager.self.getNPC(npcId);
+         npcEntity.insufficientQuestNotice.SetActive(true);
       }
    }
 

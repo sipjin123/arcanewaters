@@ -92,6 +92,9 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    // The game object that indicates that this npc has a quest for the player
    public GameObject questNotice;
 
+   // The game object that indicates that this npc has a quest for the player but does not have enough requirements
+   public GameObject insufficientQuestNotice;
+
    #endregion
 
    protected override void Awake () {
