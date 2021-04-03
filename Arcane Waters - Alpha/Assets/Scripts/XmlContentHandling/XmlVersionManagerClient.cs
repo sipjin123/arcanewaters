@@ -80,6 +80,7 @@ public class XmlVersionManagerClient : GenericGameManager {
    }
 
    public void initializeClient () {
+      D.debug("Initializing Client!");
       if (!isInitialized) {
          if (resetXmlPrefs) {
             PlayerPrefs.SetInt(XML_VERSION, 0);
@@ -101,6 +102,7 @@ public class XmlVersionManagerClient : GenericGameManager {
          finishedCheckingStreamingAsset.RemoveAllListeners();
          finishedLoadingXmlData.RemoveAllListeners();
 
+         D.debug("Nubis Client Fetch has started!");
          NubisDataFetcher.self.xmlVersionEvent.AddListener(_ => {
             processClientData(_);
             NubisDataFetcher.self.xmlVersionEvent.RemoveAllListeners();

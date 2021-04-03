@@ -209,6 +209,11 @@ public class NPCPanel : Panel
 
                if (friendshipLevel < questDataNode.friendshipLevelRequirement) {
                   canStartQuest = false;
+
+                  D.adminLog("Received a quest that requires higher level of friendship:: " +
+                     "Current:{" + friendshipLevel + "} " +
+                     "Required:{" + questDataNode.friendshipLevelRequirement + "}", D.ADMIN_LOG_TYPE.Quest);
+
                   questStatus = "Friendship too Low";
                } else {
                   questStatus = null;

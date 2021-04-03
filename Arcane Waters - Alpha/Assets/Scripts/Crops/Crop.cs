@@ -139,10 +139,11 @@ public class Crop : ClientMonoBehaviour {
       bool isPlantReadyToBeWatered = (TimeManager.self.getLastServerUnixTimestamp() - lastWaterTimestamp) > this.waterInterval;
 
       if (logWaterCropData && isPlantReadyToBeWatered) {
-         D.debug("Plant is ready to be watered: {" 
+         D.adminLog("Plant is ready to be watered: {" 
             + TimeManager.self.getLastServerUnixTimestamp() 
-            + " - " + lastWaterTimestamp 
-            + "} > {" + this.waterInterval + "}");
+            + " - " + lastWaterTimestamp
+            + " = " + (TimeManager.self.getLastServerUnixTimestamp() - lastWaterTimestamp)
+            + "} > {" + this.waterInterval + "}", D.ADMIN_LOG_TYPE.Crop);
       }
 
       return isPlantReadyToBeWatered;
