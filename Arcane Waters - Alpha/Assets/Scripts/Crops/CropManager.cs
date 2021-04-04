@@ -200,7 +200,7 @@ public class CropManager : NetworkBehaviour {
          return;
       }
 
-      double waterProcessDuration = NetworkTime.time;
+      double startWaterTime = NetworkTime.time;
       D.adminLog("Processing water crop for player {" + _player.userId + "}", D.ADMIN_LOG_TYPE.Crop);
 
       // Update it in the database
@@ -226,9 +226,9 @@ public class CropManager : NetworkBehaviour {
 
             D.adminLog("Sending water crop for player {"
                + _player.userId
-               + "} StartTime:{" + waterProcessDuration.ToString("f1")
+               + "} StartTime:{" + startWaterTime.ToString("f1")
                + "} EndTime:{" + NetworkTime.time.ToString("f1") + "} Duration is:{"
-               + (NetworkTime.time - waterProcessDuration).ToString("f1") + "}", D.ADMIN_LOG_TYPE.Crop);
+               + (NetworkTime.time - startWaterTime).ToString("f1") + "}", D.ADMIN_LOG_TYPE.Crop);
 
             sendCropsToPlayer(cropToWater, harvestCropAchievements, true);
          });
