@@ -323,16 +323,18 @@ public class BattleManager : MonoBehaviour {
    private void assignBattlerSyncData (Battler battler, PlayerBodyEntity player, bool ifFirstEquip) {
       if (!ifFirstEquip) {
          if (battler.armorManager.armorType != player.armorManager.armorType) {
-            // Add armor debuff to the player, lastst 30 seconds
+            // TODO: Setup a way to determine the duration of debuffs, maybe a debuff web tool?
+            // Add armor debuff to the player, lastst 60 seconds
             if (!battler.debuffList.ContainsKey(Status.Type.ArmorChangeDebuff)) {
-               battler.debuffList.Add(Status.Type.ArmorChangeDebuff, 30);
+               battler.debuffList.Add(Status.Type.ArmorChangeDebuff, 60);
             }
          }
 
          if (battler.weaponManager.weaponType != player.weaponManager.weaponType) {
-            // Add damage debuff to the player, lastst 30 seconds
+            // TODO: Setup a way to determine the duration of debuffs, maybe a debuff web tool?
+            // Add damage debuff to the player, lastst 60 seconds
             if (!battler.debuffList.ContainsKey(Status.Type.WeaponChangeDebuff)) {
-               battler.debuffList.Add(Status.Type.WeaponChangeDebuff, 30);
+               battler.debuffList.Add(Status.Type.WeaponChangeDebuff, 60);
             }
          }
       }
@@ -634,8 +636,8 @@ public class BattleManager : MonoBehaviour {
                   + "Damage Received is set from {" + damage.ToString("f1") + "} to {" + (damage + (damage * .2f)).ToString("f1") + "}", D.ADMIN_LOG_TYPE.Equipment);
 
                // TODO: Setup a cleaner way of doing this
-               // Add 20% damage receive if target just recently changed armor
-               damage += damage * .2f;
+               // Add 50% damage receive if target just recently changed armor
+               damage += damage * .5f;
             }
 
             // Note if the source recently changed their weapon
@@ -646,8 +648,8 @@ public class BattleManager : MonoBehaviour {
                   + "Damage Inflicted is set from {" + damage.ToString("f1") + "} to {" + (damage - (damage * .2f)).ToString("f1") + "}", D.ADMIN_LOG_TYPE.Equipment);
 
                // TODO: Setup a cleaner way of doing this
-               // Deduct 20% damage output if source just recently changed weapon
-               damage -= damage * .2f;
+               // Deduct 50% damage output if source just recently changed weapon
+               damage -= damage * .5f;
             }
 
             // Create the Action object
