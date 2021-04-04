@@ -38,6 +38,9 @@ public class NetworkedServer : NetworkedBehaviour
    // Keeps track of the users claimed by this server
    public NetworkedList<int> claimedUserIds = new NetworkedList<int>(Global.defaultNetworkedVarSettings);
 
+   // Account dictionary overrides
+   public Dictionary<string, string> accountOverrides = new Dictionary<string, string>();
+
    #endregion
 
    private void Start () {

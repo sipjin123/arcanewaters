@@ -93,9 +93,6 @@ public class Global
    // List of logs to show
    public static List<D.ADMIN_LOG_TYPE> logTypesToShow = new List<D.ADMIN_LOG_TYPE>();
 
-   // Account dictionary overrides
-   public static Dictionary<string, string> accountOverrides = new Dictionary<string, string>();
-
    // The default settings for networked vars in the server network
    public static NetworkedVarSettings defaultNetworkedVarSettings = new NetworkedVarSettings { WritePermission = NetworkedVarPermission.OwnerOnly, SendChannel = "Fragmented" };
 

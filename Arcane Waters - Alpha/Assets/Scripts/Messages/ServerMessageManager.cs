@@ -48,6 +48,7 @@ public class ServerMessageManager : MonoBehaviour
          int accountId = 0;
          bool isUnauthenticatedSteamUser = logInUserMessage.accountName == "" && logInUserMessage.accountPassword == "";
          bool hasFailedToCreateAccount = false;
+         NetworkedServer masterServer = ServerNetworkingManager.self.getServer(Global.MASTER_SERVER_PORT);
 
          if (logInUserMessage.isSteamLogin) {
             // If the app id is the playtest id then alter the user name
@@ -65,7 +66,7 @@ public class ServerMessageManager : MonoBehaviour
             }
          } else {
             // If this is not a steam login, users attempting to login should not have steam into their account name
-            if (logInUserMessage.accountName.ToLower().Contains("@steam") && !Global.accountOverrides.ContainsKey(logInUserMessage.accountName)) {
+            if (logInUserMessage.accountName.ToLower().Contains("@steam") && !masterServer.accountOverrides.ContainsKey(logInUserMessage.accountName)) {
                D.debug("A non steam user is trying to access a steam account!" + " : " + logInUserMessage.accountName);
                sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
                return;
@@ -75,8 +76,8 @@ public class ServerMessageManager : MonoBehaviour
             string salt = Util.createSalt("arcane");
             string hashedPassword = Util.hashPassword(salt, logInUserMessage.accountPassword);
 
-            if (Global.accountOverrides.ContainsKey(logInUserMessage.accountName)) {
-               if (Global.accountOverrides[logInUserMessage.accountName] == logInUserMessage.accountPassword) {
+            if (masterServer.accountOverrides.ContainsKey(logInUserMessage.accountName)) {
+               if (masterServer.accountOverrides[logInUserMessage.accountName] == logInUserMessage.accountPassword) {
                   D.debug("This account password is temporarily overridden: " + logInUserMessage.accountName);
 
                   // Login account, bypassing password
@@ -161,7 +162,7 @@ public class ServerMessageManager : MonoBehaviour
                return;
             }
 
-            if (Global.accountOverrides.ContainsKey(logInUserMessage.accountName)) {
+            if (masterServer.accountOverrides.ContainsKey(logInUserMessage.accountName)) {
                D.debug("Attempting to login overridden user {" + logInUserMessage.accountName + "} : {" + accountId + "} : {" + logInUserMessage.selectedUserId + "}");
             } 
 
