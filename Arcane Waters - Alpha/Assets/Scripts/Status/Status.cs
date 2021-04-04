@@ -8,7 +8,7 @@ public class Status : MonoBehaviour {
    #region Public Variables
 
    // The Type of Status effects
-   public enum Type { None = 0, Slowed = 1, Frozen = 2, Stunned = 3, Burning = 4 }
+   public enum Type { None = 0, Slowed = 1, Frozen = 2, Stunned = 3, Burning = 4, EquipmentChangeDebuff = 5 }
 
    // The Type of Status this is
    public Type statusType;

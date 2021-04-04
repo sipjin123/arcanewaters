@@ -224,6 +224,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [SyncVar]
    public bool battlerAbilitiesInitialized = false;
 
+   // Determines the debuffs that are assigned to this battler
+   public SyncDictionary<Status.Type, float> debuffList = new SyncDictionary<Status.Type, float>();
+
    // The location where the ui will snap to upon selection
    public Transform targetUISnapLocation;
 

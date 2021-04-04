@@ -110,6 +110,35 @@ public class Battle : NetworkBehaviour {
             continue;
          }
 
+         if (battler.debuffList.Count > 0) {
+            Dictionary<Status.Type, float> newDebuffData = new Dictionary<Status.Type, float>();
+            foreach (KeyValuePair<Status.Type, float> debuffData in battler.debuffList) {
+               if (debuffData.Value > 0) {
+                  // Deduct the timer value based on the tick interval
+                  Status.Type currentStatusType = debuffData.Key;
+                  float newValue = debuffData.Value - BattleManager.TICK_INTERVAL;
+
+                  // Add debuff to the new list that will override the synclist
+                  if (newValue > 0) {
+                     newDebuffData.Add(currentStatusType, newValue);
+                  }
+               } 
+            }
+
+            if (newDebuffData.Count > 0) {
+               // Override the debuff synclist with the new one
+               battler.debuffList.Clear();
+               foreach (KeyValuePair<Status.Type, float> debuffData in newDebuffData) {
+                  battler.debuffList.Add(debuffData.Key, debuffData.Value);
+               }
+            } else {
+               // Clear the debuff list if the new debuff data is blank
+               if (battler.debuffList.Count > 0) {
+                  battler.debuffList.Clear();
+               }
+            }
+         }
+
          // Basic Monster AI.
          // If any of our monsters are ready to attack, then do so
          if (battler.isMonster() && NetworkTime.time > battler.animatingUntil && NetworkTime.time > bufferedCooldown) {

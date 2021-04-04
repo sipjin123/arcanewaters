@@ -285,7 +285,7 @@ public class BattleManager : MonoBehaviour {
 
       // Actually spawn the Battler as a Network object now
       NetworkServer.Spawn(battler.gameObject);
-      assignBattlerSyncData(battler, player);
+      assignBattlerSyncData(battler, player, true);
 
       return battler;
    }
@@ -320,7 +320,14 @@ public class BattleManager : MonoBehaviour {
       return battler;
    }
 
-   private void assignBattlerSyncData (Battler battler, PlayerBodyEntity player) {
+   private void assignBattlerSyncData (Battler battler, PlayerBodyEntity player, bool ifFirstEquip) {
+      if (!ifFirstEquip) {
+         // Add debuff to the player, lastst 30 seconds
+         if (!battler.debuffList.ContainsKey(Status.Type.EquipmentChangeDebuff)) {
+            battler.debuffList.Add(Status.Type.EquipmentChangeDebuff, 30);
+         }
+      }
+
       // Copy the Armor Info
       if (player.armorManager.armorType < 1) {
          battler.armorManager.updateArmorSyncVars(0, 0, "");
@@ -330,6 +337,7 @@ public class BattleManager : MonoBehaviour {
          battler.armorManager.updateArmorSyncVars(player.armorManager.equipmentDataId, player.armorManager.equippedArmorId, player.armorManager.palettes);
          battler.armorManager.armorType = player.armorManager.armorType;
          battler.armorManager.palettes = player.armorManager.palettes;
+         D.adminLog("Equipping battler armor: {" + battler.armorManager.armorType + "}", D.ADMIN_LOG_TYPE.Equipment);
       }
 
       // Copy the Weapon Info
@@ -341,6 +349,7 @@ public class BattleManager : MonoBehaviour {
          battler.weaponManager.updateWeaponSyncVars(player.weaponManager.equipmentDataId, player.weaponManager.equippedWeaponId, player.weaponManager.palettes);
          battler.weaponManager.weaponType = player.weaponManager.weaponType;
          battler.weaponManager.palettes = player.weaponManager.palettes;
+         D.adminLog("Equipping battler weapon: {" + battler.weaponManager.weaponType + "}", D.ADMIN_LOG_TYPE.Equipment);
       }
 
       // Copy the Hat Info
@@ -606,6 +615,16 @@ public class BattleManager : MonoBehaviour {
             AttackAction.ActionType currentActionType = AttackAction.ActionType.Melee;
             if (attackAbilityData.abilityActionType == AbilityActionType.Ranged) {
                currentActionType = AttackAction.ActionType.Range;
+            }
+
+            if (target.debuffList.ContainsKey(Status.Type.EquipmentChangeDebuff)) {
+               D.adminLog("Target {" + target.userId + "} debuff is {" 
+                  + Status.Type.EquipmentChangeDebuff + " : " 
+                  + target.debuffList[Status.Type.EquipmentChangeDebuff] + "}", D.ADMIN_LOG_TYPE.Equipment);
+
+               // TODO: Setup a cleaner way of doing this
+               // Add 20% damage if player just recently changed equipment
+               damage += damage * .2f;
             }
 
             // Create the Action object
@@ -936,7 +955,7 @@ public class BattleManager : MonoBehaviour {
       Battler battler = getBattler(playerBody.userId);
       if (battler != null) {
          D.adminLog("Player {" + battler.userId + "} has equipped item", D.ADMIN_LOG_TYPE.Equipment);
-         assignBattlerSyncData(battler, playerBody);
+         assignBattlerSyncData(battler, playerBody, false);
          playerBody.rpc.processPlayerAbilities(playerBody, new List<PlayerBodyEntity>() { playerBody });
       }
    }
