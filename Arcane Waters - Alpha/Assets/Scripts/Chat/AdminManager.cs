@@ -774,6 +774,9 @@ public class AdminManager : NetworkBehaviour
          case "ability":
             Global.updateAdminLog(D.ADMIN_LOG_TYPE.Ability, isEnabled);
             break;
+         case "equipment":
+            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Equipment, isEnabled);
+            break;
          case "quest":
             Global.updateAdminLog(D.ADMIN_LOG_TYPE.Quest, isEnabled);
             break;

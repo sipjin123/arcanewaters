@@ -23,7 +23,7 @@ public class D : MonoBehaviour {
       Gamepad = 10,
       Initialization = 11,
       Crop = 12,
-      Quest = 13
+      Quest = 13,
    }
 
    // Any log files older than this will be deleted
