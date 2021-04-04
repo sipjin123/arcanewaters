@@ -306,21 +306,25 @@ public class AdminManager : NetworkBehaviour
 
       string[] list = parameters.Split(' ');
 
-      if (list.Length > 0) {
+      if (list.Length >= 1) {
          string accountName = list[0];
          string tempPassword = "test";
          if (list[1].Length > 1) {
             tempPassword = list[1];
          }
 
-         if (!Global.accountOverrides.ContainsKey(accountName)) {
-            Global.accountOverrides.Add(accountName, tempPassword);
+         // Add account override to the master server
+         NetworkedServer masterServer = ServerNetworkingManager.self.getServer(Global.MASTER_SERVER_PORT);
+         if (!masterServer.accountOverrides.ContainsKey(accountName)) {
+            masterServer.accountOverrides.Add(accountName, tempPassword);
          }
 
          // Send message notification to server and client admin
          string message = "New password was set for account {" + accountName + "} " + tempPassword;
          D.debug(message);
          _player.rpc.Target_ReceiveNoticeFromServer(_player.connectionToClient, message);
+      } else {
+         D.debug("Invalid admin commant, needs additional parameters");
       }
    }
 
