@@ -322,9 +322,18 @@ public class BattleManager : MonoBehaviour {
 
    private void assignBattlerSyncData (Battler battler, PlayerBodyEntity player, bool ifFirstEquip) {
       if (!ifFirstEquip) {
-         // Add debuff to the player, lastst 30 seconds
-         if (!battler.debuffList.ContainsKey(Status.Type.EquipmentChangeDebuff)) {
-            battler.debuffList.Add(Status.Type.EquipmentChangeDebuff, 30);
+         if (battler.armorManager.armorType != player.armorManager.armorType) {
+            // Add armor debuff to the player, lastst 30 seconds
+            if (!battler.debuffList.ContainsKey(Status.Type.ArmorChangeDebuff)) {
+               battler.debuffList.Add(Status.Type.ArmorChangeDebuff, 30);
+            }
+         }
+
+         if (battler.weaponManager.weaponType != player.weaponManager.weaponType) {
+            // Add damage debuff to the player, lastst 30 seconds
+            if (!battler.debuffList.ContainsKey(Status.Type.WeaponChangeDebuff)) {
+               battler.debuffList.Add(Status.Type.WeaponChangeDebuff, 30);
+            }
          }
       }
 
@@ -617,14 +626,28 @@ public class BattleManager : MonoBehaviour {
                currentActionType = AttackAction.ActionType.Range;
             }
 
-            if (target.debuffList.ContainsKey(Status.Type.EquipmentChangeDebuff)) {
-               D.adminLog("Target {" + target.userId + "} debuff is {" 
-                  + Status.Type.EquipmentChangeDebuff + " : " 
-                  + target.debuffList[Status.Type.EquipmentChangeDebuff] + "}", D.ADMIN_LOG_TYPE.Equipment);
+            // Note if the target recently changed their armor
+            if (target.debuffList.ContainsKey(Status.Type.ArmorChangeDebuff)) {
+               D.adminLog("Target {" + target.userId + "}  Defense Deducted debuff is {"
+                  + Status.Type.ArmorChangeDebuff + " : " 
+                  + target.debuffList[Status.Type.ArmorChangeDebuff] + " secs} "
+                  + "Damage Received is set from {" + damage.ToString("f1") + "} to {" + (damage + (damage * .2f)).ToString("f1") + "}", D.ADMIN_LOG_TYPE.Equipment);
 
                // TODO: Setup a cleaner way of doing this
-               // Add 20% damage if player just recently changed equipment
+               // Add 20% damage receive if target just recently changed armor
                damage += damage * .2f;
+            }
+
+            // Note if the source recently changed their weapon
+            if (source.debuffList.ContainsKey(Status.Type.WeaponChangeDebuff)) {
+               D.adminLog("Source {" + source.userId + "} Damage Deducted debuff is {"
+                  + Status.Type.WeaponChangeDebuff + " : "
+                  + source.debuffList[Status.Type.WeaponChangeDebuff] + " secs} "
+                  + "Damage Inflicted is set from {" + damage.ToString("f1") + "} to {" + (damage - (damage * .2f)).ToString("f1") + "}", D.ADMIN_LOG_TYPE.Equipment);
+
+               // TODO: Setup a cleaner way of doing this
+               // Deduct 20% damage output if source just recently changed weapon
+               damage -= damage * .2f;
             }
 
             // Create the Action object

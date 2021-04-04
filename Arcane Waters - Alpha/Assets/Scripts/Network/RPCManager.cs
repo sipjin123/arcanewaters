@@ -5616,6 +5616,8 @@ public class RPCManager : NetworkBehaviour
 
    [Server]
    public void requestSetArmorId (int armorId) {
+      D.adminLog("Requesting new armor: " + armorId, D.ADMIN_LOG_TYPE.Equipment);
+
       // They may be in an island scene, or at sea
       PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
 
@@ -5678,6 +5680,8 @@ public class RPCManager : NetworkBehaviour
 
    [Server]
    public void requestSetWeaponId (int weaponId) {
+      D.adminLog("Requesting new weapon: " + weaponId, D.ADMIN_LOG_TYPE.Equipment);
+
       // They may be in an island scene, or at sea
       PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
 

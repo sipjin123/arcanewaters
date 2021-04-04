@@ -112,16 +112,20 @@ public class Battle : NetworkBehaviour {
 
          if (battler.debuffList.Count > 0) {
             Dictionary<Status.Type, float> newDebuffData = new Dictionary<Status.Type, float>();
+            List<Status.Type> endedDebuffs = new List<Status.Type>();
             foreach (KeyValuePair<Status.Type, float> debuffData in battler.debuffList) {
-               if (debuffData.Value > 0) {
+               if (debuffData.Value < 1) {
+                  // Mark the debuffs that recently ended for future game logic such as in game notification
+                  if (!endedDebuffs.Contains(debuffData.Key)) {
+                     endedDebuffs.Add(debuffData.Key);
+                  }
+               } else { 
                   // Deduct the timer value based on the tick interval
                   Status.Type currentStatusType = debuffData.Key;
                   float newValue = debuffData.Value - BattleManager.TICK_INTERVAL;
 
                   // Add debuff to the new list that will override the synclist
-                  if (newValue > 0) {
-                     newDebuffData.Add(currentStatusType, newValue);
-                  }
+                  newDebuffData.Add(currentStatusType, newValue);
                } 
             }
 
@@ -129,6 +133,8 @@ public class Battle : NetworkBehaviour {
                // Override the debuff synclist with the new one
                battler.debuffList.Clear();
                foreach (KeyValuePair<Status.Type, float> debuffData in newDebuffData) {
+                  // For logging purposes
+                  // D.debug("Updated value of {" + debuffData.Key + "} to {" + debuffData.Value + "}");
                   battler.debuffList.Add(debuffData.Key, debuffData.Value);
                }
             } else {
