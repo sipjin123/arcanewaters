@@ -250,7 +250,7 @@ public class MyNetworkManager : NetworkManager
 
       MessageManager.unregisterServerHandlers();
 
-      ServerHistoryManager.self.onServerStop();
+      ServerHistoryManager.self.logServerEvent(ServerHistoryInfo.EventType.ServerStop);
 
       // Stop any servers or clients on the Server Network
       ServerNetworkingManager.get().StopHost();
@@ -571,6 +571,9 @@ public class MyNetworkManager : NetworkManager
          } else {
             finishPlayerDisconnection(data);
          }
+      } else {
+         // The connection must be removed, so that it doesn't block further login attempts
+         _players.Remove(conn.connectionId);
       }
    }
 
@@ -584,18 +587,20 @@ public class MyNetworkManager : NetworkManager
       }
    }
 
-   public static void noteAccountIdForConnection (int accountId, NetworkConnection conn) {
-      // Keep track of the account ID that we're associating with this connection
+   public static bool isAccountAlreadyOnline (int accountId, NetworkConnection conn) {
       ClientConnectionData existingConnection = self.getConnectedClientDataForAccount(accountId);
-
-      _players[conn.connectionId].accountId = accountId;
 
       if (existingConnection != null && existingConnection.connectionId != conn.connectionId) {
          if (!DisconnectionManager.self.isUserPendingDisconnection(existingConnection.userId)) {
-            ServerMessageManager.sendError(ErrorMessage.Type.AlreadyOnline, conn.connectionId);
-            conn.Disconnect();
+            return true;
          }
       }
+      return false;
+   }
+
+   public static void noteAccountIdForConnection (int accountId, NetworkConnection conn) {
+      // Keep track of the account ID that we're associating with this connection
+      _players[conn.connectionId].accountId = accountId;
    }
 
    public static void noteUserIdForConnection (int selectedUserId, string steamUserId, NetworkConnection conn) {

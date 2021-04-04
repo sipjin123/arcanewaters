@@ -177,7 +177,7 @@ public class TitleScreen : MonoBehaviour {
 
    public void displayError (ErrorMessage.Type errorType, ErrorMessage message = null) {
       // We didn't log in, so stop the client and restart the login process
-      MyNetworkManager.self.StopHost();
+      Util.stopHostAndReturnToTitleScreen();
 
       switch (errorType) {
          case ErrorMessage.Type.ClientOutdated:

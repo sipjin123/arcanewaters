@@ -25,7 +25,7 @@ public class Voyage
    public static int MAX_PLAYERS_PER_GROUP_HARD = 6;
 
    // The total number of maps in a league (series of voyages maps)
-   public static int MAPS_PER_LEAGUE = 5;
+   public static int MAPS_PER_LEAGUE = 3;
 
    // The maximum distance apart the group members can be when starting a league
    public static int LEAGUE_START_MEMBERS_MAX_DISTANCE = 3;

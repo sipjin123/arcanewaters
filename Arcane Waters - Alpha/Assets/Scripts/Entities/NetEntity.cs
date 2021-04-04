@@ -479,6 +479,9 @@ public class NetEntity : NetworkBehaviour
       } else {
          handleInstantMoveMode(updateEveryFrame);
       }
+
+      // In ghost mode, clamp the position to the area bounds
+      clampToMapBoundsInGhost();
    }
 
    protected virtual void OnDestroy () {
@@ -1311,6 +1314,26 @@ public class NetEntity : NetworkBehaviour
       // Handled by the PlayerShipEntity class
    }
 
+   protected void clampToMapBoundsInGhost () {
+      if (isGhost) {
+         Area area = AreaManager.self.getArea(areaKey);
+         if (area != null && !area.cameraBounds.bounds.Contains(_body.position)) {
+            // Stop the movement in the direction that went outside the bounds
+            if (_body.position.x < area.cameraBounds.bounds.min.x || _body.position.x > area.cameraBounds.bounds.max.x) {
+               _body.velocity = new Vector2(0, _body.velocity.y);
+            }
+            if (_body.position.y < area.cameraBounds.bounds.min.y || _body.position.y > area.cameraBounds.bounds.max.y) {
+               _body.velocity = new Vector2(_body.velocity.x, 0);
+            }
+
+            // Clamp the position inside the area
+            _body.MovePosition(new Vector2(
+               Mathf.Clamp(_body.position.x, area.cameraBounds.bounds.min.x, area.cameraBounds.bounds.max.x),
+               Mathf.Clamp(_body.position.y, area.cameraBounds.bounds.min.y, area.cameraBounds.bounds.max.y)));
+         }
+      }
+   }
+
    protected virtual void updateMassAndDrag (bool increasedMass) {
       if (increasedMass) {
          _body.mass = 40f;
@@ -1594,6 +1617,11 @@ public class NetEntity : NetworkBehaviour
       if (hasAttackers()) {
          ServerMessageManager.sendError(ErrorMessage.Type.Misc, this, "Cannot return to home location while in combat.");
          return;
+      }
+
+      // If the user is currently in ghost mode, disable it
+      if (isGhost && tryGetGroup(out VoyageGroupInfo voyageGroup)) {
+         VoyageGroupManager.self.removeUserFromGroup(voyageGroup, userId);
       }
 
       D.debug("Returning player to town: Go Home Command!");

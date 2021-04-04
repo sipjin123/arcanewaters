@@ -7,6 +7,9 @@ public class RestartManager : GenericGameManager
 {
    #region Public Variables
 
+   // The number of seconds left at which point the server restart event is logged and clients cannot login to the server anymore
+   public static float SECONDS_LEFT_FOR_RESTART_LOG = 15f;
+
    // Singleton self reference
    public static RestartManager self;
 
@@ -23,10 +26,21 @@ public class RestartManager : GenericGameManager
    public void onScheduledServerRestart(DateTime dateTime) {
       _timeOfNextServerRestart = dateTime;
       _isServerRestartScheduled = true;
+      StopAllCoroutines();
       StartCoroutine(CO_trackTimeToServerRestart());
+      StartCoroutine(CO_LogServerRestartEvent());
    }
 
    public void onCanceledServerRestart () {
+      if (_isServerRestartScheduled) {
+         // Check if the server restart event has already been logged
+         float secondsRemaining = (float) (_timeOfNextServerRestart - DateTime.UtcNow).TotalSeconds;
+         if (secondsRemaining < SECONDS_LEFT_FOR_RESTART_LOG) {
+            // Log the cancel event
+            ServerHistoryManager.self.logServerEvent(ServerHistoryInfo.EventType.RestartCanceled);
+         }
+      }
+
       _isServerRestartScheduled = false;
    }
 
@@ -90,7 +104,7 @@ public class RestartManager : GenericGameManager
             }
 
             // Log the server stop event
-            ServerHistoryManager.self.onServerStop();
+            ServerHistoryManager.self.logServerEvent(ServerHistoryInfo.EventType.ServerStop);
 
             break;
          } else if (currSeconds < 9.0f) {
@@ -98,6 +112,18 @@ public class RestartManager : GenericGameManager
          } else {
             yield return new WaitForSecondsRealtime(5.0f);
          }
+      }
+   }
+
+   private IEnumerator CO_LogServerRestartEvent () {
+      float secondsRemaining = (float) (_timeOfNextServerRestart - DateTime.UtcNow).TotalSeconds;
+
+      // Wait until the countdown is close to be finished
+      yield return new WaitForSecondsRealtime(secondsRemaining - SECONDS_LEFT_FOR_RESTART_LOG);
+
+      if (_isServerRestartScheduled) {
+         // Log the server restart event
+         ServerHistoryManager.self.logServerEvent(ServerHistoryInfo.EventType.RestartRequested);
       }
    }
 

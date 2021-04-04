@@ -20,7 +20,9 @@ public class ServerHistoryInfo
    {
       None = 0,
       ServerStart = 1,
-      ServerStop = 2
+      ServerStop = 2,
+      RestartRequested = 3,
+      RestartCanceled = 4
    }
 
    // The date of the event

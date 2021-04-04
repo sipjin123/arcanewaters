@@ -8449,18 +8449,20 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT eventType FROM server_history WHERE eventType IN (@eventTypeStart, @eventTypeStop) ORDER BY eventDate DESC LIMIT 1", conn)) {
+            "SELECT eventType FROM server_history WHERE eventType IN (@eventTypeStart, @eventTypeStop, @eventTypeRestartRequested, @eventTypeRestartCancelled) ORDER BY eventDate DESC LIMIT 1", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@eventTypeStart", (int) ServerHistoryInfo.EventType.ServerStart);
             cmd.Parameters.AddWithValue("@eventTypeStop", (int) ServerHistoryInfo.EventType.ServerStop);
+            cmd.Parameters.AddWithValue("@eventTypeRestartRequested", (int) ServerHistoryInfo.EventType.RestartRequested);
+            cmd.Parameters.AddWithValue("@eventTypeRestartCancelled", (int) ServerHistoryInfo.EventType.RestartCanceled);
             DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
                   ServerHistoryInfo.EventType eventType = (ServerHistoryInfo.EventType) DataUtil.getInt(dataReader, "eventType");
-                  if (eventType == ServerHistoryInfo.EventType.ServerStart) {
+                  if (eventType == ServerHistoryInfo.EventType.ServerStart || eventType == ServerHistoryInfo.EventType.RestartCanceled) {
                      isOnline = true;
                   } else {
                      isOnline = false;

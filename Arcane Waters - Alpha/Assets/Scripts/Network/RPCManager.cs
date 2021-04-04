@@ -96,6 +96,9 @@ public class RPCManager : NetworkBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Create a mail without recipient, with the auctioned item as attachment - this will also verify the item validity
          int mailId = createMailCommon(-1, "Auction House - Item Delivery", "", new int[] { item.id }, new int[] { item.count });
+         if (mailId < 0) {
+            return;
+         }
 
          // Create the auction
          int newId = DB_Main.createAuction(_player.userId, _player.nameText.text, mailId, expiryDate, startingBid,

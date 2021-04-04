@@ -26,6 +26,12 @@ public class ServerStatusPanelRow : MonoBehaviour
          case ServerHistoryInfo.EventType.ServerStop:
             eventLine.text = "Shut down at " + localTime.ToString("hh:mm tt") + " (v" + info.serverVersion.ToString() + ")";
             break;
+         case ServerHistoryInfo.EventType.RestartRequested:
+            eventLine.text = "Restart requested at " + localTime.ToString("hh:mm tt") + " (v" + info.serverVersion.ToString() + ")";
+            break;
+         case ServerHistoryInfo.EventType.RestartCanceled:
+            eventLine.text = "Restart canceled at " + localTime.ToString("hh:mm tt") + " (v" + info.serverVersion.ToString() + ")";
+            break;
          default:
             break;
       }

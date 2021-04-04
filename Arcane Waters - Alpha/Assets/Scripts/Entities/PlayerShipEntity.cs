@@ -106,6 +106,9 @@ public class PlayerShipEntity : ShipEntity
    // A reference to the rect transform for the boost bar's parent
    public RectTransform boostBarParent;
 
+   // Portrait game object
+   public GameObject playerPortrait;
+
    // The different flags the ship can display
    public enum Flag {
       None = 0,
@@ -307,6 +310,9 @@ public class PlayerShipEntity : ShipEntity
          if (!isDead() && _movementInputDirection != Vector2.zero) {
             Vector2 targetVelocity = _movementInputDirection * getMoveSpeed() * Time.fixedDeltaTime;
             _body.velocity = Vector2.SmoothDamp(_body.velocity, targetVelocity, ref _shipDampVelocity, 0.5f);
+
+            // In ghost mode, clamp the position to the area bounds
+            clampToMapBoundsInGhost();
          }
       }
    }
@@ -991,6 +997,9 @@ public class PlayerShipEntity : ShipEntity
          foreach (SpriteRenderer renderer in _renderers) {
             renderer.enabled = true;
          }
+         // Force the character portrait to redraw
+         playerPortrait.SetActive(false);
+         playerPortrait.SetActive(true);
       }
    }
 

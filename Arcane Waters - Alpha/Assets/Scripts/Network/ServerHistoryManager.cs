@@ -33,23 +33,23 @@ public class ServerHistoryManager : MonoBehaviour
       _buildVersionNumber = Util.getGameVersion();
       DateTime pruneUntilDate = DateTime.UtcNow - new TimeSpan(HISTORY_ENTRIES_LIFETIME, 0, 0, 0);
 
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Create the new event
-         DB_Main.createServerHistoryEvent(DateTime.UtcNow, ServerHistoryInfo.EventType.ServerStart, _buildVersionNumber);
+      // Create the new event
+      logServerEvent(ServerHistoryInfo.EventType.ServerStart);
 
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Delete old events
          DB_Main.pruneServerHistory(pruneUntilDate);
       });
    }
 
    [Server]
-   public void onServerStop () {
+   public void logServerEvent (ServerHistoryInfo.EventType e) {
       if (!isServerHistoryActive() || MyNetworkManager.getCurrentPort() != Global.MASTER_SERVER_PORT) {
          return;
       }
 
-      Util.tryToRunInServerBackground(() => 
-         DB_Main.createServerHistoryEvent(DateTime.UtcNow, ServerHistoryInfo.EventType.ServerStop, _buildVersionNumber));
+      Util.tryToRunInServerBackground(() =>
+         DB_Main.createServerHistoryEvent(DateTime.UtcNow, e, _buildVersionNumber));
    }
 
    public bool isServerHistoryActive () {

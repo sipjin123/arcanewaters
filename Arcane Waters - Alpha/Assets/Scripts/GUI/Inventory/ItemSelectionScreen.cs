@@ -68,6 +68,7 @@ public class ItemSelectionScreen : MonoBehaviour
       // Set the filters to be used every time the items are listed
       _categoryFilter = categoryFilter;
       _itemIdsToExclude = itemIdsToExclude;
+      _currentPage = 0;
 
       // Clear out any current items
       itemCellsContainer.DestroyChildren();
