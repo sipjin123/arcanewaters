@@ -288,6 +288,9 @@ namespace NubisDataHandling {
          }
          inventoryPanel.clearPanel();
 
+         // Filter inventory items here
+         itemList.RemoveAll(_ => _.category == Item.Category.Usable);
+
          UserObjects userObjects = new UserObjects { userInfo = inventoryBundle.user, weapon = inventoryBundle.equippedWeapon, armor = inventoryBundle.equippedArmor, hat = inventoryBundle.equippedHat };
          inventoryPanel.receiveItemForDisplay(itemList, userObjects, inventoryBundle.guildInfo, categoryFilter, pageIndex, inventoryBundle.totalItemCount, true);
       }
@@ -319,7 +322,6 @@ namespace NubisDataHandling {
          }
 
          List<Item> itemList = UserInventory.processUserInventory(listTask.Result);
-
          PanelManager.self.itemSelectionScreen.receiveItemsFromServer(itemList, pageIndex, totalCount);
       }
 
