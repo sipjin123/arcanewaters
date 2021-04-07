@@ -56,6 +56,9 @@ public class TreasureManager : MonoBehaviour {
       // Assign a unique ID
       chest.id = _id++;
 
+      // Determine chest content rarity
+      chest.rarity = Rarity.getRandom();
+
       // Sets up the custom sprite of the treasure
       chest.useCustomSprite = spot.useCustomSprite;
       chest.customSpritePath = spot.customSpritePath;

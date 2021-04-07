@@ -33,7 +33,7 @@ public class AreaManager : MonoBehaviour
    public void storeAreaInfo () {
       try {
          // Read the map data
-         List<Map> maps = DB_Main.exec(DB_Main.getMaps, true);
+         List<Map> maps = DB_Main.exec(DB_Main.getMaps);
 
          foreach (Map map in maps) {
             if (map.publishedVersion >= 0) {

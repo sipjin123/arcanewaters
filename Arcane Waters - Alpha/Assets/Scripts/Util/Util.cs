@@ -21,6 +21,7 @@ using UnityEngine.Events;
 using MapCustomization;
 using System.Net;
 using UnityEngine.InputSystem;
+using DG.Tweening;
 
 public class Util : MonoBehaviour
 {
@@ -710,6 +711,14 @@ public class Util : MonoBehaviour
       canvasGroup.blocksRaycasts = false;
    }
 
+   public static void fadeCanvasGroup (CanvasGroup canvasGroup, bool enabled, float fadeDuration) {
+      canvasGroup.DOKill();
+      float endAlpha = enabled ? 1.0f : 0.0f;
+      canvasGroup.interactable = enabled;
+      canvasGroup.blocksRaycasts = enabled;
+      canvasGroup.DOFade(endAlpha, fadeDuration);
+   }
+
    public static string createSalt (string UserName) {
 #if IS_SERVER_BUILD
       Rfc2898DeriveBytes hasher = new Rfc2898DeriveBytes(UserName.ToLower(),
@@ -1121,19 +1130,29 @@ public class Util : MonoBehaviour
    }
 
    public static string getJenkinsBuildTitle () {
-      // Declare local variables
-      string buildName = null;
+      List<string> configKeys = new List<string>();
+      configKeys.Add("projectName");
+      configKeys.Add("buildType");
+      configKeys.Add("branch");
+      configKeys.Add("database");
+      configKeys.Add("platform");
+      configKeys.Add("distribution");
 
       // Get data from config file
       TextAsset jenkinsBuildConfigAsset = Resources.Load<TextAsset>("config");
       Dictionary<string, object> jenkinsBuildConfig = MiniJSON.Json.Deserialize(jenkinsBuildConfigAsset.text) as Dictionary<string, object>;
 
-      if (jenkinsBuildConfig != null && jenkinsBuildConfig.ContainsKey("name")) {
-         buildName = jenkinsBuildConfig["name"].ToString();
+      string jenkinsBuildId = null;
+      if (jenkinsBuildConfig != null) {
+         foreach (string key in configKeys) {
+            if (jenkinsBuildConfig.ContainsKey(key)) {
+               jenkinsBuildId = jenkinsBuildId + jenkinsBuildConfig[key].ToString() + "-";
+            }
+         }
       }
 
-      string buildNumber = (getJenkinsBuildIdNumber() != null) ? "-" + getJenkinsBuildIdNumber() : "";
-      string jenkinsBuildId = buildName + buildNumber;
+      string buildNumber = (getJenkinsBuildIdNumber() != null) ? getJenkinsBuildIdNumber() : "";
+      jenkinsBuildId = jenkinsBuildId + buildNumber;
       return jenkinsBuildId;
    }
 

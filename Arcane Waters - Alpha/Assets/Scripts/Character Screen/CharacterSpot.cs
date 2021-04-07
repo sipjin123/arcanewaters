@@ -31,8 +31,11 @@ public class CharacterSpot : ClientMonoBehaviour {
    // Last CharacterSpot that the user interacted with
    public static CharacterSpot lastInteractedSpot;
 
-   // Shows a UI that notifies the user their character is being deleted
-   public GameObject deleteIndicator;
+   // A reference to the canvas group containing the buttons for this character spot
+   public CanvasGroup buttonsCanvasGroup;
+
+   // The duration of the fading of UI elements for character spots
+   public static float FADE_TIME = 0.5f;
 
    #endregion
 
@@ -119,6 +122,18 @@ public class CharacterSpot : ClientMonoBehaviour {
          Destroy(character.gameObject);
       }
 
+      StartCoroutine(CO_SetupCharacter());
+   }
+
+   private IEnumerator CO_SetupCharacter () {
+      setButtonVisiblity(false);
+      
+      // Fade to loading overlay
+      CameraFader.self.fadeIn(0.5f);
+      CameraFader.self.setLoadingIndicatorVisibility(true);
+
+      yield return new WaitForSeconds(FADE_TIME);
+
       // Create a new character at this spot
       OfflineCharacter offlineChar = Instantiate(CharacterScreen.self.offlineCharacterPrefab, this.transform.position, Quaternion.identity);
       offlineChar.creationMode = true;
@@ -144,32 +159,51 @@ public class CharacterSpot : ClientMonoBehaviour {
       }
 
       Hat hat = new Hat();
-      
+
       offlineChar.setDataAndLayers(userInfo, weapon, armor, hat, armor.paletteNames);
 
       _spotCameraSettings = new VirtualCameraSettings();
       _spotCameraSettings.position = spotCamera.position;
       _spotCameraSettings.ppuScale = MyCamera.getCharacterCreationPPUScale();
 
+      this.assignCharacter(offlineChar);
+      offlineChar.gameObject.SetActive(false);
+
+      CharacterCreationPanel.self.setCharacterBeingCreated(offlineChar);
+
+      // Remove loading overlay
+      CameraFader.self.fadeOut(0.5f);
+      yield return new WaitForSeconds(CameraFader.FADE_DURATION);
+      CameraFader.self.setLoadingIndicatorVisibility(false);
+
+      // Show character and creation panel, and zoom in
+      CharacterCreationPanel.self.show();
+      offlineChar.gameObject.SetActive(true);
+
       CharacterScreen.self.myCamera.setSettings(_spotCameraSettings).OnComplete(() => {
          CharacterCreationSpotFader.self.fadeColorOnPosition(offlineChar.transform.position);
       });
-
-      this.assignCharacter(offlineChar);
    }
 
    protected void sendDeleteUserRequest (int userId) {
-      deleteIndicator.SetActive(true);
+      
+      // Fade and show a loading indicator
+      CameraFader.self.fadeIn(0.5f);
+      CameraFader.self.setLoadingIndicatorVisibility(true);
       character.gameObject.SetActive(false);
 
       // Disable the canvas group
-      Util.disableCanvasGroup(CharacterScreen.self.canvasGroup);
+      Util.fadeCanvasGroup(CharacterScreen.self.canvasGroup, false, FADE_TIME);
 
       // Disable the buttons on the confirmation panel while we're doing stuff
-      PanelManager.self.confirmScreen.canvasGroup.interactable = false;
+      Util.fadeCanvasGroup(PanelManager.self.confirmScreen.canvasGroup, false, FADE_TIME);
 
       // Send off the request
       NetworkClient.Send(new DeleteUserMessage(Global.netId, userId));
+   }
+
+   public void setButtonVisiblity (bool isVisible) {
+      Util.fadeCanvasGroup(buttonsCanvasGroup, isVisible, FADE_TIME);
    }
 
    #region Private Variables

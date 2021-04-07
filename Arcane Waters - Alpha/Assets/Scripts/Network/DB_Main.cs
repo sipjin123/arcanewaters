@@ -45,7 +45,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
             string query = "SELECT itmId, itmCategory, itmType, itmData " +
-                           "FROM arcane.items " +
+                           "FROM items " +
                            "where (itmCategory = 7 and itmId = @itmId) and items.usrId = @usrId";
             using (MySqlCommand command = new MySqlCommand(query, connection)) {
                command.Parameters.AddWithValue("@itmId", bpId);
@@ -79,7 +79,7 @@ public class DB_Main : DB_MainStub
       byte[] rawData;
 
       try {
-         using (MySqlConnection connection = getConnectionToDevGlobal()) {
+         using (MySqlConnection connection = getConnection()) {
             connection.Open();
 
             string query = "SELECT * FROM global.xml_status where id = " + slot;
@@ -127,7 +127,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
             using (MySqlCommand command = new MySqlCommand(
-            "SELECT * FROM arcane.items " + whereClause + " order by itmCategory limit " + itemsPerPage +
+            "SELECT * FROM items " + whereClause + " order by itmCategory limit " + itemsPerPage +
             " offset " + offset, connection)) {
                D.editorLog(command.CommandText);
                DebugQuery(command);
@@ -184,7 +184,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT COUNT(*) AS itemCount FROM arcane.items " + whereClause
+            "SELECT COUNT(*) AS itemCount FROM items " + whereClause
             , conn)) {
             conn.Open();
             cmd.Prepare();
@@ -247,7 +247,7 @@ public class DB_Main : DB_MainStub
    public static new string fetchXmlVersion (string slotstr) {
       int slot = int.Parse(slotstr);
       try {
-         using (MySqlConnection connection = getConnectionToDevGlobal()) {
+         using (MySqlConnection connection = getConnection()) {
             connection.Open();
             using (MySqlCommand command = new MySqlCommand(
                "SELECT version FROM global.xml_status where id = " + slot,
@@ -277,7 +277,7 @@ public class DB_Main : DB_MainStub
             connection.Open();
             using (MySqlCommand command = new MySqlCommand(
                "SELECT itmId, itmCategory, itmType " +
-               "FROM arcane.items " +
+               "FROM items " +
                "WHERE(itmCategory = 7 AND itmData LIKE '%blueprintType=hat%') AND items.usrId = @usrId",
                connection)) {
                command.Parameters.AddWithValue("@usrId", usrId);
@@ -409,8 +409,8 @@ public class DB_Main : DB_MainStub
             connection.Open();
             using (MySqlCommand command = new MySqlCommand(
                "SELECT itmId, itmCategory, itmType, itmPalettes " +
-               "FROM arcane.items " +
-               "left join arcane.users on armId = itmId or wpnId = itmId or hatId = itmId " +
+               "FROM items " +
+               "left join users on armId = itmId or wpnId = itmId or hatId = itmId " +
                "where(armId = itmId or wpnId = itmId or hatId = itmId) and items.usrId = @usrId",
                connection)) {
                command.Parameters.AddWithValue("@usrId", usrId);
@@ -439,10 +439,10 @@ public class DB_Main : DB_MainStub
    public static new string fetchMapData (string mapName, string versionStr) {
       int version = int.Parse(versionStr);
       try {
-         using (MySqlConnection connection = getConnectionToDevGlobal()) {
+         using (MySqlConnection connection = getConnection()) {
             connection.Open();
             using (MySqlCommand command = new MySqlCommand(
-               "SELECT gameData FROM map_versions_v2 left join maps_v2 on mapid = id WHERE (name = @mapName and version=@mapVersion)",
+               "SELECT gameData FROM global.map_versions_v2 left join global.maps_v2 on mapid = id WHERE (name = @mapName and version=@mapVersion)",
                connection)) {
                command.Parameters.AddWithValue("@mapName", mapName);
                command.Parameters.AddWithValue("@mapVersion", version);
@@ -515,7 +515,7 @@ public class DB_Main : DB_MainStub
 
    public static new void writeZipData (byte[] bytes, int slot) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "UPDATE global.xml_status SET xmlZipData = @xmlZipData, version = version + 1, dataSize = @dataSize WHERE id = " + slot, conn)) {
@@ -563,7 +563,7 @@ public class DB_Main : DB_MainStub
 
       string newQuery = "SELECT " + contentToFetch + addedFields + " FROM global." + tableName;
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(newQuery, conn)) {
 
             conn.Open();
@@ -652,7 +652,7 @@ public class DB_Main : DB_MainStub
       List<RawPaletteToolData> newPaletteDataList = new List<RawPaletteToolData>();
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global." + tableName, conn)) {
 
@@ -688,7 +688,7 @@ public class DB_Main : DB_MainStub
       int latestVersion = 0;
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT version FROM global.xml_status where id = 1", conn)) {
 
@@ -717,7 +717,7 @@ public class DB_Main : DB_MainStub
 
       string newQuery = "SELECT " + lastUserUpdateKey + " FROM global." + tableName + " order by " + lastUserUpdateKey + " DESC limit 1";
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(newQuery, conn)) {
 
             conn.Open();
@@ -749,9 +749,9 @@ public class DB_Main : DB_MainStub
 
          string myAddress = Util.formatIpAddress(sourceIPAddress);
 
-         using (MySqlConnection conn = getConnectionToDevGlobal()) {
+         using (MySqlConnection conn = getConnection()) {
             using (MySqlCommand cmd = new MySqlCommand(
-               "INSERT INTO support_tickets (ticketSubject, ticketDescription, sourceUsrId, sourceAccId, sourceUsrName, sourceEmail, sourceIPAddress, sourceMachineIdentifier, targetUsrId, targetAccId, targetUsrName, ticketLog, status, playerPosition, deploymentId, sourceType) VALUES " +
+               "INSERT INTO global.support_tickets (ticketSubject, ticketDescription, sourceUsrId, sourceAccId, sourceUsrName, sourceEmail, sourceIPAddress, sourceMachineIdentifier, targetUsrId, targetAccId, targetUsrName, ticketLog, status, playerPosition, deploymentId, sourceType) VALUES " +
                 "(@ticketSubject, @ticketDescription, @sourceUsrId, @sourceAccId, @sourceUsrName, @sourceEmail, @sourceIPAddress, @sourceMachineIdentifier, @targetUsrId, @targetAccId, @targetUsrName, @ticketLog, @status, @playerPosition, @deploymentId, @sourceType);", conn)) {
                conn.Open();
                cmd.Prepare();
@@ -811,7 +811,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT chtId, time FROM arcane.chat_log order by time desc limit 1", conn)) {
+            "SELECT chtId, time FROM chat_log order by time desc limit 1", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@chatType", 12);
@@ -921,7 +921,7 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getProjectileXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
 
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand("SELECT xmlId, xmlContent FROM global.projectiles_xml_v3", conn)) {
          conn.Open();
          cmd.Prepare();
@@ -1047,7 +1047,7 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "INSERT INTO global.ability_xml_v2 (" + skillIdKey + "xml_name, xmlContent, ability_type, creator_userID, default_ability, lastUserUpdate) " +
@@ -1075,7 +1075,7 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteBattleAbilityXML (int skillId) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.ability_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -1093,7 +1093,7 @@ public class DB_Main : DB_MainStub
    public static new List<AbilityXMLContent> getBattleAbilityXML () {
       List<AbilityXMLContent> xmlContent = new List<AbilityXMLContent>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.ability_xml_v2", conn)) {
 
@@ -1123,7 +1123,7 @@ public class DB_Main : DB_MainStub
    public static new List<AbilityXMLContent> getDefaultAbilities () {
       List<AbilityXMLContent> xmlContent = new List<AbilityXMLContent>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.ability_xml_v2 WHERE (default_ability=@default_ability)", conn)) {
 
@@ -1163,7 +1163,7 @@ public class DB_Main : DB_MainStub
          xmlIdValue = "";
       }
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "INSERT INTO global.treasure_drops_xml_v2 (" + xmlIdKey + "biomeType, xmlContent, lastUserUpdate) " +
@@ -1189,7 +1189,7 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getBiomeTreasureDrops () {
       List<XMLPair> xmlContent = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.treasure_drops_xml_v2", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -1220,7 +1220,7 @@ public class DB_Main : DB_MainStub
       List<SoundEffect> effects = new List<SoundEffect>();
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.soundeffects_v2", conn)) {
 
@@ -1254,7 +1254,7 @@ public class DB_Main : DB_MainStub
 
    public static new void updateSoundEffect (SoundEffect effect) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "INSERT INTO global.soundeffects_v2 (id, name, clipName, minVolume, maxVolume, minPitch, maxPitch, offset, lastUserUpdate) " +
@@ -1285,7 +1285,7 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteSoundEffect (SoundEffect effect) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.soundeffects_v2 WHERE id=@id", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -1548,7 +1548,7 @@ public class DB_Main : DB_MainStub
       List<SQLEntryNameClass> rawDataList = new List<SQLEntryNameClass>();
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global." + EditorSQLManager.getSQLTableByName(editorType), conn)) {
 
@@ -1574,7 +1574,7 @@ public class DB_Main : DB_MainStub
       List<SQLEntryIDClass> rawDataList = new List<SQLEntryIDClass>();
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global." + EditorSQLManager.getSQLTableByID(editorType, equipmentType), conn)) {
 
@@ -1614,7 +1614,7 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "INSERT INTO global.crops_xml_v1 (" + xmlIdKey + "xml_name, xmlContent, creator_userID, is_enabled, crops_type, lastUserUpdate) " +
@@ -1643,7 +1643,7 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getCropsXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.crops_xml_v1", conn)) {
 
@@ -1672,7 +1672,7 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteCropsXML (int xmlId) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.crops_xml_v1 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -1701,7 +1701,7 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "INSERT INTO global.ship_ability_xml_v2 (" + xml_id_key + "xml_name, xmlContent, creator_userID, lastUserUpdate) " +
@@ -1728,7 +1728,7 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getShipAbilityXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.ship_ability_xml_v2", conn)) {
 
@@ -1757,7 +1757,7 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteShipAbilityXML (int xmlId) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.ship_ability_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -1787,7 +1787,7 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "INSERT INTO global.land_monster_xml_v3 (" + xml_id_key + "xmlContent, creator_userID, monster_type, monster_name, isActive, lastUserUpdate) " +
@@ -1816,7 +1816,7 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getLandMonsterXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.land_monster_xml_v3", conn)) {
 
@@ -1845,7 +1845,7 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteLandmonsterXML (int typeID) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.land_monster_xml_v3 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -1875,7 +1875,7 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "INSERT INTO global.sea_monster_xml_v2 (" + xml_id_key + "xmlContent, creator_userID, monster_type, monster_name, isActive, lastUserUpdate) " +
@@ -1904,7 +1904,7 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getSeaMonsterXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.sea_monster_xml_v2", conn)) {
 
@@ -1933,7 +1933,7 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteSeamonsterXML (int typeID) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.sea_monster_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -1963,7 +1963,7 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "INSERT INTO global.quest_data_xml_v1 (" + xmlIdKey + "xmlContent, creatorUserID, lastUserUpdate, xmlName, isActive) " +
@@ -1995,7 +1995,7 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getNPCQuestXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.quest_data_xml_v1", conn)) {
 
@@ -2024,7 +2024,7 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteNPCQuestXML (int typeID) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.quest_data_xml_v1 WHERE xmlId=@xmlId", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -2045,7 +2045,7 @@ public class DB_Main : DB_MainStub
 
    public static new void updateNPCXML (string rawData, int typeIndex) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "INSERT INTO global.npc_xml_v2 (xml_id, xmlContent, creator_userID, lastUserUpdate) " +
@@ -2071,7 +2071,7 @@ public class DB_Main : DB_MainStub
    public static new List<string> getNPCXML () {
       List<string> rawDataList = new List<string>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.npc_xml_v2", conn)) {
 
@@ -2094,7 +2094,7 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteNPCXML (int typeID) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.npc_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -2191,8 +2191,8 @@ public class DB_Main : DB_MainStub
    #region Map Editor Data
 
    public static new int getMapId (string areaKey) {
-      string cmdText = "SELECT id FROM maps_v2 WHERE name = @areaKey;";
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      string cmdText = "SELECT id FROM global.maps_v2 WHERE name = @areaKey;";
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          cmd.Parameters.AddWithValue("@areaKey", areaKey);
          conn.Open();
@@ -2211,8 +2211,8 @@ public class DB_Main : DB_MainStub
 
    public static new string getMapContents () {
       string content = "";
-      string cmdText = "SELECT * FROM maps_v2";
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      string cmdText = "SELECT * FROM global.maps_v2";
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
          cmd.Prepare();
@@ -2251,7 +2251,7 @@ public class DB_Main : DB_MainStub
       cmd.CommandText =
             "SELECT id, name, displayName, createdAt, creatorUserId, publishedVersion, sourceMapId, notes, " +
                "editorType, biome, specialType, accName, weatherEffectType " +
-            "FROM maps_v2 " +
+            "FROM global.maps_v2 " +
                "LEFT JOIN global.accounts ON maps_v2.creatorUserId = accId " +
             "ORDER BY name;";
       DebugQuery(cmd);
@@ -2289,9 +2289,9 @@ public class DB_Main : DB_MainStub
       // fetch the map if and version
       int mapVersion = -1;
       int mapId = -1;
-      string cmdText = "SELECT id,publishedVersion FROM maps_v2 WHERE (name=@mapName)";
+      string cmdText = "SELECT id,publishedVersion FROM global.maps_v2 WHERE (name=@mapName)";
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
             cmd.Parameters.AddWithValue("@mapName", areaKey);
             conn.Open();
@@ -2319,9 +2319,9 @@ public class DB_Main : DB_MainStub
       }
 
       string mapName = areaKey;
-      cmdText = "SELECT gameData FROM map_versions_v2 WHERE (mapid = @mapid AND version = @version) LIMIT 1";
+      cmdText = "SELECT gameData FROM global.map_versions_v2 WHERE (mapid = @mapid AND version = @version) LIMIT 1";
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
             cmd.Parameters.AddWithValue("@mapid", mapId);
             cmd.Parameters.AddWithValue("@version", mapVersion);
@@ -2346,9 +2346,9 @@ public class DB_Main : DB_MainStub
 
    public static new Dictionary<string, MapInfo> getLiveMaps () {
       Dictionary<string, MapInfo> maps = new Dictionary<string, MapInfo>();
-      string cmdText = "SELECT * FROM maps_v2 JOIN map_versions_v2 ON (maps_v2.id=map_versions_v2.mapId) WHERE (maps_v2.publishedVersion=map_versions_v2.version)";
+      string cmdText = "SELECT * FROM global.maps_v2 JOIN global.map_versions_v2 ON (maps_v2.id=map_versions_v2.mapId) WHERE (maps_v2.publishedVersion=map_versions_v2.version)";
 
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
          cmd.Prepare();
@@ -2371,11 +2371,11 @@ public class DB_Main : DB_MainStub
       List<MapVersion> result = new List<MapVersion>();
 
       string cmdText = "SELECT version, createdAt, updatedAt " +
-         "FROM map_versions_v2 " +
+         "FROM global.map_versions_v2 " +
          "WHERE mapId = @id " +
          "ORDER BY updatedAt DESC;";
 
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          cmd.Parameters.AddWithValue("@id", map.id);
          conn.Open();
@@ -2399,9 +2399,9 @@ public class DB_Main : DB_MainStub
    }
 
    public static new string getMapVersionEditorData (MapVersion version) {
-      string cmdText = "SELECT editorData from map_versions_v2 WHERE mapId = @id AND version = @version;";
+      string cmdText = "SELECT editorData from global.map_versions_v2 WHERE mapId = @id AND version = @version;";
 
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
          cmd.Prepare();
@@ -2423,9 +2423,9 @@ public class DB_Main : DB_MainStub
 
    public static new MapVersion getLatestMapVersionEditor (Map map, bool infiniteCommandTimeout = false) {
       string cmdText = "SELECT version, createdAt, updatedAt, editorData " +
-         "FROM map_versions_v2 WHERE mapId = @id AND version = (SELECT max(version) FROM map_versions_v2 WHERE mapId = @id);";
+         "FROM global.map_versions_v2 WHERE mapId = @id AND version = (SELECT max(version) FROM global.map_versions_v2 WHERE mapId = @id);";
 
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          if (infiniteCommandTimeout) {
             cmd.CommandTimeout = 0;
@@ -2460,9 +2460,9 @@ public class DB_Main : DB_MainStub
       List<MapSpawn> result = new List<MapSpawn>();
 
       string cmdText = "SELECT mapid, maps_v2.name as mapName, map_spawns_v2.name as spawnName, mapVersion, posX, posY " +
-         "FROM map_spawns_v2 JOIN maps_v2 ON maps_v2.id = map_spawns_v2.mapid " +
+         "FROM global.map_spawns_v2 JOIN global.maps_v2 ON maps_v2.id = map_spawns_v2.mapid " +
          "WHERE mapVersion = publishedVersion;";
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
          cmd.Prepare();
@@ -2486,7 +2486,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void createMap (MapVersion mapVersion) {
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
          MySqlTransaction transaction = conn.BeginTransaction();
@@ -2496,7 +2496,7 @@ public class DB_Main : DB_MainStub
 
          try {
             // Insert entry to maps
-            cmd.CommandText = "INSERT INTO maps_v2(name, createdAt, creatorUserId, publishedVersion, editorType, biome, displayName) " +
+            cmd.CommandText = "INSERT INTO global.maps_v2(name, createdAt, creatorUserId, publishedVersion, editorType, biome, displayName) " +
                "VALUES(@name, @createdAt, @creatorID, @publishedVersion, @editorType, @biome, @name);";
             cmd.Parameters.AddWithValue("@name", mapVersion.map.name);
             cmd.Parameters.AddWithValue("@createdAt", mapVersion.map.createdAt);
@@ -2512,7 +2512,7 @@ public class DB_Main : DB_MainStub
             mapVersion.map.id = (int) mapId;
 
             // Insert entry to map versions
-            cmd.CommandText = "INSERT INTO map_versions_v2(mapId, version, createdAt, updatedAt, editorData, gameData) " +
+            cmd.CommandText = "INSERT INTO global.map_versions_v2(mapId, version, createdAt, updatedAt, editorData, gameData) " +
                "VALUES(@mapId, @version, @createdAt, @updatedAt, @editorData, @gameData);";
             cmd.Parameters.Clear();
             cmd.Parameters.AddWithValue("@mapId", mapId);
@@ -2525,7 +2525,7 @@ public class DB_Main : DB_MainStub
             cmd.ExecuteNonQuery();
 
             // Insert spawns
-            cmd.CommandText = "INSERT INTO map_spawns_v2(mapId, mapVersion, name, posX, posY) " +
+            cmd.CommandText = "INSERT INTO global.map_spawns_v2(mapId, mapVersion, name, posX, posY) " +
                "Values(@mapId, @mapVersion, @name, @posX, @posY);";
             foreach (MapSpawn spawn in mapVersion.spawns) {
                cmd.Parameters.Clear();
@@ -2547,7 +2547,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void duplicateMapGroup (int mapId, int newCreatorId) {
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
          MySqlTransaction transaction = conn.BeginTransaction();
@@ -2579,7 +2579,7 @@ public class DB_Main : DB_MainStub
       List<int> childrenIds = new List<int>();
 
       cmd.Parameters.Clear();
-      cmd.CommandText = "SELECT id FROM maps_v2 WHERE sourceMapId = @mapID;";
+      cmd.CommandText = "SELECT id FROM global.maps_v2 WHERE sourceMapId = @mapID;";
       cmd.Parameters.AddWithValue("@mapID", parentMapId);
       DebugQuery(cmd);
 
@@ -2597,9 +2597,9 @@ public class DB_Main : DB_MainStub
 
       cmd.CommandTimeout = 1200;
       // Create a new map entry with a random name ending
-      cmd.CommandText = "INSERT INTO maps_v2(name, createdAt, creatorUserId, publishedVersion, editorType, biome, displayName, notes, specialType, sourceMapId) " +
+      cmd.CommandText = "INSERT INTO global.maps_v2(name, createdAt, creatorUserId, publishedVersion, editorType, biome, displayName, notes, specialType, sourceMapId) " +
          "SELECT CONCAT(LEFT(name, 24), ' ', FLOOR(RAND() * (99999 - 10001)) + 10000), @nowDate, @creatorID, @publishedVersion, editorType, biome, name, notes, specialType, @sourceMapID " +
-            "FROM maps_v2 WHERE id = @mapID;";
+            "FROM global.maps_v2 WHERE id = @mapID;";
       cmd.Parameters.Clear();
       cmd.Parameters.AddWithValue("@mapID", mapId);
       cmd.Parameters.AddWithValue("@nowDate", DateTime.Now);
@@ -2612,17 +2612,17 @@ public class DB_Main : DB_MainStub
       resultId = (int) cmd.LastInsertedId;
 
       // Insert entry to map versions
-      cmd.CommandText = "INSERT INTO map_versions_v2(mapId, version, createdAt, updatedAt, editorData, gameData) " +
+      cmd.CommandText = "INSERT INTO global.map_versions_v2(mapId, version, createdAt, updatedAt, editorData, gameData) " +
          "SELECT @resultID, version, @nowDate, @nowDate, editorData, gameData " +
-            "FROM map_versions_v2 WHERE mapId = @mapID;";
+            "FROM global.map_versions_v2 WHERE mapId = @mapID;";
       cmd.Parameters.AddWithValue("@resultID", resultId);
       DebugQuery(cmd);
       cmd.ExecuteNonQuery();
 
       // Insert spawns
-      cmd.CommandText = "INSERT INTO map_spawns_v2(mapId, mapVersion, name, posX, posY) " +
+      cmd.CommandText = "INSERT INTO global.map_spawns_v2(mapId, mapVersion, name, posX, posY) " +
          "SELECT @resultID, mapVersion, name, posX, posY " +
-            "FROM map_spawns_v2 WHERE mapId = @mapID;";
+            "FROM global.map_spawns_v2 WHERE mapId = @mapID;";
       DebugQuery(cmd);
       cmd.ExecuteNonQuery();
 
@@ -2630,10 +2630,10 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void updateMapDetails (Map map) {
-      string cmdText = "UPDATE maps_v2 " +
+      string cmdText = "UPDATE global.maps_v2 " +
          "SET name = @name, sourceMapId = @sourceId, notes = @notes, specialType = @specialType, displayName = @displayName, weatherEffectType = @weatherEffect " +
          "WHERE id = @mapId;";
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
 
@@ -2655,7 +2655,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new MapVersion createNewMapVersion (MapVersion mapVersion) {
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
          MySqlTransaction transaction = conn.BeginTransaction();
@@ -2667,12 +2667,12 @@ public class DB_Main : DB_MainStub
             // Update biome of map entry
             cmd.Parameters.AddWithValue("@mapId", mapVersion.mapId);
             cmd.Parameters.AddWithValue("@biome", (int) mapVersion.map.biome);
-            cmd.CommandText = "UPDATE maps_v2 SET biome = @biome WHERE id = @mapId;";
+            cmd.CommandText = "UPDATE global.maps_v2 SET biome = @biome WHERE id = @mapId;";
             DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
             // Fetch latest version of a map
-            cmd.CommandText = "SELECT IFNULL(MAX(version), -1) as latestVersion FROM map_versions_v2 WHERE mapId = @mapId;";
+            cmd.CommandText = "SELECT IFNULL(MAX(version), -1) as latestVersion FROM global.map_versions_v2 WHERE mapId = @mapId;";
             DebugQuery(cmd);
 
             int latestVersion = -1;
@@ -2694,7 +2694,7 @@ public class DB_Main : DB_MainStub
             };
 
             // Insert the new version 
-            cmd.CommandText = "INSERT INTO map_versions_v2(mapId, version, createdAt, updatedAt, editorData, gameData) " +
+            cmd.CommandText = "INSERT INTO global.map_versions_v2(mapId, version, createdAt, updatedAt, editorData, gameData) " +
             "VALUES(@mapId, @version, @createdAt, @updatedAt, @editorData, @gameData);";
 
             cmd.Parameters.AddWithValue("@version", result.version);
@@ -2706,7 +2706,7 @@ public class DB_Main : DB_MainStub
             cmd.ExecuteNonQuery();
 
             // Insert spawns
-            cmd.CommandText = "INSERT INTO map_spawns_v2(mapId, mapVersion, name, posX, posY) " +
+            cmd.CommandText = "INSERT INTO global.map_spawns_v2(mapId, mapVersion, name, posX, posY) " +
                "Values(@mapId, @mapVersion, @name, @posX, @posY);";
             foreach (MapSpawn spawn in result.spawns) {
                cmd.Parameters.Clear();
@@ -2729,7 +2729,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void updateMapVersion (MapVersion mapVersion, bool infiniteCommandTimeout = false) {
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          if (infiniteCommandTimeout) {
             cmd.CommandTimeout = 0;
@@ -2745,12 +2745,12 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@mapId", mapVersion.mapId);
             cmd.Parameters.AddWithValue("@editorType", (int) mapVersion.map.editorType);
             cmd.Parameters.AddWithValue("@biome", (int) mapVersion.map.biome);
-            cmd.CommandText = "UPDATE maps_v2 SET editorType = @editorType, biome = @biome WHERE id = @mapId;";
+            cmd.CommandText = "UPDATE global.maps_v2 SET editorType = @editorType, biome = @biome WHERE id = @mapId;";
             DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
             // Update entry in map versions
-            cmd.CommandText = "UPDATE map_versions_v2 SET " +
+            cmd.CommandText = "UPDATE global.map_versions_v2 SET " +
                "createdAt = @createdAt, " +
                "updatedAt = @updatedAt, " +
                "editorData = @editorData, " +
@@ -2768,12 +2768,12 @@ public class DB_Main : DB_MainStub
             cmd.ExecuteNonQuery();
 
             // Delete old spawns
-            cmd.CommandText = "DELETE FROM map_spawns_v2 WHERE mapId = @mapId AND mapVersion = @version;";
+            cmd.CommandText = "DELETE FROM global.map_spawns_v2 WHERE mapId = @mapId AND mapVersion = @version;";
             DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
             // Insert spawns
-            cmd.CommandText = "INSERT INTO map_spawns_v2(mapId, mapVersion, name, posX, posY) " +
+            cmd.CommandText = "INSERT INTO global.map_spawns_v2(mapId, mapVersion, name, posX, posY) " +
                "Values(@mapId, @mapVersion, @name, @posX, @posY);";
             foreach (MapSpawn spawn in mapVersion.spawns) {
                cmd.Parameters.Clear();
@@ -2795,7 +2795,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void deleteMap (int id) {
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
          MySqlTransaction transaction = conn.BeginTransaction();
@@ -2814,7 +2814,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void deleteMapGroup (int mapId) {
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
          MySqlTransaction transaction = conn.BeginTransaction();
@@ -2845,23 +2845,23 @@ public class DB_Main : DB_MainStub
       cmd.Parameters.AddWithValue("@id", mapId);
 
       // Delete map entry
-      cmd.CommandText = "DELETE FROM maps_v2 WHERE id = @id;";
+      cmd.CommandText = "DELETE FROM global.maps_v2 WHERE id = @id;";
       DebugQuery(cmd);
       cmd.ExecuteNonQuery();
 
       // Delete all version entries
-      cmd.CommandText = "DELETE FROM map_versions_v2 WHERE mapId = @id;";
+      cmd.CommandText = "DELETE FROM global.map_versions_v2 WHERE mapId = @id;";
       DebugQuery(cmd);
       cmd.ExecuteNonQuery();
 
       // Delete all spawn entries
-      cmd.CommandText = "DELETE FROM map_spawns_v2 WHERE mapId = @id;";
+      cmd.CommandText = "DELETE FROM global.map_spawns_v2 WHERE mapId = @id;";
       DebugQuery(cmd);
       cmd.ExecuteNonQuery();
    }
 
    public static new void deleteMapVersion (MapVersion version) {
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
          MySqlTransaction transaction = conn.BeginTransaction();
@@ -2873,17 +2873,17 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@version", version.version);
 
             // Unpublish version
-            cmd.CommandText = "UPDATE maps_v2 SET publishedVersion = NULL WHERE id = @mapId and publishedVersion = @version";
+            cmd.CommandText = "UPDATE global.maps_v2 SET publishedVersion = NULL WHERE id = @mapId and publishedVersion = @version";
             DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
             // Delete version entry
-            cmd.CommandText = "DELETE FROM map_versions_v2 WHERE mapId = @mapId AND version = @version;";
+            cmd.CommandText = "DELETE FROM global.map_versions_v2 WHERE mapId = @mapId AND version = @version;";
             DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
             // Delete all spawn entries
-            cmd.CommandText = "DELETE FROM map_spawns_v2 WHERE mapId = @mapId AND mapVersion = @version;";
+            cmd.CommandText = "DELETE FROM global.map_spawns_v2 WHERE mapId = @mapId AND mapVersion = @version;";
             DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
@@ -2898,7 +2898,7 @@ public class DB_Main : DB_MainStub
    #endregion
 
    public static new void publishLatestVersionForAllGroup (int mapId) {
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
          MySqlTransaction transaction = conn.BeginTransaction();
@@ -2914,7 +2914,7 @@ public class DB_Main : DB_MainStub
             // Delete parent and children
             foreach (int id in ids) {
                cmd.Parameters.Clear();
-               cmd.CommandText = "UPDATE maps_v2 SET publishedVersion = (SELECT max(version) FROM map_versions_v2 WHERE mapId = @id) WHERE id = @id";
+               cmd.CommandText = "UPDATE global.maps_v2 SET publishedVersion = (SELECT max(version) FROM global.map_versions_v2 WHERE mapId = @id) WHERE id = @id";
                cmd.Parameters.AddWithValue("@id", id);
                DebugQuery(cmd);
                cmd.ExecuteNonQuery();
@@ -2929,8 +2929,8 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void setLiveMapVersion (MapVersion version) {
-      string cmdText = "UPDATE maps_v2 SET publishedVersion = @version WHERE id = @mapId;";
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      string cmdText = "UPDATE global.maps_v2 SET publishedVersion = @version WHERE id = @mapId;";
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
          cmd.Prepare();
@@ -2959,7 +2959,7 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "INSERT INTO global.shop_xml_v2 (" + xml_id_key + "xml_name, xmlContent, creator_userID, lastUserUpdate) " +
@@ -2986,7 +2986,7 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getShopXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.shop_xml_v2", conn)) {
 
@@ -3019,7 +3019,7 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteShopXML (int xmlId) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.shop_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -3049,7 +3049,7 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "INSERT INTO global.ship_xml_v2 (" + xml_id_key + "xmlContent, creator_userID, ship_type, ship_name, isActive, lastUserUpdate) " +
@@ -3078,7 +3078,7 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getShipXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.ship_xml_v2", conn)) {
 
@@ -3106,7 +3106,7 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteShipXML (int typeID) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.ship_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -3136,7 +3136,7 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "INSERT INTO global.achievement_xml_v2 (" + xml_id_key + "xml_name, xmlContent, creator_userID, lastUserUpdate) " +
@@ -3162,7 +3162,7 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteAchievementXML (string name) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.achievement_xml_v2 WHERE xml_name=@xml_name", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -3180,7 +3180,7 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getAchievementXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.achievement_xml_v2", conn)) {
 
@@ -3216,7 +3216,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.perks WHERE usrId = @usrId", conn)) {
+            "SELECT * FROM perks WHERE usrId = @usrId", conn)) {
 
             conn.Open();
 
@@ -3242,10 +3242,10 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO arcane.perks (usrId, perkId, perkPoints) " +
+            "INSERT INTO perks (usrId, perkId, perkPoints) " +
             "VALUES(@usrId, @perkId, @perkPoints) " +
             "ON DUPLICATE KEY UPDATE perkPoints = perkPoints + @perkPoints;" +
-            "UPDATE arcane.perks SET perkPoints = perkPoints - 1 WHERE usrId = @usrId AND perkId = 0;", conn)) {
+            "UPDATE perks SET perkPoints = perkPoints - 1 WHERE usrId = @usrId AND perkId = 0;", conn)) {
 
             conn.Open();
 
@@ -3272,7 +3272,7 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.perks WHERE usrId = @usrId AND perkId = @perkId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM perks WHERE usrId = @usrId AND perkId = @perkId", conn)) {
 
             conn.Open();
             cmd.Parameters.AddWithValue("@usrId", usrId);
@@ -3298,7 +3298,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO arcane.perks (usrId, perkId, perkTypeId, perkPoints) " +
+            "INSERT INTO perks (usrId, perkId, perkTypeId, perkPoints) " +
             "VALUES(@usrId, @perkId, @perkTypeId, @perkPoints) " +
             "ON DUPLICATE KEY UPDATE perkPoints = perkPoints + @perkPoints", conn)) {
 
@@ -3319,7 +3319,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void addPerkPointsForUser (int usrId, List<Perk> perks) {
-      StringBuilder cmdText = new StringBuilder("INSERT INTO arcane.perks (usrId, perkId, perkPoints) VALUES ");
+      StringBuilder cmdText = new StringBuilder("INSERT INTO perks (usrId, perkId, perkPoints) VALUES ");
       int i = 0;
 
       using (MySqlConnection conn = getConnection())
@@ -3350,7 +3350,7 @@ public class DB_Main : DB_MainStub
 
    public static new void updatePerksXML (string rawData, int perkId) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "INSERT INTO global.perks_config_xml (xml_id, xmlContent, creator_userID, lastUserUpdate) " +
@@ -3376,7 +3376,7 @@ public class DB_Main : DB_MainStub
    public static new List<PerkData> getPerksXML () {
       List<PerkData> perkDataList = new List<PerkData>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.perks_config_xml", conn)) {
 
@@ -3399,7 +3399,7 @@ public class DB_Main : DB_MainStub
 
    public static new void deletePerkXML (int xmlId) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.perks_config_xml WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -3420,7 +3420,7 @@ public class DB_Main : DB_MainStub
 
    public static new void upsertBook (string bookContent, string name, int bookId) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "INSERT INTO global.books (bookId, bookTitle, bookContent, creator_userID, lastUserUpdate) " +
@@ -3447,7 +3447,7 @@ public class DB_Main : DB_MainStub
    public static new List<BookData> getBooksList () {
       List<BookData> rawDataList = new List<BookData>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.books", conn)) {
 
@@ -3471,7 +3471,7 @@ public class DB_Main : DB_MainStub
    public static new BookData getBookById (int bookId) {
       BookData book = null;
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.books WHERE bookId = @bookId", conn)) {
 
@@ -3496,7 +3496,7 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteBookByID (int bookId) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.books WHERE bookId=@bookId", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -3517,7 +3517,7 @@ public class DB_Main : DB_MainStub
 
    public static new void duplicateDiscovery (DiscoveryData data) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "INSERT INTO global.discoveries_v2 (discoveryName, discoveryDescription, sourceImageUrl, rarity, creator_userID) " +
@@ -3543,7 +3543,7 @@ public class DB_Main : DB_MainStub
 
    public static new void upsertDiscovery (DiscoveryData data) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "INSERT INTO global.discoveries_v2 (discoveryId, discoveryName, discoveryDescription, sourceImageUrl, rarity, creator_userID) " +
@@ -3572,7 +3572,7 @@ public class DB_Main : DB_MainStub
    public static new List<DiscoveryData> getDiscoveriesList () {
       List<DiscoveryData> rawDataList = new List<DiscoveryData>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.discoveries_v2", conn)) {
 
@@ -3596,7 +3596,7 @@ public class DB_Main : DB_MainStub
    public static new DiscoveryData getDiscoveryById (int discoveryId) {
       DiscoveryData discovery = null;
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.discoveries_v2 WHERE discoveryId = @discoveryId", conn)) {
 
@@ -3621,7 +3621,7 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteDiscoveryById (int discoveryId) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.discoveries_v2 WHERE discoveryId = @discoveryId", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -3714,7 +3714,7 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getPaletteXML (bool onlyEnabledPalettes) {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.palette_recolors" + (onlyEnabledPalettes ? " WHERE isEnabled = 1" : ""), conn)) {
 
@@ -3747,7 +3747,7 @@ public class DB_Main : DB_MainStub
    public static new int getPaletteTagID (string tag) {
       int id = -1;
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.palette_tags WHERE name = @name", conn)) {
 
@@ -3772,7 +3772,7 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getPaletteXML (int tagId) {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.palette_recolors WHERE tagId = @tagId", conn)) {
 
@@ -3803,7 +3803,7 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getPaletteXML (int tagId, string subcategory) {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.palette_recolors WHERE tagId = @tagId AND subcategory = @subcategory", conn)) {
 
@@ -3847,7 +3847,7 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "INSERT INTO global.crafting_xml_v2 (" + xml_id_key + "xmlName, xmlContent, creator_userID, lastUserUpdate) " +
@@ -3876,7 +3876,7 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getCraftingXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.crafting_xml_v2", conn)) {
 
@@ -3905,7 +3905,7 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteCraftingXML (int xmlID) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.crafting_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -3936,7 +3936,7 @@ public class DB_Main : DB_MainStub
             xml_id_value = "";
          }
 
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "INSERT INTO global.background_xml_v2 (" + xml_id_key + "xml_name, xmlContent, creator_userID, lastUserUpdate) " +
@@ -3966,7 +3966,7 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getBackgroundXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.background_xml_v2", conn)) {
 
@@ -3995,7 +3995,7 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteBackgroundXML (int xmlId) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.background_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -4036,7 +4036,7 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "INSERT INTO global." + tableName + " (" + xmlKey + "xmlContent, creator_userID, equipment_type, equipment_name, is_enabled, lastUserUpdate) " +
@@ -4077,7 +4077,7 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global." + tableName + " WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -4108,7 +4108,7 @@ public class DB_Main : DB_MainStub
 
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global." + tableName, conn)) {
 
@@ -4147,7 +4147,7 @@ public class DB_Main : DB_MainStub
 
       string cmdText = "SELECT id, category, serializedData FROM global.item_definitions;";
 
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
          cmd.Prepare();
@@ -4166,7 +4166,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void createNewItemDefinition (ItemDefinition definition) {
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
          MySqlTransaction transaction = conn.BeginTransaction();
@@ -4209,7 +4209,7 @@ public class DB_Main : DB_MainStub
 
    public static new void updateItemDefinition (ItemDefinition definition) {
       string cmdText = "UPDATE global.item_definitions SET category = @category, serializedData = @serializedData WHERE id = @id;";
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
          cmd.Prepare();
@@ -4224,7 +4224,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void deleteItemDefinition (int id) {
-      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.item_definitions WHERE id = @id;", conn)) {
          conn.Open();
          cmd.Prepare();
@@ -4244,7 +4244,7 @@ public class DB_Main : DB_MainStub
       string xmlContent = "";
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.tooltips_v4", conn)) {
 
             conn.Open();
@@ -4270,7 +4270,7 @@ public class DB_Main : DB_MainStub
       List<TooltipSqlData> rawDataList = new List<TooltipSqlData>();
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.tooltips_v4", conn)) {
 
             conn.Open();
@@ -4496,7 +4496,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.companions where userId = @userId", conn)) {
+            "SELECT * FROM companions where userId = @userId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userId", userId);
@@ -4541,7 +4541,7 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(string.Format("SELECT * FROM arcane.items where itmCategory = @itmCategory and ({0}) and usrId = @usrId", itemIds), conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(string.Format("SELECT * FROM items where itmCategory = @itmCategory and ({0}) and usrId = @usrId", itemIds), conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@itmCategory", itmCategory);
@@ -5288,7 +5288,7 @@ public class DB_Main : DB_MainStub
       try {
          string myAddress = Util.formatIpAddress(ipAddress);
 
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.bug_reports (usrId, usrName, accId, bugSubject, bugIpAddress, bugLog, ping, fps, playerPosition, screenResolution, operatingSystem, status, deploymentId, steamState) VALUES(@usrId, @usrName, @accId, @bugSubject, @bugIpAddress, @bugLog, @ping, @fps, @playerPosition, @screenResolution, @operatingSystem, @status, @deploymentId, @steamState)", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -5335,7 +5335,7 @@ public class DB_Main : DB_MainStub
 
    public static new void saveBugReportScreenshot (NetEntity player, long bugId, byte[] screenshotBytes) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("SELECT accId FROM global.bug_reports WHERE bugId=@bugId", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -5543,7 +5543,7 @@ public class DB_Main : DB_MainStub
 
    public static new void completePendingAction (int pendingActionId) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("UPDATE global.pending_actions SET completedAt = CURRENT_TIMESTAMP WHERE id = @id", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -5562,7 +5562,7 @@ public class DB_Main : DB_MainStub
       List<PendingActionInfo> pendingActions = new List<PendingActionInfo>();
 
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.pending_actions WHERE completedAt IS NULL AND serverType = @serverType", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -5588,9 +5588,9 @@ public class DB_Main : DB_MainStub
       PenaltyInfo penaltyInfo = null;
 
       try {
-         string query = string.Format("SELECT * FROM account_penalties WHERE targetAccId = @targetAccId AND penaltyType IN ({0}) AND penaltyEnd > @penaltyEnd ORDER BY penaltyStart DESC LIMIT 1", string.Join(", ", PenaltyUtil.getPenaltiesList(penaltyType)));
+         string query = string.Format("SELECT * FROM global.account_penalties WHERE targetAccId = @targetAccId AND penaltyType IN ({0}) AND penaltyEnd > @penaltyEnd ORDER BY penaltyStart DESC LIMIT 1", string.Join(", ", PenaltyUtil.getPenaltiesList(penaltyType)));
 
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
             conn.Open();
             cmd.Prepare();
@@ -5617,7 +5617,7 @@ public class DB_Main : DB_MainStub
       try {
          string query = string.Format("UPDATE global.account_penalties SET penaltyEnd = CURRENT_TIMESTAMP WHERE targetAccId = @targetAccId AND penaltyType IN ({0}) AND penaltyEnd > @penaltyEnd", string.Join(", ", PenaltyUtil.getPenaltiesList(penaltyType)));
 
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
             conn.Open();
 
@@ -5649,7 +5649,7 @@ public class DB_Main : DB_MainStub
          } else {
             // If the account doesn't have a current active ban
             try {
-               using (MySqlConnection conn = getConnectionToDevGlobal())
+               using (MySqlConnection conn = getConnection())
                using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.account_penalties (sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltyTime, penaltyEnd) VALUES" +
                   "(@sourceAccId, @sourceUsrId,  @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltyTime, @penaltyEnd)", conn)) {
                   conn.Open();
@@ -6669,7 +6669,7 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(string.Format("SELECT * FROM arcane.items WHERE usrId = @usrId AND itmCategory = @itmCategory AND ({0})", builder.ToString()), conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(string.Format("SELECT * FROM items WHERE usrId = @usrId AND itmCategory = @itmCategory AND ({0})", builder.ToString()), conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@itmCategory", (int) Item.Category.CraftingIngredients);
@@ -8510,13 +8510,13 @@ public class DB_Main : DB_MainStub
          }
          key = key.Replace(" ", "_");
 
-         using (MySqlConnection conn = getConnectionToDevGlobal()) {
+         using (MySqlConnection conn = getConnection()) {
             // Open the connection.
             conn.Open();
             // A key is tracked if it is present in the database.
 
             bool IsKeyAlreadyTracked = false;
-            using (MySqlCommand cmd = new MySqlCommand($"SELECT COUNT(*) FROM `metrics` WHERE `key`=@key", conn)) {
+            using (MySqlCommand cmd = new MySqlCommand($"SELECT COUNT(*) FROM `global`.`metrics` WHERE `key`=@key", conn)) {
                //cmd.Prepare();
                cmd.Parameters.AddWithValue("@key", key);
                DebugQuery(cmd);
@@ -8529,9 +8529,9 @@ public class DB_Main : DB_MainStub
 
             // create a new entry for the key if it's not present already,
             // and update the value if already present in the database.
-            string query = $"INSERT INTO `metrics` (`key`,`value`) VALUES (@key,@value)";
+            string query = $"INSERT INTO `global`.`metrics` (`key`,`value`) VALUES (@key,@value)";
             if (IsKeyAlreadyTracked) {
-               query = $"UPDATE `metrics` SET `value`=@value WHERE `key`=@key";
+               query = $"UPDATE `global`.`metrics` SET `value`=@value WHERE `key`=@key";
             }
 
             using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
@@ -9034,7 +9034,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT COUNT(*) AS auctionCount FROM arcane.auction_table_v1 " + whereClause
+            "SELECT COUNT(*) AS auctionCount FROM auction_table_v1 " + whereClause
             , conn)) {
             conn.Open();
             cmd.Prepare();
@@ -9099,7 +9099,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.auction_table_v1 WHERE " +
+            "SELECT * FROM auction_table_v1 WHERE " +
             "mailId > -1 AND expiryDate<=@expiryDate"
             , conn)) {
             conn.Open();
@@ -9155,7 +9155,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "UPDATE arcane.auction_table_v1 SET highestBidPrice=@highestBidPrice, highestBidUser=@highestBidUser, expiryDate=@expiryDate WHERE auctionId=@auctionId", conn)) {
+            "UPDATE auction_table_v1 SET highestBidPrice=@highestBidPrice, highestBidUser=@highestBidUser, expiryDate=@expiryDate WHERE auctionId=@auctionId", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -9176,7 +9176,7 @@ public class DB_Main : DB_MainStub
    public static new AuctionItemData getAuction (int auctionId, bool readItemData) {
       AuctionItemData auction = null;
 
-      string query = "SELECT * FROM arcane.auction_table_v1 auctions ";
+      string query = "SELECT * FROM auction_table_v1 auctions ";
       if (readItemData) {
          query += "LEFT JOIN items ON(items.usrId = -auctions.mailId AND auctions.mailId > 0) ";
       }
@@ -9257,10 +9257,6 @@ public class DB_Main : DB_MainStub
 
    public static void setServer (string server, string database = "", string uid = "", string password = "") {
       _connectionString = getDefaultConnectionString(server, database, uid, password);
-   }
-
-   public static void setServerForDevGlobal (string server = "") {
-      _connectionToDevGlobalString = getConnectionToDevGlobalString(server);
    }
 
    public static new void setServerFromConfig () {
@@ -9370,8 +9366,8 @@ public class DB_Main : DB_MainStub
 
    #region Wrapper Call Methods
 
-   public static new T exec<T> (Func<object, T> action, bool useDevGlobalDB = false) {
-      using (MySqlConnection conn = useDevGlobalDB ? getConnectionToDevGlobal() : getConnection())
+   public static new T exec<T> (Func<object, T> action) {
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.OpenAsync();
          cmd.Connection = conn;
@@ -9380,8 +9376,8 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void exec (Action<object> action, bool useDevGlobalDB = false) {
-      using (MySqlConnection conn = useDevGlobalDB ? getConnectionToDevGlobal() : getConnection())
+   public static new void exec (Action<object> action) {
+      using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.OpenAsync();
          cmd.Connection = conn;
@@ -9390,42 +9386,34 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static async new Task<T> execAsync<T> (Func<object, T> action, bool useDevGlobalDB = false) {
-      return await Task.Run(async () => {
-         using (MySqlConnection conn = useDevGlobalDB ? getConnectionToDevGlobal() : getConnection())
+   public static async new Task<T> execAsync<T> (Func<object, T> action) {
+      return await Task.Run((Func<Task<T>>) (async () => {
+         using (MySqlConnection conn = DB_Main.getConnection())
          using (MySqlCommand cmd = conn.CreateCommand()) {
             await conn.OpenAsync();
             cmd.Connection = conn;
             T result = action.Invoke(cmd);
             return result;
          }
-      });
+      }));
    }
 
-   public static async new Task execAsync (Action<object> action, bool useDevGlobalDB = false) {
-      await Task.Run(async () => {
-         using (MySqlConnection conn = useDevGlobalDB ? getConnectionToDevGlobal() : getConnection())
+   public static async new Task execAsync (Action<object> action) {
+      await Task.Run((Func<Task>) (async () => {
+         using (MySqlConnection conn = DB_Main.getConnection())
          using (MySqlCommand cmd = conn.CreateCommand()) {
             await conn.OpenAsync();
             cmd.Connection = conn;
 
             action.Invoke(cmd);
          }
-      });
+      }));
    }
 
    #endregion
 
    public static MySqlConnection getConnection () {
       return getConnection(_connectionString);
-   }
-
-   public static MySqlConnection getConnectionToDevGlobal () {
-      return getConnection(_connectionToDevGlobalString);
-   }
-
-   public static MySqlConnection getConnectionToDevArcane () {
-      return getConnection(_connectionToDevArcaneString);
    }
 
    public static MySqlConnection getConnection (string connectionString) {
@@ -9474,39 +9462,16 @@ public class DB_Main : DB_MainStub
 
       return buildConnectionString(
          server == "" ? _remoteServer : server,
-         database == "" ? _database : database,
-         uid == "" ? _uid : uid,
-         password == "" ? _password : password);
+         database,
+         uid,
+         password);
    }
 
-   public static string getConnectionToDevGlobalString (string server = "") {
-
-      DatabaseCredentials creds = loadDatabaseCredentials("Dev");
-      if (creds != null) {
-         _remoteServerDev = string.IsNullOrEmpty(creds.server) ? _remoteServerDev : creds.server;
-         _uidDev = string.IsNullOrEmpty(creds.user) ? _uidDev : creds.user;
-         _passwordDev = string.IsNullOrEmpty(creds.password) ? _passwordDev : creds.password;
-      }
-
-      return buildConnectionString(server == "" ? _remoteServerDev : server, _globalDatabase, _uidDev, _passwordDev);
-   }
-
-   public static string getConnectionToDevArcaneString () {
-      DatabaseCredentials creds = loadDatabaseCredentials("Dev");
-      if (creds != null) {
-         _remoteServerDev = string.IsNullOrEmpty(creds.server) ? _remoteServerDev : creds.server;
-         _uidDev = string.IsNullOrEmpty(creds.user) ? _uidDev : creds.user;
-         _passwordDev = string.IsNullOrEmpty(creds.password) ? _passwordDev : creds.password;
-      }
-      string newConString = buildConnectionString(_remoteServerDev, _database, _uidDev, _passwordDev);
-      return newConString;
-   }
-
-   public static string buildConnectionString (string server, string database, string uid, string password) {
+   public static string buildConnectionString (string server, string database = "", string uid = "", string password = "") {
       return "SERVER=" + server + ";" +
-          "DATABASE=" + database + ";" +
-          "UID=" + uid + ";" +
-          "PASSWORD=" + password + ";";
+          "DATABASE=" + (database == "" ? _database : database) + ";" +
+          "UID=" + (uid == "" ? _uid : uid) + ";" +
+          "PASSWORD=" + (password == "" ? _password : password) + ";";
    }
 
    /*
@@ -9586,7 +9551,7 @@ public class DB_Main : DB_MainStub
 
          try {
             using (MySqlConnection conn = getConnection())
-            using (MySqlCommand cmd = new MySqlCommand("INSERT INTO arcane.logins (usrId, usrName, accId, ipAddress, machineIdent, loginSource, deploymentId, loginTime) VALUES (@usrId, @usrName, @accId, @ipAddress, @machineIdent, @loginSource, @deploymentId, @loginTime);", conn)) {
+            using (MySqlCommand cmd = new MySqlCommand("INSERT INTO logins (usrId, usrName, accId, ipAddress, machineIdent, loginSource, deploymentId, loginTime) VALUES (@usrId, @usrName, @accId, @ipAddress, @machineIdent, @loginSource, @deploymentId, @loginTime);", conn)) {
                conn.Open();
                cmd.Prepare();
                cmd.Parameters.AddWithValue("@usrId", usrId);
@@ -9611,7 +9576,7 @@ public class DB_Main : DB_MainStub
                lastAccLoginCmd.ExecuteNonQuery();
 
                // User
-               MySqlCommand lastUsrLoginCmd = new MySqlCommand("UPDATE arcane.users SET lastLoginTime = @loginTime WHERE usrId = @usrId", conn);
+               MySqlCommand lastUsrLoginCmd = new MySqlCommand("UPDATE users SET lastLoginTime = @loginTime WHERE usrId = @usrId", conn);
                lastUsrLoginCmd.Prepare();
                lastUsrLoginCmd.Parameters.AddWithValue("@loginTime", currTime);
                lastUsrLoginCmd.Parameters.AddWithValue("@usrId", usrId);
@@ -10733,21 +10698,11 @@ public class DB_Main : DB_MainStub
 
    #region Private Variables
 
-   // Some development tables must be accessible from any build
-   private static string _globalDatabase = "global";
-   private static string _remoteServerDev = "dev-temp6.c1whxibm6zeb.us-east-2.rds.amazonaws.com";//"ruby.arcanewaters.com";
-   private static string _uidDev = "userAdKmE";
-   private static string _passwordDev = "HEqbVDsvvCza5n4N";
-
-   // Default credentials
-   private static string _database = "arcane";
-   private static string _remoteServer = _remoteServerDev;
-   private static string _uid = _uidDev;
-   private static string _password = _passwordDev;
-
-   private static string _connectionString = getDefaultConnectionString(_remoteServer);
-   private static string _connectionToDevGlobalString = getConnectionToDevGlobalString();
-   private static string _connectionToDevArcaneString = getConnectionToDevArcaneString();
+   private static string _database = "ruby";
+   private static string _remoteServer = "db.arcanewaters.com";
+   private static string _uid = "ruby_user";
+   private static string _password = "atZTKNmtjeNs5DquCMR55LnMZ5snndQZ";
+   private static string _connectionString = buildConnectionString(_remoteServer);
 
    #endregion
 }

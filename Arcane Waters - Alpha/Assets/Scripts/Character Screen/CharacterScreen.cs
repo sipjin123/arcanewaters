@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using Cinemachine;
+using System.Linq;
 
 public class CharacterScreen : GenericGameManager {
    #region Public Variables
@@ -199,10 +200,14 @@ public class CharacterScreen : GenericGameManager {
       }
 
       // Enable character buttons
-      Util.enableCanvasGroup(canvasGroup);
+      Util.fadeCanvasGroup(canvasGroup, true, CharacterSpot.FADE_TIME);
 
       // Hide loading screen
       PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login);
+   }
+
+   public List<CharacterSpot> getCharacterSpots () {
+      return _spots.Values.ToList();
    }
 
    #region Private Variables

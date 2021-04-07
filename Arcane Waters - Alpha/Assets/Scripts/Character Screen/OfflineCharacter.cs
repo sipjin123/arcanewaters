@@ -72,7 +72,6 @@ public class OfflineCharacter : ClientMonoBehaviour {
    private void Start () {
       // If we just started creating a new character, then update the panel to reflect our gender
       if (this.creationMode) {
-         CharacterCreationPanel.self.setCharacterBeingCreated(this);
          setTextsVisible(false);
       }
    }

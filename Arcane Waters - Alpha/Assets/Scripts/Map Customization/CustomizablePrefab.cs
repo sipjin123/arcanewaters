@@ -47,6 +47,12 @@ namespace MapCustomization
          }
 
          _spriteOutline.setNewColor(getOutlineColor(ready, hovered, selected, valid));
+
+         if (hovered || selected) {
+            _spriteOutline.setVisibility(true);
+         } else {
+            _spriteOutline.setVisibility(false);
+         }
       }
 
       private Color getOutlineColor (bool ready, bool hovered, bool selected, bool valid) {

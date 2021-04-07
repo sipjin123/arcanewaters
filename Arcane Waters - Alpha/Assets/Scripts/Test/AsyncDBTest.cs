@@ -24,7 +24,7 @@ public class AsyncDBTest : MonoBehaviour
       string result = await Task.Run(() => {
          string r = null;
          for (int i = 0; i < 10; i++) {
-            r = DB_Main.exec(DB_Main.getMaps, true).First().name;
+            r = DB_Main.exec(DB_Main.getMaps).First().name;
          }
          return r;
       });

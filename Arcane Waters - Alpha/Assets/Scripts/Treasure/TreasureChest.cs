@@ -24,6 +24,10 @@ public class TreasureChest : NetworkBehaviour {
    [SyncVar]
    public int chestSpawnId;
 
+   // The chest content rarity
+   [SyncVar]
+   public Rarity.Type rarity;
+
    // Our sprite renderer
    public SpriteRenderer spriteRenderer;
 
@@ -141,6 +145,11 @@ public class TreasureChest : NetworkBehaviour {
          if (effectsHolder != null) {
             effectsHolder.SetActive(false);
          }
+      } else {
+         // Modify sprites based on rarity
+         Sprite[] customSprites = ImageManager.getSprites("Sprites/Treasure/Treasure" + rarity.ToString());
+         spriteRenderer.sprite = customSprites[0];
+         openedChestSprite = customSprites[customSprites.Length - 1];
       }
 
       // Check if this chest is marked as interacted

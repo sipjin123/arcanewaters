@@ -146,7 +146,9 @@ public class CharacterInfoColumn : MonoBehaviour {
          equippedHatCell.setCellForItem(castedHat);
          equippedHatCell.show();
 
-         equipmentStats.refreshStats(castedHat);
+         if (castedHat.getHatDefense() > 0) {
+            equipmentStats.refreshStats(castedHat);
+         }
       }
    }
 
@@ -174,6 +176,29 @@ public class CharacterInfoColumn : MonoBehaviour {
          objects.hat = hatData != null ? HatStatData.translateDataToHat(hatData) : new Hat();
          objects.hat.itemTypeId = bodyEntity.hatsManager.equipmentDataId;
          objects.hat.id = bodyEntity.hatsManager.equippedHatId;
+      }
+
+      if (currentPlayer is PlayerShipEntity) {
+         WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(characterStack.weaponFrontLayer.getType());
+         objects.weapon = weaponData != null ? WeaponStatData.translateDataToWeapon(weaponData) : new Weapon();
+         if (weaponData != null) {
+            objects.weapon.itemTypeId = characterStack.weaponFrontLayer.getType();
+            objects.weapon.id = weaponData.sqlId;
+         }
+
+         ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(characterStack.armorLayer.getType());
+         objects.armor = armorData != null ? ArmorStatData.translateDataToArmor(armorData) : new Armor();
+         if (armorData != null) {
+            objects.armor.itemTypeId = characterStack.armorLayer.getType();
+            objects.armor.id = armorData.sqlId;
+         }
+
+         HatStatData hatData = EquipmentXMLManager.self.getHatData(characterStack.armorLayer.getType());
+         objects.hat = hatData != null ? HatStatData.translateDataToHat(hatData) : new Hat();
+         if (hatData != null) {
+            objects.hat.itemTypeId = characterStack.armorLayer.getType();
+            objects.hat.id = hatData.sqlId;
+         }
       }
 
       objects.guildInfo = getGuildInfoForPlayer(player);

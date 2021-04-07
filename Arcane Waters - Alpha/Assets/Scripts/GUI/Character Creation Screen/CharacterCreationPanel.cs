@@ -23,6 +23,9 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    // Our associated Canvas Group
    public CanvasGroup canvasGroup;
 
+   // A reference to the rect transform of the panel container
+   public RectTransform panelContainer;
+
    // Our toggle groups
    public ToggleGroup hairGroup1;
    public ToggleGroup hairGroup2;
@@ -116,15 +119,21 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       tabbedPanel.initialize();
       perksGrid.initialize();
+
+      // Move panel if resolution is 4K
+      if (Screen.width > 3000) {
+         panelContainer.anchoredPosition -= Vector2.right * 160.0f;
+      }
    }
 
-   private void show () {
+   public void show () {
       initializeValues();
-      Util.enableCanvasGroup(this.canvasGroup);
+      Util.fadeCanvasGroup(this.canvasGroup, true, FADE_TIME);
+      CharacterSpot.lastInteractedSpot.setButtonVisiblity(true);
    }
 
    private void hide () {
-      Util.disableCanvasGroup(this.canvasGroup);
+      Util.fadeCanvasGroup(this.canvasGroup, false, FADE_TIME);
    }
 
    public bool isShowing () {
@@ -142,8 +151,6 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       _char = offlineChar;
 
       this.genderSelected(Random.Range(1, 3));
-
-      show();
    }
 
    private void randomizeSelectedEyes () {
@@ -229,7 +236,6 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    public void onCharacterCreationValid () {
       hide();
 
-      CharacterCreationSpotFader.self.fadeOutColor();
       float fadeOutDuration = PanelManager.self.loadingScreen.getFader().getFadeOutDuration();
 
       // Show loading screen while starting map is being created
@@ -266,6 +272,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       CharacterCreationSpotFader.self.fadeOutColor();
       hideWithTransition();
       CharacterScreen.self.myCamera.setDefaultSettings(.1f);
+      CharacterSpot.lastInteractedSpot.setButtonVisiblity(true);
    }
 
    #region Character Appearance Customization
@@ -683,6 +690,9 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
    // The tween fading in/out the canvas group
    private Tween _fadeCanvasTween;
+
+   // The duration of the fading of UI elements for this panel
+   private static float FADE_TIME = 1.0f;
 
    #endregion
 }

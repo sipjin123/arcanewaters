@@ -1197,20 +1197,20 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static T exec<T> (Func<object, T> action, bool useDevGlobalDB = false) {
+   public static T exec<T> (Func<object, T> action) {
       return default;
    }
 
-   public static void exec (Action<object> action, bool useDevGlobalDB = false) {
+   public static void exec (Action<object> action) {
 
    }
 
-   public static async Task<T> execAsync<T> (Func<object, T> action, bool useDevGlobalDB = false) {
+   public static async Task<T> execAsync<T> (Func<object, T> action) {
       await Task.CompletedTask;
       return default;
    }
 
-   public static async Task execAsync (Action<object> action, bool useDevGlobalDB = false) {
+   public static async Task execAsync (Action<object> action) {
       await Task.CompletedTask;
    }
 
