@@ -53,6 +53,18 @@ namespace MapCustomization
 
          _lastPointerPos = pointerPos;
 
+         // Allow user to select prefab variations with scroll wheel
+         if (MouseUtils.mouseScrollY != 0 && _selectedPrefabEntry != null) {
+            if (MouseUtils.mouseScrollY > 0) {
+               D.debug("Scroll [NEXT] Prefab Variant RawVal:{" + MouseUtils.mouseScrollY + "}");
+               _selectedPrefabEntry.onNext();
+            }
+            if (MouseUtils.mouseScrollY < 0) {
+               D.debug("Scroll [PREV] Prefab Variant RawVal:{" + MouseUtils.mouseScrollY + "}");
+               _selectedPrefabEntry.onPrevious();
+            }
+         }
+
          if (KeyUtils.GetKey(Key.Delete)) {
             MapCustomizationManager.keyDelete();
          }
@@ -83,21 +95,35 @@ namespace MapCustomization
             selectEntry(null);
          }
       }
-
-      public void pointerScroll (BaseEventData eventData) {
+      
+      // TODO: Remove this after confirming new scroll logic works for all operating system
+      /*
+      public void pointerScrollx (BaseEventData eventData) {
          PointerEventData pointerData = eventData as PointerEventData;
 
          // Allow user to select prefab variations with scroll wheel
          if (_selectedPrefabEntry != null) {
             int change = Mathf.Clamp(Mathf.RoundToInt(pointerData.scrollDelta.y), -10, 10);
+
+            if (pointerData.scrollDelta.y > 0) {
+               D.debug("Scroll [NEXT] Prefab Variant RawVal:{" + pointerData.scrollDelta.y + "} OldVal {"+ change + "}");
+               _selectedPrefabEntry.onNext();
+            }
+            if (pointerData.scrollDelta.y < 0) {
+               D.debug("Scroll [PREV] Prefab Variant RawVal:{" + pointerData.scrollDelta.y + "} OldVal {" + change + "}");
+               _selectedPrefabEntry.onPrevious();
+            }
+
             for (int i = change; i < 0; i++) {
+               D.debug("Scroll [NEXT] Prefab Variant");
                _selectedPrefabEntry.onNext();
             }
             for (int i = 0; i < change; i++) {
+               D.debug("Scroll [PREV] Prefab Variant");
                _selectedPrefabEntry.onPrevious();
             }
          }
-      }
+      }*/
 
       public static void prefabEntryClick (PrefabSelectionEntry entry) {
          selectEntry(_selectedPrefabEntry == entry ? null : entry);
