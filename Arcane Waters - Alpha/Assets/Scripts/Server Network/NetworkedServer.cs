@@ -39,7 +39,7 @@ public class NetworkedServer : NetworkedBehaviour
    public NetworkedList<int> claimedUserIds = new NetworkedList<int>(Global.defaultNetworkedVarSettings);
 
    // Account dictionary overrides
-   public Dictionary<string, string> accountOverrides = new Dictionary<string, string>();
+   public NetworkedDictionary<string, string> accountOverrides = new NetworkedDictionary<string, string>();
 
    #endregion
 
