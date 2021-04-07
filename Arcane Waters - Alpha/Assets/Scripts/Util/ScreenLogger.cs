@@ -55,8 +55,12 @@ public class ScreenLogger : GenericGameManager {
       } catch { 
          // Only process text write if possible
       }
+
       if (textUI.text.Length > MAX_LOG_COUNT) {
-         textUI.text = textUI.text.Remove(0, TEXT_DEDUCT_COUNT);
+         try {
+            textUI.text = textUI.text.Remove(0, TEXT_DEDUCT_COUNT);
+         } catch {
+         }
       }
    }
 
@@ -71,8 +75,8 @@ public class ScreenLogger : GenericGameManager {
             canvasObj.SetActive(!canvasObj.activeSelf);
          }
 
-         // Clears log screen when holding left and T button
-         if (KeyUtils.GetKeyDown(Key.R) && canvasObj.activeSelf) {
+         // Clears log screen when holding left and R button
+         if (KeyUtils.GetKeyDown(Key.R)) {
             clearLog();
          }
       }
