@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using TMPro;
+using System.Linq;
 
 public class BattleBars : MonoBehaviour {
    #region Public Variables
@@ -19,6 +20,15 @@ public class BattleBars : MonoBehaviour {
 
    // Disables the script update
    public bool isDisabled;
+
+   // Prefab reference of the debuff icon
+   public DebuffIcon debuffIconPrefab;
+
+   // The parent of the debuff icons to be created
+   public Transform debuffIconParent;
+
+   // The current debuff icons generated for this battler
+   public List<DebuffIcon> currentDebuffIcons = new List<DebuffIcon>();
 
    #endregion
 
@@ -40,6 +50,16 @@ public class BattleBars : MonoBehaviour {
          nameText.enabled = false;
       }
       isInitialized = true;
+
+      // Check debuff stats of the battler and update the visuals accordingly
+      InvokeRepeating(nameof(checkForDebuffStats), 1, 1);
+   }
+
+   private void checkForDebuffStats () {
+      if (_battler.selectedBattleBar != null) {
+         List<Status.Type> statList = _battler.debuffList.Keys.ToList();
+         _battler.selectedBattleBar.checkDebuffStats(statList);
+      }
    }
 
    // ZERONEV-Comment: setting all these values in update are really inneficient
@@ -74,6 +94,46 @@ public class BattleBars : MonoBehaviour {
          _canvasGroup.alpha = Mathf.Clamp(_canvasGroup.alpha, 0f, 1f);
       } else {
          _canvasGroup.alpha = 1;
+      }
+   }
+
+   private void checkDebuffStats (List<Status.Type> statList) {
+      // Setup existing debuff stats here
+      foreach (Status.Type stat in statList) {
+         addDebuffStatus(stat);
+      }
+
+      if (currentDebuffIcons.Count > 0) {
+         // Add expired stats in a list
+         List<Status.Type> expiredStatList = new List<Status.Type>();
+         foreach (DebuffIcon stat in currentDebuffIcons) {
+            if (!statList.Contains(stat.statusType) || statList.Count < 1) {
+               expiredStatList.Add(stat.statusType);
+            }
+         }
+
+         // Remove all expired stats from the GUI Canvas
+         for (int i = 0; i < expiredStatList.Count; i++) {
+            removeDebuffStatus(expiredStatList[0]);
+            expiredStatList.RemoveAt(0);
+         }
+      }
+   }
+
+   private void addDebuffStatus (Status.Type statType) {
+      if (!currentDebuffIcons.Exists(_ => _.statusType == statType)) {
+         DebuffIcon currentIcon = Instantiate(debuffIconPrefab, debuffIconParent);
+         currentIcon.statusType = statType;
+         currentIcon.debuffIcon.sprite = currentIcon.debuffSpritePair.Find(_ => _.statusType == statType).statusSprite;
+         currentDebuffIcons.Add(currentIcon);
+      }
+   }
+
+   private void removeDebuffStatus (Status.Type statType) {
+      if (currentDebuffIcons.Exists(_ => _.statusType == statType)) {
+         DebuffIcon currentIcon = currentDebuffIcons.Find(_ => _.statusType == statType);
+         currentDebuffIcons.Remove(currentIcon);
+         Destroy(currentIcon.gameObject);
       }
    }
 
