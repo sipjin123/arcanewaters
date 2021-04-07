@@ -10,6 +10,9 @@ public class FlagShipAbilityRow : MonoBehaviour {
    // Image component
    public Image iconImage;
 
+   // Text displaying name
+   public Text abilityNameText;
+
    // String data
    public string abilityName;
    public string abilityInfo;

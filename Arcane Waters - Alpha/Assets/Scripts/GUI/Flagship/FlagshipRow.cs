@@ -49,7 +49,6 @@ public class FlagshipRow : MonoBehaviour {
          iconImage.sprite = sprites[0];
       }
       itemName.text = "" + shipInfo.shipName;
-      itemName.color = Rarity.getColor(shipInfo.rarity);
 
       // Fill in the stats
       damageText.text = (shipInfo.damage * 100).ToString("f1") + "%";
@@ -64,7 +63,10 @@ public class FlagshipRow : MonoBehaviour {
       flagshipButton.interactable = (Global.player is BodyEntity);
 
       // Toggle the flagship icon appropriately
-      flagshipIcon.enabled = shipInfo.shipId == FlagshipPanel.playerFlagshipId;
+      bool isCurrentShip = shipInfo.shipId == FlagshipPanel.playerFlagshipId;
+      flagshipIcon.gameObject.SetActive(isCurrentShip);
+      flagshipButton.gameObject.SetActive(!isCurrentShip);
+
       setAbilities(shipInfo.shipAbilities);
    }
 
@@ -80,14 +82,18 @@ public class FlagshipRow : MonoBehaviour {
          flagShipRow.gameObject.SetActive(true);
          flagShipRow.iconImage.sprite = ImageManager.getSprite(abilityData.skillIconPath);
          flagShipRow.abilityName = abilityData.abilityName;
+         flagShipRow.abilityNameText.text = abilityData.abilityName;
          flagShipRow.abilityInfo = abilityData.abilityDescription;
          flagShipRow.shipAbilityData = abilityData;
+
+         // TODO: Setup tooltip for new flagship layout
+         /*
          flagShipRow.GetComponent<ToolTipComponent>().message = abilityData.abilityName + "\n" + abilityData.abilityDescription;
 
          EventTrigger eventTrigger = flagShipRow.GetComponent<EventTrigger>();
          Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerEnter, (e) => flagShipRow.pointerEnter());
          Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerExit, (e) => flagShipRow.pointerExit());
-
+         */
          counter++;
       }
    }
