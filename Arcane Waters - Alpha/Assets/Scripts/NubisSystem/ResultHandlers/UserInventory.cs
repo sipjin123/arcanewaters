@@ -53,8 +53,6 @@ namespace NubisDataHandling {
                   paletteNames = itmPalettes
                }.getCastItem();
 
-               newItemList.Add(otherItem);
-
                switch (categoryType) {
                   case Item.Category.Weapon:
                      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(itmType);
@@ -87,6 +85,8 @@ namespace NubisDataHandling {
                      otherItem.setBasicInfo(otherItem.getName(), otherItem.getDescription(), otherItem.getIconPath());
                      break;
                }
+
+               newItemList.Add(otherItem);
                index++;
             }
          }

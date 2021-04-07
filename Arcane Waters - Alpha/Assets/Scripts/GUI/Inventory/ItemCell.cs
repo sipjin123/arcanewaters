@@ -31,6 +31,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    // The default icons, used when it is not defined by the item type
    public Sprite foodIcon;
    public Sprite defaultItemIcon;
+   public Sprite disabledItemIcon;
 
    // The background image
    public Image backgroundImage;
@@ -57,6 +58,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
    // The icon indicating this item is a blueprint
    public GameObject blueprintIcon;
+
+   // If the item is disabled
+   public bool isDisabledItem;
 
    #endregion
 
@@ -98,7 +102,10 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
             if (weaponData == null) {
                D.debug("Failed to process weapon data of item type: " + item.itemTypeId);
-               Destroy(gameObject);
+               icon.sprite = disabledItemIcon;
+               isDisabledItem = true;
+               itemCountText.gameObject.SetActive(false);
+               tooltip.message = "Disabled Item";
                return;
             } else {
                Weapon newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
@@ -110,12 +117,15 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                itemSpriteId = weaponData.weaponType;
                itemTypeId = item.itemTypeId;
             }
-            break;
+            break; 
          case Item.Category.Armor:
             ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId);
             if (armorData == null) {
                D.debug("Failed to process armor data of item type: " + item.itemTypeId);
-               Destroy(gameObject);
+               icon.sprite = disabledItemIcon;
+               isDisabledItem = true;
+               itemCountText.gameObject.SetActive(false);
+               tooltip.message = "Disabled Item";
                return;
             } else {
                Armor newArmor = ArmorStatData.translateDataToArmor(armorData);
@@ -132,7 +142,10 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
             if (hatData == null) {
                D.debug("Failed to process hat data of item type: " + item.itemTypeId);
-               Destroy(gameObject);
+               icon.sprite = disabledItemIcon;
+               isDisabledItem = true;
+               itemCountText.gameObject.SetActive(false);
+               tooltip.message = "Disabled Item";
                return;
             } else {
                Hat newHat = HatStatData.translateDataToHat(hatData);
@@ -161,6 +174,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
          case Item.Category.Blueprint:
             blueprintIcon.SetActive(true);
             if (item.data.Contains(Blueprint.ARMOR_DATA_PREFIX)) {
+               D.debug("Blueprint processing armor");
                ArmorStatData fetchedArmorData = EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId);
                if (fetchedArmorData == null) {
                   D.debug("Failed to fetch Armor Data for: " + item.itemTypeId);
@@ -170,6 +184,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                   icon.sprite = ImageManager.getSprite(fetchedArmorData.equipmentIconPath);
                }
             } else if (item.data.Contains(Blueprint.WEAPON_DATA_PREFIX)) {
+               D.debug("Blueprint processing weapon");
                WeaponStatData fetchedWeaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
                if (fetchedWeaponData == null) {
                   D.debug("Failed to fetch Weapon Data for: " + item.itemTypeId);
@@ -179,6 +194,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                   icon.sprite = ImageManager.getSprite(fetchedWeaponData.equipmentIconPath);
                }
             } else if (item.data.Contains(Blueprint.HAT_DATA_PREFIX)) {
+               D.debug("Blueprint processing hat");
                HatStatData fetchedHatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
                if (fetchedHatData == null) {
                   D.debug("Failed to fetch Hat Data for: " + item.itemTypeId);
@@ -187,6 +203,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                } else {
                   icon.sprite = ImageManager.getSprite(fetchedHatData.equipmentIconPath);
                }
+            } else {
+               D.debug("Unknown blueprint item! " + item.data);
+               Destroy(gameObject);
             }
 
             if (icon.sprite == ImageManager.self.blankSprite) {

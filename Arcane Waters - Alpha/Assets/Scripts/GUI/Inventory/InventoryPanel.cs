@@ -57,7 +57,6 @@ public class InventoryPanel : Panel {
 
       // Initialize the inventory tabs
       itemTabs.initialize(onTabButtonPress);
-
    }
 
    public void refreshPanel () {
@@ -109,9 +108,11 @@ public class InventoryPanel : Panel {
 
       // Create the item cells
       foreach (Item item in itemArray) {
-         if (item.itemTypeId != 0) {
+         if (item.itemTypeId != 0 && item.category != 0) {
             instantiateItemCell(item, itemCellsContainer.transform);
-         } 
+         } else {
+            D.debug("Skipping item cell, Invalid category and item");
+         }
       }
 
       // Update the CharacterInfo column
@@ -165,7 +166,9 @@ public class InventoryPanel : Panel {
       cell.setCellForItem(item);
 
       // Subscribe the click events
-      subscribeClickEventsForCell(cell);
+      if (!cell.isDisabledItem) {
+         subscribeClickEventsForCell(cell);
+      }
 
       return cell;
    }
