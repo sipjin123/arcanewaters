@@ -6621,6 +6621,7 @@ MonoBehaviour:
   toolTemplateHolder: {fileID: 814001821}
   toolTemplateFinalHolder: {fileID: 337465835}
   childList: []
+  inputSettings: {fileID: 11400000, guid: d80a739c058d3284cbdb7c003b2a3a44, type: 2}
   clickAbilityScene: {fileID: 2387419050297617331}
   clickMonsterScene: {fileID: 600680300}
   clickSeaMonsterScene: {fileID: 286410185}

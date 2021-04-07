@@ -571,6 +571,7 @@ MonoBehaviour:
   recoloredSprite: {fileID: 680923445094920028}
   foodIcon: {fileID: 21300000, guid: 75f6c2ad27552444f85d01591789c053, type: 3}
   defaultItemIcon: {fileID: 21300000, guid: f048dd06213522f4a9db2e98f670e6cb, type: 3}
+  disabledItemIcon: {fileID: 21300000, guid: d2a6140489e1bb54f841a565c502ad42, type: 3}
   backgroundImage: {fileID: 212773189562051297}
   leftClickEvent:
     m_PersistentCalls:
