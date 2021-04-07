@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.InputSystem.LowLevel;
 
 public class InputManager : GenericGameManager {
    #region Public Variables
@@ -19,8 +20,20 @@ public class InputManager : GenericGameManager {
    // The joystick values for gamepad controls
    public Vector2 joystickNavigation;
 
+   // The joystick values for gamepad mouse controls
+   public Vector2 mouseJoystickNavigation;
+
    // The axis value that determines the joystick is active
    public const float JOYSTICK_ACTIVE_VALUE = .05f;
+
+   // Reference to the input settings
+   public InputSettings inputSettings;
+
+   // If the scene is focused
+   public bool isFocused;
+
+   // Toggles the joystick to control the mouse
+   public bool mouseJoystickToggle;
 
    #endregion
 
@@ -57,6 +70,19 @@ public class InputManager : GenericGameManager {
       inputMaster.Player.Interact.performed += func => interactAction();
       inputMaster.Player.Move.performed += func => moveAction(func.ReadValue<Vector2>());
       inputMaster.Player.Move.canceled += func => moveAction(new Vector2(0, 0));
+
+      inputMaster.Player.MouseControl.performed += mfunc => mouseAction(mfunc.ReadValue<Vector2>());
+      inputMaster.Player.MouseControl.canceled += mfunc => mouseAction(new Vector2(0, 0));
+   }
+
+   private void Update () {
+      if (!Util.isCloudBuild() && isFocused) {
+         InputSystem.Update();
+      }
+   }
+
+   private void OnApplicationFocus (bool focus) {
+      isFocused = focus;
    }
 
    private void jumpAction () {
@@ -67,8 +93,14 @@ public class InputManager : GenericGameManager {
       D.adminLog("Interact!", D.ADMIN_LOG_TYPE.Gamepad);
    }
 
-   private void moveAction (Vector2 moveFactor) {
-      joystickNavigation = moveFactor;
+   private void moveAction (Vector2 moveVal) {
+      D.debug("Player Move Now: ");
+      joystickNavigation = moveVal;
+   }
+
+   private void mouseAction (Vector2 mouseVal) {
+      D.debug("Mouse Move Now: ");
+      mouseJoystickNavigation = mouseVal;
    }
 
    private void loadDefaultKeybindings () {

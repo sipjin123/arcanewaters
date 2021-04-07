@@ -6,6 +6,7 @@ using Mirror;
 using UnityEngine.SceneManagement;
 using System;
 using System.Linq;
+using UnityEngine.InputSystem;
 
 public class MasterToolScene : MonoBehaviour {
    #region Public Variables
@@ -53,6 +54,9 @@ public class MasterToolScene : MonoBehaviour {
    // List of children in the content holder
    public List<Transform> childList = new List<Transform>();
 
+   // Reference to the input settings
+   public InputSettings inputSettings;
+
    // Button triggers to open scene
    public Button clickAbilityScene,
       clickMonsterScene,
@@ -81,6 +85,8 @@ public class MasterToolScene : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      inputSettings.updateMode = InputSettings.UpdateMode.ProcessEventsInFixedUpdate;
+
       // Limit CPU usage in tools build
       QualitySettings.vSyncCount = 0;
       Application.targetFrameRate = 60;
