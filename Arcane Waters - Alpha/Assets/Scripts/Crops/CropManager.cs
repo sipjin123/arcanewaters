@@ -369,7 +369,6 @@ public class CropManager : NetworkBehaviour {
             int totalXP = (int) (baseXP * xpModifier);
             DB_Main.addJobXP(_player.userId, Jobs.Type.Trader, totalXP);
             Jobs jobs = DB_Main.getJobXP(_player.userId);
-            _player.Target_GainedXP(_player.connectionToClient, totalXP, jobs, Jobs.Type.Trader, 0, true);
 
             // Find the flagship id
             string userInfoJson = DB_Main.getUserInfoJSON(_player.userId.ToString());
@@ -379,6 +378,11 @@ public class CropManager : NetworkBehaviour {
             TradeHistoryInfo tradeInfo = new TradeHistoryInfo(_player.userId, flagshipId, AreaManager.self.getArea(_player.areaKey).townAreaKey,
                offer.cropType, amountToSell, offer.pricePerUnit, goldForThisCrop, Crop.getXP(offer.cropType), totalXP, DateTime.UtcNow);
             DB_Main.addToTradeHistory(_player.userId, tradeInfo);
+
+            // Back to Unity - add exp to the user
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               _player.Target_GainedXP(_player.connectionToClient, totalXP, jobs, Jobs.Type.Trader, 0, true);
+            });
          }
          
          // Send them the new info on what's in their silo
