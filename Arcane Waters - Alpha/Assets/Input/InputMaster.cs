@@ -67,25 +67,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""Move"",
-                    ""type"": ""Value"",
-                    ""id"": ""6619ae5b-c4fa-458e-8791-6f0ee28e6927"",
-                    ""expectedControlType"": ""Stick"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
                     ""name"": ""Enter"",
                     ""type"": ""Button"",
                     ""id"": ""0e6055a6-25bc-4e99-bf97-40940cddeaf8"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""MouseClick"",
-                    ""type"": ""Button"",
-                    ""id"": ""fb78738c-ccd0-4186-916f-a5f2a8528de3"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
@@ -99,26 +83,18 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""ActivateScreenLogger"",
-                    ""type"": ""Button"",
-                    ""id"": ""ba17571c-2ebb-45db-87b5-9d5328f3c5e6"",
-                    ""expectedControlType"": ""Button"",
+                    ""name"": ""Move"",
+                    ""type"": ""Value"",
+                    ""id"": ""6619ae5b-c4fa-458e-8791-6f0ee28e6927"",
+                    ""expectedControlType"": ""Stick"",
                     ""processors"": """",
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""ClearScreenLogger"",
-                    ""type"": ""Button"",
-                    ""id"": ""128caf2d-ab4e-4726-bf24-d88663ce5e2d"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""AltButton"",
-                    ""type"": ""Button"",
-                    ""id"": ""498d1599-03c0-4b1d-86b4-2799069ab1c0"",
-                    ""expectedControlType"": ""Button"",
+                    ""name"": ""MouseControl"",
+                    ""type"": ""Value"",
+                    ""id"": ""b67060b2-fae8-4ab0-85fc-759092646558"",
+                    ""expectedControlType"": ""Stick"",
                     ""processors"": """",
                     ""interactions"": """"
                 }
@@ -137,8 +113,8 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""a428c0ed-1977-481e-a874-be422fe9c389"",
-                    ""path"": ""<Keyboard>/space"",
+                    ""id"": ""4813067a-96d3-4362-8b51-75a816d5433d"",
+                    ""path"": ""<DualShockGamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -148,8 +124,8 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""4172dc20-ae54-44df-be65-49bb9fef555f"",
-                    ""path"": ""<Mouse>/rightButton"",
+                    ""id"": ""b179ae9b-b020-491c-b784-4080da9c0d8f"",
+                    ""path"": ""<XInputController>/buttonWest"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -159,11 +135,11 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""b179ae9b-b020-491c-b784-4080da9c0d8f"",
-                    ""path"": ""<XInputController>/buttonWest"",
+                    ""id"": ""7896f076-f4c1-492d-b874-6a6805528a52"",
+                    ""path"": ""<DualShockGamepad>/buttonWest"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""ArcaneControllerScheme"",
+                    ""groups"": """",
                     ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -258,17 +234,6 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""ba8baa68-f693-40ac-940c-21445dd9add0"",
-                    ""path"": ""<Gamepad>/leftStick"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""ArcaneControllerScheme"",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""4ea610e2-d48b-43ad-bc5d-65d90dd047dd"",
                     ""path"": ""<Keyboard>/enter"",
                     ""interactions"": """",
@@ -291,17 +256,6 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""33130216-4cc5-45c4-9f50-467d9eaf8160"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""MouseClick"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""bb9d9876-ec1f-4ee6-8792-545e6208df91"",
                     ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
@@ -313,34 +267,45 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""415fc63d-45f7-4c9b-ae8b-8af9ea79e1b8"",
-                    ""path"": ""<Keyboard>/q"",
+                    ""id"": ""60b31dca-0159-4f77-ae70-a5eca8ecd45f"",
+                    ""path"": ""<DualShockGamepad>/rightStick"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ActivateScreenLogger"",
+                    ""groups"": ""ArcaneControllerScheme"",
+                    ""action"": ""MouseControl"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""0c7b24a0-36c0-48da-96ad-2bdfc562d231"",
-                    ""path"": ""<Keyboard>/r"",
+                    ""id"": ""fb7cde50-e568-4d7d-9fa5-0411b1b5b461"",
+                    ""path"": ""<XInputController>/rightStick"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ClearScreenLogger"",
+                    ""groups"": ""ArcaneControllerScheme"",
+                    ""action"": ""MouseControl"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""ba1e6179-67da-4b63-b285-ade2bab895f3"",
-                    ""path"": ""<Keyboard>/leftAlt"",
+                    ""id"": ""ba8baa68-f693-40ac-940c-21445dd9add0"",
+                    ""path"": ""<DualShockGamepad>/leftStick"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""AltButton"",
+                    ""groups"": ""ArcaneControllerScheme"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""67745413-5758-42ff-b316-5edfb5a7b1b4"",
+                    ""path"": ""<XInputController>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""ArcaneControllerScheme"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -366,6 +331,11 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""devicePath"": ""<Mouse>"",
                     ""isOptional"": false,
                     ""isOR"": false
+                },
+                {
+                    ""devicePath"": ""<DualShockGamepad>"",
+                    ""isOptional"": false,
+                    ""isOR"": false
                 }
             ]
         }
@@ -379,13 +349,10 @@ public class @InputMaster : IInputActionCollection, IDisposable
         m_Player_MoveDown = m_Player.FindAction("MoveDown", throwIfNotFound: true);
         m_Player_MoveRight = m_Player.FindAction("MoveRight", throwIfNotFound: true);
         m_Player_MoveLeft = m_Player.FindAction("MoveLeft", throwIfNotFound: true);
-        m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Enter = m_Player.FindAction("Enter", throwIfNotFound: true);
-        m_Player_MouseClick = m_Player.FindAction("MouseClick", throwIfNotFound: true);
         m_Player_Escape = m_Player.FindAction("Escape", throwIfNotFound: true);
-        m_Player_ActivateScreenLogger = m_Player.FindAction("ActivateScreenLogger", throwIfNotFound: true);
-        m_Player_ClearScreenLogger = m_Player.FindAction("ClearScreenLogger", throwIfNotFound: true);
-        m_Player_AltButton = m_Player.FindAction("AltButton", throwIfNotFound: true);
+        m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
+        m_Player_MouseControl = m_Player.FindAction("MouseControl", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -441,13 +408,10 @@ public class @InputMaster : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_MoveDown;
     private readonly InputAction m_Player_MoveRight;
     private readonly InputAction m_Player_MoveLeft;
-    private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Enter;
-    private readonly InputAction m_Player_MouseClick;
     private readonly InputAction m_Player_Escape;
-    private readonly InputAction m_Player_ActivateScreenLogger;
-    private readonly InputAction m_Player_ClearScreenLogger;
-    private readonly InputAction m_Player_AltButton;
+    private readonly InputAction m_Player_Move;
+    private readonly InputAction m_Player_MouseControl;
     public struct PlayerActions
     {
         private @InputMaster m_Wrapper;
@@ -458,13 +422,10 @@ public class @InputMaster : IInputActionCollection, IDisposable
         public InputAction @MoveDown => m_Wrapper.m_Player_MoveDown;
         public InputAction @MoveRight => m_Wrapper.m_Player_MoveRight;
         public InputAction @MoveLeft => m_Wrapper.m_Player_MoveLeft;
-        public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Enter => m_Wrapper.m_Player_Enter;
-        public InputAction @MouseClick => m_Wrapper.m_Player_MouseClick;
         public InputAction @Escape => m_Wrapper.m_Player_Escape;
-        public InputAction @ActivateScreenLogger => m_Wrapper.m_Player_ActivateScreenLogger;
-        public InputAction @ClearScreenLogger => m_Wrapper.m_Player_ClearScreenLogger;
-        public InputAction @AltButton => m_Wrapper.m_Player_AltButton;
+        public InputAction @Move => m_Wrapper.m_Player_Move;
+        public InputAction @MouseControl => m_Wrapper.m_Player_MouseControl;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -492,27 +453,18 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 @MoveLeft.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveLeft;
                 @MoveLeft.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveLeft;
                 @MoveLeft.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveLeft;
-                @Move.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
-                @Move.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
-                @Move.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
                 @Enter.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEnter;
                 @Enter.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEnter;
                 @Enter.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEnter;
-                @MouseClick.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseClick;
-                @MouseClick.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseClick;
-                @MouseClick.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseClick;
                 @Escape.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEscape;
                 @Escape.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEscape;
                 @Escape.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEscape;
-                @ActivateScreenLogger.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActivateScreenLogger;
-                @ActivateScreenLogger.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActivateScreenLogger;
-                @ActivateScreenLogger.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActivateScreenLogger;
-                @ClearScreenLogger.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnClearScreenLogger;
-                @ClearScreenLogger.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnClearScreenLogger;
-                @ClearScreenLogger.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnClearScreenLogger;
-                @AltButton.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAltButton;
-                @AltButton.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAltButton;
-                @AltButton.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAltButton;
+                @Move.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
+                @Move.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
+                @Move.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
+                @MouseControl.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseControl;
+                @MouseControl.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseControl;
+                @MouseControl.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseControl;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -535,27 +487,18 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 @MoveLeft.started += instance.OnMoveLeft;
                 @MoveLeft.performed += instance.OnMoveLeft;
                 @MoveLeft.canceled += instance.OnMoveLeft;
-                @Move.started += instance.OnMove;
-                @Move.performed += instance.OnMove;
-                @Move.canceled += instance.OnMove;
                 @Enter.started += instance.OnEnter;
                 @Enter.performed += instance.OnEnter;
                 @Enter.canceled += instance.OnEnter;
-                @MouseClick.started += instance.OnMouseClick;
-                @MouseClick.performed += instance.OnMouseClick;
-                @MouseClick.canceled += instance.OnMouseClick;
                 @Escape.started += instance.OnEscape;
                 @Escape.performed += instance.OnEscape;
                 @Escape.canceled += instance.OnEscape;
-                @ActivateScreenLogger.started += instance.OnActivateScreenLogger;
-                @ActivateScreenLogger.performed += instance.OnActivateScreenLogger;
-                @ActivateScreenLogger.canceled += instance.OnActivateScreenLogger;
-                @ClearScreenLogger.started += instance.OnClearScreenLogger;
-                @ClearScreenLogger.performed += instance.OnClearScreenLogger;
-                @ClearScreenLogger.canceled += instance.OnClearScreenLogger;
-                @AltButton.started += instance.OnAltButton;
-                @AltButton.performed += instance.OnAltButton;
-                @AltButton.canceled += instance.OnAltButton;
+                @Move.started += instance.OnMove;
+                @Move.performed += instance.OnMove;
+                @Move.canceled += instance.OnMove;
+                @MouseControl.started += instance.OnMouseControl;
+                @MouseControl.performed += instance.OnMouseControl;
+                @MouseControl.canceled += instance.OnMouseControl;
             }
         }
     }
@@ -577,12 +520,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
         void OnMoveDown(InputAction.CallbackContext context);
         void OnMoveRight(InputAction.CallbackContext context);
         void OnMoveLeft(InputAction.CallbackContext context);
-        void OnMove(InputAction.CallbackContext context);
         void OnEnter(InputAction.CallbackContext context);
-        void OnMouseClick(InputAction.CallbackContext context);
         void OnEscape(InputAction.CallbackContext context);
-        void OnActivateScreenLogger(InputAction.CallbackContext context);
-        void OnClearScreenLogger(InputAction.CallbackContext context);
-        void OnAltButton(InputAction.CallbackContext context);
+        void OnMove(InputAction.CallbackContext context);
+        void OnMouseControl(InputAction.CallbackContext context);
     }
 }
