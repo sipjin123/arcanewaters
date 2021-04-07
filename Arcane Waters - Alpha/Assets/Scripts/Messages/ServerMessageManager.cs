@@ -58,13 +58,17 @@ public class ServerMessageManager : MonoBehaviour
             if (logInUserMessage.steamAppId == SteamLoginManagerServer.GAME_APPID && !logInUserMessage.accountName.Contains("@steam")) {
                logInUserMessage.accountName = logInUserMessage.accountName + "@steam";
             }
+            D.adminLog("Account Log: Is Steam Login as account:{" + logInUserMessage.accountName + "}", D.ADMIN_LOG_TYPE.Server_AccountLogin);
 
             // Get steam account id without requiring password since it is already authenticated by the server
             if (!isUnauthenticatedSteamUser) {
                // Steam user has been verified at this point, continue login using credentials
                accountId = DB_Main.getSteamAccountId(logInUserMessage.accountName);
+               D.adminLog("Account Log: Fetched steam account id for STEAM {" + logInUserMessage.accountName + "}" + " : {" + accountId + "}", D.ADMIN_LOG_TYPE.Server_AccountLogin);
             }
          } else {
+            D.adminLog("Account Log: Is Standalone Login", D.ADMIN_LOG_TYPE.Server_AccountLogin);
+
             // If this is not a steam login, users attempting to login should not have steam into their account name
             if (logInUserMessage.accountName.ToLower().Contains("@steam") && !masterServer.accountOverrides.ContainsKey(logInUserMessage.accountName)) {
                D.debug("A non steam user is trying to access a steam account!" + " : " + logInUserMessage.accountName);
@@ -82,7 +86,6 @@ public class ServerMessageManager : MonoBehaviour
 
                   // Login account, bypassing password
                   accountId = DB_Main.getOverriddenAccountId(logInUserMessage.accountName);
-
                   D.debug("Account id fetched for overridden account" + " : " + accountId);
                } else {
                   D.debug("Incorrect account override password");
@@ -90,6 +93,7 @@ public class ServerMessageManager : MonoBehaviour
             } else {
                // Manual login system using input user name and password
                accountId = DB_Main.getAccountId(logInUserMessage.accountName, hashedPassword);
+               D.adminLog("Account Log: Fetched steam account id for STANDALONE {" + logInUserMessage.accountName + "}" + " : {" + accountId + "}", D.ADMIN_LOG_TYPE.Server_AccountLogin);
             }
          }
 
@@ -99,6 +103,7 @@ public class ServerMessageManager : MonoBehaviour
             // If the ban isn't expired
             if (banInfo != null && !banInfo.hasPenaltyExpired()) {
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  D.debug("This is a banned user! {" + accountId + "}");
                   sendError(ErrorMessage.Type.Banned, conn.connectionId, getBannedMessage(banInfo));
                });
                return;
@@ -125,10 +130,11 @@ public class ServerMessageManager : MonoBehaviour
          } else {
             // Create an account for this new steam user after it is authorized
             if (logInUserMessage.isSteamLogin && !isUnauthenticatedSteamUser) {
-               D.debug("Attempting to create a new steam user for: {" + logInUserMessage.accountName + "}");
+               D.adminLog("Attempting to create a new steam user for: {" + logInUserMessage.accountName + "}", D.ADMIN_LOG_TYPE.Server_AccountLogin);
 
                if (logInUserMessage.accountName.Length > SteamLoginManager.MIN_STEAM_ID_LENGTH) {
                   accountId = DB_Main.createAccount(logInUserMessage.accountName, logInUserMessage.accountPassword, logInUserMessage.accountName.Replace("@", "") + "@codecommode.com", 0);
+                  D.adminLog("Account Log: Creating an account for STEAM {" + logInUserMessage.accountName + "}" + " : {" + accountId + "}", D.ADMIN_LOG_TYPE.Server_AccountLogin);
                } else {
                   D.debug("Failed to process account creation! User does not own this app" + " : " + logInUserMessage.accountName + " : " + logInUserMessage.steamUserId);
                   sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
@@ -144,6 +150,8 @@ public class ServerMessageManager : MonoBehaviour
                   hasFailedToCreateAccount = true;
                   D.debug("Failed to create account for Steam User: {" + logInUserMessage.accountName + "}");
                }
+            } else {
+               D.debug("Account Log: This is Neither a Steam account or is already an Authenticated user {" + logInUserMessage.accountName + "}" + " : {" + accountId + "}");
             }
          }
 
@@ -179,6 +187,7 @@ public class ServerMessageManager : MonoBehaviour
                });
 
                string loginMessage = (logInUserMessage.isFirstLogin) ? PlayerPrefs.GetString(AdminManager.MOTD_KEY, "") : "";
+               D.adminLog("Account Log: Login Authentication Complete! {" + logInUserMessage.accountName + "}" + " : {" + accountId + "}", D.ADMIN_LOG_TYPE.Server_AccountLogin);
 
                // Now tell the client to move forward with the login process
                LogInCompleteMessage msg = new LogInCompleteMessage(Global.netId, (Direction) users[0].facingDirection,
@@ -222,6 +231,7 @@ public class ServerMessageManager : MonoBehaviour
                      D.debug("Cannot process starting armor equipment: ArmorType:" + currentArmorId);
                   }
                }
+               D.adminLog("Account Log: Login Complete with No Characters! {" + logInUserMessage.accountName + "}" + " : {" + accountId + "}", D.ADMIN_LOG_TYPE.Server_AccountLogin);
 
                // If there was an account ID but not user ID, send the info on all of their characters for display on the Character screen
                CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), armorItemList.ToArray(), weaponItemList.ToArray(), hatItemList.ToArray(), armorPalettes, startingEquipmentIds.ToArray(), startingSpriteIds.ToArray());
