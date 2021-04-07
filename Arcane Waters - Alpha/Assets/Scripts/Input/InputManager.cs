@@ -52,15 +52,18 @@ public class InputManager : GenericGameManager {
    }
 
    private void initializeInputMaster () {
-      #if IS_SERVER_BUILD && CLOUD_BUILD
-      D.debug("InputSystem::This is a server build, input system will be disabled!");
-      #else
-      D.debug("InputSystem::This is a client build, input system will be enabled!");
-      #endif
-
       if (Util.isBatch()) {
          return;
       }
+
+      if (Util.isCloudBuild()) {
+         D.debug("Initializing input system as {DynamicUpdate}");
+         inputSettings.updateMode = InputSettings.UpdateMode.ProcessEventsInDynamicUpdate;
+      } else {
+         D.debug("Initializing input system as {ManualUpdate}");
+         inputSettings.updateMode = InputSettings.UpdateMode.ProcessEventsManually;
+      }
+      D.debug("SystLang: {" + Application.systemLanguage + "} Layout: {" + Keyboard.current.keyboardLayout + "}");
 
       // TODO: Setup all gamepad action keybindings here after stabilizing the project by overridding all scripts referencing legacy input system
       inputMaster = new InputMaster();

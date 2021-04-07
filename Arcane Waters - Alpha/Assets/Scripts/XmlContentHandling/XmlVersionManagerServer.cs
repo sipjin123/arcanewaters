@@ -103,10 +103,6 @@ public class XmlVersionManagerServer : GenericGameManager {
       D.debug("This is a Server build and a Cloud build, proceed to process xml zip setup");
       #endif
       
-      #if IS_SERVER_BUILD && !CLOUD_BUILD
-      D.debug("This is a Server build but NOT a Cloud build, cannot process xml zip setup");
-      #endif
-      
       // Make sure this directory exists
       if (!Directory.Exists(XML_TEXT_DIRECTORY)) {
          Directory.CreateDirectory(XML_TEXT_DIRECTORY);
