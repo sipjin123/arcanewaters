@@ -1262,9 +1262,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Wait for special animation to finish
             if (abilityDataReference.useSpecialAnimation) {
                // TODO: In the future, setup a dynamic way of handling special animation duration using web tool
-               // (golem special attack animation approximately ends after 1.5 seconds excluding the time elapsed upon trigger [20 frames * .5 milliseconds])
+               // (golem special attack animation approximately ends after 2 seconds excluding the time elapsed upon trigger [20 frames * .5 milliseconds])
                sourceBattler.modifyAnimSpeed(.2f);
-               yield return new WaitForSeconds(.5f);
+               yield return new WaitForSeconds(1f);
 
                // Setup target to un-freeze hit animation
                if (shakeCoroutine != null) {
@@ -1619,7 +1619,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // If this magic ability has knockup, then start it now
             targetBattler.StartCoroutine(targetBattler.animateKnockup());
             yield return new WaitForSeconds(KNOCKUP_LENGTH);
-         } else if (abilityDataReference.hasShake) {
+         } else if (abilityDataReference.hasShake && !abilityDataReference.useSpecialAnimation) {
             // If the ability magnitude will shake the screen to simulate impact
             Coroutine shakeCoroutine = targetBattler.StartCoroutine(targetBattler.animateShake());
             yield return new WaitForSeconds(SHAKE_LENGTH);
@@ -1724,6 +1724,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    private IEnumerator animateShake () {
+      GetComponent<Animator>().Play("shake");
+      yield return new WaitForSeconds(SHAKE_LENGTH);
+   }
+
+   private IEnumerator animateShakeOld () {
       float startTime = Time.time;
       const float shakeIntensity = 0.01f; // Original Value = 0.03f;
       Vector2 startPos = this.battleSpot.transform.position;
@@ -2397,6 +2402,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [SerializeField] private BattlerData _alteredBattlerData;
 
    // Our Animators
+   [SerializeField]
    protected List<SimpleAnimation> _anims;
 
    // Our renderers
