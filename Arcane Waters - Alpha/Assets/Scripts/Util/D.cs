@@ -25,6 +25,7 @@ public class D : MonoBehaviour {
       Crop = 12,
       Quest = 13,
       Server_AccountLogin = 14,
+      Client_AccountLogin = 15,
    }
 
    // Any log files older than this will be deleted

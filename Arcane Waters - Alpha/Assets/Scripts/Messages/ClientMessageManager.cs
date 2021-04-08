@@ -346,6 +346,15 @@ public class ClientMessageManager : MonoBehaviour {
    }
 
    public static void On_CharacterList (NetworkConnection conn, CharacterListMessage msg) {
+      try {
+         D.adminLog("Received LoginMessage: " + msg.userArray.Length + " : "
+            + msg.armorArray.Length + " : " + msg.weaponArray.Length + " : "
+            + msg.hatArray.Length + " : " + msg.armorPalettes.Length + " : "
+            + msg.equipmentIds.Length + " : " + msg.spriteIds.Length, D.ADMIN_LOG_TYPE.Client_AccountLogin);
+      } catch {
+         D.adminLog("Received LoginMessage: BLANK", D.ADMIN_LOG_TYPE.Client_AccountLogin);
+      }
+      
       XmlVersionManagerClient.self.initializeClient();
 
       // Delete local map files if user has too many
