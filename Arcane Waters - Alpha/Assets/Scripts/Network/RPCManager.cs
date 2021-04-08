@@ -2040,11 +2040,11 @@ public class RPCManager : NetworkBehaviour
                            incompleteQuestList.Add(questStat);
                         } else {
                            insufficientQuestList.Add(questStat);
-                           D.debug("Will not mark as incomplete, level requirement is not enough! " +
+                           D.adminLog("Will not mark as incomplete, level requirement is not enough! " +
                               "Current: {" + friendshipLevel + "} " +
-                              "Required: {" + questNodeReference.friendshipLevelRequirement + "}");
+                              "Required: {" + questNodeReference.friendshipLevelRequirement + "}", D.ADMIN_LOG_TYPE.Quest);
                         }
-                     } 
+                     }
                   }
 
                   if (incompleteQuestList.Count > 0) {
@@ -4206,6 +4206,11 @@ public class RPCManager : NetworkBehaviour
       oreNode.updateSprite(oreNode.interactCount);
       ExplosionManager.createMiningParticle(oreNode.transform.position);
 
+      if (oreNode.interactCount > OreNode.MAX_INTERACT_COUNT) {
+         D.adminLog("Exceeded max interact count!", D.ADMIN_LOG_TYPE.Mine);
+         return;
+      }
+
       if (oreNode.finishedMining()) {
          D.adminLog("Player has finished mining, spawning collectable ores:{" + oreNode.id + "}", D.ADMIN_LOG_TYPE.Mine);
          int randomCount = Random.Range(1, 3);
@@ -4222,6 +4227,7 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_InteractOre (int oreId, Vector2 startingPosition, Vector2 endPosition) {
+      D.adminLog("Player {" + _player.userId + "} tried to interact ore {" + oreId + "}", D.ADMIN_LOG_TYPE.Mine);
       Target_MineOre(_player.connectionToClient, oreId, startingPosition, endPosition);
    }
 
@@ -5132,12 +5138,12 @@ public class RPCManager : NetworkBehaviour
             }
 
             // Make sure no invalid abilities are part of the ability list to be sent
-            foreach (AbilitySQLData ability in equippedAbilityList.FindAll(_=>_.abilityID < 1)) {
+            foreach (AbilitySQLData ability in equippedAbilityList.FindAll(_ => _.abilityID < 1)) {
                D.adminLog("Removing Ability due to invaid slot id :: Name: " + ability.name
                   + " ID: " + ability.abilityID
                   + " Type: " + ability.abilityType, D.ADMIN_LOG_TYPE.Ability);
             }
-            equippedAbilityList.RemoveAll(_=>_.abilityID < 1);
+            equippedAbilityList.RemoveAll(_ => _.abilityID < 1);
 
             // Cache the invalid abilities that will be discarded
             List<int> discardedAbilities = new List<int>();
@@ -5700,10 +5706,10 @@ public class RPCManager : NetworkBehaviour
             }
             if (body != null) {
                body.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames);
-               D.adminLog("Player {" + body.userId + "} is equipping item" + 
-                  "} ID: {" + weapon.id + 
-                  "} TypeId: {" + weapon.itemTypeId + 
-                  "} Name: {" + weapon.getName()+ "}", D.ADMIN_LOG_TYPE.Equipment);
+               D.adminLog("Player {" + body.userId + "} is equipping item" +
+                  "} ID: {" + weapon.id +
+                  "} TypeId: {" + weapon.itemTypeId +
+                  "} Name: {" + weapon.getName() + "}", D.ADMIN_LOG_TYPE.Equipment);
 
                // Update the battler entity if the user is in battle
                if (body.isInBattle()) {
