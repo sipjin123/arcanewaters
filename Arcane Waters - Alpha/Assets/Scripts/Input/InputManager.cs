@@ -35,6 +35,9 @@ public class InputManager : GenericGameManager {
    // Toggles the joystick to control the mouse
    public bool mouseJoystickToggle;
 
+   // Mouse control movement speed
+   public float mouseSpeed = 10f;
+
    #endregion
 
    protected override void Awake () {
@@ -57,18 +60,22 @@ public class InputManager : GenericGameManager {
       }
 
       if (Util.isCloudBuild()) {
-         D.debug("Initializing input system as {DynamicUpdate}");
+         D.debug("Initializing input system as {DynamicUpdate} " +
+            "SystLang: { " + Application.systemLanguage + "} " +
+            "Layout: { " + Keyboard.current.keyboardLayout + "}");
          inputSettings.updateMode = InputSettings.UpdateMode.ProcessEventsInDynamicUpdate;
       } else {
-         D.debug("Initializing input system as {ManualUpdate}");
+         D.debug("Initializing input system as {ManualUpdate} " +
+            "SystLang: { " + Application.systemLanguage + "} " +
+            "Layout: { " + Keyboard.current.keyboardLayout + "}");
          inputSettings.updateMode = InputSettings.UpdateMode.ProcessEventsManually;
       }
-      D.debug("SystLang: {" + Application.systemLanguage + "} Layout: {" + Keyboard.current.keyboardLayout + "}");
 
       // TODO: Setup all gamepad action keybindings here after stabilizing the project by overridding all scripts referencing legacy input system
       inputMaster = new InputMaster();
 
       inputMaster.Player.Enable();
+      inputMaster.Player.ToggleMouseControl.performed += func => mouseToggleAction();
       inputMaster.Player.Jump.performed += func => jumpAction();
       inputMaster.Player.Interact.performed += func => interactAction();
       inputMaster.Player.Move.performed += func => moveAction(func.ReadValue<Vector2>());
@@ -82,6 +89,12 @@ public class InputManager : GenericGameManager {
       if (!Util.isCloudBuild() && isFocused) {
          InputSystem.Update();
       }
+
+      if (mouseJoystickToggle) {
+         Vector2 newValue = MouseUtils.mousePosition + (mouseJoystickNavigation * mouseSpeed);
+         InputState.Change(Mouse.current.position, newValue);
+         Mouse.current.WarpCursorPosition(newValue);
+      }
    }
 
    private void OnApplicationFocus (bool focus) {
@@ -94,6 +107,10 @@ public class InputManager : GenericGameManager {
 
    private void interactAction () {
       D.adminLog("Interact!", D.ADMIN_LOG_TYPE.Gamepad);
+   }
+
+   private void mouseToggleAction () {
+      mouseJoystickToggle = !mouseJoystickToggle;
    }
 
    private void moveAction (Vector2 moveVal) {

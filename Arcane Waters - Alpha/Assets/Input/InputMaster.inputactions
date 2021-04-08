@@ -84,6 +84,14 @@
                     "expectedControlType": "Stick",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "ToggleMouseControl",
+                    "type": "Button",
+                    "id": "fc35e372-081c-47e0-b6ea-508ca6310315",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -293,6 +301,28 @@
                     "processors": "",
                     "groups": "ArcaneControllerScheme",
                     "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bb68bb7f-70a2-4b72-bb44-3f82998131d4",
+                    "path": "<DualShockGamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "ArcaneControllerScheme",
+                    "action": "ToggleMouseControl",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dee42d52-c398-4fe6-93c2-2f1d421ef0f9",
+                    "path": "<XInputController>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "ArcaneControllerScheme",
+                    "action": "ToggleMouseControl",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

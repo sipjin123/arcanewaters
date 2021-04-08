@@ -97,6 +97,14 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Stick"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""ToggleMouseControl"",
+                    ""type"": ""Button"",
+                    ""id"": ""fc35e372-081c-47e0-b6ea-508ca6310315"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -308,6 +316,28 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bb68bb7f-70a2-4b72-bb44-3f82998131d4"",
+                    ""path"": ""<DualShockGamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""ArcaneControllerScheme"",
+                    ""action"": ""ToggleMouseControl"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dee42d52-c398-4fe6-93c2-2f1d421ef0f9"",
+                    ""path"": ""<XInputController>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""ArcaneControllerScheme"",
+                    ""action"": ""ToggleMouseControl"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -353,6 +383,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
         m_Player_Escape = m_Player.FindAction("Escape", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_MouseControl = m_Player.FindAction("MouseControl", throwIfNotFound: true);
+        m_Player_ToggleMouseControl = m_Player.FindAction("ToggleMouseControl", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -412,6 +443,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Escape;
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_MouseControl;
+    private readonly InputAction m_Player_ToggleMouseControl;
     public struct PlayerActions
     {
         private @InputMaster m_Wrapper;
@@ -426,6 +458,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
         public InputAction @Escape => m_Wrapper.m_Player_Escape;
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @MouseControl => m_Wrapper.m_Player_MouseControl;
+        public InputAction @ToggleMouseControl => m_Wrapper.m_Player_ToggleMouseControl;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -465,6 +498,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 @MouseControl.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseControl;
                 @MouseControl.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseControl;
                 @MouseControl.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseControl;
+                @ToggleMouseControl.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnToggleMouseControl;
+                @ToggleMouseControl.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnToggleMouseControl;
+                @ToggleMouseControl.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnToggleMouseControl;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -499,6 +535,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 @MouseControl.started += instance.OnMouseControl;
                 @MouseControl.performed += instance.OnMouseControl;
                 @MouseControl.canceled += instance.OnMouseControl;
+                @ToggleMouseControl.started += instance.OnToggleMouseControl;
+                @ToggleMouseControl.performed += instance.OnToggleMouseControl;
+                @ToggleMouseControl.canceled += instance.OnToggleMouseControl;
             }
         }
     }
@@ -524,5 +563,6 @@ public class @InputMaster : IInputActionCollection, IDisposable
         void OnEscape(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
         void OnMouseControl(InputAction.CallbackContext context);
+        void OnToggleMouseControl(InputAction.CallbackContext context);
     }
 }
