@@ -238,15 +238,19 @@ public class RPCManager : NetworkBehaviour
    public void Cmd_InteractAnimation (Anim.Type animType, Direction direction) {
       _player.Rpc_ForceLookat(direction);
       Rpc_InteractAnimation(animType);
+      Target_PlayerInteract(_player.connectionToClient);
+   }
+
+   [TargetRpc]
+   public void Target_PlayerInteract (NetworkConnection connection) {
+      PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
+      playerBody.farmingTrigger.interactFarming();
+      playerBody.miningTrigger.interactOres();
    }
 
    [ClientRpc]
    public void Rpc_InteractAnimation (Anim.Type animType) {
       _player.requestAnimationPlay(animType);
-
-      PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
-      playerBody.farmingTrigger.interactFarming();
-      playerBody.miningTrigger.interactOres();
    }
 
    [ClientRpc]
