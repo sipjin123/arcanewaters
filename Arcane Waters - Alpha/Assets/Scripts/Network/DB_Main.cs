@@ -8431,8 +8431,8 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  //ServerHistoryInfo row = new ServerHistoryInfo(dataReader);
-                  //eventList.Add(row);
+                  ServerHistoryInfo row = new ServerHistoryInfo(dataReader);
+                  eventList.Add(row);
                }
             }
          }

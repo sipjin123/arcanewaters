@@ -16,8 +16,7 @@ public class ServerStatusPanelRow : MonoBehaviour
    #endregion
 
    public void setRowForServerEvent (ServerHistoryInfo info) {
-      //DateTime localTime = DateTime.FromBinary(info.eventDate).ToLocalTime(); 
-      DateTime localTime = info.eventDate.ToLocalTime();
+      DateTime localTime = DateTime.FromBinary(info.eventDate).ToLocalTime();
 
       switch (info.eventType) {
          case ServerHistoryInfo.EventType.ServerStart:

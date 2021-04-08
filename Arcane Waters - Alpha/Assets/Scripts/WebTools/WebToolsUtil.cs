@@ -16,10 +16,14 @@
    public const string CLOSE = "Close";
    public const string REOPEN = "Re-Open";
 
+   // Response Codes
+   public const int SUCCESS = 200;
+
    // Endpoints
-   public const string BUG_REPORT_SUBMIT = "https://tools.arcanewaters.com/api/tasks/submit";
-   public const string IS_SERVER_ONLINE = "https://tools.arcanewaters.com/api/game/{db}/isServerOnline";
-   public const string GET_SERVER_HISTORY = "https://tools.arcanewaters.com/api/game/{db}/getServerHistory";
+   public const string BASE_URL = "https://tools.arcanewaters.com/api";
+
+   public const string BUG_REPORT_SUBMIT = BASE_URL + "/tasks/submit";
+   public const string BUG_REPORT_SERVER_LOG_SUBMIT = BASE_URL + "/tasks/submitServerLog";
 }
 
 public enum TicketSourceType

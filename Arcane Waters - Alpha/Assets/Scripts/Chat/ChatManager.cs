@@ -9,7 +9,8 @@ using System.Text;
 using System;
 using UnityEngine.InputSystem;
 
-public class ChatManager : GenericGameManager {
+public class ChatManager : GenericGameManager
+{
    #region Public Variables
 
    // The Chat Panel, need to have direct reference in case something gets logged during Awake()
@@ -38,7 +39,7 @@ public class ChatManager : GenericGameManager {
 
    private void Start () {
       // Add the various chat commands that we're going to allow
-      _commandData.Add(new CommandData("/bug", "Sends a bug report to the server", BugReportManager.self.sendBugReportToServer, parameterNames: new List<string>() { "bugInformation" }));
+      _commandData.Add(new CommandData("/bug", "Sends a bug report to the server", BugReportManager.self.sendBugReport, parameterNames: new List<string>() { "bugInformation" }));
       _commandData.Add(new CommandData("/emote", "Performs an emote", sendEmoteMessageToServer, parameterNames: new List<string>() { "emoteDescription" }));
       _commandData.Add(new CommandData("/invite", "Invites a user to your group", VoyageGroupManager.self.handleInviteCommand, parameterNames: new List<string>() { "userName" }));
       _commandData.Add(new CommandData("/group", "Send a message to your group", sendGroupMessageToServer, parameterNames: new List<string>() { "message" }));
@@ -467,7 +468,7 @@ public class ChatManager : GenericGameManager {
 
       List<string> autoCompletes = new List<string>();
       List<string> possibleNames = new List<string>();
-      List<string> friends = FriendListManager.self.getFriendNames();      
+      List<string> friends = FriendListManager.self.getFriendNames();
 
       // Add friends to possible names
       foreach (string name in friends) {

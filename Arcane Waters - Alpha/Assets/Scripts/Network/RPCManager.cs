@@ -3008,7 +3008,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_GetGuildNameInGuildIconTooltip(NetworkConnection connection, GuildInfo guildInfo) {
+   public void Target_GetGuildNameInGuildIconTooltip (NetworkConnection connection, GuildInfo guildInfo) {
       GuildIcon.tooltippedIconRef.setGuildName(guildInfo.guildName);
    }
 
@@ -4044,7 +4044,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   public void sendVoyageGroupMembersInfo() {
+   public void sendVoyageGroupMembersInfo () {
       if (!VoyageGroupManager.self.tryGetGroupById(_player.voyageGroupId, out VoyageGroupInfo voyageGroup)) {
          return;
       }
@@ -5081,7 +5081,7 @@ public class RPCManager : NetworkBehaviour
                               cachedAbility = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getThrowRumAbility());
                               equippedAbilityList[0] = cachedAbility;
                            }
-                        } 
+                        }
                         break;
                      default:
                         weaponCategory = WeaponCategory.None;
@@ -6058,12 +6058,12 @@ public class RPCManager : NetworkBehaviour
    [Command]
    public void Cmd_RequestWarp (string areaTarget, string spawnTarget) {
       D.adminLog("Player {" + _player.userId + "} Warping to {" + spawnTarget + "}", D.ADMIN_LOG_TYPE.Warp);
-      
+
       if (_player == null || _player.connectionToClient == null) {
          D.adminLog("Player {" + _player.userId + "} Failed to warp due to missing reference", D.ADMIN_LOG_TYPE.Warp);
          Target_OnWarpFailed("Missing player or player connection");
       }
-      
+
       StartCoroutine(CO_WaitForAreaLoad(areaTarget, spawnTarget));
    }
 
@@ -6281,6 +6281,14 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceiveDBDataForClientDBRequest (NetworkConnection connection, int requestId, byte[] data) {
       ClientDBRequestManager.receiveRequestData(requestId, data);
+   }
+
+   [Command]
+   public void Cmd_StoreServerLogForBugReport (int bugReportId) {
+      byte[] serverLog = Encoding.ASCII.GetBytes(D.getLogString());
+
+      // Send the server log to web tools
+      BugReportManager.self.sendBugReportServerLog(bugReportId, serverLog);
    }
 
    #region Private Variables

@@ -83,8 +83,8 @@ public class VoyageGroupManager : MonoBehaviour
          yield break;
       }
 
-      if (isGroupFull(voyageGroup)) {
-         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, player, "Your group is full!");
+      if (isGroupFull(voyageGroup, out string groupFullErrorMessage)) {
+         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, player, groupFullErrorMessage);
          yield break;
       }
 
@@ -325,8 +325,16 @@ public class VoyageGroupManager : MonoBehaviour
 
    [Server]
    public static bool isGroupFull (VoyageGroupInfo voyageGroup) {
+      return isGroupFull(voyageGroup, out string errorMessage);
+   }
+
+   [Server]
+   public static bool isGroupFull (VoyageGroupInfo voyageGroup, out string errorMessage) {
+      errorMessage = "Your group is full!";
+
       // Ghost groups have a single member
       if (voyageGroup.isGhost) {
+         errorMessage = "You cannot invite more members while in ghost mode!";
          return true;
       }
 
@@ -341,6 +349,7 @@ public class VoyageGroupManager : MonoBehaviour
             if (voyage.isLeague) {
                // Once a league is started (after the lobby), the group cannot accept more players
                if (voyage.leagueIndex > 0 || voyageGroup.members.Count >= Voyage.getMaxGroupSize(Voyage.getMaxDifficulty())) {
+                  errorMessage = "You cannot invite more members after starting a league!";
                   return true;
                } else {
                   return false;

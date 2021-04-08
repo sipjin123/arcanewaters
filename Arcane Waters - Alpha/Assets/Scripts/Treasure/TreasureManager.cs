@@ -92,6 +92,9 @@ public class TreasureManager : MonoBehaviour {
       // Assign a unique ID
       chest.id = _id++;
 
+      // Determine chest content rarity
+      chest.rarity = Rarity.getRandom();
+
       // Note which instance the chest is in
       chest.instanceId = instance.id;
 
@@ -123,6 +126,9 @@ public class TreasureManager : MonoBehaviour {
 
       // Assign a unique ID
       chest.id = _id++;
+
+      // Determine chest content rarity
+      chest.rarity = Rarity.getRandom();
 
       // Note which instance the chest is in
       chest.instanceId = instance.id;

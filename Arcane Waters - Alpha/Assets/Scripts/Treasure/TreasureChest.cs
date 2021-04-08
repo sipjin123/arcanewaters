@@ -147,9 +147,17 @@ public class TreasureChest : NetworkBehaviour {
          }
       } else {
          // Modify sprites based on rarity
-         Sprite[] customSprites = ImageManager.getSprites("Sprites/Treasure/Treasure" + rarity.ToString());
-         spriteRenderer.sprite = customSprites[0];
-         openedChestSprite = customSprites[customSprites.Length - 1];
+         if (chestType == ChestSpawnType.Site) {
+            Sprite[] customSprites = ImageManager.getSprites("Sprites/Treasure/Treasure" + rarity.ToString());
+            spriteRenderer.sprite = customSprites[0];
+            openedChestSprite = customSprites[customSprites.Length - 1];
+         } else if (chestType == ChestSpawnType.Land) {
+            spriteRenderer.sprite = ImageManager.getSprite("Sprites/Treasure/BagLandClosed" + rarity.ToString());
+            openedChestSprite = ImageManager.getSprite("Sprites/Treasure/BagLandOpen" + rarity.ToString());
+         } else if (chestType == ChestSpawnType.Sea) {
+            spriteRenderer.sprite = ImageManager.getSprites("Sprites/Treasure/BagSeaClosed" + rarity.ToString())[0];
+            openedChestSprite = ImageManager.getSprites("Sprites/Treasure/BagSeaOpen" + rarity.ToString())[0];
+         }
       }
 
       // Check if this chest is marked as interacted

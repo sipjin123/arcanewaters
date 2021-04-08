@@ -27,6 +27,9 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    // The circle
    public GameObject circle;
 
+   // The blocked icon
+   public GameObject blockedIcon;
+
    // Hard coded quest index
    public const int GET_DRESSED_QUEST_INDEX = 1;
    public const int HEAD_TO_DOCKS_QUEST_INDEX = 8;
@@ -256,9 +259,15 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             if (!arrow.activeSelf) {
                arrow.SetActive(true);
             }
+            if (blockedIcon.activeSelf) {
+               blockedIcon.SetActive(false);
+            }
          } else {
             if (arrow.activeSelf) {
                arrow.SetActive(false);
+            }
+            if (!blockedIcon.activeSelf) {
+               blockedIcon.SetActive(true);
             }
 
             // In leagues, warps to inactive treasure sites are completely invisible
@@ -266,6 +275,9 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
                if (site != null && !site.isActive()) {
                   if (circle.activeSelf) {
                      circle.SetActive(false);
+                  }
+                  if (blockedIcon.activeSelf) {
+                     blockedIcon.SetActive(false);
                   }
                }
             }

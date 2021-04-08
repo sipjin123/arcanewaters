@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
 using Mirror;
-using MiniJSON;
 using SteamLoginSystem;
 using UnityEngine.Networking;
+using System.Text;
+using System;
 
 public class BugReportManager : MonoBehaviour
 {
@@ -21,6 +21,20 @@ public class BugReportManager : MonoBehaviour
 
    public void Awake () {
       self = this;
+   }
+
+   private void OnEnable () {
+      Application.logMessageReceived += addErrorLogMessage;
+   }
+
+   private void OnDisable () {
+      Application.logMessageReceived -= addErrorLogMessage;
+   }
+
+   private void addErrorLogMessage (string logString, string stackTrace, LogType type) {
+      if (type == LogType.Exception) {
+         D.log("[EXCEPTION]: " + logString + "\n" + stackTrace);
+      }
    }
 
    [ServerOnly]
@@ -65,7 +79,7 @@ public class BugReportManager : MonoBehaviour
       Global.player.rpc.Cmd_BugReportScreenshot(bugId, _screenshotBytes);
    }
 
-   public void sendBugReportToServer (string subjectString) {
+   public void sendBugReport (string subjectString) {
       StopAllCoroutines();
       StartCoroutine(CO_CollectDataAndSendBugReport(subjectString));
    }
@@ -135,7 +149,6 @@ public class BugReportManager : MonoBehaviour
       List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
 
       // Adding bug report data as form data
-      //formData.Add(new MultipartFormDataSection("secretToken", secretToken));
       formData.Add(new MultipartFormDataSection("userId", player.userId.ToString()));
       formData.Add(new MultipartFormDataSection("username", player.entityName));
       formData.Add(new MultipartFormDataSection("accId", player.accountId.ToString()));
@@ -159,13 +172,45 @@ public class BugReportManager : MonoBehaviour
 
       yield return www.SendWebRequest();
 
-      if (www.responseCode == 201) {
+      if (www.responseCode == WebToolsUtil.SUCCESS) {
          ChatManager.self.addChat("Bug report submitted successfully, thanks!", ChatInfo.Type.System);
+
+         int bugReportId = int.Parse(www.downloadHandler.text);
+
+         // After successfully storing the bug report, we store the server log
+         Global.player.rpc.Cmd_StoreServerLogForBugReport(bugReportId);
+
       } else {
          D.error("Could not submit bug report, needs investigation");
       }
 
       _lastBugReportTime[Global.player.userId] = Time.time;
+   }
+
+   [ServerOnly]
+   public void sendBugReportServerLog (int bugReportId, byte[] serverLog) {
+      StartCoroutine(CO_SendServerLog(bugReportId, serverLog));
+   }
+
+   [ServerOnly]
+   private IEnumerator CO_SendServerLog (int bugReportId, byte[] serverLog) {
+      // Sending the request to Web Tools
+      List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
+
+      formData.Add(new MultipartFormDataSection("bugId", bugReportId.ToString()));
+      // We send the serverLog as a file!
+      formData.Add(new MultipartFormFileSection("serverLog", serverLog));
+
+      UnityWebRequest www = UnityWebRequest.Post(WebToolsUtil.BUG_REPORT_SERVER_LOG_SUBMIT, formData);
+
+      // Send the game token as header
+      www.SetRequestHeader(WebToolsUtil.GAME_TOKEN_HEADER, WebToolsUtil.GAME_TOKEN);
+
+      yield return www.SendWebRequest();
+
+      if (www.responseCode != 200) {
+         D.error("Could not submit server log!");
+      }
    }
 
    private bool addMetaDataToBugReport (ref string bugReport) {
@@ -259,7 +304,7 @@ public class BugReportManager : MonoBehaviour
    protected static int MAX_SUBJECT_LENGTH = 256;
 
    // The maximum number of bytes we'll allow a submitted bug report to have
-   protected static int MAX_BYTES = 64 * 1024;
+   protected static int MAX_BYTES = 5 * 1024 * 1024;
 
    // The maximum number of string length we'll allow a submitted bug report to have
    protected static int MAX_LOG_LENGTH = 1024 * 6;

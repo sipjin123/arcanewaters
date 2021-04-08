@@ -85,8 +85,7 @@ public class ServerStatusPanel : ClientMonoBehaviour
 
       DateTime startDate = DateTime.UtcNow - new TimeSpan(HISTORY_HOURS, 0, 0);
 
-      StartCoroutine(WebToolsManager.self.CO_GetServerHistory(HISTORY_ROWS, startDate));
-      //NubisDataFetcher.self.getServerHistory(HISTORY_ROWS, startDate);
+      NubisDataFetcher.self.getServerHistory(HISTORY_ROWS, startDate);
    }
 
    public void updatePanelWithServerHistory (bool isServerOnline, List<ServerHistoryInfo> historyList) {
