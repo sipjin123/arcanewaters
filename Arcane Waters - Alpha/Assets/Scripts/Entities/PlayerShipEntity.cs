@@ -308,7 +308,7 @@ public class PlayerShipEntity : ShipEntity
       if (NetworkServer.active) {
          // If the player wants to stop the ship, we let the linear drag handle the slowdown
          if (!isDead() && _movementInputDirection != Vector2.zero) {
-            Vector2 targetVelocity = _movementInputDirection * getMoveSpeed() * Time.fixedDeltaTime;
+            Vector2 targetVelocity = _movementInputDirection * getMoveSpeed() * Time.fixedDeltaTime * PerkManager.self.getPerkMultiplier(userId, Perk.Category.ShipMovementSpeed);
             _body.velocity = Vector2.SmoothDamp(_body.velocity, targetVelocity, ref _shipDampVelocity, 0.5f);
 
             // In ghost mode, clamp the position to the area bounds

@@ -13,6 +13,9 @@ public class CharacterStyleGrid : MonoBehaviour
    // The toggle group
    public ToggleGroup toggleGroup;
 
+   // Chosen gender
+   public static Gender.Type chosenGender;
+
    #endregion
 
    private void Awake () {
@@ -176,7 +179,7 @@ public class CharacterStyleGrid : MonoBehaviour
                CharacterCreationPanel.self.setHairType(type);
 
                // Set gender based on chosen hair
-               Gender.Type chosenGender;
+               chosenGender = 0;
                if (type.ToString().Contains("Female")) {
                   chosenGender = Gender.Type.Female;
                } else {
@@ -195,14 +198,6 @@ public class CharacterStyleGrid : MonoBehaviour
 
          // Display default hairstyles
          displayHairstyles();
-
-         // Select the first active portrait in the list
-         foreach (CharacterPortrait charPortrait in _portraits) {
-            if (charPortrait.isActiveAndEnabled) {
-               charPortrait.toggle.isOn = true;
-               break;
-            }
-         }
       }
    }
 

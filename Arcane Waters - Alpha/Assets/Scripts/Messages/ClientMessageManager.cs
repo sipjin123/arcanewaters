@@ -129,11 +129,6 @@ public class ClientMessageManager : MonoBehaviour {
             // Hide the confirm panel
             PanelManager.self.confirmScreen.hide();
 
-            // Disabled the silhouettes
-            foreach (CharacterSpot spot in CharacterScreen.self.GetComponentsInChildren<CharacterSpot>()) {
-               spot.deleteIndicator.SetActive(false);
-            }
-
             // Request a new character list
             ClientManager.sendAccountNameAndUserId();
 
@@ -355,6 +350,10 @@ public class ClientMessageManager : MonoBehaviour {
          D.adminLog("Received LoginMessage: BLANK", D.ADMIN_LOG_TYPE.Client_AccountLogin);
       }
       
+      // Remove fade and loading effects
+      CameraFader.self.setLoadingIndicatorVisibility(false);
+      CameraFader.self.fadeOut(0.5f);
+
       XmlVersionManagerClient.self.initializeClient();
 
       // Delete local map files if user has too many

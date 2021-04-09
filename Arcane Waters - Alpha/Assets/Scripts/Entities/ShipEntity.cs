@@ -102,6 +102,11 @@ public class ShipEntity : SeaEntity
       ShipData newShipData = ShipDataManager.self.getShipData(info.shipType);
       shipSize = newShipData.shipSize;
       shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);
+
+      if (this is PlayerShipEntity) {
+         currentHealth = (int)(PerkManager.self.getPerkMultiplier(Perk.Category.ShipHealth) * currentHealth);
+         maxHealth = (int)(PerkManager.self.getPerkMultiplier(Perk.Category.ShipHealth) * maxHealth);
+      }
    }
 
    public override void playAttackSound () {

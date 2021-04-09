@@ -10702,7 +10702,7 @@ public class DB_Main : DB_MainStub
    private static string _remoteServer = "db.arcanewaters.com";
    private static string _uid = "ruby_user";
    private static string _password = "atZTKNmtjeNs5DquCMR55LnMZ5snndQZ";
-   private static string _connectionString = buildConnectionString(_remoteServer);
+   private static string _connectionString = getDefaultConnectionString(_remoteServer);
 
    #endregion
 }

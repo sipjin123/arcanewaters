@@ -149,6 +149,11 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
          return;
       }
 
+      if (PerksPanel.self.isAssigningPerkPoint) {
+         PanelManager.self.noticeScreen.show("A perk point is still being assigned, please try again.");
+         return;
+      }
+
       // Show the increment locally so the UI doesn't look laggy
       assignedPoints++;
 
@@ -158,6 +163,7 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
       SoundManager.play2DClip(SoundManager.Type.Perk_Point_Assigned);
 
       Global.player.rpc.Cmd_AssignPerkPoint(_perkData.perkId);
+      PerksPanel.self.isAssigningPerkPoint = true;
    }
 
    #region Private Variables

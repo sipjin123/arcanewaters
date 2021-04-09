@@ -110,6 +110,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("difficulty", "Enables the players to alter difficulty of current instance", requestDifficulty, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "difficultyLevel" }));
       cm.addCommand(new CommandData("throw_errors", "Throws various errors and warnings on the server to test the logger tool", requestThrowTestErrors, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "message" }));
       cm.addCommand(new CommandData("toggle_nubis", "Enable or disable the usage of the Nubis server for this client", toggleNubis, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "isEnabled" }));
+      cm.addCommand(new CommandData("add_perk_points", "Gives the player perk points", requestPerkPoints, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "numPoints" }));
 
       // Log Commands for investigation
       cm.addCommand(new CommandData("xml", "Logs the xml content of the specific manager", requestXmlLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "xmlType" }));
@@ -178,6 +179,30 @@ public class AdminManager : NetworkBehaviour
       }
 
       return true;
+   }
+
+   private void requestPerkPoints (string parameters) {
+      Cmd_AddPerkPoints(parameters);
+   }
+
+   [Command]
+   private void Cmd_AddPerkPoints (string parameters) {
+      string[] inputs = parameters.Split(' ');
+      if (inputs.Length == 0) {
+         return;
+      }
+
+      int points = int.Parse(inputs[0]);
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.addPerkPointsForUser(_player.userId, new List<Perk> { new Perk(0, points) });
+
+         List<Perk> userPerks = DB_Main.getPerkPointsForUser(_player.userId);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            _player.rpc.Target_SetPerkPoints(connectionToClient, userPerks.ToArray());
+         });
+      });
    }
 
    private void requestLose (string parameter) {

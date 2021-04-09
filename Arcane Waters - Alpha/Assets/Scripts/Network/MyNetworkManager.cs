@@ -220,6 +220,9 @@ public class MyNetworkManager : NetworkManager
 
       // Log the server start time
       ServerHistoryManager.self.onServerStart();
+
+      // Load perk data from database
+      PerkManager.self.loadPerkDataFromDatabase();
    }
 
    private void initializeXmlData () {

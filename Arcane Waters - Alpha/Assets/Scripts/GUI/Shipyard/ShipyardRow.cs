@@ -48,8 +48,10 @@ public class ShipyardRow : MonoBehaviour {
             iconImage.sprite = sprites[0];
          }
       }
+
       itemName.text = shipInfo.shipName;
-      goldAmount.text = shipInfo.price + "";
+      float perkMultiplier = 1.0f - PerkManager.self.getPerkMultiplierAdditive(Perk.Category.ShopPriceReduction);
+      goldAmount.text = ((int)(shipInfo.price * perkMultiplier)) + "";
 
       // Fill in the stats
       damageText.text = (shipInfo.damage * 100).ToString("f1") + "%";

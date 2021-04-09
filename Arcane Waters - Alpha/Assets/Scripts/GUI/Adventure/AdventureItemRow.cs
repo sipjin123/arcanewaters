@@ -78,7 +78,9 @@ public class AdventureItemRow : MonoBehaviour {
          iconShadow.sprite = icon.sprite;
          itemName.text = Item.isUsingEquipmentXML(item.category) ? item.itemName : item.getName();
       }
-      goldAmount.text = item.getSellPrice() + "";
+
+      float perkMultiplier = 1.0f - PerkManager.self.getPerkMultiplierAdditive(Perk.Category.ShopPriceReduction);
+      goldAmount.text = ((int)(item.getSellPrice() * perkMultiplier)) + "";
 
       // Rarity stars
       Sprite[] rarityStars = Rarity.getRarityStars(item.getRarity());

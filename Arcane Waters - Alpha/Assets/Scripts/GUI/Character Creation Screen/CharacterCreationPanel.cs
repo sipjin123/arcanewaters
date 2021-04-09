@@ -446,19 +446,24 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    }
 
    public void refreshEyes () {
-      List<EyesLayer.Type> list = getEyeList();
-
-      // Adjust the index
-      int currentIndex = list.IndexOf(_char.eyes.getType());
-      if (currentIndex == -1) {
-         currentIndex = 0;
+      // Get a list of eye types before gender swap
+      List<EyesLayer.Type> previousGenderEyeList;
+      if (_char.eyes.getType().ToString().Contains("Male")) {
+         previousGenderEyeList = getEyeList(Gender.Type.Male);
+      } else {
+         previousGenderEyeList = getEyeList(Gender.Type.Female);
       }
 
-      currentIndex = (currentIndex + list.Count) % list.Count;
+      // Find index of old eyes
+      int currentIndex = previousGenderEyeList.IndexOf(_char.eyes.getType());
+      currentIndex = (currentIndex + previousGenderEyeList.Count) % previousGenderEyeList.Count;
 
-      // Update the Info and apply it to the character
+      // Get a list of eye types of current gender
+      List<EyesLayer.Type>  listCurrentGenderEyes = getEyeList(getGender());
+
+      // Update the new eyes and apply it to the character
       UserInfo info = _char.getUserInfo();
-      info.eyesType = list[currentIndex];
+      info.eyesType = listCurrentGenderEyes[currentIndex];
       _char.setBodyLayers(info);
    }
 
@@ -628,8 +633,11 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       }
    }
 
-   public List<EyesLayer.Type> getEyeList () {
-      if (_char.genderType == Gender.Type.Female) {
+   public List<EyesLayer.Type> getEyeList (Gender.Type gender = 0) {
+      if (gender == 0) {
+         gender = _char.genderType;
+      }
+      if (gender == Gender.Type.Female) {
          return new List<EyesLayer.Type>() { EyesLayer.Type.Female_Eyes_1, EyesLayer.Type.Female_Eyes_2, EyesLayer.Type.Female_Eyes_3 };
       } else {
          return new List<EyesLayer.Type>() { EyesLayer.Type.Male_Eyes_1, EyesLayer.Type.Male_Eyes_2, EyesLayer.Type.Male_Eyes_3 };

@@ -33,6 +33,9 @@ public class PerksPanel : MonoBehaviour, IPointerClickHandler
    // Blocks the outdated info while waiting for server response
    public GameObject loadingBlocker;
 
+   // Set to true when we are waiting for a server response after assigning a perk point
+   public bool isAssigningPerkPoint = false;
+
    // Self
    public static PerksPanel self;
 

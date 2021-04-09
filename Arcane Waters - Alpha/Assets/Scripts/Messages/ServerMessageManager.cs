@@ -120,8 +120,6 @@ public class ServerMessageManager : MonoBehaviour
          }
 
          if (accountId > 0) {
-            MyNetworkManager.noteAccountIdForConnection(accountId, conn);
-
             users = DB_Main.getUsersForAccount(accountId, selectedUserId);
             armorList = DB_Main.getArmorForAccount(accountId, selectedUserId);
             weaponList = DB_Main.getWeaponsForAccount(accountId, selectedUserId);
@@ -157,6 +155,16 @@ public class ServerMessageManager : MonoBehaviour
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (accountId > 0) {
+               // Stop the login process if the account is already logged in
+               if (MyNetworkManager.isAccountAlreadyOnline(accountId, conn)) {
+                  sendError(ErrorMessage.Type.AlreadyOnline, conn.connectionId);
+                  return;
+               }
+
+               MyNetworkManager.noteAccountIdForConnection(accountId, conn);
+            }
+
             if (isUnauthenticatedSteamUser && !hasFailedToCreateAccount) {
                // Steam user has not been authorized yet, start auth process
                processSteamUserAuth(conn, logInUserMessage);

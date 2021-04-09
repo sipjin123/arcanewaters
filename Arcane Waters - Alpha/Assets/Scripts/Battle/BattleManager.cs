@@ -604,6 +604,15 @@ public class BattleManager : MonoBehaviour {
                decreaseMultiply *= (target.stance == Battler.Stance.Defense) ? .75f : 1f;
             }
 
+            // Adjust the damage based on perks
+            if (source.enemyType == Enemy.Type.PlayerBattler) {
+               if (attackAbilityData.abilityActionType == AbilityActionType.Melee) {
+                  increaseAdditive += PerkManager.self.getPerkMultiplierAdditive(source.userId, Perk.Category.MeleeDamage);
+               } else if (attackAbilityData.abilityActionType == AbilityActionType.Ranged) {
+                  increaseAdditive += PerkManager.self.getPerkMultiplierAdditive(source.userId, Perk.Category.RangedDamage);
+               }
+            }
+
             // Decrease damage on protected targets
             if (target.isProtected(battle)) {
                decreaseMultiply *= .70f;
@@ -847,6 +856,9 @@ public class BattleManager : MonoBehaviour {
 
                // Registers the usage of the Buff Skill for achievement recording
                AchievementManager.registerUserAchievement(source.player, ActionType.BuffSkillUse);
+
+               float buffValue = buffAction.buffValue;
+               buffValue *= 1.0f + PerkManager.self.getPerkMultiplierAdditive(buffAction.sourceId, Perk.Category.Healing);
 
                // Apply damage
                if (buffAction.buffActionType == BuffActionType.Regeneration) {

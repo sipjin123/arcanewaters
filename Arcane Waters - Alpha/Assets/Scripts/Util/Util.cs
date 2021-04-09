@@ -1131,9 +1131,7 @@ public class Util : MonoBehaviour
 
    public static string getJenkinsBuildTitle () {
       List<string> configKeys = new List<string>();
-      configKeys.Add("projectName");
       configKeys.Add("buildType");
-      configKeys.Add("branch");
       configKeys.Add("database");
       configKeys.Add("platform");
       configKeys.Add("distribution");

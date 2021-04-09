@@ -641,6 +641,11 @@ public class RPCManager : NetworkBehaviour
    public void spawnBattlerMonsterChest (int instanceID, Vector3 position, int enemyID) {
       Instance currentInstance = InstanceManager.self.getInstance(instanceID);
       TreasureManager.self.createBattlerMonsterChest(currentInstance, position, enemyID, _player.userId);
+
+      // Chance to drop an extra treasure bag
+      if (Random.Range(0.0f, 1.0f) < PerkManager.self.getPerkMultiplierAdditive(_player.userId, Perk.Category.ItemDropChances)) {
+         TreasureManager.self.createBattlerMonsterChest(currentInstance, position, enemyID, _player.userId);
+      }
    }
 
    [Server]
@@ -2881,6 +2886,8 @@ public class RPCManager : NetworkBehaviour
       }
 
       int price = shopItem.getSellPrice();
+      float perkMultiplier = 1.0f - PerkManager.self.getPerkMultiplierAdditive(_player.userId, Perk.Category.ShopPriceReduction);
+      price = (int) (price * perkMultiplier);
 
       // Make sure the player has enough money
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -2954,6 +2961,8 @@ public class RPCManager : NetworkBehaviour
       }
 
       int price = ship.price;
+      float perkMultiplier = 1.0f - PerkManager.self.getPerkMultiplierAdditive(_player.userId, Perk.Category.ShopPriceReduction);
+      price = (int) (price * perkMultiplier);
 
       // Make sure the player has enough money
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -3077,7 +3086,7 @@ public class RPCManager : NetworkBehaviour
          int rankId = DB_Main.getGuildMemberRankId(_player.userId);
          if (rankId == 0 && DB_Main.getGuildInfo(guildId).guildMembers.Length > 1) {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionLocal, _player, "Leader cannot leave guild if there are any members left!");
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionLocal, _player, "Leader cannot leave guild if there are any membersFvoya left!");
             });
             return;
          }
@@ -4257,6 +4266,11 @@ public class RPCManager : NetworkBehaviour
       if (oreNode.finishedMining()) {
          D.adminLog("Player has finished mining, spawning collectable ores:{" + oreNode.id + "}", D.ADMIN_LOG_TYPE.Mine);
          int randomCount = Random.Range(1, 3);
+
+         // Chance to spawn an extra ore
+         if (Random.Range(0.0f, 1.0f) < PerkManager.self.getPerkMultiplierAdditive(Perk.Category.MiningDrops)) {
+            randomCount++;
+         }
 
          for (int i = 0; i < randomCount; i++) {
             float randomSpeed = Random.Range(.8f, 1.2f);
@@ -6069,8 +6083,9 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   private void Target_SetPerkPoints (NetworkConnection conn, Perk[] perks) {
+   public void Target_SetPerkPoints (NetworkConnection conn, Perk[] perks) {
       PerkManager.self.setPlayerPerkPoints(perks);
+      PerksPanel.self.isAssigningPerkPoint = false;
    }
 
    [Command]
@@ -6090,6 +6105,7 @@ public class RPCManager : NetworkBehaviour
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                Target_SetPerkPoints(netIdentity.connectionToClient, userPerks.ToArray());
+               PerkManager.self.updatePerkPointsForUser(_player.userId, userPerks);
             });
          } else {
             D.log("This perk has already reached its maximum level");

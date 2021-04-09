@@ -148,7 +148,8 @@ public class ServerCannonBall : NetworkBehaviour {
          int shipDamage = (int) (sourceEntity.damage * projectileBaseDamage);
          int abilityDamage = (int) (_abilityData.damageModifier * projectileBaseDamage);
          int critDamage = (int) (_isCrit ? projectileBaseDamage * 0.5f : 0.0f);
-         int totalDamage = projectileBaseDamage + shipDamage + abilityDamage + critDamage;
+		 int perkDamage = (int) (projectileBaseDamage * PerkManager.self.getPerkMultiplierAdditive(sourceEntity.userId, Perk.Category.ShipDamage));
+         int totalDamage = projectileBaseDamage + shipDamage + abilityDamage + critDamage + perkDamage;
          if (hitEntity.currentHealth > 0) {
             hitEntity.currentHealth -= totalDamage;
          }
@@ -164,7 +165,9 @@ public class ServerCannonBall : NetworkBehaviour {
          D.adminLog("Total damage of network Cannonball is" + " : " + totalDamage +
             " Projectile: " + projectileBaseDamage +
             " Ship: " + shipDamage + " Dmg: {" + (sourceEntity.damage * 100) + "%}" +
-            " Ability: " + abilityDamage + "Dmg: {" + (_abilityData.damageModifier * 100) + "%}", D.ADMIN_LOG_TYPE.Sea);
+            " Ability: " + abilityDamage + "Dmg: {" + (_abilityData.damageModifier * 100) + "%}" +
+            " Perk: " + perkDamage + " Dmg: {" + (PerkManager.self.getPerkMultiplier(sourceEntity.userId, Perk.Category.ShipDamage) * 10) + "%}"
+            , D.ADMIN_LOG_TYPE.Sea);
 
          // Apply the status effect
          if (_statusType != Status.Type.None) {

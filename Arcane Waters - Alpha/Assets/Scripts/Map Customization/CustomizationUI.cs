@@ -160,6 +160,11 @@ namespace MapCustomization
          _isShowing = false;
       }
 
+      // Non-static method used to assign to UI button
+      public void hideCustomizationPanel () {
+         ensureHidden();
+      }
+
       public static PlaceablePrefabData? getSelectedPrefabData () {
          if (_selectedPrefabEntry == null) return null;
          return _selectedPrefabEntry.getSelectedData();

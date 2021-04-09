@@ -52,8 +52,35 @@ public class PerkManager : MonoBehaviour {
          _perkData.Add(data);
       }
 
-      // Initialize the Perks Panel
-      PerksPanel.self.receivePerkData(_perkData);
+      // Initialize the Perks Panel if there is a client running
+      if (NetworkClient.active) {
+         PerksPanel.self.receivePerkData(_perkData);
+      }
+   }
+
+   public void loadPerkDataFromDatabase () {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         string perkData = DB_Main.getXmlContent(XmlVersionManagerServer.PERKS_DATA_TABLE);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            string splitter = "[next]";
+            string[] xmlGroup = perkData.Split(new string[] { splitter }, StringSplitOptions.None);
+
+            List<PerkData> perkDataList = new List<PerkData>();
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { XmlVersionManagerClient.SPACE_KEY }, StringSplitOptions.None);
+
+               if (xmlSubGroup.Length == 2) {
+                  int perkId = int.Parse(xmlSubGroup[0]);
+                  PerkData data = Util.xmlLoad<PerkData>(xmlSubGroup[1]);
+                  data.perkId = perkId;
+                  perkDataList.Add(data);
+               }
+            }
+
+            receiveListFromZipData(perkDataList);
+         });
+      });
    }
 
    public float getPerkMultiplier (Perk.Category category) {
@@ -63,6 +90,10 @@ public class PerkManager : MonoBehaviour {
       }
 
       return _boostFactors[category];
+   }
+
+   public float getPerkMultiplierAdditive (Perk.Category category) {
+      return getPerkMultiplier(category) - 1.0f;
    }
 
    public int getAssignedPointsByPerkId (int perkId) {      
@@ -107,6 +138,77 @@ public class PerkManager : MonoBehaviour {
       return boostFactor;
    }
 
+   private float getBoostFactorForCategory (int userId, Perk.Category category) {
+      float boostFactor = 1.0f;
+
+      Dictionary<Perk.Category, int> perkPoints = _serverPerkPointsByUserId[userId];
+      boostFactor += getPerkData(Perk.getCategoryId(category)).boostFactor * perkPoints[category];
+      return boostFactor;
+   }
+
+   public float getPerkMultiplier (int userId, Perk.Category category) {      
+      // Print a warning if this is called on a non-server
+      if (!NetworkServer.active) {
+         D.warning("getPerkMultiplier is being called on a non-server client, it should only be called on the server");
+         return 1.0f;
+      }
+      
+      // If we don't have the user in our dictionary, return 1
+      if (!_serverPerkPointsByUserId.ContainsKey(userId)) {
+         D.warning("PerkManager didn't have the stored perk multiplier for userId: " + userId);
+         return 1.0f;
+      }
+
+      Dictionary<Perk.Category, int> perkPoints = _serverPerkPointsByUserId[userId];
+      
+      // If we don't have a value for this perk, return 1
+      if (!perkPoints.ContainsKey(category)) {
+         D.warning("Player perk dictionary didn't have a value for: " + category.ToString());
+         return 1.0f;
+      }
+
+      return getBoostFactorForCategory(userId, category);
+   }
+
+   public float getPerkMultiplierAdditive (int userId, Perk.Category category) {
+      return getPerkMultiplier(userId, category) - 1.0f;
+   }
+
+   public void updatePerkPointsForUser (int userId, List<Perk> perkData) {
+      // If this user has stored perk data, clear it
+      if (_serverPerkPointsByUserId.ContainsKey(userId)) {
+         _serverPerkPointsByUserId.Remove(userId);
+      }
+      _serverPerkPointsByUserId.Add(userId, new Dictionary<Perk.Category, int>());
+
+      Dictionary<Perk.Category, int> storedPerkData = _serverPerkPointsByUserId[userId];
+
+      // Store perk data in dictionary
+      foreach(Perk perk in perkData) {
+         if (perk.perkId > 0) {
+            Perk.Category category = Perk.getCategory(getPerkData(perk.perkId).perkCategoryId);
+            storedPerkData[category] = perk.points;
+         }
+      }
+
+      // Assign '0' perk points to empty categories
+      foreach(Perk.Category category in Enum.GetValues(typeof(Perk.Category))) {
+         if (!storedPerkData.ContainsKey(category)) {
+            storedPerkData.Add(category, 0);
+         }
+      }
+   }
+
+   public void storePerkPointsForUser (int userId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<Perk> userPerks = DB_Main.getPerkPointsForUser(userId);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            updatePerkPointsForUser(userId, userPerks);
+         });
+      });
+   }
+
    #region Private Variables
 
    // The organized perk points of the local player
@@ -120,6 +222,9 @@ public class PerkManager : MonoBehaviour {
 
    // The boost factor for the local player for each perk category
    private Dictionary<Perk.Category, float> _boostFactors = new Dictionary<Perk.Category, float>();
+
+   // A cache of perk points for each player 
+   private Dictionary<int, Dictionary<Perk.Category, int>> _serverPerkPointsByUserId = new Dictionary<int, Dictionary<Perk.Category, int>>();
 
    #endregion
 }

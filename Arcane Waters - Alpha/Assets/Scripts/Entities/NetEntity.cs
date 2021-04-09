@@ -281,6 +281,10 @@ public class NetEntity : NetworkBehaviour
       if (isPlayerEntity()) {
          // Keep track in our Entity Manager
          EntityManager.self.storeEntity(this);
+
+         if (isServer) {
+            PerkManager.self.storePerkPointsForUser(userId);
+         }
       }
 
       // Keep track of the Entity that we control
@@ -1264,7 +1268,8 @@ public class NetEntity : NetworkBehaviour
             Vector2 forceToApply = DirectionUtil.getVectorForDirection(direction);
             float baseMoveSpeed = getMoveSpeed();
             if (isSpeedingUp) {
-               baseMoveSpeed *= SPEEDUP_MULTIPLIER_LAND;
+               float speedupMultiplier = SPEEDUP_MULTIPLIER_LAND + PerkManager.self.getPerkMultiplierAdditive(Perk.Category.WalkingSpeed);
+               baseMoveSpeed *= speedupMultiplier;
             }
 
             _body.AddForce(forceToApply.normalized * baseMoveSpeed * frameRateMultiplier);

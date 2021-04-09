@@ -136,13 +136,13 @@ public class Crop : ClientMonoBehaviour {
          return false;
       }
 
-      bool isPlantReadyToBeWatered = (TimeManager.self.getLastServerUnixTimestamp() - lastWaterTimestamp) > this.waterInterval;
+      bool isPlantReadyToBeWatered = getTimeSinceWatered() > this.waterInterval;
 
       if (logWaterCropData && isPlantReadyToBeWatered) {
          D.adminLog("Plant is ready to be watered: {" 
             + TimeManager.self.getLastServerUnixTimestamp() 
             + " - " + lastWaterTimestamp
-            + " = " + (TimeManager.self.getLastServerUnixTimestamp() - lastWaterTimestamp)
+            + " = " + getTimeSinceWatered()
             + "} > {" + this.waterInterval + "}", D.ADMIN_LOG_TYPE.Crop);
       }
 
@@ -165,10 +165,16 @@ public class Crop : ClientMonoBehaviour {
       waterLevelContainer.SetActive(true);
 
       // Check how close we are to being ready for water
-      float waterReadiness = (TimeManager.self.getLastServerUnixTimestamp() - lastWaterTimestamp) / this.waterInterval;
+      float waterReadiness = getTimeSinceWatered() / (this.waterInterval);
 
       // Update the water bar size
       waterBar.fillAmount = waterReadiness;
+   }
+
+   protected float getTimeSinceWatered () {
+      float perkMultiplier = PerkManager.self.getPerkMultiplier(Perk.Category.CropGrowthSpeed);
+      float timeSinceWatered = (TimeManager.self.getLastServerUnixTimestamp() - lastWaterTimestamp);
+      return timeSinceWatered * perkMultiplier;
    }
 
    protected bool isPlayerNear () {
