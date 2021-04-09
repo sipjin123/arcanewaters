@@ -19,14 +19,8 @@ public static class MouseUtils {
          }
 
          if (Mouse.current.scroll.y.ReadValue() > 0) {
-#if UNITY_STANDALONE_LINUX
-            return -1;
-#endif
             return 1;
          }  else if (Mouse.current.scroll.y.ReadValue() < 0) {
-#if UNITY_STANDALONE_LINUX
-            return 1;
-#endif
             return -1;
          }
 

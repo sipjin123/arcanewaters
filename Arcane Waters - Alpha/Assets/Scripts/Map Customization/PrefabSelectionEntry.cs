@@ -49,7 +49,6 @@ namespace MapCustomization
       }
 
       private void selectIndex (int index) {
-         D.debug("New index is {" + index + "}");
          _selectedIndex = index;
          iconImage.sprite = _prefabs[index].displaySprite;
          previousButton.interactable = _selectedIndex != 0;
