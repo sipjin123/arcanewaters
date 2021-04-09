@@ -167,6 +167,14 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    }
 
    [Server]
+   public void spawnChest () {
+      if (seaEntityData.shouldDropTreasure) {
+         Instance currentInstance = InstanceManager.self.getInstance(this.instanceId);
+         TreasureManager.self.createSeaMonsterChest(currentInstance, sortPoint.transform.position, seaEntityData.seaMonsterType);
+      }
+   }
+
+   [Server]
    private void updateState (ref WaypointState state, float secondsBetweenMinorSearch, float secondsBetweenMajorSearch, ref float currentSecondsBetweenMinorSearch, ref float currentSecondsBetweenMajorSearch, System.Func<bool, Vector3> targetPositionFunction) {
       switch (state) {
          case WaypointState.FINDING_PATH:
