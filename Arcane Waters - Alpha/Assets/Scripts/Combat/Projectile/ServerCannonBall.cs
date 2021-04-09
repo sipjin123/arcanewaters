@@ -158,7 +158,6 @@ public class ServerCannonBall : NetworkBehaviour {
             if (hitEntity.currentHealth <= 0) {
                ((BotShipEntity) hitEntity).spawnChest();
             }
-            sourceEntity.rpc.notifyVoyageMembers(VoyageGroupMemberCell.NotificationType.Engage, sourceEntity);
          }
 
          // TODO: Observe damage formula on live build

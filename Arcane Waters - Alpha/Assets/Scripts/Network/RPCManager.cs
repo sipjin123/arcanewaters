@@ -4127,45 +4127,6 @@ public class RPCManager : NetworkBehaviour
       return true;
    }
 
-   [Server]
-   public void notifyVoyageMembers (VoyageGroupMemberCell.NotificationType notifType, NetEntity playerEntity) {
-
-      // Get the group the player belongs to
-      List<int> groupMembers = playerEntity.tryGetGroup(out VoyageGroupInfo voyageGroup) ? voyageGroup.members : new List<int>();
-
-      // Process voyage groups
-      foreach (int memberId in groupMembers) {
-         NetEntity entity = EntityManager.self.getEntity(memberId);
-         if (entity != null) {
-            if (playerEntity.instanceId == entity.instanceId) {
-               Target_NotifyVoyageMembers(entity.connectionToClient, playerEntity.userId, notifType);
-            }
-         }
-      }
-   }
-
-   [Command]
-   public void Cmd_NotifyVoyageMembers (VoyageGroupMemberCell.NotificationType notifType) {
-
-      // Get the group the player belongs to
-      List<int> groupMembers = _player.tryGetGroup(out VoyageGroupInfo voyageGroup) ? voyageGroup.members : new List<int>();
-
-      // Process voyage groups
-      foreach (int memberId in groupMembers) {
-         NetEntity entity = EntityManager.self.getEntity(memberId);
-         if (entity != null) {
-            if (_player.instanceId == entity.instanceId) {
-               Target_NotifyVoyageMembers(entity.connectionToClient, _player.userId, notifType);
-            }
-         }
-      }
-   }
-
-   [TargetRpc]
-   public void Target_NotifyVoyageMembers (NetworkConnection connection, int memberId, VoyageGroupMemberCell.NotificationType notifType) {
-      VoyageGroupPanel.self.notifyMember(notifType, memberId);
-   }
-
    [Command]
    public void Cmd_OnClientFinishedLoadingArea () {
       if (_player == null) {

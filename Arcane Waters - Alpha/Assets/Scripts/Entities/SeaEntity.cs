@@ -671,7 +671,6 @@ public class SeaEntity : NetEntity
 
                      }
                      int targetHealthAfterDamage = targetEntity.currentHealth - damage;
-                     targetEntity.rpc.notifyVoyageMembers(VoyageGroupMemberCell.NotificationType.TakeHit, targetEntity);
 
                      if (this is PlayerShipEntity) {
                         if (targetEntity is SeaMonsterEntity) {

@@ -121,13 +121,6 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       }
    }
 
-   public void notifyMember (VoyageGroupMemberCell.NotificationType notifType, int memberId) {
-      VoyageGroupMemberCell memberCell = _memberCells.Find(_ => _.getUserId() == memberId);
-      if (memberCell != null) {
-         memberCell.triggerNotification(notifType);
-      }
-   }
-
    public bool isGroupLeader (int userId) {
       if (_memberCells != null && _memberCells.Count > 0) {
          return _memberCells[0].getUserId() == userId;
