@@ -35,6 +35,15 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
    // The area key where the user is located
    public Text playerAreaKeyText;
 
+   // Player icon notifications
+   public GameObject hitNotification, attackNotification;
+
+   public enum NotificationType { 
+      None = 0,
+      Engage = 1,
+      TakeHit = 2
+   }
+
    #endregion
 
    public void Awake () {
@@ -117,6 +126,27 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
       hpBar.enabled = true;
       hpBar.fillAmount = (float) currentHP / maxHP;
       hpBar.color = hpBarGradient.Evaluate(hpBar.fillAmount);
+   }
+
+   public void triggerNotification (NotificationType notifType) {
+      StartCoroutine(processNotification(notifType));
+   }
+
+   private IEnumerator processNotification (NotificationType notifType) {
+      notificationToggler(notifType, true);
+      yield return new WaitForSeconds(.5f);
+      notificationToggler(notifType, false);
+   }
+
+   private void notificationToggler (NotificationType notifType, bool isActive) {
+      switch (notifType) {
+         case NotificationType.Engage:
+            attackNotification.SetActive(isActive);
+            break;
+         case NotificationType.TakeHit:
+            hitNotification.SetActive(isActive);
+            break;
+      }
    }
 
    private void updatePortrait () {

@@ -149,7 +149,16 @@ public class ServerCannonBall : NetworkBehaviour {
          int abilityDamage = (int) (_abilityData.damageModifier * projectileBaseDamage);
          int critDamage = (int) (_isCrit ? projectileBaseDamage * 0.5f : 0.0f);
          int totalDamage = projectileBaseDamage + shipDamage + abilityDamage + critDamage;
-         hitEntity.currentHealth -= totalDamage;
+         if (hitEntity.currentHealth > 0) {
+            hitEntity.currentHealth -= totalDamage;
+         }
+
+         if (hitEntity is BotShipEntity) {
+            if (hitEntity.currentHealth <= 0) {
+               ((BotShipEntity) hitEntity).spawnChest();
+            }
+            sourceEntity.rpc.notifyVoyageMembers(VoyageGroupMemberCell.NotificationType.Engage, sourceEntity);
+         }
 
          // TODO: Observe damage formula on live build
          D.adminLog("Total damage of network Cannonball is" + " : " + totalDamage +
