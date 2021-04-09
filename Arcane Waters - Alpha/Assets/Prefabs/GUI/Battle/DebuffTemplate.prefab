@@ -60,7 +60,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5660378, g: 0.5660378, b: 0.5660378, a: 1}
+  m_Color: {r: 0.5660378, g: 0.5660378, b: 0.5660378, a: 0}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -91,9 +91,11 @@ MonoBehaviour:
   debuffIcon: {fileID: 681839834918086700}
   debuffSpritePair:
   - statusType: 5
-    statusSprite: {fileID: 21300000, guid: cc3e29523c210584c84958a923f36d0f, type: 3}
+    statusSprite: {fileID: -971483552379589744, guid: 9a4f00482fb7b6c4a9b39ad691577f61,
+      type: 3}
   - statusType: 6
-    statusSprite: {fileID: 21300000, guid: 81f3fc3b64a4dd442a37f9e0c137c3ab, type: 3}
+    statusSprite: {fileID: 3986112975633359074, guid: 9a4f00482fb7b6c4a9b39ad691577f61,
+      type: 3}
   statusType: 0
 --- !u!1 &7314403363517792499
 GameObject:
@@ -159,7 +161,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 3016ce2d5bd75a147aa3a66460e33058, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
