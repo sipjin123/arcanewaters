@@ -436,24 +436,6 @@ public class NetEntity : NetworkBehaviour
 
       // Keep track of our previous area type
       _previousAreaKey = this.areaKey;
-
-      // Display players' name when ALT key is pressed
-      if (KeyUtils.GetKey(Key.LeftAlt) || KeyUtils.GetKey(Key.RightAlt)) {
-         if (this is PlayerBodyEntity) {
-            showEntityName();
-            showGuildIcon();
-         }
-      }
-      if (KeyUtils.GetKeyUp(Key.LeftAlt) || KeyUtils.GetKeyUp(Key.RightAlt)) {
-         if (this is PlayerBodyEntity) {
-            if (!OptionsPanel.allPlayersNameShowing) {
-               hideEntityName();
-            }
-            if (!OptionsPanel.allGuildIconsShowing) {
-               hideGuildIcon();
-            }
-         }
-      }
    }
 
    protected virtual void FixedUpdate () {
@@ -630,16 +612,6 @@ public class NetEntity : NetworkBehaviour
             hat.data = HatStatData.serializeHatStatData(hatStatData);
          } else {
             D.debug("Hat was null {" + hat.itemTypeId + "}. User equipped hat is not available");
-         }
-      }
-   }
-
-   public void updatePlayerNameDisplay () {
-      if (this is PlayerBodyEntity) {
-         if (OptionsPanel.allPlayersNameShowing) {
-            showEntityName();
-         } else {
-            hideEntityName();
          }
       }
    }

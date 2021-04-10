@@ -148,7 +148,7 @@ public class ServerCannonBall : NetworkBehaviour {
          int shipDamage = (int) (sourceEntity.damage * projectileBaseDamage);
          int abilityDamage = (int) (_abilityData.damageModifier * projectileBaseDamage);
          int critDamage = (int) (_isCrit ? projectileBaseDamage * 0.5f : 0.0f);
-		 int perkDamage = (int) (projectileBaseDamage * PerkManager.self.getPerkMultiplierAdditive(sourceEntity.userId, Perk.Category.ShipDamage));
+         int perkDamage = (int) (projectileBaseDamage * PerkManager.self.getPerkMultiplierAdditive(sourceEntity.userId, Perk.Category.ShipDamage));
          int totalDamage = projectileBaseDamage + shipDamage + abilityDamage + critDamage + perkDamage;
          if (hitEntity.currentHealth > 0) {
             hitEntity.currentHealth -= totalDamage;

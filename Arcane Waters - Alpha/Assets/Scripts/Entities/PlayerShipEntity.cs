@@ -132,13 +132,12 @@ public class PlayerShipEntity : ShipEntity
          StartCoroutine(CO_TemporarilyDisableShip());
       }
 
-      // Ship names will be on display at all times
-      showEntityName();
-
-      // Ship Guild Icons to be displayed at all times
+      // Only show the guild icon if one exits
       if (this.guildId > 0) {
          updateGuildIconSprites();
          showGuildIcon();
+      } else {
+         hideGuildIcon();
       }
 
       if (isLocalPlayer) {

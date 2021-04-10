@@ -130,17 +130,13 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       // Retrieve the current sprites for the guild icon
       updateGuildIconSprites();
 
-      // On start, hide guild icon for land players unless the toggle is set in Options Panel
-      if (OptionsPanel.self.displayGuildIconsToggle.isOn == true) {
-         this.showGuildIcon();
-      } else {
+      // On start, check if we need to hide the names and guild icons
+      if (OptionsPanel.onlyShowGuildIconsOnMouseover) {
          this.hideGuildIcon();
       }
 
       // On start, hide entity name for land players unless the toggle is set in Options Panel
-      if (OptionsPanel.self.displayPlayersNameToggle.isOn == true) {
-         this.showEntityName();
-      } else {
+      if (OptionsPanel.onlyShowPlayerNamesOnMouseover) {
          this.hideEntityName();
       }
 
@@ -215,6 +211,24 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       processJumpLogic();
       processActionLogic();
       processSprintLogic();
+
+      // Display land players' name when ALT key is pressed.
+      if (KeyUtils.GetKey(Key.LeftAlt) || KeyUtils.GetKey(Key.RightAlt)) {
+         if (OptionsPanel.onlyShowPlayerNamesOnMouseover) {
+            showEntityName();
+         }
+         if (OptionsPanel.onlyShowGuildIconsOnMouseover) {
+            showGuildIcon();
+         }
+      }
+      if (KeyUtils.GetKeyUp(Key.LeftAlt) || KeyUtils.GetKeyUp(Key.RightAlt)) {
+         if (OptionsPanel.onlyShowPlayerNamesOnMouseover) {
+            hideEntityName();
+         }
+         if (OptionsPanel.onlyShowGuildIconsOnMouseover) {
+            hideGuildIcon();
+         }
+      }
    }
 
    public void OnPointerEnter (PointerEventData pointerEventData) {
@@ -227,10 +241,10 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    public void OnPointerExit (PointerEventData pointerEventData) {
-      if ((guildIcon != null) && (!OptionsPanel.allGuildIconsShowing)) {
+      if ((guildIcon != null) && OptionsPanel.onlyShowGuildIconsOnMouseover) {
          GetComponent<PlayerBodyEntity>().hideGuildIcon();
       }
-      if ((entityName != null) && (!OptionsPanel.allPlayersNameShowing)) {
+      if ((entityName != null) && (OptionsPanel.onlyShowPlayerNamesOnMouseover)) {
          hideEntityName();
       }
    }

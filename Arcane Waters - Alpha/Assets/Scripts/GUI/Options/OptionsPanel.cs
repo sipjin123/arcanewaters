@@ -57,10 +57,10 @@ public class OptionsPanel : Panel
    public Dropdown screenModeDropdown;
 
    // Bool to track if all players should continuously display their guild icon
-   public static bool allGuildIconsShowing;
+   public static bool onlyShowGuildIconsOnMouseover = false;
 
    // Bool to track if all players should continuously display their name
-   public static bool allPlayersNameShowing;
+   public static bool onlyShowPlayerNamesOnMouseover = false;
 
    // Self
    public static OptionsPanel self;
@@ -152,13 +152,13 @@ public class OptionsPanel : Panel
 
       // Set the guild icons toggle event
       displayGuildIconsToggle.onValueChanged.AddListener(value => {
-         allGuildIconsShowing = value;
+         onlyShowGuildIconsOnMouseover = !value;
          showAllGuildIcons(value);
       });
 
       // Set the player name toggle event
       displayPlayersNameToggle.onValueChanged.AddListener(value => {
-         allPlayersNameShowing = value;
+         onlyShowPlayerNamesOnMouseover = !value;
          showPlayersName(value);
       });
 
@@ -186,7 +186,6 @@ public class OptionsPanel : Panel
                entity.updateGuildIconSprites();
                entity.showGuildIcon();
             }
-            allGuildIconsShowing = true;
          }
       } else {
          // Do not display the guild icons of all the players
@@ -194,7 +193,6 @@ public class OptionsPanel : Panel
             if (entity is PlayerBodyEntity) {
                entity.hideGuildIcon();
             }
-            allGuildIconsShowing = false;
          }
       }
    }
@@ -205,14 +203,12 @@ public class OptionsPanel : Panel
             if (entity is PlayerBodyEntity) {
                entity.showEntityName();
             }
-            allPlayersNameShowing = true;
          }
       } else {
          foreach (NetEntity entity in EntityManager.self.getAllEntities()) {
             if (entity is PlayerBodyEntity) {
                entity.hideEntityName();
             }
-            allPlayersNameShowing = false;
          }
       }
    }
