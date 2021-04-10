@@ -1212,7 +1212,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             Coroutine shakeCoroutine = null;
             if (attackerAbility.useSpecialAnimation) {
-               shakeCoroutine = targetBattler.StartCoroutine(targetBattler.animateShake());
+               shakeCoroutine = targetBattler.StartCoroutine(targetBattler.CO_AnimateShake());
             }
 
             // If either sprite is owned by the client, play a camera shake
@@ -1621,7 +1621,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             yield return new WaitForSeconds(KNOCKUP_LENGTH);
          } else if (abilityDataReference.hasShake && !abilityDataReference.useSpecialAnimation) {
             // If the ability magnitude will shake the screen to simulate impact
-            Coroutine shakeCoroutine = targetBattler.StartCoroutine(targetBattler.animateShake());
+            Coroutine shakeCoroutine = targetBattler.StartCoroutine(targetBattler.CO_AnimateShake());
             yield return new WaitForSeconds(SHAKE_LENGTH);
             targetBattler.StopCoroutine(shakeCoroutine);
             if (!abilityData.useSpecialAnimation) {
@@ -1723,12 +1723,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
    }
 
-   private IEnumerator animateShake () {
+   private IEnumerator CO_AnimateShake () {
       GetComponent<Animator>().Play("shake");
       yield return new WaitForSeconds(SHAKE_LENGTH);
    }
 
-   private IEnumerator animateShakeOld () {
+   private IEnumerator CO_AnimateShakeOld () {
       float startTime = Time.time;
       const float shakeIntensity = 0.01f; // Original Value = 0.03f;
       Vector2 startPos = this.battleSpot.transform.position;

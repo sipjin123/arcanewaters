@@ -922,6 +922,13 @@ public class BattleManager : MonoBehaviour {
       bool foundPlayer = false;
       float distanceMagnitude = .1f;
 
+      if (teamThatWon == Battle.TeamType.Attackers) {
+         // Only Spawn one lootbag per combat win
+         int battlerEnemyID = (int) defeatedBattlers[0].getBattlerData().enemyType;
+         Transform[] spawnNodeTarget = ((Enemy) defeatedBattlers[0].player).lootSpawnPositions;
+         winningBattlers[0].player.rpc.spawnBattlerMonsterChest(winningBattlers[0].player.instanceId, spawnNodeTarget[0].position, battlerEnemyID);
+      }
+      
       foreach (Battler winner in winningBattlers) {
          // 20% chance to deduct the weapon durability the player is currently wearing
          int itemDamageChance = Random.Range(0, 10);
@@ -940,7 +947,7 @@ public class BattleManager : MonoBehaviour {
       foreach (Battler battler in defeatedBattlers) {
          if (battler.isMonster()) {
             int battlerEnemyID = (int) battler.getBattlerData().enemyType;
-            
+
             foreach (Battler participant in winningBattlers) {
                if (!participant.isMonster()) {
                   participant.player.rpc.endBattle();
@@ -981,7 +988,6 @@ public class BattleManager : MonoBehaviour {
                   targetPosition = new Vector3(spawnPositions[randomIndex].x, spawnPositions[randomIndex].y, spawnPositions[randomIndex].z);
                   spawnPositions.RemoveAt(randomIndex);
                }
-               winningBattlers[0].player.rpc.spawnBattlerMonsterChest(winningBattlers[0].player.instanceId, targetPosition, battlerEnemyID);
             } else {
                // TODO: Add reward logic here for boss enemies
             }
