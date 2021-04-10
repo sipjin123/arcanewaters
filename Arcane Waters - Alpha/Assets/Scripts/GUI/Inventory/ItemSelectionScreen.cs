@@ -146,7 +146,9 @@ public class ItemSelectionScreen : MonoBehaviour
          cell.leftClickEvent.RemoveAllListeners();
          cell.rightClickEvent.RemoveAllListeners();
          cell.doubleClickEvent.RemoveAllListeners();
-         cell.leftClickEvent.AddListener(() => setSelectedItem(cell));
+         if (!cell.isDisabledItem) {
+            cell.leftClickEvent.AddListener(() => setSelectedItem(cell));
+         }
 
          // Saves the cell in a list for easy access
          _cells.Add(cell);

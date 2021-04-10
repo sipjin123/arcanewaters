@@ -323,11 +323,15 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    }
 
    public void showSelectedBox () {
-      selectedBox.enabled = true;
+      if (selectedBox != null) {
+         selectedBox.enabled = true;
+      }
    }
 
    public void hideSelectedBox () {
-      selectedBox.enabled = false;
+      if (selectedBox != null) {
+         selectedBox.enabled = false;
+      }
    }
 
    public Item getItem () {
