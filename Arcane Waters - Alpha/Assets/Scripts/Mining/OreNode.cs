@@ -86,7 +86,7 @@ public class OreNode : NetworkBehaviour
       }
 
       if (!NetworkServer.active) {
-         OreManager.self.registerOreNode(areaKey, this);
+         OreManager.self.registerOreNode(id, this);
       }
    }
 

@@ -54,7 +54,7 @@ public class OreManager : MonoBehaviour
       oreNode.voyageId = instance.voyageId;
 
       // Keep track of the ore nodes that we've created
-      registerOreNode(instance.areaKey, oreNode);
+      registerOreNode(oreNode.id, oreNode);
 
       // The Instance needs to keep track of all Networked objects inside
       instance.entities.Add(oreNode);
@@ -65,32 +65,25 @@ public class OreManager : MonoBehaviour
       return oreNode;
    }
 
-   public void registerOreNode (string areaKey, OreNode node) {
-      // Create dictionary if none exists 
-      if (!_oreNodes.ContainsKey(areaKey)) {
-         _oreNodes.Add(areaKey, new List<OreNode>());
-      }
-
-      if (!_oreNodes[areaKey].Contains(node)) {
-         _oreNodes[areaKey].Add(node);
-      } else {
-         D.debug("Ore {" + node.id + "} already existing for area:{" + areaKey + "}");
+   public void registerOreNode (int id, OreNode node) {
+      if (!_oreNodesRaw.ContainsKey(id)) {
+         _oreNodesRaw.Add(id, node);
       }
    }
 
-   public OreNode getOreNode (string areaKey, int id) {
-      if (!_oreNodes.ContainsKey(areaKey)) {
-         D.debug("No ore node dictionary for area:{" + areaKey + "}");
+   public OreNode getOreNode (int id) {
+      if (!_oreNodesRaw.ContainsKey(id)) {
+         D.debug("No ore node dictionary for area:{" + id + "}");
          return null;
       }
 
-      return _oreNodes[areaKey].Find(_ => _.id == id);
+      return _oreNodesRaw[id];
    }
-
+   
    #region Private Variables
 
    // Stores the ore nodes we've created, indexed by their unique ID
-   protected Dictionary<string, List<OreNode>> _oreNodes = new Dictionary<string, List<OreNode>>();
+   protected Dictionary<int, OreNode> _oreNodesRaw = new Dictionary<int, OreNode>();
 
    // An ID we use to uniquely identify ore nodes
    protected static int _id = 1;
