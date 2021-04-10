@@ -26,19 +26,23 @@ public class TreasureDropsDataManager : MonoBehaviour {
       foreach (KeyValuePair<int, LootGroupData> lootDropCollection in zipData) {
          if (!lootDropsCollection.ContainsKey(lootDropCollection.Key)) {
             List<TreasureDropsData> newTreasureDropsData = new List<TreasureDropsData>();
-            foreach (TreasureDropsData treasureDrop in lootDropCollection.Value.treasureDropsCollection) {
-               newTreasureDropsData.Add(treasureDrop);
-            }
-            lootDropsCollection.Add(lootDropCollection.Key, lootDropCollection.Value);
+            try {
+               foreach (TreasureDropsData treasureDrop in lootDropCollection.Value.treasureDropsCollection) {
+                  newTreasureDropsData.Add(treasureDrop);
+               }
+               lootDropsCollection.Add(lootDropCollection.Key, lootDropCollection.Value);
 
-            // TODO: Remove after successful implementation
-            LootGroupData newTreasureCollection = new LootGroupData {
-               biomeType = lootDropCollection.Value.biomeType,
-               lootGroupName = lootDropCollection.Value.lootGroupName,
-               xmlId = lootDropCollection.Key,
-               treasureDropsCollection = newTreasureDropsData
-            };
-            _lootDropsList.Add(newTreasureCollection);
+               // TODO: Remove after successful implementation
+               LootGroupData newTreasureCollection = new LootGroupData {
+                  biomeType = lootDropCollection.Value.biomeType,
+                  lootGroupName = lootDropCollection.Value.lootGroupName,
+                  xmlId = lootDropCollection.Key,
+                  treasureDropsCollection = newTreasureDropsData
+               };
+               _lootDropsList.Add(newTreasureCollection);
+            } catch {
+               D.debug("Failed to process Loot drops: {" + lootDropCollection.Key + "}");
+            }
          }
       }
    }
@@ -85,13 +89,17 @@ public class TreasureDropsDataManager : MonoBehaviour {
 
                if (!lootDropsCollection.ContainsKey(uniqueKey)) {
                   List<TreasureDropsData> newTreasureDropsData = new List<TreasureDropsData>();
-                  foreach (TreasureDropsData treasureDrop in lootGroupData.treasureDropsCollection) {
-                     newTreasureDropsData.Add(treasureDrop);
-                  }
-                  lootDropsCollection.Add(uniqueKey, lootGroupData);
+                  try {
+                     foreach (TreasureDropsData treasureDrop in lootGroupData.treasureDropsCollection) {
+                        newTreasureDropsData.Add(treasureDrop);
+                     }
+                     lootDropsCollection.Add(uniqueKey, lootGroupData);
 
-                  // TODO: Remove after successful implementation
-                  _lootDropsList.Add(lootGroupData);
+                     // TODO: Remove after successful implementation
+                     _lootDropsList.Add(lootGroupData);
+                  } catch {
+                     D.debug("Failed to process Loot drops: {" + uniqueKey + "}");
+                  }
                }
             }
          });

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 
 [Serializable]
 public class TreasureDropsData {
@@ -9,8 +10,16 @@ public class TreasureDropsData {
    // Chance of this loot spawning
    public float spawnChance = 100;
 
+   // Determines the rarity of this object
+   [XmlElement(Namespace = "RarityType")]
+   public Rarity.Type rarity;
+
    // If this loot will only spawn in secret chests
    public bool spawnInSecretChest = false;
+
+   // The min and max drops 
+   public int dropMinCount = 1;
+   public int dropMaxCount = 1;
 }
 
 [Serializable]
