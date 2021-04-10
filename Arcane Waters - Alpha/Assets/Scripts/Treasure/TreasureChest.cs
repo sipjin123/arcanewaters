@@ -310,8 +310,8 @@ public class TreasureChest : NetworkBehaviour {
    public IEnumerator CO_CreatingFloatingIcon (Item item) {
       // Give some time for the chest to open
       float animationDuration = chestOpeningAnimation.frameLengthOverride * chestOpeningAnimation.maxIndex;
-      animationDuration = Mathf.Clamp(animationDuration, .1f, 2);
-      yield return new WaitForSeconds(animationDuration + 0.2f);
+      animationDuration = Mathf.Clamp(animationDuration, .1f, 1);
+      yield return new WaitForSeconds(animationDuration);
 
       // Create a floating icon
       GameObject floatingIcon = Instantiate(TreasureManager.self.floatingIconPrefab, Vector3.zero, Quaternion.identity);

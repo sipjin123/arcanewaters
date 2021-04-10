@@ -628,13 +628,10 @@ public class RPCManager : NetworkBehaviour
       Item item = chest.getContents();
 
       // Grant the rewards to the user
-      giveItemRewardsToPlayer(_player.userId, new List<Item>() { item }, false);
-
+      giveItemRewardsToPlayer(_player.userId, new List<Item>() { item }, false, chest.id);
+      
       // Registers the interaction of loot bags to the achievement database for recording
       AchievementManager.registerUserAchievement(_player, ActionType.OpenedLootBag);
-
-      // Send it to the specific player that opened it
-      Target_OpenChest(_player.connectionToClient, item, chest.id);
    }
 
    [Server]
@@ -4405,50 +4402,59 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   private void giveItemRewardsToPlayer (int userID, List<Item> rewardList, bool showPanel) {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Create or update the database item
-         foreach (Item item in rewardList) {
-            Item newDatabaseItem = new Item { category = Item.Category.Blueprint, count = 1, data = "" };
-            if (item.category == Item.Category.Blueprint) {
-               CraftableItemRequirements itemCache = CraftingManager.self.getCraftableData(item.itemTypeId);
-               if (itemCache == null) {
-                  D.debug("Failed to get crafting data of itemType: " + item.itemTypeId);
-                  return;
-               }
-
-               switch (itemCache.resultItem.category) {
-                  case Item.Category.Weapon:
-                     newDatabaseItem.data = Blueprint.WEAPON_DATA_PREFIX;
-                     item.data = Blueprint.WEAPON_DATA_PREFIX;
-                     break;
-                  case Item.Category.Armor:
-                     newDatabaseItem.data = Blueprint.ARMOR_DATA_PREFIX;
-                     item.data = Blueprint.ARMOR_DATA_PREFIX;
-                     break;
-                  case Item.Category.Hats:
-                     newDatabaseItem.data = Blueprint.HAT_DATA_PREFIX;
-                     item.data = Blueprint.HAT_DATA_PREFIX;
-                     break;
-               }
-               newDatabaseItem.itemTypeId = itemCache.resultItem.itemTypeId;
-            } else {
-               newDatabaseItem = item;
+   private void giveItemRewardsToPlayer (int userID, List<Item> rewardList, bool showPanel, int chestId = -1) {
+      // Create or update the database item
+      List<Item> newDatabaseItemList = new List<Item>();
+      foreach (Item item in rewardList) {
+         Item newDatabaseItem = new Item { category = Item.Category.Blueprint, count = 1, data = "" };
+         if (item.category == Item.Category.Blueprint) {
+            CraftableItemRequirements itemCache = CraftingManager.self.getCraftableData(item.itemTypeId);
+            if (itemCache == null) {
+               D.debug("Failed to get crafting data of itemType: " + item.itemTypeId);
+               return;
             }
 
-            // Make sure that the loot bag armor has an assigned palette value
-            if (item.category == Item.Category.Armor && string.IsNullOrEmpty(item.paletteNames)) {
-               item.paletteNames = PaletteSwapManager.DEFAULT_ARMOR_PALETTE_NAMES;
+            switch (itemCache.resultItem.category) {
+               case Item.Category.Weapon:
+                  newDatabaseItem.data = Blueprint.WEAPON_DATA_PREFIX;
+                  item.data = Blueprint.WEAPON_DATA_PREFIX;
+                  break;
+               case Item.Category.Armor:
+                  newDatabaseItem.data = Blueprint.ARMOR_DATA_PREFIX;
+                  item.data = Blueprint.ARMOR_DATA_PREFIX;
+                  break;
+               case Item.Category.Hats:
+                  newDatabaseItem.data = Blueprint.HAT_DATA_PREFIX;
+                  item.data = Blueprint.HAT_DATA_PREFIX;
+                  break;
             }
-            DB_Main.createItemOrUpdateItemCount(userID, newDatabaseItem);
+            newDatabaseItem.itemTypeId = itemCache.resultItem.itemTypeId;
+         } else {
+            newDatabaseItem = item;
          }
 
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Calls Reward Popup
-            if (showPanel) {
-               Target_ReceiveItemList(_player.connectionToClient, rewardList.ToArray());
-            }
-         });
+         // Make sure that the loot bag armor has an assigned palette value
+         if (item.category == Item.Category.Armor && string.IsNullOrEmpty(item.paletteNames)) {
+            item.paletteNames = PaletteSwapManager.DEFAULT_ARMOR_PALETTE_NAMES;
+         }
+
+         // Add to list
+         newDatabaseItemList.Add(newDatabaseItem);
+      }
+
+      // Calls Reward Popup
+      if (showPanel) {
+         Target_ReceiveItemList(_player.connectionToClient, rewardList.ToArray());
+      }
+      if (chestId > 0) {
+         // Send it to the specific player that opened it
+         Target_OpenChest(_player.connectionToClient, rewardList[0], chestId);
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         foreach (Item newDatabaseItem in newDatabaseItemList) {
+            DB_Main.createItemOrUpdateItemCount(userID, newDatabaseItem);
+         }
       });
    }
 
