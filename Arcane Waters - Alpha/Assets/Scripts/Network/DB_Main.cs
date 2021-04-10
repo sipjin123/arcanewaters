@@ -139,6 +139,7 @@ public class DB_Main : DB_MainStub
                      int itmCategory = reader.GetInt32("itmCategory");
                      int itmType = reader.GetInt32("itmType");
                      int itmCount = reader.GetInt32("itmCount");
+                     int itmDurability = reader.GetInt32("durability");
                      string itmData = "";
                      string itmPalettes = "";
 
@@ -153,7 +154,7 @@ public class DB_Main : DB_MainStub
                         D.editorLog("Blank Palette 1");
                      }
 
-                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{itmCount}[space]{itmData}[space]{itmPalettes}";
+                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{itmCount}[space]{itmData}[space]{itmPalettes}[space]{itmDurability}";
                      stringBuilder.AppendLine(result);
                   }
                }
@@ -423,7 +424,8 @@ public class DB_Main : DB_MainStub
                      int itmCategory = reader.GetInt32("itmCategory");
                      int itmType = reader.GetInt32("itmType");
                      string itemPalette = reader.GetString("itmPalettes");
-                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{itemPalette}[space]";
+                     int itmDurability = reader.GetInt32("durability");
+                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{itemPalette}[space]{itmDurability}[space]";
                      stringBuilder.AppendLine(result);
                   }
                }
@@ -1447,7 +1449,7 @@ public class DB_Main : DB_MainStub
                   int count = dataReader.GetInt32("itmCount");
 
                   // Create an Item instance of the proper class, and then add it to the list
-                  Item item = new Item(itemId, itemCategory, itemTypeId, count, palettes, data);
+                  Item item = new Item(itemId, itemCategory, itemTypeId, count, palettes, data, Item.MAX_DURABILITY);
                   newItemList.Add(item.getCastItem());
                }
             }
@@ -4982,10 +4984,11 @@ public class DB_Main : DB_MainStub
                   int itemId = dataReader.GetInt32("itmId");
                   int itemTypeId = dataReader.GetInt32("itmType");
                   string palettes = dataReader.GetString("itmPalettes");
+                  int itemDurability = dataReader.GetInt32("durability");
                   Item.Category category = (Item.Category) dataReader.GetInt32("itmCategory");
 
                   if (category == Item.Category.Armor) {
-                     armor = new Armor(itemId, itemTypeId, palettes, dataReader.GetString("itmData"));
+                     armor = new Armor(itemId, itemTypeId, palettes, dataReader.GetString("itmData"), itemDurability);
                   }
                }
             }
@@ -5014,10 +5017,11 @@ public class DB_Main : DB_MainStub
                   int itemId = dataReader.GetInt32("itmId");
                   int itemTypeId = dataReader.GetInt32("itmType");
                   string palettes = dataReader.GetString("itmPalettes");
+                  int itemDurability = dataReader.GetInt32("durability");
                   Item.Category category = (Item.Category) dataReader.GetInt32("itmCategory");
 
                   if (category == Item.Category.Weapon) {
-                     weapon = new Weapon(itemId, itemTypeId, palettes, dataReader.GetString("itmData"));
+                     weapon = new Weapon(itemId, itemTypeId, palettes, dataReader.GetString("itmData"), itemDurability);
                   }
                }
             }
@@ -6635,9 +6639,10 @@ public class DB_Main : DB_MainStub
                   string palettes = dataReader.GetString("itmPalettes");
                   string data = dataReader.GetString("itmData");
                   int count = dataReader.GetInt32("itmCount");
+                  int durability = dataReader.GetInt32("durability");
 
                   // Create an Item instance of the proper class, and then add it to the list
-                  Item item = new Item(itemId, itemCategory, itemTypeId, count, palettes, data);
+                  Item item = new Item(itemId, itemCategory, itemTypeId, count, palettes, data, durability);
                   itemList.Add(item.getCastItem());
                }
             }
@@ -6686,7 +6691,7 @@ public class DB_Main : DB_MainStub
                   string data = DataUtil.getString(dataReader, "itmData");
                   int itemCount = DataUtil.getInt(dataReader, "itmCount");
 
-                  Item newItem = new Item(itemId, category, itemTypeId, itemCount, palettes, data);
+                  Item newItem = new Item(itemId, category, itemTypeId, itemCount, palettes, data, Item.MAX_DURABILITY);
                   itemList.Add(newItem);
                }
             }
@@ -6824,9 +6829,10 @@ public class DB_Main : DB_MainStub
                   string palettes = dataReader.GetString("itmPalettes");
                   string data = dataReader.GetString("itmData");
                   int count = dataReader.GetInt32("itmCount");
+                  int durability = dataReader.GetInt32("durability");
 
                   // Create an Item instance of the proper class, and then add it to the list
-                  item = new Item(itemId, category, itemTypeId, count, palettes, data);
+                  item = new Item(itemId, category, itemTypeId, count, palettes, data, durability);
                }
             }
          }
@@ -6862,9 +6868,10 @@ public class DB_Main : DB_MainStub
                   string palettes = dataReader.GetString("itmPalettes");
                   string data = dataReader.GetString("itmData");
                   int count = dataReader.GetInt32("itmCount");
+                  int durability = dataReader.GetInt32("durability");
 
                   // Create an Item instance of the proper class
-                  item = new Item(itemId, itemCategory, itemTypeId, count, palettes, data);
+                  item = new Item(itemId, itemCategory, itemTypeId, count, palettes, data, durability);
                }
             }
          }
@@ -9290,8 +9297,9 @@ public class DB_Main : DB_MainStub
       int itemTypeId = DataUtil.getInt(dataReader, "armorType");
       string palettes = DataUtil.getString(dataReader, "armorPalettes");
       string itemData = DataUtil.getString(dataReader, "armorData");
+      int durability = DataUtil.getInt(dataReader, "durability");
 
-      return new Armor(itemId, itemTypeId, palettes, itemData);
+      return new Armor(itemId, itemTypeId, palettes, itemData, durability);
    }
 
    protected static Weapon getWeapon (MySqlDataReader dataReader) {
@@ -9299,42 +9307,19 @@ public class DB_Main : DB_MainStub
       int itemTypeId = DataUtil.getInt(dataReader, "weaponType");
       string palettes = DataUtil.getString(dataReader, "weaponPalettes");
       string itemData = DataUtil.getString(dataReader, "weaponData");
+      int durability = DataUtil.getInt(dataReader, "durability");
 
-      return new Weapon(itemId, itemTypeId, palettes, itemData);
+      return new Weapon(itemId, itemTypeId, palettes, itemData, durability);
    }
 
    protected static Hat getHat (MySqlDataReader dataReader) {
-      int itemId = 0;
-      int itemTypeId = 0;
-      string palettes = "";
-      string itemData = "";
+      int itemId = DataUtil.getInt(dataReader, "hatId");
+      int itemTypeId = DataUtil.getInt(dataReader, "hatType");
+      string palettes = DataUtil.getString(dataReader, "hatPalettes");
+      string itemData = DataUtil.getString(dataReader, "hatData");
+      int durability = DataUtil.getInt(dataReader, "durability");
 
-      // TODO: Make sure the errors in the catch blocks will no longer occur
-      try {
-         itemId = DataUtil.getInt(dataReader, "hatId");
-      } catch {
-         D.editorLog("Issue with data: id", Color.red);
-      }
-
-      try {
-         itemTypeId = DataUtil.getInt(dataReader, "hatType");
-      } catch {
-         D.editorLog("Issue with data: type", Color.red);
-      }
-
-      try {
-         palettes = DataUtil.getString(dataReader, "hatPalettes");
-      } catch {
-         D.editorLog("Issue with data: palettes", Color.red);
-      }
-
-      try {
-         itemData = DataUtil.getString(dataReader, "hatData");
-      } catch {
-         D.editorLog("Issue with data: data", Color.red);
-      }
-
-      return new Hat(itemId, itemTypeId, palettes, itemData);
+      return new Hat(itemId, itemTypeId, palettes, itemData, durability);
    }
 
    #endregion
