@@ -1949,6 +1949,26 @@ public class RPCManager : NetworkBehaviour
       });
    }
 
+   [Server]
+   public void modifyItemDurability (NetEntity playerBattler, int itemId, int durabilityDeduction) {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int newDurability = DB_Main.getItemDurability(playerBattler.userId, itemId);
+         int updatedDurability = newDurability - durabilityDeduction;
+         DB_Main.updateItemDurability(playerBattler.userId, itemId, updatedDurability);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveItemDurabilityNotification(playerBattler.connectionToClient, updatedDurability);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveItemDurabilityNotification (NetworkConnection connection, int durability) {
+      D.debug("Durability is: {" + durability + "}");
+   }
+
    [Command]
    public void Cmd_SelectNextNPCDialogue (int npcId, int questId, int questNodeId, int dialogueId) {
       int newQuestNodeId = questNodeId;

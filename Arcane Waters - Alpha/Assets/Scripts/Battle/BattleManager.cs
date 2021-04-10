@@ -922,6 +922,20 @@ public class BattleManager : MonoBehaviour {
       bool foundPlayer = false;
       float distanceMagnitude = .1f;
 
+      foreach (Battler winner in winningBattlers) {
+         // 20% chance to deduct the weapon durability the player is currently wearing
+         int itemDamageChance = Random.Range(0, 10);
+         if (itemDamageChance == 2) {
+            winner.player.rpc.modifyItemDurability(winner.player, winner.weaponManager.equippedWeaponId, Item.ITEM_DURABILITY_DEDUCTION);
+         }
+
+         // 10% chance to deduct the armor durability the player is currently wearing
+         itemDamageChance = Random.Range(0, 10);
+         if (itemDamageChance == 1) {
+            winner.player.rpc.modifyItemDurability(winner.player, winner.armorManager.equippedArmorId, Item.ITEM_DURABILITY_DEDUCTION);
+         }
+      }
+
       // Process monster type reward
       foreach (Battler battler in defeatedBattlers) {
          if (battler.isMonster()) {
