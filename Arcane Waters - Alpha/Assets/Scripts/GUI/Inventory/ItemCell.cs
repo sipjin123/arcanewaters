@@ -62,6 +62,15 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    // If the item is disabled
    public bool isDisabledItem;
 
+   // Color overlay depending on item durability
+   public Color midDurabilityColor, lowDurabilityColor, highDurabilityColor;
+
+   // Image reference of the item cell
+   public Image itemCellImage;
+
+   // The transparency of the durability notification
+   public const float DURABILITY_NOTIF_ALPHA = 250;
+
    #endregion
 
    public virtual void clear () {
@@ -111,6 +120,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                Weapon newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
                newWeapon.id = item.id;
                newWeapon.paletteNames = item.paletteNames;
+               newWeapon.durability = item.durability;
                item = newWeapon;
 
                icon.sprite = ImageManager.getSprite(weaponData.equipmentIconPath);
@@ -131,6 +141,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                Armor newArmor = ArmorStatData.translateDataToArmor(armorData);
                newArmor.id = item.id;
                newArmor.paletteNames = item.paletteNames;
+               newArmor.durability = item.durability;
                item = newArmor;
 
                icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
@@ -151,6 +162,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                Hat newHat = HatStatData.translateDataToHat(hatData);
                newHat.id = item.id;
                newHat.paletteNames = item.paletteNames;
+               newHat.durability = item.durability;
                item = newHat;
 
                icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
@@ -234,12 +246,30 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
       // Set the tooltip
       tooltip.message = item.category == Item.Category.Blueprint ? EquipmentXMLManager.self.getItemName(item) : item.getTooltip();
+      tooltip.message += Item.isUsingEquipmentXML(item.category) ? "\nDurability = " + item.durability : "";
+      updateCellColor(item.durability);
 
       // Saves the item
       _item = item;
 
       // Hides the selection box
       hideSelectedBox();
+   }
+
+   private void updateCellColor (int durability) {
+      // Prototype UI feeback if an item durability is low or high
+      if (itemCellImage) {
+         if (durability < 25) {
+            lowDurabilityColor.a = DURABILITY_NOTIF_ALPHA;
+            itemCellImage.color = lowDurabilityColor;
+         } else if (durability <= 50) {
+            lowDurabilityColor.a = DURABILITY_NOTIF_ALPHA;
+            itemCellImage.color = midDurabilityColor;
+         } else {
+            lowDurabilityColor.a = 0;
+            itemCellImage.color = highDurabilityColor;
+         }
+      }
    }
 
    public void setCellForItem (ItemInstance item) {
