@@ -142,7 +142,11 @@ public class PerkManager : MonoBehaviour {
       float boostFactor = 1.0f;
 
       Dictionary<Perk.Category, int> perkPoints = _serverPerkPointsByUserId[userId];
-      boostFactor += getPerkData(Perk.getCategoryId(category)).boostFactor * perkPoints[category];
+      try {
+         boostFactor += getPerkData(Perk.getCategoryId(category)).boostFactor * perkPoints[category];
+      } catch {
+         D.debug("ERROR HERE! Perk Logic");
+      }
       return boostFactor;
    }
 
