@@ -887,6 +887,14 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static void updateItemDurability (int userId, int itemId, int durability) {
+
+   }
+
+   public static int getItemDurability (int userId, int itemId) {
+      return 0;
+   }
+
    public static void decreaseQuantityOrDeleteItem (int userId, int itmId, int deductCount) {
 
    }

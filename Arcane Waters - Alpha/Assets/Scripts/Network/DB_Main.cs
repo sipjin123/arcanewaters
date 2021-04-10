@@ -6270,6 +6270,46 @@ public class DB_Main : DB_MainStub
       return 0;
    }
 
+   public static new void updateItemDurability (int userId, int itemId, int durability) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE items SET durability=@durability WHERE usrId=@usrId and itmId=@itmId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmId", itemId);
+            cmd.Parameters.AddWithValue("@durability", durability);
+            DebugQuery(cmd);
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new int getItemDurability (int userId, int itemId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT durability FROM items WHERE usrId=@usrId and itmId=@itmId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmId", itemId);
+            DebugQuery(cmd);
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  return dataReader.GetInt32("durability");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return 0;
+   }
+
    public static new void updateItemQuantity (int userId, int itemId, int itemCount) {
       try {
          using (MySqlConnection conn = getConnection())
