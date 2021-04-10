@@ -38,6 +38,15 @@ public class Item {
    // The icon path of the item
    public string iconPath = "";
 
+   // The durability
+   public int durability = 100;
+
+   // The max durability
+   public const int MAX_DURABILITY = 100;
+
+   // The amount of durability to deduct to the item
+   public const int ITEM_DURABILITY_DEDUCTION = 1;
+
    #endregion
 
    public Item () {
@@ -57,23 +66,24 @@ public class Item {
       this.paletteNames = paletteNames;
    }
 
-   public Item (int id, Category category, int itemTypeId, int count, string paletteNames, string data) {
+   public Item (int id, Category category, int itemTypeId, int count, string paletteNames, string data, int durability) {
       this.id = id;
       this.category = category;
       this.itemTypeId = itemTypeId;
       this.paletteNames = paletteNames;
       this.count = count;
       this.data = data;
+      this.durability = durability;
    }
 
    public Item getCastItem () {
       switch (this.category) {
          case Category.Hats:
-            return new Hat(this.id, this.itemTypeId, paletteNames, data, count);
+            return new Hat(this.id, this.itemTypeId, paletteNames, data, durability, count);
          case Category.Armor:
-            return new Armor(this.id, this.itemTypeId, paletteNames, data, count);
+            return new Armor(this.id, this.itemTypeId, paletteNames, data, durability, count);
          case Category.Weapon:
-            return new Weapon(this.id, this.itemTypeId, paletteNames, data, count);
+            return new Weapon(this.id, this.itemTypeId, paletteNames, data, durability, count);
          case Category.Usable:
             return new UsableItem(this.id, category, this.itemTypeId, count, paletteNames, data);
          case Category.CraftingIngredients:

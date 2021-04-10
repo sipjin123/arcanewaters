@@ -73,13 +73,14 @@ public class Weapon : EquippableItem {
       this.data = "";
    }
 
-   public Weapon (int id, int itemTypeId, string paletteNames, string data, int count = 1) {
+   public Weapon (int id, int itemTypeId, string paletteNames, string data, int durability, int count = 1) {
       this.category = Category.Weapon;
       this.id = id;
       this.count = count;
       this.itemTypeId = itemTypeId;
       this.paletteNames = paletteNames;
       this.data = data;
+      this.durability = durability;
    }
 
    public Weapon (int id, int weaponType) {
@@ -227,7 +228,7 @@ public class Weapon : EquippableItem {
       price = Util.roundToPrettyNumber(price);
 
       string data = string.Format("damage={0}, rarity={1}, price={2}", damage, (int) rarity, price);
-      Weapon weapon = new Weapon(itemId, (int) weaponType, "", data, 1);
+      Weapon weapon = new Weapon(itemId, (int) weaponType, "", data, MAX_DURABILITY, 1);
 
       return weapon;
    }

@@ -241,7 +241,7 @@ public class CraftingIngredientPanel : MonoBehaviour {
    }
 
    private Item getItem(Item.Category categ, int typeID, int count) {
-      Item resultItem = new Item(0, categ, typeID, count, "", "");
+      Item resultItem = new Item(0, categ, typeID, count, "", "", Item.MAX_DURABILITY);
       return resultItem;
    }
 

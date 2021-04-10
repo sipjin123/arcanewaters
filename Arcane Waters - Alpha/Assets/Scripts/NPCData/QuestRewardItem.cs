@@ -42,7 +42,7 @@ public class QuestRewardItem : QuestReward
    // Must be called from the background thread!
    public override Item giveRewardToUser (int npcId, int userId) {
       // Create the item
-      Item item = new Item(-1, category, itemTypeId, count, "", "");
+      Item item = new Item(-1, category, itemTypeId, count, "", "", Item.MAX_DURABILITY);
 
       // Write the item in the database
       Item databaseItem = DB_Main.createItemOrUpdateItemCount(userId, item);

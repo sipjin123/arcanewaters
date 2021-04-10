@@ -73,8 +73,9 @@ public class AuctionItemData {
          string palettes = DataUtil.getString(dataReader, "itmPalettes");
          string data = DataUtil.getString(dataReader, "itmData");
          int count = DataUtil.getInt(dataReader, "itmCount");
+         int durability = DataUtil.getInt(dataReader, "durability");
 
-         this.item = new Item(itemId, category, itemTypeId, count, palettes, data);
+         this.item = new Item(itemId, category, itemTypeId, count, palettes, data, durability);
       } else {
          this.item = new Item();
       }

@@ -57,13 +57,14 @@ public class Hat : EquippableItem
       this.data = "";
    }
 
-   public Hat (int id, int itemTypeId, string paletteNames, string data, int count = 1) {
+   public Hat (int id, int itemTypeId, string paletteNames, string data, int durability, int count = 1) {
       this.category = Category.Hats;
       this.id = id;
       this.count = count;
       this.itemTypeId = itemTypeId;
       this.paletteNames = paletteNames;
       this.data = data;
+      this.durability = durability;
    }
 
    public Hat (int id, int hatType) {
@@ -220,7 +221,7 @@ public class Hat : EquippableItem
 
       string data = string.Format("hat={0}, rarity={1}, price={2}", defenseValue, (int) rarity, price);
       int stockCount = Rarity.getRandomItemStockCount(rarity);
-      Hat hat = new Hat(itemId, hatType, (PaletteDef.Armor.Black + ", " + PaletteDef.Armor.White), data, stockCount);
+      Hat hat = new Hat(itemId, hatType, (PaletteDef.Armor.Black + ", " + PaletteDef.Armor.White), data, MAX_DURABILITY, stockCount);
 
       return hat;
    }

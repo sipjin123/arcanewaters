@@ -39,7 +39,7 @@ public class ItemShortcutInfo
       string data = DataUtil.getString(dataReader, "itmData");
       int count = DataUtil.getInt(dataReader, "itmCount");
 
-      this.item = new Item(itemId, itemCategory, itemTypeId, count, palettes, data);
+      this.item = new Item(itemId, itemCategory, itemTypeId, count, palettes, data, Item.MAX_DURABILITY);
    }
 
 #endif

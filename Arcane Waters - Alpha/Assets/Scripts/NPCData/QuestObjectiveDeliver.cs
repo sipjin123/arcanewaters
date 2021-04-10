@@ -160,7 +160,7 @@ public class QuestObjectiveDeliver : QuestObjective
       if (category == Item.Category.Currency) {
          return ImageManager.getSprite(GOLD_ICON_PATH);
       } else {
-         Item item = new Item(-1, category, itemTypeId, 1, "", "").getCastItem();
+         Item item = new Item(-1, category, itemTypeId, 1, "", "", Item.MAX_DURABILITY).getCastItem();
          string path = item.getIconPath();
          return ImageManager.getSprite(path);
       }

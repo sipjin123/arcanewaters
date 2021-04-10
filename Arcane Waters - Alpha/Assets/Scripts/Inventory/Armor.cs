@@ -56,13 +56,14 @@ public class Armor : EquippableItem {
       this.data = "";
    }
 
-   public Armor (int id, int itemTypeId, string paletteNames, string data, int count = 1) {
+   public Armor (int id, int itemTypeId, string paletteNames, string data, int durability, int count = 1) {
       this.category = Category.Armor;
       this.id = id;
       this.count = count;
       this.itemTypeId = itemTypeId;
       this.paletteNames = paletteNames;
       this.data = data;
+      this.durability = durability;
    }
 
    public Armor (int id, int armorType) {
@@ -218,7 +219,7 @@ public class Armor : EquippableItem {
       price = Util.roundToPrettyNumber(price);
 
       string data = string.Format("armor={0}, rarity={1}, price={2}", armorValue, (int) rarity, price);
-      Armor armor = new Armor(itemId, armorType, Item.parseItmPalette(new string[2] { PaletteDef.Armor.Black, PaletteDef.Armor.White }), data, 1);
+      Armor armor = new Armor(itemId, armorType, Item.parseItmPalette(new string[2] { PaletteDef.Armor.Black, PaletteDef.Armor.White }), data, MAX_DURABILITY, 1);
 
       return armor;
    }
