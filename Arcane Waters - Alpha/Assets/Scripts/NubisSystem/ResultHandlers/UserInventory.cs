@@ -38,19 +38,20 @@ namespace NubisDataHandling {
                int itmCount = int.Parse(dataGroup[3]);
                string itmData = dataGroup[4];
                string itmPalettes = dataGroup[5];
+               int itmDurability = int.Parse(dataGroup[6]);
                //string itmPalette1 = dataGroup[5];
                //string itmPalette2 = dataGroup[6];
                //string itmPalettes = Item.parseItmPalette(new string[2] { itmPalette1, itmPalette2 });
-               
-               Item.Category categoryType = (Item.Category) itmCategory;
 
+               Item.Category categoryType = (Item.Category) itmCategory;
                Item otherItem = new Item {
                   category = categoryType,
                   itemTypeId = itmType,
                   id = itmId,
                   count = itmCount,
                   data = itmData,
-                  paletteNames = itmPalettes
+                  paletteNames = itmPalettes,
+                  durability = itmDurability
                }.getCastItem();
 
                switch (categoryType) {

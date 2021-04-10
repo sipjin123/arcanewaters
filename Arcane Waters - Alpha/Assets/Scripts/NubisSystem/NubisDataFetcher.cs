@@ -322,6 +322,10 @@ namespace NubisDataHandling {
          }
 
          List<Item> itemList = UserInventory.processUserInventory(listTask.Result);
+
+         // Filter inventory items here
+         itemList.RemoveAll(_ => _.category == Item.Category.Usable);
+
          PanelManager.self.itemSelectionScreen.receiveItemsFromServer(itemList, pageIndex, totalCount);
       }
 

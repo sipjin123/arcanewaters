@@ -2056,7 +2056,8 @@ public class AdminManager : NetworkBehaviour
 
       // Go to the background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-
+         // TODO: Uncomment this only after usable items are supported
+         /*
          // Create all the usable
          foreach (UsableItem.Type usableType in Enum.GetValues(typeof(UsableItem.Type))) {
             if (usableType != UsableItem.Type.None) {
@@ -2064,7 +2065,7 @@ public class AdminManager : NetworkBehaviour
                   usableCount++;
                }
             }
-         }
+         }*/
 
          // Create all the crafting ingredients
          foreach (CraftingIngredients.Type craftingIngredientsType in Enum.GetValues(typeof(CraftingIngredients.Type))) {
