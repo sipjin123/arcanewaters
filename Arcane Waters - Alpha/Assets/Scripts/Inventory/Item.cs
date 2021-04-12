@@ -47,6 +47,12 @@ public class Item {
    // The amount of durability to deduct to the item
    public const int ITEM_DURABILITY_DEDUCTION = 1;
 
+   // The amount to deduct the weapon durabiliy (max of 10 which represents 100%)
+   public const int WEAPON_DURABILITY_DEDUCTION = 2;
+
+   // The amount to deduct the armor durabiliy (max of 10 which represents 100%)
+   public const int ARMOR_DURABILITY_DEDUCTION = 1;
+
    #endregion
 
    public Item () {
