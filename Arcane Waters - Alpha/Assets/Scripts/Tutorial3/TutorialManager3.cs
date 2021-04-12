@@ -47,6 +47,7 @@ public class TutorialManager3 : MonoBehaviour {
       TutorialPanel3.Mode panelMode = TutorialPanel3.Mode.NPCSpeech;
       string selectedTutorialKey = tutorialDataList[0].key;
       _currentStep = 0;
+      _highestReachedStep = 0;
       foreach (Tutorial3 tutorial in tutorialDataList) {
          tutorial.isCompleted = false;
       }
@@ -118,6 +119,7 @@ public class TutorialManager3 : MonoBehaviour {
 
       _currentTutorial = tutorial;
       _currentStep = 0;
+      _highestReachedStep = 0;
       _triggerCount = 0;
       refreshUI();
 
@@ -231,6 +233,7 @@ public class TutorialManager3 : MonoBehaviour {
       }
 
       _currentStep = 0;
+      _highestReachedStep = 0;
       _triggerCount = 0;
       saveConfigAndProgress();
    }
@@ -261,6 +264,8 @@ public class TutorialManager3 : MonoBehaviour {
 
       string npcSpeech = _currentTutorial.steps[_currentStep].npcSpeech;
 
+      _highestReachedStep = Mathf.Max(_currentStep, _highestReachedStep);
+
       // Handle dynamic npc speechs
       if (_currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.MoveShip) {
          npcSpeech = npcSpeech.Replace("[northp]", InputManager.getBinding(KeyAction.MoveUp).primary.ToString());
@@ -274,7 +279,7 @@ public class TutorialManager3 : MonoBehaviour {
       }
 
       panel.refreshTutorialStep(selectedTutorialKey, npcSpeech, _currentStep + 1, _currentTutorial.steps.Count,
-         isNextStepManual, _currentTutorial.isCompleted);
+         isNextStepManual, _currentTutorial.isCompleted, _currentStep < _highestReachedStep);
       arrow.setTarget(_currentTutorial.steps[_currentStep].targetAreaKey);
    }
 
@@ -353,6 +358,9 @@ public class TutorialManager3 : MonoBehaviour {
 
    // The index of the current step in the tutorial
    private int _currentStep = 0;
+
+   // The index of the highest step reached in the current tutorial
+   private int _highestReachedStep = 0;
 
    // The number of times the completion trigger has been set off for the current step
    private int _triggerCount = 0;

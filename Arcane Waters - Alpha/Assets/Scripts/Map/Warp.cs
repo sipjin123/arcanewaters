@@ -28,7 +28,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    public GameObject circle;
 
    // The blocked icon
-   public GameObject blockedIcon;
+   public SpriteRenderer blockedIcon;
 
    // Hard coded quest index
    public const int GET_DRESSED_QUEST_INDEX = 1;
@@ -42,6 +42,8 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    }
 
    void Start () {
+      blockedIcon.enabled = false;
+
       try {
          InvokeRepeating(nameof(showOrHideArrow), UnityEngine.Random.Range(0f, 1f), 0.5f);
       } catch {
@@ -259,15 +261,15 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             if (!arrow.activeSelf) {
                arrow.SetActive(true);
             }
-            if (blockedIcon.activeSelf) {
-               blockedIcon.SetActive(false);
+            if (blockedIcon.enabled) {
+               blockedIcon.enabled = false;
             }
          } else {
             if (arrow.activeSelf) {
                arrow.SetActive(false);
             }
-            if (!blockedIcon.activeSelf) {
-               blockedIcon.SetActive(true);
+            if (!blockedIcon.enabled && !Global.player.isAboutToWarpOnClient) {
+               blockedIcon.enabled = true;
             }
 
             // In leagues, warps to inactive treasure sites are completely invisible
@@ -276,8 +278,8 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
                   if (circle.activeSelf) {
                      circle.SetActive(false);
                   }
-                  if (blockedIcon.activeSelf) {
-                     blockedIcon.SetActive(false);
+                  if (blockedIcon.enabled) {
+                     blockedIcon.enabled = false;
                   }
                }
             }

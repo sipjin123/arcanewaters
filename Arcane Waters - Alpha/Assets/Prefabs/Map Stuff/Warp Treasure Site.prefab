@@ -174,7 +174,7 @@ MonoBehaviour:
   newFacingDirection: 1
   arrow: {fileID: 2079641380548157803}
   circle: {fileID: 6599133977375204295}
-  blockedIcon: {fileID: 6568963556501630038}
+  blockedIcon: {fileID: 5623431566038553148}
 --- !u!114 &2829931948103811206
 MonoBehaviour:
   m_ObjectHideFlags: 0

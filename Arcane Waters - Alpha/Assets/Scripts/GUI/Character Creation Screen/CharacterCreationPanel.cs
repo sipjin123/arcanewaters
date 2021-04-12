@@ -254,8 +254,8 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       // Hide the loading screen
       PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login, LoadingScreen.LoadingType.CharacterCreation);
 
-      Util.enableCanvasGroup(canvasGroup);
       CharacterCreationSpotFader.self.fadeColorOnPosition(_char.transform.position);
+      show();
    }
 
    public void onCancelButtonClicked () {

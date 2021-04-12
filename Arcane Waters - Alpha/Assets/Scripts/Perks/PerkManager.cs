@@ -46,15 +46,16 @@ public class PerkManager : MonoBehaviour {
    }
 
    public void receiveListFromZipData (List<PerkData> perkDataList) {
-      _perkData = new List<PerkData>();
+      _perkData = new Dictionary<Perk.Category, PerkData>();
 
       foreach (PerkData data in perkDataList) {
-         _perkData.Add(data);
+         _perkData[(Perk.Category) data.perkCategoryId] = data;
+         _perkCategoriesById[data.perkId] = (Perk.Category) data.perkCategoryId;
       }
 
       // Initialize the Perks Panel if there is a client running
       if (NetworkClient.active) {
-         PerksPanel.self.receivePerkData(_perkData);
+         PerksPanel.self.receivePerkData(perkDataList);
       }
    }
 
@@ -112,7 +113,17 @@ public class PerkManager : MonoBehaviour {
    }
 
    public PerkData getPerkData (int perkId) {
-      return _perkData.Find(x => x.perkId == perkId);
+      Perk.Category category = _perkCategoriesById[perkId];
+      return _perkData[category];
+   }
+
+   public PerkData getPerkData (Perk.Category category) {
+      if (!_perkData.ContainsKey(category)) {
+         D.error("Cached perk data didn't have data for: " + category.ToString());
+         return null;
+      }
+      
+      return _perkData[category];
    }
 
    private void initializeBoostFactors () {
@@ -140,13 +151,9 @@ public class PerkManager : MonoBehaviour {
 
    private float getBoostFactorForCategory (int userId, Perk.Category category) {
       float boostFactor = 1.0f;
-
       Dictionary<Perk.Category, int> perkPoints = _serverPerkPointsByUserId[userId];
-      try {
-         boostFactor += getPerkData(Perk.getCategoryId(category)).boostFactor * perkPoints[category];
-      } catch {
-         D.debug("ERROR HERE! Perk Logic");
-      }
+      boostFactor += getPerkData(category).boostFactor * perkPoints[category];
+
       return boostFactor;
    }
 
@@ -222,7 +229,10 @@ public class PerkManager : MonoBehaviour {
    private List<Perk> _localPlayerPerkPoints = new List<Perk>();
 
    // A cache for all the existing perks in the DB
-   private List<PerkData> _perkData = new List<PerkData>();
+   private Dictionary<Perk.Category, PerkData> _perkData = new Dictionary<Perk.Category, PerkData>();
+
+   // A dictionary of which perkIds are which perk category
+   private Dictionary<int, Perk.Category> _perkCategoriesById = new Dictionary<int, Perk.Category>();
 
    // The boost factor for the local player for each perk category
    private Dictionary<Perk.Category, float> _boostFactors = new Dictionary<Perk.Category, float>();

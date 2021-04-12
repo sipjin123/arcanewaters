@@ -447,6 +447,10 @@ public class OptionsPanel : Panel
          if (CharacterScreen.self.isShowing()) {
             // Return to the title screen
             Util.stopHostAndReturnToTitleScreen();
+            
+            if (CharacterCreationPanel.self.isShowing()) {
+               CharacterCreationPanel.self.cancelCreating();
+            }
 
             // Close this panel
             if (isShowing()) {
