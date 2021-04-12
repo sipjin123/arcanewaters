@@ -101,6 +101,13 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       }
    }
 
+   public void updateVoyageMemberCell (int userId, int damage) {
+      VoyageGroupMemberCell memberCell = _memberCells.Find(_ => _.getUserId() == userId);
+      if (memberCell != null) {
+         memberCell.updateCellDamage(damage);
+      }
+   }
+
    public void OnKickPlayerButtonClickedOn (int playerToKick) {
       PanelManager.self.showConfirmationPanel("Are you sure you want to kick player from the voyage group?",
          () => {

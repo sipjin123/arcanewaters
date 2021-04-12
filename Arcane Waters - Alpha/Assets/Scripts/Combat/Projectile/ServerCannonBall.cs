@@ -152,6 +152,8 @@ public class ServerCannonBall : NetworkBehaviour {
          int totalDamage = projectileBaseDamage + shipDamage + abilityDamage + critDamage + perkDamage;
          if (hitEntity.currentHealth > 0) {
             hitEntity.currentHealth -= totalDamage;
+            sourceEntity.totalDamageDealt += totalDamage;
+            sourceEntity.rpc.notifyDamageToVoyageCrew(sourceEntity.userId, sourceEntity.totalDamageDealt);
          }
 
          if (hitEntity is BotShipEntity) {

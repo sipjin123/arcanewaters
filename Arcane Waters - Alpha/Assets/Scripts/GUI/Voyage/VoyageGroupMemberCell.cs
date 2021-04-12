@@ -35,6 +35,9 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
    // The area key where the user is located
    public Text playerAreaKeyText;
 
+   // The total damage of the player during the voyage
+   public Text playerDamageText;
+
    #endregion
 
    public void Awake () {
@@ -146,6 +149,10 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
       } else {
          playerAreaKeyText.text = Area.getName(areaKey);
       }
+   }
+
+   public void updateCellDamage (int damage) {
+      playerDamageText.text = damage.ToString();
    }
 
    public void OnPointerEnter (PointerEventData eventData) {

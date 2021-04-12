@@ -54,6 +54,9 @@ public class SeaEntity : NetEntity
    // The combat collider
    public GenericCombatCollider combatCollider;
 
+   // The total damage dealt
+   public int totalDamageDealt = 0;
+
    #endregion
 
    protected virtual bool isBot () { return true; }
