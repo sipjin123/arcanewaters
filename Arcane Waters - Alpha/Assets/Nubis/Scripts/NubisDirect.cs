@@ -13,7 +13,7 @@ using UnityEngine;
 public class NubisDirect
 {
    public static string getUserInventoryPage (string userIdStr, string categoryFilterJSON,
-      string currentPageStr, string itemsPerPageStr) {
+      string currentPageStr, string itemsPerPageStr, string durabilityFilter) {
 
       if (int.TryParse(itemsPerPageStr, out int itemsPerPage) && itemsPerPage > 200) {
          D.debug("Requesting too many items per page.");
@@ -56,14 +56,14 @@ public class NubisDirect
       int[] itemIdsToExclude = new int[0];
       string itemIdsToExcludeJSON = JsonConvert.SerializeObject(itemIdsToExclude);
 
-      string itemCountResponse = DB_Main.userInventoryCount(userIdStr, categoryFilterJSON, itemIdsToExcludeJSON, "1");
+      string itemCountResponse = DB_Main.userInventoryCount(userIdStr, categoryFilterJSON, itemIdsToExcludeJSON, "1", durabilityFilter);
       if (!int.TryParse(itemCountResponse, out int itemCount)) {
          D.editorLog("Failed to parse: " + itemCountResponse);
          itemCount = 0;
       }
 
       string inventoryData = DB_Main.userInventory(userIdStr, categoryFilterJSON, itemIdsToExcludeJSON, "1",
-         currentPageStr, itemsPerPageStr);
+         currentPageStr, itemsPerPageStr, durabilityFilter);
 
       InventoryBundle bundle = new InventoryBundle {
          inventoryData = inventoryData,

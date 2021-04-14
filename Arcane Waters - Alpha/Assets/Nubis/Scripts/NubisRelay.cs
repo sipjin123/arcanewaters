@@ -40,7 +40,7 @@ public class NubisRelay
    private static string callImpl (string function, params string[] args) {
 
       if (string.Equals(function, "NubisDirect-getUserInventoryPage", StringComparison.OrdinalIgnoreCase)) {
-         return NubisDirect.getUserInventoryPage(args[0], args[1], args[2], args[3]);
+         return NubisDirect.getUserInventoryPage(args[0], args[1], args[2], args[3], args[4]);
       }
       // TODO: Ken: Any function that needs to be called directly should be added here.
 
