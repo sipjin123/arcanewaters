@@ -22,13 +22,13 @@ public class BattleBars : MonoBehaviour {
    public bool isDisabled;
 
    // Prefab reference of the debuff icon
-   public DebuffIcon debuffIconPrefab;
+   public BuffIcon debuffIconPrefab;
 
    // The parent of the debuff icons to be created
    public Transform debuffIconParent;
 
    // The current debuff icons generated for this battler
-   public List<DebuffIcon> currentDebuffIcons = new List<DebuffIcon>();
+   public List<BuffIcon> currentDebuffIcons = new List<BuffIcon>();
 
    #endregion
 
@@ -106,7 +106,7 @@ public class BattleBars : MonoBehaviour {
       if (currentDebuffIcons.Count > 0) {
          // Add expired stats in a list
          List<Status.Type> expiredStatList = new List<Status.Type>();
-         foreach (DebuffIcon stat in currentDebuffIcons) {
+         foreach (BuffIcon stat in currentDebuffIcons) {
             if (!statList.Contains(stat.statusType) || statList.Count < 1) {
                expiredStatList.Add(stat.statusType);
             }
@@ -122,16 +122,16 @@ public class BattleBars : MonoBehaviour {
 
    private void addDebuffStatus (Status.Type statType) {
       if (!currentDebuffIcons.Exists(_ => _.statusType == statType)) {
-         DebuffIcon currentIcon = Instantiate(debuffIconPrefab, debuffIconParent);
+         BuffIcon currentIcon = Instantiate(debuffIconPrefab, debuffIconParent);
          currentIcon.statusType = statType;
-         currentIcon.debuffIcon.sprite = currentIcon.debuffSpritePair.Find(_ => _.statusType == statType).statusSprite;
+         currentIcon.buffIcon.sprite = currentIcon.buffSpritePair.Find(_ => _.statusType == statType).statusSprite;
          currentDebuffIcons.Add(currentIcon);
       }
    }
 
    private void removeDebuffStatus (Status.Type statType) {
       if (currentDebuffIcons.Exists(_ => _.statusType == statType)) {
-         DebuffIcon currentIcon = currentDebuffIcons.Find(_ => _.statusType == statType);
+         BuffIcon currentIcon = currentDebuffIcons.Find(_ => _.statusType == statType);
          currentDebuffIcons.Remove(currentIcon);
          Destroy(currentIcon.gameObject);
       }

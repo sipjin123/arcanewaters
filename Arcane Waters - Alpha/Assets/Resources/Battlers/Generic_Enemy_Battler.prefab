@@ -440,6 +440,13 @@ MonoBehaviour:
   debugLogCanvas: {fileID: 6777568446830974037}
   debugTextLog: {fileID: 4469971400099462491}
   animGroup: 0
+  waitingDots: {fileID: 0}
+  targetLine: {fileID: 0}
+  targetRing: {fileID: 0}
+  targetRingRenderer: {fileID: 0}
+  smallTargetRing: {fileID: 0}
+  largeTargetRing: {fileID: 0}
+  targetPoint: {fileID: 6701689944844613996}
   _canCastAbility: 1
   _alteredBattlerData:
     enemyName: unknown
@@ -1612,6 +1619,7 @@ MonoBehaviour:
   isDisabled: 0
   debuffIconPrefab: {fileID: 420549040733907000}
   debuffIconParent: {fileID: 3734102749699605869}
+  currentDebuffIcons: []
 --- !u!225 &4503358756059016377
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1928,6 +1936,36 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!1 &4459886255709641172
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6701689944844613996}
+  m_Layer: 0
+  m_Name: TargetPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6701689944844613996
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4459886255709641172}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.27, y: -0.16, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8485986789109303408}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4630269372962960555
 GameObject:
   m_ObjectHideFlags: 0
@@ -2222,6 +2260,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 611476246701747533}
+  - {fileID: 6701689944844613996}
   m_Father: {fileID: 611476247965537122}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2554,6 +2593,7 @@ MonoBehaviour:
   isDisabled: 0
   debuffIconPrefab: {fileID: 420549040733907000}
   debuffIconParent: {fileID: 4218743073769281111}
+  currentDebuffIcons: []
 --- !u!225 &126959614628035449
 CanvasGroup:
   m_ObjectHideFlags: 0

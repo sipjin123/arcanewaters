@@ -88,8 +88,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f160ac4d014409146985f48f14392238, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debuffIcon: {fileID: 681839834918086700}
-  debuffSpritePair:
+  buffIcon: {fileID: 681839834918086700}
+  buffSpritePair:
   - statusType: 5
     statusSprite: {fileID: -971483552379589744, guid: 9a4f00482fb7b6c4a9b39ad691577f61,
       type: 3}

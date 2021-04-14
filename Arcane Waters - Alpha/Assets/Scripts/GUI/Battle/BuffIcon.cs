@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System;
 
-public class DebuffIcon : MonoBehaviour {
+public class BuffIcon : MonoBehaviour {
    #region Public Variables
 
-   // Icon of the debuff 
-   public Image debuffIcon;
+   // Icon of the buff 
+   public Image buffIcon;
 
-   // The debuff sprite list
-   public List<DebuffSpritePair> debuffSpritePair = new List<DebuffSpritePair>();
+   // The buff sprite list
+   public List<BuffSpritePair> buffSpritePair = new List<BuffSpritePair>();
 
    // The current status type
    public Status.Type statusType;
@@ -23,7 +23,7 @@ public class DebuffIcon : MonoBehaviour {
 }
 
 [Serializable]
-public class DebuffSpritePair {
+public class BuffSpritePair {
    // Type of status
    public Status.Type statusType;
  
