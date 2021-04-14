@@ -41,8 +41,6 @@ public class MyCamera : BaseCamera
       if (gameObject.activeInHierarchy) {
          setInternalOrthographicSize();
       }
-
-      updateCameraDamping();
    }
 
    public static float getCharacterCreationPPUScale () {

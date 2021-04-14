@@ -81,19 +81,6 @@ public class CameraManager : ClientMonoBehaviour {
 
    private void Update () {
       handlePanning();
-
-      if (Global.player != null && !isShowingBattle()) {
-         if (!Global.player.isDead()) {
-            if (_previousAreaKey != Global.player.areaKey) {
-               if (AreaManager.self.getArea(Global.player.areaKey) != null) {
-                  foreach (BaseCamera baseCamera in _baseCameras) {
-                     baseCamera.updateCameraDamping();
-                  }
-                  _previousAreaKey = Global.player.areaKey;
-               }
-            }
-         }
-      }
    }
 
    private void handlePanning () {
@@ -334,9 +321,6 @@ public class CameraManager : ClientMonoBehaviour {
    // All the BaseCameras
    [SerializeField]
    protected List<BaseCamera> _baseCameras;
-
-   // The previous area we were in
-   protected string _previousAreaKey = "";
 
    #endregion
 }

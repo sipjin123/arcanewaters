@@ -485,7 +485,7 @@ public class MyNetworkManager : NetworkManager
 
       NetworkServer.Destroy(data.netEntity.gameObject);
 
-      _players.Remove(data.connectionId);
+      removeClientConnectionData(data);
    }
 
    public void destroyPlayerObjectForAccountId (int accountId) {
@@ -576,7 +576,7 @@ public class MyNetworkManager : NetworkManager
          }
       } else {
          // The connection must be removed, so that it doesn't block further login attempts
-         _players.Remove(conn.connectionId);
+         removeClientConnectionData(data);
       }
    }
 
@@ -593,11 +593,18 @@ public class MyNetworkManager : NetworkManager
    public static bool isAccountAlreadyOnline (int accountId, NetworkConnection conn) {
       ClientConnectionData existingConnection = self.getConnectedClientDataForAccount(accountId);
 
+      // Check if the account is already registered online with a different connection - in this server
       if (existingConnection != null && existingConnection.connectionId != conn.connectionId) {
          if (!DisconnectionManager.self.isUserPendingDisconnection(existingConnection.userId)) {
             return true;
          }
       }
+
+      // Check if the account is registered online in another server
+      if (ServerNetworkingManager.self.isAccountOnlineInAnotherServer(accountId)) {
+         return true;
+      }
+
       return false;
    }
 
@@ -644,6 +651,10 @@ public class MyNetworkManager : NetworkManager
       return list;
    }
 
+   public static List<ClientConnectionData> getClientConnectionData () {
+      return _players.Values.ToList();
+   }
+
    public static T fetchEntityFromNetId<T> (uint netId) where T : NetEntity {
       if (!NetworkIdentity.spawned.ContainsKey(netId)) {
          return null;
@@ -663,6 +674,15 @@ public class MyNetworkManager : NetworkManager
       }
 
       return entity;
+   }
+
+   private void removeClientConnectionData (ClientConnectionData data) {
+      _players.Remove(data.connectionId);
+
+      // Immediately remove the connection from the server network, to avoid an 'account already online' error when warping between servers
+      if (data.isAuthenticated()) {
+         ServerNetworkingManager.self.server.connectedAccountIds.Remove(data.accountId);
+      }
    }
 
    #region Private Variables

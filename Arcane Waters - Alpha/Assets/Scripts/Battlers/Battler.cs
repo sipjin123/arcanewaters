@@ -267,6 +267,24 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // The anim group
    public Anim.Group animGroup;
 
+   // A reference to the dots that show when this battler has an attack queued
+   public SpriteRenderer waitingDots;
+
+   // A reference to the dotted line that shows which enemy this battler has targeted with their queued attack
+   public DottedLine targetLine;
+
+   // A reference to the game object containing the target ring renderer
+   public GameObject targetRing;
+
+   // A reference to the ring renderer that shows which enemy this battler has targeted with their queued attack
+   public SpriteRenderer targetRingRenderer;
+
+   // A reference to the sprites for small and large target rings
+   public Sprite smallTargetRing, largeTargetRing;
+
+   // A reference to the point where the target line should start / end
+   public Transform targetPoint;
+
    #endregion
 
    public void stopActionCoroutine () {
@@ -343,13 +361,17 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       BattleSpot battleSpot = battleBoard.getSpot(teamType, this.boardPosition);
       this.battleSpot = battleSpot;
 
-      // When our Battle is created, we need to switch to the Battle camera
+      // When our Battler is created, we need to switch to the Battle camera
       if (isLocalBattler()) {
          BattleUIManager.self.selectionId = 0;
          CameraManager.enableBattleDisplay();
 
          BattleUIManager.self.setLocalBattler(this);
          BattleUIManager.self.prepareBattleUI();
+
+         targetLine.setLineColor(ColorCurveReferences.self.localBattlerTargeterColor);
+         waitingDots.color = ColorCurveReferences.self.localBattlerTargeterColor;
+
       } else {
          // This will allow the Ability UI to be triggered when an ally is selected (used for ally target abilities such as Heal and other Buffs)
          if (enemyType == Enemy.Type.PlayerBattler && isLocalBattler()) {
@@ -368,7 +390,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             onBattlerDeselect.AddListener(() => {
                BattleUIManager.self.playerBattleCG.Hide();
             });
-         } 
+         }
+
+         if (enemyType == Enemy.Type.PlayerBattler) {
+            targetLine.setLineColor(ColorCurveReferences.self.remoteBattlerTargeterColor);
+            waitingDots.color = ColorCurveReferences.self.remoteBattlerTargeterColor;
+            targetRingRenderer.color = ColorCurveReferences.self.remoteBattlerTargeterColor;
+         }
       }
 
       // Start off with the displayed values matching the sync vars
@@ -390,6 +418,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // This simulates the click on the enemy battler on client side
       if (!isLocalBattler() && BattleSelectionManager.self.selectedBattler == null && enemyType != Enemy.Type.PlayerBattler) {
          StartCoroutine(CO_SelectEnemyBattler());
+      }
+
+      if (isBossType) {
+         targetPoint.position += Vector3.right * -0.4f;
       }
 
       if (Global.logTypesToShow.Contains(D.ADMIN_LOG_TYPE.Combat)) {
@@ -455,6 +487,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // Handle the drawing or hiding of our outline
       if (!Util.isBatch()) {
          handleSpriteOutline();
+
+         // Update the target line and ring
+         if (battlerType == BattlerType.PlayerControlled && isShowingTargetingEffects()) {
+            targetLine.updateLine();
+            targetRing.transform.position = _targetedBattler.transform.position + BattleSelectionManager.getOffsetToFeet();
+         }
       }
    }
 
@@ -537,6 +575,33 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          _hasInitializedStats = true;
       }
+   }
+
+   public void showTargetingEffects (Battler target) {
+      _targetedBattler = target;
+      targetLine.lineStart = targetPoint;
+      targetLine.lineEnd = target.targetPoint;
+
+      targetLine.updateLine();
+      targetLine.gameObject.SetActive(true);
+      waitingDots.gameObject.SetActive(true);
+
+      targetRing.transform.position = _targetedBattler.transform.position + BattleSelectionManager.getOffsetToFeet();
+      targetRingRenderer.sprite = (target.isBossType ? largeTargetRing : smallTargetRing);
+
+      if (!isLocalBattler()) {
+         targetRing.gameObject.SetActive(true);
+      }
+   }
+
+   public void hideTargetingEffects () {
+      waitingDots.gameObject.SetActive(false);
+      targetLine.gameObject.SetActive(false);
+      targetRing.gameObject.SetActive(false);
+   }
+
+   protected bool isShowingTargetingEffects () {
+      return targetLine.gameObject.activeInHierarchy;
    }
 
    #region Stat Related Functions
@@ -1132,6 +1197,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                // Play an appropriate jump sound
                sourceBattler.playJumpSound();
 
+               // Disable targeting effects
+               if (sourceBattler.battlerType == BattlerType.PlayerControlled) {
+                  sourceBattler.hideTargetingEffects();
+               }
+
                // Smoothly jump into position
                sourceBattler.playAnim(Anim.Type.Jump_East);
                Vector2 targetPosition = targetBattler.getMeleeStandPosition(sourceBattler.weaponManager.weaponType != 0);
@@ -1326,6 +1396,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Determines the animation speed modification when playing shoot animation
             float shootAnimSpeed = 1.5f;
 
+            // Disable targeting effects
+            if (sourceBattler.battlerType == BattlerType.PlayerControlled) {
+               sourceBattler.hideTargetingEffects();
+            }
+
             // Start the attack animation that will eventually create the magic effect
             if (isFirstAction) {
                // Aim gun animation
@@ -1454,6 +1529,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             sourcePos = getMagicGroundPosition() + new Vector2(projectileSpawnOffsetX, projectileSpawnOffsetY);
             targetPos = targetBattler.getMagicGroundPosition() + new Vector2(0, projectileSpawnOffsetY);
 
+            // Disable targeting effects
+            if (sourceBattler.battlerType == BattlerType.PlayerControlled) {
+               sourceBattler.hideTargetingEffects();
+            }
+
             // Start the attack animation that will eventually create the magic effect
             if (isFirstAction) {
                // Aim gun animation
@@ -1567,6 +1647,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Look up our needed references
             battle = BattleManager.self.getBattle(cancelAction.battleId);
+
+            // Disable targeting effects
+            if (sourceBattler.battlerType == BattlerType.PlayerControlled) {
+               sourceBattler.hideTargetingEffects();
+            }
 
             // If the battle has ended, no problem
             if (battle == null) {
@@ -2177,7 +2262,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       return clickBox.bounds.Contains(mouseLocation);
    }
 
-   private bool isLocalBattler () {
+   public bool isLocalBattler () {
       if (Global.player == null || Global.player.userId <= 0) {
          return false;
       }
@@ -2419,6 +2504,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    // Gets set to true if this is the Battler that the client owns
    protected bool _isClientBattler = false;
+
+   // A reference to the battler that this battler has targeted and queued an attack against
+   protected Battler _targetedBattler;
 
    // The initialized stances that the battlers will have, used for reading correctly the cooldowns
    private BasicAbilityData _balancedInitializedStance;

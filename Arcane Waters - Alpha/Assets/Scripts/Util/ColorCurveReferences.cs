@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class GradientManager : MonoBehaviour {
+public class ColorCurveReferences : MonoBehaviour {
    #region Public Variables
 
-   public static GradientManager self;
+   public static ColorCurveReferences self;
 
    // A gradient controlling the color of the boost cooldown bar outline
    public Gradient shipBoostCooldownBarOutlineColor;
@@ -20,6 +20,12 @@ public class GradientManager : MonoBehaviour {
 
    // An animation curve controlling the alpha of the ship's wake
    public AnimationCurve shipBoostWakeAlpha;
+
+   // The color that the targeting UI will be for a local battler
+   public Color localBattlerTargeterColor;
+
+   // The color that the targeting UI will be for a remote battler
+   public Color remoteBattlerTargeterColor;
 
    #endregion
 

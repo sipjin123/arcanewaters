@@ -824,6 +824,7 @@ public class XmlVersionManagerClient : GenericGameManager {
                   int sourceMapId = int.Parse(xmlSubGroup[4]);
                   int weatherEffectType = int.Parse(xmlSubGroup[5]);
                   int biome = int.Parse(xmlSubGroup[6]);
+                  int editorType = int.Parse(xmlSubGroup[7]);
 
                   Map newMapEntry = new Map {
                      id = id,
@@ -832,7 +833,8 @@ public class XmlVersionManagerClient : GenericGameManager {
                      specialType = (Area.SpecialType) specialType,
                      sourceMapId = sourceMapId,
                      weatherEffectType = (WeatherEffectType) weatherEffectType,
-                     biome = (Biome.Type) biome
+                     biome = (Biome.Type) biome,
+                     editorType = (MapCreationTool.EditorType) editorType,
                   };
                   mapKeyDataList.Add(newMapEntry);
                   message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];

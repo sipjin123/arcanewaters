@@ -37,6 +37,15 @@ public class DottedLine : MonoBehaviour {
    #endregion
 
    private void Start () {
+      checkInit();
+   }
+
+   private void checkInit () {
+      // If we have already initialised, return
+      if (_lineSegments.Count > 0) {
+         return;
+      }
+      
       createSegments();
       updateLine();
    }
@@ -76,6 +85,8 @@ public class DottedLine : MonoBehaviour {
    }
 
    public void updateLine () {
+      checkInit();
+
       // Position the start dot
       if (_lineSegments.Count > 0) {
          _lineSegments[0].transform.position = lineStart.position;
@@ -102,6 +113,8 @@ public class DottedLine : MonoBehaviour {
    }
 
    public void setLineColor (Color newColor) {
+      checkInit();
+      
       foreach(SpriteRenderer renderer in _lineSegmentRenderers) {
          renderer.color = newColor;
       }

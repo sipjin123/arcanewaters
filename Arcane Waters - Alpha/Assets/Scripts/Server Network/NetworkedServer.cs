@@ -23,6 +23,9 @@ public class NetworkedServer : NetworkedBehaviour
    // The users connected to this server
    public NetworkedList<int> connectedUserIds = new NetworkedList<int>(Global.defaultNetworkedVarSettings);
 
+   // The accounts connected to this server
+   public NetworkedList<int> connectedAccountIds = new NetworkedList<int>(new NetworkedVarSettings { WritePermission = NetworkedVarPermission.OwnerOnly, SendChannel = "Fragmented", SendTickrate = 0 });
+
    // The voyage groups stored in this server
    public NetworkedDictionary<int, VoyageGroupInfo> voyageGroups = new NetworkedDictionary<int, VoyageGroupInfo>(new NetworkedVarSettings { WritePermission = NetworkedVarPermission.Everyone, SendChannel = "Fragmented", SendTickrate = 0 });
 
@@ -53,7 +56,7 @@ public class NetworkedServer : NetworkedBehaviour
          ServerNetworkingManager.self.server = this;
 
          // Regularly update data shared between servers
-         InvokeRepeating(nameof(updateConnectedPlayers), 5f, 1f);
+         InvokeRepeating(nameof(updateConnectedAccountsAndPlayers), 5f, 1f);
          InvokeRepeating(nameof(updateVoyageInstances), 5.5f, 2f);
       }
 
@@ -66,11 +69,22 @@ public class NetworkedServer : NetworkedBehaviour
       this.name = "Networked Server #" + this.networkedPort.Value;
    }
 
-   private void updateConnectedPlayers () {
+   private void updateConnectedAccountsAndPlayers () {
       connectedUserIds.Clear();
+      connectedAccountIds.Clear();
 
-      foreach (NetEntity player in MyNetworkManager.getPlayers()) {
-         connectedUserIds.Add(player.userId);
+      foreach (ClientConnectionData connData in MyNetworkManager.getClientConnectionData()) {
+         if (connData != null) {
+            // Add the account
+            if (connData.isAuthenticated() && !DisconnectionManager.self.isUserPendingDisconnection(connData.userId)) {
+               connectedAccountIds.Add(connData.accountId);
+            }
+
+            // Add the user
+            if (connData.netEntity != null) {
+               connectedUserIds.Add(connData.netEntity.userId);
+            }
+         }
       }
    }
 

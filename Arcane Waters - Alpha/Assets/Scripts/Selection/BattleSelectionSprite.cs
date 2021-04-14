@@ -47,7 +47,7 @@ public class BattleSelectionSprite : MonoBehaviour {
          Vector3 targetPosition = selectedBattler.transform.position;
          targetPosition.z -= .001f;
 
-         this.transform.position = targetPosition + getOffset(selectedBattler);
+         this.transform.position = targetPosition + BattleSelectionManager.getOffsetToFeet();
 
          // Move the arrows around based on the orientation of our target
          setDistances(selectedBattler);
@@ -109,15 +109,6 @@ public class BattleSelectionSprite : MonoBehaviour {
       foreach (SpriteRenderer arrow in _arrows) {
          arrow.color = color;
       }
-   }
-
-   protected Vector3 getOffset (Battler selectedBattler) {
-      /*if (selectedBattler is GolemBossBattler) {
-         return new Vector2(0f, -.10f);
-      }*/
-
-      // Default
-      return new Vector2(0f, -.12f);
    }
 
    #region Private Variables

@@ -167,6 +167,11 @@ public class AbilityManager : MonoBehaviour
             continue;
          }
 
+         // Show targeting effects on remote clients
+         if (sourceBattler.battlerType == BattlerType.PlayerControlled && !sourceBattler.isLocalBattler()) {
+            sourceBattler.showTargetingEffects(targetBattler);
+         }
+
          double timeToWait = 0;
 
          // Update timestamps

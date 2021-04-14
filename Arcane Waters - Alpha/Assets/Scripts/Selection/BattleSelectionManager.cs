@@ -200,6 +200,10 @@ public class BattleSelectionManager : MonoBehaviour {
       return playerBattle;
    }
 
+   public static Vector3 getOffsetToFeet () {
+      return new Vector2(0f, -.12f);
+   }
+
    #region Private Variables
 
    #endregion

@@ -188,6 +188,16 @@ public class ServerNetworkingManager : MonoBehaviour
       return isOnline;
    }
 
+   public bool isAccountOnlineInAnotherServer (int accountId) {
+      foreach (NetworkedServer server in servers) {
+         if (server.networkedPort != this.server.networkedPort && server.connectedAccountIds.Contains(accountId)) {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
    public void claimPlayer (int userId) {
       if (!server.claimedUserIds.Contains(userId)) {
          server.claimedUserIds.Add(userId);

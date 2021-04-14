@@ -48,6 +48,18 @@ public class TitleScreen : MonoBehaviour {
    // Reference to the battleboard script of the title screen
    public BattleBoard battleBoardReference;
 
+   // The terms of service panel that user has to accept before entering game
+   public GameObject termsOfServicePanel;
+
+   // The button used to accept terms of service and continue to game
+   public GenericButton termsOfServiceConfirmButtom;
+
+   // The toggle to accept terms of service
+   public Toggle termsOfServiceToggle;
+   
+   // The terms of service website address
+   public Text linkTextToS;
+
    #endregion
 
    private void Awake () {
@@ -135,6 +147,15 @@ public class TitleScreen : MonoBehaviour {
    }
 
    public void onLoginButtonPressed (bool isSteam) {
+      if (!isTermsOfServiceAccepted()) {
+         // Store whether we are using steam client
+         _isSteamToS = SteamManager.Initialized;
+
+         // Show ToS that user has to accept to continue
+         showTermsOfService();
+         return;
+      }
+
       if (ServerHistoryManager.self.isServerHistoryActive()) {
          // Check if the server is online by looking at the boot history using Nubis
          NubisDataFetcher.self.checkServerOnlineForClientLogin(isSteam);
@@ -211,10 +232,63 @@ public class TitleScreen : MonoBehaviour {
       }
    }
 
+   private string getTermsOfServiceKey () {
+      if (_isSteamToS) {
+         if (SteamManager.Initialized) {
+            ulong steamID = Steamworks.SteamUser.GetSteamID().m_SteamID;
+            return "tos_steam_" + steamID;
+         } else {
+            D.error("SteamManager is not yet initialized!");
+         }
+      }
+      return "tos_standalone_" + accountInputField.text;
+   }
+
+   private bool isTermsOfServiceAccepted () {
+      string key = getTermsOfServiceKey();
+      return (PlayerPrefs.HasKey(key) && PlayerPrefs.GetInt(key) == 1);
+   }
+
+   private void showTermsOfService () {
+      termsOfServicePanel.SetActive(true);
+      termsOfServiceToggle.isOn = false;
+      acceptTermsOfServiceToggleChanged();
+   }
+
+   public void acceptTermsOfServiceToggleChanged () {
+      termsOfServiceConfirmButtom.interactable = termsOfServiceToggle.isOn;
+   }
+
+   public void acceptTermsOfService () {
+      string key = getTermsOfServiceKey();
+      PlayerPrefs.SetInt(key, 1);
+      PlayerPrefs.Save();
+      termsOfServicePanel.SetActive(false);
+
+      // ToS accepted - continue as usual
+      onLoginButtonPressed(_isSteamToS);
+   }
+
+   public void cancelTermsOfService () {
+      termsOfServicePanel.SetActive(false);
+   }
+
+   public void openTermsOfServiceURL () {
+      string link = linkTextToS.text;
+
+      if (!link.StartsWith("http")) {
+         link = "http://www." + link;
+      }
+      Application.OpenURL(link);
+   }
+
    #region Private Variables
 
    // Our Canvas Group
    protected CanvasGroup _canvasGroup;
+
+   // Determine whether we are using steam client - used to accept Terms of Service
+   protected bool _isSteamToS;
 
    #endregion
 }

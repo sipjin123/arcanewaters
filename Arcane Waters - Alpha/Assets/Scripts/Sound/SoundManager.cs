@@ -119,12 +119,6 @@ public class SoundManager : GenericGameManager {
       self = this;
 
       // Load the saved values if there are any
-      if (PlayerPrefs.HasKey(SaveKeys.EFFECTS_ON)) {
-         effectsOn = PlayerPrefs.GetInt(SaveKeys.EFFECTS_ON) == 1;
-      }
-      if (PlayerPrefs.HasKey(SaveKeys.MUSIC_ON)) {
-         musicOn = PlayerPrefs.GetInt(SaveKeys.MUSIC_ON) == 1;
-      }
       if (PlayerPrefs.HasKey(SaveKeys.EFFECTS_VOLUME)) {
          effectsVolume = PlayerPrefs.GetFloat(SaveKeys.EFFECTS_VOLUME);
       }
@@ -169,8 +163,6 @@ public class SoundManager : GenericGameManager {
       }
 
       // Save our sound settings for the next time
-      PlayerPrefs.SetInt(SaveKeys.EFFECTS_ON, effectsOn ? 1 : 0);
-      PlayerPrefs.SetInt(SaveKeys.MUSIC_ON, musicOn ? 1 : 0);
       PlayerPrefs.SetFloat(SaveKeys.EFFECTS_VOLUME, effectsVolume);
       PlayerPrefs.SetFloat(SaveKeys.MUSIC_VOLUME, musicVolume);
    }
@@ -254,21 +246,6 @@ public class SoundManager : GenericGameManager {
       // Toggle the icon for the button
       musicButton.GetComponent<Image>().sprite = musicOn ?
          ImageManager.getSprite("GUI/sound_icon") : ImageManager.getSprite("GUI/sound_icon_disabled");
-   }
-
-   public static void setMusic (bool isOn) {
-      musicOn = isOn;
-      PlayerPrefs.SetInt(SaveKeys.MUSIC_ON, musicOn ? 1 : 0);
-
-      // If the music isn't already playing, then start playing it
-      if (!self.backgroundMusicAudioSource.isPlaying) {
-         self.backgroundMusicAudioSource.Play();
-      }
-   }
-
-   public static void setEffects (bool isOn) {
-      effectsOn = isOn;
-      PlayerPrefs.SetInt(SaveKeys.EFFECTS_ON, effectsOn ? 1 : 0);
    }
 
    public static void setEffectsVolume (float volume) {

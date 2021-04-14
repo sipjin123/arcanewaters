@@ -91,6 +91,10 @@ public class MasterToolScene : MonoBehaviour {
       QualitySettings.vSyncCount = 0;
       Application.targetFrameRate = 60;
 
+      #if UNITY_STANDALONE_LINUX
+      Application.runInBackground = false;
+      #endif
+
       childList = new List<Transform>();
       foreach (Transform child in toolTemplateHolder) {
          childList.Add(child);

@@ -21,6 +21,9 @@ public class MapManager : MonoBehaviour
    // Convenient self reference
    public static MapManager self;
 
+   // Section arrows that indicate the prefab is selected
+   public GameObject prefabSelectionArrows;
+
    #endregion
 
    private void Awake () {
@@ -396,6 +399,11 @@ public class MapManager : MonoBehaviour
       // If changes are confirmed, mark them as confirmed
       if (confirmedState) {
          prefab.submitUnappliedChanges();
+      }
+
+      // Add selection arrows to prefab
+      if (prefab != null) {
+         Instantiate(prefabSelectionArrows, prefab.transform);
       }
 
       return prefab;
