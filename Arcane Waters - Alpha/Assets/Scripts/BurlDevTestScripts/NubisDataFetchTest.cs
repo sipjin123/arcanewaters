@@ -55,9 +55,6 @@ public class NubisDataFetchTest : MonoBehaviour
          if (GUILayout.Button("Inventory Count")) {
             nubisTotalItems();
          }
-         if (GUILayout.Button("Inventory Data")) {
-            nubisInventory();
-         }
          if (GUILayout.Button("Fetch Single Blueprint")) {
             nubisSingleBP();
          }
@@ -142,14 +139,6 @@ public class NubisDataFetchTest : MonoBehaviour
    private async void nubisEquippedItems () {
       D.debug("Get Equipped Items");
       var returnCode = await NubisClient.call(nameof(DB_Main.fetchEquippedItems), testUserId); 
-      D.debug("ASync start: " + returnCode);
-   }
-
-   private async void nubisInventory () {
-      D.debug("Get Inventory");
-      var returnCode = await NubisClient.call(nameof(DB_Main.userInventory), testUserId, 0, 0, 0, 0, 0, InventoryPanel.ITEMS_PER_PAGE);
-      List<Item> itemList = UserInventory.processUserInventory(returnCode);
-      D.editorLog("Fetched a total inventory of: " + itemList.Count);
       D.debug("ASync start: " + returnCode);
    }
 
