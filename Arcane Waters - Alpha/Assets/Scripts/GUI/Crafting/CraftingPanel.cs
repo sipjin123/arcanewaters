@@ -73,6 +73,30 @@ public class CraftingPanel : Panel
    // Self
    public static CraftingPanel self;
 
+   // The buttons triggering the crafting or refinement
+   public Button refinementTabButton, craftingTabButon;
+
+   // Title text
+   public Text titleText;
+
+   // The different panel entities
+   public GameObject[] refinementPanelEntities, craftingPanelEntities;
+
+   // The max number of refinement items per page
+   public const int REFINEMENT_ITEM_PAGE_MAX = 28;
+
+   // Text displaying durability level of an item
+   public Text durabilityText;
+
+   // Parent that hold the items that can be refined
+   public Transform refineAbleItemsHolder;
+
+   // The parent holding the selected refine-able item
+   public Transform refineAbleItemSelection;
+
+   // Cached refineable item cell
+   public ItemCell latestRefineableItem;
+
    #endregion
 
    public override void Awake () {
@@ -125,6 +149,8 @@ public class CraftingPanel : Panel
    }
 
    public void updatePanelWithBlueprintList (Item[] blueprintArray, Blueprint.Status[] blueprintStatusesArray, int pageNumber, int totalBlueprintCount) {
+      selectCraftingTab();
+
       // Update the current page number
       _currentPage = pageNumber;
 
@@ -336,6 +362,74 @@ public class CraftingPanel : Panel
       if (_currentPage > 1) {
          _currentPage--;
          refreshBlueprintList();
+      }
+   }
+
+   public void selectCraftingTab () {
+      refineAbleItemsHolder.gameObject.DestroyChildren();
+      _currentPage = 0;
+
+      craftingTabButon.interactable = false;
+      refinementTabButton.interactable = true;
+      titleText.text = "Crafting";
+
+      foreach (GameObject ui in refinementPanelEntities) {
+         ui.SetActive(false);
+      }
+      foreach (GameObject ui in craftingPanelEntities) {
+         ui.SetActive(true);
+      }
+   }
+
+   public void selectRefinementTab () {
+      blueprintRowsContainer.DestroyChildren();
+      _currentPage = 0;
+
+      refinementTabButton.interactable = false;
+      craftingTabButon.interactable = true;
+      titleText.text = "Refinement";
+
+      foreach (GameObject ui in refinementPanelEntities) {
+         ui.SetActive(true);
+      }
+      foreach (GameObject ui in craftingPanelEntities) {
+         ui.SetActive(false);
+      }
+
+      NubisDataFetcher.self.getUserInventory(new List<Item.Category> { 
+         Item.Category.Weapon, Item.Category.Armor, Item.Category.Hats
+      }, _currentPage, ROWS_PER_PAGE, 1, Panel.Type.Craft);
+   }
+
+   public void receiveRefineableItems (List<Item> itemList, int currentPageIndex) {
+      refineAbleItemsHolder.gameObject.DestroyChildren();
+      
+      foreach (Item temp in itemList) {
+         ItemCell itemCell = Instantiate(itemCellPrefab, refineAbleItemsHolder);
+         itemCell.setCellForItem(temp);
+         itemCell.leftClickEvent.RemoveAllListeners();
+         itemCell.leftClickEvent.AddListener(() => {
+            // Remove highlight of the recent item selected
+            if (latestRefineableItem) {
+               latestRefineableItem.hideSelectedBox();
+            }
+
+            // Cache this new item cell as the latest item cell selected
+            latestRefineableItem = itemCell;
+
+            // Highlight item cell
+            itemCell.showSelectedBox();
+
+            // Generate item to the item preview panel
+            refineAbleItemSelection.gameObject.DestroyChildren();
+            ItemCell selectedItemCell = Instantiate(itemCellPrefab, refineAbleItemSelection);
+            selectedItemCell.setCellForItem(temp);
+
+            // Display item durability
+            durabilityText.text = temp.durability.ToString();
+
+            // TODO Display requirements here
+         });
       }
    }
 
