@@ -440,7 +440,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private bool canSprint () {
-      return ((Global.sprintConstantly || KeyUtils.GetKey(Key.LeftShift)) && !isWithinEnemyRadius && getVelocity().magnitude > MOVING_MAGNITUDE);
+      return ((Global.sprintConstantly || InputManager.isSpeedUpKeyDown()) && !isWithinEnemyRadius && getVelocity().magnitude > MOVING_MAGNITUDE);
    }
 
    private void processActionLogic () {

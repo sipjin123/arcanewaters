@@ -4,6 +4,7 @@ using System;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.LowLevel;
+using System.Collections;
 
 public class InputManager : GenericGameManager {
    #region Public Variables
@@ -34,6 +35,9 @@ public class InputManager : GenericGameManager {
 
    // Toggles the joystick to control the mouse
    public bool mouseJoystickToggle;
+
+   // If gamepad sprint button is being held down
+   public bool holdGamepadSprint;
 
    // Mouse control movement speed
    public float mouseSpeed = 10f;
@@ -78,6 +82,11 @@ public class InputManager : GenericGameManager {
       inputMaster.Player.ToggleMouseControl.performed += func => mouseToggleAction();
       inputMaster.Player.Jump.performed += func => jumpAction();
       inputMaster.Player.Interact.performed += func => interactAction();
+      inputMaster.Player.MouseClick.performed += func => mouseClickAction();
+
+      inputMaster.Player.Dash.performed += func => dashAction(true);
+      inputMaster.Player.Dash.canceled += func => dashAction(false);
+
       inputMaster.Player.Move.performed += func => moveAction(func.ReadValue<Vector2>());
       inputMaster.Player.Move.canceled += func => moveAction(new Vector2(0, 0));
 
@@ -101,6 +110,28 @@ public class InputManager : GenericGameManager {
       isFocused = focus;
    }
 
+   private void dashAction (bool isActive) {
+      holdGamepadSprint = isActive;
+      D.adminLog("Dash! {" + isActive + "}", D.ADMIN_LOG_TYPE.Gamepad);
+   }
+
+   private void mouseClickAction () {
+      StartCoroutine(CO_SimulateMouseClick());
+   }
+
+   private IEnumerator CO_SimulateMouseClick () {
+      // Simulate mouse press down by accessing mouse command to trigger
+      Mouse.current.CopyState<MouseState>(out var mouseState);
+      mouseState.WithButton((UnityEngine.InputSystem.LowLevel.MouseButton) MouseButton.Left, true);
+      InputState.Change(Mouse.current, mouseState);
+
+      yield return new WaitForSeconds(.1f);
+
+      // Simulate mouse release by accessing mouse command to trigger
+      mouseState.WithButton((UnityEngine.InputSystem.LowLevel.MouseButton) MouseButton.Left, false);
+      InputState.Change(Mouse.current, mouseState);
+   }
+
    private void jumpAction () {
       D.adminLog("Jump!", D.ADMIN_LOG_TYPE.Gamepad);
    }
@@ -114,13 +145,17 @@ public class InputManager : GenericGameManager {
    }
 
    private void moveAction (Vector2 moveVal) {
-      D.debug("Player Move Now: ");
+      D.adminLog("Player Move Now: ", D.ADMIN_LOG_TYPE.Gamepad);
       joystickNavigation = moveVal;
    }
 
    private void mouseAction (Vector2 mouseVal) {
-      D.debug("Mouse Move Now: ");
-      mouseJoystickNavigation = mouseVal;
+      D.adminLog("Mouse Move Now: ", D.ADMIN_LOG_TYPE.Gamepad);
+      if (Util.isCloudBuild()) {
+         mouseJoystickNavigation = new Vector2(mouseVal.x, -mouseVal.y);
+      } else {
+         mouseJoystickNavigation = new Vector2(mouseVal.x, mouseVal.y);
+      }
    }
 
    private void loadDefaultKeybindings () {
@@ -322,7 +357,7 @@ public class InputManager : GenericGameManager {
 
    public static bool isSpeedUpKeyDown () {
       if (isActionInputEnabled()) {
-         return getKeyAction(KeyAction.SpeedUp);
+         return getKeyAction(KeyAction.SpeedUp) || self.holdGamepadSprint;
       }
 
       return false;
