@@ -271,7 +271,7 @@ public class TreasureChest : NetworkBehaviour {
       SeaMonsterEntity.Type monsterType = (SeaMonsterEntity.Type) enemyType;
       SeaMonsterEntityData battlerData = SeaMonsterManager.self.getMonster(monsterType);
 
-      List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(battlerData.lootGroupId);
+      List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(battlerData.lootGroupId, rarity);
       return processItemChance(treasureDropsDataList);
    }
 
@@ -279,7 +279,7 @@ public class TreasureChest : NetworkBehaviour {
       Enemy.Type monsterType = (Enemy.Type) enemyType;
       BattlerData battlerData = MonsterManager.self.getBattlerData(monsterType);
 
-      List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(battlerData.lootGroupId);
+      List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(battlerData.lootGroupId, rarity);
       return processItemChance(treasureDropsDataList);
    }
 

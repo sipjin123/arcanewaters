@@ -12,7 +12,7 @@ public class TreasureDropsData {
 
    // Determines the rarity of this object
    [XmlElement(Namespace = "RarityType")]
-   public Rarity.Type rarity;
+   public Rarity.Type rarity = Rarity.Type.Common;
 
    // If this loot will only spawn in secret chests
    public bool spawnInSecretChest = false;
