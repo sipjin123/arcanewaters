@@ -346,7 +346,7 @@ public class PlayerShipEntity : ShipEntity
       if (!isBoostCoolingDown() && _isChargingBoost) {
          // Update the boost-timing circle
          boostFillCircleParent.localScale = (Vector3.one * 0.5f) + (Vector3.one * 0.5f * getBoostChargeAmount());
-         boostFillCircle.color = GradientManager.self.shipBoostCircleColor.Evaluate(getBoostChargeAmount());
+         boostFillCircle.color = ColorCurveReferences.self.shipBoostCircleColor.Evaluate(getBoostChargeAmount());
       }
    }
 
@@ -602,7 +602,7 @@ public class PlayerShipEntity : ShipEntity
       float normalisedWakeTimeSinceBoost = timeSinceBoost / BOOST_WAKE_TIME;
       foreach (SpriteRenderer renderer in speedUpEffectHolders) {
          Color rendererColor = renderer.color;
-         rendererColor.a = GradientManager.self.shipBoostWakeAlpha.Evaluate(normalisedWakeTimeSinceBoost);
+         rendererColor.a = ColorCurveReferences.self.shipBoostWakeAlpha.Evaluate(normalisedWakeTimeSinceBoost);
          renderer.color = rendererColor;
       }
 
@@ -615,8 +615,8 @@ public class PlayerShipEntity : ShipEntity
          speedupGUI.enabled = true;
          float normalisedTimeSinceBoost = Mathf.Clamp01(timeSinceBoost / boostCooldown);
          speedUpBar.fillAmount = normalisedTimeSinceBoost;
-         boostCooldownBarOutline.color = GradientManager.self.shipBoostCooldownBarOutlineColor.Evaluate(normalisedTimeSinceBoost);
-         speedUpBar.color = GradientManager.self.shipBoostCooldownBarColor.Evaluate(normalisedTimeSinceBoost);
+         boostCooldownBarOutline.color = ColorCurveReferences.self.shipBoostCooldownBarOutlineColor.Evaluate(normalisedTimeSinceBoost);
+         speedUpBar.color = ColorCurveReferences.self.shipBoostCooldownBarColor.Evaluate(normalisedTimeSinceBoost);
       } else {
          speedupGUI.enabled = false;
       }

@@ -38,7 +38,6 @@ public class DB_Main : DB_MainStub
 {
    #region NubisFeatures
 
-   [NubisCallable]
    public static new string fetchSingleBlueprint (string bpIdStr, string usrIdStr) {
       int bpId = int.Parse(bpIdStr);
       int usrId = int.Parse(usrIdStr);
@@ -74,7 +73,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new string fetchZipRawData (string slotStr) {
       int slot = int.Parse(slotStr);
       UInt32 FileSize;
@@ -108,7 +106,6 @@ public class DB_Main : DB_MainStub
       return "";
    }
 
-   [NubisCallable]
    public static new string userInventory (string usrIdStr, string categoryFilterJSON, string itemIdsToExcludeJSON,
       string mustExcludeEquippedItemsStr, string currentPageStr, string itemsPerPageStr, string itemDurabilityFilter) {
       int usrId = int.Parse(usrIdStr);
@@ -170,7 +167,6 @@ public class DB_Main : DB_MainStub
       return "Failed to Query";
    }
 
-   [NubisCallable]
    public static new string userInventoryCount (string usrIdStr, string categoryFilterJSON, string itemIdsToExcludeJSON,
       string mustExcludeEquippedItemsStr, string itemDurabilityFilter) {
       int usrId = int.Parse(usrIdStr);
@@ -258,7 +254,6 @@ public class DB_Main : DB_MainStub
       return clause.ToString();
    }
 
-   [NubisCallable]
    public static new string fetchXmlVersion (string slotstr) {
       int slot = int.Parse(slotstr);
       try {
@@ -284,7 +279,6 @@ public class DB_Main : DB_MainStub
       return "0";
    }
 
-   [NubisCallable]
    public static new string fetchCraftableHats (string usrIdStr) {
       int usrId = int.Parse(usrIdStr);
       try {
@@ -318,7 +312,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new string fetchCraftableArmors (string usrIdStr) {
       int usrId = int.Parse(usrIdStr);
       try {
@@ -353,7 +346,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new string fetchCraftableWeapons (string usrIdStr) {
       int usrId = int.Parse(usrIdStr);
       try {
@@ -387,7 +379,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new string fetchCraftingIngredients (string usrIdStr) {
       int usrId = int.Parse(usrIdStr);
       try {
@@ -421,7 +412,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new string fetchEquippedItems (string usrIdStr) {
       int usrId = int.Parse(usrIdStr);
       try {
@@ -457,7 +447,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new string fetchMapData (string mapName, string versionStr) {
       int version = int.Parse(versionStr);
       try {
@@ -485,7 +474,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new string userAbilities (string userIdString, string abilityEquipStatusString) {
       AbilityEquipStatus abilityEquipStatus = (AbilityEquipStatus) int.Parse(abilityEquipStatusString);
       int usrId = int.Parse(userIdString);
@@ -536,7 +524,6 @@ public class DB_Main : DB_MainStub
 
    #region XML Content Handling
 
-   [NubisCallable]
    public static new void writeZipData (byte[] bytes, int slot) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -558,7 +545,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new string getXmlContent (string tableName, EditorSQLManager.EditorToolType toolType = EditorSQLManager.EditorToolType.None) {
       string content = "";
       string addedFields = "";
@@ -673,7 +659,6 @@ public class DB_Main : DB_MainStub
       return content;
    }
 
-   [NubisCallable]
    public static new List<RawPaletteToolData> getPaletteXmlContent (string tableName) {
       List<RawPaletteToolData> newPaletteDataList = new List<RawPaletteToolData>();
 
@@ -710,7 +695,6 @@ public class DB_Main : DB_MainStub
       return newPaletteDataList;
    }
 
-   [NubisCallable]
    public static new int getLatestXmlVersion () {
       int latestVersion = 0;
 
@@ -737,7 +721,6 @@ public class DB_Main : DB_MainStub
       return latestVersion;
    }
 
-   [NubisCallable]
    public static new string getLastUpdate (EditorSQLManager.EditorToolType editorType) {
       string updateContent = "";
       string tableName = EditorSQLManager.getSqlTable(editorType);
@@ -770,7 +753,6 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   [NubisCallable]
    public static new void saveComplaint (int sourceUsrId, int sourceAccId, string sourceUsrName, string sourceEmail, string sourceIPAddress, int targetUsrId, int targetAccId, string targetUsrName, string ticketDescription, string playerPosition, string playerArea, string ticketLog, byte[] screenshotBytes, string sourceMachineIdentifier, int deploymentId) {
       try {
          // We'll save the ticket's ID
@@ -835,7 +817,6 @@ public class DB_Main : DB_MainStub
 
    #region Server Communications
 
-   [NubisCallable]
    public static new ChatInfo getLatestChatInfo () {
       ChatInfo latestChatInfo = new ChatInfo();
       try {
@@ -867,7 +848,6 @@ public class DB_Main : DB_MainStub
 
    #region Abilities
 
-   [NubisCallable]
    public static new bool hasAbility (int userId, int abilityId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -898,7 +878,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void updateAbilitySlot (int userID, int abilityId, int slotNumber) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -920,7 +899,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void updateAbilitiesData (int userID, AbilitySQLData abilityData) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -951,7 +929,6 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   [NubisCallable]
    public static new List<XMLPair> getProjectileXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
 
@@ -982,7 +959,6 @@ public class DB_Main : DB_MainStub
 
    #region Achievements
 
-   [NubisCallable]
    public static new List<AchievementData> getAchievementData (int userID, ActionType actionType) {
       List<AchievementData> achievementTypeList = new List<AchievementData>();
       try {
@@ -1011,7 +987,6 @@ public class DB_Main : DB_MainStub
       return achievementTypeList;
    }
 
-   [NubisCallable]
    public static new void updateAchievementData (AchievementData achievementData, int userID, bool isCompleted, int addedCount = 0) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -1042,7 +1017,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<AchievementData> getAchievementDataList (int userID) {
       List<AchievementData> achievementList = new List<AchievementData>();
 
@@ -1075,7 +1049,6 @@ public class DB_Main : DB_MainStub
 
    #region Battler Abilities XML
 
-   [NubisCallable]
    public static new void updateBattleAbilities (int skillId, string abilityName, string abilityXML, int abilityType) {
       string skillIdKey = "xml_id, ";
       string skillIdValue = "@xml_id, ";
@@ -1111,7 +1084,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void deleteBattleAbilityXML (int skillId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -1129,7 +1101,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<AbilityXMLContent> getBattleAbilityXML () {
       List<AbilityXMLContent> xmlContent = new List<AbilityXMLContent>();
       try {
@@ -1160,7 +1131,6 @@ public class DB_Main : DB_MainStub
       return xmlContent;
    }
 
-   [NubisCallable]
    public static new List<AbilityXMLContent> getDefaultAbilities () {
       List<AbilityXMLContent> xmlContent = new List<AbilityXMLContent>();
       try {
@@ -1196,7 +1166,6 @@ public class DB_Main : DB_MainStub
 
    #region Treasure Drops XML
 
-   [NubisCallable]
    public static new void updateBiomeTreasureDrops (int xmlId, string rawXmlContent, Biome.Type biomeType) {
       string xmlIdKey = "xmlId, ";
       string xmlIdValue = "@xmlId, ";
@@ -1228,7 +1197,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<XMLPair> getBiomeTreasureDrops () {
       List<XMLPair> xmlContent = new List<XMLPair>();
       try {
@@ -1259,7 +1227,6 @@ public class DB_Main : DB_MainStub
 
    #region Sound Effects
 
-   [NubisCallable]
    public static new List<SoundEffect> getSoundEffects () {
       List<SoundEffect> effects = new List<SoundEffect>();
 
@@ -1296,7 +1263,6 @@ public class DB_Main : DB_MainStub
       return effects;
    }
 
-   [NubisCallable]
    public static new void updateSoundEffect (SoundEffect effect) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -1328,7 +1294,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void deleteSoundEffect (SoundEffect effect) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -1350,7 +1315,6 @@ public class DB_Main : DB_MainStub
 
    #region NPC Quest and Relationship
 
-   [NubisCallable]
    public static new void createNPCRelationship (int npcId, int userId, int friendshipLevel) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -1374,7 +1338,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new int getFriendshipLevel (int npcId, int userId) {
       int friendshipLevel = 0;
 
@@ -1402,7 +1365,6 @@ public class DB_Main : DB_MainStub
       return friendshipLevel;
    }
 
-   [NubisCallable]
    public static new void updateNPCRelationship (int npcId, int userId, int friendshipLevel) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -1424,7 +1386,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void createQuestStatus (int npcId, int userId, int questId, int questNodeId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -1449,7 +1410,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<Item> getRequiredItems (List<Item> itemList, int usrId) {
       List<Item> newItemList = new List<Item>();
       List<string> categoryList = new List<string>();
@@ -1509,7 +1469,6 @@ public class DB_Main : DB_MainStub
       return newItemList;
    }
 
-   [NubisCallable]
    public static new void updateQuestStatus (int npcId, int userId, int questId, int questNodeId, int dialogueId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -1535,7 +1494,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new QuestStatusInfo getQuestStatus (int npcId, int userId, int questId, int questNodeId) {
       QuestStatusInfo questStatus = null;
 
@@ -1566,7 +1524,6 @@ public class DB_Main : DB_MainStub
       return questStatus;
    }
 
-   [NubisCallable]
    public static new List<QuestStatusInfo> getQuestStatuses (int npcId, int userId) {
       List<QuestStatusInfo> questList = new List<QuestStatusInfo>();
 
@@ -1598,7 +1555,6 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   [NubisCallable]
    public static new List<SQLEntryNameClass> getSQLDataByName (EditorSQLManager.EditorToolType editorType) {
       List<SQLEntryNameClass> rawDataList = new List<SQLEntryNameClass>();
 
@@ -1625,7 +1581,6 @@ public class DB_Main : DB_MainStub
       return rawDataList;
    }
 
-   [NubisCallable]
    public static new List<SQLEntryIDClass> getSQLDataByID (EditorSQLManager.EditorToolType editorType, EquipmentType equipmentType = EquipmentType.None) {
       List<SQLEntryIDClass> rawDataList = new List<SQLEntryIDClass>();
 
@@ -1659,7 +1614,6 @@ public class DB_Main : DB_MainStub
 
    #region Crops XML Data
 
-   [NubisCallable]
    public static new void updateCropsXML (string rawData, int xmlId, int cropsType, bool isEnabled, string cropsName) {
       string xmlIdKey = "xml_id, ";
       string xmlIdValue = "@xml_id, ";
@@ -1697,7 +1651,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<XMLPair> getCropsXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
@@ -1728,7 +1681,6 @@ public class DB_Main : DB_MainStub
       return new List<XMLPair>(rawDataList);
    }
 
-   [NubisCallable]
    public static new void deleteCropsXML (int xmlId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -1750,7 +1702,6 @@ public class DB_Main : DB_MainStub
 
    #region Ship Ability XML Data
 
-   [NubisCallable]
    public static new void updateShipAbilityXML (string rawData, string shipAbilityName, int xmlId) {
       string xml_id_key = "xml_id, ";
       string xml_id_value = "@xml_id, ";
@@ -1785,7 +1736,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<XMLPair> getShipAbilityXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
@@ -1816,7 +1766,6 @@ public class DB_Main : DB_MainStub
       return rawDataList;
    }
 
-   [NubisCallable]
    public static new void deleteShipAbilityXML (int xmlId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -1838,7 +1787,6 @@ public class DB_Main : DB_MainStub
 
    #region Monster XML Data
 
-   [NubisCallable]
    public static new void updateLandMonsterXML (string rawData, int typeIndex, Enemy.Type enemyType, string battlerName, bool isActive) {
       string xml_id_key = "xml_id, ";
       string xml_id_value = "@xml_id, ";
@@ -1876,7 +1824,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<XMLPair> getLandMonsterXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
@@ -1907,7 +1854,6 @@ public class DB_Main : DB_MainStub
       return new List<XMLPair>(rawDataList);
    }
 
-   [NubisCallable]
    public static new void deleteLandmonsterXML (int typeID) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -1929,7 +1875,6 @@ public class DB_Main : DB_MainStub
 
    #region SeaMonster XML Data
 
-   [NubisCallable]
    public static new void updateSeaMonsterXML (string rawData, int typeIndex, SeaMonsterEntity.Type enemyType, string battlerName, bool isActive) {
       string xml_id_key = "xml_id, ";
       string xml_id_value = "@xml_id, ";
@@ -1967,7 +1912,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<XMLPair> getSeaMonsterXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
@@ -1998,7 +1942,6 @@ public class DB_Main : DB_MainStub
       return new List<XMLPair>(rawDataList);
    }
 
-   [NubisCallable]
    public static new void deleteSeamonsterXML (int typeID) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -2020,7 +1963,6 @@ public class DB_Main : DB_MainStub
 
    #region NPC Quest XML Data
 
-   [NubisCallable]
    public static new void updateNPCQuestXML (string rawData, int typeIndex, string xmlName, int isActive) {
       string xmlIdKey = "xmlId, ";
       string xmlIdValue = "@xmlId, ";
@@ -2061,7 +2003,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<XMLPair> getNPCQuestXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
@@ -2092,7 +2033,6 @@ public class DB_Main : DB_MainStub
       return rawDataList;
    }
 
-   [NubisCallable]
    public static new void deleteNPCQuestXML (int typeID) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -2114,7 +2054,6 @@ public class DB_Main : DB_MainStub
 
    #region NPC XML Data
 
-   [NubisCallable]
    public static new void updateNPCXML (string rawData, int typeIndex) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -2140,7 +2079,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<string> getNPCXML () {
       List<string> rawDataList = new List<string>();
       try {
@@ -2165,7 +2103,6 @@ public class DB_Main : DB_MainStub
       return new List<string>(rawDataList);
    }
 
-   [NubisCallable]
    public static new void deleteNPCXML (int typeID) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -2187,7 +2124,6 @@ public class DB_Main : DB_MainStub
 
    #region Custom Maps
 
-   [NubisCallable]
    public static new void setCustomHouseBase (object command, int userId, int baseMapId) {
       MySqlCommand cmd = command as MySqlCommand;
       cmd.CommandText = "UPDATE users SET customHouseBase = @baseMapId WHERE usrId = @userId;";
@@ -2197,7 +2133,6 @@ public class DB_Main : DB_MainStub
       cmd.ExecuteNonQuery();
    }
 
-   [NubisCallable]
    public static new void setCustomFarmBase (object command, int userId, int baseMapId) {
       MySqlCommand cmd = command as MySqlCommand;
       cmd.CommandText = "UPDATE users SET customFarmBase = @baseMapId WHERE usrId = @userId;";
@@ -2211,7 +2146,6 @@ public class DB_Main : DB_MainStub
 
    #region Map Customization
 
-   [NubisCallable]
    public static new MapCustomizationData getMapCustomizationData (object command, int mapId, int userId) {
       MySqlCommand cmd = command as MySqlCommand;
       cmd.CommandText = "SELECT data FROM map_customization_changes WHERE map_id = @map_id AND user_id = @user_id;";
@@ -2233,7 +2167,6 @@ public class DB_Main : DB_MainStub
       };
    }
 
-   [NubisCallable]
    public static new PrefabState getMapCustomizationChanges (object command, int mapId, int userId, int prefabId) {
       MySqlCommand cmd = command as MySqlCommand;
       cmd.CommandText = "SELECT data FROM map_customization_changes WHERE map_id = @map_id AND user_id = @user_id AND prefab_id = @prefab_id;";
@@ -2251,7 +2184,6 @@ public class DB_Main : DB_MainStub
       return new PrefabState { id = -1 };
    }
 
-   [NubisCallable]
    public static new void setMapCustomizationChanges (object command, int mapId, int userId, PrefabState changes) {
       MySqlCommand cmd = command as MySqlCommand;
       cmd.CommandText = "INSERT INTO map_customization_changes(user_id, map_id, prefab_id, data) Values(@user_id, @map_id, @prefab_id, @data) " +
@@ -2269,7 +2201,6 @@ public class DB_Main : DB_MainStub
 
    #region Map Editor Data
 
-   [NubisCallable]
    public static new int getMapId (string areaKey) {
       string cmdText = "SELECT id FROM global.maps_v2 WHERE name = @areaKey;";
       using (MySqlConnection conn = getConnection())
@@ -2289,7 +2220,6 @@ public class DB_Main : DB_MainStub
       return -1;
    }
 
-   [NubisCallable]
    public static new string getMapContents () {
       string content = "";
       string cmdText = "SELECT * FROM global.maps_v2";
@@ -2328,7 +2258,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<Map> getMaps (object command) {
       MySqlCommand cmd = command as MySqlCommand;
 
@@ -2367,7 +2296,6 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
-   [NubisCallable]
    public static new string getMapInfo (string areaKey) {
       MapInfo mapInfo = null;
 
@@ -2429,7 +2357,6 @@ public class DB_Main : DB_MainStub
       return JsonUtility.ToJson(mapInfo);
    }
 
-   [NubisCallable]
    public static new Dictionary<string, MapInfo> getLiveMaps () {
       Dictionary<string, MapInfo> maps = new Dictionary<string, MapInfo>();
       string cmdText = "SELECT * FROM global.maps_v2 JOIN global.map_versions_v2 ON (maps_v2.id=map_versions_v2.mapId) WHERE (maps_v2.publishedVersion=map_versions_v2.version)";
@@ -2453,7 +2380,6 @@ public class DB_Main : DB_MainStub
       return maps;
    }
 
-   [NubisCallable]
    public static new List<MapVersion> getMapVersions (Map map) {
       List<MapVersion> result = new List<MapVersion>();
 
@@ -2485,7 +2411,6 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
-   [NubisCallable]
    public static new string getMapVersionEditorData (MapVersion version) {
       string cmdText = "SELECT editorData from global.map_versions_v2 WHERE mapId = @id AND version = @version;";
 
@@ -2509,7 +2434,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new MapVersion getLatestMapVersionEditor (Map map, bool infiniteCommandTimeout = false) {
       string cmdText = "SELECT version, createdAt, updatedAt, editorData " +
          "FROM global.map_versions_v2 WHERE mapId = @id AND version = (SELECT max(version) FROM global.map_versions_v2 WHERE mapId = @id);";
@@ -2545,7 +2469,6 @@ public class DB_Main : DB_MainStub
 
    #region MAP TOOL
 
-   [NubisCallable]
    public static new List<MapSpawn> getMapSpawns () {
       List<MapSpawn> result = new List<MapSpawn>();
 
@@ -2575,7 +2498,6 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
-   [NubisCallable]
    public static new void createMap (MapVersion mapVersion) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
@@ -2637,7 +2559,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void duplicateMapGroup (int mapId, int newCreatorId) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
@@ -2721,7 +2642,6 @@ public class DB_Main : DB_MainStub
       return resultId;
    }
 
-   [NubisCallable]
    public static new void updateMapDetails (Map map) {
       string cmdText = "UPDATE global.maps_v2 " +
          "SET name = @name, sourceMapId = @sourceId, notes = @notes, specialType = @specialType, displayName = @displayName, weatherEffectType = @weatherEffect " +
@@ -2747,7 +2667,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new MapVersion createNewMapVersion (MapVersion mapVersion) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
@@ -2822,7 +2741,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void updateMapVersion (MapVersion mapVersion, bool infiniteCommandTimeout = false) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
@@ -2889,7 +2807,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void deleteMap (int id) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
@@ -2909,7 +2826,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void deleteMapGroup (int mapId) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
@@ -2957,7 +2873,6 @@ public class DB_Main : DB_MainStub
       cmd.ExecuteNonQuery();
    }
 
-   [NubisCallable]
    public static new void deleteMapVersion (MapVersion version) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
@@ -2995,7 +2910,6 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   [NubisCallable]
    public static new void publishLatestVersionForAllGroup (int mapId) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
@@ -3027,7 +2941,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void setLiveMapVersion (MapVersion version) {
       string cmdText = "UPDATE global.maps_v2 SET publishedVersion = @version WHERE id = @mapId;";
       using (MySqlConnection conn = getConnection())
@@ -3048,7 +2961,6 @@ public class DB_Main : DB_MainStub
 
    #region Shop XML Data
 
-   [NubisCallable]
    public static new void updateShopXML (string rawData, string shopName, int xmlId) {
       string xml_id_key = "xml_id, ";
       string xml_id_value = "@xml_id, ";
@@ -3084,7 +2996,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<XMLPair> getShopXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
@@ -3119,7 +3030,6 @@ public class DB_Main : DB_MainStub
       return rawDataList;
    }
 
-   [NubisCallable]
    public static new void deleteShopXML (int xmlId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -3141,7 +3051,6 @@ public class DB_Main : DB_MainStub
 
    #region Ship XML Data
 
-   [NubisCallable]
    public static new void updateShipXML (string rawData, int typeIndex, Ship.Type shipType, string shipName, bool isActive) {
       string xml_id_key = "xml_id, ";
       string xml_id_value = "@xml_id, ";
@@ -3179,7 +3088,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<XMLPair> getShipXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
@@ -3209,7 +3117,6 @@ public class DB_Main : DB_MainStub
       return new List<XMLPair>(rawDataList);
    }
 
-   [NubisCallable]
    public static new void deleteShipXML (int typeID) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -3231,7 +3138,6 @@ public class DB_Main : DB_MainStub
 
    #region Achievement XML Data
 
-   [NubisCallable]
    public static new void updateAchievementXML (string rawData, string name, int xmlId) {
       string xml_id_key = "xml_id, ";
       string xml_id_value = "@xml_id, ";
@@ -3267,7 +3173,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void deleteAchievementXML (string name) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -3285,7 +3190,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<XMLPair> getAchievementXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
@@ -3319,7 +3223,6 @@ public class DB_Main : DB_MainStub
 
    #region Perks
 
-   [NubisCallable]
    public static new List<Perk> getPerkPointsForUser (int usrId) {
       List<Perk> points = new List<Perk>();
 
@@ -3348,7 +3251,6 @@ public class DB_Main : DB_MainStub
       return points;
    }
 
-   [NubisCallable]
    public static new void assignPerkPoint (int usrId, int perkId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -3374,12 +3276,10 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new int getUnassignedPerkPoints (int usrId) {
       return getAssignedPointsByPerkId(usrId, Perk.UNASSIGNED_ID);
    }
 
-   [NubisCallable]
    public static new int getAssignedPointsByPerkId (int usrId, int perkId) {
       int points = 0;
 
@@ -3407,7 +3307,6 @@ public class DB_Main : DB_MainStub
       return points;
    }
 
-   [NubisCallable]
    public static new void addPerkPointsForUser (int usrId, int perkId, int perkPoints) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -3432,7 +3331,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void addPerkPointsForUser (int usrId, List<Perk> perks) {
       StringBuilder cmdText = new StringBuilder("INSERT INTO perks (usrId, perkId, perkPoints) VALUES ");
       int i = 0;
@@ -3463,7 +3361,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void updatePerksXML (string rawData, int perkId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -3489,7 +3386,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<PerkData> getPerksXML () {
       List<PerkData> perkDataList = new List<PerkData>();
       try {
@@ -3514,7 +3410,6 @@ public class DB_Main : DB_MainStub
       return new List<PerkData>(perkDataList);
    }
 
-   [NubisCallable]
    public static new void deletePerkXML (int xmlId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -3536,7 +3431,6 @@ public class DB_Main : DB_MainStub
 
    #region Books Data
 
-   [NubisCallable]
    public static new void upsertBook (string bookContent, string name, int bookId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -3563,7 +3457,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<BookData> getBooksList () {
       List<BookData> rawDataList = new List<BookData>();
       try {
@@ -3588,7 +3481,6 @@ public class DB_Main : DB_MainStub
       return new List<BookData>(rawDataList);
    }
 
-   [NubisCallable]
    public static new BookData getBookById (int bookId) {
       BookData book = null;
       try {
@@ -3615,7 +3507,6 @@ public class DB_Main : DB_MainStub
       return book;
    }
 
-   [NubisCallable]
    public static new void deleteBookByID (int bookId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -3637,7 +3528,6 @@ public class DB_Main : DB_MainStub
 
    #region Discoveries Data
 
-   [NubisCallable]
    public static new void duplicateDiscovery (DiscoveryData data) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -3664,7 +3554,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void upsertDiscovery (DiscoveryData data) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -3693,7 +3582,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<DiscoveryData> getDiscoveriesList () {
       List<DiscoveryData> rawDataList = new List<DiscoveryData>();
       try {
@@ -3718,7 +3606,6 @@ public class DB_Main : DB_MainStub
       return new List<DiscoveryData>(rawDataList);
    }
 
-   [NubisCallable]
    public static new DiscoveryData getDiscoveryById (int discoveryId) {
       DiscoveryData discovery = null;
       try {
@@ -3745,7 +3632,6 @@ public class DB_Main : DB_MainStub
       return discovery;
    }
 
-   [NubisCallable]
    public static new void deleteDiscoveryById (int discoveryId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -3767,7 +3653,6 @@ public class DB_Main : DB_MainStub
 
    #region Palette XML Data
 
-   [NubisCallable]
    public static new void updatePaletteXML (string rawData, string name, int xmlId, int isEnabled, string tag) {
       string xml_id_key = "paletteId, ";
       string xml_id_value = "@paletteId, ";
@@ -3805,7 +3690,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void deletePaletteXML (string name) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -3823,7 +3707,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void deletePaletteXML (int id) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -3841,7 +3724,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<XMLPair> getPaletteXML (bool onlyEnabledPalettes) {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
@@ -3875,7 +3757,6 @@ public class DB_Main : DB_MainStub
       return rawDataList;
    }
 
-   [NubisCallable]
    public static new int getPaletteTagID (string tag) {
       int id = -1;
       try {
@@ -3901,7 +3782,6 @@ public class DB_Main : DB_MainStub
       return id;
    }
 
-   [NubisCallable]
    public static new List<XMLPair> getPaletteXML (int tagId) {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
@@ -3933,7 +3813,6 @@ public class DB_Main : DB_MainStub
       return rawDataList;
    }
 
-   [NubisCallable]
    public static new List<XMLPair> getPaletteXML (int tagId, string subcategory) {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
@@ -3970,7 +3849,6 @@ public class DB_Main : DB_MainStub
 
    #region Crafting XML Data
 
-   [NubisCallable]
    public static new void updateCraftingXML (int xmlID, string rawData, string name, int typeId, int category) {
       string xml_id_key = "xml_id, ";
       string xml_id_value = "@xml_id, ";
@@ -4008,7 +3886,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<XMLPair> getCraftingXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
@@ -4039,7 +3916,6 @@ public class DB_Main : DB_MainStub
       return new List<XMLPair>(rawDataList);
    }
 
-   [NubisCallable]
    public static new void deleteCraftingXML (int xmlID) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -4061,7 +3937,6 @@ public class DB_Main : DB_MainStub
 
    #region Background XML Data
 
-   [NubisCallable]
    public static new int updateBackgroundXML (int xmlId, string rawData, string bgName) {
       int latestXMLId = 0;
       try {
@@ -4101,7 +3976,6 @@ public class DB_Main : DB_MainStub
       return latestXMLId;
    }
 
-   [NubisCallable]
    public static new List<XMLPair> getBackgroundXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
@@ -4132,7 +4006,6 @@ public class DB_Main : DB_MainStub
       return rawDataList;
    }
 
-   [NubisCallable]
    public static new void deleteBackgroundXML (int xmlId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -4154,7 +4027,6 @@ public class DB_Main : DB_MainStub
 
    #region Equipment XML Data
 
-   [NubisCallable]
    public static new void updateEquipmentXML (string rawData, int xmlID, EquipmentType equipType, string equipmentName, bool isEnabled) {
       string tableName = "";
       string xmlKey = "xml_id, ";
@@ -4203,7 +4075,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void deleteEquipmentXML (int xml_id, EquipmentType equipType) {
       string tableName = "";
       switch (equipType) {
@@ -4234,7 +4105,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<XMLPair> getEquipmentXML (EquipmentType equipType) {
       string tableName = "";
       switch (equipType) {
@@ -4285,7 +4155,6 @@ public class DB_Main : DB_MainStub
 
    #region Item Definitions Xml Data
 
-   [NubisCallable]
    public static new List<ItemDefinition> getItemDefinitions () {
       List<ItemDefinition> result = new List<ItemDefinition>();
 
@@ -4309,7 +4178,6 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
-   [NubisCallable]
    public static new void createNewItemDefinition (ItemDefinition definition) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
@@ -4352,7 +4220,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void updateItemDefinition (ItemDefinition definition) {
       string cmdText = "UPDATE global.item_definitions SET category = @category, serializedData = @serializedData WHERE id = @id;";
       using (MySqlConnection conn = getConnection())
@@ -4369,7 +4236,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void deleteItemDefinition (int id) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.item_definitions WHERE id = @id;", conn)) {
@@ -4387,7 +4253,6 @@ public class DB_Main : DB_MainStub
 
    #region ToolTip
 
-   [NubisCallable]
    public static new string getTooltipXmlContent () {
       string xmlContent = "";
 
@@ -4414,7 +4279,6 @@ public class DB_Main : DB_MainStub
       return xmlContent;
    }
 
-   [NubisCallable]
    public static new List<TooltipSqlData> getTooltipData () {
       List<TooltipSqlData> rawDataList = new List<TooltipSqlData>();
 
@@ -4443,7 +4307,6 @@ public class DB_Main : DB_MainStub
 
    #region Item Instances
 
-   [NubisCallable]
    public static new List<ItemInstance> getItemInstances (object command, int ownerUserId, ItemDefinition.Category category) {
       MySqlCommand cmd = command as MySqlCommand;
       cmd.CommandText = "SELECT * FROM item_instances WHERE item_instances.userId = @ownerUserId AND category = @category;";
@@ -4461,7 +4324,6 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
-   [NubisCallable]
    public static new ItemInstance getItemInstance (object command, int userId, int itemDefinitionId) {
       MySqlCommand cmd = command as MySqlCommand;
       cmd.CommandText = "SELECT * FROM item_instances WHERE userId = @userId AND itemDefinitionId = @itemDefinitionId;";
@@ -4477,7 +4339,6 @@ public class DB_Main : DB_MainStub
       return null;
    }
 
-   [NubisCallable]
    public static new void createOrAppendItemInstance (object command, ItemInstance item) {
       MySqlCommand cmd = command as MySqlCommand;
       if (item.getDefinition().canBeStacked()) {
@@ -4508,7 +4369,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void createNewItemInstance (object command, ItemInstance itemInstance) {
       MySqlCommand cmd = command as MySqlCommand;
       cmd.CommandText = "INSERT INTO item_instances (itemDefinitionId, userId, count, rarity, palettes, category) " +
@@ -4526,7 +4386,6 @@ public class DB_Main : DB_MainStub
       itemInstance.id = (int) cmd.LastInsertedId;
    }
 
-   [NubisCallable]
    public static new void increaseItemInstanceCount (object command, int id, int increaseBy) {
       MySqlCommand cmd = command as MySqlCommand;
       cmd.CommandText = "UPDATE item_instances SET count = count + @increaseBy WHERE id=@id;";
@@ -4536,7 +4395,6 @@ public class DB_Main : DB_MainStub
       cmd.ExecuteNonQuery();
    }
 
-   [NubisCallable]
    public static new void decreaseOrDeleteItemInstance (object command, int id, int decreaseBy) {
       MySqlCommand cmd = command as MySqlCommand;
       cmd.Transaction = cmd.Connection.BeginTransaction();
@@ -4561,7 +4419,6 @@ public class DB_Main : DB_MainStub
 
    #region Companions Features
 
-   [NubisCallable]
    public static new void updateCompanionExp (int xmlId, int userId, int exp) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -4585,7 +4442,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void updateCompanionRoster (int xmlId, int userId, int slot) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -4611,7 +4467,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void updateCompanions (int xmlId, int userId, string companionName, int companionLevel, int companionType, int equippedSlot, string iconPath, int companionExp) {
       string xmlKey = "xmlId, ";
       string xmlValue = "@xmlId, ";
@@ -4649,7 +4504,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<CompanionInfo> getCompanions (int userId) {
       List<CompanionInfo> newCompanionInfo = new List<CompanionInfo>();
       try {
@@ -4685,7 +4539,6 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   [NubisCallable]
    public static new List<Item> getRequiredIngredients (int usrId, List<CraftingIngredients.Type> itemList) {
       int itmCategory = (int) Item.Category.CraftingIngredients;
       List<Item> newItemList = new List<Item>();
@@ -4742,7 +4595,6 @@ public class DB_Main : DB_MainStub
 
    #region Treasure Chest Interaction
 
-   [NubisCallable]
    public static new TreasureStateData getTreasureStateForChest (int userId, int chestId, string areaId) {
 
       try {
@@ -4770,7 +4622,6 @@ public class DB_Main : DB_MainStub
       return null;
    }
 
-   [NubisCallable]
    public static new int updateTreasureStatus (int userId, int treasureId, string areaKey) {
       int lastTreasureId = 0;
       try {
@@ -4801,7 +4652,6 @@ public class DB_Main : DB_MainStub
 
    #region Crops Xml
 
-   [NubisCallable]
    public static new List<CropInfo> getCropInfo (int userId) {
       List<CropInfo> cropList = new List<CropInfo>();
 
@@ -4828,7 +4678,6 @@ public class DB_Main : DB_MainStub
       return cropList;
    }
 
-   [NubisCallable]
    public static new int insertCrop (CropInfo cropInfo, string areaKey) {
       int cropId = 0;
       string unixString = "CURRENT_TIMESTAMP";
@@ -4864,7 +4713,6 @@ public class DB_Main : DB_MainStub
       return cropId;
    }
 
-   [NubisCallable]
    public static new void waterCrop (CropInfo cropInfo) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -4885,7 +4733,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void deleteCrop (int cropNumber, int userId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -4908,7 +4755,6 @@ public class DB_Main : DB_MainStub
 
    #region Equipment Features
 
-   [NubisCallable]
    public static new List<Armor> getArmorForAccount (int accId, int userId = 0) {
       List<Armor> armorList = new List<Armor>();
       string userClause = (userId == 0) ? " AND users.usrId != @usrId" : " AND users.usrId = @usrId";
@@ -4937,7 +4783,6 @@ public class DB_Main : DB_MainStub
       return armorList;
    }
 
-   [NubisCallable]
    public static new List<Weapon> getWeaponsForAccount (int accId, int userId = 0) {
       List<Weapon> weaponList = new List<Weapon>();
       string userClause = (userId == 0) ? " AND users.usrId != @usrId" : " AND users.usrId = @usrId";
@@ -4966,7 +4811,6 @@ public class DB_Main : DB_MainStub
       return weaponList;
    }
 
-   [NubisCallable]
    public static new List<Hat> getHatsForAccount (int accId, int userId = 0) {
       List<Hat> hatList = new List<Hat>();
       string userClause = (userId == 0) ? " AND users.usrId != @usrId" : " AND users.usrId = @usrId";
@@ -4995,7 +4839,6 @@ public class DB_Main : DB_MainStub
       return hatList;
    }
 
-   [NubisCallable]
    public static new List<Weapon> getWeaponsForUser (int userId) {
       List<Weapon> weaponList = new List<Weapon>();
 
@@ -5022,7 +4865,6 @@ public class DB_Main : DB_MainStub
       return weaponList;
    }
 
-   [NubisCallable]
    public static new List<Armor> getArmorForUser (int userId) {
       List<Armor> armorList = new List<Armor>();
 
@@ -5049,7 +4891,6 @@ public class DB_Main : DB_MainStub
       return armorList;
    }
 
-   [NubisCallable]
    public static new void setWeaponId (int userId, int newWeaponId) {
       if (newWeaponId != 0 && !hasItem(userId, newWeaponId, (int) Item.Category.Weapon)) {
          D.warning(string.Format("User {0} does not have weapon {1} to equip.", userId, newWeaponId));
@@ -5079,7 +4920,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void setHatId (int userId, int newHatId) {
       if (newHatId != 0 && !hasItem(userId, newHatId, (int) Item.Category.Hats)) {
          D.warning(string.Format("User {0} does not have hat {1} to equip.", userId, newHatId));
@@ -5109,7 +4949,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void setArmorId (int userId, int newArmorId) {
       if (newArmorId != 0 && !hasItem(userId, newArmorId, (int) Item.Category.Armor)) {
          D.warning(string.Format("User {0} does not have armor {1} to equip.", userId, newArmorId));
@@ -5139,7 +4978,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new Armor getArmor (int userId) {
       Armor armor = new Armor();
 
@@ -5173,7 +5011,6 @@ public class DB_Main : DB_MainStub
       return armor;
    }
 
-   [NubisCallable]
    public static new Weapon getWeapon (int userId) {
       Weapon weapon = new Weapon();
 
@@ -5211,7 +5048,6 @@ public class DB_Main : DB_MainStub
 
    #region Crops Features
 
-   [NubisCallable]
    public static new List<SiloInfo> getSiloInfo (int userId) {
       List<SiloInfo> siloInfo = new List<SiloInfo>();
 
@@ -5238,7 +5074,6 @@ public class DB_Main : DB_MainStub
       return siloInfo;
    }
 
-   [NubisCallable]
    public static new void addToSilo (int userId, Crop.Type cropType, int amount = 1) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -5263,7 +5098,6 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   [NubisCallable]
    public static new bool hasItem (int userId, int itemId, int itemCategory) {
       bool found = false;
 
@@ -5291,7 +5125,6 @@ public class DB_Main : DB_MainStub
       return found;
    }
 
-   [NubisCallable]
    public static new void setNewLocalPosition (int userId, Vector2 localPosition, Direction facingDirection, string areaKey) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -5315,7 +5148,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void storeShipHealth (int shipId, int shipHealth) {
       shipHealth = Mathf.Max(shipHealth, 0);
 
@@ -5338,7 +5170,6 @@ public class DB_Main : DB_MainStub
 
    #region User Currency Features
 
-   [NubisCallable]
    public static new void setAdmin (int userId, int adminFlag) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -5357,7 +5188,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void addGold (int userId, int amount) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -5376,7 +5206,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void addGoldAndXP (int userId, int gold, int XP) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -5398,7 +5227,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new int getGold (int userId) {
       int gold = 0;
 
@@ -5424,7 +5252,6 @@ public class DB_Main : DB_MainStub
       return gold;
    }
 
-   [NubisCallable]
    public static new int getGems (int accountId) {
       int gems = 0;
 
@@ -5450,7 +5277,6 @@ public class DB_Main : DB_MainStub
       return gems;
    }
 
-   [NubisCallable]
    public static new void addGems (int accountId, int amount) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -5473,7 +5299,6 @@ public class DB_Main : DB_MainStub
 
    #region Chat System Features / Bug Reporting Features
 
-   [NubisCallable]
    public static new long saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem, int deploymentId, string steamState, string ipAddress) {
       try {
          string myAddress = Util.formatIpAddress(ipAddress);
@@ -5523,7 +5348,6 @@ public class DB_Main : DB_MainStub
       return -1;
    }
 
-   [NubisCallable]
    public static new void saveBugReportScreenshot (NetEntity player, long bugId, byte[] screenshotBytes) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -5557,7 +5381,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new int storeChatLog (int userId, string userName, string message, DateTime dateTime, ChatInfo.Type chatType, string serverIpAddress) {
       int chatId = 0;
 
@@ -5585,7 +5408,6 @@ public class DB_Main : DB_MainStub
       return chatId;
    }
 
-   [NubisCallable]
    public static new List<ChatInfo> getChat (ChatInfo.Type chatType, int seconds, string serverIpAddress, bool hasInterval = true, int limit = 0) {
       string secondsInterval = "AND time > NOW() - INTERVAL " + seconds + " SECOND";
       if (!hasInterval) {
@@ -5658,7 +5480,6 @@ public class DB_Main : DB_MainStub
 
    #region Accounts Features / User Info Features
 
-   [NubisCallable]
    public static new int getAccountId (string accountName, string accountPassword) {
       int accountId = -1;
 
@@ -5685,7 +5506,6 @@ public class DB_Main : DB_MainStub
       return accountId;
    }
 
-   [NubisCallable]
    public static new int getOverriddenAccountId (string accountName) {
       int accountId = -1;
 
@@ -5711,7 +5531,6 @@ public class DB_Main : DB_MainStub
       return accountId;
    }
 
-   [NubisCallable]
    public static new int getSteamAccountId (string accountName) {
       int accountId = -1;
 
@@ -5737,7 +5556,6 @@ public class DB_Main : DB_MainStub
       return accountId;
    }
 
-   [NubisCallable]
    public static new void completePendingAction (int pendingActionId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -5755,7 +5573,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<PendingActionInfo> getPendingActions (PendingActionServerType serverType) {
       List<PendingActionInfo> pendingActions = new List<PendingActionInfo>();
 
@@ -5782,7 +5599,6 @@ public class DB_Main : DB_MainStub
       return pendingActions;
    }
 
-   [NubisCallable]
    public static new PenaltyInfo getPenaltyInfoForAccount (int accId, PenaltyType penaltyType) {
       PenaltyInfo penaltyInfo = null;
 
@@ -5812,7 +5628,6 @@ public class DB_Main : DB_MainStub
       return penaltyInfo;
    }
 
-   [NubisCallable]
    public static new void liftPenaltyForAccount (int accId, PenaltyType penaltyType) {
       try {
          string query = string.Format("UPDATE global.account_penalties SET penaltyEnd = CURRENT_TIMESTAMP WHERE targetAccId = @targetAccId AND penaltyType IN ({0}) AND penaltyEnd > @penaltyEnd", string.Join(", ", PenaltyUtil.getPenaltiesList(penaltyType)));
@@ -5833,7 +5648,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new PenaltyStatus penalizeAccount (PenaltyInfo penaltyInfo) {
       PenaltyStatus status = PenaltyStatus.None;
 
@@ -5886,7 +5700,6 @@ public class DB_Main : DB_MainStub
       return status;
    }
 
-   [NubisCallable]
    public static new List<UserInfo> getUsersForAccount (int accId, int userId = 0) {
       List<UserInfo> userList = new List<UserInfo>();
       string userClause = (userId == 0) ? " AND users.usrId != @usrId" : " AND users.usrId = @usrId";
@@ -5918,7 +5731,6 @@ public class DB_Main : DB_MainStub
       return userList;
    }
 
-   [NubisCallable]
    public static new int getAccountStatus (int accountId) {
       int accountStatus = 0;
 
@@ -5944,7 +5756,6 @@ public class DB_Main : DB_MainStub
       return accountStatus;
    }
 
-   [NubisCallable]
    public static new int getAccountPermissionLevel (int accountId) {
       int accountStatus = 0;
 
@@ -5970,7 +5781,6 @@ public class DB_Main : DB_MainStub
       return accountStatus;
    }
 
-   [NubisCallable]
    public static new int getAccountId (int userId) {
       int accountId = -1;
 
@@ -5997,7 +5807,6 @@ public class DB_Main : DB_MainStub
    }
 
    // Returns the accId, usrId and usrName, in a tuple
-   [NubisCallable]
    public static new Tuple<int, int, string> getUserDataTuple (string username) {
       var userData = Tuple.Create(0, 0, "");
 
@@ -6023,7 +5832,6 @@ public class DB_Main : DB_MainStub
       return userData;
    }
 
-   [NubisCallable]
    public static new int getUserId (string username) {
       int userId = -1;
 
@@ -6049,7 +5857,6 @@ public class DB_Main : DB_MainStub
       return userId;
    }
 
-   [NubisCallable]
    public static new UserObjects getUserObjects (int userId) {
       UserObjects userObjects = new UserObjects();
 
@@ -6133,7 +5940,6 @@ public class DB_Main : DB_MainStub
       return userObjects;
    }
 
-   [NubisCallable]
    public static new string getUserName (int userId) {
       string userName = "";
 
@@ -6159,7 +5965,6 @@ public class DB_Main : DB_MainStub
       return userName;
    }
 
-   [NubisCallable]
    public static new string getUserInfoJSON (string userId) {
       UserInfo userInfo = null;
 
@@ -6188,7 +5993,6 @@ public class DB_Main : DB_MainStub
       return JsonUtility.ToJson(userInfo);
    }
 
-   [NubisCallable]
    public static new UserInfo getUserInfo (string userName) {
       UserInfo userInfo = null;
 
@@ -6217,7 +6021,6 @@ public class DB_Main : DB_MainStub
       return userInfo;
    }
 
-   [NubisCallable]
    public static new List<UserInfo> getUserInfoList (int[] userIdArray) {
       List<UserInfo> userList = new List<UserInfo>();
       if (userIdArray.Length <= 0) {
@@ -6245,7 +6048,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             DebugQuery(cmd);
-
+            
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
@@ -6261,7 +6064,6 @@ public class DB_Main : DB_MainStub
       return userList;
    }
 
-   [NubisCallable]
    public static new Stats getStats (int userId) {
       Stats stats = new Stats(userId);
 
@@ -6293,7 +6095,6 @@ public class DB_Main : DB_MainStub
       return stats;
    }
 
-   [NubisCallable]
    public static new int createUser (int accountId, int usrAdminFlag, UserInfo userInfo, Area area) {
       int userId = 0;
       try {
@@ -6331,7 +6132,6 @@ public class DB_Main : DB_MainStub
       return userId;
    }
 
-   [NubisCallable]
    public static new void deleteUser (int accountId, int userId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -6354,7 +6154,6 @@ public class DB_Main : DB_MainStub
 
    #region Inventory Features
 
-   [NubisCallable]
    public static new Item createNewItem (int userId, Item baseItem) {
       Item newItem = baseItem.Clone();
 
@@ -6385,7 +6184,6 @@ public class DB_Main : DB_MainStub
       return newItem;
    }
 
-   [NubisCallable]
    public static new int insertNewArmor (int userId, int armorType, string palettes) {
       int itemId = 0;
 
@@ -6414,7 +6212,6 @@ public class DB_Main : DB_MainStub
       return itemId;
    }
 
-   [NubisCallable]
    public static new int insertNewWeapon (int userId, int weaponType, string palettes) {
       int itemId = 0;
 
@@ -6443,7 +6240,6 @@ public class DB_Main : DB_MainStub
       return itemId;
    }
 
-   [NubisCallable]
    public static new void setItemOwner (int userId, int itemId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -6462,7 +6258,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new int getItemID (int userId, int itmCategory, int itmType) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -6486,7 +6281,6 @@ public class DB_Main : DB_MainStub
       return 0;
    }
 
-   [NubisCallable]
    public static new void updateItemDurability (int userId, int itemId, int durability) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -6505,7 +6299,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new int getItemDurability (int userId, int itemId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -6528,7 +6321,6 @@ public class DB_Main : DB_MainStub
       return 0;
    }
 
-   [NubisCallable]
    public static new void updateItemQuantity (int userId, int itemId, int itemCount) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -6547,7 +6339,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void decreaseQuantityOrDeleteItem (int userId, int itemId, int deductedValue) {
       // First query deletes the entry which has only 1 of item left
       // Second query decreases the count by deductedValue if the item wasn't deleted (had more than deductedValue left)
@@ -6570,7 +6361,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new Item createItemOrUpdateItemCount (int userId, Item baseItem) {
       // Make sure that we have the right class
       Item castedItem = baseItem.getCastItem();
@@ -6599,7 +6389,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void transferItem (Item item, int fromUserId, int toUserId, int amount) {
       // Make sure that we have the right class
       Item fromItem = item.getCastItem();
@@ -6700,7 +6489,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new int getItemCountByType (int userId, int itemCategory, int itemType) {
       int itemCount = 0;
 
@@ -6730,14 +6518,12 @@ public class DB_Main : DB_MainStub
       return itemCount;
    }
 
-   [NubisCallable]
    public static new int getItemCountByCategory (int userId, Item.Category[] categories) {
       int[] categoryInt = Array.ConvertAll(categories.ToArray(), x => (int) x);
       string categoryJson = JsonConvert.SerializeObject(categoryInt);
       return int.Parse(getItemCount(userId.ToString(), categoryJson, "", ""));
    }
 
-   [NubisCallable]
    public static new string getItemCount (string userId, string categoriesJSON, string itemIdsToFilterJSON, string categoriesToFilterJSON) {
       int[] categories = categoriesJSON.Length > 1 ? JsonConvert.DeserializeObject<int[]>(categoriesJSON) : new int[0];
       int[] itemIdsToFilter = itemIdsToFilterJSON.Length > 1 ? JsonConvert.DeserializeObject<int[]>(itemIdsToFilterJSON) : new int[0];
@@ -6819,12 +6605,10 @@ public class DB_Main : DB_MainStub
       return itemCount.ToString();
    }
 
-   [NubisCallable]
    public static new List<Item> getItems (int userId, Item.Category[] categories, int page, int itemsPerPage) {
       return getItems(userId, categories, page, itemsPerPage, new List<int>(), new List<Item.Category>());
    }
 
-   [NubisCallable]
    public static new List<Item> getItems (int userId, Item.Category[] categories, int page, int itemsPerPage,
       List<int> itemIdsToFilter, List<Item.Category> categoriesToFilter) {
       // Initialize the list
@@ -6921,7 +6705,6 @@ public class DB_Main : DB_MainStub
       return itemList;
    }
 
-   [NubisCallable]
    public static new List<Item> getCraftingIngredients (int usrId, List<CraftingIngredients.Type> ingredientTypes) {
       List<Item> itemList = new List<Item>();
 
@@ -6970,7 +6753,6 @@ public class DB_Main : DB_MainStub
       return itemList;
    }
 
-   [NubisCallable]
    public static new int insertNewUsableItem (int userId, UsableItem.Type itemType, string palettes) {
       int itemId = 0;
 
@@ -6999,7 +6781,6 @@ public class DB_Main : DB_MainStub
       return itemId;
    }
 
-   [NubisCallable]
    public static new int insertNewUsableItem (int userId, UsableItem.Type itemType, Ship.SkinType skinType) {
       int itemId = 0;
 
@@ -7028,7 +6809,6 @@ public class DB_Main : DB_MainStub
       return itemId;
    }
 
-   [NubisCallable]
    public static new int insertNewUsableItem (int userId, UsableItem.Type itemType, HairLayer.Type hairType) {
       int itemId = 0;
 
@@ -7057,7 +6837,6 @@ public class DB_Main : DB_MainStub
       return itemId;
    }
 
-   [NubisCallable]
    public static new int deleteItem (int userId, int itemId) {
       int rowsAffected = 0;
 
@@ -7080,7 +6859,6 @@ public class DB_Main : DB_MainStub
       return rowsAffected;
    }
 
-   [NubisCallable]
    public static new Item getItem (int userId, int itemId) {
       Item item = null;
 
@@ -7120,7 +6898,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new Item getFirstItem (int userId, Item.Category itemCategory, int itemTypeId) {
       Item item = null;
 
@@ -7160,7 +6937,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void updateItemShortcut (int userId, int slotNumber, int itemId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -7185,7 +6961,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void deleteItemShortcut (int userId, int slotNumber) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -7206,7 +6981,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<ItemShortcutInfo> getItemShortcutList (int userId) {
       List<ItemShortcutInfo> shortcutList = new List<ItemShortcutInfo>();
 
@@ -7238,7 +7012,6 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   [NubisCallable]
    public static new void deleteAllFromTable (int accountId, int userId, string table) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -7257,7 +7030,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void setHairColor (int userId, string newPalette) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -7282,7 +7054,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void setHairType (int userId, HairLayer.Type newType) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -7309,7 +7080,6 @@ public class DB_Main : DB_MainStub
 
    #region Ship Features
 
-   [NubisCallable]
    public static new ShipInfo getShipInfo (int shipId) {
       ShipInfo shipInfo = null;
 
@@ -7335,7 +7105,6 @@ public class DB_Main : DB_MainStub
       return shipInfo;
    }
 
-   [NubisCallable]
    public static new ShipInfo getShipInfoForUser (int userId) {
       ShipInfo shipInfo = null;
 
@@ -7361,7 +7130,6 @@ public class DB_Main : DB_MainStub
       return shipInfo;
    }
 
-   [NubisCallable]
    public static new ShipInfo createStartingShip (int userId) {
       Ship.Type shipType = Ship.Type.Type_1;
 
@@ -7425,7 +7193,6 @@ public class DB_Main : DB_MainStub
       return shipInfo;
    }
 
-   [NubisCallable]
    public static new void updateShipAbilities (int shipId, string abilityXML) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -7444,7 +7211,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new ShipInfo createShipFromShipyard (int userId, ShipInfo shipyardInfo) {
       ShipInfo shipInfo = new ShipInfo();
 
@@ -7497,7 +7263,6 @@ public class DB_Main : DB_MainStub
       return shipInfo;
    }
 
-   [NubisCallable]
    public static new List<ShipInfo> getShips (int userId, int page, int shipsPerPage) {
       List<ShipInfo> shipList = new List<ShipInfo>();
 
@@ -7527,7 +7292,6 @@ public class DB_Main : DB_MainStub
       return shipList;
    }
 
-   [NubisCallable]
    public static new void setShipSkin (int shipId, Ship.SkinType newSkin) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -7552,7 +7316,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void setCurrentShip (int userId, int shipId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -7575,7 +7338,6 @@ public class DB_Main : DB_MainStub
 
    #region Jobs Features / Guild Features
 
-   [NubisCallable]
    public static new Jobs getJobXP (int userId) {
       Jobs jobs = new Jobs(userId);
 
@@ -7607,7 +7369,6 @@ public class DB_Main : DB_MainStub
       return jobs;
    }
 
-   [NubisCallable]
    public static new GuildInfo getGuildInfo (int guildId) {
       GuildInfo info = null;
 
@@ -7639,7 +7400,6 @@ public class DB_Main : DB_MainStub
       return info;
    }
 
-   [NubisCallable]
    public static new string getGuildInfoJSON (int guildId) {
       GuildInfo info = null;
 
@@ -7666,7 +7426,6 @@ public class DB_Main : DB_MainStub
       return JsonUtility.ToJson(info);
    }
 
-   [NubisCallable]
    public static new List<UserInfo> getUsersForGuild (int guildId) {
       List<UserInfo> userList = new List<UserInfo>();
 
@@ -7696,7 +7455,6 @@ public class DB_Main : DB_MainStub
       return userList;
    }
 
-   [NubisCallable]
    public static new int getUserGuildId (int userId) {
       int guildId = -1;
 
@@ -7722,7 +7480,6 @@ public class DB_Main : DB_MainStub
       return guildId;
    }
 
-   [NubisCallable]
    public static new int getMemberCountForGuild (int guildId) {
       int memberCount = 0;
 
@@ -7748,7 +7505,6 @@ public class DB_Main : DB_MainStub
       return memberCount;
    }
 
-   [NubisCallable]
    public static new int createGuild (GuildInfo guildInfo) {
       int guildId = 0;
 
@@ -7778,7 +7534,6 @@ public class DB_Main : DB_MainStub
       return guildId;
    }
 
-   [NubisCallable]
    public static new void deleteGuild (int guildId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -7796,7 +7551,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void deleteGuildRanks (int guildId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -7814,7 +7568,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void deleteGuildRank (int guildId, int rankId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -7833,7 +7586,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void assignGuild (int userId, int guildId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -7852,7 +7604,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void assignRankGuild (int userId, int guildRankId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -7871,7 +7622,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new int getLowestRankIdGuild (int guildId) {
       GuildRankInfo info = null;
 
@@ -7901,7 +7651,6 @@ public class DB_Main : DB_MainStub
       return info != null ? info.id : -1;
    }
 
-   [NubisCallable]
    public static new void createRankGuild (GuildRankInfo rankInfo) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -7925,7 +7674,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void updateRankGuild (GuildRankInfo rankInfo) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -7948,7 +7696,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void updateRankGuildByID (GuildRankInfo rankInfo, int id) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -7972,7 +7719,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new List<GuildRankInfo> getGuildRankInfo (int guildId) {
       List<GuildRankInfo> rankList = new List<GuildRankInfo>();
 
@@ -7999,7 +7745,6 @@ public class DB_Main : DB_MainStub
       return rankList;
    }
 
-   [NubisCallable]
    public static new int getGuildMemberPermissions (int userId) {
       int permissions = 0;
 
@@ -8033,7 +7778,6 @@ public class DB_Main : DB_MainStub
       return permissions;
    }
 
-   [NubisCallable]
    public static new int getGuildMemberRankId (int userId) {
       int rankId = -1;
 
@@ -8067,7 +7811,6 @@ public class DB_Main : DB_MainStub
       return rankId;
    }
 
-   [NubisCallable]
    public static new void addJobXP (int userId, Jobs.Type jobType, int XP) {
       string columnName = Jobs.getColumnName(jobType);
 
@@ -8099,7 +7842,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void insertIntoJobs (int userId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -8123,7 +7865,6 @@ public class DB_Main : DB_MainStub
 
    #region Trade History
 
-   [NubisCallable]
    public static new void addToTradeHistory (int userId, TradeHistoryInfo tradeInfo) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -8153,7 +7894,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new int getTradeHistoryCount (int userId) {
       int tradeCount = 0;
 
@@ -8179,7 +7919,6 @@ public class DB_Main : DB_MainStub
       return tradeCount;
    }
 
-   [NubisCallable]
    public static new List<TradeHistoryInfo> getTradeHistory (int userId, int page, int tradesPerPage) {
       List<TradeHistoryInfo> tradeList = new List<TradeHistoryInfo>();
 
@@ -8209,7 +7948,6 @@ public class DB_Main : DB_MainStub
       return tradeList;
    }
 
-   [NubisCallable]
    public static new void pruneJobHistory (DateTime untilDate) {
 
       try {
@@ -8234,7 +7972,6 @@ public class DB_Main : DB_MainStub
 
    #region Leader Boards
 
-   [NubisCallable]
    public static new List<LeaderBoardInfo> calculateLeaderBoard (Jobs.Type jobType,
       LeaderBoardsManager.Period period, DateTime startDate, DateTime endDate) {
 
@@ -8273,7 +8010,6 @@ public class DB_Main : DB_MainStub
       return list;
    }
 
-   [NubisCallable]
    public static new void deleteLeaderBoards (LeaderBoardsManager.Period period) {
 
       try {
@@ -8294,7 +8030,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void updateLeaderBoards (List<LeaderBoardInfo> entries) {
       // Return if the list is empty
       if (entries.Count <= 0) {
@@ -8334,7 +8069,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void updateLeaderBoardDates (LeaderBoardsManager.Period period,
       DateTime startDate, DateTime endDate) {
 
@@ -8358,7 +8092,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new DateTime getLeaderBoardEndDate (LeaderBoardsManager.Period period) {
 
       // If there are no leader boards, sets a long past date to force a recalculation
@@ -8387,7 +8120,6 @@ public class DB_Main : DB_MainStub
       return periodEndDate;
    }
 
-   [NubisCallable]
    public static new void getLeaderBoards (LeaderBoardsManager.Period period,
       out List<LeaderBoardInfo> farmingEntries, out List<LeaderBoardInfo> sailingEntries, out List<LeaderBoardInfo> exploringEntries,
       out List<LeaderBoardInfo> tradingEntries, out List<LeaderBoardInfo> craftingEntries, out List<LeaderBoardInfo> miningEntries) {
@@ -8452,7 +8184,6 @@ public class DB_Main : DB_MainStub
 
    #region Friendship
 
-   [NubisCallable]
    public static new void createFriendship (int userId, int friendUserId, Friendship.Status friendshipStatus, DateTime lastContactDate) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -8477,7 +8208,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void updateFriendship (int userId, int friendUserId, Friendship.Status friendshipStatus, DateTime lastContactDate) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -8501,7 +8231,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void deleteFriendship (int userId, int friendUserId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -8522,7 +8251,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new FriendshipInfo getFriendshipInfo (int userId, int friendUserId) {
       FriendshipInfo friendshipInfo = null;
 
@@ -8552,7 +8280,6 @@ public class DB_Main : DB_MainStub
       return friendshipInfo;
    }
 
-   [NubisCallable]
    public static new List<FriendshipInfo> getFriendshipInfoList (int userId, Friendship.Status friendshipStatus, int page, int friendsPerPage) {
       List<FriendshipInfo> friendList = new List<FriendshipInfo>();
 
@@ -8586,7 +8313,6 @@ public class DB_Main : DB_MainStub
       return friendList;
    }
 
-   [NubisCallable]
    public static new int getFriendshipInfoCount (int userId, Friendship.Status friendshipStatus) {
       int friendCount = 0;
 
@@ -8616,7 +8342,6 @@ public class DB_Main : DB_MainStub
       return friendCount;
    }
 
-   [NubisCallable]
    public static new List<int> getUserIdsHavingPendingFriendshipRequests (DateTime startDate) {
       List<int> userIdsList = new List<int>();
 
@@ -8646,7 +8371,6 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   [NubisCallable]
    public static new bool updateDeploySchedule (long scheduleDateAsTicks, int buildVersion) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -8667,7 +8391,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new DeployScheduleInfo getDeploySchedule () {
       try {
          using (MySqlConnection conn = getConnection())
@@ -8698,7 +8421,6 @@ public class DB_Main : DB_MainStub
       return null;
    }
 
-   [NubisCallable]
    public static new bool cancelDeploySchedule () {
       try {
          using (MySqlConnection conn = getConnection())
@@ -8720,7 +8442,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void createServerHistoryEvent (DateTime eventDate, ServerHistoryInfo.EventType eventType, int serverVersion) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -8743,7 +8464,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new string getServerHistoryList (string startDateString, string maxRowsString) {
       // Parse the input parameters
       DateTime startDate = DateTime.UtcNow - new TimeSpan(1, 0, 0, 0);
@@ -8781,7 +8501,6 @@ public class DB_Main : DB_MainStub
       return JsonConvert.SerializeObject(eventList);
    }
 
-   [NubisCallable]
    public static new string isServerOnline () {
       bool isOnline = false;
 
@@ -8816,7 +8535,6 @@ public class DB_Main : DB_MainStub
       return isOnline.ToString();
    }
 
-   [NubisCallable]
    public static new void pruneServerHistory (DateTime untilDate) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -8889,34 +8607,28 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
-   [NubisCallable]
    public static new bool setMetricPlayersCount (string machineId, string processName, string PID, int playerCount) {
       return setMetric(machineId, processName, PID, "players_count", playerCount.ToString());
    }
 
-   [NubisCallable]
    public static new bool setMetricAreaInstancesCount (string machineId, string processName, string PID, int areaInstancesCount) {
       return setMetric(machineId, processName, PID, "area_instances_count", areaInstancesCount.ToString());
    }
 
-   [NubisCallable]
    public static new bool setMetricPort (string machineId, string processName, string PID, int port) {
       return setMetric(machineId, processName, PID, "port", port.ToString());
    }
 
-   [NubisCallable]
    public static new bool setMetricIP (string machineId, string processName, string PID, string ip) {
       return setMetric(machineId, processName, PID, "ip", ip);
    }
 
-   [NubisCallable]
    public static new bool setMetricUptime (string machineId, string processName, string PID, long uptime) {
       return setMetric(machineId, processName, PID, "uptime", uptime.ToString());
    }
 
    #region Mail
 
-   [NubisCallable]
    public static new int createMail (MailInfo mailInfo) {
       int mailId = -1;
 
@@ -8947,7 +8659,6 @@ public class DB_Main : DB_MainStub
       return mailId;
    }
 
-   [NubisCallable]
    public static new void updateMailReadStatus (int mailId, bool isRead) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -8968,7 +8679,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void deleteMail (int mailId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -8988,7 +8698,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new MailInfo getMailInfo (int mailId) {
       MailInfo mailInfo = null;
 
@@ -9015,7 +8724,6 @@ public class DB_Main : DB_MainStub
       return mailInfo;
    }
 
-   [NubisCallable]
    public static new List<MailInfo> getMailInfoList (int recipientUserId, int page, int mailsPerPage) {
       List<MailInfo> mailList = new List<MailInfo>();
 
@@ -9048,7 +8756,6 @@ public class DB_Main : DB_MainStub
       return mailList;
    }
 
-   [NubisCallable]
    public static new int getMailInfoCount (int recipientUserId) {
       int mailCount = 0;
 
@@ -9074,7 +8781,6 @@ public class DB_Main : DB_MainStub
       return mailCount;
    }
 
-   [NubisCallable]
    public static new List<int> getUserIdsHavingUnreadMail (DateTime startDate) {
       List<int> userIdsList = new List<int>();
 
@@ -9101,7 +8807,6 @@ public class DB_Main : DB_MainStub
       return userIdsList;
    }
 
-   [NubisCallable]
    public static new bool hasUnreadMail (int userId) {
       int mailCount = 0;
 
@@ -9132,7 +8837,6 @@ public class DB_Main : DB_MainStub
 
    #region Minimum Version
 
-   [NubisCallable]
    public static new int getMinimumClientGameVersionForWindows () {
       int minVersion = 0;
 
@@ -9157,7 +8861,6 @@ public class DB_Main : DB_MainStub
       return minVersion;
    }
 
-   [NubisCallable]
    public static new int getMinimumClientGameVersionForMac () {
       int minVersion = 0;
 
@@ -9182,7 +8885,6 @@ public class DB_Main : DB_MainStub
       return minVersion;
    }
 
-   [NubisCallable]
    public static new int getMinimumClientGameVersionForLinux () {
       int minVersion = 0;
 
@@ -9207,7 +8909,6 @@ public class DB_Main : DB_MainStub
       return minVersion;
    }
 
-   [NubisCallable]
    public static new int getMinimumToolsVersionForWindows () {
       int minVersion = 0;
 
@@ -9232,7 +8933,6 @@ public class DB_Main : DB_MainStub
       return minVersion;
    }
 
-   [NubisCallable]
    public static new int getMinimumToolsVersionForMac () {
       int minVersion = 0;
 
@@ -9257,7 +8957,6 @@ public class DB_Main : DB_MainStub
       return minVersion;
    }
 
-   [NubisCallable]
    public static new int getMinimumToolsVersionForLinux () {
       int minVersion = 0;
 
@@ -9286,7 +8985,6 @@ public class DB_Main : DB_MainStub
 
    #region Auction Features
 
-   [NubisCallable]
    public static new void deleteAuction (int auctionId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -9312,7 +9010,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new int createAuction (int sellerUserId, string sellerName, int mailId, DateTime expiryDate,
       int highestBidPrice, int buyoutPrice, Item.Category itemCategory, string itemName, int itemCount) {
       int auctionId = 0;
@@ -9348,7 +9045,6 @@ public class DB_Main : DB_MainStub
       return auctionId;
    }
 
-   [NubisCallable]
    public static new string getAuctionList (string pageNumberStr, string rowsPerPageStr, string categoryFilter, string userIdStr, string auctionFilter) {
       List<AuctionItemData> auctionList = new List<AuctionItemData>();
 
@@ -9389,7 +9085,6 @@ public class DB_Main : DB_MainStub
       return AuctionItemData.getXmlDataGroup(auctionList);
    }
 
-   [NubisCallable]
    public static new string getAuctionListCount (string userIdStr, string filterData, string auctionFilter) {
       int auctionCount = 0;
       string whereClause = getAuctionListWhereClause(userIdStr, filterData, auctionFilter);
@@ -9456,7 +9151,6 @@ public class DB_Main : DB_MainStub
       return clause.ToString();
    }
 
-   [NubisCallable]
    public static new List<AuctionItemData> getAuctionsToDeliver () {
       List<AuctionItemData> auctionList = new List<AuctionItemData>();
 
@@ -9487,7 +9181,6 @@ public class DB_Main : DB_MainStub
       return auctionList;
    }
 
-   [NubisCallable]
    public static new void deliverAuction (int auctionId, int mailId, int recipientUserId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -9516,7 +9209,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void updateAuction (int auctionId, int highestBidUser, int highestBidPrice, DateTime expiryDate) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -9539,7 +9231,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new AuctionItemData getAuction (int auctionId, bool readItemData) {
       AuctionItemData auction = null;
 
@@ -9572,7 +9263,6 @@ public class DB_Main : DB_MainStub
       return auction;
    }
 
-   [NubisCallable]
    public static new void addBidderOnAuction (int auctionId, int userId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -9596,7 +9286,6 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   [NubisCallable]
    public static new void readTest () {
       try {
          using (MySqlConnection conn = getConnection())
@@ -9624,12 +9313,10 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static void setServer (string server, string database = "", string uid = "", string password = "") {
       _connectionString = getDefaultConnectionString(server, database, uid, password);
    }
 
-   [NubisCallable]
    public static new void setServerFromConfig () {
       string dbServerConfigFile = Path.Combine(Application.dataPath, "dbConfig.json");
 
@@ -9688,7 +9375,6 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   [NubisCallable]
    public static new int getUsrAdminFlag (int accountId) {
       int result = -1;
 
@@ -9716,7 +9402,6 @@ public class DB_Main : DB_MainStub
 
    #region Wrapper Call Methods
 
-   [NubisCallable]
    public static new T exec<T> (Func<object, T> action) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
@@ -9727,7 +9412,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static new void exec (Action<object> action) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
@@ -9738,7 +9422,6 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   [NubisCallable]
    public static async new Task<T> execAsync<T> (Func<object, T> action) {
       return await Task.Run((Func<Task<T>>) (async () => {
          using (MySqlConnection conn = DB_Main.getConnection())
@@ -9751,7 +9434,6 @@ public class DB_Main : DB_MainStub
       }));
    }
 
-   [NubisCallable]
    public static async new Task execAsync (Action<object> action) {
       await Task.Run((Func<Task>) (async () => {
          using (MySqlConnection conn = DB_Main.getConnection())
@@ -9766,12 +9448,10 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   [NubisCallable]
    public static MySqlConnection getConnection () {
       return getConnection(_connectionString);
    }
 
-   [NubisCallable]
    public static MySqlConnection getConnection (string connectionString) {
       // Throws a warning if used in the main thread
       if (UnityThreadHelper.IsMainThread && !ClientManager.isApplicationQuitting && MyNetworkManager.wasServerStarted) {
@@ -9807,7 +9487,6 @@ public class DB_Main : DB_MainStub
       return creds;
    }
 
-   [NubisCallable]
    public static string getDefaultConnectionString (string server = "", string database = "", string uid = "", string password = "") {
       DatabaseCredentials creds = loadDatabaseCredentials("local");
       if (creds != null) {
@@ -9824,7 +9503,6 @@ public class DB_Main : DB_MainStub
          password);
    }
 
-   [NubisCallable]
    public static string buildConnectionString (string server, string database = "", string uid = "", string password = "") {
       return "SERVER=" + server + ";" +
           "DATABASE=" + (database == "" ? _database : database) + ";" +
@@ -9834,8 +9512,7 @@ public class DB_Main : DB_MainStub
 
    /*
 
-   [NubisCallable]
-public static new void refillSupplies (int userId) {
+   public static new void refillSupplies (int userId) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("UPDATE users, ships SET ships.supplies=ships.suppliesMax WHERE users.shpId=ships.shpId AND users.usrId=@userId", conn)) {
@@ -9854,7 +9531,6 @@ public static new void refillSupplies (int userId) {
    */
 
    #region Account creation and Update
-   [NubisCallable]
    public static new int createAccount (string accountName, string accountPassword, string accountEmail, int validated) {
       int accountId = 0;
 
@@ -9883,7 +9559,6 @@ public static new void refillSupplies (int userId) {
       return accountId;
    }
 
-   [NubisCallable]
    public static new void updateAccountMode (int accoundId, bool isSinglePlayer) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -9902,7 +9577,6 @@ public static new void refillSupplies (int userId) {
       }
    }
 
-   [NubisCallable]
    public static new void storeLoginInfo (int usrId, int accId, string usrName, string ipAddress, string machineIdent, int deploymentId) {
       // Storing Login info, only when usrId > 0 and accId > 0
       if (usrId > 0 && accId > 0) {
@@ -9959,8 +9633,7 @@ public static new void refillSupplies (int userId) {
    #endregion
 
    /*
-   [NubisCallable]
-public static new void deleteAccount (int accountId) {
+   public static new void deleteAccount (int accountId) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM accounts WHERE accId=@accId", conn)) {
@@ -9976,8 +9649,7 @@ public static new void deleteAccount (int accountId) {
       }
    }
 
-   [NubisCallable]
-public static new void setSupplies (int shipId, int suppliesAmount) {
+   public static new void setSupplies (int shipId, int suppliesAmount) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("UPDATE ships SET supplies=@supplies WHERE shpId=@shpId", conn)) {
@@ -9994,8 +9666,7 @@ public static new void setSupplies (int shipId, int suppliesAmount) {
       }
    }
 
-   [NubisCallable]
-public static new List<PortInfo> getPorts () {
+   public static new List<PortInfo> getPorts () {
       List<PortInfo> portList = new List<PortInfo>();
 
       try {
@@ -10019,8 +9690,7 @@ public static new List<PortInfo> getPorts () {
       return portList;
    }
 
-   [NubisCallable]
-public static new PortCargoSummary getPortCargoSummary (Barter.Type barterType, int specificPortId = 0) {
+   public static new PortCargoSummary getPortCargoSummary (Barter.Type barterType, int specificPortId = 0) {
       PortCargoSummary cargoSummary = null;
       List<PortCargoInfo> cargoRows = new List<PortCargoInfo>();
 
@@ -10057,8 +9727,7 @@ public static new PortCargoSummary getPortCargoSummary (Barter.Type barterType, 
       return cargoSummary;
    }
 
-   [NubisCallable]
-public static new ShipCargoSummary getShipCargoSummaryForUser (int userId) {
+   public static new ShipCargoSummary getShipCargoSummaryForUser (int userId) {
       int shipId = 0;
       int cargoMax = 0;
       int tradePermits = 0;
@@ -10100,8 +9769,7 @@ public static new ShipCargoSummary getShipCargoSummaryForUser (int userId) {
       return cargoSummary;
    }
 
-   [NubisCallable]
-public static new int getShipCount (int userId) {
+   public static new int getShipCount (int userId) {
       int shipCount = 0;
 
       try {
@@ -10125,8 +9793,7 @@ public static new int getShipCount (int userId) {
       return shipCount;
    }
 
-   [NubisCallable]
-public static new int getPortCargoAmount (int portId, Cargo.Type cargoType, Barter.Type barterType) {
+   public static new int getPortCargoAmount (int portId, Cargo.Type cargoType, Barter.Type barterType) {
       int amount = 0;
       string table = Barter.getTable(barterType);
 
@@ -10152,8 +9819,7 @@ public static new int getPortCargoAmount (int portId, Cargo.Type cargoType, Bart
       return amount;
    }
 
-   [NubisCallable]
-public static new void removeCargoFromPort (int portId, Cargo.Type cargoType, Barter.Type barterType, int amount) {
+   public static new void removeCargoFromPort (int portId, Cargo.Type cargoType, Barter.Type barterType, int amount) {
       string table = Barter.getTable(barterType);
 
       try {
@@ -10173,8 +9839,7 @@ public static new void removeCargoFromPort (int portId, Cargo.Type cargoType, Ba
       }
    }
 
-   [NubisCallable]
-public static new void addCargoToShip (int shipId, Barter.Type barterType, Cargo.Type cargoType, int amount) {
+   public static new void addCargoToShip (int shipId, Barter.Type barterType, Cargo.Type cargoType, int amount) {
       // If we're selling to a port, then the amount is actually negative
       if (barterType == Barter.Type.SellToPort) {
          amount *= -1;
@@ -10200,8 +9865,7 @@ public static new void addCargoToShip (int shipId, Barter.Type barterType, Cargo
       }
    }
 
-   [NubisCallable]
-public static new void deleteEmptyCargoRow (int shipId, Cargo.Type cargoType) {
+   public static new void deleteEmptyCargoRow (int shipId, Cargo.Type cargoType) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM cargo WHERE shpId=@shpId AND crgType=@cargoType AND amount <= 0", conn)) {
@@ -10222,8 +9886,7 @@ public static new void deleteEmptyCargoRow (int shipId, Cargo.Type cargoType) {
       }
    }
 
-   [NubisCallable]
-public static new TradeRecord insertTradeRecord (int userId, int shipId, int portId, Barter.Type barterType, Cargo.Type cargoType, int amount, int unitPrice, int unitXP) {
+   public static new TradeRecord insertTradeRecord (int userId, int shipId, int portId, Barter.Type barterType, Cargo.Type cargoType, int amount, int unitPrice, int unitXP) {
       int tradeRecordId = 0;
       int totalPrice = unitPrice * amount;
       int totalXP = unitXP * amount;
@@ -10262,8 +9925,7 @@ public static new TradeRecord insertTradeRecord (int userId, int shipId, int por
       return record;
    }
 
-   [NubisCallable]
-public static new TradeHistory getTradeHistory (int userId) {
+   public static new TradeHistory getTradeHistory (int userId) {
       TradeHistory tradeHistory = new TradeHistory(userId);
 
       try {
@@ -10290,8 +9952,7 @@ public static new TradeHistory getTradeHistory (int userId) {
       return tradeHistory;
    }
 
-   [NubisCallable]
-public static new void incrementTradePermits () {
+   public static new void incrementTradePermits () {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("UPDATE users SET usrTradePermits = LEAST(usrTradePermits + 1, @maxTradePermits)", conn)) {
@@ -10307,8 +9968,7 @@ public static new void incrementTradePermits () {
       }
    }
 
-   [NubisCallable]
-public static new List<int> getTestUserIds () {
+   public static new List<int> getTestUserIds () {
       List<int> userList = new List<int>();
 
       try {
@@ -10332,8 +9992,7 @@ public static new List<int> getTestUserIds () {
       return userList;
    }
 
-   [NubisCallable]
-public static new bool hasItem (int userId, int itemId, int itemCategory) {
+   public static new bool hasItem (int userId, int itemId, int itemCategory) {
       bool found = false;
 
       try {
@@ -10359,8 +10018,7 @@ public static new bool hasItem (int userId, int itemId, int itemCategory) {
       return found;
    }
 
-   [NubisCallable]
-public static new List<BuildingLoc> getBuildingLocs () {
+   public static new List<BuildingLoc> getBuildingLocs () {
       List<BuildingLoc> buildingLocList = new List<BuildingLoc>();
 
       try {
@@ -10391,8 +10049,7 @@ public static new List<BuildingLoc> getBuildingLocs () {
       return buildingLocList;
    }
 
-   [NubisCallable]
-public static new List<Area> getAreas () {
+   public static new List<Area> getAreas () {
       List<Area> areas = new List<Area>();
 
       try {
@@ -10425,8 +10082,7 @@ public static new List<Area> getAreas () {
       return areas;
    }
 
-   [NubisCallable]
-public static new DateTime getLastUnlock (int accId, int areaId, float localX, float localY) {
+   public static new DateTime getLastUnlock (int accId, int areaId, float localX, float localY) {
       DateTime unlockTime = DateTime.MinValue;
 
       try {
@@ -10463,8 +10119,7 @@ public static new DateTime getLastUnlock (int accId, int areaId, float localX, f
       return unlockTime;
    }
 
-   [NubisCallable]
-public static new void storeUnlock (int accountId, int userId, int areaId, float localX, float localY, int gold, int itemId) {
+   public static new void storeUnlock (int accountId, int userId, int areaId, float localX, float localY, int gold, int itemId) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("INSERT INTO unlocks (accId, usrId, areaId, localX, localY, gold, itmId) " +
@@ -10487,8 +10142,7 @@ public static new void storeUnlock (int accountId, int userId, int areaId, float
       }
    }
 
-   [NubisCallable]
-public static new void setFlagship (int userId, int shipId) {
+   public static new void setFlagship (int userId, int shipId) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("UPDATE users SET shpId=@shipId WHERE usrId=@userId", conn)) {
@@ -10505,8 +10159,7 @@ public static new void setFlagship (int userId, int shipId) {
       }
    }
 
-   [NubisCallable]
-public static new List<NPC_Info> getNPCs (int areaId) {
+   public static new List<NPC_Info> getNPCs (int areaId) {
       List<NPC_Info> npcs = new List<NPC_Info>();
 
       try {
@@ -10531,8 +10184,7 @@ public static new List<NPC_Info> getNPCs (int areaId) {
       return npcs;
    }
 
-   [NubisCallable]
-public static new void insertNPC (NPC_Info info) {
+   public static new void insertNPC (NPC_Info info) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("INSERT INTO npcs (npcType, npcName, areaId, localX, localY, hairType, bodyType, eyesType, " +
@@ -10571,8 +10223,7 @@ public static new void insertNPC (NPC_Info info) {
       }
    }
 
-   [NubisCallable]
-public static new void deleteNPCs () {
+   public static new void deleteNPCs () {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM npcs", conn)) {
@@ -10587,8 +10238,7 @@ public static new void deleteNPCs () {
       }
    }
 
-   [NubisCallable]
-public static new List<Shop_ShipInfo> getShopShips () {
+   public static new List<Shop_ShipInfo> getShopShips () {
       List<Shop_ShipInfo> ships = new List<Shop_ShipInfo>();
 
       try {
@@ -10612,8 +10262,7 @@ public static new List<Shop_ShipInfo> getShopShips () {
       return ships;
    }
 
-   [NubisCallable]
-public static new int insertShip (PortInfo port, Shop_ShipInfo shipInfo) {
+   public static new int insertShip (PortInfo port, Shop_ShipInfo shipInfo) {
       int stockId = 0;
 
       try {
@@ -10650,8 +10299,7 @@ public static new int insertShip (PortInfo port, Shop_ShipInfo shipInfo) {
       return stockId;
    }
 
-   [NubisCallable]
-public static new void deleteShopShips (PortInfo port) {
+   public static new void deleteShopShips (PortInfo port) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM shops_shipyard WHERE portId=@portId", conn)) {
@@ -10667,8 +10315,7 @@ public static new void deleteShopShips (PortInfo port) {
       }
    }
 
-   [NubisCallable]
-public static new List<Shop_ItemInfo> getShopItems () {
+   public static new List<Shop_ItemInfo> getShopItems () {
       List<Shop_ItemInfo> items = new List<Shop_ItemInfo>();
 
       try {
@@ -10692,8 +10339,7 @@ public static new List<Shop_ItemInfo> getShopItems () {
       return items;
    }
 
-   [NubisCallable]
-public static new void deleteShopItems (PortInfo port) {
+   public static new void deleteShopItems (PortInfo port) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM shops_items WHERE portId=@portId", conn)) {
@@ -10709,8 +10355,7 @@ public static new void deleteShopItems (PortInfo port) {
       }
    }
 
-   [NubisCallable]
-public static new int insertItem (PortInfo port, Shop_ItemInfo itemInfo) {
+   public static new int insertItem (PortInfo port, Shop_ItemInfo itemInfo) {
       int stockId = 0;
 
       try {
@@ -10740,8 +10385,7 @@ public static new int insertItem (PortInfo port, Shop_ItemInfo itemInfo) {
       return stockId;
    }
 
-   [NubisCallable]
-public static new ItemInfo createItemFromStock (int userId, Shop_ItemInfo itemStock) {
+   public static new ItemInfo createItemFromStock (int userId, Shop_ItemInfo itemStock) {
       ItemInfo itemInfo = new ItemInfo();
       itemInfo.itemCategory = itemStock.itemCategory;
       itemInfo.itemType = itemStock.itemType;
@@ -10775,8 +10419,7 @@ public static new ItemInfo createItemFromStock (int userId, Shop_ItemInfo itemSt
       return itemInfo;
    }
 
-   [NubisCallable]
-public static new int unlockDiscovery (int userId, Discovery.Type discoveryType, int primaryKeyID, int areaId) {
+   public static new int unlockDiscovery (int userId, Discovery.Type discoveryType, int primaryKeyID, int areaId) {
       int discoveryId = 0;
 
       try {
@@ -10803,8 +10446,7 @@ public static new int unlockDiscovery (int userId, Discovery.Type discoveryType,
       return discoveryId;
    }
 
-   [NubisCallable]
-public static new List<Discovery> getDiscoveries (int userId, int areaId) {
+   public static new List<Discovery> getDiscoveries (int userId, int areaId) {
       List<Discovery> list = new List<Discovery>();
       string areaClause = (areaId > 0) ? " AND areaId=@areaId" : "";
 
@@ -10835,8 +10477,7 @@ public static new List<Discovery> getDiscoveries (int userId, int areaId) {
       return list;
    }
 
-   [NubisCallable]
-public static new List<SeaMonsterSpawnInfo> getSeaMonsterSpawns () {
+   public static new List<SeaMonsterSpawnInfo> getSeaMonsterSpawns () {
       List<SeaMonsterSpawnInfo> list = new List<SeaMonsterSpawnInfo>();
 
       try {
@@ -10860,8 +10501,7 @@ public static new List<SeaMonsterSpawnInfo> getSeaMonsterSpawns () {
       return list;
    }
 
-   [NubisCallable]
-public static new void deleteAllSeaMonsterSpawns () {
+   public static new void deleteAllSeaMonsterSpawns () {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM seamonster_spawns", conn)) {
@@ -10876,8 +10516,7 @@ public static new void deleteAllSeaMonsterSpawns () {
       }
    }
 
-   [NubisCallable]
-public static new int insertSeaMonsterSpawn (int areaId, SeaMonster.Type seaMonsterType, float localX, float localY) {
+   public static new int insertSeaMonsterSpawn (int areaId, SeaMonster.Type seaMonsterType, float localX, float localY) {
       int smsId = 0;
 
       try {
@@ -10904,8 +10543,7 @@ public static new int insertSeaMonsterSpawn (int areaId, SeaMonster.Type seaMons
       return smsId;
    }
 
-   [NubisCallable]
-public static new int insertArea (string areaName, Area.Type areaType, TileType tileType, int worldX, int worldY, int versionNumber, int serverId) {
+   public static new int insertArea (string areaName, Area.Type areaType, TileType tileType, int worldX, int worldY, int versionNumber, int serverId) {
       int areaId = 0;
 
       try {
@@ -10935,8 +10573,7 @@ public static new int insertArea (string areaName, Area.Type areaType, TileType 
       return areaId;
    }
 
-   [NubisCallable]
-public static new void deleteOldTreasureAreas () {
+   public static new void deleteOldTreasureAreas () {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM areas WHERE areaType=4 AND NOW() - INTERVAL 7 DAY > creationTime", conn)) {
@@ -10951,8 +10588,7 @@ public static new void deleteOldTreasureAreas () {
       }
    }
 
-   [NubisCallable]
-public static new void insertServer (string address, int port) {
+   public static new void insertServer (string address, int port) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -10972,8 +10608,7 @@ public static new void insertServer (string address, int port) {
       }
    }
 
-   [NubisCallable]
-public static new int getServerId (string address, int port) {
+   public static new int getServerId (string address, int port) {
       int serverId = 0;
 
       try {
@@ -11002,8 +10637,7 @@ public static new int getServerId (string address, int port) {
       return serverId;
    }
 
-   [NubisCallable]
-public static new int insertSite (int innerAreaId, int outerAreaId, string siteName, int siteLevel, Site.Type siteType, float localX, float localY) {
+   public static new int insertSite (int innerAreaId, int outerAreaId, string siteName, int siteLevel, Site.Type siteType, float localX, float localY) {
       int siteId = 0;
 
       try {
@@ -11033,8 +10667,7 @@ public static new int insertSite (int innerAreaId, int outerAreaId, string siteN
       return siteId;
    }
 
-   [NubisCallable]
-public static new SiteLoc getSiteLoc (int siteId) {
+   public static new SiteLoc getSiteLoc (int siteId) {
       SiteLoc siteLoc = new SiteLoc();
 
       try {
@@ -11058,8 +10691,7 @@ public static new SiteLoc getSiteLoc (int siteId) {
       return siteLoc;
    }
 
-   [NubisCallable]
-public static new List<SiteLoc> getSiteLocs () {
+   public static new List<SiteLoc> getSiteLocs () {
       List<SiteLoc> list = new List<SiteLoc>();
 
       try {
@@ -11083,8 +10715,7 @@ public static new List<SiteLoc> getSiteLocs () {
       return list;
    }
 
-   [NubisCallable]
-public static new void deleteAllAreas () {
+   public static new void deleteAllAreas () {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("DELETE FROM areas", conn)) {
