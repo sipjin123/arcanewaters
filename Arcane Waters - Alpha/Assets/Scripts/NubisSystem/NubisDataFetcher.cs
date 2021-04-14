@@ -219,7 +219,7 @@ namespace NubisDataHandling {
 
       #region Equipment Features
 
-      public async void getUserInventory (List<Item.Category> categoryFilter, int pageIndex = 1, int itemsPerPage = 42) {
+      public async void getUserInventory (List<Item.Category> categoryFilter, int pageIndex = 1, int itemsPerPage = 42, int itemDurabilityFilter = 0, Panel.Type panelType = Panel.Type.Inventory) {
          if (Global.player == null) {
             return;
          }
@@ -232,7 +232,7 @@ namespace NubisDataHandling {
 
          // Request the inventory to Nubis
          string inventoryBundleString = await NubisClient.callDirect("getUserInventoryPage",
-            userId.ToString(), categoryFilterJSON, pageIndex.ToString(), itemsPerPage.ToString());
+            userId.ToString(), categoryFilterJSON, pageIndex.ToString(), itemsPerPage.ToString(), itemDurabilityFilter.ToString());
 
          try {
             inventoryBundle = JsonConvert.DeserializeObject<InventoryBundle>(inventoryBundleString);
@@ -275,24 +275,30 @@ namespace NubisDataHandling {
          }
 
          List<Item> itemList = UserInventory.processUserInventory(inventoryBundle.inventoryData);
-
-         // Get the inventory panel
-         InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
-
-         // Make sure the inventory panel is showing
-         if (!inventoryPanel.isShowing()) {
-            PanelManager.self.linkPanel(Panel.Type.Inventory);
-
-            // When inventory panel is opened, we should always start at the first page
-            pageIndex = 0;
-         }
-         inventoryPanel.clearPanel();
-
+        
          // Filter inventory items here
          itemList.RemoveAll(_ => _.category == Item.Category.Usable);
 
-         UserObjects userObjects = new UserObjects { userInfo = inventoryBundle.user, weapon = inventoryBundle.equippedWeapon, armor = inventoryBundle.equippedArmor, hat = inventoryBundle.equippedHat };
-         inventoryPanel.receiveItemForDisplay(itemList, userObjects, inventoryBundle.guildInfo, categoryFilter, pageIndex, inventoryBundle.totalItemCount, true);
+         if (panelType == Panel.Type.Inventory) {
+            // Get the inventory panel
+            InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
+
+            // Make sure the inventory panel is showing
+            if (!inventoryPanel.isShowing()) {
+               PanelManager.self.linkPanel(Panel.Type.Inventory);
+
+               // When inventory panel is opened, we should always start at the first page
+               pageIndex = 0;
+            }
+            inventoryPanel.clearPanel();
+
+            UserObjects userObjects = new UserObjects { userInfo = inventoryBundle.user, weapon = inventoryBundle.equippedWeapon, armor = inventoryBundle.equippedArmor, hat = inventoryBundle.equippedHat };
+            inventoryPanel.receiveItemForDisplay(itemList, userObjects, inventoryBundle.guildInfo, categoryFilter, pageIndex, inventoryBundle.totalItemCount, true);
+         } else if (panelType == Panel.Type.Craft) {
+            // Get the crafting panel
+            CraftingPanel craftingPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
+            craftingPanel.receiveRefineableItems(itemList, pageIndex);
+         }
       }
 
       public async void getInventoryForItemSelection (List<Item.Category> categoryFilter, List<int> itemIdsToExclude,
@@ -310,9 +316,9 @@ namespace NubisDataHandling {
 
          // Call the list and list count in parallel
          Task<string> listTask = NubisClient.call(nameof(DB_Main.userInventory), userId.ToString(), categoryFilterJSON,
-            itemIdsToExcludeJSON, "1", pageIndex.ToString(), itemsPerPage.ToString());
+            itemIdsToExcludeJSON, "1", pageIndex.ToString(), itemsPerPage.ToString(), "0");
          Task<string> totalCountTask = NubisClient.call(nameof(DB_Main.userInventoryCount), userId.ToString(), categoryFilterJSON,
-            itemIdsToExcludeJSON, "1");
+            itemIdsToExcludeJSON, "1", "0");
 
          await Task.WhenAll(listTask, totalCountTask);
 

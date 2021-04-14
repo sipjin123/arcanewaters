@@ -61,7 +61,7 @@ public class InventoryPanel : Panel {
 
    public void refreshPanel () {
       loadBlocker.SetActive(true);
-      NubisDataFetcher.self.getUserInventory(itemTabs.categoryFilters, _currentPage, ITEMS_PER_PAGE);
+      NubisDataFetcher.self.getUserInventory(itemTabs.categoryFilters, _currentPage, ITEMS_PER_PAGE, 0, Panel.Type.Inventory);
    }
 
    public void clearPanel () {

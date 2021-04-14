@@ -25,12 +25,12 @@ public class DB_MainStub : MonoBehaviour
    }
 
    public static string userInventory (string usrIdStr, string categoryFilterJSON, string itemIdsToExcludeJSON,
-      string mustExcludeEquippedItemsStr, string currentPageStr, string itemsPerPageStr) {
+      string mustExcludeEquippedItemsStr, string currentPageStr, string itemsPerPageStr, string durabilityFilter) {
       return "";
    }
 
    public static string userInventoryCount (string usrIdStr, string categoryFilterJSON, string itemIdsToExcludeJSON,
-      string mustExcludeEquippedItemsStr) {
+      string mustExcludeEquippedItemsStr, string durabilityFilter) {
       return "0";
    }
 

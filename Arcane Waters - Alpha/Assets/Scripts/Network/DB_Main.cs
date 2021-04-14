@@ -110,7 +110,7 @@ public class DB_Main : DB_MainStub
 
    [NubisCallable]
    public static new string userInventory (string usrIdStr, string categoryFilterJSON, string itemIdsToExcludeJSON,
-      string mustExcludeEquippedItemsStr, string currentPageStr, string itemsPerPageStr) {
+      string mustExcludeEquippedItemsStr, string currentPageStr, string itemsPerPageStr, string itemDurabilityFilter) {
       int usrId = int.Parse(usrIdStr);
       int currentPage = int.Parse(currentPageStr);
       int itemsPerPage = int.Parse(itemsPerPageStr);
@@ -124,7 +124,7 @@ public class DB_Main : DB_MainStub
          new int[0];
 
       string whereClause = getUserInventoryWhereClause(usrId, categoryFilter, itemIdsToExclude,
-         mustExcludeEquippedItemsStr == "1");
+         mustExcludeEquippedItemsStr == "1", int.Parse(itemDurabilityFilter));
 
       try {
          using (MySqlConnection connection = getConnection()) {
@@ -172,7 +172,7 @@ public class DB_Main : DB_MainStub
 
    [NubisCallable]
    public static new string userInventoryCount (string usrIdStr, string categoryFilterJSON, string itemIdsToExcludeJSON,
-      string mustExcludeEquippedItemsStr) {
+      string mustExcludeEquippedItemsStr, string itemDurabilityFilter) {
       int usrId = int.Parse(usrIdStr);
 
       int[] categoryFilter = categoryFilterJSON.Length > 1 ?
@@ -184,7 +184,7 @@ public class DB_Main : DB_MainStub
 
       int count = 0;
       string whereClause = getUserInventoryWhereClause(usrId, categoryFilter, itemIdsToExclude,
-         mustExcludeEquippedItemsStr == "1");
+         mustExcludeEquippedItemsStr == "1", int.Parse(itemDurabilityFilter));
 
       try {
          using (MySqlConnection conn = getConnection())
@@ -211,7 +211,7 @@ public class DB_Main : DB_MainStub
    }
 
    private static string getUserInventoryWhereClause (int userId, int[] categoryFilter,
-      int[] itemIdsToExclude, bool mustExcludeEquippedItems) {
+      int[] itemIdsToExclude, bool mustExcludeEquippedItems, int filterItemDurability) {
       StringBuilder clause = new StringBuilder();
       clause.Append(" WHERE usrId = " + userId + " ");
 
@@ -236,6 +236,15 @@ public class DB_Main : DB_MainStub
          clause.Length = clause.Length - 2;
 
          clause.Append(") ");
+      }
+
+      switch (filterItemDurability) {
+         case 1:
+            clause.Append(" AND (durability > 0) ");
+            break;
+         case -1:
+            clause.Append(" AND (durability < 1) ");
+            break;
       }
 
       // Exclude equipped item ids
