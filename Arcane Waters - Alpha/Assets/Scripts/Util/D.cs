@@ -255,6 +255,13 @@ public class D : MonoBehaviour {
    }
 
    public static void adminLog (string text, ADMIN_LOG_TYPE logType) {
+      try {
+         if (Util.isCloudBuild() && !Util.getJenkinsBuildTitle().StartsWith(Util.PRODUCTION_BUILD)) {
+            return;
+         }
+      } catch { 
+      
+      }
       if (!Global.logTypesToShow.Contains(logType)) {
          return;
       }

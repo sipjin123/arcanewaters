@@ -97,12 +97,15 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
       // Any warp inside a treasure site area is considered an exit towards the sea voyage area
       if (VoyageGroupManager.isInGroup(player) && VoyageManager.isTreasureSiteArea(player.areaKey)) {
+         D.adminLog("Successfully warp process", D.ADMIN_LOG_TYPE.Server_AccountLogin);
          // Try to find the treasure site entrance (spawn) where the user is registered
          int voyageId = player.getInstance().voyageId;
 
          // If the voyage instance cannot be found, warp the player to the starting town
          if (!InstanceManager.self.tryGetVoyageInstance(voyageId, out Instance seaVoyageInstance)) {
             D.error(string.Format("Could not find the sea voyage instace when leaving a treasure site. userId: {0}, treasure site areaKey: {1}", player.userId, player.areaKey));
+
+            D.adminLog("Successfully warp spawn in new map [0]", D.ADMIN_LOG_TYPE.Server_AccountLogin);
             player.spawnInNewMap(Area.STARTING_TOWN);
             yield break;
          }
@@ -119,6 +122,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             D.error(string.Format("Could not find the treasure site where the user is registered. userId: {0}, voyage areaKey: {1}, treasure site areaKey: {2}", player.userId, seaVoyageInstance.areaKey, player.areaKey));
          }
 
+         D.adminLog("Successfully warp spawn in new map [1]", D.ADMIN_LOG_TYPE.Server_AccountLogin);
          player.spawnInNewMap(voyageId, seaVoyageInstance.areaKey, spawnTarget, newFacingDirection);
       }
       // Check if the destination is a treasure site
@@ -129,6 +133,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          treasureSite.playerListInSite.Add(player.userId);
 
          int voyageId = player.getInstance().voyageId;
+         D.adminLog("Successfully warp spawn in new map [2]", D.ADMIN_LOG_TYPE.Server_AccountLogin);
          player.spawnInNewMap(voyageId, treasureSite.destinationArea, treasureSite.destinationSpawn, newFacingDirection);
       }
       // Any warp inside a league voyage map is considered an exit towards the next map
@@ -138,6 +143,8 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          // If the instance is not a voyage, warp the player to the starting town
          if (instance == null || instance.voyageId <= 0) {
             D.error(string.Format("An instance in a league area is not a voyage. userId: {0}, league areaKey: {1}", player.userId, player.areaKey));
+
+            D.adminLog("Successfully warp spawn in new map [3]", D.ADMIN_LOG_TYPE.Server_AccountLogin);
             player.spawnInNewMap(Area.STARTING_TOWN);
             yield break;
          }
@@ -146,6 +153,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             // At the end of a league, warp to the town in the next biome
             Biome.Type nextBiome = (Biome.Type)(((int) instance.biome) + 1);
 
+            D.adminLog("Successfully warp spawn in new map [4]", D.ADMIN_LOG_TYPE.Server_AccountLogin);
             if (Area.homeTownForBiome.TryGetValue(nextBiome, out string nextBiomeTownAreaKey)) {
                player.spawnInNewMap(nextBiomeTownAreaKey);
             } else if (Area.homeTownForBiome.TryGetValue(instance.biome, out string currentBiomeTownAreaKey)){
@@ -159,9 +167,11 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
                D.error("Error when retrieving the voyage during warp to next league instance.");
                player.rpc.sendError("Error when warping between league maps. Could not find the voyage.");
                player.spawnInNewMap(Area.STARTING_TOWN);
+               D.adminLog("Successfully warp spawn in new map [5]", D.ADMIN_LOG_TYPE.Server_AccountLogin);
                yield break;
             }
 
+            D.adminLog("Successfully warp spawn in new map [6]", D.ADMIN_LOG_TYPE.Server_AccountLogin);
             // If the group is already assigned to another voyage map, the next instance has already been created and we simply warp the player to it
             if (voyage.voyageId != instance.voyageId) {
                player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
@@ -171,6 +181,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             }
          }
       } else {
+         D.adminLog("Successfully warp spawn in new map [7]", D.ADMIN_LOG_TYPE.Server_AccountLogin);
          player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
       }
    }

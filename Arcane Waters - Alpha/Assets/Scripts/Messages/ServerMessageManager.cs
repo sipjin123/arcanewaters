@@ -149,7 +149,7 @@ public class ServerMessageManager : MonoBehaviour
                   D.debug("Failed to create account for Steam User: {" + logInUserMessage.accountName + "}");
                }
             } else {
-               D.debug("Account Log: This is Neither a Steam account or is already an Authenticated user {" + logInUserMessage.accountName + "}" + " : {" + accountId + "}");
+               D.adminLog("Account Log: This is Neither a Steam account or is already an Authenticated user {" + logInUserMessage.accountName + "}" + " : {" + accountId + "}", D.ADMIN_LOG_TYPE.Server_AccountLogin);
             }
          }
 
