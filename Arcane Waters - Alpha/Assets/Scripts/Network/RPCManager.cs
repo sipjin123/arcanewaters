@@ -596,6 +596,7 @@ public class RPCManager : NetworkBehaviour
    [Command]
    public void Cmd_OpenLootBag (int chestId) {
       TreasureChest chest = TreasureManager.self.getChest(chestId);
+      D.adminLog("User {" + _player.userId + "} is trying to open lootbag {" + chestId + "}", D.ADMIN_LOG_TYPE.Treasure);
 
       // Make sure we found the Treasure Chest
       if (chest == null) {

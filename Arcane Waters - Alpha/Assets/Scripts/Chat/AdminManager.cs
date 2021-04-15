@@ -805,6 +805,12 @@ public class AdminManager : NetworkBehaviour
          case "quest":
             Global.updateAdminLog(D.ADMIN_LOG_TYPE.Quest, isEnabled);
             break;
+         case "treasure":
+            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Treasure, isEnabled);
+            break;
+         case "refine":
+            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Refine, isEnabled);
+            break;
          default:
             if (Util.isServerBuild()) {
                _player.Target_FloatingMessage(_player.connectionToClient, "Invalid Parameters" + " : " + parameters);

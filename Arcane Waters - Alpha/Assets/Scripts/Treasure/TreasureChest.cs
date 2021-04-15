@@ -270,6 +270,7 @@ public class TreasureChest : NetworkBehaviour {
    public Item getSeaMonsterLootContents () {
       SeaMonsterEntity.Type monsterType = (SeaMonsterEntity.Type) enemyType;
       SeaMonsterEntityData battlerData = SeaMonsterManager.self.getMonster(monsterType);
+      D.adminLog("Getting sea monster contents {" + battlerData.lootGroupId + "}", D.ADMIN_LOG_TYPE.Treasure);
 
       List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(battlerData.lootGroupId, rarity);
       return processItemChance(treasureDropsDataList);
@@ -278,6 +279,7 @@ public class TreasureChest : NetworkBehaviour {
    public Item getLandMonsterLootContents () {
       Enemy.Type monsterType = (Enemy.Type) enemyType;
       BattlerData battlerData = MonsterManager.self.getBattlerData(monsterType);
+      D.adminLog("Getting land monster contents {" + battlerData.lootGroupId + "}", D.ADMIN_LOG_TYPE.Treasure);
 
       List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(battlerData.lootGroupId, rarity);
       return processItemChance(treasureDropsDataList);
@@ -288,6 +290,7 @@ public class TreasureChest : NetworkBehaviour {
          foreach (TreasureDropsData treasureDropData in treasureDropsDataList.OrderBy(_ => _.spawnChance)) {
             float randomizer = Random.Range(0, 100);
             if (randomizer < treasureDropData.spawnChance) {
+               D.adminLog("Lootbag will drop random item {" + EquipmentXMLManager.self.getItemName(treasureDropData.item) + "}", D.ADMIN_LOG_TYPE.Treasure);
                return treasureDropData.item;
             }
          }

@@ -339,7 +339,7 @@ public class ChatPanel : MonoBehaviour {
       _isNameInputFocused = nameInputField.isFocused;
 
       // Submit the field when enter is pressed and the field is focused
-      if ((Time.time - _lastFocusTime) < .05f && KeyUtils.GetKeyDown(Key.Enter)) {
+      if (KeyUtils.GetKeyDown(Key.Enter)) {
          if (inputField.text != "") {
             // Send the message off to the server for processing
             string message = inputField.text;
@@ -358,7 +358,7 @@ public class ChatPanel : MonoBehaviour {
 
          // Unselect the input field UI from the event system so ChatManager.isTyping() will be set to false
          GameObject currentSelection = EventSystem.current.currentSelectedGameObject;
-         
+
          // Check if we're typing in an input field
          if (currentSelection != null && Util.hasInputField(currentSelection)) {
             EventSystem.current.SetSelectedGameObject(null);
