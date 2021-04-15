@@ -14,11 +14,52 @@ public class CraftingManager : MonoBehaviour {
 
    // For editor preview of data
    public List<CraftableItemRequirements> craftingDataList = new List<CraftableItemRequirements>();
+   public List<RefinementData> refinementDataList = new List<RefinementData>();
 
    #endregion
 
    private void Awake () {
       self = this;
+      initializeRefinementData();
+   }
+
+   private void initializeRefinementData () {
+      // TODO: Setup this feature to the web tool instead of hard coding the ingredients
+
+      List<Item> newItemGroup = new List<Item>();
+      newItemGroup.Add(new Item {
+         category = Item.Category.CraftingIngredients,
+         itemTypeId = (int) CraftingIngredients.Type.Wood,
+         count = 1
+      });
+      newItemGroup.Add(new Item {
+         category = Item.Category.CraftingIngredients,
+         itemTypeId = (int) CraftingIngredients.Type.Iron_Ore,
+         count = 2
+      });
+
+      _refinementData.Add(0, new RefinementData {
+         xmlId = 0,
+         combinationRequirements = newItemGroup.ToArray()
+      });
+      refinementDataList.Add(_refinementData[0]);
+
+      newItemGroup.Clear();
+      newItemGroup.Add(new Item {
+         category = Item.Category.CraftingIngredients,
+         itemTypeId = (int) CraftingIngredients.Type.Coal,
+         count = 2
+      });
+      newItemGroup.Add(new Item {
+         category = Item.Category.CraftingIngredients,
+         itemTypeId = (int) CraftingIngredients.Type.Silver_Ore,
+         count = 3
+      });
+      _refinementData.Add(1, new RefinementData {
+         xmlId = 1,
+         combinationRequirements = newItemGroup.ToArray()
+      });
+      refinementDataList.Add(_refinementData[1]);
    }
 
    public CraftableItemRequirements getCraftableData(Item.Category itemCategory, int itemTypeId) {
@@ -27,6 +68,15 @@ public class CraftingManager : MonoBehaviour {
          return _craftingData[key];
       } else {
          D.debug("No existing Crafting key found: " + key + " : RawData is: " + itemCategory + " : " + itemTypeId);
+         return null;
+      }
+   }
+
+   public RefinementData getRefinementData (int xmlId) {
+      if (_refinementData.ContainsKey(xmlId)) {
+         return _refinementData[xmlId];
+      } else {
+         D.debug("No existing Refinement found: " + xmlId);
          return null;
       }
    }
@@ -82,5 +132,7 @@ public class CraftingManager : MonoBehaviour {
    // The cached crafting data 
    private Dictionary<string, CraftableItemRequirements> _craftingData = new Dictionary<string, CraftableItemRequirements>();
 
+   // The cached refinement data 
+   private Dictionary<int, RefinementData> _refinementData = new Dictionary<int, RefinementData>();
    #endregion
 }
