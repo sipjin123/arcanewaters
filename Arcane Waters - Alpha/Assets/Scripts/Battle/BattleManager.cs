@@ -268,6 +268,10 @@ public class BattleManager : MonoBehaviour {
    }
 
    protected Battler createBattlerForPlayer (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType) {
+      if (battle == null) {
+         D.error("Battle is missing!");
+      }
+
       // We need to make a new one
       Battler battler = Instantiate(baseBattlerPrefab);
 

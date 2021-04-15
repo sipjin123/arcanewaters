@@ -63,7 +63,7 @@ public class TreasureDropsDataManager : MonoBehaviour {
       return LootGroupData.DEFAULT_LOOT_GROUP.treasureDropsCollection; 
    }
 
-   public List<TreasureDropsData> getTreasureDropsById (int groupId, Rarity.Type rarity, bool showLogs = false) {
+   public List<TreasureDropsData> getTreasureDropsById (int groupId, Rarity.Type rarity) {
       if (lootDropsCollection.ContainsKey(groupId)) {
          LootGroupData groupDataLoots = lootDropsCollection[groupId];
 
@@ -71,23 +71,19 @@ public class TreasureDropsDataManager : MonoBehaviour {
          int dropsCount = groupDataLoots.treasureDropsCollection.FindAll(_ => _.rarity == rarity).Count;
          if (dropsCount > 0) {
             if (groupDataLoots != null && groupDataLoots.treasureDropsCollection.Count > 0) {
-               if (showLogs) {
-                  D.debug("Found loot group Id: {" + groupId + "} "
-                     + "Loot group name: {" + groupDataLoots.lootGroupName
-                     + "} Total Loot Drops: {" + dropsCount + "}");
-               }
+               D.adminLog("Found loot group Id: {" + groupId + "} "
+                  + "Loot group name: {" + groupDataLoots.lootGroupName
+                  + "} Total Loot Drops: {" + dropsCount + "}", D.ADMIN_LOG_TYPE.Treasure);
                return groupDataLoots.treasureDropsCollection.FindAll(_ => _.rarity == rarity);
             }
          } else {
-            D.debug("This treasure drops data " +
+            D.adminLog("This treasure drops data " +
                "{" + groupId + " : " + groupDataLoots.lootGroupName + "} " +
-               "does not contain the rarity {" + rarity + "}");
+               "does not contain the rarity {" + rarity + "}", D.ADMIN_LOG_TYPE.Treasure);
             return LootGroupData.DEFAULT_LOOT_GROUP.treasureDropsCollection;
          }
       } else {
-         if (showLogs) {
-            D.debug("No loot group with id {" + groupId + "} found");
-         }
+         D.adminLog("No loot group with id {" + groupId + "} found", D.ADMIN_LOG_TYPE.Treasure);
       }
       return LootGroupData.DEFAULT_LOOT_GROUP.treasureDropsCollection;
    }
