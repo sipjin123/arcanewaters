@@ -234,12 +234,12 @@ public class DB_Main : DB_MainStub
          clause.Append(") ");
       }
 
-      switch (filterItemDurability) {
-         case 1:
-            clause.Append(" AND (durability > 0) ");
+      switch ((Item.DurabilityFilter)filterItemDurability) {
+         case Item.DurabilityFilter.MaxDurability:
+            clause.Append(" AND (durability = 100) ");
             break;
-         case -1:
-            clause.Append(" AND (durability < 1) ");
+         case Item.DurabilityFilter.ReducedDurability:
+            clause.Append(" AND (durability < 100) ");
             break;
       }
 
@@ -6724,8 +6724,9 @@ public class DB_Main : DB_MainStub
       }
 
       try {
+         string query = string.Format("SELECT * FROM items WHERE usrId = @usrId AND itmCategory = @itmCategory AND ({0})", builder.ToString());
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(string.Format("SELECT * FROM items WHERE usrId = @usrId AND itmCategory = @itmCategory AND ({0})", builder.ToString()), conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@itmCategory", (int) Item.Category.CraftingIngredients);

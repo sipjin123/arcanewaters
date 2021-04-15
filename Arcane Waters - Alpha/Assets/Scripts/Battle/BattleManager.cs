@@ -931,13 +931,13 @@ public class BattleManager : MonoBehaviour {
       
       foreach (Battler winner in winningBattlers) {
          // Randomize chance to deduct the weapon durability the player is currently wearing
-         int itemDamageChance = Random.Range(0, 10);
+         int itemDamageChance = Random.Range(0, Item.PERCENT_CHANCE);
          if (itemDamageChance < Item.WEAPON_DURABILITY_DEDUCTION) {
             winner.player.rpc.modifyItemDurability(winner.player, winner.weaponManager.equippedWeaponId, Item.ITEM_DURABILITY_DEDUCTION);
          }
 
          // Randomize chance to deduct the armor durability the player is currently wearing
-         itemDamageChance = Random.Range(0, 10);
+         itemDamageChance = Random.Range(0, Item.PERCENT_CHANCE);
          if (itemDamageChance < Item.ARMOR_DURABILITY_DEDUCTION) {
             winner.player.rpc.modifyItemDurability(winner.player, winner.armorManager.equippedArmorId, Item.ITEM_DURABILITY_DEDUCTION);
          }

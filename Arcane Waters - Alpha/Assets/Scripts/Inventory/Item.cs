@@ -11,6 +11,9 @@ public class Item {
    // The category of item this is
    public enum Category { None = 0, Weapon = 1, Armor = 2, Hats = 3, Potion = 4, Usable = 5, CraftingIngredients = 6 , Blueprint  = 7, Currency = 8, Quest_Item = 9 }
 
+   // The durability filter being used by the item
+   public enum DurabilityFilter { None = 0, MaxDurability = 1, ReducedDurability = 2 }
+
    // The category of item this is
    public Category category;
 
@@ -47,11 +50,14 @@ public class Item {
    // The amount of durability to deduct to the item
    public const int ITEM_DURABILITY_DEDUCTION = 1;
 
-   // The amount to deduct the weapon durabiliy (max of 10 which represents 100%)
-   public const int WEAPON_DURABILITY_DEDUCTION = 2;
+   // The amount to deduct the weapon durabiliy (max of 100%)
+   public const int WEAPON_DURABILITY_DEDUCTION = 20;
 
-   // The amount to deduct the armor durabiliy (max of 10 which represents 100%)
-   public const int ARMOR_DURABILITY_DEDUCTION = 1;
+   // The amount to deduct the armor durabiliy (max of 100%)
+   public const int ARMOR_DURABILITY_DEDUCTION = 10;
+
+   // Max cap in randomizing item durability deduction
+   public const int PERCENT_CHANCE = 100;
 
    #endregion
 
