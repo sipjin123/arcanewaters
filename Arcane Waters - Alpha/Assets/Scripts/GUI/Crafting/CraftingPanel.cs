@@ -39,8 +39,11 @@ public class CraftingPanel : Panel
    // The prefab we use for creating ingredient cells
    public ItemCellIngredient ingredientCellPrefab;
 
-   // The blockers that will popup when fetching data
+   // The blockers that will popup when fetching crafting data
    public GameObject loadBlockerList, loadBlockerContent, loadBlockerIngredients;
+
+   // The blockers that will popup when fetching refinement data
+   public GameObject loadBlockerRefinementList, loadBlockerRefinementIngredients;
 
    // The prefab we use for creating item cells
    public ItemCell itemCellPrefab;
@@ -57,6 +60,9 @@ public class CraftingPanel : Panel
    public CraftingStatColumn earthStatColumn;
    public CraftingStatColumn airStatColumn;
    public CraftingStatColumn waterStatColumn;
+
+   // The refine button
+   public Button refineButton;
 
    // The craft button
    public Button craftButton;
@@ -89,13 +95,16 @@ public class CraftingPanel : Panel
    public Text durabilityText;
 
    // Parent that hold the items that can be refined
-   public Transform refineAbleItemsHolder;
+   public Transform refineableItemsHolder;
 
    // The parent holding the selected refine-able item
    public Transform refineAbleItemSelection;
 
    // Cached refineable item cell
    public ItemCell latestRefineableItem;
+
+   // Parent holding the ingredient list needed for the refinement
+   public Transform refinementIngredientsHolder;
 
    #endregion
 
@@ -123,6 +132,15 @@ public class CraftingPanel : Panel
    public void refreshBlueprintList () {
       toggleBlockers(true);
       NubisDataFetcher.self.fetchCraftableData(_currentPage, ROWS_PER_PAGE);
+   }
+
+   public void refreshRefinementList () {
+      latestRefineableItem.hideSelectedBox();
+      refineAbleItemSelection.gameObject.DestroyChildren();
+
+      NubisDataFetcher.self.getUserInventory(new List<Item.Category> {
+         Item.Category.Weapon, Item.Category.Armor, Item.Category.Hats
+      }, _currentPage, ROWS_PER_PAGE, (int) Item.DurabilityFilter.ReducedDurability, Type.Craft);
    }
 
    public void displayBlueprint (int itemId) {
@@ -327,6 +345,16 @@ public class CraftingPanel : Panel
       }
    }
 
+   public void refine () {
+      D.adminLog("Attempt to refine item:: " +
+         "ID: " + latestRefineableItem.itemCache.id + " " +
+         "Category: " + latestRefineableItem.itemCache.category + " " +
+         "Type: " + latestRefineableItem.itemCache.itemTypeId + " " +
+         "Durability: " + latestRefineableItem.itemCache.durability, D.ADMIN_LOG_TYPE.Refine);
+
+      Global.player.rpc.Cmd_RefineItem(latestRefineableItem.itemCache);
+   }
+
    public void updateCraftButton () {
       if (_selectedBlueprintId == -1 || !_canSelectedBlueprintBeCrafted) {
          craftButton.interactable = false;
@@ -354,19 +382,31 @@ public class CraftingPanel : Panel
    public void nextPage () {
       if (_currentPage < _maxPage) {
          _currentPage++;
-         refreshBlueprintList();
+
+         if (!craftingTabButon.gameObject.activeInHierarchy) {
+            refreshBlueprintList();
+         } else {
+            refreshRefinementList();
+         }
       }
    }
 
    public void previousPage () {
       if (_currentPage > 1) {
          _currentPage--;
-         refreshBlueprintList();
+
+         if (!craftingTabButon.gameObject.activeInHierarchy) {
+            refreshBlueprintList();
+         } else {
+            refreshRefinementList();
+         }
       }
    }
 
    public void selectCraftingTab () {
-      refineAbleItemsHolder.gameObject.DestroyChildren();
+      refineableItemsHolder.gameObject.DestroyChildren();
+      refinementIngredientsHolder.gameObject.DestroyChildren();
+      refineAbleItemSelection.gameObject.DestroyChildren();
       _currentPage = 0;
 
       craftingTabButon.interactable = false;
@@ -382,6 +422,8 @@ public class CraftingPanel : Panel
    }
 
    public void selectRefinementTab () {
+      loadBlockerRefinementList.SetActive(true);
+      loadBlockerRefinementIngredients.SetActive(true);
       blueprintRowsContainer.DestroyChildren();
       _currentPage = 0;
 
@@ -398,17 +440,21 @@ public class CraftingPanel : Panel
 
       NubisDataFetcher.self.getUserInventory(new List<Item.Category> { 
          Item.Category.Weapon, Item.Category.Armor, Item.Category.Hats
-      }, _currentPage, ROWS_PER_PAGE, 1, Panel.Type.Craft);
+      }, _currentPage, ROWS_PER_PAGE, (int)Item.DurabilityFilter.ReducedDurability, Panel.Type.Craft);
    }
 
    public void receiveRefineableItems (List<Item> itemList, int currentPageIndex) {
-      refineAbleItemsHolder.gameObject.DestroyChildren();
-      
+      refineableItemsHolder.gameObject.DestroyChildren();
+      loadBlockerRefinementList.SetActive(false);
+      loadBlockerRefinementIngredients.SetActive(false);
+
       foreach (Item temp in itemList) {
-         ItemCell itemCell = Instantiate(itemCellPrefab, refineAbleItemsHolder);
+         ItemCell itemCell = Instantiate(itemCellPrefab, refineableItemsHolder);
          itemCell.setCellForItem(temp);
          itemCell.leftClickEvent.RemoveAllListeners();
          itemCell.leftClickEvent.AddListener(() => {
+            loadBlockerRefinementIngredients.SetActive(true);
+
             // Remove highlight of the recent item selected
             if (latestRefineableItem) {
                latestRefineableItem.hideSelectedBox();
@@ -428,7 +474,16 @@ public class CraftingPanel : Panel
             // Display item durability
             durabilityText.text = temp.durability.ToString();
 
-            // TODO Display requirements here
+            // Display requirements here
+            refinementIngredientsHolder.gameObject.DestroyChildren();
+
+            // TODO: Replace this hard coded id into the id that is set in the web tool
+            int xmlId = 0;
+            foreach (Item item in CraftingManager.self.getRefinementData(xmlId).combinationRequirements) {
+               ItemCell requiredItemCell = Instantiate(itemCellPrefab, refinementIngredientsHolder);
+               requiredItemCell.setCellForItem(item);
+            }
+            loadBlockerRefinementIngredients.SetActive(false);
          });
       }
    }

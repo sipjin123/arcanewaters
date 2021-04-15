@@ -26,6 +26,8 @@ public class D : MonoBehaviour {
       Quest = 13,
       Server_AccountLogin = 14,
       Client_AccountLogin = 15,
+      Treasure = 16,
+      Refine = 17
    }
 
    // Any log files older than this will be deleted

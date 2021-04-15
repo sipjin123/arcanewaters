@@ -3519,6 +3519,74 @@ public class RPCManager : NetworkBehaviour
    #endregion
 
    [Command]
+   public void Cmd_RefineItem (Item itemToRefine) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      RefinementData refinementData = CraftingManager.self.getRefinementData(0);
+      List<CraftingIngredients.Type> ingredientList = new List<CraftingIngredients.Type>();
+      foreach (Item refinementIngredient in refinementData.combinationRequirements) {
+         if (refinementIngredient.category == Item.Category.CraftingIngredients) {
+            ingredientList.Add((CraftingIngredients.Type) refinementIngredient.itemTypeId);
+         } else {
+            D.debug("Mismatch type: " + refinementIngredient.category+" : "+ refinementIngredient.itemTypeId);
+         }
+      }
+
+      bool hasMetRequirements = true;
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<Item> userInventoryIngredients = DB_Main.getCraftingIngredients(_player.userId, ingredientList);
+         foreach (Item refinementRequirement in refinementData.combinationRequirements) {
+            Item userItemData = userInventoryIngredients.Find(_ =>
+               _.category == refinementRequirement.category
+               && _.itemTypeId == refinementRequirement.itemTypeId
+               && _.count >= refinementRequirement.count);
+
+            int userItemCount = userItemData == null ? 0 : userItemData.count;
+            if (userItemData != null) {
+               D.adminLog("Refinement Ingredient match!"
+                  + " Name: {" + EquipmentXMLManager.self.getItemName(refinementRequirement)
+                  + "} Current:{" + userItemCount + "}"
+                  + "} Required:{" + refinementRequirement.count + "}", D.ADMIN_LOG_TYPE.Refine);
+            } else {
+               hasMetRequirements = false;
+               D.adminLog("Insufficient Refinement Ingredient!"
+                  + " Name: {" + EquipmentXMLManager.self.getItemName(refinementRequirement)
+                  + "} Current:{" + userItemCount + "}"
+                  + "} Required:{" + refinementRequirement.count + "}", D.ADMIN_LOG_TYPE.Refine);
+            }
+         }
+
+         if (hasMetRequirements) {
+            // Deduct the player inventory items which is now consumed by the refinement process
+            foreach (Item item in userInventoryIngredients) {
+               Item requiredItemRef = refinementData.combinationRequirements.ToList().Find(_ => _.category == item.category && _.itemTypeId == item.itemTypeId);
+               DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, requiredItemRef.count);
+            }
+
+            // Add item durability
+            int newDurability = itemToRefine.durability + 1;
+            DB_Main.updateItemDurability(_player.userId, itemToRefine.id, newDurability);
+         }
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_RefreshRefinementPanel(_player.connectionToClient);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_RefreshRefinementPanel (NetworkConnection connection) {
+      // Get the crafting panel
+      CraftingPanel panel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
+
+      // Refresh the panel
+      panel.refreshRefinementList();
+   }
+
+   [Command]
    public void Cmd_CraftItem (int blueprintItemId) {
       if (_player == null) {
          D.warning("No player object found.");
