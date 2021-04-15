@@ -220,6 +220,11 @@ public class PerkManager : MonoBehaviour {
       });
    }
 
+   public bool perkActivationRoll (int userId, Perk.Category category) {
+      // Performs a random roll to see if a perk will activate, based on the points the user has in the perk
+      return (UnityEngine.Random.Range(0.0f, 1.0f) < getPerkMultiplierAdditive(userId, category));
+   }
+
    #region Private Variables
 
    // The organized perk points of the local player

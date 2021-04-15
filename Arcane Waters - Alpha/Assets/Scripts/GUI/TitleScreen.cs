@@ -148,9 +148,6 @@ public class TitleScreen : MonoBehaviour {
 
    public void onLoginButtonPressed (bool isSteam) {
       if (!isTermsOfServiceAccepted()) {
-         // Store whether we are using steam client
-         _isSteamToS = SteamManager.Initialized;
-
          // Show ToS that user has to accept to continue
          showTermsOfService();
          return;
@@ -233,13 +230,9 @@ public class TitleScreen : MonoBehaviour {
    }
 
    private string getTermsOfServiceKey () {
-      if (_isSteamToS) {
-         if (SteamManager.Initialized) {
-            ulong steamID = Steamworks.SteamUser.GetSteamID().m_SteamID;
-            return "tos_steam_" + steamID;
-         } else {
-            D.error("SteamManager is not yet initialized!");
-         }
+      if (SteamManager.Initialized) {
+         ulong steamID = Steamworks.SteamUser.GetSteamID().m_SteamID;
+         return "tos_steam_" + steamID;
       }
       return "tos_standalone_" + accountInputField.text;
    }
@@ -266,7 +259,7 @@ public class TitleScreen : MonoBehaviour {
       termsOfServicePanel.SetActive(false);
 
       // ToS accepted - continue as usual
-      onLoginButtonPressed(_isSteamToS);
+      onLoginButtonPressed(SteamManager.Initialized);
    }
 
    public void cancelTermsOfService () {
@@ -286,9 +279,6 @@ public class TitleScreen : MonoBehaviour {
 
    // Our Canvas Group
    protected CanvasGroup _canvasGroup;
-
-   // Determine whether we are using steam client - used to accept Terms of Service
-   protected bool _isSteamToS;
 
    #endregion
 }

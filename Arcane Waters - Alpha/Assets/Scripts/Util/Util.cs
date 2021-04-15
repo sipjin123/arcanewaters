@@ -1134,7 +1134,6 @@ public class Util : MonoBehaviour
       configKeys.Add("buildType");
       configKeys.Add("database");
       configKeys.Add("platform");
-      configKeys.Add("distribution");
 
       // Get data from config file
       TextAsset jenkinsBuildConfigAsset = Resources.Load<TextAsset>("config");

@@ -310,6 +310,13 @@ public class InventoryPanel : Panel {
       }
    }
 
+   public override void hide () {
+      base.hide();
+
+      // Make sure to also hide perks panel in case of hiding inventory
+      PerksPanel.self.hide();
+   }
+
    #region Private Variables
 
    // The index of the current page

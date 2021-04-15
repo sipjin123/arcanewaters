@@ -1109,6 +1109,7 @@ MonoBehaviour:
   - {fileID: 20112}
   currentImpactMagnitude: 0
   combatCollider: {fileID: 943633091000639015}
+  totalDamageDealt: 0
   shipType: 100
   skinType: 0
   speed: 15
@@ -3389,7 +3390,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 33d4afa8c4d9045429c506723e64189c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.8}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

@@ -331,6 +331,7 @@ GameObject:
   - component: {fileID: 1730630030005961682}
   - component: {fileID: 3881789229965311541}
   - component: {fileID: 5021075951075969440}
+  - component: {fileID: 8776687531512108052}
   - component: {fileID: 888741232}
   - component: {fileID: 752909713694686012}
   - component: {fileID: 5989040040333118063}
@@ -387,6 +388,7 @@ MonoBehaviour:
   shineContainer: {fileID: 8263979464909163114}
   boxCollider: {fileID: 1730630030005961682}
   triggerCollider: {fileID: 5021075951075969440}
+  autoOpenCollider: {fileID: 8776687531512108052}
   chestOpeningAnimation: {fileID: 888741232}
   chestBurstAnimation: {fileID: 459723537}
   openedChestSprite: {fileID: 4142961907861163260, guid: 5aa837bd93a1eb149ab953e6b2fdd825,
@@ -541,6 +543,22 @@ CircleCollider2D:
   m_Offset: {x: 0, y: -0.05}
   serializedVersion: 2
   m_Radius: 1
+--- !u!58 &8776687531512108052
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4298218442774231790}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -0.05}
+  serializedVersion: 2
+  m_Radius: 0.2
 --- !u!114 &888741232
 MonoBehaviour:
   m_ObjectHideFlags: 0

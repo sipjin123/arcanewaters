@@ -440,6 +440,7 @@ public class SeaEntity : NetEntity
 
    public virtual void noteAttacker (uint netId) {
       _attackers[netId] = NetworkTime.time;
+      _lastAttackerNetId = netId;
    }
 
    public bool hasReloaded () {

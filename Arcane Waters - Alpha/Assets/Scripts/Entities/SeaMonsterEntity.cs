@@ -628,7 +628,10 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       // Drops the treasure bag if this entity can spawn one
       if (seaMonsterData.shouldDropTreasure) {
-         spawnChest();
+         NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(_lastAttackerNetId);
+         if (lastAttacker) {
+            spawnChest(lastAttacker.userId);
+         }
       }
    }
 
@@ -654,9 +657,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    }
 
    [Server]
-   protected void spawnChest () {
+   protected void spawnChest (int killerUserId) {
       Instance currentInstance = InstanceManager.self.getInstance(this.instanceId);
-      TreasureManager.self.createSeaMonsterChest(currentInstance, sortPoint.transform.position, seaMonsterData.seaMonsterType);
+      TreasureManager.self.createSeaMonsterChest(currentInstance, sortPoint.transform.position, seaMonsterData.seaMonsterType, killerUserId);
    }
 
    [Server]

@@ -377,6 +377,8 @@ GameObject:
   - component: {fileID: 8949625920773657222}
   - component: {fileID: 8784471621373643850}
   - component: {fileID: 2596290907059815799}
+  - component: {fileID: 7471728036844615833}
+  - component: {fileID: 2571233358728958212}
   m_Layer: 5
   m_Name: Name Text
   m_TagString: Untagged
@@ -494,6 +496,42 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &7471728036844615833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2613587381077129200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+--- !u!114 &2571233358728958212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2613587381077129200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipPlacement: 2
+  tooltipType: 1
+  message: 'A Cloth armor
+
+    
+
+    Armor = 0
+
+    Durability = 100'
+  maxWidth: 250
+  forceFitOnScreen: 0
 --- !u!1 &2778980397679753273
 GameObject:
   m_ObjectHideFlags: 0
@@ -763,14 +801,14 @@ MonoBehaviour:
     category: 0
     id: 0
     itemTypeId: 0
-    paletteName1: 
-    paletteName2: 
+    paletteNames: 
     data: 
     count: 1
     itemName: 
     itemDescription: 
     iconPath: 
-  tooltip: {fileID: 9012263189032642928}
+    durability: 100
+  tooltip: {fileID: 2571233358728958212}
 --- !u!1 &3299620241458756460
 GameObject:
   m_ObjectHideFlags: 0

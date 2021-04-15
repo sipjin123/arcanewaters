@@ -158,7 +158,7 @@ public class ServerCannonBall : NetworkBehaviour {
 
          if (hitEntity is BotShipEntity) {
             if (hitEntity.currentHealth <= 0) {
-               ((BotShipEntity) hitEntity).spawnChest();
+               ((BotShipEntity) hitEntity).spawnChest(sourceEntity.userId);
             }
          }
 

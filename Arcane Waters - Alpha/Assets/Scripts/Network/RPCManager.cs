@@ -638,11 +638,6 @@ public class RPCManager : NetworkBehaviour
    public void spawnBattlerMonsterChest (int instanceID, Vector3 position, int enemyID) {
       Instance currentInstance = InstanceManager.self.getInstance(instanceID);
       TreasureManager.self.createBattlerMonsterChest(currentInstance, position, enemyID, _player.userId);
-
-      // Chance to drop an extra treasure bag
-      if (Random.Range(0.0f, 1.0f) < PerkManager.self.getPerkMultiplierAdditive(_player.userId, Perk.Category.ItemDropChances)) {
-         TreasureManager.self.createBattlerMonsterChest(currentInstance, position, enemyID, _player.userId);
-      }
    }
 
    [Server]

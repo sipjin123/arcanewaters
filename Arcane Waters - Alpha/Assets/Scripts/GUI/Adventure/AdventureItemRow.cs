@@ -35,7 +35,7 @@ public class AdventureItemRow : MonoBehaviour {
    public Item item;
 
    // The tooltip on the image
-   public Tooltipped tooltip;
+   public ToolTipComponent tooltip;
 
    #endregion
 
@@ -91,15 +91,36 @@ public class AdventureItemRow : MonoBehaviour {
       // Recolor
       recoloredSprite.recolor(item.paletteNames);
 
-      // Sets the tooltip when hovering the image
-      tooltip.text = Item.isUsingEquipmentXML(item.category) ? item.itemDescription : item.getDescription();
+      tooltip.message = getTooltipText(item);
 
       // Associate a new function with the confirmation button
       buyButton.onClick.RemoveAllListeners();
       buyButton.onClick.AddListener(() => AdventureShopScreen.self.buyButtonPressed(item.id));
    }
 
+   public string getTooltipText (Item item) {
+      // Set the tooltip Description text
+      string itemDescription = Item.isUsingEquipmentXML(item.category) ? item.itemDescription : item.getDescription();
+
+      // Set the tooltip Strength text
+      string itemStrength = "";
+      if (item.category == Item.Category.Weapon) {
+         WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
+         itemStrength = "Damage = " + weaponData.weaponBaseDamage.ToString();
+      }
+      if (item.category == Item.Category.Armor) {
+         ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(item.itemTypeId);
+         itemStrength = "Defense = " + armorData.armorBaseDefense.ToString();
+      }
+
+      // Set the tooltip Durability text
+      string itemDurability = "Durability = " + item.durability.ToString();
+
+      string tooltipText = itemDescription + System.Environment.NewLine + System.Environment.NewLine + itemStrength + System.Environment.NewLine + itemDurability;
+      return tooltipText;
+   }
+
    #region Private Variables
-      
+
    #endregion
 }

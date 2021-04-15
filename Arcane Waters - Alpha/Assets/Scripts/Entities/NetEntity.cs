@@ -1922,6 +1922,9 @@ public class NetEntity : NetworkBehaviour
    // Entities that have attacked us and the time when they attacked
    protected Dictionary<uint, double> _attackers = new Dictionary<uint, double>();
 
+   // The netId of the last entity that attacked us
+   protected uint _lastAttackerNetId = 0;
+
    // The initial scale of the entity's shadow
    protected Vector3 _shadowInitialScale;
 
