@@ -447,6 +447,7 @@ MonoBehaviour:
   smallTargetRing: {fileID: 0}
   largeTargetRing: {fileID: 0}
   targetPoint: {fileID: 6701689944844613996}
+  hasLoggedAnimationFreeze: 0
   _canCastAbility: 1
   _alteredBattlerData:
     enemyName: unknown
@@ -1617,8 +1618,8 @@ MonoBehaviour:
   timerContainer: {fileID: 3987063453117997839}
   isInitialized: 0
   isDisabled: 0
-  debuffIconPrefab: {fileID: 420549040733907000}
-  debuffIconParent: {fileID: 3734102749699605869}
+  buffIconPrefab: {fileID: 420549040733907000}
+  buffIconParent: {fileID: 3734102749699605869}
   currentDebuffIcons: []
 --- !u!225 &4503358756059016377
 CanvasGroup:
@@ -2591,8 +2592,8 @@ MonoBehaviour:
   timerContainer: {fileID: 4630269372962960555}
   isInitialized: 0
   isDisabled: 0
-  debuffIconPrefab: {fileID: 420549040733907000}
-  debuffIconParent: {fileID: 4218743073769281111}
+  buffIconPrefab: {fileID: 420549040733907000}
+  buffIconParent: {fileID: 4218743073769281111}
   currentDebuffIcons: []
 --- !u!225 &126959614628035449
 CanvasGroup:

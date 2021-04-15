@@ -21,11 +21,11 @@ public class BattleBars : MonoBehaviour {
    // Disables the script update
    public bool isDisabled;
 
-   // Prefab reference of the debuff icon
-   public BuffIcon debuffIconPrefab;
+   // Prefab reference of the buff icon
+   public BuffIcon buffIconPrefab;
 
-   // The parent of the debuff icons to be created
-   public Transform debuffIconParent;
+   // The parent of the buff icons to be created
+   public Transform buffIconParent;
 
    // The current debuff icons generated for this battler
    public List<BuffIcon> currentDebuffIcons = new List<BuffIcon>();
@@ -122,7 +122,7 @@ public class BattleBars : MonoBehaviour {
 
    private void addDebuffStatus (Status.Type statType) {
       if (!currentDebuffIcons.Exists(_ => _.statusType == statType)) {
-         BuffIcon currentIcon = Instantiate(debuffIconPrefab, debuffIconParent);
+         BuffIcon currentIcon = Instantiate(buffIconPrefab, buffIconParent);
          currentIcon.statusType = statType;
          currentIcon.buffIcon.sprite = currentIcon.buffSpritePair.Find(_ => _.statusType == statType).statusSprite;
          currentDebuffIcons.Add(currentIcon);
