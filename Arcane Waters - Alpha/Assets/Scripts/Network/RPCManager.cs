@@ -6254,10 +6254,15 @@ public class RPCManager : NetworkBehaviour
       // Get the warps for the area the player is currently in
       List<Warp> warps = area.getWarps();
 
+      int index = 0;
       foreach (Warp warp in warps) {
          // Only warp the player if they're close enough to the warp. Check area and spawn targets are the ones player requested just in case two warps are too close together.
          float distanceToWarp = Vector2.Distance(warp.transform.position, transform.position);
          if (distanceToWarp < 2f && areaTarget == warp.areaTarget && spawnTarget == warp.spawnTarget && warp.canPlayerUseWarp(_player)) {
+            D.adminLog(index + "::DistanceToWarp(Req:<2) {" + distanceToWarp + "}" +
+               "AreaTarget: {" + areaTarget + "}={" + warp.areaTarget + "}" +
+               "SpawnTarget: {" + spawnTarget + "}={" + warp.spawnTarget + "}" +
+               "CanUseWarp? {" + warp.canPlayerUseWarp(_player) + "}", D.ADMIN_LOG_TYPE.Warp);
             if (warp.gameObject.activeInHierarchy) {
                warp.startWarpForPlayer(_player);
             } else {
@@ -6274,6 +6279,7 @@ public class RPCManager : NetworkBehaviour
             "AreaTarget: {" + areaTarget + "} " +
             "WarpTarget: {" + warp.spawnTarget + "} " +
             "CanUse?: {" + warp.canPlayerUseWarp(_player) + "}", D.ADMIN_LOG_TYPE.Warp);
+         index++;
       }
 
       D.adminLog("Player {" + _player.userId + "} Failed to warp since there is no warp nearby!", D.ADMIN_LOG_TYPE.Warp);
