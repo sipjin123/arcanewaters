@@ -4540,6 +4540,7 @@ public class RPCManager : NetworkBehaviour
                   item.data = Blueprint.HAT_DATA_PREFIX;
                   break;
             }
+            D.adminLog("Database item is Blueprint! " + itemCache.xmlId + " : " + EquipmentXMLManager.self.getItemName(itemCache.resultItem), D.ADMIN_LOG_TYPE.Blueprints);
             newDatabaseItem.itemTypeId = itemCache.resultItem.itemTypeId;
          } else {
             newDatabaseItem = item;

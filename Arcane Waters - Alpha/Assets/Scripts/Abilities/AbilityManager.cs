@@ -212,7 +212,7 @@ public class AbilityManager : MonoBehaviour
                      + " Target is: " + targetBattler.enemyType
                      + " TimeToWait: " + timeToWait
                      + " CurrAnim: " + targetBattler.getAnim()[0].currentAnimation
-                     + " TargetHealth: " + targetBattler.health + " : " + targetBattler.displayedHealth, D.ADMIN_LOG_TYPE.Combat);
+                     + " TargetHealth: " + targetBattler.health + " : " + targetBattler.displayedHealth, D.ADMIN_LOG_TYPE.AnimationFreeze);
                }
 
                sourceBattler.registerNewActionCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst), action.battleActionType);

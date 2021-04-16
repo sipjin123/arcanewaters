@@ -507,7 +507,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          if (battlerType == BattlerType.PlayerControlled) {
             battlerData = MonsterManager.self.getBattlerData(Enemy.Type.PlayerBattler);
-         } else {
+         } else { 
             // Sets the default monster if data is not yet created in xml editor
             if (battlerData == null) {
                battlerData = MonsterManager.self.getBattlerData(Enemy.Type.Lizard);
@@ -1222,11 +1222,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             if (sourceBattler.enemyType == Enemy.Type.PlayerBattler)
             if (targetBattler.displayedHealth < 1 || targetBattler.health < 1 || targetBattler._anims[0].currentAnimation == Anim.Type.Death_East) {
-               D.debug("Error here! Play should not be able to attack target with no health!! " +
+               D.adminLog("Error here! Play should not be able to attack target with no health!! " +
                   "{" + targetBattler.enemyType + "} " +
                   "{" + targetBattler.displayedHealth + "} " +
                   "{" + targetBattler.health + "} " +
-                  "{" + targetBattler._anims[0].currentAnimation + "}");
+                  "{" + targetBattler._anims[0].currentAnimation + "}", D.ADMIN_LOG_TYPE.AnimationFreeze);
             }
 
             const float SPECIAL_ATTACK_READY_TIME = .2f;

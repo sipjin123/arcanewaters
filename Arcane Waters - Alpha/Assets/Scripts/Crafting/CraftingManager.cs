@@ -134,5 +134,6 @@ public class CraftingManager : MonoBehaviour {
 
    // The cached refinement data 
    private Dictionary<int, RefinementData> _refinementData = new Dictionary<int, RefinementData>();
+
    #endregion
 }

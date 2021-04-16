@@ -824,6 +824,10 @@ public class AdminManager : NetworkBehaviour
             newLogType = D.ADMIN_LOG_TYPE.Refine;
             Global.updateAdminLog(newLogType, isEnabled);
             break;
+         case "bp":
+            newLogType = D.ADMIN_LOG_TYPE.Blueprints;
+            Global.updateAdminLog(newLogType, isEnabled);
+            break;
          default:
             if (Util.isServerBuild()) {
                _player.Target_FloatingMessage(_player.connectionToClient, "Invalid Parameters" + " : " + parameters);

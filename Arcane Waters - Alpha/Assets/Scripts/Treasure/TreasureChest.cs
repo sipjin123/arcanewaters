@@ -292,6 +292,12 @@ public class TreasureChest : NetworkBehaviour {
       D.adminLog("Getting land monster contents {" + battlerData.lootGroupId + "}", D.ADMIN_LOG_TYPE.Treasure);
 
       List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(battlerData.lootGroupId, rarity);
+      foreach (TreasureDropsData newData in treasureDropsDataList) {
+         D.adminLog("Treasure drops Content :: " +
+            "Category: {" + newData.item.category + "} " +
+            "TypeID: {" + newData.item.itemTypeId + "} " +
+            "Data: {" + newData.item.data + "}", D.ADMIN_LOG_TYPE.Treasure);
+      }
       return processItemChance(treasureDropsDataList);
    }
 
@@ -300,7 +306,14 @@ public class TreasureChest : NetworkBehaviour {
          foreach (TreasureDropsData treasureDropData in treasureDropsDataList.OrderBy(_ => _.spawnChance)) {
             float randomizer = Random.Range(0, 100);
             if (randomizer < treasureDropData.spawnChance) {
-               D.adminLog("Lootbag will drop random item {" + EquipmentXMLManager.self.getItemName(treasureDropData.item) + "}", D.ADMIN_LOG_TYPE.Treasure);
+               if (treasureDropData.item.category == Item.Category.Blueprint) {
+                  D.adminLog("This is a blueprint! " +
+                     "TypeID:{" + treasureDropData.item.itemTypeId + "} " +
+                     "Data: {" + treasureDropData.item.data + "}", D.ADMIN_LOG_TYPE.Blueprints);
+               }
+               D.adminLog("Lootbag will drop random item:: " +
+                  "Name:{" + EquipmentXMLManager.self.getItemName(treasureDropData.item) + "} " +
+                  "Data:{" + treasureDropData.item.data + "}", D.ADMIN_LOG_TYPE.Treasure);
                return treasureDropData.item;
             }
          }
