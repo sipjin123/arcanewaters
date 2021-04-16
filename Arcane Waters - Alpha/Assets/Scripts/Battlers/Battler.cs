@@ -1220,6 +1220,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Pause for a moment after reaching our destination
             yield return new WaitForSeconds(PAUSE_LENGTH);
 
+            if (sourceBattler.enemyType == Enemy.Type.PlayerBattler)
+            if (targetBattler.displayedHealth < 1 || targetBattler.health < 1 || targetBattler._anims[0].currentAnimation == Anim.Type.Death_East) {
+               D.debug("Error here! Play should not be able to attack target with no health!! " +
+                  "{" + targetBattler.enemyType + "} " +
+                  "{" + targetBattler.displayedHealth + "} " +
+                  "{" + targetBattler.health + "} " +
+                  "{" + targetBattler._anims[0].currentAnimation + "}");
+            }
+
             const float SPECIAL_ATTACK_READY_TIME = .2f;
             if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
                sourceBattler.playAnim(Anim.Type.Punch);
