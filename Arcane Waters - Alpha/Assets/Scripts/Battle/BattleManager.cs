@@ -861,8 +861,10 @@ public class BattleManager : MonoBehaviour {
                // Registers the usage of the Buff Skill for achievement recording
                AchievementManager.registerUserAchievement(source.player, ActionType.BuffSkillUse);
 
-               float buffValue = buffAction.buffValue;
-               buffValue *= 1.0f + PerkManager.self.getPerkMultiplierAdditive(buffAction.sourceId, Perk.Category.Healing);
+               if (source.enemyType == Enemy.Type.PlayerBattler) {
+                  float buffValue = buffAction.buffValue;
+                  buffValue *= 1.0f + PerkManager.self.getPerkMultiplierAdditive(buffAction.sourceId, Perk.Category.Healing);
+               }
 
                // Apply damage
                if (buffAction.buffActionType == BuffActionType.Regeneration) {

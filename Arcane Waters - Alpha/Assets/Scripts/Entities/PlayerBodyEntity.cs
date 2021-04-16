@@ -448,6 +448,10 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          return;
       }
 
+      if (PriorityOverProcessActionLogic.isAnyHovered()) {
+         return;
+      }
+
       if (InputManager.isLeftClickKeyPressed() && !PanelManager.self.hasPanelInLinkedList()) {
          NetEntity body = getClickedBody();
          if (body != null && body is PlayerBodyEntity) {

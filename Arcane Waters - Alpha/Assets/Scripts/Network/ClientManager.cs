@@ -49,12 +49,11 @@ public class ClientManager : GenericGameManager {
          MyNetworkManager.self.StartClient();
       }
 
-      if (CommandCodes.get(CommandCodes.Type.AUTO_SERVER)) {
-         MyNetworkManager.self.StartServer();
-      }
-
       if (CommandCodes.get(CommandCodes.Type.AUTO_DBCONFIG) || Util.isForceServerLocalWithAutoDbconfig()) {
          DB_Main.setServerFromConfig();
+      }
+
+      if (CommandCodes.get(CommandCodes.Type.AUTO_SERVER) || Util.isForceServerLocalWithAutoDbconfig()) {
          MyNetworkManager.self.StartServer();
       }
 

@@ -49,6 +49,9 @@ public class TreasureChest : NetworkBehaviour {
    // Our trigger collider for the Open button
    public CircleCollider2D triggerCollider;
 
+   // Our trigger collider for the automatically opening treasure - used only for sea and land treasure bags
+   public CircleCollider2D autoOpenCollider;
+
    // Our Chest opening animation
    public SimpleAnimation chestOpeningAnimation;
 
@@ -126,7 +129,9 @@ public class TreasureChest : NetworkBehaviour {
          return;
       }
       
-      Minimap.self.addTreasureChestIcon(this.gameObject);
+      if (Global.player && allowedUserIds.Contains(Global.player.userId)) {
+         Minimap.self.addTreasureChestIcon(this.gameObject);
+      }
 
       if (useCustomSprite) {
          Sprite[] customSprites = ImageManager.getSprites(customSpritePath);
@@ -170,6 +175,11 @@ public class TreasureChest : NetworkBehaviour {
 
       // Disables opened loot bags
       if (isExpired || (hasBeenOpened() && (chestType == ChestSpawnType.Land || chestType == ChestSpawnType.Sea))) {
+         gameObject.SetActive(false);
+      }
+
+      // If the user is NOT part of the sync list of allowed user interaction, just disable this loot as the user will not be able to open it anyway
+      if (Global.player && !allowedUserIds.Contains(Global.player.userId) && chestType != ChestSpawnType.Site) {
          gameObject.SetActive(false);
       }
    }
@@ -373,6 +383,27 @@ public class TreasureChest : NetworkBehaviour {
       } else {
          string msg = string.Format("You found one <color=red>{0}</color>!", itemName);
          ChatManager.self.addChat(msg, ChatInfo.Type.System);
+      }
+   }
+
+   private void OnTriggerEnter2D (Collider2D other) {
+      // Auto-opening should be enabled only for sea/land treasure bags
+      if (chestType == ChestSpawnType.Site) {
+         return;
+      }
+
+      // Ignore already opened chests
+      if (hasBeenOpened()) {
+         return;
+      }
+
+      // If our player enters the treasure bag, automatically send request to open it
+      NetEntity entity = other.GetComponent<NetEntity>();
+      if (entity != null && Global.player != null && entity.userId == Global.player.userId) {
+         // Ensure that correct player has entered correct trigger
+         if (other.IsTouching(autoOpenCollider)) {
+            sendOpenRequest();
+         }
       }
    }
 

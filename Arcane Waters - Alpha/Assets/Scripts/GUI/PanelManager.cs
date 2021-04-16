@@ -26,6 +26,7 @@ public class PanelManager : GenericGameManager {
    public CountdownScreen countdownScreen;
    public ContextMenuPanel contextMenuPanel;
    public ShortcutPanel itemShortcutPanel;
+   public NotificationPanel notificationPanel;
 
    // Helps Determine which active panel requires inventory data (crafting/inventory)
    public Panel.Type selectedPanel;

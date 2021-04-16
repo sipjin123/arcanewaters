@@ -976,6 +976,7 @@ GameObject:
   - component: {fileID: 2111939073535570174}
   - component: {fileID: 4210623070800773355}
   - component: {fileID: 5031008375051027426}
+  - component: {fileID: 8581224059449224613}
   m_Layer: 5
   m_Name: Expand Button
   m_TagString: Untagged
@@ -1094,6 +1095,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 8581224059449224613}
+        m_MethodName: removeFromList
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2111939073535570174
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1139,6 +1151,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: Expand
+--- !u!114 &8581224059449224613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 629758436244451302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bac4ac10040ed7d4584f0b2f1c4dda91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &642792737418918052
 GameObject:
   m_ObjectHideFlags: 0
@@ -14996,6 +15020,7 @@ GameObject:
   - component: {fileID: 1982424218252447204}
   - component: {fileID: 2094607779672738966}
   - component: {fileID: 524055613010612844}
+  - component: {fileID: 6849779408827365089}
   m_Layer: 5
   m_Name: Collapse Button
   m_TagString: Untagged
@@ -15114,6 +15139,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 6849779408827365089}
+        m_MethodName: removeFromList
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1982424218252447204
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15159,6 +15195,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: Collapse
+--- !u!114 &6849779408827365089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8101328626493637562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bac4ac10040ed7d4584f0b2f1c4dda91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8138451701672858331
 GameObject:
   m_ObjectHideFlags: 0
@@ -16966,12 +17014,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0cd95c957f90e854ab24bae23f93c8bc, type: 3}
---- !u!224 &6483534910860594255 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 4796230455704811386, guid: 0cd95c957f90e854ab24bae23f93c8bc,
-    type: 3}
-  m_PrefabInstance: {fileID: 1978635591973174069}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &96025021642069725 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1882681296095227368, guid: 0cd95c957f90e854ab24bae23f93c8bc,
@@ -16984,6 +17026,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4b9c7105968ae847964bb89e071805f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &6483534910860594255 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4796230455704811386, guid: 0cd95c957f90e854ab24bae23f93c8bc,
+    type: 3}
+  m_PrefabInstance: {fileID: 1978635591973174069}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2034152069812107345
 PrefabInstance:
   m_ObjectHideFlags: 0

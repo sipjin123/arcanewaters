@@ -1216,6 +1216,9 @@ public class Util : MonoBehaviour
       // Notice the tutorial
       TutorialManager3.self.onUserLogOut();
 
+      // Discard any pending notifications
+      NotificationManager.self.onUserLogOut();
+
       // Look up the background music for the Title Screen, if we have any
       SoundManager.setBackgroundMusic(SoundManager.Type.Intro_Music);
 

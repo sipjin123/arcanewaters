@@ -49,6 +49,11 @@ public class RespawnScreen : MonoBehaviour
          if (TutorialManager3.self.panel.getMode() != TutorialPanel3.Mode.Closed) {
             TutorialManager3.self.panel.gameObject.SetActive(true);
          }
+
+         // When dying in a voyage area, show a tip explaining how to return
+         if (Global.player.isInGroup() && VoyageManager.isVoyageOrLeagueArea(Global.player.areaKey)) {
+            NotificationManager.self.add(Notification.Type.ReturnToVoyage);
+         }
       }
       _deadTime = 0;
       hide();
