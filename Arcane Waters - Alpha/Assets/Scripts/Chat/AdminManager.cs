@@ -774,49 +774,63 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void processLogAuthorization (string logType, bool isEnabled, string parameters) {
+      D.ADMIN_LOG_TYPE newLogType = D.ADMIN_LOG_TYPE.None;
       switch (logType) {
          case "gamepad":
-            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Gamepad, isEnabled);
+            newLogType = D.ADMIN_LOG_TYPE.Gamepad;
+            Global.updateAdminLog(newLogType, isEnabled);
             break;
          case "combat":
-            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Combat, isEnabled);
+            newLogType = D.ADMIN_LOG_TYPE.Combat;
+            Global.updateAdminLog(newLogType, isEnabled);
             break;
          case "crop":
-            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Crop, isEnabled);
+            newLogType = D.ADMIN_LOG_TYPE.Crop;
+            Global.updateAdminLog(newLogType, isEnabled);
             break;
          case "sea":
-            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Sea, isEnabled);
+            newLogType = D.ADMIN_LOG_TYPE.Sea;
+            Global.updateAdminLog(newLogType, isEnabled);
             break;
          case "warp":
-            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Warp, isEnabled);
+            newLogType = D.ADMIN_LOG_TYPE.Warp;
+            Global.updateAdminLog(newLogType, isEnabled);
             break;
          case "boss":
-            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Boss, isEnabled);
+            newLogType = D.ADMIN_LOG_TYPE.Boss;
+            Global.updateAdminLog(newLogType, isEnabled);
             break;
          case "mine":
-            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Mine, isEnabled);
+            newLogType = D.ADMIN_LOG_TYPE.Mine;
+            Global.updateAdminLog(newLogType, isEnabled);
             break;
          case "ability":
-            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Ability, isEnabled);
+            newLogType = D.ADMIN_LOG_TYPE.Ability;
+            Global.updateAdminLog(newLogType, isEnabled);
             break;
          case "equipment":
-            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Equipment, isEnabled);
+            newLogType = D.ADMIN_LOG_TYPE.Equipment;
+            Global.updateAdminLog(newLogType, isEnabled);
             break;
          case "quest":
-            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Quest, isEnabled);
+            newLogType = D.ADMIN_LOG_TYPE.Quest;
+            Global.updateAdminLog(newLogType, isEnabled);
             break;
          case "treasure":
-            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Treasure, isEnabled);
+            newLogType = D.ADMIN_LOG_TYPE.Treasure;
+            Global.updateAdminLog(newLogType, isEnabled);
             break;
          case "refine":
-            Global.updateAdminLog(D.ADMIN_LOG_TYPE.Refine, isEnabled);
+            newLogType = D.ADMIN_LOG_TYPE.Refine;
+            Global.updateAdminLog(newLogType, isEnabled);
             break;
          default:
             if (Util.isServerBuild()) {
                _player.Target_FloatingMessage(_player.connectionToClient, "Invalid Parameters" + " : " + parameters);
             }
-            return;
+            break;
       }
+      D.adminLog("Test Log", newLogType);
    }
 
    [Command]
