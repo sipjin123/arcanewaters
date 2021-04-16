@@ -448,9 +448,9 @@ public class CraftingPanel : Panel
       loadBlockerRefinementList.SetActive(false);
       loadBlockerRefinementIngredients.SetActive(false);
 
-      foreach (Item temp in itemList) {
+      foreach (Item item in itemList) {
          ItemCell itemCell = Instantiate(itemCellPrefab, refineableItemsHolder);
-         itemCell.setCellForItem(temp);
+         itemCell.setCellForItem(item);
          itemCell.leftClickEvent.RemoveAllListeners();
          itemCell.leftClickEvent.AddListener(() => {
             loadBlockerRefinementIngredients.SetActive(true);
@@ -469,23 +469,37 @@ public class CraftingPanel : Panel
             // Generate item to the item preview panel
             refineAbleItemSelection.gameObject.DestroyChildren();
             ItemCell selectedItemCell = Instantiate(itemCellPrefab, refineAbleItemSelection);
-            selectedItemCell.setCellForItem(temp);
-
-            // Display item durability
-            durabilityText.text = temp.durability.ToString();
-
-            // Display requirements here
+            selectedItemCell.setCellForItem(item);
             refinementIngredientsHolder.gameObject.DestroyChildren();
 
-            // TODO: Replace this hard coded id into the id that is set in the web tool
-            int xmlId = 0;
-            foreach (Item item in CraftingManager.self.getRefinementData(xmlId).combinationRequirements) {
-               ItemCell requiredItemCell = Instantiate(itemCellPrefab, refinementIngredientsHolder);
-               requiredItemCell.setCellForItem(item);
-            }
-            loadBlockerRefinementIngredients.SetActive(false);
+            // Display item durability
+            durabilityText.text = item.durability.ToString();
+
+            Global.player.rpc.Cmd_RequestRefinementRequirement(item.id);
          });
       }
+   }
+
+   public void receiveRefineRequirementsForItem (int xmlId, Item[] currentPlayerItems) {
+      // Display requirements here
+      refinementIngredientsHolder.gameObject.DestroyChildren();
+      loadBlockerRefinementIngredients.SetActive(false);
+
+      // TODO: Replace this hard coded id into the id that is set in the web tool
+      foreach (Item requiredItem in CraftingManager.self.getRefinementData(xmlId).combinationRequirements) {
+         ItemCell requiredItemCell = Instantiate(itemCellPrefab, refinementIngredientsHolder);
+         Item currentPlayerItem = currentPlayerItems.ToList().Find(_ => _.category == requiredItem.category && _.itemTypeId == requiredItem.itemTypeId);
+         requiredItemCell.setCellForItem(requiredItem);
+
+         int currentPlayerInventory = currentPlayerItem == null ? 0 : currentPlayerItem.count;
+         requiredItemCell.itemCountText.text = requiredItem.count + "/" + currentPlayerInventory.ToString();
+         if (currentPlayerInventory >= requiredItem.count) {
+            requiredItemCell.itemCountText.color = Color.green;
+         } else {
+            requiredItemCell.itemCountText.color = Color.red;
+         }
+      }
+      loadBlockerRefinementIngredients.SetActive(false);
    }
 
    private void updateNavigationButtons () {

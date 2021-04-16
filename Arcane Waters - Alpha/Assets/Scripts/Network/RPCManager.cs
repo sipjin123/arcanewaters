@@ -4232,6 +4232,54 @@ public class RPCManager : NetworkBehaviour
       }
    }
 
+   [Command]
+   public void Cmd_RequestRefinementRequirement (int itemId) {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Get the item from the user inventory
+         Item itemToRefine = DB_Main.getItem(_player.userId, itemId);
+         if (itemToRefine == null) {
+            D.debug("Error here! Item {" + itemId + "} does not exist for user {" + _player.userId + "}");
+            // TODO: Process error handling here to be sent to the client
+         }
+
+         // TODO: Do this dynamically by setting up xml id as part of the equipment data in the web tool
+         int xmlId = 0;
+
+         // Fetch the refinement requirements for the item type
+         RefinementData refinementData = CraftingManager.self.getRefinementData(xmlId);
+         if (refinementData == null) {
+            // If refinement data failed to fetch, fetch the default one and error log
+            D.debug("There is no refinement data with {" + xmlId + "} id");
+            refinementData = CraftingManager.self.getRefinementData(0);
+         }
+
+         // Filter all the items needed for the refinement before sending database query
+         List<CraftingIngredients.Type> ingredientType = new List<CraftingIngredients.Type>();
+         foreach (Item item in refinementData.combinationRequirements) {
+            if (item.category == Item.Category.CraftingIngredients) {
+               ingredientType.Add((CraftingIngredients.Type) item.itemTypeId);
+            }
+         }
+
+         // Fetch the crafting ingredients from the users inventory if any
+         List<Item> ingredients = DB_Main.getCraftingIngredients(_player.userId, ingredientType);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveRefinementRequirements(_player.connectionToClient, xmlId, ingredients.ToArray());
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveRefinementRequirements (NetworkConnection connection, int xmlId, Item[] itemList) {
+      CraftingPanel panel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
+
+      // Refresh the panel
+      panel.receiveRefineRequirementsForItem(xmlId, itemList);
+   }
+
    [TargetRpc]
    public void Target_callInsufficientNotification (NetworkConnection connection, int npcID) {
       NPC npc = NPCManager.self.getNPC(npcID);
