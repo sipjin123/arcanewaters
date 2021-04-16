@@ -153,7 +153,6 @@ public class ServerCannonBall : NetworkBehaviour {
          if (hitEntity.currentHealth > 0) {
             hitEntity.currentHealth -= totalDamage;
             sourceEntity.totalDamageDealt += totalDamage;
-            sourceEntity.rpc.notifyDamageToVoyageCrew(sourceEntity.userId, sourceEntity.totalDamageDealt);
          }
 
          if (hitEntity is BotShipEntity) {

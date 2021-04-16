@@ -55,6 +55,7 @@ public class SeaEntity : NetEntity
    public GenericCombatCollider combatCollider;
 
    // The total damage dealt
+   [SyncVar]
    public int totalDamageDealt = 0;
 
    #endregion

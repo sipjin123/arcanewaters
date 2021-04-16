@@ -50,6 +50,8 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       // Clear out any info
       memberContainer.DestroyAllChildrenExcept(panelHoveringZone.gameObject);
       _memberCells.Clear();
+
+      InvokeRepeating(nameof(updateMemberCellDamage), 1, 1);
    }
 
    public void Update () {
@@ -67,6 +69,17 @@ public class VoyageGroupPanel : ClientMonoBehaviour
          xButton.gameObject.SetActive(true);
       } else {
          xButton.gameObject.SetActive(false);
+      }
+   }
+
+   private void updateMemberCellDamage () {
+      foreach (VoyageGroupMemberCell memberCell in _memberCells) {
+         var entity = EntityManager.self.getEntity(memberCell.getUserId());
+         if (entity != null) {
+            if (entity is PlayerShipEntity) {
+               memberCell.updateCellDamage(((PlayerShipEntity) entity).totalDamageDealt);
+            }
+         }
       }
    }
 
@@ -98,13 +111,6 @@ public class VoyageGroupPanel : ClientMonoBehaviour
          if (cell.getUserId() == userId) {
             cell.updateTooltip(userName, XP, areaKey);
          }
-      }
-   }
-
-   public void updateVoyageMemberCell (int userId, int damage) {
-      VoyageGroupMemberCell memberCell = _memberCells.Find(_ => _.getUserId() == userId);
-      if (memberCell != null) {
-         memberCell.updateCellDamage(damage);
       }
    }
 

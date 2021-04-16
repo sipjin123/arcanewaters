@@ -3819,27 +3819,6 @@ public class RPCManager : NetworkBehaviour
       _player.spawnInNewMap(voyageId, areaKey, Direction.South);
    }
 
-   [Server]
-   public void notifyDamageToVoyageCrew (int userId, int damage) {
-      // Get the group the player belongs to
-      List<int> groupMembers = _player.tryGetGroup(out VoyageGroupInfo voyageGroup) ? voyageGroup.members : new List<int>();
-      
-      // Process voyage groups
-      foreach (int groupMemberId in groupMembers) {
-         NetEntity entity = EntityManager.self.getEntity(groupMemberId);
-         if (entity != null) {
-            if (_player.instanceId == entity.instanceId) {
-               Target_NotifyDamageToVoyageCrew(entity.connectionToClient, userId, damage);
-            }
-         }
-      }
-   }
-
-   [TargetRpc]
-   public void Target_NotifyDamageToVoyageCrew (NetworkConnection conn, int userId, int damage) {
-      VoyageGroupPanel.self.updateVoyageMemberCell(userId, damage);
-   }
-
    [Command]
    public void Cmd_JoinVoyageAlone (int voyageId) {
       if (_player == null) {
