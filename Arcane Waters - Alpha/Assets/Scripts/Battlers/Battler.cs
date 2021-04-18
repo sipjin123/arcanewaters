@@ -285,10 +285,17 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // A reference to the point where the target line should start / end
    public Transform targetPoint;
 
+   // TODO: Remove this after animation freeze no longer occurs
+   public bool hasLoggedAnimationFreeze;
+
+   // Returns simple animation list
+   public List<SimpleAnimation> getAnim () { return _anims; } 
+
    #endregion
 
    public void stopActionCoroutine () {
       if (currentActionCoroutine != null) {
+         D.debug("Action Coroutine has been stopped for battler! {" + userId + "}" + " : {" + enemyType + "}");
          StopCoroutine(currentActionCoroutine);
          receivedCancelState = true;
          StartCoroutine(CO_ResetBattlerSpot());
@@ -492,6 +499,22 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          if (battlerType == BattlerType.PlayerControlled && isShowingTargetingEffects()) {
             targetLine.updateLine();
             targetRing.transform.position = _targetedBattler.transform.position + BattleSelectionManager.getOffsetToFeet();
+         }
+
+         // TODO: Remove this after rare occurence animation freeze no longer occurs
+         // Death frame is at 33-38
+         if (animGroup == Anim.Group.Pirate && !hasLoggedAnimationFreeze && health < 1) {
+            SimpleAnimation animReference = _anims[0];
+            hasLoggedAnimationFreeze = true;
+            string warningMessage = "";
+            if (animReference.getIndex() > 33 && _anims[0].getIndex() < 37) {
+               warningMessage = "The pirate battler has stopped! Investigate cause! Here are the raw data: ";
+               D.debug(warningMessage
+                  + animReference.isPaused + " : "
+                  + animReference.stayAtLastFrame + " : "
+                  + animReference.getIndex() + " : "
+                  + animReference.currentAnimation);
+            }
          }
       }
    }
@@ -1221,13 +1244,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             yield return new WaitForSeconds(PAUSE_LENGTH);
 
             if (sourceBattler.enemyType == Enemy.Type.PlayerBattler)
-            if (targetBattler.displayedHealth < 1 || targetBattler.health < 1 || targetBattler._anims[0].currentAnimation == Anim.Type.Death_East) {
-               D.adminLog("Error here! Play should not be able to attack target with no health!! " +
-                  "{" + targetBattler.enemyType + "} " +
-                  "{" + targetBattler.displayedHealth + "} " +
-                  "{" + targetBattler.health + "} " +
-                  "{" + targetBattler._anims[0].currentAnimation + "}", D.ADMIN_LOG_TYPE.AnimationFreeze);
-            }
+               if (targetBattler.displayedHealth < 1 || targetBattler._anims[0].currentAnimation == Anim.Type.Death_East) {
+                  D.adminLog("Error here! Play should not be able to attack target with no health!! " +
+                     "{" + targetBattler.enemyType + "} " +
+                     "{" + targetBattler.displayedHealth + "} " +
+                     "{" + targetBattler.health + "} " +
+                     "{" + targetBattler._anims[0].currentAnimation + "}", D.ADMIN_LOG_TYPE.AnimationFreeze);
+               }
 
             const float SPECIAL_ATTACK_READY_TIME = .2f;
             if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
@@ -1261,7 +1284,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                Vector2 newEffectPost = new Vector2(sourceBattler.getCorePosition().x + .1f, sourceBattler.getCorePosition().y + .4f);
                EffectManager.playCastAbilityVFX(sourceBattler, action, newEffectPost, BattleActionType.Attack);
             }
-            
+
             if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
                sourceBattler.playAnim(Anim.Type.Battle_East);
             } else {
@@ -1281,11 +1304,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                // Play an appropriate attack animation effect
                effectPosition = targetBattler.getMagicGroundPosition() + new Vector2(0f, .25f);
                EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
-               
+
                // Make the target sprite display its "Hit" animation
                targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action, attackerAbility));
             }
-            
+
             // Simulate the collision effect of the attack towards the target battler
             yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action, attackerAbility));
 
@@ -1367,9 +1390,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             targetBattler.displayedAP = Util.clamp<int>(targetBattler.displayedAP + action.targetApChange, 0, MAX_AP);
 
             // If the target died, animate that death now
-            if (targetBattler.isDead()) {
+            if (targetBattler.isDead() && targetBattler.getAnim()[0].currentAnimation != Anim.Type.Death_East) {
                BattleSelectionManager.self.deselectTarget();
                targetBattler.StartCoroutine(targetBattler.animateDeath());
+            } else {
+               D.debug("Skip animating death for {" + enemyType + "} Anim:{" + targetBattler.getAnim()[0].currentAnimation + "}");
             }
 
             onBattlerAttackEnd.Invoke();
