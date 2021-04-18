@@ -352,7 +352,7 @@ public class CraftingPanel : Panel
          "Type: " + latestRefineableItem.itemCache.itemTypeId + " " +
          "Durability: " + latestRefineableItem.itemCache.durability, D.ADMIN_LOG_TYPE.Refine);
 
-      Global.player.rpc.Cmd_RefineItem(latestRefineableItem.itemCache);
+      Global.player.rpc.Cmd_RefineItem(latestRefineableItem.itemCache.id);
    }
 
    public void updateCraftButton () {

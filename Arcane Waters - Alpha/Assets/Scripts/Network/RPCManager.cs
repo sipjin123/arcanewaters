@@ -3520,7 +3520,7 @@ public class RPCManager : NetworkBehaviour
    #endregion
 
    [Command]
-   public void Cmd_RefineItem (Item itemToRefine) {
+   public void Cmd_RefineItem (int itemIdToRefine) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -3538,6 +3538,7 @@ public class RPCManager : NetworkBehaviour
 
       bool hasMetRequirements = true;
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         Item itemToRefine = DB_Main.getItem(_player.userId, itemIdToRefine);
          List<Item> userInventoryIngredients = DB_Main.getCraftingIngredients(_player.userId, ingredientList);
          foreach (Item refinementRequirement in refinementData.combinationRequirements) {
             Item userItemData = userInventoryIngredients.Find(_ =>
