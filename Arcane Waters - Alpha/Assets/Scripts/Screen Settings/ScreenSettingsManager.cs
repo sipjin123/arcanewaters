@@ -75,6 +75,10 @@ public class ScreenSettingsManager : GenericGameManager {
       }
    }
 
+   private void Start () {
+      BattleUIManager.self.setBattleCameraHeight();
+   }
+
    public static void setFullscreenMode (FullScreenMode screenMode) {
       if (screenMode == fullScreenMode) { 
          return; 
@@ -122,6 +126,8 @@ public class ScreenSettingsManager : GenericGameManager {
       ScreenSettingsManager.refreshRate = refreshRate;
 
       Screen.SetResolution(width, height, fullScreenMode, refreshRate);
+
+      BattleUIManager.self.setBattleCameraHeight();
 
       saveSettings();
    }

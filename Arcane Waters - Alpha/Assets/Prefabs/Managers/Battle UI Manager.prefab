@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &448410433782278633
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 448410433782278634}
+  - component: {fileID: 448410433782278635}
+  m_Layer: 0
+  m_Name: Battle UI Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &448410433782278634
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 448410433782278633}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &448410433782278635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 448410433782278633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 360a8b4ff136b3341b2bdd93f28977af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  battleRingSteps:
+  - 0.175
+  - 0.275
+  - 0.375
+  - 0.475
+  - 0.575
+  - 0.725
+  - 1
+  battleCamPixelFade: {fileID: 0}
+  mainCanvasRect: {fileID: 0}
+  abilitiesCG: {fileID: 0}
+  abilityTargetButtons:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  playerBattleCG: {fileID: 0}
+  mainPlayerRect: {fileID: 0}
+  mainPlayerRectCG: {fileID: 0}
+  extraStatusHolder: {fileID: 0}
+  statusPrefab: {fileID: 0}
+  playerHealthBar: {fileID: 0}
+  playerApBar: {fileID: 0}
+  debugWIPFrame: {fileID: 0}
+  stanceButtons:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  stanceCooldownImages:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  stanceActiveSprites:
+  - {fileID: 21300000, guid: d42fe5f6a67138b449cbbb3a01271851, type: 3}
+  - {fileID: 21300000, guid: 5d6ad5a0086097b439faaf6f933187c7, type: 3}
+  - {fileID: 21300000, guid: 330379c4bf73a3341ad234aa1797a406, type: 3}
+  stanceInactiveSprites:
+  - {fileID: 21300000, guid: 114500ae04a84f54d8d2e1a61f4d68a1, type: 3}
+  - {fileID: 21300000, guid: 91073e829e09261489931d34c021659f, type: 3}
+  - {fileID: 21300000, guid: a1e621e4de1aa674b9b31d851170c52b, type: 3}
+  descriptionPanel: {fileID: 0}
+  tooltipOutline: {fileID: 0}
+  greyTooltipSprite: {fileID: 21300000, guid: a8f24ba32be0e9f439c108006b72daff, type: 3}
+  goldTooltipSprite: {fileID: 21300000, guid: 04177e456ac2aa14f8f9522128e0212e, type: 3}
+  descriptionIcon: {fileID: 0}
+  descriptionName: {fileID: 0}
+  descriptionLevel: {fileID: 0}
+  descriptionCost: {fileID: 0}
+  descriptionText: {fileID: 0}
+  canSimulateEnterBattle: 0
+  battleBoard: {fileID: 0}
+  attackPanel: {fileID: 0}
+  selectionId: 0
+  battleCamera: {fileID: 0}

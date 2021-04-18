@@ -99,6 +99,9 @@ public class BattleUIManager : MonoBehaviour {
    // The selection id
    public int selectionId = 0;
 
+   // The battle camera
+   public Camera battleCamera;
+
    #endregion
 
    private void Awake () {
@@ -802,6 +805,17 @@ public class BattleUIManager : MonoBehaviour {
       updateButtons(_currentAbilityType);
    }
 
+   public void setBattleCameraHeight () {
+      float height;
+      if (ScreenSettingsManager.width < MIN_WIDTH) {
+         height = RAISED_CAM_HEIGHT;
+      } else {
+         height = DEFAULT_CAM_HEIGHT;
+      }
+
+      battleCamera.transform.position = new Vector3(battleCamera.transform.position.x, height, battleCamera.transform.position.z);
+   }
+
    #region Private Variables
 
    // Reference for the local player battler, used for setting the bars information only
@@ -812,6 +826,15 @@ public class BattleUIManager : MonoBehaviour {
 
    // The current abilities displayed by the ability buttons
    private List<int> _lastAbilityList = new List<int>();
+
+   // Minimum screen resolution width before we need to raise the battle camera
+   private float MIN_WIDTH = 1300;
+
+   // Raised height of battle camera
+   private float RAISED_CAM_HEIGHT = -10.3f;
+
+   // Default height of battle camera
+   private float DEFAULT_CAM_HEIGHT = -10f;
 
    #endregion
 }
