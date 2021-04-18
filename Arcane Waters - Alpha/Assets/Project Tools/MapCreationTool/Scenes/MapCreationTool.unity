@@ -4061,7 +4061,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _minZoom: 3
-  _maxZoom: 100
+  _maxZoom: 150
   _zoomSpeed:
     serializedVersion: 2
     m_Curve:
