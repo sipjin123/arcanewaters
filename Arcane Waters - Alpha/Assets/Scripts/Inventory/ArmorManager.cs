@@ -22,6 +22,10 @@ public class ArmorManager : EquipmentManager {
    [SyncVar]
    public int equipmentDataId = 0;
 
+   // The durability of the armors
+   [SyncVar]
+   public int armorDurability = 0;
+
    // Armor colors
    [SyncVar]
    public string palettes;
@@ -98,8 +102,13 @@ public class ArmorManager : EquipmentManager {
       SoundManager.create3dSound("equip_", this.transform.position, 2);
    }
 
+   public void updateDurability (int newDurability) {
+      D.adminLog("Armor durability modified from [" + armorDurability + "] to [" + newDurability + "]", D.ADMIN_LOG_TYPE.Refine);
+      armorDurability = newDurability;
+   }
+
    [Server]
-   public void updateArmorSyncVars (int armorTypeId, int armorId, string palettes) {
+   public void updateArmorSyncVars (int armorTypeId, int armorId, string palettes, int durability) {
       ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(armorTypeId);
 
       // This ensures that there is a palette being assigned for the armor
@@ -124,6 +133,7 @@ public class ArmorManager : EquipmentManager {
       this.equipmentDataId = armorData.sqlId;
       this.armorType = armorData.armorType;
       this.palettes = palettes;
+      this.armorDurability = durability;
 
       // Send the Info to all clients
       Rpc_EquipArmor(ArmorStatData.serializeArmorStatData(armorData), palettes);

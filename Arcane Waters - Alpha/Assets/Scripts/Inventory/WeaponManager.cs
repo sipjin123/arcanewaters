@@ -1,11 +1,5 @@
-using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using System;
 using Mirror;
-using System.Xml.Serialization;
-using System.Text;
-using System.Xml;
 
 public class WeaponManager : EquipmentManager {
    #region Public Variables
@@ -24,6 +18,10 @@ public class WeaponManager : EquipmentManager {
    // Equipment sql Id
    [SyncVar]
    public int equipmentDataId = 0;
+
+   // The durability of the weapons
+   [SyncVar]
+   public int weaponDurability = 0;
 
    // Weapon colors
    [SyncVar]
@@ -112,14 +110,19 @@ public class WeaponManager : EquipmentManager {
       D.adminLog("Equipped weapon" + " SQL: {" + weaponData.sqlId +
          "} Name: {" + weaponData.equipmentName +
          "} Type: {" + weaponData.weaponType +
-         "} Class: {" + weaponData.weaponClass+ "}", D.ADMIN_LOG_TYPE.Equipment);
+         "} Class: {" + weaponData.weaponClass + "}", D.ADMIN_LOG_TYPE.Equipment);
 
       // Play a sound
       SoundManager.create3dSound("equip_", this.transform.position, 2);
    }
+   
+   public void updateDurability (int newDurability) {
+      D.adminLog("Weapon durability modified from [" + weaponDurability + "] to [" + newDurability + "]", D.ADMIN_LOG_TYPE.Refine);
+      weaponDurability = newDurability;
+   }
 
    [Server]
-   public void updateWeaponSyncVars (int weaponDataId, int weaponId, string palettes) {
+   public void updateWeaponSyncVars (int weaponDataId, int weaponId, string palettes, int durability) {
       WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponDataId);
 
       if (weaponData == null) {
@@ -137,6 +140,7 @@ public class WeaponManager : EquipmentManager {
       this.weaponType = weaponData.weaponType;
       this.palettes = palettes;
       this.actionType = weaponData == null ? Weapon.ActionType.None : weaponData.actionType;
+      this.weaponDurability = durability;
 
       // Send the Weapon Info to all clients
       Rpc_EquipWeapon(WeaponStatData.serializeWeaponStatData(weaponData), this.palettes);
