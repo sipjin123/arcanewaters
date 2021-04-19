@@ -1943,23 +1943,59 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   public void modifyItemDurability (NetEntity playerBattler, int itemId, int durabilityDeduction) {
+   public void modifyItemDurability (NetEntity playerBattler, int weaponId, int weaponDurabilityDeduction, int armorId, int armorDurabilityDeduction) {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         int newDurability = DB_Main.getItemDurability(playerBattler.userId, itemId);
-         int updatedDurability = newDurability - durabilityDeduction;
-         DB_Main.updateItemDurability(playerBattler.userId, itemId, updatedDurability);
+         int updatedArmorDurability = 100;
+         int updatedWeaponDurability = 100;
+         bool isArmorUpdated = false;
+         bool isWeaponUpdated = false;
+
+         if (weaponId > 0) {
+            int newWeaponDurability = DB_Main.getItemDurability(playerBattler.userId, weaponId);
+            if (newWeaponDurability > 0) {
+               isWeaponUpdated = true;
+               updatedWeaponDurability = newWeaponDurability - weaponDurabilityDeduction;
+               DB_Main.updateItemDurability(playerBattler.userId, weaponId, updatedWeaponDurability);
+            }
+         }
+
+         if (armorId > 0) {
+            int newArmorDurability = DB_Main.getItemDurability(playerBattler.userId, armorId);
+            if (newArmorDurability > 0) {
+               isArmorUpdated = true;
+               updatedArmorDurability = newArmorDurability - armorDurabilityDeduction;
+               DB_Main.updateItemDurability(playerBattler.userId, armorId, updatedArmorDurability);
+            }
+         }
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveItemDurabilityNotification(playerBattler.connectionToClient, updatedDurability);
+            if (weaponId > 0 && isWeaponUpdated) {
+               ((PlayerBodyEntity) _player).weaponManager.updateDurability(updatedWeaponDurability);
+               if (updatedWeaponDurability <= 0) {
+                  Target_ReceiveWeaponDurabilityNotification(playerBattler.connectionToClient, updatedWeaponDurability);
+               }
+            }
+
+            if (armorId > 0 && isArmorUpdated) {
+               ((PlayerBodyEntity) _player).armorManager.updateDurability(updatedArmorDurability);
+               if (updatedArmorDurability <= 0) {
+                  Target_ReceiveArmorDurabilityNotification(playerBattler.connectionToClient, updatedArmorDurability);
+               }
+            }
          });
       });
    }
 
    [TargetRpc]
-   public void Target_ReceiveItemDurabilityNotification (NetworkConnection connection, int durability) {
-      //D.debug("Durability is: {" + durability + "}");
+   public void Target_ReceiveWeaponDurabilityNotification (NetworkConnection connection, int durability) {
+      D.warning("Weapon durability is at its lowest: {" + durability + "}");
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveArmorDurabilityNotification (NetworkConnection connection, int durability) {
+      D.warning("Armor durability is at its lowest: {" + durability + "}");
    }
 
    [Command]

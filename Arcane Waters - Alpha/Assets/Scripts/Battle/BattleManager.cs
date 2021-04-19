@@ -948,17 +948,22 @@ public class BattleManager : MonoBehaviour {
       }
       
       foreach (Battler winner in winningBattlers) {
+         bool damageWeapon = false;
+         bool damageArmor = false;
+
          // Randomize chance to deduct the weapon durability the player is currently wearing
          int itemDamageChance = Random.Range(0, Item.PERCENT_CHANCE);
          if (itemDamageChance < Item.WEAPON_DURABILITY_DEDUCTION) {
-            winner.player.rpc.modifyItemDurability(winner.player, winner.weaponManager.equippedWeaponId, Item.ITEM_DURABILITY_DEDUCTION);
+            damageWeapon = true;
          }
 
          // Randomize chance to deduct the armor durability the player is currently wearing
          itemDamageChance = Random.Range(0, Item.PERCENT_CHANCE);
          if (itemDamageChance < Item.ARMOR_DURABILITY_DEDUCTION) {
-            winner.player.rpc.modifyItemDurability(winner.player, winner.armorManager.equippedArmorId, Item.ITEM_DURABILITY_DEDUCTION);
+            damageArmor = true;
          }
+         winner.player.rpc.modifyItemDurability(winner.player, damageWeapon == false ? -1 : winner.weaponManager.equippedWeaponId, Item.ITEM_DURABILITY_DEDUCTION,
+            damageArmor == false ? -1 : winner.armorManager.equippedArmorId, Item.ITEM_DURABILITY_DEDUCTION);
       }
 
       // Process monster type reward
