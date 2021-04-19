@@ -114,7 +114,7 @@ public class Battle : NetworkBehaviour {
             Dictionary<Status.Type, float> newDebuffData = new Dictionary<Status.Type, float>();
             List<Status.Type> endedDebuffs = new List<Status.Type>();
             foreach (KeyValuePair<Status.Type, float> debuffData in battler.debuffList) {
-               if (debuffData.Value < 1) {
+               if (debuffData.Value < 1 && debuffData.Value >= 0) {
                   // Mark the debuffs that recently ended for future game logic such as in game notification
                   if (!endedDebuffs.Contains(debuffData.Key)) {
                      endedDebuffs.Add(debuffData.Key);
