@@ -36,6 +36,8 @@ public class GUI_SoundEffects : MonoBehaviour, IPointerEnterHandler, IPointerCli
    }
 
    protected void play (string path) {
+      _audioSource.volume = SoundManager.effectsVolume;
+
       // Don't play it if not enough time has passed
       if (_lastPlayTime.ContainsKey(path) && Time.time - _lastPlayTime[path] < .10f) {
          return;
