@@ -58,9 +58,6 @@ public class NotificationPanel : MonoBehaviour
       text.text = notification.getMessage();
       buttonText.text = notification.getButtonText();
 
-      // Make sure the values are captured for the click events
-      Notification.Type notificationType = notification.type;
-
       // Add actions to perform when the user confirms the notification
       confirmButton.onClick.RemoveAllListeners();
       confirmButton.onClick.AddListener(notification.action);

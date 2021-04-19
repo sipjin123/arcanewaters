@@ -50,6 +50,9 @@ public class OptionsPanel : Panel
    // Player Name Display
    public Toggle displayPlayersNameToggle;
 
+   // Help tips display
+   public Toggle displayHelpTipsToggle;
+
    // The constantly sprinting toggle
    public Toggle sprintConstantlyToggle;
 
@@ -162,6 +165,12 @@ public class OptionsPanel : Panel
          showPlayersName(value);
       });
 
+      // Initialize the help tips toggle
+      displayHelpTipsToggle.SetIsOnWithoutNotify(!NotificationManager.self.areAllNotificationsDisabled());
+      displayHelpTipsToggle.onValueChanged.AddListener(value => {
+         setHelpTipsDisplay();
+      });
+
       sprintConstantlyToggle.isOn = PlayerPrefs.GetInt(OptionsManager.PREF_SPRINT_CONSTANTLY) == 1 ? true : false;
       sprintConstantlyToggle.onValueChanged.AddListener(value => {
          PlayerPrefs.SetInt(OptionsManager.PREF_SPRINT_CONSTANTLY, value ? 1 : 0);
@@ -211,6 +220,10 @@ public class OptionsPanel : Panel
             }
          }
       }
+   }
+
+   public void setHelpTipsDisplay () {
+      NotificationManager.self.toggleNotifications(displayHelpTipsToggle.isOn);
    }
 
    public void setVSync (bool vsync) {

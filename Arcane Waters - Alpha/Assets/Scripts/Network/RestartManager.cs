@@ -116,6 +116,10 @@ public class RestartManager : GenericGameManager
    }
 
    private IEnumerator CO_LogServerRestartEvent () {
+      if (_timeOfNextServerRestart < DateTime.UtcNow + TimeSpan.FromSeconds(3f)) {
+         yield break;
+      }
+      
       float secondsRemaining = (float) (_timeOfNextServerRestart - DateTime.UtcNow).TotalSeconds;
 
       // Wait until the countdown is close to be finished

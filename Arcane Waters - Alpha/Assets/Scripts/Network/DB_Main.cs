@@ -9287,6 +9287,89 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
+   #region World Map
+
+   public static new void addUnlockedBiome (int userId, Biome.Type biome) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO unlocked_locations (usrId, biome) VALUES (@usrId, @biome)" +
+            "ON DUPLICATE KEY UPDATE biome=values(biome)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@biome", (int) biome);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new bool isBiomeUnlockedForUser (int userId, Biome.Type biome) {
+      bool isLocationUnlocked = false;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT EXISTS (SELECT * FROM unlocked_locations WHERE usrId=@usrId AND biome=@biome) AS isLocationUnlocked"
+            , conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@biome", (int) biome);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  isLocationUnlocked = DataUtil.getInt(dataReader, "isLocationUnlocked") > 0;
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return isLocationUnlocked;
+   }
+
+   public static new List<Biome.Type> getUnlockedBiomes (int userId) {
+      List<Biome.Type> unlockedBiomeList = new List<Biome.Type>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM unlocked_locations WHERE usrId=@usrId"
+            , conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  Biome.Type biome = (Biome.Type) DataUtil.getInt(dataReader, "biome");
+                  unlockedBiomeList.Add(biome);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return unlockedBiomeList;
+   }
+
+   #endregion
+
    public static new void readTest () {
       try {
          using (MySqlConnection conn = getConnection())

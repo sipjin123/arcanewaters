@@ -147,16 +147,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
          if (Voyage.isLastLeagueMap(instance.leagueIndex)) {
             // At the end of a league, warp to the town in the next biome
-            Biome.Type nextBiome = (Biome.Type)(((int) instance.biome) + 1);
-
-            if (Area.homeTownForBiome.TryGetValue(nextBiome, out string nextBiomeTownAreaKey)) {
-               player.spawnInNewMap(nextBiomeTownAreaKey);
-            } else if (Area.homeTownForBiome.TryGetValue(instance.biome, out string currentBiomeTownAreaKey)){
-               // If the next town is not defined, return to the one of the current biome
-               player.spawnInNewMap(currentBiomeTownAreaKey);
-            } else {
-               player.spawnInNewMap(Area.STARTING_TOWN);
-            }
+            player.spawnInNewMap(VoyageManager.self.getHomeTownForNextBiome(instance.biome));
          } else {
             if (!player.tryGetVoyage(out Voyage voyage)) {
                D.error("Error when retrieving the voyage during warp to next league instance.");

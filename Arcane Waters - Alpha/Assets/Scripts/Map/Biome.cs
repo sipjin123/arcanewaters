@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System;
 
 public class Biome {
    #region Public Variables
@@ -35,6 +36,15 @@ public class Biome {
       List<Type> list = Util.getAllEnumValues<Type>();
       list.Remove(Type.None);
       return list;
+   }
+
+   public static Type getNextBiome (Type currentBiome) {
+      int nextBiomeInt = ((int) currentBiome) + 1;
+      if (Enum.IsDefined(typeof(Type), nextBiomeInt)) {
+         return (Type) nextBiomeInt;
+      } else {
+         return currentBiome;
+      }
    }
 
    #region Private Variables

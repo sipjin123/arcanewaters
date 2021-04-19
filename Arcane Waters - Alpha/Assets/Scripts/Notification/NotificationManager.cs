@@ -12,7 +12,7 @@ public class NotificationManager : MonoBehaviour
 
    // The keys used to save the config in PlayerPrefs
    public static string NOTIFICATIONS_DISABLED = "Notifications_Disabled_";
-   public static string ALL_NOTIFICATIONS_DISABLED = "All_Notifications_Disabled_";
+   public static string ALL_NOTIFICATIONS_DISABLED = "All_Notifications_Disabled";
 
    // Self
    public static NotificationManager self;
@@ -63,7 +63,11 @@ public class NotificationManager : MonoBehaviour
    }
 
    public bool isNotificationDisabled (int userId, Notification.Type type) {
-      return PlayerPrefs.HasKey(ALL_NOTIFICATIONS_DISABLED + userId) || PlayerPrefs.HasKey(NOTIFICATIONS_DISABLED + userId + "_" + type.ToString());
+      if (Notification.canBeDisabled(type)) {
+         return PlayerPrefs.HasKey(ALL_NOTIFICATIONS_DISABLED) || PlayerPrefs.HasKey(NOTIFICATIONS_DISABLED + userId + "_" + type.ToString());
+      } else {
+         return false;
+      }
    }
 
    public void disableNotification (int userId, Notification.Type type) {
@@ -72,12 +76,16 @@ public class NotificationManager : MonoBehaviour
       }
    }
 
-   public void disableAllNotification (int userId) {
-      PlayerPrefs.SetInt(ALL_NOTIFICATIONS_DISABLED + userId, 1);
+   public void toggleNotifications (bool isDisplayed) {
+      if (isDisplayed) {
+         PlayerPrefs.DeleteKey(ALL_NOTIFICATIONS_DISABLED);
+      } else {
+         PlayerPrefs.SetInt(ALL_NOTIFICATIONS_DISABLED, 1);
+      }
    }
 
-   public void enableAllNotifications (int userId) {
-      PlayerPrefs.DeleteKey(ALL_NOTIFICATIONS_DISABLED + userId);
+   public bool areAllNotificationsDisabled () {
+      return PlayerPrefs.HasKey(ALL_NOTIFICATIONS_DISABLED);
    }
 
    #region Private Variables

@@ -284,6 +284,7 @@ public class NetEntity : NetworkBehaviour
 
          if (isServer) {
             PerkManager.self.storePerkPointsForUser(userId);
+            StartCoroutine(CO_UnlockNewLocationForUser());
          }
       }
 
@@ -1864,6 +1865,23 @@ public class NetEntity : NetworkBehaviour
          return true;
       } else {
          return false;
+      }
+   }
+
+   [Server]
+   private IEnumerator CO_UnlockNewLocationForUser () {
+      if (!isServer || !isPlayerEntity()) {
+         yield break;
+      }
+
+      // The user must be in a league voyage
+      if (!tryGetVoyage(out Voyage voyage) || !voyage.isLeague) {
+         yield break;
+      }
+
+      // Regularly check if the league has been cleared
+      while (!VoyageManager.self.tryUnlockNewLocationForUser(this)) {
+         yield return new WaitForSeconds(2f);
       }
    }
 

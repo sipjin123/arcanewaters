@@ -26,6 +26,8 @@ public class ServerHistoryManager : MonoBehaviour
 
    [Server]
    public void onServerStart () {
+      D.debug(string.Format("Server history manager OnServerStart, isServerHistoryActive: {0}, enableDebug: {1}, Util.isCloudBuild(): {2}, MyNetworkManager.getCurrentPort(): {3}, Global.MASTER_SERVER_PORT: {4}",
+         isServerHistoryActive(), enableDebug, Util.isCloudBuild(), MyNetworkManager.getCurrentPort(), Global.MASTER_SERVER_PORT));
       if (!isServerHistoryActive() || MyNetworkManager.getCurrentPort() != Global.MASTER_SERVER_PORT) {
          return;
       }
@@ -48,6 +50,7 @@ public class ServerHistoryManager : MonoBehaviour
          return;
       }
 
+      D.debug("Logging server event: " + e.ToString());
       Util.tryToRunInServerBackground(() =>
          DB_Main.createServerHistoryEvent(DateTime.UtcNow, e, _buildVersionNumber));
    }

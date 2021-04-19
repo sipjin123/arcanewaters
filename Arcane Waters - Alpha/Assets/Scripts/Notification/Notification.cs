@@ -14,7 +14,8 @@ public class Notification
    {
       None = 0,
       ReturnToVoyage = 1,
-      NewLocationUnblocked = 2,
+      NewLocationUnlocked = 2,
+      VoyageCompleted = 3,
    }
 
    // The notification type
@@ -34,8 +35,10 @@ public class Notification
       switch (type) {
          case Type.ReturnToVoyage:
             return "Go to the docks to return to your voyage!";
-         case Type.NewLocationUnblocked:
+         case Type.NewLocationUnlocked:
             return "A new locale is accessible!";
+         case Type.VoyageCompleted:
+            return "Voyage complete!";
          default:
             return "";
       }
@@ -43,7 +46,8 @@ public class Notification
 
    public string getButtonText () {
       switch (type) {
-         case Type.NewLocationUnblocked:
+         case Type.NewLocationUnlocked:
+         case Type.VoyageCompleted:
             return "View Map";
          default:
             return "Got it!";
@@ -56,7 +60,8 @@ public class Notification
 
    public static bool canBeDisabled (Type type) {
       switch (type) {
-         case Type.NewLocationUnblocked:
+         case Type.NewLocationUnlocked:
+         case Type.VoyageCompleted:
             return false;
          default:
             return true;

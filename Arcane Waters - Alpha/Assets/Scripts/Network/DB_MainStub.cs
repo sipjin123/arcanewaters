@@ -1313,6 +1313,18 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static void addUnlockedBiome (int userId, Biome.Type biome) {
+
+   }
+
+   public static bool isBiomeUnlockedForUser (int userId, Biome.Type biome) {
+      return false;
+   }
+
+   public static List<Biome.Type> getUnlockedBiomes (int userId) {
+      return null;
+   }
+
    /*
 
    public static void refillSupplies (int userId) {
