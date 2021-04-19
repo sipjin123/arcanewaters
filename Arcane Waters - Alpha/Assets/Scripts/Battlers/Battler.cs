@@ -2028,7 +2028,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       // Add our armor's defense value, if we have any
       if (armorManager.hasArmor()) {
-         defense += armorManager.getArmor().getDefense(element);
+         float armorDefense = armorManager.getArmor().getDefense(element);
+
+         // If durability is at its lowest point then reduce the armor defense value by 50%
+         if (armorManager.armorDurability < 1) {
+            armorDefense *= 0.5f;
+         }
+         defense += armorDefense;
       }
 
       if (hatManager.hasHat()) {
@@ -2078,7 +2084,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       // Add our weapon's damage value, if we have a weapon
       if (weaponManager.hasWeapon()) {
-         damage += weaponManager.getWeapon().getDamage(element);
+         float weaponDamage = weaponManager.getWeapon().getDamage(element);
+
+         // If durability is at its lowest point then reduce the weapon damage value by 50%
+         if (weaponManager.weaponDurability < 1) {
+            weaponDamage *= 0.5f;
+         }
+         damage += weaponDamage;
       }
 
       float multiplier = 1;
