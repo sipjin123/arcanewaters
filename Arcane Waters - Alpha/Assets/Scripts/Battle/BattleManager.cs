@@ -341,15 +341,27 @@ public class BattleManager : MonoBehaviour {
                battler.debuffList.Add(Status.Type.WeaponChangeDebuff, 60);
             }
          }
+      } else {
+         if (player.weaponManager.weaponDurability < 1) {
+            if (!battler.debuffList.ContainsKey(Status.Type.WeaponBreakDebuff)) {
+               battler.debuffList.Add(Status.Type.WeaponBreakDebuff, -1);
+            }
+         }
+
+         if (player.armorManager.armorDurability < 1) {
+            if (!battler.debuffList.ContainsKey(Status.Type.ArmorChangeDebuff)) {
+               battler.debuffList.Add(Status.Type.ArmorBreakDebuff, -1);
+            }
+         }
       }
 
       // Copy the Armor Info
       if (player.armorManager.armorType < 1) {
-         battler.armorManager.updateArmorSyncVars(0, 0, "");
+         battler.armorManager.updateArmorSyncVars(0, 0, "", 0);
          battler.armorManager.armorType = 0;
          battler.armorManager.palettes = "";
       } else {
-         battler.armorManager.updateArmorSyncVars(player.armorManager.equipmentDataId, player.armorManager.equippedArmorId, player.armorManager.palettes);
+         battler.armorManager.updateArmorSyncVars(player.armorManager.equipmentDataId, player.armorManager.equippedArmorId, player.armorManager.palettes, player.armorManager.armorDurability);
          battler.armorManager.armorType = player.armorManager.armorType;
          battler.armorManager.palettes = player.armorManager.palettes;
          D.adminLog("Equipping battler armor: {" + battler.armorManager.armorType + "}", D.ADMIN_LOG_TYPE.Equipment);
@@ -357,11 +369,11 @@ public class BattleManager : MonoBehaviour {
 
       // Copy the Weapon Info
       if (player.weaponManager.weaponType < 1) {
-         battler.weaponManager.updateWeaponSyncVars(0, 0, "");
+         battler.weaponManager.updateWeaponSyncVars(0, 0, "", 0);
          battler.weaponManager.weaponType = 0;
          battler.weaponManager.palettes = "";
       } else {
-         battler.weaponManager.updateWeaponSyncVars(player.weaponManager.equipmentDataId, player.weaponManager.equippedWeaponId, player.weaponManager.palettes);
+         battler.weaponManager.updateWeaponSyncVars(player.weaponManager.equipmentDataId, player.weaponManager.equippedWeaponId, player.weaponManager.palettes, player.weaponManager.weaponDurability);
          battler.weaponManager.weaponType = player.weaponManager.weaponType;
          battler.weaponManager.palettes = player.weaponManager.palettes;
          D.adminLog("Equipping battler weapon: {" + battler.weaponManager.weaponType + "}", D.ADMIN_LOG_TYPE.Equipment);
