@@ -5798,7 +5798,7 @@ public class RPCManager : NetworkBehaviour
                userObjects.armor.data = armor.data;
             }
             if (body != null) {
-               body.armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id, armor.paletteNames);
+               body.armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id, armor.paletteNames, armor.durability);
 
                // Update the battler entity if the user is in battle
                if (body.isInBattle()) {
@@ -5863,7 +5863,7 @@ public class RPCManager : NetworkBehaviour
                userObjects.weapon.data = weapon.data;
             }
             if (body != null) {
-               body.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames);
+               body.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames, userObjects.weapon.durability);
                D.adminLog("Player {" + body.userId + "} is equipping item" +
                   "} ID: {" + weapon.id +
                   "} TypeId: {" + weapon.itemTypeId +

@@ -5864,8 +5864,8 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT *, " +
-            "armor.itmId AS armorId, armor.itmType AS armorType, armor.itmPalettes AS armorPalettes, armor.itmData AS armorData, " +
-            "weapon.itmId AS weaponId, weapon.itmType AS weaponType, weapon.itmPalettes AS weaponPalettes, weapon.itmData AS weaponData, " +
+            "armor.itmId AS armorId, armor.durability AS armorDurability, armor.itmType AS armorType, armor.itmPalettes AS armorPalettes, armor.itmData AS armorData, " +
+            "weapon.itmId AS weaponId, weapon.durability AS weaponDurability, weapon.itmType AS weaponType, weapon.itmPalettes AS weaponPalettes, weapon.itmData AS weaponData, " +
             "hat.itmId AS hatId, hat.itmType AS hatType, hat.itmPalettes AS hatPalettes, hat.itmData AS hatData " +
             "FROM users JOIN global.accounts USING(accId) LEFT JOIN ships USING(shpId) " +
             "LEFT JOIN guilds ON(users.gldId = guilds.gldId)" +
@@ -9432,7 +9432,7 @@ public class DB_Main : DB_MainStub
       int itemTypeId = DataUtil.getInt(dataReader, "armorType");
       string palettes = DataUtil.getString(dataReader, "armorPalettes");
       string itemData = DataUtil.getString(dataReader, "armorData");
-      int durability = DataUtil.getInt(dataReader, "durability");
+      int durability = DataUtil.getInt(dataReader, "armorDurability");
 
       return new Armor(itemId, itemTypeId, palettes, itemData, durability);
    }
@@ -9442,7 +9442,7 @@ public class DB_Main : DB_MainStub
       int itemTypeId = DataUtil.getInt(dataReader, "weaponType");
       string palettes = DataUtil.getString(dataReader, "weaponPalettes");
       string itemData = DataUtil.getString(dataReader, "weaponData");
-      int durability = DataUtil.getInt(dataReader, "durability");
+      int durability = DataUtil.getInt(dataReader, "weaponDurability");
 
       return new Weapon(itemId, itemTypeId, palettes, itemData, durability);
    }
