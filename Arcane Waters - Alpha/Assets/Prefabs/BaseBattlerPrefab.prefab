@@ -2746,6 +2746,7 @@ MonoBehaviour:
   equippedWeaponId: 0
   weaponType: 0
   equipmentDataId: 0
+  weaponDurability: 0
   palettes: 
   actionType: 0
   actionTypeValue: 0
@@ -3583,33 +3584,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: DebuffTemplate
       objectReference: {fileID: 0}
-    - target: {fileID: 6851457724328985359, guid: 6be6554cf25866a40808951b298d74e1,
-        type: 3}
-      propertyPath: buffSpritePair.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6851457724328985359, guid: 6be6554cf25866a40808951b298d74e1,
-        type: 3}
-      propertyPath: buffSpritePair.Array.data[0].statusType
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6851457724328985359, guid: 6be6554cf25866a40808951b298d74e1,
-        type: 3}
-      propertyPath: buffSpritePair.Array.data[1].statusType
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 6851457724328985359, guid: 6be6554cf25866a40808951b298d74e1,
-        type: 3}
-      propertyPath: buffSpritePair.Array.data[0].statusSprite
-      value: 
-      objectReference: {fileID: -971483552379589744, guid: 9a4f00482fb7b6c4a9b39ad691577f61,
-        type: 3}
-    - target: {fileID: 6851457724328985359, guid: 6be6554cf25866a40808951b298d74e1,
-        type: 3}
-      propertyPath: buffSpritePair.Array.data[1].statusSprite
-      value: 
-      objectReference: {fileID: 3986112975633359074, guid: 9a4f00482fb7b6c4a9b39ad691577f61,
-        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6be6554cf25866a40808951b298d74e1, type: 3}
 --- !u!114 &2438419466249540768 stripped
