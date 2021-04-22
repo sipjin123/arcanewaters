@@ -13,6 +13,9 @@ public class TreasureSiteLeague : TreasureSite
    [SyncVar]
    public int leagueIndex = 0;
 
+   // The name of the treasure site
+   public Text treasureSiteName;
+
    #endregion
 
    public override void Update () {
@@ -43,6 +46,9 @@ public class TreasureSiteLeague : TreasureSite
             isClearedOfEnemies = true;
          }
       }
+
+      // Displays the destination name
+      treasureSiteName.text = destinationArea;
    }
 
    public override void OnTriggerEnter2D (Collider2D other) {
