@@ -946,24 +946,26 @@ public class BattleManager : MonoBehaviour {
          Transform[] spawnNodeTarget = ((Enemy) defeatedBattlers[0].player).lootSpawnPositions;
          winningBattlers[0].player.rpc.spawnBattlerMonsterChest(winningBattlers[0].player.instanceId, spawnNodeTarget[0].position, battlerEnemyID);
       }
-      
+
       foreach (Battler winner in winningBattlers) {
-         bool damageWeapon = false;
-         bool damageArmor = false;
+         if (winner.enemyType == Enemy.Type.PlayerBattler) {
+            bool damageWeapon = false;
+            bool damageArmor = false;
 
-         // Randomize chance to deduct the weapon durability the player is currently wearing
-         int itemDamageChance = Random.Range(0, Item.PERCENT_CHANCE);
-         if (itemDamageChance < Item.WEAPON_DURABILITY_DEDUCTION) {
-            damageWeapon = true;
-         }
+            // Randomize chance to deduct the weapon durability the player is currently wearing
+            int itemDamageChance = Random.Range(0, Item.PERCENT_CHANCE);
+            if (itemDamageChance < Item.WEAPON_DURABILITY_DEDUCTION) {
+               damageWeapon = true;
+            }
 
-         // Randomize chance to deduct the armor durability the player is currently wearing
-         itemDamageChance = Random.Range(0, Item.PERCENT_CHANCE);
-         if (itemDamageChance < Item.ARMOR_DURABILITY_DEDUCTION) {
-            damageArmor = true;
+            // Randomize chance to deduct the armor durability the player is currently wearing
+            itemDamageChance = Random.Range(0, Item.PERCENT_CHANCE);
+            if (itemDamageChance < Item.ARMOR_DURABILITY_DEDUCTION) {
+               damageArmor = true;
+            }
+            winner.player.rpc.modifyItemDurability(winner.player, damageWeapon == false ? -1 : winner.weaponManager.equippedWeaponId, Item.ITEM_DURABILITY_DEDUCTION,
+               damageArmor == false ? -1 : winner.armorManager.equippedArmorId, Item.ITEM_DURABILITY_DEDUCTION);
          }
-         winner.player.rpc.modifyItemDurability(winner.player, damageWeapon == false ? -1 : winner.weaponManager.equippedWeaponId, Item.ITEM_DURABILITY_DEDUCTION,
-            damageArmor == false ? -1 : winner.armorManager.equippedArmorId, Item.ITEM_DURABILITY_DEDUCTION);
       }
 
       // Process monster type reward
