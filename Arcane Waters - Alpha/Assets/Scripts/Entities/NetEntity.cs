@@ -1664,6 +1664,14 @@ public class NetEntity : NetworkBehaviour
          targetLocalPos = spawn == null
             ? SpawnManager.self.getDefaultLocalPosition(newArea)
             : SpawnManager.self.getLocalPosition(newArea, spawn);
+
+         if (spawn != null) {
+            SpawnManager.SpawnData spawnData = SpawnManager.self.getMapSpawnData(newArea, spawn);
+            if (spawnData != null) {
+               newFacingDirection = (Direction) spawnData.arriveFacing;
+               D.adminLog("Override facing direction, Spawn is" + " " + newArea + " " + SpawnManager.self.getMapSpawnData(newArea, spawn)+ " " + newFacingDirection, D.ADMIN_LOG_TYPE.Warp);
+            }
+         }
       }
 
       spawnInNewMap(newArea, targetLocalPos, newFacingDirection);
