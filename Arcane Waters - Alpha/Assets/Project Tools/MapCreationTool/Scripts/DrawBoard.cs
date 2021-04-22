@@ -450,7 +450,9 @@ namespace MapCreationTool
             mapVersion = mapVersion,
             name = s.spawnName,
             posX = s.transform.position.x * 0.16f,
-            posY = s.transform.position.y * 0.16f
+            posY = s.transform.position.y * 0.16f,
+            spawnId = s.spawnId,
+            facingDirection = (int) s.arriveFacing
          }
          ).ToList();
       }

@@ -11,6 +11,8 @@ namespace MapCreationTool.Serialization
       public float posY { get; set; }
 
       public string mapName { get; set; }
+      public int spawnId { get; set; }
+      public int facingDirection { get; set; }
    }
 }
 

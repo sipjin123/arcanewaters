@@ -98,6 +98,20 @@ namespace MapCreationTool
             mf.toolTipMessage = "Target Map to Warp Into";
             fields.Add("target map", mf);
 
+            // TODO: Remove this after spawn feature functionality is confirmed
+            // facing position
+            /*
+            try {
+               Field facingDir = Instantiate(dropdownFieldPref, transform);
+               facingDir.setFieldProperties(Overlord.remoteMaps.formMapsSelectOptions());
+               facingDir.fieldName.text = "target map";
+               facingDir.ValueChanged += (value) => valueChanged("target map", value);
+               facingDir.toolTipMessage = "Target Map to Warp Into";
+               fields.Add("target map", facingDir);
+            } catch {
+
+            }*/
+
             // target spawn
             Field sf = Instantiate(dropdownFieldPref, transform);
             sf.setFieldProperties(Overlord.remoteSpawns.formSpawnsSelectOptions(-1));
