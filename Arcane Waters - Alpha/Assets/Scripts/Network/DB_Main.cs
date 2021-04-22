@@ -234,7 +234,7 @@ public class DB_Main : DB_MainStub
          clause.Append(") ");
       }
 
-      switch ((Item.DurabilityFilter)filterItemDurability) {
+      switch ((Item.DurabilityFilter) filterItemDurability) {
          case Item.DurabilityFilter.MaxDurability:
             clause.Append(" AND (durability = 100) ");
             break;
@@ -2472,7 +2472,7 @@ public class DB_Main : DB_MainStub
    public static new List<MapSpawn> getMapSpawns () {
       List<MapSpawn> result = new List<MapSpawn>();
 
-      string cmdText = "SELECT mapid, maps_v2.name as mapName, map_spawns_v2.name as spawnName, mapVersion, posX, posY " +
+      string cmdText = "SELECT mapid, mapSpawnId, arriveFacing, maps_v2.name as mapName, map_spawns_v2.name as spawnName, mapVersion, posX, posY " +
          "FROM global.map_spawns_v2 JOIN global.maps_v2 ON maps_v2.id = map_spawns_v2.mapid " +
          "WHERE mapVersion = publishedVersion;";
       using (MySqlConnection conn = getConnection())
@@ -2489,7 +2489,9 @@ public class DB_Main : DB_MainStub
                   mapVersion = dataReader.GetInt32("mapVersion"),
                   name = dataReader.GetString("spawnName"),
                   posX = dataReader.GetFloat("posX"),
-                  posY = dataReader.GetFloat("posY")
+                  posY = dataReader.GetFloat("posY"),
+                  spawnId = dataReader.GetInt32("mapSpawnId"),
+                  facingDirection = dataReader.GetInt32("arriveFacing"),
                });
             }
          }
@@ -2538,8 +2540,8 @@ public class DB_Main : DB_MainStub
             cmd.ExecuteNonQuery();
 
             // Insert spawns
-            cmd.CommandText = "INSERT INTO global.map_spawns_v2(mapId, mapVersion, name, posX, posY) " +
-               "Values(@mapId, @mapVersion, @name, @posX, @posY);";
+            cmd.CommandText = "INSERT INTO global.map_spawns_v2(mapId, mapVersion, name, posX, posY, mapSpawnId, arriveFacing) " +
+               "Values(@mapId, @mapVersion, @name, @posX, @posY, @mapSpawnId, @arriveFacing);";
             foreach (MapSpawn spawn in mapVersion.spawns) {
                cmd.Parameters.Clear();
                cmd.Parameters.AddWithValue("@mapId", mapId);
@@ -2547,6 +2549,8 @@ public class DB_Main : DB_MainStub
                cmd.Parameters.AddWithValue("@name", spawn.name);
                cmd.Parameters.AddWithValue("@posX", spawn.posX);
                cmd.Parameters.AddWithValue("@posY", spawn.posY);
+               cmd.Parameters.AddWithValue("@mapSpawnId", spawn.spawnId);
+               cmd.Parameters.AddWithValue("@arriveFacing", spawn.facingDirection);
                DebugQuery(cmd);
                cmd.ExecuteNonQuery();
             }
@@ -2719,8 +2723,8 @@ public class DB_Main : DB_MainStub
             cmd.ExecuteNonQuery();
 
             // Insert spawns
-            cmd.CommandText = "INSERT INTO global.map_spawns_v2(mapId, mapVersion, name, posX, posY) " +
-               "Values(@mapId, @mapVersion, @name, @posX, @posY);";
+            cmd.CommandText = "INSERT INTO global.map_spawns_v2(mapId, mapVersion, name, posX, posY, mapSpawnId, arriveFacing) " +
+               "Values(@mapId, @mapVersion, @name, @posX, @posY, @mapSpawnId, @arriveFacing);";
             foreach (MapSpawn spawn in result.spawns) {
                cmd.Parameters.Clear();
                cmd.Parameters.AddWithValue("@mapId", spawn.mapId);
@@ -2728,6 +2732,8 @@ public class DB_Main : DB_MainStub
                cmd.Parameters.AddWithValue("@name", spawn.name);
                cmd.Parameters.AddWithValue("@posX", spawn.posX);
                cmd.Parameters.AddWithValue("@posY", spawn.posY);
+               cmd.Parameters.AddWithValue("@mapSpawnId", spawn.spawnId);
+               cmd.Parameters.AddWithValue("@arriveFacing", spawn.facingDirection);
                DebugQuery(cmd);
                cmd.ExecuteNonQuery();
             }
@@ -2786,8 +2792,8 @@ public class DB_Main : DB_MainStub
             cmd.ExecuteNonQuery();
 
             // Insert spawns
-            cmd.CommandText = "INSERT INTO global.map_spawns_v2(mapId, mapVersion, name, posX, posY) " +
-               "Values(@mapId, @mapVersion, @name, @posX, @posY);";
+            cmd.CommandText = "INSERT INTO global.map_spawns_v2(mapId, mapVersion, name, posX, posY, mapSpawnId, arriveFacing) " +
+               "Values(@mapId, @mapVersion, @name, @posX, @posY, @mapSpawnId, @arriveFacing);";
             foreach (MapSpawn spawn in mapVersion.spawns) {
                cmd.Parameters.Clear();
                cmd.Parameters.AddWithValue("@mapId", spawn.mapId);
@@ -2795,6 +2801,9 @@ public class DB_Main : DB_MainStub
                cmd.Parameters.AddWithValue("@name", spawn.name);
                cmd.Parameters.AddWithValue("@posX", spawn.posX);
                cmd.Parameters.AddWithValue("@posY", spawn.posY);
+               cmd.Parameters.AddWithValue("@mapSpawnId", spawn.spawnId);
+               cmd.Parameters.AddWithValue("@arriveFacing", spawn.facingDirection);
+
                DebugQuery(cmd);
                cmd.ExecuteNonQuery();
             }

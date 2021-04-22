@@ -94,7 +94,7 @@ public partial class SpawnManager : MonoBehaviour
    protected List<MapSpawnData> _mapSpawnPreviewList = new List<MapSpawnData>();
 
    [Serializable]
-   protected class MapSpawnData
+   public class MapSpawnData
    {
       // Name of the map
       public string mapName;
@@ -112,13 +112,19 @@ public partial class SpawnManager : MonoBehaviour
    }
 
    [Serializable]
-   protected class SpawnData
+   public class SpawnData
    {
       // Name of the spawn
       public string name;
 
       // Local position in map of the spawn
       public Vector2 localPosition;
+
+      // The map spawn id
+      public int spawnId;
+
+      // Arrive facing what direction
+      public int arriveFacing;
    }
 
    #endregion
