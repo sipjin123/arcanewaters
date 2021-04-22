@@ -77,12 +77,10 @@ public class LoadingScreen : MonoBehaviour
       if (fadeOutEffect != null) {
          Global.isScreenTransitioning = true;
          float fadeTime = fadeOutEffect.fadeOut() + ADDITIONAL_WAIT_TIME;
+         mainCanvasGroup.DOFade(1.0f, fadeTime);
          yield return new WaitForSeconds(fadeTime);
          Global.isScreenTransitioning = false;
       }
-
-      // Blacken the screen
-      mainCanvasGroup.alpha = 1f;
 
       // Show a black screen for a short time
       for (float time = 0; time < MIN_TIME_BEFORE_SHOWING_BAR; time += Time.deltaTime) {
@@ -124,24 +122,27 @@ public class LoadingScreen : MonoBehaviour
       barImage.fillAmount = 1f;
       loadingFinishedMessage.enabled = true;
 
-      // Fade out loading screen elements - progress bar, etc.
-      elementsCanvasGroup.DOFade(0, 0.2f);
-      yield return new WaitForSeconds(0.25f);
-
-      hide(fadeOutEffect);
+      hide(fadeInEffect);
    }
 
    public void hide (IScreenFader fadeInEffect) {
-      mainCanvasGroup.alpha = 0;
+      StartCoroutine(CO_Hide(fadeInEffect));
+   }
+
+   private IEnumerator CO_Hide (IScreenFader fadeInEffect) {
+      // Fade out loading screen elements - progress bar, etc.
+      elementsCanvasGroup.DOFade(0, 0.4f);
+      yield return new WaitForSeconds(0.5f);
+
+      // Fade out loading screen
+      float duration = fadeInEffect.fadeIn();
+      mainCanvasGroup.DOFade(0.0f, duration);
+      yield return new WaitForSeconds(duration);
+
       mainCanvasGroup.blocksRaycasts = false;
       mainCanvasGroup.interactable = false;
       _isShowing = false;
       Global.isScreenTransitioning = false;
-
-      // If we have a fade in effect, show it
-      if (fadeInEffect != null) {
-         fadeInEffect.fadeIn();
-      }
    }
 
    public bool isShowing () {

@@ -292,6 +292,11 @@ public class PlayerShipEntity : ShipEntity
       }
 
       boostUpdate();
+
+      // Try to open chest through code (instead of UI) in case if UI is blocking raycasts casted to the chest Canvas
+      if (InputManager.isLeftClickKeyPressed() && !PriorityOverProcessActionLogic.isAnyHovered()) {
+         tryToOpenChest();
+      }
    }
 
    private void LateUpdate () {

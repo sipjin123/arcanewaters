@@ -96,7 +96,12 @@ public class QuickLaunchPanel : MonoBehaviour {
 
          // Launch into the appropriate mode, depending on which toggle was selected
          if (hostToggle.isOn) {
-            MyNetworkManager.self.StartHost();
+            PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.Login);
+
+            LoadingUtil.executeAfterFade(() => {
+               MyNetworkManager.self.StartHost();
+            });
+            
          } else if (clientToggle.isOn) {
             PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.Login);
 

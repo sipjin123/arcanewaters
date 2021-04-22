@@ -190,7 +190,7 @@ public class ServerMessageManager : MonoBehaviour
                // Storing login info
                UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                   if (conn != null && logInUserMessage.isFirstLogin) {
-                     DB_Main.storeLoginInfo(logInUserMessage.selectedUserId, accountId, selectedUsrName, conn.address, logInUserMessage.machineIdentifier ?? "", logInUserMessage.deploymentId);
+                     DB_Main.storeGameAccountLoginEvent(logInUserMessage.selectedUserId, accountId, selectedUsrName, conn.address, logInUserMessage.machineIdentifier ?? "", logInUserMessage.deploymentId);
                   }
                });
 
@@ -549,7 +549,7 @@ public class ServerMessageManager : MonoBehaviour
             // Storing login info
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                if (conn != null) {
-                  DB_Main.storeLoginInfo(userInfo.userId, accountId, userInfo.username, conn.address, msg.machineIdentifier, msg.deploymentId);
+                  DB_Main.storeGameAccountLoginEvent(userInfo.userId, accountId, userInfo.username, conn.address, msg.machineIdentifier, msg.deploymentId);
                }
             });
 

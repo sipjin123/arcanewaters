@@ -331,6 +331,11 @@ public class NetEntity : NetworkBehaviour
 
       // Routinely clean the attackers set
       InvokeRepeating("cleanAttackers", 0f, 1f);
+
+      // Registering the game user create event
+      if (NetworkServer.active && (this is PlayerBodyEntity || this is PlayerShipEntity)) {
+         Util.tryToRunInServerBackground(() => DB_Main.storeGameUserCreateEvent(this.userId, this.accountId, this.entityName, this.connectionToClient.address));
+      }
    }
 
    public virtual PlayerBodyEntity getPlayerBodyEntity () {
@@ -480,6 +485,11 @@ public class NetEntity : NetworkBehaviour
       // Remove the entity from the manager
       if (this is PlayerBodyEntity || this is PlayerShipEntity) {
          EntityManager.self.removeEntity(userId);
+      }
+
+      // Registering the game user destroy event
+      if (NetworkServer.active && (this is PlayerBodyEntity || this is PlayerShipEntity)) {
+         Util.tryToRunInServerBackground(() => DB_Main.storeGameUserDestroyEvent(this.userId, this.accountId, this.entityName, this.connectionToClient.address));
       }
 
       Vector3 localPos = this.transform.localPosition;
@@ -1883,6 +1893,44 @@ public class NetEntity : NetworkBehaviour
       while (!VoyageManager.self.tryUnlockNewLocationForUser(this)) {
          yield return new WaitForSeconds(2f);
       }
+   }
+
+   protected bool tryToOpenChest () {
+      // Max collisions to check
+      const int MAX_COLLISION_COUNT = 32;
+
+      Collider2D[] hits = Physics2D.OverlapPointAll(Util.getMousePos());
+      int collisionCount = 0;
+
+      foreach (Collider2D hit in hits) {
+         if (collisionCount > MAX_COLLISION_COUNT) {
+            break;
+         }
+         collisionCount++;
+
+         Collider2D[] colliders = hit.GetComponents<Collider2D>();
+         bool hitInBounds = false;
+         foreach (Collider2D collider in colliders) {
+            // If a collider contains the mouse
+            float distToMouse = ((Vector2) (collider.transform.position - Util.getMousePos())).magnitude;
+            if (distToMouse < collider.bounds.size.x) {
+               hitInBounds = true;
+            }
+         }
+
+         if (!hitInBounds) {
+            continue;
+         }
+
+         // If we clicked on a chest, interact with it
+         TreasureChest chest = hit.GetComponent<TreasureChest>();
+         if (chest && !chest.hasBeenOpened() && chest.chestType != ChestSpawnType.Site && chest.autoOpenCollider == hit) {
+            chest.sendOpenRequest();
+            return true;
+         }
+      }
+
+      return false;
    }
 
    protected virtual void webBounceUpdate () { }

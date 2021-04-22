@@ -462,6 +462,11 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       if (InputManager.isRightClickKeyPressed()) {
          triggerInteractAction();  
       }
+
+      // Try to open chest through code (instead of UI) in case if UI is blocking raycasts casted to the chest Canvas
+      if (InputManager.isLeftClickKeyPressed()) {
+         tryToOpenChest();
+      }
    }
 
    private void triggerInteractAction (bool faceMouseDirection = true) {

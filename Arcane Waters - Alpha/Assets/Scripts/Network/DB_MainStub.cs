@@ -1305,7 +1305,15 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
-   public static void storeLoginInfo (int usrId, int accId, string usrName, string ipAddress, string machineIdent, int deploymentId) {
+   public static void storeGameAccountLoginEvent (int usrId, int accId, string usrName, string ipAddress, string machineIdent, int deploymentId) {
+
+   }
+
+   public static void storeGameUserCreateEvent (int usrId, int accId, string usrName, string ipAddress) {
+
+   }
+
+   public static void storeGameUserDestroyEvent (int usrId, int accId, string usrName, string ipAddress) {
 
    }
 

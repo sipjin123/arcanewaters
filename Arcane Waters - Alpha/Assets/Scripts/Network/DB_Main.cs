@@ -6048,7 +6048,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             DebugQuery(cmd);
-            
+
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
@@ -9661,8 +9661,8 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void storeLoginInfo (int usrId, int accId, string usrName, string ipAddress, string machineIdent, int deploymentId) {
-      // Storing Login info, only when usrId > 0 and accId > 0
+   public static new void storeGameAccountLoginEvent (int usrId, int accId, string usrName, string ipAddress, string machineIdent, int deploymentId) {
+      // Storing session start info, only when usrId > 0 and accId > 0
       if (usrId > 0 && accId > 0) {
          // Getting the current time, in UTC
          DateTime currTime = DateTime.UtcNow;
@@ -9671,20 +9671,20 @@ public class DB_Main : DB_MainStub
 
          try {
             using (MySqlConnection conn = getConnection())
-            using (MySqlCommand cmd = new MySqlCommand("INSERT INTO logins (usrId, usrName, accId, ipAddress, machineIdent, loginSource, deploymentId, loginTime) VALUES (@usrId, @usrName, @accId, @ipAddress, @machineIdent, @loginSource, @deploymentId, @loginTime);", conn)) {
+            using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.sessions_history(accId,usrId,usrName,ipAddress,sessionEvent,machineIdentifier,deploymentId,sessionTime) VALUES(@accId,@usrId,@usrName,@ipAddress,@sessionEvent,@machineIdentifier,@deploymentId,@sessionTime);", conn)) {
                conn.Open();
                cmd.Prepare();
+
+               cmd.Parameters.AddWithValue("@accId", accId);
                cmd.Parameters.AddWithValue("@usrId", usrId);
                cmd.Parameters.AddWithValue("@usrName", usrName);
-               cmd.Parameters.AddWithValue("@accId", accId);
                cmd.Parameters.AddWithValue("@ipAddress", myAddress);
-               cmd.Parameters.AddWithValue("@machineIdent", machineIdent);
+               cmd.Parameters.AddWithValue("@machineIdentifier", machineIdent);
+               cmd.Parameters.AddWithValue("@sessionEvent", (int) SessionEvent.GameAccountLogin);
                cmd.Parameters.AddWithValue("@deploymentId", deploymentId);
-               cmd.Parameters.AddWithValue("@loginSource", "game");
-               cmd.Parameters.AddWithValue("@loginTime", currTime);
-               DebugQuery(cmd);
+               cmd.Parameters.AddWithValue("@sessionTime", currTime);
 
-               // Execute the command
+               DebugQuery(cmd);
                cmd.ExecuteNonQuery();
 
                // Updating last login time for both the account and its current user
@@ -9693,6 +9693,8 @@ public class DB_Main : DB_MainStub
                lastAccLoginCmd.Prepare();
                lastAccLoginCmd.Parameters.AddWithValue("@loginTime", currTime);
                lastAccLoginCmd.Parameters.AddWithValue("@accId", accId);
+
+               DebugQuery(lastAccLoginCmd);
                lastAccLoginCmd.ExecuteNonQuery();
 
                // User
@@ -9700,6 +9702,8 @@ public class DB_Main : DB_MainStub
                lastUsrLoginCmd.Prepare();
                lastUsrLoginCmd.Parameters.AddWithValue("@loginTime", currTime);
                lastUsrLoginCmd.Parameters.AddWithValue("@usrId", usrId);
+
+               DebugQuery(lastUsrLoginCmd);
                lastUsrLoginCmd.ExecuteNonQuery();
             }
          } catch (Exception e) {
@@ -9707,6 +9711,57 @@ public class DB_Main : DB_MainStub
          }
       }
    }
+
+   public static new void storeGameUserCreateEvent (int usrId, int accId, string usrName, string ipAddress) {
+      if (usrId > 0 && accId > 0) {
+         string myAddress = Util.formatIpAddress(ipAddress);
+
+         try {
+            using (MySqlConnection conn = getConnection())
+            using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.sessions_history(accId,usrId,usrName,sessionEvent,ipAddress) VALUES(@accId,@usrId,@usrName,@event,@ipAddress);", conn)) {
+               conn.Open();
+               cmd.Prepare();
+
+               cmd.Parameters.AddWithValue("@accId", accId);
+               cmd.Parameters.AddWithValue("@usrId", usrId);
+               cmd.Parameters.AddWithValue("@usrName", usrName);
+               cmd.Parameters.AddWithValue("@event", (int) SessionEvent.GameUserCreate);
+               cmd.Parameters.AddWithValue("@ipAddress", myAddress);
+
+               DebugQuery(cmd);
+               cmd.ExecuteNonQuery();
+            }
+         } catch (Exception e) {
+            D.error("MySQL Error: " + e.ToString());
+         }
+      }
+   }
+
+   public static new void storeGameUserDestroyEvent (int usrId, int accId, string usrName, string ipAddress) {
+      if (usrId > 0 && accId > 0) {
+         string myAddress = Util.formatIpAddress(ipAddress);
+
+         try {
+            using (MySqlConnection conn = getConnection())
+            using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.sessions_history(accId,usrId,usrName,sessionEvent,ipAddress) VALUES(@accId,@usrId,@usrName,@event,@ipAddress);", conn)) {
+               conn.Open();
+               cmd.Prepare();
+
+               cmd.Parameters.AddWithValue("@accId", accId);
+               cmd.Parameters.AddWithValue("@usrId", usrId);
+               cmd.Parameters.AddWithValue("@usrName", usrName);
+               cmd.Parameters.AddWithValue("@event", (int) SessionEvent.GameUserDestroy);
+               cmd.Parameters.AddWithValue("@ipAddress", myAddress);
+
+               DebugQuery(cmd);
+               cmd.ExecuteNonQuery();
+            }
+         } catch (Exception e) {
+            D.error("MySQL Error: " + e.ToString());
+         }
+      }
+   }
+
    #endregion
 
    #region Db debug

@@ -6499,6 +6499,128 @@ public class RPCManager : NetworkBehaviour
       BugReportManager.self.sendBugReportServerLog(bugReportId, serverLog);
    }
 
+   [Server]
+   public void sendNotification (Notification.Type notificationType) {
+      Target_DisplayNotification(_player.connectionToClient, notificationType);
+   }
+
+   [TargetRpc]
+   public void Target_DisplayNotification (NetworkConnection connection, Notification.Type notificationType) {
+      NotificationManager.self.add(notificationType);
+   }
+
+   [TargetRpc]
+   public void Target_DisplayNotificationForVoyageCompleted (NetworkConnection connection, Notification.Type notificationType, Biome.Type newUnlockedBiome) {
+      NotificationManager.self.add(notificationType, () => ((WorldMapPanel) PanelManager.self.get(Panel.Type.WorldMap)).displayMap(newUnlockedBiome));
+   }
+
+   [Command]
+   public void Cmd_RequestUnlockedBiomeListFromServer () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<Biome.Type> unlockedBiomeList = DB_Main.getUnlockedBiomes(_player.userId);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // The forest biome is always accessible
+            bool hasForestBiome = false;
+            foreach (Biome.Type biome in unlockedBiomeList) {
+               if (biome == Biome.Type.Forest) {
+                  hasForestBiome = true;
+                  break;
+               }
+            }
+
+            if (!hasForestBiome) {
+               unlockedBiomeList.Add(Biome.Type.Forest);
+            }
+
+            // Get the area key of the home towns in each biome
+            string forestHomeTown = "";
+            string desertHomeTown = "";
+            string snowHomeTown = "";
+            string pineHomeTown = "";
+            string lavaHomeTown = "";
+            string mushroomHomeTown = "";
+
+            Area.homeTownForBiome.TryGetValue(Biome.Type.Forest, out forestHomeTown);
+            Area.homeTownForBiome.TryGetValue(Biome.Type.Desert, out desertHomeTown);
+            Area.homeTownForBiome.TryGetValue(Biome.Type.Snow, out snowHomeTown);
+            Area.homeTownForBiome.TryGetValue(Biome.Type.Pine, out pineHomeTown);
+            Area.homeTownForBiome.TryGetValue(Biome.Type.Lava, out lavaHomeTown);
+            Area.homeTownForBiome.TryGetValue(Biome.Type.Mushroom, out mushroomHomeTown);
+
+            // Send the result to the client
+            Target_ReceiveUnlockedBiomeList(_player.connectionToClient, unlockedBiomeList.ToArray(), forestHomeTown,
+               desertHomeTown, snowHomeTown, pineHomeTown, lavaHomeTown, mushroomHomeTown);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveUnlockedBiomeList (NetworkConnection connection, Biome.Type[] unlockedBiomeArray,
+      string forestHomeTown, string desertHomeTown, string snowHomeTown, string pineHomeTown,
+      string lavaHomeTown, string mushroomHomeTown) {
+
+      List<Biome.Type> unlockedBiomeList = new List<Biome.Type>(unlockedBiomeArray);
+
+      // Make sure the panel is showing
+      PanelManager.self.linkIfNotShowing(Panel.Type.WorldMap);
+
+      // Pass the data to the panel
+      WorldMapPanel panel = (WorldMapPanel) PanelManager.self.get(Panel.Type.WorldMap);
+      panel.updatePanelWithUnlockedBiomes(unlockedBiomeList, forestHomeTown, desertHomeTown,
+         snowHomeTown, pineHomeTown, lavaHomeTown, mushroomHomeTown);
+   }
+
+   [Command]
+   public void Cmd_RequestWarpToBiomeHomeTown (Biome.Type biome) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Don't allow users to warp if they are in battle
+      if (_player.hasAttackers()) {
+         ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "You cannot warp while in combat!");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Check if the user has unlocked the biome
+         bool isBiomeUnlocked = DB_Main.isBiomeUnlockedForUser(_player.userId, biome);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // The forest biome is always unlocked
+            if (biome == Biome.Type.Forest) {
+               isBiomeUnlocked = true;
+            }
+
+            if (!isBiomeUnlocked) {
+               sendError("The " + biome.ToString() + " biome is locked!");
+            } else {
+               if (Area.homeTownForBiome.TryGetValue(biome, out string homeTown)) {
+                  if (Area.dockSpawnForBiome.TryGetValue(biome, out string dockSpawn)) {
+                     _player.spawnInNewMap(homeTown, dockSpawn, Direction.South);
+                  } else {
+                     _player.spawnInNewMap(homeTown);
+                  }
+               } else {
+                  sendError("Could not find the home town for the biome " + biome.ToString() + "!");
+                  _player.spawnInNewMap(Area.STARTING_TOWN);
+               }
+            }
+         });
+      });
+   }
+
    #region Private Variables
 
    // Our associated Player object
