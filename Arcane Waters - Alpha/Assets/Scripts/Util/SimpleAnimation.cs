@@ -44,6 +44,9 @@ public class SimpleAnimation : ClientMonoBehaviour {
    // Disables this scripts capability to alter the alpha of the sprite
    public bool freezeAlpha;
 
+   // Logs the scenarios where the sprite pause is triggered
+   public bool logPauseTriggers;
+
    #endregion
 
    protected override void Awake () {
@@ -113,9 +116,16 @@ public class SimpleAnimation : ClientMonoBehaviour {
          return;
       }
 
+      // TODO: Remove after confirming animation does not break after this update
+      CancelInvoke();
+
       // Update the sprite indexes accordingly
       updateIndexMinMax(info.minIndex, info.maxIndex);
       this.currentAnimation = newAnimType;
+
+      // TODO: Remove after confirming animation does not break after this update
+      float delay = this.delayStart ? (getTimePerFrame() * _sprites.Length / 2f) : initialDelay;
+      InvokeRepeating(nameof(changeSprite), delay, getTimePerFrame());
    }
 
    public void setNewTexture (Texture2D newTexture) {
@@ -258,6 +268,11 @@ public class SimpleAnimation : ClientMonoBehaviour {
 
       // Check if we need to pause
       if (Anim.pausesAtEnd(this.currentAnimation) && _index >= maxIndex) {
+         if (logPauseTriggers) {
+            D.debug("Pausing anim PauseAtEnd:{" + Anim.pausesAtEnd(this.currentAnimation) +
+               "} or IndexReach:{" + (_index >= maxIndex) + " :: " + _index + " >= " + maxIndex + "} " +
+               "Anim playing is:{" + currentAnimation + "}" + " " + group);
+         }
          this.isPaused = true;
       }
 

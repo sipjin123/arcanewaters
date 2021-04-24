@@ -599,6 +599,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          // Enemy stat setup
          setupEnemyStats();
 
+         // TODO: Remove this after animation freeze bug is fixed
+         if (enemyType == Enemy.Type.Pirate_Shooter || enemyType == Enemy.Type.Pirate_Healer) {
+            _anims[0].logPauseTriggers = true;
+         }
+
          _hasInitializedStats = true;
       }
    }

@@ -74,11 +74,6 @@ public class NubisDataFetchTest : MonoBehaviour
                });
             });
          }
-         if (GUILayout.Button("Force update player pref xml version")) {
-            int forcedVersion = 178;
-            PlayerPrefs.SetInt(XmlVersionManagerClient.XML_VERSION, forcedVersion);
-            D.editorLog("Finished");
-         }
          if (GUILayout.Button("Directly Fetch Xml Data")) {
             directFetchXmlData();
          }
