@@ -400,21 +400,25 @@ public class MyNetworkManager : NetworkManager
             if (BattleManager.self.getActiveBattlersData().ContainsKey(player.userId)) {
                Battle activeBattle = BattleManager.self.getActiveBattlersData()[player.userId];
                if (activeBattle != null) {
+                  D.debug("Player is still in an existing battle:" + " " + activeBattle.battleId);
                   Battler activeBattlerObj = activeBattle.getBattler(player.userId);
+                  D.debug("Players battler is still active:" + " " + activeBattlerObj.health + " " + activeBattlerObj.displayedHealth+ " " + activeBattle.isOver());
 
-                  // Reassign the updated info
-                  activeBattlerObj.playerNetId = player.netId;
-                  activeBattlerObj.player = player;
+                  if (!activeBattle.isOver()) {
+                     // Reassign the updated info
+                     activeBattlerObj.playerNetId = player.netId;
+                     activeBattlerObj.player = player;
 
-                  // Assign the Battle ID to the Sync Var
-                  player.battleId = activeBattle.battleId;
+                     // Assign the Battle ID to the Sync Var
+                     player.battleId = activeBattle.battleId;
 
-                  // Update the observers associated with the Battle and the associated players
-                  BattleManager.self.rebuildObservers(activeBattlerObj, activeBattle);
+                     // Update the observers associated with the Battle and the associated players
+                     BattleManager.self.rebuildObservers(activeBattlerObj, activeBattle);
 
-                  // Send player the data of the background and their abilities
-                  player.rpc.Target_ReceiveBackgroundInfo(player.connectionToClient, activeBattle.battleBoard.xmlID);
-                  player.rpc.processPlayerAbilities((PlayerBodyEntity) player, new List<PlayerBodyEntity> { (PlayerBodyEntity) player });
+                     // Send player the data of the background and their abilities
+                     player.rpc.Target_ReceiveBackgroundInfo(player.connectionToClient, activeBattle.battleBoard.xmlID);
+                     player.rpc.processPlayerAbilities((PlayerBodyEntity) player, new List<PlayerBodyEntity> { (PlayerBodyEntity) player });
+                  }
                }
             }
 
