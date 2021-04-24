@@ -182,6 +182,8 @@ public class TreasureChest : NetworkBehaviour {
       if (Global.player && !allowedUserIds.Contains(Global.player.userId) && chestType != ChestSpawnType.Site) {
          gameObject.SetActive(false);
       }
+
+      StartCoroutine(CO_ReparentObject());
    }
 
    public void Update () {
@@ -215,6 +217,14 @@ public class TreasureChest : NetworkBehaviour {
       }
    }
 
+   private IEnumerator CO_ReparentObject () {
+      while (AreaManager.self.getArea(areaKey) == null) {
+         yield return 0;
+      }
+      Area newArea = AreaManager.self.getArea(areaKey);
+      transform.SetParent(newArea.prefabParent);
+   }
+
    public void sendOpenRequest () {
       if (hasBeenOpened()) {
          return;
@@ -233,10 +243,14 @@ public class TreasureChest : NetworkBehaviour {
          return;
       }
 
-      if (chestType == ChestSpawnType.Sea || chestType == ChestSpawnType.Land) {
+      if ((chestType == ChestSpawnType.Sea && Global.player is PlayerShipEntity) || (chestType == ChestSpawnType.Land && Global.player is PlayerBodyEntity)) {
          Global.player.rpc.Cmd_OpenLootBag(this.id);
       } else {
-         Global.player.rpc.Cmd_OpenChest(this.id);
+         if (Global.player is PlayerBodyEntity) {
+            Global.player.rpc.Cmd_OpenChest(this.id);
+         } else {
+            D.debug("Error here! Only players are allowed to open chests");
+         }
       }
 
       deleteTreasureChestIcon();
