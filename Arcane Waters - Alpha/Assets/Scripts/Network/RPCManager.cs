@@ -4954,6 +4954,11 @@ public class RPCManager : NetworkBehaviour
       Instance instance = InstanceManager.self.getInstance(localBattler.instanceId);
       List<PlayerBodyEntity> bodyEntities = new List<PlayerBodyEntity>();
 
+      if (enemy.isDefeated) {
+         D.debug("Error here! Attempting to engage combat with a defeated enemy! Enemy battle id is {" + enemy.battleId + "}");
+         return;
+      }
+
       // Register the Host as the first entry for the party entities
       bodyEntities.Add(localBattler);
 
@@ -5053,23 +5058,29 @@ public class RPCManager : NetworkBehaviour
       bool isExistingBattle = (enemy.battleId > 0);
 
       // Get or create the Battle instance
-      Battle battle = isExistingBattle ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createTeamBattle(area, instance, enemy, attackers, localBattler, modifiedDefenderList.ToArray());
+      Battle battle = isExistingBattle && !enemy.isDefeated ? (BattleManager.self.getBattle(enemy.battleId)): BattleManager.self.createTeamBattle(area, instance, enemy, attackers, localBattler, modifiedDefenderList.ToArray());
 
-      // If the Battle is full, we can't proceed
-      if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
-         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The battle is already full!");
-         return;
+      if (battle == null) {
+         D.debug("Error here! Trying to engage battle but the Battle is NULL!! Battle id {" + enemy.battleId + "} is probably finished");
+      } else {
+         D.debug("Battle has started, battle id is {" + battle.battleId + "}");
+
+         // If the Battle is full, we can't proceed
+         if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The battle is already full!");
+            return;
+         }
+
+         // Adds the player to the newly created or existing battle
+         BattleManager.self.addPlayerToBattle(battle, localBattler, Battle.TeamType.Attackers);
+
+         // Handles ability related logic
+         processPlayerAbilities(localBattler, bodyEntities);
+
+         // Send Battle Bg data
+         int bgXmlID = battle.battleBoard.xmlID;
+         Target_ReceiveBackgroundInfo(_player.connectionToClient, bgXmlID);
       }
-
-      // Adds the player to the newly created or existing battle
-      BattleManager.self.addPlayerToBattle(battle, localBattler, Battle.TeamType.Attackers);
-
-      // Handles ability related logic
-      processPlayerAbilities(localBattler, bodyEntities);
-
-      // Send Battle Bg data
-      int bgXmlID = battle.battleBoard.xmlID;
-      Target_ReceiveBackgroundInfo(_player.connectionToClient, bgXmlID);
    }
 
    private void processPvp (BattlerInfo[] defenders, BattlerInfo[] attackers) {
