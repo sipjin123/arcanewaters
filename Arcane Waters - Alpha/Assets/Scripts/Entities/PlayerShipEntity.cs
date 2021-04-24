@@ -174,6 +174,8 @@ public class PlayerShipEntity : ShipEntity
 
          boostBarParent.anchoredPosition = boostBarParentPos;
 
+         PanelManager.self.showPowerupPanel();
+
       } else if (isServer) {
          _movementInputDirection = Vector2.zero;
       } else {
@@ -193,6 +195,11 @@ public class PlayerShipEntity : ShipEntity
       _targetCircle.gameObject.SetActive(false);
       _targetCone.gameObject.SetActive(false);
       _cannonTargeter.gameObject.SetActive(false);
+
+      if (isServer) {
+         // When we enter a new scene, update powerups on the client
+         rpc.Target_UpdatePowerups(connectionToClient, PowerupManager.self.getPowerupsForUser(userId));
+      }
    }
 
    protected override void updateSprites () {
@@ -312,7 +319,10 @@ public class PlayerShipEntity : ShipEntity
       if (NetworkServer.active) {
          // If the player wants to stop the ship, we let the linear drag handle the slowdown
          if (!isDead() && _movementInputDirection != Vector2.zero) {
-            Vector2 targetVelocity = _movementInputDirection * getMoveSpeed() * Time.fixedDeltaTime * PerkManager.self.getPerkMultiplier(userId, Perk.Category.ShipMovementSpeed);
+            float increaseAdditive = 1.0f;
+            increaseAdditive += PerkManager.self.getPerkMultiplierAdditive(userId, Perk.Category.ShipMovementSpeed);
+            increaseAdditive += PowerupManager.self.getPowerupMultiplierAdditive(userId, Powerup.Type.SpeedUp);
+            Vector2 targetVelocity = _movementInputDirection * getMoveSpeed() * Time.fixedDeltaTime * increaseAdditive;
             _body.velocity = Vector2.SmoothDamp(_body.velocity, targetVelocity, ref _shipDampVelocity, 0.5f);
 
             // In ghost mode, clamp the position to the area bounds
@@ -560,6 +570,7 @@ public class PlayerShipEntity : ShipEntity
       hasEnteredPvP = true;
 
       fireCannonBallAtTarget(spawnPosition, fireDirection, chargeAmount, playSound);
+      triggerPowerupsOnFire();
    }
 
    [Command]
@@ -579,6 +590,35 @@ public class PlayerShipEntity : ShipEntity
       hasEnteredPvP = true;
 
       fireSpecialCannonBallAtTarget(startPosition, targetPosition, lifetime, playSound);
+   }
+
+   [Server]
+   protected void triggerPowerupsOnFire () {
+      float multiShotMultiplier = PowerupManager.self.getPowerupMultiplierAdditive(userId, Powerup.Type.MultiShots);
+
+      // If the user has the MultiShots powerup
+      if (multiShotMultiplier > 0.01f) {
+         // Store the activation chance for the powerup
+         float activationChance = multiShotMultiplier * 2.0f;
+         int maxExtraShots = (int) (multiShotMultiplier * 10.0f);
+         int extraShotsCounter = 0;
+
+         List<SeaEntity> nearbyEnemies = Util.getEnemiesInCircle(this, transform.position, getCannonballDistance(1.0f));
+         foreach(SeaEntity enemy in nearbyEnemies) {
+            // If we have reached the limit of extra shots, stop checking
+            if (extraShotsCounter >= maxExtraShots) {
+               break;
+            }
+
+            // Roll for powerup activation chance
+            if (Random.Range(0.0f, 1.0f) <= activationChance) {
+               // Successfully activated, fire an extra cannonball at the enemy
+               Vector2 toEnemy = enemy.transform.position - transform.position;
+               fireCannonBallAtTarget(transform.position, toEnemy.normalized, getCannonChargeAmount(), false);
+               extraShotsCounter++;
+            }
+         }
+      }
    }
 
    [Command]
@@ -642,6 +682,10 @@ public class PlayerShipEntity : ShipEntity
          Destroy(_cannonTargeter.gameObject);
       }
 
+      if (isLocalPlayer) {
+         PanelManager.self.hidePowerupPanel();
+      }
+
       // Handle OnDestroy logic in a separate method so it can be correctly stripped
       onBeingDestroyedServer();
    }
@@ -688,6 +732,9 @@ public class PlayerShipEntity : ShipEntity
       netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, false, statusType: cannonEffectType,
          playFiringSound: playSound, lifetime: lifetime, isCrit: isCritical);
 
+      // Add effectors to cannonball
+      netBall.addEffectors(PowerupManager.self.getEffectors(userId));
+
       NetworkServer.Spawn(netBall.gameObject);
    }
 
@@ -714,6 +761,8 @@ public class PlayerShipEntity : ShipEntity
       // Setup cannonball
       netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, true, statusType: cannonEffectType,
          playFiringSound: playSound, lifetime: lifetime);
+
+      netBall.addEffectors(PowerupManager.self.getEffectors(userId));
 
       NetworkServer.Spawn(netBall.gameObject);
    }

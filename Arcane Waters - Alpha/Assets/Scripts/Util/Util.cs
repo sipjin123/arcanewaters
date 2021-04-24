@@ -1311,6 +1311,20 @@ public class Util : MonoBehaviour
       throw new Exception("No network adapters with an IPv4 or IPv6 address in the system!");
    }
 
+   public static List<SeaEntity> getEnemiesInCircle (SeaEntity checkingEntity, Vector3 checkPosition, float circleRadius) {
+      Collider2D[] hits = Physics2D.OverlapCircleAll(checkPosition, circleRadius);
+      List<SeaEntity> enemies = new List<SeaEntity>();
+
+      foreach (Collider2D hit in hits) {
+         SeaEntity hitEntity = hit.GetComponent<SeaEntity>();
+         if (hitEntity && checkingEntity.isEnemyOf(hitEntity)) {
+            enemies.Add(hitEntity);
+         }
+      }
+
+      return enemies;
+   }
+
    // A Random instance we can use for generating random numbers
    private static System.Random r = new System.Random();
 

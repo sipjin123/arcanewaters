@@ -5612,7 +5612,7 @@ public class DB_Main : DB_MainStub
       PenaltyInfo penaltyInfo = null;
 
       try {
-         string query = string.Format("SELECT * FROM global.account_penalties WHERE targetAccId = @targetAccId AND penaltyType IN ({0}) AND penaltyEnd > @penaltyEnd ORDER BY penaltyStart DESC LIMIT 1", string.Join(", ", PenaltyUtil.getPenaltiesList(penaltyType)));
+         string query = string.Format("SELECT * FROM global.account_penalties WHERE targetAccId = @targetAccId AND penaltyType IN ({0}) AND penaltyEnd > CURRENT_TIMESTAMP ORDER BY penaltyStart DESC LIMIT 1", string.Join(", ", PenaltyUtil.getPenaltiesList(penaltyType)));
 
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
@@ -5620,7 +5620,6 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@targetAccId", accId);
-            cmd.Parameters.AddWithValue("@penaltyEnd", DateTime.UtcNow);
 
             DebugQuery(cmd);
 
@@ -8439,6 +8438,25 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@scheduleVersion", string.Empty);
             cmd.Parameters.AddWithValue("@scheduleDate", string.Empty);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+
+         return true;
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return false;
+      }
+   }
+
+   public static new bool finishDeploySchedule () {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE deploy_schedule SET schedule_date=-1 WHERE id=1", conn)) {
+            conn.Open();
+            cmd.Prepare();
             DebugQuery(cmd);
 
             // Execute the command

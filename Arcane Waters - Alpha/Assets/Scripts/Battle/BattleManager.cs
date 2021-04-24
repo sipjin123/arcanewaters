@@ -1028,6 +1028,11 @@ public class BattleManager : MonoBehaviour {
 
                // TODO: Implement logic here that either warps the player to a different place or give invulnerability time so they can move away from previous enemy, otherwise its an unlimited battle until the player wins
                if (battler.player != null) {
+                  // When dying in a voyage treasure site, send a tip to the user explaining how to return
+                  if (battler.player.isInGroup() && VoyageManager.isTreasureSiteArea(battler.player.areaKey)) {
+                     battler.player.rpc.sendNotification(Notification.Type.ReturnToVoyage);
+                  }
+
                   battler.player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);
                }
             }

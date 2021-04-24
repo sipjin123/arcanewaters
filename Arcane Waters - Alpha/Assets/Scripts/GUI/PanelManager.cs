@@ -366,6 +366,16 @@ public class PanelManager : GenericGameManager {
       }
    }
 
+   public void showPowerupPanel () {
+      PowerupPanel.self.gameObject.SetActive(true);
+   }
+
+   public void hidePowerupPanel () {
+      if (!ClientManager.isApplicationQuitting) {
+         PowerupPanel.self.gameObject.SetActive(false);
+      }
+   }
+
    #region Private Variables
 
    // The Panel instances we know about

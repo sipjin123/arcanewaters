@@ -70,6 +70,10 @@ public class ServerCannonBall : NetworkBehaviour {
       }
    }
 
+   public void addEffectors (List<CannonballEffector> effectors) {
+      _effectors.AddRange(effectors);
+   }
+
    private IEnumerator CO_SetColliderAfter(float seconds, bool value) {
       yield return new WaitForSeconds(seconds);
       _ballCollider.enabled = value;
@@ -171,7 +175,7 @@ public class ServerCannonBall : NetworkBehaviour {
 
          // Apply the status effect
          if (_statusType != Status.Type.None) {
-            hitEntity.applyStatus(_statusType, _statusDuration);
+            hitEntity.applyStatus(_statusType, 1.0f, _statusDuration);
          }
 
          // Have the server tell the clients where the explosion occurred
@@ -180,12 +184,20 @@ public class ServerCannonBall : NetworkBehaviour {
          // Registers Damage throughout the clients
          hitEntity.Rpc_NetworkProjectileDamage(_creatorNetId, Attack.Type.Cannon, transform.position);
 
+         // Apply on-hit effectors to the target
+         applyEffectorsOnHit(hitEntity);
+
          // Destroy the projectile
          processDestruction();
       }
    }
 
    private void processDestruction () {
+      if (_cancelDestruction) {
+         _cancelDestruction = false;
+         return;
+      }
+
       // Detach the Trail Renderer so that it continues to show up a little while longer
       TrailRenderer trail = this.gameObject.GetComponentInChildren<TrailRenderer>();
       if (trail != null) {
@@ -212,12 +224,23 @@ public class ServerCannonBall : NetworkBehaviour {
 
       bool hitLand = Util.hasLandTile(transform.position);
 
+      playHitSound(hitLand || _hitEnemy);
+
+      // Plays SFX and VFX for land collision
+      if (hitLand || _hitEnemy) {
+         Instantiate(PrefabsManager.self.requestCannonSmokePrefab(_impactMagnitude), transform.position, Quaternion.identity);
+      } else {
+         Instantiate(PrefabsManager.self.requestCannonSplashPrefab(_impactMagnitude), transform.position, Quaternion.identity);
+      }
+   }
+
+   private void playHitSound (bool hitSolid) {
       bool playDefaultSFX = false;
       ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(projectileId);
       if (projectileData == null) {
          playDefaultSFX = true;
       } else {
-         if (hitLand || _hitEnemy) {
+         if (hitSolid) {
             if (projectileData.landHitSFX.Length < 1) {
                playDefaultSFX = true;
             } else {
@@ -232,16 +255,13 @@ public class ServerCannonBall : NetworkBehaviour {
          }
       }
 
-      // Plays SFX and VFX for land collision
-      if (hitLand || _hitEnemy) {
-         Instantiate(PrefabsManager.self.requestCannonSmokePrefab(_impactMagnitude), transform.position, Quaternion.identity);
+      if (hitSolid) {
          if (playDefaultSFX) {
             SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position, true);
          } else {
             SoundManager.create3dSoundWithPath(projectileData.landHitSFX, transform.position, projectileData.landHitVol);
          }
       } else {
-         Instantiate(PrefabsManager.self.requestCannonSplashPrefab(_impactMagnitude), transform.position, Quaternion.identity);
          if (playDefaultSFX) {
             SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position, true);
          } else {
@@ -252,6 +272,113 @@ public class ServerCannonBall : NetworkBehaviour {
 
    public int getInstanceId () {
       return _instanceId;
+   }
+
+   private void applyEffectorsOnHit (SeaEntity hitEntity) {
+      SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
+
+      // Execute the effects of any effectors attached to this cannonball
+      foreach (CannonballEffector effector in _effectors) {
+         switch (effector.effectorType) {
+            case CannonballEffector.Type.Fire:
+               hitEntity.applyStatus(Status.Type.Burning, effector.effectStrength, effector.effectDuration);
+               break;
+            case CannonballEffector.Type.Electric:
+               if (PowerupManager.self.powerupActivationRoll(sourceEntity.userId, Powerup.Type.ElectricShots)) {
+                  sourceEntity.cannonballChainLightning(_creatorNetId, transform.position, hitEntity.netId, effector.effectRange, effector.effectStrength);
+               }
+               break;
+            case CannonballEffector.Type.Ice:
+               hitEntity.applyStatus(Status.Type.Slowed, effector.effectStrength, effector.effectDuration);
+               break;
+            case CannonballEffector.Type.Explosion:
+               createOnHitExplosion(effector, hitEntity);
+               break;
+            case CannonballEffector.Type.Bouncing:
+               handleBounceEffect(effector, hitEntity);
+               break;
+         }
+      }
+   }
+
+   private void createOnHitExplosion (CannonballEffector effector, SeaEntity hitEntity) {
+      float explosionRadius = effector.effectRange;
+      int explosionDamage = (int) effector.effectStrength;
+      SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
+
+      PlayerShipEntity player = sourceEntity as PlayerShipEntity;
+      if (player) {
+         player.rpc.Rpc_ShowExplosiveShotEffect(transform.position, explosionRadius);
+      }
+
+      List<SeaEntity> nearbyEnemies = Util.getEnemiesInCircle(sourceEntity, transform.position, explosionRadius);
+      foreach(SeaEntity enemy in nearbyEnemies) {
+         // The enemy hit by the cannonball won't take splash damage
+         if (enemy.netId != hitEntity.netId && enemy.instanceId == _instanceId) {
+            // Apply damage
+            if (enemy.currentHealth > 0) {
+               enemy.currentHealth -= explosionDamage;
+               sourceEntity.totalDamageDealt += explosionDamage;
+            }
+
+            // Spawn a chest if enemy is killed
+            if (enemy is BotShipEntity) {
+               if (enemy.currentHealth <= 0) {
+                  ((BotShipEntity) enemy).spawnChest(sourceEntity.userId);
+               }
+            }
+
+            // Registers Damage throughout the clients
+            enemy.Rpc_NetworkProjectileDamage(_creatorNetId, Attack.Type.Cannon, enemy.transform.position);
+            enemy.Rpc_ShowDamage(Attack.Type.Cannon, enemy.transform.position, explosionDamage);
+         }
+      }
+   }
+
+   private void handleBounceEffect (CannonballEffector effector, SeaEntity hitEntity) {
+      int maxBounceCount = (int) effector.effectStrength;
+      SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
+
+      // Check if max bounce number has been reached
+      if (effector.triggerCount >= maxBounceCount) {
+         return;
+      }
+
+      float bounceActivationChance = 0.8f - effector.triggerCount * 0.1f;
+
+      // Roll for chance to bounce
+      if (UnityEngine.Random.Range(0.0f, 1.0f) <= bounceActivationChance) {
+         
+         // Find an enemy to bounce to, that isn't the one we hit
+         List<SeaEntity> nearbyEnemies = Util.getEnemiesInCircle(sourceEntity, transform.position,  effector.effectRange);
+         foreach (SeaEntity enemy in nearbyEnemies) {
+            if (enemy.netId != hitEntity.netId && enemy.instanceId == _instanceId) {
+               // Setup cannonball variables for new target
+               Vector2 toNewEnemy = enemy.transform.position - transform.position;
+               _startTime = NetworkTime.time;
+               _distance = toNewEnemy.magnitude;
+               effector.triggerCount++;
+               _hasCollided = false;
+
+               float currentSpeed = _rigidbody.velocity.magnitude;
+               projectileVelocity = toNewEnemy.normalized * currentSpeed;
+               _rigidbody.velocity = projectileVelocity;
+               Rpc_NotifyBounce(projectileVelocity, _distance);
+
+               // Set flag to stop destruction of cannonball
+               _cancelDestruction = true;
+               break;
+            }
+         }
+      }
+   }
+
+   [ClientRpc]
+   private void Rpc_NotifyBounce (Vector2 newVelocity, float distance) {
+      _rigidbody.velocity = newVelocity;
+      _startTime = NetworkTime.time;
+      _distance = distance;
+      _hasCollided = false;
    }
 
    #region Private Variables
@@ -313,6 +440,12 @@ public class ServerCannonBall : NetworkBehaviour {
 
    // Whether this cannonball will deal critical damage
    private bool _isCrit = false;
+
+   // All effectors that will apply effects to this cannonball
+   private List<CannonballEffector> _effectors = new List<CannonballEffector>();
+
+   // When set to true, this will prevent processDestruction from destroying the cannonball once
+   private bool _cancelDestruction = false;
 
    #endregion
 

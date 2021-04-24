@@ -85,35 +85,49 @@ public class TreasureManager : MonoBehaviour {
       // Allow the user who triggered the spawn to see and interact with this loot bag
       chest.allowedUserIds.Add(userId);
 
-      List<PlayerShipEntity> otherInstancePlayers = instance.getPlayerShipEntities();
-      int playerVoyageGroupId = otherInstancePlayers.Find(_ => _.userId == userId).voyageGroupId;
+      List<PlayerShipEntity> instancePlayerEntities = instance.getPlayerShipEntities();
+      int playerVoyageGroupId = instancePlayerEntities.Find(_ => _.userId == userId).voyageGroupId;
+
       if (playerVoyageGroupId > 0) {
-         foreach (PlayerShipEntity playerEntity in otherInstancePlayers) {
+         foreach (PlayerShipEntity playerEntity in instancePlayerEntities) {
             // If there are players in the instance that share the same voyage group id with the player, then add them to the allowed list of user interaction
             if (playerEntity.userId != userId && playerEntity.voyageGroupId == playerVoyageGroupId) {
                chest.allowedUserIds.Add(playerEntity.userId);
-            }
-
-            // Check if any players in the instance got an extra loot drop
-            if (playerEntity.voyageGroupId == playerVoyageGroupId) {
-               if (PerkManager.self.perkActivationRoll(playerEntity.userId, Perk.Category.ItemDropChances)) { 
-                  // Instantiate a new Treasure Chest like the original
-                  TreasureChest bonusChest = Instantiate(seaChestPrefab, spot + Vector3.right * 0.3f, Quaternion.identity);
-
-                  // Setup the chest variables
-                  initEnemyDropChest(bonusChest, (int) enemyType, instance, true);
-
-                  // Only the player who got the extra drop is allowed to open it (or see it)
-                  bonusChest.allowedUserIds.Add(playerEntity.userId);
-
-                  NetworkServer.Spawn(bonusChest.gameObject);
-               }
             }
          }
       }
 
       // Spawn the network object on the Clients
       NetworkServer.Spawn(chest.gameObject);
+
+      // Check if any players in the instance got an extra loot drop
+      foreach (PlayerShipEntity playerEntity in instancePlayerEntities) {
+         if (playerEntity.voyageGroupId == playerVoyageGroupId) {
+               
+            int bonusChests = 0;
+            if (PerkManager.self.perkActivationRoll(playerEntity.userId, Perk.Category.ItemDropChances)) {
+               bonusChests++;
+            }
+
+            if (PowerupManager.self.powerupActivationRoll(playerEntity.userId, Powerup.Type.TreasureDropUp)) {
+               bonusChests++;       
+            }
+
+            for (int i = 0; i < bonusChests; i++) {
+               // Instantiate a new Treasure Chest like the original
+               TreasureChest bonusChest = Instantiate(seaChestPrefab, spot + Vector3.up * 0.1f * (i + 1), Quaternion.identity);
+
+               // Setup the chest variables
+               initEnemyDropChest(bonusChest, (int) enemyType, instance, true);
+
+               // Only the player who got the extra drop is allowed to open it (or see it)
+               bonusChest.allowedUserIds.Add(playerEntity.userId);
+
+               NetworkServer.Spawn(bonusChest.gameObject);
+            }
+         }
+      }
+
 
       return chest;
    }
@@ -129,34 +143,48 @@ public class TreasureManager : MonoBehaviour {
       chest.allowedUserIds.Add(userId);
 
       List<PlayerBodyEntity> instancePlayerEntities = instance.getPlayerBodyEntities();
-      if (instancePlayerEntities.Find(_ => _.userId == userId).voyageGroupId > 0) {
-         int playerVoyageGroupId = instancePlayerEntities.Find(_ => _.userId == userId).voyageGroupId;
+      int playerVoyageGroupId = instancePlayerEntities.Find(_ => _.userId == userId).voyageGroupId;
+
+      // If there are players in the instance that share the same voyage group id with the player, then add them to the allowed list of user interaction
+      if (playerVoyageGroupId > 0) {
          foreach (PlayerBodyEntity playerEntity in instancePlayerEntities) {
-            // If there are players in the instance that share the same voyage group id with the player, then add them to the allowed list of user interaction
             if (playerEntity.userId != userId && playerEntity.voyageGroupId == playerVoyageGroupId) {
-               chest.allowedUserIds.Add(playerEntity.userId); 
-            }
-
-            // Check if any players in the instance that got an extra loot drop
-            if (playerEntity.voyageGroupId == playerVoyageGroupId) {
-               if (PerkManager.self.perkActivationRoll(playerEntity.userId, Perk.Category.ItemDropChances)) {
-                  // Instantiate a new Treasure Chest like the original
-                  TreasureChest bonusChest = Instantiate(monsterBagPrefab, spot + Vector3.right * 0.3f, Quaternion.identity);
-
-                  // Setup the chest variables
-                  initEnemyDropChest(bonusChest, enemyTypeId, instance, true);
-                  
-                  // Only the player who got the extra drop is allowed to open it (or see it)
-                  bonusChest.allowedUserIds.Add(playerEntity.userId);
-
-                  NetworkServer.Spawn(bonusChest.gameObject);
-               }
+               chest.allowedUserIds.Add(playerEntity.userId);
             }
          }
       }
 
       // Spawn the network object on the Clients
       NetworkServer.Spawn(chest.gameObject);
+
+      // Check if any players in the instance that got an extra loot drop
+      foreach (PlayerBodyEntity playerEntity in instancePlayerEntities) {
+         if (playerEntity.voyageGroupId == playerVoyageGroupId) {
+
+            int bonusChests = 0;
+            if (PerkManager.self.perkActivationRoll(playerEntity.userId, Perk.Category.ItemDropChances)) {
+               bonusChests++;
+            }
+
+            if (PowerupManager.self.powerupActivationRoll(playerEntity.userId, Powerup.Type.TreasureDropUp)) {
+               bonusChests++;
+            }
+
+            for (int i = 0; i < bonusChests; i++) {
+               // Instantiate a new Treasure Chest like the original
+               TreasureChest bonusChest = Instantiate(seaChestPrefab, spot + Vector3.up * 0.1f * i, Quaternion.identity);
+
+               // Setup the chest variables
+               initEnemyDropChest(bonusChest, enemyTypeId, instance, true);
+
+               // Only the player who got the extra drop is allowed to open it (or see it)
+               bonusChest.allowedUserIds.Add(playerEntity.userId);
+
+               NetworkServer.Spawn(bonusChest.gameObject);
+            }
+         }
+      }
+
 
       return chest;
    }

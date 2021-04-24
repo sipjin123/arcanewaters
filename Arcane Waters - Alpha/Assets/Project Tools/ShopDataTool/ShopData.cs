@@ -40,4 +40,7 @@ public class ShopItemData {
 
    // Chance to Drop
    public float dropChance;
+
+   // Item data (used by blueprint)
+   public string data;
 }

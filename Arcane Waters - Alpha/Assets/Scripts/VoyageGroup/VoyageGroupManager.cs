@@ -169,6 +169,11 @@ public class VoyageGroupManager : MonoBehaviour
 
       // Send the group composition update to all group members
       StartCoroutine(CO_SendGroupCompositionToAllMembers(voyageGroup.groupId));
+
+      // If the voyage group is in a voyage, the new member will have their powerups cleared
+      if (voyageGroup.voyageId > 0) {
+         PowerupManager.self.clearPowerupsForUser(player.userId);
+      }      
    }
 
    [Server]
@@ -176,6 +181,9 @@ public class VoyageGroupManager : MonoBehaviour
       player.voyageGroupId = -1;
       removeUserFromGroup(voyageGroup, player.userId);
       player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, new VoyageGroupMemberCellInfo[0]);
+      
+      // Clear user powerups on the server
+      PowerupManager.self.clearPowerupsForUser(player.userId);
    }
 
    [Server]
@@ -199,6 +207,9 @@ public class VoyageGroupManager : MonoBehaviour
          // Send the group composition update to all group members
          StartCoroutine(CO_SendGroupCompositionToAllMembers(voyageGroup.groupId));
       }
+
+      // Clear user powerups on the server
+      PowerupManager.self.clearPowerupsForUser(userId);
    }
 
    [Server]

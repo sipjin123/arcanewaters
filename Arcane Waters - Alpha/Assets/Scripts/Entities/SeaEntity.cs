@@ -193,16 +193,15 @@ public class SeaEntity : NetEntity
       Collider2D[] hits = Physics2D.OverlapCircleAll(sourcePos, 1);
       Dictionary<NetEntity, Transform> collidedEntities = new Dictionary<NetEntity, Transform>();
       List<uint> targetIDList = new List<uint>();
+      ShipAbilityData abilityData = getSeaAbility(Attack.Type.Shock_Ball);
+      ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(abilityData.projectileId);
+      int damage = (int) (projectileData.projectileDamage * Attack.getDamageModifier(Attack.Type.Shock_Ball));
 
       foreach (Collider2D collidedEntity in hits) {
          if (collidedEntity != null) {
-            if (collidedEntity.GetComponent<PlayerShipEntity>() != null) {
+            if (collidedEntity.GetComponent<SeaEntity>() != null) {
                SeaEntity seaEntity = collidedEntity.GetComponent<SeaEntity>();
-               if (!collidedEntities.ContainsKey(seaEntity) && seaEntity.currentHealth > 0) {
-                  ShipAbilityData abilityData = getSeaAbility(Attack.Type.Shock_Ball);
-                  ProjectileStatData projectilData = ProjectileStatManager.self.getProjectileData(abilityData.projectileId);
-
-                  int damage = (int) (projectilData.projectileDamage * Attack.getDamageModifier(Attack.Type.Shock_Ball));
+               if (this.isEnemyOf(seaEntity) && !collidedEntities.ContainsKey(seaEntity) && seaEntity.currentHealth > 0 && seaEntity.instanceId == this.instanceId) {
                   seaEntity.currentHealth -= damage;
                   seaEntity.Rpc_ShowExplosion(attackerNetId, collidedEntity.transform.position, damage, Attack.Type.None, false);
 
@@ -217,6 +216,29 @@ public class SeaEntity : NetEntity
       }
 
       Rpc_ChainLightning(targetIDList.ToArray(), primaryTargetNetID, sourcePos);
+   }
+
+   [Server]
+   public void cannonballChainLightning (uint attackerNetId, Vector2 sourcePos, uint primaryTargetNetID, float chainRadius, float damage) {
+      Collider2D[] hits = Physics2D.OverlapCircleAll(sourcePos, chainRadius);
+      Dictionary<NetEntity, Transform> collidedEntities = new Dictionary<NetEntity, Transform>();
+      List<uint> targetNetIdList = new List<uint>();
+      int damageInt = (int) damage;
+
+      foreach (Collider2D hit in hits) {
+         if (hit != null && hit.GetComponent<SeaEntity>() != null) {
+            SeaEntity hitEntity = hit.GetComponent<SeaEntity>();
+            if (this.isEnemyOf(hitEntity) && !collidedEntities.ContainsKey(hitEntity) && hitEntity.currentHealth > 0 && hitEntity.instanceId == this.instanceId) {
+               hitEntity.currentHealth -= damageInt;
+               hitEntity.Rpc_ShowDamage(Attack.Type.None, hitEntity.transform.position, damageInt);
+
+               collidedEntities.Add(hitEntity, hit.transform);
+               targetNetIdList.Add(hitEntity.netId);
+            }
+         }
+      }
+
+      Rpc_ChainLightning(targetNetIdList.ToArray(), primaryTargetNetID, sourcePos);
    }
 
    [ClientRpc]
@@ -413,7 +435,7 @@ public class SeaEntity : NetEntity
             break;
          case Attack.Type.Venom:
             // Apply the status effect
-            StatusManager.self.create(Status.Type.Slowed, 3f, attackerNetID);
+            StatusManager.self.create(Status.Type.Slowed, 0.3f, 3f, attackerNetID);
             ExplosionManager.createSlimeExplosion(location);
             SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Attack_Fire, location);
             break;
@@ -712,6 +734,13 @@ public class SeaEntity : NetEntity
                         }
                      }
 
+                     float damageReductionMultiplier = 1.0f;
+                     PlayerShipEntity player = targetEntity.getPlayerShipEntity();
+                     if (player) {
+                        damageReductionMultiplier = 1.0f - PowerupManager.self.getPowerupMultiplierAdditive(player.userId, Powerup.Type.DamageReduction);
+                     }
+
+                     damage = (int) (damage * damageReductionMultiplier);
                      targetEntity.currentHealth -= damage;
                      targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, damage, attackType, false);
 
@@ -733,9 +762,9 @@ public class SeaEntity : NetEntity
                         }
                      }
 
-                     StatusManager.self.create(Status.Type.Frozen, 2f, targetEntity.netId);
+                     StatusManager.self.create(Status.Type.Frozen, 1.0f, 2f, targetEntity.netId);
                   } else if (attackType == Attack.Type.Venom) {
-                     StatusManager.self.create(Status.Type.Slowed, 1f, targetEntity.netId);
+                     StatusManager.self.create(Status.Type.Slowed, 0.3f, 1f, targetEntity.netId);
                   }
                   enemyHitList.Add(targetEntity);
                }

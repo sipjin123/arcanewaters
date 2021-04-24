@@ -16,13 +16,13 @@ public class StatusManager : MonoBehaviour {
       self = this;
    }
 
-   public Status create (Status.Type statusType, float length, uint targetNetId) {
+   public Status create (Status.Type statusType, float strength, float length, uint targetNetId) {
       Status statusEffect = null;
 
       // If the target already has the status, refresh it
       if (hasStatus(targetNetId, statusType)) {
          statusEffect = getStatus(targetNetId, statusType);
-         refreshStatus(statusEffect, targetNetId, length);
+         refreshStatus(statusEffect, targetNetId, length, strength);
       }
       // Otherwise, create a new one
       else {
@@ -31,6 +31,7 @@ public class StatusManager : MonoBehaviour {
          statusEffect.statusType = statusType;
          statusEffect.startTime = NetworkTime.time;
          statusEffect.endTime = statusEffect.startTime + length;
+         statusEffect.strength = strength;
 
          // Keep track of the status effects
          addStatus(targetNetId, statusEffect);
@@ -66,10 +67,11 @@ public class StatusManager : MonoBehaviour {
       _statuses[netId] = list;
    }
 
-   private void refreshStatus (Status oldStatus, uint netId, float length) {
+   private void refreshStatus (Status oldStatus, uint netId, float length, float strength) {
       oldStatus.isNew = false;
       oldStatus.startTime = NetworkTime.time;
       oldStatus.endTime = oldStatus.startTime + length;
+      oldStatus.strength = strength;
 
       StopCoroutine(oldStatus.removeStatusCoroutine);
 
@@ -105,6 +107,18 @@ public class StatusManager : MonoBehaviour {
       }
 
       return false;
+   }
+
+   public float getStatusStrength (uint netId, Status.Type statusType) {
+      if (_statuses.ContainsKey(netId)) {
+         foreach (Status status in _statuses[netId]) {
+            if (status.statusType == statusType) {
+               return status.strength;
+            }
+         }
+      }
+
+      return 0.0f;
    }
 
    public Status getStatus (uint netId, Status.Type statusType) {

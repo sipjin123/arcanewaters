@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 
-public class PenaltyUtil {
+public class PenaltyUtil
+{
 
    public static List<int> getPenaltiesList (PenaltyType penaltyType) {
       List<int> penaltyTypes = new List<int>();
 
-      if (penaltyType == PenaltyType.Ban) {
+      if (penaltyType == PenaltyType.Ban || penaltyType == PenaltyType.Kick) {
          penaltyTypes.Add((int) penaltyType);
       } else if (penaltyType == PenaltyType.Mute || penaltyType == PenaltyType.StealthMute) {
          penaltyTypes.Add((int) PenaltyType.Mute);

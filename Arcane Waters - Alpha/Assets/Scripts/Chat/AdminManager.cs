@@ -98,7 +98,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("ship_health", "Sets your ship's health", requestSetShipHealth, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "health" }));
       cm.addCommand(new CommandData("spawn_sea_enemy", "Spawns a sea enemy at your mouse position", requestSpawnSeaEnemy, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "enemyId" }));
       cm.addCommand(new CommandData("warp_anywhere", "Allows user warp anywhere without getting returned to town", requestWarpAnywhere, requiredPrefix: CommandType.Admin));
-      cm.addCommand(new CommandData("kick", "Disconnects a player from the name", kickPlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "reason" }));
+      cm.addCommand(new CommandData("kick", "Disconnects a player from the game", kickPlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "reason" }));
       cm.addCommand(new CommandData("ban", "Ban a player from the game for [duration] minutes", banPlayerTemporary, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "duration", "reason" }));
       cm.addCommand(new CommandData("ban_permanently", "Bans a player from the game indefinitely", banPlayerIndefinite, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "reason" }));
       cm.addCommand(new CommandData("god", "Gives the player's ship very high health and damage", requestGod, requiredPrefix: CommandType.Admin));
@@ -111,6 +111,9 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("throw_errors", "Throws various errors and warnings on the server to test the logger tool", requestThrowTestErrors, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "message" }));
       cm.addCommand(new CommandData("toggle_nubis", "Enable or disable the usage of the Nubis server for this client", toggleNubis, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "isEnabled" }));
       cm.addCommand(new CommandData("add_perk_points", "Gives the player perk points", requestPerkPoints, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "numPoints" }));
+      cm.addCommand(new CommandData("add_powerup", "Gives you a powerup of specified type and rarity", requestPowerup, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "powerupType", "powerupRarity" }));
+      cm.addCommand(new CommandData("clear_powerups", "Clears all of your current powerups", requestClearPowerups, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("set_powerup_drop_chance", "Sets the chance for an enemy ship to drop a powerup (1.0 = 100%)", requestSetPowerupDropChance, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "dropChance" }));
 
       // Log Commands for investigation
       cm.addCommand(new CommandData("xml", "Logs the xml content of the specific manager", requestXmlLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "xmlType" }));
@@ -181,6 +184,16 @@ public class AdminManager : NetworkBehaviour
       return true;
    }
 
+   private void requestSetPowerupDropChance (string parameters) {
+      Cmd_SetPowerupDropChance(parameters);
+   }
+
+   [Command]
+   private void Cmd_SetPowerupDropChance (string parameters) {
+      float newDropChance = float.Parse(parameters);
+      BotShipEntity.powerupDropChance = Mathf.Clamp01(newDropChance);
+   }
+
    private void requestPerkPoints (string parameters) {
       Cmd_AddPerkPoints(parameters);
    }
@@ -203,6 +216,38 @@ public class AdminManager : NetworkBehaviour
             _player.rpc.Target_SetPerkPoints(connectionToClient, userPerks.ToArray());
          });
       });
+   }
+
+   private void requestClearPowerups () {
+      PowerupPanel.self.clearPowerups();
+      Cmd_ClearPowerups();
+   }
+
+   [Command]
+   private void Cmd_ClearPowerups () {
+      PowerupManager.self.clearPowerupsForUser(_player.userId);
+   }
+
+   private void requestPowerup (string parameters) {
+      Cmd_AddPowerup(parameters);
+   }
+
+   [Command] 
+   private void Cmd_AddPowerup (string parameters) {
+      string[] inputs = parameters.Split(' ');
+
+      if (inputs.Length > 1) {
+         Powerup.Type type = (Powerup.Type) int.Parse(inputs[0]);
+         Rarity.Type rarity = (Rarity.Type) int.Parse(inputs[1]);
+
+         if (type == Powerup.Type.None || rarity == Rarity.Type.None) {
+            return;
+         }
+         
+         Powerup newPowerup = new Powerup(type, rarity);
+         PowerupManager.self.addPowerupServer(_player.userId, newPowerup);
+         _player.rpc.Target_AddPowerup(connectionToClient, newPowerup);
+      }
    }
 
    private void requestLose (string parameter) {
@@ -613,7 +658,7 @@ public class AdminManager : NetworkBehaviour
 
                   NetEntity player = EntityManager.self.getEntityWithName(usrName);
                   if (player != null) {
-                     player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Banned, ServerMessageManager.getBannedMessage(penaltyInfo)));
+                     player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Banned, ServerMessageManager.getPenaltyMessage(penaltyInfo)));
                      player.connectionToClient.Disconnect();
                   }
                   // If not...

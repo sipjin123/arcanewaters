@@ -493,7 +493,7 @@ public class VoyageManager : GenericGameManager {
    }
 
    [Server]
-   private IEnumerator CO_CreateLeagueInstanceAndWarpPlayer (NetEntity player, int leagueIndex, Biome.Type biome, int randomSeed = -1, string areaKey = "") {
+   private IEnumerator CO_CreateLeagueInstanceAndWarpPlayer (NetEntity player, int leagueIndex, Biome.Type biome, int randomSeed = -1, string areaKey = "") {      
       // Get a new voyage id from the master server
       RpcResponse<int> response = ServerNetworkingManager.self.getNewVoyageId();
       while (!response.IsDone) {
@@ -559,6 +559,20 @@ public class VoyageManager : GenericGameManager {
       // Wait until the voyage instance has been created
       while (!tryGetVoyage(voyageId, out Voyage voyage)) {
          yield return null;
+      }
+
+      // At the creation of the league lobby, clear powerups of all users
+      if (leagueIndex == 0) {
+         if (voyageGroup != null) {
+            foreach (int memberUserId in voyageGroup.members) {
+               NetEntity memberEntity = EntityManager.self.getEntity(memberUserId);
+               if (memberEntity != null) {
+                  PowerupManager.self.clearPowerupsForUser(memberUserId);
+               }
+            }
+         } else {
+            PowerupManager.self.clearPowerupsForUser(player.userId);
+         }
       }
 
       if (leagueIndex == 1 && voyageGroup != null) {

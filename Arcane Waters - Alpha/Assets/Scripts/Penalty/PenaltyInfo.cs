@@ -136,4 +136,5 @@ public enum PenaltyType
    Mute = 1,
    StealthMute = 2,
    Ban = 3,
+   Kick = 4
 }

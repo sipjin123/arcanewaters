@@ -21,9 +21,6 @@ public class AutoCompletePanel : MonoBehaviour {
    // Whether the chat input field has the user's focus
    public bool inputFieldFocused = false;
 
-   // Where the mouse was last frame
-   public Vector2 lastMousePos = Vector2.zero;
-
    #endregion
 
    private void Awake () {
@@ -46,10 +43,6 @@ public class AutoCompletePanel : MonoBehaviour {
       if (KeyUtils.GetKeyDown(Key.Enter)) {
          onEnterPressed();
       }
-   }
-
-   private void LateUpdate () {
-      lastMousePos = MouseUtils.mousePosition;
    }
 
    private void onScrolled (Vector2 pos) {

@@ -19,6 +19,9 @@ public class Status : MonoBehaviour {
    // When this Status effect ends
    public double endTime;
 
+   // How strong this status effect is
+   public float strength;
+
    // If the status has been freshly created, this is set to false when the effect is refreshed
    public bool isNew = true;
 

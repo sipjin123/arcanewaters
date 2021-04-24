@@ -104,8 +104,9 @@ public class ShipEntity : SeaEntity
       shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);
 
       if (this is PlayerShipEntity) {
-         currentHealth = (int)(PerkManager.self.getPerkMultiplier(Perk.Category.ShipHealth) * currentHealth);
-         maxHealth = (int)(PerkManager.self.getPerkMultiplier(Perk.Category.ShipHealth) * maxHealth);
+         float healthMultiplierAdditive = 1.0f + PerkManager.self.getPerkMultiplierAdditive(userId, Perk.Category.ShipHealth) + PowerupManager.self.getPowerupMultiplierAdditive(userId, Powerup.Type.IncreasedHealth);
+         currentHealth = (int)(healthMultiplierAdditive * currentHealth);
+         maxHealth = (int)(healthMultiplierAdditive * maxHealth);
       }
    }
 

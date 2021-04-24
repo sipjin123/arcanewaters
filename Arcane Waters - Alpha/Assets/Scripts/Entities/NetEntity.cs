@@ -246,6 +246,7 @@ public class NetEntity : NetworkBehaviour
       _body = GetComponent<Rigidbody2D>();
       _outline = GetComponentInChildren<SpriteOutline>();
       _clickableBox = GetComponentInChildren<ClickableBox>();
+      _clickableBoxCanvas = _clickableBox?.GetComponentInParent<Canvas>();
       _networkLerp = GetComponent<NetworkLerpRigidbody2D>();
       _animators.AddRange(GetComponentsInChildren<Animator>());
       _renderers.AddRange(GetComponentsInChildren<SpriteRenderer>());
@@ -515,7 +516,7 @@ public class NetEntity : NetworkBehaviour
    }
 
    public bool isMuted () {
-      // DateTime.Compare() returns a number < 0 if DateTime.Now is earlier than the chatSuspensionEndDate, 0 if the dates are equal or a number > 0 otherwise
+      // DateTime.Compare() returns a number < 0 if DateTime.Now is earlier than the muteExpirationDate, 0 if the dates are equal or a number > 0 otherwise
       int isEarlier = DateTime.Compare(DateTime.UtcNow, muteExpirationDate);
       return isEarlier < 0;
    }
@@ -863,7 +864,7 @@ public class NetEntity : NetworkBehaviour
       if (StatusManager.self.hasStatus(this.netId, Status.Type.Frozen) || StatusManager.self.hasStatus(this.netId, Status.Type.Stunned)) {
          modifier = 0f;
       } else if (StatusManager.self.hasStatus(this.netId, Status.Type.Slowed)) {
-         modifier = .5f;
+         modifier = Mathf.Clamp(1.0f - StatusManager.self.getStatusStrength(this.netId, Status.Type.Slowed), 0.2f, 1.0f);
       } else if (_isClimbing) {
          if (Time.time - _lastBodySpriteChangetime <= .2f) {
             modifier = 0;
@@ -946,17 +947,17 @@ public class NetEntity : NetworkBehaviour
       return .2;
    }
 
-   public void applyStatus (Status.Type statusType, float length) {
-      Status newStatus = StatusManager.self.create(statusType, length, netId);
+   public void applyStatus (Status.Type statusType, float strength, float duration) {
+      Status newStatus = StatusManager.self.create(statusType, strength, duration, netId);
 
       if (statusType == Status.Type.Burning) {
          if (!newStatus.isNew) {
             StopCoroutine(_burningCoroutine);
          }
-         _burningCoroutine = applyDamageOverTime(10, 1.0f, 3.0f);
+         _burningCoroutine = applyDamageOverTime((int)strength, 1.0f, duration);
       }
 
-      Rpc_ApplyStatusIcon(statusType, newStatus.isNew, length);
+      Rpc_ApplyStatusIcon(statusType, newStatus.isNew, duration);
    }
 
    [ClientRpc]
@@ -1941,6 +1942,10 @@ public class NetEntity : NetworkBehaviour
       return false;
    }
 
+   public Canvas getClickableBoxCanvas () {
+      return _clickableBoxCanvas;
+   }
+
    protected virtual void webBounceUpdate () { }
 
    protected virtual void onStartMoving () { }
@@ -1969,6 +1974,7 @@ public class NetEntity : NetworkBehaviour
    // Our various component references
    protected Rigidbody2D _body;
    protected ClickableBox _clickableBox;
+   protected Canvas _clickableBoxCanvas;
    protected SpriteOutline _outline;
    protected NetworkLerpRigidbody2D _networkLerp;
 

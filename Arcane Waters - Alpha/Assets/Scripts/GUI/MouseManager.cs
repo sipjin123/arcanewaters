@@ -73,7 +73,8 @@ public class MouseManager : ClientMonoBehaviour
    public bool isMouseOverSomething () {
       _boxBeingHovered = null;
       GameObject gameObjectUnderMouse = null;
- 
+      List<GameObject> gameObjectsUnderMouseList = new List<GameObject>();
+
       pointerEventData = new PointerEventData(EventSystem.current);
       pointerEventData.position = MouseUtils.mousePosition;
 
@@ -84,7 +85,13 @@ public class MouseManager : ClientMonoBehaviour
       // Search for clickable box
       foreach (RaycastResult result in results) {
          if (result.gameObject.GetComponent<ClickableBox>()) {
-            gameObjectUnderMouse = result.gameObject;
+            gameObjectsUnderMouseList.Add(result.gameObject);
+         }
+      }
+
+      foreach (GameObject gameObject in gameObjectsUnderMouseList) {
+         if (gameObjectUnderMouse == null || gameObject.transform.position.z < gameObjectUnderMouse.transform.position.z) {
+            gameObjectUnderMouse = gameObject;
          }
       }
 

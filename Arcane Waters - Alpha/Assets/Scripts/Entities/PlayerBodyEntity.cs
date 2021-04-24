@@ -150,6 +150,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
                triggerJumpAction();
             }
          };
+
+         PanelManager.self.hidePowerupPanel();
       }
    }
 

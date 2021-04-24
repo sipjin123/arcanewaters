@@ -185,6 +185,9 @@ public class PrefabsManager : MonoBehaviour {
    // A reference to the poof effect prefab
    public GameObject poofPrefab;
 
+   // A reference to the explosive shot effect prefab
+   public GameObject explosiveShotEffectPrefab;
+
    // Self
    public static PrefabsManager self;
 

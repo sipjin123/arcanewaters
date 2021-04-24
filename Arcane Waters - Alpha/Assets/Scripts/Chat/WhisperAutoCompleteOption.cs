@@ -69,7 +69,7 @@ public class WhisperAutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IP
 
    public void OnPointerEnter (PointerEventData eventData) {
       // Don't trigger PointerEnter events if the mouse hasn't moved, to avoid triggering on objects enabled under the mouse
-      if (MouseUtils.mousePosition == ChatManager.self.autoCompletePanel.lastMousePos) {
+      if (MouseUtils.mouseDelta.magnitude < 0.1f) {
          return;
       }
 

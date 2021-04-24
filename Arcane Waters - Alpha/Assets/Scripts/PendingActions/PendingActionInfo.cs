@@ -47,7 +47,8 @@ public enum PendingActionType
    NotifyMute = 1,
    NotifyBan = 2,
    LiftMute = 3,
-   LiftBan = 4
+   LiftBan = 4,
+   KickPlayer = 5
 }
 
 public enum PendingActionServerType

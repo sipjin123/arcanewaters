@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class PendingActionManager : GenericGameManager {
+public class PendingActionManager : GenericGameManager
+{
    #region Public Variables
 
    #endregion
@@ -69,7 +70,7 @@ public class PendingActionManager : GenericGameManager {
                               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                                  NetEntity player = EntityManager.self.getEntityWithAccId(banInfo.targetAccId);
                                  if (player != null) {
-                                    player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Banned, ServerMessageManager.getBannedMessage(banInfo)));
+                                    player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Banned, ServerMessageManager.getPenaltyMessage(banInfo)));
                                     player.connectionToClient.Disconnect();
                                  }
                               });
@@ -92,6 +93,20 @@ public class PendingActionManager : GenericGameManager {
                               }
                            });
 
+                           break;
+                        case PendingActionType.KickPlayer:
+                           PenaltyInfo kickInfo = DB_Main.getPenaltyInfoForAccount(int.Parse(pendingJson["targetAccId"].ToString()), PenaltyType.Kick);
+
+                           if (kickInfo != null) {
+                              UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                                 NetEntity player = EntityManager.self.getEntityWithAccId(kickInfo.targetAccId);
+
+                                 if (player != null) {
+                                    player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Kicked, ServerMessageManager.getPenaltyMessage(kickInfo)));
+                                    player.connectionToClient.Disconnect();
+                                 }
+                              });
+                           }
                            break;
                      }
 

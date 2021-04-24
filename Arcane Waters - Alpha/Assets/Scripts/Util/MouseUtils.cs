@@ -27,4 +27,16 @@ public static class MouseUtils {
          return 0;
       }
    }
+
+   public static Vector2 mouseDelta
+   {
+      get
+      {
+         if (Util.isBatch()) {
+            return Vector2.zero;
+         }
+
+         return Mouse.current.delta.ReadValue();
+      }
+   }
 }

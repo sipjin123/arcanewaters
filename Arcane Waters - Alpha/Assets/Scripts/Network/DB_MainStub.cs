@@ -1230,6 +1230,9 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static bool finishDeploySchedule () {
+      return true;
+   }
 
    public static bool cancelDeploySchedule () {
       return false;

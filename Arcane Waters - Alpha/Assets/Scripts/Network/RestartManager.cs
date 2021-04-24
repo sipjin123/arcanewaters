@@ -105,6 +105,9 @@ public class RestartManager : GenericGameManager
 
             // Log the server stop event
             ServerHistoryManager.self.logServerEvent(ServerHistoryInfo.EventType.ServerStop);
+            
+            // Update schedule_date to -1 to let jenkins job know that server release job can be started
+            DB_Main.finishDeploySchedule();
 
             break;
          } else if (currSeconds < 9.0f) {

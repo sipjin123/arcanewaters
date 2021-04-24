@@ -50,6 +50,9 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    // How far the cone extends ahead of the ship
    public float aggroConeRadius;
 
+   // Temporary powerup drop chance variable used for testing
+   public static float powerupDropChance = 0.2f;
+
    #endregion
 
    protected override void Start () {
@@ -171,6 +174,20 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       if (seaEntityData.shouldDropTreasure) {
          Instance currentInstance = InstanceManager.self.getInstance(this.instanceId);
          TreasureManager.self.createSeaMonsterChest(currentInstance, sortPoint.transform.position, seaEntityData.seaMonsterType, killerUserId);
+      }
+
+      // Members of the voyage group that killed us have a chance to get a random powerup
+      NetEntity killer = EntityManager.self.getEntity(killerUserId);
+      if (killer) {
+         VoyageGroupInfo voyageGroup;
+         if (killer.tryGetGroup(out voyageGroup)) {
+            foreach (int memberUserId in voyageGroup.members) {
+               // Chance to award a random powerup
+               if (Random.Range(0.0f, 1.0f) < powerupDropChance) {
+                  PowerupManager.self.awardRandomPowerupToUser(memberUserId);
+               }
+            }
+         }
       }
    }
 

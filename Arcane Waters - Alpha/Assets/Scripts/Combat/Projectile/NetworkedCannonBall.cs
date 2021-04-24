@@ -46,7 +46,7 @@ public class NetworkedCannonBall : NetworkedProjectile
          hitEntity.currentHealth -= damage;
 
          // Apply the status effect
-         StatusManager.self.create(Status.Type.Slowed, 3f, hitEntity.netId);
+         StatusManager.self.create(Status.Type.Slowed, 1.0f, 3f, hitEntity.netId);
 
          // Have the server tell the clients where the explosion occurred
          hitEntity.Rpc_ShowExplosion(sourceEntity.netId, circleCollider.transform.position, damage, Attack.Type.Cannon, false);

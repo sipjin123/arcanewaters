@@ -6621,6 +6621,23 @@ public class RPCManager : NetworkBehaviour
       });
    }
 
+   [TargetRpc]
+   public void Target_UpdatePowerups (NetworkConnection connection, List<Powerup> powerups) {
+      PowerupPanel.self.updatePowerups(powerups);
+   }
+
+   [TargetRpc]
+   public void Target_AddPowerup (NetworkConnection connection, Powerup newPowerup) {
+      PowerupManager.self.addPowerupClient(newPowerup);
+   }
+
+   [ClientRpc]
+   public void Rpc_ShowExplosiveShotEffect (Vector2 position, float radius) {
+      GameObject effect = Instantiate(PrefabsManager.self.explosiveShotEffectPrefab, position, Quaternion.identity, null);
+      float tempEffectScale = 3.0f;
+      effect.transform.localScale = Vector3.one * tempEffectScale * radius;
+   }
+
    #region Private Variables
 
    // Our associated Player object
