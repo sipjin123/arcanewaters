@@ -16,6 +16,9 @@ public class TreasureSiteLeague : TreasureSite
    // The name of the treasure site
    public Text treasureSiteName;
 
+   // The gui displaying the name plate of the treasure site
+   public GameObject namePlateGUI;
+
    #endregion
 
    public override void Update () {
@@ -49,6 +52,7 @@ public class TreasureSiteLeague : TreasureSite
 
       // Displays the destination name
       treasureSiteName.text = destinationArea;
+      namePlateGUI.SetActive(isActive());
    }
 
    public override void OnTriggerEnter2D (Collider2D other) {
