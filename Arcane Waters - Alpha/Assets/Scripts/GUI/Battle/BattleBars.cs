@@ -89,7 +89,7 @@ public class BattleBars : MonoBehaviour {
       healthBar.fillAmount = ((float) _battler.displayedHealth / _battler.getStartingHealth());
 
       // Hide our bars while we're doing an attack
-      if (_battler != BattleSelectionManager.self.selectedBattler) {
+      if ((_battler != BattleSelectionManager.self.selectedBattler && !_battler.isLocalBattler()) || _battler.isAttacking) {
          _canvasGroup.alpha += _battler.isJumping ? -5f * Time.deltaTime : 5f * Time.deltaTime;
          _canvasGroup.alpha = Mathf.Clamp(_canvasGroup.alpha, 0f, 1f);
       } else {

@@ -624,6 +624,7 @@ MonoBehaviour:
   equippedArmorId: 0
   armorType: 0
   equipmentDataId: 0
+  armorDurability: 0
   palettes: 
   cachedArmorData:
     equipmentName: Undefined
@@ -661,6 +662,7 @@ MonoBehaviour:
   equippedWeaponId: 0
   weaponType: 0
   equipmentDataId: 0
+  weaponDurability: 0
   palettes: 
   actionType: 0
   actionTypeValue: 0
@@ -2129,7 +2131,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f01404b11d418b44eba085340c73d9b0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8df4ce09deeec74409254846b36f0c5f, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2709,7 +2711,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f01404b11d418b44eba085340c73d9b0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8df4ce09deeec74409254846b36f0c5f, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2775,7 +2777,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -673.3, y: -62.49}
+  m_AnchoredPosition: {x: 17.5, y: -18.79}
   m_SizeDelta: {x: 35, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9056412350475713174

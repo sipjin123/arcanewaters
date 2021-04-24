@@ -115,6 +115,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec16d7de84d12ea40a6509bac50ab952, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  textureSwappedEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &6411829894089007786
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -499,6 +502,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a83d3aa1ebf2a2645aa0311dfe2a4a34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  textureSwappedEvent:
+    m_PersistentCalls:
+      m_Calls: []
   isFront: 0
 --- !u!114 &8465923078169423105
 MonoBehaviour:
@@ -629,6 +635,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c423c34b9b7bdc542b28f6638747660d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  textureSwappedEvent:
+    m_PersistentCalls:
+      m_Calls: []
   isFront: 1
 --- !u!114 &4799414012765415894
 MonoBehaviour:
@@ -1080,6 +1089,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c423c34b9b7bdc542b28f6638747660d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  textureSwappedEvent:
+    m_PersistentCalls:
+      m_Calls: []
   isFront: 0
 --- !u!114 &653023293699102750
 MonoBehaviour:
@@ -1417,6 +1429,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3415edd38e1d39948828aab52b453b4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  textureSwappedEvent:
+    m_PersistentCalls:
+      m_Calls: []
   equipmentId: 0
 --- !u!114 &6307793882743100680
 MonoBehaviour:
@@ -1546,6 +1561,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a83d3aa1ebf2a2645aa0311dfe2a4a34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  textureSwappedEvent:
+    m_PersistentCalls:
+      m_Calls: []
   isFront: 1
 --- !u!114 &6427430478580924236
 MonoBehaviour:
@@ -1693,6 +1711,7 @@ MonoBehaviour:
   guildRankPriority: 0
   battleId: 0
   voyageGroupId: -1
+  isGhost: 0
   hasEnteredPvP: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
@@ -1819,6 +1838,7 @@ MonoBehaviour:
   equippedArmorId: 0
   armorType: 0
   equipmentDataId: 0
+  armorDurability: 0
   palettes: 
   cachedArmorData:
     equipmentName: Undefined
@@ -1858,6 +1878,7 @@ MonoBehaviour:
   equippedWeaponId: 0
   weaponType: 0
   equipmentDataId: 0
+  weaponDurability: 0
   palettes: 
   actionType: 0
   actionTypeValue: 0
@@ -2471,6 +2492,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e131fe70c2398e41b5edce8b59c8019, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  textureSwappedEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &7134036831248214437
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8629,6 +8653,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58c51506c5b0e5b4eb1272587a156000, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  textureSwappedEvent:
+    m_PersistentCalls:
+      m_Calls: []
   equipmentId: 0
 --- !u!1 &5436578864175175978
 GameObject:
@@ -10076,7 +10103,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 713672114105101032}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d57bd3865ece73142a8e669afaf93059, type: 3}
   m_Name: 

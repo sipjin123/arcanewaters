@@ -97,7 +97,7 @@ MonoBehaviour:
     statusSprite: {fileID: 3986112975633359074, guid: 9a4f00482fb7b6c4a9b39ad691577f61,
       type: 3}
   - statusType: 7
-    statusSprite: {fileID: 21300000, guid: cc3e29523c210584c84958a923f36d0f, type: 3}
+    statusSprite: {fileID: 21300000, guid: d10a7e5d04966874db14ccc6c5a7fb07, type: 3}
   - statusType: 8
     statusSprite: {fileID: 21300000, guid: 81f3fc3b64a4dd442a37f9e0c137c3ab, type: 3}
   statusType: 0

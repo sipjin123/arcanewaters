@@ -100,7 +100,7 @@ public class BattleSelectionManager : MonoBehaviour {
       if (!clickedBattler) {
          BattleUIManager.self.highlightLocalBattler(false);
 
-         if (selectedBattler != null) {
+         if (selectedBattler != null && !selectedBattler.isLocalBattler()) {
             selectedBattler.deselectThis();
          }
          selectedBattler = null;

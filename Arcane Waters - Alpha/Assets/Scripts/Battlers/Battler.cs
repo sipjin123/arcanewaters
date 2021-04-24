@@ -289,7 +289,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public bool hasLoggedAnimationFreeze;
 
    // Returns simple animation list
-   public List<SimpleAnimation> getAnim () { return _anims; } 
+   public List<SimpleAnimation> getAnim () { return _anims; }
+
+   // If the battler is attacking
+   public bool isAttacking;
 
    #endregion
 
@@ -582,7 +585,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                selectedBattleBar = minionBattleBar;
                selectedBattleBar.nameText.text = Global.player.nameText.text;
                BattleUIManager.self.playerBattleCG.Hide();
-               selectedBattleBar.toggleDisplay(false);
+               selectedBattleBar.toggleDisplay(true);
             }
          }
 
@@ -752,10 +755,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             hoverPlayerNames = true;
          }
 
-         if (hoverPlayerNames) {
-            selectedBattleBar.toggleDisplay(isMouseHovering());
-         } else {
-            selectedBattleBar.toggleDisplay(false);
+         if (!isLocalBattler()) {
+            if (hoverPlayerNames) {
+               selectedBattleBar.toggleDisplay(isMouseHovering());
+            } else {
+               selectedBattleBar.toggleDisplay(false);
+            }
          }
       } else {
          if (selectedBattleBar != null) {
@@ -1149,6 +1154,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // Then proceeding to execute the remaining for each path, it is a little extensive, but definitely a lot better than
       // creating a lot of different scripts
 
+      isAttacking = true;
       Battle battle = BattleManager.self.getBattle(battleAction.battleId);
       Battler sourceBattler = battle.getBattler(battleAction.sourceId);
       modifyAnimSpeed(-1);
@@ -1712,6 +1718,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       if (userId == Global.player.userId && enemyType == Enemy.Type.PlayerBattler) {
          setBattlerCanCastAbility(true);
       }
+
+      isAttacking = false;
    }
 
    private IEnumerator CO_ResetBattlerSpot () {
