@@ -16,9 +16,6 @@ using MapCreationTool.Serialization;
 public class XmlVersionManagerClient : GenericGameManager {
    #region Public Variables
 
-   // The player pref key for clients
-   public static string XML_VERSION = "xml_version";
-
    // Path of the streaming files
    public static string ZIP_PATH = Application.streamingAssetsPath + "/XmlZip/XmlContent.zip";
    public static string TEXT_PATH = Application.streamingAssetsPath + "/XmlTexts/";
@@ -26,6 +23,9 @@ public class XmlVersionManagerClient : GenericGameManager {
    // Error directory for log purposes
    public static string ERROR_DIRECTORY = "C:/XmlErrorLog/";
    public static string ERROR_FILENAME = "ErrorFile.txt";
+
+   // Version text file
+   public static string VERSION_FILE = "version_xml";
 
    // Progress indicators
    public int targetProgress;
@@ -83,7 +83,7 @@ public class XmlVersionManagerClient : GenericGameManager {
       D.debug("Initializing Client!");
       if (!isInitialized) {
          if (resetXmlPrefs) {
-            PlayerPrefs.SetInt(XML_VERSION, 0);
+            File.WriteAllText(TEXT_PATH + VERSION_FILE + ".txt", "0");
          }
          loadBlocker.SetActive(true);
 
@@ -113,7 +113,27 @@ public class XmlVersionManagerClient : GenericGameManager {
    }
 
    private void processClientData (int serverVersion) {
-      int clientXmlVersion = PlayerPrefs.GetInt(XML_VERSION, 0);
+      int clientXmlVersion = 0; 
+
+      string fileDirectory = TEXT_PATH + VERSION_FILE + ".txt";
+      if (!File.Exists(fileDirectory)) {
+         D.debug("Missing file! Creating now: " + fileDirectory);
+         File.Create(fileDirectory).Close();
+         File.WriteAllText(fileDirectory, "0");
+      } else {
+         // Read the text from directly from the txt file
+         StreamReader reader = new StreamReader(fileDirectory);
+         string versionText = reader.ReadToEnd();
+         reader.Close();
+
+         try {
+            clientXmlVersion = int.Parse(versionText);
+            D.debug("Client version is {" + clientXmlVersion + "}");
+         } catch {
+            D.debug("Failed to parse version {" + versionText + "} from file {" + fileDirectory + "}");
+         }
+      }
+
       string clientMessage = "";
 
       finishedCheckingStreamingAsset.AddListener(isCompleteData => {
@@ -123,7 +143,7 @@ public class XmlVersionManagerClient : GenericGameManager {
             D.debug(clientMessage);
 
             // Reset version cache since file integrity might be compromised
-            PlayerPrefs.SetInt(XML_VERSION, 0);
+            File.WriteAllText(TEXT_PATH + VERSION_FILE + ".txt", "0");
 
             // Force redownload zip data due to possible missing files
             downloadClientData(serverVersion);
@@ -193,6 +213,7 @@ public class XmlVersionManagerClient : GenericGameManager {
    
    private async void downloadClientData (int targetVersion) {
       string zipDataRequest = await NubisClient.call(nameof(DB_Main.fetchZipRawData), NubisDataFetcher.getSlotIndex());
+      D.debug("ZipDownloadComplete: " + zipDataRequest.Length);
       _downloadProgress = 1f;
       updateLoadingProgress();
       writeData(zipDataRequest, targetVersion);
@@ -208,6 +229,7 @@ public class XmlVersionManagerClient : GenericGameManager {
       } else {
          try {
             byte[] bytes = Convert.FromBase64String(zipDataRequest);
+            D.debug("Successfully written zip bytes: " + bytes.Length);
             File.WriteAllBytes(ZIP_PATH, bytes);
          } catch {
             D.editorLog("Failed to convert bytes:", Color.red);
@@ -219,6 +241,7 @@ public class XmlVersionManagerClient : GenericGameManager {
                File.Create(ERROR_DIRECTORY + ERROR_FILENAME).Close();
             }
             File.WriteAllText(ERROR_DIRECTORY + ERROR_FILENAME, zipDataRequest);
+            D.debug("Successfully written zip bytes: " + zipDataRequest.Length);
          }
 
          GZipUtility.decompressToDirectory(ZIP_PATH, TEXT_PATH, (fileName) => {
@@ -226,7 +249,8 @@ public class XmlVersionManagerClient : GenericGameManager {
          });
 
          D.editorLog("Finished Extracting Zip", Color.green);
-         PlayerPrefs.SetInt(XML_VERSION, targetVersion);
+         File.WriteAllText(TEXT_PATH + VERSION_FILE + ".txt", targetVersion.ToString());
+         D.debug("New xml version is: " + targetVersion + " to " + TEXT_PATH + VERSION_FILE + ".txt");
          _writeProgress = 1f;
          updateLoadingProgress();
          processClientXml();
@@ -363,6 +387,8 @@ public class XmlVersionManagerClient : GenericGameManager {
    }
 
    private void assignDataToManagers (EditorToolType xmlType, string content) {
+      D.debug("Assigning data to manager {" + xmlType + "}" + " " + content.Length);
+
       // Split each entry data
       string splitter = "[next]";
       string[] xmlGroup = content.Split(new string[] { splitter }, StringSplitOptions.None);
@@ -817,14 +843,32 @@ public class XmlVersionManagerClient : GenericGameManager {
 
                // Extract the segregated data and assign to the xml manager
                if (xmlSubGroup.Length >= 6) {
-                  int id = int.Parse(xmlSubGroup[0]);
-                  string name = xmlSubGroup[1];
-                  string displayName = xmlSubGroup[2];
-                  int specialType = int.Parse(xmlSubGroup[3]);
-                  int sourceMapId = int.Parse(xmlSubGroup[4]);
-                  int weatherEffectType = int.Parse(xmlSubGroup[5]);
-                  int biome = int.Parse(xmlSubGroup[6]);
-                  int editorType = int.Parse(xmlSubGroup[7]);
+                  int id = 0;
+                  string name = "";
+                  string displayName = "";
+                  int specialType = 0;
+                  int sourceMapId = 0;
+                  int weatherEffectType = 0;
+                  int biome = 0;
+                  int editorType = 0;
+
+                  try {
+                     id = int.Parse(xmlSubGroup[0]);
+                     name = xmlSubGroup[1];
+                     displayName = xmlSubGroup[2];
+                     specialType = int.Parse(xmlSubGroup[3]);
+                     sourceMapId = int.Parse(xmlSubGroup[4]);
+                     weatherEffectType = int.Parse(xmlSubGroup[5]);
+                     biome = int.Parse(xmlSubGroup[6]);
+                  } catch { 
+                     D.debug("Failed to get index 0-6"); 
+                  }
+
+                  try {
+                     editorType = xmlSubGroup.Length >= 7 ? int.Parse(xmlSubGroup[7]) : (int) MapCreationTool.EditorType.Area;
+                  } catch {
+                     D.debug("Failed to get index 7 {editorType}");
+                  }
 
                   Map newMapEntry = new Map {
                      id = id,
