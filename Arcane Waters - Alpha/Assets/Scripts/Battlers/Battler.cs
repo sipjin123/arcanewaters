@@ -1397,9 +1397,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             targetBattler.displayedAP = Util.clamp<int>(targetBattler.displayedAP + action.targetApChange, 0, MAX_AP);
 
             // If the target died, animate that death now
-            if (targetBattler.isDead() && targetBattler.getAnim()[0].currentAnimation != Anim.Type.Death_East) {
-               BattleSelectionManager.self.deselectTarget();
-               targetBattler.StartCoroutine(targetBattler.animateDeath());
+            if (targetBattler.isDead()) {
+               if (targetBattler.getAnim()[0].currentAnimation != Anim.Type.Death_East) {
+                  BattleSelectionManager.self.deselectTarget();
+                  targetBattler.StartCoroutine(targetBattler.animateDeath());
+               }
             } else {
                D.debug("Skip animating death for {" + enemyType + "} Anim:{" + targetBattler.getAnim()[0].currentAnimation + "}");
             }

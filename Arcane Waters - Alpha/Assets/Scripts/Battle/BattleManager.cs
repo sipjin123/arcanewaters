@@ -939,8 +939,6 @@ public class BattleManager : MonoBehaviour {
       }
 
       List<Vector3> spawnPositions = new List<Vector3>();
-      bool foundPlayer = false;
-      float distanceMagnitude = .1f;
 
       if (teamThatWon == Battle.TeamType.Attackers) {
          // Only Spawn one lootbag per combat win
@@ -972,6 +970,10 @@ public class BattleManager : MonoBehaviour {
       }
       D.adminLog("Item durability is processed completely", D.ADMIN_LOG_TYPE.CombatEnd);
 
+      // TODO: Remove this completely after confirming that there should only be one treasure bag drop per land combat victory
+      //bool foundPlayer = false;
+      //float distanceMagnitude = .1f;
+
       // Process monster type reward
       foreach (Battler battler in defeatedBattlers) {
          if (battler.isMonster()) {
@@ -980,6 +982,9 @@ public class BattleManager : MonoBehaviour {
             foreach (Battler participant in winningBattlers) {
                if (!participant.isMonster()) {
                   participant.player.rpc.endBattle();
+                  
+                  // TODO: Remove this completely after confirming that there should only be one treasure bag drop per land combat victory
+                  /*
                   Vector3 chestPos = Vector3.zero;
                   try {
                      chestPos = battler.player.transform.position;
@@ -999,7 +1004,7 @@ public class BattleManager : MonoBehaviour {
                   } catch {
                      D.debug("Error! Battler Player does not exist!");
                      continue;
-                  }
+                  }*/
 
                   // Registers the kill count of the combat
                   AchievementManager.registerUserAchievement(participant.player, ActionType.KillLandMonster, defeatedBattlers.Count);
@@ -1010,6 +1015,8 @@ public class BattleManager : MonoBehaviour {
                } 
             }
 
+            // TODO: Remove this completely after confirming that there should only be one treasure bag drop per land combat victory
+            /*
             // Spawn loot bags multiplied by the number of enemies defeated
             if (!battler.isBossType && winningBattlers.Count >= 1) {
                Vector3 targetPosition = battler.player.transform.position;
@@ -1020,7 +1027,7 @@ public class BattleManager : MonoBehaviour {
                }
             } else {
                // TODO: Add reward logic here for boss enemies
-            }
+            }*/
          } else {
             if (battler.player is PlayerBodyEntity && !battle.isPvp) {
                // Registers the death of the player in combat
