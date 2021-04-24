@@ -210,7 +210,7 @@ public class AbilityManager : MonoBehaviour
                if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
                   D.adminLog("Source battler is attacking" + " : " + sourceBattler.enemyType
                      + " Target is: " + targetBattler.enemyType
-                     + " TimeToWait: " + timeToWait
+                     + " TimeToWait: " + timeToWait.ToString("f1")
                      + " CurrAnim: " + targetBattler.getAnim()[0].currentAnimation
                      + " TargetHealth: " + targetBattler.health + " : " + targetBattler.displayedHealth, D.ADMIN_LOG_TYPE.AnimationFreeze);
                }

@@ -232,6 +232,7 @@ public class BattleManager : MonoBehaviour {
          // Destroy the Battler from the Network
          NetworkServer.Destroy(battler.gameObject);
       }
+      D.adminLog("{" + battle.battleId + "} is now being destroyed", D.ADMIN_LOG_TYPE.CombatEnd);
 
       // Destroy the Battle from the Network
       NetworkServer.Destroy(battle.gameObject);
@@ -892,7 +893,7 @@ public class BattleManager : MonoBehaviour {
    }
 
    protected IEnumerator endBattleAfterDelay (Battle battle, float delay) {
-      D.adminLog("End battle after delay", D.ADMIN_LOG_TYPE.CombatEnd);
+      D.adminLog("{" + battle.battleId + "} End battle after delay", D.ADMIN_LOG_TYPE.CombatEnd);
       Battle.TeamType teamThatWon = battle.getTeamThatWon();
       List<Battler> defeatedBattlers = (battle.teamThatWon == Battle.TeamType.Attackers) ? battle.getDefenders() : battle.getAttackers();
       List<Battler> winningBattlers = (battle.teamThatWon == Battle.TeamType.Attackers) ? battle.getAttackers() : battle.getDefenders();
@@ -915,7 +916,6 @@ public class BattleManager : MonoBehaviour {
             }
          }
       });
-      D.adminLog("Add gold and exp", D.ADMIN_LOG_TYPE.CombatEnd);
 
       // Update the XP amount on the PlayerController objects for the connected players
       foreach (Battler battler in winningBattlers) {
@@ -939,14 +939,12 @@ public class BattleManager : MonoBehaviour {
       }
 
       List<Vector3> spawnPositions = new List<Vector3>();
-
       if (teamThatWon == Battle.TeamType.Attackers) {
          // Only Spawn one lootbag per combat win
          int battlerEnemyID = (int) defeatedBattlers[0].getBattlerData().enemyType;
          Transform[] spawnNodeTarget = ((Enemy) defeatedBattlers[0].player).lootSpawnPositions;
          winningBattlers[0].player.rpc.spawnBattlerMonsterChest(winningBattlers[0].player.instanceId, spawnNodeTarget[0].position, battlerEnemyID);
       }
-      D.adminLog("Chest spawn", D.ADMIN_LOG_TYPE.CombatEnd);
 
       foreach (Battler winner in winningBattlers) {
          if (winner.enemyType == Enemy.Type.PlayerBattler) {
@@ -968,7 +966,6 @@ public class BattleManager : MonoBehaviour {
                damageArmor == false ? -1 : winner.armorManager.equippedArmorId, Item.ITEM_DURABILITY_DEDUCTION);
          }
       }
-      D.adminLog("Item durability is processed completely", D.ADMIN_LOG_TYPE.CombatEnd);
 
       // TODO: Remove this completely after confirming that there should only be one treasure bag drop per land combat victory
       //bool foundPlayer = false;
@@ -1011,7 +1008,6 @@ public class BattleManager : MonoBehaviour {
 
                   // Registers the gold earned for achievement recording
                   AchievementManager.registerUserAchievement(participant.player, ActionType.EarnGold, goldWon);
-                  D.adminLog("Achievment processed", D.ADMIN_LOG_TYPE.CombatEnd);
                } 
             }
 
@@ -1045,8 +1041,7 @@ public class BattleManager : MonoBehaviour {
             }
          }
       }
-
-      D.adminLog("End battle done", D.ADMIN_LOG_TYPE.CombatEnd);
+      D.adminLog("{" + battle.battleId + "} End battle done", D.ADMIN_LOG_TYPE.CombatEnd);
 
       // Pass along the request to the Battle Manager to handle shutting everything down
       this.endBattle(battle, teamThatWon);

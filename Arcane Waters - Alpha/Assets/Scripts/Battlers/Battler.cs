@@ -874,7 +874,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             Enemy enemy = (Enemy) player;
 
             if (!enemy.isDefeated) {
+               D.debug("Enemy {" + enemy.enemyType + "} is now defeated and battle id is set to 0");
                enemy.isDefeated = true;
+               enemy.battleId = 0;
             }
          } else {
             // The user might be offline, in which case we need to modify their position in the DB

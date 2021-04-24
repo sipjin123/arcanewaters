@@ -299,6 +299,9 @@ public class Battle : NetworkBehaviour {
             if (winningTeam == TeamType.Defenders || participant.player is PlayerBodyEntity || (winningTeam == TeamType.Attackers && participant.isAttacker())) {
                participant.player.battleId = 0;
                participant.player.resetCombatInit();
+               if (participant.enemyType != Enemy.Type.PlayerBattler) {
+                  D.adminLog("{" + participant.battleId + "} End battle state for enemy {" + participant.enemyType + "}", D.ADMIN_LOG_TYPE.CombatEnd);
+               }
             }
          }
       }
