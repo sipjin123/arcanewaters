@@ -1990,12 +1990,12 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveWeaponDurabilityNotification (NetworkConnection connection, int durability) {
-      D.warning("Weapon durability is at its lowest: {" + durability + "}");
+      ChatManager.self.addChat("Your weapon has worn down and requires repair!", ChatInfo.Type.Warning);
    }
 
    [TargetRpc]
    public void Target_ReceiveArmorDurabilityNotification (NetworkConnection connection, int durability) {
-      D.warning("Armor durability is at its lowest: {" + durability + "}");
+      ChatManager.self.addChat("Your armor has worn down and requires repair!", ChatInfo.Type.Warning);
    }
 
    [Command]
@@ -5931,7 +5931,7 @@ public class RPCManager : NetworkBehaviour
                   BattleManager.self.onPlayerEquipItem(body);
                }
             } else {
-               D.editorLog("Failed to cast!", Color.magenta);
+               D.editorLog("Failed to cast to <PlayerBodyEntity>!", Color.magenta);
             }
 
             if (_player != null) {
