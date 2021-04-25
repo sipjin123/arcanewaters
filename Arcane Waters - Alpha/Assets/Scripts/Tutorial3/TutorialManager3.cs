@@ -409,4 +409,5 @@ public enum TutorialTrigger
    SpawnInLeagueNotLobby = 43,
    SwitchToOffensiveStance = 44,
    SpawnInLobby = 45,
+   SwitchToDefensiveStance = 46,
 };
