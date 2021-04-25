@@ -938,7 +938,6 @@ public class BattleManager : MonoBehaviour {
          }
       }
 
-      List<Vector3> spawnPositions = new List<Vector3>();
       if (teamThatWon == Battle.TeamType.Attackers) {
          // Only Spawn one lootbag per combat win
          int battlerEnemyID = (int) defeatedBattlers[0].getBattlerData().enemyType;
@@ -967,10 +966,6 @@ public class BattleManager : MonoBehaviour {
          }
       }
 
-      // TODO: Remove this completely after confirming that there should only be one treasure bag drop per land combat victory
-      //bool foundPlayer = false;
-      //float distanceMagnitude = .1f;
-
       // Process monster type reward
       foreach (Battler battler in defeatedBattlers) {
          if (battler.isMonster()) {
@@ -980,29 +975,6 @@ public class BattleManager : MonoBehaviour {
                if (!participant.isMonster()) {
                   participant.player.rpc.endBattle();
                   
-                  // TODO: Remove this completely after confirming that there should only be one treasure bag drop per land combat victory
-                  /*
-                  Vector3 chestPos = Vector3.zero;
-                  try {
-                     chestPos = battler.player.transform.position;
-                     if (!foundPlayer) {
-                        foundPlayer = true;
-
-                        // Initialize the spawn positions if there are multiple enemies dropping loots
-                        if (spawnPositions.Count < 1) {
-                           Transform[] spawnNodeList = ((Enemy) battler.player).lootSpawnPositions;
-                           foreach (Transform spawnNode in spawnNodeList) {
-                              float randomOffset = Random.Range(-distanceMagnitude, distanceMagnitude);
-                              Vector3 newPosition = new Vector3(spawnNode.position.x + randomOffset, spawnNode.position.y + randomOffset, spawnNode.position.z);
-                              spawnPositions.Add(newPosition);
-                           }
-                        }
-                     }
-                  } catch {
-                     D.debug("Error! Battler Player does not exist!");
-                     continue;
-                  }*/
-
                   // Registers the kill count of the combat
                   AchievementManager.registerUserAchievement(participant.player, ActionType.KillLandMonster, defeatedBattlers.Count);
 
@@ -1010,20 +982,6 @@ public class BattleManager : MonoBehaviour {
                   AchievementManager.registerUserAchievement(participant.player, ActionType.EarnGold, goldWon);
                } 
             }
-
-            // TODO: Remove this completely after confirming that there should only be one treasure bag drop per land combat victory
-            /*
-            // Spawn loot bags multiplied by the number of enemies defeated
-            if (!battler.isBossType && winningBattlers.Count >= 1) {
-               Vector3 targetPosition = battler.player.transform.position;
-               if (spawnPositions.Count > 0) {
-                  int randomIndex = Random.Range(0, spawnPositions.Count - 1);
-                  targetPosition = new Vector3(spawnPositions[randomIndex].x, spawnPositions[randomIndex].y, spawnPositions[randomIndex].z);
-                  spawnPositions.RemoveAt(randomIndex);
-               }
-            } else {
-               // TODO: Add reward logic here for boss enemies
-            }*/
          } else {
             if (battler.player is PlayerBodyEntity && !battle.isPvp) {
                // Registers the death of the player in combat
