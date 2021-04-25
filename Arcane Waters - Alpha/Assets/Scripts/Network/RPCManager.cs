@@ -1123,6 +1123,7 @@ public class RPCManager : NetworkBehaviour
    public void Target_ReceiveAreaInfo (NetworkConnection connection, string areaKey, string baseMapAreaKey, int latestVersion, Vector3 mapPosition, MapCustomizationData customizations, Biome.Type biome) {
       // Check if we already have the Area created
       Area area = AreaManager.self.getArea(areaKey);
+      TutorialManager3.self.tryCompletingStep(TutorialTrigger.LeaveVoyageGroup);
 
       if (area != null && area.version == latestVersion) {
          if (area.isInterior) {

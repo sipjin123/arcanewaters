@@ -272,6 +272,9 @@ public class AbilityManager : MonoBehaviour
       if (action.newStance == Battler.Stance.Attack && Global.player != null && Global.player.userId == sourceBattler.userId) {
          TutorialManager3.self.tryCompletingStep(TutorialTrigger.SwitchToOffensiveStance);
       }
+      if (action.newStance == Battler.Stance.Defense && Global.player != null && Global.player.userId == sourceBattler.userId) {
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.SwitchToDefensiveStance);
+      }
    }
 
    public static BasicAbilityData getAbility (int abilityGlobalID, AbilityType abilityType) {
