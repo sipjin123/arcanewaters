@@ -640,14 +640,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    public override void resetCombatInit () {
       base.resetCombatInit();
-      Target_ResetMoveDisable();
-   }
-
-   [TargetRpc]
-   public void Target_ResetMoveDisable () {
-      D.debug("Combat Disable Has Been Removed!!");
-      isWithinEnemyRadius = false;
-      playerBattleCollider.combatInitCollider.enabled = true;
    }
 
    [Command]

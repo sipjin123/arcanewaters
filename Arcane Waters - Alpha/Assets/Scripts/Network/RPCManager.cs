@@ -5450,6 +5450,16 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
+   public void Target_ResetMoveDisable (NetworkConnection connection) {
+      if (Global.player is PlayerBodyEntity) {
+         PlayerBodyEntity playerBody = (PlayerBodyEntity) Global.player; 
+         D.debug("Combat Disable Has Been Removed!!");
+         playerBody.isWithinEnemyRadius = false;
+         playerBody.playerBattleCollider.combatInitCollider.enabled = true;
+      } 
+   }
+
+   [TargetRpc]
    public void Target_ReceiveMsgFromServer (NetworkConnection connection, string message) {
       Debug.LogError("Server Msg is: " + message);
    }
