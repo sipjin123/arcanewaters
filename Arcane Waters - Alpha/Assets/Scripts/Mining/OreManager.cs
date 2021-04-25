@@ -68,19 +68,35 @@ public class OreManager : MonoBehaviour
    public void registerOreNode (int id, OreNode node) {
       if (!_oreNodesRaw.ContainsKey(id)) {
          _oreNodesRaw.Add(id, node);
+         _oreNodeEditorList.Add(node);
+      } else {
+         if (_oreNodesRaw[id] == null) {
+            D.adminLog("Ore node {" + id + "} is null! replacing new ore node", D.ADMIN_LOG_TYPE.Mine);
+            _oreNodesRaw[id] = node;
+         } else {
+            D.adminLog("An ore node is already existing for id {" + id + "}", D.ADMIN_LOG_TYPE.Mine);
+         }
       }
    }
 
    public OreNode getOreNode (int id) {
       if (!_oreNodesRaw.ContainsKey(id)) {
-         D.debug("No ore node dictionary for area:{" + id + "}");
+         D.adminLog("No ore node dictionary for area:{" + id + "}", D.ADMIN_LOG_TYPE.Mine);
+         return null;
+      }
+      if (_oreNodesRaw[id] == null) {
+         D.adminLog("Missing ore node:{" + id + "}", D.ADMIN_LOG_TYPE.Mine);
          return null;
       }
 
       return _oreNodesRaw[id];
    }
-   
+
    #region Private Variables
+
+   // This is to review the ore nodes registered to this manager on the unity editor side
+   [SerializeField]
+   protected List<OreNode> _oreNodeEditorList = new List<OreNode>();
 
    // Stores the ore nodes we've created, indexed by their unique ID
    protected Dictionary<int, OreNode> _oreNodesRaw = new Dictionary<int, OreNode>();
