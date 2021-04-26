@@ -196,6 +196,7 @@ public class XmlVersionManagerClient : GenericGameManager {
       checkStreamingAssetFile(XmlVersionManagerServer.PROJECTILES_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.TUTORIAL_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.MAP_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.SFX_FILE);
    }
 
    private void checkStreamingAssetFile (string fileName, bool isLastEntry = false) {
@@ -287,6 +288,7 @@ public class XmlVersionManagerClient : GenericGameManager {
       extractXmlType(EditorToolType.Projectiles);
       extractXmlType(EditorToolType.Tutorial);
       extractXmlType(EditorToolType.Map_Keys);
+      extractXmlType(EditorToolType.SFX);
 
       initializeLoadingXmlData.Invoke();
    }
@@ -373,6 +375,9 @@ public class XmlVersionManagerClient : GenericGameManager {
             break;
          case EditorToolType.Map_Keys:
             path = TEXT_PATH + XmlVersionManagerServer.MAP_FILE + ".txt";
+            break;
+         case EditorToolType.SFX:
+            path = TEXT_PATH + XmlVersionManagerServer.SFX_FILE + ".txt";
             break;
       }
 
@@ -834,6 +839,23 @@ public class XmlVersionManagerClient : GenericGameManager {
                }
             }
             TutorialManager3.self.receiveDataFromZip(tutorialDataList);
+            break;
+
+         case EditorToolType.SFX:
+            List<SoundEffect> sfxDataList = new List<SoundEffect>();
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+
+               // Extract the segregated data and assign to the xml manager
+               if (xmlSubGroup.Length == 2) {
+                  int dataId = int.Parse(xmlSubGroup[0]);
+                  SoundEffect actualData = Util.xmlLoad<SoundEffect>(xmlSubGroup[1]);
+                  actualData.id = dataId;
+                  sfxDataList.Add(actualData);
+                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+               }
+            }
+            SoundEffectManager.self.receiveListFromServer(sfxDataList.ToArray());
             break;
 
          case EditorToolType.Map_Keys:

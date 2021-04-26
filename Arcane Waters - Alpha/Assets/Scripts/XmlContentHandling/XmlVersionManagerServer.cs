@@ -52,6 +52,7 @@ public class XmlVersionManagerServer : GenericGameManager {
    public static string PROJECTILES_TABLE = "projectiles_xml_v3";
    public static string TUTORIAL_TABLE = "tutorial_xml_v1";
    public static string MAP_TABLE = "maps_v2";
+   public static string SFX_TABLE = "soundeffects_v2";
 
    // TEXT FILE NAMES (Do not Modify)
    public static string CROPS_FILE = "crops";
@@ -80,6 +81,7 @@ public class XmlVersionManagerServer : GenericGameManager {
    public static string PROJECTILES_FILE = "projectiles_xml";
    public static string TUTORIAL_FILE = "tutorial_xml";
    public static string MAP_FILE = "map_xml";
+   public static string SFX_FILE = "sfx_xml";
 
    // Progress indicators
    public int targetProgress;
@@ -141,6 +143,7 @@ public class XmlVersionManagerServer : GenericGameManager {
       confirmTextFile(PROJECTILES_FILE);
 
       confirmTextFile(MAP_FILE);
+      confirmTextFile(SFX_FILE);
    }
 
    private void confirmTextFile (string fileName) {
@@ -299,6 +302,8 @@ public class XmlVersionManagerServer : GenericGameManager {
          string tooltipData = DB_Main.getTooltipXmlContent();
          string projectileData = DB_Main.getXmlContent(PROJECTILES_TABLE, EditorToolType.Projectiles);
          string mapData = DB_Main.getMapContents();
+         List<SoundEffect> soundEffectsRawData = DB_Main.getSoundEffects();
+         string soundEffectsData = SoundEffectManager.self.getSoundEffectsStringData(soundEffectsRawData);
 
          // Write data to text files
          writeAndCache(XML_TEXT_DIRECTORY + "/" + LAND_MONSTER_FILE + ".txt", landMonsterData);
@@ -327,6 +332,7 @@ public class XmlVersionManagerServer : GenericGameManager {
          writeAndCache(XML_TEXT_DIRECTORY + "/" + PROJECTILES_FILE + ".txt", projectileData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + TUTORIAL_FILE + ".txt", tutorialData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + MAP_FILE + ".txt", mapData);
+         writeAndCache(XML_TEXT_DIRECTORY + "/" + SFX_FILE + ".txt", soundEffectsData);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             string zipDirectory = SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE;

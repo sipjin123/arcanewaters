@@ -380,10 +380,6 @@ public class MyNetworkManager : NetworkManager
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);
 
             player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, userObjects.hat, shipInfo, guildInfo, guildRankInfo);
-
-            // Send SoundEffects to the Client
-            List<SoundEffect> currentSoundEffects = SoundEffectManager.self.getAllSoundEffects();
-            player.rpc.Target_ReceiveSoundEffects(player.connectionToClient, Util.serialize(currentSoundEffects));
             player.steamId = steamUserId;
 
             if (existingConnection != null && existingConnection.isReconnecting) {

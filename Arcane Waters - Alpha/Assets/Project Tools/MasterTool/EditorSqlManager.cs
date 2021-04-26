@@ -39,7 +39,8 @@ public class EditorSQLManager {
       Tool_Tip = 30,
       Projectiles = 31,
       Tutorial = 32,
-      Map_Keys = 33
+      Map_Keys = 33,
+      SFX = 34
    }
 
    public static string getSqlTable (EditorToolType editorType) {

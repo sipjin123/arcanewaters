@@ -202,15 +202,6 @@ public class RPCManager : NetworkBehaviour
       panel.enableAdminButtons(isEnabled);
    }
 
-   [TargetRpc]
-   public void Target_ReceiveSoundEffects (NetworkConnection connection, string[] rawInfo) {
-      // Deserialize data
-      SoundEffect[] soundEffectsList = Util.unserialize<SoundEffect>(rawInfo).ToArray();
-
-      // Cache to SoundEffectManager
-      SoundEffectManager.self.receiveListFromServer(soundEffectsList);
-   }
-
    [Command]
    public void Cmd_RequestTeamCombatData () {
       // Checks if the user is an admin

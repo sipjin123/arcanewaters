@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
+using System;
+using Random = UnityEngine.Random;
 
+[Serializable]
 public class SoundEffect
 {
    #region Public Variables
