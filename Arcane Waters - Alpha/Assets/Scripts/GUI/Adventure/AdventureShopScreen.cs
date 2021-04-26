@@ -84,6 +84,12 @@ public class AdventureShopScreen : Panel {
          case Item.Category.CraftingIngredients:
             itemName = CraftingIngredients.getName((CraftingIngredients.Type) item.itemTypeId);
             break;
+         case Item.Category.Blueprint:
+            itemName = item.itemName;
+            break;
+         default:
+            D.debug("Unknown Ingredient!");
+            break;
       }
 
       // Associate a new function with the confirmation button

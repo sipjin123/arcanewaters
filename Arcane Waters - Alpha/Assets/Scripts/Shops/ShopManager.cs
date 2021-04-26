@@ -188,6 +188,18 @@ public class ShopManager : MonoBehaviour {
 
                // Add it to the list
                _itemsByShopName[shopData.shopName].Add(item.id);
+            } else if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Blueprint) {
+               Item item = new Item {
+                  category = (Item.Category) rawItemData.shopItemCategoryIndex,
+                  itemTypeId = rawItemData.shopItemTypeIndex,
+                  count = UnityEngine.Random.Range( rawItemData.shopItemCountMin, rawItemData.shopItemCountMax),
+                  id = _itemId++,
+                  paletteNames = "",
+                  data = ""
+               };
+
+               _items[item.id] = item;
+               _itemsByShopName[shopData.shopName].Add(item.id);
             }
          }
       }

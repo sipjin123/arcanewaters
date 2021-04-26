@@ -37,6 +37,9 @@ public class AdventureItemRow : MonoBehaviour {
    // The tooltip on the image
    public ToolTipComponent tooltip;
 
+   // An icon that is enabled if the item is a blueprint
+   public GameObject blueprintIndicator;
+
    #endregion
 
    public void setRowForItem (Item item) {
@@ -72,11 +75,50 @@ public class AdventureItemRow : MonoBehaviour {
                   return;
                }
                break;
+            case Item.Category.Blueprint:
+               CraftableItemRequirements craftingData = CraftingManager.self.getCraftableData(item.itemTypeId);
+               blueprintIndicator.SetActive(true);
+
+               if (craftingData.resultItem.category == Item.Category.Armor) {
+                  ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(craftingData.resultItem.itemTypeId);
+                  if (armorData == null) {
+                     itemName.text = AdventureShopScreen.UNKNOWN_ITEM;
+                  } else {
+                     path = armorData.equipmentIconPath;
+                     itemName.text = armorData.equipmentName + " Design";
+                  }
+               } else if (craftingData.resultItem.category == Item.Category.Weapon) {
+                  WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(craftingData.resultItem.itemTypeId);
+                  if (weaponData == null) {
+                     itemName.text = AdventureShopScreen.UNKNOWN_ITEM;
+                  } else {
+                     path = weaponData.equipmentIconPath;
+                     itemName.text = weaponData.equipmentName + " Design";
+                  }
+               } else if (craftingData.resultItem.category == Item.Category.Hats) {
+                  HatStatData hatData = EquipmentXMLManager.self.getHatData(craftingData.resultItem.itemTypeId);
+                  if (hatData == null) {
+                     itemName.text = AdventureShopScreen.UNKNOWN_ITEM;
+                  } else {
+                     path = hatData.equipmentIconPath;
+                     itemName.text = hatData.equipmentName + " Design";
+                  }
+               }
+
+               item.itemName = itemName.text;
+               icon.sprite = ImageManager.getSprite(path);
+               iconShadow.sprite = icon.sprite;
+               break;
+            default:
+               D.debug("Unknown Ingredient!");
+               break;
          }
-         path = Item.isUsingEquipmentXML(item.category) ? item.iconPath : item.getIconPath(); 
-         icon.sprite = ImageManager.getSprite(path);
-         iconShadow.sprite = icon.sprite;
-         itemName.text = Item.isUsingEquipmentXML(item.category) ? item.itemName : item.getName();
+         if (item.category != Item.Category.Blueprint) {
+            path = Item.isUsingEquipmentXML(item.category) ? item.iconPath : item.getIconPath();
+            icon.sprite = ImageManager.getSprite(path);
+            iconShadow.sprite = icon.sprite;
+            itemName.text = Item.isUsingEquipmentXML(item.category) ? item.itemName : item.getName();
+         }
       }
 
       float perkMultiplier = 1.0f - PerkManager.self.getPerkMultiplierAdditive(Perk.Category.ShopPriceReduction);

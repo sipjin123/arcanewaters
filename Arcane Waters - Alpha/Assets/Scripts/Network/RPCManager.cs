@@ -2942,6 +2942,25 @@ public class RPCManager : NetworkBehaviour
             Item singleShopItem = shopItem.Clone();
             singleShopItem.count = 1;
 
+            // Process the appropriate data for blueprint items
+            if (singleShopItem.category == Item.Category.Blueprint) {
+               CraftableItemRequirements craftingData = CraftingManager.self.getCraftableData(shopItem.itemTypeId);
+               switch (craftingData.resultItem.category) {
+                  case Item.Category.Weapon:
+                     singleShopItem.data = Blueprint.WEAPON_DATA_PREFIX;
+                     singleShopItem.itemTypeId = craftingData.resultItem.itemTypeId;
+                     break;
+                  case Item.Category.Armor:
+                     singleShopItem.data = Blueprint.ARMOR_DATA_PREFIX;
+                     singleShopItem.itemTypeId = craftingData.resultItem.itemTypeId;
+                     break;
+                  case Item.Category.Hats:
+                     singleShopItem.data = Blueprint.HAT_DATA_PREFIX;
+                     singleShopItem.itemTypeId = craftingData.resultItem.itemTypeId;
+                     break;
+               }
+            }
+
             // Create a new instance of the item
             if (shopItem.category == Item.Category.CraftingIngredients) {
                newItem = DB_Main.createItemOrUpdateItemCount(_player.userId, singleShopItem);
@@ -2979,6 +2998,13 @@ public class RPCManager : NetworkBehaviour
             string itemName = "";
             if (shopItem.category == Item.Category.CraftingIngredients) {
                itemName = CraftingIngredients.getName((CraftingIngredients.Type) shopItem.itemTypeId);
+            } else if (shopItem.category == Item.Category.Blueprint) {
+               CraftableItemRequirements craftingData = CraftingManager.self.getCraftableData(shopItem.itemTypeId);
+               if (craftingData == null) {
+                  itemName = AdventureShopScreen.UNKNOWN_ITEM;
+               } else { 
+                  itemName = EquipmentXMLManager.self.getItemName(craftingData.resultItem);
+               }
             } else {
                itemName = shopItem.getName();
             }
@@ -5801,6 +5827,12 @@ public class RPCManager : NetworkBehaviour
             case Item.Category.CraftingIngredients:
                CraftingIngredients.Type ingredientType = (CraftingIngredients.Type) item.itemTypeId;
                item.setBasicInfo(CraftingIngredients.getName(ingredientType), "", CraftingIngredients.getIconPath(ingredientType));
+               break;
+            case Item.Category.Blueprint:
+               // TODO: Do additional blueprint logic here if necessary
+               break;
+            default:
+               D.debug("UNKNOWN data setup is " + " " + item.category + " " + item.itemTypeId + " " + item.data + " " + item.itemName);
                break;
          }
       }
