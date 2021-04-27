@@ -186,7 +186,6 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
          case Item.Category.Blueprint:
             blueprintIcon.SetActive(true);
             if (item.data.Contains(Blueprint.ARMOR_DATA_PREFIX)) {
-               D.debug("Blueprint processing armor");
                ArmorStatData fetchedArmorData = EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId);
                if (fetchedArmorData == null) {
                   D.debug("Failed to fetch Armor Data for: " + item.itemTypeId);
@@ -196,7 +195,6 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                   icon.sprite = ImageManager.getSprite(fetchedArmorData.equipmentIconPath);
                }
             } else if (item.data.Contains(Blueprint.WEAPON_DATA_PREFIX)) {
-               D.debug("Blueprint processing weapon");
                WeaponStatData fetchedWeaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
                if (fetchedWeaponData == null) {
                   D.debug("Failed to fetch Weapon Data for: " + item.itemTypeId);
@@ -206,7 +204,6 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                   icon.sprite = ImageManager.getSprite(fetchedWeaponData.equipmentIconPath);
                }
             } else if (item.data.Contains(Blueprint.HAT_DATA_PREFIX)) {
-               D.debug("Blueprint processing hat");
                HatStatData fetchedHatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
                if (fetchedHatData == null) {
                   D.debug("Failed to fetch Hat Data for: " + item.itemTypeId);
