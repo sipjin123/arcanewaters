@@ -512,9 +512,6 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
-   public virtual void resetCombatInit () {
-   }
-
    public bool isMuted () {
       // DateTime.Compare() returns a number < 0 if DateTime.Now is earlier than the muteExpirationDate, 0 if the dates are equal or a number > 0 otherwise
       int isEarlier = DateTime.Compare(DateTime.UtcNow, muteExpirationDate);

@@ -63,7 +63,6 @@ public class SoundEffectManager : MonoBehaviour
                if (!_soundEffects.ContainsKey(effect.id)) {
                   findAndAssignAudioClip(effect);
                   _soundEffects.Add(effect.id, effect);
-                  _editorSFXList.Add(effect);
                }
             }
             _hasInitialized = true;
@@ -76,7 +75,6 @@ public class SoundEffectManager : MonoBehaviour
          foreach (SoundEffect effect in effects) {
             findAndAssignAudioClip(effect);
             _soundEffects.Add(effect.id, effect);
-            _editorSFXList.Add(effect);
          }
 
          _hasInitialized = true;
@@ -161,10 +159,6 @@ public class SoundEffectManager : MonoBehaviour
 
    // Holds the path of the folder containing Sound Effects (with the Resource folder as a base)
    private const string RESOURCE_FOLDER_PATH = "Sound/Effects";
-
-   // List preview in editor mode
-   [SerializeField]
-   private List<SoundEffect> _editorSFXList = new List<SoundEffect>();
 
    // The SoundEffects that has been stored on the DB
    private Dictionary<int, SoundEffect> _soundEffects = new Dictionary<int, SoundEffect>();

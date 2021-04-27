@@ -298,7 +298,6 @@ public class Battle : NetworkBehaviour {
             // If players win, reset battle id for only players. Enemies should not have a valid battle id anymore so that they cant be engaged in combat
             if (winningTeam == TeamType.Defenders || participant.player is PlayerBodyEntity || (winningTeam == TeamType.Attackers && participant.isAttacker())) {
                participant.player.battleId = 0;
-               participant.player.resetCombatInit();
                participant.player.rpc.Target_ResetMoveDisable(participant.player.connectionToClient);
                if (participant.enemyType != Enemy.Type.PlayerBattler) {
                   D.adminLog("{" + participant.battleId + "} End battle state for enemy {" + participant.enemyType + "}", D.ADMIN_LOG_TYPE.CombatEnd);

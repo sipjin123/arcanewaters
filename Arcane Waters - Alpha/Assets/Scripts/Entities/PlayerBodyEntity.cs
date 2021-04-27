@@ -638,10 +638,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
    }
 
-   public override void resetCombatInit () {
-      base.resetCombatInit();
-   }
-
    [Command]
    void Cmd_JumpOver (Vector3 sourceLocation, Vector3 worldLocation, int direction) {
       Rpc_JumpOver(sourceLocation, worldLocation, direction);
