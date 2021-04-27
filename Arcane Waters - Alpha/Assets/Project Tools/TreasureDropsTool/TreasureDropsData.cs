@@ -14,6 +14,13 @@ public class TreasureDropsData {
    [XmlElement(Namespace = "RarityType")]
    public Rarity.Type rarity = Rarity.Type.Common;
 
+   // Chance of this power up spawning
+   public float powerupChance = 100;
+
+   // The powerup type
+   [XmlElement(Namespace = "PowerupType")]
+   public Powerup.Type powerUp = Powerup.Type.None;
+
    // If this loot will only spawn in secret chests
    public bool spawnInSecretChest = false;
 

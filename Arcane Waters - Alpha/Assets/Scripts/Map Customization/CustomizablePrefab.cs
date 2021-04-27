@@ -50,10 +50,14 @@ namespace MapCustomization
 
          if (hovered || selected) {
             _spriteOutline.setVisibility(true);
-            GetComponentInChildren<SelectionSpriteBuildMode>().show();
+            if (GetComponentInChildren<SelectionSpriteBuildMode>() != null) {
+               GetComponentInChildren<SelectionSpriteBuildMode>().show();
+            }
          } else {
             _spriteOutline.setVisibility(false);
-            GetComponentInChildren<SelectionSpriteBuildMode>().hide();
+            if (GetComponentInChildren<SelectionSpriteBuildMode>() != null) {
+               GetComponentInChildren<SelectionSpriteBuildMode>().hide();
+            }
          }
       }
 
