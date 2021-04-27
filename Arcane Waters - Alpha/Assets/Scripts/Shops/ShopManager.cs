@@ -189,14 +189,19 @@ public class ShopManager : MonoBehaviour {
                // Add it to the list
                _itemsByShopName[shopData.shopName].Add(item.id);
             } else if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Blueprint) {
+               Rarity.Type rarity = Rarity.getRandom();
+               int randomizedPrice = rawItemData.shopItemCostMax;
                Item item = new Item {
                   category = (Item.Category) rawItemData.shopItemCategoryIndex,
                   itemTypeId = rawItemData.shopItemTypeIndex,
-                  count = UnityEngine.Random.Range( rawItemData.shopItemCountMin, rawItemData.shopItemCountMax),
+                  count = UnityEngine.Random.Range(rawItemData.shopItemCountMin, rawItemData.shopItemCountMax),
                   id = _itemId++,
                   paletteNames = "",
                   data = ""
                };
+
+               string data = string.Format("rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
+               item.data = data;
 
                _items[item.id] = item;
                _itemsByShopName[shopData.shopName].Add(item.id);
