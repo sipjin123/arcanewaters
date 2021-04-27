@@ -23,6 +23,18 @@ public class SoundEffectManager : MonoBehaviour
    // The database id of the jump start
    public const int JUMP_START_ID = 5;
 
+   // The database id of the ship boost
+   public const int SHIPBOOST_ID = 54;
+
+   // The database id of the ore drop
+   public const int ORE_DROP = 53;
+
+   // The database id of the ore mining
+   public const int ORE_MINE = 52;
+
+   // The database id of the ore pickup
+   public const int ORE_PICKUP = 55;
+
    // The database id of the jump end
    public const int JUMP_END_ID = 6;
 

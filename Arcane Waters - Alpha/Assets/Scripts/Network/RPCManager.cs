@@ -4402,6 +4402,7 @@ public class RPCManager : NetworkBehaviour
       oreNode.interactCount++;
       oreNode.updateSprite(oreNode.interactCount);
       ExplosionManager.createMiningParticle(oreNode.transform.position);
+      SoundEffectManager.self.playSoundEffect(SoundEffectManager.ORE_MINE, transform);
 
       if (oreNode.interactCount > OreNode.MAX_INTERACT_COUNT) {
          D.adminLog("Exceeded max interact count!", D.ADMIN_LOG_TYPE.Mine);
