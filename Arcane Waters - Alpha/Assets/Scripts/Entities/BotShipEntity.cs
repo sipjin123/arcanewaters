@@ -169,6 +169,17 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       }
    }
 
+   public override void onDeath () {
+      base.onDeath();
+
+      NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(_lastAttackerNetId);
+      if (lastAttacker) {
+         spawnChest(lastAttacker.userId);
+      } else {
+         D.warning("Bot ship couldn't drop a chest, due to not being able to locate last attacker");
+      }
+   }
+
    [Server]
    public void spawnChest (int killerUserId) {
       if (seaEntityData.shouldDropTreasure) {

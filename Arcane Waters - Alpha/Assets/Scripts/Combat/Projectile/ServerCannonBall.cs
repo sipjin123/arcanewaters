@@ -140,6 +140,11 @@ public class ServerCannonBall : NetworkBehaviour {
          return;
       }
 
+      // Cannonballs won't hit dead entities
+      if (hitEntity.isDead()) {
+         return;
+      }
+
       _hasCollided = true;
 
       // The Server will handle applying damage
@@ -153,20 +158,13 @@ public class ServerCannonBall : NetworkBehaviour {
          int abilityDamage = (int) (_abilityData.damageModifier * projectileBaseDamage);
          int critDamage = (int) (_isCrit ? projectileBaseDamage * 0.5f : 0.0f);
          int perkDamage = (int) (projectileBaseDamage * PerkManager.self.getPerkMultiplierAdditive(sourceEntity.userId, Perk.Category.ShipDamage));
-         int totalDamage = projectileBaseDamage + shipDamage + abilityDamage + critDamage + perkDamage;
-         if (hitEntity.currentHealth > 0) {
-            hitEntity.currentHealth -= totalDamage;
-            sourceEntity.totalDamageDealt += totalDamage;
-         }
-
-         if (hitEntity is BotShipEntity) {
-            if (hitEntity.currentHealth <= 0) {
-               ((BotShipEntity) hitEntity).spawnChest(sourceEntity.userId);
-            }
-         }
+         int totalInitialDamage = projectileBaseDamage + shipDamage + abilityDamage + critDamage + perkDamage;
+         
+         int totalFinalDamage = hitEntity.applyDamage(totalInitialDamage, sourceEntity.netId);
+         sourceEntity.totalDamageDealt += totalFinalDamage;
 
          // TODO: Observe damage formula on live build
-         D.adminLog("Total damage of network Cannonball is" + " : " + totalDamage +
+         D.adminLog("Total damage of network Cannonball is" + " : " + totalFinalDamage +
             " Projectile: " + projectileBaseDamage +
             " Ship: " + shipDamage + " Dmg: {" + (sourceEntity.damage * 100) + "%}" +
             " Ability: " + abilityDamage + "Dmg: {" + (_abilityData.damageModifier * 100) + "%}" +
@@ -175,11 +173,11 @@ public class ServerCannonBall : NetworkBehaviour {
 
          // Apply the status effect
          if (_statusType != Status.Type.None) {
-            hitEntity.applyStatus(_statusType, 1.0f, _statusDuration);
+            hitEntity.applyStatus(_statusType, 1.0f, _statusDuration, sourceEntity.netId);
          }
 
          // Have the server tell the clients where the explosion occurred
-         hitEntity.Rpc_ShowExplosion(sourceEntity.netId, transform.position, totalDamage, Attack.Type.Cannon, _isCrit);
+         hitEntity.Rpc_ShowExplosion(sourceEntity.netId, transform.position, totalFinalDamage, Attack.Type.Cannon, _isCrit);
 
          // Registers Damage throughout the clients
          hitEntity.Rpc_NetworkProjectileDamage(_creatorNetId, Attack.Type.Cannon, transform.position);
@@ -281,7 +279,7 @@ public class ServerCannonBall : NetworkBehaviour {
       foreach (CannonballEffector effector in _effectors) {
          switch (effector.effectorType) {
             case CannonballEffector.Type.Fire:
-               hitEntity.applyStatus(Status.Type.Burning, effector.effectStrength, effector.effectDuration);
+               hitEntity.applyStatus(Status.Type.Burning, effector.effectStrength, effector.effectDuration, sourceEntity.netId);
                break;
             case CannonballEffector.Type.Electric:
                if (PowerupManager.self.powerupActivationRoll(sourceEntity.userId, Powerup.Type.ElectricShots)) {
@@ -289,7 +287,7 @@ public class ServerCannonBall : NetworkBehaviour {
                }
                break;
             case CannonballEffector.Type.Ice:
-               hitEntity.applyStatus(Status.Type.Slowed, effector.effectStrength, effector.effectDuration);
+               hitEntity.applyStatus(Status.Type.Slowed, effector.effectStrength, effector.effectDuration, sourceEntity.netId);
                break;
             case CannonballEffector.Type.Explosion:
                createOnHitExplosion(effector, hitEntity);
@@ -314,23 +312,14 @@ public class ServerCannonBall : NetworkBehaviour {
       List<SeaEntity> nearbyEnemies = Util.getEnemiesInCircle(sourceEntity, transform.position, explosionRadius);
       foreach(SeaEntity enemy in nearbyEnemies) {
          // The enemy hit by the cannonball won't take splash damage
-         if (enemy.netId != hitEntity.netId && enemy.instanceId == _instanceId) {
-            // Apply damage
-            if (enemy.currentHealth > 0) {
-               enemy.currentHealth -= explosionDamage;
-               sourceEntity.totalDamageDealt += explosionDamage;
-            }
-
-            // Spawn a chest if enemy is killed
-            if (enemy is BotShipEntity) {
-               if (enemy.currentHealth <= 0) {
-                  ((BotShipEntity) enemy).spawnChest(sourceEntity.userId);
-               }
-            }
+         if (enemy.netId != hitEntity.netId && enemy.instanceId == _instanceId && !enemy.isDead()) {
+            // Apply damage            
+            int finalDamage = enemy.applyDamage(explosionDamage, sourceEntity.netId);
+            sourceEntity.totalDamageDealt += finalDamage;
 
             // Registers Damage throughout the clients
             enemy.Rpc_NetworkProjectileDamage(_creatorNetId, Attack.Type.Cannon, enemy.transform.position);
-            enemy.Rpc_ShowDamage(Attack.Type.Cannon, enemy.transform.position, explosionDamage);
+            enemy.Rpc_ShowDamage(Attack.Type.Cannon, enemy.transform.position, finalDamage);
          }
       }
    }

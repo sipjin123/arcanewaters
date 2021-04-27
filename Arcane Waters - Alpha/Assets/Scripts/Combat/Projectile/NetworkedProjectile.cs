@@ -218,8 +218,8 @@ public class NetworkedProjectile : MonoBehaviour {
             D.editorLog("The network projectile damage is"+ " : " + calculatedDamage + " AbilityModif: " +damageModifier+ " DistanceModif: " + ((calculatedDamage) * _distanceDamageMultiplier), Color.cyan);
          }
 
-         int totalDamage = (int) ((calculatedDamage) * _distanceDamageMultiplier);
-         hitEntity.currentHealth -= totalDamage;
+         int initialDamage = (int) ((calculatedDamage) * _distanceDamageMultiplier);
+         int finalDamage = hitEntity.applyDamage(initialDamage, sourceEntity.netId);
 
          switch (attackType) {
             case Attack.Type.Boulder:
@@ -234,7 +234,7 @@ public class NetworkedProjectile : MonoBehaviour {
                AchievementManager.registerUserAchievement(hitEntity, ActionType.Poisoned);
 
                // Spawn Damage Per Second Residue
-               hitEntity.Rpc_AttachEffect(totalDamage, Attack.Type.Venom);
+               hitEntity.Rpc_AttachEffect(finalDamage, Attack.Type.Venom);
                break;
             default:
                D.debug("Cant process attack");
@@ -244,7 +244,7 @@ public class NetworkedProjectile : MonoBehaviour {
          hitEntity.Rpc_NetworkProjectileDamage(_creatorNetId, attackType, circleCollider.transform.position);
 
          // Have the server tell the clients where the explosion occurred
-         hitEntity.Rpc_ShowExplosion(sourceEntity.netId, hitEntity.transform.position, totalDamage, attackType, false);
+         hitEntity.Rpc_ShowExplosion(sourceEntity.netId, hitEntity.transform.position, finalDamage, attackType, false);
       }
       _hasCollided = true;
 

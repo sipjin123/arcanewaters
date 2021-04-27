@@ -81,6 +81,36 @@ public class SeaEntity : NetEntity
       }
    }
 
+   [Server]
+   public int applyDamage (int amount, uint damageSourceNetId) {
+      float damageMultiplier = 1.0f;
+
+      // Apply damage reduction, if there is any
+      if (this is PlayerShipEntity) {
+         // Hard cap damage reduction at 75%, and damage addition at 100% extra
+         damageMultiplier = Mathf.Clamp(damageMultiplier - PowerupManager.self.getPowerupMultiplierAdditive(userId, Powerup.Type.DamageReduction), 0.25f, 2.0f);
+      }
+      amount = (int) (amount * damageMultiplier);
+      currentHealth -= amount;
+
+      noteAttacker(damageSourceNetId);
+
+      if (isDead()) {
+         onDeath();
+      }
+
+      // Return the final amount of damage dealt
+      return amount;
+   }
+
+   public virtual void onDeath () {
+      if (_hasRunOnDeath) {
+         return;
+      }
+
+      _hasRunOnDeath = true;
+   }
+
    public GenericCombatCollider getCombatCollider () {
       if (combatCollider == null) {
          combatCollider = GetComponentInChildren<GenericCombatCollider>();
@@ -201,9 +231,9 @@ public class SeaEntity : NetEntity
          if (collidedEntity != null) {
             if (collidedEntity.GetComponent<SeaEntity>() != null) {
                SeaEntity seaEntity = collidedEntity.GetComponent<SeaEntity>();
-               if (this.isEnemyOf(seaEntity) && !collidedEntities.ContainsKey(seaEntity) && seaEntity.currentHealth > 0 && seaEntity.instanceId == this.instanceId) {
-                  seaEntity.currentHealth -= damage;
-                  seaEntity.Rpc_ShowExplosion(attackerNetId, collidedEntity.transform.position, damage, Attack.Type.None, false);
+               if (this.isEnemyOf(seaEntity) && !collidedEntities.ContainsKey(seaEntity) && !seaEntity.isDead() && seaEntity.instanceId == this.instanceId) {
+                  int finalDamage = seaEntity.applyDamage(damage, attackerNetId);
+                  seaEntity.Rpc_ShowExplosion(attackerNetId, collidedEntity.transform.position, finalDamage, Attack.Type.None, false);
 
                   // Registers the action electrocuted to the userID to the achievement database for recording
                   AchievementManager.registerUserAchievement(seaEntity, ActionType.Electrocuted);
@@ -228,9 +258,9 @@ public class SeaEntity : NetEntity
       foreach (Collider2D hit in hits) {
          if (hit != null && hit.GetComponent<SeaEntity>() != null) {
             SeaEntity hitEntity = hit.GetComponent<SeaEntity>();
-            if (this.isEnemyOf(hitEntity) && !collidedEntities.ContainsKey(hitEntity) && hitEntity.currentHealth > 0 && hitEntity.instanceId == this.instanceId) {
-               hitEntity.currentHealth -= damageInt;
-               hitEntity.Rpc_ShowDamage(Attack.Type.None, hitEntity.transform.position, damageInt);
+            if (this.isEnemyOf(hitEntity) && !collidedEntities.ContainsKey(hitEntity) && !hitEntity.isDead() && hitEntity.instanceId == this.instanceId) {
+               int finalDamage = hitEntity.applyDamage(damageInt, attackerNetId);
+               hitEntity.Rpc_ShowDamage(Attack.Type.None, hitEntity.transform.position, finalDamage);
 
                collidedEntities.Add(hitEntity, hit.transform);
                targetNetIdList.Add(hitEntity.netId);
@@ -695,9 +725,10 @@ public class SeaEntity : NetEntity
                            + " Name: " + getSeaAbility(abilityId).abilityName
                            + " ID: " + getSeaAbility(abilityId).abilityId
                            + " Projectile ID: " + projectileData.projectileId, D.ADMIN_LOG_TYPE.Sea);
-
                      }
-                     int targetHealthAfterDamage = targetEntity.currentHealth - damage;
+
+                     int finalDamage = targetEntity.applyDamage(damage, attacker.netId);
+                     int targetHealthAfterDamage = targetEntity.currentHealth - finalDamage;
 
                      if (this is PlayerShipEntity) {
                         if (targetEntity is SeaMonsterEntity) {
@@ -734,21 +765,13 @@ public class SeaEntity : NetEntity
                         }
                      }
 
-                     float damageReductionMultiplier = 1.0f;
-                     PlayerShipEntity player = targetEntity.getPlayerShipEntity();
-                     if (player) {
-                        damageReductionMultiplier = 1.0f - PowerupManager.self.getPowerupMultiplierAdditive(player.userId, Powerup.Type.DamageReduction);
-                     }
-
-                     damage = (int) (damage * damageReductionMultiplier);
-                     targetEntity.currentHealth -= damage;
-                     targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, damage, attackType, false);
+                     targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, finalDamage, attackType, false);
 
                      if (attackType == Attack.Type.Shock_Ball) {
                         chainLightning(attacker.netId, targetEntity.transform.position, targetEntity.netId);
                      }
                   } else {
-                     targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, (int)damage, Attack.Type.None, false);
+                     targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, 0, Attack.Type.None, false);
                   }
                   targetEntity.noteAttacker(attacker);
 
@@ -900,6 +923,68 @@ public class SeaEntity : NetEntity
       return projectileData;
    }
 
+   public void applyStatus (Status.Type statusType, float strength, float duration, uint attackerNetId) {
+      Status newStatus = StatusManager.self.create(statusType, strength, duration, netId);
+
+      if (statusType == Status.Type.Burning) {
+         if (!newStatus.isNew) {
+            StopCoroutine(_burningCoroutine);
+         }
+         _burningCoroutine = applyDamageOverTime((int) strength, 1.0f, duration, attackerNetId);
+      }
+
+      Rpc_ApplyStatusIcon(statusType, newStatus.isNew, duration);
+   }
+
+   [ClientRpc]
+   public void Rpc_ApplyStatusIcon (Status.Type statusType, bool isNew, float length) {
+      // If this net entity doesn't have its prefab set up for status icons yet, don't try to add one
+      if (statusEffectContainer) {
+
+         // If the status effect is new, create a new icon
+         if (isNew) {
+            StatusIcon statusIcon = StatusManager.self.getStatusIcon(statusType, length, statusEffectContainer).GetComponent<StatusIcon>();
+            statusIcon.setLifetime(length);
+            statusIcon.statusType = statusType;
+            statusIcon.GetComponent<RectTransform>().sizeDelta = Vector2.one * 16;
+            _statusIcons[statusType] = statusIcon;
+         } else {
+            // Otherwise, update the existing icon
+            StatusIcon existingIcon = _statusIcons[statusType];
+
+            if (existingIcon) {
+               existingIcon.setLifetime(length);
+            }
+         }
+      }
+   }
+
+   public Coroutine applyDamageOverTime (int tickDamage, float tickInterval, float duration, uint attackerNetId) {
+      // Applies a damage over time effect to this net entity, dealing 'tickDamage' damage every 'tickInterval' seconds, for 'duration' seconds
+      return StartCoroutine(CO_DamageOverTime(tickDamage, tickInterval, duration, attackerNetId));
+   }
+
+   private IEnumerator CO_DamageOverTime (int tickDamage, float tickInterval, float duration, uint attackerNetId) {
+      float totalTimer = 0.0f;
+      float tickTimer = 0.0f;
+
+      while (totalTimer <= duration) {
+         totalTimer += Time.deltaTime;
+         tickTimer += Time.deltaTime;
+
+         // If enough time has passed for a damage tick, apply it
+         if (tickTimer >= tickInterval) {
+            int finalTickDamage = applyDamage(tickDamage, attackerNetId);
+
+            Rpc_ShowDamage(Attack.Type.Fire, transform.position, finalTickDamage);
+
+            tickTimer -= tickInterval;
+         }
+
+         yield return null;
+      }
+   }
+
    #region Private Variables
 
    // The cached sea ability list
@@ -931,6 +1016,15 @@ public class SeaEntity : NetEntity
 
    // Check if sound used when ship is being destroyed, was already played
    protected bool _playedDestroySound = false;
+
+   // A dictionary of references to all the status icons currently on this sea entity
+   private Dictionary<Status.Type, StatusIcon> _statusIcons = new Dictionary<Status.Type, StatusIcon>();
+
+   // A reference to a damage over time coroutine caused by burning
+   protected Coroutine _burningCoroutine = null;
+
+   // Set to true when 'onDeath(...)' has run on this SeaEntity
+   private bool _hasRunOnDeath = false;
 
    #endregion
 }

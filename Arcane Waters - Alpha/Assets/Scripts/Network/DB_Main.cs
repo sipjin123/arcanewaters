@@ -8383,7 +8383,7 @@ public class DB_Main : DB_MainStub
    public static new bool updateDeploySchedule (long scheduleDateAsTicks, int buildVersion) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("UPDATE deploy_schedule SET schedule_date=@scheduleDate, schedule_version=@scheduleVersion WHERE id=1", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE deploy_schedule SET schedule_date=@scheduleDate, schedule_version=@scheduleVersion, has_deployed_on_steam=0 WHERE id=1", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@scheduleVersion", buildVersion.ToString());

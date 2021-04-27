@@ -817,32 +817,6 @@ public class NetEntity : NetworkBehaviour
       interactingAnimation = false;
    }
 
-   public Coroutine applyDamageOverTime (int tickDamage, float tickInterval, float duration) {
-      // Applies a damage over time effect to this net entity, dealing 'tickDamage' damage every 'tickInterval' seconds, for 'duration' seconds
-      return StartCoroutine(CO_DamageOverTime(tickDamage, tickInterval, duration));
-   }
-
-   private IEnumerator CO_DamageOverTime (int tickDamage, float tickInterval, float duration) {
-      float totalTimer = 0.0f;
-      float tickTimer = 0.0f;
-
-      while (totalTimer <= duration) {
-         totalTimer += Time.deltaTime;
-         tickTimer += Time.deltaTime;
-
-         // If enough time has passed for a damage tick, apply it
-         if (tickTimer >= tickInterval) {
-            currentHealth -= tickDamage;
-
-            Rpc_ShowDamage(Attack.Type.Fire, transform.position, tickDamage);
-
-            tickTimer -= tickInterval;
-         }
-
-         yield return null;
-      }
-   }
-
    [ClientRpc]
    public void Rpc_ReceiveMuteInfo (PenaltyInfo muteInfo) {
       muteExpirationDate = muteInfo.penaltyEnd;
@@ -945,42 +919,6 @@ public class NetEntity : NetworkBehaviour
 
    public virtual double getAddForceDelay () {
       return .2;
-   }
-
-   public void applyStatus (Status.Type statusType, float strength, float duration) {
-      Status newStatus = StatusManager.self.create(statusType, strength, duration, netId);
-
-      if (statusType == Status.Type.Burning) {
-         if (!newStatus.isNew) {
-            StopCoroutine(_burningCoroutine);
-         }
-         _burningCoroutine = applyDamageOverTime((int)strength, 1.0f, duration);
-      }
-
-      Rpc_ApplyStatusIcon(statusType, newStatus.isNew, duration);
-   }
-
-   [ClientRpc]
-   public void Rpc_ApplyStatusIcon (Status.Type statusType, bool isNew, float length) {
-      // If this net entity doesn't have its prefab set up for status icons yet, don't try to add one
-      if (statusEffectContainer) {
-
-         // If the status effect is new, create a new icon
-         if (isNew) {
-            StatusIcon statusIcon = StatusManager.self.getStatusIcon(statusType, length, statusEffectContainer).GetComponent<StatusIcon>();
-            statusIcon.setLifetime(length);
-            statusIcon.statusType = statusType;
-            statusIcon.GetComponent<RectTransform>().sizeDelta = Vector2.one * 16;
-            _statusIcons[statusType] = statusIcon;
-         } else {
-            // Otherwise, update the existing icon
-            StatusIcon existingIcon = _statusIcons[statusType];
-
-            if (existingIcon) {
-               existingIcon.setLifetime(length);
-            }
-         }
-      }
    }
 
    public Rigidbody2D getRigidbody () {
@@ -2028,12 +1966,6 @@ public class NetEntity : NetworkBehaviour
 
    // Main collider of the entity, used for collisions
    private CircleCollider2D _mainCollider;
-
-   // A dictionary of references to all the status icons currently on this net entity
-   private Dictionary<Status.Type, StatusIcon> _statusIcons = new Dictionary<Status.Type, StatusIcon>();
-
-   // A reference to a damage over time coroutine caused by burning
-   protected Coroutine _burningCoroutine = null;
 
    // The timestamp of our last web bounce start
    protected float _webBounceStartTime = 0.0f;

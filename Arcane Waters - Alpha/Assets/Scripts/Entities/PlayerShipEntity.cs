@@ -1002,8 +1002,8 @@ public class PlayerShipEntity : ShipEntity
       yield return new WaitForSeconds(delay);
 
       // Apply the damage
-      target.currentHealth -= damage;
-      target.Rpc_ShowExplosion(source.netId, target.transform.position, damage, attackType, false);
+      int finalDamage = applyDamage(damage, source.netId);
+      target.Rpc_ShowExplosion(source.netId, target.transform.position, finalDamage, attackType, false);
       target.noteAttacker(source);
    }
 

@@ -53,9 +53,9 @@ public class SeaMine : NetworkBehaviour {
                      float distance = (seaEntity.transform.position - transform.position).magnitude;
                      float damageAmount = Mathf.InverseLerp(0, explosionRadius, distance);
                      int damage = (int)Mathf.Lerp(minDamage, maxDamage, damageAmount);
+                     int finalDamage = seaEntity.applyDamage(damage, netId);
 
-                     seaEntity.currentHealth -= damage;
-                     seaEntity.Rpc_ShowDamageTaken(damage, true);
+                     seaEntity.Rpc_ShowDamageTaken(finalDamage, true);
 
                      // Don't apply the force if the explosion destroyed the ship
                      if (!seaEntity.isDead()) {

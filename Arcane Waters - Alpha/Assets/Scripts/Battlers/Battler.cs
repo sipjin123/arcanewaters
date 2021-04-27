@@ -273,15 +273,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // A reference to the dotted line that shows which enemy this battler has targeted with their queued attack
    public DottedLine targetLine;
 
-   // A reference to the game object containing the target ring renderer
-   public GameObject targetRing;
-
-   // A reference to the ring renderer that shows which enemy this battler has targeted with their queued attack
-   public SpriteRenderer targetRingRenderer;
-
-   // A reference to the sprites for small and large target rings
-   public Sprite smallTargetRing, largeTargetRing;
-
    // A reference to the point where the target line should start / end
    public Transform targetPoint;
 
@@ -405,7 +396,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          if (enemyType == Enemy.Type.PlayerBattler) {
             targetLine.setLineColor(ColorCurveReferences.self.remoteBattlerTargeterColor);
             waitingDots.color = ColorCurveReferences.self.remoteBattlerTargeterColor;
-            targetRingRenderer.color = ColorCurveReferences.self.remoteBattlerTargeterColor;
          }
       }
 
@@ -501,7 +491,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          // Update the target line and ring
          if (battlerType == BattlerType.PlayerControlled && isShowingTargetingEffects()) {
             targetLine.updateLine();
-            targetRing.transform.position = _targetedBattler.transform.position + BattleSelectionManager.getOffsetToFeet();
          }
 
          // TODO: Remove this after rare occurence animation freeze no longer occurs
@@ -616,19 +605,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       targetLine.updateLine();
       targetLine.gameObject.SetActive(true);
       waitingDots.gameObject.SetActive(true);
-
-      targetRing.transform.position = _targetedBattler.transform.position + BattleSelectionManager.getOffsetToFeet();
-      targetRingRenderer.sprite = (target.isBossType ? largeTargetRing : smallTargetRing);
-
-      if (!isLocalBattler()) {
-         targetRing.gameObject.SetActive(true);
-      }
    }
 
    public void hideTargetingEffects () {
       waitingDots.gameObject.SetActive(false);
       targetLine.gameObject.SetActive(false);
-      targetRing.gameObject.SetActive(false);
    }
 
    protected bool isShowingTargetingEffects () {

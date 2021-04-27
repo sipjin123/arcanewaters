@@ -267,7 +267,7 @@ public class TutorialManager3 : MonoBehaviour {
       _highestReachedStep = Mathf.Max(_currentStep, _highestReachedStep);
 
       // Handle dynamic npc speechs
-      if (_currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.MoveShip) {
+      if (npcSpeech.Contains("[")) {
          npcSpeech = npcSpeech.Replace("[northp]", InputManager.getBinding(KeyAction.MoveUp).primary.ToString());
          npcSpeech = npcSpeech.Replace("[norths]", InputManager.getBinding(KeyAction.MoveUp).secondary.ToString());
          npcSpeech = npcSpeech.Replace("[eastp]", InputManager.getBinding(KeyAction.MoveRight).primary.ToString());
