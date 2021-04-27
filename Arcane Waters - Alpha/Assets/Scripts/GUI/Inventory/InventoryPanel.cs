@@ -118,18 +118,18 @@ public class InventoryPanel : Panel {
       // Update the CharacterInfo column
       characterInfoColumn.setPlayer(Global.player);
 
-      Item equippedWeapon = Global.getUserObjects().weapon;
-      if (equippedWeapon.itemTypeId != 0) {
+      int equippedWeaponId = (Global.player as PlayerBodyEntity).weaponManager.weaponType;
+      if (equippedWeaponId != 0) {
          subscribeClickEventsForCell(characterInfoColumn.equippedWeaponCell);
       }
 
-      Item equippedArmor = Global.getUserObjects().armor;
-      if (equippedArmor.itemTypeId != 0) {
+      int equippedArmorId = (Global.player as PlayerBodyEntity).armorManager.armorType;
+      if (equippedArmorId != 0) {
          subscribeClickEventsForCell(characterInfoColumn.equippedArmorCell);
-      }
+      } 
 
-      Item equippedHat = Global.getUserObjects().hat;
-      if (equippedHat.itemTypeId != 0) {
+      int equippedHatId = (Global.player as PlayerBodyEntity).hatsManager.hatType;
+      if (equippedHatId != 0) {
          subscribeClickEventsForCell(characterInfoColumn.equippedHatCell);
       }
 

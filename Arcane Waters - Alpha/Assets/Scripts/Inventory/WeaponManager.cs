@@ -114,6 +114,12 @@ public class WeaponManager : EquipmentManager {
 
       // Play a sound
       SoundManager.create3dSound("equip_", this.transform.position, 2);
+
+      Global.getUserObjects().weapon = new Weapon {
+         id = equippedWeaponId,
+         category = Item.Category.Weapon,
+         itemTypeId = weaponType
+      };
    }
    
    public void updateDurability (int newDurability) {

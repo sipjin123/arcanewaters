@@ -80,6 +80,12 @@ public class HatManager : EquipmentManager {
 
       // Play a sound
       SoundManager.create3dSound("equip_", this.transform.position, 2);
+
+      Global.getUserObjects().hat = new Hat {
+         id = equippedHatId,
+         category = Item.Category.Hats,
+         itemTypeId = hatType
+      };
    }
 
    [Server]

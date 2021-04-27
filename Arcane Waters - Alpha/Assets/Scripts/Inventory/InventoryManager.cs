@@ -112,14 +112,28 @@ public class InventoryManager : MonoBehaviour
    }
 
    public static bool isEquipped (int itemId) {
-      if (itemId <= 0 || Global.getUserObjects() == null) {
+      if (itemId <= 0 || Global.player == null) {
          return false;
       }
 
-      if (itemId == Global.getUserObjects().weapon.id || itemId == Global.getUserObjects().armor.id || itemId == Global.getUserObjects().hat.id) {
-         return true;
+      if (Global.player is PlayerBodyEntity) {
+         PlayerBodyEntity playerBody = (PlayerBodyEntity) Global.player;
+         if (playerBody == null) {
+            return false;
+         }
+
+         if (itemId == playerBody.weaponManager.equippedWeaponId || itemId == playerBody.armorManager.equippedArmorId || itemId == playerBody.hatsManager.equippedHatId) {
+            return true;
+         }
       }
 
+      if (Global.player is PlayerShipEntity) {
+         UserObjects playerUserObj = Global.getUserObjects();
+         if (itemId == playerUserObj.weapon.id || itemId == playerUserObj.armor.id || itemId == playerUserObj.hat.id) {
+            return true;
+         }
+      }
+        
       return false;
    }
 

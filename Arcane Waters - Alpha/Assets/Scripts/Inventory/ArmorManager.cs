@@ -100,6 +100,12 @@ public class ArmorManager : EquipmentManager {
 
       // Play a sound
       SoundManager.create3dSound("equip_", this.transform.position, 2);
+
+      Global.getUserObjects().armor = new Armor {
+         id = equippedArmorId,
+         category = Item.Category.Armor,
+         itemTypeId = armorType
+      };
    }
 
    public void updateDurability (int newDurability) {
