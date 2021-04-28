@@ -99,7 +99,7 @@ MonoBehaviour:
   - statusType: 7
     statusSprite: {fileID: 21300000, guid: d10a7e5d04966874db14ccc6c5a7fb07, type: 3}
   - statusType: 8
-    statusSprite: {fileID: 21300000, guid: 81f3fc3b64a4dd442a37f9e0c137c3ab, type: 3}
+    statusSprite: {fileID: 21300000, guid: 0934c735998cc6f4f903f0268fd280e5, type: 3}
   statusType: 0
 --- !u!1 &7314403363517792499
 GameObject:
