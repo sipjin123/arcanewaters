@@ -6,7 +6,7 @@ using Mirror;
 using System.Text;
 using NubisDataHandling;
 
-public class ItemSelectionScreen : MonoBehaviour
+public class ItemSelectionScreen : FullScreenSeparatePanel
 {
    #region Public Variables
 

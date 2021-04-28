@@ -28,9 +28,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // Script handling the battle initializer
    public PlayerBattleCollider playerBattleCollider;
 
-   // The animators handling the dash vfx
-   public Animator[] dashAnimators;
-
    // If the player is near an enemy
    public bool isWithinEnemyRadius;
 
@@ -49,8 +46,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // Reference to the transform of the sprite holder
    public Transform spritesTransform;
 
-   // Reference to the wind vfx during dash
-   public Transform windDashSprite;
+   // A reference to the transform containing the wind particle effects
+   public Transform windEffectsParent;
 
    // Reference to the canvas containing the player's health and name
    public Transform nameAndHealthUI;
@@ -85,9 +82,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // The target world location when jumping over an obstacle
    public Vector2 jumpOverWorldLocation, jumpOverSourceLocation;
 
-   // The dust particle when sprinting
-   public ParticleSystem dustTrailParticleObj;
-
    // How long the jump takes to execute
    public const float JUMP_DURATION = 0.5f;
 
@@ -104,13 +98,21 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    [HideInInspector]
    public SpiderWebTrigger collidingSpiderWebTrigger = null;
 
+   // A reference to the sprint dust particle system
+   public ParticleSystem sprintDustParticles;
+
+   // A reference to the sprint wind particle systems for going vertically or horizontally
+   public ParticleSystem sprintWindParticlesHorizontal, sprintWindParticlesVertical;
+
    #endregion
 
    protected override void Awake () {
       base.Awake();
 
-      ParticleSystem.MainModule dustMainModule = dustTrailParticleObj.main;
-      _dustStartSizeMultiplier = dustMainModule.startSizeMultiplier;
+      _sprintDustParticlesMain = sprintDustParticles.main;
+      _sprintDustParticlesEmission = sprintDustParticles.emission;
+      _sprintWindParticlesEmissionHorizontal = sprintWindParticlesHorizontal.emission;
+      _sprintWindParticlesEmissionVertical = sprintWindParticlesVertical.emission;
    }
 
    protected override void Start () {
@@ -185,18 +187,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       base.Update();
 
       updateJumpHeight();
+      updateSprintParticles();
 
       if (!isLocalPlayer || !Util.isGeneralInputAllowed()) {
-         if (getVelocity().magnitude > NETWORK_PLAYER_SPEEDUP_MAGNITUDE) {
-            foreach (Animator animator in dashAnimators) {
-               animator.SetBool(IS_SPRINTING, true);
-            }
-         } else {
-            foreach (Animator animator in dashAnimators) {
-               animator.SetBool(IS_SPRINTING, false);
-            }
-         }
-         sprintRecovery();
          webBounceUpdate();
          processJumpLogic();
 
@@ -212,7 +205,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       webBounceUpdate();
       processJumpLogic();
       processActionLogic();
-      processSprintLogic();
 
       // Display land players' name when ALT key is pressed.
       if (KeyUtils.GetKey(Key.LeftAlt) || KeyUtils.GetKey(Key.RightAlt)) {
@@ -281,24 +273,78 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
          float newShadowScale = 1.0f - (y / jumpUpMagnitude) / 2.0f;
          shadow.transform.localScale = _shadowInitialScale * newShadowScale;
-         setDashParticleVisibility(false);
       }
       else if (!isBouncingOnWeb()) {
          y = 0.0f;
-         setDashParticleVisibility(true);
-      } else {
-         setDashParticleVisibility(false);
       }
 
       setSpritesHeight(y);
-      Util.setLocalY(windDashSprite, y);
+      Util.setLocalY(windEffectsParent, y);
       Util.setLocalY(nameAndHealthUI, y);
    }
 
-   private void setDashParticleVisibility (bool isVisible) {
-      windDashSprite.gameObject.SetActive(isVisible);
-      ParticleSystem.MainModule particleSystem = dustTrailParticleObj.main;
-      particleSystem.startSizeMultiplier = (isVisible) ? _dustStartSizeMultiplier : 0.0f;
+   private void updateSprintParticles () {
+      bool isSprinting;
+
+      if (isLocalPlayer) {
+         isSprinting = (canSprint() && !_waterChecker.inWater());
+      } else {
+         isSprinting = isSpeedingUp;
+      }
+
+      if (isSprinting) {
+         // Disable dust particles if we are jumping
+         if (isJumping()) {
+            _sprintWindParticlesEmissionVertical.rateOverDistance = 0.0f;
+            _sprintWindParticlesEmissionHorizontal.rateOverDistance = 0.0f;
+         } else {
+            // Alter dust particles based on the direction we are facing
+            float particleXScale = 1.0f;
+            float particleStartRotation = 0.0f;
+
+            if (facing == Direction.East || facing == Direction.South) {
+               particleXScale = -1.0f;
+            }
+
+            if (facing == Direction.North || facing == Direction.South) {
+               particleStartRotation = 90.0f;
+            }
+
+            _sprintDustParticlesMain.startRotation = particleStartRotation;
+            sprintDustParticles.transform.localScale = new Vector3(particleXScale, 1.0f, 1.0f);
+            _sprintDustParticlesEmission.rateOverDistance = SPRINT_DUST_PARTICLES_RATE_OVER_DISTANCE;
+         }
+
+         // Activate the vertical or horizontal wind effects based on which way we are facing
+         bool facingVertical = (facing == Direction.North || facing == Direction.South);
+
+         _sprintWindParticlesEmissionVertical.rateOverDistance = facingVertical ? SPRINT_WIND_PARTICLES_RATE_OVER_DISTANCE : 0.0f;
+         _sprintWindParticlesEmissionHorizontal.rateOverDistance = facingVertical ? 0.0f : SPRINT_WIND_PARTICLES_RATE_OVER_DISTANCE;
+
+      } else {
+         _sprintDustParticlesEmission.rateOverDistance = 0.0f;
+         _sprintWindParticlesEmissionHorizontal.rateOverDistance = 0.0f;
+         _sprintWindParticlesEmissionVertical.rateOverDistance = 0.0f;
+      }
+      
+      if (isLocalPlayer) {
+         if (isSpeedingUp != isSprinting) {
+            Cmd_SetSpeedingUp(isSprinting);
+         }
+         isSpeedingUp = isSprinting;
+      }
+   }
+
+   [Command]
+   private void Cmd_SetSpeedingUp (bool isSpeedingUp) {
+      Rpc_SetSpeedingUp(isSpeedingUp);
+   }
+
+   [ClientRpc]
+   private void Rpc_SetSpeedingUp (bool isSpeedingUp) {
+      if (!isLocalPlayer) {
+         this.isSpeedingUp = isSpeedingUp;
+      }
    }
 
    public void setSpritesHeight (float newHeight) {
@@ -399,50 +445,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
    }
 
-   private void sprintRecovery () {
-      if (!canSprint()) {
-         // Only notify other clients once if disabling
-         if (isSpeedingUp) {
-            isSpeedingUp = false;
-         }
-
-         setDustParticles(false);
-      }
-   }
-
-   private void processSprintLogic () {
-      // Sets animators speed to default
-      foreach (Animator animator in dashAnimators) {
-         animator.speed = 1;
-      }
-      foreach (Animator animator in animators) {
-         animator.speed = 1;
-      }
-
-      // Speed sprint boost feature
-      if (canSprint()) {
-         isSpeedingUp = true;
-         if (!waterChecker.inWater()) {
-            setDustParticles(true);
-            foreach (Animator dashAnimator in dashAnimators) {
-               dashAnimator.SetBool(IS_SPRINTING, true);
-            }
-         } else {
-            isSpeedingUp = false;
-            foreach (Animator dashAnimator in dashAnimators) {
-               dashAnimator.SetBool(IS_SPRINTING, false);
-            }
-         }
-      } else {
-         foreach (Animator dashAnimator in dashAnimators) {
-            dashAnimator.SetBool(IS_SPRINTING, false);
-         }
-         sprintRecovery();
-      }
-   }
-
    private bool canSprint () {
-      return ((Global.sprintConstantly || InputManager.isSpeedUpKeyDown()) && !isWithinEnemyRadius && getVelocity().magnitude > MOVING_MAGNITUDE);
+      return ((Global.sprintConstantly || InputManager.isSpeedUpKeyDown()) && !isWithinEnemyRadius && getVelocity().magnitude > SPRINTING_MAGNITUDE);
    }
 
    private void processActionLogic () {
@@ -454,7 +458,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          return;
       }
 
-      if (InputManager.isLeftClickKeyPressed() && !PanelManager.self.hasPanelInLinkedList()) {
+      if (InputManager.isLeftClickKeyPressed() && !PanelManager.self.hasPanelInLinkedList() && !PanelManager.self.isFullScreenSeparatePanelShowing()) {
          NetEntity body = getClickedBody();
          if (body != null && body is PlayerBodyEntity) {
             PanelManager.self.contextMenuPanel.showDefaultMenuForUser(body.userId, body.entityName);
@@ -628,10 +632,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       return newDirection;
    }
 
-   private void setDustParticles (bool isActive) {
-      dustTrailParticleObj.enableEmission = isActive;
-   }
-
    private void jumpOver (Collider2D[] obstacleCollidedEntries, Collider2D[] jumpEndCollidedEntries) {
       if (obstacleCollidedEntries.Length > 2 && jumpEndCollidedEntries.Length < 3) {
          Cmd_JumpOver(transform.position, jumpEndCollider.transform.position, (int) facing);
@@ -791,6 +791,21 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    // The 'startSizeMultiplier' of the dust trail particle
    private float _dustStartSizeMultiplier;
+
+   // A reference to the main module of the sprint dust particle system
+   private ParticleSystem.MainModule _sprintDustParticlesMain;
+
+   // A reference to the emission module of the dust particle system
+   private ParticleSystem.EmissionModule _sprintDustParticlesEmission;
+
+   // References to the emission modules of the sprint wind particle systems
+   private ParticleSystem.EmissionModule _sprintWindParticlesEmissionVertical, _sprintWindParticlesEmissionHorizontal;
+
+   // The rate over distance variable for the sprint dust particles
+   private const float SPRINT_DUST_PARTICLES_RATE_OVER_DISTANCE = 1.0f;
+
+   // The rate over distance variable for the sprint wind particles
+   private const float SPRINT_WIND_PARTICLES_RATE_OVER_DISTANCE = 2.0f;
 
    #endregion
 }

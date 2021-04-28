@@ -193,7 +193,7 @@ public class NetEntity : NetworkBehaviour
    public GuildIcon guildIcon;
 
    // Values that determines if the magnitude indicates moving
-   public const float MOVING_MAGNITUDE = .2f;
+   public const float SPRINTING_MAGNITUDE = .2f;
    public const float SHIP_MOVING_MAGNITUDE = .005f;
    public const float NETWORK_SHIP_MOVING_MAGNITUDE = .001f;
 
@@ -389,13 +389,6 @@ public class NetEntity : NetworkBehaviour
             animator.SetBool("inBattle", battling);
 
             PlayerBodyEntity bodyEntity = getPlayerBodyEntity();
-
-            // Update the direction of the dash animator
-            if (bodyEntity != null) {
-               foreach (Animator dashAnimator in bodyEntity.dashAnimators) {
-                  dashAnimator.SetInteger("direction", (int) facing);
-               }
-            }
 
             if (this is BodyEntity) {
                animator.SetInteger("fallDirection", (int) this.fallDirection);

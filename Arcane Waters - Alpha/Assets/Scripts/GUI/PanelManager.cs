@@ -28,6 +28,9 @@ public class PanelManager : GenericGameManager {
    public ShortcutPanel itemShortcutPanel;
    public NotificationPanel notificationPanel;
 
+   // Reference to the main Canvas - GUI in the scene
+   public Canvas mainCanvasRef;
+
    // Helps Determine which active panel requires inventory data (crafting/inventory)
    public Panel.Type selectedPanel;
 
@@ -57,6 +60,9 @@ public class PanelManager : GenericGameManager {
 
       // Start off with only the login screen visible
       // showModalPanel(Panel.Type.Login);
+
+      // Initialize list with separate panels to avoid calling FindObjectsOfType after every player's LMB click/press
+      _fullScreenSeparatePanels = mainCanvasRef.gameObject.GetComponentsInChildren<FullScreenSeparatePanel>(true);
    }
 
    private void Update () {
@@ -352,6 +358,20 @@ public class PanelManager : GenericGameManager {
       }
    }
 
+   public bool isFullScreenSeparatePanelShowing () {
+      foreach (FullScreenSeparatePanel panel in _fullScreenSeparatePanels) {
+         if (panel.gameObject.activeSelf) {
+            foreach (CanvasGroup canvas in panel.allCanvasGroups) {
+               if (canvas && canvas.enabled && canvas.alpha > 0) {
+                  return true;
+               }
+            }
+         }
+      }
+
+      return false;
+   }
+
    protected Panel showPanel (Panel.Type panelType) {
       Panel panel = _panels[panelType];
       panel.show();
@@ -383,6 +403,9 @@ public class PanelManager : GenericGameManager {
 
    // The linkedList of panel types that are currently open
    protected LinkedList<Panel.Type> _linkedList = new LinkedList<Panel.Type>();
+
+   // The panels that are never linked. They're taking full screen, don't need to be managed but they can sometimes be blocked by Context Menu
+   protected FullScreenSeparatePanel[] _fullScreenSeparatePanels;
 
    #endregion
 }

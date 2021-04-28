@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 using TMPro;
 
-public class ConfirmScreen : MonoBehaviour {
+public class ConfirmScreen : FullScreenSeparatePanel
+{
    #region Public Variables
 
    // Our associated Canvas Group

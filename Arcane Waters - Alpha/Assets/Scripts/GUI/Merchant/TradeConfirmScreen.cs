@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 
-public class TradeConfirmScreen : MonoBehaviour
+public class TradeConfirmScreen : FullScreenSeparatePanel
 {
    #region Public Variables
 

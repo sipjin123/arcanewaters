@@ -10,7 +10,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-public class LoadingScreen : MonoBehaviour
+public class LoadingScreen : FullScreenSeparatePanel
 {
    #region Public Variables
 

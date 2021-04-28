@@ -6,7 +6,7 @@ using Mirror;
 using TMPro;
 using UnityEngine.EventSystems;
 
-public class NoticeScreen : MonoBehaviour {
+public class NoticeScreen : FullScreenSeparatePanel {
    #region Public Variables
 
    // Our associated Canvas Group
