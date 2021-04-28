@@ -297,7 +297,18 @@ public class TreasureChest : NetworkBehaviour {
       D.adminLog("Getting sea monster contents {" + battlerData.lootGroupId + "}", D.ADMIN_LOG_TYPE.Treasure);
 
       List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(battlerData.lootGroupId, rarity);
-      return processItemChance(treasureDropsDataList);
+      return treasureDropsDataList.ChooseRandom().item;
+   }
+
+   public Powerup.Type getPowerUp () {
+      SeaMonsterEntity.Type monsterType = (SeaMonsterEntity.Type) enemyType;
+      SeaMonsterEntityData battlerData = SeaMonsterManager.self.getMonster(monsterType);
+
+      TreasureDropsData treasureDropsData = 
+         TreasureDropsDataManager.self.getTreasureDropsById(battlerData.lootGroupId, rarity).
+         FindAll(_ => _.powerUp != Powerup.Type.None).ChooseRandom();
+
+      return treasureDropsData.powerUp;
    }
 
    public Item getLandMonsterLootContents () {
@@ -411,6 +422,30 @@ public class TreasureChest : NetworkBehaviour {
          string msg = string.Format("You found one <color=red>{0}</color>!", itemName);
          ChatManager.self.addChat(msg, ChatInfo.Type.System);
       }
+   }
+
+   public IEnumerator CO_CreatingFloatingPowerupIcon (Powerup.Type powerupType) {
+      // Give some time for the chest to open
+      float animationDuration = chestOpeningAnimation.frameLengthOverride * chestOpeningAnimation.maxIndex;
+      animationDuration = Mathf.Clamp(animationDuration, .1f, 1);
+      yield return new WaitForSeconds(animationDuration);
+
+      // Create a floating icon
+      GameObject floatingIcon = Instantiate(TreasureManager.self.floatingIconPrefab, Vector3.zero, Quaternion.identity);
+      floatingIcon.transform.SetParent(this.transform);
+      floatingIcon.transform.localPosition = new Vector3(0f, .04f);
+
+      Image image = floatingIcon.GetComponentInChildren<Image>();
+      image.sprite = PowerupManager.self.getPowerupData(powerupType).spriteIcon;
+
+      // Set the name text
+      floatingIcon.GetComponentInChildren<FloatAndStop>().nameText.text = PowerupManager.self.getPowerupData(powerupType).powerupName;
+
+      isWaitingForServerResponse = false;
+
+      // Show a confirmation in chat
+      string msg = string.Format("You received powerup! <color=red>{0}</color>!", powerupType);
+      ChatManager.self.addChat(msg, ChatInfo.Type.System);
    }
 
    private void OnTriggerEnter2D (Collider2D other) {

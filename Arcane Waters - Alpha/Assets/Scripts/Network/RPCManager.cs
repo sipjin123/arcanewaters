@@ -619,11 +619,57 @@ public class RPCManager : NetworkBehaviour
       // Check what we're going to give the user
       Item item = chest.getContents();
 
-      // Grant the rewards to the user
-      giveItemRewardsToPlayer(_player.userId, new List<Item>() { item }, false, chest.id);
-      
-      // Registers the interaction of loot bags to the achievement database for recording
-      AchievementManager.registerUserAchievement(_player, ActionType.OpenedLootBag);
+      if (chest.chestType == ChestSpawnType.Sea && (item == null || item.category == 0 || item.itemTypeId == 0)) {
+         Powerup.Type powerupUpType = chest.getPowerUp();
+         if (powerupUpType == Powerup.Type.None) {
+            powerupUpType = Powerup.Type.SpeedUp;
+         }
+
+         Target_GivePowerupToPlayer(_player.connectionToClient, (int) powerupUpType, chestId);
+         Powerup newPowerUp = new Powerup {
+            powerupRarity = Rarity.getRandom(),
+            powerupType = powerupUpType
+         };
+
+         PowerupManager.self.addPowerupServer(_player.userId, newPowerUp);
+         Target_AddPowerup(_player.connectionToClient, newPowerUp);
+      } else {
+         // Grant the rewards to the user
+         giveItemRewardsToPlayer(_player.userId, new List<Item>() { item }, false, chest.id);
+
+         // Registers the interaction of loot bags to the achievement database for recording
+         AchievementManager.registerUserAchievement(_player, ActionType.OpenedLootBag);
+      }
+   }
+
+   [TargetRpc]
+   public void Target_GivePowerupToPlayer (NetworkConnection connection, int powerupType, int chestId) {
+      // Locate the Chest
+      TreasureChest chest = null;
+      foreach (TreasureChest existingChest in FindObjectsOfType<TreasureChest>()) {
+         if (existingChest.id == chestId) {
+            chest = existingChest;
+         }
+      }
+
+      // Start the opening and burst animations
+      chest.chestBurstAnimation.enabled = true;
+      if (chest.chestType == ChestSpawnType.Site) {
+         chest.chestOpeningAnimation.enabled = true;
+      } else {
+         chest.spriteRenderer.sprite = chest.openedChestSprite;
+         chest.chestOpeningAnimation.enabled = false;
+      }
+
+      chest.StartCoroutine(chest.CO_CreatingFloatingPowerupIcon((Powerup.Type) powerupType));
+
+      // Play some sounds
+      SoundManager.create3dSound("Door_open", Global.player.transform.position);
+      SoundManager.create3dSound("tutorial_step", Global.player.transform.position);
+
+      if (chest.autoDestroy) {
+         chest.disableChest();
+      }
    }
 
    [Server]
@@ -5930,6 +5976,9 @@ public class RPCManager : NetworkBehaviour
 
       // They may be in an island scene, or at sea
       PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
+      if (body == null) {
+         return;
+      }
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
