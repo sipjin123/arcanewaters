@@ -1,0 +1,179 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6837755322816144918
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6837755322816144913}
+  - component: {fileID: 6837755322816144912}
+  m_Layer: 0
+  m_Name: PowerupManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6837755322816144913
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6837755322816144918}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6837755322816144912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6837755322816144918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5559ca7593a711848b0c3a1d5ec957e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  powerupData:
+  - powerupName: None
+    powerupType: 0
+    description: None
+    spriteIcon: {fileID: 0}
+    rarityBoostFactors:
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+  - powerupName: Better Treasure Drops
+    powerupType: 1
+    description: Adds a chance for enemies to award an extra loot drop.
+    spriteIcon: {fileID: 1673295319354346906, guid: 49a4b5be66adf484786c3e150274d973,
+      type: 3}
+    rarityBoostFactors:
+    - 0
+    - 0.1
+    - 0.2
+    - 0.3
+    - 0.4
+    - 0.5
+  - powerupName: Increased Speed
+    powerupType: 2
+    description: Increases the speed of your ship.
+    spriteIcon: {fileID: 6553764133145668894, guid: 49a4b5be66adf484786c3e150274d973,
+      type: 3}
+    rarityBoostFactors:
+    - 0
+    - 0.1
+    - 0.2
+    - 0.3
+    - 0.4
+    - 0.5
+  - powerupName: Electric Cannonballs
+    powerupType: 3
+    description: Adds a chance for lightning to chain to enemies near your target.
+    spriteIcon: {fileID: -699363487167916058, guid: 49a4b5be66adf484786c3e150274d973,
+      type: 3}
+    rarityBoostFactors:
+    - 0
+    - 0.1
+    - 0.2
+    - 0.3
+    - 0.4
+    - 0.5
+  - powerupName: Fire Cannonballs
+    powerupType: 4
+    description: Your shots will set their target alight on hit.
+    spriteIcon: {fileID: -6265058533208839681, guid: 49a4b5be66adf484786c3e150274d973,
+      type: 3}
+    rarityBoostFactors:
+    - 0
+    - 0.1
+    - 0.3
+    - 0.5
+    - 0.7
+    - 1
+  - powerupName: Ice Cannonballs
+    powerupType: 5
+    description: Your shots will greatly slow their target on hit.
+    spriteIcon: {fileID: -4265734650324945713, guid: 49a4b5be66adf484786c3e150274d973,
+      type: 3}
+    rarityBoostFactors:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+  - powerupName: Multi-shot
+    powerupType: 6
+    description: On firing, adds a chance to fire additional cannonballs at nearby
+      enemies.
+    spriteIcon: {fileID: 3942792037458494445, guid: 49a4b5be66adf484786c3e150274d973,
+      type: 3}
+    rarityBoostFactors:
+    - 0
+    - 0.1
+    - 0.2
+    - 0.3
+    - 0.4
+    - 0.5
+  - powerupName: Explosive Shots
+    powerupType: 7
+    description: Adds a large explosion to your cannonballs, allowing them to hit
+      other nearby enemies.
+    spriteIcon: {fileID: -8915500064386323034, guid: 49a4b5be66adf484786c3e150274d973,
+      type: 3}
+    rarityBoostFactors:
+    - 0
+    - 0.1
+    - 0.2
+    - 0.3
+    - 0.4
+    - 0.5
+  - powerupName: Bouncing Cannonballs
+    powerupType: 8
+    description: Adds a chance for your shots to bounce to nearby enemies upon hitting.
+    spriteIcon: {fileID: 8409283423071610039, guid: 49a4b5be66adf484786c3e150274d973,
+      type: 3}
+    rarityBoostFactors:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+  - powerupName: Damage Reduction
+    powerupType: 9
+    description: Reduces the amount of damage you take.
+    spriteIcon: {fileID: 8000419633984971890, guid: 49a4b5be66adf484786c3e150274d973,
+      type: 3}
+    rarityBoostFactors:
+    - 0
+    - 0.1
+    - 0.2
+    - 0.3
+    - 0.4
+    - 0.5
+  - powerupName: Increased Health
+    powerupType: 10
+    description: Increases your maximum health.
+    spriteIcon: {fileID: -8405874332659613431, guid: 49a4b5be66adf484786c3e150274d973,
+      type: 3}
+    rarityBoostFactors:
+    - 0
+    - 0.1
+    - 0.2
+    - 0.3
+    - 0.4
+    - 0.5
