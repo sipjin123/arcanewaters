@@ -297,7 +297,9 @@ public class TreasureChest : NetworkBehaviour {
       D.adminLog("Getting sea monster contents {" + battlerData.lootGroupId + "}", D.ADMIN_LOG_TYPE.Treasure);
 
       List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(battlerData.lootGroupId, rarity);
-      return treasureDropsDataList.ChooseRandom().item;
+      TreasureDropsData treasureData = treasureDropsDataList.ChooseRandom();
+      treasureData.item.count = Random.Range(treasureData.dropMinCount, treasureData.dropMaxCount);
+      return treasureData.item;
    }
 
    public Powerup.Type getPowerUp () {
@@ -317,13 +319,15 @@ public class TreasureChest : NetworkBehaviour {
       D.adminLog("Getting land monster contents {" + battlerData.lootGroupId + "}", D.ADMIN_LOG_TYPE.Treasure);
 
       List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(battlerData.lootGroupId, rarity);
+      TreasureDropsData treasureData = treasureDropsDataList.ChooseRandom();
+      treasureData.item.count = Random.Range(treasureData.dropMinCount, treasureData.dropMaxCount);
       foreach (TreasureDropsData newData in treasureDropsDataList) {
          D.adminLog("Treasure drops Content :: " +
             "Category: {" + newData.item.category + "} " +
             "TypeID: {" + newData.item.itemTypeId + "} " +
             "Data: {" + newData.item.data + "}", D.ADMIN_LOG_TYPE.Treasure);
       }
-      return processItemChance(treasureDropsDataList);
+      return treasureData.item;
    }
 
    private Item processItemChance (List<TreasureDropsData> treasureDropsDataList) {
@@ -411,7 +415,14 @@ public class TreasureChest : NetworkBehaviour {
       }
 
       // Set the name text
-      floatingIcon.GetComponentInChildren<FloatAndStop>().nameText.text = itemName;
+      FloatAndStop floatingComponent = floatingIcon.GetComponentInChildren<FloatAndStop>();
+      if (floatingComponent.quantityText != null) {
+         floatingComponent.nameText.text = itemName;
+         if (item.count > 1) {
+            floatingComponent.quantityText.text = item.count.ToString();
+            floatingComponent.quantityText.gameObject.SetActive(true);
+         }
+      }
 
       isWaitingForServerResponse = false;
 
@@ -419,7 +430,7 @@ public class TreasureChest : NetworkBehaviour {
       if (itemName.Length < 1) {
          D.debug("Invalid Item Name: The item found is: " + item.category + " : " + item.itemTypeId + " : " + item.data);
       } else {
-         string msg = string.Format("You found one <color=red>{0}</color>!", itemName);
+         string msg = string.Format("You found <color=yellow>{0}</color> (<color=red>{1}</color>)", item.count, itemName);
          ChatManager.self.addChat(msg, ChatInfo.Type.System);
       }
    }
@@ -436,15 +447,16 @@ public class TreasureChest : NetworkBehaviour {
       floatingIcon.transform.localPosition = new Vector3(0f, .04f);
 
       Image image = floatingIcon.GetComponentInChildren<Image>();
-      image.sprite = PowerupManager.self.getPowerupData(powerupType).spriteIcon;
+      PowerupData powerupData = PowerupManager.self.getPowerupData(powerupType);
+      image.sprite = powerupData.spriteIcon;
 
       // Set the name text
-      floatingIcon.GetComponentInChildren<FloatAndStop>().nameText.text = PowerupManager.self.getPowerupData(powerupType).powerupName;
+      floatingIcon.GetComponentInChildren<FloatAndStop>().nameText.text = powerupData.powerupName;
 
       isWaitingForServerResponse = false;
 
       // Show a confirmation in chat
-      string msg = string.Format("You received powerup! <color=red>{0}</color>!", powerupType);
+      string msg = string.Format("You received powerup! <color=red>{0}</color>!", powerupData.powerupName);
       ChatManager.self.addChat(msg, ChatInfo.Type.System);
    }
 

@@ -4620,7 +4620,7 @@ public class RPCManager : NetworkBehaviour
       // Create or update the database item
       List<Item> newDatabaseItemList = new List<Item>();
       foreach (Item item in rewardList) {
-         Item newDatabaseItem = new Item { category = Item.Category.Blueprint, count = 1, data = "" };
+         Item newDatabaseItem = new Item { category = Item.Category.Blueprint, count = item.count, data = "" };
          if (item.category == Item.Category.Blueprint) {
             CraftableItemRequirements itemCache = CraftingManager.self.getCraftableData(item.itemTypeId);
             if (itemCache == null) {

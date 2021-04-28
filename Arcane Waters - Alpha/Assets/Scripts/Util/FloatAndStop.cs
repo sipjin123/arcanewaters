@@ -17,6 +17,9 @@ public class FloatAndStop : MonoBehaviour {
    // The associated Text (if any)
    public TextMeshProUGUI nameText;
 
+   // The associated Text (if any)
+   public TextMeshProUGUI quantityText;
+
    // How fast this should float up
    public static float RISE_SPEED = .005f;
 
