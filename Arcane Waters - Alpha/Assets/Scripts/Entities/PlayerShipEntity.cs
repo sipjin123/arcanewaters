@@ -337,8 +337,8 @@ public class PlayerShipEntity : ShipEntity
          _boostChargeStartTime = NetworkTime.time;
          boostTimingSprites.alpha = 1.0f;
          _isChargingBoost = true;
-      // Activate boost
       } else if (InputManager.isSpeedUpKeyReleased() && !isBoostCoolingDown() && _isChargingBoost) {
+         // Activate boost
          SoundEffectManager.self.playSoundEffect(SoundEffectManager.SHIPBOOST_ID, transform);
 
          // If the player is pressing a direction, boost them that way, otherwise boost them the way they are facing
