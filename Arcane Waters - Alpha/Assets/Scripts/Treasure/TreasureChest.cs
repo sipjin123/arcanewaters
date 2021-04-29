@@ -318,7 +318,10 @@ public class TreasureChest : NetworkBehaviour {
 
       List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(battlerData.lootGroupId, rarity);
       TreasureDropsData treasureData = treasureDropsDataList.ChooseRandom();
-      treasureData.item.count = Random.Range(treasureData.dropMinCount, treasureData.dropMaxCount);
+
+      if (treasureData.item != null) { 
+         treasureData.item.count = Random.Range(treasureData.dropMinCount, treasureData.dropMaxCount);
+      }
       return treasureData.item;
    }
 
