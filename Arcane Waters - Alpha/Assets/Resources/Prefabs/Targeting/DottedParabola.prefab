@@ -82,7 +82,8 @@ MonoBehaviour:
   parabolaHeight: 1
   numSegments: 7
   dotOverride: {fileID: 21300000, guid: 1176370c670f4bc4881da3057cfa4676, type: 3}
-  endDotOverride: {fileID: 21300000, guid: 421aac4d38c2ab44b975bc6bd13bc514, type: 3}
+  endDotOverride: {fileID: 0}
+  dotsZOffset: 0
 --- !u!1 &9057887939399017938
 GameObject:
   m_ObjectHideFlags: 0

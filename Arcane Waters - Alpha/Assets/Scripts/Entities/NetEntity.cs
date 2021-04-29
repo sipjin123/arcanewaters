@@ -285,7 +285,6 @@ public class NetEntity : NetworkBehaviour
 
          if (isServer) {
             PerkManager.self.storePerkPointsForUser(userId);
-            StartCoroutine(CO_UnlockNewLocationForUser());
          }
       }
 
@@ -476,14 +475,14 @@ public class NetEntity : NetworkBehaviour
          _temporaryControllers[0].forceFastForward(this);
       }
 
-      // Remove the entity from the manager
-      if (this is PlayerBodyEntity || this is PlayerShipEntity) {
-         EntityManager.self.removeEntity(userId);
-      }
-
       // Registering the game user destroy event
       if (NetworkServer.active && (this is PlayerBodyEntity || this is PlayerShipEntity)) {
          Util.tryToRunInServerBackground(() => DB_Main.storeGameUserDestroyEvent(this.userId, this.accountId, this.entityName, this.connectionToClient.address));
+      }
+
+      // Remove the entity from the manager
+      if (this is PlayerBodyEntity || this is PlayerShipEntity) {
+         EntityManager.self.removeEntity(userId);
       }
 
       Vector3 localPos = this.transform.localPosition;
@@ -1812,23 +1811,6 @@ public class NetEntity : NetworkBehaviour
          return true;
       } else {
          return false;
-      }
-   }
-
-   [Server]
-   private IEnumerator CO_UnlockNewLocationForUser () {
-      if (!isServer || !isPlayerEntity()) {
-         yield break;
-      }
-
-      // The user must be in a league voyage
-      if (!tryGetVoyage(out Voyage voyage) || !voyage.isLeague) {
-         yield break;
-      }
-
-      // Regularly check if the league has been cleared
-      while (!VoyageManager.self.tryUnlockNewLocationForUser(this)) {
-         yield return new WaitForSeconds(2f);
       }
    }
 

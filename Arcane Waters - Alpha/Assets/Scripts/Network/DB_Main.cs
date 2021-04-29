@@ -758,7 +758,7 @@ public class DB_Main : DB_MainStub
          // We'll save the ticket's ID
          long ticketId;
 
-         string myAddress = Util.formatIpAddress(sourceIPAddress);
+         string myAddress = Util.getIpAddress(sourceIPAddress);
 
          using (MySqlConnection conn = getConnection()) {
             using (MySqlCommand cmd = new MySqlCommand(
@@ -5310,7 +5310,7 @@ public class DB_Main : DB_MainStub
 
    public static new long saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem, int deploymentId, string steamState, string ipAddress) {
       try {
-         string myAddress = Util.formatIpAddress(ipAddress);
+         string myAddress = Util.getIpAddress(ipAddress);
 
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.bug_reports (usrId, usrName, accId, bugSubject, bugIpAddress, bugLog, ping, fps, playerPosition, screenResolution, operatingSystem, status, deploymentId, steamState) VALUES(@usrId, @usrName, @accId, @bugSubject, @bugIpAddress, @bugLog, @ping, @fps, @playerPosition, @screenResolution, @operatingSystem, @status, @deploymentId, @steamState)", conn)) {
@@ -5612,7 +5612,7 @@ public class DB_Main : DB_MainStub
       PenaltyInfo penaltyInfo = null;
 
       try {
-         string query = string.Format("SELECT * FROM global.account_penalties WHERE targetAccId = @targetAccId AND penaltyType IN ({0}) AND penaltyEnd > CURRENT_TIMESTAMP ORDER BY penaltyStart DESC LIMIT 1", string.Join(", ", PenaltyUtil.getPenaltiesList(penaltyType)));
+         string query = string.Format("SELECT * FROM global.account_penalties WHERE targetAccId = @targetAccId AND penaltyType IN ({0}) AND (penaltyEnd > CURRENT_TIMESTAMP OR penaltyEnd IS NULL) ORDER BY penaltyStart DESC LIMIT 1", string.Join(", ", PenaltyUtil.getPenaltiesList(penaltyType)));
 
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
@@ -5673,8 +5673,8 @@ public class DB_Main : DB_MainStub
             // If the account doesn't have a current active ban
             try {
                using (MySqlConnection conn = getConnection())
-               using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.account_penalties (sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltyTime, penaltyEnd) VALUES" +
-                  "(@sourceAccId, @sourceUsrId,  @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltyTime, @penaltyEnd)", conn)) {
+               using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.account_penalties (sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltyEnd) VALUES" +
+                  "(@sourceAccId, @sourceUsrId,  @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltyEnd)", conn)) {
                   conn.Open();
                   cmd.Prepare();
 
@@ -5686,12 +5686,11 @@ public class DB_Main : DB_MainStub
                   cmd.Parameters.AddWithValue("@targetUsrName", penaltyInfo.targetUsrName);
                   cmd.Parameters.AddWithValue("@penaltyType", (int) penaltyInfo.penaltyType);
                   cmd.Parameters.AddWithValue("@penaltyReason", penaltyInfo.penaltyReason);
-                  cmd.Parameters.AddWithValue("@penaltyTime", penaltyInfo.penaltyTime);
 
-                  if (penaltyInfo.penaltyEnd > DateTime.MinValue) {
-                     cmd.Parameters.AddWithValue("@penaltyEnd", penaltyInfo.penaltyEnd);
-                  } else {
+                  if (penaltyInfo.isPermanent) {
                      cmd.Parameters.AddWithValue("@penaltyEnd", null);
+                  } else {
+                     cmd.Parameters.AddWithValue("@penaltyEnd", penaltyInfo.penaltyEnd);
                   }
 
                   DebugQuery(cmd);
@@ -9694,7 +9693,7 @@ public class DB_Main : DB_MainStub
          // Getting the current time, in UTC
          DateTime currTime = DateTime.UtcNow;
 
-         string myAddress = Util.formatIpAddress(ipAddress);
+         string myAddress = Util.getIpAddress(ipAddress);
 
          try {
             using (MySqlConnection conn = getConnection())
@@ -9741,7 +9740,7 @@ public class DB_Main : DB_MainStub
 
    public static new void storeGameUserCreateEvent (int usrId, int accId, string usrName, string ipAddress) {
       if (usrId > 0 && accId > 0) {
-         string myAddress = Util.formatIpAddress(ipAddress);
+         string myAddress = Util.getIpAddress(ipAddress);
 
          try {
             using (MySqlConnection conn = getConnection())
@@ -9766,7 +9765,7 @@ public class DB_Main : DB_MainStub
 
    public static new void storeGameUserDestroyEvent (int usrId, int accId, string usrName, string ipAddress) {
       if (usrId > 0 && accId > 0) {
-         string myAddress = Util.formatIpAddress(ipAddress);
+         string myAddress = Util.getIpAddress(ipAddress);
 
          try {
             using (MySqlConnection conn = getConnection())

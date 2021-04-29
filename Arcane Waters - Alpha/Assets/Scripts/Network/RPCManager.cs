@@ -4745,8 +4745,10 @@ public class RPCManager : NetworkBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          item = DB_Main.createItemOrUpdateItemCount(_player.userId, item);
 
-         // Update the treasure chest status if is opened
-         DB_Main.updateTreasureStatus(_player.userId, chest.chestSpawnId, _player.areaKey);
+         // Update the treasure chest status if is opened, except in treasure site areas since they can be visited again in voyages
+         if (!VoyageManager.isTreasureSiteArea(chest.areaKey)) {
+            DB_Main.updateTreasureStatus(_player.userId, chest.chestSpawnId, _player.areaKey);
+         }
       });
 
       // Registers the interaction of treasure chests to the achievement database for recording
@@ -4754,6 +4756,53 @@ public class RPCManager : NetworkBehaviour
 
       // Send it to the specific player that opened it
       Target_OpenChest(_player.connectionToClient, item, chest.id);
+   }
+
+   [Server]
+   private void processMapFragmentReward (TreasureChest chest) {
+      // All enemies must be defeated before opening the chest
+      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+      if (instance.aliveNPCEnemiesCount > 0) {
+         D.warning("Player trying to open a map fragment treasure chest while there are still enemies in the instance!");
+         return;
+      }
+      
+      // Get the biome that will be unlocked
+      Biome.Type nextBiome = Biome.getNextBiome(instance.biome);
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Check if the user has already unlocked the biome
+         bool isNextBiomeAlreadyUnlocked = DB_Main.isBiomeUnlockedForUser(_player.userId, nextBiome);
+
+         if (!isNextBiomeAlreadyUnlocked) {
+            // Add the unlocked biome for the user
+            DB_Main.addUnlockedBiome(_player.userId, nextBiome);
+         }
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (isNextBiomeAlreadyUnlocked) {
+               // If the next biome is already unlocked, the chest will reward a normal item
+               processChestRewards(chest);
+
+               // Notify the client that the voyage is complete
+               Target_DisplayNotificationForVoyageCompleted(_player.connectionToClient, Notification.Type.VoyageCompleted, Biome.Type.None);
+            } else {
+               // Add the user ID to the list
+               chest.userIds.Add(_player.userId);
+
+               // Registers the interaction of treasure chests to the achievement database for recording
+               AchievementManager.registerUserAchievement(_player, ActionType.OpenTreasureChest);
+
+               // Send it to the specific player that opened it
+               Target_OpenMapFragmentChest(_player.connectionToClient, chest.id);
+
+               // Notify the client that a new location has been unlocked
+               Target_DisplayNotificationForVoyageCompleted(_player.connectionToClient, Notification.Type.NewLocationUnlocked, nextBiome);
+            }
+         });
+      });
    }
 
    #region Spawn Sea Entities

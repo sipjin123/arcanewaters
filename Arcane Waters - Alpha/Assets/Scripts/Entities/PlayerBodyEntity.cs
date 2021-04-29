@@ -515,7 +515,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
          // If we clicked on a chest, interact with it
          TreasureChest chest = hit.GetComponent<TreasureChest>();
-         if (chest && !chest.hasBeenOpened()) {
+         if (chest && !chest.hasBeenOpened() && chest.instanceId == instanceId) {
             chest.sendOpenRequest();
             forceLookAt(chest.transform.position);
             return true;
@@ -567,7 +567,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             }
 
             TreasureChest chest = hit.GetComponent<TreasureChest>();
-            if (chest && !chest.hasBeenOpened()) {
+            if (chest && !chest.hasBeenOpened() && chest.instanceId == instanceId) {
                treasuresNearby.Add(hit.GetComponent<TreasureChest>());
             }
          }

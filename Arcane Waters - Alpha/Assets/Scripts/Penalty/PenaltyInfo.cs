@@ -30,57 +30,59 @@ public class PenaltyInfo
    // The type of the penalty applied to the account
    public PenaltyType penaltyType = PenaltyType.None;
 
-   // The penalty type, in minutes for ban, in seconds for mute
-   public int penaltyTime;
-
    // When the account was penalized
    public DateTime penaltyStart;
 
    // When the account's penalty is over
    public DateTime penaltyEnd;
+
+   // Is this a permanent penalty?
+   public bool isPermanent;
+
    #endregion
 
    public PenaltyInfo () { }
 
-   #if IS_SERVER_BUILD
+#if IS_SERVER_BUILD
 
    public PenaltyInfo (MySqlDataReader dataReader) {
       try {
          sourceAccId = DataUtil.getInt(dataReader, "sourceAccId");
          sourceUsrId = DataUtil.getInt(dataReader, "sourceUsrId");
          sourceUsrName = DataUtil.getString(dataReader, "sourceUsrName");
-
          targetAccId = DataUtil.getInt(dataReader, "targetAccId");
          targetUsrId = DataUtil.getInt(dataReader, "targetUsrId");
          targetUsrName = DataUtil.getString(dataReader, "targetUsrName");
-
          penaltyReason = DataUtil.getString(dataReader, "penaltyReason");
-
          penaltyType = (PenaltyType) DataUtil.getInt(dataReader, "penaltyType");
-         penaltyTime = DataUtil.getInt(dataReader, "penaltyTime");
-
          penaltyStart = DataUtil.getDateTime(dataReader, "penaltyStart");
          penaltyEnd = DataUtil.getDateTime(dataReader, "penaltyEnd");
+
+         isPermanent = penaltyEnd == DateTime.MinValue;
       } catch (Exception ex) {
          D.debug("Error in parsing MySqlData for PenaltyInfo " + ex.ToString());
       }
    }
 
-   #endif
+#endif
 
-   public PenaltyInfo (int sourceAccId, int sourceUsrId, string sourceUsrName, PenaltyType penaltyType, int penaltyTime, string penaltyReason) {
+   public PenaltyInfo (int sourceAccId, int sourceUsrId, string sourceUsrName, PenaltyType penaltyType, string penaltyReason, int penaltyTime, bool isPermanent) {
       this.sourceAccId = sourceAccId;
       this.sourceUsrId = sourceUsrId;
       this.sourceUsrName = sourceUsrName;
       this.penaltyType = penaltyType;
-      this.penaltyTime = penaltyTime;
       this.penaltyReason = penaltyReason;
+      this.isPermanent = isPermanent;
 
-      penaltyEnd = DateTime.UtcNow.AddMinutes(this.penaltyTime);
+      penaltyEnd = DateTime.UtcNow.AddMinutes(penaltyTime);
    }
 
    public bool hasPenaltyExpired () {
-      return DateTime.Compare(DateTime.UtcNow, penaltyEnd) > 0; ;
+      if (penaltyEnd == DateTime.MinValue) {
+         return false;
+      } else {
+         return DateTime.Compare(DateTime.UtcNow, penaltyEnd) > 0;
+      }
    }
 
    public string getAction () {

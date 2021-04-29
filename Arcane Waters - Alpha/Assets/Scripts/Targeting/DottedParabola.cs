@@ -28,6 +28,9 @@ public class DottedParabola : MonoBehaviour {
    // If populated, the end segment of the dotted parabola will have its sprite replaced with this.
    public Sprite endDotOverride;
 
+   // What z-offset will be applied to the z-snap script attached to the dots for this line
+   public float dotsZOffset = 0.0f;
+
    #endregion
 
    private void Start () {
@@ -39,31 +42,32 @@ public class DottedParabola : MonoBehaviour {
       for (int i = 0; i < numSegments; i++) {
          GameObject newSegment = Instantiate(segmentPrefab, transform);
          SpriteRenderer renderer = newSegment.GetComponent<SpriteRenderer>();
+         newSegment.GetComponent<ZSnap>().offsetZ = dotsZOffset;
 
          // Override sprite if an override is provided
          if (dotOverride) {
             renderer.sprite = dotOverride;
          }
-
+         
          _parabolaSegments.Add(newSegment);
          _parabolaSegmentRenderers.Add(renderer);
       }
 
       // Override end dot
       if (endDotOverride && _parabolaSegmentRenderers.Count > 1) {
-         // _parabolaSegmentRenderers[_parabolaSegmentRenderers.Count - 1].sprite = endDotOverride;
+         _parabolaSegmentRenderers[_parabolaSegmentRenderers.Count - 1].sprite = endDotOverride;
       }
    }
 
    public void updateParabola () {
       // Position the start dot
       if (_parabolaSegments.Count > 0) {
-         _parabolaSegments[0].transform.position = parabolaStart.position;
+         _parabolaSegments[0].transform.position = new Vector3(parabolaStart.position.x, parabolaStart.position.y, _parabolaSegments[0].transform.position.z); 
       }
       
       // Position the end dot
       if (_parabolaSegments.Count > 1) {
-         _parabolaSegments[_parabolaSegments.Count - 1].transform.position = parabolaEnd.position;
+         _parabolaSegments[_parabolaSegments.Count - 1].transform.position = new Vector3(parabolaEnd.position.x, parabolaEnd.position.y, _parabolaSegments[_parabolaSegments.Count -1].transform.position.z);
       }
 
       // Position the middle dots
@@ -82,7 +86,8 @@ public class DottedParabola : MonoBehaviour {
 
             offset += h * Vector2.up;
 
-            _parabolaSegments[i].transform.position = parabolaStart.position + new Vector3(offset.x, offset.y, 0.0f);
+            Vector3 finalPosition = parabolaStart.position + new Vector3(offset.x, offset.y, 0.0f);
+            _parabolaSegments[i].transform.position = new Vector3(finalPosition.x, finalPosition.y, _parabolaSegments[i].transform.position.z);
          }
       }
    }

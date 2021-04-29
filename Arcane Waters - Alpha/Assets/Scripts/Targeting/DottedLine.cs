@@ -34,6 +34,9 @@ public class DottedLine : MonoBehaviour {
    // When set to true, the images that make up the dotted line will rotate to match the direction of this line
    public bool rotateSegmentSprites;
 
+   // What z-offset will be applied to the z-snap script attached to the dots for this line
+   public float dotsZOffset = 0.0f;
+
    #endregion
 
    private void Start () {
@@ -42,10 +45,11 @@ public class DottedLine : MonoBehaviour {
 
    private void checkInit () {
       // If we have already initialised, return
-      if (_lineSegments.Count > 0) {
+      if (_hasInitialised) {
          return;
       }
-      
+
+      _hasInitialised = true;
       createSegments();
       updateLine();
    }
@@ -53,27 +57,10 @@ public class DottedLine : MonoBehaviour {
    // Creates objects for the line segments, and stores them in a list
    private void createSegments () {
       for (int i = 0; i < numSegments; i++) {
-         GameObject newSegment = Instantiate(segmentPrefab, transform);
-         SpriteRenderer renderer = newSegment.GetComponent<SpriteRenderer>();
-
-         // Override sprite if an override is provided
-         if (dotOverride) {
-            renderer.sprite = dotOverride;
-         }
-
-         _lineSegments.Add(newSegment);
-         _lineSegmentRenderers.Add(renderer);
+         createNewSegment();
       }
 
-      // Override starting dot
-      if (startDotOverride && _lineSegments.Count > 0) {
-         _lineSegments[0].GetComponent<SpriteRenderer>().sprite = startDotOverride;
-      }
-
-      // Override ending dot
-      if (endDotOverride && _lineSegmentRenderers.Count > 1) {
-         _lineSegmentRenderers[_lineSegmentRenderers.Count - 1].sprite = endDotOverride;
-      }
+      overrideSprites();
    }
 
    private void rotateSegments () {
@@ -103,7 +90,8 @@ public class DottedLine : MonoBehaviour {
          offsetVector.z = 0.0f;
 
          for (int i = 1; i < _lineSegments.Count - 1; i++) {
-            _lineSegments[i].transform.position = lineStart.position + (float)i * offsetVector;
+            Vector3 newPosition = lineStart.position + (float) i * offsetVector;
+            _lineSegments[i].transform.position = new Vector3(newPosition.x, newPosition.y, _lineSegments[i].transform.position.z);
          }
       }
 
@@ -118,6 +106,55 @@ public class DottedLine : MonoBehaviour {
       foreach(SpriteRenderer renderer in _lineSegmentRenderers) {
          renderer.color = newColor;
       }
+
+      _lineColor = newColor;
+   }
+
+   public void setNumSegments (int newNumSegments) {
+      // If new number of segments is larger, create new segments
+      if (newNumSegments > numSegments) {
+         int numToCreate = newNumSegments - numSegments;
+         for (int i = 0; i < numToCreate; i++) {
+            createNewSegment();
+         }
+
+      // If new number of segments is smaller, remove some segments
+      } else if (newNumSegments < numSegments) {
+         int numToRemove = numSegments - newNumSegments;
+
+         _lineSegments.RemoveRange(newNumSegments, numToRemove);
+         _lineSegmentRenderers.RemoveRange(newNumSegments, numToRemove);
+      }
+
+      numSegments = newNumSegments;
+      overrideSprites();
+   }
+
+   private void createNewSegment () {
+      GameObject newSegment = Instantiate(segmentPrefab, transform);
+      SpriteRenderer renderer = newSegment.GetComponent<SpriteRenderer>();
+      renderer.color = _lineColor;
+      newSegment.GetComponent<ZSnap>().offsetZ = dotsZOffset;
+
+      _lineSegments.Add(newSegment);
+      _lineSegmentRenderers.Add(renderer);
+   }
+
+   private void overrideSprites () {
+      for (int i = 0; i < numSegments; i++) {
+         // Override the first dot if appropriate
+         if (i == 0 && startDotOverride) {
+            _lineSegmentRenderers[i].sprite = startDotOverride;
+
+         // Override the last dot if appropriate
+         } else if (i == numSegments - 1 && endDotOverride) {
+            _lineSegmentRenderers[i].sprite = endDotOverride;
+
+         // Override other dots if appropriate
+         } else if (dotOverride) {
+            _lineSegmentRenderers[i].sprite = dotOverride;
+         }
+      }
    }
 
    #region Private Variables
@@ -127,6 +164,12 @@ public class DottedLine : MonoBehaviour {
 
    // A list of the renderers of the segments of this dotted line
    private List<SpriteRenderer> _lineSegmentRenderers = new List<SpriteRenderer>();
+
+   // Set to true after initialising
+   private bool _hasInitialised = false;
+
+   // The color that this line has been set to
+   private Color _lineColor = Color.white;
 
    #endregion
 }

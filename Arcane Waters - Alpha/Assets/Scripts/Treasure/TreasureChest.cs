@@ -102,6 +102,12 @@ public class TreasureChest : NetworkBehaviour {
    // If is interacted locally
    public bool isLocallyInteracted;
 
+   // The map fragment name displayed by the floating icon
+   public static string MAP_FRAGMENT_NAME = "Map Fragment";
+
+   // The map fragment sprite displayed by the floating icon
+   public Sprite mapFragmentSprite;
+
    // The areakey
    [SyncVar]
    public string areaKey;
@@ -222,13 +228,20 @@ public class TreasureChest : NetworkBehaviour {
          yield return 0;
       }
       Area newArea = AreaManager.self.getArea(areaKey);
-      transform.SetParent(newArea.prefabParent);
+      bool worldPositionStays = newArea.cameraBounds.bounds.Contains((Vector2) transform.position);
+      transform.SetParent(newArea.prefabParent, worldPositionStays);
    }
 
    public void sendOpenRequest () {
       if (hasBeenOpened()) {
          return;
       }
+
+      // Check that the local player and chest are in the same instance
+      if (Global.player == null || Global.player.instanceId != instanceId) {
+         return;
+      }
+
       isWaitingForServerResponse = true;
 
       // The player has to be close enough
@@ -247,6 +260,13 @@ public class TreasureChest : NetworkBehaviour {
          Global.player.rpc.Cmd_OpenLootBag(this.id);
       } else {
          if (Global.player is PlayerBodyEntity) {
+            // In league treasure sites, all enemies must be defeated before opening the map fragment chest
+            Instance instance = Global.player.getInstance();
+            if (VoyageManager.isTreasureSiteArea(instance.areaKey) && instance.voyageId > 0 && instance.aliveNPCEnemiesCount > 0) {
+               FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asEnemiesAround();
+               return;
+            }
+
             Global.player.rpc.Cmd_OpenChest(this.id);
          } else {
             D.debug("Error here! Only players are allowed to open chests");
@@ -433,6 +453,30 @@ public class TreasureChest : NetworkBehaviour {
          string msg = string.Format("You found <color=yellow>{0}</color> (<color=red>{1}</color>)", item.count, itemName);
          ChatManager.self.addChat(msg, ChatInfo.Type.System);
       }
+   }
+
+   public IEnumerator CO_CreatingFloatingMapFragmentIcon () {
+      // Give some time for the chest to open
+      float animationDuration = chestOpeningAnimation.frameLengthOverride * chestOpeningAnimation.maxIndex;
+      animationDuration = Mathf.Clamp(animationDuration, .1f, 1);
+      yield return new WaitForSeconds(animationDuration);
+
+      // Create a floating icon
+      GameObject floatingIcon = Instantiate(TreasureManager.self.floatingIconPrefab, Vector3.zero, Quaternion.identity);
+      floatingIcon.transform.SetParent(this.transform);
+      floatingIcon.transform.localPosition = new Vector3(0f, .04f);
+      
+      Image image = floatingIcon.GetComponentInChildren<Image>();
+      image.sprite = mapFragmentSprite;
+
+      // Set the name text
+      floatingIcon.GetComponentInChildren<FloatAndStop>().nameText.text = MAP_FRAGMENT_NAME;
+
+      isWaitingForServerResponse = false;
+
+      // Show a confirmation in chat
+      string msg = string.Format("You found a (<color=red>{0}</color>)", MAP_FRAGMENT_NAME);
+      ChatManager.self.addChat(msg, ChatInfo.Type.System);
    }
 
    public IEnumerator CO_CreatingFloatingPowerupIcon (Powerup.Type powerupType) {

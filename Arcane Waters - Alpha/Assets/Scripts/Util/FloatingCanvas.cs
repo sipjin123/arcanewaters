@@ -83,6 +83,14 @@ public class FloatingCanvas : MonoBehaviour {
       return this;
    }
 
+   public FloatingCanvas asEnemiesAround () {
+      if (text != null) {
+         text.text = "There are enemies around...";
+      }
+
+      return this;
+   }
+
    #region Private Variables
 
    // The time at which we were created

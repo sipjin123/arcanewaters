@@ -42,7 +42,7 @@ public class AdminManager : NetworkBehaviour
 
       StartCoroutine(CO_CreateItemNamesDictionary());
 
-      #if IS_SERVER_BUILD         
+      #if IS_SERVER_BUILD
          networkProfiler.MaxTicks = int.MaxValue;
          networkProfiler.IsRecording = true;
       #endif
@@ -232,7 +232,7 @@ public class AdminManager : NetworkBehaviour
       Cmd_AddPowerup(parameters);
    }
 
-   [Command] 
+   [Command]
    private void Cmd_AddPowerup (string parameters) {
       string[] inputs = parameters.Split(' ');
 
@@ -243,7 +243,7 @@ public class AdminManager : NetworkBehaviour
          if (type == Powerup.Type.None || rarity == Rarity.Type.None) {
             return;
          }
-         
+
          Powerup newPowerup = new Powerup(type, rarity);
          PowerupManager.self.addPowerupServer(_player.userId, newPowerup);
          _player.rpc.Target_AddPowerup(connectionToClient, newPowerup);
@@ -356,9 +356,9 @@ public class AdminManager : NetworkBehaviour
          _player.Target_FloatingMessage(_player.connectionToClient, "Invalid Parameters" + " : " + parameters);
       }
    }
-   
-   
-   private readonly NetworkProfiler networkProfiler = new NetworkProfiler(60*60); // 60 seconds
+
+
+   private readonly NetworkProfiler networkProfiler = new NetworkProfiler(60 * 60); // 60 seconds
 
    private void networkProfile (string parameters) {
       Cmd_NetworkProfile(parameters);
@@ -409,7 +409,7 @@ public class AdminManager : NetworkBehaviour
          Directory.CreateDirectory(dumpsDirPath);
       }
       string dumpFile = dumpsDirPath + DateTime.Now.ToString("MM_dd_yyyy_HH_mm_ss") + "_dump.netdata";
-      
+
       networkProfiler.IsRecording = false;
       networkProfiler.Save(dumpFile);
       networkProfiler.IsRecording = true;
@@ -570,7 +570,7 @@ public class AdminManager : NetworkBehaviour
          string playerName = list[0];
          string reason = parameters.Replace(list[0] + " ", "");
 
-         PenaltyInfo penaltyInfo = new PenaltyInfo(_player.accountId, _player.userId, _player.entityName, PenaltyType.Ban, 0, reason);
+         PenaltyInfo penaltyInfo = new PenaltyInfo(_player.accountId, _player.userId, _player.entityName, PenaltyType.Ban, reason, 0, true);
          penaltyInfo.penaltyEnd = DateTime.MinValue;
          banPlayer(playerName, penaltyInfo);
       }
@@ -695,7 +695,7 @@ public class AdminManager : NetworkBehaviour
 
          string reason = parameters.Replace($"{list[0]} {list[1]} ", "");
 
-         PenaltyInfo penaltyInfo = new PenaltyInfo(_player.accountId, _player.userId, _player.entityName, PenaltyType.StealthMute, minutes, reason);
+         PenaltyInfo penaltyInfo = new PenaltyInfo(_player.accountId, _player.userId, _player.entityName, PenaltyType.StealthMute, reason, minutes, false);
          mutePlayer(playerName, penaltyInfo);
       }
    }
@@ -719,7 +719,7 @@ public class AdminManager : NetworkBehaviour
 
          string reason = parameters.Replace($"{list[0]} {list[1]} ", "");
 
-         PenaltyInfo penaltyInfo = new PenaltyInfo(_player.accountId, _player.userId, _player.entityName, PenaltyType.Mute, minutes, reason);
+         PenaltyInfo penaltyInfo = new PenaltyInfo(_player.accountId, _player.userId, _player.entityName, PenaltyType.Mute, reason, minutes, false);
          mutePlayer(playerName, penaltyInfo);
       }
    }
@@ -744,7 +744,7 @@ public class AdminManager : NetworkBehaviour
 
          string reason = parameters.Replace($"{list[0]} {list[1]} ", "");
 
-         PenaltyInfo penaltyInfo = new PenaltyInfo(_player.accountId, _player.userId, _player.entityName, PenaltyType.Ban, minutes, reason);
+         PenaltyInfo penaltyInfo = new PenaltyInfo(_player.accountId, _player.userId, _player.entityName, PenaltyType.Ban, reason, minutes, false);
          banPlayer(playerName, penaltyInfo);
       }
    }
@@ -952,7 +952,7 @@ public class AdminManager : NetworkBehaviour
    private void requestSetShipHealth (string parameter) {
       Cmd_SetShipHealth(parameter);
    }
-   
+
    private void requestXmlLogs (string parameter) {
       string[] list = parameter.Split(' ');
       if (list.Length > 0) {

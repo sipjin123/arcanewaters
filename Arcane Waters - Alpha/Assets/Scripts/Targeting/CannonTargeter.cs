@@ -40,6 +40,11 @@ public class CannonTargeter : MonoBehaviour {
 
    #endregion
 
+   private void Awake () {
+      dottedLine.dotsZOffset = 1.0f;
+      dottedParabola.dotsZOffset = -1.0f;
+   }
+
    public void Start () {
       chargeRenderer.enabled = false;
    }

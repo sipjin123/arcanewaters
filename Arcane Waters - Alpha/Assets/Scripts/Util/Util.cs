@@ -1086,12 +1086,16 @@ public class Util : MonoBehaviour
       return deploymentId;
    }
 
-   public static string formatIpAddress (string ogAddress) {
-      string finalAddress = ogAddress;
+   public static string getIpAddress (string address) {
+      string finalAddress = address;
 
       if (finalAddress.StartsWith("::ffff:")) {
-         string[] finalAddressArray = ogAddress.Split(':');
+         string[] finalAddressArray = address.Split(':');
          finalAddress = finalAddressArray[finalAddressArray.Length - 1];
+      }
+      else if (finalAddress.Equals("::1")) {
+         // If our address is ::1, it is localhost
+         finalAddress = "localhost";
       }
 
       return finalAddress;

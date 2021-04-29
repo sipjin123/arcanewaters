@@ -463,6 +463,11 @@ public class BattleUIManager : MonoBehaviour {
       StartCoroutine(setPlayerBattlerUIEvents());
 
       prepareUIEvents();
+
+      // Reset button scales
+      foreach (Button button in stanceButtons) {
+         button.transform.localScale = Vector3.one;
+      }
    }
 
    public void disableBattleUI () {

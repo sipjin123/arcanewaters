@@ -24,24 +24,15 @@ public class WorldMapBiome : MonoBehaviour
    public Image land;
 
    // The home town button
-   public Button homeTownButton;
+   public WorldMapTownButton homeTownButton;
 
-   // The text displaying the home town name
-   public Text homeTownText;
-   
    // The canvas group containing the town icons
    public CanvasGroup townContainer;
 
    #endregion
 
    public void setHomeTown (string townAreaKey) {
-      homeTownText.text = Area.getName(townAreaKey);
-
-      // Capture the values for the click events
-      string destinationAreaKey = townAreaKey;
-
-      homeTownButton.onClick.RemoveAllListeners();
-      homeTownButton.onClick.AddListener(() => onLocationButtonPressed(destinationAreaKey));
+      homeTownButton.initialize(townAreaKey, biome);
    }
 
    public void reveal () {
@@ -57,6 +48,9 @@ public class WorldMapBiome : MonoBehaviour
       // Make the town canvasgroup interactable, but invisible
       townContainer.Show();
       townContainer.alpha = 0f;
+
+      // Highlight the home town button
+      homeTownButton.enableArrows();
 
       Sequence revealSequence = DOTween.Sequence();
 

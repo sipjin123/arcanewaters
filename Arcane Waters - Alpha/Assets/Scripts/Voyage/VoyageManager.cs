@@ -295,58 +295,6 @@ public class VoyageManager : GenericGameManager {
    }
 
    [Server]
-   public bool tryUnlockNewLocationForUser (NetEntity playerEntity) {
-      if (!NetworkServer.active || playerEntity == null) {
-         return false;
-      }
-
-      // The player must be in a group
-      if (!playerEntity.isInGroup()) {
-         return false;
-      }
-
-      Instance instance = InstanceManager.self.getInstance(playerEntity.instanceId);
-      if (instance == null) {
-         return false;
-      }
-
-      // The current instance must be part of a voyage
-      if (instance.voyageId <= 0) {
-         return false;
-      }
-
-      // The user must be in a treasure site and all enemies must be defeated
-      if (isTreasureSiteArea(instance.areaKey) && instance.isNetworkPrefabInstantiationFinished && instance.aliveNPCEnemiesCount == 0) {
-         Biome.Type nextBiome = Biome.getNextBiome(instance.biome);
-
-         // Background thread
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            // Check if the user has already unlocked the biome
-            bool isNextBiomeAlreadyUnlocked = DB_Main.isBiomeUnlockedForUser(playerEntity.userId, nextBiome);
-
-            if (!isNextBiomeAlreadyUnlocked) {
-               // Add the unlocked biome for the user
-               DB_Main.addUnlockedBiome(playerEntity.userId, nextBiome);
-            }
-
-            // Back to the Unity thread
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               if (isNextBiomeAlreadyUnlocked) {
-                  // Notify the client that the voyage is complete
-                  playerEntity.rpc.Target_DisplayNotificationForVoyageCompleted(playerEntity.connectionToClient, Notification.Type.VoyageCompleted, Biome.Type.None);
-               } else {
-                  // Notify the client that a new location has been unlocked
-                  playerEntity.rpc.Target_DisplayNotificationForVoyageCompleted(playerEntity.connectionToClient, Notification.Type.NewLocationUnlocked, nextBiome);
-               }
-            });
-         });
-         return true;
-      }
-
-      return false;
-   }
-
-   [Server]
    protected void createVoyageInstanceIfNeeded () {
       // Only the master server launches the creation of voyages instances
       NetworkedServer server = ServerNetworkingManager.self.server;
