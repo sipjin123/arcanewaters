@@ -57,7 +57,7 @@ updateLatestSteamBuild = function(eventToEmit, buildValue, buildType) {
 getUpdateLogsFromJenkins = function(eventToEmit, buildValue) {
     console.log('Jenkins Build Value is: '+ buildValue);
 
-    connection.query('select dhBuildVersion, dhChangesetId, dhStatusReason from deploy_history where dhBuildTarget = "arcanewaters--ArcaneWaters-Server-Dev-Windows" and dhStatus = "COMPLETED" and dhBuildVersion > ' + buildValue, function(err,result){
+    connection.query('select dhBuildVersion, dhChangesetId, dhStatusReason from deploy_history where dhBuildTarget = "ArcaneWaters-Server-Dev-Windows-1" and dhStatus = "COMPLETED" and dhBuildVersion > ' + buildValue, function(err,result){
         if (err) {
             console.log('Failed to fetch Jenkins Sql Data Complete');
             console.error(err);
@@ -75,7 +75,7 @@ getCommentsFromPlastic = function(eventToEmit, cachedContent) {
     var hasCompletedQuery = false;
     var queryResponseCounte = 0;
     var buildIdArray = [];
-
+    
     // Log cache to make sure the process is working properly
     for (var i = 0 ; i < cachedContent.length ; i++) {
         console.log("Parameter cache is: "+cachedContent[i].dhBuildVersion);
@@ -85,42 +85,49 @@ getCommentsFromPlastic = function(eventToEmit, cachedContent) {
         console.log("BuildId cache is: "+buildIdArray[i]);
     }
 
-    if (cachedContent.length < 1) {
-        eventToEmit.emit('finishedCheckingJenkins', newClassList);
-    } else  {
-        for (var i = 0 ; i < cachedContent.length ; i++) {
-            console.log("Fetching from database: "+cachedContent[i].dhBuildVersion + " "+cachedContent[i].dhChangesetId)
-            var queryString = 'SELECT * FROM global.plastic_changeset where id = ' + cachedContent[i].dhChangesetId;
-            connection.query(queryString, function(err,result){
-                if (err) {
-                    console.log('Failed to fetch plasitc changeset');
-                    console.error(err);
-                } else {
-                    console.log('No error in fetching plasitc changeset: '+result.length+" Index: "+i);
-                    for (var q = 0 ; q < result.length ; q++) {
-                        var newClass = new patchNoteClass (
-                            buildIdArray[i],
-                            result[q].comment
-                        );
-                        
-                        newClassList.push(newClass);
-                    }
-                    queryResponseCounte++;
+    if ( cachedContent.length < 1) {
+		eventToEmit.emit('finishedCheckingJenkins', newClassList);
+    } else {
+	    for (var i = 0 ; i < cachedContent.length ; i++) {
+	        console.log("Fetching from database: "+cachedContent[i].dhBuildVersion + " "+cachedContent[i].dhChangesetId)
+            var cacheddhBuildVersion = cachedContent[i].dhBuildVersion;
+            var cachedChangeSetID = cachedContent[i].dhChangesetId;
 
-                    if (queryResponseCounte >= cachedContent.length && !hasCompletedQuery) {
-                        hasCompletedQuery = true;
-                        console.log('-------------- Finished fetching from database '+newClassList.length+' --------------');
+	        var queryString = 'SELECT * FROM global.plastic_changeset where id = ' + cachedContent[i].dhChangesetId;
+	        connection.query(queryString, function(err,result){
+	            if (err) {
+	                console.log('Failed to fetch plasitc changeset');
+	                console.error(err);
+	            } else {
+	                console.log('No error in fetching plasitc changeset: '+result.length+" Index: "+i 
+                        + ' :: Changeset dhl build id is:' + cacheddhBuildVersion
+                        + ' :: Changeset Id is:' + cachedChangeSetID);
+                    
+	                for (var q = 0 ; q < result.length ; q++) {
+	                    var newClass = new patchNoteClass (
+	                        buildIdArray[i],
+	                        result[q].comment
+	                    );
+	                    
+                        console.log('Adding changeset: ID:'+buildIdArray[i]+" ID: "+result[q].comment);
+	                    newClassList.push(newClass);
+	                }
+	                queryResponseCounte++;
 
-                        for (var r = 0 ; r < newClassList.length ; r++) {
-                            newClassList[r].buildId = buildIdArray[r];
-                            console.log('-> CompletedQuery: '+newClassList[r].buildId+ " : " +newClassList[r].buildComment);
+	                if (queryResponseCounte >= cachedContent.length && !hasCompletedQuery) {
+	                    hasCompletedQuery = true;
+	                    console.log('-------------- Finished fetching from database '+newClassList.length+' --------------');
 
-                        }
-                        eventToEmit.emit('finishedCheckingJenkins', newClassList);
-                    }
-                }
-            });
-        }
+	                    for (var r = 0 ; r < newClassList.length ; r++) {
+	                        newClassList[r].buildId = buildIdArray[r];
+	                        console.log('-> CompletedQuery: '+newClassList[r].buildId+ " : " +newClassList[r].buildComment);
+
+	                    }
+	                    eventToEmit.emit('finishedCheckingJenkins', newClassList);
+	                }
+	            }
+	        });
+	    }
     }
 }
 
