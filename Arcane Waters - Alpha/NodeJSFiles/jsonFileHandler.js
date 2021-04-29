@@ -3,7 +3,7 @@ var jsonFileHandler = {};
 const fs = require('fs');
 const jsonfile = require('jsonfile')
 const versionsFilePath = './buildVersions.json';
-const config = require ('./config.json');
+const config = require('./config.json');
 
 // Database Requirements
 var express = require('express');
@@ -31,7 +31,7 @@ var eventEmitter = new events.EventEmitter();
 //========================================================
 
 getLatestSteamBuild = function(eventToEmit, buildType) {
-    connection.query('select buildId from steam_patch_status where steamAppId="'+buildType+'"', function(err,result){
+    connection.query('select buildId from steam_patch_status where steamAppId="' + buildType + '"', function(err, result) {
         if (err) {
             console.error(err);
             eventToEmit.emit('finishedCheckingSteamBuild', result);
@@ -43,7 +43,7 @@ getLatestSteamBuild = function(eventToEmit, buildType) {
 }
 
 updateLatestSteamBuild = function(eventToEmit, buildValue, buildType) {
-    connection.query('UPDATE steam_patch_status SET buildId = '+buildValue+ ' where steamAppId="'+buildType+'"', function(err,result){
+    connection.query('UPDATE steam_patch_status SET buildId = ' + buildValue + ' where steamAppId="' + buildType + '"', function(err, result) {
         if (err) {
             console.error(err);
             eventToEmit.emit('finishedUpdatingSteamBuild', result);
@@ -55,9 +55,9 @@ updateLatestSteamBuild = function(eventToEmit, buildValue, buildType) {
 }
 
 getUpdateLogsFromJenkins = function(eventToEmit, buildValue) {
-    console.log('Jenkins Build Value is: '+ buildValue);
+    console.log('Jenkins Build Value is: ' + buildValue);
 
-    connection.query('select dhBuildVersion, dhChangesetId, dhStatusReason from deploy_history where dhBuildTarget = "ArcaneWaters-Server-Dev-Windows-1" and dhStatus = "COMPLETED" and dhBuildVersion > ' + buildValue, function(err,result){
+    connection.query('select dhBuildVersion, dhChangesetId, dhStatusReason from deploy_history where dhBuildTarget = "ArcaneWaters-Server-Dev-Windows-1" and dhStatus = "COMPLETED" and dhBuildVersion > ' + buildValue, function(err, result) {
         if (err) {
             console.log('Failed to fetch Jenkins Sql Data Complete');
             console.error(err);
@@ -75,67 +75,67 @@ getCommentsFromPlastic = function(eventToEmit, cachedContent) {
     var hasCompletedQuery = false;
     var queryResponseCounte = 0;
     var buildIdArray = [];
-    
+
     // Log cache to make sure the process is working properly
-    for (var i = 0 ; i < cachedContent.length ; i++) {
-        console.log("Parameter cache is: "+cachedContent[i].dhBuildVersion);
+    for (var i = 0; i < cachedContent.length; i++) {
+        console.log("Parameter cache is: " + cachedContent[i].dhBuildVersion);
         buildIdArray.push(cachedContent[i].dhBuildVersion);
     }
-    for (var i = 0 ; i < buildIdArray.length ; i++) {
-        console.log("BuildId cache is: "+buildIdArray[i]);
+    for (var i = 0; i < buildIdArray.length; i++) {
+        console.log("BuildId cache is: " + buildIdArray[i]);
     }
 
-    if ( cachedContent.length < 1) {
-		eventToEmit.emit('finishedCheckingJenkins', newClassList);
+    if (cachedContent.length < 1) {
+        eventToEmit.emit('finishedCheckingJenkins', newClassList);
     } else {
-	    for (var i = 0 ; i < cachedContent.length ; i++) {
-	        console.log("Fetching from database: "+cachedContent[i].dhBuildVersion + " "+cachedContent[i].dhChangesetId)
+        for (var i = 0; i < cachedContent.length; i++) {
+            console.log("Fetching from database: " + cachedContent[i].dhBuildVersion + " " + cachedContent[i].dhChangesetId)
             var cacheddhBuildVersion = cachedContent[i].dhBuildVersion;
             var cachedChangeSetID = cachedContent[i].dhChangesetId;
 
-	        var queryString = 'SELECT * FROM global.plastic_changeset where id = ' + cachedContent[i].dhChangesetId;
-	        connection.query(queryString, function(err,result){
-	            if (err) {
-	                console.log('Failed to fetch plasitc changeset');
-	                console.error(err);
-	            } else {
-	                console.log('No error in fetching plasitc changeset: '+result.length+" Index: "+i 
-                        + ' :: Changeset dhl build id is:' + cacheddhBuildVersion
-                        + ' :: Changeset Id is:' + cachedChangeSetID);
-                    
-	                for (var q = 0 ; q < result.length ; q++) {
-	                    var newClass = new patchNoteClass (
-	                        buildIdArray[i],
-	                        result[q].comment
-	                    );
-	                    
-                        console.log('Adding changeset: ID:'+buildIdArray[i]+" ID: "+result[q].comment);
-	                    newClassList.push(newClass);
-	                }
-	                queryResponseCounte++;
+            var queryString = 'SELECT * FROM global.plastic_changeset where id = ' + cachedContent[i].dhChangesetId;
+            connection.query(queryString, function(err, result) {
+                if (err) {
+                    console.log('Failed to fetch plasitc changeset');
+                    console.error(err);
+                } else {
+                    console.log('No error in fetching plasitc changeset: ' + result.length + " Index: " + i +
+                        ' :: Changeset dhl build id is:' + cacheddhBuildVersion +
+                        ' :: Changeset Id is:' + cachedChangeSetID);
 
-	                if (queryResponseCounte >= cachedContent.length && !hasCompletedQuery) {
-	                    hasCompletedQuery = true;
-	                    console.log('-------------- Finished fetching from database '+newClassList.length+' --------------');
+                    for (var q = 0; q < result.length; q++) {
+                        var newClass = new patchNoteClass(
+                            buildIdArray[i],
+                            result[q].comment
+                        );
 
-	                    for (var r = 0 ; r < newClassList.length ; r++) {
-	                        newClassList[r].buildId = buildIdArray[r];
-	                        console.log('-> CompletedQuery: '+newClassList[r].buildId+ " : " +newClassList[r].buildComment);
+                        console.log('Adding changeset: ID:' + buildIdArray[i] + " ID: " + result[q].comment);
+                        newClassList.push(newClass);
+                    }
+                    queryResponseCounte++;
 
-	                    }
-	                    eventToEmit.emit('finishedCheckingJenkins', newClassList);
-	                }
-	            }
-	        });
-	    }
+                    if (queryResponseCounte >= cachedContent.length && !hasCompletedQuery) {
+                        hasCompletedQuery = true;
+                        console.log('-------------- Finished fetching from database ' + newClassList.length + ' --------------');
+
+                        for (var r = 0; r < newClassList.length; r++) {
+                            newClassList[r].buildId = buildIdArray[r];
+                            console.log('-> CompletedQuery: ' + newClassList[r].buildId + " : " + newClassList[r].buildComment);
+
+                        }
+                        eventToEmit.emit('finishedCheckingJenkins', newClassList);
+                    }
+                }
+            });
+        }
     }
 }
 
 connectionTest = function(eventToEmit) {
-    connection.connect(function(error){
-        if(!!error){
+    connection.connect(function(error) {
+        if (!!error) {
             console.log('Error');
-        } else  {
+        } else {
             console.log('Connected');
         }
     });
