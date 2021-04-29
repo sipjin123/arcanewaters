@@ -28,6 +28,7 @@ public class ItemCellInventory : ItemCell, IPointerDownHandler, IPointerEnterHan
    public void OnPointerEnter (PointerEventData eventData) {
       if (_interactable) {
          onPointerEnter?.Invoke();
+         SoundEffectManager.self.playSoundEffect(SoundEffectManager.INVENTORY_HOVER, transform);
       }
    }
 
@@ -59,6 +60,7 @@ public class ItemCellInventory : ItemCell, IPointerDownHandler, IPointerEnterHan
          if (sqrDistance > DISTANCE_UNTIL_START_DRAG) {
             // Begin the drag process
             onDragStarted?.Invoke();
+            SoundEffectManager.self.playSoundEffect(SoundEffectManager.INVENTORY_DRAG_START, transform);
             break;
          }
          yield return null;

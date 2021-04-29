@@ -53,6 +53,7 @@ namespace MapCustomization
          iconImage.sprite = _prefabs[index].displaySprite;
          previousButton.interactable = _selectedIndex != 0;
          nextButton.interactable = _selectedIndex != _prefabs.Length - 1;
+         SoundEffectManager.self.playSoundEffect(SoundEffectManager.NEXTPREFAB_SELECTION, SoundEffectManager.self.transform);
       }
 
       public void setSelected (bool selected) {

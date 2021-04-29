@@ -182,6 +182,7 @@ public class BattleUIManager : MonoBehaviour {
                if (selectedButton.cooldownValue < selectedButton.cooldownTarget - .1f) {
                   D.error("Ability is cooling down!: " + selectedButton.cooldownValue + " / " + selectedButton.cooldownTarget);
                } else {
+                  SoundEffectManager.self.playSoundEffect(SoundEffectManager.ABILITY_SELECTION, transform);
                   selectedButton.abilityButton.onClick.Invoke();
                }
             } else {
@@ -501,6 +502,7 @@ public class BattleUIManager : MonoBehaviour {
             break;
       }
 
+      SoundEffectManager.self.playSoundEffect(SoundEffectManager.STANCE_SELECTION, transform);
       onStanceChanged((Battler.Stance) newStance);
       Global.player.rpc.Cmd_RequestStanceChange((Battler.Stance) newStance);
 

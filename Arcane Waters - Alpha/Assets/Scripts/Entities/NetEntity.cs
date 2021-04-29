@@ -1456,6 +1456,7 @@ public class NetEntity : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceiveUnreadMailNotification (NetworkConnection conn) {
       BottomBar.self.setUnreadMailNotificationStatus(true);
+      SoundEffectManager.self.playSoundEffect(SoundEffectManager.MAIL_NOTIF, transform);
    }
 
    [TargetRpc]

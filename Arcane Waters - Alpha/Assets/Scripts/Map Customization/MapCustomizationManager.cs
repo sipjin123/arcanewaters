@@ -241,6 +241,7 @@ namespace MapCustomization
             selectPrefab(hoveredPrefab);
             _draggedPrefab = hoveredPrefab;
             updatePrefabOutlines(worldPosition);
+            SoundEffectManager.self.playSoundEffect(SoundEffectManager.PICKUP_EDIT_OBJ, SoundEffectManager.self.transform);
          } else {
             if (CustomizationUI.getSelectedPrefabData() != null) {
                updateToBePlacedPrefab(worldPosition, CustomizationUI.getSelectedPrefabData().Value.serializationId);
@@ -249,6 +250,7 @@ namespace MapCustomization
 
                if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _newPrefab.unappliedChanges, false, out string errorMessage)) {
                   Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges);
+                  SoundEffectManager.self.playSoundEffect(SoundEffectManager.DROP_EDIT_OBJ, SoundEffectManager.self.transform);
 
                   // Decrease remaining prop item that corresponds to this prefab
                   foreach (ItemInstance item in remainingProps) {
@@ -283,6 +285,7 @@ namespace MapCustomization
          if (_selectedPrefab.anyUnappliedState()) {
             if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _selectedPrefab.unappliedChanges, false, out string errorMessage)) {
                Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _selectedPrefab.unappliedChanges);
+               SoundEffectManager.self.playSoundEffect(SoundEffectManager.DROP_EDIT_OBJ, SoundEffectManager.self.transform);
                _selectedPrefab.submitUnappliedChanges();
             } else {
                _selectedPrefab.revertUnappliedChanges();
@@ -306,6 +309,8 @@ namespace MapCustomization
          _newPrefab.unappliedChanges.localPosition = currentArea.prefabParent.transform.InverseTransformPoint(worldPosition);
          _newPrefab.transform.localPosition = _newPrefab.unappliedChanges.localPosition;
          _newPrefab.GetComponent<ZSnap>()?.snapZ();
+
+         SoundEffectManager.self.playSoundEffect(SoundEffectManager.DROP_EDIT_OBJ, SoundEffectManager.self.transform);
       }
 
       private static PrefabState newPrefabState (Vector3 worldPosition, int serializationId) {

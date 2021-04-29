@@ -288,6 +288,10 @@ public class MapManager : MonoBehaviour
          createLiveMap(_nextAreaKey, _nextMapInfo, _nextMapPosition, _nextMapCustomizationData, _nextBiome);
          _nextAreaKey = null;
       }
+
+      if (area.isInterior) {
+         SoundEffectManager.self.playSoundEffect(SoundEffectManager.ENTER_DOOR, transform);
+      }
    }
 
    private IEnumerator CO_ProcessNpcQuestInArea () {
