@@ -160,7 +160,11 @@ const postUpdates = async (newCloudObjects) => {
 
 			// Register text field content
 			await page2.waitFor(actionInterval);
-			await page2.type('.partnereventeditor_EventEditorTitleInput_ZAOXn', 'Patch Notes!');
+			var patchName = "";
+			if (buildType == "playtest") {
+				patchName = "PlayTest ";
+			}
+			await page2.type('.partnereventeditor_EventEditorTitleInput_ZAOXn', patchName + 'Patch Notes Build#' + newCloudObjects[newCloudObjects.length-1].buildId);
 
 			await page2.waitFor(typingInterval);
 			await page2.type('.partnereventeditor_Subtitle_32XZf', 'Build #' + newCloudObjects[newCloudObjects.length-1].buildId);
@@ -200,9 +204,60 @@ const postUpdates = async (newCloudObjects) => {
 			await page2.waitFor(actionInterval);
 
 			// Take screen shot
-			console.log("Taking screenshot");
-    		await page2.screenshot(options);
+			//console.log("Taking screenshot");
+    		//await page2.screenshot(options);
 
+			// Navigate to Graphic Assets Tab
+			console.log("Navigate to Graphic Assets Tab");
+			await page2.waitFor(actionInterval);
+			await page2.evaluate(() => {
+					  var nameOfClass = 'tabbar_GraphicalAssetsTab_3lJb_ ';
+					  document.querySelectorAll('.' + nameOfClass)[2].click();
+					});
+			await page2.waitFor(actionInterval);
+
+
+			// Navigate to Previously Uploaded Assets
+			console.log("Navigate to Previously Uploaded Assets");
+			await page2.waitFor(actionInterval);
+			await page2.evaluate(() => {
+					  var nameOfClass = 'clanimagepicker_SelectImageButton__R_zU ';
+					  document.querySelectorAll('.' + nameOfClass)[1].click();
+					});
+			await page2.waitFor(actionInterval);
+
+			// Double Click graphic image
+			console.log("Double Click graphic image");
+			await page2.waitFor(actionInterval);
+
+			// Find the image to attach which is from the previous graphic asset upload
+	  		const rect = await page2.evaluate(() => {
+				  	var nameOfClass = 'clanimagepicker_ImageWrapper_vYrtX';
+				    const element = document.querySelectorAll('.' + nameOfClass)[0];
+				    if (!element) return null;
+				    const { x, y } = element.getBoundingClientRect();
+				    return { x, y };
+				});
+
+			// After finding the image to select, simulate double click
+			if (rect) {
+			    await page2.mouse.click(rect.x, rect.y, { clickCount: 2 });
+		    } else {
+		    	console.error("Element Not Found");
+		    }
+
+			await page2.waitFor(actionInterval);
+
+			// Naviate through all buttons in the page and select the upload button
+			console.log("Select Upload Image Button");
+			const elHandleArray = await page2.$$('button')
+			// Total of 10 buttons will be pressed (Date Updated: 04-29-2021) This might change if steam updates their page
+			// 0 upload
+			// 1 cancel
+			// 2 cover example
+			// 3-10 Etc...
+			elHandleArray[0].click();
+			
 			// Navigate to Publish Tab
 			console.log("Select publish Button");
 			await page2.waitFor(actionInterval);
@@ -229,7 +284,7 @@ const postUpdates = async (newCloudObjects) => {
 			await page2.waitFor(actionInterval);
 		    console.log('Session has been loaded in the browser');
 
-			jsonFileHandler.updateLatestSteamBuild(eventFinishedUpdatingSteamData, newCloudObjects[newCloudObjects.length-1].buildId, buildType);
+			//jsonFileHandler.updateLatestSteamBuild(eventFinishedUpdatingSteamData, newCloudObjects[newCloudObjects.length-1].buildId, buildType);
 		} else {
 		  console.log('Cookies length is: ' + cookiesArr.length);
 		}
