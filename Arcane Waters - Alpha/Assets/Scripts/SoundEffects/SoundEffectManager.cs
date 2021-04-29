@@ -23,18 +23,6 @@ public class SoundEffectManager : MonoBehaviour
    // The database id of the jump start
    public const int JUMP_START_ID = 5;
 
-   // The database id of the ship boost
-   public const int SHIPBOOST_ID = 54;
-
-   // The database id of the ore drop
-   public const int ORE_DROP = 53;
-
-   // The database id of the ore mining
-   public const int ORE_MINE = 52;
-
-   // The database id of the ore pickup
-   public const int ORE_PICKUP = 55;
-
    // The database id of the jump end
    public const int JUMP_END_ID = 6;
 
@@ -43,6 +31,30 @@ public class SoundEffectManager : MonoBehaviour
 
    // The database id of the sound effect
    public const int HARVESTING_FLYING = 44;
+
+   // In game action sound effects
+   public const int ORE_MINE = 52;
+   public const int ORE_DROP = 53;
+   public const int SHIPBOOST_ID = 54;
+   public const int ORE_PICKUP = 55;
+   public const int PICKUP_EDIT_OBJ = 56;
+   public const int DROP_EDIT_OBJ = 57;
+   public const int NEXTPREFAB_SELECTION = 58;
+
+   public const int PICKUP_POWERUP = 59;
+   public const int SHORTCUT_SELECTION = 60;
+   public const int ABILITY_SELECTION = 61;
+   public const int STANCE_SELECTION = 62;
+
+   public const int INVENTORY_HOVER = 63;
+   public const int INVENTORY_DRAG_START = 64;
+   public const int INVENTORY_DROP = 65;
+
+   public const int NPC_PANEL_POPUP = 66;
+   public const int ENTER_DOOR = 67;
+   public const int CRAFT_COMPLETE = 68;
+   public const int REFINE_COMPLETE = 69;
+   public const int MAIL_NOTIF = 70;
 
    #endregion
 
