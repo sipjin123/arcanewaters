@@ -95,6 +95,42 @@ jsonFileHandler.getLatestSteamBuild(eventFinishedReadingSteamBuildData, buildTyp
 
 //========================================================
 
+// TODO: Use this function for selecting all previously uploaded images after learning how its possible to use parameters inside page.evaluate()
+const selectImageSelector = async (page2) => {
+	var actionInterval = 3000;
+
+	// Navigate to Previously Uploaded Assets
+	console.log("Navigate to Previously Uploaded Assets");
+
+	await page2.waitFor(actionInterval);
+	await page2.evaluate(() => {
+			  var nameOfClass = 'clanimagepicker_SelectImageButton__R_zU ';
+			  document.querySelectorAll('.' + nameOfClass)[1].click();
+			});
+	await page2.waitFor(actionInterval);
+
+    // Find the images to attach which is from the previous graphic assets upload
+	const rect = await page2.evaluate(() => {
+	  	var nameOfClass = 'clanimagepicker_ImageWrapper_vYrtX';
+	    const allQuery = document.querySelectorAll('.' + nameOfClass);
+	    const element = allQuery[allQuery.length - 1];
+	    if (!element) return null;
+	    const { x, y } = element.getBoundingClientRect();
+	    return { x, y };
+	});
+
+	// After finding the image to select, simulate double click
+	if (rect) {
+	    await page2.mouse.click(rect.x, rect.y, { clickCount: 2 });
+    } else {
+    	console.error("Element Not Found for index: " + 1);
+    }
+
+	await page2.waitFor(actionInterval);
+
+	console.log("Done Uploaded Assets");
+}
+
 const postUpdates = async (newCloudObjects) => {
 	const options = {
 		path: 'images/Build_' + newCloudObjects[newCloudObjects.length-1].buildId + '.png',
@@ -215,10 +251,9 @@ const postUpdates = async (newCloudObjects) => {
 					  document.querySelectorAll('.' + nameOfClass)[2].click();
 					});
 			await page2.waitFor(actionInterval);
-
-
+			// ==============================================================================
 			// Navigate to Previously Uploaded Assets
-			console.log("Navigate to Previously Uploaded Assets");
+			console.log("Navigate to Previously Uploaded Assets 1");
 			await page2.waitFor(actionInterval);
 			await page2.evaluate(() => {
 					  var nameOfClass = 'clanimagepicker_SelectImageButton__R_zU ';
@@ -227,64 +262,136 @@ const postUpdates = async (newCloudObjects) => {
 			await page2.waitFor(actionInterval);
 
 			// Double Click graphic image
-			console.log("Double Click graphic image");
+			console.log("Double Click graphic image 1");
 			await page2.waitFor(actionInterval);
 
-			// Find the image to attach which is from the previous graphic asset upload
-	  		const rect = await page2.evaluate(() => {
+			// Find the images to attach which is from the previous graphic assets upload
+	  		const rect1 = await page2.evaluate(() => {
 				  	var nameOfClass = 'clanimagepicker_ImageWrapper_vYrtX';
-				    const element = document.querySelectorAll('.' + nameOfClass)[0];
+				    const allQuery = document.querySelectorAll('.' + nameOfClass);
+				    const element = allQuery[allQuery.length - 1];
 				    if (!element) return null;
 				    const { x, y } = element.getBoundingClientRect();
 				    return { x, y };
 				});
 
 			// After finding the image to select, simulate double click
-			if (rect) {
-			    await page2.mouse.click(rect.x, rect.y, { clickCount: 2 });
+			if (rect1) {
+			    await page2.mouse.click(rect1.x, rect1.y, { clickCount: 2 });
 		    } else {
-		    	console.error("Element Not Found");
+		    	console.error("Element Not Found 1");
 		    }
 
 			await page2.waitFor(actionInterval);
+			// ==========================
 
-			// Naviate through all buttons in the page and select the upload button
-			console.log("Select Upload Image Button");
-			const elHandleArray = await page2.$$('button')
-			// Total of 10 buttons will be pressed (Date Updated: 04-29-2021) This might change if steam updates their page
-			// 0 upload
-			// 1 cancel
-			// 2 cover example
-			// 3-10 Etc...
-			elHandleArray[0].click();
-			
-			// Navigate to Publish Tab
-			console.log("Select publish Button");
+			// Navigate to Previously Uploaded Assets
+			console.log("Navigate to Previously Uploaded Assets 2");
 			await page2.waitFor(actionInterval);
 			await page2.evaluate(() => {
-					  var nameOfClass = 'tabbar_GraphicalAssetsTab_3lJb_ ';
-					  document.querySelectorAll('.' + nameOfClass)[4].click();
+					  var nameOfClass = 'clanimagepicker_SelectImageButton__R_zU ';
+					  document.querySelectorAll('.' + nameOfClass)[1].click();
 					});
 			await page2.waitFor(actionInterval);
+
+			// Double Click graphic image
+			console.log("Double Click graphic image 2");
+			await page2.waitFor(actionInterval);
+
+			// Find the images to attach which is from the previous graphic assets upload
+	  		const rect2 = await page2.evaluate(() => {
+				  	var nameOfClass = 'clanimagepicker_ImageWrapper_vYrtX';
+				    const allQuery = document.querySelectorAll('.' + nameOfClass);
+				    const element = allQuery[allQuery.length - 2];
+				    if (!element) return null;
+				    const { x, y } = element.getBoundingClientRect();
+				    return { x, y };
+				});
+
+			// After finding the image to select, simulate double click
+			if (rect1) {
+			    await page2.mouse.click(rect2.x, rect2.y, { clickCount: 2 });
+		    } else {
+		    	console.error("Element Not Found 2");
+		    }
+
+			await page2.waitFor(actionInterval);
+			// ==========================
+
+			// Navigate to Previously Uploaded Assets
+			console.log("Navigate to Previously Uploaded Assets 3");
+			await page2.waitFor(actionInterval);
 			await page2.evaluate(() => {
-			  var nameOfClass = 'partnereventshared_EventPublishButton_3nIAe';
-			  document.querySelector('.' + nameOfClass).click();
-			});
+					  var nameOfClass = 'clanimagepicker_SelectImageButton__R_zU ';
+					  document.querySelectorAll('.' + nameOfClass)[1].click();
+					});
+			await page2.waitFor(actionInterval);
 
-			// Trigger publish action
+			// Double Click graphic image
+			console.log("Double Click graphic image 3");
 			await page2.waitFor(actionInterval);
-			await page2.waitForSelector('button[type="submit"]');
-			await page2.click('button[type="submit"]');
-			await page2.waitFor(actionInterval);
-			await page2.waitForSelector('button[type="submit"]');
-			await page2.click('button[type="submit"]');
 
-			// Finishing notification
-			await page2.waitFor(actionInterval);
-			await page2.waitFor(actionInterval);
-		    console.log('Session has been loaded in the browser');
+			// Find the images to attach which is from the previous graphic assets upload
+	  		const rect3 = await page2.evaluate(() => {
+				  	var nameOfClass = 'clanimagepicker_ImageWrapper_vYrtX';
+				    const allQuery = document.querySelectorAll('.' + nameOfClass);
+				    const element = allQuery[allQuery.length - 3];
+				    if (!element) return null;
+				    const { x, y } = element.getBoundingClientRect();
+				    return { x, y };
+				});
 
-			//jsonFileHandler.updateLatestSteamBuild(eventFinishedUpdatingSteamData, newCloudObjects[newCloudObjects.length-1].buildId, buildType);
+			// After finding the image to select, simulate double click
+			if (rect1) {
+			    await page2.mouse.click(rect3.x, rect3.y, { clickCount: 2 });
+		    } else {
+		    	console.error("Element Not Found 3");
+		    }
+
+			await page2.waitFor(actionInterval);
+			// ==============================================================================
+			var blockPublishCommand = false;
+			if (!blockPublishCommand) {
+				await page2.waitFor(actionInterval);
+
+				// Naviate through all buttons in the page and select the upload button
+				console.log("Select Upload Image Button");
+				const elHandleArray = await page2.$$('button')
+				// Total of 10 buttons will be pressed (Date Updated: 04-29-2021) This might change if steam updates their page
+				// 0 upload
+				// 1 cancel
+				// 2 cover example
+				// 3-10 Etc...
+				elHandleArray[0].click();
+				
+				// Navigate to Publish Tab
+				console.log("Select publish Button");
+				await page2.waitFor(actionInterval);
+				await page2.evaluate(() => {
+						  var nameOfClass = 'tabbar_GraphicalAssetsTab_3lJb_ ';
+						  document.querySelectorAll('.' + nameOfClass)[4].click();
+						});
+				await page2.waitFor(actionInterval);
+				await page2.evaluate(() => {
+				  var nameOfClass = 'partnereventshared_EventPublishButton_3nIAe';
+				  document.querySelector('.' + nameOfClass).click();
+				});
+
+				// Trigger publish action
+				await page2.waitFor(actionInterval);
+				await page2.waitForSelector('button[type="submit"]');
+				await page2.click('button[type="submit"]');
+				await page2.waitFor(actionInterval);
+				await page2.waitForSelector('button[type="submit"]');
+				await page2.click('button[type="submit"]');
+
+				// Finishing notification
+				await page2.waitFor(actionInterval);
+				await page2.waitFor(actionInterval);
+			    console.log('Session has been loaded in the browser');
+
+				jsonFileHandler.updateLatestSteamBuild(eventFinishedUpdatingSteamData, newCloudObjects[newCloudObjects.length-1].buildId, buildType);
+			}
 		} else {
 		  console.log('Cookies length is: ' + cookiesArr.length);
 		}
