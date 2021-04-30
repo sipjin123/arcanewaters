@@ -1164,6 +1164,7 @@ public class RPCManager : NetworkBehaviour
 
       if (area != null && area.version == latestVersion) {
          if (area.isInterior) {
+            SoundEffectManager.self.playSoundEffect(SoundEffectManager.ENTER_DOOR, transform);
             WeatherManager.self.setWeatherSimulation(WeatherEffectType.None);
          }
 
@@ -3686,6 +3687,7 @@ public class RPCManager : NetworkBehaviour
 
       // Refresh the panel
       panel.refreshRefinementList();
+      SoundEffectManager.self.playSoundEffect(SoundEffectManager.REFINE_COMPLETE, SoundEffectManager.self.transform);
    }
 
    [Command]
@@ -4414,6 +4416,7 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveItem (NetworkConnection connection, Item item) {
+      SoundEffectManager.self.playSoundEffect(SoundEffectManager.CRAFT_COMPLETE, SoundEffectManager.self.transform);
       RewardManager.self.showItemInRewardPanel(item);
    }
 
@@ -6770,6 +6773,7 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_AddPowerup (NetworkConnection connection, Powerup newPowerup) {
+      SoundEffectManager.self.playSoundEffect(SoundEffectManager.PICKUP_POWERUP, transform);
       PowerupManager.self.addPowerupClient(newPowerup);
    }
 
