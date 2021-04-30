@@ -117,13 +117,24 @@ public class AttackAbilityData : BasicAbilityData
             // Add up the amount of time it takes to animate an entire melee action
             return jumpDuration + Battler.PAUSE_LENGTH + attacker.getPreContactLength() +
                 Battler.POST_CONTACT_LENGTH + jumpDuration + Battler.PAUSE_LENGTH + shakeLength + knockupLength + knockBackLength;
-         case AbilityActionType.Ranged:
-            // Add up the amount of time it takes to animate an entire action
-            return attacker.getPreMagicLength() + shakeLength + knockupLength + knockBackLength + getPreDamageLength + getPostDamageLength + Battler.AIM_DURATION + Battler.PRE_AIM_DELAY + Battler.POST_SHOOT_DELAY + Battler.PRE_SHOOT_DELAY;
-
          case AbilityActionType.Projectile:
             // Add up the amount of time it takes to animate an entire action
-            return attacker.getPreMagicLength() + shakeLength + knockupLength + knockBackLength + getPreDamageLength + getPostDamageLength + Battler.AIM_DURATION + Battler.PRE_AIM_DELAY + Battler.POST_SHOOT_DELAY + Battler.PRE_SHOOT_DELAY;
+            //return attacker.getPreMagicLength() + shakeLength + knockupLength + knockBackLength + getPreDamageLength + getPostDamageLength + Battler.AIM_DURATION + Battler.PRE_AIM_DELAY + Battler.POST_SHOOT_DELAY + Battler.PRE_SHOOT_DELAY;
+         case AbilityActionType.Ranged:
+            ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(projectileId);
+            float projectileSpeedVal = 0.5f;
+            if (projectileData != null) {
+               projectileSpeedVal = projectileData.animationSpeed;
+            } else {
+               D.debug("Warning! Projectile id {" + projectileId + "} does not exist for ability");
+            }
+
+            // Add up the amount of time it takes to animate an entire action (Should exactly be the same with the delays set in the battler script)
+            return Battler.PRE_AIM_DELAY + Battler.AIM_DURATION
+               + Battler.POST_SHOOT_DELAY + Battler.PRE_SHOOT_DELAY
+               + (Vector2.Distance(attacker.transform.position, target.transform.position) / projectileSpeedVal)
+               + shakeLength + knockupLength + knockBackLength 
+               + getPreDamageLength + Battler.POST_CONTACT_LENGTH;
 
          case AbilityActionType.CastToTarget:
             // Add up the amount of time it takes to animate an entire action

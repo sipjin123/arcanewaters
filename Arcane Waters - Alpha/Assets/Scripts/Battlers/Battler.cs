@@ -1207,6 +1207,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield break;
             }
 
+            if (targetBattler.displayedHealth < 1 || targetBattler.getAnim()[0].currentAnimation == Anim.Type.Death_East) {
+               D.adminLog("Warning! The target is dead! Cancel Attack Action from Battler Script!", D.ADMIN_LOG_TYPE.AnimationFreeze);
+               yield break;
+            }
+
             // Plays the melee cast VFX ability before jumping
             if (!abilityDataReference.useSpecialAnimation) {
                EffectManager.playCastAbilityVFX(sourceBattler, action, sourceBattler.transform.position, BattleActionType.Attack);
@@ -1276,8 +1281,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                }
             }
 
-            // Special animation delay interval when casting special animation vfx 
-            yield return new WaitForSeconds(sourceBattler.getPreContactLength() - SPECIAL_ATTACK_READY_TIME);
+            if (abilityDataReference.useSpecialAnimation) {
+               // Special animation delay interval when casting special animation vfx 
+               yield return new WaitForSeconds(sourceBattler.getPreContactLength() - SPECIAL_ATTACK_READY_TIME);
+            } else {
+               yield return new WaitForSeconds(sourceBattler.getPreContactLength());
+            }
 
             if (abilityDataReference.useSpecialAnimation) {
                // Render a special attack vfx sprite upon casting special animation
@@ -1394,10 +1403,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                if (targetBattler.getAnim()[0].currentAnimation != Anim.Type.Death_East) {
                   BattleSelectionManager.self.deselectTarget();
                   targetBattler.StartCoroutine(targetBattler.animateDeath());
+               } else {
+                  D.debug("Skip animating death for {" + enemyType + "} Anim:{" + targetBattler.getAnim()[0].currentAnimation + "}");
                }
-            } else {
-               D.debug("Skip animating death for {" + enemyType + "} Anim:{" + targetBattler.getAnim()[0].currentAnimation + "}");
-            }
+            } 
 
             onBattlerAttackEnd.Invoke();
 
