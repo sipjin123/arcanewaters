@@ -642,6 +642,15 @@ public class BattleManager : MonoBehaviour {
             // Make note of the time that this battle action is going to be fully completed, considering animation times
             double timeAttackEnds = NetworkTime.time + timeToWait + attackAbilityData.getTotalAnimLength(source, target);
 
+            if (source.enemyType == Enemy.Type.PlayerBattler) {
+               D.adminLog("2) TimeAttackEnds Total Seconds: " + (timeAttackEnds - NetworkTime.time).ToString("f1") + 
+                  " :: Total : {" + timeAttackEnds.ToString("f1")
+                  + " = " + NetworkTime.time.ToString("f1") + " + "
+                  + timeToWait.ToString("f1") + " + "
+                  + attackAbilityData.getTotalAnimLength(source, target).ToString("f1") + "} "
+                  + "CURRTIME: " + NetworkTime.time.ToString("f1"), D.ADMIN_LOG_TYPE.AnimationFreeze);
+            }
+
             float cooldownDuration = abilityData.abilityCooldown * source.getCooldownModifier();
             source.cooldownEndTime = timeAttackEnds + cooldownDuration;
 

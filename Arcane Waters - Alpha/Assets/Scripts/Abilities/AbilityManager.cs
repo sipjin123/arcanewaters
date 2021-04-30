@@ -212,12 +212,18 @@ public class AbilityManager : MonoBehaviour
                // Check how long we need to wait before displaying this action
                timeToWait = BattleManager.TICK_INTERVAL + actionToExecute.actionEndTime - NetworkTime.time - animationLength;
 
+               float currTime = (float) NetworkTime.time;
                if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
-                  D.adminLog("Source battler is attacking" + " : " + sourceBattler.enemyType
+                  D.adminLog("Attacking" + " : " + sourceBattler.enemyType +
+                     " CURRTIME" + " : {" + NetworkTime.time.ToString("f1")
+                     + "} TimeToWait: {" + timeToWait.ToString("f1") + " = "
+                     + BattleManager.TICK_INTERVAL.ToString("f1") + " + "
+                     + actionToExecute.actionEndTime.ToString("f1") + " - "
+                     + currTime.ToString("f1") + " - " + animationLength.ToString("f1") + "}"
                      + " Target is: " + targetBattler.enemyType
-                     + " TimeToWait: " + timeToWait.ToString("f1")
                      + " CurrAnim: " + targetBattler.getAnim()[0].currentAnimation
-                     + " TargetHealth: " + targetBattler.health + " : " + targetBattler.displayedHealth, D.ADMIN_LOG_TYPE.AnimationFreeze);
+                     + " TargetHealth: " + targetBattler.health + " : " + targetBattler.displayedHealth
+                     , D.ADMIN_LOG_TYPE.AnimationFreeze);
                }
 
                sourceBattler.registerNewActionCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst), action.battleActionType);

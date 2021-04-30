@@ -5177,8 +5177,6 @@ public class RPCManager : NetworkBehaviour
       if (battle == null) {
          D.debug("Error here! Trying to engage battle but the Battle is NULL!! Battle id {" + enemy.battleId + "} is probably finished");
       } else {
-         D.debug("Battle has started, battle id is {" + battle.battleId + "}");
-
          // If the Battle is full, we can't proceed
          if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The battle is already full!");

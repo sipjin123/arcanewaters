@@ -354,6 +354,21 @@ public class Battle : NetworkBehaviour {
 
             // Set our timeToWait to the largest value we've found so far
             timeToWait = Util.maxDouble(timeToWait, diff);
+
+            if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
+               D.adminLog("1) Time to wait is" + " {" + timeToWait.ToString("f1") + "} " +
+               "CURRTIME " + " {" + NetworkTime.time.ToString("f1") + "} " +
+               "Diff is" + " {" + diff.ToString("f1") + "} ::::: SOURCE:" +
+               "{(" + (sourceBattler.animatingUntil - NetworkTime.time).ToString("f1") + ")" +
+               " = " + sourceBattler.animatingUntil.ToString("f1") + " - " + NetworkTime.time.ToString("f1") + "} OR TARGET:" +
+               "{(" + (targetBattler.animatingUntil - NetworkTime.time).ToString("f1") + ")" +
+               " = " + targetBattler.animatingUntil.ToString("f1") + " - " + NetworkTime.time.ToString("f1") + "}"
+               , D.ADMIN_LOG_TYPE.AnimationFreeze);
+            }
+         } else {
+            if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
+               D.adminLog("1) Time to wait is {0} CURRTIME {" + NetworkTime.time.ToString("f1") + "}", D.ADMIN_LOG_TYPE.AnimationFreeze);
+            } 
          }
       }
 

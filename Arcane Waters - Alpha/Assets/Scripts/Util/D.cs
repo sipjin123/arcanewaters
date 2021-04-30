@@ -261,7 +261,17 @@ public class D : MonoBehaviour {
       if (!Global.logTypesToShow.Contains(logType)) {
          return;
       }
-      log("[" + logType.ToString().ToUpper() + "]" + text);
+
+      string additiveLog = "";
+      if (logType == ADMIN_LOG_TYPE.AnimationFreeze) {
+         try {
+            additiveLog = Mirror.NetworkTime.time.ToString("f1");
+         } catch { 
+         
+         }
+      }
+
+      log(additiveLog + "[" + logType.ToString().ToUpper() + "]" + text);
    }
 
    public static void editorLog (string text, Color color = new Color()) {

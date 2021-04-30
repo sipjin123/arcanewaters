@@ -1192,6 +1192,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             float jumpDuration = attackerAbility.getJumpDuration(sourceBattler, targetBattler);
 
             // Don't start animating until both sprites are available
+            if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
+               D.adminLog("Source battler is attacking" + " : " + sourceBattler.enemyType
+                  + " TimeToWait: {" + timeToWait.ToString("f1") + "}"
+                  , D.ADMIN_LOG_TYPE.AnimationFreeze);
+            }
             yield return new WaitForSecondsDouble(timeToWait);
 
             attackDuration = (float) (cooldownEndTime - NetworkTime.time);

@@ -34,7 +34,7 @@ public class ScreenLogger : GenericGameManager {
       canvasObj.SetActive(false);
 
       Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.AnimationFreeze);
-      Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.CombatEnd);
+      //Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.CombatEnd);
       D.debug("Screen Logger v4");
 
       if (!Util.isCloudBuild()) {
