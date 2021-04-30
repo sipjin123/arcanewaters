@@ -70,7 +70,6 @@ public class ShortcutPanel : ClientMonoBehaviour {
       ShortcutBox box = _boxes.Find(b => b.slotNumber == slotNumber);
       if (box != null) {
          box.onShortcutPress();
-         SoundEffectManager.self.playSoundEffect(SoundEffectManager.SHORTCUT_SELECTION, transform);
       }
    }
 

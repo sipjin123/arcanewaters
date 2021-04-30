@@ -392,7 +392,7 @@ public class XmlVersionManagerClient : GenericGameManager {
    }
 
    private void assignDataToManagers (EditorToolType xmlType, string content) {
-      D.debug("Assigning data to manager {" + xmlType + "}" + " " + content.Length);
+      D.adminLog("Assigning data to manager {" + xmlType + "}" + " " + content.Length, D.ADMIN_LOG_TYPE.Client_AccountLogin);
 
       // Split each entry data
       string splitter = "[next]";
