@@ -1544,6 +1544,22 @@ public class NetEntity : NetworkBehaviour
       D.debug("Returning player to town: Go Home Command!");
       spawnInNewMap(Area.STARTING_TOWN);
    }
+   
+   [Server]
+   public void spawnInBiomeHomeTown () {
+      Instance instance = InstanceManager.self.getInstance(instanceId);
+      Biome.Type biome = instance == null ? Biome.Type.Forest : instance.biome;
+
+      if (Area.homeTownForBiome.TryGetValue(biome, out string townAreaKey)) {
+         if (Area.dockSpawnForBiome.TryGetValue(biome, out string dockSpawn)) {
+            spawnInNewMap(townAreaKey, dockSpawn, Direction.South);
+         } else {
+            spawnInNewMap(townAreaKey);
+         }
+      } else {
+         spawnInNewMap(Area.STARTING_TOWN);
+      }
+   }
 
    [Command]
    public void Cmd_SpawnInNewMap (string areaKey) {

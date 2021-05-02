@@ -19,10 +19,17 @@ public class UIToolTipManager : MonoBehaviour {
    // List of tool tip data fetched from xml content
    public List<TooltipSqlData> toolTipDataList = new List<TooltipSqlData>();
 
+   // List of open tooltips
+   public static List<GameObject> openTooltips;
+
    #endregion
 
    private void Awake () {
       self = this;
+   }
+
+   private void Start () {
+      openTooltips = new List<GameObject>();
    }
 
    public void receiveZipData (List<TooltipSqlData> xmlTooltipList) {

@@ -693,7 +693,21 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_OpenChest (NetworkConnection connection, Item item, int chestId) {
+      TreasureChest chest = openChestCommon(chestId);
 
+      if (item.category != Item.Category.None && item.itemTypeId > 0) {
+         item = item.getCastItem();
+         chest.StartCoroutine(chest.CO_CreatingFloatingIcon(item));
+      }
+   }
+
+   [TargetRpc]
+   public void Target_OpenMapFragmentChest (NetworkConnection connection, int chestId) {
+      TreasureChest chest = openChestCommon(chestId);
+      chest.StartCoroutine(chest.CO_CreatingFloatingMapFragmentIcon());
+   }
+
+   public TreasureChest openChestCommon (int chestId) {
       // Locate the Chest
       TreasureChest chest = null;
       foreach (TreasureChest existingChest in FindObjectsOfType<TreasureChest>()) {
@@ -711,21 +725,20 @@ public class RPCManager : NetworkBehaviour
          chest.chestOpeningAnimation.enabled = false;
       }
 
-      if (item.category != Item.Category.None && item.itemTypeId > 0) {
-         item = item.getCastItem();
-         chest.StartCoroutine(chest.CO_CreatingFloatingIcon(item));
-      }
-
       // Play some sounds
       SoundManager.create3dSound("Door_open", Global.player.transform.position);
       SoundManager.create3dSound("tutorial_step", Global.player.transform.position);
 
-      // Register chest id player pref data and set as true
-      PlayerPrefs.SetInt(TreasureChest.PREF_CHEST_STATE + "_" + Global.userObjects.userInfo.userId + "_" + _player.areaKey + "_" + chest.chestSpawnId, 1);
+      // Register chest id player pref data and set as true, except in treasure site areas since they can be visited again in voyages
+      if (!VoyageManager.isTreasureSiteArea(chest.areaKey)) {
+         PlayerPrefs.SetInt(TreasureChest.PREF_CHEST_STATE + "_" + Global.userObjects.userInfo.userId + "_" + _player.areaKey + "_" + chest.chestSpawnId, 1);
+      }
 
       if (chest.autoDestroy) {
          chest.disableChest();
       }
+
+      return chest;
    }
 
    [TargetRpc]
@@ -4116,23 +4129,8 @@ public class RPCManager : NetworkBehaviour
          D.warning("No player object found.");
          return;
       }
-
-      if (!_player.tryGetVoyage(out Voyage voyage)) {
-         sendError("Error when exiting a league area. Could not find the voyage.");
-         _player.spawnInNewMap(Area.STARTING_TOWN);
-         return;
-      }
-
-      // Get the home town for the current voyage biome
-      if (Area.homeTownForBiome.TryGetValue(voyage.biome, out string townAreaKey)) {
-         if (Area.dockSpawnForBiome.TryGetValue(voyage.biome, out string dockSpawn)) {
-            _player.spawnInNewMap(townAreaKey, dockSpawn, Direction.South);
-         } else {
-            _player.spawnInNewMap(townAreaKey);
-         }
-      } else {
-         _player.spawnInNewMap(Area.STARTING_TOWN);
-      }
+      
+      _player.spawnInBiomeHomeTown();
    }
 
    [Command]
@@ -4229,9 +4227,9 @@ public class RPCManager : NetworkBehaviour
 
       VoyageGroupManager.self.removeUserFromGroup(voyageGroup, playerToRemove);
 
-      // If the player is in a voyage area or is in ghost mode, warp him to the starting town
+      // If the player is in a voyage area or is in ghost mode, warp him to the closest town
       if (VoyageManager.isVoyageOrLeagueArea(playerToRemove.areaKey) || VoyageManager.isTreasureSiteArea(playerToRemove.areaKey) || playerToRemove.isGhost) {
-         playerToRemove.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
+         playerToRemove.spawnInBiomeHomeTown();
       }
    }
 
@@ -4696,12 +4694,36 @@ public class RPCManager : NetworkBehaviour
    public void Cmd_OpenChest (int chestId) {
       TreasureChest chest = TreasureManager.self.getChest(chestId);
 
+      // Make sure we found the Treasure Chest
+      if (chest == null) {
+         D.warning("Treasure chest not found: " + chestId);
+         return;
+      }
+
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          TreasureStateData interactedTreasure = DB_Main.getTreasureStateForChest(_player.userId, chest.chestSpawnId, _player.areaKey);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (interactedTreasure == null) {
-               processChestRewards(chestId);
+               // Make sure the user is in the right instance
+               if (_player.instanceId != chest.instanceId) {
+                  D.warning("Player trying to open treasure from a different instance!");
+                  return;
+               }
+
+               // Make sure they didn't already open it
+               if (chest.userIds.Contains(_player.userId)) {
+                  return;
+               }
+
+               // Check if the chest should reward a map fragment and unlock a new location
+               Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+               if (VoyageManager.isTreasureSiteArea(instance.areaKey) && instance.voyageId > 0) {
+                  processMapFragmentReward(chest);
+               } else {
+                  processChestRewards(chest);
+               }
+
             } else {
                chest.userIds.Add(_player.userId);
 
@@ -4713,26 +4735,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   private void processChestRewards (int chestId) {
-      TreasureChest chest = TreasureManager.self.getChest(chestId);
-
-      // Make sure we found the Treasure Chest
-      if (chest == null) {
-         D.warning("Treasure chest not found: " + chestId);
-         return;
-      }
-
-      // Make sure the user is in the right instance
-      if (_player.instanceId != chest.instanceId) {
-         D.warning("Player trying to open treasure from a different instance!");
-         return;
-      }
-
-      // Make sure they didn't already open it
-      if (chest.userIds.Contains(_player.userId)) {
-         return;
-      }
-
+   private void processChestRewards (TreasureChest chest) {
       // Add the user ID to the list
       chest.userIds.Add(_player.userId);
 

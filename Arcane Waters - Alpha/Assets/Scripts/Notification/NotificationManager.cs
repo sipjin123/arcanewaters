@@ -27,7 +27,7 @@ public class NotificationManager : MonoBehaviour
       add(type, () => { });
    }
 
-   public void add (Notification.Type type, UnityAction customAction) {
+   public void add (Notification.Type type, UnityAction customAction, bool shouldCloseAtConfirm = true) {
       // Check if the notification is disabled
       if (Global.player != null && isNotificationDisabled(Global.player.userId, type)) {
          return;
@@ -40,7 +40,23 @@ public class NotificationManager : MonoBehaviour
          }
       }
 
-      _notifications.AddLast(new Notification(type, customAction));
+      _notifications.AddLast(new Notification(type, customAction, shouldCloseAtConfirm));
+   }
+
+   public void removeAllTypes (Notification.Type type) {
+      // Close the notification panel if it is showing the current type
+      if (hasNotifications() && getFirst().type == type) {
+         PanelManager.self.notificationPanel.hide();
+      }
+
+      LinkedListNode<Notification> currentNode = _notifications.First;
+      while (currentNode != null) {
+         LinkedListNode<Notification> nextNode = currentNode.Next;
+         if (currentNode.Value.type == type) {
+            _notifications.Remove(currentNode.Value);
+         }
+         currentNode = nextNode;
+      }
    }
 
    public Notification getFirst () {

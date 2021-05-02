@@ -37,6 +37,17 @@ public class Spawn : MonoBehaviour, IMapEditorDataReceiver {
       return (_spawnBox == null) ? this.transform.position : Util.RandomPointInBounds(_spawnBox.bounds);
    }
 
+   public Vector2 getRandomPositionOffset () {
+      if (_spawnBox == null || (_spawnBox.size.x == 1 && _spawnBox.size.y == 1)) {
+         return Vector2.zero;
+      }
+
+      float x = UnityEngine.Random.Range(_spawnBox.size.x * (-0.5f), _spawnBox.size.x * 0.5f) * transform.localScale.x;
+      float y = UnityEngine.Random.Range(_spawnBox.size.y * (-0.5f), _spawnBox.size.y * 0.5f) * transform.localScale.y;
+
+      return new Vector2(x, y);
+   }
+
    protected string getAreaKey () {
       return _areaKey;
    }

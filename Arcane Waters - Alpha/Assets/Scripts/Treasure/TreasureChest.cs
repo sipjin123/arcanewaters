@@ -102,12 +102,6 @@ public class TreasureChest : NetworkBehaviour {
    // If is interacted locally
    public bool isLocallyInteracted;
 
-   // The map fragment name displayed by the floating icon
-   public static string MAP_FRAGMENT_NAME = "Map Fragment";
-
-   // The map fragment sprite displayed by the floating icon
-   public Sprite mapFragmentSprite;
-
    // The areakey
    [SyncVar]
    public string areaKey;
@@ -470,15 +464,15 @@ public class TreasureChest : NetworkBehaviour {
       floatingIcon.transform.localPosition = new Vector3(0f, .04f);
       
       Image image = floatingIcon.GetComponentInChildren<Image>();
-      image.sprite = mapFragmentSprite;
+      image.sprite = TreasureManager.self.mapFragmentSprite;
 
       // Set the name text
-      floatingIcon.GetComponentInChildren<FloatAndStop>().nameText.text = MAP_FRAGMENT_NAME;
+      floatingIcon.GetComponentInChildren<FloatAndStop>().nameText.text = TreasureManager.MAP_FRAGMENT_NAME;
 
       isWaitingForServerResponse = false;
 
       // Show a confirmation in chat
-      string msg = string.Format("You found a (<color=red>{0}</color>)", MAP_FRAGMENT_NAME);
+      string msg = string.Format("You found a (<color=red>{0}</color>)", TreasureManager.MAP_FRAGMENT_NAME);
       ChatManager.self.addChat(msg, ChatInfo.Type.System);
    }
 

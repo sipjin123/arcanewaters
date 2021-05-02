@@ -656,7 +656,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
+  tooltipPlacement: 2
   tooltipType: 1
   message: 
   maxWidth: 0

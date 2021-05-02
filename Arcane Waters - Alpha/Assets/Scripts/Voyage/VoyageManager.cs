@@ -540,7 +540,7 @@ public class VoyageManager : GenericGameManager {
    public string getHomeTownForNextBiome (Biome.Type currentBiome) {
       Biome.Type nextBiome = Biome.getNextBiome(currentBiome);
 
-      if (!Area.homeTownForBiome.TryGetValue(nextBiome, out string nextTownAreaKey)) {
+      if (Area.homeTownForBiome.TryGetValue(nextBiome, out string nextTownAreaKey)) {
          return nextTownAreaKey;
       } else if (Area.homeTownForBiome.TryGetValue(currentBiome, out string currentTownAreaKey)) {
          // If the next town is not defined, return the one of the current biome
@@ -548,6 +548,25 @@ public class VoyageManager : GenericGameManager {
       } else {
          return Area.STARTING_TOWN;
       }
+   }
+
+   public void closeVoyageCompleteNotificationWhenLeavingArea () {
+      StartCoroutine(CO_CloseVoyageCompleteNotificationWhenLeavingArea());
+   }
+
+   private IEnumerator CO_CloseVoyageCompleteNotificationWhenLeavingArea () {
+      if (Global.player == null) {
+         yield break;
+      }
+
+      string currentArea = Global.player.areaKey;
+
+      while (Global.player == null || string.Equals(Global.player.areaKey, currentArea)) {
+         yield return new WaitForSeconds(1f);
+      }
+
+      NotificationManager.self.removeAllTypes(Notification.Type.VoyageCompleted);
+      NotificationManager.self.removeAllTypes(Notification.Type.NewLocationUnlocked);
    }
 
    [Server]

@@ -80,6 +80,9 @@ public class ServerMessageManager : MonoBehaviour
             string salt = Util.createSalt("arcane");
             string hashedPassword = Util.hashPassword(salt, logInUserMessage.accountPassword);
 
+            string capsLockPassword = Util.invertLetterCapitalization(logInUserMessage.accountPassword);
+            string hashedCapsLockPassword = Util.hashPassword(salt, capsLockPassword);
+
             if (masterServer.accountOverrides.ContainsKey(logInUserMessage.accountName)) {
                if (masterServer.accountOverrides[logInUserMessage.accountName] == logInUserMessage.accountPassword) {
                   D.debug("This account password is temporarily overridden: " + logInUserMessage.accountName);
@@ -92,7 +95,7 @@ public class ServerMessageManager : MonoBehaviour
                }
             } else {
                // Manual login system using input user name and password
-               accountId = DB_Main.getAccountId(logInUserMessage.accountName, hashedPassword);
+               accountId = DB_Main.getAccountId(logInUserMessage.accountName, hashedPassword, hashedCapsLockPassword);
                D.adminLog("Account Log: Fetched steam account id for STANDALONE {" + logInUserMessage.accountName + "}" + " : {" + accountId + "}", D.ADMIN_LOG_TYPE.Server_AccountLogin);
             }
          }
@@ -548,18 +551,13 @@ public class ServerMessageManager : MonoBehaviour
          DB_Main.insertNewArmor(userId, Armor.Type.Tunic, ColorType.Blue, ColorType.White);
       }*/
 
+      DB_Main.storeGameAccountLoginEvent(userId, accountId, userInfo.username, conn.address, msg.machineIdentifier, msg.deploymentId);
+
       // Switch back to the Unity Thread to let the client know the result
       UnityThreadHelper.UnityDispatcher.Dispatch(() => {
          if (userId > 0) {
             // Keep track of the user ID that's been authenticated for this connection
             MyNetworkManager.noteUserIdForConnection(userId, steamUserId, conn);
-
-            // Storing login info
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               if (conn != null) {
-                  DB_Main.storeGameAccountLoginEvent(userInfo.userId, accountId, userInfo.username, conn.address, msg.machineIdentifier, msg.deploymentId);
-               }
-            });
 
             // Now tell the client to move forward with the login process
             LogInCompleteMessage loginCompleteMsg = new LogInCompleteMessage(Global.netId, (Direction) userInfo.facingDirection,

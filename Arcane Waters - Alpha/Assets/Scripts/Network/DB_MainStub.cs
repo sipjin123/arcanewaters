@@ -662,7 +662,7 @@ public class DB_MainStub : MonoBehaviour
       return PenaltyStatus.None;
    }
 
-   public static int getAccountId (string accountName, string accountPassword) {
+   public static int getAccountId (string accountName, string accountPassword, string accountPasswordCapsLock) {
       return -1;
    }
 

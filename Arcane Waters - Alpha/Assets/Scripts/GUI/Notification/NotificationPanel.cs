@@ -35,7 +35,7 @@ public class NotificationPanel : MonoBehaviour
 
    public void Update () {
       // If the notification is showing and the player warps, hide it
-      if (Global.player == null || PanelManager.self.loadingScreen.isShowing()) {
+      if (Global.player == null || PanelManager.self.loadingScreen.isShowing() || PanelManager.self.get(Panel.Type.WorldMap).isShowing()) {
          hide();
          return;
       }
@@ -62,8 +62,11 @@ public class NotificationPanel : MonoBehaviour
       confirmButton.onClick.RemoveAllListeners();
       confirmButton.onClick.AddListener(notification.action);
       confirmButton.onClick.AddListener(() => updateNotificationConfig(notification.type));
-      confirmButton.onClick.AddListener(NotificationManager.self.removeFirst);
-      confirmButton.onClick.AddListener(hide);
+
+      if (notification.shouldCloseAtConfirm) {
+         confirmButton.onClick.AddListener(NotificationManager.self.removeFirst);
+         confirmButton.onClick.AddListener(hide);
+      }
 
       show();
 

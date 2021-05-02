@@ -24,11 +24,15 @@ public class Notification
    // The action to perform when the user confirms the notification
    public UnityAction action;
 
+   // Gets set to true when the notification panel must be closed when pressing the confirm button
+   public bool shouldCloseAtConfirm;
+
    #endregion
 
-   public Notification (Type type, UnityAction action) {
+   public Notification (Type type, UnityAction action, bool shouldCloseAtConfirm = true) {
       this.type = type;
       this.action = action;
+      this.shouldCloseAtConfirm = shouldCloseAtConfirm;
    }
 
    public string getMessage () {

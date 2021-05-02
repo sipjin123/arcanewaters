@@ -20,9 +20,17 @@ public class TooltipHandler : MonoBehaviour
    public HorizontalLayoutGroup backgroundHorizontalLayoutGroup;
    public ContentSizeFitter tooltipContentSizeFitter;
    public static int WIDTH_THRESHOLD = 150;
+   public Image backgroundImage;
+   public Image starsImage;
+   public ToolTipComponent.Type toolipType;
+   public GameObject defaultTooltipPanel;
+   public GameObject inventoryTooltipPanel;
 
    // The Y value of the top edge of the tooltip owner
    public float tooltipOwnerTopEdge;
+
+   // The directory for the rarity sprites
+   public static string RARITY_PATH = "Assets/Resources/Sprites/GUI/ItemTooltips/";
 
    #endregion
 
@@ -31,12 +39,8 @@ public class TooltipHandler : MonoBehaviour
    }
 
    private void Start () {
-      // Look up components
-      backgroundHorizontalLayoutGroup = backgroundRect.GetComponent<HorizontalLayoutGroup>();
-      tooltipHorizontalLayoutGroup = toolTipPanel.GetComponent<HorizontalLayoutGroup>();
-      tooltipContentSizeFitter = GetComponent<ContentSizeFitter>();
+      toolTipPanel = defaultTooltipPanel;
    }
-
    private void OnEnable () {
       Panel.OnPanelOpened += cancelToolTip;
       Panel.OnPanelClosed += cancelToolTip;
@@ -47,24 +51,43 @@ public class TooltipHandler : MonoBehaviour
       Panel.OnPanelClosed -= cancelToolTip;
    }
 
-   public void callToolTip (GameObject tooltipOwner, string msg, ToolTipComponent.TooltipPlacement placement, Vector3 elementPosition, GameObject panelRoot, float width) {
-         toolTipTMPText.SetText(msg);
+   public void callToolTip (Rarity.Type itemRarityType, GameObject tooltipOwner, ToolTipComponent.Type type, string msg, ToolTipComponent.TooltipPlacement placement, Vector3 elementPosition, GameObject panelRoot, float width) {
+      // Choose the inventory style panel for the tooltip display
+      toolipType = type;
+      if (toolipType == ToolTipComponent.Type.ItemCellInventory) {
+         toolTipPanel = inventoryTooltipPanel;
+         backgroundRect = toolTipPanel.GetComponentInChildren<RectTransform>();
+         prepTooltipForInventoryItem(msg, itemRarityType);
+
+      } else {
+         // Choose the default style panel for the tooltip display
+         toolTipPanel = GameObject.Find("Tooltip");
+         backgroundRect = toolTipPanel.GetComponentInChildren<RectTransform>();
+         backgroundHorizontalLayoutGroup = backgroundRect.GetComponent<HorizontalLayoutGroup>();
+         tooltipHorizontalLayoutGroup = toolTipPanel.GetComponent<HorizontalLayoutGroup>();
+         tooltipContentSizeFitter = GetComponent<ContentSizeFitter>();
+         toolTipPanel.GetComponentInChildren<TextMeshProUGUI>().SetText(msg);
+      }
+
+      // Add to list of currently open tooltips
+      UIToolTipManager.openTooltips.Add(toolTipPanel);
 
       // Coroutine needed to allow TMP rect transform to update at end of frame
-      StartCoroutine(CO_placeTooltip(tooltipOwner, placement, elementPosition, panelRoot, width));
+      StartCoroutine(CO_placeTooltip(tooltipOwner, placement, toolipType, elementPosition, panelRoot, width));
    }
 
-   public IEnumerator CO_placeTooltip (GameObject tooltipOwner, ToolTipComponent.TooltipPlacement placement, Vector3 elementPosition, GameObject panelRoot, float width) {
+   public IEnumerator CO_placeTooltip (GameObject tooltipOwner, ToolTipComponent.TooltipPlacement placement, ToolTipComponent.Type type, Vector3 elementPosition, GameObject panelRoot, float width) {
       // Wait for end of frame for rect transform to update correctly
-      toolTipTMPText.ForceMeshUpdate();
       backgroundRect.ForceUpdateRectTransforms();
       yield return new WaitForEndOfFrame();
 
       // Set width of tooltip. If width is set to zero, the tooltip will be sized automatically.
-      if (width > 0) {
-         setTooltipToSizeManually(width);
-      } else {
-         setTooltipToSizeAutomatically();
+      if (type != ToolTipComponent.Type.ItemCellInventory) {
+         if (width > 0) {
+            setTooltipToSizeManually(width);
+         } else {
+            setTooltipToSizeAutomatically();
+         }
       }
 
       // Find the top edge of the tooltip owner
@@ -122,32 +145,95 @@ public class TooltipHandler : MonoBehaviour
       toolTipPanel.GetComponent<CanvasGroup>().blocksRaycasts = false;
    }
 
+   public void prepTooltipForInventoryItem (string message, Rarity.Type itemRarity) {
+      CanvasGroup canvasGroup = toolTipPanel.GetComponent<CanvasGroup>();
+      TextMeshProUGUI[] textArray = toolTipPanel.GetComponentsInChildren<TextMeshProUGUI>();
+
+      // Give a default rarity level if none is detected
+      if (itemRarity.ToString() == "None") {
+         itemRarity = Rarity.Type.Common;
+      }
+
+      Image backgroundSprite = backgroundImage;
+      Image starSprite = starsImage;
+
+      // Display correct background and stars for rarity level
+      switch ((int) itemRarity) {
+         case 0:
+            backgroundSprite.sprite = ImageManager.getSprite(RARITY_PATH + "CommonTooltip");
+            starSprite.sprite = ImageManager.getSprite(RARITY_PATH + "CommonStars");
+            break;
+         case 1:
+            backgroundSprite.sprite = ImageManager.getSprite(RARITY_PATH + "CommonTooltip");
+            starSprite.sprite = ImageManager.getSprite(RARITY_PATH + "CommonStars");
+            break;
+         case 2:
+            backgroundSprite.sprite = ImageManager.getSprite(RARITY_PATH + "UncommonTooltip");
+            starSprite.sprite = ImageManager.getSprite(RARITY_PATH + "UncommonStars");
+            break;
+         case 3:
+            backgroundSprite.sprite = ImageManager.getSprite(RARITY_PATH + "RareTooltip");
+            starSprite.sprite = ImageManager.getSprite(RARITY_PATH + "RareStars");
+            break;
+         case 4:
+            backgroundSprite.sprite = ImageManager.getSprite(RARITY_PATH + "EpicTooltip");
+            starSprite.sprite = ImageManager.getSprite(RARITY_PATH + "EpicStars");
+            break;
+         case 5:
+            backgroundSprite.sprite = ImageManager.getSprite(RARITY_PATH + "LegendaryTooltip");
+            starSprite.sprite = ImageManager.getSprite(RARITY_PATH + "LegendaryStars");
+            break;
+
+      }
+      textArray[0].text = itemRarity.ToString();
+      textArray[1].text = message;
+   }
+
    public bool isTooltipOffScreen () {
       return (toolTipPanel.transform.position.x + _tooltipDimensions.x/2 + _offSetX > Screen.width) || (toolTipPanel.transform.position.x - _tooltipDimensions.x - _offSetX < 0);
    }
 
    public void setTooltipToSizeAutomatically () {
       tooltipHorizontalLayoutGroup.childControlWidth = true;
-      backgroundHorizontalLayoutGroup.childForceExpandWidth = false;
+      if (backgroundHorizontalLayoutGroup != null) {
+         backgroundHorizontalLayoutGroup.childForceExpandWidth = false;
+      }
       tooltipHorizontalLayoutGroup.childForceExpandWidth = false;
-      tooltipContentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+      if (tooltipContentSizeFitter != null) {
+         tooltipContentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+      }
    }
 
    // Uses the width pulled from tooltip database. *** TO DO: Database implementation ***
    public void setTooltipToSizeManually (float width) {
       tooltipHorizontalLayoutGroup.childControlWidth = false;
       tooltipHorizontalLayoutGroup.childForceExpandWidth = true;
-      backgroundHorizontalLayoutGroup.childForceExpandWidth = true;
-      tooltipContentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+      if (backgroundHorizontalLayoutGroup != null) {
+         backgroundHorizontalLayoutGroup.childForceExpandWidth = true;
+      }
+      if (tooltipContentSizeFitter != null) {
+         tooltipContentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+      }
       GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
       backgroundRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
    }
 
    public void cancelToolTip () {
-      toolTipPanel.GetComponent<CanvasGroup>().alpha = 0;
-      tooltipHorizontalLayoutGroup.childControlWidth = true;
-      backgroundHorizontalLayoutGroup.childForceExpandWidth = false;
-      tooltipHorizontalLayoutGroup.childForceExpandWidth = false;
+      if (toolTipPanel) {
+         toolTipPanel.GetComponent<CanvasGroup>().alpha = 0;
+         if (tooltipHorizontalLayoutGroup != null) {
+            tooltipHorizontalLayoutGroup.childControlWidth = true;
+         }
+         if (backgroundHorizontalLayoutGroup != null) {
+            backgroundHorizontalLayoutGroup.childForceExpandWidth = false;
+         }
+         if (tooltipHorizontalLayoutGroup != null) {
+            tooltipHorizontalLayoutGroup.childForceExpandWidth = false;
+         }
+
+         // Remove this tooltip from the list of currently open tooltips
+         UIToolTipManager.openTooltips.Remove(toolTipPanel);
+      }
    }
 
    public void placeAutomatically (Vector3 elementPosition, GameObject panelRoot) {
@@ -170,17 +256,25 @@ public class TooltipHandler : MonoBehaviour
    }
 
    public void placeOnLeftSideOfPanel (float leftEdge, float middleOfEdge, Vector2 _tooltipDimensions) {
-      tooltipHorizontalLayoutGroup.childControlWidth = false;
-      tooltipHorizontalLayoutGroup.childForceExpandWidth = true;
-      backgroundHorizontalLayoutGroup.childForceExpandWidth = true;
-      toolTipPanel.transform.position = new Vector3(leftEdge - _tooltipDimensions.x / 2 , middleOfEdge, 0);
+      if (toolipType != ToolTipComponent.Type.ItemCellInventory) {
+         tooltipHorizontalLayoutGroup.childControlWidth = false;
+         tooltipHorizontalLayoutGroup.childForceExpandWidth = true;
+         if (backgroundHorizontalLayoutGroup != null) {
+            backgroundHorizontalLayoutGroup.childForceExpandWidth = true;
+         }
+      }
+      toolTipPanel.transform.position = new Vector3(leftEdge - _tooltipDimensions.x / 2, middleOfEdge, 0);
    }
 
    public void placeOnRightSideOfPanel (float rightEdge, float middleOfEdge, Vector2 _tooltipDimensions) {
-      tooltipHorizontalLayoutGroup.childControlWidth = false;
-      tooltipHorizontalLayoutGroup.childForceExpandWidth = true;
-      backgroundHorizontalLayoutGroup.childForceExpandWidth = true;
-      toolTipPanel.transform.position = new Vector3(rightEdge + _tooltipDimensions.x / 2 , middleOfEdge, 0);
+      if (toolipType != ToolTipComponent.Type.ItemCellInventory) {
+         tooltipHorizontalLayoutGroup.childControlWidth = false;
+         tooltipHorizontalLayoutGroup.childForceExpandWidth = true;
+         if (backgroundHorizontalLayoutGroup != null) {
+            backgroundHorizontalLayoutGroup.childForceExpandWidth = true;
+         }
+      }
+      toolTipPanel.transform.position = new Vector3(rightEdge + _tooltipDimensions.x / 2, middleOfEdge, 0);
    }
 
    #region Private Variables

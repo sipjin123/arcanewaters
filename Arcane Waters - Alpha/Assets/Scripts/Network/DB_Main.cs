@@ -5489,16 +5489,17 @@ public class DB_Main : DB_MainStub
 
    #region Accounts Features / User Info Features
 
-   public static new int getAccountId (string accountName, string accountPassword) {
+   public static new int getAccountId (string accountName, string accountPassword, string accountPasswordCapsLock) {
       int accountId = -1;
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT accId FROM global.accounts WHERE accName=@accName AND accPassword=@accPassword", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT accId FROM global.accounts WHERE accName=@accName AND (accPassword=@accPassword OR accPassword=@accPasswordCapsLock)", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accName", accountName);
             cmd.Parameters.AddWithValue("@accPassword", accountPassword);
+            cmd.Parameters.AddWithValue("@accPasswordCapsLock", accountPasswordCapsLock);
             DebugQuery(cmd);
 
             // Create a data reader and Execute the command

@@ -297,6 +297,7 @@ public class PanelManager : GenericGameManager {
       tradeConfirmScreen.hide();
       itemSelectionScreen.hide();
       VoyageGroupManager.self.hideVoyageGroupInvitation();
+      MapCustomization.CustomizationUI.ensureHidden();
 
       if (CharacterCreationPanel.self.isShowing()) {
          CharacterCreationPanel.self.cancelCreating();
@@ -350,9 +351,8 @@ public class PanelManager : GenericGameManager {
    }
 
    public void hideToolTips () {
-      // Check for any tooltips and close them
-      TooltipHandler[] toolTips = FindObjectsOfType<TooltipHandler>();
-      foreach (TooltipHandler toolTip in toolTips) {
+      // Check for any opened tooltips and close them
+      foreach (GameObject toolTip in UIToolTipManager.openTooltips) {
          toolTip.GetComponent<CanvasGroup>().alpha = 0;
          toolTip.GetComponent<CanvasGroup>().blocksRaycasts = false;
       }

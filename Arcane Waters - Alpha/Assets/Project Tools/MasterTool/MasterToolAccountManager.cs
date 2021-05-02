@@ -79,7 +79,11 @@ public class MasterToolAccountManager : MonoBehaviour {
             // Look up the account ID corresponding to the provided account name and password
             string salt = Util.createSalt("arcane");
             string hashedPassword = Util.hashPassword(salt, passwordField.text);
-            int accID = DB_Main.getAccountId(userNameField.text, hashedPassword);
+
+            string capsLockPassword = Util.invertLetterCapitalization(passwordField.text);
+            string hashedCapsLockPassword = Util.hashPassword(salt, capsLockPassword);
+
+            int accID = DB_Main.getAccountId(userNameField.text, hashedPassword, hashedCapsLockPassword);
 
             // Look up the minimum version of the program required to login
             int minimumToolsVersion;

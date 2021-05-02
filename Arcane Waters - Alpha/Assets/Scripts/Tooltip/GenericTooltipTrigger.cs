@@ -12,6 +12,12 @@ public class GenericTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPoint
    // The tooltip message
    public string message = "";
 
+   // The rarity of the item.  Default set to common.
+   public Rarity.Type itemRarityType = Rarity.Type.Common;
+
+   // The tooltip type
+   public ToolTipComponent.Type tooltipType;
+
    // The placement of the tooltip
    public ToolTipComponent.TooltipPlacement tooltipPlacement = ToolTipComponent.TooltipPlacement.AutoPlacement;
 
@@ -22,7 +28,7 @@ public class GenericTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPoint
 
    public void OnPointerEnter (PointerEventData eventData) {
       if (enabled && !Util.isEmpty(message)) {
-         TooltipHandler.self.callToolTip(gameObject, message, tooltipPlacement, transform.position, gameObject, maxWidth);
+         TooltipHandler.self.callToolTip(itemRarityType, gameObject, tooltipType, message, tooltipPlacement, transform.position, gameObject, maxWidth);
       }
    }
 

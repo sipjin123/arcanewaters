@@ -28,6 +28,9 @@ public class ContextMenuPanel : MonoBehaviour
    // The rect transform of the button zone
    public RectTransform buttonsRectTransform;
 
+   // Padding from the edge of the screen
+   public float PADDING = 30F;
+
    #endregion
 
    public void show(string title) {
@@ -67,11 +70,11 @@ public class ContextMenuPanel : MonoBehaviour
 
       // Check if the panel is out of the screen and move it if needed
       if (transform.position.x + panelSize.x > Screen.width) {
-         transform.position = new Vector3(transform.position.x - panelSize.x, transform.position.y, transform.position.z);
+         transform.position = new Vector3(transform.position.x - panelSize.x - PADDING, transform.position.y, transform.position.z);
       }
 
       if (transform.position.y - panelSize.y < 0) {
-         transform.position = new Vector3(transform.position.x, transform.position.y + panelSize.y, transform.position.z);
+         transform.position = new Vector3(transform.position.x, transform.position.y + panelSize.y + PADDING, transform.position.z);
       }
 
       this.canvasGroup.alpha = 1f;
@@ -100,7 +103,7 @@ public class ContextMenuPanel : MonoBehaviour
          return;
       }
 
-      if (KeyUtils.GetButton(MouseButton.Left) || KeyUtils.GetButton(MouseButton.Right)) {
+      if (KeyUtils.GetButtonDown(MouseButton.Left) || KeyUtils.GetButtonDown(MouseButton.Right)) {
          // Hide the menu if a mouse button is clicked and the pointer is not over any button
          if (!RectTransformUtility.RectangleContainsScreenPoint(buttonsRectTransform, MouseUtils.mousePosition)) {
             hide();

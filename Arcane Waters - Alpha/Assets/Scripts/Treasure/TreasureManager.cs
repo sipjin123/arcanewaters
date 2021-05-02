@@ -19,6 +19,12 @@ public class TreasureManager : MonoBehaviour {
    // The prefab we use for creating floating icons
    public GameObject floatingIconPrefab;
 
+   // The map fragment name displayed by the floating icon
+   public static string MAP_FRAGMENT_NAME = "Map Fragment";
+
+   // The map fragment sprite displayed by the floating icon
+   public Sprite mapFragmentSprite;
+
    // Self
    public static TreasureManager self;
 
@@ -214,6 +220,27 @@ public class TreasureManager : MonoBehaviour {
       chest.transform.SetParent(this.transform, true);
       chest.instanceId = instance.id;
       chest.autoDestroy = autoDestroy;
+   }
+
+   [Server]
+   public bool isLastUnopenedChestInInstanceForUser (int chestId, int instanceId, int userId) {
+      foreach (TreasureChest chest in _chests.Values) {
+         if (chest.instanceId == instanceId && chest.id != chestId) {
+            bool isOpened = false;
+            foreach (int interactedUserId in chest.userIds) {
+               if (interactedUserId == userId) {
+                  isOpened = true;
+                  break;
+               }
+            }
+            
+            if (!isOpened) {
+               return false;
+            }
+         }
+      }
+
+      return true;
    }
 
    #region Private Variables

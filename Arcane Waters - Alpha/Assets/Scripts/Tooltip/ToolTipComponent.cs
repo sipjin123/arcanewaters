@@ -86,45 +86,55 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
          currentParent = currentParent.parent;
       }
 
-      // Retrieve tooltip message from dictionary
-      string dictKeySuffix = null;
+      // If this tooptip belongs to an inventory item, store it's rarity level
+      Rarity.Type itemRarityType = Rarity.Type.Common;
+      if (this.tooltipType == Type.ItemCellInventory) {
+         if (this.GetComponent<ItemCellInventory>().targetItem != null) {
+            itemRarityType = this.GetComponent<ItemCellInventory>().targetItem.rarity;
+         } else {
+            itemRarityType = Rarity.Type.Common;
+         }
+      }
 
       // Check if the tooltip text is being created dynamically at runtime (if so, there will be no entry in the xml document)
       if (tooltipType == Type.ItemCellInventory) {
          maxWidth = 250;
-         TooltipHandler.self.callToolTip(_tooltipOwner, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
+         TooltipHandler.self.callToolTip(itemRarityType, _tooltipOwner, tooltipType, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
          return;
       }
 
       if (tooltipType == Type.ItemCellIngredient) {
          maxWidth = 250;
-         TooltipHandler.self.callToolTip(_tooltipOwner, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
+         TooltipHandler.self.callToolTip(itemRarityType, _tooltipOwner, tooltipType, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
          return;
       }
 
       if (tooltipType == Type.PerkElementTemplate) {
          maxWidth = 220;
-         TooltipHandler.self.callToolTip(_tooltipOwner, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
+         TooltipHandler.self.callToolTip(itemRarityType, _tooltipOwner, tooltipType, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
          return;
       }
 
       if (tooltipType == Type.CreationPerkIcon) {
          maxWidth = 185;
-         TooltipHandler.self.callToolTip(_tooltipOwner, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
+         TooltipHandler.self.callToolTip(itemRarityType, _tooltipOwner, tooltipType, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
          return;
       }
 
       if (tooltipType == Type.SellButton) {
          maxWidth = 200;
-         TooltipHandler.self.callToolTip(_tooltipOwner, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
+         TooltipHandler.self.callToolTip(itemRarityType, _tooltipOwner, tooltipType, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
          return;
       }
 
       if (tooltipType == Type.DynamicText) {
          // Do not modify maxWidth value here - it is being set directly by user
-         TooltipHandler.self.callToolTip(_tooltipOwner, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
+         TooltipHandler.self.callToolTip(itemRarityType, _tooltipOwner, tooltipType, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
          return;
       }
+
+      // Variable to hold the sprite name of this item, which is then added to end of the dictionary key.
+      string dictKeySuffix = null;
 
       // Create the key needed to find the tooltip in the dictionary
       if ((this.GetComponent<Image>() != null) && (this.GetComponent<Image>().sprite != null)) {
@@ -140,7 +150,7 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
             tooltipPlacement = (TooltipPlacement) UIToolTipManager.self.toolTipDict[dictKey].displayLocation;
 
             // Send the message to the tooltip handler
-            TooltipHandler.self.callToolTip(_tooltipOwner,message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
+            TooltipHandler.self.callToolTip(itemRarityType, _tooltipOwner, tooltipType, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
          }
       }
    }

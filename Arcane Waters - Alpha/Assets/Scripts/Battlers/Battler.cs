@@ -488,7 +488,17 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       if (!Util.isBatch()) {
          handleSpriteOutline();
 
-         // Update the target line and ring
+         // Update the target line
+         if (battlerType == BattlerType.PlayerControlled && _hasAttackQueued) {
+            if (_targetedBattler.isJumping) {
+               targetLine.gameObject.SetActive(false);
+            } else {
+               targetLine.gameObject.SetActive(true);
+            }
+         } else if (battlerType == BattlerType.PlayerControlled) {
+            targetLine.gameObject.SetActive(false);
+         }
+
          if (battlerType == BattlerType.PlayerControlled && isShowingTargetingEffects()) {
             targetLine.updateLine();
          }
@@ -602,14 +612,18 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       targetLine.lineStart = targetPoint;
       targetLine.lineEnd = target.targetPoint;
 
+      Vector3 toTarget = target.battleSpot.transform.position - battleSpot.transform.position;
+      toTarget.z = 0.0f;
+      float distToTarget = toTarget.magnitude;
+      int numDots = Mathf.Clamp((int) (distToTarget * 10.0f) - 2, 0, 100);
+      targetLine.setNumSegments(numDots);
+
       targetLine.updateLine();
-      targetLine.gameObject.SetActive(true);
-      waitingDots.gameObject.SetActive(true);
+      _hasAttackQueued = true;
    }
 
    public void hideTargetingEffects () {
-      waitingDots.gameObject.SetActive(false);
-      targetLine.gameObject.SetActive(false);
+      _hasAttackQueued = false;
    }
 
    protected bool isShowingTargetingEffects () {
@@ -743,14 +757,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          if (!isLocalBattler()) {
             if (hoverPlayerNames) {
-               selectedBattleBar.toggleDisplay(isMouseHovering());
+               selectedBattleBar.toggleDisplay(isMouseHovering() && !isDead());
             } else {
                selectedBattleBar.toggleDisplay(false);
             }
          }
       } else {
          if (selectedBattleBar != null) {
-            selectedBattleBar.toggleDisplay(isMouseHovering());
+            selectedBattleBar.toggleDisplay(isMouseHovering() && !isDead());
          }
       }
    }
@@ -2566,6 +2580,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    // A reference to the battler that this battler has targeted and queued an attack against
    protected Battler _targetedBattler;
+
+   // Whether this battler has an attack queued up
+   protected bool _hasAttackQueued = false;
 
    // The initialized stances that the battlers will have, used for reading correctly the cooldowns
    private BasicAbilityData _balancedInitializedStance;

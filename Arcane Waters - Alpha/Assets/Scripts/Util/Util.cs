@@ -665,20 +665,20 @@ public class Util : MonoBehaviour
    }
 
    public static void tryToRunInServerBackground (Action action) {
-#if IS_SERVER_BUILD
+      #if IS_SERVER_BUILD
 
-      // If Unity is shutting down, we can't create new background threads
-      if (ClientManager.isApplicationQuitting) {
-         action();
-         return;
-      }
+         // If Unity is shutting down, we can't create new background threads
+         if (ClientManager.isApplicationQuitting) {
+            action();
+            return;
+         }
 
-      // Otherwise, go ahead and run it in the background
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         action();
-      });
+         // Otherwise, go ahead and run it in the background
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            action();
+         });
 
-#endif
+      #endif
    }
 
    public static string removeNumbers (string input) {
@@ -727,6 +727,24 @@ public class Util : MonoBehaviour
 #else
          return "";
 #endif
+   }
+
+   public static string invertLetterCapitalization (string text) {
+      string newText = "";
+      string upper = text.ToUpper();
+      string lower = text.ToLower();
+
+      for (int i = 0; i < text.Length; i++) {
+         if (text[i] == upper[i]) {
+            newText += lower[i];
+         } else if (text[i] == lower[i]) {
+            newText += upper[i];
+         } else {
+            newText += text[i];
+         }
+      }
+
+      return newText;
    }
 
    public static string hashPassword (string Salt, string Password) {
