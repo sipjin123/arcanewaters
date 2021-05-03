@@ -348,7 +348,9 @@ public class Battle : NetworkBehaviour {
 
       // Check if our sprite or the target sprite is busy being animated
       foreach (Battler targetBattler in targetBattlers) {
-         if (sourceBattler.animatingUntil > NetworkTime.time || targetBattler.animatingUntil > NetworkTime.time) {
+         bool isSourceBattlerAnimating = sourceBattler.animatingUntil > NetworkTime.time;
+         bool isTargetBattlerAnimating = targetBattler.animatingUntil > NetworkTime.time;
+         if (isSourceBattlerAnimating || isTargetBattlerAnimating) {
             // Check if the source or the target has the longer wait time
             double diff = Util.maxDouble(sourceBattler.animatingUntil - NetworkTime.time, targetBattler.animatingUntil - NetworkTime.time);
 
@@ -356,18 +358,25 @@ public class Battle : NetworkBehaviour {
             timeToWait = Util.maxDouble(timeToWait, diff);
 
             if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
-               D.adminLog("1) Time to wait is" + " {" + timeToWait.ToString("f1") + "} " +
-               "CURRTIME " + " {" + NetworkTime.time.ToString("f1") + "} " +
-               "Diff is" + " {" + diff.ToString("f1") + "} ::::: SOURCE:" +
-               "{(" + (sourceBattler.animatingUntil - NetworkTime.time).ToString("f1") + ")" +
-               " = " + sourceBattler.animatingUntil.ToString("f1") + " - " + NetworkTime.time.ToString("f1") + "} OR TARGET:" +
-               "{(" + (targetBattler.animatingUntil - NetworkTime.time).ToString("f1") + ")" +
-               " = " + targetBattler.animatingUntil.ToString("f1") + " - " + NetworkTime.time.ToString("f1") + "}"
-               , D.ADMIN_LOG_TYPE.AnimationFreeze);
+               string timeLogs = "";
+               if (isTargetBattlerAnimating) {
+                  timeLogs = " :: TARGET:" + "{(" + (targetBattler.animatingUntil - NetworkTime.time).ToString("f2") + ")" + 
+                     " = " + targetBattler.animatingUntil.ToString("f1") + " - " + NetworkTime.time.ToString("f1") + "}";
+               }
+               if (isSourceBattlerAnimating) {
+                  timeLogs = " ::SOURCE:" + "{(" + (sourceBattler.animatingUntil - NetworkTime.time).ToString("f2") + ")" +
+                     " = " + sourceBattler.animatingUntil.ToString("f1") + " - " + NetworkTime.time.ToString("f1") + "}";
+               }
+
+               D.adminLog("(1) {" + sourceBattler.userId + "} {" + BattleManager.self.actionIdIndex + "} " +
+                  "Time to wait is" + " {" + timeToWait.ToString("f1") + "} at Time:{" + (NetworkTime.time + timeToWait).ToString("f2") + "} " +
+                  "Diff is" + " {" + diff.ToString("f1") + "} " + timeLogs
+                  , D.ADMIN_LOG_TYPE.AnimationFreeze); // First Server Sequence
             }
          } else {
             if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
-               D.adminLog("1) Time to wait is {0} CURRTIME {" + NetworkTime.time.ToString("f1") + "}", D.ADMIN_LOG_TYPE.AnimationFreeze);
+               D.adminLog("(1) {" + sourceBattler.userId + "} {" + BattleManager.self.actionIdIndex + "} Time to wait is {0}"
+                  , D.ADMIN_LOG_TYPE.AnimationFreeze); // First Server Sequence
             } 
          }
       }

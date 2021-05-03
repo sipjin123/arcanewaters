@@ -1206,12 +1206,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             float jumpDuration = attackerAbility.getJumpDuration(sourceBattler, targetBattler);
 
             // Don't start animating until both sprites are available
-            if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
-               D.adminLog("Source battler is attacking" + " : " + sourceBattler.enemyType
-                  + " TimeToWait: {" + timeToWait.ToString("f1") + "}"
-                  , D.ADMIN_LOG_TYPE.AnimationFreeze);
-            }
             yield return new WaitForSecondsDouble(timeToWait);
+            if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
+               D.adminLog(" (4a) {" + action.actionId + "} {" + sourceBattler.userId + "} " + (sourceBattler.isLocalBattler() ? "LOCAL" : "Other") + " battler is attacking"
+                  + " TimeToWait was: {" + timeToWait.ToString("f1") + "}"
+                  , D.ADMIN_LOG_TYPE.AnimationFreeze); // Fourth-A Client Sequence
+            }
 
             attackDuration = (float) (cooldownEndTime - NetworkTime.time);
             triggerAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, attackDuration);
@@ -1222,7 +1222,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             }
 
             if (targetBattler.displayedHealth < 1 || targetBattler.getAnim()[0].currentAnimation == Anim.Type.Death_East) {
-               D.adminLog("Warning! The target is dead! Cancel Attack Action from Battler Script!", D.ADMIN_LOG_TYPE.AnimationFreeze);
+               D.adminLog(" (4b) {" + action.actionId + "} {" + sourceBattler.userId + "} Warning! The target is dead! Cancel Attack Action from Battler Script!"
+                  , D.ADMIN_LOG_TYPE.AnimationFreeze); // Fourth - B Client Sequence
                yield break;
             }
 
@@ -1263,11 +1264,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
                if (targetBattler.displayedHealth < 1 || targetBattler._anims[0].currentAnimation == Anim.Type.Death_East) {
-                  D.adminLog("Error here! Play should not be able to attack target with no health!! " +
+                  D.adminLog(" (4c) {" + action.actionId + "} {" + sourceBattler.userId + "} Error here! "+ (sourceBattler.isLocalBattler() ? "Local" : "Other") + "Player should not be able to attack target with no health!! " +
                      "{" + targetBattler.enemyType + "} " +
                      "{" + targetBattler.displayedHealth + "} " +
                      "{" + targetBattler.health + "} " +
-                     "{" + targetBattler._anims[0].currentAnimation + "}", D.ADMIN_LOG_TYPE.AnimationFreeze);
+                     "{" + targetBattler._anims[0].currentAnimation + "}", D.ADMIN_LOG_TYPE.AnimationFreeze); // Fourth-C Client Sequence
                }
             }
 
@@ -1360,6 +1361,19 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             targetBattler.displayedHealth -= action.damage;
             targetBattler.displayedHealth = Util.clamp<int>(targetBattler.displayedHealth, 0, targetBattler.getStartingHealth());
+            if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
+               double actionDurationFinal = NetworkTime.time - actionDuration;
+               if (targetBattler.displayedHealth < 1) {
+                  D.adminLog(" (4d) {" + action.actionId + "} {" + sourceBattler.userId + "} " + (sourceBattler.isLocalBattler() ? "Local" : "Other") + "Player " +
+                     "Should already kill this target {" + targetBattler.enemyType + "} Duration: {" + actionDurationFinal.ToString("f2") + "}"
+                     , D.ADMIN_LOG_TYPE.AnimationFreeze); // Fourth-D Client Sequence
+               } else {
+                  D.adminLog(" (4d) {" + action.actionId + "} {" + sourceBattler.userId + "} " + (sourceBattler.isLocalBattler() ? "Local" : "Other") + "Player " +
+                     "was unable to kill this target {" + targetBattler.enemyType + "} Duration: {" + actionDurationFinal.ToString("f2") + "} " +
+                     "Hp: {" + targetBattler.displayedHealth + ":" + targetBattler.displayedHealth + "}"
+                     , D.ADMIN_LOG_TYPE.AnimationFreeze); // Fourth-D Client Sequence
+               }
+            }
 
             #endregion
 
@@ -1412,23 +1426,35 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             sourceBattler.displayedAP = Util.clamp<int>(sourceBattler.displayedAP + action.sourceApChange, 0, MAX_AP);
             targetBattler.displayedAP = Util.clamp<int>(targetBattler.displayedAP + action.targetApChange, 0, MAX_AP);
 
+            // TODO: Remove after fixing bug wherein Golem boss action is stuck for a long time
+            if (sourceBattler.enemyType == Enemy.Type.Golem_Boss) {
+               double actionDurationFinal = NetworkTime.time - actionDuration;
+               D.adminLog("Golem has finished attacking" + " : " + NetworkTime.time.ToString("f1") + " Duration: " + actionDurationFinal.ToString("f1"), D.ADMIN_LOG_TYPE.Boss);
+            }
+            if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
+               double actionDurationFinal = NetworkTime.time - actionDuration;
+               D.adminLog(" (5) {" + action.actionId + "} {" + sourceBattler.userId + "}" +
+                  " " + (sourceBattler.isLocalBattler() ? "Local" : "Other") + "Player attack has ended, Duration was {(" + actionDurationFinal.ToString("f2") + ") : " +
+                  "W/oWait: (" + (actionDurationFinal - timeToWait).ToString("f1") + ")} " +
+                  "TimeToWait: (" + timeToWait.ToString("f1") + ")} " +
+                  "target health is {" + targetBattler.displayedHealth + "}", D.ADMIN_LOG_TYPE.AnimationFreeze); // Fifth Client Sequence
+            }
+
             // If the target died, animate that death now
             if (targetBattler.isDead()) {
                if (targetBattler.getAnim()[0].currentAnimation != Anim.Type.Death_East) {
+                  if (sourceBattler.enemyType == Enemy.Type.PlayerBattler && isLocalBattler()) {
+                     D.adminLog(" (6) {" + action.actionId + "} {" + sourceBattler.userId + "} "
+                        + (sourceBattler.isLocalBattler() ? "Local" : "Other") + "Player has KILLED target {" + targetBattler.enemyType + "}"
+                        , D.ADMIN_LOG_TYPE.AnimationFreeze); // Sixth Client Sequence
+                  }
                   BattleSelectionManager.self.deselectTarget();
                   targetBattler.StartCoroutine(targetBattler.animateDeath());
                } else {
                   D.debug("Skip animating death for {" + enemyType + "} Anim:{" + targetBattler.getAnim()[0].currentAnimation + "}");
                }
-            } 
-
-            onBattlerAttackEnd.Invoke();
-
-            // TODO: Remove after fixing bug wherein Golem boss action is stuck for a long time
-            if (sourceBattler.enemyType == Enemy.Type.Golem_Boss) {
-               actionDuration = NetworkTime.time - actionDuration;
-               D.adminLog("Golem has finished attacking" + " : " + NetworkTime.time.ToString("f1") + " Duration: " + actionDuration.ToString("f1"), D.ADMIN_LOG_TYPE.Boss);
             }
+            onBattlerAttackEnd.Invoke();
             break;
          case AbilityActionType.Ranged:
             // Cast version of the Attack Action

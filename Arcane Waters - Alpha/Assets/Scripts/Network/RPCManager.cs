@@ -5743,6 +5743,8 @@ public class RPCManager : NetworkBehaviour
 
       // Ignore invalid or dead sources and targets
       if (sourceBattler == null || targetBattler == null || sourceBattler.isDead() || targetBattler.isDead()) {
+         D.adminLog(" (0) {" + sourceBattler.userId + "} Attack request denied! Enemy is Dead!}"
+            , D.ADMIN_LOG_TYPE.AnimationFreeze); // Pre Server Sequence
          Target_ReceiveRefreshCasting(connectionToClient, false);
          return;
       }
