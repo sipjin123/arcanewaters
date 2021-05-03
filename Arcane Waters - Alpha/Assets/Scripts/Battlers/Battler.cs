@@ -470,7 +470,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // This block is only enabled upon admin command and is double checked by the server if the user is an admin
       // TODO: After observing multiplayer combat and confirmed that freezing on death anim is no longer occurring, remove this block
       if (Global.logTypesToShow.Contains(D.ADMIN_LOG_TYPE.Combat)) {
-         string newMessage = "Dead" + " : " + isDead()
+         string newMessage = "Dead" + " : " + hasDisplayedDeath()
             + "\nCurHP: {" + health + "} DisHP: {" + displayedHealth + "}"
             + "\nAnim: " + _anims[0].currentAnimation;
          if (player.isLocalPlayer) {
@@ -720,7 +720,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // Only show our outline when the mouse is over us
       Color color = battlerType.Equals(BattlerType.AIEnemyControlled) ? Color.red : Color.green;
       _outline.setNewColor(color);
-      _outline.setVisibility(isMouseHovering() && !isDead());
+      _outline.setVisibility(isMouseHovering() && !hasDisplayedDeath());
 
       // Hide or show battler Name
       if (battlerType.Equals(BattlerType.PlayerControlled) && Global.player != null) {
@@ -733,14 +733,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          if (!isLocalBattler()) {
             if (hoverPlayerNames) {
-               selectedBattleBar.toggleDisplay(isMouseHovering() && !isDead());
+               selectedBattleBar.toggleDisplay(isMouseHovering() && !hasDisplayedDeath());
             } else {
                selectedBattleBar.toggleDisplay(false);
             }
          }
       } else {
          if (selectedBattleBar != null) {
-            selectedBattleBar.toggleDisplay(isMouseHovering() && !isDead());
+            selectedBattleBar.toggleDisplay(isMouseHovering() && !hasDisplayedDeath());
          }
       }
    }
@@ -1417,7 +1417,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             }
 
             // If the target died, animate that death now
-            if (targetBattler.isDead()) {
+            if (targetBattler.hasDisplayedDeath()) {
                if (targetBattler.getAnim()[0].currentAnimation != Anim.Type.Death_East) {
                   if (sourceBattler.enemyType == Enemy.Type.PlayerBattler && isLocalBattler()) {
                      D.adminLog(" (6) {" + action.actionId + "} {" + sourceBattler.userId + "} "
@@ -1559,7 +1559,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             targetBattler.addAP(action.targetApChange);
 
             // If the target died, animate that death now
-            if (targetBattler.isDead()) {
+            if (targetBattler.hasDisplayedDeath()) {
                BattleSelectionManager.self.deselectTarget();
                targetBattler.StartCoroutine(targetBattler.animateDeath());
             }
@@ -1690,7 +1690,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             targetBattler.addAP(action.targetApChange);
 
             // If the target died, animate that death now
-            if (targetBattler.isDead()) {
+            if (targetBattler.hasDisplayedDeath()) {
                BattleSelectionManager.self.deselectTarget();
                targetBattler.StartCoroutine(targetBattler.animateDeath());
             }
@@ -2280,10 +2280,21 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
 
       if (NetworkServer.active) {
-         return (health <= 0 || displayedHealth <= 0 || isPlayingDeathAnim);
+         return health <= 0;
       } else {
          return (displayedHealth <= 0 || isPlayingDeathAnim);
       }
+   }
+
+   public bool hasDisplayedDeath () {
+      bool isPlayingDeathAnim = false;
+      if (_anims.Count > 0) {
+         if (_anims[0].currentAnimation == Anim.Type.Death_East) {
+            isPlayingDeathAnim = true;
+         }
+      }
+
+      return (displayedHealth <= 0 || isPlayingDeathAnim);
    }
 
    public bool isAttacker () {
