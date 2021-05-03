@@ -22,7 +22,7 @@ public class PlayerBattleCollider : MonoBehaviour {
             Enemy enemy = collision.GetComponent<EnemyBattleCollider>().enemy;
             if (playerBody.instanceId == enemy.instanceId && !enemy.isDefeated) {
                if (playerBody.voyageGroupId == enemy.voyageGroupId || enemy.voyageGroupId == -1) {
-                  D.debug("Engaging combat:: EnemyType: {" + enemy.enemyType + "}" + " NetID: {" + enemy.netId + "}");
+                  D.adminLog("Engaging combat:: EnemyType: {" + enemy.enemyType + "}" + " NetID: {" + enemy.netId + "}", D.ADMIN_LOG_TYPE.AnimationFreeze);
                   combatInitCollider.enabled = false;
                   playerBody.isWithinEnemyRadius = true;
                   Global.player.rpc.Cmd_StartNewBattle(enemy.netId, Battle.TeamType.Attackers);

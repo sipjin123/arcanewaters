@@ -217,7 +217,7 @@ public class BattleManager : MonoBehaviour {
       BattleUIManager.self.disableBattleUI();
 
       if (battle == null) {
-         D.debug("ERROR HERE! Battle should not be null before ending it!!!");
+         D.error("ERROR HERE! Battle should not be null before ending it!!!");
       }
 
       // Remove the Battle ID for any participants

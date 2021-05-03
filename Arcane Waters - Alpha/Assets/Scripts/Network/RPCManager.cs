@@ -5824,6 +5824,7 @@ public class RPCManager : NetworkBehaviour
 
       // Ignore invalid or dead sources and targets
       if (sourceBattler == null || sourceBattler.isDead()) {
+         D.error("NULL here for player: " + _player.userId+ " " + sourceBattler+ " " +sourceBattler.isDead()+ " " + sourceBattler.userId + " " + sourceBattler.health);
          return;
       }
 
