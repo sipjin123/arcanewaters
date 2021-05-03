@@ -305,66 +305,61 @@ public class TreasureChest : NetworkBehaviour {
       };
    }
 
-   public Item getSeaMonsterLootContents () {
-      SeaMonsterEntity.Type monsterType = (SeaMonsterEntity.Type) enemyType;
-      SeaMonsterEntityData battlerData = SeaMonsterManager.self.getMonster(monsterType);
-      D.adminLog("Getting sea monster contents {" + battlerData.lootGroupId + "}", D.ADMIN_LOG_TYPE.Treasure);
-
-      List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(battlerData.lootGroupId, rarity);
-      TreasureDropsData treasureData = treasureDropsDataList.ChooseRandom();
-
-      if (treasureData.item != null) { 
-         treasureData.item.count = Random.Range(treasureData.dropMinCount, treasureData.dropMaxCount);
-      }
-      return treasureData.item;
-   }
-
    public Powerup.Type getPowerUp () {
       SeaMonsterEntity.Type monsterType = (SeaMonsterEntity.Type) enemyType;
       SeaMonsterEntityData battlerData = SeaMonsterManager.self.getMonster(monsterType);
 
-      TreasureDropsData treasureDropsData = 
+      TreasureDropsData treasureDropsData =
          TreasureDropsDataManager.self.getTreasureDropsById(battlerData.lootGroupId, rarity).
          FindAll(_ => _.powerUp != Powerup.Type.None).ChooseRandom();
 
       return treasureDropsData.powerUp;
    }
 
+   public Item getSeaMonsterLootContents () {
+      SeaMonsterEntity.Type monsterType = (SeaMonsterEntity.Type) enemyType;
+      SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getMonster(monsterType);
+      D.adminLog("Getting sea monster contents {" + seaMonsterData.lootGroupId + "}", D.ADMIN_LOG_TYPE.Treasure);
+      return getGenericMonsterContent(seaMonsterData.lootGroupId, seaMonsterData.monsterName);
+   }
+
    public Item getLandMonsterLootContents () {
       Enemy.Type monsterType = (Enemy.Type) enemyType;
       BattlerData battlerData = MonsterManager.self.getBattlerData(monsterType);
       D.adminLog("Getting land monster contents {" + battlerData.lootGroupId + "}", D.ADMIN_LOG_TYPE.Treasure);
-
-      List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(battlerData.lootGroupId, rarity);
-      TreasureDropsData treasureData = treasureDropsDataList.ChooseRandom();
-      treasureData.item.count = Random.Range(treasureData.dropMinCount, treasureData.dropMaxCount);
-      foreach (TreasureDropsData newData in treasureDropsDataList) {
-         D.adminLog("Treasure drops Content :: " +
-            "Category: {" + newData.item.category + "} " +
-            "TypeID: {" + newData.item.itemTypeId + "} " +
-            "Data: {" + newData.item.data + "}", D.ADMIN_LOG_TYPE.Treasure);
-      }
-      return treasureData.item;
+      return getGenericMonsterContent(battlerData.lootGroupId, monsterType.ToString());
    }
 
-   private Item processItemChance (List<TreasureDropsData> treasureDropsDataList) {
-      if (treasureDropsDataList.Count > 0) {
-         foreach (TreasureDropsData treasureDropData in treasureDropsDataList.OrderBy(_ => _.spawnChance)) {
-            float randomizer = Random.Range(0, 100);
-            if (randomizer < treasureDropData.spawnChance) {
-               if (treasureDropData.item.category == Item.Category.Blueprint) {
-                  D.adminLog("This is a blueprint! " +
-                     "TypeID:{" + treasureDropData.item.itemTypeId + "} " +
-                     "Data: {" + treasureDropData.item.data + "}", D.ADMIN_LOG_TYPE.Blueprints);
-               }
-               D.adminLog("Lootbag will drop random item:: " +
-                  "Name:{" + EquipmentXMLManager.self.getItemName(treasureDropData.item) + "} " +
-                  "Data:{" + treasureDropData.item.data + "}", D.ADMIN_LOG_TYPE.Treasure);
-               return treasureDropData.item;
+   private Item getGenericMonsterContent (int lootGroupId, string monsterName) {
+      List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(lootGroupId, rarity);
+      if (treasureDropsDataList.Count < 1) {
+         D.debug("Error here! Something went wrong with treasure drops (Blank List), Loot ID: {" + lootGroupId + "} Rarity is {" + rarity + "}");
+      } else {
+         foreach (TreasureDropsData newData in treasureDropsDataList) {
+            D.adminLog("Treasure drops Content :: " +
+               "Category: {" + newData.item.category + "} " +
+               "TypeID: {" + newData.item.itemTypeId + "} " +
+               "Data: {" + newData.item.data + "}", D.ADMIN_LOG_TYPE.Treasure);
+         }
+
+         TreasureDropsData treasureData = treasureDropsDataList.ChooseRandom();
+         if (treasureData == null) {
+            D.debug("Error here! Something went wrong with treasure drops (NULL Data)," +
+               " Loot ID: {" + lootGroupId + "} Rarity is {" + rarity + "} for monster {" + monsterName + "}");
+         } else {
+            if (treasureData.item != null) {
+               treasureData.item.count = Random.Range(treasureData.dropMinCount, treasureData.dropMaxCount);
             }
+            return treasureData.item;
          }
       }
-      return treasureDropsDataList[0].item;
+
+      return new Item {
+         category = Item.Category.CraftingIngredients,
+         itemTypeId = (int) CraftingIngredients.Type.Wood,
+         count = 1,
+         data = ""
+      };
    }
 
    public bool hasBeenOpened () {
