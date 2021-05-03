@@ -2302,7 +2302,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             isPlayingDeathAnim = true;
          }
       }
-      return (health <= 0 || displayedHealth <= 0 || isPlayingDeathAnim);
+
+      if (NetworkServer.active) {
+         return (health <= 0 || displayedHealth <= 0 || isPlayingDeathAnim);
+      } else {
+         return (displayedHealth <= 0 || isPlayingDeathAnim);
+      }
    }
 
    public bool isAttacker () {
