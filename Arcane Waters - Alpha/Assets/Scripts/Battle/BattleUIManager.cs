@@ -322,7 +322,8 @@ public class BattleUIManager : MonoBehaviour {
       }
 
       if (BattleSelectionManager.self.selectedBattler == null) {
-         updateButtons(AbilityType.Undefined, (int) Battler.Stance.Balanced);
+         // TODO: Confirm with sir mike, Since caching of latest battle stance has now been implemented, should deselecting a battler force the stance to balance stance again?
+         // updateButtons(AbilityType.Undefined, (int) Battler.Stance.Balanced);
       } else {
          BattleSelectionManager.self.selectedBattler.selectThis();
       }
@@ -478,6 +479,10 @@ public class BattleUIManager : MonoBehaviour {
 
    // Changes the icon that is at the right side of the player battle ring UI
    public void changeBattleStance (int newStance) {
+      Global.player.rpc.Cmd_RequestStanceChange((Battler.Stance) newStance);
+   }
+
+   public void updateBattleStanceGUI (int newStance) {
       Battler.Stance stance = (Battler.Stance) newStance;
 
       // Don't allow the player to change stance if it's on cooldown, or to change to the stance they're already in
@@ -504,7 +509,6 @@ public class BattleUIManager : MonoBehaviour {
 
       SoundEffectManager.self.playSoundEffect(SoundEffectManager.STANCE_SELECTION, transform);
       onStanceChanged((Battler.Stance) newStance);
-      Global.player.rpc.Cmd_RequestStanceChange((Battler.Stance) newStance);
 
       // Whenever we have finished setting the new stance, we hide the frames
       updateButtons(_currentAbilityType, newStance);

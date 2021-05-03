@@ -784,6 +784,8 @@ public class BattleManager : MonoBehaviour {
       double timeActionEnds = NetworkTime.time + source.getStanceCooldown(newStance);
       StanceAction stanceAction = new StanceAction(battle.battleId, source.userId, timeActionEnds, newStance);
 
+      source.player.cachedBattleStance = newStance;
+
       string serializedValue = stanceAction.serialize();
       string[] values = new[] { serializedValue };
 

@@ -5672,6 +5672,9 @@ public class RPCManager : NetworkBehaviour
                   }
                   D.adminLog("Sending Overridden Ability Data to Player: " + battler.userId + " :: " + abilityStrList, D.ADMIN_LOG_TYPE.Ability);
                   battler.setBattlerAbilities(basicAbilityIds, BattlerType.PlayerControlled);
+
+                  // Load recently saved battle stance after ability has been processed
+                  requestStanceChange(battler.player.cachedBattleStance);
                }
             });
          }
@@ -5791,6 +5794,11 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_RequestStanceChange (Battler.Stance newStance) {
+      requestStanceChange(newStance);
+   }
+
+   [Server]
+   public void requestStanceChange (Battler.Stance newStance) {
       if (_player == null || !(_player is PlayerBodyEntity)) {
          return;
       }
