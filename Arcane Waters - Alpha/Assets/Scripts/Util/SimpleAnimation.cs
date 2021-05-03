@@ -44,9 +44,6 @@ public class SimpleAnimation : ClientMonoBehaviour {
    // Disables this scripts capability to alter the alpha of the sprite
    public bool freezeAlpha;
 
-   // Logs the scenarios where the sprite pause is triggered
-   public bool logPauseTriggers;
-
    #endregion
 
    protected override void Awake () {
@@ -268,11 +265,6 @@ public class SimpleAnimation : ClientMonoBehaviour {
 
       // Check if we need to pause
       if (Anim.pausesAtEnd(this.currentAnimation) && _index >= maxIndex) {
-         if (logPauseTriggers) {
-            D.debug("Pausing anim PauseAtEnd:{" + Anim.pausesAtEnd(this.currentAnimation) +
-               "} or IndexReach:{" + (_index >= maxIndex) + " :: " + _index + " >= " + maxIndex + "} " +
-               "Anim playing is:{" + currentAnimation + "}" + " " + group);
-         }
          this.isPaused = true;
       }
 

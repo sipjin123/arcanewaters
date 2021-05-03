@@ -276,9 +276,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // A reference to the point where the target line should start / end
    public Transform targetPoint;
 
-   // TODO: Remove this after animation freeze no longer occurs
-   public bool hasLoggedAnimationFreeze;
-
    // Returns simple animation list
    public List<SimpleAnimation> getAnim () { return _anims; }
 
@@ -502,22 +499,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          if (battlerType == BattlerType.PlayerControlled && isShowingTargetingEffects()) {
             targetLine.updateLine();
          }
-
-         // TODO: Remove this after rare occurence animation freeze no longer occurs
-         // Death frame is at 33-38
-         if (animGroup == Anim.Group.Pirate && !hasLoggedAnimationFreeze && health < 1) {
-            SimpleAnimation animReference = _anims[0];
-            hasLoggedAnimationFreeze = true;
-            string warningMessage = "";
-            if (animReference.getIndex() > 33 && _anims[0].getIndex() < 37) {
-               warningMessage = "The pirate battler has stopped! Investigate cause! Here are the raw data: ";
-               D.debug(warningMessage
-                  + animReference.isPaused + " : "
-                  + animReference.stayAtLastFrame + " : "
-                  + animReference.getIndex() + " : "
-                  + animReference.currentAnimation);
-            }
-         }
       }
    }
 
@@ -597,11 +578,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          // Enemy stat setup
          setupEnemyStats();
-
-         // TODO: Remove this after animation freeze bug is fixed
-         if (enemyType == Enemy.Type.Pirate_Shooter || enemyType == Enemy.Type.Pirate_Healer) {
-            _anims[0].logPauseTriggers = true;
-         }
 
          _hasInitializedStats = true;
       }
