@@ -57,7 +57,7 @@ public class RestartManager : GenericGameManager
 
             // Back to the Unity thread to handle the database info
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               if (info == null) {
+               if (info == null || info.DateAsTicks < 0) {
                   return;
                }
 

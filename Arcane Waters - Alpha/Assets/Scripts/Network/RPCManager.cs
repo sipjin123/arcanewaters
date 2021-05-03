@@ -4772,6 +4772,12 @@ public class RPCManager : NetworkBehaviour
          D.warning("Player trying to open a map fragment treasure chest while there are still enemies in the instance!");
          return;
       }
+
+      // Only the last chest in the instance rewards the map fragment, otherwise it is a normal chest
+      if (!TreasureManager.self.isLastUnopenedChestInInstanceForUser(chest.id, chest.instanceId, _player.userId)) {
+         processChestRewards(chest);
+         return;
+      }
       
       // Get the biome that will be unlocked
       Biome.Type nextBiome = Biome.getNextBiome(instance.biome);
@@ -6546,6 +6552,12 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
+      // Make sure the function is allowed to be called by clients
+      if (!NubisStatics.WhiteList.Contains(functionName)){
+         D.error(string.Format("Received a request to execute a forbidden function: {0}, from userId {1}.", functionName, _player.userId));
+         return;
+      }
+
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          string result = "";
@@ -6660,7 +6672,8 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_DisplayNotificationForVoyageCompleted (NetworkConnection connection, Notification.Type notificationType, Biome.Type newUnlockedBiome) {
-      NotificationManager.self.add(notificationType, () => ((WorldMapPanel) PanelManager.self.get(Panel.Type.WorldMap)).displayMap(newUnlockedBiome));
+      NotificationManager.self.add(notificationType, () => ((WorldMapPanel) PanelManager.self.get(Panel.Type.WorldMap)).displayMap(newUnlockedBiome), false);
+      VoyageManager.self.closeVoyageCompleteNotificationWhenLeavingArea();
    }
 
    [Command]

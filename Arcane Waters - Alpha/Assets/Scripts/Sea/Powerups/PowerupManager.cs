@@ -119,13 +119,25 @@ public class PowerupManager : MonoBehaviour {
 
       PlayerPowerups powerups = _serverPlayerPowerups[userId];
 
-      // If we don't have a list for that powerup type yet, create it
-      Powerup.Type powerupType = (Powerup.Type) newPowerup.powerupType;
-      if (!powerups.ContainsKey(powerupType)) {
-         powerups.Add(powerupType, new List<Powerup>());
+      // If we don't have a list for that powerup type yet, create it;
+      if (!powerups.ContainsKey(newPowerup.powerupType)) {
+         powerups.Add(newPowerup.powerupType, new List<Powerup>());
       }
 
-      powerups[powerupType].Add(newPowerup);
+      // If the player has received a health bonus powerup, change their health immediately
+      if (newPowerup.powerupType == Powerup.Type.IncreasedHealth) {
+         NetEntity player = EntityManager.self.getEntity(userId);
+         if (player) {
+            PlayerShipEntity playerShip = player.getPlayerShipEntity();
+            if (playerShip) {
+               float boostFactorAdditive = getBoostFactor(newPowerup.powerupType, newPowerup.powerupRarity) - 1.0f;
+               playerShip.applyBonusHealth(boostFactorAdditive);
+               playerShip.shipBars.initializeHealthBar();
+            }
+         }
+      }
+
+      powerups[newPowerup.powerupType].Add(newPowerup);
    }
 
    public bool powerupActivationRoll (int userId, Powerup.Type type) {

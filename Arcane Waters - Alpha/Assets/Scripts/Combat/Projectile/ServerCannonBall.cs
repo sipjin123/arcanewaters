@@ -312,7 +312,7 @@ public class ServerCannonBall : NetworkBehaviour {
       List<SeaEntity> nearbyEnemies = Util.getEnemiesInCircle(sourceEntity, transform.position, explosionRadius);
       foreach(SeaEntity enemy in nearbyEnemies) {
          // The enemy hit by the cannonball won't take splash damage
-         if (enemy.netId != hitEntity.netId && enemy.instanceId == _instanceId && !enemy.isDead()) {
+         if (enemy.netId != hitEntity.netId && !enemy.isDead()) {
             // Apply damage            
             int finalDamage = enemy.applyDamage(explosionDamage, sourceEntity.netId);
             sourceEntity.totalDamageDealt += finalDamage;
@@ -341,7 +341,7 @@ public class ServerCannonBall : NetworkBehaviour {
          // Find an enemy to bounce to, that isn't the one we hit
          List<SeaEntity> nearbyEnemies = Util.getEnemiesInCircle(sourceEntity, transform.position,  effector.effectRange);
          foreach (SeaEntity enemy in nearbyEnemies) {
-            if (enemy.netId != hitEntity.netId && enemy.instanceId == _instanceId) {
+            if (enemy.netId != hitEntity.netId) {
                // Setup cannonball variables for new target
                Vector2 toNewEnemy = enemy.transform.position - transform.position;
                _startTime = NetworkTime.time;

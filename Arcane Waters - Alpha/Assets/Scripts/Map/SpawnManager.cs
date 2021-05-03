@@ -74,8 +74,9 @@ public partial class SpawnManager : MonoBehaviour
    public Vector2 getLocalPosition (string mapName, string spawnName) {
       if (_mapSpawns.TryGetValue(mapName, out MapSpawnData mapSpawnData)) {
          if (mapSpawnData.spawns.TryGetValue(spawnName, out SpawnData spawnData)) {
-            Spawn spawn = mapSpawnList.Find(_ => spawnData.spawnId == _.spawnId);
-            return spawnData.localPosition + spawn.getRandomPositionOffset();
+            // Spawn spawn = mapSpawnList.Find(_ => spawnData.spawnId == _.spawnId);
+            // return spawnData.localPosition + spawn.getRandomPositionOffset();
+            return spawnData.localPosition;
          }
       }
 
@@ -86,8 +87,9 @@ public partial class SpawnManager : MonoBehaviour
    public Vector2 getDefaultLocalPosition (string areaKey) {
       if (_mapSpawns.TryGetValue(areaKey, out MapSpawnData mapSpawnData)) {
          if (mapSpawnData.defaultSpawn != null) {
-            Spawn spawn = mapSpawnList.Find(_ => mapSpawnData.defaultSpawn.spawnId == _.spawnId);
-            return mapSpawnData.defaultSpawn.localPosition + spawn.getRandomPositionOffset();
+            // Spawn spawn = mapSpawnList.Find(_ => mapSpawnData.defaultSpawn.spawnId == _.spawnId);
+            // return mapSpawnData.defaultSpawn.localPosition + spawn.getRandomPositionOffset();
+            return mapSpawnData.defaultSpawn.localPosition;
          }
       }
 

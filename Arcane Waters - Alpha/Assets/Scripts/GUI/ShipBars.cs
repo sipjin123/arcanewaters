@@ -121,8 +121,9 @@ public class ShipBars : MonoBehaviour {
       _lastHealth = _entity.currentHealth;
    }
 
-   protected void initializeHealthBar () {
+   public void initializeHealthBar () {
       healthBlockContainer.DestroyChildren();
+      _healthBlocks.Clear();
 
       int tier = getHealthBlockTier();
       int hpPerBlock = ShipHealthBlock.HP_PER_BLOCK[tier];

@@ -109,6 +109,9 @@ public class PlayerShipEntity : ShipEntity
    // Portrait game object
    public GameObject playerPortrait;
 
+   // A reference to the bars script that displays the health of this ship
+   public ShipBarsPlayer shipBars;
+
    // The different flags the ship can display
    public enum Flag {
       None = 0,
@@ -200,6 +203,14 @@ public class PlayerShipEntity : ShipEntity
          // When we enter a new scene, update powerups on the client
          rpc.Target_UpdatePowerups(connectionToClient, PowerupManager.self.getPowerupsForUser(userId));
       }
+   }
+
+   protected override void initialize (ShipInfo info) {
+      base.initialize(info);
+
+      float healthMultiplierAdditive = 1.0f + PerkManager.self.getPerkMultiplierAdditive(userId, Perk.Category.ShipHealth) + PowerupManager.self.getPowerupMultiplierAdditive(userId, Powerup.Type.IncreasedHealth);
+      currentHealth = (int) (healthMultiplierAdditive * currentHealth);
+      maxHealth = (int) (healthMultiplierAdditive * maxHealth);
    }
 
    protected override void updateSprites () {

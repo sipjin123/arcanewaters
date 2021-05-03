@@ -92,6 +92,7 @@ public class ShipEntity : SeaEntity
       skinType = info.skinType;
       currentHealth = info.health;
       maxHealth = info.maxHealth;
+      _baseHealth = info.maxHealth;
       attackRangeModifier = info.attackRange;
 
       speed = info.speed;
@@ -102,12 +103,6 @@ public class ShipEntity : SeaEntity
       ShipData newShipData = ShipDataManager.self.getShipData(info.shipType);
       shipSize = newShipData.shipSize;
       shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);
-
-      if (this is PlayerShipEntity) {
-         float healthMultiplierAdditive = 1.0f + PerkManager.self.getPerkMultiplierAdditive(userId, Perk.Category.ShipHealth) + PowerupManager.self.getPowerupMultiplierAdditive(userId, Powerup.Type.IncreasedHealth);
-         currentHealth = (int)(healthMultiplierAdditive * currentHealth);
-         maxHealth = (int)(healthMultiplierAdditive * maxHealth);
-      }
    }
 
    public override void playAttackSound () {
@@ -386,6 +381,12 @@ public class ShipEntity : SeaEntity
       }
    }
 
+   public void applyBonusHealth (float healthBonusAdditive) {
+      int bonusHealth = (int) (_baseHealth * healthBonusAdditive);
+      maxHealth += bonusHealth;
+      currentHealth += bonusHealth;
+   }
+
    #region Private Variables
 
    // Ship Ripple SpriteSheets
@@ -396,6 +397,9 @@ public class ShipEntity : SeaEntity
 
    // Boost circle sprites
    protected Texture2D _boostCircleOutline, _boostCircleFill;
+
+   // The base health amount for this ship, stored from its ShipInfo
+   protected int _baseHealth;
 
    #endregion
 }
