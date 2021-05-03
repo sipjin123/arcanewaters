@@ -216,6 +216,10 @@ public class BattleManager : MonoBehaviour {
    public void endBattle (Battle battle, Battle.TeamType winningTeam) {
       BattleUIManager.self.disableBattleUI();
 
+      if (battle == null) {
+         D.debug("ERROR HERE! Battle should not be null before ending it!!!");
+      }
+
       // Remove the Battle ID for any participants
       battle.resetAllBattleIDs(winningTeam);
 

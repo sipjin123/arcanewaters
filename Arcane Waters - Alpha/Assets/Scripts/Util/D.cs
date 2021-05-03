@@ -265,13 +265,13 @@ public class D : MonoBehaviour {
       string additiveLog = "";
       if (logType == ADMIN_LOG_TYPE.AnimationFreeze) {
          try {
-            additiveLog = Mirror.NetworkTime.time.ToString("f1");
+            additiveLog = "[" + Mirror.NetworkTime.time.ToString("f2") + "]";
          } catch { 
          
          }
       }
 
-      log(additiveLog + "[" + logType.ToString().ToUpper() + "]" + text);
+      log("[" + logType.ToString().ToUpper() + "]" + additiveLog + text, ChatInfo.Type.Debug);
    }
 
    public static void editorLog (string text, Color color = new Color()) {
