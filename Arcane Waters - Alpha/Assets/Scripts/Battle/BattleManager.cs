@@ -43,6 +43,9 @@ public class BattleManager : MonoBehaviour {
    // The list of battleboards
    public List<BattleBoard> battleBoardList;
 
+   // The action id that iterates per combat action
+   public int actionIdIndex = 0;
+
    #endregion
 
    public void Awake () {
@@ -691,7 +694,10 @@ public class BattleManager : MonoBehaviour {
             AttackAction action = new AttackAction(battle.battleId, currentActionType, source.userId, target.userId,
                 (int) damage, timeAttackEnds, abilityInventoryIndex, wasCritical, wasBlocked, cooldownDuration, sourceApChange,
                 targetApChange, abilityData.itemID, damageEffectMagnitude);
+            action.actionId = actionIdIndex;
             actions.Add(action);
+
+            actionIdIndex++;
 
             // Make note how long the two Battler objects need in order to execute the attack/hit animations
             source.animatingUntil = timeAttackEnds;

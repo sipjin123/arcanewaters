@@ -86,6 +86,7 @@ public class AttackAction : BattleAction {
       serialized += this.abilityGlobalID + ",";
       serialized += (int) this.battleActionType + ",";
       serialized += (int) this.damageMagnitude + ",";
+      serialized += (int) this.actionId + ",";
 
       return serialized;
    }
@@ -109,6 +110,7 @@ public class AttackAction : BattleAction {
       action.abilityGlobalID = Convert.ToInt32(stringArray[13]);
       action.battleActionType = (BattleActionType) Convert.ToInt32(stringArray[14]);
       action.damageMagnitude = (DamageMagnitude) Convert.ToInt32(stringArray[15]);
+      action.actionId = Convert.ToInt32(stringArray[16]);
 
       return action;
    }

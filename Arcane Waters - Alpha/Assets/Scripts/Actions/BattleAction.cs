@@ -5,6 +5,9 @@ using System.Collections.Generic;
 public class BattleAction {
    #region Public Variables
 
+   // The id for each action
+   public int actionId;
+
    // The id of the Battle that this BattleAction is for
    public int battleId;
 
