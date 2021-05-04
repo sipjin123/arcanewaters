@@ -287,14 +287,17 @@ public class TreasureChest : NetworkBehaviour {
       }
 
       Instance instance = InstanceManager.self.getInstance(instanceId);
-      string areaKey = instance.areaKey;
       Biome.Type biome = instance.biome;
-      List<TreasureDropsData> treasureDropsList = TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome).OrderBy(_=>_.spawnChance).ToList();
+      List<TreasureDropsData> treasureDropsList = TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome).ToList();
 
-      foreach (TreasureDropsData treasureDropsEntry in treasureDropsList) {
-         float randomizer = Random.Range(0, 100);
-         if (randomizer < treasureDropsEntry.spawnChance) {
-            return treasureDropsEntry.item;
+      if (treasureDropsList.Count < 1) {
+         D.error("There are no treasure drops generated for Biome:{" + biome + "}");
+      } else {
+         TreasureDropsData randomEntry = treasureDropsList.ChooseRandom();
+         if (randomEntry.item != null) {
+            return randomEntry.item;
+         } else {
+            D.error("Random Entry found is: NULL for biome {" + biome + "}");
          }
       }
 
@@ -336,10 +339,12 @@ public class TreasureChest : NetworkBehaviour {
          D.debug("Error here! Something went wrong with treasure drops (Blank List), Loot ID: {" + lootGroupId + "} Rarity is {" + rarity + "}");
       } else {
          foreach (TreasureDropsData newData in treasureDropsDataList) {
-            D.adminLog("Treasure drops Content :: " +
-               "Category: {" + newData.item.category + "} " +
-               "TypeID: {" + newData.item.itemTypeId + "} " +
-               "Data: {" + newData.item.data + "}", D.ADMIN_LOG_TYPE.Treasure);
+            if (newData.item != null) {
+               D.adminLog("Treasure drops Content :: " +
+                  "Category: {" + newData.item.category + "} " +
+                  "TypeID: {" + newData.item.itemTypeId + "} " +
+                  "Data: {" + newData.item.data + "}", D.ADMIN_LOG_TYPE.Treasure);
+            }
          }
 
          TreasureDropsData treasureData = treasureDropsDataList.ChooseRandom();
