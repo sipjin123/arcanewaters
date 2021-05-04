@@ -618,8 +618,12 @@ public class RPCManager : NetworkBehaviour
 
       // Check what we're going to give the user
       Item item = chest.getContents();
+      bool spawnPowerup = item == null;
+      if (item != null) {
+         spawnPowerup = item.category == 0 || item.itemTypeId == 0;
+      }
 
-      if (chest.chestType == ChestSpawnType.Sea && (item == null || item.category == 0 || item.itemTypeId == 0)) {
+      if (chest.chestType == ChestSpawnType.Sea && spawnPowerup) {
          Powerup.Type powerupUpType = chest.getPowerUp();
          if (powerupUpType == Powerup.Type.None) {
             powerupUpType = Powerup.Type.SpeedUp;
