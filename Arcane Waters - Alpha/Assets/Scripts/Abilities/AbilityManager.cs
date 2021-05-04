@@ -281,7 +281,7 @@ public class AbilityManager : MonoBehaviour
       sourceBattler.stanceCooldownEndTime = action.actionEndTime;
       if (sourceBattler.isLocalBattler()) {
          BattleUIManager.self.updateBattleStanceGUI((int) action.newStance);
-         sourceBattler.stance = action.newStance;
+         PlayerPrefs.SetInt(PlayerBodyEntity.CACHED_STANCE_PREF, (int) action.newStance);
       }
 
       if (action.newStance == Battler.Stance.Attack && Global.player != null && Global.player.userId == sourceBattler.userId) {

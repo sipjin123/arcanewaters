@@ -61,10 +61,6 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public string hairPalettes;
 
-   // The cached battle stance
-   [SyncVar]
-   public Battler.Stance cachedBattleStance;
-
    // The Name of this entity
    [SyncVar]
    public string entityName;

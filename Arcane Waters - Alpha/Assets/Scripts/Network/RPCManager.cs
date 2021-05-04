@@ -5658,7 +5658,6 @@ public class RPCManager : NetworkBehaviour
                List<AbilitySQLData> equippedAbilityDataList = abilityDataList.FindAll(_ => _.equipSlotIndex >= 0);
                Battler battler = BattleManager.self.getBattler(entity.userId);
 
-
                List<int> basicAbilityIds = new List<int>();
                foreach (AbilitySQLData temp in equippedAbilityList) {
                   basicAbilityIds.Add(temp.abilityID);
@@ -5672,9 +5671,6 @@ public class RPCManager : NetworkBehaviour
                   }
                   D.adminLog("Sending Overridden Ability Data to Player: " + battler.userId + " :: " + abilityStrList, D.ADMIN_LOG_TYPE.Ability);
                   battler.setBattlerAbilities(basicAbilityIds, BattlerType.PlayerControlled);
-
-                  // Load recently saved battle stance after ability has been processed
-                  requestStanceChange(battler.player.cachedBattleStance);
                }
             });
          }

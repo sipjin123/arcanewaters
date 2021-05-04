@@ -476,10 +476,6 @@ public class BattleUIManager : MonoBehaviour {
 
    // Changes the icon that is at the right side of the player battle ring UI
    public void changeBattleStance (int newStance) {
-      Global.player.rpc.Cmd_RequestStanceChange((Battler.Stance) newStance);
-   }
-
-   public void updateBattleStanceGUI (int newStance) {
       Battler.Stance stance = (Battler.Stance) newStance;
 
       // Don't allow the player to change stance if it's on cooldown, or to change to the stance they're already in
@@ -491,6 +487,12 @@ public class BattleUIManager : MonoBehaviour {
          stanceCooldownImages[newStance].transform.DOShakeRotation(0.2f, Vector3.forward * 70.0f, vibrato: 40);
          return;
       }
+
+      Global.player.rpc.Cmd_RequestStanceChange((Battler.Stance) newStance);
+   }
+
+   public void updateBattleStanceGUI (int newStance) {
+      Battler.Stance stance = (Battler.Stance) newStance;
 
       switch (stance) {
          case Battler.Stance.Balanced:

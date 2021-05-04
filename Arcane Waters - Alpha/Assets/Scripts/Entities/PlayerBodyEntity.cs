@@ -104,6 +104,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // A reference to the sprint wind particle systems for going vertically or horizontally
    public ParticleSystem sprintWindParticlesHorizontal, sprintWindParticlesVertical;
 
+   // The cached battle stance player pref key
+   public const string CACHED_STANCE_PREF = "CACHE_STANCE";
+
    #endregion
 
    protected override void Awake () {

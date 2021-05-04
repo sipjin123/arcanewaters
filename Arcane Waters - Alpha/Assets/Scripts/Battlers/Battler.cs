@@ -320,6 +320,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          return;
       }
       initializeBattler();
+
+      if (isLocalBattler()) {
+         player.rpc.Cmd_RequestStanceChange((Stance) PlayerPrefs.GetInt(PlayerBodyEntity.CACHED_STANCE_PREF, 0));
+      }
    }
 
    private void initializeBattler () {
@@ -508,6 +512,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public void initializeBattlerData () {
+      // Create initialized copies of the stances data.
+      _balancedInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.balancedStance);
+      _offenseInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.offenseStance);
+      _defensiveInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.defenseStance);
+
       if (!_hasInitializedStats) {
          BattlerData battlerData = MonsterManager.self.getBattlerData(enemyType);
 

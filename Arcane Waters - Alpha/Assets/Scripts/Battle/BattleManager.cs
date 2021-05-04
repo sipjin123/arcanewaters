@@ -781,10 +781,9 @@ public class BattleManager : MonoBehaviour {
 
    // Stance action does not requires another target or an ability inventory index, thus, being removed from executeBattleAction
    public void executeStanceChangeAction (Battle battle, Battler source, Battler.Stance newStance) {
+      source.stance = newStance;
       double timeActionEnds = NetworkTime.time + source.getStanceCooldown(newStance);
       StanceAction stanceAction = new StanceAction(battle.battleId, source.userId, timeActionEnds, newStance);
-
-      source.player.cachedBattleStance = newStance;
 
       string serializedValue = stanceAction.serialize();
       string[] values = new[] { serializedValue };
