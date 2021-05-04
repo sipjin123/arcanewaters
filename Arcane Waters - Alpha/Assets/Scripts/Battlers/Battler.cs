@@ -286,6 +286,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public void stopActionCoroutine () {
       if (currentActionCoroutine != null) {
+         if (targetLine) { 
+            targetLine.gameObject.SetActive(false);
+         }
          D.debug("Action Coroutine has been stopped for battler! {" + userId + "}" + " : {" + enemyType + "}");
          StopCoroutine(currentActionCoroutine);
          receivedCancelState = true;
@@ -1702,6 +1705,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             break;
 
          case AbilityActionType.Cancel:
+            targetLine.gameObject.SetActive(false);
+
             // Cancel requires time before activating.
             yield return new WaitForSecondsDouble(timeToWait);
 
@@ -2274,18 +2279,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public bool isDead () {
-      bool isPlayingDeathAnim = false;
-      if (_anims.Count > 0) {
-         if (_anims[0].currentAnimation == Anim.Type.Death_East) {
-            isPlayingDeathAnim = true;
-         }
-      }
-
-      if (NetworkServer.active) {
-         return health <= 0;
-      } else {
-         return (displayedHealth <= 0 || isPlayingDeathAnim);
-      }
+      return health <= 0;
    }
 
    public bool hasDisplayedDeath () {
