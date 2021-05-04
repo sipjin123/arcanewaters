@@ -113,15 +113,15 @@ public class BattleUIManager : MonoBehaviour {
    }
 
    public void updateButtons (AbilityType abilityType, int newStance = -1) {
-      Battler.Stance playerStance;
+      Battler.Stance localPlayerStance;
       if (newStance == -1) {
          
          if (_playerLocalBattler) {
-            playerStance = _playerLocalBattler.stance;
+            localPlayerStance = _playerLocalBattler.stance;
          } else {
             Battler player = BattleManager.self.getPlayerBattler();
             if (player) {
-               playerStance = player.stance;
+               localPlayerStance = player.stance;
             } else {
                D.error("BattleUIManager: Couldn't get a reference to the player battler");
                return;
@@ -129,7 +129,7 @@ public class BattleUIManager : MonoBehaviour {
          }
          
       } else {
-         playerStance = (Battler.Stance) newStance;
+         localPlayerStance = (Battler.Stance) newStance;
       }
 
       foreach (AbilityButton abilityButton in abilityTargetButtons) {
@@ -321,10 +321,7 @@ public class BattleUIManager : MonoBehaviour {
          indexCounter++;
       }
 
-      if (BattleSelectionManager.self.selectedBattler == null) {
-         // TODO: Confirm with sir mike, Since caching of latest battle stance has now been implemented, should deselecting a battler force the stance to balance stance again?
-         // updateButtons(AbilityType.Undefined, (int) Battler.Stance.Balanced);
-      } else {
+      if (BattleSelectionManager.self.selectedBattler != null) {
          BattleSelectionManager.self.selectedBattler.selectThis();
       }
    }
