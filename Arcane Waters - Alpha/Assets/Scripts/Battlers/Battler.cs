@@ -755,12 +755,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public void setBattlerAbilities (List<int> basicAbilityIds, BattlerType battlerType) {
-
-      // Create initialized copies of the stances data.
-      _balancedInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.balancedStance);
-      _offenseInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.offenseStance);
-      _defensiveInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.defenseStance);
-
       if (!NetworkServer.active) {
          return;
       }
