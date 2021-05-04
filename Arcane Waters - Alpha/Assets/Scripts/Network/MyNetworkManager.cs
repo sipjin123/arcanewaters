@@ -396,9 +396,7 @@ public class MyNetworkManager : NetworkManager
             if (BattleManager.self.getActiveBattlersData().ContainsKey(player.userId)) {
                Battle activeBattle = BattleManager.self.getActiveBattlersData()[player.userId];
                if (activeBattle != null) {
-                  D.debug("Player is still in an existing battle:" + " " + activeBattle.battleId);
                   Battler activeBattlerObj = activeBattle.getBattler(player.userId);
-                  D.debug("Players battler is still active:" + " " + activeBattlerObj.health + " " + activeBattlerObj.displayedHealth+ " " + activeBattle.isOver());
 
                   if (!activeBattle.isOver()) {
                      // Reassign the updated info
