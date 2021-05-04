@@ -237,7 +237,6 @@ MonoBehaviour:
   currentAnimation: 0
   group: 0
   freezeAlpha: 0
-  logPauseTriggers: 0
   _index: 0
 --- !u!1 &1250778782417802
 GameObject:
@@ -759,7 +758,6 @@ MonoBehaviour:
   currentAnimation: 0
   group: 0
   freezeAlpha: 0
-  logPauseTriggers: 0
   _index: 0
 --- !u!1 &1361910378954146
 GameObject:
@@ -12367,7 +12365,6 @@ MonoBehaviour:
   currentAnimation: 0
   group: 0
   freezeAlpha: 0
-  logPauseTriggers: 0
   _index: 0
 --- !u!1 &2020491563635176270
 GameObject:
@@ -12674,7 +12671,6 @@ MonoBehaviour:
   currentAnimation: 0
   group: 0
   freezeAlpha: 0
-  logPauseTriggers: 0
   _index: 0
 --- !u!1 &2303740727528456134
 GameObject:
@@ -17705,7 +17701,6 @@ MonoBehaviour:
   currentAnimation: 0
   group: 0
   freezeAlpha: 0
-  logPauseTriggers: 0
   _index: 0
 --- !u!1 &5221308735025842766
 GameObject:
@@ -17813,7 +17808,6 @@ MonoBehaviour:
   currentAnimation: 0
   group: 0
   freezeAlpha: 0
-  logPauseTriggers: 0
   _index: 0
 --- !u!1 &5326684929590338027
 GameObject:
@@ -17921,7 +17915,6 @@ MonoBehaviour:
   currentAnimation: 0
   group: 0
   freezeAlpha: 0
-  logPauseTriggers: 0
   _index: 0
 --- !u!1 &5351409806282604604
 GameObject:
@@ -18162,7 +18155,6 @@ MonoBehaviour:
   currentAnimation: 0
   group: 0
   freezeAlpha: 0
-  logPauseTriggers: 0
   _index: 0
 --- !u!1 &5479664052542558197
 GameObject:
@@ -18270,7 +18262,6 @@ MonoBehaviour:
   currentAnimation: 0
   group: 0
   freezeAlpha: 0
-  logPauseTriggers: 0
   _index: 0
 --- !u!1 &5534694074991757507
 GameObject:
@@ -23624,7 +23615,6 @@ MonoBehaviour:
   currentAnimation: 0
   group: 0
   freezeAlpha: 0
-  logPauseTriggers: 0
   _index: 0
 --- !u!1 &7538153424676349664
 GameObject:
@@ -23764,7 +23754,6 @@ MonoBehaviour:
   currentAnimation: 0
   group: 0
   freezeAlpha: 0
-  logPauseTriggers: 0
   _index: 0
 --- !u!1 &8227161128579935718
 GameObject:
@@ -23872,7 +23861,6 @@ MonoBehaviour:
   currentAnimation: 0
   group: 0
   freezeAlpha: 0
-  logPauseTriggers: 0
   _index: 0
 --- !u!1 &8895359651129226206
 GameObject:

@@ -9,11 +9,17 @@ using System.Linq;
 public class BattleBars : MonoBehaviour {
    #region Public Variables
 
-   // Our components
+   // The text component displaying the battler's name
    public TextMeshProUGUI nameText;
-   public Image healthBar;
+   
+   // The filled image used to display the health bar for local players, and non-player-controlled battlers
+   public Image localHealthBar;
+
+   // The filled image used to display the health bar for remote players
+   public Image remoteHealthBar;
+
+   // The filled image used to display the timer bar for local players
    public Image timerBar;
-   public GameObject timerContainer;
 
    // Determines if this was initialized
    public bool isInitialized;
@@ -39,9 +45,6 @@ public class BattleBars : MonoBehaviour {
    }
 
    private void Start () {
-      // Only show the timer for our own player
-      timerContainer.SetActive(_battler.player == Global.player);
-
       // Note our starting position
       _startPos = _battler.transform.position;
 
@@ -49,6 +52,20 @@ public class BattleBars : MonoBehaviour {
       if (_battler.battlerType == BattlerType.AIEnemyControlled) {
          nameText.enabled = false;
       }
+
+      // Assign the health bar image to update
+      if (_battler.battlerType == BattlerType.PlayerControlled) {
+         _healthBar = (_battler.isLocalBattler()) ? localHealthBar : remoteHealthBar;
+
+         // For the local player, show the smaller battlebars with the timer
+         if (_battler.isLocalBattler()) {
+            remoteHealthBar.transform.parent.gameObject.SetActive(false);
+            localHealthBar.transform.parent.gameObject.SetActive(true);
+         }
+      } else {
+         _healthBar = localHealthBar;
+      }
+
       isInitialized = true;
 
       // Check debuff stats of the battler and update the visuals accordingly
@@ -86,7 +103,7 @@ public class BattleBars : MonoBehaviour {
 
       // Figure out how full our bars should be
       timerBar.fillAmount = _battler.getActionTimerPercent();
-      healthBar.fillAmount = ((float) _battler.displayedHealth / _battler.getStartingHealth());
+      _healthBar.fillAmount = ((float) _battler.displayedHealth / _battler.getStartingHealth());
 
       // Hide our bars while we're doing an attack
       if ((_battler != BattleSelectionManager.self.selectedBattler && !_battler.isLocalBattler()) || _battler.isAttacking) {
@@ -158,6 +175,9 @@ public class BattleBars : MonoBehaviour {
 
    // The position we started at
    protected Vector2 _startPos;
+
+   // The filled image we will be updating in real time to display health
+   protected Image _healthBar;
       
    #endregion
 }

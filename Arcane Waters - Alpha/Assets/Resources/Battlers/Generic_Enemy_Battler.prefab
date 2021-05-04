@@ -190,6 +190,7 @@ MonoBehaviour:
   currentAnimation: 0
   group: 2
   freezeAlpha: 0
+  logPauseTriggers: 0
   _index: 0
 --- !u!114 &611476246701747522
 MonoBehaviour:
@@ -442,12 +443,9 @@ MonoBehaviour:
   animGroup: 0
   waitingDots: {fileID: 0}
   targetLine: {fileID: 0}
-  targetRing: {fileID: 0}
-  targetRingRenderer: {fileID: 0}
-  smallTargetRing: {fileID: 0}
-  largeTargetRing: {fileID: 0}
   targetPoint: {fileID: 6701689944844613996}
   hasLoggedAnimationFreeze: 0
+  isAttacking: 0
   _canCastAbility: 1
   _alteredBattlerData:
     enemyName: unknown
@@ -1615,9 +1613,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nameText: {fileID: 2560166142244693361}
-  healthBar: {fileID: 8488684292983152421}
+  localHealthBar: {fileID: 8488684292983152421}
+  remoteHealthBar: {fileID: 0}
   timerBar: {fileID: 4496573309526433355}
-  timerContainer: {fileID: 3987063453117997839}
   isInitialized: 0
   isDisabled: 0
   buffIconPrefab: {fileID: 420549040733907000}
@@ -2131,7 +2129,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8df4ce09deeec74409254846b36f0c5f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f01404b11d418b44eba085340c73d9b0, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2589,9 +2587,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nameText: {fileID: 3095160228555008320}
-  healthBar: {fileID: 1005074378536172995}
+  localHealthBar: {fileID: 1005074378536172995}
+  remoteHealthBar: {fileID: 0}
   timerBar: {fileID: 6918109356834201273}
-  timerContainer: {fileID: 4630269372962960555}
   isInitialized: 0
   isDisabled: 0
   buffIconPrefab: {fileID: 420549040733907000}
@@ -2711,7 +2709,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8df4ce09deeec74409254846b36f0c5f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f01404b11d418b44eba085340c73d9b0, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1

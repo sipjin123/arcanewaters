@@ -261,7 +261,6 @@ public class TutorialPanel3 : MonoBehaviour
          refreshPanelConfig();
          TutorialManager3.self.updateArrow();
          AutoTyper.SlowlyRevealText(npcSpeechText, _npcSpeech);
-         PowerupPanel.self.updateOffset(true);
       }
    }
 
@@ -282,10 +281,8 @@ public class TutorialPanel3 : MonoBehaviour
             navigationRowButtonCanvasGroup.Hide();
             navigationRowCanvasGroup.interactable = true;
             navigationRowCanvasGroup.blocksRaycasts = true;
-            PowerupPanel.self.updateOffset(true);
             break;
          case Mode.Closed:
-            PowerupPanel.self.updateOffset(false);
             gameObject.SetActive(false);
             break;
          case Mode.NPCSpeech:
@@ -295,7 +292,6 @@ public class TutorialPanel3 : MonoBehaviour
             navigationRowButtonCanvasGroup.Show();
             navigationRowCanvasGroup.interactable = false;
             navigationRowCanvasGroup.blocksRaycasts = false;
-            PowerupPanel.self.updateOffset(true);
             break;
       }
    }

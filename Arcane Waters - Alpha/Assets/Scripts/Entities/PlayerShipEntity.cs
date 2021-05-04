@@ -582,7 +582,7 @@ public class PlayerShipEntity : ShipEntity
       hasEnteredPvP = true;
 
       fireCannonBallAtTarget(spawnPosition, fireDirection, chargeAmount, playSound);
-      triggerPowerupsOnFire();
+      triggerPowerupsOnFire(chargeAmount);
    }
 
    [Command]
@@ -605,7 +605,7 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Server]
-   protected void triggerPowerupsOnFire () {
+   protected void triggerPowerupsOnFire (float chargeAmount) {
       float multiShotMultiplier = PowerupManager.self.getPowerupMultiplierAdditive(userId, Powerup.Type.MultiShots);
 
       // If the user has the MultiShots powerup
@@ -615,7 +615,7 @@ public class PlayerShipEntity : ShipEntity
          int maxExtraShots = (int) (multiShotMultiplier * 10.0f);
          int extraShotsCounter = 0;
 
-         List<SeaEntity> nearbyEnemies = Util.getEnemiesInCircle(this, transform.position, getCannonballDistance(1.0f));
+         List<SeaEntity> nearbyEnemies = Util.getEnemiesInCircle(this, transform.position, getCannonballDistance(chargeAmount));
          foreach(SeaEntity enemy in nearbyEnemies) {
             // If we have reached the limit of extra shots, stop checking
             if (extraShotsCounter >= maxExtraShots) {
@@ -626,7 +626,7 @@ public class PlayerShipEntity : ShipEntity
             if (Random.Range(0.0f, 1.0f) <= activationChance) {
                // Successfully activated, fire an extra cannonball at the enemy
                Vector2 toEnemy = enemy.transform.position - transform.position;
-               fireCannonBallAtTarget(transform.position, toEnemy.normalized, getCannonChargeAmount(), false);
+               fireCannonBallAtTarget(transform.position, toEnemy.normalized, chargeAmount, false);
                extraShotsCounter++;
             }
          }

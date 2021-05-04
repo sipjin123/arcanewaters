@@ -70,12 +70,6 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
       _isExpanded = false;
    }
 
-   public void updateOffset (bool tutorialPanelIsShowing) {
-      Vector3 oldPos = _rectTransform.anchoredPosition;
-      oldPos.y = (tutorialPanelIsShowing) ? CONTAINER_Y_TUTORIAL_PANEL_OFFSET : CONTAINER_Y;
-      _rectTransform.anchoredPosition = oldPos;
-   }
-
    #region Private Variables
 
    // A reference to the layout group that holds the powerup icons
@@ -92,12 +86,6 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
    // How fast the icons expand / collapse
    private const float EXPAND_SPEED = 10.0f;
-
-   // The default y position of the container
-   private const float CONTAINER_Y = 63.0f;
-
-   // The y position of the container when the tutorial panel is showing
-   private const float CONTAINER_Y_TUTORIAL_PANEL_OFFSET = 198.0f;
 
    // A list of references to our current powerups
    private List<PowerupIcon> _powerupIcons = new List<PowerupIcon>();

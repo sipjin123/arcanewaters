@@ -18,6 +18,9 @@ public class PowerupIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
    // A reference to the tooltip for this powerup
    public RectTransform toolTip;
 
+   // A reference to the rect transform containing the content for the tooltip
+   public RectTransform toolTipContent;
+
    // Text fields for the name and description of this powerup
    public TextMeshProUGUI nameText, descriptionText;
 
@@ -56,7 +59,6 @@ public class PowerupIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
    public void OnPointerEnter (PointerEventData eventData) {
       toolTip.gameObject.SetActive(true);
-      keepOnScreen();
    }
 
    public void OnPointerExit (PointerEventData eventData) {
@@ -64,11 +66,21 @@ public class PowerupIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
       toolTip.anchoredPosition = new Vector2(0.0f, toolTip.anchoredPosition.y);
    }
 
-   private void keepOnScreen () {
-      Rect screenRect = Util.rectTransformToScreenSpace(toolTip);
+   private void Update () {
+      keepTooltipOnScreen();
+   }
+
+   private void keepTooltipOnScreen () {
+      Rect screenRect = Util.rectTransformToScreenSpace(toolTipContent);
+
       float distanceToRightEdge = Screen.width - screenRect.xMax;
       if (distanceToRightEdge < 0.0f) {
          toolTip.anchoredPosition += Vector2.right * distanceToRightEdge;
+      }
+
+      float distanceToLeftEdge = screenRect.xMin;
+      if (distanceToLeftEdge < 0.0f) {
+         toolTip.anchoredPosition += Vector2.right * -distanceToLeftEdge;
       }
    }
 

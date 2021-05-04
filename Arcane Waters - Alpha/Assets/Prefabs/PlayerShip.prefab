@@ -1198,6 +1198,7 @@ MonoBehaviour:
   boostFillCircle: {fileID: 4450849974061855424}
   boostBarParent: {fileID: 5066225339834016573}
   playerPortrait: {fileID: 2872083525666463054}
+  shipBars: {fileID: 4241746846664799138}
 --- !u!50 &20007
 Rigidbody2D:
   serializedVersion: 4
