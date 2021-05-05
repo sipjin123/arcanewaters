@@ -202,11 +202,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    [HideInInspector] public BattlerDamagedEvent onBattlerDamaged = new BattlerDamagedEvent();
 
-   // Determines the cast time for the aim animation
-   public const float PRE_AIM_DELAY = .15f;
-
    // Determines the aiming duration
-   public const float AIM_DURATION = 1;
+   public const float AIM_DURATION = .05f;
 
    // Determines the delay before animation the Shoot clip
    public const float PRE_SHOOT_DELAY = .1f;
@@ -1454,7 +1451,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield break;
             }
 
-            float projectileSpawnOffsetX = sourceBattler.isAttacker() ? .38f : -.38f;
+            const float offsetX = .3f;
+            float projectileSpawnOffsetX = sourceBattler.isAttacker() ? offsetX : -offsetX;
             float projectileSpawnOffsetY = .28f;
             Vector2 sourcePos = getMagicGroundPosition() + new Vector2(projectileSpawnOffsetX, projectileSpawnOffsetY);
             Vector2 targetPos = targetBattler.getMagicGroundPosition() + new Vector2(0, projectileSpawnOffsetY);
@@ -1472,12 +1470,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                // Aim gun animation
                sourceBattler.playAnim(Anim.Type.Ready_Attack);
 
-               yield return new WaitForSeconds(PRE_AIM_DELAY);
-
                // Play the sound associated for casting
                attackerAbility.playCastClipAtTarget(targetBattler.transform);
 
-               yield return new WaitForSeconds(AIM_DURATION);
+               yield return new WaitForSeconds(attackerAbility.getAimDuration());
             }
             
             // Shoot the projectile after playing cast time

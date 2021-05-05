@@ -130,7 +130,7 @@ public class AttackAbilityData : BasicAbilityData
             }
 
             // Add up the amount of time it takes to animate an entire action (Should exactly be the same with the delays set in the battler script)
-            return Battler.PRE_AIM_DELAY + Battler.AIM_DURATION
+            return getAimDuration()
                + Battler.POST_SHOOT_DELAY + Battler.PRE_SHOOT_DELAY
                + (Vector2.Distance(attacker.transform.position, target.transform.position) / projectileSpeedVal)
                + shakeLength + knockupLength + knockBackLength 
@@ -144,6 +144,17 @@ public class AttackAbilityData : BasicAbilityData
             Debug.LogWarning("Ability type is not defined for getting anim length");
             return 0;
       }
+   }
+
+   public float getAimDuration () {
+      if (classRequirement == Weapon.Class.Ranged) {
+         return Battler.AIM_DURATION * 2;
+      }
+      if (classRequirement == Weapon.Class.Rum) {
+         return Battler.AIM_DURATION;
+      }
+
+      return Battler.AIM_DURATION;
    }
 
    public float getJumpDuration (Battler source, Battler target) {
