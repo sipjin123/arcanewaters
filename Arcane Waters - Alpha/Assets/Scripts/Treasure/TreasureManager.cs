@@ -225,7 +225,7 @@ public class TreasureManager : MonoBehaviour {
    [Server]
    public bool isLastUnopenedChestInInstanceForUser (int chestId, int instanceId, int userId) {
       foreach (TreasureChest chest in _chests.Values) {
-         if (chest.instanceId == instanceId && chest.id != chestId) {
+         if (chest.instanceId == instanceId && chest.id != chestId && chest.chestType == ChestSpawnType.Site) {
             bool isOpened = false;
             foreach (int interactedUserId in chest.userIds) {
                if (interactedUserId == userId) {

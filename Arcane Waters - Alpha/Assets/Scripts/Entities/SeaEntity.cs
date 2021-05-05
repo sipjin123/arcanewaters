@@ -133,8 +133,10 @@ public class SeaEntity : NetEntity
          _outline.setVisibility(false);
          disableCollisions();
 
-         if (_burningCoroutine != null) {
-            StopCoroutine(_burningCoroutine);
+         foreach (Coroutine coroutine in _burningCoroutines) {
+            if (coroutine != null) {
+               StopCoroutine(coroutine);
+            }
          }
 
          if (this is SeaMonsterEntity) {
@@ -927,34 +929,28 @@ public class SeaEntity : NetEntity
       Status newStatus = StatusManager.self.create(statusType, strength, duration, netId);
 
       if (statusType == Status.Type.Burning) {
-         if (!newStatus.isNew) {
-            StopCoroutine(_burningCoroutine);
-         }
-         _burningCoroutine = applyDamageOverTime((int) strength, 1.0f, duration, attackerNetId);
+         _burningCoroutines.Add(applyDamageOverTime((int) strength, 1.0f, duration, attackerNetId));
       }
 
-      Rpc_ApplyStatusIcon(statusType, newStatus.isNew, duration);
+      Rpc_ApplyStatusIcon(statusType, duration);
    }
 
    [ClientRpc]
-   public void Rpc_ApplyStatusIcon (Status.Type statusType, bool isNew, float length) {
+   public void Rpc_ApplyStatusIcon (Status.Type statusType, float length) {
       // If this net entity doesn't have its prefab set up for status icons yet, don't try to add one
       if (statusEffectContainer) {
+         // If this entity already has an icon of this type, update it
+         if (_statusIcons.ContainsKey(statusType) && _statusIcons[statusType] != null) {
+            StatusIcon existingIcon = _statusIcons[statusType];
+            existingIcon.setLongestLifetime(length);
 
          // If the status effect is new, create a new icon
-         if (isNew) {
+         } else {
             StatusIcon statusIcon = StatusManager.self.getStatusIcon(statusType, length, statusEffectContainer).GetComponent<StatusIcon>();
             statusIcon.setLifetime(length);
             statusIcon.statusType = statusType;
             statusIcon.GetComponent<RectTransform>().sizeDelta = Vector2.one * 16;
             _statusIcons[statusType] = statusIcon;
-         } else {
-            // Otherwise, update the existing icon
-            StatusIcon existingIcon = _statusIcons[statusType];
-
-            if (existingIcon) {
-               existingIcon.setLifetime(length);
-            }
          }
       }
    }
@@ -1020,8 +1016,8 @@ public class SeaEntity : NetEntity
    // A dictionary of references to all the status icons currently on this sea entity
    private Dictionary<Status.Type, StatusIcon> _statusIcons = new Dictionary<Status.Type, StatusIcon>();
 
-   // A reference to a damage over time coroutine caused by burning
-   protected Coroutine _burningCoroutine = null;
+   // A reference to any damage over time coroutines caused by burning
+   protected List<Coroutine> _burningCoroutines = new List<Coroutine>();
 
    // Set to true when 'onDeath(...)' has run on this SeaEntity
    private bool _hasRunOnDeath = false;

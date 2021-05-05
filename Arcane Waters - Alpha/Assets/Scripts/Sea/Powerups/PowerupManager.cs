@@ -248,7 +248,7 @@ public class PowerupManager : MonoBehaviour {
    private const float ICE_BASE_STRENGTH = 0.1f;
 
    // The base duration for the ice effect
-   private const float ICE_BASE_DURATION = 2.5f;
+   private const float ICE_BASE_DURATION = 4.0f;
 
    // The base damage for the explosive effect
    private const float EXPLOSIVE_BASE_DAMAGE = 30.0f;

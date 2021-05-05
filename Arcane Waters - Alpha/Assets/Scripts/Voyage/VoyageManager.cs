@@ -502,7 +502,14 @@ public class VoyageManager : GenericGameManager {
       }
 
       // Launch the creation of the new voyage instance
-      requestVoyageInstanceCreation(voyageId, areaKey, false, true, leagueIndex, randomSeed, biome, difficulty);
+      if (leagueIndex == 0) {
+         // The first instance is created in the best available server
+         requestVoyageInstanceCreation(voyageId, areaKey, false, true, leagueIndex, randomSeed, biome, difficulty);
+      } else {
+         // Keep all instances of the same league in the same server
+         int serverPort = ServerNetworkingManager.self.server.networkedPort.Value;
+         ServerNetworkingManager.self.createVoyageInstanceInServer(serverPort, voyageId, areaKey, false, true, leagueIndex, randomSeed, biome, difficulty);
+      }
 
       // Wait until the voyage instance has been created
       while (!tryGetVoyage(voyageId, out Voyage voyage)) {
@@ -533,20 +540,6 @@ public class VoyageManager : GenericGameManager {
          }
       } else {
          player.spawnInNewMap(voyageId, areaKey, Direction.South);
-      }
-   }
-
-   [Server]
-   public string getHomeTownForNextBiome (Biome.Type currentBiome) {
-      Biome.Type nextBiome = Biome.getNextBiome(currentBiome);
-
-      if (Area.homeTownForBiome.TryGetValue(nextBiome, out string nextTownAreaKey)) {
-         return nextTownAreaKey;
-      } else if (Area.homeTownForBiome.TryGetValue(currentBiome, out string currentTownAreaKey)) {
-         // If the next town is not defined, return the one of the current biome
-         return currentTownAreaKey;
-      } else {
-         return Area.STARTING_TOWN;
       }
    }
 

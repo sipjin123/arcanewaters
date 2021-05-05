@@ -167,6 +167,10 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public bool hasEnteredPvP = false;
 
+   // Gets set to true when the player has unlocked the next biome, after the one of the current instance
+   [SyncVar]
+   public bool isNextBiomeUnlocked = false;
+
    // The house layout for this user, if chosen
    [SyncVar]
    public int customHouseBaseId;
@@ -827,7 +831,7 @@ public class NetEntity : NetworkBehaviour
       if (StatusManager.self.hasStatus(this.netId, Status.Type.Frozen) || StatusManager.self.hasStatus(this.netId, Status.Type.Stunned)) {
          modifier = 0f;
       } else if (StatusManager.self.hasStatus(this.netId, Status.Type.Slowed)) {
-         modifier = Mathf.Clamp(1.0f - StatusManager.self.getStatusStrength(this.netId, Status.Type.Slowed), 0.2f, 1.0f);
+         modifier = Mathf.Clamp(1.0f - StatusManager.self.getStrongestStatus(this.netId, Status.Type.Slowed), 0.2f, 1.0f);
       } else if (_isClimbing) {
          if (Time.time - _lastBodySpriteChangetime <= .2f) {
             modifier = 0;
@@ -1548,8 +1552,11 @@ public class NetEntity : NetworkBehaviour
    [Server]
    public void spawnInBiomeHomeTown () {
       Instance instance = InstanceManager.self.getInstance(instanceId);
-      Biome.Type biome = instance == null ? Biome.Type.Forest : instance.biome;
+      spawnInBiomeHomeTown(instance == null ? Biome.Type.Forest : instance.biome);
+   }
 
+   [Server]
+   public void spawnInBiomeHomeTown (Biome.Type biome) {
       if (Area.homeTownForBiome.TryGetValue(biome, out string townAreaKey)) {
          if (Area.dockSpawnForBiome.TryGetValue(biome, out string dockSpawn)) {
             spawnInNewMap(townAreaKey, dockSpawn, Direction.South);

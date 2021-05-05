@@ -147,7 +147,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
          if (Voyage.isLastLeagueMap(instance.leagueIndex)) {
             // At the end of a league, warp to the town in the next biome
-            player.spawnInNewMap(VoyageManager.self.getHomeTownForNextBiome(instance.biome));
+            player.spawnInBiomeHomeTown(Biome.getNextBiome(instance.biome));
          } else {
             if (!player.tryGetVoyage(out Voyage voyage)) {
                D.error("Error when retrieving the voyage during warp to next league instance.");
@@ -334,6 +334,11 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
          // Check that all enemies inside maps accessed through treasure sites in this instance have been defeated
          if (!instance.areAllTreasureSitesClearedOfEnemies) {
+            return false;
+         }
+
+         // In the last league map, the warp is only active if the user has unlocked the next biome
+         if (Voyage.isLastLeagueMap(instance.leagueIndex) && !player.isNextBiomeUnlocked) {
             return false;
          }
       }

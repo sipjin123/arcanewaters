@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class Status : MonoBehaviour {
+public class Status {
    #region Public Variables
 
    // The Type of Status effects

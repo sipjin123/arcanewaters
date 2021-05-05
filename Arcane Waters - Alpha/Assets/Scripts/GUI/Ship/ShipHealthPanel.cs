@@ -93,6 +93,8 @@ public class ShipHealthPanel : ClientMonoBehaviour
       }
 
       _lastHealth = Global.player.currentHealth;
+
+      PowerupPanel.self.rebuildLayoutGroup();
    }
 
    private void hide () {

@@ -19,26 +19,17 @@ public class StatusManager : MonoBehaviour {
    public Status create (Status.Type statusType, float strength, float length, uint targetNetId) {
       Status statusEffect = null;
 
-      // If the target already has the status, refresh it
-      if (hasStatus(targetNetId, statusType)) {
-         statusEffect = getStatus(targetNetId, statusType);
-         refreshStatus(statusEffect, targetNetId, length, strength);
-      }
-      // Otherwise, create a new one
-      else {
-         statusEffect = Instantiate(PrefabsManager.self.statusPrefab);
-         statusEffect.transform.SetParent(self.transform, false);
-         statusEffect.statusType = statusType;
-         statusEffect.startTime = NetworkTime.time;
-         statusEffect.endTime = statusEffect.startTime + length;
-         statusEffect.strength = strength;
+      statusEffect = new Status();
+      statusEffect.statusType = statusType;
+      statusEffect.startTime = NetworkTime.time;
+      statusEffect.endTime = statusEffect.startTime + length;
+      statusEffect.strength = strength;
 
-         // Keep track of the status effects
-         addStatus(targetNetId, statusEffect);
+      // Keep track of the status effects
+      addStatus(targetNetId, statusEffect);
 
-         // Remove the Status after the delay
-         statusEffect.removeStatusCoroutine = StartCoroutine(CO_removeStatus(targetNetId, statusEffect, length));
-      }
+      // Remove the Status after the delay
+      statusEffect.removeStatusCoroutine = StartCoroutine(CO_removeStatus(targetNetId, statusEffect, length));
 
       return statusEffect;
    }
@@ -60,22 +51,11 @@ public class StatusManager : MonoBehaviour {
       List<Status> list = new List<Status>();
 
       if (_statuses.ContainsKey(netId)) {
-         list = _statuses[netId];         
+         list = _statuses[netId];
       }
 
       list.Add(newStatus);
       _statuses[netId] = list;
-   }
-
-   private void refreshStatus (Status oldStatus, uint netId, float length, float strength) {
-      oldStatus.isNew = false;
-      oldStatus.startTime = NetworkTime.time;
-      oldStatus.endTime = oldStatus.startTime + length;
-      oldStatus.strength = strength;
-
-      StopCoroutine(oldStatus.removeStatusCoroutine);
-
-      oldStatus.removeStatusCoroutine = StartCoroutine(CO_removeStatus(netId, oldStatus, length));
    }
 
    public void removeStatus (uint netId, Status oldStatus) {
@@ -92,9 +72,6 @@ public class StatusManager : MonoBehaviour {
       }
 
       _statuses[netId] = newList;
-
-      // Now we can destroy it
-      Destroy(oldStatus.gameObject);
    }
 
    public bool hasStatus (uint netId, Status.Type statusType) {
@@ -107,6 +84,21 @@ public class StatusManager : MonoBehaviour {
       }
 
       return false;
+   }
+
+   public float getStrongestStatus (uint netId, Status.Type statusType) {
+      if (_statuses.ContainsKey(netId)) {
+         float highestStrengthOfType = 0.0f;
+         foreach (Status status in _statuses[netId]) {
+            if (status.statusType == statusType && status.strength > highestStrengthOfType) {
+               highestStrengthOfType = status.strength;
+            }
+         }
+
+         return highestStrengthOfType;
+      }
+
+      return 0.0f;
    }
 
    public float getStatusStrength (uint netId, Status.Type statusType) {

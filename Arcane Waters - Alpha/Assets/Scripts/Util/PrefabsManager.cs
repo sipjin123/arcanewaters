@@ -162,9 +162,6 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating treasure sites in league instances
    public TreasureSite treasureSiteLeaguePrefab;
 
-   // The prefab we use for creating Status effects
-   public Status statusPrefab;
-
    [Header("Texture prefabs")]
    // Prefab used to create new palette texture for material
    public Texture2D textureSquare256;

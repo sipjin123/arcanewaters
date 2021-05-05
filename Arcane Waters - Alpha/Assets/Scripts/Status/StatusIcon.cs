@@ -12,6 +12,13 @@ public class StatusIcon : MonoBehaviour {
 
    #endregion
 
+   public void setLongestLifetime (float newLifetime) {
+      // Only overwrite lifetime if the new lifetime is longer
+      if (newLifetime > _lifetime) {
+         _lifetime = newLifetime;
+      }
+   }
+
    public void setLifetime (float newLifetime) {
       _lifetime = newLifetime;
    }

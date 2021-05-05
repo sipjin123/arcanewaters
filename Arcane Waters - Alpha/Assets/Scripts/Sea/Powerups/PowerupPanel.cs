@@ -21,6 +21,9 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
    // A reference to the canvas that this panel is in
    public Canvas parentCanvas;
 
+   // A reference to the rect transform of the layout group that contains this panel
+   public RectTransform containingLayoutGroup;
+
    #endregion
 
    private void Awake () {
@@ -68,6 +71,10 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
    public void OnPointerExit (PointerEventData eventData) {
       _isExpanded = false;
+   }
+
+   public void rebuildLayoutGroup () {
+      LayoutRebuilder.ForceRebuildLayoutImmediate(containingLayoutGroup);
    }
 
    #region Private Variables

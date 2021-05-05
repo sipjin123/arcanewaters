@@ -424,7 +424,9 @@ public class InstanceManager : MonoBehaviour {
 
       // Destroy any instance-specific entities
       foreach (NetworkBehaviour entity in instance.entities) {
-         NetworkServer.Destroy(entity.gameObject);
+         if (entity != null) {
+            NetworkServer.Destroy(entity.gameObject);
+         }
       }
 
       // Remove it from our internal mapping

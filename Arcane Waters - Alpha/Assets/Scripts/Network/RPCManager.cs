@@ -4271,6 +4271,25 @@ public class RPCManager : NetworkBehaviour
       });
    }
 
+   [Server]
+   public void setNextBiomeUnlocked () {
+      // Get the next biome
+      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+      Biome.Type nextBiome = Biome.getNextBiome(instance.biome);
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Check if the user has unlocked the biome
+         bool isNextBiomeUnlocked = DB_Main.isBiomeUnlockedForUser(_player.userId, nextBiome);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Set the value in the player entity
+            _player.isNextBiomeUnlocked = isNextBiomeUnlocked;
+         });
+      });
+   }
+
    [ServerOnly]
    private bool canPlayerStayInVoyage () {
       // TODO: Setup a better solution for allowing users to bypass warping back to town
