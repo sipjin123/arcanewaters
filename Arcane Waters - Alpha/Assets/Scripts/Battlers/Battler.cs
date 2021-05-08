@@ -289,6 +289,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          D.debug("Action Coroutine has been stopped for battler! {" + userId + "}" + " : {" + enemyType + "}");
          StopCoroutine(currentActionCoroutine);
          receivedCancelState = true;
+         BattleUIManager.self.resetButtonAnimations();
          StartCoroutine(CO_ResetBattlerSpot());
       } 
    }
@@ -1522,7 +1523,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Play the magic vfx such as (Flame effect on fire element attacks)
             effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
-            EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
             
             // If the action was blocked, animate that
             if (action.wasBlocked) {
@@ -1702,6 +1702,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          case AbilityActionType.Cancel:
             targetLine.gameObject.SetActive(false);
+
+            BattleUIManager.self.resetButtonAnimations();
 
             // Cancel requires time before activating.
             yield return new WaitForSecondsDouble(timeToWait);

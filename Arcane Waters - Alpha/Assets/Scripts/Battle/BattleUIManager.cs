@@ -108,6 +108,12 @@ public class BattleUIManager : MonoBehaviour {
       self = this;
    }
 
+   public void resetButtonAnimations () {
+      foreach (AbilityButton buttonRef in abilityTargetButtons) {
+         buttonRef.playIdleAnim();
+      }
+   }
+   
    public void updateButtons () {
       updateButtons(_currentAbilityType);
    }
@@ -511,38 +517,6 @@ public class BattleUIManager : MonoBehaviour {
 
       // Whenever we have finished setting the new stance, we hide the frames
       updateButtons(_currentAbilityType, newStance);
-   }
-
-   private bool doesAttackMatchStance (AbilityButton button, Battler.Stance stance, bool logData = false) {
-      AbilityType abilityType = button.abilityType;
-      int abilityTypeIndex = button.abilityTypeIndex;
-      BasicAbilityData abilityData = null;
-
-      if (abilityType == AbilityType.Standard) {
-         if (_playerLocalBattler.getAttackAbilities().Count > 0) {
-            abilityData = _playerLocalBattler.getAttackAbilities()[abilityTypeIndex];
-            if (logData) {
-               D.adminLog("Ability Attack data is" + " : " + abilityData.itemName + " : " + abilityData.allowedStances.Length, D.ADMIN_LOG_TYPE.Ability);
-            }
-         } else {
-            D.debug("The local battler {" + _playerLocalBattler.userId + "} has no attack abilities registered to it!");
-         }
-      } else if (abilityType == AbilityType.BuffDebuff) {
-         if (_playerLocalBattler.getBuffAbilities().Count > 0) {
-            abilityData = _playerLocalBattler.getBuffAbilities()[abilityTypeIndex];
-            if (logData) {
-               D.adminLog("Ability Buff data is" + " : " + abilityData.itemName + " : " + abilityData.allowedStances.Length, D.ADMIN_LOG_TYPE.Ability);
-            }
-         }
-      }
-
-      if (abilityData != null) {
-         if (abilityData.allowedStances.Contains(stance)) {
-            return true;
-         }
-      }
-
-      return false;
    }
 
    #region Tooltips
