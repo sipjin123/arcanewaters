@@ -310,6 +310,10 @@ public class ClientMessageManager : MonoBehaviour {
             PanelManager.self.noticeScreen.show(msg.customMessage);
 
             return;
+
+         case ConfirmMessage.Type.CorrectClientVersion:
+            TitleScreen.self.continueAfterCheckingClientVersion();
+            return;
             /*case ConfirmMessage.Type.SeaWarp:
                // Pixelate the screen
                // PixelFadeEffect.self.fadeOut();

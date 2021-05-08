@@ -379,7 +379,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          return;
       }
 
-      if (InputManager.isJumpKeyPressed()) {
+      // Can't jump while interacting
+      if (InputManager.isJumpKeyPressed() && !interactingAnimation) {
          triggerJumpAction();
       }
    }
@@ -436,7 +437,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    [Command]
-   private void Cmd_NoteJump () {
+   public void Cmd_NoteJump () {
       Rpc_NoteJump();
    }
 
@@ -487,7 +488,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          foundInteractable = tryInteractNearby();
       }
 
-      if (!foundInteractable && !isMoving()) {
+      // Don't allow the player to enter the interact animation if they're jumping
+      if (!foundInteractable && !isJumping()) {
          tryInteractAnimation(faceMouseDirection);
       }
    }

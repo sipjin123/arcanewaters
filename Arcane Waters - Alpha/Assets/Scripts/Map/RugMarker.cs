@@ -46,6 +46,12 @@ public class RugMarker : MonoBehaviour
    public Color getRugColor () {
       Color[] rugLookup = null;
       Biome.Type biome = Global.player.getInstance().biome;
+      
+      // Handle special case when user is inside his own house
+      if (biome == Biome.Type.None && AreaManager.self.isHouseOfUser(Global.player.areaKey, Global.player.userId)) {
+         biome = Biome.Type.Forest;
+      }
+
       switch (biome) {
          case Biome.Type.Forest:
             rugLookup = Minimap.self.mapEditorConfig.rugLookupForest;

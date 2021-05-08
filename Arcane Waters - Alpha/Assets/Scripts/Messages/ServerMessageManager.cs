@@ -14,6 +14,25 @@ public class ServerMessageManager : MonoBehaviour
    #endregion
 
    [ServerOnly]
+   public static void On_CheckVersionMessage (NetworkConnection conn, CheckVersionMessage checkVersionMessage) {
+      // Determine the minimum client version for the client's platform
+      int minClientGameVersion;
+      if (checkVersionMessage.clientPlatform == RuntimePlatform.OSXPlayer) {
+         minClientGameVersion = GameVersionManager.self.minClientGameVersionMac;
+      } else if (checkVersionMessage.clientPlatform == RuntimePlatform.LinuxPlayer) {
+         minClientGameVersion = GameVersionManager.self.minClientGameVersionLinux;
+      } else {
+         minClientGameVersion = GameVersionManager.self.minClientGameVersionWin;
+      }
+
+      if (checkVersionMessage.clientGameVersion < minClientGameVersion) {
+         sendError(ErrorMessage.Type.ClientOutdated, conn.connectionId);
+      } else {
+         sendConfirmation(ConfirmMessage.Type.CorrectClientVersion, conn.connectionId);
+      }
+   }
+
+   [ServerOnly]
    public static void On_LogInUserMessage (NetworkConnection conn, LogInUserMessage logInUserMessage) {
       int selectedUserId = logInUserMessage.selectedUserId;
 

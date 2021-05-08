@@ -123,9 +123,6 @@ public class CropManager : NetworkBehaviour {
       CropInfo cropInfo = new CropInfo(cropType, userId, cropNumber, now, DateTimeOffset.UtcNow.ToUnixTimeSeconds(), waterInterval);
       cropInfo.areaKey = areaKey;
 
-      // Store the result
-      _crops.Add(cropInfo);
-
       // Insert it into the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          int newCropId = DB_Main.insertCrop(cropInfo, areaKey);
@@ -142,28 +139,29 @@ public class CropManager : NetworkBehaviour {
                // Registers the planting action to the achievement database for recording
                AchievementManager.registerUserAchievement(_player, ActionType.PlantCrop);
 
-               sendCropsToPlayer(cropInfo, harvestCropAchievements, false);
-            } else {
-               // In case that adding row to database failed
-               _crops.Remove(cropInfo);
+               // Checks achievements to determine if the plant will grow quickly for tutorial purposes
+               bool quickGrow = false;
+               if (harvestCropAchievements.Count < 1) {
+                  quickGrow = true;
+               }
+               foreach (AchievementData achievementData in harvestCropAchievements) {
+                  if (achievementData.count < TUTORIAL_CROP_COUNT) {
+                     quickGrow = true;
+                  }
+               }
+
+               cropInfo = getUpdatedCropInfo(quickGrow, cropInfo);
+
+               // Store the result
+               _crops.Add(cropInfo);
+
+               sendCropsToPlayer(cropInfo, false);
             }
          });
       });
    }
 
-   private void sendCropsToPlayer (CropInfo cropInfo, List<AchievementData> harvestCropAchievements, bool justGrew) {
-      // Checks achievements to determine if the plant will grow quickly for tutorial purposes
-      bool quickGrow = false;
-      if (harvestCropAchievements.Count < 1) {
-         quickGrow = true;
-      }
-      foreach (AchievementData achievementData in harvestCropAchievements) {
-         if (achievementData.count < TUTORIAL_CROP_COUNT) {
-            quickGrow = true;
-         }
-      }
-
-      cropInfo = getUpdatedCropInfo(quickGrow, cropInfo);
+   private void sendCropsToPlayer (CropInfo cropInfo, bool justGrew) {
       D.adminLog("Player {" + _player.userId + "} just finished interacting with crop Level:{"
          + cropInfo.growthLevel + "} IsMax:{"
          + cropInfo.isMaxLevel() + "}", D.ADMIN_LOG_TYPE.Crop);
@@ -180,6 +178,7 @@ public class CropManager : NetworkBehaviour {
       foreach (CropInfo crop in _crops) {
          if (crop.cropNumber == cropNumber && crop.cropType != Crop.Type.None) {
             cropToWater = crop;
+            break;
          }
       }
 
@@ -211,7 +210,6 @@ public class CropManager : NetworkBehaviour {
          int xp = Crop.getXP(cropToWater.cropType);
          DB_Main.addJobXP(_player.userId, Jobs.Type.Farmer, xp);
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
-         List<AchievementData> harvestCropAchievements = DB_Main.getAchievementData(_player.userId, ActionType.HarvestCrop);
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -230,7 +228,7 @@ public class CropManager : NetworkBehaviour {
                + "} EndTime:{" + NetworkTime.time.ToString("f1") + "} Duration is:{"
                + (NetworkTime.time - startWaterTime).ToString("f1") + "}", D.ADMIN_LOG_TYPE.Crop);
 
-            sendCropsToPlayer(cropToWater, harvestCropAchievements, true);
+            sendCropsToPlayer(cropToWater, true);
          });
       });
    }

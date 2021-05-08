@@ -257,7 +257,7 @@ public class LoggerManager : MonoBehaviour {
    
    #region Private Variables
    const string VERSION = "3";
-   // const string SERVER_URL = "http://127.0.0.1:3000/";
+   // const string SERVER_URL = "https://localhost:5001/";
    const string SERVER_URL = "https://tools.arcanewaters.com/";
    const string API_MESSAGES_URL = SERVER_URL + "api/logger/add";
    const string API_SALT = "as5HU5_YhkPaRWpr+dxmBMq#eTWAx98fu8XJF-b2Rg@AWtgF*8EqaEvLedMexk";

@@ -1713,6 +1713,7 @@ MonoBehaviour:
   voyageGroupId: -1
   isGhost: 0
   hasEnteredPvP: 0
+  isNextBiomeUnlocked: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
   guildIconBorder: 

@@ -170,6 +170,8 @@ public class Minimap : ClientMonoBehaviour {
          TilemapToTextureColorsStatic(area, instance.biome, false);
       } else if (AreaManager.self.isFarmOfUser(Global.player.areaKey, Global.player.userId)) {
          TilemapToTextureColorsStatic(area, Biome.Type.Forest, false);
+      } else if (AreaManager.self.isHouseOfUser(Global.player.areaKey, Global.player.userId)) {
+         TilemapToTextureColorsStatic(area, Biome.Type.Forest, false);
       } else {
          // Change the background image
          backgroundImage.sprite = ImageManager.getSprite("Minimaps/" + area.areaKey);

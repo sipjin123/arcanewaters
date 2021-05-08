@@ -138,6 +138,12 @@ public class MyNetworkManager : NetworkManager
    public override void OnClientConnect (NetworkConnection conn) {
       // This code is called on the client after connecting to a server
 
+      // Check version
+      CheckVersionMessage checkVersionMessage = new CheckVersionMessage(Global.netId, Global.clientGameVersion, Application.platform);
+      NetworkClient.Send(checkVersionMessage);
+   }
+
+   public void continueConnectAfterClientVersionChecked () {
       // Now that we have a connection, we can send our login credentials
       ClientManager.sendAccountNameAndUserId();
 

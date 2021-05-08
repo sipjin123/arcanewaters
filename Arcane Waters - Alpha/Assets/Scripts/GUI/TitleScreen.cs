@@ -166,15 +166,18 @@ public class TitleScreen : MonoBehaviour {
       MyNetworkManager.self.StopClient();
 
       if (isSteam || (!isSteam && passwordInputField.text.Length > 0 && accountInputField.text.Length > 0)) {
-         PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.Login);
-
-         LoadingUtil.executeAfterFade(() => {
-            // Start up the Network Client, which triggers the rest of the login process
-            MyNetworkManager.self.StartClient();
-         });
+         // Start up the Network Client, which triggers the rest of the login process
+         MyNetworkManager.self.StartClient();
       } else {
          displayError(ErrorMessage.Type.FailedUserOrPass);
       }
+   }
+
+   public void continueAfterCheckingClientVersion () {
+      PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.Login);
+      LoadingUtil.executeAfterFade(() => {
+         MyNetworkManager.self.continueConnectAfterClientVersionChecked();
+      });
    }
 
    public void openOptionsPanel () {

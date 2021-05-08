@@ -729,7 +729,6 @@ public class NetEntity : NetworkBehaviour
          return;
       }
 
-      interactingAnimation = true;
       foreach (Animator animator in _animators) {
          switch (animType) {
             case Anim.Type.Interact_East:
@@ -759,11 +758,13 @@ public class NetEntity : NetworkBehaviour
          case Anim.Type.Interact_North:
          case Anim.Type.Interact_South:
             StartCoroutine(CO_DelayExitAnim(animType, 0.4f));
+            interactingAnimation = true;
             break;
          case Anim.Type.Pet_East:
          case Anim.Type.Pet_North:
          case Anim.Type.Pet_South:
             StartCoroutine(CO_DelayExitAnim(animType, 1.4f));
+            interactingAnimation = true;
             break;
          case Anim.Type.NC_Jump_East:
          case Anim.Type.NC_Jump_North:
@@ -1172,7 +1173,8 @@ public class NetEntity : NetworkBehaviour
          if (InputManager.isPressingDirection(direction)) {
             // Check if we need to update our facing direction SyncVar
             Direction newFacingDirection = DirectionUtil.getFacingDirection(hasDiagonals, direction);
-            if (this.facing != newFacingDirection) {
+            // Don't update the facing direction if we're performing an interact animation
+            if (this.facing != newFacingDirection && !interactingAnimation) {
                this.facing = newFacingDirection;
 
                // Tell the server to pass it along to all clients
@@ -1182,11 +1184,16 @@ public class NetEntity : NetworkBehaviour
             // Figure out the force vector we should apply
             Vector2 forceToApply = DirectionUtil.getVectorForDirection(direction);
             float baseMoveSpeed = getMoveSpeed();
-            if (isSpeedingUp) {
-               float speedupMultiplier = SPEEDUP_MULTIPLIER_LAND + PerkManager.self.getPerkMultiplierAdditive(Perk.Category.WalkingSpeed);
-               baseMoveSpeed *= speedupMultiplier;
+            float speedupMultiplier = SPEEDUP_MULTIPLIER_LAND;
+
+            // Slow the player down if they're performing an interaction animation
+            if (interactingAnimation) {
+               speedupMultiplier *= 0.25f;
+            } else if (isSpeedingUp) {
+               speedupMultiplier += PerkManager.self.getPerkMultiplierAdditive(Perk.Category.WalkingSpeed);
             }
 
+            baseMoveSpeed *= speedupMultiplier;
             _body.AddForce(forceToApply.normalized * baseMoveSpeed * frameRateMultiplier);
 
             // Make note of the time
@@ -1399,6 +1406,11 @@ public class NetEntity : NetworkBehaviour
                _isDoingHalfBounce = true;
             } else {
                _isDoingHalfBounce = false;
+            }
+
+            PlayerBodyEntity body = getPlayerBodyEntity();
+            if (body && isLocalPlayer) {
+               body.Cmd_NoteJump();
             }
          }
       }

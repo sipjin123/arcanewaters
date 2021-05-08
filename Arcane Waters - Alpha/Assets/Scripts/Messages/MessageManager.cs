@@ -35,12 +35,14 @@ public class MessageManager : MonoBehaviour {
    }
 
    public static void registerServerHandlers () {
+      NetworkServer.RegisterHandler<CheckVersionMessage>(ServerMessageManager.On_CheckVersionMessage);
       NetworkServer.RegisterHandler<LogInUserMessage>(ServerMessageManager.On_LogInUserMessage);
       NetworkServer.RegisterHandler<CreateUserMessage>(ServerMessageManager.On_CreateUserMessage);
       NetworkServer.RegisterHandler<DeleteUserMessage>(ServerMessageManager.On_DeleteUserMessage);
    }
 
    public static void unregisterServerHandlers () {
+      NetworkServer.UnregisterHandler<CheckVersionMessage>();
       NetworkServer.UnregisterHandler<LogInUserMessage>();
       NetworkServer.UnregisterHandler<CreateUserMessage>();
       NetworkServer.UnregisterHandler<DeleteUserMessage>();
