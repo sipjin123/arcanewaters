@@ -26,6 +26,9 @@ public class FloatAndStop : MonoBehaviour {
    // Alters the transform using an animator instead of this script
    public bool animateTransform;
 
+   // The icon border
+   public GameObject border;
+
    #endregion
 
    void Start () {

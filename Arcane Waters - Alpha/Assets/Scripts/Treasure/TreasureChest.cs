@@ -492,7 +492,9 @@ public class TreasureChest : NetworkBehaviour {
       image.sprite = powerupData.spriteIcon;
 
       // Set the name text
-      floatingIcon.GetComponentInChildren<FloatAndStop>().nameText.text = powerupData.powerupName;
+      FloatAndStop floatAndStopReference = floatingIcon.GetComponentInChildren<FloatAndStop>();
+      floatAndStopReference.nameText.text = powerupData.powerupName;
+      floatAndStopReference.border.SetActive(true);
 
       isWaitingForServerResponse = false;
 
