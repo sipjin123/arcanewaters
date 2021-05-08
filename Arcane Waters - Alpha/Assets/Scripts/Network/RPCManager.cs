@@ -4391,17 +4391,17 @@ public class RPCManager : NetworkBehaviour
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveRefinementRequirements(_player.connectionToClient, xmlId, ingredients.ToArray());
+            Target_ReceiveRefinementRequirements(_player.connectionToClient, xmlId, ingredients.ToArray(), itemToRefine);
          });
       });
    }
 
    [TargetRpc]
-   public void Target_ReceiveRefinementRequirements (NetworkConnection connection, int xmlId, Item[] itemList) {
+   public void Target_ReceiveRefinementRequirements (NetworkConnection connection, int xmlId, Item[] itemList, Item itemToRefine) {
       CraftingPanel panel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
 
       // Refresh the panel
-      panel.receiveRefineRequirementsForItem(xmlId, itemList);
+      panel.receiveRefineRequirementsForItem(xmlId, itemList, itemToRefine);
    }
 
    [TargetRpc]

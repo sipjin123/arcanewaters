@@ -52,7 +52,7 @@ public class CraftingPanel : Panel
    public Text itemNameText;
 
    // The description of the result item
-   public Text descriptionText;
+   public Text descriptionText, refinementDescriptionText;
 
    // The stat cells for each element
    public CraftingStatColumn physicalStatColumn;
@@ -126,6 +126,7 @@ public class CraftingPanel : Panel
       waterStatColumn.clear();
 
       descriptionText.text = "";
+      refinementDescriptionText.text = "";
       itemNameText.text = "";
    }
 
@@ -447,7 +448,7 @@ public class CraftingPanel : Panel
       refineableItemsHolder.gameObject.DestroyChildren();
       loadBlockerRefinementList.SetActive(false);
       loadBlockerRefinementIngredients.SetActive(false);
-
+      refineButton.interactable = false;
       foreach (Item item in itemList) {
          ItemCell itemCell = Instantiate(itemCellPrefab, refineableItemsHolder);
          itemCell.setCellForItem(item);
@@ -480,10 +481,11 @@ public class CraftingPanel : Panel
       }
    }
 
-   public void receiveRefineRequirementsForItem (int xmlId, Item[] currentPlayerItems) {
+   public void receiveRefineRequirementsForItem (int xmlId, Item[] currentPlayerItems, Item itemToRefine) {
       // Display requirements here
       refinementIngredientsHolder.gameObject.DestroyChildren();
       loadBlockerRefinementIngredients.SetActive(false);
+      bool hasSufficientRequirements = true;
 
       // TODO: Replace this hard coded id into the id that is set in the web tool
       foreach (Item requiredItem in CraftingManager.self.getRefinementData(xmlId).combinationRequirements) {
@@ -492,14 +494,17 @@ public class CraftingPanel : Panel
          requiredItemCell.setCellForItem(requiredItem);
 
          int currentPlayerInventory = currentPlayerItem == null ? 0 : currentPlayerItem.count;
-         requiredItemCell.itemCountText.text = requiredItem.count + "/" + currentPlayerInventory.ToString();
+         requiredItemCell.itemCountText.text = currentPlayerInventory.ToString() + "/" + requiredItem.count;
          if (currentPlayerInventory >= requiredItem.count) {
             requiredItemCell.itemCountText.color = Color.green;
          } else {
             requiredItemCell.itemCountText.color = Color.red;
+            hasSufficientRequirements = false;
          }
       }
+      refinementDescriptionText.text = EquipmentXMLManager.self.getItemDescription(itemToRefine);
       loadBlockerRefinementIngredients.SetActive(false);
+      refineButton.interactable = hasSufficientRequirements;
    }
 
    private void updateNavigationButtons () {
