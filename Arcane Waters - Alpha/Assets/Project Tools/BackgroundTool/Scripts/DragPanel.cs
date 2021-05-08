@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using MapCreationTool;
 
 namespace BackgroundTool
 {
@@ -42,7 +43,13 @@ namespace BackgroundTool
 
       #endregion
 
-      public void OnMouseDown () {
+      private void Start () {
+         EventTrigger eventTrigger = GetComponent<EventTrigger>();
+         Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerDown, (e) => onClicked());
+         Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerUp, (e) => onReleased()); 
+      }
+
+      public void onClicked () {
          if (ImageManipulator.self.draggedObjList.Count > 0) {
             ImageManipulator.self.isHoveringHighlight = false;
          }
@@ -88,7 +95,7 @@ namespace BackgroundTool
          }
       }
 
-      public void OnMouseUp () {
+      public void onReleased () {
          if (isDragging) {
             List<SpriteTemplate> spawnedSpriteList = new List<SpriteTemplate>();
             List<SpriteSelectionTemplate> spriteSelectionList = new List<SpriteSelectionTemplate>();

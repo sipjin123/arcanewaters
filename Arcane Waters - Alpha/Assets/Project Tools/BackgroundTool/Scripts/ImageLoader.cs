@@ -168,7 +168,7 @@ namespace BackgroundTool
             float previousBounds = 0;
             foreach (ImageManager.ImageData imgData in spriteIconFiles) {
                GameObject prefab = Instantiate(emptySprite, spriteParent);
-
+               prefab.name = "placeable prefab";
                float spriteHeight = imgData.sprite.bounds.size.y;
 
                if (imgData.imageName.ToLower().Contains("tree")) {
@@ -190,6 +190,7 @@ namespace BackgroundTool
                previousBounds = Mathf.Abs(newYValue);
 
                SpriteSelectionTemplate spriteTemplate = prefab.GetComponent<SpriteSelectionTemplate>();
+               spriteTemplate.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.None;
                spriteTemplate.spriteIcon.sprite = imgData.sprite;
                spriteTemplate.spritePath = imgData.imagePath;
                spriteTemplate.layerType = layerType;

@@ -45,14 +45,14 @@ namespace BackgroundTool
          isHighlighted = isEnabled;
       }
 
-      public void OnMouseDown () {
+      public void onClicked () {
          if (hasActiveClicker) {
             if (isHighlighted && ImageManipulator.self.draggedObjList.Count > 0) {
                ImageManipulator.self.isHoveringHighlight = true;
                return;
             }
 
-            if (!ImageManipulator.self.isDragging && !EventSystem.current.IsPointerOverGameObject() &&
+            if (!ImageManipulator.self.isDragging && 
                !ImageManipulator.self.isSpawning) {
                List<SpriteTemplate> spriteTemp = new List<SpriteTemplate>();
                spriteTemp.Add(this);

@@ -296,6 +296,17 @@ namespace BackgroundTool
          bool dragSpawnableGroup = draggedObjList.Count > 0 && isDragging;
          bool dragHighlightedSpawnedGroup = !isSpawning && draggedObjList.Count > 0 && KeyUtils.GetButton(MouseButton.Left) && isHoveringHighlight;
 
+         Vector2 newPousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+         RaycastHit2D hitx = Physics2D.Raycast(newPousePos, Vector2.zero);
+         if (hitx) {
+            if (hitx.collider.gameObject.GetComponent<DragPanel>() != null) {
+               DragPanel spriteSelect = hitx.collider.GetComponent<DragPanel>();
+               if (KeyUtils.GetButtonUp(MouseButton.Left) && spriteSelect != null) {
+                  spriteSelect.onReleased();
+               }
+            }
+         }
+
          // Cache initial mouse position upon click
          if (dragHighlightedSpawnedGroup && KeyUtils.GetButtonDown(MouseButton.Left)) {
             Vector3 pos = _mainCam.ScreenToWorldPoint(MouseUtils.mousePosition);
@@ -329,7 +340,7 @@ namespace BackgroundTool
          }
 
          // Cancel spawn sprite mode
-         if (KeyUtils.GetButtonDown(MouseButton.Right)) {
+         if (KeyUtils.GetButtonDown(MouseButton.Right) || KeyUtils.GetKeyDown(Key.Escape)) {
             if (isSpawning) {
                isSpawning = false;
                foreach (DraggableContent draggableContent in draggedObjList) {

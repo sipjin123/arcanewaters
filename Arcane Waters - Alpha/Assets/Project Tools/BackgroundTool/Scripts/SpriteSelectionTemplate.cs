@@ -9,8 +9,7 @@ using UnityEngine.InputSystem;
 
 namespace BackgroundTool
 {
-   public class SpriteSelectionTemplate : MonoBehaviour
-   {
+   public class SpriteSelectionTemplate : MonoBehaviour {
       #region Public Variables
 
       // The image of the sprite selection
@@ -30,7 +29,7 @@ namespace BackgroundTool
 
       #endregion
 
-      public void OnMouseDown () {
+      public void OnPointerDown () {
          if (!ImageManipulator.self.isDragging) {
             bool withinRectTrans = RectTransformUtility.RectangleContainsScreenPoint(ImageManipulator.self.rectReference, new Vector2(MouseUtils.mousePosition.x, MouseUtils.mousePosition.y));
             if (withinRectTrans) {
@@ -42,7 +41,7 @@ namespace BackgroundTool
          }
       }
 
-      public void OnMouseEnter () {
+      public void OnPointerEnter () {
          bool withinRectTrans = RectTransformUtility.RectangleContainsScreenPoint(ImageManipulator.self.rectReference, new Vector2(MouseUtils.mousePosition.x, MouseUtils.mousePosition.y));
          if (withinRectTrans) {
             spriteIcon.color = Color.blue;
@@ -51,7 +50,7 @@ namespace BackgroundTool
          }
       }
 
-      public void OnMouseExit () {
+      public void OnPointerExit () {
          spriteIcon.color = Color.white;
       }
 
