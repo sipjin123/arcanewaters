@@ -197,10 +197,8 @@ public class BattleManager : MonoBehaviour {
       // Add the Battler to the Battle
       if (teamType == Battle.TeamType.Attackers) {
          battle.attackers.Add(battler.userId);
-         D.adminLog("Adding battler Enemy as Attacker" + " UID: " + battler.userId + " Type: " + battler.enemyType + " AtkrCount: " + battle.attackers.Count, D.ADMIN_LOG_TYPE.Boss);
       } else if (teamType == Battle.TeamType.Defenders) {
          battle.defenders.Add(battler.userId);
-         D.adminLog("Adding battler Enemy as Defender" + " UID: " + battler.userId + " Type: " + battler.enemyType + " DefrCount: " + battle.defenders.Count, D.ADMIN_LOG_TYPE.Boss);
       }
 
       // Assign the Battle ID to the Sync Var, causing movement to stop and facing direction to change
