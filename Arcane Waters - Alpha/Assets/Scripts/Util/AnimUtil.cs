@@ -101,7 +101,7 @@ public class AnimUtil : MonoBehaviour {
                   return new AnimInfo(animType, 32, 33);
 
                case Anim.Type.Finish_Attack:
-                  return new AnimInfo(animType, 33, 34);
+                  return new AnimInfo(animType, 34, 34);
 
                case Anim.Type.Punch:
                   return new AnimInfo(animType, 32, 33);
@@ -226,6 +226,9 @@ public class AnimUtil : MonoBehaviour {
 
                case Anim.Type.Ready_Attack:
                   return new AnimInfo(animType, 24, 27);
+
+               case Anim.Type.Toast:
+                  return new AnimInfo(animType, 34, 34);
 
                case Anim.Type.Finish_Attack:
                   return new AnimInfo(animType, 28, 31);
