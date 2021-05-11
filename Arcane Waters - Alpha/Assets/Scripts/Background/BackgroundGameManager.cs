@@ -146,6 +146,9 @@ public class BackgroundGameManager : MonoBehaviour {
          spriteTempObj.transform.SetParent(board.centerPoint);
 
          SpriteTemplate spriteTemp = spriteTempObj.GetComponent<SpriteTemplate>();
+         if (spriteTemp.guiClicker) { 
+            spriteTemp.guiClicker.SetActive(false);
+         }
          if (!spriteTempData.spritePath.Contains(PLACEHOLDER)) {
             float zOffset = -(spriteTempData.layerIndex - 1) - spriteTempData.zAxisOffset;
             spriteTemp.transform.localPosition = new Vector3(spriteTempData.localPositionData.x, spriteTempData.localPositionData.y, zOffset);

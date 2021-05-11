@@ -111,6 +111,7 @@ MonoBehaviour:
   createdFromPanel: 0
   isHighlighted: 0
   hasActiveClicker: 1
+  guiClicker: {fileID: 6427091249009740396}
 --- !u!114 &-459827004173542324
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -369,6 +370,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 82c16aa2d8330b04daa3869b4e2e1447, type: 3}
+--- !u!1 &6427091249009740396 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 408331789556458493, guid: 82c16aa2d8330b04daa3869b4e2e1447,
+    type: 3}
+  m_PrefabInstance: {fileID: 6672983250114996625}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &6898280600360090641 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 225372677195568512, guid: 82c16aa2d8330b04daa3869b4e2e1447,

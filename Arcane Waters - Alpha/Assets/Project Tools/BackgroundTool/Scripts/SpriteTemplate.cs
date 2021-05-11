@@ -29,6 +29,9 @@ namespace BackgroundTool
       // If the sprite can be clicked on
       public bool hasActiveClicker = true;
 
+      // The interactable canvas that is used for moving the sprite using the bg tool
+      public GameObject guiClicker;
+
       #endregion
 
       private void Start () {
