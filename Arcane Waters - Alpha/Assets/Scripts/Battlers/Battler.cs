@@ -449,8 +449,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       if (BattleSelectionManager.self.selectedBattler != this) {
          BattleSelectionManager.self.clickedArea(transform.position);
-      } else {
-         D.debug("Cannot select Battler since it is currently Selected");
       }
    }
 
@@ -973,6 +971,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Make sure the battlers are still alive at this point
             if (sourceBattler.isDead()) {
+               D.debug("The source battler {" + sourceBattler.userId + "} is dead! Cancel buff display!");
                yield break;
             }
 
@@ -1043,6 +1042,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
                // Make sure the battlers are still alive at this point
                if (sourceBattler.isDead()) {
+                  D.debug("The source battler {" + sourceBattler.userId + "} is dead! Cancel buff display!");
                   yield break;
                }
 
@@ -1197,13 +1197,17 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Make sure the source battler is still alive at this point
             if (sourceBattler.isDead()) {
+               D.debug("The source battler {" + sourceBattler.userId + "} is dead! Cancel attack display!");
                yield break;
             }
 
             if (targetBattler.displayedHealth < 1 || targetBattler.getAnim()[0].currentAnimation == Anim.Type.Death_East) {
                D.adminLog(" (4b) {" + action.actionId + "} {" + sourceBattler.userId + "} Warning! The target is dead! Cancel Attack Action from Battler Script!"
                   , D.ADMIN_LOG_TYPE.AnimationFreeze); // Fourth - B Client Sequence
-               yield break;
+               D.debug("Warning here! The battler is about to attack and enemy that is " +
+                  (targetBattler.displayedHealth < 1 ? "Display Health Zero" : "{Skip}") + " or " +
+                  (targetBattler.getAnim()[0].currentAnimation == Anim.Type.Death_East ? "AnimatingDeath" : "{Skip}"));
+               // yield break;
             }
 
             // Plays the melee cast VFX ability before jumping
@@ -1449,6 +1453,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // The unused code is on the MagicAbility script
             // Make sure the battlers are still alive at this point
             if (sourceBattler.isDead()) {
+               D.debug("The source battler {" + sourceBattler.userId + "} is dead! Cancel attack display!");
                yield break;
             }
 
@@ -1582,6 +1587,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Make sure the battlers are still alive at this point
             if (sourceBattler.isDead()) {
+               D.debug("The source battler {" + sourceBattler.userId + "} is dead! Cancel attack display!");
                yield break;
             }
 
@@ -1721,6 +1727,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // If the battle has ended, no problem
             if (battle == null) {
+               D.debug("The Battle is NULL! Cancel Action for: {" + sourceBattler.userId + "}");
                yield break;
             }
 

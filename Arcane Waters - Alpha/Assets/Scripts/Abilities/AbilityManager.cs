@@ -170,7 +170,7 @@ public class AbilityManager : MonoBehaviour
          // Hide targeting effects if the action is canceled
          if (sourceBattler.battlerType == BattlerType.PlayerControlled && action.battleActionType == BattleActionType.Cancel) {
             sourceBattler.hideTargetingEffects();
-            D.log("Action canceled");
+            D.log("Ability successfully cancelled for battler: {" + sourceBattler.userId + "}");
 
          // Show targeting effects on remote clients
          } else if (sourceBattler.battlerType == BattlerType.PlayerControlled && !sourceBattler.isLocalBattler()) {
@@ -260,7 +260,7 @@ public class AbilityManager : MonoBehaviour
                   sourceBattler.cooldownEndTime -= cancelAction.timeToSubtract;
                   sourceBattler.stopActionCoroutine();
                   sourceBattler.setBattlerCanCastAbility(true);
-                  D.log("Ability successfully canceled");
+                  D.log("Ability successfully cancelled for battler: {" + sourceBattler.userId + "}");
                } else {
                   D.log("Ability can not be canceled!");
                }

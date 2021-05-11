@@ -5530,6 +5530,9 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_StartNewBattle (uint enemyNetId, Battle.TeamType teamType) {
+      D.debug("Player is starting new battle, IsVoyageArea:{" + VoyageManager.isVoyageOrLeagueArea(_player.areaKey)
+         + "} IsTreasureSite:{" + VoyageManager.isTreasureSiteArea(_player.areaKey) + "} CanPlayerStay{" + canPlayerStayInVoyage() + "}");
+
       if (VoyageManager.isVoyageOrLeagueArea(_player.areaKey) && (!VoyageManager.isTreasureSiteArea(_player.areaKey) || !canPlayerStayInVoyage())) {
          string reason = "";
          if (VoyageManager.isTreasureSiteArea(_player.areaKey)) {
