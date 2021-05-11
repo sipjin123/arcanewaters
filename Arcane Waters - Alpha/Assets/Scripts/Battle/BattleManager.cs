@@ -979,11 +979,13 @@ public class BattleManager : MonoBehaviour {
          }
       }
 
-      if (teamThatWon == Battle.TeamType.Attackers) {
+      if (teamThatWon == Battle.TeamType.Attackers && defeatedBattlers[0].getBattlerData().enemyType != Enemy.Type.PlayerBattler) {
          // Only Spawn one lootbag per combat win
          int battlerEnemyID = (int) defeatedBattlers[0].getBattlerData().enemyType;
-         Transform[] spawnNodeTarget = ((Enemy) defeatedBattlers[0].player).lootSpawnPositions;
-         winningBattlers[0].player.rpc.spawnBattlerMonsterChest(winningBattlers[0].player.instanceId, spawnNodeTarget[0].position, battlerEnemyID);
+         if (defeatedBattlers[0].player is Enemy) {
+            Transform[] spawnNodeTarget = ((Enemy) defeatedBattlers[0].player).lootSpawnPositions;
+            winningBattlers[0].player.rpc.spawnBattlerMonsterChest(winningBattlers[0].player.instanceId, spawnNodeTarget[0].position, battlerEnemyID);
+         }
       }
 
       foreach (Battler winner in winningBattlers) {
