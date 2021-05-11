@@ -127,6 +127,7 @@ public class BugReportManager : MonoBehaviour
       int fps = Mathf.FloorToInt(((float) frameCount) / totalTime);
 
       string screenResolution = Screen.currentResolution.ToString();
+      string gameResolution = Screen.width + " x " + Screen.height;
       string operatingSystem = SystemInfo.operatingSystem;
       string steamState = SteamLoginManager.getSteamState();
 
@@ -161,6 +162,7 @@ public class BugReportManager : MonoBehaviour
       formData.Add(new MultipartFormDataSection("steamState", steamState));
       formData.Add(new MultipartFormDataSection("deploymentId", deploymentId.ToString()));
       formData.Add(new MultipartFormDataSection("playerPosition", playerPosition));
+      formData.Add(new MultipartFormDataSection("gameResolution", gameResolution));
 
       // Adding the screenshot as a form file
       formData.Add(new MultipartFormFileSection(standardTex.EncodeToPNG()));

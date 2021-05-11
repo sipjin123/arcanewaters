@@ -116,6 +116,14 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
       voyageArrow.transform.localPosition = -DirectionUtil.getVectorForDirection(arrowDirection);
    }
 
+   public bool hasCollider () {
+      return _collider;
+   }
+
+   public Bounds getColliderBounds () {
+      return _collider ? _collider.bounds : new Bounds();
+   }
+
    private void OnTriggerEnter2D (Collider2D collision) {
       NetEntity entity = collision.GetComponent<NetEntity>();
 

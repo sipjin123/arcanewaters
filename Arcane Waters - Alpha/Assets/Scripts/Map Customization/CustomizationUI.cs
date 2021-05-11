@@ -124,6 +124,10 @@ namespace MapCustomization
       }
 
       public static void ensureHidden () {
+         if (self == null || self._cGroup == null) {
+            return;
+         }
+
          Util.disableCanvasGroup(self._cGroup);
 
          _isShowing = false;

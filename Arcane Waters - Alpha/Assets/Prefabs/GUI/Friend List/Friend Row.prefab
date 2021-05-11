@@ -1915,6 +1915,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1395538311875893681}
     m_Modifications:
+    - target: {fileID: 4057386204052805271, guid: 5c20705c7cd1fef48a41c790991d9d6b,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4057386204052805271, guid: 5c20705c7cd1fef48a41c790991d9d6b,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 5153975776215992002, guid: 5c20705c7cd1fef48a41c790991d9d6b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2034,6 +2044,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Guild Icon Small
+      objectReference: {fileID: 0}
+    - target: {fileID: 6954952714548661877, guid: 5c20705c7cd1fef48a41c790991d9d6b,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6954952714548661877, guid: 5c20705c7cd1fef48a41c790991d9d6b,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c20705c7cd1fef48a41c790991d9d6b, type: 3}

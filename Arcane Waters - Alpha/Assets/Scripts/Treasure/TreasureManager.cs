@@ -19,11 +19,11 @@ public class TreasureManager : MonoBehaviour {
    // The prefab we use for creating floating icons
    public GameObject floatingIconPrefab;
 
+   // The prefab we use for creating floating map fragment icons
+   public GameObject floatingMapFragmentPrefab;
+
    // The map fragment name displayed by the floating icon
    public static string MAP_FRAGMENT_NAME = "Map Fragment";
-
-   // The map fragment sprite displayed by the floating icon
-   public Sprite mapFragmentSprite;
 
    // Self
    public static TreasureManager self;

@@ -114,6 +114,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("add_powerup", "Gives you a powerup of specified type and rarity", requestPowerup, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "powerupType", "powerupRarity" }));
       cm.addCommand(new CommandData("clear_powerups", "Clears all of your current powerups", requestClearPowerups, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("set_powerup_drop_chance", "Sets the chance for an enemy ship to drop a powerup (1.0 = 100%)", requestSetPowerupDropChance, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "dropChance" }));
+      cm.addCommand(new CommandData("unlock_world_map", "Unlocks all the biomes and town warps in the world map", unlockWorldMap, requiredPrefix: CommandType.Admin));
 
       // Log Commands for investigation
       cm.addCommand(new CommandData("xml", "Logs the xml content of the specific manager", requestXmlLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "xmlType" }));
@@ -480,6 +481,36 @@ public class AdminManager : NetworkBehaviour
       } else {
          ChatManager.self.addChat("Could not parse the isEnabled parameter (only 0 or 1 values allowed): " + parameters, ChatInfo.Type.Error);
       }
+   }
+
+   private void unlockWorldMap () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      Cmd_UnlockWorldMap();
+   }
+
+   [Command]
+   protected void Cmd_UnlockWorldMap () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<Biome.Type> unlockedBiomeList = DB_Main.getUnlockedBiomes(_player.userId);
+
+         foreach (Biome.Type biome in Enum.GetValues(typeof(Biome.Type))) {
+            if (!unlockedBiomeList.Contains(biome)) {
+               DB_Main.addUnlockedBiome(_player.userId, biome);
+            }
+         }
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            _player.Target_ReceiveNormalChat("The world map has been unlocked", ChatInfo.Type.System);
+         });
+      });
    }
 
    [Command]

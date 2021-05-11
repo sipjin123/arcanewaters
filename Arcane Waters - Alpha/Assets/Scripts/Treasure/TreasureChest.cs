@@ -459,13 +459,10 @@ public class TreasureChest : NetworkBehaviour {
       yield return new WaitForSeconds(animationDuration);
 
       // Create a floating icon
-      GameObject floatingIcon = Instantiate(TreasureManager.self.floatingIconPrefab, Vector3.zero, Quaternion.identity);
+      GameObject floatingIcon = Instantiate(TreasureManager.self.floatingMapFragmentPrefab, Vector3.zero, Quaternion.identity);
       floatingIcon.transform.SetParent(this.transform);
       floatingIcon.transform.localPosition = new Vector3(0f, .04f);
       
-      Image image = floatingIcon.GetComponentInChildren<Image>();
-      image.sprite = TreasureManager.self.mapFragmentSprite;
-
       // Set the name text
       floatingIcon.GetComponentInChildren<FloatAndStop>().nameText.text = TreasureManager.MAP_FRAGMENT_NAME;
 

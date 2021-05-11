@@ -125,30 +125,6 @@ public class FriendListPanel : Panel
       friendRowsContainer.DestroyChildren();
       friendRequestRowsContainer.DestroyChildren();
 
-      // Create the friend rows
-      foreach (FriendshipInfo friend in friendshipInfoList) {
-         // Use different prefabs and parameters for each tab
-         switch (friendshipStatus) {
-            case Friendship.Status.InviteSent:
-               // Instantiate and initialize the row
-               FriendshipRequestSentRow rowSent = Instantiate(friendshipRequestSentRowPrefab, friendRequestRowsContainer.transform, false);
-               rowSent.setRowForFriendshipInfo(friend);
-               break;
-            case Friendship.Status.InviteReceived:
-               // Instantiate and initialize the row
-               FriendshipRequestReceivedRow rowReceived = Instantiate(friendshipRequestReceivedRowPrefab, friendRequestRowsContainer.transform, false);
-               rowReceived.setRowForFriendshipInfo(friend);
-               break;
-            case Friendship.Status.Friends:
-               // Instantiate and initialize the row
-               FriendListRow rowFriend = Instantiate(friendRowPrefab, friendRowsContainer.transform, false);
-               rowFriend.setRowForFriendshipInfo(friend);
-               break;
-            default:
-               break;
-         }
-      }
-
       // Select the correct tab
       switch (friendshipStatus) {
          case Friendship.Status.InviteSent:
@@ -183,6 +159,30 @@ public class FriendListPanel : Panel
             break;
          default:
             break;
+      }
+
+      // Create the friend rows
+      foreach (FriendshipInfo friend in friendshipInfoList) {
+         // Use different prefabs and parameters for each tab
+         switch (friendshipStatus) {
+            case Friendship.Status.InviteSent:
+               // Instantiate and initialize the row
+               FriendshipRequestSentRow rowSent = Instantiate(friendshipRequestSentRowPrefab, friendRequestRowsContainer.transform, false);
+               rowSent.setRowForFriendshipInfo(friend);
+               break;
+            case Friendship.Status.InviteReceived:
+               // Instantiate and initialize the row
+               FriendshipRequestReceivedRow rowReceived = Instantiate(friendshipRequestReceivedRowPrefab, friendRequestRowsContainer.transform, false);
+               rowReceived.setRowForFriendshipInfo(friend);
+               break;
+            case Friendship.Status.Friends:
+               // Instantiate and initialize the row
+               FriendListRow rowFriend = Instantiate(friendRowPrefab, friendRowsContainer.transform, false);
+               rowFriend.setRowForFriendshipInfo(friend);
+               break;
+            default:
+               break;
+         }
       }
 
       // Update the pending friendship request notification

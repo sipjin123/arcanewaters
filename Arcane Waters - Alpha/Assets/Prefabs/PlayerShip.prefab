@@ -1073,6 +1073,7 @@ MonoBehaviour:
   voyageGroupId: -1
   isGhost: 0
   hasEnteredPvP: 0
+  isNextBiomeUnlocked: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
   guildIconBorder: 
@@ -1123,25 +1124,28 @@ MonoBehaviour:
       type: 3}
     speedBoostSpriteBack: {fileID: -8324121184711729553, guid: 22f898053f28f8c4988509a1d4e0477c,
       type: 3}
-    boostCircleOutline: {fileID: 21300000, guid: 33d4afa8c4d9045429c506723e64189c,
+    boostCircleOutline: {fileID: -7169502134078171813, guid: 1e9b4bc307e66ef45b429839cac872d9,
       type: 3}
-    boostCircleFill: {fileID: 21300000, guid: ebaf6be36c4ac67479a222cb40c5a8a0, type: 3}
+    boostCircleFill: {fileID: -3135531479543252062, guid: cc150d4a0387be0489f34e9cfb763306,
+      type: 3}
   - shipSize: 2
     speedBoostSpriteFront: {fileID: 8799653914425054584, guid: f2a50f60810a067469aedca9fed7fc32,
       type: 3}
     speedBoostSpriteBack: {fileID: -2648452905745815880, guid: 8f84c938a382c2b48a9c321267fa4c0f,
       type: 3}
-    boostCircleOutline: {fileID: 21300000, guid: ee8e3318ea391714991d660c71f54b9c,
+    boostCircleOutline: {fileID: -2656365564412667943, guid: 4efe0390bedfcd8479b9894b44a9c955,
       type: 3}
-    boostCircleFill: {fileID: 21300000, guid: 1ea86ea952b68c54ca56bfa3727fc969, type: 3}
+    boostCircleFill: {fileID: 4876365252133241552, guid: 5eab1ec14f282864facfde89395acca9,
+      type: 3}
   - shipSize: 3
     speedBoostSpriteFront: {fileID: -8530885898770274208, guid: 857ade54972acda48a7dd7ba74304aef,
       type: 3}
     speedBoostSpriteBack: {fileID: -8324121184711729553, guid: 22f898053f28f8c4988509a1d4e0477c,
       type: 3}
-    boostCircleOutline: {fileID: 21300000, guid: 8def250a3e8487845bc29b252240fd4f,
+    boostCircleOutline: {fileID: 6299092245989404372, guid: d4f7bbf54c79959448391c5382d909b6,
       type: 3}
-    boostCircleFill: {fileID: 21300000, guid: b802bbfebd5218e4a88c41cd99cdf9cc, type: 3}
+    boostCircleFill: {fileID: -9084274857696686815, guid: 211ba1659654de54fa8fe1f1e8edbfe1,
+      type: 3}
   shipSizeSpriteCache:
     shipSize: 0
     speedBoostSpriteFront: {fileID: 0}
@@ -1199,6 +1203,8 @@ MonoBehaviour:
   boostBarParent: {fileID: 5066225339834016573}
   playerPortrait: {fileID: 2872083525666463054}
   shipBars: {fileID: 4241746846664799138}
+  boostCircleOutlineAnimator: {fileID: 3972284782895464361}
+  boostCircleFillAnimator: {fileID: 466632894573816548}
 --- !u!50 &20007
 Rigidbody2D:
   serializedVersion: 4
@@ -2804,6 +2810,7 @@ GameObject:
   - component: {fileID: 2788306077375720560}
   - component: {fileID: 4450849974061855424}
   - component: {fileID: 5218820553153269490}
+  - component: {fileID: 466632894573816548}
   m_Layer: 8
   m_Name: CircleFill
   m_TagString: Untagged
@@ -2864,7 +2871,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: ebaf6be36c4ac67479a222cb40c5a8a0, type: 3}
+  m_Sprite: {fileID: -3135531479543252062, guid: cc150d4a0387be0489f34e9cfb763306,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2888,6 +2896,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   newTexture: {fileID: 0}
+--- !u!95 &466632894573816548
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3047466018472492361}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 11860c24ece3cca4497cfbe2db8de382, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &3114109023007965077
 GameObject:
   m_ObjectHideFlags: 0
@@ -3330,6 +3357,7 @@ GameObject:
   - component: {fileID: 4024937072554858180}
   - component: {fileID: 4202016338663336180}
   - component: {fileID: 675334368486436880}
+  - component: {fileID: 3972284782895464361}
   m_Layer: 8
   m_Name: CircleOutline
   m_TagString: Untagged
@@ -3390,7 +3418,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 33d4afa8c4d9045429c506723e64189c, type: 3}
+  m_Sprite: {fileID: -7169502134078171813, guid: 1e9b4bc307e66ef45b429839cac872d9,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.8}
   m_FlipX: 0
   m_FlipY: 0
@@ -3414,6 +3443,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   newTexture: {fileID: 0}
+--- !u!95 &3972284782895464361
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3335497510624306688}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 67eaf931484754046b47bf9e9dea972a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &3776101598272383736
 GameObject:
   m_ObjectHideFlags: 0
@@ -7074,6 +7122,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4bc53f6d1c2dbe444ba4d9cd276b0a23, type: 3}
+--- !u!224 &2872083525666463053 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3792861630930390434, guid: 4bc53f6d1c2dbe444ba4d9cd276b0a23,
+    type: 3}
+  m_PrefabInstance: {fileID: 1403226637596184815}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &5551809496225748552 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6805711320569366183, guid: 4bc53f6d1c2dbe444ba4d9cd276b0a23,
@@ -7086,12 +7140,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3c92048c62ffc34587fc92d8c058731, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &2872083525666463053 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 3792861630930390434, guid: 4bc53f6d1c2dbe444ba4d9cd276b0a23,
-    type: 3}
-  m_PrefabInstance: {fileID: 1403226637596184815}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2872083525666463054 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3792861630930390433, guid: 4bc53f6d1c2dbe444ba4d9cd276b0a23,
@@ -7172,15 +7220,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d30416cd843e7e846a649c9fdacb75e2, type: 3}
---- !u!4 &3528694981534091233 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1990597497093218664, guid: d30416cd843e7e846a649c9fdacb75e2,
-    type: 3}
-  m_PrefabInstance: {fileID: 3123374448880576137}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3318682353992999856 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 384530586105201977, guid: d30416cd843e7e846a649c9fdacb75e2,
+    type: 3}
+  m_PrefabInstance: {fileID: 3123374448880576137}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3528694981534091233 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1990597497093218664, guid: d30416cd843e7e846a649c9fdacb75e2,
     type: 3}
   m_PrefabInstance: {fileID: 3123374448880576137}
   m_PrefabAsset: {fileID: 0}

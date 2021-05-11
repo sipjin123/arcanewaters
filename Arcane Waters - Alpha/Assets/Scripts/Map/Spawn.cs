@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using MapCreationTool.Serialization;
 using System;
+using System.Collections.Generic;
 
 public class Spawn : MonoBehaviour, IMapEditorDataReceiver {
    #region Public Variables
@@ -38,14 +39,36 @@ public class Spawn : MonoBehaviour, IMapEditorDataReceiver {
    }
 
    public Vector2 getRandomPositionOffset () {
-      if (_spawnBox == null || (_spawnBox.size.x == 1 && _spawnBox.size.y == 1)) {
+      if (_spawnBox == null) {
          return Vector2.zero;
       }
 
       float x = UnityEngine.Random.Range(_spawnBox.size.x * (-0.5f), _spawnBox.size.x * 0.5f) * transform.localScale.x;
       float y = UnityEngine.Random.Range(_spawnBox.size.y * (-0.5f), _spawnBox.size.y * 0.5f) * transform.localScale.y;
 
-      return new Vector2(x, y);
+      Vector2 offsetPos = new Vector2(x, y);
+      Vector2 worldPos = offsetPos + (Vector2)this.transform.position;
+
+      Area area = AreaManager.self.getArea(_areaKey);
+      if (area) {
+         List<Warp> warps = area.getWarps();
+         foreach (Warp warp in warps) {
+            // If player is too close to warp, just spawn in the middle of the spawn bounds
+            if (warp.hasCollider() && (warp.getColliderBounds().Contains(worldPos) || Vector2.Distance(warp.getColliderBounds().ClosestPoint(worldPos), worldPos) < 0.05f)) {
+               return Vector2.zero;
+            }
+         }
+
+         List<GenericActionTrigger> leagueWarps = area.getLeagueWarpTriggers();
+         foreach (GenericActionTrigger warp in leagueWarps) {
+            // If player is too close to warp, just spawn in the middle of the spawn bounds
+            if (warp.hasCollider() && (warp.getColliderBounds().Contains(worldPos) || Vector2.Distance(warp.getColliderBounds().ClosestPoint(worldPos), worldPos) < 0.05f)) {
+               return Vector2.zero;
+            }
+         }
+      }
+
+      return offsetPos;
    }
 
    protected string getAreaKey () {

@@ -213,6 +213,14 @@ public class Area : MonoBehaviour
          _warps.Add(warp);
       }
 
+      // Store a reference to all the action triggers "warping to league"
+      List<GenericActionTrigger> genericActionTriggers = new List<GenericActionTrigger>(GetComponentsInChildren<GenericActionTrigger>());
+      foreach (GenericActionTrigger trigger in genericActionTriggers) {
+         if (trigger.actionName == GenericActionTrigger.WARP_TO_LEAGUE_ACTION) {
+            _warpToLeagueTrigger.Add(trigger);
+         }
+      }
+
       // Store all references to temporary controllers
       _tempControllers = new List<TemporaryController>(GetComponentsInChildren<TemporaryController>());
 
@@ -285,6 +293,10 @@ public class Area : MonoBehaviour
       return _warps;
    }
 
+   public List<GenericActionTrigger> getLeagueWarpTriggers () {
+      return _warpToLeagueTrigger;
+   }
+
    public TemporaryController getTemporaryControllerAtPosition (Vector2 localPosition) {
       return _tempControllers
          .FirstOrDefault(c => ((Vector2) c.transform.localPosition - localPosition).sqrMagnitude < 0.01f);
@@ -299,7 +311,7 @@ public class Area : MonoBehaviour
       if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
          // Check if it is someone else's farm, prepend the name if so
          int userId = CustomMapManager.getUserId(areaKey);
-         if (userId != Global.player.userId) {
+         if (Global.player != null && userId != Global.player.userId) {
             string userName = EntityManager.self.getEntity(userId)?.entityName ?? "Unknown";
             return $"{ userName }'s { customMapManager.typeDisplayName }";
          }
@@ -466,6 +478,9 @@ public class Area : MonoBehaviour
    // The list of warps in this area
    [SerializeField]
    protected List<Warp> _warps = new List<Warp>();
+
+   // The lits of action triggers "warping to league"
+   protected List<GenericActionTrigger> _warpToLeagueTrigger = new List<GenericActionTrigger>();
 
    // The list of temporary controllers in this rea
    protected List<TemporaryController> _tempControllers = new List<TemporaryController>();

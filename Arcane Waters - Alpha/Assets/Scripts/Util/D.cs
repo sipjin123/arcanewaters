@@ -76,7 +76,11 @@ public class D : MonoBehaviour {
 
       if (WRITE_TO_FILE) {
          // Create the "logs" directory and store the path to it
+         #if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
+         string logsDirectoryPath = Application.persistentDataPath + "/logs/";
+         #else
          string logsDirectoryPath = Application.persistentDataPath + "\\logs\\";
+         #endif
          Directory.CreateDirectory(logsDirectoryPath);
 
          // Clear out any old files from the directory

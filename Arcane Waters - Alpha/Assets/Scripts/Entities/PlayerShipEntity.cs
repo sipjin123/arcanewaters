@@ -112,6 +112,9 @@ public class PlayerShipEntity : ShipEntity
    // A reference to the bars script that displays the health of this ship
    public ShipBarsPlayer shipBars;
 
+   // References to animators for the player's boost circle
+   public Animator boostCircleOutlineAnimator, boostCircleFillAnimator;
+
    // The different flags the ship can display
    public enum Flag {
       None = 0,
@@ -374,6 +377,9 @@ public class PlayerShipEntity : ShipEntity
          // Update the boost-timing circle
          boostFillCircleParent.localScale = (Vector3.one * 0.5f) + (Vector3.one * 0.5f * getBoostChargeAmount());
          boostFillCircle.color = ColorCurveReferences.self.shipBoostCircleColor.Evaluate(getBoostChargeAmount());
+
+         boostCircleFillAnimator.SetInteger("facing", (int) facing);
+         boostCircleOutlineAnimator.SetInteger("facing", (int) facing);
       }
    }
 

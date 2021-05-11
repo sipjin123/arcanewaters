@@ -12,7 +12,7 @@ public class ShipHealthPanel : ClientMonoBehaviour
    public static int HP_PER_SAILOR = 100;
 
    // The maximum number of sailors that will be displayed
-   public static int MAX_SAILORS = 20;
+   public static int MAX_SAILORS = 18;
 
    // The prefab we use for creating sailors
    public SailorHP sailorPrefab;

@@ -94,6 +94,8 @@ public class QuickLaunchPanel : MonoBehaviour {
          TitleScreen.self.accountInputField.text = this.accountInputField.text;
          TitleScreen.self.passwordInputField.text = this.passwordInputField.text;
 
+         TitleScreen.self.usedQuickLaunchPanel();
+
          // Launch into the appropriate mode, depending on which toggle was selected
          if (hostToggle.isOn) {
             PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.Login);

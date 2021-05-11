@@ -38,7 +38,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    #endregion
 
    protected virtual void Awake () {
-      _collider = GetComponent<BoxCollider2D>();
+      _collider = GetComponent<Collider2D>();
    }
 
    void Start () {
@@ -303,6 +303,14 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       return null;
    }
 
+   public bool hasCollider () {
+      return _collider;
+   }
+
+   public Bounds getColliderBounds () {
+      return _collider ? _collider.bounds : new Bounds();
+   }
+
    public bool canPlayerUseWarp (NetEntity player) {
       if (player.isClient && !player.isServer && player.isAboutToWarpOnClient) {
          return false;
@@ -354,7 +362,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    #region Private Variables
 
    // The the collider, which will trigger the warp to activate
-   protected BoxCollider2D _collider;
+   protected Collider2D _collider;
 
    // The associated treasure site for each instance id, if any
    protected Dictionary<int, TreasureSite> _treasureSites = new Dictionary<int, TreasureSite>();

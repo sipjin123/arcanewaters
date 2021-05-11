@@ -108,7 +108,7 @@ public class TitleScreen : MonoBehaviour {
       // Save the current alpha
       float currentAlpha = _canvasGroup.alpha;
 
-      if (isActive) {
+      if (isActive || !_hasClientVersionBeenApproved) {
          // If they press Enter in the password field, activate the Play button
          if (KeyUtils.GetKeyDown(Key.Enter) && Util.isSelected(passwordInputField) && passwordInputField.text != "" && passwordInputField.text.Length > 0 && accountInputField.text.Length > 0) {
             Util.clickButton(loginButton);
@@ -162,6 +162,8 @@ public class TitleScreen : MonoBehaviour {
    }
 
    public void startUpNetworkClient (bool isSteam) {
+      _hasClientVersionBeenApproved = false;
+
       // Stop the client in case we're already connected to the server
       MyNetworkManager.self.StopClient();
 
@@ -174,10 +176,16 @@ public class TitleScreen : MonoBehaviour {
    }
 
    public void continueAfterCheckingClientVersion () {
+      _hasClientVersionBeenApproved = true;
+
       PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.Login);
       LoadingUtil.executeAfterFade(() => {
          MyNetworkManager.self.continueConnectAfterClientVersionChecked();
       });
+   }
+
+   public void usedQuickLaunchPanel () {
+      _hasClientVersionBeenApproved = true;
    }
 
    public void openOptionsPanel () {
@@ -282,6 +290,9 @@ public class TitleScreen : MonoBehaviour {
 
    // Our Canvas Group
    protected CanvasGroup _canvasGroup;
+
+   // Check whether client app has confirmed that its version is up to date
+   private bool _hasClientVersionBeenApproved = false;
 
    #endregion
 }
