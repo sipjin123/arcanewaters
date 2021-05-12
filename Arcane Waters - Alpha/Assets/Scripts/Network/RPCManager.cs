@@ -667,10 +667,6 @@ public class RPCManager : NetworkBehaviour
 
       chest.StartCoroutine(chest.CO_CreatingFloatingPowerupIcon((Powerup.Type) powerupType));
 
-      // Play some sounds
-      SoundManager.create3dSound("Door_open", Global.player.transform.position);
-      SoundManager.create3dSound("tutorial_step", Global.player.transform.position);
-
       if (chest.autoDestroy) {
          chest.disableChest();
       }
@@ -730,8 +726,17 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Play some sounds
-      SoundManager.create3dSound("Door_open", Global.player.transform.position);
-      SoundManager.create3dSound("tutorial_step", Global.player.transform.position);
+      switch (chest.chestType) {
+         case ChestSpawnType.Sea:
+            SoundEffectManager.self.playSoundEffect(SoundEffectManager.OPEN_SEA_BAG, Global.player.transform);
+            break;
+         case ChestSpawnType.Land:
+            SoundEffectManager.self.playSoundEffect(SoundEffectManager.OPEN_LAND_BAG, Global.player.transform);
+            break;
+         case ChestSpawnType.Site:
+            SoundEffectManager.self.playSoundEffect(SoundEffectManager.OPEN_CHEST, Global.player.transform);
+            break;
+      }
 
       // Register chest id player pref data and set as true, except in treasure site areas since they can be visited again in voyages
       if (!VoyageManager.isTreasureSiteArea(chest.areaKey)) {

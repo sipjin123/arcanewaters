@@ -56,6 +56,10 @@ public class SoundEffectManager : MonoBehaviour
    public const int REFINE_COMPLETE = 69;
    public const int MAIL_NOTIF = 70;
 
+   public const int OPEN_SEA_BAG = 71;
+   public const int OPEN_LAND_BAG = 72;
+   public const int OPEN_CHEST = 73;
+
    #endregion
 
    private void Awake () {
