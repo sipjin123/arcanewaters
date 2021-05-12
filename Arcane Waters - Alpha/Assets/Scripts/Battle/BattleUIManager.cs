@@ -818,7 +818,7 @@ public class BattleUIManager : MonoBehaviour {
    private float RAISED_CAM_HEIGHT = -10.3f;
 
    // Default height of battle camera
-   private float DEFAULT_CAM_HEIGHT = -10f;
+   private float DEFAULT_CAM_HEIGHT = -10.2f;
 
    #endregion
 }

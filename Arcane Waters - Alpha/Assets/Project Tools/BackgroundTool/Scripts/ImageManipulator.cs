@@ -321,6 +321,12 @@ namespace BackgroundTool
             Vector3 mousePos = _mainCam.ScreenToWorldPoint(MouseUtils.mousePosition);
 
             foreach (DraggableContent draggableContent in draggedObjList) {
+               if (draggableContent == null) {
+                  continue;
+               }
+               if (draggableContent.cachedSpriteTemplate == null) {
+                  continue;
+               }
                if (!draggableContent.cachedSpriteTemplate.spriteData.isLocked) {
                   int layerOffset = getLayerOffset(draggableContent.cachedSpriteTemplate.spriteData.layerIndex);
                   float zAxisOffset = getZAxisOffset(draggableContent.cachedSpriteTemplate);

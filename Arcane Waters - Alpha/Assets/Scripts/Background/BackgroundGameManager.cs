@@ -140,6 +140,8 @@ public class BackgroundGameManager : MonoBehaviour {
       // Set up weather type
       board.setWeather(bgContentData.weatherType, bgContentData.biomeType);
 
+      int leftSpotIndex = 1;
+      int rightSpotIndex = 1;
       foreach (SpriteTemplateData spriteTempData in bgContentData.spriteTemplateList) {
          bool isAnimatedSprite = spriteTempData.contentCategory == ImageLoader.BGContentCategory.Interactive || spriteTempData.contentCategory == ImageLoader.BGContentCategory.Animating;
          GameObject spriteTempObj = Instantiate(isAnimatedSprite ? spriteTemplateAnimatedPrefab : spriteTemplatePrefab);
@@ -194,8 +196,15 @@ public class BackgroundGameManager : MonoBehaviour {
                spriteTemp.gameObject.name = spriteTemp.spriteRender.sprite.name;
 
                if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.SpawnPoints_Attackers || spriteTempData.contentCategory == ImageLoader.BGContentCategory.SpawnPoints_Defenders) {
+                  if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.SpawnPoints_Attackers) {
+                     spriteTemp.gameObject.name = "RightBattleSpot_" + rightSpotIndex;
+                     rightSpotIndex++;
+                  }
+                  if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.SpawnPoints_Defenders) {
+                     spriteTemp.gameObject.name = "LeftBattleSpot_" + leftSpotIndex;
+                     leftSpotIndex++;
+                  }
                   spriteTemp.spriteRender.enabled = false;
-                  spriteTemp.gameObject.name = ImageLoader.BGContentCategory.PlaceHolders.ToString();
                }
             } else {
                spriteTemp.spriteRender.enabled = false;
