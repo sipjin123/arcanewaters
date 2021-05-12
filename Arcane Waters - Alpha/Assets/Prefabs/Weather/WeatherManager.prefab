@@ -3873,6 +3873,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1723334850833386431}
     m_Modifications:
+    - target: {fileID: 1419205994, guid: de0638988c9fe024b9294ccd6c5e4d85, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 1419205994, guid: de0638988c9fe024b9294ccd6c5e4d85, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2664268287811865152, guid: de0638988c9fe024b9294ccd6c5e4d85,
         type: 3}
       propertyPath: m_Name
@@ -3936,6 +3944,16 @@ PrefabInstance:
     - target: {fileID: 2664268287811865153, guid: de0638988c9fe024b9294ccd6c5e4d85,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2664268287938139133, guid: de0638988c9fe024b9294ccd6c5e4d85,
+        type: 3}
+      propertyPath: ShapeModule.radius.value
+      value: 4.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2664268287938139135, guid: de0638988c9fe024b9294ccd6c5e4d85,
+        type: 3}
+      propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
