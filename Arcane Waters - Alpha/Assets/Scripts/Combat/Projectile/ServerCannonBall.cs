@@ -145,6 +145,10 @@ public class ServerCannonBall : NetworkBehaviour {
          return;
       }
 
+      if (!sourceEntity.isEnemyOf(hitEntity)) {
+         return;
+      }
+
       _hasCollided = true;
 
       // The Server will handle applying damage
@@ -157,7 +161,10 @@ public class ServerCannonBall : NetworkBehaviour {
          int shipDamage = (int) (sourceEntity.damage * projectileBaseDamage);
          int abilityDamage = (int) (_abilityData.damageModifier * projectileBaseDamage);
          int critDamage = (int) (_isCrit ? projectileBaseDamage * 0.5f : 0.0f);
-         int perkDamage = (int) (projectileBaseDamage * PerkManager.self.getPerkMultiplierAdditive(sourceEntity.userId, Perk.Category.ShipDamage));
+         int perkDamage = 0;
+         if (sourceEntity.userId != 0) {
+            perkDamage = (int) (projectileBaseDamage * PerkManager.self.getPerkMultiplierAdditive(sourceEntity.userId, Perk.Category.ShipDamage));
+         }
          int totalInitialDamage = projectileBaseDamage + shipDamage + abilityDamage + critDamage + perkDamage;
          
          int totalFinalDamage = hitEntity.applyDamage(totalInitialDamage, sourceEntity.netId);
@@ -168,7 +175,7 @@ public class ServerCannonBall : NetworkBehaviour {
             " Projectile: " + projectileBaseDamage +
             " Ship: " + shipDamage + " Dmg: {" + (sourceEntity.damage * 100) + "%}" +
             " Ability: " + abilityDamage + "Dmg: {" + (_abilityData.damageModifier * 100) + "%}" +
-            " Perk: " + perkDamage + " Dmg: {" + (PerkManager.self.getPerkMultiplier(sourceEntity.userId, Perk.Category.ShipDamage) * 10) + "%}"
+            " Perk: " + perkDamage
             , D.ADMIN_LOG_TYPE.Sea);
 
          // Apply the status effect

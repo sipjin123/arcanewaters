@@ -34,7 +34,7 @@ public class MM_PlayerIcon : ClientMonoBehaviour {
       // Physical map size is in range [-5, 5], we need to transform it to minimap space which is [-64, 64]
       const float worldToMapSpaceTransform = 64f / 5f;
       if (currentArea != null) {
-         float minimapSpriteWidth = Minimap.self.backgroundImage.sprite.textureRect.width;
+         float minimapSpriteWidth = (Minimap.self.realAreaSize != Vector2Int.zero) ? Minimap.self.realAreaSize.x : Minimap.self.backgroundImage.sprite.textureRect.width;
 
          // Scale transformation based on current map size
          float relativePositionScale = (minimapSpriteWidth / 64f);

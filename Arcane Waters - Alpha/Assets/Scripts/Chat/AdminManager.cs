@@ -113,7 +113,6 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("add_perk_points", "Gives the player perk points", requestPerkPoints, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "numPoints" }));
       cm.addCommand(new CommandData("add_powerup", "Gives you a powerup of specified type and rarity", requestPowerup, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "powerupType", "powerupRarity" }));
       cm.addCommand(new CommandData("clear_powerups", "Clears all of your current powerups", requestClearPowerups, requiredPrefix: CommandType.Admin));
-      cm.addCommand(new CommandData("set_powerup_drop_chance", "Sets the chance for an enemy ship to drop a powerup (1.0 = 100%)", requestSetPowerupDropChance, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "dropChance" }));
       cm.addCommand(new CommandData("unlock_world_map", "Unlocks all the biomes and town warps in the world map", unlockWorldMap, requiredPrefix: CommandType.Admin));
 
       // Log Commands for investigation
@@ -183,16 +182,6 @@ public class AdminManager : NetworkBehaviour
       }
 
       return true;
-   }
-
-   private void requestSetPowerupDropChance (string parameters) {
-      Cmd_SetPowerupDropChance(parameters);
-   }
-
-   [Command]
-   private void Cmd_SetPowerupDropChance (string parameters) {
-      float newDropChance = float.Parse(parameters);
-      BotShipEntity.powerupDropChance = Mathf.Clamp01(newDropChance);
    }
 
    private void requestPerkPoints (string parameters) {
@@ -1732,19 +1721,22 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
-      foreach (Ship.Type shipType in System.Enum.GetValues(typeof(Ship.Type))) {
-         if (shipType == Ship.Type.None) {
-            continue;
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         foreach (Ship.Type shipType in System.Enum.GetValues(typeof(Ship.Type))) {
+            if (shipType == Ship.Type.None) {
+               continue;
+            }
+            Rarity.Type rarity = Rarity.Type.Uncommon;
+
+            // Set up the Ship Info
+            ShipInfo ship = Ship.generateNewShip(shipType, rarity);
+            ship.userId = _player.userId;
+
+            // Create the ship in the database
+            DB_Main.createShipFromShipyard(_player.userId, ship);
          }
-         Rarity.Type rarity = Rarity.Type.Uncommon;
-
-         // Set up the Ship Info
-         ShipInfo ship = Ship.generateNewShip(shipType, rarity);
-         ship.userId = _player.userId;
-
-         // Create the ship in the database
-         DB_Main.createShipFromShipyard(_player.userId, ship);
-      }
+      });
    }
 
    [Command]

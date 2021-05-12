@@ -72,6 +72,10 @@ public class Minimap : ClientMonoBehaviour {
    // Map config that should be consistent with minimap generators
    public MapCreationTool.EditorConfig mapEditorConfig;
 
+   // Store real size based on number of tiles in the current area
+   [HideInInspector]
+   public Vector2Int realAreaSize;
+
    // Minimap generator presets (scriptable objects) for sea random maps
    [Header("Random sea prefabs")]
    public MinimapGeneratorPreset seaDesertPreset;
@@ -164,21 +168,35 @@ public class Minimap : ClientMonoBehaviour {
       if (instance == null || !instance.isNetworkPrefabInstantiationFinished) {
          return;
       }
+      
+      // Change the background image - load static images
+      backgroundImage.sprite = ImageManager.getSprite("Minimaps/" + area.areaKey, true);
 
-      // Dynamically generate minimap for base map player entered
-      if (instance.biome != Biome.Type.None) {
-         TilemapToTextureColorsStatic(area, instance.biome, false);
-      } else if (AreaManager.self.isFarmOfUser(Global.player.areaKey, Global.player.userId)) {
-         TilemapToTextureColorsStatic(area, Biome.Type.Forest, false);
-      } else if (AreaManager.self.isHouseOfUser(Global.player.areaKey, Global.player.userId)) {
-         TilemapToTextureColorsStatic(area, Biome.Type.Forest, false);
+      // Dynamically generate minimap for base map player entered - lack of static images
+      if (backgroundImage.sprite == null || backgroundImage.sprite == ImageManager.self.blankSprite) {
+         realAreaSize = Vector2Int.zero;
+
+         if (instance.biome != Biome.Type.None) {
+            TilemapToTextureColorsStatic(area, instance.biome, false);
+         } else if (AreaManager.self.isFarmOfUser(Global.player.areaKey, Global.player.userId)) {
+            TilemapToTextureColorsStatic(area, Biome.Type.Forest, false);
+         } else if (AreaManager.self.isHouseOfUser(Global.player.areaKey, Global.player.userId)) {
+            TilemapToTextureColorsStatic(area, Biome.Type.Forest, false);
+         }
       } else {
-         // Change the background image
-         backgroundImage.sprite = ImageManager.getSprite("Minimaps/" + area.areaKey);
+         // Static minimap was found - setup data (minimap size for static images might be different than real area size)
+         foreach (var tilemap in area.GetComponentsInChildren<Tilemap>(true)) {
+            if (tilemap.size.x > realAreaSize.x) {
+               realAreaSize.x = tilemap.size.x;
+            }
+            if (tilemap.size.y > realAreaSize.y) {
+               realAreaSize.y = tilemap.size.y;
+            }
+         }
       }
 
       // If we didn't find a background image, just use a black background
-      if (backgroundImage.sprite == null) {
+      if (backgroundImage.sprite == null || backgroundImage.sprite == ImageManager.self.blankSprite) {
          backgroundImage.sprite = ImageManager.getSprite("Minimaps/Black");
       }
 

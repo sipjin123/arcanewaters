@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using MapCreationTool.Serialization;
 using Pathfinding;
+using DG.Tweening;
 
 public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 {
@@ -50,10 +51,23 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    // How far the cone extends ahead of the ship
    public float aggroConeRadius;
 
-   // Temporary powerup drop chance variable used for testing
-   public static float powerupDropChance = 0.2f;
+   // A reference to the animator used to show where this ship is aiming
+   public Animator targetingIndicatorAnimator;
+
+   // A reference to the transform of the parent of the targeting indicator
+   public Transform targetingIndicatorParent;
+
+   // A reference to the transform of the socket of the barrel of the targeting indicator, for spawning cannonballs
+   public Transform targetingBarrelSocket;
+
+   // A reference to the renderer used to show where this ship is aiming
+   public SpriteRenderer targetingIndicatorRenderer;
 
    #endregion
+
+   protected override void Awake () {
+      base.Awake();
+   }
 
    protected override void Start () {
       base.Start();
@@ -118,6 +132,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.DefeatPirateShip);
          }
       }
+
+      updateTargetingIndicator();
    }
 
    protected override void FixedUpdate () {
@@ -429,7 +445,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    [Server]
    private IEnumerator CO_attackEnemiesInRange (float delayInSecondsWhenNotReloading) {
       while (!isDead()) {
-         bool attacked = false;
+
+         NetEntity target = null;
 
          // Check if any of our attackers are within range
          foreach (uint attackerId in _attackers.Keys) {
@@ -439,25 +456,134 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             }
 
             Vector2 attackerPosition = attacker.transform.position;
-            if (isInRange(attackerPosition)) {
-               if (primaryAbilityId > 0) {
-                  ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(primaryAbilityId);
-                  fireAtSpot(attackerPosition, shipAbilityData.abilityId, 0, 0, transform.position);
-               } else {
-                  ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(Attack.Type.Cannon);
-                  fireAtSpot(attackerPosition, shipAbilityData.abilityId, 0, 0, transform.position);
-               }
-               attacked = true;
+            if (!isInRange(attackerPosition)) {
+               continue;
+            }
+
+            target = attacker;
+         }
+
+         // Show the charging animation on clients
+         if (target) {
+            Rpc_NotifyChargeUp(target.netId);
+            _aimTarget = target;
+         }
+
+         // Wait for the charge-up animation to play
+         float chargeTimer = 1.0f;
+         while (chargeTimer > 0.0f) {
+            if (!_aimTarget || _aimTarget.isDead() || isDead()) {
                break;
+            }
+
+            float indicatorAngle = 360.0f - Util.angle(_aimTarget.transform.position - transform.position);
+            targetingIndicatorParent.transform.rotation = Quaternion.Euler(0.0f, 0.0f, indicatorAngle);
+            chargeTimer -= Time.deltaTime;
+            yield return null;
+         }
+         
+         float waitTimeToUse = delayInSecondsWhenNotReloading;
+
+         // Fire a shot at our target, if we charge up fully
+         if (chargeTimer <= 0.0f) {
+            if (target) {
+               fireCannonAtTarget(target);
+               Rpc_NotifyCannonFired();
+
+               waitTimeToUse = reloadDelay;
             }
          }
 
-         float waitTimeToUse = delayInSecondsWhenNotReloading;
-         if(attacked) {
-            waitTimeToUse = reloadDelay;
-         }
          yield return new WaitForSeconds(waitTimeToUse);
       }
+   }
+
+   [ClientRpc]
+   private void Rpc_NotifyChargeUp (uint targetNetId) {
+      NetEntity target = MyNetworkManager.fetchEntityFromNetId<NetEntity>(targetNetId);
+      if (target == null || target.isDead() || isDead()) {
+         return;
+      }
+
+      _aimTarget = target;
+
+      // Show the charging animation
+      showTargetingEffects();
+   }
+
+   [ClientRpc]
+   private void Rpc_NotifyCannonFired () {
+      if (_isShowingTargetingIndicator) {
+         hideTargetingEffects();
+      }
+   }
+
+   private void updateTargetingIndicator () {
+      // If targeting effects are showing, and either: we have no target, the target is dead, or we are dead, hide targeting effects
+      if (_isShowingTargetingIndicator && (!_aimTarget || _aimTarget.isDead() || isDead())) {
+         hideTargetingEffects();
+      }
+
+      // If we are showing targeting effects, update the rotation of our effects to point at our target
+      if (_isShowingTargetingIndicator) {
+         float indicatorAngle = 360.0f - Util.angle(_aimTarget.transform.position - transform.position);
+         targetingIndicatorParent.transform.rotation = Quaternion.Euler(0.0f, 0.0f, indicatorAngle);
+      }
+   }
+
+   private void showTargetingEffects () {
+      targetingIndicatorAnimator.gameObject.SetActive(true);
+      targetingIndicatorRenderer.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+      targetingIndicatorRenderer.DOFade(1.0f, 0.1f);
+      targetingIndicatorAnimator.SetTrigger("ChargeAndFire");
+      _isShowingTargetingIndicator = true;
+   }
+
+   private void hideTargetingEffects () {
+      DOTween.Kill(targetingIndicatorAnimator);
+      DOTween.Kill(targetingIndicatorRenderer);
+      targetingIndicatorAnimator.transform.DOPunchScale(Vector3.up * 0.15f, 0.25f, 1);
+      targetingIndicatorRenderer.DOFade(0.0f, 0.25f).OnComplete(() => targetingIndicatorAnimator.gameObject.SetActive(false));
+      _isShowingTargetingIndicator = false;
+      _aimTarget = null;
+   }
+
+   [Server]
+   private void fireCannonAtTarget (NetEntity target) {
+      Vector2 targetPosition = target.transform.position;
+      Vector2 spawnPosition = targetingBarrelSocket.position;
+      Vector2 toTarget = targetPosition - spawnPosition;
+      float targetDistance = toTarget.magnitude;
+
+      float range = getAttackRange();
+
+      // If the target is out of range, fire a max range shot in their direction
+      if (targetDistance > range) {
+         targetPosition = spawnPosition + toTarget.normalized * range;
+         targetDistance = range;
+      }
+
+      ShipAbilityData abilityData = null;
+      if (primaryAbilityId > 0) {
+         abilityData = ShipAbilityManager.self.getAbility(primaryAbilityId);
+      } else {
+         abilityData = ShipAbilityManager.self.getAbility(Attack.Type.Cannon);
+      }
+
+      // Create the cannon ball object from the prefab
+      ServerCannonBall netBall = Instantiate(PrefabsManager.self.serverCannonBallPrefab, spawnPosition, Quaternion.identity);
+
+      // Set up the cannonball
+      float distanceModifier = Mathf.Clamp(targetDistance / range, 0.1f, 1.0f);
+      float lobHeight = 0.25f * distanceModifier;
+      float lifetime = targetDistance / Attack.getSpeedModifier(Attack.Type.Cannon);
+      Vector2 velocity = toTarget.normalized * Attack.getSpeedModifier(Attack.Type.Cannon);
+
+      netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityData.abilityId, velocity, lobHeight, false, lifetime: lifetime);
+
+      NetworkServer.Spawn(netBall.gameObject);
+
+      Rpc_NoteAttack();
    }
 
    public static int fetchDataFieldID (DataField[] dataFields) {
@@ -620,6 +746,12 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
    // The last spawn point that bot ship was nearby and had to change its path
    private Vector3 _lastSpawnPosition = Vector3.zero;
+
+   // A reference to the NetEntity we are aiming at
+   private NetEntity _aimTarget;
+
+   // Whether we are currently showing targeting effects
+   private bool _isShowingTargetingIndicator = false;
 
    #endregion
 }

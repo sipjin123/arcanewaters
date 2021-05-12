@@ -1184,16 +1184,16 @@ public class NetEntity : NetworkBehaviour
             // Figure out the force vector we should apply
             Vector2 forceToApply = DirectionUtil.getVectorForDirection(direction);
             float baseMoveSpeed = getMoveSpeed();
-            float speedupMultiplier = SPEEDUP_MULTIPLIER_LAND;
+            float sprintingSpeedMultiplier = 1.0f;
 
             // Slow the player down if they're performing an interaction animation
             if (interactingAnimation) {
-               speedupMultiplier *= 0.25f;
+               sprintingSpeedMultiplier *= 0.25f;
             } else if (isSpeedingUp) {
-               speedupMultiplier += PerkManager.self.getPerkMultiplierAdditive(Perk.Category.WalkingSpeed);
+               sprintingSpeedMultiplier = SPEEDUP_MULTIPLIER_LAND + PerkManager.self.getPerkMultiplierAdditive(Perk.Category.WalkingSpeed);
             }
 
-            baseMoveSpeed *= speedupMultiplier;
+            baseMoveSpeed *= sprintingSpeedMultiplier;
             _body.AddForce(forceToApply.normalized * baseMoveSpeed * frameRateMultiplier);
 
             // Make note of the time
@@ -1771,7 +1771,7 @@ public class NetEntity : NetworkBehaviour
          TutorialManager3.self.onUserSpawns(this.userId);
 
          // Trigger the tutorial
-         if (VoyageManager.isLeagueArea(this.areaKey)) {
+         if (VoyageManager.isLeagueArea(this.areaKey) || VoyageManager.isLeagueSeaBossArea(this.areaKey)) {
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInLeagueNotLobby);
          } else if (VoyageManager.isVoyageOrLeagueArea(this.areaKey)) {
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInVoyage);

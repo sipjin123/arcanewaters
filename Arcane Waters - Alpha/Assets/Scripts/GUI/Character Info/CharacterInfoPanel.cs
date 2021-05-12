@@ -34,6 +34,7 @@ public class CharacterInfoPanel : Panel {
 
       setPlayer(player);
       PanelManager.self.linkIfNotShowing(Panel.Type.CharacterInfo);      
+      setPlayer(player);
    }
 
    #region Private Variables

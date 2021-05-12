@@ -88,13 +88,15 @@ public class ImageManager : ClientMonoBehaviour {
       D.adminLog("ImageManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
-   public static Sprite getSprite (string path) {
-      Sprite fetchedSprite = self.getSpriteFromPath(path);
+   public static Sprite getSprite (string path, bool skipLogs = false) {
+      Sprite fetchedSprite = self.getSpriteFromPath(path, skipLogs);
 
       // Returns a blank sprite if the fetched data from the path is null
       if (fetchedSprite == null) {
          if (!Util.isBatch()) {
-            D.debug("Could not find sprite at path(" + path + "). Returning a blank sprite");
+            if (!skipLogs) {
+               D.debug("Could not find sprite at path(" + path + "). Returning a blank sprite");
+            }
          }
          return self.blankSprite;
       }
@@ -197,7 +199,7 @@ public class ImageManager : ClientMonoBehaviour {
       return fetchedSprites;
    }
 
-   protected Sprite getSpriteFromPath (string path) {
+   protected Sprite getSpriteFromPath (string path, bool skipLogs = false) {
       // Avoid using Resources.Load() on batch server
       if (Util.isBatch()) {
          return self.blankSprite;
@@ -207,7 +209,9 @@ public class ImageManager : ClientMonoBehaviour {
       Sprite sprite = Resources.Load<Sprite>(path);
 
       if (sprite == null) {
-         D.debug("Could not find sprite at path(" + path + "). Returning a blank sprite");
+         if (!skipLogs) {
+            D.debug("Could not find sprite at path(" + path + "). Returning a blank sprite");
+         }
          return self.blankSprite;
       }
       return sprite;

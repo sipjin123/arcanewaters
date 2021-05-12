@@ -174,11 +174,16 @@ public class VoyageManager : GenericGameManager {
    }
 
    public static bool isVoyageOrLeagueArea (string areaKey) {
-      return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.Voyage || AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.League || AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.LeagueLobby;
+      return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.Voyage
+         || AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.League
+         || AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.LeagueLobby
+         || AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.LeagueSeaBoss;
    }
 
    public static bool isLeagueOrLobbyArea (string areaKey) {
-      return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.League || AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.LeagueLobby;
+      return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.League
+         || AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.LeagueLobby
+         || AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.LeagueSeaBoss;
    }
 
    public static bool isLeagueArea (string areaKey) {
@@ -187,6 +192,10 @@ public class VoyageManager : GenericGameManager {
 
    public static bool isLobbyArea (string areaKey) {
       return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.LeagueLobby;
+   }
+
+   public static bool isLeagueSeaBossArea (string areaKey) {
+      return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.LeagueSeaBoss;
    }
 
    public static bool isTreasureSiteArea (string areaKey) {
@@ -203,6 +212,10 @@ public class VoyageManager : GenericGameManager {
 
    public List<string> getLobbyAreaKeys () {
       return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.LeagueLobby).ToList();
+   }
+
+   public List<string> getLeagueSeaBossAreaKeys () {
+      return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.LeagueSeaBoss).ToList();
    }
 
    [Server]

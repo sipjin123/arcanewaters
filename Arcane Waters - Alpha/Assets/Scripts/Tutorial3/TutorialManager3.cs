@@ -260,7 +260,10 @@ public class TutorialManager3 : MonoBehaviour {
 
    private void refreshUI () {
       string selectedTutorialKey = _currentTutorial.key;
-      bool isNextStepManual = _currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.Manual;
+      bool isNextStepManual = _currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.Manual
+         || _currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.PlantCrop
+         || _currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.CropGrewToMaxLevel
+         || _currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.HarvestCrop;
 
       string npcSpeech = _currentTutorial.steps[_currentStep].npcSpeech;
 
