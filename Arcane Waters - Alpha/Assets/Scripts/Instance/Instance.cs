@@ -418,6 +418,42 @@ public class Instance : NetworkBehaviour
          }
       }
 
+      if (area.bossSpawnerDataFields.Count > 0) {
+         Enemy.Type bossToSpawn = Enemy.Type.None;
+         switch (biome) {
+            case Biome.Type.Forest:
+               bossToSpawn = Enemy.Type.Lizard_King;
+               break;
+            case Biome.Type.Lava:
+               bossToSpawn = Enemy.Type.Golem_Boss;
+               break;
+         }
+
+         if (bossToSpawn != Enemy.Type.None) {
+            foreach (ExportedPrefab001 dataField in area.bossSpawnerDataFields) {
+               // Add it to the Instance
+               Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
+               enemy.enemyType = bossToSpawn;
+               enemy.isStationary = true;
+               enemy.areaKey = area.areaKey;
+               Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
+               enemy.transform.localPosition = targetLocalPos;
+               enemy.setAreaParent(area, false);
+               BattlerData battlerData = MonsterManager.self.getBattlerData(enemy.enemyType);
+               if (battlerData != null) {
+                  enemy.isBossType = battlerData.isBossType;
+                  enemy.isSupportType = battlerData.isSupportType;
+                  enemy.animGroupType = battlerData.animGroup;
+                  enemy.facing = Direction.South;
+                  enemy.displayNameText.text = battlerData.enemyName;
+               }
+
+               InstanceManager.self.addEnemyToInstance(enemy, this);
+               NetworkServer.Spawn(enemy.gameObject);
+            }
+         }
+      }
+
       // Spawn random enemies
       if (area.isSea) {
          EnemyManager.self.spawnShipsOnServerForInstance(this);
