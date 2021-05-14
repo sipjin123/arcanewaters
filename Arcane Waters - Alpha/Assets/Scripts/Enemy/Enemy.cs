@@ -74,6 +74,9 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    // Sound when character starts moving around
    public SoundManager.Type walkSound = SoundManager.Type.None;
 
+   // The z snap offset of boss monsters which have larger sprites
+   public const float BOSS_Z_OFFSET = -0.48f;
+
    #endregion
 
    protected override void Awake () {
@@ -142,10 +145,12 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          bodyAnim.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture("Enemies/LandMonsters/" + enemySpriteName);
       }
       bodyAnim.group = animGroupType;
-
+      
       if (isBossType) {
          bossCollider.SetActive(true);
          GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
+         _zSnap.sortPoint.transform.localPosition = new Vector3(0, BOSS_Z_OFFSET, 0);
+         _zSnap.initialize();
       }
 
       if (isServer) {
