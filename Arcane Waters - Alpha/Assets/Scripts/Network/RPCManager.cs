@@ -5112,6 +5112,8 @@ public class RPCManager : NetworkBehaviour
       List<PlayerBodyEntity> bodyEntities = new List<PlayerBodyEntity>();
 
       if (enemy.isDefeated) {
+         // Reset player movement restriction if the battle engagement is invalid
+         Target_ResetMoveDisable(_player.connectionToClient);
          D.debug("Error here! Attempting to engage combat with a defeated enemy! Enemy battle id is {" + enemy.battleId + "}");
          return;
       }
