@@ -37,7 +37,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &5333152839137896465
 Canvas:
@@ -113,7 +113,7 @@ GameObject:
   - component: {fileID: 2693033479407738654}
   - component: {fileID: 8780164857429172688}
   m_Layer: 5
-  m_Name: Button
+  m_Name: SpriteClicker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
