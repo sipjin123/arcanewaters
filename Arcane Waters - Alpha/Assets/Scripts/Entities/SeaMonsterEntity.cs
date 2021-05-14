@@ -658,8 +658,10 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    [Server]
    protected void spawnChest (int killerUserId) {
-      Instance currentInstance = InstanceManager.self.getInstance(this.instanceId);
-      TreasureManager.self.createSeaMonsterChest(currentInstance, sortPoint.transform.position, seaMonsterData.seaMonsterType, killerUserId);
+      if (killerUserId > 0) {
+         Instance currentInstance = InstanceManager.self.getInstance(this.instanceId);
+         TreasureManager.self.createSeaMonsterChest(currentInstance, sortPoint.transform.position, seaMonsterData.seaMonsterType, killerUserId);
+      }
    }
 
    [Server]
