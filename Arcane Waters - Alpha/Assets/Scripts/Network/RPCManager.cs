@@ -4316,8 +4316,11 @@ public class RPCManager : NetworkBehaviour
          }
       }
 
+      bool isInvalidVoyageId = voyageGroup.voyageId <= 0;
+      bool isVoyageIdMismatch = _player.getInstance().voyageId != voyageGroup.voyageId;
+
       // If the voyage is not defined or doesn't exists, or the group is not linked to this instance, redirect to the starting town
-      if (voyageGroup.voyageId <= 0 || !_player.tryGetVoyage(out Voyage voyage) || _player.getInstance().voyageId != voyageGroup.voyageId) {
+      if (isInvalidVoyageId || !_player.tryGetVoyage(out Voyage voyage) || isVoyageIdMismatch) {
          if (voyageGroup.voyageId <= 0) {
             D.debug("Returning player to town: Voyage id is Invalid!");
          }
@@ -5538,7 +5541,7 @@ public class RPCManager : NetworkBehaviour
       D.debug("Player is starting new battle, IsVoyageArea:{" + VoyageManager.isVoyageOrLeagueArea(_player.areaKey)
          + "} IsTreasureSite:{" + VoyageManager.isTreasureSiteArea(_player.areaKey) + "} CanPlayerStay{" + canPlayerStayInVoyage() + "}");
 
-      if (VoyageManager.isVoyageOrLeagueArea(_player.areaKey) && (!VoyageManager.isTreasureSiteArea(_player.areaKey) || !canPlayerStayInVoyage())) {
+      if ((VoyageManager.isVoyageOrLeagueArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)) && !canPlayerStayInVoyage()) {
          string reason = "";
          if (VoyageManager.isTreasureSiteArea(_player.areaKey)) {
             reason += "This is not a treasure area\n";
