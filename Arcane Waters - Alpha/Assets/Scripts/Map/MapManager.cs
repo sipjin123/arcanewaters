@@ -21,9 +21,6 @@ public class MapManager : MonoBehaviour
    // Convenient self reference
    public static MapManager self;
 
-   // Section arrows that indicate the prefab is selected
-   public GameObject prefabSelectionArrows;
-
    #endregion
 
    private void Awake () {
@@ -373,10 +370,11 @@ public class MapManager : MonoBehaviour
             break;
          }
       }
-
-      if (!found && changes.created) {
-         createPrefab(area, biome, changes, true);
-      }
+      // *** This code is causing a duplicate prop to be created when MapCustomizationManager._newPrefab is not null and pressing the "Delete" key to delete the prop.
+      // *** Not sure if this code is even needed.  The customization seems to work without it.
+      //if (!found && changes.created) {
+      //   createPrefab(area, biome, changes, true);
+      //}
    }
 
    public CustomizablePrefab createPrefab (Area area, Biome.Type biome, PrefabState state, bool confirmedState) {
@@ -403,11 +401,6 @@ public class MapManager : MonoBehaviour
       // If changes are confirmed, mark them as confirmed
       if (confirmedState) {
          prefab.submitUnappliedChanges();
-      }
-
-      // Add selection arrows to prefab
-      if (prefab != null) {
-         Instantiate(prefabSelectionArrows, prefab.transform);
       }
 
       return prefab;

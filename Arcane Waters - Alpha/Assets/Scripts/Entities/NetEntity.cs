@@ -1778,6 +1778,9 @@ public class NetEntity : NetworkBehaviour
          }
          TutorialManager3.self.tryCompletingStepByLocation();
 
+         // Update the instance status panel
+         VoyageStatusPanel.self.onUserSpawn();
+
          // Signal the server
          rpc.Cmd_OnClientFinishedLoadingArea();
       }

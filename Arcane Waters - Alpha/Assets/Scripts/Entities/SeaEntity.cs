@@ -1020,7 +1020,7 @@ public class SeaEntity : NetEntity
    protected List<Coroutine> _burningCoroutines = new List<Coroutine>();
 
    // Set to true when 'onDeath(...)' has run on this SeaEntity
-   private bool _hasRunOnDeath = false;
+   protected bool _hasRunOnDeath = false;
 
    #endregion
 }

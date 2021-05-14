@@ -103,48 +103,15 @@ public class VoyageStatusPanel : ClientMonoBehaviour
 
       // Collapse the panel if the mouse is not over it
       if (_isAlwaysExpanded || RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, MouseUtils.mousePosition)) {
-         collapsingContainer.SetActive(true);
+         collapsingContainer.SetActiveIfNeeded(true);
       } else {
-         collapsingContainer.SetActive(false);
+         collapsingContainer.SetActiveIfNeeded(false);
       }
 
       // Get the current instance
       Instance instance = Global.player.getInstance();
       if (instance == null) {
          return;
-      }
-
-      // Show different relevant statuses depending on the area type
-      if (VoyageGroupManager.isInGroup(Global.player)) {
-         if (instance.isLeague && VoyageManager.isLobbyArea(instance.areaKey)) {
-            voyageStatuses.Hide();
-            leagueStatuses.Hide();
-            townStatuses.Hide();
-            treasureSiteStatuses.Hide();
-            lobbyStatuses.Show();
-         } else if (instance.isLeague && !VoyageManager.isLobbyArea(instance.areaKey)) {
-            voyageStatuses.Hide();
-            lobbyStatuses.Hide();
-            townStatuses.Hide();
-            treasureSiteStatuses.Hide();
-            leagueStatuses.Show();
-         } else if (VoyageManager.isTreasureSiteArea(instance.areaKey)) {
-            voyageStatuses.Hide();
-            lobbyStatuses.Hide();
-            townStatuses.Hide();
-            leagueStatuses.Hide();
-            treasureSiteStatuses.Show();
-         } else if (instance.isVoyage) {
-            lobbyStatuses.Hide();
-            leagueStatuses.Hide();
-            townStatuses.Hide();
-            treasureSiteStatuses.Hide();
-            voyageStatuses.Show();
-         } else {
-            setDefaultStatus();
-         }
-      } else {
-         setDefaultStatus();
       }
 
       playerCountTownText.text = EntityManager.self.getEntityCount() + "/" + instance.getMaxPlayers();
@@ -189,6 +156,47 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       leagueIndexText.text = Voyage.getLeagueAreaName(instance.leagueIndex);
    }
 
+   public void onUserSpawn () {
+      // Get the current instance
+      Instance instance = Global.player.getInstance();
+      if (instance == null) {
+         return;
+      }
+
+      // Show different relevant statuses depending on the area type
+      if (VoyageGroupManager.isInGroup(Global.player)) {
+         if (instance.isLeague && VoyageManager.isLobbyArea(instance.areaKey)) {
+            voyageStatuses.Hide();
+            leagueStatuses.Hide();
+            townStatuses.Hide();
+            treasureSiteStatuses.Hide();
+            lobbyStatuses.Show();
+         } else if (instance.isLeague && !VoyageManager.isLobbyArea(instance.areaKey)) {
+            voyageStatuses.Hide();
+            lobbyStatuses.Hide();
+            townStatuses.Hide();
+            treasureSiteStatuses.Hide();
+            leagueStatuses.Show();
+         } else if (VoyageManager.isTreasureSiteArea(instance.areaKey)) {
+            voyageStatuses.Hide();
+            lobbyStatuses.Hide();
+            townStatuses.Hide();
+            leagueStatuses.Hide();
+            treasureSiteStatuses.Show();
+         } else if (instance.isVoyage) {
+            lobbyStatuses.Hide();
+            leagueStatuses.Hide();
+            townStatuses.Hide();
+            treasureSiteStatuses.Hide();
+            voyageStatuses.Show();
+         } else {
+            setDefaultStatus();
+         }
+      } else {
+         setDefaultStatus();
+      }
+   }
+
    private void setDefaultStatus () {
       lobbyStatuses.Hide();
       leagueStatuses.Hide();
@@ -213,7 +221,6 @@ public class VoyageStatusPanel : ClientMonoBehaviour
          this.canvasGroup.alpha = 1f;
          this.canvasGroup.blocksRaycasts = true;
          this.canvasGroup.interactable = true;
-         setDefaultStatus();
       }
    }
 

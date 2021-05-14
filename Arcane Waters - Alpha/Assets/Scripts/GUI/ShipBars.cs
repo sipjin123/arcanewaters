@@ -84,21 +84,21 @@ public class ShipBars : MonoBehaviour {
    }
 
    protected void handleStatusIcons () {
-      // Default to hidden
-      targetedIcon.gameObject.SetActive(false);
-      enemyIcon.gameObject.SetActive(false);
-
       // Don't show if our bars aren't showing
       if (!barsContainer.activeSelf) {
+         targetedIcon.gameObject.SetActiveIfNeeded(false);
+         enemyIcon.gameObject.SetActiveIfNeeded(false);
          return;
       }
 
-      // Show the red skull icon if we're an enemy of the player
       if (_entity.isEnemyOf(Global.player)) {
-         enemyIcon.gameObject.SetActive(true);
+         // Show the red skull icon if we're an enemy of the player
+         enemyIcon.gameObject.SetActiveIfNeeded(true);
+         targetedIcon.gameObject.SetActiveIfNeeded(false);
       } else if (_entity.hasAttackers()) {
          // Show the target icon if we're being attacked
-         targetedIcon.gameObject.SetActive(true);
+         targetedIcon.gameObject.SetActiveIfNeeded(true);
+         enemyIcon.gameObject.SetActiveIfNeeded(false);
       }
    }
 

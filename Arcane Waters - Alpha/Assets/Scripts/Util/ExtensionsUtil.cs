@@ -313,6 +313,14 @@ public static class ExtensionsUtil {
       }
    }
 
+   public static void SetActiveIfNeeded (this GameObject gO, bool value) {
+      if (value && !gO.activeSelf) {
+         gO.SetActive(true);
+      } else if (!value && gO.activeSelf) {
+         gO.SetActive(false);
+      }
+   }
+
    #region Private Variables
 
    // An instance of Random for generating random numbers

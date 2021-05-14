@@ -290,6 +290,8 @@ public class AbilityManager : MonoBehaviour
       if (action.newStance == Battler.Stance.Defense && Global.player != null && Global.player.userId == sourceBattler.userId) {
          TutorialManager3.self.tryCompletingStep(TutorialTrigger.SwitchToDefensiveStance);
       }
+
+      sourceBattler.stanceChangeEffect.show(action.newStance, sourceBattler.isLocalBattler());
    }
 
    public static BasicAbilityData getAbility (int abilityGlobalID, AbilityType abilityType) {

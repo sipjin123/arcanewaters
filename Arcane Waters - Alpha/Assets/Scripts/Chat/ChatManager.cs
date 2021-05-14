@@ -45,7 +45,7 @@ public class ChatManager : GenericGameManager
       _commandData.Add(new CommandData("/group", "Send a message to your group", sendGroupMessageToServer, parameterNames: new List<string>() { "message" }));
       _commandData.Add(new CommandData("/officer", "Executes an officer command, if you have officer privileges", sendOfficerMessageToServer, parameterNames: new List<string>() { "officerCommand" }));
       _commandData.Add(new CommandData("/guild", "Executes a guild command", sendGuildMessageToServer, parameterNames: new List<string>() { "guildCommand" }));
-      _commandData.Add(new CommandData("/complain", "Sends a complaint about a user", sendComplainToServer, parameterNames: new List<string>() { "userName", "details" }));
+      _commandData.Add(new CommandData("/complain", "Sends a complaint about a user", SupportTicketManager.self.sendComplaint, parameterNames: new List<string>() { "userName", "details" }));
       _commandData.Add(new CommandData("/roll", "Rolls a die", sendRollToServer, parameterNames: new List<string>() { "max", "min" }));
       _commandData.Add(new CommandData("/whisper", "Sends a private message to a user", sendWhisperMessageToServer, parameterNames: new List<string>() { "userName", "message" }));
       _commandData.Add(new CommandData("/w", "Sends a private message to a user", sendWhisperMessageToServer, parameterNames: new List<string>() { "userName", "message" }));

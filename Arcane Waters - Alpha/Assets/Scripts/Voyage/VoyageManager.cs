@@ -466,6 +466,9 @@ public class VoyageManager : GenericGameManager {
          if (leagueIndex == 0) {
             // The first league map is always a lobby
             areaKey = getLobbyAreaKeys()[UnityEngine.Random.Range(0, getLobbyAreaKeys().Count)];
+         } else if (Voyage.isLastLeagueMap(leagueIndex)) {
+            // The last league map is always a boss
+            areaKey = getLeagueSeaBossAreaKeys()[UnityEngine.Random.Range(0, getLeagueSeaBossAreaKeys().Count)];
          } else {
             // Generate a random list of league maps indexes to ensure there is no repetition in the same league
             List<int> mapIndexes = new List<int>();

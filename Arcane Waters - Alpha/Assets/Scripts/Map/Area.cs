@@ -15,7 +15,7 @@ public class Area : MonoBehaviour
    #region Public Variables
 
    // The special type of the area
-   public enum SpecialType { None = 0, Voyage = 1, TreasureSite = 2, Town = 3, Private = 4, League = 5, LeagueLobby = 6 }
+   public enum SpecialType { None = 0, Voyage = 1, TreasureSite = 2, Town = 3, Private = 4, League = 5, LeagueLobby = 6, LeagueSeaBoss = 7 }
 
    // Hardcoded area keys
    public static string STARTING_TOWN = "Tutorial Town";
@@ -307,7 +307,7 @@ public class Area : MonoBehaviour
    }
 
    public static bool isHouse (string areaKey) {
-      return areaKey.Contains("House");
+      return areaKey.ToLower().Contains("house");
    }
 
    public static string getName (string areaKey) {
@@ -327,7 +327,7 @@ public class Area : MonoBehaviour
       Map map = AreaManager.self.getMapInfo(areaKey);
       if (map != null) {
          // Display a special name for league maps
-         if (map.specialType == SpecialType.League) {
+         if (map.specialType == SpecialType.League || map.specialType == SpecialType.LeagueSeaBoss) {
             return "Leagues";
          } else if (map.specialType == SpecialType.LeagueLobby) {
             return "League Lobby";
@@ -349,6 +349,8 @@ public class Area : MonoBehaviour
 
       if (AreaManager.self.isInteriorArea(areaKey)) {
          return SoundManager.Type.None;
+      } else if (VoyageManager.isLeagueSeaBossArea(areaKey)) {
+         return SoundManager.Type.Sea_Lava;
       } else if (AreaManager.self.isSeaArea(areaKey)) {
          switch (biome) {
             case Biome.Type.Forest:
@@ -446,10 +448,14 @@ public class Area : MonoBehaviour
       _graph.collision.use2D = true;
       _graph.collision.Initialize(_graph.transform, 1.0f);
 
-      // For non-sea maps, use collider sphere to avoid NPCs moving through colliders
-      if (AreaManager.self.isSeaArea(areaKey)) {
+      if (VoyageManager.isLeagueSeaBossArea(areaKey)) {
+         // In sea boss areas, expand the unwalkable area around land so that the boss doesn't overlap it
+         _graph.collision.type = ColliderType.Sphere;
+         _graph.collision.diameter = 6f;
+      } else if (AreaManager.self.isSeaArea(areaKey)) {
          _graph.collision.type = ColliderType.Ray;
       } else {
+         // For non-sea maps, use collider sphere to avoid NPCs moving through colliders
          _graph.collision.type = ColliderType.Sphere;
 
          // 1.5 diameter (1 block of empty space + cut corners) for 0.16 grid size

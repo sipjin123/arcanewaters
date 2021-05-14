@@ -51,12 +51,12 @@ namespace MapCustomization
          if (hovered || selected) {
             _spriteOutline.setVisibility(true);
             if (GetComponentInChildren<SelectionSpriteBuildMode>() != null) {
-               GetComponentInChildren<SelectionSpriteBuildMode>().show();
+               MapCustomizationManager.showSelectionArrows();
             }
          } else {
             _spriteOutline.setVisibility(false);
             if (GetComponentInChildren<SelectionSpriteBuildMode>() != null) {
-               GetComponentInChildren<SelectionSpriteBuildMode>().hide();
+               MapCustomizationManager.hideSelectionArrows();
             }
          }
       }

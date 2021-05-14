@@ -48,11 +48,21 @@ namespace MapCustomization
       [Tooltip("Color for outline that is used when user is modifying a prefab and the current changes are invalid")]
       public Color prefabInvalidColor;
 
+      // Reference to the selection arrows
+      public GameObject selectionArrows;
+
+      // The prefab that the mouse pointer is hovering over
+      public static CustomizablePrefab hoveredPrefab;
+
+      // Keep track of sound state in update loop
+      public static bool soundHasBeenPlayed = false;
+
       #endregion
 
       private void OnEnable () {
          self = this;
          _propIconCamera = GetComponentInChildren<PropIconCamera>();
+         self.selectionArrows.SetActive(false);
       }
 
       public static bool isCustomizing => currentArea != null;
@@ -179,7 +189,9 @@ namespace MapCustomization
             }
          }
 
-         selectPrefab(null);
+         hideSelectionArrows();
+         _newPrefab = null;
+         _selectedPrefab = null;
          updatePrefabOutlines(null);
       }
 
@@ -205,7 +217,7 @@ namespace MapCustomization
       /// <param name="worldPosition"></param>
       public static void pointerHover (Vector2 worldPosition) {
          // Check if we have a prefab that can be placed right now
-         if (_selectedPrefab == null && getPrefabAtPosition(worldPosition) == null && CustomizationUI.getSelectedPrefabData() != null) {
+         if (CustomizationUI.getSelectedPrefabData() != null) {
             updateToBePlacedPrefab(worldPosition, CustomizationUI.getSelectedPrefabData().Value.serializationId);
          } else if (_newPrefab != null) {
             _newPrefab.revertUnappliedChanges();
@@ -230,19 +242,40 @@ namespace MapCustomization
             _selectedPrefab.transform.localPosition = _selectedPrefab.unappliedChanges.localPosition;
             _selectedPrefab.GetComponent<ZSnap>()?.snapZ();
 
+            // Move selection arrows with prefab
+            self.selectionArrows.transform.position = _selectedPrefab.transform.position;
+            self.selectionArrows.SetActive(true);
             updatePrefabOutlines(null);
+         }
+      }
+
+      // Right click will cancel the process of placing a new prefab
+      public static void rightClick () {
+         _selectedPrefab = null;
+
+         foreach (KeyValuePair<int, CustomizablePrefab> entry in _customizablePrefabs) {
+            entry.Value.setOutline(false, false, false, false);
+            _selectedPrefab = null;
+            hideSelectionArrows();
+         }
+
+         if (_newPrefab != null) {
+            _newPrefab.revertUnappliedChanges();
+            _newPrefab = null;
          }
       }
 
       public static void pointerDown (Vector2 worldPosition) {
          // If something is hovered, select it and procceed to change it's position
-         CustomizablePrefab hoveredPrefab = getPrefabAtPosition(worldPosition);
+         hoveredPrefab = getPrefabAtPosition(worldPosition);
          if (hoveredPrefab != null) {
             selectPrefab(hoveredPrefab);
             _draggedPrefab = hoveredPrefab;
             updatePrefabOutlines(worldPosition);
             SoundEffectManager.self.playSoundEffect(SoundEffectManager.PICKUP_EDIT_OBJ, SoundEffectManager.self.transform);
          } else {
+            _selectedPrefab = null;
+            hideSelectionArrows();
             if (CustomizationUI.getSelectedPrefabData() != null) {
                updateToBePlacedPrefab(worldPosition, CustomizationUI.getSelectedPrefabData().Value.serializationId);
                _newPrefab.setGameInteractionsActive(true);
@@ -251,6 +284,7 @@ namespace MapCustomization
                if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _newPrefab.unappliedChanges, false, out string errorMessage)) {
                   Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges);
                   SoundEffectManager.self.playSoundEffect(SoundEffectManager.DROP_EDIT_OBJ, SoundEffectManager.self.transform);
+                  selectPrefab(_newPrefab);
 
                   // Decrease remaining prop item that corresponds to this prefab
                   foreach (ItemInstance item in remainingProps) {
@@ -269,10 +303,18 @@ namespace MapCustomization
                   _newPrefab.revertUnappliedChanges();
                }
 
+               // Turn on colliders for the prefab that was just placed
+               if (_newPrefab.GetComponent<Collider2D>() != null) {
+                  _newPrefab.GetComponent<Collider2D>().enabled = true;
+               } else if (_newPrefab.GetComponentsInChildren<Collider2D>() != null) {
+                  foreach (Collider2D col in _newPrefab.GetComponentsInChildren<Collider2D>()) {
+                     col.enabled = true;
+                  }
+               }
+
                _newPrefab = null;
             }
 
-            selectPrefab(null);
             updatePrefabOutlines(worldPosition);
          }
       }
@@ -287,8 +329,6 @@ namespace MapCustomization
                Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _selectedPrefab.unappliedChanges);
                SoundEffectManager.self.playSoundEffect(SoundEffectManager.DROP_EDIT_OBJ, SoundEffectManager.self.transform);
                _selectedPrefab.submitUnappliedChanges();
-            } else {
-               _selectedPrefab.revertUnappliedChanges();
             }
          }
 
@@ -298,19 +338,21 @@ namespace MapCustomization
       private static void updateToBePlacedPrefab (Vector3 worldPosition, int serializationId) {
          // If prefab is missing or it changed, we need to reinitialize it
          if (_newPrefab == null || _newPrefab.unappliedChanges.serializationId != serializationId) {
-            if (_newPrefab != null) {
-               _newPrefab.revertUnappliedChanges();
-            }
-
             _newPrefab = MapManager.self.createPrefab(currentArea, currentBiome, newPrefabState(worldPosition, serializationId), false);
             _newPrefab.setGameInteractionsActive(false);
+            soundHasBeenPlayed = false;
          }
 
          _newPrefab.unappliedChanges.localPosition = currentArea.prefabParent.transform.InverseTransformPoint(worldPosition);
          _newPrefab.transform.localPosition = _newPrefab.unappliedChanges.localPosition;
          _newPrefab.GetComponent<ZSnap>()?.snapZ();
 
-         SoundEffectManager.self.playSoundEffect(SoundEffectManager.DROP_EDIT_OBJ, SoundEffectManager.self.transform);
+         _newPrefab.setOutline(false, false, false, false);
+
+         if (!soundHasBeenPlayed) {
+            SoundEffectManager.self.playSoundEffect(SoundEffectManager.DROP_EDIT_OBJ, SoundEffectManager.self.transform);
+            soundHasBeenPlayed = true;
+         }
       }
 
       private static PrefabState newPrefabState (Vector3 worldPosition, int serializationId) {
@@ -361,6 +403,7 @@ namespace MapCustomization
          if (_selectedPrefab != null) {
             _selectedPrefab.setGameInteractionsActive(true);
             _selectedPrefab.setOutline(true, false, false, false);
+            hideSelectionArrows();
          }
 
          _selectedPrefab = prefab;
@@ -368,7 +411,18 @@ namespace MapCustomization
          if (_selectedPrefab != null) {
             _selectedPrefab.setGameInteractionsActive(false);
             CustomizationUI.selectEntry(null);
+            self.selectionArrows.transform.position = _selectedPrefab.transform.position;
+            SelectionSpriteBuildMode.self.setDistances(_selectedPrefab);
+            showSelectionArrows();
          }
+      }
+
+      public static void showSelectionArrows () {
+         self.selectionArrows.SetActive(true);
+      }
+
+      public static void hideSelectionArrows () {
+         self.selectionArrows.SetActive(false);
       }
 
       public static void serverAllowedEnterCustomization (ItemInstance[] remainingProps) {

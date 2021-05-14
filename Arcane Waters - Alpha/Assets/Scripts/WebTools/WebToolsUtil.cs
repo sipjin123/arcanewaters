@@ -18,12 +18,14 @@
 
    // Response Codes
    public const int SUCCESS = 200;
+   public const int BAD_REQUEST = 400;
 
    // Endpoints
    public const string BASE_URL = "https://tools.arcanewaters.com/api";
 
    public const string BUG_REPORT_SUBMIT = BASE_URL + "/tasks/submit";
    public const string BUG_REPORT_SERVER_LOG_SUBMIT = BASE_URL + "/tasks/submitServerLog";
+   public const string COMPLAINT_SUBMIT = BASE_URL + "/supportTickets/submit";
 }
 
 public enum TicketSourceType

@@ -279,6 +279,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // If the battler is attacking
    public bool isAttacking;
 
+   // A reference to the stance change effect for this battler
+   public StanceChangeEffect stanceChangeEffect;
+
    #endregion
 
    public void stopActionCoroutine () {
@@ -708,15 +711,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          }
 
          // Update the Armor, hat and Weapon
-         if (armorManager.hasArmor()) {
-            armorManager.updateSprites();
-         }
-         if (weaponManager.hasWeapon()) {
-            weaponManager.updateSprites();
-         }
-         if (hatManager.hasHat()) {
-            hatManager.updateSprites();
-         }
+         armorManager.updateSprites();
+         weaponManager.updateSprites();
+         hatManager.updateSprites();
       }
    }
 

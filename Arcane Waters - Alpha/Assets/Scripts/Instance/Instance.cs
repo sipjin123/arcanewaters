@@ -360,24 +360,15 @@ public class Instance : NetworkBehaviour
 
             // Special case of the 'horror' boss
             if (seaMonsterType == SeaMonsterEntity.Type.Horror) {
-               seaMonster.isStationary = true;
+               float distanceGap = 1.2f;
+               float diagonalDistanceGap = Vector2.Distance(new Vector2(0, 0), new Vector2(distanceGap, distanceGap));
 
-               float distanceGap = .25f;
-               float diagonalDistanceGap = .35f;
-
-               SeaMonsterEntity childSeaMonster1 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(distanceGap, -distanceGap, 0), area, seaMonster, 1, -1, 1);
-               SeaMonsterEntity childSeaMonster2 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-distanceGap, -distanceGap, 0), area, seaMonster, -1, -1, 0);
-               SeaMonsterEntity childSeaMonster3 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(distanceGap, distanceGap, 0), area, seaMonster, 1, 1, 1);
-               SeaMonsterEntity childSeaMonster4 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-distanceGap, distanceGap, 0), area, seaMonster, -1, 1, 0);
-               SeaMonsterEntity childSeaMonster5 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-diagonalDistanceGap, 0, 0), area, seaMonster, -1, 0, 1);
-               SeaMonsterEntity childSeaMonster6 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(diagonalDistanceGap, 0, 0), area, seaMonster, 1, 0, 0);
-
-               childSeaMonster1.isStationary = true;
-               childSeaMonster2.isStationary = true;
-               childSeaMonster3.isStationary = true;
-               childSeaMonster4.isStationary = true;
-               childSeaMonster5.isStationary = true;
-               childSeaMonster6.isStationary = true;
+               SeaMonsterEntity childSeaMonster1 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(diagonalDistanceGap, -diagonalDistanceGap, 0), area, seaMonster, 1, -1, distanceGap, 1);
+               SeaMonsterEntity childSeaMonster2 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-diagonalDistanceGap, -diagonalDistanceGap, 0), area, seaMonster, -1, -1, distanceGap, 0);
+               SeaMonsterEntity childSeaMonster3 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(diagonalDistanceGap, diagonalDistanceGap, 0), area, seaMonster, 1, 1, distanceGap, 1);
+               SeaMonsterEntity childSeaMonster4 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-diagonalDistanceGap, diagonalDistanceGap, 0), area, seaMonster, -1, 1, distanceGap, 0);
+               SeaMonsterEntity childSeaMonster5 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-distanceGap, 0, 0), area, seaMonster, -1, 0, distanceGap, 1);
+               SeaMonsterEntity childSeaMonster6 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(distanceGap, 0, 0), area, seaMonster, 1, 0, distanceGap, 0);
             }
          }
       }
@@ -648,10 +639,11 @@ public class Instance : NetworkBehaviour
       return botShip;
    }
 
-   private SeaMonsterEntity spawnSeaMonsterChild (SeaMonsterEntity.Type seaMonsterType, Vector2 localPos, Area area, SeaMonsterEntity parentSeaMonster, int xVal, int yVal, int variety) {
+   private SeaMonsterEntity spawnSeaMonsterChild (SeaMonsterEntity.Type seaMonsterType, Vector2 localPos, Area area, SeaMonsterEntity parentSeaMonster, int xVal, int yVal, float distanceToParent, int variety) {
       SeaMonsterEntity childSeaMonster = spawnSeaMonster(seaMonsterType, localPos, area);
 
-      childSeaMonster.distanceFromSpawnPoint = new Vector2(xVal, yVal);
+      childSeaMonster.directionFromSpawnPoint = new Vector2(xVal, yVal);
+      childSeaMonster.distanceFromSpawnPoint = distanceToParent;
       childSeaMonster.variety = (variety);
 
       // Link the parent and child monsters

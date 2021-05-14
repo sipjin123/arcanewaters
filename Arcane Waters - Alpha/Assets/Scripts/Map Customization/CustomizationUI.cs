@@ -51,6 +51,10 @@ namespace MapCustomization
             MapCustomizationManager.pointerDrag(pointerPos - _lastPointerPos);
          }
 
+         if (KeyUtils.GetButton(MouseButton.Right)) {
+            MapCustomizationManager.rightClick();
+         }
+
          _lastPointerPos = pointerPos;
 
          // Allow user to select prefab variations with scroll wheel

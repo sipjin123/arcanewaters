@@ -249,7 +249,7 @@ public class BugReportManager : MonoBehaviour
       return tex;
    }
 
-   private Texture2D takeScreenshot (int resWidth, int resHeight) {
+   public Texture2D takeScreenshot (int resWidth, int resHeight) {
       // Prepare data
       Camera camera = Camera.main;
 

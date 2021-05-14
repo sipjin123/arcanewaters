@@ -186,6 +186,10 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    }
 
    public override void onDeath () {
+      if (_hasRunOnDeath) {
+         return;
+      }
+
       base.onDeath();
 
       NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(_lastAttackerNetId);
