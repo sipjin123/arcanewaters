@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
+using Random = UnityEngine.Random;
 
 public class EnemyManager : MonoBehaviour {
    #region Public Variables
@@ -108,6 +109,7 @@ public class EnemyManager : MonoBehaviour {
 
       int guildId = BotShipEntity.PIRATES_GUILD_ID;
       Area area = AreaManager.self.getArea(instance.areaKey);
+      int randomEnemyTypeVal = Random.Range(0, 100);
 
       foreach (Enemy_Spawner spawner in _spawners[instance.areaKey]) {
          Ship.Type shipType = randomizeShipType(instance.biome);
@@ -118,25 +120,68 @@ public class EnemyManager : MonoBehaviour {
             continue;
          }
 
-         BotShipEntity botShip = Instantiate(PrefabsManager.self.botShipPrefab);
-         botShip.areaKey = instance.areaKey;
-         botShip.facing = Direction.South;
-         botShip.setAreaParent(area, false);
-         botShip.transform.localPosition = spawner.transform.localPosition;
+         // Spawning ships has a 60% chance
+         if (randomEnemyTypeVal < 60) {
+            BotShipEntity botShip = Instantiate(PrefabsManager.self.botShipPrefab);
+            botShip.areaKey = instance.areaKey;
+            botShip.facing = Direction.South;
+            botShip.setAreaParent(area, false);
+            botShip.transform.localPosition = spawner.transform.localPosition;
 
-         botShip.seaEntityData = seaEnemyData;
-         botShip.maxHealth = seaEnemyData.maxHealth;
-         botShip.currentHealth = seaEnemyData.maxHealth;
+            botShip.seaEntityData = seaEnemyData;
+            botShip.maxHealth = seaEnemyData.maxHealth;
+            botShip.currentHealth = seaEnemyData.maxHealth;
 
-         botShip.shipType = shipType;
-         if (seaEnemyData.skillIdList.Count > 0) {
-            botShip.primaryAbilityId = seaEnemyData.skillIdList[0];
+            botShip.shipType = shipType;
+            if (seaEnemyData.skillIdList.Count > 0) {
+               botShip.primaryAbilityId = seaEnemyData.skillIdList[0];
+            }
+            botShip.guildId = guildId;
+            botShip.setShipData(seaEnemyData.xmlId, shipType, instance.difficulty);
+
+            InstanceManager.self.addSeaMonsterToInstance(botShip, instance);
+            NetworkServer.Spawn(botShip.gameObject);
+         } else {
+            // Spawn sea monster type based on biome
+            SeaMonsterEntity.Type seaMonsterType = SeaMonsterEntity.Type.None;
+            switch (instance.biome) {
+               case Biome.Type.Forest:
+               case Biome.Type.Pine:
+                  seaMonsterType = SeaMonsterEntity.Type.Fishman;
+                  break;
+               case Biome.Type.Lava:
+                  seaMonsterType = SeaMonsterEntity.Type.Reef_Giant;
+                  break;
+               case Biome.Type.Desert:
+                  seaMonsterType = SeaMonsterEntity.Type.Worm;
+                  break;
+               default:
+                  D.debug("No specific monster for biome: {" + instance.biome + "} Spawning default Fishman");
+                  seaMonsterType = SeaMonsterEntity.Type.Fishman;
+                  break;
+            }
+
+            SeaMonsterEntity seaEntity = Instantiate(PrefabsManager.self.seaMonsterPrefab);
+            SeaMonsterEntityData data = SeaMonsterManager.self.getMonster(seaMonsterType);
+
+            // Basic setup
+            seaEntity.monsterType = data.seaMonsterType;
+            seaEntity.areaKey = instance.areaKey;
+            seaEntity.facing = Direction.South;
+
+            // Transform setup
+            seaEntity.setAreaParent(area, true);
+            seaEntity.transform.localPosition = spawner.transform.localPosition;
+
+            // Update stats based on difficulty
+            int difficultyClamp = Mathf.Clamp(instance.difficulty, 1, 4);
+            seaEntity.maxHealth = data.maxHealth * difficultyClamp;
+            seaEntity.currentHealth = data.maxHealth * difficultyClamp;
+            
+            // Network Setup
+            InstanceManager.self.addSeaMonsterToInstance(seaEntity, instance);
+            NetworkServer.Spawn(seaEntity.gameObject);
          }
-         botShip.guildId = guildId;
-         botShip.setShipData(seaEnemyData.xmlId, shipType, instance.difficulty);
-
-         InstanceManager.self.addSeaMonsterToInstance(botShip, instance);
-         NetworkServer.Spawn(botShip.gameObject);
       }
    }
 
