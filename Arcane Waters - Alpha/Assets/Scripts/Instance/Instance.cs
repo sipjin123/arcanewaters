@@ -413,9 +413,11 @@ public class Instance : NetworkBehaviour
          Enemy.Type bossToSpawn = Enemy.Type.None;
          switch (biome) {
             case Biome.Type.Forest:
+            case Biome.Type.Pine:
                bossToSpawn = Enemy.Type.Lizard_King;
                break;
             case Biome.Type.Lava:
+            case Biome.Type.Desert:
                bossToSpawn = Enemy.Type.Golem_Boss;
                break;
          }
