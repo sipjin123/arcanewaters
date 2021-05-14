@@ -19,7 +19,9 @@ public class BattleCamera : BaseCamera {
 
    protected override void Start () {
       base.Start();
-      onResolutionChanged();
+
+      // TODO: Confirm if this ruins the camera perspective of main cam and battle cam, this causes title screen to be zoomed out immediately but the zoom should be triggered inside battle
+      //onResolutionChanged();
    }
 
    public override void onResolutionChanged () {

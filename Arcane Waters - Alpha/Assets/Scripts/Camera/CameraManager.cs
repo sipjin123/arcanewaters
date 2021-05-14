@@ -234,6 +234,8 @@ public class CameraManager : ClientMonoBehaviour {
    }
 
    protected IEnumerator CO_EnableBattleDisplay () {
+      battleCamera.onResolutionChanged();
+
       // Start the fade to black effect
       defaultCamera.getPixelFadeEffect().fadeOut();
       battleCamera.getPixelFadeEffect().fadeOut();

@@ -20,10 +20,14 @@ public class BaseCamera : MonoBehaviour {
    // The PPU scale of this camera
    public float customPPUScale = -1.0f;
 
-   // Is this camera targeting a battle scebe, or a scene which features a battle scene
+   // Is this camera targeting a battle scene, or a scene which features a battle scene
    public bool isBattleScreenCamera;
 
+   // Is this camera targeting a title scene, or a scene which features the login scene and character selection
+   public bool isTitleScreenCamera;
+
    // Scale factor of camera zoom
+   public const float TITLE_CAM_SCALE_FACTOR = 3f;
    public const float BATTLE_CAM_SCALE_FACTOR = 2.5f;
    public const float BASE_CAM_SCALE_FACTOR = 2f;
 
@@ -83,10 +87,10 @@ public class BaseCamera : MonoBehaviour {
 
    public virtual float getPPUScale () {
       float ppu = useCustomPPUScale ? customPPUScale : DEFAULT_PPU_SCALE;
-      return ppu * getConstantCameraScalingFactor(isBattleScreenCamera);
+      return ppu * getConstantCameraScalingFactor(isBattleScreenCamera, isTitleScreenCamera);
    }
 
-   public static float getConstantCameraScalingFactor (bool isBattleScreen = false) {
+   public static float getConstantCameraScalingFactor (bool isBattleScreen = false, bool isTitleScene = false) {
       // NOTE: as of writing, we are using the 'battle' screen for title and character screens,
       // so for them isBattleScreen should be set to 'true'
 
@@ -95,7 +99,12 @@ public class BaseCamera : MonoBehaviour {
          ? 2f
          : 1f;
 
-      float typeFactor = isBattleScreen ? BATTLE_CAM_SCALE_FACTOR : BASE_CAM_SCALE_FACTOR;
+      float typeFactor = BASE_CAM_SCALE_FACTOR;
+      if (isBattleScreen) {
+         typeFactor = BATTLE_CAM_SCALE_FACTOR;
+      } else if (isTitleScene) {
+         typeFactor = TITLE_CAM_SCALE_FACTOR;
+      }
 
       return sizeFactor * typeFactor;
    }
