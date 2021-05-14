@@ -23,6 +23,10 @@ public class BaseCamera : MonoBehaviour {
    // Is this camera targeting a battle scebe, or a scene which features a battle scene
    public bool isBattleScreenCamera;
 
+   // Scale factor of camera zoom
+   public const float BATTLE_CAM_SCALE_FACTOR = 2.5f;
+   public const float BASE_CAM_SCALE_FACTOR = 2f;
+
    #endregion
 
    public virtual void Awake () {
@@ -91,7 +95,7 @@ public class BaseCamera : MonoBehaviour {
          ? 2f
          : 1f;
 
-      float typeFactor = isBattleScreen ? 3f : 2f;
+      float typeFactor = isBattleScreen ? BATTLE_CAM_SCALE_FACTOR : BASE_CAM_SCALE_FACTOR;
 
       return sizeFactor * typeFactor;
    }
