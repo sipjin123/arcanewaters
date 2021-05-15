@@ -7,7 +7,7 @@ public class FmodTester : MonoBehaviour {
    // The cached event state that plays loop sounds
    FMOD.Studio.EventInstance playerState;
 
-   // Event that is earchable using this attribute
+   // Event that is searchable using this attribute
    [EventRef]
    public string searchableEvent;
 
@@ -16,14 +16,14 @@ public class FmodTester : MonoBehaviour {
    public string loopSound2 = "";
 
    // One shot sound event directories
-   public string onceShotEvent1 = "";
+   public string oneShotEvent1 = "";
    public string oneShotEvent2 = "";
 
    #endregion
 
    public void Start () {
       // Assign the strings real time
-      onceShotEvent1 = "event:/SFX/Player/Interactions/Diegetic/Jump";
+      oneShotEvent1 = "event:/SFX/Player/Interactions/Diegetic/Jump";
       oneShotEvent2 = "event:/SFX/Player/Interactions/Diegetic/Land";
       loopSound1 = "event:/SFX/Ambience/Beds/Ocean_Pad_01";
       loopSound2 = "event:/SFX/Ambience/Beds/Ocean_Pad_02";
@@ -40,7 +40,7 @@ public class FmodTester : MonoBehaviour {
 
       // Plays the first one shot event
       if (KeyUtils.GetKeyDown(UnityEngine.InputSystem.Key.X)) {
-         RuntimeManager.PlayOneShot(onceShotEvent1, transform.position);
+         RuntimeManager.PlayOneShot(oneShotEvent1, transform.position);
       }
 
       // Plays the second one shot event

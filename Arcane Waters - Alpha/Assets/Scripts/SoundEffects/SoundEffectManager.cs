@@ -62,7 +62,7 @@ public class SoundEffectManager : MonoBehaviour
    public const int OPEN_CHEST = 73;
 
    // The cached event state that plays loop sounds
-   FMOD.Studio.EventInstance fmodLoopState;
+   public FMOD.Studio.EventInstance fmodLoopState;
 
    // The loop sound sfx for the fmod
    public string loopSound = "";
@@ -158,7 +158,7 @@ public class SoundEffectManager : MonoBehaviour
       eventEmitter.transform.SetParent(target, true);
       eventEmitter.EventInstance.setVolume(effect.minVolume);
       eventEmitter.Play();
-      StartCoroutine(destroyAfterEnd(eventEmitter));
+      StartCoroutine(CO_DestroyAfterEnd(eventEmitter));
 
       // This was the old way of playing sounds, is now replaced by FMOD sound setup
       /* 
@@ -172,7 +172,7 @@ public class SoundEffectManager : MonoBehaviour
       Destroy(audioSource.gameObject, audioSource.clip.length);*/
    }
 
-   private IEnumerator destroyAfterEnd (StudioEventEmitter emitter) {
+   private IEnumerator CO_DestroyAfterEnd (StudioEventEmitter emitter) {
       while (emitter.IsPlaying()) {
          yield return 0;
       }
