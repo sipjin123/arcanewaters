@@ -855,7 +855,7 @@ public class XmlVersionManagerClient : GenericGameManager {
                   message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
                }
             }
-            SoundEffectManager.self.receiveListFromServer(sfxDataList.ToArray());
+            SoundEffectManager.self.receiveListFromZipFile(sfxDataList.ToArray());
             break;
 
          case EditorToolType.Map_Keys:

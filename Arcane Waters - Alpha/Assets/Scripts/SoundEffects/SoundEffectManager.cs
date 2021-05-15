@@ -6,6 +6,7 @@ using Mirror;
 using System.Xml.Serialization;
 using System.Text;
 using System.Xml;
+using FMODUnity;
 
 public class SoundEffectManager : MonoBehaviour
 {
@@ -60,6 +61,12 @@ public class SoundEffectManager : MonoBehaviour
    public const int OPEN_LAND_BAG = 72;
    public const int OPEN_CHEST = 73;
 
+   // The cached event state that plays loop sounds
+   FMOD.Studio.EventInstance fmodLoopState;
+
+   // The loop sound sfx for the fmod
+   public string loopSound = "";
+
    #endregion
 
    private void Awake () {
@@ -86,7 +93,7 @@ public class SoundEffectManager : MonoBehaviour
       });
    }
 
-   public void receiveListFromServer (SoundEffect[] effects) {
+   public void receiveListFromZipFile (SoundEffect[] effects) {
       if (!_hasInitialized) {
          foreach (SoundEffect effect in effects) {
             findAndAssignAudioClip(effect);
@@ -119,6 +126,14 @@ public class SoundEffectManager : MonoBehaviour
          if (effect.is3D) {
             playSoundEffect3D(effect, target);
          }  else {
+            if (effect.fmodId.Length > 1) {
+               RuntimeManager.PlayOneShot(effect.fmodId, transform.position);
+            } else {
+               D.debug("This id {" + effect.id + "} does not have an FmodID assigned to it, please refer to the sound effect web tool");
+            }
+
+            // This was the old way of playing sounds, is now replaced by FMOD sound setup
+            /* 
             source.clip = effect.clip;
             if (effect.clip == null) {
                D.debug("Missing Sound Effect ID: " + id);
@@ -127,7 +142,7 @@ public class SoundEffectManager : MonoBehaviour
             effect.calibrateSource(source);
             source.volume = effect.minVolume;
             source.loop = false;
-            source.Play();
+            source.Play(); */
          }
          
       } else if (id >= 0) {
@@ -137,6 +152,16 @@ public class SoundEffectManager : MonoBehaviour
 
    private void playSoundEffect3D (SoundEffect effect, Transform target) {
       // Setup audio player
+
+      StudioEventEmitter eventEmitter = Instantiate(PrefabsManager.self.fMod3dPrefab, target.position, Quaternion.identity);
+      eventEmitter.Event = effect.fmodId;
+      eventEmitter.transform.SetParent(target, true);
+      eventEmitter.EventInstance.setVolume(effect.minVolume);
+      eventEmitter.Play();
+      StartCoroutine(destroyAfterEnd(eventEmitter));
+
+      // This was the old way of playing sounds, is now replaced by FMOD sound setup
+      /* 
       AudioSource audioSource = Instantiate(PrefabsManager.self.sound3dPrefab, target.position, Quaternion.identity);
       audioSource.transform.SetParent(target, true);
       audioSource.clip = effect.clip;
@@ -144,7 +169,35 @@ public class SoundEffectManager : MonoBehaviour
       audioSource.Play();
 
       // Destroy object after clip finishes playing
-      Destroy(audioSource.gameObject, audioSource.clip.length);
+      Destroy(audioSource.gameObject, audioSource.clip.length);*/
+   }
+
+   private IEnumerator destroyAfterEnd (StudioEventEmitter emitter) {
+      while (emitter.IsPlaying()) {
+         yield return 0;
+      }
+      Destroy(emitter.gameObject);
+   }
+
+   public void playFmodLoop (int soundEffectId, Transform transformToSnapTo) {
+      SoundEffect effect;
+      if (_soundEffects.TryGetValue(soundEffectId, out effect)) {
+         loopSound = effect.fmodId;
+      } else {
+         D.debug("Cannot play Loop Fmod sfx, missing id {" + soundEffectId + "}");
+         return;
+      }
+
+      if (transformToSnapTo != null && transformToSnapTo.GetComponent<Rigidbody2D>()) { 
+         RuntimeManager.AttachInstanceToGameObject(fmodLoopState, transformToSnapTo, transformToSnapTo.GetComponent<Rigidbody2D>());
+      }
+      fmodLoopState.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+      fmodLoopState = RuntimeManager.CreateInstance(loopSound);
+      fmodLoopState.start();
+   }
+
+   public void stopCurrentFmodLoop () {
+      fmodLoopState.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
    }
 
    private void findAndAssignAudioClip (SoundEffect effect) {
