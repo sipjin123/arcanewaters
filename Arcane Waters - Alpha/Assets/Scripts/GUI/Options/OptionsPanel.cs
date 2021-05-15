@@ -413,6 +413,7 @@ public class OptionsPanel : Panel
       }
 
       SoundManager.musicVolume = musicSlider.value;
+      SoundManager.self.musicVCA.setVolume(SoundManager.musicVolume);
    }
 
    public void effectsSliderChanged () {
@@ -422,6 +423,7 @@ public class OptionsPanel : Panel
       }
 
       SoundManager.effectsVolume = effectsSlider.value;
+      SoundManager.self.sfxVCA.setVolume(SoundManager.effectsVolume);
    }
 
    public void guiScaleSliderChanged () {      

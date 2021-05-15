@@ -4,12 +4,18 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Audio;
+using FMODUnity;
 
 public class SoundManager : GenericGameManager {
    #region Public Variables
 
    // The minimum amount of time we'll wait between playing the same clip
    public static float MIN_DELAY = .10f;
+
+   // FMOD volume settings address
+   public const string MASTER_BUS_PATH = "Bus:/";
+   public const string MUSIC_VCA_PATH = "vca:/Music";
+   public const string SFX_VCA_PATH = "vca:/Sound Effects";
 
    // The minimum velocity we must be moving to trigger a footstep sound
    public static float MIN_FOOTSTEP_VELOCITY = .8f;
@@ -44,6 +50,10 @@ public class SoundManager : GenericGameManager {
 
    // The Audio Source for our background music
    public AudioSource backgroundMusicAudioSource;
+
+   // The master volume controls of FMOD
+   public FMOD.Studio.Bus masterBus;
+   public FMOD.Studio.VCA musicVCA, sfxVCA;
 
    // The type of sound to play
    public enum Type {
@@ -117,13 +127,19 @@ public class SoundManager : GenericGameManager {
    protected override void Awake () {
       base.Awake();
       self = this;
+      
+      masterBus = RuntimeManager.GetBus(MASTER_BUS_PATH);
+      musicVCA = RuntimeManager.GetVCA(MUSIC_VCA_PATH);
+      sfxVCA = RuntimeManager.GetVCA(SFX_VCA_PATH);
 
       // Load the saved values if there are any
       if (PlayerPrefs.HasKey(SaveKeys.EFFECTS_VOLUME)) {
          effectsVolume = PlayerPrefs.GetFloat(SaveKeys.EFFECTS_VOLUME);
+         sfxVCA.setVolume(effectsVolume);
       }
       if (PlayerPrefs.HasKey(SaveKeys.MUSIC_VOLUME)) {
          musicVolume = PlayerPrefs.GetFloat(SaveKeys.MUSIC_VOLUME);
+         musicVCA.setVolume(musicVolume);
       }
 
       // Look up the background music for the Title Screen, if we have any
@@ -250,6 +266,7 @@ public class SoundManager : GenericGameManager {
 
    public static void setEffectsVolume (float volume) {
       effectsVolume = volume;
+      self.sfxVCA.setVolume(effectsVolume);
 
       // Save the new volume
       PlayerPrefs.SetFloat(SaveKeys.EFFECTS_VOLUME, effectsVolume);
