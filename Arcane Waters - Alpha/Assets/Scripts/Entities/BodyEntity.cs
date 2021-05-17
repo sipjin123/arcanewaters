@@ -92,7 +92,25 @@ public class BodyEntity : NetEntity
 
       if (nameText != null && !Util.isEmpty(this.entityName)) {
          nameText.text = this.entityName;
+
+         if (Global.player == this) {
+            recolorNameText();
+         }        
       }
+   }
+
+   public void recolorNameText () {
+      Color localPlayerColor = new Color(8.0f / 255.0f, 133.0f / 255.0f, 230.0f / 255.0f, 1.0f);
+      nameText.fontMaterial = new Material(nameText.fontSharedMaterial);
+      nameText.fontMaterial.SetColor("_FaceColor", localPlayerColor);
+
+      nameTextOutline.enabled = true;
+      nameTextOutline.text = this.entityName;
+      nameTextOutline.GetComponent<RectTransform>().position = new Vector2(nameTextOutline.GetComponent<RectTransform>().position.x, nameText.GetComponent<RectTransform>().position.y);
+      nameTextOutline.GetComponent<RectTransform>().sizeDelta = new Vector2(nameTextOutline.preferredWidth, nameTextOutline.preferredHeight);
+      nameTextOutline.fontMaterial = new Material(nameTextOutline.fontSharedMaterial);
+      nameTextOutline.fontMaterial.SetColor("_OutlineColor", localPlayerColor);
+      nameTextOutline.fontMaterial.SetFloat("_OutlineWidth", 0.15f);
    }
 
    public void restartAnimations () {

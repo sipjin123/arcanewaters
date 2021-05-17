@@ -360,6 +360,8 @@ public class Instance : NetworkBehaviour
 
             // Special case of the 'horror' boss
             if (seaMonsterType == SeaMonsterEntity.Type.Horror) {
+               seaMonster.chestDropCount = UnityEngine.Random.Range(3, 5);
+
                float distanceGap = 1.2f;
                float diagonalDistanceGap = Vector2.Distance(new Vector2(0, 0), new Vector2(distanceGap, distanceGap));
 

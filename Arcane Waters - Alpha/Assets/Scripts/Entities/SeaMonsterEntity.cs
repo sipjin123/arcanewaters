@@ -31,9 +31,6 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    [SyncVar]
    public string monsterName;
 
-   // A flag to determine if the object has died
-   public bool hasDied = false;
-
    // The unique data for each seamonster
    public SeaMonsterEntityData seaMonsterData;
 
@@ -52,7 +49,10 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    public SeaMonsterEntity.Type monsterType = 0;
 
    // Determines the location of this unit in relation to its spawn point
-   public Vector2 distanceFromSpawnPoint;
+   public Vector2 directionFromSpawnPoint;
+
+   // Multiplies the direction from the spawn point to get the relative position
+   public float distanceFromSpawnPoint = 1f;
 
    // Holds the info of the seamonster health Bars
    public SeaMonsterBars seaMonsterBars;
@@ -75,6 +75,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    // Gets set to true when the entity doesn't plan any move (or attack)
    public bool isStationary = false;
+
+   // The number of chests dropped by this monsters when defeated
+   public int chestDropCount = 1;
 
    // The animation speed cached from the xml database
    public float cachedAnimSpeed = .25f;
@@ -247,11 +250,6 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       // Alters the simple animation data
       handleAnimations();
 
-      // Kills the unit
-      if (hasDied == false && isDead()) {
-         killUnit();
-      }
-
       // Handles attack animations
       if (NetworkTime.time > _attackStartAnimateTime && !_hasAttackAnimTriggered) {
          _simpleAnim.stayAtLastFrame = true;
@@ -283,10 +281,10 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          }
       } else {
          // Forces minions to look at direction in relation to the parent
-         if (distanceFromSpawnPoint.x < 0) {
+         if (directionFromSpawnPoint.x < 0) {
             facing = Direction.West;
-         } else if (distanceFromSpawnPoint.x == 0) {
-            facing = distanceFromSpawnPoint.y == 1 ? Direction.East : Direction.West;
+         } else if (directionFromSpawnPoint.x == 0) {
+            facing = directionFromSpawnPoint.y == 1 ? Direction.East : Direction.West;
          } else {
             facing = Direction.East;
          }
@@ -312,16 +310,15 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       // If this entity is a Minion, snap to its parent
       if (seaMonsterData.roleType == RoleType.Minion && seaMonsterParentEntity != null) {
-         Vector2 targetLocation = SeaMonsterUtility.getFixedPositionAroundPosition(seaMonsterParentEntity.sortPoint.transform.position, distanceFromSpawnPoint);
+         Vector2 targetLocation = SeaMonsterUtility.getFixedPositionAroundPosition(seaMonsterParentEntity.sortPoint.transform.position, directionFromSpawnPoint, distanceFromSpawnPoint);
          Vector2 waypointDirection = (targetLocation - (Vector2) sortPoint.transform.position).normalized;
 
          // Teleports the Minions if too far away from Parent
-         if (Vector2.SqrMagnitude(sortPoint.transform.position - seaMonsterParentEntity.transform.position) > 2 * 2) {
+         if (Vector2.Distance(sortPoint.transform.position, seaMonsterParentEntity.transform.position) > 2) {
             _body.MovePosition(targetLocation);
          }
 
-         float sqrDistanceToWaypoint = Vector2.SqrMagnitude(targetLocation - (Vector2)sortPoint.transform.position);
-         if (sqrDistanceToWaypoint > .025f) {
+         if (Vector2.Distance(targetLocation, sortPoint.transform.position) > .05f) {
             _body.AddForce(waypointDirection.normalized * (getMoveSpeed() / 1.75f));
          }
          return;
@@ -565,7 +562,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    #endregion
 
    private void handleAnimations () {
-      if (hasDied) {
+      if (isDead()) {
          _simpleAnim.playAnimation(Anim.Type.Death_East);
          return;
       }
@@ -604,37 +601,6 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
    }
 
-   protected virtual void killUnit () {
-      if (_currentBehaviorCoroutine != null) {
-         StopCoroutine(_currentBehaviorCoroutine);
-      }
-
-      hasDied = true;
-      handleAnimations();
-
-      _clickableBox.gameObject.SetActive(false);
-      seaMonsterBars.gameObject.SetActive(false);
-
-      // Reduces the life of the parent entity if there is one
-      if (seaMonsterData.roleType == RoleType.Minion && seaMonsterParentEntity != null) {
-         seaMonsterParentEntity.currentHealth -= 1000;
-      }
-
-      if (seaMonsterData.roleType == RoleType.Master) {
-         foreach (SeaMonsterEntity childEntity in seaMonsterChildrenList) {
-            NetworkServer.Destroy(childEntity.gameObject);
-         }
-      }
-
-      // Drops the treasure bag if this entity can spawn one
-      if (seaMonsterData.shouldDropTreasure) {
-         NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(_lastAttackerNetId);
-         if (lastAttacker) {
-            spawnChest(lastAttacker.userId);
-         }
-      }
-   }
-
    public static int fetchReceivedData (DataField[] dataFields) {
       foreach (DataField field in dataFields) {
          if (field.k.CompareTo(DataField.SEA_ENEMY_DATA_KEY) == 0) {
@@ -656,11 +622,59 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
    }
 
+   public override void onDeath () {
+      if (_hasRunOnDeath) {
+         return;
+      }
+
+      base.onDeath();
+
+      if (seaMonsterData.shouldDropTreasure) {
+         NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(_lastAttackerNetId);
+         if (lastAttacker) {
+            spawnChest(lastAttacker.userId);
+         } else {
+            D.warning("Sea monster couldn't drop a chest, due to not being able to locate last attacker");
+         }
+      }
+
+      if (_currentBehaviorCoroutine != null) {
+         StopCoroutine(_currentBehaviorCoroutine);
+      }
+
+      handleAnimations();
+
+      _clickableBox.gameObject.SetActive(false);
+      seaMonsterBars.gameObject.SetActive(false);
+
+      // Reduces the life of the parent entity if there is one
+      if (seaMonsterData.roleType == RoleType.Minion && seaMonsterParentEntity != null) {
+         seaMonsterParentEntity.currentHealth -= 1000;
+         if (seaMonsterParentEntity.isDead()) {
+            seaMonsterParentEntity.onDeath();
+         }
+      }
+
+      if (seaMonsterData.roleType == RoleType.Master) {
+         foreach (SeaMonsterEntity childEntity in seaMonsterChildrenList) {
+            NetworkServer.Destroy(childEntity.gameObject);
+         }
+      }
+   }
+
    [Server]
    protected void spawnChest (int killerUserId) {
       if (killerUserId > 0) {
          Instance currentInstance = InstanceManager.self.getInstance(this.instanceId);
-         TreasureManager.self.createSeaMonsterChest(currentInstance, sortPoint.transform.position, seaMonsterData.seaMonsterType, killerUserId);
+         for (int i = 0; i < chestDropCount; i++) {
+            // When multiple chests are dropped, spawn them in a random area around the monster position
+            Vector2 offset = new Vector2(0, 0);
+            if (i > 0) {
+               offset += Random.insideUnitCircle * 0.3f;
+            }
+
+            TreasureManager.self.createSeaMonsterChest(currentInstance, sortPoint.transform.position + (Vector3)offset, seaMonsterData.seaMonsterType, killerUserId);
+         }
       }
    }
 

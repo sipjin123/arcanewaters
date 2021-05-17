@@ -206,6 +206,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6395239100931506762}
   - component: {fileID: 1323820619680386022}
+  - component: {fileID: 6597289524563956800}
   m_Layer: 0
   m_Name: SelectionSpriteBuildMode
   m_TagString: Untagged
@@ -247,6 +248,18 @@ MonoBehaviour:
   east: {fileID: 8172344351826395998}
   south: {fileID: 2015205891872484923}
   west: {fileID: 7475686649252892000}
+--- !u!225 &6597289524563956800
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5011736094747587318}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &8104694746470760697
 GameObject:
   m_ObjectHideFlags: 0

@@ -114,6 +114,9 @@ public class NetEntity : NetworkBehaviour
    // The Text component that has our name
    public TextMeshProUGUI nameText;
 
+   // The Text component that has our name as outline
+   public TextMeshProUGUI nameTextOutline;
+
    // The object we use for sorting our sprites
    public GameObject sortPoint;
 
@@ -362,6 +365,10 @@ public class NetEntity : NetworkBehaviour
 
       if (isPlayerEntity()) {
          nameText.text = this.entityName;
+
+         if (Global.player == getPlayerBodyEntity()) {
+            getPlayerBodyEntity().recolorNameText();
+         }
       }
    }
 

@@ -4896,7 +4896,7 @@ public class RPCManager : NetworkBehaviour
       bot.areaKey = _player.areaKey;
       bot.entityName = enemyType.ToString();
       bot.monsterType = enemyType;
-      bot.distanceFromSpawnPoint = new Vector2(xVal, yVal);
+      bot.directionFromSpawnPoint = new Vector2(xVal, yVal);
       bot.variety = (variety);
 
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);

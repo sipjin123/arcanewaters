@@ -520,6 +520,9 @@ public class NPCPanel : Panel
       ClickableText row = Instantiate(dialogueOptionRowPrefab);
       row.transform.SetParent(container.transform);
 
+      // Preserve scale
+      row.transform.localScale = Vector3.one;
+
       // Set the text
       if (text == null) {
          row.initData(clickableType);
