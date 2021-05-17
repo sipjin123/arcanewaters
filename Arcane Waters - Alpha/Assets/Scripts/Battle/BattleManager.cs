@@ -897,6 +897,11 @@ public class BattleManager : MonoBehaviour {
                target.health -= attackAction.damage;
                target.health = Util.clamp<int>(target.health, 0, target.getStartingHealth());
 
+               if (target.health <= 0) {
+                  D.debug("Target will die at the next round! UserId: {" + target.userId + "} EnemyType: {" + target.enemyType + "}");
+                  target.diesAfterAction = true;
+               }
+
                if (source.enemyType == Enemy.Type.PlayerBattler) {
                   if (target.health <= 0) {
                      D.adminLog("(4) {" + source.userId + "} {" + action.actionId + "} will kill " +

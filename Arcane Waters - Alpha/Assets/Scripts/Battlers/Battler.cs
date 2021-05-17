@@ -113,6 +113,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [SyncVar]
    public int XP;
 
+   // If this user dies after the action
+   [SyncVar]
+   public bool diesAfterAction;
+
    // The board position we were placed at
    [SyncVar]
    public int boardPosition;

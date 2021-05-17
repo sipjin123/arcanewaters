@@ -5237,6 +5237,7 @@ public class RPCManager : NetworkBehaviour
          // Send Battle Bg data
          int bgXmlID = battle.battleBoard.xmlID;
          Target_ReceiveBackgroundInfo(_player.connectionToClient, bgXmlID);
+         Target_StartBattleData(_player.connectionToClient, enemy.battleId);
       }
    }
 
@@ -5607,6 +5608,30 @@ public class RPCManager : NetworkBehaviour
                processTeamBattle(battlerInfoList.ToArray(), allyInfoList.ToArray(), enemyNetId);
             });
          });
+      }
+   }
+
+   [TargetRpc]
+   public void Target_StartBattleData (NetworkConnection connection, int battleId) {
+      StartCoroutine(CO_StartBattleData(battleId));
+   }
+
+   private IEnumerator CO_StartBattleData (int battleId) {
+      while (BattleManager.self.getBattle(battleId) == null) {
+         yield return 0;
+      }
+
+      // TODO: Find alternative solution here that will be more reliable than a fixed network interval, something related to the data being processed by battle.cs
+      yield return new WaitForSeconds(BattleManager.TICK_INTERVAL);
+
+      // TODO: Implement code logic here that will set the enemy to animate death animation when it is still standing up but has 0 syncvar health
+      Battle battleData = BattleManager.self.getBattle(battleId);
+      foreach (Battler defenders in battleData.getDefenders()) {
+         D.debug("The enemies are UserID: {" + defenders.userId
+            + "} DiesAfter: {" + defenders.diesAfterAction
+            + "} EnemyType: {" + defenders.enemyType
+            + "} HP: {" + defenders.health + "} DHP: {" + defenders.displayedHealth
+            + "} Anim: {" + defenders.getAnim()[0].currentAnimation + "}");
       }
    }
 
