@@ -100,6 +100,9 @@ public class ArmorManager : EquipmentManager {
 
       // Play a sound
       SoundManager.create3dSound("equip_", this.transform.position, 2);
+      D.adminLog("Equipped armor" + " SQL: {" + armorData.sqlId +
+         "} Name: {" + armorData.equipmentName +
+         "} Class: {" + armorData.armorType + "}", D.ADMIN_LOG_TYPE.Equipment);
 
       Global.getUserObjects().armor = new Armor {
          id = equippedArmorId,
@@ -128,6 +131,7 @@ public class ArmorManager : EquipmentManager {
       }
 
       if (armorData == null) {
+         D.debug("Armor data is null for {" + armorTypeId + "}");
          armorData = ArmorStatData.getDefaultData();
       }
       cachedArmorData = armorData;
