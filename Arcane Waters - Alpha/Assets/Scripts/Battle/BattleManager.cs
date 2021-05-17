@@ -292,10 +292,10 @@ public class BattleManager : MonoBehaviour {
       BattleSpot battleSpot = battle.battleBoard.getSpot(teamType, battler.boardPosition);
       battler.battleSpot = battleSpot;
       battler.transform.position = battleSpot.transform.position;
+      assignBattlerSyncData(battler, player, true);
 
       // Actually spawn the Battler as a Network object now
       NetworkServer.Spawn(battler.gameObject);
-      assignBattlerSyncData(battler, player, true);
 
       return battler;
    }
