@@ -425,6 +425,10 @@ public class Battle : NetworkBehaviour {
 
    [ClientRpc]
    public void Rpc_SendCombatAction (string[] actionStrings, BattleActionType battleActionType, bool cancelAbility) {
+      processCombatAction(actionStrings, battleActionType, cancelAbility);
+   }
+
+   public void processCombatAction (string[] actionStrings, BattleActionType battleActionType, bool cancelAbility) {
       List<BattleAction> actionList = new List<BattleAction>();
       BattleAction actionToSend = null;
       

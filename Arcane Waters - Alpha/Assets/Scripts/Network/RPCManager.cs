@@ -5231,6 +5231,10 @@ public class RPCManager : NetworkBehaviour
          // Adds the player to the newly created or existing battle
          BattleManager.self.addPlayerToBattle(battle, localBattler, Battle.TeamType.Attackers);
 
+         foreach (BattleManager.QueuedRpcAction rpcBattleAction in BattleManager.self.queuedRpcActionList) {
+            Target_SendCombatAction(_player.connectionToClient, enemy.battleId, rpcBattleAction.actionSerialized, rpcBattleAction.battleActionType, rpcBattleAction.isCancelAction);
+         }
+
          // Handles ability related logic
          processPlayerAbilities(localBattler, bodyEntities);
 
