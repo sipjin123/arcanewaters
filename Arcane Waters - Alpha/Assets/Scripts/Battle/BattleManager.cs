@@ -46,6 +46,9 @@ public class BattleManager : MonoBehaviour {
    // The action id that iterates per combat action
    public int actionIdIndex = 0;
 
+   // The queued rpc action executed by the battle manager
+   public List<QueuedRpcAction> queuedRpcActionList = new List<QueuedRpcAction>();
+
    #endregion
 
    public void Awake () {
@@ -525,6 +528,14 @@ public class BattleManager : MonoBehaviour {
             // Force the cooldown to reach current time so a new ability can be casted
             source.cooldownEndTime = NetworkTime.time - .1f;
 
+            QueuedRpcAction queuedRpc = new QueuedRpcAction {
+               actionSerialized = stringList.ToArray(),
+               battleActionType = BattleActionType.Attack,
+               isCancelAction = true
+            };
+
+            queuedRpcActionList.Add(queuedRpc);
+
             // Send it to clients
             battle.Rpc_SendCombatAction(stringList.ToArray(), BattleActionType.Attack, true);
          } 
@@ -773,6 +784,14 @@ public class BattleManager : MonoBehaviour {
          D.debug("Battle action was not prepared correctly");
       }
 
+      QueuedRpcAction queuedRpc = new QueuedRpcAction {
+         actionSerialized = stringList.ToArray(),
+         battleActionType = actionType,
+         isCancelAction = false
+      };
+
+      queuedRpcActionList.Add(queuedRpc);
+
       // Send it to clients
       battle.Rpc_SendCombatAction(stringList.ToArray(), actionType, false);
    }
@@ -786,6 +805,13 @@ public class BattleManager : MonoBehaviour {
       string serializedValue = stanceAction.serialize();
       string[] values = new[] { serializedValue };
 
+      QueuedRpcAction queuedRpc = new QueuedRpcAction {
+         actionSerialized = values,
+         battleActionType = BattleActionType.Stance,
+         isCancelAction = false
+      };
+
+      queuedRpcActionList.Add(queuedRpc);
       battle.Rpc_SendCombatAction(values, BattleActionType.Stance, false);
    }
 
@@ -1065,6 +1091,17 @@ public class BattleManager : MonoBehaviour {
    public Dictionary<int, Battle> getActiveBattlersData () { return _activeBattles; }
 
    #region Private Variables
+
+   public class QueuedRpcAction {
+      // The serialized action data
+      public string[] actionSerialized;
+
+      // The type of battle action
+      public BattleActionType battleActionType;
+
+      // If action is to be cancelled
+      public bool isCancelAction;
+   }
 
    // Stores the Battle Board used for each Biome Type
    protected Dictionary<Biome.Type, BattleBoard> _boards = new Dictionary<Biome.Type, BattleBoard>();
