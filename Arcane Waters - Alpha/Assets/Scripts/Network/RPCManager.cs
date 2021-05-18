@@ -5245,6 +5245,20 @@ public class RPCManager : NetworkBehaviour
       }
    }
 
+   [TargetRpc]
+   public void Target_SendCombatAction (NetworkConnection connection, int battleId, string[] actionStrings, BattleActionType battleActionType, bool cancelAbility) {
+      StartCoroutine(CO_WaitRpcActionBattle(battleId, actionStrings, battleActionType, cancelAbility));
+   }
+
+   private IEnumerator CO_WaitRpcActionBattle (int battleId, string[] actionStrings, BattleActionType battleActionType, bool cancelAbility) {
+      while (BattleManager.self.getBattle(battleId) == null) {
+         yield return 0;
+      }
+      
+      Battle battle = BattleManager.self.getBattle(battleId);
+      battle.processCombatAction(actionStrings, battleActionType, cancelAbility);
+   }
+
    private void processPvp (BattlerInfo[] defenders, BattlerInfo[] attackers) {
       // Look up the player's Area
       Area area = AreaManager.self.getArea(_player.areaKey);
