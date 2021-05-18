@@ -267,6 +267,16 @@ public class BattleManager : MonoBehaviour {
          // Don't tick unless the Battle is still in progress
          if (!battle.isOver()) {
             Battle.TickResult tickResult = battle.tick();
+            
+            List<QueuedRpcAction> queuedRpcActionToRemove = new List<QueuedRpcAction>();
+            foreach (QueuedRpcAction queuedRpc in queuedRpcActionList) {
+               if (NetworkTime.time > queuedRpc.actionEndTime) {
+                  queuedRpcActionToRemove.Add(queuedRpc);
+               }
+            }
+            foreach (QueuedRpcAction actionToDelete in queuedRpcActionToRemove) {
+               queuedRpcActionList.Remove(actionToDelete);
+            }
 
             // If a battle just ended, notify all the clients involved
             if (tickResult == Battle.TickResult.BattleOver) {
@@ -531,7 +541,8 @@ public class BattleManager : MonoBehaviour {
             QueuedRpcAction queuedRpc = new QueuedRpcAction {
                actionSerialized = stringList.ToArray(),
                battleActionType = BattleActionType.Attack,
-               isCancelAction = true
+               isCancelAction = true,
+               actionEndTime = 0
             };
 
             queuedRpcActionList.Add(queuedRpc);
@@ -564,6 +575,7 @@ public class BattleManager : MonoBehaviour {
       bool wasCritical = false;
       bool isMultiTarget = targets.Count > 1;
       double timeToWait = battle.getTimeToWait(source, targets);
+      double actionEndTime = 0;
 
       List<BattleAction> actions = new List<BattleAction>();
 
@@ -723,6 +735,7 @@ public class BattleManager : MonoBehaviour {
                + " AtkEnds: " + timeAttackEnds.ToString("f1")
                + " CurrTime: " + NetworkTime.time.ToString("f1") 
                + " Target: " + target.userId + " - " + target.enemyType, D.ADMIN_LOG_TYPE.Boss);
+            actionEndTime = action.actionEndTime;
 
             // Wait to apply the effects of the action here on the server until the appointed time
             StartCoroutine(applyActionAfterDelay(timeToWait, action, isMultiTarget));
@@ -772,6 +785,7 @@ public class BattleManager : MonoBehaviour {
             // Make note how long the two Battler objects need in order to execute the cast effect animations
             source.animatingUntil = timeBuffEnds;
             target.animatingUntil = timeBuffEnds;
+            actionEndTime = action.actionEndTime;
 
             // Wait to apply the effects of the action here on the server until the appointed time
             StartCoroutine(applyActionAfterDelay(timeToWait, action, isMultiTarget));
@@ -787,7 +801,8 @@ public class BattleManager : MonoBehaviour {
       QueuedRpcAction queuedRpc = new QueuedRpcAction {
          actionSerialized = stringList.ToArray(),
          battleActionType = actionType,
-         isCancelAction = false
+         isCancelAction = false,
+         actionEndTime = actionEndTime
       };
 
       queuedRpcActionList.Add(queuedRpc);
@@ -808,7 +823,8 @@ public class BattleManager : MonoBehaviour {
       QueuedRpcAction queuedRpc = new QueuedRpcAction {
          actionSerialized = values,
          battleActionType = BattleActionType.Stance,
-         isCancelAction = false
+         isCancelAction = false,
+         actionEndTime = timeActionEnds
       };
 
       queuedRpcActionList.Add(queuedRpc);
@@ -1101,6 +1117,9 @@ public class BattleManager : MonoBehaviour {
 
       // If action is to be cancelled
       public bool isCancelAction;
+
+      // The time the action should end
+      public double actionEndTime;
    }
 
    // Stores the Battle Board used for each Biome Type
