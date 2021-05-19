@@ -46,9 +46,6 @@ public class BattleManager : MonoBehaviour {
    // The action id that iterates per combat action
    public int actionIdIndex = 0;
 
-   // The queued rpc action executed by the battle manager
-   public List<QueuedRpcAction> queuedRpcActionList = new List<QueuedRpcAction>();
-
    #endregion
 
    public void Awake () {
@@ -268,16 +265,6 @@ public class BattleManager : MonoBehaviour {
          if (!battle.isOver()) {
             Battle.TickResult tickResult = battle.tick();
             
-            List<QueuedRpcAction> queuedRpcActionToRemove = new List<QueuedRpcAction>();
-            foreach (QueuedRpcAction queuedRpc in queuedRpcActionList) {
-               if (NetworkTime.time > queuedRpc.actionEndTime) {
-                  queuedRpcActionToRemove.Add(queuedRpc);
-               }
-            }
-            foreach (QueuedRpcAction actionToDelete in queuedRpcActionToRemove) {
-               queuedRpcActionList.Remove(actionToDelete);
-            }
-
             // If a battle just ended, notify all the clients involved
             if (tickResult == Battle.TickResult.BattleOver) {
                StartCoroutine(endBattleAfterDelay(battle, END_BATTLE_DELAY));
@@ -538,14 +525,14 @@ public class BattleManager : MonoBehaviour {
             // Force the cooldown to reach current time so a new ability can be casted
             source.cooldownEndTime = NetworkTime.time - .1f;
 
-            QueuedRpcAction queuedRpc = new QueuedRpcAction {
+            Battle.QueuedRpcAction queuedRpc = new Battle.QueuedRpcAction {
                actionSerialized = stringList.ToArray(),
                battleActionType = BattleActionType.Attack,
                isCancelAction = true,
                actionEndTime = 0
             };
 
-            queuedRpcActionList.Add(queuedRpc);
+            battle.queuedRpcActionList.Add(queuedRpc);
 
             // Send it to clients
             battle.Rpc_SendCombatAction(stringList.ToArray(), BattleActionType.Attack, true);
@@ -798,14 +785,14 @@ public class BattleManager : MonoBehaviour {
          D.debug("Battle action was not prepared correctly");
       }
 
-      QueuedRpcAction queuedRpc = new QueuedRpcAction {
+      Battle.QueuedRpcAction queuedRpc = new Battle.QueuedRpcAction {
          actionSerialized = stringList.ToArray(),
          battleActionType = actionType,
          isCancelAction = false,
          actionEndTime = actionEndTime
       };
 
-      queuedRpcActionList.Add(queuedRpc);
+      battle.queuedRpcActionList.Add(queuedRpc);
 
       // Send it to clients
       battle.Rpc_SendCombatAction(stringList.ToArray(), actionType, false);
@@ -820,14 +807,14 @@ public class BattleManager : MonoBehaviour {
       string serializedValue = stanceAction.serialize();
       string[] values = new[] { serializedValue };
 
-      QueuedRpcAction queuedRpc = new QueuedRpcAction {
+      Battle.QueuedRpcAction queuedRpc = new Battle.QueuedRpcAction {
          actionSerialized = values,
          battleActionType = BattleActionType.Stance,
          isCancelAction = false,
          actionEndTime = timeActionEnds
       };
 
-      queuedRpcActionList.Add(queuedRpc);
+      battle.queuedRpcActionList.Add(queuedRpc);
       battle.Rpc_SendCombatAction(values, BattleActionType.Stance, false);
    }
 
@@ -1107,20 +1094,6 @@ public class BattleManager : MonoBehaviour {
    public Dictionary<int, Battle> getActiveBattlersData () { return _activeBattles; }
 
    #region Private Variables
-
-   public class QueuedRpcAction {
-      // The serialized action data
-      public string[] actionSerialized;
-
-      // The type of battle action
-      public BattleActionType battleActionType;
-
-      // If action is to be cancelled
-      public bool isCancelAction;
-
-      // The time the action should end
-      public double actionEndTime;
-   }
 
    // Stores the Battle Board used for each Biome Type
    protected Dictionary<Biome.Type, BattleBoard> _boards = new Dictionary<Biome.Type, BattleBoard>();

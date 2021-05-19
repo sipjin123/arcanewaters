@@ -7,6 +7,22 @@ using UnityEngine.Events;
 public class Battle : NetworkBehaviour {
    #region Public Variables
 
+   // This class contains the information about the actions that are sent across the network to all battlers
+   public class QueuedRpcAction
+   {
+      // The serialized action data
+      public string[] actionSerialized;
+
+      // The type of battle action
+      public BattleActionType battleActionType;
+
+      // If action is to be cancelled
+      public bool isCancelAction;
+
+      // The time the action should end
+      public double actionEndTime;
+   }
+
    // The sides of the battle
    public enum TeamType { None = 0, Attackers = 1, Defenders = 2 };
 
@@ -49,6 +65,9 @@ public class Battle : NetworkBehaviour {
 
    // The max number of enemies
    public const int MAX_ENEMY_COUNT = 6;
+
+   // The queued rpc action executed by the battle manager
+   public List<QueuedRpcAction> queuedRpcActionList = new List<QueuedRpcAction>();
 
    #endregion
 
@@ -95,6 +114,17 @@ public class Battle : NetworkBehaviour {
       // Everything below here is only valid for the server
       if (!NetworkServer.active) {
          return TickResult.None;
+      }
+
+      // Check if a queued action end time has already lapsed, if so then remove from list
+      List<QueuedRpcAction> queuedRpcActionToRemove = new List<QueuedRpcAction>();
+      foreach (QueuedRpcAction queuedRpc in queuedRpcActionList) {
+         if (NetworkTime.time > queuedRpc.actionEndTime) {
+            queuedRpcActionToRemove.Add(queuedRpc);
+         }
+      }
+      foreach (QueuedRpcAction actionToDelete in queuedRpcActionToRemove) {
+         queuedRpcActionList.Remove(actionToDelete);
       }
 
       // Cycle over all of the participants in the battle
