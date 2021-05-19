@@ -177,9 +177,8 @@ public class CharacterScreen : GenericGameManager {
             OfflineCharacter offlineChar = Instantiate(offlineCharacterPrefab, spot.transform.position, Quaternion.identity);
             Global.lastUserGold = userArray[i].gold;
             Global.lastUserGems = userArray[i].gems;
-            offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], hatArray[i], armorPalettes[i]);
-
             try {
+               offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], hatArray[i], armorPalettes[i]);
             } catch {
                D.debug("Investigate Here! Failed to assign data to offline character and character spot! " +
                   "Weapon Count: {" + weaponArray.Length + "/3} " +

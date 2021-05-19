@@ -14,7 +14,7 @@ public class SeaEntity : NetEntity
    // The amount of damage we do
    [SyncVar]
    public float damage = 25;
-   
+
    // How long we have to wait to reload
    [SyncVar]
    public float reloadDelay = 1.5f;
@@ -142,7 +142,7 @@ public class SeaEntity : NetEntity
          if (this is SeaMonsterEntity) {
             SeaMonsterEntity monsterEntity = GetComponent<SeaMonsterEntity>();
 
-            foreach(SpriteRenderer renderer in _renderers) {
+            foreach (SpriteRenderer renderer in _renderers) {
                Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .03f * Time.smoothDeltaTime);
                if (renderer.enabled) {
                   float newAlpha = Mathf.Lerp(1f, 0f, spritesContainer.transform.localPosition.y * -10f);
@@ -168,7 +168,7 @@ public class SeaEntity : NetEntity
             Instantiate(isBot() ? PrefabsManager.self.pirateShipExplosionEffect : PrefabsManager.self.playerShipExplosionEffect, transform.position, Quaternion.identity);
          }
 
-         Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .03f * Time.smoothDeltaTime);                  
+         Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .03f * Time.smoothDeltaTime);
       }
    }
 
@@ -519,11 +519,12 @@ public class SeaEntity : NetEntity
 
       updateSprites();
 
-      // Assign the ship name
-      if (!Util.isEmpty(this.entityName)) {
-         entityNameGO.SetActive(true);
-         entityNameGO.GetComponentInChildren<TextMeshProUGUI>(true).text = this.entityName;
-      }
+      assignEntityName();
+
+   }
+
+   protected virtual void assignEntityName () {
+     
    }
 
    [Command]
@@ -716,7 +717,7 @@ public class SeaEntity : NetEntity
                         float abilityDamageModifier = projectileData.projectileDamage * shipAbilityData.damageModifier;
                         float baseSkillDamage = projectileData.projectileDamage + abilityDamageModifier;
 
-                        damage = getDamageForShot((int)baseSkillDamage, distanceModifier);
+                        damage = getDamageForShot((int) baseSkillDamage, distanceModifier);
 
                         // TODO: Observe damage formula on live build
                         D.adminLog("Damage fetched for sea entity logic"
@@ -944,7 +945,7 @@ public class SeaEntity : NetEntity
             StatusIcon existingIcon = _statusIcons[statusType];
             existingIcon.setLongestLifetime(length);
 
-         // If the status effect is new, create a new icon
+            // If the status effect is new, create a new icon
          } else {
             StatusIcon statusIcon = StatusManager.self.getStatusIcon(statusType, length, statusEffectContainer).GetComponent<StatusIcon>();
             statusIcon.setLifetime(length);

@@ -580,16 +580,27 @@ public class BattleManager : MonoBehaviour {
          int sourceApChange = abilityData.apChange;
          source.addAP(sourceApChange);
 
+         float critChance = 0.25f;
+         if (source.userId > 0) {
+            critChance = getStanceCritChance(source.stance);
+         }
+
          foreach (Battler target in targets) {
+            
+            float blockChance = 0.25f;
+            if (target.canBlock()) {
+               blockChance = getStanceBlockChance(target.stance);
+            }
+            
             // For now, players have a 25% chance of blocking monsters
             if (target.canBlock() && attackAbilityData.canBeBlocked) {
                float blockRandomizer = Random.Range(0.0f, 1.0f);
-               wasBlocked = blockRandomizer > .75f;
+               wasBlocked = blockRandomizer < blockChance;
             }
-
+            
             // If the attack wasn't blocked, 25% chance to be a critical attack
             if (!wasBlocked) {
-               wasCritical = Random.Range(0.0f, 1.0f) > .75f;
+               wasCritical = Random.Range(0.0f, 1.0f) < critChance;
             }
 
             // Adjust the damage amount based on element, ability, and the target's armor
@@ -991,6 +1002,8 @@ public class BattleManager : MonoBehaviour {
             if (battler.player is PlayerBodyEntity) {
                PlayerBodyEntity body = (PlayerBodyEntity) battler.player;
                bool isLeveledUp = LevelUtil.gainedLevel(body.XP, body.XP + xpWon);
+               body.onGainedXP(body.XP, body.XP + xpWon);
+
                body.XP += xpWon;
 
                foreach (Battler companionBattlers in winningBattlers) {
@@ -1087,6 +1100,32 @@ public class BattleManager : MonoBehaviour {
    public List<BattlerData> getAllBattlersData () { return _allBattlersData; }
 
    public Dictionary<int, Battle> getActiveBattlersData () { return _activeBattles; }
+
+   private float getStanceCritChance (Battler.Stance stance) {
+      switch (stance) {
+         case Battler.Stance.Attack:
+            return 0.4f;
+         case Battler.Stance.Balanced:
+            return 0.25f;
+         case Battler.Stance.Defense:
+            return 0.1f;
+      }
+
+      return 0.25f;
+   }
+
+   private float getStanceBlockChance (Battler.Stance stance) {
+      switch (stance) {
+         case Battler.Stance.Defense:
+            return 0.4f;
+         case Battler.Stance.Balanced:
+            return 0.25f;
+         case Battler.Stance.Attack:
+            return 0.1f;
+      }
+
+      return 0.25f;
+   }
 
    #region Private Variables
 

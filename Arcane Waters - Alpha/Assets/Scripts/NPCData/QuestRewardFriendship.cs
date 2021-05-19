@@ -31,6 +31,12 @@ public class QuestRewardFriendship : QuestReward
       if (newFriendshipLevel != currentFriendship) {
          DB_Main.updateNPCRelationship(npcId, userId, newFriendshipLevel);
       }
+
+      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+         NetEntity player = EntityManager.self.getEntity(userId);
+         NPCFriendship.checkAchievementTrigger(player, currentFriendship, newFriendshipLevel);
+      });
+
       return null;
    }
 

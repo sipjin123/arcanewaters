@@ -674,6 +674,10 @@ public class DB_MainStub : MonoBehaviour
       return -1;
    }
 
+   public static string getAccountName (int userId) {
+      return "";
+   }
+
    public static Tuple<int, int, string> getUserDataTuple (string username) {
       return Tuple.Create(0, 0, "");
    }

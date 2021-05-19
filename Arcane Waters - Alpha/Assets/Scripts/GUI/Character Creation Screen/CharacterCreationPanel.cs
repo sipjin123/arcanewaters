@@ -381,6 +381,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       // The gender is special, in that we need to update the other options afterwards
       randomizeSelectedEyes();
       randomizeSelectedArmor();
+      randomizeSelectedHair();
 
       updateColorBoxes(info.gender);
 

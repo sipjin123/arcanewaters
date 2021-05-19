@@ -122,6 +122,10 @@ public class DottedLine : MonoBehaviour {
       } else if (newNumSegments < numSegments) {
          int numToRemove = numSegments - newNumSegments;
 
+         for (int i = 0; i < numToRemove; i++) {
+            Destroy(_lineSegments[numSegments - 1 - i]);
+         }
+
          _lineSegments.RemoveRange(newNumSegments, numToRemove);
          _lineSegmentRenderers.RemoveRange(newNumSegments, numToRemove);
       }

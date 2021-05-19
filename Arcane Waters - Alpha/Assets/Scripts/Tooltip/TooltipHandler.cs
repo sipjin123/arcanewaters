@@ -125,17 +125,19 @@ public class TooltipHandler : MonoBehaviour
             break;
       }
 
+      float backgroundWidth = toolTipPanel.gameObject.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.x;
+
       // If tooltip does not fit in the desired loaction, place it above the element or shift it back on screen.
       if (isTooltipOffScreen()) {
-         if (tooltipOwner.GetComponent<ToolTipComponent>().forceFitOnScreen == false) {
+         if (tooltipOwner.GetComponent<ToolTipComponent>().nudgeAwayFromBorder == false) {
             placeAboveUIELement(elementPosition);
          } else {
             // If tooltip is off the right edge of screen
-            if (_rightEdge + _tooltipDimensions.x + _offSetX > Screen.width) {
-               toolTipPanel.transform.position = new Vector3(_rightEdge - _tooltipDimensions.x / 2, tooltipOwnerTopEdge + _tooltipDimensions.y / 2 + _offSetY, 0);
+            if (_rightEdge + backgroundRect.sizeDelta.x + _offSetX > Screen.width) {
+               toolTipPanel.transform.position = new Vector3(Screen.width - (backgroundWidth / 2 - (Screen.width - toolTipPanel.transform.position.x)) - (3 * _offSetX), tooltipOwnerTopEdge + _tooltipDimensions.y / 2 + _offSetY, 0);
             } else {
                // If tooltip is off the left edge of screen
-               toolTipPanel.transform.position = new Vector3(_rightEdge - _tooltipDimensions.x / 2, tooltipOwnerTopEdge + _tooltipDimensions.y / 2 + _offSetY, 0);
+               toolTipPanel.transform.position = new Vector3(backgroundWidth / 2 - toolTipPanel.transform.position.x + (3 * _offSetX), tooltipOwnerTopEdge + _tooltipDimensions.y / 2 + _offSetY, 0);
             }
          }
       }

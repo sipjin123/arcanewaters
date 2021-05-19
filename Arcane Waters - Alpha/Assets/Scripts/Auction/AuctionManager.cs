@@ -34,9 +34,11 @@ public class AuctionManager : MonoBehaviour
          return;
       }
 
+      List<AuctionItemData> auctions;
+
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Get the list of expired auctions that have not yet been delivered
-         List<AuctionItemData> auctions = DB_Main.getAuctionsToDeliver();
+         auctions = DB_Main.getAuctionsToDeliver();
 
          // Deliver the item by setting the recipient in the associated mail
          foreach (AuctionItemData auction in auctions) {
@@ -48,6 +50,15 @@ public class AuctionManager : MonoBehaviour
                DB_Main.deliverAuction(auction.auctionId, auction.mailId, auction.sellerId);
             }
          }
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (AuctionItemData auction in auctions) {
+               // If someone won the auction, the user has 'sold an item'
+               if (auction.highestBidUser > 0) {
+                  AchievementManager.registerUserAchievement(auction.sellerId, ActionType.SellItem);
+               }
+            }
+         });
       });
    }
 

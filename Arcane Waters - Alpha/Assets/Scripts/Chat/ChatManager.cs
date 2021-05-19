@@ -42,6 +42,7 @@ public class ChatManager : GenericGameManager
       _commandData.Add(new CommandData("/bug", "Sends a bug report to the server", BugReportManager.self.sendBugReport, parameterNames: new List<string>() { "bugInformation" }));
       _commandData.Add(new CommandData("/emote", "Performs an emote", sendEmoteMessageToServer, parameterNames: new List<string>() { "emoteDescription" }));
       _commandData.Add(new CommandData("/invite", "Invites a user to your group", VoyageGroupManager.self.handleInviteCommand, parameterNames: new List<string>() { "userName" }));
+      _commandData.Add(new CommandData("/global", "Send a message to all users", sendGlobalMessageToServer, parameterNames: new List<string>() { "message" }));
       _commandData.Add(new CommandData("/group", "Send a message to your group", sendGroupMessageToServer, parameterNames: new List<string>() { "message" }));
       _commandData.Add(new CommandData("/officer", "Executes an officer command, if you have officer privileges", sendOfficerMessageToServer, parameterNames: new List<string>() { "officerCommand" }));
       _commandData.Add(new CommandData("/guild", "Executes a guild command", sendGuildMessageToServer, parameterNames: new List<string>() { "guildCommand" }));
@@ -140,6 +141,11 @@ public class ChatManager : GenericGameManager
 
    public void sendEmoteMessageToServer (string message) {
       sendMessageToServer(message, ChatInfo.Type.Emote);
+   }
+
+   public void sendGlobalMessageToServer (string message) {
+      sendMessageToServer(message, ChatInfo.Type.Global);
+      chatPanel.setCurrentChatType(ChatInfo.Type.Global);
    }
 
    public void sendGroupMessageToServer (string message) {

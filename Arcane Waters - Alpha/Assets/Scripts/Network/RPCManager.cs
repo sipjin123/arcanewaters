@@ -643,6 +643,7 @@ public class RPCManager : NetworkBehaviour
 
          // Registers the interaction of loot bags to the achievement database for recording
          AchievementManager.registerUserAchievement(_player, ActionType.OpenedLootBag);
+         AchievementManager.registerUserAchievement(_player, ActionType.LootGainTotal);
       }
    }
 
@@ -1454,6 +1455,8 @@ public class RPCManager : NetworkBehaviour
                // Send the confirmation message so the player updates their inventory panel
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ConfirmDeleteItem, _player, itemId + "");
 
+               AchievementManager.registerUserAchievement(_player, ActionType.TrashItem);
+
                // Update the shortcuts panel in case the deleted item was set in a slot
                sendItemShortcutList();
             } else {
@@ -1812,6 +1815,12 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_RequestNPCQuestSelectionListFromServer (int npcId) {
+      float timeSinceTalkedToNPC = (float) NetworkTime.time - _player.lastNPCTalkTime;
+      if (timeSinceTalkedToNPC > 20.0f) {
+         _player.lastNPCTalkTime = (float) NetworkTime.time;
+         AchievementManager.registerUserAchievement(_player, ActionType.TalkToNPC);
+      }
+      
       NPCData npcData = NPCManager.self.getNPCData(npcId);
       int questId = npcData.questId;
       QuestData questData = NPCQuestManager.self.getQuestData(questId);
@@ -2071,6 +2080,8 @@ public class RPCManager : NetworkBehaviour
       QuestData questData = NPCQuestManager.self.getQuestData(questId);
       QuestDataNode questDataNode = questData.questDataNodes[questNodeId];
       if (questDataNode.questDialogueNodes.Length > dialogueId + 1) {
+         bool deliveredItems = false;
+         
          // Gather the item list to deduct from the preview node
          QuestDialogueNode questDialogue = questDataNode.questDialogueNodes[newDialogueId];
          if (questDialogue.itemRequirements != null) {
@@ -2115,6 +2126,7 @@ public class RPCManager : NetworkBehaviour
                   int deductCount = targetItem.count;
                   DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, deductCount);
                }
+               deliveredItems = true;
             }
 
             // If the dialogue node has required items, get the current items of the user
@@ -2125,6 +2137,9 @@ public class RPCManager : NetworkBehaviour
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                Target_ReceiveNPCQuestNode(_player.connectionToClient, questId, newQuestNodeId, newDialogueId, friendshipLevel, true, true, itemStock.ToArray(), newJobXP);
+               if (deliveredItems) {
+                  AchievementManager.registerUserAchievement(_player, ActionType.QuestDelivery);
+               }
             });
          });
       } else {
@@ -2195,6 +2210,11 @@ public class RPCManager : NetworkBehaviour
                }
                if (questDialogue.abilityIdReward > 0) {
                   giveAbilityToPlayer(_player.userId, new int[1] { questDialogue.abilityIdReward });
+               }
+
+               // Register quest completion with achievement manager
+               if (newDialogueId != dialogueId && newDialogueId == (questDataNode.questDialogueNodes.Length)) {
+                  AchievementManager.registerUserAchievement(_player, ActionType.QuestComplete);
                }
             });
          });
@@ -2312,6 +2332,8 @@ public class RPCManager : NetworkBehaviour
 
             // Registers the npc gift action to the achievement database for recording
             AchievementManager.registerUserAchievement(_player, ActionType.NPCGift);
+
+            NPCFriendship.checkAchievementTrigger(_player, currentFriendship, newFriendshipLevel);
          });
       });
    }
@@ -3222,7 +3244,7 @@ public class RPCManager : NetworkBehaviour
          int rankId = DB_Main.getGuildMemberRankId(_player.userId);
          if (rankId == 0 && DB_Main.getGuildInfo(guildId).guildMembers.Length > 1) {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionLocal, _player, "Leader cannot leave guild if there are any membersFvoya left!");
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionLocal, _player, "Leader cannot leave guild if there are any members left!");
             });
             return;
          }
@@ -3816,10 +3838,18 @@ public class RPCManager : NetworkBehaviour
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
 
             // Registers the crafting action to the achievement database
-            // AchievementManager.registerUserAchievement(_player, ActionType.Craft);
+            AchievementManager.registerUserAchievement(_player, ActionType.Craft);
 
             // Let them know they gained experience
             _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Crafter, 0, true);
+            if (craftedItem.category == Item.Category.Armor) {
+               AchievementManager.registerUserAchievement(_player, ActionType.CraftArmor);
+            }
+
+            if (craftedItem.category == Item.Category.Weapon) {
+               AchievementManager.registerUserAchievement(_player, ActionType.CraftWeapon);
+            }
+
 
             // Update the available ingredients for the displayed blueprint
             Target_RefreshCraftingPanel(_player.connectionToClient);
@@ -4790,6 +4820,7 @@ public class RPCManager : NetworkBehaviour
 
       // Registers the interaction of treasure chests to the achievement database for recording
       AchievementManager.registerUserAchievement(_player, ActionType.OpenTreasureChest);
+      AchievementManager.registerUserAchievement(_player, ActionType.LootGainTotal);
 
       // Send it to the specific player that opened it
       Target_OpenChest(_player.connectionToClient, item, chest.id);
@@ -4837,6 +4868,7 @@ public class RPCManager : NetworkBehaviour
 
                // Registers the interaction of treasure chests to the achievement database for recording
                AchievementManager.registerUserAchievement(_player, ActionType.OpenTreasureChest);
+               AchievementManager.registerUserAchievement(_player, ActionType.LootGainTotal);
 
                // Send it to the specific player that opened it
                Target_OpenMapFragmentChest(_player.connectionToClient, chest.id);
@@ -5232,7 +5264,7 @@ public class RPCManager : NetworkBehaviour
          BattleManager.self.addPlayerToBattle(battle, localBattler, Battle.TeamType.Attackers);
 
          // After joining, the server will send all the queued rpc actions to the newly joined client
-         foreach (Battle.QueuedRpcAction rpcBattleAction in battle.queuedRpcActionList) {
+         foreach (QueuedRpcAction rpcBattleAction in battle.queuedRpcActionList) {
             Target_ReceiveCombatAction(_player.connectionToClient, enemy.battleId, 
                rpcBattleAction.actionSerialized, 
                rpcBattleAction.battleActionType, 
@@ -6863,6 +6895,11 @@ public class RPCManager : NetworkBehaviour
       GameObject effect = Instantiate(PrefabsManager.self.explosiveShotEffectPrefab, position, Quaternion.identity, null);
       float tempEffectScale = 3.0f;
       effect.transform.localScale = Vector3.one * tempEffectScale * radius;
+   }
+
+   [Command]
+   public void Cmd_RegisterAchievement (ActionType type, int count) {
+      AchievementManager.registerUserAchievement(_player.userId, type, customCount: count);
    }
 
    #region Private Variables

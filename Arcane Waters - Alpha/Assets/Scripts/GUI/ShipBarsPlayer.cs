@@ -28,6 +28,13 @@ public class ShipBarsPlayer : ShipBars
    // The frame used if the portrait is not the local player's
    public Sprite nonLocalPlayerFrame;
 
+   // The width of the outline
+   [Range(0.0f, 1.0f)]
+   public float nameOutlineWidth;
+
+   // The coloro the outline
+   public Color32 nameOutlineColor;
+
    #endregion
 
    protected override void Start () {

@@ -242,6 +242,9 @@ public class NetEntity : NetworkBehaviour
    // If this unit is being controlled by another script
    public bool isUnderExternalControl;
 
+   // Stores the last time this player talked to an NPC
+   public float lastNPCTalkTime = -30.0f;
+
    #endregion
 
    protected virtual void Awake () {
@@ -1344,12 +1347,18 @@ public class NetEntity : NetworkBehaviour
          // Play a sound
          SoundManager.create3dSound("tutorial_step", Global.player.transform.position);
 
-         // Registers the achievement of leveling up for recording
-         AchievementManager.registerUserAchievement(this, ActionType.LevelUp);
-
          // Show the level up in chat
          string levelsMsg = string.Format("You gained {0} {1} {2}!", levelsGained, jobType, levelsGained > 1 ? "levels" : "level");
          ChatManager.self.addChat(levelsMsg, ChatInfo.Type.System);
+      }
+   }
+
+   [Server]
+   public void onGainedXP (int oldXP, int newXP) {
+      int levelsGained = LevelUtil.levelsGained(oldXP, newXP);
+
+      if (levelsGained > 0) {
+         AchievementManager.registerUserAchievement(this, ActionType.LevelUp, levelsGained);
       }
    }
 
@@ -1974,7 +1983,7 @@ public class NetEntity : NetworkBehaviour
    private float _lastBodySpriteChangetime;
 
    // Whether the player is climbing
-   private bool _isClimbing = false;
+   protected bool _isClimbing = false;
 
    // Keep a reference to the last instance accessed with getInstance
    private Instance _lastInstance = null;

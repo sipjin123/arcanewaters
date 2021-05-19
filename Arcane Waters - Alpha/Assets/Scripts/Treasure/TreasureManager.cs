@@ -85,6 +85,28 @@ public class TreasureManager : MonoBehaviour {
       // Instantiate a new Treasure Chest
       TreasureChest chest = Instantiate(seaChestPrefab, spot, Quaternion.identity);
 
+      // Raycast around spawned chest to ensure that there is some distance between chest and nearby colliders
+      int layerMask = LayerMask.GetMask(LayerUtil.GRID_COLLIDERS);
+      const float MIN_DISTANCE = 0.25f;
+
+      RaycastHit2D hitLeft = Physics2D.Raycast(chest.transform.position, Vector2.left, MIN_DISTANCE, layerMask);
+      RaycastHit2D hitRight = Physics2D.Raycast(chest.transform.position, Vector2.right, MIN_DISTANCE, layerMask);
+      RaycastHit2D hitTop = Physics2D.Raycast(chest.transform.position, Vector2.up, MIN_DISTANCE, layerMask);
+      RaycastHit2D hitBottom = Physics2D.Raycast(chest.transform.position, Vector2.down, MIN_DISTANCE, layerMask);
+
+      if (hitLeft.distance > 0 && hitLeft.distance < MIN_DISTANCE) {
+         chest.transform.position += new Vector3((MIN_DISTANCE - hitLeft.distance), 0, 0);
+      }
+      if (hitRight.distance > 0 && hitRight.distance < MIN_DISTANCE) {
+         chest.transform.position -= new Vector3((MIN_DISTANCE - hitRight.distance), 0, 0);
+      }
+      if (hitTop.distance > 0 && hitTop.distance < MIN_DISTANCE) {
+         chest.transform.position -= new Vector3(0, (MIN_DISTANCE - hitTop.distance), 0);
+      }
+      if (hitBottom.distance > 0 && hitBottom.distance < MIN_DISTANCE) {
+         chest.transform.position += new Vector3(0, (MIN_DISTANCE - hitBottom.distance), 0);
+      }
+
       // Setup the chest variables
       initEnemyDropChest(chest, (int) enemyType, instance, true);
 
@@ -141,6 +163,30 @@ public class TreasureManager : MonoBehaviour {
    public TreasureChest createBattlerMonsterChest (Instance instance, Vector3 spot, int enemyTypeId, int userId) {
       // Instantiate a new Treasure Chest
       TreasureChest chest = Instantiate(monsterBagPrefab, spot, Quaternion.identity);
+
+      // Raycast around spawned chest to ensure that there is some distance between chest and nearby colliders
+      const float MIN_DISTANCE = 0.15f;
+      const int MAX_RETRIES = 20;
+      int layerMask = LayerMask.GetMask(LayerUtil.GRID_COLLIDERS);
+      int retries = 0;
+
+      Vector2 originalPos = chest.transform.position;
+      Collider2D result = Physics2D.OverlapCircle(chest.transform.position, MIN_DISTANCE, layerMask);
+      Vector2 playerPos = EntityManager.self.getEntity(userId).transform.position;
+      Vector2 dir = playerPos - originalPos;
+
+      while (result != null) {
+         retries++;
+         Vector2 addPos = Random.insideUnitCircle * 0.3f;
+         chest.transform.position = originalPos + dir * 0.2f + addPos;
+
+         result = Physics2D.OverlapCircle(chest.transform.position, MIN_DISTANCE, layerMask);
+
+         if (retries > MAX_RETRIES) {
+            chest.transform.position = playerPos - dir * MIN_DISTANCE;
+            break;
+         }
+      }
 
       // Setup the chest variables
       initEnemyDropChest(chest, enemyTypeId, instance, true);

@@ -116,7 +116,8 @@ public class PlayerShipEntity : ShipEntity
    public Animator boostCircleOutlineAnimator, boostCircleFillAnimator;
 
    // The different flags the ship can display
-   public enum Flag {
+   public enum Flag
+   {
       None = 0,
       White = 1,
       Group = 2
@@ -622,7 +623,7 @@ public class PlayerShipEntity : ShipEntity
          int extraShotsCounter = 0;
 
          List<SeaEntity> nearbyEnemies = Util.getEnemiesInCircle(this, transform.position, getCannonballDistance(chargeAmount));
-         foreach(SeaEntity enemy in nearbyEnemies) {
+         foreach (SeaEntity enemy in nearbyEnemies) {
             // If we have reached the limit of extra shots, stop checking
             if (extraShotsCounter >= maxExtraShots) {
                break;
@@ -1200,6 +1201,22 @@ public class PlayerShipEntity : ShipEntity
             AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener());
          } else {
             D.error("Couldn't switch audio listener back to main camera");
+         }
+      }
+   }
+
+   protected override void assignEntityName () {
+      // Assign the ship name
+      if (!Util.isEmpty(entityName)) {
+         entityNameGO.SetActive(true);
+         entityNameGO.GetComponentInChildren<TextMeshProUGUI>(true).text = this.entityName;
+         if (isLocalPlayer) {
+            ShipBarsPlayer sbp = entityNameGO.GetComponentInParent<ShipBarsPlayer>();
+            TextMeshProUGUI entityNameLabel = entityNameGO.GetComponentInChildren<TextMeshProUGUI>(true);
+            entityNameLabel.outlineColor = sbp.nameOutlineColor;
+            entityNameLabel.outlineWidth = sbp.nameOutlineWidth;
+
+            entityNameGO.GetComponentInChildren<RawImage>(true).enabled = true;
          }
       }
    }

@@ -276,7 +276,7 @@ public class CropManager : NetworkBehaviour {
             _crops.Remove(cropToHarvest);
 
             // Registers the harvesting action to the achievement database for recording
-            AchievementManager.registerUserAchievement(_player, ActionType.HarvestCrop);
+            AchievementManager.registerUserAchievement(_player, ActionType.GatherItem);
 
             // Let the player see the crop go away
             this.Target_HarvestCrop(_player.connectionToClient, cropToHarvest);

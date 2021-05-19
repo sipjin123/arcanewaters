@@ -353,6 +353,13 @@ public class TutorialManager3 : MonoBehaviour {
             return false;
       }
    }
+      
+   public void checkUneqipHammerStep () {
+      // Check if we have to uneqip the hammer as trigger
+      if (_currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.UnequipHammer) {
+         tryCompletingStep(TutorialTrigger.UnequipHammer);
+      }
+   }
 
    #region Private Variables
 

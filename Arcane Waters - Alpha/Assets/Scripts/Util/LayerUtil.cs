@@ -11,6 +11,7 @@ public class LayerUtil : MonoBehaviour
    public const string EVERYTHING = "Everything";
    public const string SEA_MONSTERS = "SeaMonsters";
    public const string SHIPS = "Ships";
+   public const string GRID_COLLIDERS = "GridColliders";
 
    #endregion
 

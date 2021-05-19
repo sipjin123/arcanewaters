@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class RestartManager : GenericGameManager
 {
+
    #region Public Variables
 
    // The number of seconds left at which point the server restart event is logged and clients cannot login to the server anymore
@@ -17,13 +18,17 @@ public class RestartManager : GenericGameManager
 
    protected override void Awake () {
       base.Awake();
-      // Continually check if a Restart has been scheduled in the database
-      InvokeRepeating("checkPendingServerRestarts", 0.0f, 60.0f);
 
       self = this;
+
+      if (!Application.isEditor) {
+         // Continually check if a Restart has been scheduled in the database
+         InvokeRepeating("checkPendingServerRestarts", 0.0f, 60.0f);
+      }
+
    }
 
-   public void onScheduledServerRestart(DateTime dateTime) {
+   public void onScheduledServerRestart (DateTime dateTime) {
       _timeOfNextServerRestart = dateTime;
       _isServerRestartScheduled = true;
       StopAllCoroutines();
@@ -105,7 +110,7 @@ public class RestartManager : GenericGameManager
 
             // Log the server stop event
             ServerHistoryManager.self.logServerEvent(ServerHistoryInfo.EventType.ServerStop);
-            
+
             // Update schedule_date to -1 to let jenkins job know that server release job can be started
             DB_Main.finishDeploySchedule();
 
@@ -122,7 +127,7 @@ public class RestartManager : GenericGameManager
       if (_timeOfNextServerRestart < DateTime.UtcNow + TimeSpan.FromSeconds(3f)) {
          yield break;
       }
-      
+
       float secondsRemaining = (float) (_timeOfNextServerRestart - DateTime.UtcNow).TotalSeconds;
 
       // Wait until the countdown is close to be finished

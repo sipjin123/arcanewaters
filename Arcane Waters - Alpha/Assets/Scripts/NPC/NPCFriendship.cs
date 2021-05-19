@@ -67,6 +67,28 @@ public class NPCFriendship
       }
    }
 
+   public static void checkAchievementTrigger (NetEntity player, int oldFriendship, int newFriendship) {
+      Rank oldRank = getRank(oldFriendship);
+      Rank newRank = getRank(newFriendship);
+
+      if (oldRank != newRank) {
+         switch (newRank) {
+            case Rank.Acquaintance:
+               AchievementManager.registerUserAchievement(player, ActionType.NPCAcquaintance);
+               break;
+            case Rank.CasualFriend:
+               AchievementManager.registerUserAchievement(player, ActionType.NPCCasualFriend);
+               break;
+            case Rank.CloseFriend:
+               AchievementManager.registerUserAchievement(player, ActionType.NPCCloseFriend);
+               break;
+            case Rank.BestFriend:
+               AchievementManager.registerUserAchievement(player, ActionType.NPCBestFriend);
+               break;
+         }
+      }
+   }
+
    #region Private Variables
 
    #endregion

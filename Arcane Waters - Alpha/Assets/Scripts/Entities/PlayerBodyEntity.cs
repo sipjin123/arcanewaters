@@ -107,6 +107,16 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // The cached battle stance player pref key
    public const string CACHED_STANCE_PREF = "CACHE_STANCE";
 
+   // The color of the local player's name
+   public Color localPlayerNameColor = Color.white;
+
+   // The color of the outline around the local player's name
+   public Color localPlayerOutlineColor = Color.blue;
+
+   // The width of the outline around the local player's name
+   [Range(0.0f, 1.0f)]
+   public float localPlayerOutlineWidth = 0.35f;
+
    #endregion
 
    protected override void Awake () {
@@ -386,7 +396,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private void triggerJumpAction () {
-      if (!isJumpCoolingDown() && isLocalPlayer && !isBouncingOnWeb()) {
+      if (!isJumpCoolingDown() && isLocalPlayer && !isBouncingOnWeb() && !_isClimbing) {
          // If we are in a spider web  trigger, and facing the right way, jump onto the spider web
          if (collidingSpiderWebTrigger != null && collidingSpiderWebTrigger.isFacingWeb(facing)) {
             collidingSpiderWebTrigger.onPlayerJumped(this);
@@ -780,6 +790,18 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       } else {
          D.error("Couldn't find an audio listener to assign");
       }
+   }
+
+   public override void recolorNameText () {
+      nameText.fontMaterial = new Material(nameText.fontSharedMaterial);
+      nameText.fontMaterial.SetColor("_FaceColor", localPlayerNameColor);
+
+      nameTextOutline.enabled = true;
+      nameTextOutline.text = this.entityName;
+      nameTextOutline.fontMaterial = new Material(nameTextOutline.fontSharedMaterial);
+      nameTextOutline.fontMaterial.SetColor("_FaceColor", localPlayerNameColor);
+      nameTextOutline.fontMaterial.SetColor("_OutlineColor", localPlayerOutlineColor);
+      nameTextOutline.fontMaterial.SetFloat("_OutlineWidth", localPlayerOutlineWidth);
    }
 
    #region Private Variables

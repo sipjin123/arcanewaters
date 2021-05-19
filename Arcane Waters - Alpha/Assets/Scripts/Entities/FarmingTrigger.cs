@@ -143,6 +143,8 @@ public class FarmingTrigger : MonoBehaviour {
                   cropProjectile.setSprite(cropSpot.crop.cropType);
                   cropProjectile.init(hit.collider.transform.position, dir, cropSpot);
 
+                  Global.player.rpc.Cmd_RegisterAchievement(ActionType.HarvestCrop, 1);
+
                   // Play 2D clip instead of attached to avoid layering multiple sounds (sounds like single one with higher volume because of timing)
                   SoundEffectManager.self.playSoundEffect(SoundEffectManager.HARVESTING_FLYING, transform);
                }

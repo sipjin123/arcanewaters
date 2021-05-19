@@ -95,7 +95,6 @@ public enum ActionType
    UsePotion = 26, UseStatsBuff = 27, TrashItem = 28, WeaponBuy = 29, ArmorBuy = 30,
    HeadgearBuy = 31, BuffSkillUse = 32, OffensiveSkillUse = 33, EnterCombat = 34, JumpOnBouncePad = 35,
    MineOre = 36, OpenTreasureChest = 37, HarvestCrop = 38, SellCrop = 39, WaterCrop = 40,
-   PlantCrop = 41, EarnGold = 42, GatherItem = 43, HealthGain = 44, OreGain = 45,
-   HitSeaMonster = 46, HitEnemyShips = 47, EnterArea = 48, ReachCoordinates = 49, ReceiveItem = 50,
-   EquipArmor = 51, DestroyGate = 52, CraftArmor = 53, CraftWeapon = 54
+   PlantCrop = 41, EarnGold = 42, GatherItem = 43, OreGain = 45,
+   HitSeaMonster = 46, HitEnemyShips = 47, CraftArmor = 53, CraftWeapon = 54
 }

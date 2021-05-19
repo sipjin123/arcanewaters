@@ -39,7 +39,7 @@ public class BodyEntity : NetEntity
       BodyManager.self.storeBody(this);
    }
 
-   protected override void Update() {
+   protected override void Update () {
       base.Update();
 
       // Note if we just finished falling
@@ -95,34 +95,22 @@ public class BodyEntity : NetEntity
 
          if (Global.player == this) {
             recolorNameText();
-         }        
-      }
-   }
-
-   public void recolorNameText () {
-      Color localPlayerColor = new Color(8.0f / 255.0f, 133.0f / 255.0f, 230.0f / 255.0f, 1.0f);
-      nameText.fontMaterial = new Material(nameText.fontSharedMaterial);
-      nameText.fontMaterial.SetColor("_FaceColor", localPlayerColor);
-
-      nameTextOutline.enabled = true;
-      nameTextOutline.text = this.entityName;
-      nameTextOutline.GetComponent<RectTransform>().position = new Vector2(nameTextOutline.GetComponent<RectTransform>().position.x, nameText.GetComponent<RectTransform>().position.y);
-      nameTextOutline.GetComponent<RectTransform>().sizeDelta = new Vector2(nameTextOutline.preferredWidth, nameTextOutline.preferredHeight);
-      nameTextOutline.fontMaterial = new Material(nameTextOutline.fontSharedMaterial);
-      nameTextOutline.fontMaterial.SetColor("_OutlineColor", localPlayerColor);
-      nameTextOutline.fontMaterial.SetFloat("_OutlineWidth", 0.15f);
-   }
-
-   public void restartAnimations () {
-      foreach (Animator animator in GetComponents<Animator>()) {
-         if (!_ignoredAnimators.Contains(animator)) {
-            animator.StopPlayback();
-            animator.StartPlayback();
          }
       }
    }
 
-   protected void checkFallDirection() {
+   public virtual void recolorNameText () {
+   }
+
+   public void restartAnimations () {
+      foreach (Animator animator in _animators) {
+         if (!_ignoredAnimators.Contains(animator)) {
+            animator.Play(animator.GetCurrentAnimatorStateInfo(0).fullPathHash, 0, 0.0f);
+         }
+      }
+   }
+
+   protected void checkFallDirection () {
       // Check if we just finished fallin
       if (this.fallDirection == 0 && this.fallDirection != _previousFallDirection) {
          StartCoroutine(CO_ShowFallEffect());

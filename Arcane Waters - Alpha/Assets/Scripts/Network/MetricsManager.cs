@@ -10,10 +10,12 @@ using System.Diagnostics;
 namespace Assets.Scripts.Network
 {
    public class MetricsManager : GenericGameManager {
+#if IS_SERVER_BUILD
       #region Public Variables
 
       // UpdateFrequency.
-      public float UpdateFrequencySecs = 10.0f;
+      [SerializeField]
+      private float UpdateFrequencySecs = 10.0f;
 
       #endregion
 
@@ -84,5 +86,6 @@ namespace Assets.Scripts.Network
 
       #endregion
 
+#endif
    }
 }

@@ -111,11 +111,14 @@ public class AchievementManager : MonoBehaviour {
    }
 
    public static void registerUserAchievement (NetEntity player, ActionType action, int customCount = 1, Item dependencyItem = null) {
-      self.processAchievement(player, action, customCount, dependencyItem);
+      self.processAchievement(player.userId, action, customCount, dependencyItem);
    }
 
-   public void processAchievement (NetEntity player, ActionType actionType, int count, Item dependencyItem = null) {      
-      int userID = player.userId;
+   public static void registerUserAchievement(int userId, ActionType action, int customCount = 1, Item dependencyItem = null) {
+      self.processAchievement(userId, action, customCount, dependencyItem);
+   }
+
+   public void processAchievement (int userId, ActionType actionType, int count, Item dependencyItem = null) {      
       #if IS_SERVER_BUILD
       if (logAchievements) { 
          D.debug("Register Achievement: " + actionType);
@@ -128,7 +131,10 @@ public class AchievementManager : MonoBehaviour {
       }
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<AchievementData> achievementDB = DB_Main.getAchievementData(userID, actionType);
+         string accountName = DB_Main.getAccountName(userId);
+         int steamId = DB_Main.getSteamAccountId(accountName);
+         
+         List<AchievementData> achievementDB = DB_Main.getAchievementData(userId, actionType);
          bool existsInDatabase = true;
 
          if (achievementDB.Count < 1) {
@@ -167,10 +173,10 @@ public class AchievementManager : MonoBehaviour {
                   isComplete = true;
                }
 
-               DB_Main.updateAchievementData(rawData, userID, isComplete, count);
+               DB_Main.updateAchievementData(rawData, userId, isComplete, count);
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  if (!string.IsNullOrEmpty(player.steamId)) {
-                     StartCoroutine(CO_PublishSteamAchievements(actionType, resultCount, player.steamId));
+                  if (steamId != -1) {
+                     StartCoroutine(CO_PublishSteamAchievements(actionType, resultCount, steamId.ToString()));
                   }
                });
             }
@@ -206,11 +212,11 @@ public class AchievementManager : MonoBehaviour {
                AchievementData newData = AchievementData.CreateAchievementData(rawData);
                newData.count = 1;
 
-               DB_Main.updateAchievementData(newData, userID, isComplete);
+               DB_Main.updateAchievementData(newData, userId, isComplete);
 
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  if (!string.IsNullOrEmpty(player.steamId)) {
-                     StartCoroutine(CO_PublishSteamAchievements(actionType, 1, player.steamId));
+                  if (steamId != -1) {
+                     StartCoroutine(CO_PublishSteamAchievements(actionType, 1, steamId.ToString()));
                   } 
                });
             }
