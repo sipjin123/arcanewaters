@@ -7,22 +7,6 @@ using UnityEngine.Events;
 public class Battle : NetworkBehaviour {
    #region Public Variables
 
-   // This class contains the information about the actions that are sent across the network to all battlers
-   public class QueuedRpcAction
-   {
-      // The serialized action data
-      public string[] actionSerialized;
-
-      // The type of battle action
-      public BattleActionType battleActionType;
-
-      // If action is to be cancelled
-      public bool isCancelAction;
-
-      // The time the action should end
-      public double actionEndTime;
-   }
-
    // The sides of the battle
    public enum TeamType { None = 0, Attackers = 1, Defenders = 2 };
 
