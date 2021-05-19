@@ -472,7 +472,7 @@ public class Battle : NetworkBehaviour {
          actionToSend = StanceAction.deserialize(actionStrings[0]);
          AbilityManager.self.execute((StanceAction) actionToSend);
 
-      }  else if (battleActionType != BattleActionType.UNDEFINED) {
+      } else if (battleActionType != BattleActionType.UNDEFINED) {
          // Standard attack
          foreach (string actionString in actionStrings) {
             switch (battleActionType) {

@@ -61,7 +61,7 @@ public class BattleManager : MonoBehaviour {
       }
 
       // Repeatedly call the tick() function for our Battle objects
-      InvokeRepeating("tickBattles", 0f, TICK_INTERVAL);
+      InvokeRepeating(nameof(tickBattles), 0f, TICK_INTERVAL);
    }
 
    public Battle createTeamBattle (Area area, Instance instance, Enemy enemy, BattlerInfo[] attackersData, PlayerBodyEntity playerBody, BattlerInfo[] defendersData) {
@@ -244,7 +244,7 @@ public class BattleManager : MonoBehaviour {
    }
 
    public void registerBattler (BattlerData battler) {
-      if(_allBattlersData.Exists(_=>_.enemyType == battler.enemyType)) {
+      if (_allBattlersData.Exists(_ => _.enemyType == battler.enemyType)) {
          return;
       }
       _allBattlersData.Add(battler);
@@ -658,7 +658,7 @@ public class BattleManager : MonoBehaviour {
             double timeAttackEnds = NetworkTime.time + timeToWait + attackAbilityData.getTotalAnimLength(source, target);
 
             if (source.enemyType == Enemy.Type.PlayerBattler) {
-               D.adminLog("(2) {" + source.userId + "} {" + actionIdIndex + "} TimeAttackEnds Total Seconds: " + (timeAttackEnds - NetworkTime.time).ToString("f1") + 
+               D.adminLog("(2) {" + source.userId + "} {" + actionIdIndex + "} TimeAttackEnds Total Seconds: " + (timeAttackEnds - NetworkTime.time).ToString("f1") +
                   " :: AtkEnds in : {[" + timeAttackEnds.ToString("f1")
                   + "] = " + NetworkTime.time.ToString("f1") + " + "
                   + timeToWait.ToString("f1") + " + "
@@ -681,7 +681,7 @@ public class BattleManager : MonoBehaviour {
             // Note if the target recently changed their armor
             if (target.debuffList.ContainsKey(Status.Type.ArmorChangeDebuff)) {
                D.adminLog("Target {" + target.userId + "}  Defense Deducted debuff is {"
-                  + Status.Type.ArmorChangeDebuff + " : " 
+                  + Status.Type.ArmorChangeDebuff + " : "
                   + target.debuffList[Status.Type.ArmorChangeDebuff] + " secs} "
                   + "Damage Received is set from {" + damage.ToString("f1") + "} to {" + (damage + (damage * .2f)).ToString("f1") + "}", D.ADMIN_LOG_TYPE.Equipment);
 
@@ -720,7 +720,7 @@ public class BattleManager : MonoBehaviour {
                + " TimeToWait: " + (timeToWait)
                + " Cooldown: " + cooldownDuration
                + " AtkEnds: " + timeAttackEnds.ToString("f1")
-               + " CurrTime: " + NetworkTime.time.ToString("f1") 
+               + " CurrTime: " + NetworkTime.time.ToString("f1")
                + " Target: " + target.userId + " - " + target.enemyType, D.ADMIN_LOG_TYPE.Boss);
             actionEndTime = action.actionEndTime;
 
@@ -925,11 +925,6 @@ public class BattleManager : MonoBehaviour {
                // Apply damage
                target.health -= attackAction.damage;
                target.health = Util.clamp<int>(target.health, 0, target.getStartingHealth());
-
-               if (target.health <= 0) {
-                  D.debug("Target will die at the next round! UserId: {" + target.userId + "} EnemyType: {" + target.enemyType + "}");
-                  target.diesAfterAction = true;
-               }
 
                if (source.enemyType == Enemy.Type.PlayerBattler) {
                   if (target.health <= 0) {
