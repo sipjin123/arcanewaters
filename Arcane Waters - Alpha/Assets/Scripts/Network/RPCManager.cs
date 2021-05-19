@@ -5231,8 +5231,12 @@ public class RPCManager : NetworkBehaviour
          // Adds the player to the newly created or existing battle
          BattleManager.self.addPlayerToBattle(battle, localBattler, Battle.TeamType.Attackers);
 
-         foreach (BattleManager.QueuedRpcAction rpcBattleAction in BattleManager.self.queuedRpcActionList) {
-            Target_SendCombatAction(_player.connectionToClient, enemy.battleId, rpcBattleAction.actionSerialized, rpcBattleAction.battleActionType, rpcBattleAction.isCancelAction);
+         // After joining, the server will send all the queued rpc actions to the newly joined client
+         foreach (Battle.QueuedRpcAction rpcBattleAction in battle.queuedRpcActionList) {
+            Target_ReceiveCombatAction(_player.connectionToClient, enemy.battleId, 
+               rpcBattleAction.actionSerialized, 
+               rpcBattleAction.battleActionType, 
+               rpcBattleAction.isCancelAction);
          }
 
          // Handles ability related logic
@@ -5245,11 +5249,11 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_SendCombatAction (NetworkConnection connection, int battleId, string[] actionStrings, BattleActionType battleActionType, bool cancelAbility) {
-      StartCoroutine(CO_WaitRpcActionBattle(battleId, actionStrings, battleActionType, cancelAbility));
+   public void Target_ReceiveCombatAction (NetworkConnection connection, int battleId, string[] actionStrings, BattleActionType battleActionType, bool cancelAbility) {
+      StartCoroutine(CO_ProcessBattleAction(battleId, actionStrings, battleActionType, cancelAbility));
    }
 
-   private IEnumerator CO_WaitRpcActionBattle (int battleId, string[] actionStrings, BattleActionType battleActionType, bool cancelAbility) {
+   private IEnumerator CO_ProcessBattleAction (int battleId, string[] actionStrings, BattleActionType battleActionType, bool cancelAbility) {
       while (BattleManager.self.getBattle(battleId) == null) {
          yield return 0;
       }
