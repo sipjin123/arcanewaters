@@ -6378,10 +6378,10 @@ public class DB_Main : DB_MainStub
       Item castedItem = baseItem.getCastItem();
 
       // Verify if the item can be stacked
-      if (castedItem.canBeStacked()) {
+      if (castedItem.canBeStacked() || castedItem.category == Item.Category.CraftingIngredients) {
          // Retrieve the item from the database, if it exists
          Item databaseItem = getFirstItem(userId, castedItem.category, castedItem.itemTypeId);
-
+         
          // If the item exist, update its count
          if (databaseItem != null) {
             databaseItem.count += castedItem.count;

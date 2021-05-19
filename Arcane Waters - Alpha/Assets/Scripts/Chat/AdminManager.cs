@@ -2238,17 +2238,18 @@ public class AdminManager : NetworkBehaviour
       bool wasItemCreated = false;
 
       // Retrieve the item from the user inventory, if it exists
-      Item existingItem = DB_Main.getFirstItem(_player.userId, category, itemTypeId);
-
-      if (existingItem == null) {
+      Item databaseItem = DB_Main.getFirstItem(_player.userId, category, itemTypeId);
+      Item castedItem = databaseItem.getCastItem();
+      
+      if (castedItem == null) {
          // If the item does not exist, create a new one
          Item baseItem = new Item(-1, category, itemTypeId, count, "", "", Item.MAX_DURABILITY).getCastItem();
          DB_Main.createItemOrUpdateItemCount(_player.userId, baseItem);
          wasItemCreated = true;
       } else {
          // If the item can be stacked and there are less items than what is requested, replenish the stack
-         if (existingItem.canBeStacked() && existingItem.count < count) {
-            DB_Main.updateItemQuantity(_player.userId, existingItem.id, count);
+         if (castedItem.canBeStacked() && castedItem.count < count && castedItem.category == Item.Category.CraftingIngredients) {
+            DB_Main.updateItemQuantity(_player.userId, castedItem.id, count);
             wasItemCreated = true;
          }
       }
