@@ -1240,19 +1240,21 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             attackDuration = (float) (cooldownEndTime - NetworkTime.time);
             triggerAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, attackDuration);
 
-            // Make sure the source battler is still alive at this point
-            if (sourceBattler.isDead()) {
-               D.debug("The source battler {" + sourceBattler.userId + "} is dead! Cancel attack display!");
+            // Make sure the source and target battler is still alive at this point
+            if (sourceBattler.isDead() || targetBattler.hasDisplayedDeath()) {
+               D.debug("The source/target battler {" + sourceBattler.userId + "} is dead! Cancel attack display!");
+
+               D.adminLog(" (4b) {" + action.actionId + "} {" + sourceBattler.userId + "} Warning! The target is dead! Cancel Attack Action from Battler Script!"
+                  , D.ADMIN_LOG_TYPE.AnimationFreeze); // Fourth - B Client Sequence
+
+               if (targetBattler.hasDisplayedDeath()) {
+                  D.debug("Warning here! The battler {" + sourceBattler.userId + "} is about to attack and enemy that is " +
+                     (targetBattler.displayedHealth < 1 ? "Display Health Zero" : "{Skip}") + " or " +
+                     (targetBattler.getAnim()[0].currentAnimation == Anim.Type.Death_East ? "AnimatingDeath" : "{Skip}"));
+               }
                yield break;
             }
 
-            if (targetBattler.displayedHealth < 1 || targetBattler.getAnim()[0].currentAnimation == Anim.Type.Death_East) {
-               D.adminLog(" (4b) {" + action.actionId + "} {" + sourceBattler.userId + "} Warning! The target is dead! Cancel Attack Action from Battler Script!"
-                  , D.ADMIN_LOG_TYPE.AnimationFreeze); // Fourth - B Client Sequence
-               D.debug("Warning here! The battler is about to attack and enemy that is " +
-                  (targetBattler.displayedHealth < 1 ? "Display Health Zero" : "{Skip}") + " or " +
-                  (targetBattler.getAnim()[0].currentAnimation == Anim.Type.Death_East ? "AnimatingDeath" : "{Skip}"));
-               // yield break;
             if (enemyType == Enemy.Type.PlayerBattler) {
                D.adminLog("Battle has initialized {" + userId + "}" + " : {" + enemyType + "}", D.ADMIN_LOG_TYPE.CancelAttack);
             }
@@ -1522,8 +1524,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // The unused code is on the MagicAbility script
             // Make sure the battlers are still alive at this point
-            if (sourceBattler.isDead()) {
-               D.debug("The source battler {" + sourceBattler.userId + "} is dead! Cancel attack display!");
+            if (sourceBattler.isDead() || targetBattler.hasDisplayedDeath()) {
+               D.debug("The source/target battler {" + sourceBattler.userId + "} is dead! Cancel attack display!");
                yield break;
             }
 
@@ -1656,8 +1658,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             triggerAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, attackDuration);
 
             // Make sure the battlers are still alive at this point
-            if (sourceBattler.isDead()) {
-               D.debug("The source battler {" + sourceBattler.userId + "} is dead! Cancel attack display!");
+            if (sourceBattler.isDead() || targetBattler.hasDisplayedDeath()) {
+               D.debug("The source/target battler {" + sourceBattler.userId + "} is dead! Cancel attack display!");
                yield break;
             }
 
