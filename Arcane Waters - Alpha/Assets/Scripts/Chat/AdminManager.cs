@@ -115,6 +115,10 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("clear_powerups", "Clears all of your current powerups", requestClearPowerups, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("unlock_world_map", "Unlocks all the biomes and town warps in the world map", unlockWorldMap, requiredPrefix: CommandType.Admin));
 
+      // Used for combat simulation
+      cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
+      cm.addCommand(new CommandData("force_join", "During land combat, forces group memebers to join automatically", forceJoin, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "autoAttack", "attackDelay" }));
+
       // Log Commands for investigation
       cm.addCommand(new CommandData("xml", "Logs the xml content of the specific manager", requestXmlLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "xmlType" }));
       cm.addCommand(new CommandData("screen_log", "Allows screen to log files using D.debug()", requestScreenLogs, requiredPrefix: CommandType.Admin));
@@ -534,6 +538,80 @@ public class AdminManager : NetworkBehaviour
          }
       } else {
          ChatManager.self.addChat("Could not parse the isEnabled parameter (only 0 or 1 values allowed): " + parameters, ChatInfo.Type.Error);
+      }
+   }
+
+   private void autoAttack (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+      if (list.Length > 0) {
+         float attackDelay = .25f;
+         try {
+            attackDelay = float.Parse(list[1]);
+         } catch {
+            D.debug("AttackDelay is invalid: " + list[1]);
+         }
+
+         Cmd_AutoAttack(attackDelay);
+      }
+   }
+
+   [Command]
+   protected void Cmd_AutoAttack (float attackDelay) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      _player.Target_AutoAttack(attackDelay);
+   }
+
+   private void forceJoin (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+      if (list.Length > 1) {
+         int autoAttack = 0;
+         try {
+            autoAttack = int.Parse(list[0]);
+         } catch {
+            D.debug("AutoAttack is invalid: " + list[0]);
+         }
+
+         float attackDelay = .25f;
+         try {
+            attackDelay = float.Parse(list[1]);
+         } catch {
+            D.debug("AttackDelay is invalid: " + list[1]);
+         }
+
+         Cmd_ForceJoin(autoAttack == 1 ? true : false, attackDelay);
+      }
+   }
+
+   [Command]
+   protected void Cmd_ForceJoin (bool autoAttack, float attackDelay) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      _player.Target_ForceJoin(autoAttack, attackDelay);
+      if (autoAttack) {
+         // Get the group the player belongs to
+         List<int> groupMembers = _player.tryGetGroup(out VoyageGroupInfo voyageGroup) ? voyageGroup.members : new List<int>();
+
+         foreach (int memberId in groupMembers) {
+            NetEntity entity = EntityManager.self.getEntity(memberId);
+            if (entity != null) {
+               if (entity.userId != _player.userId && _player.instanceId == entity.instanceId) {
+                  entity.Target_ForceJoin(autoAttack, attackDelay);
+               }
+            }
+         }
       }
    }
 

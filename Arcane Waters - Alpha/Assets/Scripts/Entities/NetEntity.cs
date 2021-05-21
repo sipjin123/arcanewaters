@@ -1296,6 +1296,23 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
+   public void Target_AutoAttack (float attackDelay) {
+      ChatManager.self.addChat("This user will now auto attack", ChatInfo.Type.Debug);
+      Global.autoAttack = true;
+      Global.attackDelay = attackDelay;
+   }
+
+   [TargetRpc]
+   public void Target_ForceJoin (bool autoAttack, float attackDelay) {
+      ChatManager.self.addChat("This user will now force their group to join", ChatInfo.Type.Debug);
+      Global.forceJoin = true;
+      if (autoAttack) {
+         Global.autoAttack = true;
+         Global.attackDelay = attackDelay;
+      } 
+   }
+
+   [TargetRpc]
    public void Target_ReceiveNormalChat (string message, ChatInfo.Type type) {
       ChatManager.self.addChat(message, type);
    }

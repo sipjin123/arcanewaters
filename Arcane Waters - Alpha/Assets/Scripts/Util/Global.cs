@@ -72,6 +72,15 @@ public class Global
    // Determine if the player should automatically farm crop spots they walk over
    public static bool autoFarm = false;
 
+   // Determine if the player should automatically attack during land combat
+   public static bool autoAttack = false;
+
+   // The attack delay of the auto attack
+   public static float attackDelay = .25f;
+
+   // Determine if the player will force their party to join combat
+   public static bool forceJoin = false;
+
    // Keeps track of the last account creation time, for Paymentwall
    public static System.DateTime lastAccountCreationTime;
 
