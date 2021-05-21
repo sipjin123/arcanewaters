@@ -42,15 +42,6 @@ public class SoundEffect
    // Whether to play this sound in 3D
    public bool is3D = false;
 
-   // The fmod id used for fmod implementation
-   public string fmodId = "";
-
-   // The biome type associated with this sfx
-   public Biome.Type biomeType;
-
-   // The special area type
-   public Area.SpecialType specialType;
-
    public enum ValueType
    {
       VOLUME = 1,

@@ -1252,10 +1252,6 @@ public class DB_Main : DB_MainStub
                   newEffect.maxPitch = dataReader.GetFloat("maxPitch");
                   newEffect.offset = dataReader.GetFloat("offset");
                   newEffect.is3D = dataReader.GetBoolean("is3D");
-                  newEffect.fmodId = dataReader.GetString("fmodNameId");
-                  newEffect.biomeType = (Biome.Type) dataReader.GetInt32("biomeType");
-                  newEffect.specialType = (Area.SpecialType) dataReader.GetInt32("specialArea");
-
                   effects.Add(newEffect);
                }
             }
