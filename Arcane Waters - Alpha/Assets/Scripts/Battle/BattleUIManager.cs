@@ -432,12 +432,16 @@ public class BattleUIManager : MonoBehaviour {
       }
    }
 
-   public void selectNextTarget () {
+   public void selectNextTarget (bool orderByUserId = false) {
       // Store a references
       Battler playerBattler = BattleManager.self.getPlayerBattler();
       Battler selectedBattler = BattleSelectionManager.self.selectedBattler;
 
       List<Battler> enemyBattlersAlive = BattleSelectionManager.self.getLiveTargets();
+      if (orderByUserId && enemyBattlersAlive.Count > 0) {
+         BattleSelectionManager.self.clickBattler(enemyBattlersAlive[0]);
+         return;
+      }
 
       if (enemyBattlersAlive.Count() > 1) {
          if (selectedBattler != null) {

@@ -175,7 +175,7 @@ public class BattleSelectionManager : MonoBehaviour {
          : BattleManager.self.getBattle(playerBattler.battleId).getAttackers();
 
       // Make a new list of non dead oponents
-      List<Battler> enemiesAlive = battlerList.Where<Battler>(battler => !battler.isDead()).ToList<Battler>();
+      List<Battler> enemiesAlive = battlerList.Where<Battler>(battler => !battler.isDead()).OrderBy(_=>_.userId).ToList<Battler>();
       return enemiesAlive;
    }
    

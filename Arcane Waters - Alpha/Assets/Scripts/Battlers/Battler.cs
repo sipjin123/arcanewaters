@@ -342,6 +342,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    private void autoAttackSimulation () {
+      BattleUIManager.self.selectNextTarget(true);
       BattleUIManager.self.triggerAbilityByKey(0);
    }
 
