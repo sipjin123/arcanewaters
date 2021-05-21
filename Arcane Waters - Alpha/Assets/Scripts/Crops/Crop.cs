@@ -195,6 +195,10 @@ public class Crop : ClientMonoBehaviour {
       return false;
    }
 
+   public bool hasBeenHarvested () {
+      return !objectHolder.activeSelf;
+   }
+
    #region Private Variables
 
    #endregion

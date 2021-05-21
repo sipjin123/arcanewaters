@@ -1221,6 +1221,12 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
+   protected override void onMaxHealthChanged (int oldValue, int newValue) {
+      base.onMaxHealthChanged(oldValue, newValue);
+
+      shipBars.initializeHealthBar();
+   }
+
    #region Private Variables
 
    // Our ship movement sound

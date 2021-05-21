@@ -20,7 +20,7 @@ public class AdminBattleParamRow : MonoBehaviour
 
    public void initialize (float value) {
       _startingValue = value;
-      setValue(value);
+      setValue(value, false);
    }
 
    public void onUpButtonClicked () {
@@ -40,7 +40,7 @@ public class AdminBattleParamRow : MonoBehaviour
       }
    }
 
-   private void setValue (float value) {
+   private void setValue (float value, bool notifyMainPanel = true) {
       // Truncate after the second decimal
       value = Mathf.Round(value * 100f) / 100f;
       _value = value;
@@ -54,7 +54,9 @@ public class AdminBattleParamRow : MonoBehaviour
       }
 
       // Notify the panel
-      PanelManager.self.adminBattlePanel.onParameterRowChanged();
+      if (notifyMainPanel) {
+         PanelManager.self.adminBattlePanel.onParameterRowChanged();
+      }
    }
 
    public float getValue () {

@@ -97,13 +97,20 @@ public class PowerupManager : MonoBehaviour {
       }
 
       // If we don't have a list for that powerup type yet, create it
-      Powerup.Type powerupType = (Powerup.Type) newPowerup.powerupType;
+      Powerup.Type powerupType = newPowerup.powerupType;
       if (!_localPlayerPowerups.ContainsKey(powerupType)) {
          _localPlayerPowerups.Add(powerupType, new List<Powerup>());
       }
 
       _localPlayerPowerups[powerupType].Add(newPowerup);
-      PowerupPanel.self.addPowerup((Powerup.Type) newPowerup.powerupType, (Rarity.Type) newPowerup.powerupRarity);
+      PowerupPanel.self.addPowerup(newPowerup.powerupType, newPowerup.powerupRarity);
+
+      if (newPowerup.powerupType == Powerup.Type.IncreasedHealth) {
+         PlayerShipEntity playerShip = Global.player.getPlayerShipEntity();
+         if (playerShip) {
+            playerShip.shipBars.initializeHealthBar();
+         }
+      }
    }
 
    public void addPowerupServer (int userId, Powerup newPowerup) {

@@ -228,14 +228,14 @@ public class RPCManager : NetworkBehaviour
    [Command]
    public void Cmd_InteractAnimation (Anim.Type animType, Direction direction) {
       _player.Rpc_ForceLookat(direction);
-      Rpc_InteractAnimation(animType);
+      Rpc_InteractAnimation(animType, false);
       Target_PlayerInteract(_player.connectionToClient);
    }
 
    [Command]
-   public void Cmd_FastInteractAnimation (Anim.Type animType, Direction direction) {
+   public void Cmd_FastInteractAnimation (Anim.Type animType, Direction direction, bool playedLocally) {
       _player.Rpc_ForceLookat(direction);
-      Rpc_InteractAnimation(animType);
+      Rpc_InteractAnimation(animType, playedLocally);
    }
 
    [TargetRpc]
@@ -246,7 +246,11 @@ public class RPCManager : NetworkBehaviour
    }
 
    [ClientRpc]
-   public void Rpc_InteractAnimation (Anim.Type animType) {
+   public void Rpc_InteractAnimation (Anim.Type animType, bool playedLocally) {
+      // If we are the local player, and the animation has already played locally, don't play it again in the Rpc
+      if (isLocalPlayer && playedLocally) {
+         return;
+      }
       _player.requestAnimationPlay(animType);
    }
 
@@ -4862,23 +4866,20 @@ public class RPCManager : NetworkBehaviour
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (isNextBiomeAlreadyUnlocked) {
-               // If the next biome is already unlocked, the chest will reward a normal item
-               processChestRewards(chest);
+            // Add the user ID to the list
+            chest.userIds.Add(_player.userId);
 
+            // Registers the interaction of treasure chests to the achievement database for recording
+            AchievementManager.registerUserAchievement(_player, ActionType.OpenTreasureChest);
+            AchievementManager.registerUserAchievement(_player, ActionType.LootGainTotal);
+
+            // Send it to the specific player that opened it
+            Target_OpenMapFragmentChest(_player.connectionToClient, chest.id);
+
+            if (isNextBiomeAlreadyUnlocked) {
                // Notify the client that the voyage is complete
                Target_DisplayNotificationForVoyageCompleted(_player.connectionToClient, Notification.Type.VoyageCompleted, Biome.Type.None);
             } else {
-               // Add the user ID to the list
-               chest.userIds.Add(_player.userId);
-
-               // Registers the interaction of treasure chests to the achievement database for recording
-               AchievementManager.registerUserAchievement(_player, ActionType.OpenTreasureChest);
-               AchievementManager.registerUserAchievement(_player, ActionType.LootGainTotal);
-
-               // Send it to the specific player that opened it
-               Target_OpenMapFragmentChest(_player.connectionToClient, chest.id);
-
                // Notify the client that a new location has been unlocked
                Target_DisplayNotificationForVoyageCompleted(_player.connectionToClient, Notification.Type.NewLocationUnlocked, nextBiome);
             }

@@ -52,7 +52,7 @@ public class ServerMessageManager : MonoBehaviour
          if (logInUserMessage.clientGameVersion < minClientGameVersion) {
             string msg = string.Format("Refusing login for {0}, client version {1}, the current version in the cloud is {2}", logInUserMessage.accountName, logInUserMessage.clientGameVersion, minClientGameVersion);
             D.debug(msg);
-            sendError(ErrorMessage.Type.ClientOutdated, conn.connectionId);
+            sendError(ErrorMessage.Type.ClientOutdated, conn.connectionId, minClientGameVersion.ToString());
             return;
          }
       }

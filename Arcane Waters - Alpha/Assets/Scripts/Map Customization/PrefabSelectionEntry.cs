@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace MapCustomization
-{
-   public class PrefabSelectionEntry : MonoBehaviour
-   {
+namespace MapCustomization {
+   public class PrefabSelectionEntry : MonoBehaviour {
       #region Public Variables
 
       // Image that is showing the prefab's icon

@@ -211,9 +211,9 @@ public class TitleScreen : MonoBehaviour {
       switch (errorType) {
          case ErrorMessage.Type.ClientOutdated:
             if (SteamManager.Initialized) {
-               PanelManager.self.noticeScreen.show($"Please update your client to log in!");
+               PanelManager.self.noticeScreen.show($"Please update your client to log in!\n  If the update is not available in Steam, it may be necessary to exit Steam and relaunch it.");
             } else {
-               PanelManager.self.noticeScreen.show($"Please download the new version <link=\"{ downloadNewVersionLink }\"><u>here</u></link>");
+               PanelManager.self.noticeScreen.show($"Please download the new version <link=\"{ downloadNewVersionLink }\"><u>here</u></link>\nCurrent version: {Util.getGameVersion()}\nRequired version: {message}");
             }
             break;
          case ErrorMessage.Type.FailedUserOrPass:

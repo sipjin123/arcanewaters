@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
@@ -18,8 +19,8 @@ public class AdminBattlePanel : MonoBehaviour
    public AdminBattleParamRow attackDurationRow;
    public AdminBattleParamRow attackCooldownRow;
 
-   // The apply button
-   public Button applyButton;
+   // A message that displays when the changes have been applied
+   public CanvasGroup changesAppliedMessage;
 
    // Self
    public static AdminBattlePanel self;
@@ -48,23 +49,23 @@ public class AdminBattlePanel : MonoBehaviour
       jumpDurationRow.initialize(AdminBattleManager.self.jumpDurationMultiplier);
       attackDurationRow.initialize(AdminBattleManager.self.attackDurationMultiplier);
       attackCooldownRow.initialize(AdminBattleManager.self.attackCooldownMultiplier);
-   }
-
-   public void onApplyButtonPressed () {
-      Global.player.rpc.Cmd_SetAdminBattleParameters(idleAnimSpeedRow.getValue(), jumpDurationRow.getValue(), attackDurationRow.getValue(), attackCooldownRow.getValue());
-      applyButton.interactable = false;
-   }
-
-   public void onUndoButtonPressed () {
-      refreshPanel();
+      changesAppliedMessage.Show();
    }
 
    public void onParameterRowChanged () {
       if (hasAtLeastOneParameterChanged()) {
-         applyButton.interactable = true;
+         StopAllCoroutines();
+         StartCoroutine(CO_ApplyChangesAfterDelay());
+         changesAppliedMessage.Hide();
       } else {
-         applyButton.interactable = false;
+         changesAppliedMessage.Show();
       }
+   }
+
+   private IEnumerator CO_ApplyChangesAfterDelay () {
+      yield return new WaitForSeconds(1f);
+      Global.player.rpc.Cmd_SetAdminBattleParameters(idleAnimSpeedRow.getValue(), jumpDurationRow.getValue(), attackDurationRow.getValue(), attackCooldownRow.getValue());
+      changesAppliedMessage.Show();
    }
 
    private bool hasAtLeastOneParameterChanged () {
@@ -84,7 +85,9 @@ public class AdminBattlePanel : MonoBehaviour
    }
 
    public void hide () {
+      StopAllCoroutines();
       this.canvasGroup.Hide();
+      this.gameObject.SetActive(false);
    }
 
    public bool isShowing () {

@@ -130,7 +130,7 @@ public class FarmingTrigger : MonoBehaviour {
 
             // Create dirt particle when colliding with crop spots with crops using a pitchfork
             if (currentActionType == Weapon.ActionType.HarvestCrop && cropSpot.crop != null) {
-               if (cropSpot.crop.isMaxLevel() && cropSpot.crop.objectHolder.activeSelf) {
+               if (cropSpot.crop.isMaxLevel() && !cropSpot.crop.hasBeenHarvested()) {
                   anyCropHarvested = true;
 
                   cropSpot.harvestCrop();

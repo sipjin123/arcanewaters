@@ -76,22 +76,22 @@ public class CropSpot : MonoBehaviour {
          bool triggeredAction = false;
 
          // If the player is holding seeds, try plant seeds here
-         if (player.weaponManager.actionType == Weapon.ActionType.PlantCrop) {
-            player.playFastInteractAnimation(transform.position);
+         if (player.weaponManager.actionType == Weapon.ActionType.PlantCrop && !crop) {
+            player.playFastInteractAnimation(transform.position, true);
             player.Cmd_PlantCrop((Crop.Type) player.weaponManager.actionTypeValue, cropNumber, player.areaKey);
             triggeredAction = true;
          }
 
          // If the player is holding a watering can, try to water this plot
          if (player.weaponManager.actionType == Weapon.ActionType.WaterCrop && crop && !crop.isMaxLevel() && crop.isReadyForWater()) {
-            player.playFastInteractAnimation(transform.position);
+            player.playFastInteractAnimation(transform.position, true);
             player.Cmd_WaterCrop(this.cropNumber);
             triggeredAction = true;
          }
 
          // If the player is holding a pitchfork, try to harvest this plot
-         if (player.weaponManager.actionType == Weapon.ActionType.HarvestCrop && crop && crop.isMaxLevel()) {
-            player.playFastInteractAnimation(transform.position);
+         if (player.weaponManager.actionType == Weapon.ActionType.HarvestCrop && crop && crop.isMaxLevel() && !crop.hasBeenHarvested()) {
+            player.playFastInteractAnimation(transform.position, true);
             harvestCrop();
             triggeredAction = true;
          }

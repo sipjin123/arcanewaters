@@ -70,7 +70,7 @@ public class NetEntity : NetworkBehaviour
    public int currentHealth = 1000;
 
    // Our max health
-   [SyncVar]
+   [SyncVar(hook = "onMaxHealthChanged")]
    public int maxHealth = 1000;
 
    // The amount of XP we have, which we can use to show our level
@@ -1953,6 +1953,8 @@ public class NetEntity : NetworkBehaviour
    public virtual bool isSeaMonster () { return false; }
 
    public virtual bool isLandEnemy () { return false; }
+
+   protected virtual void onMaxHealthChanged (int oldValue, int newValue) { }
 
    #region Private Variables
 

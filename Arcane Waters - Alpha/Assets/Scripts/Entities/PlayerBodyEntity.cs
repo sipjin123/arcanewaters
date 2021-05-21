@@ -617,16 +617,23 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
    }
 
-   public void playFastInteractAnimation (Vector3 lookTarget) {
+   public void playFastInteractAnimation (Vector3 lookTarget, bool playLocalInstantly) {
       Direction newDirection = forceLookAt(lookTarget);
 
-      if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
-         || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {
-         rpc.Cmd_FastInteractAnimation(Anim.Type.Interact_East, newDirection);
-      } else if (newDirection == Direction.North) {
-         rpc.Cmd_FastInteractAnimation(Anim.Type.Interact_North, newDirection);
+      Anim.Type animToPlay;
+
+      if (newDirection == Direction.North) {
+         animToPlay = Anim.Type.Fast_Interact_North;
       } else if (newDirection == Direction.South) {
-         rpc.Cmd_FastInteractAnimation(Anim.Type.Interact_South, newDirection);
+         animToPlay = Anim.Type.Fast_Interact_South;
+      } else {
+         animToPlay = Anim.Type.Fast_Interact_East;
+      }
+
+      rpc.Cmd_FastInteractAnimation(animToPlay, newDirection, playLocalInstantly);
+
+      if (playLocalInstantly) {
+         requestAnimationPlay(animToPlay);
       }
    }
 
