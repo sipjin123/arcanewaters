@@ -458,6 +458,7 @@ public class MyNetworkManager : NetworkManager
             player.rpc.checkForPendingFriendshipRequests();
             player.rpc.sendVoyageGroupMembersInfo();
             player.rpc.setNextBiomeUnlocked();
+            player.rpc.setAdminBattleParameters();
 
             // In sea voyages, if the player is spawning in a different position than the default spawn, we conclude he is returning from a treasure site and has already entered PvP
             if (instance.isVoyage && AreaManager.self.isSeaArea(player.areaKey) &&

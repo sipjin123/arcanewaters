@@ -36,7 +36,10 @@ public class Anim : MonoBehaviour {
       Throw_Projectile = 31,
       Toast = 32,
       SpecialAnimation = 33,
-      SpecialAnimationReady = 34
+      SpecialAnimationReady = 34,
+      Fast_Interact_East = 35,
+      Fast_Interact_North = 36,
+      Fast_Interact_South = 37,
    }
 
    // The different animation groups

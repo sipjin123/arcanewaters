@@ -132,29 +132,14 @@ public class FarmingTrigger : MonoBehaviour {
             if (currentActionType == Weapon.ActionType.HarvestCrop && cropSpot.crop != null) {
                if (cropSpot.crop.isMaxLevel() && cropSpot.crop.objectHolder.activeSelf) {
                   anyCropHarvested = true;
-                  ExplosionManager.createFarmingParticle(currentActionType, hit.collider.transform.position, fadeSpeed, 4, false);
-                  cropSpot.crop.hideCrop();
 
-                  CropProjectile cropProjectile = Instantiate(PrefabsManager.self.cropProjectilePrefab, AreaManager.self.getArea(cropSpot.areaKey).transform).GetComponent<CropProjectile>();
-                  cropProjectile.cropReference = cropSpot.crop;
-                  cropProjectile.transform.position = hit.collider.transform.position;
-                  Vector2 dir = cropSpot.transform.position - transform.position;
-                  dir /= dir.magnitude;
-                  cropProjectile.setSprite(cropSpot.crop.cropType);
-                  cropProjectile.init(hit.collider.transform.position, dir, cropSpot);
-
-                  Global.player.rpc.Cmd_RegisterAchievement(ActionType.HarvestCrop, 1);
-
-                  // Play 2D clip instead of attached to avoid layering multiple sounds (sounds like single one with higher volume because of timing)
-                  SoundEffectManager.self.playSoundEffect(SoundEffectManager.HARVESTING_FLYING, transform);
+                  cropSpot.harvestCrop();
                }
             }
          }
 
          if (currentActionType == Weapon.ActionType.HarvestCrop) {
-            if (anyCropHarvested) {
-               SoundEffectManager.self.playSoundEffect(SoundEffectManager.HARVESTING_PITCHFORK_HIT, transform);
-            } else {
+            if (!anyCropHarvested) {
                SoundManager.play2DClip(SoundManager.Type.Harvesting_Pitchfork_Miss);
             }
          }

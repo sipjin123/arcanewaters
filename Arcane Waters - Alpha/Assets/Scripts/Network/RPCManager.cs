@@ -232,6 +232,12 @@ public class RPCManager : NetworkBehaviour
       Target_PlayerInteract(_player.connectionToClient);
    }
 
+   [Command]
+   public void Cmd_FastInteractAnimation (Anim.Type animType, Direction direction) {
+      _player.Rpc_ForceLookat(direction);
+      Rpc_InteractAnimation(animType);
+   }
+
    [TargetRpc]
    public void Target_PlayerInteract (NetworkConnection connection) {
       PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
@@ -6900,6 +6906,45 @@ public class RPCManager : NetworkBehaviour
    [Command]
    public void Cmd_RegisterAchievement (ActionType type, int count) {
       AchievementManager.registerUserAchievement(_player.userId, type, customCount: count);
+   }
+
+   [Command]
+   public void Cmd_SetAdminBattleParameters (float idleAnimSpeed, float jumpDuration, float attackDuration, float attackCooldown) { 
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      AdminBattleManager.self.idleAnimationSpeedMultiplier = idleAnimSpeed;
+      AdminBattleManager.self.jumpDurationMultiplier = jumpDuration;
+      AdminBattleManager.self.attackDurationMultiplier = attackDuration;
+      AdminBattleManager.self.attackCooldownMultiplier = attackCooldown;
+
+      // Set the parameters in all connected clients
+      foreach (NetEntity netEntity in MyNetworkManager.getPlayers()) {
+         netEntity.rpc.setAdminBattleParameters();
+      }
+   }
+
+   [Server]
+   public void setAdminBattleParameters () {
+      Target_ReceiveAdminBattleParameters(
+         AdminBattleManager.self.idleAnimationSpeedMultiplier,
+         AdminBattleManager.self.jumpDurationMultiplier, 
+         AdminBattleManager.self.attackDurationMultiplier,
+         AdminBattleManager.self.attackCooldownMultiplier);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveAdminBattleParameters (float idleAnimSpeed, float jumpDuration, float attackDuration, float attackCooldown) {
+      AdminBattleManager.self.idleAnimationSpeedMultiplier = idleAnimSpeed;
+      AdminBattleManager.self.jumpDurationMultiplier = jumpDuration;
+      AdminBattleManager.self.attackDurationMultiplier = attackDuration;
+      AdminBattleManager.self.attackCooldownMultiplier = attackCooldown;
    }
 
    #region Private Variables

@@ -56,6 +56,9 @@ public class OptionsPanel : Panel
    // The constantly sprinting toggle
    public Toggle sprintConstantlyToggle;
 
+   // A toggle controlling whether the user will automatically farm
+   public Toggle autoFarmToggle;
+
    // The screen mode toggle
    public Dropdown screenModeDropdown;
 
@@ -175,6 +178,14 @@ public class OptionsPanel : Panel
       sprintConstantlyToggle.onValueChanged.AddListener(value => {
          PlayerPrefs.SetInt(OptionsManager.PREF_SPRINT_CONSTANTLY, value ? 1 : 0);
          Global.sprintConstantly = value;
+      });
+
+      bool autoFarm = PlayerPrefs.GetInt(OptionsManager.PREF_AUTO_FARM, 0) == 1 ? true : false;
+      autoFarmToggle.isOn = autoFarm;
+      Global.autoFarm = autoFarm;
+      autoFarmToggle.onValueChanged.AddListener(value => {
+         PlayerPrefs.SetInt(OptionsManager.PREF_AUTO_FARM, value ? 1 : 0);
+         Global.autoFarm = value;
       });
 
       // Build string and show version number
@@ -413,7 +424,6 @@ public class OptionsPanel : Panel
       }
 
       SoundManager.musicVolume = musicSlider.value;
-      SoundManager.self.musicVCA.setVolume(SoundManager.musicVolume);
    }
 
    public void effectsSliderChanged () {
@@ -423,7 +433,6 @@ public class OptionsPanel : Panel
       }
 
       SoundManager.effectsVolume = effectsSlider.value;
-      SoundManager.self.sfxVCA.setVolume(SoundManager.effectsVolume);
    }
 
    public void guiScaleSliderChanged () {      

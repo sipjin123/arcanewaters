@@ -27,6 +27,9 @@ public class ColorCurveReferences : MonoBehaviour {
    // The color that the targeting UI will be for a remote battler
    public Color remoteBattlerTargeterColor;
 
+   // A gradient controlling the color of the attack timing indicator outline
+   public Gradient attackTimingOutlineColor;
+
    #endregion
 
    private void Awake () {

@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
+using DG.Tweening;
 
 // Will load Battler Data and use that accordingly in all actions.
 public class Battler : NetworkBehaviour, IAttackBehaviour
@@ -281,6 +282,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    // A reference to the stance change effect for this battler
    public StanceChangeEffect stanceChangeEffect;
+
+   // A reference to the canvas group that contains the attack timing indicator
+   public CanvasGroup attackTimingIndicatorCanvasGroup;
+
+   // References to images of the outline and fill of the attack timing indicator
+   public Image attackingTimingOutline, attackTimingFill;
 
    #endregion
 
@@ -615,6 +622,37 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    protected bool isShowingTargetingEffects () {
       return targetLine.gameObject.activeInHierarchy;
+   }
+
+   private void showAttackTimingIndicator (float timeUntilAttack) {
+      _attackTimingIndicatorCoroutine = StartCoroutine(CO_ShowAttackTimingIndicator(timeUntilAttack));
+   }
+
+   private IEnumerator CO_ShowAttackTimingIndicator (float timeUntilAttack) {
+      float timer = 0.0f;
+      setAttackTimingIndicatorVisibility(true);
+
+      while (timer < timeUntilAttack) {
+         float normalisedTime = Mathf.Clamp01(timer / timeUntilAttack);
+         attackTimingFill.fillAmount = normalisedTime;
+         attackingTimingOutline.color = ColorCurveReferences.self.attackTimingOutlineColor.Evaluate(normalisedTime);
+         timer += Time.deltaTime;
+         yield return null;
+      }
+
+      setAttackTimingIndicatorVisibility(false);
+   }
+
+   protected void setAttackTimingIndicatorVisibility (bool isVisible) {
+      if (!isVisible) {
+         StopCoroutine(_attackTimingIndicatorCoroutine);
+         attackTimingIndicatorCanvasGroup.DOFade(0.0f, 0.2f).OnComplete(() => {
+            attackTimingIndicatorCanvasGroup.gameObject.SetActive(false);
+         });
+      } else {
+         attackTimingIndicatorCanvasGroup.gameObject.SetActive(true);
+         attackTimingIndicatorCanvasGroup.alpha = 1.0f;
+      }      
    }
 
    #region Stat Related Functions
@@ -1130,7 +1168,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // If it is a ranged attack, then normally we will stay in our place, executing our cast particles (if any)
 
       // Then proceeding to execute the remaining for each path, it is a little extensive, but definitely a lot better than
-      // creating a lot of different scripts
+      // creating a lot of different scripts      
 
       isAttacking = true;
       Battle battle = BattleManager.self.getBattle(battleAction.battleId);
@@ -1156,6 +1194,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // we check if the ability we want to reference is a cancel ability
       if (!globalAbilityData.isCancel()) {
          attackerAbility = getAttackAbility(battleAction.abilityInventoryIndex);
+      }
+
+      if (isLocalBattler()) {
+         showAttackTimingIndicator((float) timeToWait);
       }
 
       float attackDuration = 0;
@@ -1697,7 +1739,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             break;
 
          case AbilityActionType.Cancel:
-            targetLine.gameObject.SetActive(false);
+            if (userId > 0) {
+               targetLine.gameObject.SetActive(false);
+            }
+
+            if (isLocalBattler()) {
+               setAttackTimingIndicatorVisibility(false);
+            }
 
             BattleUIManager.self.resetButtonAnimations();
 
@@ -2597,6 +2645,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    private BasicAbilityData _balancedInitializedStance;
    private BasicAbilityData _offenseInitializedStance;
    private BasicAbilityData _defensiveInitializedStance;
+
+   // A reference to the coroutine that handles showing when the player will attack
+   private Coroutine _attackTimingIndicatorCoroutine = null;
 
    #endregion
 }

@@ -76,7 +76,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    // Gets set to true when the entity doesn't plan any move (or attack)
    public bool isStationary = false;
 
-   // The number of chests dropped by this monsters when defeated
+   // The number of chests dropped by this monster when defeated
    public int chestDropCount = 1;
 
    // The animation speed cached from the xml database

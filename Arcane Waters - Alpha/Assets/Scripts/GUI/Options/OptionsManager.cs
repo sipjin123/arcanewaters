@@ -20,6 +20,9 @@ public class OptionsManager : GenericGameManager {
    // Player Pref key for constant sprint
    public const string PREF_SPRINT_CONSTANTLY = "SPRINT_CONSTANTLY";
 
+   // Player Prefs key for auto-farming
+   public const string PREF_AUTO_FARM = "AUTO_FARM";
+
    // The reference to the UI Parent Canvas
    public Canvas mainGameCanvas;
 

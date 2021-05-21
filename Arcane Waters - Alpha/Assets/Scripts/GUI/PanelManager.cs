@@ -27,6 +27,7 @@ public class PanelManager : GenericGameManager {
    public ContextMenuPanel contextMenuPanel;
    public ShortcutPanel itemShortcutPanel;
    public NotificationPanel notificationPanel;
+   public AdminBattlePanel adminBattlePanel;
 
    // Reference to the main Canvas - GUI in the scene
    public Canvas mainCanvasRef;
@@ -126,7 +127,10 @@ public class PanelManager : GenericGameManager {
          BottomBar.self.toggleMailPanel();
       } else if (KeyUtils.GetKeyDown(Key.F7)) {
          ((AdminVoyagePanel) get(Panel.Type.AdminVoyage)).togglePanel();
+      } else if (KeyUtils.GetKeyDown(Key.F6)) {
+         adminBattlePanel.togglePanel();
       }
+
    }
 
    public Panel currentPanel () {

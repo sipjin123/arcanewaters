@@ -155,7 +155,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          this.hideEntityName();
       }
 
-      if (isLocalPlayer) {
+      if (isLocalPlayer && !Util.isBatch()) {
          // Gamepad action trigger
          InputManager.self.inputMaster.Player.Interact.performed += func => triggerInteractAction(false);
 
@@ -615,7 +615,19 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       } else if (newDirection == Direction.South) {
          rpc.Cmd_InteractAnimation(Anim.Type.Interact_South, newDirection);
       }
+   }
 
+   public void playFastInteractAnimation (Vector3 lookTarget) {
+      Direction newDirection = forceLookAt(lookTarget);
+
+      if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
+         || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {
+         rpc.Cmd_FastInteractAnimation(Anim.Type.Interact_East, newDirection);
+      } else if (newDirection == Direction.North) {
+         rpc.Cmd_FastInteractAnimation(Anim.Type.Interact_North, newDirection);
+      } else if (newDirection == Direction.South) {
+         rpc.Cmd_FastInteractAnimation(Anim.Type.Interact_South, newDirection);
+      }
    }
 
    private Direction forceLookAt (Vector2 targetPosition) {

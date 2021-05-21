@@ -136,6 +136,8 @@ public class LoadingScreen : FullScreenSeparatePanel
 
       // Fade out loading screen
       float duration = fadeInEffect.fadeIn();
+      mainCanvasGroup.DOKill();
+      mainCanvasGroup.alpha = 1.0f;
       mainCanvasGroup.DOFade(0.0f, duration);
       yield return new WaitForSeconds(duration);
 

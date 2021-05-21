@@ -65,6 +65,69 @@ public class CropSpot : MonoBehaviour {
       return (Vector2.Distance(Global.player.transform.position, this.transform.position) <= .24f);
    }
 
+   private void OnTriggerEnter2D (Collider2D collision) {
+      tryAutoFarm(collision);
+   }
+
+   private void tryAutoFarm (Collider2D collision) {
+      // If the local player walked over this crop spot
+      PlayerBodyEntity player = collision.GetComponent<PlayerBodyEntity>();
+      if (Global.autoFarm && player && Global.player && player == Global.player && !player.interactingAnimation) {
+         bool triggeredAction = false;
+
+         // If the player is holding seeds, try plant seeds here
+         if (player.weaponManager.actionType == Weapon.ActionType.PlantCrop) {
+            player.playFastInteractAnimation(transform.position);
+            player.Cmd_PlantCrop((Crop.Type) player.weaponManager.actionTypeValue, cropNumber, player.areaKey);
+            triggeredAction = true;
+         }
+
+         // If the player is holding a watering can, try to water this plot
+         if (player.weaponManager.actionType == Weapon.ActionType.WaterCrop && crop && !crop.isMaxLevel() && crop.isReadyForWater()) {
+            player.playFastInteractAnimation(transform.position);
+            player.Cmd_WaterCrop(this.cropNumber);
+            triggeredAction = true;
+         }
+
+         // If the player is holding a pitchfork, try to harvest this plot
+         if (player.weaponManager.actionType == Weapon.ActionType.HarvestCrop && crop && crop.isMaxLevel()) {
+            player.playFastInteractAnimation(transform.position);
+            harvestCrop();
+            triggeredAction = true;
+         }
+
+         if (triggeredAction) {
+            // Play weapon SFX upon triggering animation
+            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(player.weaponManager.equipmentDataId);
+            if (weaponData != null && weaponData.actionSfxDirectory.Length > 1) {
+               SoundManager.create3dSoundWithPath(weaponData.actionSfxDirectory, transform.position);
+            }
+         }
+      }
+   }
+
+   public void harvestCrop () {
+      if (!Global.player || !crop) {
+         return;
+      }
+      
+      PlayerBodyEntity player = Global.player.getPlayerBodyEntity();
+      ExplosionManager.createFarmingParticle(Weapon.ActionType.HarvestCrop, transform.position, 1.5f, 4, false);
+      crop.hideCrop();
+
+      CropProjectile cropProjectile = Instantiate(PrefabsManager.self.cropProjectilePrefab, AreaManager.self.getArea(areaKey).transform).GetComponent<CropProjectile>();
+      cropProjectile.cropReference = crop;
+      cropProjectile.transform.position = transform.position;
+      Vector2 dir = (transform.position - player.transform.position).normalized;
+      cropProjectile.setSprite(crop.cropType);
+      cropProjectile.init(transform.position, dir, this);
+
+      Global.player.rpc.Cmd_RegisterAchievement(ActionType.HarvestCrop, 1);
+
+      SoundEffectManager.self.playSoundEffect(SoundEffectManager.HARVESTING_FLYING, transform);
+      SoundEffectManager.self.playSoundEffect(SoundEffectManager.HARVESTING_PITCHFORK_HIT, transform);
+   }
+
    #region Private Variables
 
    // Our associated Sprite

@@ -224,7 +224,7 @@ public class TreasureManager : MonoBehaviour {
 
             for (int i = 0; i < bonusChests; i++) {
                // Instantiate a new Treasure Chest like the original
-               TreasureChest bonusChest = Instantiate(seaChestPrefab, spot + Vector3.up * 0.1f * i, Quaternion.identity);
+               TreasureChest bonusChest = Instantiate(monsterBagPrefab, spot + Vector3.up * 0.1f * i, Quaternion.identity);
 
                // Setup the chest variables
                initEnemyDropChest(bonusChest, enemyTypeId, instance, true);

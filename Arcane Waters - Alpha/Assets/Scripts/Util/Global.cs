@@ -69,6 +69,9 @@ public class Global
    // Determine if the player should sprint without holding down sprint button
    public static bool sprintConstantly;
 
+   // Determine if the player should automatically farm crop spots they walk over
+   public static bool autoFarm = false;
+
    // Keeps track of the last account creation time, for Paymentwall
    public static System.DateTime lastAccountCreationTime;
 

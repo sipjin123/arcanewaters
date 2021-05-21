@@ -272,18 +272,83 @@ public class AdminManager : NetworkBehaviour
       if (!_player.isAdmin()) {
          return;
       }
+
+      // Land battles
       Battle battle = BattleManager.self.getBattleForUser(_player.userId);
-      if (battle == null) {
-         return;
-      }
+      if (battle != null) {
 
-      List<Battler> participants = battle.getParticipants();
+         List<Battler> participants = battle.getParticipants();
 
-      foreach (Battler battler in participants) {
-         if ((battler != null) && battler.isMonster()) {
-            battler.health = 0;
+         foreach (Battler battler in participants) {
+            if ((battler != null) && battler.isMonster()) {
+               battler.health = 0;
+            }
          }
+
       }
+
+      // Sea battles
+      if (_player.isPlayerShip()) {
+         Instance playerInstance = InstanceManager.self.getInstance(_player.instanceId);
+         int enemiesCounter = 0;
+         int killedEnemiesCounter = 0;
+         foreach (NetworkBehaviour entity in playerInstance.entities.ToArray()) {
+            SeaEntity targetEntity = entity.transform.GetComponent<SeaEntity>();
+
+            if (targetEntity == null) {
+               targetEntity = entity.transform.GetComponentInParent<SeaEntity>();
+            }
+
+            // Ensure that the target entity is valid and
+            // Ensure the target entity belongs to the same instance of the player and
+            // Ensure the target entity is not the player
+            if (targetEntity == null || targetEntity.instanceId != _player.instanceId || targetEntity.netId == _player.netId) {
+               continue;
+            }
+
+            // Prevent players from being damaged by other players if they have not entered PvP yet
+            if (_player != null && _player.isPlayerShip() && !targetEntity.canBeAttackedByPlayers()) {
+               continue;
+            }
+
+            // Do not eliminate other members in the voyage
+            if ((_player.voyageGroupId > 0 || targetEntity.voyageGroupId > 0) && (_player.voyageGroupId == targetEntity.voyageGroupId)) {
+               continue;
+            }
+
+            // Skip dead entities
+            if (targetEntity.isDead()) {
+               continue;
+            }
+
+            if (!_player.isEnemyOf(targetEntity)) {
+               continue;
+            }
+
+            // Make sure that this is called on the server
+            if (NetworkServer.active) {
+
+               int finalDamage = targetEntity.applyDamage(int.MaxValue, _player.netId);
+
+               // Apply the status effect
+               StatusManager.self.create(Status.Type.Slowed, 1.0f, 3f, targetEntity.netId);
+
+               if (targetEntity.isDead()) {
+                  killedEnemiesCounter++;
+               }
+
+            }
+
+            enemiesCounter++;
+         }
+
+         string message = $"No sea enemy detected!";
+         if (enemiesCounter > 0) {
+            message = $"{killedEnemiesCounter} out of {enemiesCounter} sea enemies eliminated!";
+         }
+         _player.rpc.Target_ReceiveNoticeFromServer(_player.connectionToClient, message);
+      }
+
    }
 
    private void kickPlayer (string parameters) {

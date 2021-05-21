@@ -744,6 +744,9 @@ public class NetEntity : NetworkBehaviour
             case Anim.Type.Interact_East:
             case Anim.Type.Interact_North:
             case Anim.Type.Interact_South:
+            case Anim.Type.Fast_Interact_East:
+            case Anim.Type.Fast_Interact_North:
+            case Anim.Type.Fast_Interact_South:
                animator.SetBool("interact", true);
                break;
             case Anim.Type.Pet_East:
@@ -770,6 +773,12 @@ public class NetEntity : NetworkBehaviour
             StartCoroutine(CO_DelayExitAnim(animType, 0.4f));
             interactingAnimation = true;
             break;
+         case Anim.Type.Fast_Interact_East:
+         case Anim.Type.Fast_Interact_North:
+         case Anim.Type.Fast_Interact_South:
+            StartCoroutine(CO_DelayExitAnim(animType, 0.2f));
+            interactingAnimation = true;
+            break;
          case Anim.Type.Pet_East:
          case Anim.Type.Pet_North:
          case Anim.Type.Pet_South:
@@ -794,6 +803,9 @@ public class NetEntity : NetworkBehaviour
             case Anim.Type.Interact_East:
             case Anim.Type.Interact_North:
             case Anim.Type.Interact_South:
+            case Anim.Type.Fast_Interact_East:
+            case Anim.Type.Fast_Interact_North:
+            case Anim.Type.Fast_Interact_South:
                animator.SetBool("interact", false);
                break;
             case Anim.Type.Pet_East:

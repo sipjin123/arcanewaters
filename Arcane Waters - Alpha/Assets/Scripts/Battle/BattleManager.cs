@@ -677,7 +677,7 @@ public class BattleManager : MonoBehaviour {
                   , D.ADMIN_LOG_TYPE.AnimationFreeze); // Second Server Sequence
             }
 
-            float cooldownDuration = abilityData.abilityCooldown * source.getCooldownModifier();
+            float cooldownDuration = abilityData.abilityCooldown * source.getCooldownModifier() * AdminBattleManager.self.attackCooldownMultiplier;
             source.cooldownEndTime = timeAttackEnds + cooldownDuration;
 
             // Apply the target's AP change
@@ -769,7 +769,7 @@ public class BattleManager : MonoBehaviour {
          foreach (Battler target in targets) {
             // Make note of the time that this battle action is going to be fully completed, considering animation times
             double timeBuffEnds = NetworkTime.time + timeToWait + buffAbility.getTotalAnimLength(source, target);
-            float cooldownDuration = abilityData.abilityCooldown * source.getCooldownModifier();
+            float cooldownDuration = abilityData.abilityCooldown * source.getCooldownModifier() * AdminBattleManager.self.attackCooldownMultiplier;
             source.cooldownEndTime = timeBuffEnds + cooldownDuration;
 
             // Apply the target's AP change
@@ -792,6 +792,8 @@ public class BattleManager : MonoBehaviour {
                stringList.Add(action.serialize());
             }
          }
+
+         AchievementManager.registerUserAchievement(source.player, ActionType.UseStatsBuff);
       } else {
          D.debug("Battle action was not prepared correctly");
       }

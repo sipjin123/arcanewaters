@@ -5566,6 +5566,56 @@ public class DB_Main : DB_MainStub
       return accountId;
    }
 
+   public static new string getAccountName (int userId) {
+      int accId = -1;
+      string accountName = "";
+
+      // Get the account ID from the userId
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT accId FROM users WHERE usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Create a data reader and execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  accId = dataReader.GetInt32("accId");
+               }
+            }
+         }
+
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return accountName;
+      }
+
+      // Get the account name from the accountId
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT accName FROM global.accounts WHERE accId=@accId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accId", accId);
+            DebugQuery(cmd);
+
+            // Create a data reader and execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  accountName = dataReader.GetString("accName");
+               }
+            }
+         }
+
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return accountName;
+   }
+
    public static new void completePendingAction (int pendingActionId) {
       try {
          using (MySqlConnection conn = getConnection())
