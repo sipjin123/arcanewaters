@@ -265,7 +265,7 @@ public class AchievementManager : MonoBehaviour {
          using (UnityWebRequest www = UnityWebRequest.Post(STEAMWEBAPI_SET_USER_STATS, form)) {
             yield return www.SendWebRequest();
             if (www.isNetworkError || www.isHttpError) {
-               Debug.Log(www.error);
+               Debug.LogWarning(www.error);
             } 
          }
       }

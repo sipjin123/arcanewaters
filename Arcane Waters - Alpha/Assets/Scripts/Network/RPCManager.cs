@@ -1830,7 +1830,7 @@ public class RPCManager : NetworkBehaviour
          _player.lastNPCTalkTime = (float) NetworkTime.time;
          AchievementManager.registerUserAchievement(_player, ActionType.TalkToNPC);
       }
-      
+
       NPCData npcData = NPCManager.self.getNPCData(npcId);
       int questId = npcData.questId;
       QuestData questData = NPCQuestManager.self.getQuestData(questId);
@@ -2091,7 +2091,7 @@ public class RPCManager : NetworkBehaviour
       QuestDataNode questDataNode = questData.questDataNodes[questNodeId];
       if (questDataNode.questDialogueNodes.Length > dialogueId + 1) {
          bool deliveredItems = false;
-         
+
          // Gather the item list to deduct from the preview node
          QuestDialogueNode questDialogue = questDataNode.questDialogueNodes[newDialogueId];
          if (questDialogue.itemRequirements != null) {
@@ -3103,7 +3103,7 @@ public class RPCManager : NetworkBehaviour
                CraftableItemRequirements craftingData = CraftingManager.self.getCraftableData(shopItem.itemTypeId);
                if (craftingData == null) {
                   itemName = AdventureShopScreen.UNKNOWN_ITEM;
-               } else { 
+               } else {
                   itemName = EquipmentXMLManager.self.getItemName(craftingData.resultItem);
                }
             } else {
@@ -3687,7 +3687,7 @@ public class RPCManager : NetworkBehaviour
          if (refinementIngredient.category == Item.Category.CraftingIngredients) {
             ingredientList.Add((CraftingIngredients.Type) refinementIngredient.itemTypeId);
          } else {
-            D.debug("Mismatch type: " + refinementIngredient.category+" : "+ refinementIngredient.itemTypeId);
+            D.debug("Mismatch type: " + refinementIngredient.category + " : " + refinementIngredient.itemTypeId);
          }
       }
 
@@ -4178,7 +4178,7 @@ public class RPCManager : NetworkBehaviour
          D.warning("No player object found.");
          return;
       }
-      
+
       _player.spawnInBiomeHomeTown();
    }
 
@@ -4850,7 +4850,7 @@ public class RPCManager : NetworkBehaviour
          processChestRewards(chest);
          return;
       }
-      
+
       // Get the biome that will be unlocked
       Biome.Type nextBiome = Biome.getNextBiome(instance.biome);
 
@@ -5259,7 +5259,7 @@ public class RPCManager : NetworkBehaviour
       bool isExistingBattle = (enemy.battleId > 0);
 
       // Get or create the Battle instance
-      Battle battle = isExistingBattle && !enemy.isDefeated ? (BattleManager.self.getBattle(enemy.battleId)): BattleManager.self.createTeamBattle(area, instance, enemy, attackers, localBattler, modifiedDefenderList.ToArray());
+      Battle battle = isExistingBattle && !enemy.isDefeated ? (BattleManager.self.getBattle(enemy.battleId)) : BattleManager.self.createTeamBattle(area, instance, enemy, attackers, localBattler, modifiedDefenderList.ToArray());
 
       if (battle == null) {
          D.debug("Error here! Trying to engage battle but the Battle is NULL!! Battle id {" + enemy.battleId + "} is probably finished");
@@ -5275,9 +5275,9 @@ public class RPCManager : NetworkBehaviour
 
          // After joining, the server will send all the queued rpc actions to the newly joined client
          foreach (QueuedRpcAction rpcBattleAction in battle.queuedRpcActionList) {
-            Target_ReceiveCombatAction(_player.connectionToClient, enemy.battleId, 
-               rpcBattleAction.actionSerialized, 
-               rpcBattleAction.battleActionType, 
+            Target_ReceiveCombatAction(_player.connectionToClient, enemy.battleId,
+               rpcBattleAction.actionSerialized,
+               rpcBattleAction.battleActionType,
                rpcBattleAction.isCancelAction);
          }
 
@@ -5299,7 +5299,7 @@ public class RPCManager : NetworkBehaviour
       while (BattleManager.self.getBattle(battleId) == null) {
          yield return 0;
       }
-      
+
       Battle battle = BattleManager.self.getBattle(battleId);
       battle.processCombatAction(actionStrings, battleActionType, cancelAbility);
    }
@@ -5921,7 +5921,7 @@ public class RPCManager : NetworkBehaviour
 
       // Ignore invalid or dead sources and targets
       if (sourceBattler == null || sourceBattler.isDead()) {
-         D.error("NULL here for player: " + _player.userId+ " " + sourceBattler+ " " +sourceBattler.isDead()+ " " + sourceBattler.userId + " " + sourceBattler.health);
+         D.error("NULL here for player: " + _player.userId + " " + sourceBattler + " " + sourceBattler.isDead() + " " + sourceBattler.userId + " " + sourceBattler.health);
          return;
       }
 
@@ -6659,7 +6659,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Make sure the function is allowed to be called by clients
-      if (!NubisStatics.WhiteList.Contains(functionName)){
+      if (!NubisStatics.WhiteList.Contains(functionName)) {
          D.error(string.Format("Received a request to execute a forbidden function: {0}, from userId {1}.", functionName, _player.userId));
          return;
       }
