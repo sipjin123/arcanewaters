@@ -5194,8 +5194,11 @@ public class RPCManager : NetworkBehaviour
          if (entity != null) {
             if (entity.userId != _player.userId && _player.instanceId == entity.instanceId) {
                attackerCount++;
+
+               // If this is an admin group party, randomize delay before team member is forced to join
                if (isGroupBattle) {
-                  entity.rpc.Target_JoinTeamCombat(entity.connectionToClient, netId);
+                  bool joinInstantly = Random.Range(0, 5) < 2;
+                  entity.rpc.Target_JoinTeamCombat(entity.connectionToClient, netId, joinInstantly ? 0 : 2);
                }
             }
          }
@@ -6890,7 +6893,12 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_JoinTeamCombat (NetworkConnection connection, uint enemyId) {
+   public void Target_JoinTeamCombat (NetworkConnection connection, uint enemyId, float delay) {
+      StartCoroutine(CO_DelayJoinTeamCombat(enemyId, delay));
+   }
+
+   private IEnumerator CO_DelayJoinTeamCombat (uint enemyId, float delay) {
+      yield return new WaitForSeconds(delay);
       Global.player.rpc.Cmd_StartNewBattle(enemyId, Battle.TeamType.Attackers, false);
    }
 
