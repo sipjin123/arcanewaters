@@ -984,6 +984,10 @@ public class AdminManager : NetworkBehaviour
    private void processLogAuthorization (string logType, bool isEnabled, string parameters) {
       D.ADMIN_LOG_TYPE newLogType = D.ADMIN_LOG_TYPE.None;
       switch (logType) {
+         case "cancelatk":
+            newLogType = D.ADMIN_LOG_TYPE.CancelAttack;
+            Global.updateAdminLog(newLogType, isEnabled);
+            break;
          case "gamepad":
             newLogType = D.ADMIN_LOG_TYPE.Gamepad;
             Global.updateAdminLog(newLogType, isEnabled);

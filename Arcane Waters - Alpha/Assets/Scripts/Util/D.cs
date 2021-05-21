@@ -30,7 +30,8 @@ public class D : MonoBehaviour {
       Refine = 17,
       Blueprints = 18,
       AnimationFreeze = 19,
-      CombatEnd = 20
+      CombatEnd = 20,
+      CancelAttack = 21
    }
 
    // Any log files older than this will be deleted

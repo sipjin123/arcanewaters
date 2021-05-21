@@ -1253,11 +1253,17 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                   (targetBattler.displayedHealth < 1 ? "Display Health Zero" : "{Skip}") + " or " +
                   (targetBattler.getAnim()[0].currentAnimation == Anim.Type.Death_East ? "AnimatingDeath" : "{Skip}"));
                // yield break;
+            if (enemyType == Enemy.Type.PlayerBattler) {
+               D.adminLog("Battle has initialized {" + userId + "}" + " : {" + enemyType + "}", D.ADMIN_LOG_TYPE.CancelAttack);
             }
 
             // Plays the melee cast VFX ability before jumping
             if (!abilityDataReference.useSpecialAnimation) {
                EffectManager.playCastAbilityVFX(sourceBattler, action, sourceBattler.transform.position, BattleActionType.Attack);
+            }
+
+            if (enemyType == Enemy.Type.PlayerBattler) {
+               D.adminLog("Battle Jump Start {" + userId + "}" + " : {" + enemyType + "}", D.ADMIN_LOG_TYPE.CancelAttack);
             }
 
             if (isMovable()) {
@@ -1285,6 +1291,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
                // Make sure we're exactly in position now that the jump is over
                sourceBattler.transform.position = new Vector3(targetPosition.x, targetPosition.y, sourceBattler.transform.position.z);
+            }
+
+            if (enemyType == Enemy.Type.PlayerBattler) {
+               D.adminLog("Battle Jump Finish {" + userId + "}" + " : {" + enemyType + "}", D.ADMIN_LOG_TYPE.CancelAttack);
             }
 
             // Pause for a moment after reaching our destination
@@ -1324,6 +1334,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                }
             }
 
+            if (enemyType == Enemy.Type.PlayerBattler) {
+               D.adminLog("Battle Ready Attack Anim Finish {" + userId + "}" + " : {" + enemyType + "}", D.ADMIN_LOG_TYPE.CancelAttack);
+            }
+
             if (abilityDataReference.useSpecialAnimation) {
                // Special animation delay interval when casting special animation vfx 
                yield return new WaitForSeconds(sourceBattler.getPreContactLength() - SPECIAL_ATTACK_READY_TIME);
@@ -1343,6 +1357,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                if (!abilityDataReference.useSpecialAnimation) {
                   sourceBattler.playAnim(Anim.Type.Finish_Attack);
                }
+            }
+
+            if (enemyType == Enemy.Type.PlayerBattler) {
+               D.adminLog("Battle Finsih Attack Anim Finish {" + userId + "}" + " : {" + enemyType + "}", D.ADMIN_LOG_TYPE.CancelAttack);
             }
 
             // Return animation speed to default
@@ -1407,6 +1425,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             yield return new WaitForSeconds(POST_CONTACT_LENGTH);
 
+            if (enemyType == Enemy.Type.PlayerBattler) {
+               D.adminLog("Battle Jump back start {" + userId + "}" + " : {" + enemyType + "}", D.ADMIN_LOG_TYPE.CancelAttack);
+            }
+
             if (isMovable()) {
                // Now jump back to where we started from
                sourceBattler.playAnim(Anim.Type.Jump_East);
@@ -1424,6 +1446,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
                // Wait for a moment after we reach our jump destination
                yield return new WaitForSeconds(PAUSE_LENGTH);
+            }
+
+            if (enemyType == Enemy.Type.PlayerBattler) {
+               D.adminLog("Battle Jump back Finish {" + userId + "}" + " : {" + enemyType + "}", D.ADMIN_LOG_TYPE.CancelAttack);
             }
 
             // Wait for special animation to finish
@@ -1449,6 +1475,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Mark the source sprite as no longer jumping
             sourceBattler.isJumping = false;
+
+            if (enemyType == Enemy.Type.PlayerBattler) {
+               D.adminLog("Battle Display End {" + userId + "}" + " : {" + enemyType + "}", D.ADMIN_LOG_TYPE.CancelAttack);
+            }
 
             // Add any AP we earned
             sourceBattler.displayedAP = Util.clamp<int>(sourceBattler.displayedAP + action.sourceApChange, 0, MAX_AP);
@@ -1801,6 +1831,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    private IEnumerator CO_ResetBattlerSpot () {
+      if (enemyType == Enemy.Type.PlayerBattler) { 
+         D.adminLog("Resetting the battle position after cancel attack! {" + userId + "}" + " : {" + enemyType + "}", D.ADMIN_LOG_TYPE.CancelAttack);
+      }
+
       playAnim(Anim.Type.Jump_East);
       Vector2 targetPosition = battleSpot.transform.position;
       while (Vector2.Distance(targetPosition, transform.position) > .1f) {
