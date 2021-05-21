@@ -5152,8 +5152,8 @@ public class RPCManager : NetworkBehaviour
 
       if (enemy.isDefeated) {
          // Reset player movement restriction if the battle engagement is invalid
+         D.debug("Error here! {" + _player.userId + "} is Attempting to engage combat with a defeated enemy! Enemy battle id is {" + enemy.battleId + "}");
          Target_ResetMoveDisable(_player.connectionToClient);
-         D.debug("Error here! Attempting to engage combat with a defeated enemy! Enemy battle id is {" + enemy.battleId + "}");
          return;
       }
 
@@ -5607,9 +5607,9 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_StartNewBattle (uint enemyNetId, Battle.TeamType teamType, bool isGroupBattle) {
-      D.debug("Player is starting new battle, IsVoyageArea:{" + VoyageManager.isVoyageOrLeagueArea(_player.areaKey)
+      D.adminLog("Player is starting new battle, IsVoyageArea:{" + VoyageManager.isVoyageOrLeagueArea(_player.areaKey)
          + "} IsTreasureSite:{" + VoyageManager.isTreasureSiteArea(_player.areaKey) + "} CanPlayerStay{" + canPlayerStayInVoyage() + "}"
-         + " SpecialType: {" + AreaManager.self.getAreaSpecialType(_player.areaKey) + "}");
+         + " SpecialType: {" + AreaManager.self.getAreaSpecialType(_player.areaKey) + "}", D.ADMIN_LOG_TYPE.Combat);
 
       if ((VoyageManager.isVoyageOrLeagueArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)) && !canPlayerStayInVoyage()) {
          string reason = "";

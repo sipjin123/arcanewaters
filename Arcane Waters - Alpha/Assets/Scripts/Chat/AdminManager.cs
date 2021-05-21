@@ -550,12 +550,14 @@ public class AdminManager : NetworkBehaviour
       if (list.Length > 0) {
          float attackDelay = .25f;
          try {
-            attackDelay = float.Parse(list[1]);
+            attackDelay = float.Parse(list[0]);
          } catch {
-            D.debug("AttackDelay is invalid: " + list[1]);
+            D.debug("AttackDelay is invalid: " + list[0]);
          }
 
          Cmd_AutoAttack(attackDelay);
+      } else {
+         Cmd_AutoAttack(.5f);
       }
    }
 
@@ -590,6 +592,8 @@ public class AdminManager : NetworkBehaviour
          }
 
          Cmd_ForceJoin(autoAttack == 1 ? true : false, attackDelay);
+      } else {
+         Cmd_ForceJoin(false, 1);
       }
    }
 
