@@ -5095,7 +5095,7 @@ public class RPCManager : NetworkBehaviour
       processTeamBattle(defenders, attackers, 0, true);
    }
 
-   private void processTeamBattle (BattlerInfo[] defenders, BattlerInfo[] attackers, uint netId, bool createNewEnemy = false) {
+   private void processTeamBattle (BattlerInfo[] defenders, BattlerInfo[] attackers, uint netId, bool isGroupBattle, bool createNewEnemy = false) {
       bool isPvpBattle = true;
 
       foreach (BattlerInfo defenderInfo in defenders) {
@@ -5193,6 +5193,9 @@ public class RPCManager : NetworkBehaviour
          if (entity != null) {
             if (entity.userId != _player.userId && _player.instanceId == entity.instanceId) {
                attackerCount++;
+               if (isGroupBattle) {
+                  entity.rpc.Target_JoinTeamCombat(entity.connectionToClient, netId);
+               }
             }
          }
       }
@@ -5599,7 +5602,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_StartNewBattle (uint enemyNetId, Battle.TeamType teamType) {
+   public void Cmd_StartNewBattle (uint enemyNetId, Battle.TeamType teamType, bool isGroupBattle) {
       D.debug("Player is starting new battle, IsVoyageArea:{" + VoyageManager.isVoyageOrLeagueArea(_player.areaKey)
          + "} IsTreasureSite:{" + VoyageManager.isTreasureSiteArea(_player.areaKey) + "} CanPlayerStay{" + canPlayerStayInVoyage() + "}"
          + " SpecialType: {" + AreaManager.self.getAreaSpecialType(_player.areaKey) + "}");
@@ -5643,7 +5646,7 @@ public class RPCManager : NetworkBehaviour
       });
 
       if (!_player.isSinglePlayer) {
-         processTeamBattle(battlerInfoList.ToArray(), new BattlerInfo[0], enemyNetId);
+         processTeamBattle(battlerInfoList.ToArray(), new BattlerInfo[0], enemyNetId, isGroupBattle);
       } else {
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             // Fetch the list of companions
@@ -5664,7 +5667,7 @@ public class RPCManager : NetworkBehaviour
                }
 
                // Continue to process team battle
-               processTeamBattle(battlerInfoList.ToArray(), allyInfoList.ToArray(), enemyNetId);
+               processTeamBattle(battlerInfoList.ToArray(), allyInfoList.ToArray(), enemyNetId, false);
             });
          });
       }
@@ -6883,6 +6886,11 @@ public class RPCManager : NetworkBehaviour
             }
          });
       });
+   }
+
+   [TargetRpc]
+   public void Target_JoinTeamCombat (NetworkConnection connection, uint enemyId) {
+      Global.player.rpc.Cmd_StartNewBattle(enemyId, Battle.TeamType.Attackers, false);
    }
 
    [TargetRpc]

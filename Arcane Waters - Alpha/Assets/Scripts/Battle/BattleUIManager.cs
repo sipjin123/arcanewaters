@@ -170,7 +170,7 @@ public class BattleUIManager : MonoBehaviour {
       }
    }
 
-   private void triggerAbilityByKey (int keySlot) {
+   public void triggerAbilityByKey (int keySlot) {
       AbilityButton selectedButton = abilityTargetButtons.ToList().Find(_ => _.abilityIndex == keySlot);
 
       // If player is using keys 1-5 to attack with no target selected, then select a random target
@@ -178,7 +178,9 @@ public class BattleUIManager : MonoBehaviour {
          try {
             BattleSelectionManager.self.clickBattler(BattleSelectionManager.self.getRandomTarget());
          } catch {
-            D.debug("Unable to find an opponent to target");
+            if (!Global.autoAttack) {
+               D.debug("Unable to find an opponent to target");
+            }
          }
       }
 
@@ -192,7 +194,9 @@ public class BattleUIManager : MonoBehaviour {
                   selectedButton.abilityButton.onClick.Invoke();
                }
             } else {
-               D.debug("Player cant cast ability yet! Ability ID: " + selectedButton.abilityTypeIndex);
+               if (!Global.autoAttack) {
+                  D.debug("Player cant cast ability yet! Ability ID: " + selectedButton.abilityTypeIndex);
+               }
             }
          } else {
             selectedButton.invalidButtonClick();
