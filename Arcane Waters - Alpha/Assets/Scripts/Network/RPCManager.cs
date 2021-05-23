@@ -5880,6 +5880,8 @@ public class RPCManager : NetworkBehaviour
             Target_ReceiveRefreshCasting(connectionToClient, true);
             return;
          }
+
+         sourceBattler.canExecuteAction = false;
          BattleManager.self.executeBattleAction(battle, sourceBattler, targetBattlers, abilityInventoryIndex, abilityType);
       }
    }
