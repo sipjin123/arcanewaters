@@ -23,7 +23,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [Space(8)]
 
    // The amount of time a jump takes
-   public static float JUMP_LENGTH = .2f;
+   public static float JUMP_LENGTH = 0.2f;
 
    // The amount of time we pause after a jump forward or back
    public static float PAUSE_LENGTH = .1f;
@@ -125,6 +125,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // The time at which we can switch into another stance.
    [SyncVar]
    public double stanceCooldownEndTime;
+   
+   // If this battler can execute its action
+   [SyncVar]
+   public bool canExecuteAction = false;
 
    // Used for showing in the UI the time remaining for changing into another stance.
    public double stanceCurrentCooldown;
@@ -296,7 +300,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          if (targetLine) { 
             targetLine.gameObject.SetActive(false);
          }
-         D.debug("Action Coroutine has been stopped for battler! {" + userId + "}" + " : {" + enemyType + "}");
+
+         if (!canExecuteAction) { 
+            D.debug("Server decided the action should be stopped for battler! {" + userId + "}" + " : {" + enemyType + "}");
+         }
+
          StopCoroutine(currentActionCoroutine);
          receivedCancelState = true;
          BattleUIManager.self.resetButtonAnimations();
@@ -1232,6 +1240,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Don't start animating until both sprites are available
             yield return new WaitForSecondsDouble(timeToWait);
+
             if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
                D.adminLog(" (4a) {" + action.actionId + "} {" + sourceBattler.userId + "} " + (sourceBattler.isLocalBattler() ? "LOCAL" : "Other") + " battler is attacking"
                   + " TimeToWait was: {" + timeToWait.ToString("f1") + "}"
@@ -1240,6 +1249,23 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             attackDuration = (float) (cooldownEndTime - NetworkTime.time);
             triggerAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, attackDuration);
+
+            // Log this data, this is the instance where the animation freeze bug would have been triggered
+            bool captureExecuteActionLog = false;
+            if (canExecuteAction == false) {
+               captureExecuteActionLog = true;
+               D.debug("{" + sourceBattler.userId + "} Wait for server to finish process....");
+            }
+
+            // Wait for server to finish process before granting this battler action
+            while (canExecuteAction == false) {
+               yield return 0;
+            }
+
+            // Log information that the delay between the server and client resulted in the server granting this action
+            if (captureExecuteActionLog) {
+               D.debug("{" + sourceBattler.userId + "} The server decided that this action should proceed and not be cancelled");
+            }
 
             // Make sure the source and target battler is still alive at this point
             if (sourceBattler.isDead() || targetBattler.hasDisplayedDeath()) {
@@ -1523,6 +1549,23 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             attackDuration = (float) (cooldownEndTime - NetworkTime.time);
             triggerAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, attackDuration);
 
+            // Log this data, this is the instance where the animation freeze bug would have been triggered
+            captureExecuteActionLog = false;
+            if (canExecuteAction == false) {
+               captureExecuteActionLog = true;
+               D.debug("{" + sourceBattler.userId + "} Wait for server to finish process....");
+            }
+
+            // Wait for server to finish process before granting this battler action
+            while (canExecuteAction == false) {
+               yield return 0;
+            }
+
+            // Log information that the delay between the server and client resulted in the server granting this action
+            if (captureExecuteActionLog) {
+               D.debug("{" + sourceBattler.userId + "} The server decided that this action should proceed and not be cancelled");
+            }
+
             // The unused code is on the MagicAbility script
             // Make sure the battlers are still alive at this point
             if (sourceBattler.isDead() || targetBattler.hasDisplayedDeath()) {
@@ -1657,6 +1700,23 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             attackDuration = (float) (cooldownEndTime - NetworkTime.time);
             triggerAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, attackDuration);
+
+            // Log this data, this is the instance where the animation freeze bug would have been triggered
+            captureExecuteActionLog = false;
+            if (canExecuteAction == false) {
+               captureExecuteActionLog = true;
+               D.debug("{" + sourceBattler.userId + "} Wait for server to finish process....");
+            }
+
+            // Wait for server to finish process before granting this battler action
+            while (canExecuteAction == false) {
+               yield return 0;
+            }
+
+            // Log information that the delay between the server and client resulted in the server granting this action
+            if (captureExecuteActionLog) {
+               D.debug("{" + sourceBattler.userId + "} The server decided that this action should proceed and not be cancelled");
+            }
 
             // Make sure the battlers are still alive at this point
             if (sourceBattler.isDead() || targetBattler.hasDisplayedDeath()) {

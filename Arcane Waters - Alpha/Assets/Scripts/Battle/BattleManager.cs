@@ -949,6 +949,8 @@ public class BattleManager : MonoBehaviour {
                         , D.ADMIN_LOG_TYPE.AnimationFreeze); // Server Fourth Sequence
                   }
                }
+
+               source.canExecuteAction = true;
             } else if (action is BuffAction) {
                BuffAction buffAction = (BuffAction) action;
 
