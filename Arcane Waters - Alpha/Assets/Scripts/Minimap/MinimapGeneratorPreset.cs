@@ -17,8 +17,8 @@ namespace MinimapGeneration
       }
 
       [Header("Images settings")]
-      public string _minimapsPath = "/Sprites/Minimaps/";
-      public string imagePrefixName = "";
+      public string _minimapsPath = "Resources/Sprites/Minimaps/";
+      public string imagePrefixName = "Editor/";
       public string imageSuffixName = "";
       public Vector2Int _textureSize = new Vector2Int(1024, 1024);
 

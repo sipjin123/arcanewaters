@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using UnityEditor;
 using Random = UnityEngine.Random;
+using MapCreationTool.Serialization;
 
 public class Minimap : ClientMonoBehaviour {
    #region Public Variables
@@ -136,6 +137,51 @@ public class Minimap : ClientMonoBehaviour {
       InvokeRepeating("refreshShipIcons", 0.0f, 2.0f);
    }
 
+#if UNITY_EDITOR
+   [MenuItem("Util/Save all minimaps")]
+   public static void saveAllMinimaps () {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         _mapsUsedToSaveMinimaps = DB_Main.getMaps();
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+
+            _savingMinimapsWithScript = true;
+            _currentMinimapIndex = 0;
+            Minimap.self.continueMinimapSave();
+         });
+      });
+   }
+
+   public void continueMinimapSave () {
+      if (_currentMinimapIndex >= _mapsUsedToSaveMinimaps.Count) {
+         _savingMinimapsWithScript = false;
+         _currentMinimapIndex = 0;
+      } else {
+         string areaKey = _mapsUsedToSaveMinimaps[_currentMinimapIndex].name;
+
+         if (areaKey != "customfarm" && areaKey != "customhouse" && areaKey != "Treasure Sites") {
+            string rawMapInfo = DB_Main.getMapInfo(areaKey);
+            if (rawMapInfo != "") {
+               MapManager.self.createLiveMap(areaKey);
+               StartCoroutine(waitForMap());
+               return;
+            }
+         }
+
+         _currentMinimapIndex++;
+         continueMinimapSave();
+      }
+   }
+
+   private IEnumerator waitForMap () {
+      string areaKey = _mapsUsedToSaveMinimaps[_currentMinimapIndex].name;
+      yield return new WaitUntil(() => !MapManager.self.isAreaUnderCreation(areaKey));
+
+      Minimap.self.updateMinimapForNewArea(AreaManager.self.getArea(areaKey), AreaManager.self.getDefaultBiome(areaKey));
+      _currentMinimapIndex++;
+      continueMinimapSave();
+   }
+#endif
+
    void Update () {
       // Hide the minimap if there's no player
       _canvasGroup.alpha = (Global.player == null || Global.isInBattle()) ? 0f : 1f;
@@ -155,20 +201,29 @@ public class Minimap : ClientMonoBehaviour {
       return _rect.sizeDelta.x / 2f * SCALE;
    }
 
-   public void updateMinimapForNewArea () {
+   public void updateMinimapForNewArea (Area area = null, Biome.Type biomeType = Biome.Type.None) {
       if (Global.player == null) {
          return;
       }
-      Area area = AreaManager.self.getArea(Global.player.areaKey);
+
+      if (area == null) {
+         area = AreaManager.self.getArea(Global.player.areaKey);
+      }
+
       if (area == null) {
          return;
       }
 
-      Instance instance = Global.player.getInstance();
-      if (instance == null || !instance.isNetworkPrefabInstantiationFinished) {
-         return;
+      Instance instance = null;
+      if (biomeType == Biome.Type.None) {
+         instance = Global.player.getInstance();
+         if (instance == null || !instance.isNetworkPrefabInstantiationFinished) {
+            return;
+         }
+
+         biomeType = instance.biome;
       }
-      
+
       // Change the background image - load static images
       backgroundImage.sprite = ImageManager.getSprite("Minimaps/" + area.areaKey, true);
 
@@ -176,12 +231,12 @@ public class Minimap : ClientMonoBehaviour {
       if (backgroundImage.sprite == null || backgroundImage.sprite == ImageManager.self.blankSprite) {
          realAreaSize = Vector2Int.zero;
 
-         if (instance.biome != Biome.Type.None) {
-            TilemapToTextureColorsStatic(area, instance.biome, false);
+         if (biomeType != Biome.Type.None) {
+            TilemapToTextureColorsStatic(area, biomeType, _savingMinimapsWithScript);
          } else if (AreaManager.self.isFarmOfUser(Global.player.areaKey, Global.player.userId)) {
-            TilemapToTextureColorsStatic(area, Biome.Type.Forest, false);
+            TilemapToTextureColorsStatic(area, Biome.Type.Forest, _savingMinimapsWithScript);
          } else if (AreaManager.self.isHouseOfUser(Global.player.areaKey, Global.player.userId)) {
-            TilemapToTextureColorsStatic(area, Biome.Type.Forest, false);
+            TilemapToTextureColorsStatic(area, Biome.Type.Forest, _savingMinimapsWithScript);
          }
       } else {
          // Static minimap was found - setup data (minimap size for static images might be different than real area size)
@@ -712,7 +767,6 @@ public class Minimap : ClientMonoBehaviour {
             _tileLayer = preset._tileLayer;
             _tileIconLayers = preset._tileIconLayers;
             _textureSize = preset._textureSize;
-            _minimapsPath = preset._minimapsPath;
 
             // Iterate over preset first to allow layers reordering
             foreach (var layer in _tileLayer) {
@@ -1686,7 +1740,7 @@ public class Minimap : ClientMonoBehaviour {
    [SerializeField] Vector2Int _textureSize = new Vector2Int(512, 512);
 
    [SerializeField] string _mapsPath = "Assets/Prefabs/Maps/";
-   [SerializeField] string _minimapsPath = "/Sprites/Minimaps/";
+   [SerializeField] string _minimapsPath = "Resources/Sprites/Minimaps/Editor";
 
    // The icons used for different shop types
    private string _shopShipyardIconPath = "Minimap/sign_shipyard";
@@ -1696,6 +1750,15 @@ public class Minimap : ClientMonoBehaviour {
    // Name of special case icon layers
    private string _treasureSiteIconName = "TreasureSite";
    private string _warpIconName = "Warp";
+
+   // Is user currently generating minimaps with script
+   private static bool _savingMinimapsWithScript = false;
+
+   // Stored map list available in database, used to generate minimaps with script
+   private static List<Map> _mapsUsedToSaveMinimaps = new List<Map>();
+
+   // Index of current map in the list - used to generate minimaps with script
+   private static int _currentMinimapIndex = 0;
 
    #endregion
 }

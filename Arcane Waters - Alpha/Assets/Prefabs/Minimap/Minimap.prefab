@@ -226,6 +226,7 @@ MonoBehaviour:
   - {fileID: 2921302659564167798}
   backgroundImage: {fileID: 2921302660014535456}
   mapEditorConfig: {fileID: 11400000, guid: f2b9c11ccd2e6084e801d30e1db9e5d7, type: 2}
+  realAreaSize: {x: 0, y: 0}
   seaDesertPreset: {fileID: 11400000, guid: 4533fcf1f3bb07b478de6b97a267087f, type: 2}
   seaPinePreset: {fileID: 11400000, guid: 01e33107e1ff08848b5f4f9b508eeda6, type: 2}
   seaSnowPreset: {fileID: 11400000, guid: 935296573292b3e409497576c73c9f80, type: 2}
@@ -253,7 +254,7 @@ MonoBehaviour:
   _tileIconLayers: []
   _textureSize: {x: 512, y: 512}
   _mapsPath: Assets/Prefabs/Maps/
-  _minimapsPath: /Sprites/Minimaps/
+  _minimapsPath: /Resources/Sprites/Minimaps/Editor/
 --- !u!225 &2921302659690871159
 CanvasGroup:
   m_ObjectHideFlags: 0

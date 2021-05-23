@@ -70,15 +70,19 @@ namespace MapCustomization {
       }
 
       public void onPrevious () {
-         if (_selectedIndex == 0) return;
-         selectIndex(_selectedIndex - 1);
-         previousButton.interactable = _selectedIndex != 0;
-         nextButton.interactable = _selectedIndex != _prefabs.Length - 1;
+         if (_selectedIndex == 0) {
+            selectIndex(_prefabs.Length - 1);
+         } else {
+            selectIndex(_selectedIndex - 1);
+         }
       }
 
       public void onNext () {
-         if (_selectedIndex == _prefabs.Length - 1) return;
-         selectIndex(_selectedIndex + 1);
+         if (_selectedIndex == _prefabs.Length - 1) {
+            selectIndex(0);
+         } else {
+            selectIndex(_selectedIndex + 1);
+         }
       }
 
       #region Private Variables

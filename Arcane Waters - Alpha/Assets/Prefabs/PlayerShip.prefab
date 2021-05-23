@@ -1091,6 +1091,7 @@ MonoBehaviour:
   statusEffectContainer: {fileID: 7884613956860877850}
   entityNameGO: {fileID: 7471511516067433114}
   isUnderExternalControl: 0
+  lastNPCTalkTime: -30
   _ignoredAnimators:
   - {fileID: 3476353292930757795}
   _animators: []
@@ -2218,7 +2219,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: -2.8, y: 0}
-  m_SizeDelta: {x: 10, y: 10}
+  m_SizeDelta: {x: 13, y: 13}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &817235981347461597
 CanvasRenderer:
@@ -2247,7 +2248,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: de63aa2c60617524096be3342f6176f1, type: 3}
+  m_Texture: {fileID: 2800000, guid: 98890626ec9fe6244927b67729cc013e, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0

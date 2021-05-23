@@ -2296,6 +2296,51 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
+   public static new List<Map> getMaps () {
+      List<Map> result = new List<Map>();
+
+      string cmdText =
+            "SELECT id, name, displayName, createdAt, creatorUserId, publishedVersion, sourceMapId, notes, " +
+               "editorType, biome, specialType, accName, weatherEffectType " +
+            "FROM global.maps_v2 " +
+               "LEFT JOIN global.accounts ON maps_v2.creatorUserId = accId " +
+            "ORDER BY name;";
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  result.Add(new Map {
+                     id = dataReader.GetInt32("id"),
+                     name = dataReader.GetString("name"),
+                     displayName = dataReader.GetString("displayName"),
+                     createdAt = dataReader.GetDateTime("createdAt"),
+                     publishedVersion = dataReader.IsDBNull(dataReader.GetOrdinal("publishedVersion"))
+                        ? -1
+                        : dataReader.GetInt32("publishedVersion"),
+                     creatorID = dataReader.GetInt32("creatorUserId"),
+                     creatorName = dataReader.GetString("accName"),
+                     sourceMapId = dataReader.GetInt32("sourceMapId"),
+                     notes = dataReader.GetString("notes"),
+                     editorType = (EditorType) dataReader.GetInt32("editorType"),
+                     biome = (Biome.Type) dataReader.GetInt32("biome"),
+                     specialType = (Area.SpecialType) dataReader.GetInt32("specialType"),
+                     weatherEffectType = (WeatherEffectType) dataReader.GetInt32("weatherEffectType")
+                  });
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return result;
+   }
+
    public static new string getMapInfo (string areaKey) {
       MapInfo mapInfo = null;
 

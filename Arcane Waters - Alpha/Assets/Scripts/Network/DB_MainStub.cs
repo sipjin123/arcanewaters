@@ -424,6 +424,10 @@ public class DB_MainStub : MonoBehaviour
       return new List<Map>();
    }
 
+   public static List<Map> getMaps () {
+      return new List<Map>();
+   }
+
    public static string getMapInfo (string areaKey) {
       return null;
    }
