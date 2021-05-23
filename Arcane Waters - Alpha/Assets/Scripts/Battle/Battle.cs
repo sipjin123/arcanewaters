@@ -371,29 +371,7 @@ public class Battle : NetworkBehaviour {
 
             // Set our timeToWait to the largest value we've found so far
             timeToWait = Util.maxDouble(timeToWait, diff);
-
-            if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
-               string timeLogs = "";
-               if (isTargetBattlerAnimating) {
-                  timeLogs = " :: TARGET:" + "{(" + (targetBattler.animatingUntil - NetworkTime.time).ToString("f2") + ")" + 
-                     " = " + targetBattler.animatingUntil.ToString("f1") + " - " + NetworkTime.time.ToString("f1") + "}";
-               }
-               if (isSourceBattlerAnimating) {
-                  timeLogs = " ::SOURCE:" + "{(" + (sourceBattler.animatingUntil - NetworkTime.time).ToString("f2") + ")" +
-                     " = " + sourceBattler.animatingUntil.ToString("f1") + " - " + NetworkTime.time.ToString("f1") + "}";
-               }
-
-               D.adminLog("(1) {" + sourceBattler.userId + "} {" + BattleManager.self.actionIdIndex + "} " +
-                  "Time to wait is" + " {" + timeToWait.ToString("f1") + "} at Time:{" + (NetworkTime.time + timeToWait).ToString("f2") + "} " +
-                  "Diff is" + " {" + diff.ToString("f1") + "} " + timeLogs
-                  , D.ADMIN_LOG_TYPE.AnimationFreeze); // First Server Sequence
-            }
-         } else {
-            if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
-               D.adminLog("(1) {" + sourceBattler.userId + "} {" + BattleManager.self.actionIdIndex + "} Time to wait is {0}"
-                  , D.ADMIN_LOG_TYPE.AnimationFreeze); // First Server Sequence
-            } 
-         }
+         } 
       }
 
       return timeToWait;

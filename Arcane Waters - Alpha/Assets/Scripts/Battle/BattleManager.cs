@@ -667,16 +667,6 @@ public class BattleManager : MonoBehaviour {
             
             // Make note of the time that this battle action is going to be fully completed, considering animation times
             double timeAttackEnds = NetworkTime.time + timeToWait + attackAbilityData.getTotalAnimLength(source, target);
-
-            if (source.enemyType == Enemy.Type.PlayerBattler) {
-               D.adminLog("(2) {" + source.userId + "} {" + actionIdIndex + "} TimeAttackEnds Total Seconds: " + (timeAttackEnds - NetworkTime.time).ToString("f1") +
-                  " :: AtkEnds in : {[" + timeAttackEnds.ToString("f1")
-                  + "] = " + NetworkTime.time.ToString("f1") + " + "
-                  + timeToWait.ToString("f1") + " + "
-                  + attackAbilityData.getTotalAnimLength(source, target).ToString("f1") + "}"
-                  , D.ADMIN_LOG_TYPE.AnimationFreeze); // Second Server Sequence
-            }
-
             float cooldownDuration = abilityData.abilityCooldown * source.getCooldownModifier() * AdminBattleManager.self.attackCooldownMultiplier;
             source.cooldownEndTime = timeAttackEnds + cooldownDuration;
 
@@ -875,11 +865,6 @@ public class BattleManager : MonoBehaviour {
 
          // If the source or target is already dead, then send a Cancel Action
          if (source.isDead() || target.isDead()) {
-            if (source.enemyType == Enemy.Type.PlayerBattler && target.isDead()) {
-               D.adminLog("(4) {" + source.userId + "} {" + action.actionId + "} will cancel action, target is already dead! " +
-                  "Enemy: {" + target.enemyType + "}!", D.ADMIN_LOG_TYPE.AnimationFreeze); // Fourth Server Sequence
-            }
-
             // Don't create Cancel Actions for multi-target abilities
             if (hasMultipleTargets) {
                yield break;
@@ -930,26 +915,9 @@ public class BattleManager : MonoBehaviour {
 
                yield return new WaitForSeconds(attackApplyDelay);
 
-               if (source.enemyType == Enemy.Type.PlayerBattler) {
-                  D.adminLog("(3) {" + source.userId + "} {" + action.actionId + "} ApplyAction after delay! " +
-                     "Delay: {" + timeToWait.ToString("f1") + "}", D.ADMIN_LOG_TYPE.AnimationFreeze); // Third Server Sequence
-               }
-
                // Apply damage
                target.health -= attackAction.damage;
                target.health = Util.clamp<int>(target.health, 0, target.getStartingHealth());
-
-               if (source.enemyType == Enemy.Type.PlayerBattler) {
-                  if (target.health <= 0) {
-                     D.adminLog("(4) {" + source.userId + "} {" + action.actionId + "} will kill " +
-                        "Enemy: {" + target.enemyType + "} on this attack!", D.ADMIN_LOG_TYPE.AnimationFreeze); // Fourth Server Sequence
-                  } else {
-                     D.adminLog("(4) {" + source.userId + "} {" + action.actionId + "} did not kill " +
-                        "Enemy: {" + target.enemyType + "} on this attack! Remaining is: {" + target.health + "}"
-                        , D.ADMIN_LOG_TYPE.AnimationFreeze); // Server Fourth Sequence
-                  }
-               }
-
                source.canExecuteAction = true;
             } else if (action is BuffAction) {
                BuffAction buffAction = (BuffAction) action;

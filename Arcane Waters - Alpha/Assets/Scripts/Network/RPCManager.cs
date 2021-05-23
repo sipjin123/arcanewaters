@@ -5679,11 +5679,14 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ResetMoveDisable (NetworkConnection connection) {
+      D.debug("Player movement has now been restored");
       if (Global.player is PlayerBodyEntity) {
-         PlayerBodyEntity playerBody = (PlayerBodyEntity) Global.player; 
+         PlayerBodyEntity playerBody = (PlayerBodyEntity) Global.player;
          playerBody.isWithinEnemyRadius = false;
          playerBody.playerBattleCollider.combatInitCollider.enabled = true;
-      } 
+      } else {
+         D.debug("Failed to restore player movement!");
+      }
    }
 
    [TargetRpc]
@@ -5851,8 +5854,7 @@ public class RPCManager : NetworkBehaviour
 
       // Ignore invalid or dead sources and targets
       if (sourceBattler == null || targetBattler == null || sourceBattler.isDead() || targetBattler.isDead()) {
-         D.adminLog(" (0) {" + sourceBattler.userId + "} Attack request denied! Enemy is Dead!}"
-            , D.ADMIN_LOG_TYPE.AnimationFreeze); // Pre Server Sequence
+         D.debug("{" + sourceBattler.userId + "} Attack request denied! Enemy is Dead!}");
          Target_ReceiveRefreshCasting(connectionToClient, false);
          return;
       }

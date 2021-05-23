@@ -1241,12 +1241,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Don't start animating until both sprites are available
             yield return new WaitForSecondsDouble(timeToWait);
 
-            if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
-               D.adminLog(" (4a) {" + action.actionId + "} {" + sourceBattler.userId + "} " + (sourceBattler.isLocalBattler() ? "LOCAL" : "Other") + " battler is attacking"
-                  + " TimeToWait was: {" + timeToWait.ToString("f1") + "}"
-                  , D.ADMIN_LOG_TYPE.AnimationFreeze); // Fourth-A Client Sequence
-            }
-
             attackDuration = (float) (cooldownEndTime - NetworkTime.time);
             triggerAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, attackDuration);
 
@@ -1271,9 +1265,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             if (sourceBattler.isDead() || targetBattler.hasDisplayedDeath()) {
                D.debug("The source/target battler {" + sourceBattler.userId + "} is dead! Cancel attack display!");
 
-               D.adminLog(" (4b) {" + action.actionId + "} {" + sourceBattler.userId + "} Warning! The target is dead! Cancel Attack Action from Battler Script!"
-                  , D.ADMIN_LOG_TYPE.AnimationFreeze); // Fourth - B Client Sequence
-
                if (targetBattler.hasDisplayedDeath()) {
                   D.debug("Warning here! The battler {" + sourceBattler.userId + "} is about to attack and enemy that is " +
                      (targetBattler.displayedHealth < 1 ? "Display Health Zero" : "{Skip}") + " or " +
@@ -1282,17 +1273,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield break;
             }
 
-            if (enemyType == Enemy.Type.PlayerBattler) {
-               D.adminLog("Battle has initialized {" + userId + "}" + " : {" + enemyType + "}", D.ADMIN_LOG_TYPE.CancelAttack);
-            }
-
             // Plays the melee cast VFX ability before jumping
             if (!abilityDataReference.useSpecialAnimation) {
                EffectManager.playCastAbilityVFX(sourceBattler, action, sourceBattler.transform.position, BattleActionType.Attack);
-            }
-
-            if (enemyType == Enemy.Type.PlayerBattler) {
-               D.adminLog("Battle Jump Start {" + userId + "}" + " : {" + enemyType + "}", D.ADMIN_LOG_TYPE.CancelAttack);
             }
 
             if (isMovable()) {
@@ -1322,22 +1305,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                sourceBattler.transform.position = new Vector3(targetPosition.x, targetPosition.y, sourceBattler.transform.position.z);
             }
 
-            if (enemyType == Enemy.Type.PlayerBattler) {
-               D.adminLog("Battle Jump Finish {" + userId + "}" + " : {" + enemyType + "}", D.ADMIN_LOG_TYPE.CancelAttack);
-            }
-
             // Pause for a moment after reaching our destination
             yield return new WaitForSeconds(PAUSE_LENGTH);
-
-            if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
-               if (targetBattler.displayedHealth < 1 || targetBattler._anims[0].currentAnimation == Anim.Type.Death_East) {
-                  D.adminLog(" (4c) {" + action.actionId + "} {" + sourceBattler.userId + "} Error here! "+ (sourceBattler.isLocalBattler() ? "Local" : "Other") + "Player should not be able to attack target with no health!! " +
-                     "{" + targetBattler.enemyType + "} " +
-                     "{" + targetBattler.displayedHealth + "} " +
-                     "{" + targetBattler.health + "} " +
-                     "{" + targetBattler._anims[0].currentAnimation + "}", D.ADMIN_LOG_TYPE.AnimationFreeze); // Fourth-C Client Sequence
-               }
-            }
 
             const float SPECIAL_ATTACK_READY_TIME = .2f;
             if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
@@ -1363,10 +1332,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                }
             }
 
-            if (enemyType == Enemy.Type.PlayerBattler) {
-               D.adminLog("Battle Ready Attack Anim Finish {" + userId + "}" + " : {" + enemyType + "}", D.ADMIN_LOG_TYPE.CancelAttack);
-            }
-
             if (abilityDataReference.useSpecialAnimation) {
                // Special animation delay interval when casting special animation vfx 
                yield return new WaitForSeconds(sourceBattler.getPreContactLength() - SPECIAL_ATTACK_READY_TIME);
@@ -1386,10 +1351,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                if (!abilityDataReference.useSpecialAnimation) {
                   sourceBattler.playAnim(Anim.Type.Finish_Attack);
                }
-            }
-
-            if (enemyType == Enemy.Type.PlayerBattler) {
-               D.adminLog("Battle Finsih Attack Anim Finish {" + userId + "}" + " : {" + enemyType + "}", D.ADMIN_LOG_TYPE.CancelAttack);
             }
 
             // Return animation speed to default
@@ -1436,27 +1397,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             targetBattler.displayedHealth -= action.damage;
             targetBattler.displayedHealth = Util.clamp<int>(targetBattler.displayedHealth, 0, targetBattler.getStartingHealth());
-            if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
-               double actionDurationFinal = NetworkTime.time - actionDuration;
-               if (targetBattler.displayedHealth < 1) {
-                  D.adminLog(" (4d) {" + action.actionId + "} {" + sourceBattler.userId + "} " + (sourceBattler.isLocalBattler() ? "Local" : "Other") + "Player " +
-                     "Should already kill this target {" + targetBattler.enemyType + "} Duration: {" + actionDurationFinal.ToString("f2") + "}"
-                     , D.ADMIN_LOG_TYPE.AnimationFreeze); // Fourth-D Client Sequence
-               } else {
-                  D.adminLog(" (4d) {" + action.actionId + "} {" + sourceBattler.userId + "} " + (sourceBattler.isLocalBattler() ? "Local" : "Other") + "Player " +
-                     "was unable to kill this target {" + targetBattler.enemyType + "} Duration: {" + actionDurationFinal.ToString("f2") + "} " +
-                     "Hp: {" + targetBattler.displayedHealth + ":" + targetBattler.displayedHealth + "}"
-                     , D.ADMIN_LOG_TYPE.AnimationFreeze); // Fourth-D Client Sequence
-               }
-            }
-
+      
             #endregion
 
             yield return new WaitForSeconds(POST_CONTACT_LENGTH);
-
-            if (enemyType == Enemy.Type.PlayerBattler) {
-               D.adminLog("Battle Jump back start {" + userId + "}" + " : {" + enemyType + "}", D.ADMIN_LOG_TYPE.CancelAttack);
-            }
 
             if (isMovable()) {
                // Now jump back to where we started from
@@ -1475,10 +1419,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
                // Wait for a moment after we reach our jump destination
                yield return new WaitForSeconds(PAUSE_LENGTH);
-            }
-
-            if (enemyType == Enemy.Type.PlayerBattler) {
-               D.adminLog("Battle Jump back Finish {" + userId + "}" + " : {" + enemyType + "}", D.ADMIN_LOG_TYPE.CancelAttack);
             }
 
             // Wait for special animation to finish
@@ -1505,31 +1445,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Mark the source sprite as no longer jumping
             sourceBattler.isJumping = false;
 
-            if (enemyType == Enemy.Type.PlayerBattler) {
-               D.adminLog("Battle Display End {" + userId + "}" + " : {" + enemyType + "}", D.ADMIN_LOG_TYPE.CancelAttack);
-            }
-
             // Add any AP we earned
             sourceBattler.displayedAP = Util.clamp<int>(sourceBattler.displayedAP + action.sourceApChange, 0, MAX_AP);
             targetBattler.displayedAP = Util.clamp<int>(targetBattler.displayedAP + action.targetApChange, 0, MAX_AP);
 
-            if (sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
-               double actionDurationFinal = NetworkTime.time - actionDuration;
-               D.adminLog(" (5) {" + action.actionId + "} {" + sourceBattler.userId + "}" +
-                  " " + (sourceBattler.isLocalBattler() ? "Local" : "Other") + "Player attack has ended, Duration was {(" + actionDurationFinal.ToString("f2") + ") : " +
-                  "W/oWait: (" + (actionDurationFinal - timeToWait).ToString("f1") + ")} " +
-                  "TimeToWait: (" + timeToWait.ToString("f1") + ")} " +
-                  "target health is {" + targetBattler.displayedHealth + "}", D.ADMIN_LOG_TYPE.AnimationFreeze); // Fifth Client Sequence
-            }
-
             // If the target died, animate that death now
             if (targetBattler.hasDisplayedDeath()) {
                if (targetBattler.getAnim()[0].currentAnimation != Anim.Type.Death_East) {
-                  if (sourceBattler.enemyType == Enemy.Type.PlayerBattler && isLocalBattler()) {
-                     D.adminLog(" (6) {" + action.actionId + "} {" + sourceBattler.userId + "} "
-                        + (sourceBattler.isLocalBattler() ? "Local" : "Other") + "Player has KILLED target {" + targetBattler.enemyType + "}"
-                        , D.ADMIN_LOG_TYPE.AnimationFreeze); // Sixth Client Sequence
-                  }
                   BattleSelectionManager.self.deselectTarget();
                   targetBattler.StartCoroutine(targetBattler.animateDeath());
                } else {
@@ -1894,10 +1816,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    private IEnumerator CO_ResetBattlerSpot () {
-      if (enemyType == Enemy.Type.PlayerBattler) { 
-         D.adminLog("Resetting the battle position after cancel attack! {" + userId + "}" + " : {" + enemyType + "}", D.ADMIN_LOG_TYPE.CancelAttack);
-      }
-
       playAnim(Anim.Type.Jump_East);
       Vector2 targetPosition = battleSpot.transform.position;
       while (Vector2.Distance(targetPosition, transform.position) > .1f) {

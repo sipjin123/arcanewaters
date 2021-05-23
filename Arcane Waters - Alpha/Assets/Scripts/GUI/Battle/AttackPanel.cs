@@ -73,8 +73,7 @@ public class AttackPanel : MonoBehaviour {
       if (BattleManager.self.getPlayerBattler().canCastAbility()) {
          BattleManager.self.getPlayerBattler().setBattlerCanCastAbility(false);
 
-         D.adminLog(" (x) {" + Global.player.userId + "} LocalPlayer requested attack using ability slot {" + abilityIndex + "}"
-            , D.ADMIN_LOG_TYPE.AnimationFreeze); // First Client Sequence
+         // Send an rpc request to the server
          Global.player.rpc.Cmd_RequestAbility((int) AbilityType.Standard, target.netId, abilityIndex, false);
 
          // Show targeting effects locally
