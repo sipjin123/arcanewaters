@@ -17,6 +17,12 @@ public class BattleAction {
    // The userId of the action's target
    public int targetId;
 
+   // The starting health of the target before this action is executed
+   public int targetStartingHealth;
+
+   // If the action is a queued action
+   public bool isQueuedAction;
+
    // The server timestamp for when this action was marked as ending
    public double actionEndTime;
 

@@ -208,6 +208,9 @@ public class AbilityManager : MonoBehaviour
 
                AttackAction attackAction = action as AttackAction;
                actionToExecute = attackAction;
+               if (actionToExecute.targetStartingHealth > 0 && actionToExecute.isQueuedAction) {
+                  targetBattler.displayedHealth = actionToExecute.targetStartingHealth;
+               }
 
                // Check how long we need to wait before displaying this action
                timeToWait = BattleManager.TICK_INTERVAL + actionToExecute.actionEndTime - NetworkTime.time - animationLength;
@@ -230,6 +233,9 @@ public class AbilityManager : MonoBehaviour
             case BattleActionType.BuffDebuff: 
                BuffAction buffAction = action as BuffAction;
                actionToExecute = buffAction;
+               if (actionToExecute.targetStartingHealth > 0 && actionToExecute.isQueuedAction) {
+                  targetBattler.displayedHealth = actionToExecute.targetStartingHealth;
+               }
 
                // Check how long we need to wait before displaying this action
                timeToWait = BattleManager.TICK_INTERVAL + actionToExecute.actionEndTime - NetworkTime.time;

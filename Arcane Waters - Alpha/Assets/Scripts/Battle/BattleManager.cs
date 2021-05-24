@@ -708,6 +708,7 @@ public class BattleManager : MonoBehaviour {
                 (int) damage, timeAttackEnds, abilityInventoryIndex, wasCritical, wasBlocked, cooldownDuration, sourceApChange,
                 targetApChange, abilityData.itemID, damageEffectMagnitude);
             action.actionId = actionIdIndex;
+            action.targetStartingHealth = target.health;
             actions.Add(action);
 
             actionIdIndex++;
@@ -768,6 +769,7 @@ public class BattleManager : MonoBehaviour {
 
             // Create the Action object
             BuffAction action = new BuffAction(battle.battleId, 0, source.userId, target.userId, timeBuffEnds, timeBuffEnds + 10, cooldownDuration, timeBuffEnds, sourceApChange, targetApChange, abilityData.itemID, buffAbility.value, buffAbility.elementType, buffAbility.bonusStatType, buffAbility.buffActionType);
+            action.targetStartingHealth = target.health;
             actions.Add(action);
 
             // Make note how long the two Battler objects need in order to execute the cast effect animations
@@ -792,7 +794,7 @@ public class BattleManager : MonoBehaviour {
          actionSerialized = stringList.ToArray(),
          battleActionType = actionType,
          isCancelAction = false,
-         actionEndTime = actionEndTime
+         actionEndTime = actionEndTime,
       };
 
       battle.queuedRpcActionList.Add(queuedRpc);

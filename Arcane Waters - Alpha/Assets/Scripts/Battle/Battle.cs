@@ -420,7 +420,7 @@ public class Battle : NetworkBehaviour {
       processCombatAction(actionStrings, battleActionType, cancelAbility);
    }
 
-   public void processCombatAction (string[] actionStrings, BattleActionType battleActionType, bool cancelAbility) {
+   public void processCombatAction (string[] actionStrings, BattleActionType battleActionType, bool cancelAbility, bool isQueuedAction = false) {
       List<BattleAction> actionList = new List<BattleAction>();
       BattleAction actionToSend = null;
       
@@ -445,6 +445,7 @@ public class Battle : NetworkBehaviour {
                   } else {
                      actionToSend = AttackAction.deseralize(actionString);
                   }
+                  actionToSend.isQueuedAction = isQueuedAction;
                   actionList.Add(actionToSend);
                   break;
                case BattleActionType.BuffDebuff:
@@ -454,6 +455,7 @@ public class Battle : NetworkBehaviour {
                   } else {
                      actionToSend = BuffAction.deseralize(actionString);
                   }
+                  actionToSend.isQueuedAction = isQueuedAction;
                   actionList.Add(actionToSend);
                   break;
             }

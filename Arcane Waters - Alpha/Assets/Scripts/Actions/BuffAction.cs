@@ -101,6 +101,7 @@ public class BuffAction : BattleAction {
       serialized += this.buffValue + ",";
       serialized += (int) this.buffElement + ",";
       serialized += (int) this.bonusStatType + ",";
+      serialized += (int) this.targetStartingHealth + ",";
 
       return serialized;
    }
@@ -124,6 +125,7 @@ public class BuffAction : BattleAction {
       action.buffValue = Convert.ToInt32(stringArray[13]);
       action.buffElement = (Element) Convert.ToInt32(stringArray[14]);
       action.bonusStatType = (BonusStatType) Convert.ToInt32(stringArray[15]);
+      action.targetStartingHealth = Convert.ToInt32(stringArray[16]);
 
       return action;
    }

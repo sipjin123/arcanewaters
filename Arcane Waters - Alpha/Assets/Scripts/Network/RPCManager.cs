@@ -5304,7 +5304,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       Battle battle = BattleManager.self.getBattle(battleId);
-      battle.processCombatAction(actionStrings, battleActionType, cancelAbility);
+      battle.processCombatAction(actionStrings, battleActionType, cancelAbility, true);
    }
 
    private void processPvp (BattlerInfo[] defenders, BattlerInfo[] attackers) {
