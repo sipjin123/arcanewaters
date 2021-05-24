@@ -85,6 +85,7 @@ public class AbilityManager : MonoBehaviour
                   case AbilityType.Standard:
                      try {
                         AttackAbilityData attackAbilityData = Util.xmlLoad<AttackAbilityData>(newTextAsset);
+                        attackAbilityData.itemID = abilityXML.abilityId;
                         addNewAbility(attackAbilityData);
                      } catch {
                         D.editorLog("Error converting attack ability: " + abilityXML.abilityId, Color.red);
@@ -93,6 +94,7 @@ public class AbilityManager : MonoBehaviour
                   case AbilityType.Stance:
                      try {
                         AttackAbilityData stancebilityData = Util.xmlLoad<AttackAbilityData>(newTextAsset);
+                        stancebilityData.itemID = abilityXML.abilityId;
                         addNewAbility(stancebilityData);
                      } catch {
                         D.editorLog("Error converting stance ability: " + abilityXML.abilityId, Color.red);
@@ -101,6 +103,7 @@ public class AbilityManager : MonoBehaviour
                   case AbilityType.BuffDebuff:
                      try {
                         BuffAbilityData buffAbilityData = Util.xmlLoad<BuffAbilityData>(newTextAsset);
+                        buffAbilityData.itemID = abilityXML.abilityId;
                         addNewAbility(buffAbilityData);
                      } catch {
                         D.editorLog("Error converting buff ability: " + abilityXML.abilityId, Color.red);
@@ -109,6 +112,7 @@ public class AbilityManager : MonoBehaviour
                   default:
                      try {
                         BasicAbilityData abilityData = Util.xmlLoad<BasicAbilityData>(newTextAsset);
+                        abilityData.itemID = abilityXML.abilityId;
                         addNewAbility(abilityData);
                      } catch {
                         D.editorLog("Error converting basic ability: " + abilityXML.abilityId, Color.red);
