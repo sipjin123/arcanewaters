@@ -792,6 +792,14 @@ public class SeaEntity : NetEntity
          }
       }
 
+      if (attackType == Attack.Type.Tentacle) {
+         SeaEntity sourceEntity = SeaManager.self.getEntity(netId);
+         VenomResidue venomResidue = Instantiate(PrefabsManager.self.venomResiduePrefab, circleCenter, Quaternion.identity);
+         venomResidue.creatorNetId = netId;
+         venomResidue.instanceId = instanceId;
+         sourceEntity.Rpc_SpawnVenomResidue(netId, instanceId, circleCenter);
+      }
+
       // If we didn't hit an enemy, show an effect based on whether we hit land or water
       if (!hitEnemy) {
          Rpc_ShowTerrainHit(circleCenter, impactMagnitude);
