@@ -28,7 +28,7 @@ public class BaseCamera : MonoBehaviour {
 
    // Scale factor of camera zoom
    public const float TITLE_CAM_SCALE_FACTOR = 3f;
-   public const float BATTLE_CAM_SCALE_FACTOR = 2.5f;
+   public const float BATTLE_CAM_SCALE_FACTOR = 2f;
    public const float BASE_CAM_SCALE_FACTOR = 2f;
 
    #endregion
@@ -101,7 +101,7 @@ public class BaseCamera : MonoBehaviour {
 
       float typeFactor = BASE_CAM_SCALE_FACTOR;
       if (isBattleScreen) {
-         typeFactor = BATTLE_CAM_SCALE_FACTOR;
+         typeFactor = Screen.height <= ScreenSettingsManager.MIN_HEIGHT ? BATTLE_CAM_SCALE_FACTOR : TITLE_CAM_SCALE_FACTOR;
       } else if (isTitleScene) {
          typeFactor = TITLE_CAM_SCALE_FACTOR;
       }
