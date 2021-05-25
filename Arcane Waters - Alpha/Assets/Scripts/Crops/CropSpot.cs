@@ -48,6 +48,11 @@ public class CropSpot : MonoBehaviour {
       // If a player tried to plant on this spot holding a seed bag, maybe plant something
       if (this.crop == null && (Global.player as PlayerBodyEntity).weaponManager.actionType == Weapon.ActionType.PlantCrop) {
          Global.player.Cmd_PlantCrop((Crop.Type)(Global.player as PlayerBodyEntity).weaponManager.actionTypeValue, this.cropNumber, Global.player.areaKey);
+         EffectManager.self.create(Effect.Type.Crop_Harvest, transform.position);
+         EffectManager.self.create(Effect.Type.Crop_Dirt_Large, transform.position);
+
+         // Play a sound
+         SoundManager.create3dSound("crop_plant_", transform.position, 5);
       }
 
       // If the player tried to water this spot holding the watering pot, maybe water something
@@ -79,6 +84,15 @@ public class CropSpot : MonoBehaviour {
          if (player.weaponManager.actionType == Weapon.ActionType.PlantCrop && !crop) {
             player.playFastInteractAnimation(transform.position, true);
             player.Cmd_PlantCrop((Crop.Type) player.weaponManager.actionTypeValue, cropNumber, player.areaKey);
+
+            // Show effects on the crop spot
+            ExplosionManager.createFarmingParticle(Weapon.ActionType.PlantCrop, transform.position, 1.5f, particleCount: 4);
+            EffectManager.self.create(Effect.Type.Crop_Harvest, transform.position);
+            EffectManager.self.create(Effect.Type.Crop_Dirt_Large, transform.position);
+
+            // Play a sound
+            SoundManager.create3dSound("crop_plant_", transform.position, 5);
+
             triggeredAction = true;
          }
 
@@ -86,6 +100,7 @@ public class CropSpot : MonoBehaviour {
          if (player.weaponManager.actionType == Weapon.ActionType.WaterCrop && crop && !crop.isMaxLevel() && crop.isReadyForWater()) {
             player.playFastInteractAnimation(transform.position, true);
             player.Cmd_WaterCrop(this.cropNumber);
+            ExplosionManager.createFarmingParticle(Weapon.ActionType.WaterCrop, transform.position, 1.5f, 2, false, 30, 60);
             triggeredAction = true;
          }
 
@@ -121,8 +136,6 @@ public class CropSpot : MonoBehaviour {
       Vector2 dir = (transform.position - player.transform.position).normalized;
       cropProjectile.setSprite(crop.cropType);
       cropProjectile.init(transform.position, dir, this);
-
-      Global.player.rpc.Cmd_RegisterAchievement(ActionType.HarvestCrop, 1);
 
       SoundEffectManager.self.playSoundEffect(SoundEffectManager.HARVESTING_FLYING, transform);
       SoundEffectManager.self.playSoundEffect(SoundEffectManager.HARVESTING_PITCHFORK_HIT, transform);

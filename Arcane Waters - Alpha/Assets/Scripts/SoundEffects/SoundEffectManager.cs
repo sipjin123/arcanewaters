@@ -6,6 +6,7 @@ using Mirror;
 using System.Xml.Serialization;
 using System.Text;
 using System.Xml;
+using FMODUnity;
 
 public class SoundEffectManager : MonoBehaviour
 {
@@ -21,7 +22,7 @@ public class SoundEffectManager : MonoBehaviour
    public AudioSource source3D;
 
    // The database id of the jump start
-   public const int JUMP_START_ID = 5;
+   public const int JUMP_START_ID = 3;
 
    // The database id of the jump end
    public const int JUMP_END_ID = 6;
@@ -59,6 +60,13 @@ public class SoundEffectManager : MonoBehaviour
    public const int OPEN_SEA_BAG = 71;
    public const int OPEN_LAND_BAG = 72;
    public const int OPEN_CHEST = 73;
+
+   public const int SHIP_CANNON = 85;
+   public const int FISH_JUMP = 86;
+   public const int ROCK_MINE = 91;
+
+   // Reference to the main camera
+   public Camera mainCamReference;
 
    #endregion
 
@@ -135,6 +143,24 @@ public class SoundEffectManager : MonoBehaviour
       }
    }
 
+   public void playFmodSoundEffect(int id, Transform target, bool force3d = false) {
+      SoundEffect effect;
+
+      if (_soundEffects.TryGetValue(id, out effect)) {
+         if (effect.is3D || force3d) {
+            playFmodSoundEffect3D(effect, target);
+         } else {
+            if (effect.fmodId.Length > 0) {
+               RuntimeManager.PlayOneShot(effect.fmodId, mainCamReference.transform.position);
+            } else {
+               D.debug("This id {" + effect.id + "} does not have an FmodID assigned to it, please refer to the sound effect web tool");
+            }
+         }
+      } else {
+         D.debug("Could not find SoundEffect with 'id' : '" + id + "'");
+      }
+   }
+
    private void playSoundEffect3D (SoundEffect effect, Transform target) {
       // Setup audio player
       AudioSource audioSource = Instantiate(PrefabsManager.self.sound3dPrefab, target.position, Quaternion.identity);
@@ -145,6 +171,24 @@ public class SoundEffectManager : MonoBehaviour
 
       // Destroy object after clip finishes playing
       Destroy(audioSource.gameObject, audioSource.clip.length);
+   }
+
+   private void playFmodSoundEffect3D(SoundEffect effect, Transform target) {
+      StudioEventEmitter eventEmitter = Instantiate(PrefabsManager.self.fMod3dPrefab, target.position, Quaternion.identity);
+      eventEmitter.Event = effect.fmodId;
+      eventEmitter.transform.SetParent(target, true);
+      eventEmitter.EventInstance.setVolume(effect.minVolume);
+      eventEmitter.Play();
+      StartCoroutine(CO_DestroyAfterEnd(eventEmitter));
+   }
+
+   private IEnumerator CO_DestroyAfterEnd (StudioEventEmitter emitter) {
+      while (emitter.IsPlaying()) {
+         yield return 0;
+      }
+      if (emitter.gameObject != null) {
+         Destroy(emitter.gameObject);
+      }
    }
 
    private void findAndAssignAudioClip (SoundEffect effect) {

@@ -71,9 +71,15 @@ public class SpeechManager : MonoBehaviour {
       // Create a new instance from the prefab
       SpeechBubble speechBubble = Instantiate(speechBubblePrefab);
 
+      Transform speechBubbleParent = player.transform;
+      PlayerBodyEntity playerBody = player.getPlayerBodyEntity();
+      if (playerBody) {
+         speechBubbleParent = playerBody.followJumpHeight;
+      }
+
       // Set the name, parent, position, etc.
       speechBubble.name = "Canvas - Speech Bubble";
-      speechBubble.transform.SetParent(player.transform);
+      speechBubble.transform.SetParent(speechBubbleParent);
       speechBubble.transform.localPosition = new Vector3(.85f, .25f, -5f);
       speechBubble.canvasGroup.alpha = 1f;
 

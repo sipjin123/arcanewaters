@@ -117,6 +117,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    [Range(0.0f, 1.0f)]
    public float localPlayerOutlineWidth = 0.35f;
 
+   // A transform that will follow the player as they jump, as will child objects of it
+   public Transform followJumpHeight;
+
    #endregion
 
    protected override void Awake () {
@@ -294,6 +297,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       setSpritesHeight(y);
       Util.setLocalY(windEffectsParent, y);
       Util.setLocalY(nameAndHealthUI, y);
+      Util.setLocalY(followJumpHeight, y);
    }
 
    private void updateSprintParticles () {

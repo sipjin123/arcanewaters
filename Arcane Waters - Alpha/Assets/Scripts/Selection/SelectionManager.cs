@@ -46,8 +46,8 @@ public class SelectionManager : MonoBehaviour {
       if (entity.isEnemyOf(Global.player)) {
          selectedEntity = entity;
 
-         if (entity.guildId == BotShipEntity.PIRATES_GUILD_ID) {
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.SelectPirateShip);
+         if (entity.guildId == BotShipEntity.PIRATES_GUILD_ID || entity.isSeaMonster()) {
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.SelectSeaEnemy);
          }
       }
    }

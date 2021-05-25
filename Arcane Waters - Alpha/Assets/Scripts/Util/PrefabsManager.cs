@@ -101,6 +101,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating 3d sounds
    public AudioSource sound3dPrefab;
 
+   // The prefab we use for creating 3d sounds FMOD version
+   public FMODUnity.StudioEventEmitter fMod3dPrefab;
+
    // The prefab we use for creating name text that follows the players around
    public TargetFollow nameTextPrefab;
 

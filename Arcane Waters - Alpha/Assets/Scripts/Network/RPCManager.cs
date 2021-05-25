@@ -742,10 +742,12 @@ public class RPCManager : NetworkBehaviour
             SoundEffectManager.self.playSoundEffect(SoundEffectManager.OPEN_SEA_BAG, Global.player.transform);
             break;
          case ChestSpawnType.Land:
-            SoundEffectManager.self.playSoundEffect(SoundEffectManager.OPEN_LAND_BAG, Global.player.transform);
+            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.OPEN_LAND_BAG, Global.player.transform);
+            //SoundEffectManager.self.playSoundEffect(SoundEffectManager.OPEN_LAND_BAG, Global.player.transform);
             break;
          case ChestSpawnType.Site:
-            SoundEffectManager.self.playSoundEffect(SoundEffectManager.OPEN_CHEST, Global.player.transform);
+            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.OPEN_CHEST, Global.player.transform);
+            //SoundEffectManager.self.playSoundEffect(SoundEffectManager.OPEN_CHEST, Global.player.transform);
             break;
       }
 
@@ -4520,7 +4522,8 @@ public class RPCManager : NetworkBehaviour
       oreNode.interactCount++;
       oreNode.updateSprite(oreNode.interactCount);
       ExplosionManager.createMiningParticle(oreNode.transform.position);
-      SoundEffectManager.self.playSoundEffect(SoundEffectManager.ORE_MINE, transform);
+      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.ROCK_MINE, transform);
+      //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ORE_MINE, transform);
 
       if (oreNode.interactCount > OreNode.MAX_INTERACT_COUNT) {
          D.adminLog("Exceeded max interact count!", D.ADMIN_LOG_TYPE.Mine);
@@ -4644,6 +4647,7 @@ public class RPCManager : NetworkBehaviour
             // Registers the Ore mining success action to the achievement database for recording
             AchievementManager.registerUserAchievement(_player, ActionType.MineOre);
             AchievementManager.registerUserAchievement(_player, ActionType.OreGain, 1);
+            AchievementManager.registerUserAchievement(_player, ActionType.GatherItem);
 
             // Grant the rewards to the user without showing reward panel
             giveItemRewardsToPlayer(_player.userId, rewardedItems, false);
@@ -6913,7 +6917,8 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_AddPowerup (NetworkConnection connection, Powerup newPowerup) {
-      SoundEffectManager.self.playSoundEffect(SoundEffectManager.PICKUP_POWERUP, transform);
+      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.PICKUP_POWERUP, transform);
+      //SoundEffectManager.self.playSoundEffect(SoundEffectManager.PICKUP_POWERUP, transform);
       PowerupManager.self.addPowerupClient(newPowerup);
    }
 
@@ -6922,11 +6927,6 @@ public class RPCManager : NetworkBehaviour
       GameObject effect = Instantiate(PrefabsManager.self.explosiveShotEffectPrefab, position, Quaternion.identity, null);
       float tempEffectScale = 3.0f;
       effect.transform.localScale = Vector3.one * tempEffectScale * radius;
-   }
-
-   [Command]
-   public void Cmd_RegisterAchievement (ActionType type, int count) {
-      AchievementManager.registerUserAchievement(_player.userId, type, customCount: count);
    }
 
    [Command]

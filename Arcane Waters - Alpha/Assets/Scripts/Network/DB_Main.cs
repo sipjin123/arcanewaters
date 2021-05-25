@@ -1252,6 +1252,8 @@ public class DB_Main : DB_MainStub
                   newEffect.maxPitch = dataReader.GetFloat("maxPitch");
                   newEffect.offset = dataReader.GetFloat("offset");
                   newEffect.is3D = dataReader.GetBoolean("is3D");
+                  newEffect.fmodId = dataReader.GetString("fmodNameId");
+
                   effects.Add(newEffect);
                }
             }

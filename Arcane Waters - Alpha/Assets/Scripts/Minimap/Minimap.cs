@@ -176,7 +176,10 @@ public class Minimap : ClientMonoBehaviour {
       string areaKey = _mapsUsedToSaveMinimaps[_currentMinimapIndex].name;
       yield return new WaitUntil(() => !MapManager.self.isAreaUnderCreation(areaKey));
 
-      Minimap.self.updateMinimapForNewArea(AreaManager.self.getArea(areaKey), AreaManager.self.getDefaultBiome(areaKey));
+      Area.SpecialType specialType = AreaManager.self.getAreaSpecialType(areaKey);
+      if (specialType == Area.SpecialType.Town || specialType == Area.SpecialType.League || specialType == Area.SpecialType.TreasureSite) {
+         Minimap.self.updateMinimapForNewArea(AreaManager.self.getArea(areaKey), AreaManager.self.getDefaultBiome(areaKey));
+      }
       _currentMinimapIndex++;
       continueMinimapSave();
    }

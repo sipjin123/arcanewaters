@@ -82,7 +82,8 @@ public class SeaMine : NetworkBehaviour {
       GameObject explosionEffect = PrefabsManager.self.requestCannonExplosionPrefab(Attack.ImpactMagnitude.Strong);
       explosionEffect.transform.position = transform.position;
 
-      SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Cannon_1, transform.position);
+      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.SHIP_CANNON, this.transform);
+      //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Cannon_1, transform.position);
 
       _spriteRenderer.enabled = false;
       _collider.enabled = false;

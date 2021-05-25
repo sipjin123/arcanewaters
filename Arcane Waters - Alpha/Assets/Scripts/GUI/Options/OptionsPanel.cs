@@ -433,6 +433,7 @@ public class OptionsPanel : Panel
       }
 
       SoundManager.effectsVolume = effectsSlider.value;
+      SoundManager.self.masterBus.setVolume(SoundManager.effectsVolume);
    }
 
    public void guiScaleSliderChanged () {      
@@ -550,13 +551,14 @@ public class OptionsPanel : Panel
       // Tell the server that the player logged out safely
       Global.player.rpc.Cmd_OnPlayerLogOutSafely();
 
-      // Return to the title screen
-      Util.stopHostAndReturnToTitleScreen();
-
       // Close this panel
       if (isShowing()) {
          PanelManager.self.unlinkPanel();
       }
+
+      // Return to the title screen
+      Util.stopHostAndReturnToTitleScreen();
+      
    }
 
    public void enableAdminButtons (bool isEnabled) {

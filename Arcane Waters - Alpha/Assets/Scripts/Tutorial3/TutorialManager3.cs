@@ -409,7 +409,7 @@ public enum TutorialTrigger
    UnequipHammer = 30,
    MoveShip = 33,
    LeaveVoyageGroup = 35,
-   SelectPirateShip = 36,
+   SelectSeaEnemy = 36,
    MoveObject = 37,
    SelectObject = 38,
    OpenMerchantScreen = 39,

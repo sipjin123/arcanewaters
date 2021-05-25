@@ -561,7 +561,7 @@ public class SeaEntity : NetEntity
          return;
       }
 
-      if (isDead() || (!hasReloaded() && shipAbility.selectedAttackType != Attack.Type.Mini_Boulder)) {
+      if (isDead() || (!hasReloaded() && shipAbility.selectedAttackType != Attack.Type.Mini_Boulder && shipAbility.selectedAttackType != Attack.Type.Tentacle)) {
          return;
       }
 
@@ -584,7 +584,6 @@ public class SeaEntity : NetEntity
             D.adminLog("Trigger timed projectile: " + shipAbility.selectedAttackType, D.ADMIN_LOG_TYPE.Sea);
             fireTimedGenericProjectile(spawnPosition, spot, abilityId, launchDelay);
             break;
-         case Attack.Type.Tentacle:
          case Attack.Type.Mini_Boulder:
             // Fire multiple projectiles around the entity
             float offset = .2f;
@@ -605,11 +604,6 @@ public class SeaEntity : NetEntity
                StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(diagonalTargetValue, -target), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(diagonalValue, -offset)));
                StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(-target, diagonalTargetValue), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(-offset, diagonalValue)));
                StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(-target, -diagonalTargetValue), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(-offset, -diagonalValue)));
-            }
-
-            // The tentacle also fires a projectile directly on the target
-            if (shipAbility.selectedAttackType == Attack.Type.Tentacle) {
-               StartCoroutine(CO_FireAtSpotSingle(spot, abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
             }
             break;
          default:

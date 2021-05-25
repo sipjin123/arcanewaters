@@ -93,6 +93,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    public const float MINION_SORT_POINT = -0.132f;
    public const float BOSS_SORT_POINT = -0.218f;
 
+   // The probability that the tentacle monster will attack targets in range, apart from its main target
+   public const float TENTACLE_EXTRA_TARGET_CHANCE = 0.3f;
+
    // Seamonster Animation
    public enum SeaMonsterAnimState
    {
@@ -405,6 +408,23 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       return nearestEntity;
    }
 
+   protected List<NetEntity> getAllTargetsInRange () {
+      List<NetEntity> targets = new List<NetEntity>();
+
+      foreach (uint attackerId in _attackers.Keys) {
+         NetEntity attacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attackerId);
+         if (attacker == null || attacker == this || attacker.isDead() || (attacker is SeaMonsterEntity)) {
+            continue;
+         }
+
+         if (isWithinRangedAttackDistance(attacker)) {
+            targets.Add(attacker);
+         }
+      }
+
+      return targets;
+   }
+
    #endregion
 
    #region Behavior functions
@@ -500,7 +520,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       _currentBehavior = MonsterBehavior.Attack;
 
       // Wait for the reload to finish
-      while (!hasReloaded() && !canAttack()) {
+      while (!hasReloaded() || !canAttack()) {
          yield return null;
       }
 
@@ -534,6 +554,17 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
             float launchDelay = .4f; 
             float projectileDelay = seaMonsterData.projectileDelay;
             launchProjectile(targetEntity.transform.position, targetEntity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
+
+            // Tentacles also attack other targets in range
+            if (monsterType == Type.Horror_Tentacle) {
+               scanTargetsInArea();
+               List<NetEntity> targetsInRange = getAllTargetsInRange();
+               foreach (NetEntity entity in targetsInRange) {
+                  if (entity != targetEntity && Random.value < TENTACLE_EXTRA_TARGET_CHANCE) {
+                     launchProjectile(entity.transform.position, entity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
+                  }
+               }
+            }
          }
       }
 
@@ -792,10 +823,14 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       return sqrDistance < seaMonsterData.territoryRadius * seaMonsterData.territoryRadius;
    }
 
+   protected bool isWithinRangedAttackDistance (NetEntity entity) {
+      return isWithinRangedAttackDistance(Vector2.SqrMagnitude(sortPoint.transform.position - entity.transform.position));
+   }
+
    protected bool isWithinRangedAttackDistance (float sqrDistance) {
       return sqrDistance < seaMonsterData.maxProjectileDistanceGap * seaMonsterData.maxProjectileDistanceGap;
    }
-
+   
    protected bool isWithinMeleeAttackDistance (float sqrDistance) {
       return sqrDistance < seaMonsterData.maxMeleeDistanceGap * seaMonsterData.maxMeleeDistanceGap;
    }
