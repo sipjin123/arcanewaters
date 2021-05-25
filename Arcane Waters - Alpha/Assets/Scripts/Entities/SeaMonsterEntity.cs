@@ -48,6 +48,10 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    [SyncVar]
    public SeaMonsterEntity.Type monsterType = 0;
 
+   [SyncVar]
+   // The difficulty level of the instance this monster is int
+   public int difficultyLevel = 1;
+
    // Determines the location of this unit in relation to its spawn point
    public Vector2 directionFromSpawnPoint;
 
@@ -178,8 +182,8 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
 
       reloadDelay = seaMonsterData.reloadDelay;
-      currentHealth = seaMonsterData.maxHealth;
-      maxHealth = seaMonsterData.maxHealth;
+      currentHealth = seaMonsterData.maxHealth * difficultyLevel;
+      maxHealth = seaMonsterData.maxHealth * difficultyLevel;
       invulnerable = seaMonsterData.isInvulnerable;
 
       if (seaMonsterData.projectileSpawnLocations.Count > 0) {

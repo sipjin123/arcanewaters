@@ -175,9 +175,8 @@ public class EnemyManager : MonoBehaviour {
 
             // Update stats based on difficulty
             int difficultyClamp = Mathf.Clamp(instance.difficulty, 1, 4);
-            seaEntity.maxHealth = data.maxHealth * difficultyClamp;
-            seaEntity.currentHealth = data.maxHealth * difficultyClamp;
-            
+            seaEntity.difficultyLevel = difficultyClamp;
+
             // Network Setup
             InstanceManager.self.addSeaMonsterToInstance(seaEntity, instance);
             NetworkServer.Spawn(seaEntity.gameObject);
