@@ -40,6 +40,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // The amount of time it takes to animate a shake effect
    public static float SHAKE_LENGTH = .75f;
 
+   // The amount of time it takes to animate a shake effect
+   public static float SHAKE_SPECIAL_LENGTH = 1.5f;
+
    // The amount of time a projectile takes to reach its target
    public static float PROJECTILE_LENGTH = .35f;
 
@@ -1424,9 +1427,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Wait for special animation to finish
             if (abilityDataReference.useSpecialAnimation) {
                // TODO: In the future, setup a dynamic way of handling special animation duration using web tool
-               // (golem special attack animation approximately ends after 2 seconds excluding the time elapsed upon trigger [20 frames * .5 milliseconds])
+               // (golem special attack animation approximately ends after 1.4 seconds excluding the time elapsed upon trigger [20 frames * .5 milliseconds])
                sourceBattler.modifyAnimSpeed(.2f);
-               yield return new WaitForSeconds(1f);
+               yield return new WaitForSeconds(SHAKE_SPECIAL_LENGTH - .1f);
 
                // Setup target to un-freeze hit animation
                if (shakeCoroutine != null) {
@@ -1946,7 +1949,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    private IEnumerator CO_AnimateShake () {
       GetComponent<Animator>().Play("shake");
-      yield return new WaitForSeconds(SHAKE_LENGTH);
+      yield return new WaitForSeconds(SHAKE_SPECIAL_LENGTH);
    }
 
    private IEnumerator CO_AnimateShakeOld () {
