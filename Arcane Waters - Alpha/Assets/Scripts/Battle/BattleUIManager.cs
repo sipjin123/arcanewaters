@@ -188,14 +188,10 @@ public class BattleUIManager : MonoBehaviour {
          if (selectedButton.isEnabled && BattleSelectionManager.self.selectedBattler != null) {
             if (BattleManager.self.getPlayerBattler().canCastAbility()) {
                if (selectedButton.cooldownValue < selectedButton.cooldownTarget - .1f) {
-                  D.error("Ability is cooling down!: " + selectedButton.cooldownValue + " / " + selectedButton.cooldownTarget);
+                  D.error("Ability is cooling down!: " + selectedButton.cooldownValue.ToString("f1") + " / " + selectedButton.cooldownTarget.ToString("f1"));
                } else {
                   SoundEffectManager.self.playSoundEffect(SoundEffectManager.ABILITY_SELECTION, transform);
                   selectedButton.abilityButton.onClick.Invoke();
-               }
-            } else {
-               if (!Global.autoAttack) {
-                  D.debug("Player cant cast ability yet! Ability ID: " + selectedButton.abilityTypeIndex);
                }
             }
          } else {

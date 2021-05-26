@@ -163,11 +163,9 @@ public class AbilityManager : MonoBehaviour
          Battler sourceBattler = battle.getBattler(action.sourceId);
          Battler targetBattler = battle.getBattler(action.targetId);
          if (sourceBattler == null) {
-            D.debug("Cannot execute, Source battler not existing: " + action.sourceId);
             continue;
          }
          if (targetBattler == null) {
-            D.debug("Cannot execute, Target battler not existing: " + action.targetId);
             continue;
          }
 
