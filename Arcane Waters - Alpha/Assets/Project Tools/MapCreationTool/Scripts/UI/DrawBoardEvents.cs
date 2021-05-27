@@ -60,10 +60,10 @@ namespace MapCreationTool
          // Check from scrolling
          if (isHovering && MouseUtils.mouseScrollY != 0) {
             float mouseValue = MouseUtils.mouseScrollY;
-            #if UNITY_STANDALONE_LINUX
-            mouseValue = -MouseUtils.mouseScrollY;
-            #endif
-            PointerScroll.Invoke(lastHoverPosition.Value, MouseUtils.mouseScrollY);
+#if UNITY_STANDALONE_LINUX
+            mouseValue *= -1;
+#endif
+            PointerScroll.Invoke(lastHoverPosition.Value, mouseValue);
          }
 
          // Check for movement
