@@ -44,9 +44,6 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       // Hide the panel by default
       hide();
 
-      // Hide the x button
-      xButton.gameObject.SetActive(false);
-
       // Clear out any info
       memberContainer.DestroyAllChildrenExcept(panelHoveringZone.gameObject);
       _memberCells.Clear();
@@ -63,13 +60,6 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
       // Show the panel
       show();
-
-      // Display the X button only if the mouse is over the defined zone
-      if (RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, MouseUtils.mousePosition)) {
-         xButton.gameObject.SetActive(true);
-      } else {
-         xButton.gameObject.SetActive(false);
-      }
    }
 
    private void updateMemberCellDamage () {
