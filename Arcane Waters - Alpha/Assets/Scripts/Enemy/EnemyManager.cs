@@ -174,8 +174,7 @@ public class EnemyManager : MonoBehaviour {
             seaEntity.transform.localPosition = spawner.transform.localPosition;
 
             // Update stats based on difficulty
-            int difficultyClamp = Mathf.Clamp(instance.difficulty, 1, 4);
-            seaEntity.difficultyLevel = difficultyClamp;
+            seaEntity.difficultyLevel = instance.difficulty;
 
             // Network Setup
             InstanceManager.self.addSeaMonsterToInstance(seaEntity, instance);
