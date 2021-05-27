@@ -5683,11 +5683,17 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ResetMoveDisable (NetworkConnection connection) {
-      D.debug("Player movement has now been restored");
+      // TODO: Remove all these logs after playtest
+      if (Global.player == null) {
+         D.debug("Player is missing!");
+         return;
+      }
+
       if (Global.player is PlayerBodyEntity) {
          PlayerBodyEntity playerBody = (PlayerBodyEntity) Global.player;
          playerBody.isWithinEnemyRadius = false;
          playerBody.playerBattleCollider.combatInitCollider.enabled = true;
+         D.debug("Succeeded in restoring player movement!");
       } else {
          D.debug("Failed to restore player movement!");
       }
