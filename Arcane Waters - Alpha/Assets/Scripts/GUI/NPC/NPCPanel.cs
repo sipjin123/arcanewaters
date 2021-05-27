@@ -285,6 +285,7 @@ public class NPCPanel : Panel
       foreach (Item itemRequirement in itemRequirementList) {
          // Create a quest objective cell
          NPCPanelQuestObjectiveCell cell = Instantiate(questObjectiveCellPrefab);
+         cell.icon.GetComponentInParent<ToolTipComponent>().message = EquipmentXMLManager.self.getItemName(itemRequirement);
          cell.transform.SetParent(questObjectivesContainer.transform);
          cell.updateCellContent(itemRequirement, itemRequirement.count, itemStock[itemIndexCount]);
          if (itemStock[itemIndexCount] >= itemRequirement.count) {

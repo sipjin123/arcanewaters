@@ -88,7 +88,7 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
       // If this tooptip belongs to an inventory item, store it's rarity level
       Rarity.Type itemRarityType = Rarity.Type.Common;
-      if (this.tooltipType == Type.ItemCellInventory) {
+      if (this.tooltipType == Type.ItemCellInventory && this.GetComponent<ItemCellInventory>() != null) {
          if (this.GetComponent<ItemCellInventory>().targetItem != null) {
             itemRarityType = this.GetComponent<ItemCellInventory>().targetItem.rarity;
          } else {
