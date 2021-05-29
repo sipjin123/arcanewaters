@@ -243,6 +243,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [SyncVar]
    public bool isPvp;
 
+   // If the battler is declared dead by the server
+   [SyncVar]
+   public bool isAlreadyDead;
+
+   // If the client has processed the death handling on the client side
+   public bool hasPlayedDeathAnim;
+
    // Caches the sizes of the monsters in pixel for offset purposes
    public const float LARGE_MONSTER_SIZE = 140;
    public const float LARGE_MONSTER_OFFSET = .25f;
@@ -498,6 +505,20 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    private void Update () {
       if (!hasAssignedNetId) {
          return;
+      }
+
+      if (isAlreadyDead && !hasPlayedDeathAnim) {
+         // Process the client side death animation, will trigger only once for this objects lifetime
+         hasPlayedDeathAnim = true;
+
+         // Disable all coroutines, attack display / collision effects / hit animations / battle spot repositioning
+         if (currentActionCoroutine != null) { 
+            StopCoroutine(currentActionCoroutine);
+         }
+         StopAllCoroutines();
+
+         // Trigger the death animation coroutine
+         StartCoroutine(animateDeath());
       }
 
       // This block is only enabled upon admin command and is double checked by the server if the user is an admin
@@ -1456,9 +1477,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             if (targetBattler.hasDisplayedDeath()) {
                if (targetBattler.getAnim()[0].currentAnimation != Anim.Type.Death_East) {
                   BattleSelectionManager.self.deselectTarget();
-                  targetBattler.StartCoroutine(targetBattler.animateDeath());
+
+                  // TODO: Remove this after confirming new death animation process causes no issue after playtest
+                  //targetBattler.StartCoroutine(targetBattler.animateDeath());
                } else {
-                  D.debug("Skip animating death for {" + enemyType + "} Anim:{" + targetBattler.getAnim()[0].currentAnimation + "}");
+                  D.debug(userId+" Skip animating death for {" + enemyType + "} Anim:{" + targetBattler.getAnim()[0].currentAnimation + "}");
                }
             }
             onBattlerAttackEnd.Invoke();
@@ -1608,7 +1631,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // If the target died, animate that death now
             if (targetBattler.hasDisplayedDeath()) {
                BattleSelectionManager.self.deselectTarget();
-               targetBattler.StartCoroutine(targetBattler.animateDeath());
+               // TODO: Remove this after confirming new death animation process causes no issue after playtest
+               //targetBattler.StartCoroutine(targetBattler.animateDeath());
             }
 
             onBattlerAttackEnd.Invoke();
@@ -1757,7 +1781,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // If the target died, animate that death now
             if (targetBattler.hasDisplayedDeath()) {
                BattleSelectionManager.self.deselectTarget();
-               targetBattler.StartCoroutine(targetBattler.animateDeath());
+               // TODO: Remove this after confirming new death animation process causes no issue after playtest
+               //targetBattler.StartCoroutine(targetBattler.animateDeath());
             }
 
             onBattlerAttackEnd.Invoke();

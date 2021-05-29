@@ -921,6 +921,11 @@ public class BattleManager : MonoBehaviour {
                target.health -= attackAction.damage;
                target.health = Util.clamp<int>(target.health, 0, target.getStartingHealth());
                source.canExecuteAction = true;
+
+               // Setup server to declare a battler is dead when the network time reaches the time action ends
+               if (target.health <= 0) {
+                  StartCoroutine(CO_KillBattlerAtEndTime(attackAction));
+               }
             } else if (action is BuffAction) {
                BuffAction buffAction = (BuffAction) action;
 
@@ -943,6 +948,25 @@ public class BattleManager : MonoBehaviour {
             }
          }
       }
+   }
+
+   protected IEnumerator CO_KillBattlerAtEndTime (AttackAction attackAction) {
+      // Wait for action end time
+      while (NetworkTime.time < attackAction.actionEndTime) {
+         yield return 0;
+      }
+
+      Battle battle = getBattle(attackAction.battleId);
+      if (battle == null) {
+         yield return null;
+      }
+      Battler target = battle.getBattler(attackAction.targetId);
+      if (target == null) {
+         yield return null;
+      }
+
+      // Declare target as dead using the syncvar which will be read by the clients
+      target.isAlreadyDead = true;
    }
 
    protected IEnumerator endBattleAfterDelay (Battle battle, float delay) {
