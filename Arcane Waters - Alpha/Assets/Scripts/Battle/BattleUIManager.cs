@@ -129,7 +129,6 @@ public class BattleUIManager : MonoBehaviour {
             if (player) {
                localPlayerStance = player.stance;
             } else {
-               D.error("BattleUIManager: Couldn't get a reference to the player battler");
                return;
             }
          }
