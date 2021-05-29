@@ -360,8 +360,16 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    private void autoAttackSimulation () {
+      // Simulate target selection ordered by user id
       BattleUIManager.self.selectNextTarget(true);
-      BattleUIManager.self.triggerAbilityByKey(0);
+
+      // Trigger the first ability button when its not cooling down
+      if (BattleUIManager.self.abilityTargetButtons[0].cooldownImage.enabled == false) {
+         BattleUIManager.self.triggerAbilityByKey(0);
+      }
+
+      // Simulate changing battle stance once in a while
+      BattleUIManager.self.changeBattleStance(Random.Range(0, 3));
    }
 
    private void initializeBattler () {
