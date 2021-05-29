@@ -420,4 +420,6 @@ public enum TutorialTrigger
    SwitchToOffensiveStance = 44,
    SpawnInLobby = 45,
    SwitchToDefensiveStance = 46,
+   KillBoss = 47,
+   OpenMap = 48
 };

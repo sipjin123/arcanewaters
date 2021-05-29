@@ -669,6 +669,20 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       base.onDeath();
 
+      if (Global.player != null) {
+         if (hasBeenAttackedBy(Global.player)) {
+            // If the tutorial is waiting for a bot ship defeat, test if the conditions are met
+            if (TutorialManager3.self.getCurrentTrigger() == TutorialTrigger.DefeatPirateShip) {
+               TutorialManager3.self.tryCompletingStep(TutorialTrigger.DefeatPirateShip);
+            }
+
+            // If the tutorial is waiting for a sea monster boss to be defeated, test if the conditions are met
+            if (TutorialManager3.self.getCurrentTrigger() == TutorialTrigger.KillBoss && monsterType == Type.Horror) {
+               TutorialManager3.self.tryCompletingStep(TutorialTrigger.KillBoss);
+            }
+         }
+      }
+
       if (seaMonsterData.shouldDropTreasure) {
          NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(_lastAttackerNetId);
          if (lastAttacker) {
