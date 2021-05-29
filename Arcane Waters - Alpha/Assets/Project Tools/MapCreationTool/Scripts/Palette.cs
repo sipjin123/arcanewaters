@@ -87,9 +87,9 @@ namespace MapCreationTool
          if (pointerHovering) {
             if (MouseUtils.mouseScrollY != 0) {
                float mouseValue = MouseUtils.mouseScrollY;
-#if UNITY_STANDALONE_LINUX
-            mouseValue *= -1;
-#endif
+               if (Util.isLinux()) {
+                  mouseValue *= -1;
+               }
                pointerScroll(mouseValue);
             }
 

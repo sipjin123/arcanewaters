@@ -223,6 +223,13 @@ public class Util : MonoBehaviour
       return newType;
    }
 
+   public static bool isLinux () {
+      #if UNITY_STANDALONE_LINUX
+      return true;
+      #endif
+      return false;
+   }
+
    public static bool isEmpty (String str) {
       return (str == null || str.Equals(""));
    }

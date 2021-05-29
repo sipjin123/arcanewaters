@@ -15,12 +15,7 @@ public class ScrollRectOverride : MonoBehaviour {
    #endregion 
 
    private void Start () {
-      bool isLinuxBuild = false;
-#if UNITY_STANDALONE_LINUX
-      isLinuxBuild = true;
-#endif
-
-      if (isLinuxBuild) {
+      if (Util.isLinux()) {
          foreach (ScrollRect scroller in scrollList) {
             scroller.scrollSensitivity *= -1;
          }

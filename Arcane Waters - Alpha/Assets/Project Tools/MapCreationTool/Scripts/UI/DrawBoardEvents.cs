@@ -60,9 +60,9 @@ namespace MapCreationTool
          // Check from scrolling
          if (isHovering && MouseUtils.mouseScrollY != 0) {
             float mouseValue = MouseUtils.mouseScrollY;
-#if UNITY_STANDALONE_LINUX
-            mouseValue *= -1;
-#endif
+            if (Util.isLinux()) {
+               mouseValue *= -1;
+            }
             PointerScroll.Invoke(lastHoverPosition.Value, mouseValue);
          }
 
