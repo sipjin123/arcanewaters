@@ -2407,22 +2407,31 @@ public class AdminManager : NetworkBehaviour
    [Server]
    private bool createItemIfNotExistOrReplenishStack (Item.Category category, int itemTypeId, int count) {
       bool wasItemCreated = false;
+      bool shouldCreateItem = false;
 
       // Retrieve the item from the user inventory, if it exists
       Item databaseItem = DB_Main.getFirstItem(_player.userId, category, itemTypeId);
-      Item castedItem = databaseItem.getCastItem();
-      
-      if (castedItem == null) {
+
+      if (databaseItem != null) {
+         Item castedItem = databaseItem.getCastItem();
+         if (castedItem != null) {
+            // If the item can be stacked and there are less items than what is requested, replenish the stack
+            if (castedItem.canBeStacked() && castedItem.count < count && castedItem.category == Item.Category.CraftingIngredients) {
+               DB_Main.updateItemQuantity(_player.userId, castedItem.id, count);
+               wasItemCreated = true;
+            }
+         } else {
+            shouldCreateItem = true;
+         }
+      } else {
+         shouldCreateItem = true;
+      }
+
+      if (shouldCreateItem) {
          // If the item does not exist, create a new one
          Item baseItem = new Item(-1, category, itemTypeId, count, "", "", Item.MAX_DURABILITY).getCastItem();
          DB_Main.createItemOrUpdateItemCount(_player.userId, baseItem);
          wasItemCreated = true;
-      } else {
-         // If the item can be stacked and there are less items than what is requested, replenish the stack
-         if (castedItem.canBeStacked() && castedItem.count < count && castedItem.category == Item.Category.CraftingIngredients) {
-            DB_Main.updateItemQuantity(_player.userId, castedItem.id, count);
-            wasItemCreated = true;
-         }
       }
 
       return wasItemCreated;
