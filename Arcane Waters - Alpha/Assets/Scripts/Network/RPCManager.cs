@@ -5946,7 +5946,14 @@ public class RPCManager : NetworkBehaviour
       // Look up the player's Battle object
       PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
       Battle battle = BattleManager.self.getBattle(playerBody.battleId);
+      if (battle == null) {
+         return;
+      }
+
       Battler sourceBattler = battle.getBattler(_player.userId);
+      if (sourceBattler == null) {
+         return;
+      }
       BasicAbilityData abilityData = null;
 
       // Get the correct stance ability data.

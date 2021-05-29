@@ -267,7 +267,17 @@ public class AbilityManager : MonoBehaviour
 
    public void execute (StanceAction action) {
       Battle battle = BattleManager.self.getBattle(action.battleId);
+
+      if (battle == null) {
+         D.debug("Battle is null, cancel stance action");
+         return;
+      }
+
       Battler sourceBattler = battle.getBattler(action.sourceId);
+      if (sourceBattler == null) {
+         D.debug("Source Battler is null, cancel stance action");
+         return;
+      }
 
       // Make note of the time that this action is going to occur
       sourceBattler.lastStanceChange = action.actionEndTime;
@@ -277,11 +287,15 @@ public class AbilityManager : MonoBehaviour
          PlayerPrefs.SetInt(PlayerBodyEntity.CACHED_STANCE_PREF, (int) action.newStance);
       }
 
-      if (action.newStance == Battler.Stance.Attack && Global.player != null && Global.player.userId == sourceBattler.userId) {
-         TutorialManager3.self.tryCompletingStep(TutorialTrigger.SwitchToOffensiveStance);
-      }
-      if (action.newStance == Battler.Stance.Defense && Global.player != null && Global.player.userId == sourceBattler.userId) {
-         TutorialManager3.self.tryCompletingStep(TutorialTrigger.SwitchToDefensiveStance);
+      if (Global.player == null) {
+         D.debug("Tutorial action cancel, missing global player");
+      } else {
+         if (action.newStance == Battler.Stance.Attack && Global.player != null && Global.player.userId == sourceBattler.userId) {
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.SwitchToOffensiveStance);
+         }
+         if (action.newStance == Battler.Stance.Defense && Global.player != null && Global.player.userId == sourceBattler.userId) {
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.SwitchToDefensiveStance);
+         }
       }
 
       sourceBattler.stanceChangeEffect.show(action.newStance, sourceBattler.isLocalBattler());

@@ -1430,10 +1430,12 @@ public class NetEntity : NetworkBehaviour
    [Command]
    public void Cmd_TemporaryControlRequested (float controllerPosX, float controllerPosY) {
       Vector2 controllerLocalPosition = new Vector2(controllerPosX, controllerPosY);
-      TemporaryController con = AreaManager.self.getArea(areaKey).getTemporaryControllerAtPosition(controllerLocalPosition);
-      if (con != null && !hasScheduledController(con)) {
-         requestControl(con);
-         rpc.Rpc_TemporaryControlRequested(controllerLocalPosition);
+      if (AreaManager.self.getArea(areaKey) != null) {
+         TemporaryController con = AreaManager.self.getArea(areaKey).getTemporaryControllerAtPosition(controllerLocalPosition);
+         if (con != null && !hasScheduledController(con)) {
+            requestControl(con);
+            rpc.Rpc_TemporaryControlRequested(controllerLocalPosition);
+         }
       }
    }
 

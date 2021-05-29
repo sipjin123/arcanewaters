@@ -169,14 +169,18 @@ public class BattleSelectionManager : MonoBehaviour {
       // Store a references
       Battler playerBattler = BattleManager.self.getPlayerBattler();
 
-      // Select the list of opponents
-      List<Battler> battlerList = playerBattler.isAttacker()
-         ? BattleManager.self.getBattle(playerBattler.battleId).getDefenders()
-         : BattleManager.self.getBattle(playerBattler.battleId).getAttackers();
+      if (playerBattler != null) {
+         // Select the list of opponents
+         List<Battler> battlerList = playerBattler.isAttacker()
+            ? BattleManager.self.getBattle(playerBattler.battleId).getDefenders()
+            : BattleManager.self.getBattle(playerBattler.battleId).getAttackers();
 
-      // Make a new list of non dead oponents
-      List<Battler> enemiesAlive = battlerList.Where<Battler>(battler => !battler.isDead()).OrderBy(_=>_.userId).ToList<Battler>();
-      return enemiesAlive;
+         // Make a new list of non dead oponents
+         List<Battler> enemiesAlive = battlerList.Where<Battler>(battler => !battler.isDead()).OrderBy(_ => _.userId).ToList<Battler>();
+         return enemiesAlive;
+      }
+
+      return new List<Battler>();
    }
    
    public List<Battler> getSelectableTargets () {
