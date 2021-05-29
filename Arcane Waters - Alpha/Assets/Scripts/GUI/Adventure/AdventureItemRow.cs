@@ -148,11 +148,19 @@ public class AdventureItemRow : MonoBehaviour {
       string itemStrength = "";
       if (item.category == Item.Category.Weapon) {
          WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
-         itemStrength = "Damage = " + weaponData.weaponBaseDamage.ToString();
+         if (weaponData != null) {
+            itemStrength = "Damage = " + weaponData.weaponBaseDamage.ToString();
+         } else {
+            D.debug("Missing weapon data with id: " + item.itemTypeId);
+         }
       }
       if (item.category == Item.Category.Armor) {
          ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(item.itemTypeId);
-         itemStrength = "Defense = " + armorData.armorBaseDefense.ToString();
+         if (armorData != null) {
+            itemStrength = "Defense = " + armorData.armorBaseDefense.ToString();
+         } else {
+            D.debug("Missing armor data with id: " + item.itemTypeId);
+         }
       }
 
       // Set the tooltip Durability text
