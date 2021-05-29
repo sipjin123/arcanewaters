@@ -28,6 +28,10 @@ public class WorldMapPanel : Panel
    }
 
    public void displayMap (Biome.Type newBiomeToReveal) {
+      if (TutorialManager3.self.getCurrentTrigger() == TutorialTrigger.OpenMap) {
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.OpenMap);
+      }
+
       _newBiomeToReveal = newBiomeToReveal;
       Global.player.rpc.Cmd_RequestUnlockedBiomeListFromServer();
    }
