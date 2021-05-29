@@ -39,6 +39,10 @@ public class WeaponStatData : EquipmentStatData
    // The generic value of the action type
    public int actionTypeValue = 0;
 
+   // Sound Id, used for SFX
+   [XmlElement(Namespace = "SoundId")]
+   public int soundId = 0;
+
    public static Weapon translateDataToWeapon (WeaponStatData weaponData) {
       Weapon newWeapon = new Weapon {
          id = weaponData.sqlId,

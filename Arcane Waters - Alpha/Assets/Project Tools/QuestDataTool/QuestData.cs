@@ -68,6 +68,14 @@ public class QuestDialogueNode {
 
    // The level of the job required to proceed with the dialogue
    public int jobLevelRequirement = 0;
+
+   public bool hasItemRequirements () {
+      return itemRequirements != null && itemRequirements.Length > 0;
+   }
+
+   public bool hasItemRewards () {
+      return itemRewards != null && itemRewards.Length > 0;
+   }
 }
 
 [Serializable]

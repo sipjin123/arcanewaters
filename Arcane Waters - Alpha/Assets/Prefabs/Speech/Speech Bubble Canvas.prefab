@@ -229,6 +229,9 @@ MonoBehaviour:
   fadeDelay: 3
   speechText: {fileID: 3238773682490697082}
   canvasGroup: {fileID: 22551356}
+  speechBubbleContainer: {fileID: 186264}
+  speechBubbleBackground: {fileID: 136848}
+  speechBubbleText: {fileID: 5401062099250080700}
 --- !u!1 &186264
 GameObject:
   m_ObjectHideFlags: 0

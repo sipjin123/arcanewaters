@@ -513,7 +513,7 @@ public class TreasureChest : NetworkBehaviour {
 
       // If our player enters the treasure bag, automatically send request to open it
       NetEntity entity = other.GetComponent<NetEntity>();
-      if (entity != null && Global.player != null && entity.userId == Global.player.userId) {
+      if (entity != null && Global.player != null && entity.userId == Global.player.userId && !Global.player.isDead()) {
          // Ensure that correct player has entered correct trigger
          if (other.IsTouching(autoOpenCollider)) {
             sendOpenRequest();

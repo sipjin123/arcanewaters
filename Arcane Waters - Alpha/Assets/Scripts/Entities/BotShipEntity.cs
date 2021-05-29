@@ -108,6 +108,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
          InvokeRepeating(nameof(checkEnemiesToAggro), 0.0f, 0.5f);
          StartCoroutine(CO_attackEnemiesInRange(0.25f));
+
+         getRandomPowerup();
       }
 
       if (Application.isEditor) {
@@ -452,7 +454,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
          NetEntity target = null;
 
-         // Check if any of our attackers are within range
+         // List all our attackers that are in range
+         List<NetEntity> attackersInRange = new List<NetEntity>();
          foreach (uint attackerId in _attackers.Keys) {
             NetEntity attacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attackerId);
             if (attacker == null || attacker.isDead()) {
@@ -460,11 +463,14 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             }
 
             Vector2 attackerPosition = attacker.transform.position;
-            if (!isInRange(attackerPosition)) {
-               continue;
+            if (isInRange(attackerPosition)) {
+               attackersInRange.Add(attacker);
             }
+         }
 
-            target = attacker;
+         // Randomly choose an attacker to target
+         if (attackersInRange.Count > 0) {
+            target = attackersInRange[Random.Range(0, attackersInRange.Count)];
          }
 
          // Show the charging animation on clients
@@ -492,6 +498,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          if (chargeTimer <= 0.0f) {
             if (target) {
                fireCannonAtTarget(target);
+               triggerPowerupsOnFire();
                Rpc_NotifyCannonFired();
 
                waitTimeToUse = reloadDelay;
@@ -584,6 +591,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       Vector2 velocity = toTarget.normalized * Attack.getSpeedModifier(Attack.Type.Cannon);
 
       netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityData.abilityId, velocity, lobHeight, false, lifetime: lifetime);
+
+      netBall.addEffectors(getCannonballEffectors());
 
       NetworkServer.Spawn(netBall.gameObject);
 
@@ -685,6 +694,53 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       this.transform.SetParent(area.botShipParent, worldPositionStays);
    }
 
+   private void getRandomPowerup () {
+      Powerup.Type[] allowedPowerups = { Powerup.Type.BouncingShots, Powerup.Type.ElectricShots, Powerup.Type.MultiShots, Powerup.Type.ExplosiveShots };
+      _powerup = allowedPowerups[Random.Range(0, 4)];
+   }
+
+   private void triggerPowerupsOnFire () {
+      if (_powerup != Powerup.Type.MultiShots) {
+         return;
+      }
+
+      float activationChance = 0.5f;
+      int maxExtraShots = 2;
+      int extraShotsCounter = 0;
+
+      List<SeaEntity> nearbyEnemies = Util.getEnemiesInCircle(this, transform.position, getAttackRange());
+      foreach (SeaEntity enemy in nearbyEnemies) {
+         // If we have reached the limit of extra shots, stop checking
+         if (extraShotsCounter >= maxExtraShots) {
+            break;
+         }
+
+         // Roll for powerup activation chance
+         if (Random.Range(0.0f, 1.0f) <= activationChance) {
+            fireCannonAtTarget(enemy);
+            extraShotsCounter++;
+         }
+      }
+   }
+
+   private List<CannonballEffector> getCannonballEffectors () {
+      List<CannonballEffector> effectors = new List<CannonballEffector>();
+      
+      switch (_powerup) {
+         case Powerup.Type.BouncingShots:
+            effectors.Add(new CannonballEffector(CannonballEffector.Type.Bouncing, 1.0f, range: 2.0f));
+            break;
+         case Powerup.Type.ElectricShots:
+            effectors.Add(new CannonballEffector(CannonballEffector.Type.Electric, 25.0f, range: 0.75f));
+            break;
+         case Powerup.Type.ExplosiveShots:
+            effectors.Add(new CannonballEffector(CannonballEffector.Type.Explosion, 30.0f, range: 0.6f));
+            break;
+      }
+
+      return effectors;
+   }
+
    #region Private Variables
 
    // The Seeker that handles Pathfinding
@@ -756,6 +812,9 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
    // Whether we are currently showing targeting effects
    private bool _isShowingTargetingIndicator = false;
+
+   // What powerup this bot ship has
+   private Powerup.Type _powerup;
 
    #endregion
 }

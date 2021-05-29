@@ -154,6 +154,7 @@ namespace MapCustomization
          currentArea = null;
          currentBiome = Biome.Type.None;
          _selectedPrefab = null;
+         hideSelectionArrows();
          CustomizationUI.ensureHidden();
 
          self.StopAllCoroutines();
@@ -283,7 +284,8 @@ namespace MapCustomization
 
                if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _newPrefab.unappliedChanges, false, out string errorMessage)) {
                   Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges);
-                  SoundEffectManager.self.playSoundEffect(SoundEffectManager.DROP_EDIT_OBJ, SoundEffectManager.self.transform);
+                  SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.DROP_EDIT_OBJ, SoundEffectManager.self.transform);
+                  //SoundEffectManager.self.playSoundEffect(SoundEffectManager.DROP_EDIT_OBJ, SoundEffectManager.self.transform);
                   selectPrefab(_newPrefab);
 
                   // Decrease remaining prop item that corresponds to this prefab
@@ -327,7 +329,8 @@ namespace MapCustomization
          if (_selectedPrefab.anyUnappliedState()) {
             if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _selectedPrefab.unappliedChanges, false, out string errorMessage)) {
                Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _selectedPrefab.unappliedChanges);
-               SoundEffectManager.self.playSoundEffect(SoundEffectManager.DROP_EDIT_OBJ, SoundEffectManager.self.transform);
+               SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.DROP_EDIT_OBJ, SoundEffectManager.self.transform);
+               //SoundEffectManager.self.playSoundEffect(SoundEffectManager.DROP_EDIT_OBJ, SoundEffectManager.self.transform);
                _selectedPrefab.submitUnappliedChanges();
             }
          }
@@ -336,8 +339,18 @@ namespace MapCustomization
       }
 
       private static void updateToBePlacedPrefab (Vector3 worldPosition, int serializationId) {
-         // If prefab is missing or it changed, we need to reinitialize it
-         if (_newPrefab == null || _newPrefab.unappliedChanges.serializationId != serializationId) {
+         // If the prefab has changed, destroy the current prefab before creating a new one
+         if ((_newPrefab != null) && (_newPrefab.unappliedChanges.serializationId != serializationId)) {
+            _newPrefab.revertUnappliedChanges();
+            _newPrefab = null;
+            Destroy(_newPrefab);
+            _newPrefab = MapManager.self.createPrefab(currentArea, currentBiome, newPrefabState(worldPosition, serializationId), false);
+            _newPrefab.setGameInteractionsActive(false);
+            soundHasBeenPlayed = false;
+         }
+
+         // If the prefab is missing, create a new one and initialize it
+         if (_newPrefab == null ) {        
             _newPrefab = MapManager.self.createPrefab(currentArea, currentBiome, newPrefabState(worldPosition, serializationId), false);
             _newPrefab.setGameInteractionsActive(false);
             soundHasBeenPlayed = false;
@@ -350,7 +363,8 @@ namespace MapCustomization
          _newPrefab.setOutline(false, false, false, false);
 
          if (!soundHasBeenPlayed) {
-            SoundEffectManager.self.playSoundEffect(SoundEffectManager.DROP_EDIT_OBJ, SoundEffectManager.self.transform);
+            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.DROP_EDIT_OBJ, SoundEffectManager.self.transform);
+            //SoundEffectManager.self.playSoundEffect(SoundEffectManager.DROP_EDIT_OBJ, SoundEffectManager.self.transform);
             soundHasBeenPlayed = true;
          }
       }

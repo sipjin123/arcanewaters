@@ -61,9 +61,13 @@ public class SoundEffectManager : MonoBehaviour
    public const int OPEN_LAND_BAG = 72;
    public const int OPEN_CHEST = 73;
 
+   public const int BATTLE_INTRO = 81;
+   public const int BATTLE_OUTRO = 82;
+
    public const int SHIP_CANNON = 85;
    public const int FISH_JUMP = 86;
    public const int ROCK_MINE = 91;
+   public const int PICKUP_CROP = 93;
 
    // Reference to the main camera
    public Camera mainCamReference;
@@ -183,10 +187,10 @@ public class SoundEffectManager : MonoBehaviour
    }
 
    private IEnumerator CO_DestroyAfterEnd (StudioEventEmitter emitter) {
-      while (emitter.IsPlaying()) {
+      while (emitter != null && emitter.IsPlaying()) {
          yield return 0;
       }
-      if (emitter.gameObject != null) {
+      if (emitter != null) {
          Destroy(emitter.gameObject);
       }
    }

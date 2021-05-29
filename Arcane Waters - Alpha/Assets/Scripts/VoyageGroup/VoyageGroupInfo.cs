@@ -31,6 +31,9 @@ public class VoyageGroupInfo
    // The userId of the members
    public List<int> members = new List<int>();
 
+   // Where members of this group will be spawned in pvp
+   public string pvpSpawn = "";
+
    #endregion
 
    public VoyageGroupInfo () { }

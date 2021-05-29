@@ -65,6 +65,41 @@ public class SpeechManager : MonoBehaviour {
       if (speechInstance != null) {
          speechInstance.sayText(message);
       }
+
+      // Make sure the speech bubble stays on screen
+      keepSpeechBubbleOnScreen(speechInstance);
+   }
+
+   public void keepSpeechBubbleOnScreen (SpeechBubble speechInstance) {
+      RectTransform speechBubbleRect = speechInstance.GetComponent<RectTransform>();
+
+      // Find the real world location of the speech bubble
+      Vector3 speechBubblePos = speechBubbleRect.transform.position;
+
+      // Find the real world corners of the speech bubble
+      Vector3[] worldCorners = new Vector3[4];
+      speechBubbleRect.GetWorldCorners(worldCorners);
+      float speechBubbleWidth = worldCorners[3].x - worldCorners[0].x;
+
+      // Find the camera bounds
+      Vector2 screenUpperBounds = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
+
+      // Check if speech bubble is out of bounds and move if needed
+      if (speechBubblePos.x + speechBubbleWidth / 2 > screenUpperBounds.x) {
+         speechBubbleRect.transform.localPosition = new Vector3(-0.85f, .25f, -5f);
+         speechInstance.speechBubbleText.transform.SetParent(null);
+         speechInstance.speechBubbleContainer.transform.localScale = new Vector3(-1, 1, 1);
+         speechInstance.speechBubbleText.transform.SetParent(speechInstance.speechBubbleBackground.transform);
+      }
+   }
+
+   public void resetSpeechBubble (SpeechBubble speechInstance) {
+      // Reset the speech bubble
+      RectTransform speechBubbleRect = speechInstance.GetComponent<RectTransform>();
+      speechBubbleRect.transform.localPosition = new Vector3(.85f, .25f, -5f);
+      speechInstance.speechBubbleText.transform.SetParent(null);
+      speechInstance.speechBubbleContainer.transform.localScale = new Vector3(1, 1, 1);
+      speechInstance.speechBubbleText.transform.SetParent(speechInstance.speechBubbleBackground.transform);
    }
 
    protected SpeechBubble createSpeechBubble (NetEntity player) {

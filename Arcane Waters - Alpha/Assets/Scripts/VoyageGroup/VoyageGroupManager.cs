@@ -625,6 +625,13 @@ public class VoyageGroupManager : MonoBehaviour
       return flagPalettes[index].name;
    }
 
+   [Server]
+   public void setPvpSpawn(int groupId, string spawnName) {
+      if (tryGetGroupById(groupId, out VoyageGroupInfo voyageGroup)) {
+         voyageGroup.pvpSpawn = spawnName;
+      }
+   }
+
    #region Private Variables
 
    // Keeps a log of the group invitations to prevent spamming

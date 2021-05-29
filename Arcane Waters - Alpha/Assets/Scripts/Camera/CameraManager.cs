@@ -241,7 +241,8 @@ public class CameraManager : ClientMonoBehaviour {
       battleCamera.getPixelFadeEffect().fadeOut();
 
       // Play a sound effect
-      SoundManager.play2DClip(SoundManager.Type.Battle_Intro, 0f);
+      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.BATTLE_INTRO, transform);
+      //SoundManager.play2DClip(SoundManager.Type.Battle_Intro, 0f);
 
       // Play the Battle music
       SoundManager.setBackgroundMusic(SoundManager.Type.Battle_Music);
@@ -265,7 +266,8 @@ public class CameraManager : ClientMonoBehaviour {
       battleCamera.getPixelFadeEffect().fadeOut();
 
       // Play a sound effect
-      SoundManager.play2DClip(SoundManager.Type.Battle_Outro, 0f);
+      //SoundManager.play2DClip(SoundManager.Type.Battle_Outro, 0f);
+      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.BATTLE_OUTRO, transform);
 
       // End the Battle music
       SoundManager.setBackgroundMusic(SoundManager.previousMusicType);
@@ -305,7 +307,8 @@ public class CameraManager : ClientMonoBehaviour {
       yield return new WaitForSeconds(1f);
 
       // Play a sound effect
-      SoundManager.play2DClip(SoundManager.Type.Battle_Outro, 0f);
+      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.BATTLE_OUTRO, transform);
+      //SoundManager.play2DClip(SoundManager.Type.Battle_Outro, 0f);
       defaultCamera.getPixelFadeEffect().fadeIn();
    }
 

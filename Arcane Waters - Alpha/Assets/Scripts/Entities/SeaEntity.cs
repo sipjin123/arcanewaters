@@ -260,7 +260,7 @@ public class SeaEntity : NetEntity
       foreach (Collider2D hit in hits) {
          if (hit != null && hit.GetComponent<SeaEntity>() != null) {
             SeaEntity hitEntity = hit.GetComponent<SeaEntity>();
-            if (this.isEnemyOf(hitEntity) && !collidedEntities.ContainsKey(hitEntity) && !hitEntity.isDead() && hitEntity.instanceId == this.instanceId) {
+            if (this.isEnemyOf(hitEntity) && !collidedEntities.ContainsKey(hitEntity) && !hitEntity.isDead() && hitEntity.instanceId == this.instanceId && hitEntity.netId != primaryTargetNetID) {
                int finalDamage = hitEntity.applyDamage(damageInt, attackerNetId);
                hitEntity.Rpc_ShowDamage(Attack.Type.None, hitEntity.transform.position, finalDamage);
 
@@ -982,6 +982,13 @@ public class SeaEntity : NetEntity
 
          yield return null;
       }
+   }
+
+   [ClientRpc]
+   public void Rpc_ShowExplosiveShotEffect (Vector2 position, float radius) {
+      GameObject effect = Instantiate(PrefabsManager.self.explosiveShotEffectPrefab, position, Quaternion.identity, null);
+      float tempEffectScale = 3.0f;
+      effect.transform.localScale = Vector3.one * tempEffectScale * radius;
    }
 
    #region Private Variables

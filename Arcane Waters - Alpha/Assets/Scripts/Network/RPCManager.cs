@@ -1199,7 +1199,8 @@ public class RPCManager : NetworkBehaviour
 
       if (area != null && area.version == latestVersion) {
          if (area.isInterior) {
-            SoundEffectManager.self.playSoundEffect(SoundEffectManager.ENTER_DOOR, transform);
+            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.ENTER_DOOR, transform);
+            //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ENTER_DOOR, transform);
             WeatherManager.self.setWeatherSimulation(WeatherEffectType.None);
          }
 
@@ -1976,6 +1977,18 @@ public class RPCManager : NetworkBehaviour
                   if (questData.questDataNodes.Length > questNodeId) {
                      QuestDataNode questDataNode = questData.questDataNodes[questNodeId];
                      if (questDataNode.questDialogueNodes.Length > dialogueId) {
+                        // When the user selects a quest, we show again the dialogues up to the previously completed reward or quest node
+                        for (dialogueId--; dialogueId >= 0; dialogueId--) {
+                           if (questDataNode.questDialogueNodes[dialogueId].hasItemRequirements() 
+                              || questDataNode.questDialogueNodes[dialogueId].hasItemRewards()
+                              || questDataNode.questDialogueNodes[dialogueId].friendshipRewardPts > 0) {
+                              // This node has already been rewarded/completed, so we continue from the next
+                              dialogueId++;
+                              break;
+                           }
+                        }
+                        dialogueId = dialogueId < 0 ? 0 : dialogueId;
+
                         QuestDialogueNode questDialogue = questDataNode.questDialogueNodes[dialogueId];
                         if (questDialogue.itemRequirements != null) {
                            foreach (Item item in questDialogue.itemRequirements) {
@@ -4098,6 +4111,13 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
+      if (voyage.isPvP) {
+         if (_player.tryGetGroup(out VoyageGroupInfo groupInfo)) {
+            _player.spawnInNewMap(voyage.voyageId, voyage.areaKey, groupInfo.pvpSpawn, Direction.South);
+            return;
+         }
+      }
+
       // Warp to the voyage area
       _player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
    }
@@ -4403,6 +4423,12 @@ public class RPCManager : NetworkBehaviour
       // If the player does not meet the voyage requirements, warp the player back to town
       if (!canPlayerStayInVoyage()) {
          _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
+      }
+
+      if (playerShipEntity && playerShipEntity.tryGetVoyage(out Voyage voyage)) {
+         if (voyage.isPvP) {
+            playerShipEntity.hasEnteredPvP = true;
+         }
       }
    }
 
@@ -6926,13 +6952,6 @@ public class RPCManager : NetworkBehaviour
       SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.PICKUP_POWERUP, transform);
       //SoundEffectManager.self.playSoundEffect(SoundEffectManager.PICKUP_POWERUP, transform);
       PowerupManager.self.addPowerupClient(newPowerup);
-   }
-
-   [ClientRpc]
-   public void Rpc_ShowExplosiveShotEffect (Vector2 position, float radius) {
-      GameObject effect = Instantiate(PrefabsManager.self.explosiveShotEffectPrefab, position, Quaternion.identity, null);
-      float tempEffectScale = 3.0f;
-      effect.transform.localScale = Vector3.one * tempEffectScale * radius;
    }
 
    [Command]

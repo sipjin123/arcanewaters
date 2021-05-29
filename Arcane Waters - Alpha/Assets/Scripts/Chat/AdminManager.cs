@@ -114,6 +114,8 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("add_powerup", "Gives you a powerup of specified type and rarity", requestPowerup, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "powerupType", "powerupRarity" }));
       cm.addCommand(new CommandData("clear_powerups", "Clears all of your current powerups", requestClearPowerups, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("unlock_world_map", "Unlocks all the biomes and town warps in the world map", unlockWorldMap, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("pvp_join", "Warps the player to the lobby area for pvp", joinPvpLobby, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("pvp_start", "Starts a pvp game, with the players currently in the lobby", startPvpGame, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "mapName" }));
 
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
@@ -186,6 +188,24 @@ public class AdminManager : NetworkBehaviour
       }
 
       return true;
+   }
+
+   private void joinPvpLobby () {
+      Cmd_JoinPvpLobby();
+   }
+
+   [Command]
+   private void Cmd_JoinPvpLobby () {
+      VoyageManager.self.warpPlayerToPvpLobby(_player);
+   }
+
+   private void startPvpGame (string mapName) {
+      Cmd_StartPvpGame(mapName);
+   }
+
+   [Command]
+   private void Cmd_StartPvpGame (string mapName) {
+      VoyageManager.self.createPvpLeagueInstanceAndWarpPlayers(mapName);
    }
 
    private void requestPerkPoints (string parameters) {

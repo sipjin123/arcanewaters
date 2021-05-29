@@ -59,6 +59,18 @@ public static class KeyUtils {
       }
    }
 
+   public static bool GetEnterKey() {
+      return GetKey(Key.Enter) || GetKey(Key.NumpadEnter);
+   }
+
+   public static bool GetEnterKeyDown () {
+      return GetKeyDown(Key.Enter) || GetKeyDown(Key.NumpadEnter);
+   }
+
+   public static bool GetEnterKeyUp () {
+      return GetKeyUp(Key.Enter) || GetKeyUp(Key.NumpadEnter);
+   }
+
    #endregion
 
    #region Mouse keys

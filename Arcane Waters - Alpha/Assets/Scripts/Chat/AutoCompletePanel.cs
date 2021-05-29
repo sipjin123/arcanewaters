@@ -40,7 +40,7 @@ public class AutoCompletePanel : MonoBehaviour {
          return;
       }
 
-      if (KeyUtils.GetKeyDown(Key.Enter)) {
+      if (KeyUtils.GetEnterKeyDown()) {
          onEnterPressed();
       }
    }

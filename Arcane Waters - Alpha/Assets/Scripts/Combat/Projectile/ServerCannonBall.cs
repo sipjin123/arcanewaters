@@ -290,8 +290,13 @@ public class ServerCannonBall : NetworkBehaviour {
                hitEntity.applyStatus(Status.Type.Burning, effector.effectStrength, effector.effectDuration, sourceEntity.netId);
                break;
             case CannonballEffector.Type.Electric:
-               if (PowerupManager.self.powerupActivationRoll(sourceEntity.userId, Powerup.Type.ElectricShots)) {
+               if (sourceEntity.userId > 0 && PowerupManager.self.powerupActivationRoll(sourceEntity.userId, Powerup.Type.ElectricShots)) {
                   sourceEntity.cannonballChainLightning(_creatorNetId, transform.position, hitEntity.netId, effector.effectRange, effector.effectStrength);
+               } else {
+                  // Bot ships have a flat 75% chance to trigger chain lightning for now
+                  if (UnityEngine.Random.Range(0.0f, 1.0f) <= 0.75f) {
+                     sourceEntity.cannonballChainLightning(_creatorNetId, transform.position, hitEntity.netId, effector.effectRange, effector.effectStrength);
+                  }
                }
                break;
             case CannonballEffector.Type.Ice:
@@ -312,9 +317,8 @@ public class ServerCannonBall : NetworkBehaviour {
       int explosionDamage = (int) effector.effectStrength;
       SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
 
-      PlayerShipEntity player = sourceEntity as PlayerShipEntity;
-      if (player) {
-         player.rpc.Rpc_ShowExplosiveShotEffect(transform.position, explosionRadius);
+      if (sourceEntity) {
+         sourceEntity.Rpc_ShowExplosiveShotEffect(transform.position, explosionRadius);
       }
 
       List<SeaEntity> nearbyEnemies = Util.getEnemiesInCircle(sourceEntity, transform.position, explosionRadius);

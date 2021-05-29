@@ -181,7 +181,8 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          getCombatCollider().setScale(new Vector3(seaMonsterData.battleColliderScaleX, seaMonsterData.battleColliderScaleY, 1));
       }
 
-      reloadDelay = seaMonsterData.reloadDelay;
+      float reloadModifier = 1 + (((float) difficultyLevel - 1) / (Voyage.getMaxDifficulty() - 1));
+      reloadDelay = seaMonsterData.reloadDelay / (difficultyLevel > 0 ? reloadModifier : 1);
       currentHealth = seaMonsterData.maxHealth * difficultyLevel;
       maxHealth = seaMonsterData.maxHealth * difficultyLevel;
       invulnerable = seaMonsterData.isInvulnerable;
@@ -412,7 +413,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       return nearestEntity;
    }
 
-   protected List<NetEntity> getAllTargetsInRange () {
+   protected List<NetEntity> getAllTargetsInAttackRange () {
       List<NetEntity> targets = new List<NetEntity>();
 
       foreach (uint attackerId in _attackers.Keys) {
@@ -449,17 +450,16 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    private void standaloneBehavior () {
       if (_currentBehavior == MonsterBehavior.Idle) {
-         // Continue attacking the current target
-         if (canCurrentTargetBeAttacked()) {
-            _currentBehaviorCoroutine = StartCoroutine(CO_AttackTargetOnce());
-            noteAttacker(targetEntity);
-            Rpc_NoteAttacker(targetEntity.netId);
-            return;
-         }
-
          // Check if there are targets around
          scanTargetsInArea();
-         targetEntity = getNearestTarget();
+         _targetsInAttackRange = getAllTargetsInAttackRange();
+
+         // Select a random target in attack range, or the closest target in the territory
+         if (_targetsInAttackRange.Count > 0) {
+            targetEntity = _targetsInAttackRange[Random.Range(0, _targetsInAttackRange.Count)];
+         } else {
+            targetEntity = getNearestTarget();
+         }
 
          if (canCurrentTargetBeAttacked()) {
             // Attack the target in range
@@ -491,15 +491,22 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    private void minionBehavior () {
       if (_currentBehavior == MonsterBehavior.Idle) {
-         // Continue attacking the current target
+         // Check if there are targets around
+         scanTargetsInArea();
+         _targetsInAttackRange = getAllTargetsInAttackRange();
+
+         // Select a random target in attack range, or the closest target in the territory
+         if (_targetsInAttackRange.Count > 0) {
+            targetEntity = _targetsInAttackRange[Random.Range(0, _targetsInAttackRange.Count)];
+         } else {
+            targetEntity = getNearestTarget();
+         }
+
+         // Attack the current target
          if (canCurrentTargetBeAttacked()) {
             _currentBehaviorCoroutine = StartCoroutine(CO_AttackTargetOnce());
             return;
          }
-
-         // Verify if there are targets around
-         scanTargetsInArea();
-         targetEntity = getNearestTarget();
       }
    }
 
@@ -561,9 +568,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
             // Tentacles also attack other targets in range
             if (monsterType == Type.Horror_Tentacle) {
-               scanTargetsInArea();
-               List<NetEntity> targetsInRange = getAllTargetsInRange();
-               foreach (NetEntity entity in targetsInRange) {
+               foreach (NetEntity entity in _targetsInAttackRange) {
                   if (entity != targetEntity && Random.value < TENTACLE_EXTRA_TARGET_CHANCE) {
                      launchProjectile(entity.transform.position, entity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
                   }
@@ -871,6 +876,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    // The current behavior
    private MonsterBehavior _currentBehavior = MonsterBehavior.Idle;
+
+   // The current targets in attack range
+   List<NetEntity> _targetsInAttackRange = new List<NetEntity>();
 
    #endregion
 }

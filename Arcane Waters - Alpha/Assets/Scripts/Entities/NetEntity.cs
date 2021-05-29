@@ -1494,7 +1494,19 @@ public class NetEntity : NetworkBehaviour
 
    [TargetRpc]
    public void Target_GainedItem (NetworkConnection conn, string itemIconPath, string itemName, Jobs.Type jobType, float jobExp, int itemCount) {
-      Vector3 pos = this.transform.position + new Vector3(0f, .32f);
+      Vector3 nudge = new Vector3(0f, .32f);
+      Vector3 pos = this.transform.position + nudge;
+
+      // Move the already spawned messages a little up.
+      FloatingCanvas[] spawnedCanvases = GameObject.FindObjectsOfType<FloatingCanvas>();
+      if (spawnedCanvases != null && spawnedCanvases.Length > 0) {
+         foreach (FloatingCanvas canvas in spawnedCanvases) {
+            if (canvas.TryGetComponent<RectTransform>(out RectTransform rectTransform)) {
+               Vector3 scaledRect = rectTransform.localScale * (rectTransform.rect.height + nudge.y);
+               canvas.transform.position = canvas.transform.position + new Vector3(.0f, scaledRect.y, .0f);
+            }
+         }
+      }
 
       // Show a message that they gained some XP along with the item they received
       GameObject gainItemCanvas = Instantiate(PrefabsManager.self.itemReceivedPrefab);

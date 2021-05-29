@@ -17,6 +17,15 @@ public class SpeechBubble : MonoBehaviour {
    // Our Canvas Group
    public CanvasGroup canvasGroup;
 
+   // Reference to the child gameobject called container
+   public GameObject speechBubbleContainer;
+
+   // Reference to the child gameobject called background
+   public GameObject speechBubbleBackground;
+
+   // Reference to the child gameobject that holds the text
+   public GameObject speechBubbleText;
+
    #endregion
 
    void Awake () {
@@ -44,6 +53,10 @@ public class SpeechBubble : MonoBehaviour {
       if (timePassed > fadeDelay && !Util.isEmpty(speechText.text)) {
          targetAlpha = 1f - (timePassed - fadeDelay);
          targetAlpha = Mathf.Clamp(targetAlpha, 0f, 1f);
+
+         if (targetAlpha == 0) {
+            SpeechManager.self.resetSpeechBubble(this);
+         }
       }
 
       canvasGroup.alpha = targetAlpha;

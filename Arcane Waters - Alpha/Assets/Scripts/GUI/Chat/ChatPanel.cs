@@ -339,7 +339,7 @@ public class ChatPanel : MonoBehaviour {
       _isNameInputFocused = nameInputField.isFocused;
 
       // Submit the field when enter is pressed and the field is focused
-      if (KeyUtils.GetKeyDown(Key.Enter)) {
+      if (KeyUtils.GetEnterKeyDown()) {
          if (inputField.text != "") {
             // Send the message off to the server for processing
             string message = inputField.text;
@@ -371,7 +371,7 @@ public class ChatPanel : MonoBehaviour {
 
       // Activate the input field when enter is pressed and the field is unfocused, except if the
       // player is writing a mail      
-      if (KeyUtils.GetKeyDown(Key.Enter) && !((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail()) {
+      if (KeyUtils.GetEnterKeyDown() && !((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail()) {
          if (!wasJustFocused()) {
 
             if (Global.player != null) {

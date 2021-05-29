@@ -1098,6 +1098,9 @@ public class PlayerShipEntity : ShipEntity
 
       // Set the ship health back to max
       restoreMaxShipHealth();
+
+      // Clear any powerup
+      PowerupManager.self.clearPowerupsForUser(userId);
    }
 
    [Server]
