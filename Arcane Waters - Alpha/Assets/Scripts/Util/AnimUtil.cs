@@ -333,12 +333,20 @@ public class AnimUtil : MonoBehaviour {
 
                case Anim.Type.Jump_East:
                   return new AnimInfo(animType, 12, 15);
-               case Anim.Type.Attack_East:
-                  return new AnimInfo(animType, 16, 23);
+               case Anim.Type.Ready_Attack:
+                  return new AnimInfo(animType, 16, 18);
+               case Anim.Type.Finish_Attack:
+                  return new AnimInfo(animType, 19, 23);
+
                case Anim.Type.Hurt_East:
                   return new AnimInfo(animType, 24, 24);
                case Anim.Type.Death_East:
                   return new AnimInfo(animType, 25, 31);
+
+               case Anim.Type.SpecialAnimationReady:
+                  return new AnimInfo(animType, 16, 18);
+               case Anim.Type.SpecialAnimation:
+                  return new AnimInfo(animType, 19, 23);
             }
             break;
 
