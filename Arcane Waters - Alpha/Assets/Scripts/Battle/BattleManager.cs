@@ -525,15 +525,6 @@ public class BattleManager : MonoBehaviour {
             // Force the cooldown to reach current time so a new ability can be casted
             source.cooldownEndTime = NetworkTime.time - .1f;
 
-            QueuedRpcAction queuedRpc = new QueuedRpcAction {
-               actionSerialized = stringList.ToArray(),
-               battleActionType = BattleActionType.Attack,
-               isCancelAction = true,
-               actionEndTime = 0
-            };
-
-            battle.queuedRpcActionList.Add(queuedRpc);
-
             // Send it to clients
             battle.Rpc_SendCombatAction(stringList.ToArray(), BattleActionType.Attack, true);
          } 
@@ -812,14 +803,6 @@ public class BattleManager : MonoBehaviour {
       string serializedValue = stanceAction.serialize();
       string[] values = new[] { serializedValue };
 
-      QueuedRpcAction queuedRpc = new QueuedRpcAction {
-         actionSerialized = values,
-         battleActionType = BattleActionType.Stance,
-         isCancelAction = false,
-         actionEndTime = timeActionEnds
-      };
-
-      battle.queuedRpcActionList.Add(queuedRpc);
       battle.Rpc_SendCombatAction(values, BattleActionType.Stance, false);
    }
 
