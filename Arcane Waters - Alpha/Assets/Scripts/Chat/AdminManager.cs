@@ -120,6 +120,7 @@ public class AdminManager : NetworkBehaviour
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
       cm.addCommand(new CommandData("force_join", "During land combat, forces group memebers to join automatically", forceJoin, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "autoAttack", "attackDelay" }));
+      cm.addCommand(new CommandData("battle_simulate", "Simulate the combat", battleSimulate, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "rounds" }));
 
       // Log Commands for investigation
       cm.addCommand(new CommandData("xml", "Logs the xml content of the specific manager", requestXmlLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "xmlType" }));
@@ -558,6 +559,58 @@ public class AdminManager : NetworkBehaviour
          }
       } else {
          ChatManager.self.addChat("Could not parse the isEnabled parameter (only 0 or 1 values allowed): " + parameters, ChatInfo.Type.Error);
+      }
+   }
+
+   private void battleSimulate (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      // Forces party members to auto attack and join the combat
+      forceJoin("1 .25");
+
+      string[] list = parameters.Split(' ');
+      if (list.Length > 0) {
+         int battleCount = 1;
+         try {
+            // Simulate the combat x number of times
+            battleCount = int.Parse(list[0]);
+            StartCoroutine(CO_battleSimulate(battleCount));
+         } catch {
+            // If parameter is invalid, simulate combat 10 times
+            StartCoroutine(CO_battleSimulate(10));
+         }
+      } else {
+         // If parameter is null, simulate combat 10 times
+         StartCoroutine(CO_battleSimulate(10));
+      }
+   }
+
+   private IEnumerator CO_battleSimulate (int battleCounter) {
+      // Spawns an enemy infront of the player that will trigger combat automatically
+      spawnCustomEnemy(Enemy.Type.Pirate_Shooter.ToString());
+
+      // Wait for player to enter combat before proceeding
+      if (!Global.player.isInBattle()) {
+         while (!Global.player.isInBattle()) {
+            yield return 0;
+         }
+      }
+
+      // Wait for combat to end
+      while (Global.player.isInBattle()) {
+         yield return 0;
+      }
+
+      yield return new WaitForSeconds(1);
+
+      // Deduct battle counter, if counter is not 0 then keep repeating battle simulation
+      battleCounter -= 1;
+      if (battleCounter > 0) {
+         StartCoroutine(CO_battleSimulate(battleCounter));
+      } else {
+         D.debug("Combat Simulation Ended");
       }
    }
 
