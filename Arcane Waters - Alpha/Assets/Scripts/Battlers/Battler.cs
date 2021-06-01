@@ -312,7 +312,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          }
 
          if (!canExecuteAction) { 
-            D.debug("Server decided the action should be stopped for battler! {" + userId + "}" + " : {" + enemyType + "}");
+            D.debug("Server decided the action should be CANCELLED for battler! {" + userId + "}" + " : {" + enemyType + "}");
          }
 
          StopCoroutine(currentActionCoroutine);
@@ -970,6 +970,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public void playAnim (Anim.Type animationType) {
+      if (animationType != Anim.Type.Death_East && (isAlreadyDead || hasPlayedDeathAnim)) {
+         D.debug("Has attempted to play other animation {" + animationType + "} but battler is already dead!");
+         return;
+      }
+
       // Make all of our Simple Animation components play the animation
       foreach (SimpleAnimation anim in _anims) {
          if (anim.enabled) {
@@ -1289,7 +1294,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             bool captureExecuteActionLog = false;
             if (canExecuteAction == false) {
                captureExecuteActionLog = true;
-               D.debug("{" + sourceBattler.userId + "} Wait for server to finish process....");
             }
 
             // Wait for server to finish process before granting this battler action
@@ -1518,7 +1522,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             captureExecuteActionLog = false;
             if (canExecuteAction == false) {
                captureExecuteActionLog = true;
-               D.debug("{" + sourceBattler.userId + "} Wait for server to finish process....");
             }
 
             // Wait for server to finish process before granting this battler action
@@ -1671,7 +1674,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             captureExecuteActionLog = false;
             if (canExecuteAction == false) {
                captureExecuteActionLog = true;
-               D.debug("{" + sourceBattler.userId + "} Wait for server to finish process....");
             }
 
             // Wait for server to finish process before granting this battler action

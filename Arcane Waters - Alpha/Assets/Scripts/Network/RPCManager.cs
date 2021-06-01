@@ -5257,7 +5257,7 @@ public class RPCManager : NetworkBehaviour
                }
             }
 
-            if (randomizedSpawnChance < 5) {
+            if (randomizedSpawnChance < 5 && enemyRoster.Count > 0) {
                Enemy backupEnemy = forceCombatantEntry ? enemyRoster.FindAll(_ => !_.isSupportType).ChooseRandom() : enemyRoster.ChooseRandom();
                BattlerData battlerData = MonsterManager.self.getBattlerData(backupEnemy.enemyType);
                modifiedDefenderList.Add(new BattlerInfo {
@@ -5709,7 +5709,6 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ResetMoveDisable (NetworkConnection connection) {
-      // TODO: Remove all these logs after playtest
       if (Global.player == null) {
          D.debug("Player is missing!");
          return;
@@ -5719,7 +5718,6 @@ public class RPCManager : NetworkBehaviour
          PlayerBodyEntity playerBody = (PlayerBodyEntity) Global.player;
          playerBody.isWithinEnemyRadius = false;
          playerBody.playerBattleCollider.combatInitCollider.enabled = true;
-         D.debug("Succeeded in restoring player movement!");
       } else {
          D.debug("Failed to restore player movement!");
       }
