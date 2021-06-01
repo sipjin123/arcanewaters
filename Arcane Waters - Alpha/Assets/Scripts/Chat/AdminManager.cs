@@ -567,6 +567,9 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
+      // Stops the existing coroutines
+      StopAllCoroutines();
+
       // Forces party members to auto attack and join the combat
       forceJoin("1 .25");
 
