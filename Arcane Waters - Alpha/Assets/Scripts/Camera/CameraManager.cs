@@ -248,7 +248,7 @@ public class CameraManager : ClientMonoBehaviour {
       SoundManager.setBackgroundMusic(SoundManager.Type.Battle_Music);
 
       // Wait for it to finish
-      yield return new WaitForSeconds(1f);
+      yield return new WaitForSeconds(defaultCamera.getPixelFadeEffect().getFadeOutDuration());
 
       // Enable the Battle Camera
       battleCamera.getCamera().enabled = true;
@@ -273,7 +273,7 @@ public class CameraManager : ClientMonoBehaviour {
       SoundManager.setBackgroundMusic(SoundManager.previousMusicType);
 
       // Wait for it to finish
-      yield return new WaitForSeconds(1f);
+      yield return new WaitForSeconds(battleCamera.getPixelFadeEffect().getFadeOutDuration());
 
       // Disable the Battle Camera
       defaultCamera.setDepth(-1);

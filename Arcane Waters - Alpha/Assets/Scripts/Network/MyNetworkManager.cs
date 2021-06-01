@@ -187,6 +187,9 @@ public class MyNetworkManager : NetworkManager
       // We have to register handlers to be able to send and receive messages
       MessageManager.registerServerHandlers();
 
+      // Load the admin settings
+      AdminGameSettingsManager.self.onServerStart();
+
       // Look up and store all of the area keys and spawn positions from the database
       AreaManager.self.storeAreaInfo();
       SpawnManager.self.storeSpawnPositions();

@@ -158,7 +158,7 @@ public class Minimap : ClientMonoBehaviour {
       } else {
          string areaKey = _mapsUsedToSaveMinimaps[_currentMinimapIndex].name;
 
-         if (areaKey != "customfarm" && areaKey != "customhouse" && areaKey != "Treasure Sites") {
+         if (areaKey != "customfarm" && areaKey != "customhouse" && areaKey != "Treasure Sites" && areaKey != "Battlegrounds") {
             string rawMapInfo = DB_Main.getMapInfo(areaKey);
             if (rawMapInfo != "") {
                MapManager.self.createLiveMap(areaKey);

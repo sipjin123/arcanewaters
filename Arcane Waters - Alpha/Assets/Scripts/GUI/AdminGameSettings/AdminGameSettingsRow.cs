@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 
-public class AdminBattleParamRow : MonoBehaviour
+public class AdminGameSettingsRow : MonoBehaviour
 {
    #region Public Variables
 
@@ -19,7 +19,6 @@ public class AdminBattleParamRow : MonoBehaviour
    #endregion
 
    public void initialize (float value) {
-      _startingValue = value;
       setValue(value, false);
    }
 
@@ -55,7 +54,7 @@ public class AdminBattleParamRow : MonoBehaviour
 
       // Notify the panel
       if (notifyMainPanel) {
-         PanelManager.self.adminBattlePanel.onParameterRowChanged();
+         PanelManager.self.adminGameSettingsPanel.onParameterRowChanged();
       }
    }
 
@@ -63,18 +62,10 @@ public class AdminBattleParamRow : MonoBehaviour
       return _value;
    }
 
-   public bool hasChanged () {
-      return _value != _startingValue;
-   }
-
    #region Private Variables
-
-   // The value when the row was initialized
-   private float _startingValue = 1f;
 
    // The parameter value currently set in the input field
    private float _value = 0;
 
    #endregion
 }
-

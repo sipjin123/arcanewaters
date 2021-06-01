@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FMOD.Studio;
 using FMODUnity;
 using UnityEngine;
 
@@ -8,6 +9,26 @@ public class AmbienceManager : ClientMonoBehaviour
 
    // Self
    public static AmbienceManager self;
+
+   // FMOD event instance
+   EventInstance ambienceEvent;
+
+   // Is the FMOD event ready?
+   bool isEventReady = false;
+
+   public enum AmbienceType
+   {
+      Forest = 0,
+      Desert = 1,
+      Snow = 2,
+      Lava = 3,
+      Pine = 4,
+      Shroom = 5,
+      TreasureSite = 6,
+      Farm = 7,
+      Interior = 8,
+      SeaMap = 9
+   }
 
    #endregion
 
@@ -51,15 +72,37 @@ public class AmbienceManager : ClientMonoBehaviour
          Destroy(s);
       }
 
-      // Add the new sounds
-      foreach (SoundManager.Type typeToPlay in ambienceTypes) {
-         playAmbience(typeToPlay);
+      // Using one event, we can change the ambience using a parameter
+      if (AreaManager.self.isSeaArea(newAreaKey)) {
+         if (!isEventReady) {
+            SoundEffect effect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.AMBIENCE_BED_MASTER);
+
+            if (effect != null) {
+               ambienceEvent = RuntimeManager.CreateInstance(effect.fmodId);
+               isEventReady = true;
+            }
+         }
+
+         if (isEventReady) {
+            ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, 9);
+            ambienceEvent.start();
+         }
+      } else {
+         if (isEventReady) {
+            ambienceEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+         }
+
+         // Add the new sounds
+         foreach (SoundManager.Type typeToPlay in ambienceTypes) {
+            playAmbience(typeToPlay);
+         }
       }
    }
 
    protected List<SoundManager.Type> getAmbienceTypeForArea (string areaKey) {
       if (AreaManager.self.getArea(areaKey)?.isSea == true) {
-         return new List<SoundManager.Type>() { SoundManager.Type.Ambience_Ocean };
+         //return new List<SoundManager.Type>() { SoundManager.Type.Ambience_Ocean };
+         return new List<SoundManager.Type>() { };
       }
 
       if (Area.isHouse(areaKey)) {
@@ -74,21 +117,8 @@ public class AmbienceManager : ClientMonoBehaviour
    }
 
    protected void playAmbience (SoundManager.Type ambienceType) {
-      if (ambienceType != SoundManager.Type.Ambience_Ocean) {
-         LoopedSound loopedSound = this.gameObject.AddComponent<LoopedSound>();
-         loopedSound.soundType = ambienceType;
-      } else {
-         GameObject eventGo = new GameObject();
-         eventGo.name = "Ambience Emitter";
-         eventGo.transform.SetParent(this.transform);
-
-         StudioEventEmitter eventEmitter = eventGo.AddComponent<StudioEventEmitter>();
-         eventEmitter.Event = SoundEffectManager.self.getSoundEffect(SoundEffectManager.OCEAN_PAD)?.fmodId;
-         eventEmitter.PlayEvent = EmitterGameEvent.ObjectStart;
-         eventEmitter.StopEvent = EmitterGameEvent.ObjectDestroy;
-         eventEmitter.AllowFadeout = true;
-         eventEmitter.Play();
-      }
+      LoopedSound loopedSound = this.gameObject.AddComponent<LoopedSound>();
+      loopedSound.soundType = ambienceType;
    }
 
    #region Private Variables

@@ -18,6 +18,10 @@ public class ClientMessageManager : MonoBehaviour {
 
    #endregion
 
+   private void Awake () {
+      _self = this;
+   }
+
    public void Start () {
       // Set a default culture so we avoid potential deserialization bugs
       CultureInfo culture = CultureInfo.CreateSpecificCulture("en-US");
@@ -30,7 +34,7 @@ public class ClientMessageManager : MonoBehaviour {
       if (Util.isSameIpAddress(msg.newIpAddress, NetworkManager.singleton.networkAddress) && msg.newPort == MyNetworkManager.self.telepathy.port) {
          ClientManager.sendAccountNameAndUserId();
       } else {
-         NetworkManager.singleton.StartCoroutine(CO_Reconnect(msg));
+         _self.StartCoroutine(CO_Reconnect(msg));
       }
    }
 
@@ -374,7 +378,7 @@ public class ClientMessageManager : MonoBehaviour {
    }
 
    public static void On_LoginIsComplete (NetworkConnection conn, LogInCompleteMessage msg) {
-      NetworkManager.singleton.StartCoroutine(CO_OnLoginIsComplete(conn, msg));
+      _self.StartCoroutine(CO_OnLoginIsComplete(conn, msg));
    }
 
    private static IEnumerator CO_OnLoginIsComplete (NetworkConnection conn, LogInCompleteMessage msg) {
@@ -441,6 +445,9 @@ public class ClientMessageManager : MonoBehaviour {
    }
 
    #region Private Variables
+
+   // A reference to the single instance of this object
+   private static ClientMessageManager _self;
 
    #endregion
 }

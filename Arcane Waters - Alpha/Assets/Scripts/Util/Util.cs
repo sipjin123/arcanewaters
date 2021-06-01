@@ -1248,8 +1248,8 @@ public class Util : MonoBehaviour
       // Discard any pending notifications
       NotificationManager.self.onUserLogOut();
 
-      // Close the admin battle panel
-      AdminBattlePanel.self.onUserLogOut();
+      // Close the admin settings panel
+      AdminGameSettingsPanel.self.onUserLogOut();
 
       // Look up the background music for the Title Screen, if we have any
       SoundManager.setBackgroundMusic(SoundManager.Type.Intro_Music);

@@ -117,7 +117,8 @@ public class PlayerShipEntity : ShipEntity
    public Animator boostCircleOutlineAnimator, boostCircleFillAnimator;
 
    // FMOD event instance for managing ship's boost SFX
-   FMOD.Studio.EventInstance boostState;
+   //FMOD.Studio.EventInstance boostState;
+   StudioEventEmitter boostEventEmitter;
 
    // The different flags the ship can display
    public enum Flag
@@ -216,8 +217,13 @@ public class PlayerShipEntity : ShipEntity
       SoundEffect boostEffect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.SHIP_LAUNCH_CHARGE);
 
       if (boostEffect != null) {
-         boostState = RuntimeManager.CreateInstance(boostEffect.fmodId);
-         RuntimeManager.AttachInstanceToGameObject(boostState, transform, _body);
+         //boostState = RuntimeManager.CreateInstance(boostEffect.fmodId);
+         //RuntimeManager.AttachInstanceToGameObject(boostState, transform, _body);
+
+         boostEventEmitter = gameObject.AddComponent<StudioEventEmitter>();
+         boostEventEmitter.AllowFadeout = true;
+         boostEventEmitter.StopEvent = EmitterGameEvent.ObjectDestroy;
+         boostEventEmitter.Event = boostEffect.fmodId;
       }
    }
 
@@ -365,13 +371,16 @@ public class PlayerShipEntity : ShipEntity
          boostTimingSprites.alpha = 1.0f;
          _isChargingBoost = true;
 
-         boostState.start();
-         boostState.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 0);
+         //boostState.start();
+         boostEventEmitter.SetParameter(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 0);
+         boostEventEmitter.Play();
+         //boostState.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 0);
       } else if (InputManager.isSpeedUpKeyReleased() && !isBoostCoolingDown() && _isChargingBoost) {
          // Activate boost
          //SoundEffectManager.self.playSoundEffect(SoundEffectManager.SHIPBOOST_ID, transform);
          // FMOD SFX
-         boostState.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 2);
+         //boostState.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 2);
+         boostEventEmitter.SetParameter(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 2);
 
          // If the player is pressing a direction, boost them that way, otherwise boost them the way they are facing
          Vector2 boostDirection = InputManager.getMovementInput();
@@ -401,7 +410,8 @@ public class PlayerShipEntity : ShipEntity
 
          // FMOD SFX
          if (getBoostChargeAmount() == 1) {
-            boostState.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 1);
+            boostEventEmitter.SetParameter(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 1);
+            //boostState.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 1);
          }
       }
    }

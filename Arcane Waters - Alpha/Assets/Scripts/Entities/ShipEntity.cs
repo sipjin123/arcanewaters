@@ -79,6 +79,7 @@ public class ShipEntity : SeaEntity
 
       float reloadModifier = 1 + (((float) instanceDifficulty - 1) / (Voyage.getMaxDifficulty() - 1));
       reloadDelay = enemyData.reloadDelay / (instanceDifficulty > 0 ? reloadModifier : 1);
+      reloadDelay *= AdminGameSettingsManager.self.settings.seaAttackCooldown;
 
       speed = shipData.baseSpeed;
       sailors = shipData.baseSailors;
@@ -112,7 +113,7 @@ public class ShipEntity : SeaEntity
 
    public override void playAttackSound () {
       // Play a sound effect
-      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.SHIP_CANNON, this.transform);
+      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.SHIP_CANNON, this.transform, true, true);
       //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Cannon_1, this.transform.position);
    }
 

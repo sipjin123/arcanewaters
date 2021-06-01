@@ -183,6 +183,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       float reloadModifier = 1 + (((float) difficultyLevel - 1) / (Voyage.getMaxDifficulty() - 1));
       reloadDelay = seaMonsterData.reloadDelay / (difficultyLevel > 0 ? reloadModifier : 1);
+      reloadDelay *= AdminGameSettingsManager.self.settings.seaAttackCooldown;
       currentHealth = seaMonsterData.maxHealth * difficultyLevel;
       maxHealth = seaMonsterData.maxHealth * difficultyLevel;
       invulnerable = seaMonsterData.isInvulnerable;
@@ -767,7 +768,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    private MonsterBehavior _currentBehavior = MonsterBehavior.Idle;
 
    // The current targets in attack range
-   List<NetEntity> _targetsInAttackRange = new List<NetEntity>();
+   private List<NetEntity> _targetsInAttackRange = new List<NetEntity>();
 
    #endregion
 }

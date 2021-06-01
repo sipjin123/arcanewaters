@@ -1344,6 +1344,16 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static void addAdminGameSettings (AdminGameSettings settings) {
+   }
+
+   public static void updateAdminGameSettings (AdminGameSettings settings) {
+   }
+
+   public static AdminGameSettings getAdminGameSettings () {
+      return null;
+   }
+    
    /*
 
    public static void refillSupplies (int userId) {

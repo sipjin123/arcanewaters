@@ -658,7 +658,7 @@ public class BattleManager : MonoBehaviour {
             
             // Make note of the time that this battle action is going to be fully completed, considering animation times
             double timeAttackEnds = NetworkTime.time + timeToWait + attackAbilityData.getTotalAnimLength(source, target);
-            float cooldownDuration = abilityData.abilityCooldown * source.getCooldownModifier() * AdminBattleManager.self.attackCooldownMultiplier;
+            float cooldownDuration = abilityData.abilityCooldown * source.getCooldownModifier() * AdminGameSettingsManager.self.settings.battleAttackCooldown;
             source.cooldownEndTime = timeAttackEnds + cooldownDuration;
 
             // Apply the target's AP change
@@ -751,7 +751,7 @@ public class BattleManager : MonoBehaviour {
          foreach (Battler target in targets) {
             // Make note of the time that this battle action is going to be fully completed, considering animation times
             double timeBuffEnds = NetworkTime.time + timeToWait + buffAbility.getTotalAnimLength(source, target);
-            float cooldownDuration = abilityData.abilityCooldown * source.getCooldownModifier() * AdminBattleManager.self.attackCooldownMultiplier;
+            float cooldownDuration = abilityData.abilityCooldown * source.getCooldownModifier() * AdminGameSettingsManager.self.settings.battleAttackCooldown;
             source.cooldownEndTime = timeBuffEnds + cooldownDuration;
 
             // Apply the target's AP change

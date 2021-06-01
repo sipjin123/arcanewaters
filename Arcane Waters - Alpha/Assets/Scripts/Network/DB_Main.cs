@@ -9494,6 +9494,86 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
+   #region Admin Settings
+
+   public static new void addAdminGameSettings (AdminGameSettings settings) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO admin_game_settings (creationDate, battleAttackCooldown, battleJumpDuration, seaSpawnsPerSpot, seaAttackCooldown) " +
+            "VALUES(@creationDate, @battleAttackCooldown, @battleJumpDuration, @seaSpawnsPerSpot, @seaAttackCooldown);"
+            , conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@creationDate", DateTime.FromBinary(settings.creationDate));
+            cmd.Parameters.AddWithValue("@battleAttackCooldown", settings.battleAttackCooldown);
+            cmd.Parameters.AddWithValue("@battleJumpDuration", settings.battleJumpDuration);
+            cmd.Parameters.AddWithValue("@seaSpawnsPerSpot", settings.seaSpawnsPerSpot);
+            cmd.Parameters.AddWithValue("@seaAttackCooldown", settings.seaAttackCooldown);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+
+            settings.id = (int) cmd.LastInsertedId;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void updateAdminGameSettings (AdminGameSettings settings) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+         "UPDATE admin_game_settings SET battleAttackCooldown=@battleAttackCooldown, battleJumpDuration=@battleJumpDuration, seaSpawnsPerSpot=@seaSpawnsPerSpot, seaAttackCooldown=@seaAttackCooldown " +
+         "WHERE id=@id", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@id", settings.id);
+            cmd.Parameters.AddWithValue("@battleAttackCooldown", settings.battleAttackCooldown);
+            cmd.Parameters.AddWithValue("@battleJumpDuration", settings.battleJumpDuration);
+            cmd.Parameters.AddWithValue("@seaSpawnsPerSpot", settings.seaSpawnsPerSpot);
+            cmd.Parameters.AddWithValue("@seaAttackCooldown", settings.seaAttackCooldown);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new AdminGameSettings getAdminGameSettings () {
+      AdminGameSettings settings = null;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM admin_game_settings ORDER BY creationDate DESC LIMIT 1"
+            , conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  settings = new AdminGameSettings(dataReader);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return settings;
+   }
+
+   #endregion
+
    public static new void readTest () {
       try {
          using (MySqlConnection conn = getConnection())

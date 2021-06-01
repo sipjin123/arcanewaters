@@ -73,8 +73,11 @@ public class SoundEffectManager : MonoBehaviour
    public const int ROCK_MINE = 91;
    public const int SHIP_LAUNCH_CHARGE = 92;
    public const int PICKUP_CROP = 93;
+   public const int LightningFlash = 96;
+   public const int AMBIENCE_BED_MASTER = 97;
 
    public const string SHIP_CHARGE_RELEASE_PARAM = "Ship_Charge_Release";
+   public const string AMBIENCE_AUDIO_SWITCH_PARAM = "Audio_Switch";
 
    // Reference to the main camera
    public Camera mainCamReference;
@@ -153,12 +156,12 @@ public class SoundEffectManager : MonoBehaviour
       }
    }
 
-   public void playFmodSoundEffect(int id, Transform target, bool force3d = false) {
+   public void playFmodSoundEffect(int id, Transform target, bool force3d = false, bool forceNoParent = false) {
       SoundEffect effect;
 
       if (_soundEffects.TryGetValue(id, out effect)) {
          if (effect.is3D || force3d) {
-            playFmodSoundEffect3D(effect, target);
+            playFmodSoundEffect3D(effect, target, forceNoParent);
          } else {
             if (effect.fmodId.Length > 0) {
                RuntimeManager.PlayOneShot(effect.fmodId, mainCamReference.transform.position);
@@ -193,10 +196,15 @@ public class SoundEffectManager : MonoBehaviour
       Destroy(audioSource.gameObject, audioSource.clip.length);
    }
 
-   private void playFmodSoundEffect3D(SoundEffect effect, Transform target) {
+   private void playFmodSoundEffect3D(SoundEffect effect, Transform target, bool forceNoParent = false) {
       StudioEventEmitter eventEmitter = Instantiate(PrefabsManager.self.fMod3dPrefab, target.position, Quaternion.identity);
+     
       eventEmitter.Event = effect.fmodId;
-      eventEmitter.transform.SetParent(target, true);
+      
+      if (!forceNoParent) {
+         eventEmitter.transform.SetParent(target, true);
+      }
+
       eventEmitter.EventInstance.setVolume(effect.minVolume);
       eventEmitter.Play();
       StartCoroutine(CO_DestroyAfterEnd(eventEmitter));

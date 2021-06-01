@@ -27,7 +27,7 @@ public class ServerCannonBall : NetworkBehaviour {
       if (!Util.isBatch()) {
          // Play an appropriate sound
          if (_playFiringSound) {
-            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.SHIP_CANNON, this.transform);
+            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.SHIP_CANNON, this.transform, true, true);
             //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Cannon_1, this.transform.position);
          }
 

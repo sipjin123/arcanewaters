@@ -167,7 +167,7 @@ public class AttackAbilityData : BasicAbilityData
       float jumpDuration = distance * Battler.JUMP_LENGTH;
 
       // Additional modifier set by admins
-      jumpDuration *= AdminBattleManager.self.jumpDurationMultiplier;
+      jumpDuration *= AdminGameSettingsManager.self.settings.battleJumpDuration;
 
       return jumpDuration;
    }

@@ -42,7 +42,7 @@ public class EnemyManager : MonoBehaviour {
       }
    }
 
-    public void spawnEnemyAtLocation(Enemy.Type enemyType, Instance instance, Vector2 location) {
+   public void spawnEnemyAtLocation(Enemy.Type enemyType, Instance instance, Vector2 location) {
         // If we don't have any spawners defined for this Area, then we're done
         if (instance == null)
         {
@@ -110,7 +110,7 @@ public class EnemyManager : MonoBehaviour {
       int guildId = BotShipEntity.PIRATES_GUILD_ID;
       Area area = AreaManager.self.getArea(instance.areaKey);
       int randomEnemyTypeVal = Random.Range(0, 100);
-      int spawnsPerSpot = Mathf.CeilToInt((float)instance.difficulty / 2f);
+      int spawnsPerSpot = getSpawnsPerSpot(instance.difficulty);
 
       foreach (Enemy_Spawner spawner in _spawners[instance.areaKey]) {
          // Spawning ships has a 60% chance
@@ -268,6 +268,14 @@ public class EnemyManager : MonoBehaviour {
       }
 
       return xmlId;
+   }
+
+   public static int getSpawnsPerSpot (int difficulty) {
+      return getSpawnsPerSpot(difficulty, AdminGameSettingsManager.self.settings.seaSpawnsPerSpot);
+   }
+
+   public static int getSpawnsPerSpot (int difficulty, float adminParameter) {
+      return Mathf.CeilToInt(((float)difficulty / 2f) * adminParameter);
    }
 
    #region Private Variables
