@@ -191,10 +191,6 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          displayNameText.enabled = false;
          highlightCanvas.enabled = false;
 
-         // Disable boss collider after it dies
-         if (bossCollider != null) {
-            bossCollider.SetActive(false);
-         }
          enemyBattleCollider.gameObject.SetActive(false);
 
          if (shouldDisableColliderOnDeath()) {
