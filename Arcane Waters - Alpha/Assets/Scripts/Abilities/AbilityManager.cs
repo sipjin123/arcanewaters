@@ -157,8 +157,7 @@ public class AbilityManager : MonoBehaviour
          BattleAction actionToExecute = null;
          Battle battle = BattleManager.self.getBattle(action.battleId);
          if (battle == null) {
-            D.debug("Battle fetched was null!");
-            return;
+            continue;
          }
          Battler sourceBattler = battle.getBattler(action.sourceId);
          Battler targetBattler = battle.getBattler(action.targetId);
@@ -267,15 +266,12 @@ public class AbilityManager : MonoBehaviour
 
    public void execute (StanceAction action) {
       Battle battle = BattleManager.self.getBattle(action.battleId);
-
       if (battle == null) {
-         D.debug("Battle is null, cancel stance action");
          return;
       }
 
       Battler sourceBattler = battle.getBattler(action.sourceId);
       if (sourceBattler == null) {
-         D.debug("Source Battler is null, cancel stance action");
          return;
       }
 
