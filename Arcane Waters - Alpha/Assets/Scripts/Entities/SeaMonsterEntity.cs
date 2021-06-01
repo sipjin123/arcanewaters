@@ -221,21 +221,6 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       initData(monsterData);
 
-      if (isServer) {
-         _seeker = GetComponent<Seeker>();
-         if (_seeker == null) {
-            D.debug("There has to be a Seeker Script attached to the SeaMonsterEntity Prefab");
-         }
-
-         // Only use the graph in this area to calculate paths
-         GridGraph graph = AreaManager.self.getArea(areaKey).getGraph();
-         _seeker.graphMask = GraphMask.FromGraph(graph);
-
-         _seeker.pathCallback = setPath_Asynchronous;
-
-         startAnalysis();
-      }
-
       // Note our spawn position
       _spawnPos = sortPoint.transform.position;
 
@@ -434,166 +419,6 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    #region Behavior functions
 
-   private void startAnalysis () {
-      switch (seaMonsterData.roleType) {
-         case RoleType.Standalone:
-         case RoleType.Master:
-            InvokeRepeating(nameof(standaloneBehavior), Random.Range(0f, 1f), 0.5f);
-            break;
-         case RoleType.Minion:
-            InvokeRepeating(nameof(minionBehavior), Random.Range(0f, 1f), 0.5f);
-            break;
-         default:
-            break;
-      }
-   }
-
-   private void standaloneBehavior () {
-      if (_currentBehavior == MonsterBehavior.Idle) {
-         // Check if there are targets around
-         scanTargetsInArea();
-         _targetsInAttackRange = getAllTargetsInAttackRange();
-
-         // Select a random target in attack range, or the closest target in the territory
-         if (_targetsInAttackRange.Count > 0) {
-            targetEntity = _targetsInAttackRange[Random.Range(0, _targetsInAttackRange.Count)];
-         } else {
-            targetEntity = getNearestTarget();
-         }
-
-         if (canCurrentTargetBeAttacked()) {
-            // Attack the target in range
-            _currentBehaviorCoroutine = StartCoroutine(CO_AttackTargetOnce());
-         } else if (targetEntity != null && !targetEntity.isDead() && isWithinMoveDistance(targetEntity) && isWithinTerritory(targetEntity)) {
-            // Move closer to the target
-            _currentBehaviorCoroutine = StartCoroutine(CO_MoveToPosition(
-               (Vector2)targetEntity.transform.position + Random.insideUnitCircle * 0.5f, 0.1f,
-               MonsterBehavior.MoveToAttackPosition));
-         } else {
-            // Move around
-            _currentBehaviorCoroutine = StartCoroutine(CO_MoveToPosition(
-               _spawnPos + Random.insideUnitCircle * 0.5f, seaMonsterData.moveFrequency,
-               MonsterBehavior.MoveToPosition));
-         }
-      } else if (_currentBehavior == MonsterBehavior.MoveToPosition) {
-         // Check if there are targets around
-         scanTargetsInArea();
-         targetEntity = getNearestTarget();
-
-         if (targetEntity != null && !targetEntity.isDead() && isWithinMoveDistance(targetEntity) && isWithinTerritory(targetEntity)) {
-            // Interrupt the move around behavior
-            StopCoroutine(_currentBehaviorCoroutine);
-            _currentPathIndex = _currentPath.Count;
-            _currentBehavior = MonsterBehavior.Idle;
-         }
-      }
-   }
-
-   private void minionBehavior () {
-      if (_currentBehavior == MonsterBehavior.Idle) {
-         // Check if there are targets around
-         scanTargetsInArea();
-         _targetsInAttackRange = getAllTargetsInAttackRange();
-
-         // Select a random target in attack range, or the closest target in the territory
-         if (_targetsInAttackRange.Count > 0) {
-            targetEntity = _targetsInAttackRange[Random.Range(0, _targetsInAttackRange.Count)];
-         } else {
-            targetEntity = getNearestTarget();
-         }
-
-         // Attack the current target
-         if (canCurrentTargetBeAttacked()) {
-            _currentBehaviorCoroutine = StartCoroutine(CO_AttackTargetOnce());
-            return;
-         }
-      }
-   }
-
-   private IEnumerator CO_MoveToPosition (Vector2 pos, float endDelay, MonsterBehavior behavior) {
-      _currentBehavior = behavior;
-
-      yield return findAndSetPath_Asynchronous(pos);
-
-      // The movement is performed in FixedUpdate
-      while (_currentPathIndex < _currentPath.Count) {
-         yield return new WaitForSeconds(0.1f);
-      }
-
-      if (endDelay >= 0) {
-         yield return new WaitForSeconds(endDelay);
-      }
-
-      _currentBehavior = MonsterBehavior.Idle;
-   }
-
-   private IEnumerator CO_AttackTargetOnce () {
-      _currentBehavior = MonsterBehavior.Attack;
-
-      // Wait for the reload to finish
-      while (!hasReloaded() || !canAttack()) {
-         yield return null;
-      }
-
-      // If the target is no more valid, stop here
-      if (!canCurrentTargetBeAttacked()) {
-         _currentBehavior = MonsterBehavior.Idle;
-         yield break;
-      }
-
-      // TODO: Setup a more efficient method for attack type setup
-      Attack.Type attackType = Attack.Type.None;
-      if (seaMonsterData.skillIdList.Count > 0) {
-         ShipAbilityData seaEntityAbilityData = ShipAbilityManager.self.getAbility(seaMonsterData.skillIdList[0]);
-         if (seaEntityAbilityData != null) {
-            attackType = seaEntityAbilityData.selectedAttackType;
-         }
-      }
-
-      // Attack
-      if (attackType != Attack.Type.None) {
-         if (seaMonsterData.isMelee) {
-            meleeAtSpot(targetEntity.transform.position, seaMonsterData.attackType);
-         } else if (seaMonsterData.isRanged) {
-            int abilityId = -1;
-            if (seaMonsterData.skillIdList.Count > 0) {
-               ShipAbilityData shipAbility = ShipAbilityManager.self.getAbility(seaMonsterData.skillIdList[0]);
-               abilityId = shipAbility.abilityId;
-            }
-
-            // TODO: Confirm later on if this needs to be dynamic
-            float launchDelay = .4f; 
-            float projectileDelay = seaMonsterData.projectileDelay;
-            launchProjectile(targetEntity.transform.position, targetEntity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
-
-            // Tentacles also attack other targets in range
-            if (monsterType == Type.Horror_Tentacle) {
-               foreach (NetEntity entity in _targetsInAttackRange) {
-                  if (entity != targetEntity && Random.value < TENTACLE_EXTRA_TARGET_CHANCE) {
-                     launchProjectile(entity.transform.position, entity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
-                  }
-               }
-            }
-         }
-      }
-
-      _currentBehavior = MonsterBehavior.Idle;
-   }
-
-   private bool canCurrentTargetBeAttacked () {
-      if (targetEntity == null || targetEntity.isDead() || !isWithinTerritory(targetEntity)) {
-         return false;
-      }
-
-      float sqrDistanceToTarget = Vector2.SqrMagnitude(sortPoint.transform.position - targetEntity.transform.position);
-      if ((seaMonsterData.isMelee && !isWithinMeleeAttackDistance(sqrDistanceToTarget)) ||
-            (seaMonsterData.isRanged && !isWithinRangedAttackDistance(sqrDistanceToTarget))) {
-         return false;
-      }
-
-      return true;
-   }
-
    public bool canAttack () {
       double timeSinceAttack = NetworkTime.time - _lastAttackTime;
       return timeSinceAttack > seaMonsterData.attackFrequency;
@@ -776,23 +601,6 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       fireAtSpot(targetLoc, abilityId, attackDelay, launchDelay, spawnPosition);
    }
 
-   private IEnumerator findAndSetPath_Asynchronous (Vector3 targetPosition) {
-      if (!_seeker.IsDone()) {
-         _seeker.CancelCurrentPathRequest();
-      }
-      _seeker.StartPath(sortPoint.transform.position, targetPosition);
-
-      while (!_seeker.IsDone()) {
-         yield return null;
-      }
-   }
-
-   private void setPath_Asynchronous (Path newPath) {
-      _currentPath = newPath.vectorPath;
-      _currentPathIndex = 0;
-      _seeker.CancelCurrentPathRequest(true);
-   }
-
    public override void setAreaParent (Area area, bool worldPositionStays) {
       this.transform.SetParent(area.seaMonsterParent, worldPositionStays);
    }
@@ -860,12 +668,79 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    public override bool isSeaMonster () { return true; }
 
+   public override bool isSeaMonsterMinion () {
+      return seaMonsterData.roleType == RoleType.Minion;
+   }
+
+   protected override bool isInRange (Vector2 position) {
+      Vector2 myPosition = transform.position;
+      float sqrDistance = Vector2.SqrMagnitude(position - myPosition);
+      if (seaMonsterData.isMelee) {
+         return isWithinMeleeAttackDistance(sqrDistance);
+      } else {
+         return isWithinRangedAttackDistance(sqrDistance);
+      }
+   }
+
+   protected override IEnumerator CO_AttackEnemiesInRange (float delayInSecondsWhenNotReloading) {
+      while (!isDead()) {
+
+         // Wait for the reload to finish
+         while (!hasReloaded() || !canAttack()) {
+            yield return null;
+         }
+
+         targetEntity = getAttackerInRange();
+
+         if (targetEntity) {
+            attackTarget();
+         }
+
+         yield return null;
+      }
+   }
+
+   private void attackTarget () {
+      // TODO: Setup a more efficient method for attack type setup
+      Attack.Type attackType = Attack.Type.None;
+      if (seaMonsterData.skillIdList.Count > 0) {
+         ShipAbilityData seaEntityAbilityData = ShipAbilityManager.self.getAbility(seaMonsterData.skillIdList[0]);
+         if (seaEntityAbilityData != null) {
+            attackType = seaEntityAbilityData.selectedAttackType;
+         }
+      }
+
+      // Attack
+      if (attackType != Attack.Type.None) {
+         if (seaMonsterData.isMelee) {
+            meleeAtSpot(targetEntity.transform.position, seaMonsterData.attackType);
+         } else if (seaMonsterData.isRanged) {
+            int abilityId = -1;
+            if (seaMonsterData.skillIdList.Count > 0) {
+               ShipAbilityData shipAbility = ShipAbilityManager.self.getAbility(seaMonsterData.skillIdList[0]);
+               abilityId = shipAbility.abilityId;
+            }
+
+            // TODO: Confirm later on if this needs to be dynamic
+            float launchDelay = .4f;
+            float projectileDelay = seaMonsterData.projectileDelay;
+            launchProjectile(targetEntity.transform.position, targetEntity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
+
+            // Tentacles also attack other targets in range
+            if (monsterType == Type.Horror_Tentacle) {
+               foreach (NetEntity entity in _targetsInAttackRange) {
+                  if (entity != targetEntity && Random.value < TENTACLE_EXTRA_TARGET_CHANCE) {
+                     launchProjectile(entity.transform.position, entity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
+                  }
+               }
+            }
+         }
+      }
+   }
+
    #endregion
 
    #region Private Variables
-
-   // The Seeker that handles Pathfinding
-   protected Seeker _seeker;
 
    // The handling for monster sprite animation
    protected SimpleAnimation _simpleAnim;

@@ -7,6 +7,7 @@ using System.Xml.Serialization;
 using System.Text;
 using System.Xml;
 using FMODUnity;
+using FMOD.Studio;
 
 public class SoundEffectManager : MonoBehaviour
 {
@@ -61,13 +62,19 @@ public class SoundEffectManager : MonoBehaviour
    public const int OPEN_LAND_BAG = 72;
    public const int OPEN_CHEST = 73;
 
+   public const int OCEAN_PAD = 74;
+
    public const int BATTLE_INTRO = 81;
    public const int BATTLE_OUTRO = 82;
 
    public const int SHIP_CANNON = 85;
    public const int FISH_JUMP = 86;
+   public const int CALMING_WATERFALL = 90;
    public const int ROCK_MINE = 91;
+   public const int SHIP_LAUNCH_CHARGE = 92;
    public const int PICKUP_CROP = 93;
+
+   public const string SHIP_CHARGE_RELEASE_PARAM = "Ship_Charge_Release";
 
    // Reference to the main camera
    public Camera mainCamReference;
@@ -110,9 +117,8 @@ public class SoundEffectManager : MonoBehaviour
    }
 
    public SoundEffect getSoundEffect (int id) {
-      SoundEffect data = null;
+      SoundEffect data;
       _soundEffects.TryGetValue(id, out data);
-
       return data;
    }
 
@@ -163,6 +169,16 @@ public class SoundEffectManager : MonoBehaviour
       } else {
          D.debug("Could not find SoundEffect with 'id' : '" + id + "'");
       }
+   }
+
+   public SoundEffect getSoundEffectFromId(int id) {
+      SoundEffect effect;
+
+      if(!_soundEffects.TryGetValue(id, out effect)) {
+         D.debug("Could not find SoundEffect with 'id' : '" + id + "'");
+      }
+
+      return effect;
    }
 
    private void playSoundEffect3D (SoundEffect effect, Transform target) {

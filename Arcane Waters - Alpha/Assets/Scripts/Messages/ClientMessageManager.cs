@@ -374,6 +374,15 @@ public class ClientMessageManager : MonoBehaviour {
    }
 
    public static void On_LoginIsComplete (NetworkConnection conn, LogInCompleteMessage msg) {
+      NetworkManager.singleton.StartCoroutine(CO_OnLoginIsComplete(conn, msg));
+   }
+
+   private static IEnumerator CO_OnLoginIsComplete (NetworkConnection conn, LogInCompleteMessage msg) {
+      // Wait for any fades to complete before processing anything
+      while (Global.isScreenTransitioning) {
+         yield return null;
+      }
+
       // Set our initial facing direction
       Global.initialFacingDirection = msg.initialFacingDirection;
       Global.lastAccountEmail = msg.accountEmail;

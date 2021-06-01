@@ -5,6 +5,7 @@ using UnityEngine.Tilemaps;
 using System.Collections.Generic;
 using System;
 using MapCustomization;
+using FMODUnity;
 
 namespace MapCreationTool
 {
@@ -130,6 +131,31 @@ namespace MapCreationTool
                   waterfall.transform.localPosition = chunk.position * 0.16f + Vector2.down * 0.16f * 0.5f;
                   waterfall.transform.localScale = Vector3.one;
                   waterfall.setSize(chunk.size + Vector2.up * 0f + Vector2.left * 0.9f);
+
+                  // Attaching a FMOD event emitter
+                  if (SoundEffectManager.self != null) {
+                     SoundEffect effect = SoundEffectManager.self.getSoundEffectFromId(SoundEffectManager.CALMING_WATERFALL);
+
+                     if(effect != null) {
+                        BoxCollider2D waterfallCollider = waterfall.GetComponent<BoxCollider2D>();
+                        Bounds bounds = waterfallCollider.bounds;
+
+                        // FMOD 3D emitter position
+                        GameObject emitterGo = new GameObject();
+                        emitterGo.name = "Waterfall Emitter";
+                        emitterGo.transform.SetParent(waterfall.transform);
+
+                        Vector2 emitterPos = new Vector2(bounds.center.x, bounds.center.y);
+                        emitterGo.transform.position = emitterPos;
+
+                        StudioEventEmitter emitterScript = emitterGo.AddComponent<StudioEventEmitter>();
+                        emitterScript.PlayEvent = EmitterGameEvent.ObjectStart;
+                        emitterScript.StopEvent = EmitterGameEvent.ObjectDestroy;
+                        emitterScript.Event = effect.fmodId;
+                        emitterScript.EventInstance.setVolume(effect.minVolume);
+                     }
+                  }
+
                   break;
                case SpecialTileChunk.Type.Current:
                   GameObject current = UnityEngine.Object.Instantiate(AssetSerializationMaps.currentEffector, map.effectorContainer);

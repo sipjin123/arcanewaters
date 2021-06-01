@@ -350,13 +350,22 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
       initializeBattler();
 
-      if (isLocalBattler()) {
+      bool isLocalBattler = this.isLocalBattler();
+
+      if (isLocalBattler) {
          player.rpc.Cmd_RequestStanceChange((Stance) PlayerPrefs.GetInt(PlayerBodyEntity.CACHED_STANCE_PREF, 0));
 
          if (Global.autoAttack) {
             InvokeRepeating(nameof(autoAttackSimulation), 1, Math.Min(.25f, Global.attackDelay));
-         } 
+         }
+
       }
+
+      LocalPlayerIndicator indicator = this.GetComponentInChildren<LocalPlayerIndicator>();
+      if (indicator != null) {
+         indicator.toggle(isLocalBattler);
+      }
+
    }
 
    private void autoAttackSimulation () {

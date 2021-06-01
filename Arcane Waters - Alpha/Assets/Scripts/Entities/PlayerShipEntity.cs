@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 using TMPro;
 using DG.Tweening;
 using UnityEngine.InputSystem;
+using FMODUnity;
 
 public class PlayerShipEntity : ShipEntity
 {
@@ -115,6 +116,9 @@ public class PlayerShipEntity : ShipEntity
    // References to animators for the player's boost circle
    public Animator boostCircleOutlineAnimator, boostCircleFillAnimator;
 
+   // FMOD event instance for managing ship's boost SFX
+   FMOD.Studio.EventInstance boostState;
+
    // The different flags the ship can display
    public enum Flag
    {
@@ -206,6 +210,14 @@ public class PlayerShipEntity : ShipEntity
       if (isServer) {
          // When we enter a new scene, update powerups on the client
          rpc.Target_UpdatePowerups(connectionToClient, PowerupManager.self.getPowerupsForUser(userId));
+      }
+
+      // Attaching state to this gameobject
+      SoundEffect boostEffect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.SHIP_LAUNCH_CHARGE);
+
+      if (boostEffect != null) {
+         boostState = RuntimeManager.CreateInstance(boostEffect.fmodId);
+         RuntimeManager.AttachInstanceToGameObject(boostState, transform, _body);
       }
    }
 
@@ -352,9 +364,14 @@ public class PlayerShipEntity : ShipEntity
          _boostChargeStartTime = NetworkTime.time;
          boostTimingSprites.alpha = 1.0f;
          _isChargingBoost = true;
+
+         boostState.start();
+         boostState.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 0);
       } else if (InputManager.isSpeedUpKeyReleased() && !isBoostCoolingDown() && _isChargingBoost) {
          // Activate boost
-         SoundEffectManager.self.playSoundEffect(SoundEffectManager.SHIPBOOST_ID, transform);
+         //SoundEffectManager.self.playSoundEffect(SoundEffectManager.SHIPBOOST_ID, transform);
+         // FMOD SFX
+         boostState.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 2);
 
          // If the player is pressing a direction, boost them that way, otherwise boost them the way they are facing
          Vector2 boostDirection = InputManager.getMovementInput();
@@ -381,6 +398,11 @@ public class PlayerShipEntity : ShipEntity
 
          boostCircleFillAnimator.SetInteger("facing", (int) facing);
          boostCircleOutlineAnimator.SetInteger("facing", (int) facing);
+
+         // FMOD SFX
+         if (getBoostChargeAmount() == 1) {
+            boostState.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 1);
+         }
       }
    }
 
@@ -1219,7 +1241,10 @@ public class PlayerShipEntity : ShipEntity
             entityNameLabel.outlineColor = sbp.nameOutlineColor;
             entityNameLabel.outlineWidth = sbp.nameOutlineWidth;
 
-            entityNameGO.GetComponentInChildren<RawImage>(true).enabled = true;
+            LocalPlayerIndicator indicator = this.GetComponentInChildren<LocalPlayerIndicator>();
+            if (indicator != null) {
+               indicator.toggle(isLocalPlayer);
+            }
          }
       }
    }

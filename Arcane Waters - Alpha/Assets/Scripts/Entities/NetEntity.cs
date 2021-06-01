@@ -317,11 +317,11 @@ public class NetEntity : NetworkBehaviour
          }
 
          // This will allow the local host in unity editor to simulate time for features such as crops
-         #if UNITY_EDITOR
+         if (Application.isEditor) {
             if (Global.player != null && isServer) {
                InvokeRepeating("requestServerTime", 0f, 1f);
             }
-         #endif
+         }
 
          // Fetch the perk points for this user
          Global.player.rpc.Cmd_FetchPerkPointsForUser();
@@ -1621,7 +1621,7 @@ public class NetEntity : NetworkBehaviour
       D.debug("Returning player to town: Go Home Command!");
       spawnInNewMap(Area.STARTING_TOWN);
    }
-   
+
    [Server]
    public void spawnInBiomeHomeTown () {
       Instance instance = InstanceManager.self.getInstance(instanceId);
@@ -1967,6 +1967,8 @@ public class NetEntity : NetworkBehaviour
    public virtual bool isBotShip () { return false; }
 
    public virtual bool isSeaMonster () { return false; }
+
+   public virtual bool isSeaMonsterMinion () { return false; }
 
    public virtual bool isLandEnemy () { return false; }
 

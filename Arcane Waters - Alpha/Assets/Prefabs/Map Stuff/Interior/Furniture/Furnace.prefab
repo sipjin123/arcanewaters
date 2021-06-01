@@ -187,6 +187,8 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 0
+  freezeAlpha: 0
+  _index: 0
 --- !u!1 &8953369135155473566
 GameObject:
   m_ObjectHideFlags: 0
@@ -202,6 +204,7 @@ GameObject:
   - component: {fileID: 4236490625857413329}
   - component: {fileID: -1857454874716832709}
   - component: {fileID: 5480315273872317302}
+  - component: {fileID: 4792379056449743125}
   m_Layer: 15
   m_Name: Furnace
   m_TagString: Untagged
@@ -299,7 +302,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8953369135155473566}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0b55fee7791a0ed4ea630416c3c7e974, type: 3}
   m_Name: 
@@ -354,6 +357,8 @@ MonoBehaviour:
   maxIndex: 40
   currentAnimation: 0
   group: 0
+  freezeAlpha: 0
+  _index: 0
 --- !u!114 &5480315273872317302
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -368,3 +373,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   includeChildren: 1
   currentBiome: 1
+--- !u!114 &4792379056449743125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8953369135155473566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  Event: event:/SFX/Ambience/Emitters/Calming_Fire
+  PlayEvent: 1
+  StopEvent: 2
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 3.9
+  OverrideMaxDistance: 11.9

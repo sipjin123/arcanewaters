@@ -250,6 +250,7 @@ MonoBehaviour:
   maxHealth: 1000
   XP: 0
   desiredAngle: 0
+  isStealthMuted: 0
   netIdent: {fileID: 0}
   rpc: {fileID: 0}
   cropManager: {fileID: 0}
@@ -257,6 +258,7 @@ MonoBehaviour:
   groundChecker: {fileID: 0}
   waterChecker: {fileID: 0}
   nameText: {fileID: 7411994986116116252}
+  nameTextOutline: {fileID: 0}
   sortPoint: {fileID: 1307228615476472}
   facing: 3
   isSinglePlayer: 0
@@ -269,7 +271,9 @@ MonoBehaviour:
   guildRankPriority: 0
   battleId: 0
   voyageGroupId: -1
+  isGhost: 0
   hasEnteredPvP: 0
+  isNextBiomeUnlocked: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
   guildIconBorder: 
@@ -286,6 +290,7 @@ MonoBehaviour:
   statusEffectContainer: {fileID: 6472138581510055911}
   entityNameGO: {fileID: 2883113982508800893}
   isUnderExternalControl: 0
+  lastNPCTalkTime: -30
   _ignoredAnimators: []
   _animators: []
   damage: 10
@@ -322,11 +327,20 @@ MonoBehaviour:
   - {fileID: 5172033207913725948}
   currentImpactMagnitude: 0
   combatCollider: {fileID: 6710469785494565506}
+  totalDamageDealt: 0
+  aggroConeDegrees: 35
+  aggroConeRadius: 2
+  maxSecondsOnChasePath: 2
+  attackingWaypointsRadius: 1
+  secondsBetweenFindingPatrolRoutes: 5
+  secondsBetweenFindingAttackRoutes: 0
+  newWaypointsRadius: 10
+  secondsPatrolingUntilChoosingNewTreasureSite: 30
+  patrolingWaypointsRadius: 1
   seaMonsterChildrenList: []
   seaMonsterParentEntity: {fileID: 0}
   targetEntity: {fileID: 0}
   monsterName: 
-  hasDied: 0
   seaMonsterData:
     monsterName: 
     seaMonsterType: 0
@@ -359,6 +373,7 @@ MonoBehaviour:
     scaleOverride: 1
     outlineScaleOverride: 1
     rippleScaleOverride: 1
+    projectileDelay: 0.4
     maxHealth: 25
     animGroup: 0
     roleType: 0
@@ -380,12 +395,15 @@ MonoBehaviour:
   isAttacking: 0
   variety: 0
   monsterType: 0
-  distanceFromSpawnPoint: {x: 0, y: 0}
+  difficultyLevel: 1
+  directionFromSpawnPoint: {x: 0, y: 0}
+  distanceFromSpawnPoint: 1
   seaMonsterBars: {fileID: 1576247974216057746}
   isMinionPlanning: 0
   corpseHolder: {fileID: 1428648646478705256}
   isLoggingData: 0
   isStationary: 0
+  chestDropCount: 1
   cachedAnimSpeed: 0.25
   cachedAttackAnimSpeed: 0.35
 --- !u!50 &50644847342071564
@@ -438,7 +456,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: -0.04}
   serializedVersion: 2
-  m_Radius: 0.025
+  m_Radius: 0.06
 --- !u!114 &114394699576994808
 MonoBehaviour:
   m_ObjectHideFlags: 0

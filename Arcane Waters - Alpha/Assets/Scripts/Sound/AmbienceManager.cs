@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using FMODUnity;
+using UnityEngine;
 
 public class AmbienceManager : ClientMonoBehaviour
 {
@@ -72,8 +74,21 @@ public class AmbienceManager : ClientMonoBehaviour
    }
 
    protected void playAmbience (SoundManager.Type ambienceType) {
-      LoopedSound loopedSound = this.gameObject.AddComponent<LoopedSound>();
-      loopedSound.soundType = ambienceType;
+      if (ambienceType != SoundManager.Type.Ambience_Ocean) {
+         LoopedSound loopedSound = this.gameObject.AddComponent<LoopedSound>();
+         loopedSound.soundType = ambienceType;
+      } else {
+         GameObject eventGo = new GameObject();
+         eventGo.name = "Ambience Emitter";
+         eventGo.transform.SetParent(this.transform);
+
+         StudioEventEmitter eventEmitter = eventGo.AddComponent<StudioEventEmitter>();
+         eventEmitter.Event = SoundEffectManager.self.getSoundEffect(SoundEffectManager.OCEAN_PAD)?.fmodId;
+         eventEmitter.PlayEvent = EmitterGameEvent.ObjectStart;
+         eventEmitter.StopEvent = EmitterGameEvent.ObjectDestroy;
+         eventEmitter.AllowFadeout = true;
+         eventEmitter.Play();
+      }
    }
 
    #region Private Variables

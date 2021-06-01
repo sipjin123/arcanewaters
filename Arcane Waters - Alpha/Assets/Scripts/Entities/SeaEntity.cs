@@ -6,6 +6,7 @@ using DigitalRuby.LightningBolt;
 using Mirror;
 using System;
 using TMPro;
+using Pathfinding;
 
 public class SeaEntity : NetEntity
 {
@@ -58,6 +59,37 @@ public class SeaEntity : NetEntity
    [SyncVar]
    public int totalDamageDealt = 0;
 
+   #region Enemy AI
+
+   // How big the aggro cone is in degrees
+   public float aggroConeDegrees;
+
+   // How far the cone extends ahead of the ship
+   public float aggroConeRadius;
+
+   // The maximum amount of seconds chasing a target before finding a new path
+   public float maxSecondsOnChasePath = 2.0f;
+
+   // The radius of which we'll pick new points to attack from
+   public float attackingWaypointsRadius = 1.0f;
+
+   // The seconds spent idling between finding patrol routes
+   public float secondsBetweenFindingPatrolRoutes = 5.0f;
+
+   // The seconds spent idling between finding attack routes
+   public float secondsBetweenFindingAttackRoutes = 0.0f;
+
+   // The radius of which we'll pick new points to patrol to, when there is no treasure sites in the map
+   public float newWaypointsRadius = 10.0f;
+
+   // The seconds to patrol the current TreasureSite before choosing another one
+   public float secondsPatrolingUntilChoosingNewTreasureSite = 30.0f;
+
+   // The radius of which we'll pick new points to patrol to
+   public float patrolingWaypointsRadius = 1.0f;
+
+   #endregion
+
    #endregion
 
    protected virtual bool isBot () { return true; }
@@ -78,6 +110,18 @@ public class SeaEntity : NetEntity
       // Set our sprite sheets according to our types
       if (!Util.isBatch()) {
          StartCoroutine(CO_UpdateAllSprites());
+      }
+
+      if (useSeaEnemyAI() && isServer) {
+         initSeeker();
+         detectPlayerSpawns();
+
+         InvokeRepeating(nameof(checkEnemiesToAggro), 0.0f, 0.5f);
+         StartCoroutine(CO_AttackEnemiesInRange(0.25f));
+      }
+
+      if (useSeaEnemyAI() && Application.isEditor) {
+         editorGenerateAggroCone();
       }
    }
 
@@ -169,6 +213,30 @@ public class SeaEntity : NetEntity
          }
 
          Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .03f * Time.smoothDeltaTime);
+      }
+   }
+
+   protected override void FixedUpdate () {
+      base.FixedUpdate();
+
+      // Return if we're not a living AI on the server
+      if (!isServer || isDead() || !useSeaEnemyAI()) {
+         return;
+      }
+      
+      // Don't let minions pathfind and move
+      if (isSeaMonsterMinion()) {
+         return;
+      }
+
+      moveAlongCurrentPath();
+      checkForPathUpdate();
+
+      bool wasChasingLastFrame = _isChasingEnemy;
+      _isChasingEnemy = _attackers != null && _attackers.Count > 0;
+
+      if (!wasChasingLastFrame && _isChasingEnemy) {
+         _chaseStartTime = NetworkTime.time;
       }
    }
 
@@ -991,6 +1059,392 @@ public class SeaEntity : NetEntity
       effect.transform.localScale = Vector3.one * tempEffectScale * radius;
    }
 
+   #region Enemy AI
+
+   private bool useSeaEnemyAI () {
+      return (this is SeaMonsterEntity || this is BotShipEntity);
+   }
+
+   [Server]
+   private void setPath_Asynchronous (Path newPath) {
+      _currentPath = newPath.vectorPath;
+      _currentPathIndex = 0;
+      _seeker.CancelCurrentPathRequest(true);
+   }
+
+   [Server]
+   private void checkEnemiesToAggro () {
+      if (instanceId <= 0) {
+         D.log("AI SeaEntity needs to be placed in an instance");
+         return;
+      }
+
+      Instance instance = InstanceManager.self.getInstance(instanceId);
+      if (instance == null) {
+         return;
+      }
+
+      float degreesToDot = aggroConeDegrees / 90.0f;
+
+      foreach (NetworkBehaviour iBehaviour in instance.getEntities()) {
+         NetEntity iEntity = iBehaviour as NetEntity;
+
+         // If the entity our ally, ignore it
+         if (iEntity == null || !this.isEnemyOf(iEntity)) {
+            continue;
+         }
+
+         // Ignore admins in ghost mode
+         if (iEntity.isGhost) {
+            continue;
+         }
+
+         // Reset the z axis value to ensure the square magnitude is not compromised by the z axis
+         Vector3 currentPosition = transform.position;
+         currentPosition.z = 0;
+         Vector3 targetPosition = iEntity.transform.position;
+         targetPosition.z = 0;
+
+         // If enemy isn't within radius, early out
+         if ((currentPosition - targetPosition).sqrMagnitude > aggroConeRadius * aggroConeRadius) {
+            continue;
+         }
+
+         // If enemy isn't within cone aggro range, early out
+         if (Vector2.Dot(Util.getDirectionFromFacing(facing), (targetPosition - currentPosition).normalized) < 1.0f - degreesToDot) {
+            continue;
+         }
+
+         // We can see the enemy, attack it
+         _attackers[iEntity.netId] = NetworkTime.time;
+      }
+   }
+
+   protected void initSeeker () {
+      // Ensure this entity has a 'Seeker' component attached
+      _seeker = GetComponent<Seeker>();
+      if (_seeker == null) {
+         D.error("There has to be a Seeker Script attached to the SeaEntity Prefab");
+      }
+
+      // Set up seeker component
+      Area area = AreaManager.self.getArea(areaKey);
+      GridGraph graph = area.getGraph();
+      _seeker.graphMask = GraphMask.FromGraph(graph);
+      _seeker.pathCallback = setPath_Asynchronous;
+      _originalPosition = transform.position;
+   }
+
+   protected void detectPlayerSpawns () {
+      Area area = AreaManager.self.getArea(areaKey);
+      List<WarpTreasureSite> treasureSites = new List<WarpTreasureSite>(area.GetComponentsInChildren<WarpTreasureSite>());
+
+      Spawn[] playerSpawns = area.GetComponentsInChildren<Spawn>();
+      foreach (Spawn spawn in playerSpawns) {
+         bool add = true;
+         foreach (WarpTreasureSite treasureSite in treasureSites) {
+            if (Vector2.Distance(spawn.transform.position, treasureSite.transform.position) < 1.0f) {
+               add = false;
+            }
+         }
+         if (add) {
+            _playerSpawnPoints.Add(spawn.transform.position);
+         }
+      }
+
+      _minDistanceToSpawn = area.getAreaSizeWorld().x * MIN_DISTANCE_TO_SPAWN_PERCENT;
+      _minDistanceToSpawnPath = area.getAreaSizeWorld().x * MIN_DISTANCE_TO_SPAWN_PATH_PERCENT;
+   }
+
+   [Server]
+   protected virtual IEnumerator CO_AttackEnemiesInRange (float delayInSecondsWhenNotReloading) {
+      yield break;
+   }
+
+   protected virtual bool isInRange (Vector2 position) {
+      return false;
+   }
+
+   private void editorGenerateAggroCone () {
+      float coneRadians = aggroConeDegrees * Mathf.Deg2Rad;
+      float singleDegreeInRadian = 1 * Mathf.Deg2Rad;
+
+      _editorConeAggroGizmoMesh = new Mesh();
+      List<Vector3> positions = new List<Vector3>();
+      List<Vector3> normals = new List<Vector3>();
+
+      // Center of the cone fan
+      positions.Add(Vector3.zero);
+      normals.Add(Vector3.back);
+
+      for (float iPoint = -coneRadians; iPoint < coneRadians; iPoint += singleDegreeInRadian) {
+         positions.Add(new Vector3(Mathf.Cos(iPoint), Mathf.Sin(iPoint), 0.0f) * aggroConeRadius);
+
+         // Point normals towards the camera
+         normals.Add(Vector3.back);
+      }
+
+      List<int> triangles = new List<int>(positions.Count * 3);
+      for (int iVertex = 2; iVertex < positions.Count; iVertex += 1) {
+         triangles.Add(0);
+         triangles.Add(iVertex);
+         triangles.Add(iVertex - 1);
+      }
+
+      _editorConeAggroGizmoMesh.SetVertices(positions);
+      _editorConeAggroGizmoMesh.SetNormals(normals);
+      _editorConeAggroGizmoMesh.SetIndices(triangles, MeshTopology.Triangles, 0);
+   }
+
+   protected NetEntity getAttackerInRange () {
+      // Check if any of our attackers are within range
+      foreach (uint attackerId in _attackers.Keys) {
+         NetEntity attacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attackerId);
+         if (attacker == null || attacker.isDead()) {
+            continue;
+         }
+
+         Vector2 attackerPosition = attacker.transform.position;
+         if (!isInRange(attackerPosition)) {
+            continue;
+         }
+
+         // If we have found an attacker, exit early
+         if (attacker) {
+            return attacker;
+         }
+      }
+
+      return null;
+   }
+
+   [Server]
+   private void moveAlongCurrentPath () {
+      if (_currentPath != null && _currentPathIndex < _currentPath.Count) {
+         // Only change our movement if enough time has passed
+         double moveTime = NetworkTime.time - _lastMoveChangeTime;
+         if (moveTime >= MOVE_CHANGE_INTERVAL) {
+            Vector2 direction = (Vector2) _currentPath[_currentPathIndex] - (Vector2) transform.position;
+
+            // Update our facing direction
+            Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(direction);
+            if (newFacingDirection != facing) {
+               facing = newFacingDirection;
+            }
+
+            _body.AddForce(direction.normalized * getMoveSpeed());
+            _lastMoveChangeTime = NetworkTime.time;
+         }
+
+         // If ship got too close to spawn point - change path
+         if (!_isChasingEnemy && !_disableSpawnDistanceTmp) {
+            foreach (Vector3 spawn in _playerSpawnPoints) {
+               float dist = Vector2.Distance(spawn, _currentPath[_currentPathIndex]);
+               if (dist < _minDistanceToSpawn) {
+                  _currentPathIndex = int.MaxValue - 1;
+                  _disableSpawnDistanceTmp = true;
+                  _lastSpawnPosition = spawn;
+                  return;
+               }
+            }
+         }
+
+         // Advance along the path as the unit comes close enough to the current waypoint
+         float distanceToWaypoint = Vector2.Distance(_currentPath[_currentPathIndex], transform.position);
+         if (distanceToWaypoint < .1f) {
+            ++_currentPathIndex;
+         }
+      }
+   }
+
+   [Server]
+   private void checkForPathUpdate () {
+      if (_attackers != null && _attackers.Count > 0) {
+         double chaseDuration = NetworkTime.time - _chaseStartTime;
+         if (!_isChasingEnemy || (chaseDuration > maxSecondsOnChasePath)) {
+            _currentSecondsBetweenAttackRoutes = 0.0f;
+            _attackingWaypointState = WaypointState.FINDING_PATH;
+            if (_currentPath != null) {
+               _currentPath.Clear();
+            }
+            findAndSetPath_Asynchronous(findAttackerVicinityPosition(true));
+            _chaseStartTime = NetworkTime.time;
+         }
+
+         // Update attacking state with only Minor updates
+         float tempMajorRef = 0.0f;
+         updateState(ref _attackingWaypointState, secondsBetweenFindingAttackRoutes, 9001.0f, ref _currentSecondsBetweenAttackRoutes, ref tempMajorRef, findAttackerVicinityPosition);
+      } else {
+         // Use treasure site only in maps with more than two treasure sites
+         System.Func<bool, Vector3> findingFunction = findRandomVicinityPosition;
+
+         if (_isChasingEnemy) {
+            _currentSecondsBetweenPatrolRoutes = 0.0f;
+            _currentSecondsPatroling = 0.0f;
+            _patrolingWaypointState = WaypointState.FINDING_PATH;
+            if (_currentPath != null) {
+               _currentPath.Clear();
+            }
+            findAndSetPath_Asynchronous(findingFunction(true));
+         }
+         updateState(ref _patrolingWaypointState, secondsBetweenFindingPatrolRoutes, secondsPatrolingUntilChoosingNewTreasureSite, ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, findingFunction);
+      }
+   }
+
+   [Server]
+   private void findAndSetPath_Asynchronous (Vector3 targetPosition) {
+      if (!_seeker.IsDone()) {
+         _seeker.CancelCurrentPathRequest();
+      }
+      _seeker.StartPath(transform.position, targetPosition);
+
+      if (_disableSpawnDistanceTmp) {
+         Invoke(nameof(enableSpawnDistance), 3.5f);
+      }
+   }
+
+   private void enableSpawnDistance () {
+      _disableSpawnDistanceTmp = false;
+   }
+
+   [Server]
+   private Vector3 findAttackerVicinityPosition (bool newAttacker) {
+      bool hasAttacker = _attackers.ContainsKey(_currentAttacker);
+
+      // If we should choose a new attacker, and we have a selection available, pick a unique one randomly, which could be the same as the previous
+      if ((!hasAttacker || (hasAttacker && newAttacker)) && _attackers.Count > 0) {
+         _currentAttacker = _attackers.RandomKey();
+         hasAttacker = true;
+      }
+
+      // If we fail to get a non-null attacker, return somewhere around yourself
+      if (!hasAttacker) {
+         return findPositionAroundPosition(transform.position, attackingWaypointsRadius);
+      }
+
+      // If we have a registered attacker but it's not in the scene list of spawned NetworkIdentities, then return somewhere around yourself
+      if (!NetworkIdentity.spawned.ContainsKey(_currentAttacker)) {
+         return findPositionAroundPosition(transform.position, attackingWaypointsRadius);
+      }
+
+      // If we have gotten a NetworkIdentity but it's by some chance null, then return somewhere around yourself
+      NetworkIdentity attackerIdentity = NetworkIdentity.spawned[_currentAttacker];
+      if (attackerIdentity == null) {
+         return findPositionAroundPosition(transform.position, attackingWaypointsRadius);
+      }
+
+      NetEntity enemyEntity = attackerIdentity.GetComponent<NetEntity>();
+      Vector3 projectedPosition = attackerIdentity.transform.position;
+
+      if (enemyEntity) {
+         // Find a point ahead of the target to path find to
+         projectedPosition = enemyEntity.getProjectedPosition(maxSecondsOnChasePath / 2.0f);
+      }
+
+      // If we have an attacker, find new position around it
+      return findPositionAroundPosition(projectedPosition, attackingWaypointsRadius);
+   }
+
+   [Server]
+   private Vector3 findPositionAroundPosition (Vector3 position, float radius) {
+      return position + UnityEngine.Random.insideUnitCircle.ToVector3() * radius;
+   }
+
+   [Server]
+   private void updateState (ref WaypointState state, float secondsBetweenMinorSearch, float secondsBetweenMajorSearch, ref float currentSecondsBetweenMinorSearch, ref float currentSecondsBetweenMajorSearch, System.Func<bool, Vector3> targetPositionFunction) {
+      switch (state) {
+         case WaypointState.FINDING_PATH:
+            if (_seeker.IsDone() && (_currentPath == null || _currentPath.Count <= 0)) {
+               // Try to find another path as the previous one wasn't valid
+               findAndSetPath_Asynchronous(targetPositionFunction(false));
+            }
+
+            if (_currentPath != null && _currentPath.Count > 0) {
+               // If we have a valid path, start moving to the target
+               state = WaypointState.MOVING_TO;
+            }
+            break;
+
+         case WaypointState.MOVING_TO:
+            // If there are no nodes left in the path, change into a patrolling state
+            if (_currentPathIndex >= _currentPath.Count) {
+               state = WaypointState.PATROLING;
+               currentSecondsBetweenMinorSearch = 0.0f;
+               currentSecondsBetweenMajorSearch = 0.0f;
+            }
+            break;
+
+         case WaypointState.PATROLING:
+            currentSecondsBetweenMajorSearch += Time.fixedDeltaTime;
+
+            // If we've still got a path to complete, don't try to find a new one
+            if (_currentPath != null && _currentPathIndex < _currentPath.Count) {
+               break;
+            }
+
+            // Find a new Major target
+            if (currentSecondsBetweenMajorSearch >= secondsBetweenMajorSearch) {
+               findAndSetPath_Asynchronous(targetPositionFunction(true));
+               state = WaypointState.FINDING_PATH;
+               break;
+            }
+
+            currentSecondsBetweenMinorSearch += Time.fixedDeltaTime;
+
+            // Find a new Minor target
+            if (currentSecondsBetweenMinorSearch >= secondsBetweenMinorSearch) {
+               _currentSecondsBetweenPatrolRoutes = 0.0f;
+               findAndSetPath_Asynchronous(targetPositionFunction(false));
+            }
+            break;
+      }
+   }
+
+   [Server]
+   private Vector3 findRandomVicinityPosition (bool placeholder) {
+      Vector3 start = _body.transform.position;
+
+      // If ship is near original position - try to find new distant location to move to
+      if (Vector2.Distance(start, _originalPosition) < 1.0f) {
+         const int MAX_RETRIES = 50;
+         int retries = 0;
+         bool retry = true;
+
+         Vector3 dir = start - _lastSpawnPosition;
+         dir.Normalize();
+         while (retry && retries < MAX_RETRIES) {
+            retry = false;
+            Vector3 end = _disableSpawnDistanceTmp ? findPositionAroundPosition(start + dir * newWaypointsRadius, newWaypointsRadius) : findPositionAroundPosition(start, newWaypointsRadius);
+            foreach (Vector3 spawn in _playerSpawnPoints) {
+               if (Vector2.Distance(spawn, end) < _minDistanceToSpawnPath) {
+                  retry = true;
+                  retries++;
+                  break;
+               }
+            }
+
+            if (!retry) {
+               return end;
+            }
+         }
+
+         return findPositionAroundPosition(start, newWaypointsRadius);
+      }
+
+      // Otherwise - go back to original location of the ship
+      return findPositionAroundPosition(_originalPosition, patrolingWaypointsRadius);
+   }
+
+   private void OnDrawGizmosSelected () {
+      if (Application.isPlaying) {
+         Gizmos.color = new Color(1.0f, 0.0f, 0.0f, 0.5f);
+         Gizmos.DrawMesh(_editorConeAggroGizmoMesh, 0, transform.position, Quaternion.Euler(0.0f, 0.0f, -Vector2.SignedAngle(Util.getDirectionFromFacing(facing), Vector2.right)), Vector3.one);
+         Gizmos.color = Color.white;
+      }
+   }
+
+   #endregion
+
    #region Private Variables
 
    // The cached sea ability list
@@ -1031,6 +1485,74 @@ public class SeaEntity : NetEntity
 
    // Set to true when 'onDeath(...)' has run on this SeaEntity
    protected bool _hasRunOnDeath = false;
+
+   #region Enemy AI
+
+   // The Seeker that handles Pathfinding
+   protected Seeker _seeker;
+
+   // The current path to the destination
+   private List<Vector3> _currentPath;
+
+   // The current Point Index of the path
+   private int _currentPathIndex;
+
+   // In case there are no TreasureSites to pursue, use this to patrol the vicinity
+   private Vector3 _originalPosition;
+
+   // The generated mesh for showing the cone of aggro in the Editor
+   private Mesh _editorConeAggroGizmoMesh;
+
+   // Spawn points placed in the area that sea enemies should avoid
+   private List<Vector3> _playerSpawnPoints = new List<Vector3>();
+
+   // Const values to calculate distance to spawn points
+   private static float MIN_DISTANCE_TO_SPAWN_PERCENT = 0.3f;
+   private static float MIN_DISTANCE_TO_SPAWN_PATH_PERCENT = 0.4f;
+
+   // Distance values that bot ship should keep from the spawn points, calculated for current area
+   private float _minDistanceToSpawn;
+   private float _minDistanceToSpawnPath;
+
+   // Are we currently chasing an enemy
+   private bool _isChasingEnemy;
+
+   // The flag which temporarily disables avoiding spawn points
+   private bool _disableSpawnDistanceTmp = false;
+
+   // The last spawn point that bot ship was nearby and had to change its path
+   private Vector3 _lastSpawnPosition = Vector3.zero;
+
+   // The time at which we started chasing an enemy, on this path
+   private double _chaseStartTime = 0.0f;
+
+   // How many seconds have passed since we last stopped on an attack route
+   private float _currentSecondsBetweenAttackRoutes;
+
+   private enum WaypointState
+   {
+      NONE = 0,
+      FINDING_PATH = 1,
+      MOVING_TO = 2,
+      PATROLING = 3,
+   }
+
+   // In what state the Attack Waypoint traversing is in
+   private WaypointState _attackingWaypointState = WaypointState.FINDING_PATH;
+
+   // In what state the Patrol Waypoint traversing is in
+   private WaypointState _patrolingWaypointState = WaypointState.FINDING_PATH;
+
+   // The first and closest attacker that we've aggroed
+   private uint _currentAttacker;
+
+   // How many seconds have passed since we last stopped on a patrol route
+   private float _currentSecondsBetweenPatrolRoutes;
+
+   // How many seconds have passed since we've started patrolling the current TreasureSite
+   private float _currentSecondsPatroling;
+
+   #endregion
 
    #endregion
 }

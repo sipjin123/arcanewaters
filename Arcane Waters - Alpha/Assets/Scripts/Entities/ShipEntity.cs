@@ -49,6 +49,9 @@ public class ShipEntity : SeaEntity
    [SyncVar]
    public ShipSize shipSize;
 
+   // A reference to the ship's Rigibody2D component
+   public Rigidbody2D rb2d;
+
    #endregion
 
    protected virtual void initialize (ShipData data) {
@@ -125,7 +128,7 @@ public class ShipEntity : SeaEntity
       return this.shipType.ToString().ToLower().Contains(skinClass.ToLower());
    }
 
-   public bool isInRange (Vector2 position) {
+   protected override bool isInRange (Vector2 position) {
       return Vector2.SqrMagnitude(position - (Vector2) transform.position) <= getAttackRange() * getAttackRange();
    }
 
