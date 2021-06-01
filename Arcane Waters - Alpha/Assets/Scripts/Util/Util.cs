@@ -224,10 +224,11 @@ public class Util : MonoBehaviour
    }
 
    public static bool isLinux () {
-      #if UNITY_STANDALONE_LINUX
-      return true;
-      #endif
-      return false;
+      if (Application.platform == RuntimePlatform.LinuxPlayer) {
+         return true;
+      } else {
+         return false;
+      }
    }
 
    public static bool isEmpty (String str) {
