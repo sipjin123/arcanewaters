@@ -4373,24 +4373,18 @@ public class RPCManager : NetworkBehaviour
 
          // If player cant bypass restirctions, return them to town due to insufficient conditions being met
          if (!EntityManager.self.canUserBypassWarpRestrictions(_player.userId)) {
-            D.debug("Returning player to town: Voyage Group does not Exist!");
+            D.adminLog("Returning player to town: Voyage Group does not Exist!", D.ADMIN_LOG_TYPE.Warp);
             return false;
          }
       }
 
-      bool isInvalidVoyageId = voyageGroup.voyageId <= 0;
-      bool isVoyageIdMismatch = _player.getInstance().voyageId != voyageGroup.voyageId;
-
       // If the voyage is not defined or doesn't exists, or the group is not linked to this instance, redirect to the starting town
-      if (isInvalidVoyageId || !_player.tryGetVoyage(out Voyage voyage) || isVoyageIdMismatch) {
+      if (voyageGroup.voyageId <= 0 || !_player.tryGetVoyage(out Voyage voyage) || _player.getInstance().voyageId != voyageGroup.voyageId) {
          if (voyageGroup.voyageId <= 0) {
-            D.debug("Returning player to town: Voyage id is Invalid!");
-         }
-         if (!_player.tryGetVoyage(out voyage)) {
-            D.debug("Returning player to town: Unable to fetch Voyage!");
+            D.adminLog("Returning player to town: Voyage id is Invalid!", D.ADMIN_LOG_TYPE.Warp);
          }
          if (_player.getInstance().voyageId != voyageGroup.voyageId) {
-            D.debug("Returning player to town: Player voyage Id is incompatible with voyage group: {" + _player.getInstance().voyageId + "} : {" + voyageGroup.voyageId + "}");
+            D.adminLog("Returning player to town: Player voyage Id is incompatible with voyage group: {" + _player.getInstance().voyageId + "} : {" + voyageGroup.voyageId + "}", D.ADMIN_LOG_TYPE.Warp);
          }
 
          // If player cant bypass restirctions, return them to town due to insufficient conditions being met
