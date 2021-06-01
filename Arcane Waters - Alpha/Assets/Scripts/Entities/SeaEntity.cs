@@ -183,6 +183,13 @@ public class SeaEntity : NetEntity
             }
          }
 
+         if (Global.player != null) {
+            // If the tutorial is waiting for a bot ship defeat, test if the conditions are met
+            if (hasBeenAttackedBy(Global.player) && isClient && TutorialManager3.self.getCurrentTrigger() == TutorialTrigger.DefeatPirateShip) {
+               TutorialManager3.self.tryCompletingStep(TutorialTrigger.DefeatPirateShip);
+            }
+         }
+
          if (this is SeaMonsterEntity) {
             SeaMonsterEntity monsterEntity = GetComponent<SeaMonsterEntity>();
 
