@@ -602,6 +602,10 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static bool hasFriendshipLevel (int npcId, int userId) {
+      return false;
+   }
+
    public static int getFriendshipLevel (int npcId, int userId) {
       return 0;
    }

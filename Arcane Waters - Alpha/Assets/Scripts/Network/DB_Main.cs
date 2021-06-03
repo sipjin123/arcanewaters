@@ -1340,6 +1340,35 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new bool hasFriendshipLevel (int npcId, int userId) {
+      bool hasFriendshipLevel = false;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT friendshipLevel FROM npc_relationship WHERE npcId=@npcId AND usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@npcId", npcId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  if (DataUtil.getInt(dataReader, "friendshipLevel") >= 0) {
+                     hasFriendshipLevel = true;
+                  }
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return hasFriendshipLevel;
+   }
+
    public static new int getFriendshipLevel (int npcId, int userId) {
       int friendshipLevel = 0;
 

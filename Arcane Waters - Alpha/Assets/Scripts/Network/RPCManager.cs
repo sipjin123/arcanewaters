@@ -1952,11 +1952,12 @@ public class RPCManager : NetworkBehaviour
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Retrieve the friendship level
+         bool hasFriendshipLevel = DB_Main.hasFriendshipLevel(npcId, _player.userId);
          int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
          // Initialize the relationship if it is the first time the player talks to this NPC
-         if (friendshipLevel == -1) {
+         if (!hasFriendshipLevel) {
             friendshipLevel = 0;
             DB_Main.createNPCRelationship(npcId, _player.userId, friendshipLevel);
          }
