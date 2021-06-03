@@ -27,7 +27,7 @@ public class ServerCannonBall : NetworkBehaviour {
       if (!Util.isBatch()) {
          // Play an appropriate sound
          if (_playFiringSound) {
-            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.SHIP_CANNON, this.transform, true, true);
+            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.SHIP_CANNON, this.transform, true);
             //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Cannon_1, this.transform.position);
          }
 
@@ -230,7 +230,7 @@ public class ServerCannonBall : NetworkBehaviour {
 
       bool hitLand = Util.hasLandTile(transform.position);
 
-      playHitSound(hitLand || _hitEnemy);
+      playHitSound(hitLand, _hitEnemy);
 
       // Plays SFX and VFX for land collision
       if (hitLand || _hitEnemy) {
@@ -240,8 +240,11 @@ public class ServerCannonBall : NetworkBehaviour {
       }
    }
 
-   private void playHitSound (bool hitSolid) {
+   private void playHitSound (bool hitLand, bool hitEnemy) {
       bool playDefaultSFX = false;
+
+      bool hitSolid = hitLand || hitEnemy;
+
       ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(projectileId);
       if (projectileData == null) {
          playDefaultSFX = true;
@@ -261,13 +264,13 @@ public class ServerCannonBall : NetworkBehaviour {
          }
       }
 
-      if (hitSolid) {
+      if (hitLand) {
          if (playDefaultSFX) {
             SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position, true);
          } else {
             SoundManager.create3dSoundWithPath(projectileData.landHitSFX, transform.position, projectileData.landHitVol);
          }
-      } else {
+      } else if(!hitEnemy) {
          if (playDefaultSFX) {
             SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position, true);
          } else {

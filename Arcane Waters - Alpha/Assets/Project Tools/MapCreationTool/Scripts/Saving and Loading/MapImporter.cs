@@ -134,7 +134,7 @@ namespace MapCreationTool
 
                   // Attaching a FMOD event emitter
                   if (SoundEffectManager.self != null) {
-                     SoundEffect effect = SoundEffectManager.self.getSoundEffectFromId(SoundEffectManager.CALMING_WATERFALL);
+                     SoundEffect effect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.CALMING_WATERFALL);
 
                      if(effect != null) {
                         BoxCollider2D waterfallCollider = waterfall.GetComponent<BoxCollider2D>();

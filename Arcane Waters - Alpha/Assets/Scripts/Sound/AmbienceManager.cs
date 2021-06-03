@@ -72,8 +72,11 @@ public class AmbienceManager : ClientMonoBehaviour
          Destroy(s);
       }
 
+      Biome.Type biomeType = AreaManager.self.getDefaultBiome(newAreaKey);
+      bool isSea = AreaManager.self.isSeaArea(newAreaKey);
+
       // Using one event, we can change the ambience using a parameter
-      if (AreaManager.self.isSeaArea(newAreaKey)) {
+      if (isSea || biomeType == Biome.Type.Forest) {
          if (!isEventReady) {
             SoundEffect effect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.AMBIENCE_BED_MASTER);
 
@@ -84,7 +87,12 @@ public class AmbienceManager : ClientMonoBehaviour
          }
 
          if (isEventReady) {
-            ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, 9);
+            if (isSea) {
+               ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int)AmbienceType.SeaMap);
+            } else if(biomeType == Biome.Type.Forest) {
+               ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int)AmbienceType.Forest);
+            }
+
             ambienceEvent.start();
          }
       } else {
@@ -101,8 +109,7 @@ public class AmbienceManager : ClientMonoBehaviour
 
    protected List<SoundManager.Type> getAmbienceTypeForArea (string areaKey) {
       if (AreaManager.self.getArea(areaKey)?.isSea == true) {
-         //return new List<SoundManager.Type>() { SoundManager.Type.Ambience_Ocean };
-         return new List<SoundManager.Type>() { };
+         return new List<SoundManager.Type>() { SoundManager.Type.Ambience_Ocean };
       }
 
       if (Area.isHouse(areaKey)) {

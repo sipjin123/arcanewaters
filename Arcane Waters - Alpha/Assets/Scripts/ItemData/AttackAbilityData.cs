@@ -105,9 +105,9 @@ public class AttackAbilityData : BasicAbilityData
       float knockupLength = 0;
       float knockBackLength = 0;
 
-      shakeLength = hasShake ? Battler.SHAKE_LENGTH : 0f;
-      knockupLength = hasKnockup ? Battler.KNOCKUP_LENGTH : 0f;
-      knockBackLength = hasKnockBack ? Battler.KNOCKBACK_LENGTH : 0f;
+      shakeLength = hasShake ? Battler.getShakeLength() : 0f;
+      knockupLength = hasKnockup ? Battler.getKnockupLength() : 0f;
+      knockBackLength = hasKnockBack ? Battler.getKnockbackLength() : 0f;
 
       switch (abilityActionType) {
          case AbilityActionType.Melee:
@@ -115,8 +115,8 @@ public class AttackAbilityData : BasicAbilityData
             float jumpDuration = getJumpDuration(attacker, target);
 
             // Add up the amount of time it takes to animate an entire melee action
-            return jumpDuration + Battler.PAUSE_LENGTH + attacker.getPreContactLength() +
-                Battler.POST_CONTACT_LENGTH + jumpDuration + Battler.PAUSE_LENGTH + shakeLength + knockupLength + knockBackLength;
+            return jumpDuration + Battler.getPauseLength() + attacker.getPreContactLength() +
+                Battler.getPostContactLength() + jumpDuration + Battler.getPauseLength() + shakeLength + knockupLength + knockBackLength;
          case AbilityActionType.Projectile:
             // Add up the amount of time it takes to animate an entire action
             //return attacker.getPreMagicLength() + shakeLength + knockupLength + knockBackLength + getPreDamageLength + getPostDamageLength + Battler.AIM_DURATION + Battler.PRE_AIM_DELAY + Battler.POST_SHOOT_DELAY + Battler.PRE_SHOOT_DELAY;
@@ -128,17 +128,18 @@ public class AttackAbilityData : BasicAbilityData
             } else {
                D.debug("Warning! Projectile id {" + projectileId + "} does not exist for ability");
             }
+            projectileSpeedVal /= AdminGameSettingsManager.self.settings.battleAttackDuration;
 
             // Add up the amount of time it takes to animate an entire action (Should exactly be the same with the delays set in the battler script)
             return getAimDuration()
-               + Battler.POST_SHOOT_DELAY + Battler.PRE_SHOOT_DELAY
+               + Battler.getPostShootDelay() + Battler.getPreShootDelay()
                + (Vector2.Distance(attacker.transform.position, target.transform.position) / projectileSpeedVal)
                + shakeLength + knockupLength + knockBackLength 
-               + getPreDamageLength + Battler.POST_CONTACT_LENGTH;
+               + getPreDamageLength + Battler.getPostContactLength();
 
          case AbilityActionType.CastToTarget:
             // Add up the amount of time it takes to animate an entire action
-            return attacker.getPreMagicLength() + shakeLength + knockupLength + knockBackLength + getPreDamageLength + getPostDamageLength + Battler.POST_CAST_DELAY + Battler.PRE_CAST_DELAY;
+            return attacker.getPreMagicLength() + shakeLength + knockupLength + knockBackLength + getPreDamageLength + getPostDamageLength + Battler.getPostCastDelay() + Battler.getPreCastDelay();
 
          default:
             Debug.LogWarning("Ability type is not defined for getting anim length");
@@ -148,28 +149,29 @@ public class AttackAbilityData : BasicAbilityData
 
    public float getAimDuration () {
       if (classRequirement == Weapon.Class.Ranged) {
-         return Battler.AIM_DURATION * 2;
+         return Battler.getAimDuration() * 2;
       }
       if (classRequirement == Weapon.Class.Rum) {
-         return Battler.AIM_DURATION;
+         return Battler.getAimDuration();
       }
 
-      return Battler.AIM_DURATION;
+      return Battler.getAimDuration();
    }
 
    public float getJumpDuration (Battler source, Battler target) {
       // The animation length depends on the distance between attacker and target
       if (source == null || target == null || source.battleSpot == null || target.battleSpot == null) {
-         return Battler.JUMP_LENGTH;
+         return Battler.getJumpLength();
       }
 
       float distance = Battle.getDistance(source, target);
-      float jumpDuration = distance * Battler.JUMP_LENGTH;
-
-      // Additional modifier set by admins
-      jumpDuration *= AdminGameSettingsManager.self.settings.battleJumpDuration;
+      float jumpDuration = distance * Battler.getJumpLength();
 
       return jumpDuration;
+   }
+
+   public float getProjectileSpeed () {
+      return projectileSpeed / AdminGameSettingsManager.self.settings.battleAttackDuration;
    }
 
    // By default, we'll use the Attack animation when the ability is activated

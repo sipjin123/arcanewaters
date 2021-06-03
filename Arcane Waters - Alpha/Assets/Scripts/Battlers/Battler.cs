@@ -22,30 +22,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    [Space(8)]
 
-   // The amount of time a jump takes
-   public static float JUMP_LENGTH = 0.2f;
-
-   // The amount of time we pause after a jump forward or back
-   public static float PAUSE_LENGTH = .1f;
-
-   // The amount of time left after a melee attack makes contact
-   public static float POST_CONTACT_LENGTH = .25f;
-
-   // The amount of time it takes to animate a knock back effect
-   public static float KNOCKBACK_LENGTH = .45f;
-
-   // The amount of time it takes to animate a knockup effect
-   public static float KNOCKUP_LENGTH = .45f;
-
-   // The amount of time it takes to animate a shake effect
-   public static float SHAKE_LENGTH = .75f;
-
-   // The amount of time it takes to animate a shake effect
-   public static float SHAKE_SPECIAL_LENGTH = 1.5f;
-
-   // The amount of time a projectile takes to reach its target
-   public static float PROJECTILE_LENGTH = .35f;
-
    // The maxmimum AP a battler can have
    public static int MAX_AP = 20;
 
@@ -209,21 +185,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [HideInInspector] public UnityEvent onBattlerAttackEnd = new UnityEvent();
 
    [HideInInspector] public BattlerDamagedEvent onBattlerDamaged = new BattlerDamagedEvent();
-
-   // Determines the aiming duration
-   public const float AIM_DURATION = .05f;
-
-   // Determines the delay before animation the Shoot clip
-   public const float PRE_SHOOT_DELAY = .1f;
-
-   // Determines the delay before ending Shoot Pose
-   public const float POST_SHOOT_DELAY = .15f;
-
-   // Determines the delay before animation the cast clip
-   public const float PRE_CAST_DELAY = .25f;
-
-   // Determines the delay before ending cast Pose
-   public const float POST_CAST_DELAY = .13f;
 
    // Determines if the abilities have been initialized
    [SyncVar]
@@ -965,10 +926,16 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       SoundEffectManager.self.playSoundEffect(jumpSoundEffect.id, transform);
    }
 
-   public void playAnim (Anim.Type animationType) {
+   public void playAnim (Anim.Type animationType, float customSpeed = -1) {
       if (animationType != Anim.Type.Death_East && (isAlreadyDead || hasPlayedDeathAnim)) {
          D.debug("Has attempted to play other animation {" + animationType + "} but battler is already dead!");
          return;
+      }
+      
+      if (customSpeed > 0) {
+         modifyAnimSpeed(customSpeed * AdminGameSettingsManager.self.settings.battleTimePerFrame);
+      } else {
+         modifyAnimSpeed(SimpleAnimation.DEFAULT_TIME_PER_FRAME * AdminGameSettingsManager.self.settings.battleTimePerFrame);
       }
 
       // Make all of our Simple Animation components play the animation
@@ -1114,7 +1081,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             targetBattler.displayedHealth += buffAction.buffValue;
             targetBattler.displayedHealth = Util.clamp<int>(targetBattler.displayedHealth, 0, targetBattler.getStartingHealth());
 
-            yield return new WaitForSeconds(POST_CONTACT_LENGTH);
+            yield return new WaitForSeconds(getPostContactLength());
 
             if (isFirstAction) {
                // Switch back to our battle stance
@@ -1202,7 +1169,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                   }
                }
 
-               yield return new WaitForSeconds(POST_CONTACT_LENGTH);
+               yield return new WaitForSeconds(getPostContactLength());
 
                if (isFirstAction) {
                   // Switch back to our battle stance
@@ -1232,7 +1199,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       isAttacking = true;
       Battle battle = BattleManager.self.getBattle(battleAction.battleId);
       Battler sourceBattler = battle.getBattler(battleAction.sourceId);
-      modifyAnimSpeed(-1);
 
       // I believe we must grab the index from this battler, since this will be the one executing the attack
       AttackAbilityData attackerAbility = null;
@@ -1329,9 +1295,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             }
 
             // Pause for a moment after reaching our destination
-            yield return new WaitForSeconds(PAUSE_LENGTH);
+            yield return new WaitForSeconds(getPauseLength());
 
-            const float SPECIAL_ATTACK_READY_TIME = .2f;
             if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
                sourceBattler.playAnim(Anim.Type.Punch);
             } else {
@@ -1340,14 +1305,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                } else {
                   if (abilityDataReference.useSpecialAnimation) {
                      // Set the windup special animation speed
-                     sourceBattler.modifyAnimSpeed(.5f);
-                     sourceBattler.playAnim(Anim.Type.SpecialAnimationReady);
+                     sourceBattler.playAnim(Anim.Type.SpecialAnimationReady, 0.5f / AdminGameSettingsManager.self.settings.battleAttackDuration);
 
-                     yield return new WaitForSeconds(SPECIAL_ATTACK_READY_TIME);
+                     yield return new WaitForSeconds(getSpecialAttackReadyTime());
 
                      // End of special animation is faster than the windup time
-                     sourceBattler.modifyAnimSpeed(.2f);
-                     sourceBattler.playAnim(Anim.Type.SpecialAnimation);
+                     sourceBattler.playAnim(Anim.Type.SpecialAnimation, 0.2f / AdminGameSettingsManager.self.settings.battleAttackDuration);
                      sourceBattler.pauseAnim(false);
                   } else {
                      sourceBattler.playAnim(Anim.Type.Ready_Attack);
@@ -1357,7 +1320,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             if (abilityDataReference.useSpecialAnimation) {
                // Special animation delay interval when casting special animation vfx 
-               yield return new WaitForSeconds(sourceBattler.getPreContactLength() - SPECIAL_ATTACK_READY_TIME);
+               yield return new WaitForSeconds(sourceBattler.getPreContactLength() - getSpecialAttackReadyTime());
             } else {
                yield return new WaitForSeconds(sourceBattler.getPreContactLength());
             }
@@ -1375,9 +1338,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                   sourceBattler.playAnim(Anim.Type.Finish_Attack);
                }
             }
-
-            // Return animation speed to default
-            sourceBattler.modifyAnimSpeed(-1);
 
             #region Display Block
             // If the action was blocked, animate that
@@ -1423,7 +1383,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       
             #endregion
 
-            yield return new WaitForSeconds(POST_CONTACT_LENGTH);
+            yield return new WaitForSeconds(getPostContactLength());
 
             if (isMovable()) {
                // Now jump back to where we started from
@@ -1441,24 +1401,22 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                sourceBattler.transform.position = new Vector3(startPos.x, startPos.y, sourceBattler.transform.position.z);
 
                // Wait for a moment after we reach our jump destination
-               yield return new WaitForSeconds(PAUSE_LENGTH);
+               yield return new WaitForSeconds(getPauseLength());
             }
 
             // Wait for special animation to finish
             if (abilityDataReference.useSpecialAnimation) {
                // TODO: In the future, setup a dynamic way of handling special animation duration using web tool
                // (golem special attack animation approximately ends after 1.4 seconds excluding the time elapsed upon trigger [20 frames * .5 milliseconds])
-               sourceBattler.modifyAnimSpeed(.2f);
-               yield return new WaitForSeconds(SHAKE_SPECIAL_LENGTH - .1f);
+               yield return new WaitForSeconds(getShakeSpecialLength() - .1f);
 
                // Setup target to un-freeze hit animation
                if (shakeCoroutine != null) {
-                  targetBattler.playAnim(Anim.Type.Battle_East);
+                  targetBattler.playAnim(Anim.Type.Battle_East, 0.2f / AdminGameSettingsManager.self.settings.battleAttackDuration);
                   targetBattler.StopCoroutine(shakeCoroutine);
                }
 
-               yield return new WaitForSeconds(1.0f);
-               sourceBattler.modifyAnimSpeed(-1);
+               yield return new WaitForSeconds(1.0f * AdminGameSettingsManager.self.settings.battleAttackDuration);
             }
 
             // Switch back to our battle stance
@@ -1513,7 +1471,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             Vector2 targetPos = targetBattler.getMagicGroundPosition() + new Vector2(0, projectileSpawnOffsetY);
 
             // Determines the animation speed modification when playing shoot animation
-            float shootAnimSpeed = 1.5f;
+            float shootAnimSpeed = 1.5f / AdminGameSettingsManager.self.settings.battleAttackDuration;
 
             // Disable targeting effects
             if (sourceBattler.battlerType == BattlerType.PlayerControlled) {
@@ -1547,33 +1505,31 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                   }
                }
             }
-            EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, attackerAbility.projectileSpeed, spriteProjectile, attackerAbility.projectileScale, attackerAbility.FXTimePerFrame);
+            EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, attackerAbility.getProjectileSpeed(), spriteProjectile, attackerAbility.projectileScale, attackerAbility.FXTimePerFrame);
 
             EffectManager.show(Effect.Type.Cannon_Smoke, sourcePos);
-            yield return new WaitForSeconds(PRE_SHOOT_DELAY);
+            yield return new WaitForSeconds(getPreShootDelay());
 
             // Speed up animation then Animate Shoot clip for a Recoil Effect
-            sourceBattler.modifyAnimSpeed(shootAnimSpeed);
             sourceBattler.pauseAnim(false);
             if (weaponData == null) {
-               sourceBattler.playAnim(Anim.Type.Finish_Attack);
+               sourceBattler.playAnim(Anim.Type.Finish_Attack, shootAnimSpeed);
             } else {
                if (weaponData.weaponClass == Weapon.Class.Magic || weaponData.weaponClass == Weapon.Class.Rum) {
-                  sourceBattler.playAnim(Anim.Type.Throw_Projectile);
+                  sourceBattler.playAnim(Anim.Type.Throw_Projectile, shootAnimSpeed);
                } else {
-                  sourceBattler.playAnim(Anim.Type.Finish_Attack);
+                  sourceBattler.playAnim(Anim.Type.Finish_Attack, shootAnimSpeed);
                }
             }
-            yield return new WaitForSeconds(POST_SHOOT_DELAY);
+            yield return new WaitForSeconds(getPostShootDelay());
 
             // Return to battle stance
             sourceBattler.pauseAnim(false);
             sourceBattler.playAnim(Anim.Type.Battle_East);
 
             // Wait the appropriate amount of time before creating the magic effect
-            float timeBeforeCollision = Vector2.Distance(sourcePos, targetPos) / attackerAbility.projectileSpeed;
+            float timeBeforeCollision = Vector2.Distance(sourcePos, targetPos) / attackerAbility.getProjectileSpeed();
             yield return new WaitForSeconds(timeBeforeCollision);
-            sourceBattler.modifyAnimSpeed(-1);
 
             // Play the magic vfx such as (Flame effect on fire element attacks)
             effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
@@ -1600,7 +1556,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             targetBattler.displayedHealth = Util.clamp<int>(targetBattler.displayedHealth, 0, targetBattler.getStartingHealth());
 
             // Now wait the specified amount of time before switching back to our battle stance
-            yield return new WaitForSeconds(POST_CONTACT_LENGTH);
+            yield return new WaitForSeconds(getPostContactLength());
 
             if (isFirstAction) {
                // Switch back to our battle stance
@@ -1645,7 +1601,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield break;
             }
 
-            float castAnimSpeed = 1.5f;
+            float castAnimSpeed = 1.5f / AdminGameSettingsManager.self.settings.battleAttackDuration;
             projectileSpawnOffsetX = sourceBattler.isAttacker() ? .38f : -.38f;
             projectileSpawnOffsetY = .28f;
             sourcePos = getMagicGroundPosition() + new Vector2(projectileSpawnOffsetX, projectileSpawnOffsetY);
@@ -1681,7 +1637,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                }
                EffectManager.playCastAbilityVFX(sourceBattler, action, castPosition, BattleActionType.Attack);
             }
-            yield return new WaitForSeconds(PRE_CAST_DELAY);
+            yield return new WaitForSeconds(getPreCastDelay());
 
             // Shoot the projectile after playing cast time
             if (abilityDataReference.useCustomProjectileSprite) {
@@ -1689,27 +1645,25 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             } else {
                spriteProjectile = weaponData.projectileSprite;
             }
-            EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, attackerAbility.projectileSpeed, spriteProjectile, attackerAbility.projectileScale, attackerAbility.FXTimePerFrame);
+            EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, attackerAbility.getProjectileSpeed(), spriteProjectile, attackerAbility.projectileScale, attackerAbility.FXTimePerFrame);
 
             // Speed up animation then Animate Shoot clip for a Recoil Effect
-            sourceBattler.modifyAnimSpeed(castAnimSpeed);
             sourceBattler.pauseAnim(false);
             if (weaponData.weaponClass == Weapon.Class.Magic || weaponData.weaponClass == Weapon.Class.Rum) {
-               sourceBattler.playAnim(Anim.Type.Throw_Projectile);
+               sourceBattler.playAnim(Anim.Type.Throw_Projectile, castAnimSpeed);
             } else {
-               sourceBattler.playAnim(Anim.Type.Finish_Attack);
+               sourceBattler.playAnim(Anim.Type.Finish_Attack, castAnimSpeed);
             }
-            yield return new WaitForSeconds(POST_CAST_DELAY);
+            yield return new WaitForSeconds(getPostCastDelay());
 
             // Return to battle stance
             sourceBattler.pauseAnim(false);
             sourceBattler.playAnim(Anim.Type.Battle_East);
 
             // Wait the appropriate amount of time before creating the magic effect
-            timeBeforeCollision = Vector2.Distance(sourcePos, targetPos) / attackerAbility.projectileSpeed;
+            timeBeforeCollision = Vector2.Distance(sourcePos, targetPos) / attackerAbility.getProjectileSpeed();
             float effectOffset = .1f;
-            yield return new WaitForSeconds(timeBeforeCollision - effectOffset - POST_CAST_DELAY);
-            sourceBattler.modifyAnimSpeed(-1);
+            yield return new WaitForSeconds(timeBeforeCollision - effectOffset - getPostCastDelay());
 
             // Play the magic vfx such as (Flame effect on fire element attacks)
             effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
@@ -1737,7 +1691,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             targetBattler.displayedHealth = Util.clamp<int>(targetBattler.displayedHealth, 0, targetBattler.getStartingHealth());
 
             // Now wait the specified amount of time before switching back to our battle stance
-            yield return new WaitForSeconds(POST_CONTACT_LENGTH);
+            yield return new WaitForSeconds(getPostContactLength());
 
             if (isFirstAction) {
                // Switch back to our battle stance
@@ -1838,11 +1792,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          if (abilityDataReference.hasKnockup && targetBattler.isMovable()) {
             // If this magic ability has knockup, then start it now
             targetBattler.StartCoroutine(targetBattler.animateKnockup());
-            yield return new WaitForSeconds(KNOCKUP_LENGTH);
+            yield return new WaitForSeconds(getKnockupLength());
          } else if (abilityDataReference.hasShake && !abilityDataReference.useSpecialAnimation) {
             // If the ability magnitude will shake the screen to simulate impact
             Coroutine shakeCoroutine = targetBattler.StartCoroutine(targetBattler.CO_AnimateShake());
-            yield return new WaitForSeconds(SHAKE_LENGTH);
+            yield return new WaitForSeconds(getShakeLength());
             targetBattler.StopCoroutine(shakeCoroutine);
             if (!abilityData.useSpecialAnimation) {
                targetBattler.playAnim(Anim.Type.Battle_East);
@@ -1851,7 +1805,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Move the sprite back and forward to simulate knockback
             targetBattler.playAnim(Anim.Type.Hurt_East);
             targetBattler.StartCoroutine(targetBattler.animateKnockback());
-            yield return new WaitForSeconds(KNOCKBACK_LENGTH);
+            yield return new WaitForSeconds(getKnockbackLength());
          }
 
          // Note that the contact is happening right now
@@ -1861,11 +1815,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    private IEnumerator animateKnockback () {
       float startTime = Time.time;
-      float halfDuration = POST_CONTACT_LENGTH / 2f;
+      float halfDuration = getPostContactLength() / 2f;
       Vector3 startPos = battleSpot.transform.position;
 
       // Animate the knockback during the post-contact duration
-      while (Time.time - startTime < POST_CONTACT_LENGTH) {
+      while (Time.time - startTime < getPostContactLength()) {
          float timePassed = Time.time - startTime;
          bool overHalfwayDone = timePassed > halfDuration;
 
@@ -1898,11 +1852,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       Vector2 startPos = this.battleSpot.transform.position;
 
       // Animate the knockup 
-      while (Time.time - startTime < KNOCKUP_LENGTH) {
+      while (Time.time - startTime < getKnockupLength()) {
          float timePassed = Time.time - startTime;
 
          // We want the offset to be 0 at the beginning and end, and 1 at the middle
-         float degrees = (timePassed / KNOCKUP_LENGTH) * 180;
+         float degrees = (timePassed / getKnockupLength()) * 180;
          float radians = degrees * Mathf.Deg2Rad;
          float yOffset = Mathf.Sin(radians) * .4f;
 
@@ -1924,7 +1878,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // Show the Block animation frame
       playAnim(Anim.Type.Block_East);
       EffectManager.playBlockEffect(attacker, this);
-      yield return new WaitForSeconds(POST_CONTACT_LENGTH);
+      yield return new WaitForSeconds(getPostContactLength());
       playAnim(Anim.Type.Battle_East);
    }
 
@@ -1932,7 +1886,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // Display the Hit animation frame for a short period
       playAnim(Anim.Type.Hurt_East);
 
-      yield return new WaitForSeconds(POST_CONTACT_LENGTH);
+      yield return new WaitForSeconds(getPostContactLength());
 
       // Play the ability hit SFX after the hurt animation frame
       ability.playHitClipAtTarget(transform);
@@ -1945,7 +1899,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    private IEnumerator CO_AnimateShake () {
       GetComponent<Animator>().Play("shake");
-      yield return new WaitForSeconds(SHAKE_SPECIAL_LENGTH);
+      yield return new WaitForSeconds(getShakeSpecialLength());
    }
 
    private IEnumerator CO_AnimateShakeOld () {
@@ -1955,15 +1909,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       // If the client's player is the target of this shake, then also shake the camera
       if (Util.isPlayer(this.userId)) {
-         BattleCamera.self.shakeCamera(SHAKE_LENGTH);
+         BattleCamera.self.shakeCamera(getShakeLength());
       }
 
       // Animate the shake 
-      while (Time.time - startTime < SHAKE_LENGTH) {
+      while (Time.time - startTime < getShakeLength()) {
          float timePassed = Time.time - startTime;
 
          // We want the offset to be 0 at the beginning and end, and 1 at the middle
-         float degrees = (timePassed / SHAKE_LENGTH) * 1800;
+         float degrees = (timePassed / getShakeLength()) * 1800;
 
          float radians = degrees * Mathf.Deg2Rad;
          float xOffset = Mathf.Sin(radians) * shakeIntensity;
@@ -2105,7 +2059,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public float getPreContactLength () {
       // The amount of time our attack takes depends the type of Battler
-      return 0.35f;
+      return 0.35f * AdminGameSettingsManager.self.settings.battleAttackDuration;
    }
 
    public float getPreMagicLength () {
@@ -2113,9 +2067,69 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       return .6f;
    }
 
-   public float getProjectileSpeed () {
-      // The speed of the projectile
-      return .2f;
+   public static float getAimDuration () {
+      // Determines the aiming duration
+      return .05f * AdminGameSettingsManager.self.settings.battleAttackDuration;
+   }
+
+   public static float getPreCastDelay () {
+      // Determines the delay before animation the cast clip
+      return .25f * AdminGameSettingsManager.self.settings.battleAttackDuration;
+   }
+
+   public static float getPostCastDelay () {
+      // Determines the delay before ending cast Pose
+      return .13f * AdminGameSettingsManager.self.settings.battleAttackDuration;
+   }
+
+   public static float getPreShootDelay () {
+      // Determines the delay before animation the Shoot clip
+      return .1f * AdminGameSettingsManager.self.settings.battleAttackDuration;
+   }
+
+   public static float getPostShootDelay () {
+      // Determines the delay before ending Shoot Pose
+      return .15f * AdminGameSettingsManager.self.settings.battleAttackDuration;
+   }
+   
+   public static float getJumpLength () {
+      // The amount of time a jump takes
+      return .2f * AdminGameSettingsManager.self.settings.battleJumpDuration;
+   }
+
+   public static float getPauseLength () {
+      // The amount of time we pause after a jump forward or back
+      return .1f * AdminGameSettingsManager.self.settings.battleAttackDuration;
+   }
+
+   public static float getSpecialAttackReadyTime () {
+      // The amount of time we pause before a special attack
+      return .2f * AdminGameSettingsManager.self.settings.battleAttackDuration;
+   }
+
+   public static float getPostContactLength () {
+      // The amount of time left after a melee attack makes contact
+      return .25f * AdminGameSettingsManager.self.settings.battleAttackDuration;
+   }
+
+   public static float getShakeLength () {
+      // The amount of time it takes to animate a shake effect
+      return .75f * AdminGameSettingsManager.self.settings.battleAttackDuration;
+   }
+
+   public static float getShakeSpecialLength () {
+      // The amount of time it takes to animate a special shake effect (boss)
+      return 1.5f * AdminGameSettingsManager.self.settings.battleAttackDuration;
+   }
+
+   public static float getKnockupLength () {
+      // The amount of time it takes to animate a knockup effect
+      return .45f * AdminGameSettingsManager.self.settings.battleAttackDuration;
+   }
+
+   public static float getKnockbackLength () {
+      // The amount of time it takes to animate a knock back effect
+      return .45f * AdminGameSettingsManager.self.settings.battleAttackDuration;
    }
 
    public float getDefense (Element element) {

@@ -14,10 +14,10 @@ public class AdminGameSettingsPanel : MonoBehaviour
    public CanvasGroup canvasGroup;
 
    // The parameter rows
-   //public AdminGameSettingsRow battleIdleAnimSpeedRow;
-   //public AdminGameSettingsRow battleAttackDurationRow;
    public AdminGameSettingsRow battleJumpDurationRow;
+   public AdminGameSettingsRow battleAttackDurationRow;
    public AdminGameSettingsRow battleAttackCooldownRow;
+   public AdminGameSettingsRow battleTimePerFrameRow;
    public AdminGameSettingsRow seaSpawnsPerSpotRow;
    public AdminGameSettingsRow seaAttackCooldownRow;
 
@@ -50,13 +50,15 @@ public class AdminGameSettingsPanel : MonoBehaviour
          refreshPanel();
          show();
       } else {
-         hide();
+         hide(true);
       }
    }
 
    public void refreshPanel () {
       battleJumpDurationRow.initialize(AdminGameSettingsManager.self.settings.battleJumpDuration);
       battleAttackCooldownRow.initialize(AdminGameSettingsManager.self.settings.battleAttackCooldown);
+      battleAttackDurationRow.initialize(AdminGameSettingsManager.self.settings.battleAttackDuration);
+      battleTimePerFrameRow.initialize(AdminGameSettingsManager.self.settings.battleTimePerFrame);
       seaSpawnsPerSpotRow.initialize(AdminGameSettingsManager.self.settings.seaSpawnsPerSpot);
       seaAttackCooldownRow.initialize(AdminGameSettingsManager.self.settings.seaAttackCooldown);
       updateSpawnsPerSpot();
@@ -72,9 +74,15 @@ public class AdminGameSettingsPanel : MonoBehaviour
 
    private IEnumerator CO_ApplyChangesAfterDelay () {
       yield return new WaitForSeconds(1f);
+      applyChanges();
+   }
+
+   private void applyChanges () {
       AdminGameSettings settings = new AdminGameSettings(-1, DateTime.UtcNow,
          battleAttackCooldownRow.getValue(),
-         battleJumpDurationRow.getValue() ,
+         battleJumpDurationRow.getValue(),
+         battleAttackDurationRow.getValue(),
+         battleTimePerFrameRow.getValue(),
          seaSpawnsPerSpotRow.getValue(), 
          seaAttackCooldownRow.getValue());
       Global.player.rpc.Cmd_SetAdminGameSettings(settings);
@@ -99,8 +107,13 @@ public class AdminGameSettingsPanel : MonoBehaviour
       this.gameObject.SetActive(true);
    }
 
-   public void hide () {
+   public void hide (bool shouldApplyPendingChanges = false) {
       StopAllCoroutines();
+
+      if (shouldApplyPendingChanges) {
+         applyChanges();
+      }
+
       this.canvasGroup.Hide();
       this.gameObject.SetActive(false);
    }

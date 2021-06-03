@@ -9,6 +9,9 @@ public class Spawn : MonoBehaviour, IMapEditorDataReceiver {
    // Hardcoded spawn keys
    public static string STARTING_SPAWN = "Tutorial Town Start";
 
+   // Minimum distance from warping triggers when using random position offset in spawn areas
+   public static float MIN_DISTANCE_TO_WARP_TRIGGER = 0.18f;
+
    // The key determining the type of spawn this is
    public string spawnKey;
 
@@ -54,7 +57,7 @@ public class Spawn : MonoBehaviour, IMapEditorDataReceiver {
          List<Warp> warps = area.getWarps();
          foreach (Warp warp in warps) {
             // If player is too close to warp, just spawn in the middle of the spawn bounds
-            if (warp.hasCollider() && (warp.getColliderBounds().Contains(worldPos) || Vector2.Distance(warp.getColliderBounds().ClosestPoint(worldPos), worldPos) < 0.05f)) {
+            if (warp.hasCollider() && (warp.getColliderBounds().Contains(worldPos) || Vector2.Distance(warp.getColliderBounds().ClosestPoint(worldPos), worldPos) < MIN_DISTANCE_TO_WARP_TRIGGER)) {
                return Vector2.zero;
             }
          }
@@ -62,7 +65,7 @@ public class Spawn : MonoBehaviour, IMapEditorDataReceiver {
          List<GenericActionTrigger> leagueWarps = area.getLeagueWarpTriggers();
          foreach (GenericActionTrigger warp in leagueWarps) {
             // If player is too close to warp, just spawn in the middle of the spawn bounds
-            if (warp.hasCollider() && (warp.getColliderBounds().Contains(worldPos) || Vector2.Distance(warp.getColliderBounds().ClosestPoint(worldPos), worldPos) < 0.05f)) {
+            if (warp.hasCollider() && (warp.getColliderBounds().Contains(worldPos) || Vector2.Distance(warp.getColliderBounds().ClosestPoint(worldPos), worldPos) < MIN_DISTANCE_TO_WARP_TRIGGER)) {
                return Vector2.zero;
             }
          }

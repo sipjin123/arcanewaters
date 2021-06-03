@@ -739,7 +739,8 @@ public class RPCManager : NetworkBehaviour
       // Play some sounds
       switch (chest.chestType) {
          case ChestSpawnType.Sea:
-            SoundEffectManager.self.playSoundEffect(SoundEffectManager.OPEN_SEA_BAG, Global.player.transform);
+            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.OPEN_SEA_BAG, Global.player.transform);
+            //SoundEffectManager.self.playSoundEffect(SoundEffectManager.OPEN_SEA_BAG, Global.player.transform);
             break;
          case ChestSpawnType.Land:
             SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.OPEN_LAND_BAG, Global.player.transform);

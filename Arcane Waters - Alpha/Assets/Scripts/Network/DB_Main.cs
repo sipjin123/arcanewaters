@@ -9500,14 +9500,16 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO admin_game_settings (creationDate, battleAttackCooldown, battleJumpDuration, seaSpawnsPerSpot, seaAttackCooldown) " +
-            "VALUES(@creationDate, @battleAttackCooldown, @battleJumpDuration, @seaSpawnsPerSpot, @seaAttackCooldown);"
+            "INSERT INTO admin_game_settings (creationDate, battleAttackCooldown, battleJumpDuration, battleAttackDuration, battleTimePerFrame, seaSpawnsPerSpot, seaAttackCooldown) " +
+            "VALUES(@creationDate, @battleAttackCooldown, @battleJumpDuration, @battleAttackDuration, @battleTimePerFrame, @seaSpawnsPerSpot, @seaAttackCooldown);"
             , conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@creationDate", DateTime.FromBinary(settings.creationDate));
             cmd.Parameters.AddWithValue("@battleAttackCooldown", settings.battleAttackCooldown);
             cmd.Parameters.AddWithValue("@battleJumpDuration", settings.battleJumpDuration);
+            cmd.Parameters.AddWithValue("@battleAttackDuration", settings.battleAttackDuration);
+            cmd.Parameters.AddWithValue("@battleTimePerFrame", settings.battleTimePerFrame);
             cmd.Parameters.AddWithValue("@seaSpawnsPerSpot", settings.seaSpawnsPerSpot);
             cmd.Parameters.AddWithValue("@seaAttackCooldown", settings.seaAttackCooldown);
             DebugQuery(cmd);
@@ -9526,13 +9528,16 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-         "UPDATE admin_game_settings SET battleAttackCooldown=@battleAttackCooldown, battleJumpDuration=@battleJumpDuration, seaSpawnsPerSpot=@seaSpawnsPerSpot, seaAttackCooldown=@seaAttackCooldown " +
+         "UPDATE admin_game_settings SET battleAttackCooldown=@battleAttackCooldown, battleJumpDuration=@battleJumpDuration, battleAttackDuration=@battleAttackDuration, " +
+         "battleTimePerFrame=@battleTimePerFrame, seaSpawnsPerSpot=@seaSpawnsPerSpot, seaAttackCooldown=@seaAttackCooldown " +
          "WHERE id=@id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@id", settings.id);
             cmd.Parameters.AddWithValue("@battleAttackCooldown", settings.battleAttackCooldown);
             cmd.Parameters.AddWithValue("@battleJumpDuration", settings.battleJumpDuration);
+            cmd.Parameters.AddWithValue("@battleAttackDuration", settings.battleAttackDuration);
+            cmd.Parameters.AddWithValue("@battleTimePerFrame", settings.battleTimePerFrame);
             cmd.Parameters.AddWithValue("@seaSpawnsPerSpot", settings.seaSpawnsPerSpot);
             cmd.Parameters.AddWithValue("@seaAttackCooldown", settings.seaAttackCooldown);
             DebugQuery(cmd);

@@ -7,6 +7,7 @@ using Mirror;
 using System;
 using TMPro;
 using Pathfinding;
+using FMODUnity;
 
 public class SeaEntity : NetEntity
 {
@@ -230,7 +231,7 @@ public class SeaEntity : NetEntity
       if (!isServer || isDead() || !useSeaEnemyAI()) {
          return;
       }
-      
+
       // Don't let minions pathfind and move
       if (isSeaMonsterMinion()) {
          return;
@@ -405,10 +406,10 @@ public class SeaEntity : NetEntity
       if (audioClipData.audioPath.Length > 1) {
          AudioClip clip = audioClipData.audioClip;
          if (clip != null) {
-            SoundManager.playClipAtPoint(clip, Camera.main.transform.position);
+            //SoundManager.playClipAtPoint(clip, Camera.main.transform.position);
          }
       } else {
-         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Attack_Fire, this.transform.position);
+         //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Attack_Fire, this.transform.position);
       }
 
       if (abilityData.selectedAttackType == Attack.Type.Shock_Ball) {
@@ -486,8 +487,32 @@ public class SeaEntity : NetEntity
 
          noteAttacker(attackerNetId);
 
-         // Play the damage sound
-         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_2, pos);
+         // Play the damage sound (FMOD SFX)
+         SeaEntity attackerEntity = SeaManager.self.getEntity(attackerNetId);
+
+         if (attackerEntity != null && this is BotShipEntity) {
+            SoundEffect hitEffect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.ENEMY_SHIP_IMPACT);
+
+            if(hitEffect != null) {
+               GameObject hitGo = new GameObject();
+               hitGo.transform.SetParent(this.transform);
+               hitGo.transform.localPosition = Vector3.zero;
+               hitGo.name = "Hit Emitter";
+
+               StudioEventEmitter hitEmitter = hitGo.AddComponent<StudioEventEmitter>();
+               hitEmitter.SetParameter(SoundEffectManager.APPLY_CRIT_PARAM, isCrit ? 1 : 0);
+               hitEmitter.AllowFadeout = true;
+               hitEmitter.Event = hitEffect.fmodId;
+               hitEmitter.Play();
+
+               // Destroy emitter after event end
+               StartCoroutine(SoundEffectManager.self.CO_DestroyAfterEnd(hitEmitter));
+            } else {
+               SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_2, pos);
+            }
+         } else {
+            SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_2, pos);
+         }
       }
 
       // If it was our ship, shake the camera
@@ -538,13 +563,13 @@ public class SeaEntity : NetEntity
          case Attack.Type.Boulder:
             // Apply the status effect
             ExplosionManager.createRockExplosion(location);
-            SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Boulder, location);
+            //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Boulder, location);
             break;
          case Attack.Type.Venom:
             // Apply the status effect
             StatusManager.self.create(Status.Type.Slowed, 0.3f, 3f, attackerNetID);
             ExplosionManager.createSlimeExplosion(location);
-            SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Attack_Fire, location);
+            //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Attack_Fire, location);
             break;
       }
    }
@@ -599,7 +624,7 @@ public class SeaEntity : NetEntity
    }
 
    protected virtual void assignEntityName () {
-     
+
    }
 
    [Command]

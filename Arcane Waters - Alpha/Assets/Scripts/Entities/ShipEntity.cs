@@ -113,7 +113,7 @@ public class ShipEntity : SeaEntity
 
    public override void playAttackSound () {
       // Play a sound effect
-      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.SHIP_CANNON, this.transform, true, true);
+      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.SHIP_CANNON, this.transform, true);
       //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Cannon_1, this.transform.position);
    }
 
@@ -242,7 +242,7 @@ public class ShipEntity : SeaEntity
       // Play an appropriate sound
       AudioClip clip = AudioClipManager.self.getAudioClipData(shipData.castSFXPath).audioClip;
       if (clip != null) {
-         SoundManager.playClipAtPoint(clip, Camera.main.transform.position);
+         //SoundManager.playClipAtPoint(clip, Camera.main.transform.position);
       } else {
          playAttackSound();
       }

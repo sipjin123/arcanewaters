@@ -73,11 +73,13 @@ public class SoundEffectManager : MonoBehaviour
    public const int ROCK_MINE = 91;
    public const int SHIP_LAUNCH_CHARGE = 92;
    public const int PICKUP_CROP = 93;
-   public const int LightningFlash = 96;
+   public const int ENEMY_SHIP_IMPACT = 94;
+   public const int LIGHTNING_FLASH = 96;
    public const int AMBIENCE_BED_MASTER = 97;
 
    public const string SHIP_CHARGE_RELEASE_PARAM = "Ship_Charge_Release";
-   public const string AMBIENCE_AUDIO_SWITCH_PARAM = "Audio_Switch";
+   public const string AMBIENCE_AUDIO_SWITCH_PARAM = "Ambience_Switch";
+   public const string APPLY_CRIT_PARAM = "Apply_Crit";
 
    // Reference to the main camera
    public Camera mainCamReference;
@@ -156,12 +158,12 @@ public class SoundEffectManager : MonoBehaviour
       }
    }
 
-   public void playFmodSoundEffect(int id, Transform target, bool force3d = false, bool forceNoParent = false) {
+   public void playFmodSoundEffect(int id, Transform target, bool force3d = false) {
       SoundEffect effect;
 
       if (_soundEffects.TryGetValue(id, out effect)) {
          if (effect.is3D || force3d) {
-            playFmodSoundEffect3D(effect, target, forceNoParent);
+            playFmodSoundEffect3D(effect, target);
          } else {
             if (effect.fmodId.Length > 0) {
                RuntimeManager.PlayOneShot(effect.fmodId, mainCamReference.transform.position);
@@ -172,16 +174,6 @@ public class SoundEffectManager : MonoBehaviour
       } else {
          D.debug("Could not find SoundEffect with 'id' : '" + id + "'");
       }
-   }
-
-   public SoundEffect getSoundEffectFromId(int id) {
-      SoundEffect effect;
-
-      if(!_soundEffects.TryGetValue(id, out effect)) {
-         D.debug("Could not find SoundEffect with 'id' : '" + id + "'");
-      }
-
-      return effect;
    }
 
    private void playSoundEffect3D (SoundEffect effect, Transform target) {
@@ -196,21 +188,18 @@ public class SoundEffectManager : MonoBehaviour
       Destroy(audioSource.gameObject, audioSource.clip.length);
    }
 
-   private void playFmodSoundEffect3D(SoundEffect effect, Transform target, bool forceNoParent = false) {
+   private void playFmodSoundEffect3D(SoundEffect effect, Transform target) {
       StudioEventEmitter eventEmitter = Instantiate(PrefabsManager.self.fMod3dPrefab, target.position, Quaternion.identity);
      
       eventEmitter.Event = effect.fmodId;
-      
-      if (!forceNoParent) {
-         eventEmitter.transform.SetParent(target, true);
-      }
-
+      eventEmitter.transform.position = target.position;
+      eventEmitter.transform.SetParent(this.transform, true);
       eventEmitter.EventInstance.setVolume(effect.minVolume);
       eventEmitter.Play();
       StartCoroutine(CO_DestroyAfterEnd(eventEmitter));
    }
 
-   private IEnumerator CO_DestroyAfterEnd (StudioEventEmitter emitter) {
+   public IEnumerator CO_DestroyAfterEnd (StudioEventEmitter emitter) {
       while (emitter != null && emitter.IsPlaying()) {
          yield return 0;
       }

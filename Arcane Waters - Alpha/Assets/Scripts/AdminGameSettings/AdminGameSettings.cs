@@ -25,17 +25,17 @@ public class AdminGameSettings
    // A multiplier applied to all battler jumps duration (when battlers move across the screen)
    public float battleJumpDuration = 1.0f;
 
+   // A multiplier applied to the battler attack duration (sword swings, gun fire, etc)
+   public float battleAttackDuration = 1.0f;
+
+   // A multiplier applied to all battler animations time per frame
+   public float battleTimePerFrame = 1.0f;
+
    // A multiplier applied to the enemy spawn count per spawner spot in sea leagues maps
    public float seaSpawnsPerSpot = 1.0f;
 
    // A multiplier applied to enemy attack cooldowns in sea league maps
    public float seaAttackCooldown = 1.0f;
-
-   //// A multiplier applied to all battler idle animations
-   //public float idleAnimationSpeedMultiplier = 1f;
-
-   //// A multiplier applied to the battler attack duration (sword swings, gun fire, etc)
-   //public float attackDurationMultiplier = 1f;
 
    #endregion
 
@@ -48,6 +48,8 @@ public class AdminGameSettings
       this.creationDate = DataUtil.getDateTime(dataReader, "creationDate").ToBinary();
       this.battleAttackCooldown = DataUtil.getFloat(dataReader, "battleAttackCooldown");
       this.battleJumpDuration = DataUtil.getFloat(dataReader, "battleJumpDuration");
+      this.battleAttackDuration = DataUtil.getFloat(dataReader, "battleAttackDuration");
+      this.battleTimePerFrame = DataUtil.getFloat(dataReader, "battleTimePerFrame");
       this.seaSpawnsPerSpot = DataUtil.getFloat(dataReader, "seaSpawnsPerSpot");
       this.seaAttackCooldown = DataUtil.getFloat(dataReader, "seaAttackCooldown");
    }
@@ -55,11 +57,13 @@ public class AdminGameSettings
 #endif
 
    public AdminGameSettings (int id, DateTime creationDate, float battleAttackCooldown, float battleJumpDuration, 
-      float seaSpawnsPerSpot, float seaAttackCooldown) {
+      float battleAttackDuration, float battleTimePerFrame, float seaSpawnsPerSpot, float seaAttackCooldown) {
       this.id = id;
       this.creationDate = creationDate.ToBinary();
       this.battleAttackCooldown = battleAttackCooldown;
       this.battleJumpDuration = battleJumpDuration;
+      this.battleAttackDuration = battleAttackDuration;
+      this.battleTimePerFrame = battleTimePerFrame;
       this.seaSpawnsPerSpot = seaSpawnsPerSpot;
       this.seaAttackCooldown = seaAttackCooldown;
    }

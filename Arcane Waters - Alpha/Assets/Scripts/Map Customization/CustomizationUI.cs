@@ -30,6 +30,9 @@ namespace MapCustomization
       // Template for prefab selection entries
       public PrefabSelectionEntry prefabSelectEntryPref;
 
+      // Reference to the grouping of prefabs
+      public static IEnumerable<IGrouping<int, PlaceablePrefabData>> itemPrefabs;
+
       #endregion
 
       private void Awake () {
@@ -162,7 +165,7 @@ namespace MapCustomization
          _prefabEntries.Clear();
 
          // Group prefabs by their item id
-         IEnumerable<IGrouping<int, PlaceablePrefabData>> itemPrefabs = dataCollection.GroupBy(d => d.prefab.propDefinitionId);
+         itemPrefabs = dataCollection.GroupBy(d => d.prefab.propDefinitionId);
 
          foreach (IGrouping<int, PlaceablePrefabData> itemPrefab in itemPrefabs) {
             PrefabSelectionEntry entry = Instantiate(self.prefabSelectEntryPref, self.prefabSelectEntryParent);
