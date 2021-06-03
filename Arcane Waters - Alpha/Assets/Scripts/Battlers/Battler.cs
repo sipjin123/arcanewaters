@@ -1785,7 +1785,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    #region Combat Effect Simulation
 
    private IEnumerator CO_SimulateCollisionEffects (Battler targetBattler, AttackAbilityData abilityDataReference, AttackAction action, BasicAbilityData abilityData) {
-      if (health > 0) {
+      if (health > 0 && !targetBattler.hasDisplayedDeath()) {
          // Play the sound associated for hit
          // TODO: Play SFX here for knockup / knockback / shake
 
@@ -1883,6 +1883,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    private IEnumerator animateHit (Battler attacker, AttackAction action, BasicAbilityData ability) {
+      if (hasDisplayedDeath()) {
+         yield return null;
+      }
+
       // Display the Hit animation frame for a short period
       playAnim(Anim.Type.Hurt_East);
 
