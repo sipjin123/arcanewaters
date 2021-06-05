@@ -5221,8 +5221,7 @@ public class RPCManager : NetworkBehaviour
 
                // If this is an admin group party, randomize delay before team member is forced to join
                if (isGroupBattle) {
-                  bool joinInstantly = Random.Range(0, 5) < 2;
-                  entity.rpc.Target_JoinTeamCombat(entity.connectionToClient, netId, joinInstantly ? 0 : 2);
+                  entity.rpc.Target_JoinTeamCombat(entity.connectionToClient, netId, Random.RandomRange(.25f,4));
                }
             }
          }

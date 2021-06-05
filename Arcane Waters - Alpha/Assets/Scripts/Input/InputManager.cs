@@ -145,12 +145,18 @@ public class InputManager : GenericGameManager {
    }
 
    private void moveAction (Vector2 moveVal) {
-      D.adminLog("Player Move Now: ", D.ADMIN_LOG_TYPE.Gamepad);
+      if (Global.player == null) {
+         return;
+      }
+
       joystickNavigation = moveVal;
    }
 
    private void mouseAction (Vector2 mouseVal) {
-      D.adminLog("Mouse Move Now: ", D.ADMIN_LOG_TYPE.Gamepad);
+      if (Global.player == null) {
+         return;
+      }
+
       if (Util.isCloudBuild()) {
          mouseJoystickNavigation = new Vector2(mouseVal.x, -mouseVal.y);
       } else {
