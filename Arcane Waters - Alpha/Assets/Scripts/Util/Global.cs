@@ -76,7 +76,7 @@ public class Global
    public static bool autoAttack = false;
 
    // The attack delay of the auto attack
-   public static float attackDelay = .25f;
+   public static float attackDelay = .01f;
 
    // Determine if the player will force their party to join combat
    public static bool forceJoin = false;

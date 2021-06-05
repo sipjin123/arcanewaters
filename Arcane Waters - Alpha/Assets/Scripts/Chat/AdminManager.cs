@@ -614,7 +614,7 @@ public class AdminManager : NetworkBehaviour
 
       string[] list = parameters.Split(' ');
       if (list.Length > 0) {
-         float attackDelay = .25f;
+         float attackDelay = 0.01f;
          try {
             attackDelay = float.Parse(list[0]);
          } catch {
@@ -650,7 +650,7 @@ public class AdminManager : NetworkBehaviour
             D.debug("AutoAttack is invalid: " + list[0]);
          }
 
-         float attackDelay = .25f;
+         float attackDelay = 0f;
          try {
             attackDelay = float.Parse(list[1]);
          } catch {

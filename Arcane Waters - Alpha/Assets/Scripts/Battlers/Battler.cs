@@ -313,7 +313,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          player.rpc.Cmd_RequestStanceChange((Stance) PlayerPrefs.GetInt(PlayerBodyEntity.CACHED_STANCE_PREF, 0));
 
          if (Global.autoAttack) {
-            InvokeRepeating(nameof(autoAttackSimulation), 1, Math.Min(.25f, Global.attackDelay));
+            InvokeRepeating(nameof(autoAttackSimulation), 1, Global.attackDelay);
          }
 
       }
