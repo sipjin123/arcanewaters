@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.Linq;
+using DG.Tweening;
 
 public class TreasureChest : NetworkBehaviour {
    #region Public Variables
@@ -473,30 +474,34 @@ public class TreasureChest : NetworkBehaviour {
       ChatManager.self.addChat(msg, ChatInfo.Type.System);
    }
 
-   public IEnumerator CO_CreatingFloatingPowerupIcon (Powerup.Type powerupType) {
+   public IEnumerator CO_CreatingFloatingPowerupIcon (Powerup.Type powerupType, Rarity.Type powerupRarity, PlayerShipEntity player) {
       // Give some time for the chest to open
       float animationDuration = chestOpeningAnimation.frameLengthOverride * chestOpeningAnimation.maxIndex;
       animationDuration = Mathf.Clamp(animationDuration, .1f, 1);
       yield return new WaitForSeconds(animationDuration);
 
-      // Create a floating icon
-      GameObject floatingIcon = Instantiate(TreasureManager.self.floatingIconPrefab, Vector3.zero, Quaternion.identity);
-      floatingIcon.transform.SetParent(this.transform);
-      floatingIcon.transform.localPosition = new Vector3(0f, .04f);
+      // Create the popup icon, make it scale up in size
+      PowerupPopupIcon popupIcon = Instantiate(TreasureManager.self.powerupPopupIcon, Vector3.zero, Quaternion.identity).GetComponent<PowerupPopupIcon>();
+      popupIcon.transform.SetParent(this.transform);
+      popupIcon.transform.localPosition = new Vector3(0.0f, 0.04f);
+      popupIcon.transform.SetParent(AreaManager.self.getArea(areaKey).transform);
+      popupIcon.init(powerupType, powerupRarity);
+      popupIcon.transform.localScale = Vector3.one * 0.25f;
+      popupIcon.transform.DOScale(1.0f, 0.8f).SetEase(Ease.InElastic);
+      yield return new WaitForSeconds(0.4f);
 
-      Image image = floatingIcon.GetComponentInChildren<Image>();
-      PowerupData powerupData = PowerupManager.self.getPowerupData(powerupType);
-      image.sprite = powerupData.spriteIcon;
+      // After a delay, have the popup icon move upwards
+      popupIcon.transform.DOBlendableLocalMoveBy(Vector3.up * 0.3f, 0.4f).SetEase(Ease.OutSine);
+      yield return new WaitForSeconds(1.4f);
 
-      // Set the name text
-      FloatAndStop floatAndStopReference = floatingIcon.GetComponentInChildren<FloatAndStop>();
-      floatAndStopReference.nameText.text = powerupData.powerupName;
-      floatAndStopReference.border.SetActive(true);
+      // After another delay, have the popup icon move towards the player
+      popupIcon.gravitateToPlayer(player, 1.0f);
 
       isWaitingForServerResponse = false;
 
       // Show a confirmation in chat
-      string msg = string.Format("You received powerup! <color=red>{0}</color>!", powerupData.powerupName);
+      string powerupName = PowerupManager.self.getPowerupData(powerupType).powerupName;
+      string msg = string.Format("You received powerup! <color=red>{0}</color>!", powerupName);
       ChatManager.self.addChat(msg, ChatInfo.Type.System);
    }
 

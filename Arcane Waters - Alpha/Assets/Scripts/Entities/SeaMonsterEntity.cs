@@ -745,12 +745,6 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    // The position we spawned at
    protected Vector2 _spawnPos;
 
-   // The current waypoint List
-   protected List<Vector3> _currentPath = new List<Vector3>();
-
-   // The current Point Index of the path
-   private int _currentPathIndex;
-
    // Keeps reference to the behavior coroutine so that it can be manually stopped
    private Coroutine _currentBehaviorCoroutine = null;
 

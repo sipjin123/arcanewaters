@@ -142,7 +142,10 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       // If we are the local player, assign us the audio listener
       if (isLocalPlayer && AudioListenerManager.self) {
          _audioListener = GetComponent<AudioListener>();
+         _fmodListener = GetComponent<FMODUnity.StudioListener>();
+
          AudioListenerManager.self.setActiveListener(_audioListener);
+         AudioListenerManager.self.setActiveFmodListener(_fmodListener);
       }
 
       // Retrieve the current sprites for the guild icon
@@ -186,6 +189,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
          if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getAudioListener() != null) {
             AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener());
+            AudioListenerManager.self.setActiveFmodListener(CameraManager.defaultCamera.getFmodListener());
          } else {
             D.error("Couldn't switch audio listener back to main camera");
          }
@@ -801,15 +805,18 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          // If the listener hasn't been switched, switch it
          if (CameraManager.battleCamera.getAudioListener() != AudioListenerManager.self.getActiveListener()) {
             AudioListenerManager.self.setActiveListener(CameraManager.battleCamera.getAudioListener());
+            AudioListenerManager.self.setActiveFmodListener(CameraManager.battleCamera.getFmodListener());
          }
       // If the player isn't in battle
       } else if (_audioListener != null) {
          // Make sure the game is using the player's audio listener
          if (_audioListener != AudioListenerManager.self.getActiveListener()) {
             AudioListenerManager.self.setActiveListener(_audioListener);
+            AudioListenerManager.self.setActiveFmodListener(_fmodListener);
          }
       } else if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getAudioListener() != null) {
          AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener());
+         AudioListenerManager.self.setActiveFmodListener(CameraManager.defaultCamera.getFmodListener());
       } else {
          D.error("Couldn't find an audio listener to assign");
       }
@@ -838,6 +845,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    // A reference to the audiolistener attached to the player
    private AudioListener _audioListener;
+
+   // A reference to the FMOD Studio Listener attached to the player
+   private FMODUnity.StudioListener _fmodListener;
 
    // The 'startSizeMultiplier' of the dust trail particle
    private float _dustStartSizeMultiplier;

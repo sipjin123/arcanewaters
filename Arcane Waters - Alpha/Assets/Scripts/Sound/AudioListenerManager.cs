@@ -19,7 +19,10 @@ public class AudioListenerManager : GenericGameManager {
       base.Awake();
       self = this;
       AudioListener startingListener = FindObjectOfType<AudioListener>();
+      FMODUnity.StudioListener startingFmodListener = FindObjectOfType<FMODUnity.StudioListener>();
+
       setActiveListener(startingListener);
+      setActiveFmodListener(startingFmodListener);
    }
    
    public void setActiveListener (AudioListener newListener) {
@@ -32,8 +35,22 @@ public class AudioListenerManager : GenericGameManager {
       onListenerChanged?.Invoke();
    }
 
+   public void setActiveFmodListener(FMODUnity.StudioListener newListener) {
+      if (_activeFmodListener) {
+         _activeFmodListener.enabled = false;
+      }
+
+      _activeFmodListener = newListener;
+      _activeFmodListener.enabled = true;
+      //onListenerChanged?.Invoke();
+   }
+
    public AudioListener getActiveListener () {
       return _activeListener;
+   }
+
+   public FMODUnity.StudioListener getActiveFmodListener () {
+      return _activeFmodListener;
    }
 
    public float getActiveListenerZ () {
@@ -44,6 +61,9 @@ public class AudioListenerManager : GenericGameManager {
 
    // A reference to the AudioListener that is being used
    private AudioListener _activeListener;
+
+   // A reference to the FMOD Studio Listener that is being used
+   private FMODUnity.StudioListener _activeFmodListener;
 
    #endregion
 }

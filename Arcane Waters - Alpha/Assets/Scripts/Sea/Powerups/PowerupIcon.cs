@@ -40,8 +40,8 @@ public class PowerupIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
          return;
       }
 
-      Sprite[] iconSprites = Resources.LoadAll<Sprite>("Sprites/Powerups/PowerUpIcons");
-      Sprite[] borderSprites = Resources.LoadAll<Sprite>("Sprites/Powerups/PowerUpBorders");
+      Sprite[] iconSprites = Resources.LoadAll<Sprite>(Powerup.ICON_SPRITES_LOCATION);
+      Sprite[] borderSprites = Resources.LoadAll<Sprite>(Powerup.BORDER_SPRITES_LOCATION);
 
       iconImage.sprite = iconSprites[(int)type - 1];
       borderImage.sprite = borderSprites[(int)rarity - 1];

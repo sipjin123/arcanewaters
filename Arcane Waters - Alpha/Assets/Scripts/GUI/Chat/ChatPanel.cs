@@ -488,16 +488,12 @@ public class ChatPanel : MonoBehaviour {
          }
 
          // If the message is from an Admin, set color of message to Admin color
-         string colorAsString;
-         string stringFormat;
          if (chatInfo.isSenderAdmin) {
-            colorAsString = "#" + ColorUtility.ToHtmlStringRGBA(adminNameColor);
-            stringFormat = "<color={0}>[ADMIN] {1}:</color> <color={2}>{3}</color>";
-            chatLine.text.text = string.Format(stringFormat, colorAsString, messageSource, colorAsString, chatInfo.text);
+            string senderAdminColor = "#" + ColorUtility.ToHtmlStringRGBA(adminNameColor);
+            chatLine.text.text = string.Format("<color={0}>[ADMIN] {1}:</color> <color={2}>{3}</color>", senderAdminColor, messageSource, getColorString(chatInfo.messageType, isLocalPlayer), chatInfo.text);
          } else {
-            colorAsString = getSenderNameColor(chatInfo.messageType, isLocalPlayer);
-            stringFormat = chatInfo.messageType == ChatInfo.Type.Global ? "<color={0}>[GLOBAL] {1}:</color> <color={2}>{3}</color>" : "<color={0}>{1}:</color> <color={2}>{3}</color>";
-            chatLine.text.text = string.Format(stringFormat, colorAsString, messageSource, colorAsString, chatInfo.text);
+            string stringFormat = chatInfo.messageType == ChatInfo.Type.Global ? "<color={0}>[GLOBAL] {1}:</color> <color={2}>{3}</color>" : "<color={0}>{1}:</color> <color={2}>{3}</color>";
+            chatLine.text.text = string.Format(stringFormat, getSenderNameColor(chatInfo.messageType, isLocalPlayer), messageSource, getColorString(chatInfo.messageType, isLocalPlayer), chatInfo.text);
          }
       }
 

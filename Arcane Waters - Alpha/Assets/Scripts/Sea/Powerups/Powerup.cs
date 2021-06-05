@@ -29,6 +29,12 @@ public class Powerup {
    // What rarity this powerup is
    public Rarity.Type powerupRarity;
 
+   // Where the icon sprites for the powerups are located
+   public static string ICON_SPRITES_LOCATION = "Sprites/Powerups/PowerUpIcons";
+
+   // Where the border sprites for the powerups are located
+   public static string BORDER_SPRITES_LOCATION = "Sprites/Powerups/PowerUpBorders";
+
    #endregion
 
    public Powerup () { }

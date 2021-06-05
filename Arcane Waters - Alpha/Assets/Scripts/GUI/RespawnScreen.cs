@@ -42,19 +42,31 @@ public class RespawnScreen : MonoBehaviour
    }
 
    public void onRespawnButtonPress() {
-      if (Global.player != null && Global.player.isPlayerShip()) {
-         ((PlayerShipEntity) Global.player).requestRespawn();
+      if (Global.player != null) {
+         PlayerShipEntity playerShip = Global.player.getPlayerShipEntity();
 
-         // Re enable the tutorial panel
-         if (TutorialManager3.self.panel.getMode() != TutorialPanel3.Mode.Closed) {
-            TutorialManager3.self.panel.gameObject.SetActive(true);
-         }
+         // If the player dies in a pvp area, respawn them in the same map
+         // TODO - Replace this check with something more robust
+         if (playerShip.areaKey.StartsWith("pvp")) {
+            setLifeboatVisibility(false);
+            playerShip.Cmd_RespawnPlayerInInstance();
 
-         // When dying in a voyage area, show a tip explaining how to return
-         if (Global.player.isInGroup() && VoyageManager.isVoyageOrLeagueArea(Global.player.areaKey)) {
-            NotificationManager.self.add(Notification.Type.ReturnToVoyage);
+         // Otherwise, return them to town
+         } else {
+            playerShip.requestRespawn();
+
+            // Re enable the tutorial panel
+            if (TutorialManager3.self.panel.getMode() != TutorialPanel3.Mode.Closed) {
+               TutorialManager3.self.panel.gameObject.SetActive(true);
+            }
+
+            // When dying in a voyage area, show a tip explaining how to return
+            if (Global.player.isInGroup() && VoyageManager.isVoyageOrLeagueArea(Global.player.areaKey)) {
+               NotificationManager.self.add(Notification.Type.ReturnToVoyage);
+            }
          }
       }
+
       _deadTime = 0;
       hide();
    }

@@ -30,6 +30,9 @@ public class ColorCurveReferences : MonoBehaviour {
    // A gradient controlling the color of the attack timing indicator outline
    public Gradient attackTimingOutlineColor;
 
+   // An animation curve controlling the movement of the powerup popup icon
+   public AnimationCurve powerupPopupMovement;
+
    #endregion
 
    private void Awake () {

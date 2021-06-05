@@ -118,11 +118,10 @@ public class PlayerShipEntity : ShipEntity
 
    // FMOD event instance for managing ship's boost SFX
    //FMOD.Studio.EventInstance boostState;
-   StudioEventEmitter boostEventEmitter;
+   //StudioEventEmitter boostEventEmitter;
 
    // The different flags the ship can display
-   public enum Flag
-   {
+   public enum Flag {
       None = 0,
       White = 1,
       Group = 2
@@ -200,6 +199,9 @@ public class PlayerShipEntity : ShipEntity
       GameObject targetConePrefab = Resources.Load<GameObject>("Prefabs/Targeting/TargetConeDots");
       GameObject cannonTargeterPrefab = Resources.Load<GameObject>("Prefabs/Targeting/CannonTargeter");
 
+      // Get a reference to our FMOD Studio Listener
+      _fmodListener = GetComponent<FMODUnity.StudioListener>();
+
       _targetCircle = Instantiate(targetCirclePrefab, transform.parent).GetComponent<TargetCircle>();
       _targetCone = Instantiate(targetConePrefab, transform.parent).GetComponent<TargetCone>();
       _cannonTargeter = Instantiate(cannonTargeterPrefab, transform.parent).GetComponent<CannonTargeter>();
@@ -217,13 +219,12 @@ public class PlayerShipEntity : ShipEntity
       SoundEffect boostEffect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.SHIP_LAUNCH_CHARGE);
 
       if (boostEffect != null) {
-         //boostState = RuntimeManager.CreateInstance(boostEffect.fmodId);
-         //RuntimeManager.AttachInstanceToGameObject(boostState, transform, _body);
+         _boostState = RuntimeManager.CreateInstance(boostEffect.fmodId);
 
-         boostEventEmitter = gameObject.AddComponent<StudioEventEmitter>();
-         boostEventEmitter.AllowFadeout = true;
-         boostEventEmitter.StopEvent = EmitterGameEvent.ObjectDestroy;
-         boostEventEmitter.Event = boostEffect.fmodId;
+         //boostEventEmitter = gameObject.AddComponent<StudioEventEmitter>();
+         //boostEventEmitter.AllowFadeout = true;
+         //boostEventEmitter.StopEvent = EmitterGameEvent.ObjectDestroy;
+         //boostEventEmitter.Event = boostEffect.fmodId;
       }
    }
 
@@ -336,7 +337,10 @@ public class PlayerShipEntity : ShipEntity
       // Try to open chest through code (instead of UI) in case if UI is blocking raycasts casted to the chest Canvas
       if (InputManager.isLeftClickKeyPressed() && !PriorityOverProcessActionLogic.isAnyHovered()) {
          tryToOpenChest();
-      }
+      } 
+      
+      // Update FMOD Studio Listener attachment
+      RuntimeManager.AttachInstanceToGameObject(_boostState, transform, _body);
    }
 
    private void LateUpdate () {
@@ -379,8 +383,8 @@ public class PlayerShipEntity : ShipEntity
          // Activate boost
          //SoundEffectManager.self.playSoundEffect(SoundEffectManager.SHIPBOOST_ID, transform);
          // FMOD SFX
-         //boostState.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 2);
-         boostEventEmitter.SetParameter(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 2);
+         _boostState.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 2);
+         //boostEventEmitter.SetParameter(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 2);
 
          // If the player is pressing a direction, boost them that way, otherwise boost them the way they are facing
          Vector2 boostDirection = InputManager.getMovementInput();
@@ -747,6 +751,12 @@ public class PlayerShipEntity : ShipEntity
 
    [ServerOnly]
    private void onBeingDestroyedServer () {
+      // If the player is in a pvp game, remove them from the game
+      PvpGame activeGame = PvpManager.self.getGameWithPlayer(this);
+      if (activeGame != null) {
+         activeGame.removePlayerFromGame(this);
+      }
+
       // We don't care when the Destroy was initiated by a warp
       if (this.isAboutToWarpOnServer) {
          return;
@@ -1176,6 +1186,7 @@ public class PlayerShipEntity : ShipEntity
    private void checkAudioListener () {
       if (AudioListenerManager.self.getActiveListener() != _audioListener) {
          AudioListenerManager.self.setActiveListener(_audioListener);
+         AudioListenerManager.self.setActiveFmodListener(_fmodListener);
       }
    }
 
@@ -1234,6 +1245,7 @@ public class PlayerShipEntity : ShipEntity
 
          if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getAudioListener() != null) {
             AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener());
+            AudioListenerManager.self.setActiveFmodListener(CameraManager.defaultCamera.getFmodListener());
          } else {
             D.error("Couldn't switch audio listener back to main camera");
          }
@@ -1263,6 +1275,60 @@ public class PlayerShipEntity : ShipEntity
       base.onMaxHealthChanged(oldValue, newValue);
 
       shipBars.initializeHealthBar();
+   }
+
+   [Command]
+   public void Cmd_RespawnPlayerInInstance () {
+      if (_respawningInInstanceCoroutine == null) {
+         _respawningInInstanceCoroutine = StartCoroutine(CO_RespawnPlayerInInstance());
+      }
+   }
+
+   [Server]
+   private IEnumerator CO_RespawnPlayerInInstance () {
+      restoreMaxShipHealth();
+      currentHealth = maxHealth;
+
+      // Wait for currentHealth syncvar to be upated
+      yield return new WaitForSeconds(1.0f);
+
+      // Move the player to their spawn point
+      PvpGame game = PvpManager.self.getGameWithPlayer(this);
+      if (game != null) {
+         Vector3 spawnPosition = game.getSpawnPositionForUser(this);
+         transform.localPosition = spawnPosition;
+      }
+
+      Rpc_OnRespawned();
+
+      _respawningInInstanceCoroutine = null;
+   }
+
+   [ClientRpc]
+   public void Rpc_OnRespawned () {
+      onRespawned();
+   }
+
+   public void onRespawned () {
+      // Show all the sprites
+      foreach (SpriteRenderer renderer in _renderers) {
+         renderer.enabled = true;
+      }
+
+      // Re-enable outline
+      _outline.setVisibility(true);
+
+      // Re-enable colliders
+      setCollisions(true);
+
+      // Raise the ship back up
+      Util.setLocalY(spritesContainer.transform, 0.0f);
+
+      // Allow this ship to play the destroyed sound and visual effect again
+      _playedDestroySound = false;
+
+      // Enable the boost timing circle
+      boostTimingSprites.gameObject.SetActive(true);
    }
 
    #region Private Variables
@@ -1338,6 +1404,15 @@ public class PlayerShipEntity : ShipEntity
 
    // Set to true when the player is charging their boost
    private bool _isChargingBoost = false;
+
+   // A reference to a coroutine responsible for respawning the player in their instance
+   private Coroutine _respawningInInstanceCoroutine = null;
+
+   // FMOD event instance for managing ship's boost SFX
+   FMOD.Studio.EventInstance _boostState;
+
+   // A reference to the FMOD Studio Listener that follows the ship
+   private FMODUnity.StudioListener _fmodListener;
 
    #endregion
 }

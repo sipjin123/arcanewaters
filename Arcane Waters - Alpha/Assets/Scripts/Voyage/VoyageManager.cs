@@ -30,8 +30,6 @@ public class VoyageManager : GenericGameManager {
          StartCoroutine(CO_CreateInitialVoyages());
       }
 
-      createPvpLobby();
-
       // Regularly check that there are enough voyage instances open and create more
       InvokeRepeating(nameof(createVoyageInstanceIfNeeded), 20f, 10f);
    }
@@ -561,145 +559,6 @@ public class VoyageManager : GenericGameManager {
       }
    }
 
-   [Server]
-   public void createPvpLobby () {
-      StartCoroutine(CO_CreatePvpLobby());
-   }
-   
-   private IEnumerator CO_CreatePvpLobby () {
-      yield return new WaitForSeconds(10.0f);
-      
-      // Get a new voyage id from the master server
-      RpcResponse<int> response = ServerNetworkingManager.self.getNewVoyageId();
-      while (!response.IsDone) {
-         yield return null;
-      }
-      _pvpLobbyVoyageId = response.Value;
-
-      string areaKey = getLobbyAreaKeys()[UnityEngine.Random.Range(0, getLobbyAreaKeys().Count)];
-      
-      requestVoyageInstanceCreation(_pvpLobbyVoyageId, areaKey, false, true, 0, -1, Biome.Type.Forest, 1);
-   }
-
-   [Server]
-   public void warpPlayerToPvpLobby (NetEntity player) {
-      // If the player is currently in a voyage group, leave it
-      if (player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
-         VoyageGroupManager.self.removeUserFromGroup(voyageGroup, player.userId);
-      }
-
-      // Create a voyage group with just the player
-      VoyageGroupManager.self.createGroup(player, _pvpLobbyVoyageId, true);
-
-      if (tryGetVoyage(_pvpLobbyVoyageId, out Voyage voyage)) {
-         player.spawnInNewMap(_pvpLobbyVoyageId, voyage.areaKey, Direction.South);
-      } else {
-         D.error("Pvp lobby wasn't created");
-      }
-   }
-
-   [Server]
-   public void createPvpLeagueInstanceAndWarpPlayers (string areaKey = "") {
-      if (_creatingPvpGame) {
-         return;
-      }
-      
-      if (string.IsNullOrEmpty(areaKey)) {
-         areaKey = "pvp_cut_throat";
-      }
-
-      StartCoroutine(CO_CreatePvpLeagueInstanceAndWarpPlayers(areaKey));
-   }
-
-   private IEnumerator CO_CreatePvpLeagueInstanceAndWarpPlayers (string areaKey) {
-      _creatingPvpGame = true;
-
-      // Get a new voyage id from the master server
-      RpcResponse<int> response = ServerNetworkingManager.self.getNewVoyageId();
-      while (!response.IsDone) {
-         yield return null;
-      }
-      int voyageId = response.Value;
-
-      Voyage pvpLobby;
-      if (!tryGetVoyage(_pvpLobbyVoyageId, out pvpLobby)) {
-         D.error("Pvp lobby voyage didn't exist");
-         _creatingPvpGame = false;
-         yield break;
-      }
-
-      Instance pvpLobbyInstance = InstanceManager.self.getInstance(pvpLobby.instanceId);
-      List<PlayerShipEntity> players = pvpLobbyInstance.getPlayerShipEntities();
-
-      if (players.Count < 2) {
-         if (Global.player) {
-            Global.player.rpc.sendError(players.Count + " is not enough players to start pvp game");
-         }
-         _creatingPvpGame = false;
-         yield break;
-      }
-
-      // Remove players from their current voyage groups
-      for (int i = 0; i < players.Count; i++) {
-         PlayerShipEntity player = players[i];
-         if (player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
-            VoyageGroupManager.self.removeUserFromGroup(voyageGroup, player.userId);
-         }
-      }
-
-      int numSpawns = 2;
-      SpawnManager.MapSpawnData mapSpawnData = SpawnManager.self.getAllMapSpawnData(areaKey);
-      if (mapSpawnData != null) {
-         numSpawns = mapSpawnData.spawns.Count;
-         D.log("Map has " + numSpawns + " spawns.");
-      }
-
-      int idealNumberOfTeams = getIdealNumberOfTeams(players.Count, numSpawns);
-      List<VoyageGroupInfo> teamVoyageGroupInfo = new List<VoyageGroupInfo>();
-
-      // For the first player in each team, create a voyage group
-      for (int i = 0; i < idealNumberOfTeams; i++) {
-         PlayerShipEntity player = players[i];
-         VoyageGroupManager.self.createGroup(player, voyageId, true);
-         VoyageGroupInfo playerGroupInfo;
-
-         // Wait for group to be created
-         while (!player.tryGetGroup(out playerGroupInfo)) {
-            yield return null;
-         }
-
-         teamVoyageGroupInfo.Add(playerGroupInfo);
-         VoyageGroupManager.self.setPvpSpawn(playerGroupInfo.groupId, "team" + (i + 1).ToString());
-      }
-
-      // For the remaining players in each team, add them to the voyage group
-      for (int i = idealNumberOfTeams; i < players.Count; i++) {
-         int teamNumber = i % idealNumberOfTeams;
-         PlayerShipEntity player = players[i];
-
-         VoyageGroupManager.self.addUserToGroup(teamVoyageGroupInfo[teamNumber], player);
-      }
-
-      // Launch the creation of the pvp voyage instance
-      requestVoyageInstanceCreation(voyageId, areaKey, isPvP: true, false, 1, -1, Biome.Type.Forest, 1);
-      Voyage newPvpVoyage;
-      
-      // Wait for the instance creation to finish
-      while (!tryGetVoyage(voyageId, out newPvpVoyage)) {
-         yield return null;
-      }
-
-      // Once the instance creation is done, warp all players to the map
-      for (int i = 0; i < players.Count; i++) {
-         int teamNumber = i % idealNumberOfTeams;
-         string spawnName = "team" + (teamNumber + 1).ToString();
-         PlayerShipEntity player = players[i];
-         player.spawnInNewMap(voyageId, newPvpVoyage.areaKey, spawnName, Direction.South);
-      }
-
-      _creatingPvpGame = false;
-   }
-
    public void closeVoyageCompleteNotificationWhenLeavingArea () {
       StartCoroutine(CO_CloseVoyageCompleteNotificationWhenLeavingArea());
    }
@@ -729,26 +588,6 @@ public class VoyageManager : GenericGameManager {
       return ++_lastVoyageId;
    }
 
-   private int getIdealNumberOfTeams (int numPlayers, int maxNumTeams) {
-      if (maxNumTeams == 2) {
-         return 2;
-      } else if (maxNumTeams == 3) {
-         return 3;
-      } else if (maxNumTeams == 4) {
-         if (numPlayers < 8) {
-            return 2;
-         } else {
-            return 4;
-         }
-      }
-
-      return 2;
-   }
-
-   public int getPvpLobbyVoyageId () {
-      return _pvpLobbyVoyageId;
-   }
-
    #region Private Variables
 
    // Gets toggled every time a new voyage is created, to ensure an equal number of PvP and PvE instances
@@ -756,12 +595,6 @@ public class VoyageManager : GenericGameManager {
 
    // The last id used to create a voyage group
    private int _lastVoyageId = 0;
-
-   // The voyage id of the pvp lobby
-   private int _pvpLobbyVoyageId = 0;
-
-   // Set to true when creating a pvp game, to prevent creation of additional games during creation
-   private bool _creatingPvpGame = false;
 
    #endregion
 }

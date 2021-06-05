@@ -38,6 +38,7 @@ public class BaseCamera : MonoBehaviour {
       _vcam = GetComponent<CinemachineVirtualCamera>();
       _pixelFadeEffect = GetComponent<PixelFadeEffect>();
       _audioListener = GetComponent<AudioListener>();
+      _fmodListener = GetComponent<FMODUnity.StudioListener>();
    }
 
    protected virtual void Start () {
@@ -124,6 +125,10 @@ public class BaseCamera : MonoBehaviour {
       return _audioListener;
    }
 
+   public FMODUnity.StudioListener getFmodListener () {
+      return _fmodListener;
+   }
+
    #region Private Variables
 
    // Our associated camera
@@ -141,6 +146,9 @@ public class BaseCamera : MonoBehaviour {
 
    // The audio listener attached to this camera
    private AudioListener _audioListener = null;
+
+   // The FMOD listener attached to this camera
+   private FMODUnity.StudioListener _fmodListener = null;
 
    #endregion
 }

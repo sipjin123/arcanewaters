@@ -311,6 +311,7 @@ MonoBehaviour:
   groundChecker: {fileID: 0}
   waterChecker: {fileID: 0}
   nameText: {fileID: 6035651514146022868}
+  nameTextOutline: {fileID: 0}
   sortPoint: {fileID: 1500841596590262}
   facing: 5
   isSinglePlayer: 0
@@ -325,6 +326,7 @@ MonoBehaviour:
   voyageGroupId: -1
   isGhost: 0
   hasEnteredPvP: 0
+  isNextBiomeUnlocked: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
   guildIconBorder: 
@@ -341,6 +343,7 @@ MonoBehaviour:
   statusEffectContainer: {fileID: 0}
   entityNameGO: {fileID: 0}
   isUnderExternalControl: 0
+  lastNPCTalkTime: -30
   _ignoredAnimators: []
   _animators: []
   spritePath: 
@@ -1316,7 +1319,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_Sprite: {fileID: -8905372413273794119, guid: 8c539e46528eb1c44aa667ecf7db6970,
     type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.4117647}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1564,7 +1567,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_Sprite: {fileID: -8905372413273794119, guid: 8c539e46528eb1c44aa667ecf7db6970,
     type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.4117647}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2010,7 +2013,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_Sprite: {fileID: -8905372413273794119, guid: 8c539e46528eb1c44aa667ecf7db6970,
     type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.4117647}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

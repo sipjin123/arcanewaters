@@ -634,16 +634,19 @@ public class RPCManager : NetworkBehaviour
       }
 
       if (chest.chestType == ChestSpawnType.Sea && spawnPowerup) {
-         Powerup.Type powerupUpType = chest.getPowerUp();
-         if (powerupUpType == Powerup.Type.None) {
-            powerupUpType = Powerup.Type.SpeedUp;
+         Powerup.Type newPowerupType = chest.getPowerUp();
+         if (newPowerupType == Powerup.Type.None) {
+            newPowerupType = Powerup.Type.SpeedUp;
          }
 
-         Target_GivePowerupToPlayer(_player.connectionToClient, (int) powerupUpType, chestId);
+         Rarity.Type newPowerupRarity = Rarity.getRandom();
+         Target_GivePowerupToPlayer(_player.connectionToClient, newPowerupType, newPowerupRarity, chestId);
+
          Powerup newPowerUp = new Powerup {
-            powerupRarity = Rarity.getRandom(),
-            powerupType = powerupUpType
+            powerupRarity = newPowerupRarity,
+            powerupType = newPowerupType
          };
+         
 
          PowerupManager.self.addPowerupServer(_player.userId, newPowerUp);
          Target_AddPowerup(_player.connectionToClient, newPowerUp);
@@ -658,7 +661,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_GivePowerupToPlayer (NetworkConnection connection, int powerupType, int chestId) {
+   public void Target_GivePowerupToPlayer (NetworkConnection connection, Powerup.Type powerupType, Rarity.Type powerupRarity, int chestId) {
       // Locate the Chest
       TreasureChest chest = null;
       foreach (TreasureChest existingChest in FindObjectsOfType<TreasureChest>()) {
@@ -676,7 +679,8 @@ public class RPCManager : NetworkBehaviour
          chest.chestOpeningAnimation.enabled = false;
       }
 
-      chest.StartCoroutine(chest.CO_CreatingFloatingPowerupIcon((Powerup.Type) powerupType));
+      PlayerShipEntity playerShip = _player.getPlayerShipEntity();
+      chest.StartCoroutine(chest.CO_CreatingFloatingPowerupIcon(powerupType, powerupRarity, playerShip));
 
       if (chest.autoDestroy) {
          chest.disableChest();
@@ -4113,13 +4117,6 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
-      if (voyage.isPvP) {
-         if (_player.tryGetGroup(out VoyageGroupInfo groupInfo)) {
-            _player.spawnInNewMap(voyage.voyageId, voyage.areaKey, groupInfo.pvpSpawn, Direction.South);
-            return;
-         }
-      }
-
       // Warp to the voyage area
       _player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
    }
@@ -4933,6 +4930,7 @@ public class RPCManager : NetworkBehaviour
       // Assign ship size to spawned ship
       ShipData shipData = ShipDataManager.self.getShipData(bot.shipType);
       bot.shipSize = shipData.shipSize;
+      bot.seaEntityData.seaMonsterType = SeaMonsterEntity.Type.PirateShip;
 
       // Add ship to pirate guild or privateer guild
       if (guildID == BotShipEntity.PIRATES_GUILD_ID) {

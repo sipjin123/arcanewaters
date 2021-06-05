@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 using System.Linq;
+using DG.Tweening;
 
 public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
    #region Public Variables
@@ -43,6 +44,8 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
       for (int i = 0; i < orderedIcons.Length; i++) {
          orderedIcons[i].transform.SetSiblingIndex(i);
       }
+
+      newPowerup.transform.DOPunchScale(Vector3.one * 0.3f, 0.3f);
    }
 
    public void clearPowerups () {

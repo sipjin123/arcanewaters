@@ -158,11 +158,11 @@ public class SoundEffectManager : MonoBehaviour
       }
    }
 
-   public void playFmodSoundEffect(int id, Transform target, bool force3d = false) {
+   public void playFmodSoundEffect(int id, Transform target, bool forceCamera = false) {
       SoundEffect effect;
 
       if (_soundEffects.TryGetValue(id, out effect)) {
-         if (effect.is3D || force3d) {
+         if (effect.is3D && !forceCamera) {
             playFmodSoundEffect3D(effect, target);
          } else {
             if (effect.fmodId.Length > 0) {

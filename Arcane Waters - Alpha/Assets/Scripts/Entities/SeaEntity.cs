@@ -176,7 +176,7 @@ public class SeaEntity : NetEntity
       // If we've died, start slowing moving our sprites downward
       if (isDead()) {
          _outline.setVisibility(false);
-         disableCollisions();
+         setCollisions(false);
 
          foreach (Coroutine coroutine in _burningCoroutines) {
             if (coroutine != null) {
@@ -270,9 +270,9 @@ public class SeaEntity : NetEntity
       return (hasAttackers() || hasRecentCombat());
    }
 
-   public void disableCollisions () {
+   public void setCollisions (bool enabled) {
       foreach (Collider2D col in colliderList) {
-         col.enabled = false;
+         col.enabled = enabled;
       }
    }
 
@@ -1524,10 +1524,10 @@ public class SeaEntity : NetEntity
    protected Seeker _seeker;
 
    // The current path to the destination
-   private List<Vector3> _currentPath;
+   protected List<Vector3> _currentPath = new List<Vector3>();
 
    // The current Point Index of the path
-   private int _currentPathIndex;
+   protected int _currentPathIndex;
 
    // In case there are no TreasureSites to pursue, use this to patrol the vicinity
    private Vector3 _originalPosition;
