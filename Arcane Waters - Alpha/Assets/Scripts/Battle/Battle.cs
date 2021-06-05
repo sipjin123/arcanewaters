@@ -117,7 +117,7 @@ public class Battle : NetworkBehaviour {
             battler.transform.SetParent(transform, false);
          }
 
-         float bufferedCooldown = (float)battler.cooldownEndTime + MONSTER_ATTACK_BUFFER;
+         float bufferedCooldown = (float) battler.cooldownEndTime + MONSTER_ATTACK_BUFFER;
 
          // Dead battlers don't do anything
          if (battler.isDead()) {
@@ -206,33 +206,36 @@ public class Battle : NetworkBehaviour {
                      List<Battler> targetBattlers = new List<Battler>();
                      AttackAbilityData abilityData = AbilityManager.self.getAttackAbility(battler.basicAbilityIDList[1]);
 
-                     D.adminLog("Golem Boss fetching ability :: " +
+                     D.adminLog("Boss fetching ability :: " +
                         "Name:{" + abilityData.itemName + "} " +
                         "ID1:{" + battler.basicAbilityIDList[1] + "} " +
                         "ID2:{" + abilityData.itemID + "} " +
-                        "MaxTarget: {" + abilityData.maxTargets + "}", D.ADMIN_LOG_TYPE.Combat);
+                        "MaxTarget: {" + abilityData.maxTargets + "}", D.ADMIN_LOG_TYPE.Boss);
 
                      // Setup the maximum targets affected by this ability
                      foreach (Battler attacker in getAttackers()) {
                         targetBattlers.Add(attacker);
-                        D.adminLog("Added attacker target {" + attacker.userId + " : " + attacker.enemyType + "}", D.ADMIN_LOG_TYPE.Combat);
+                        D.adminLog("Added attacker target {" + attacker.userId + " : " + attacker.enemyType + "}", D.ADMIN_LOG_TYPE.Boss);
                         targetCounter++;
                         if (targetCounter >= abilityData.maxTargets) {
-                           D.adminLog("Break target counter! Max target reached" + " Curr: " + targetCounter + " Max: " + abilityData.maxTargets, D.ADMIN_LOG_TYPE.Combat);
+                           D.adminLog("Break target counter! Max target reached" + " Curr: " + targetCounter + " Max: " + abilityData.maxTargets, D.ADMIN_LOG_TYPE.Boss);
                            break;
                         }
                      }
 
-                     D.adminLog("Golem Boss is atttacking using AOE attack having {" + battlePlan.targets.Count + "} targets, AttackerCount:{" + getAttackers().Count + "}", D.ADMIN_LOG_TYPE.Combat);
+                     D.adminLog("Boss is attacking using AOE attack having {" + battlePlan.targets.Count + "} targets, AttackerCount:{" + getAttackers().Count + "}", D.ADMIN_LOG_TYPE.Boss);
                      BattleManager.self.executeBattleAction(this, battler, targetBattlers, 1, AbilityType.Standard);
                   } else {
-                     D.adminLog("Golem Boss is atttacking using regular attack", D.ADMIN_LOG_TYPE.Combat);
+                     D.adminLog("Boss is attacking using regular attack", D.ADMIN_LOG_TYPE.Boss);
                      BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0, AbilityType.Standard);
                   }
                } else {
                   BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0, AbilityType.Standard);
                }
             }
+         } else {
+            // Enable log here if there are abnormalities with the enemy AI not attacking
+            //D.debug("Battler cant process this ! " + battler.isMonster() + " " + (NetworkTime.time + " > " + battler.animatingUntil) + " " +( NetworkTime.time + " > " + bufferedCooldown));
          }
       }
 
