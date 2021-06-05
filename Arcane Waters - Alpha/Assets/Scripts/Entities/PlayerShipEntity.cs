@@ -113,6 +113,9 @@ public class PlayerShipEntity : ShipEntity
    // A reference to the bars script that displays the health of this ship
    public ShipBarsPlayer shipBars;
 
+   // If the dash button is pressed for the 
+   public bool gamePadDashPressed = false;
+
    // References to animators for the player's boost circle
    public Animator boostCircleOutlineAnimator, boostCircleFillAnimator;
 
@@ -214,6 +217,20 @@ public class PlayerShipEntity : ShipEntity
          // When we enter a new scene, update powerups on the client
          rpc.Target_UpdatePowerups(connectionToClient, PowerupManager.self.getPowerupsForUser(userId));
       }
+
+      InputManager.self.inputMaster.Player.Dash.performed += func => {
+         if (gamePadDashPressed != true) {
+            pressBoost();
+            gamePadDashPressed = true; 
+         }
+      };
+
+      InputManager.self.inputMaster.Player.Dash.canceled += func => {
+         if (gamePadDashPressed != false) {
+            releaseBoost();
+            gamePadDashPressed = false;
+         }
+      };
 
       // Attaching state to this gameobject
       SoundEffect boostEffect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.SHIP_LAUNCH_CHARGE);
@@ -370,16 +387,43 @@ public class PlayerShipEntity : ShipEntity
 
    private void boostUpdate () {
       // Begin charging boost
-      if (InputManager.isSpeedUpKeyPressed() && !isBoostCoolingDown()) {
+      if ((InputManager.isSpeedUpKeyPressed())) {
+         pressBoost();
+      } else if ((InputManager.isSpeedUpKeyReleased())) {
+         releaseBoost();
+      }
+
+      if (!isBoostCoolingDown() && _isChargingBoost) {
+         // Update the boost-timing circle
+         boostFillCircleParent.localScale = (Vector3.one * 0.5f) + (Vector3.one * 0.5f * getBoostChargeAmount());
+         boostFillCircle.color = ColorCurveReferences.self.shipBoostCircleColor.Evaluate(getBoostChargeAmount());
+
+         boostCircleFillAnimator.SetInteger("facing", (int) facing);
+         boostCircleOutlineAnimator.SetInteger("facing", (int) facing);
+
+         // FMOD SFX
+         if (getBoostChargeAmount() == 1) {
+            //boostEventEmitter.SetParameter(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 1);
+            _boostState.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 1);
+         }
+      }
+   }
+
+   private void pressBoost () {
+      if (!isBoostCoolingDown()) {
          _boostChargeStartTime = NetworkTime.time;
          boostTimingSprites.alpha = 1.0f;
          _isChargingBoost = true;
 
-         //boostState.start();
-         boostEventEmitter.SetParameter(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 0);
-         boostEventEmitter.Play();
-         //boostState.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 0);
-      } else if (InputManager.isSpeedUpKeyReleased() && !isBoostCoolingDown() && _isChargingBoost) {
+         _boostState.start();
+         //boostEventEmitter.SetParameter(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 0);
+         //boostEventEmitter.Play();
+         _boostState.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 0);
+      }
+   }
+
+   private void releaseBoost () {
+      if (!isBoostCoolingDown() && _isChargingBoost) {
          // Activate boost
          //SoundEffectManager.self.playSoundEffect(SoundEffectManager.SHIPBOOST_ID, transform);
          // FMOD SFX
@@ -402,21 +446,6 @@ public class PlayerShipEntity : ShipEntity
 
          // Trigger the tutorial
          TutorialManager3.self.tryCompletingStep(TutorialTrigger.ShipSpeedUp);
-      }
-
-      if (!isBoostCoolingDown() && _isChargingBoost) {
-         // Update the boost-timing circle
-         boostFillCircleParent.localScale = (Vector3.one * 0.5f) + (Vector3.one * 0.5f * getBoostChargeAmount());
-         boostFillCircle.color = ColorCurveReferences.self.shipBoostCircleColor.Evaluate(getBoostChargeAmount());
-
-         boostCircleFillAnimator.SetInteger("facing", (int) facing);
-         boostCircleOutlineAnimator.SetInteger("facing", (int) facing);
-
-         // FMOD SFX
-         if (getBoostChargeAmount() == 1) {
-            boostEventEmitter.SetParameter(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 1);
-            //boostState.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 1);
-         }
       }
    }
 
@@ -895,7 +924,7 @@ public class PlayerShipEntity : ShipEntity
 
       Vector2 inputVector = InputManager.getMovementInput();
 
-      if (inputVector != _movementInputDirection || isSpeedingUp != InputManager.isSpeedUpKeyPressed()) {
+      if (inputVector != _movementInputDirection || (isSpeedingUp != InputManager.isSpeedUpKeyPressed() && isSpeedingUp != (gamePadDashPressed == true))) {
          // If the ship wasn't moving, apply a small force locally to make up for delay
          if (inputVector != Vector2.zero && _body.velocity.sqrMagnitude < 0.025f) {
             _body.AddForce(Quaternion.AngleAxis(this.desiredAngle, Vector3.forward) * Vector3.up * getMoveSpeed() * CLIENT_SIDE_FORCE);
