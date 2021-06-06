@@ -267,7 +267,6 @@ namespace MapCustomization
 
                         // Save information about current prefab before it is deleted
                         Vector3 prefabPosition = prefab.transform.position;
-                        prefabSerializedID = prefab.customizedState.serializationId;
 
                         // Destroy prefab
                         prefab.revertUnappliedChanges();
@@ -277,7 +276,7 @@ namespace MapCustomization
                         hideSelectionArrows();
 
                         if (scrollWheelUp == true) {
-                           // Wrap around the array if this prefab is at last index;
+                           // Wrap around the array if this prefab is at the last index;
                            if (i == prefabDataArray.Length - 1) {
                               prefabSerializedID = prefabDataArray[0].serializationId;
 
@@ -290,7 +289,7 @@ namespace MapCustomization
                               prefabSerializedID = prefabDataArray[prefabDataArray.Length - 1].serializationId;
 
                            } else {
-                              prefabSerializedID = prefabSerializedID - 1;
+                              prefabSerializedID = prefabDataArray[i -1].serializationId;
                            }
                         }
 

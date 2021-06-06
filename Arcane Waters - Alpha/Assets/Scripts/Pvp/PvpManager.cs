@@ -125,6 +125,13 @@ public class PvpManager : MonoBehaviour {
       return null;
    }
 
+   public void tryRemoveEmptyGame (int instanceId) {
+      // If the game exists, remove itss
+      if (_activeGames.TryGetValue(instanceId, out PvpGame emptyGame)) {
+         _activeGames.Remove(instanceId);
+      }
+   }
+
    #region Private Variables
 
    // After how long the game creation will time out

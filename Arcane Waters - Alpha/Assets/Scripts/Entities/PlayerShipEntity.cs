@@ -203,7 +203,7 @@ public class PlayerShipEntity : ShipEntity
       GameObject cannonTargeterPrefab = Resources.Load<GameObject>("Prefabs/Targeting/CannonTargeter");
 
       // Get a reference to our FMOD Studio Listener
-      _fmodListener = GetComponent<FMODUnity.StudioListener>();
+      //_fmodListener = GetComponent<FMODUnity.StudioListener>();
 
       _targetCircle = Instantiate(targetCirclePrefab, transform.parent).GetComponent<TargetCircle>();
       _targetCone = Instantiate(targetConePrefab, transform.parent).GetComponent<TargetCone>();
@@ -232,17 +232,14 @@ public class PlayerShipEntity : ShipEntity
          }
       };
 
-      // Attaching state to this gameobject
-      SoundEffect boostEffect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.SHIP_LAUNCH_CHARGE);
+      // Creating the FMOD event Instance
+      _boostState = RuntimeManager.CreateInstance(SoundEffectManager.self.getSoundEffect(SoundEffectManager.SHIP_LAUNCH_CHARGE).fmodId);
+      _boostState.set3DAttributes(RuntimeUtils.To3DAttributes(this.transform));
 
-      if (boostEffect != null) {
-         _boostState = RuntimeManager.CreateInstance(boostEffect.fmodId);
-
-         //boostEventEmitter = gameObject.AddComponent<StudioEventEmitter>();
-         //boostEventEmitter.AllowFadeout = true;
-         //boostEventEmitter.StopEvent = EmitterGameEvent.ObjectDestroy;
-         //boostEventEmitter.Event = boostEffect.fmodId;
-      }
+      //boostEventEmitter = gameObject.AddComponent<StudioEventEmitter>();
+      //boostEventEmitter.AllowFadeout = true;
+      //boostEventEmitter.StopEvent = EmitterGameEvent.ObjectDestroy;
+      //boostEventEmitter.Event = boostEffect.fmodId;
    }
 
    protected override void initialize (ShipInfo info) {
@@ -354,8 +351,8 @@ public class PlayerShipEntity : ShipEntity
       // Try to open chest through code (instead of UI) in case if UI is blocking raycasts casted to the chest Canvas
       if (InputManager.isLeftClickKeyPressed() && !PriorityOverProcessActionLogic.isAnyHovered()) {
          tryToOpenChest();
-      } 
-      
+      }
+
       // Update FMOD Studio Listener attachment
       RuntimeManager.AttachInstanceToGameObject(_boostState, transform, _body);
    }
@@ -1215,7 +1212,7 @@ public class PlayerShipEntity : ShipEntity
    private void checkAudioListener () {
       if (AudioListenerManager.self.getActiveListener() != _audioListener) {
          AudioListenerManager.self.setActiveListener(_audioListener);
-         AudioListenerManager.self.setActiveFmodListener(_fmodListener);
+         //AudioListenerManager.self.setActiveFmodListener(_fmodListener);
       }
    }
 
@@ -1358,6 +1355,9 @@ public class PlayerShipEntity : ShipEntity
 
       // Enable the boost timing circle
       boostTimingSprites.gameObject.SetActive(true);
+
+      // Reset this bool to ensure players can attack
+      _shouldUpdateTargeting = true;
    }
 
    #region Private Variables

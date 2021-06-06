@@ -39,9 +39,11 @@ public class RecoloredSprite : MonoBehaviour {
          D.warning("Currently more than 4 palettes are not supported! Only 4 first palettes will be used");
       }
 
-      // Fill list to four palettes, to make sure that old one gets reset, once this function got called with smaller number of palettes
-      while (palettesToUse.Count < 4) {
-         palettesToUse.Add("");
+      if (palettesToUse.Count != 0) {
+         // Fill list to four palettes, to make sure that old one gets reset, once this function got called with smaller number of palettes
+         while (palettesToUse.Count < 4) {
+            palettesToUse.Add("");
+         }
       }
 
       checkMaterialAvailability();

@@ -72,11 +72,6 @@ public class ClientMessageManager : MonoBehaviour {
          return;
       }
 
-      if (!Util.isEmpty(msg.customMessage) && msg.errorType != ErrorMessage.Type.Banned && msg.errorType != ErrorMessage.Type.Kicked) {
-         PanelManager.self.noticeScreen.show(msg.customMessage);
-         return;
-      }
-
       switch (msg.errorType) {
          case ErrorMessage.Type.SteamWebOffline:
          case ErrorMessage.Type.FailedUserOrPass:

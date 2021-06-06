@@ -291,7 +291,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       _clickableBox = GetComponentInChildren<ClickableBox>();
 
       // Keep track of all of our Simple Animation components
-      _anims = new List<SimpleAnimation>(GetComponentsInChildren<SimpleAnimation>());
+      _anims = new List<SimpleAnimation>(GetComponentsInChildren<SimpleAnimation>(true));
 
       AP = DEFAULT_AP;
    }
@@ -984,6 +984,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          BattleSelectionManager.self.autoTargetNextOpponent();
          yield break;
       }
+
+      // Assign death animation spritesheet to the shadow
+      if (_anims.Count > 1 && _anims[1]) {
+         Enemy.assignDeathShadowSprite(enemyType, _anims[0], _anims[1], shadowTransform.gameObject);
+      }
+
       playAnim(Anim.Type.Death_East);
 
       if (battlerType == BattlerType.AIEnemyControlled) {

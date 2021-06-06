@@ -53,6 +53,12 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    // Our body animator
    public SimpleAnimation bodyAnim;
 
+   // Our shadow animator
+   public SimpleAnimation shadowAnim;
+
+   // Static shadow object beneath enemy character
+   public GameObject shadowObject;
+
    // A convenient reference to our collider
    public CircleCollider2D circleCollider;
 
@@ -302,6 +308,48 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
 
       // Play the new animation
       bodyAnim.playAnimation(newAnimType);
+
+      if (newAnimType == Anim.Type.Death_East && !_shadowAnimDataCopied) {
+         // Use only once to setup shadowAnim
+         _shadowAnimDataCopied = true;
+
+         // Use reflection to copy data from bodyAnim to shadowAnim component
+         System.Type type = bodyAnim.GetType();
+         System.Reflection.FieldInfo[] fields = type.GetFields();
+         foreach (System.Reflection.FieldInfo field in fields) {
+            field.SetValue(shadowAnim, field.GetValue(bodyAnim));
+         }
+
+         // Assign death animation spritesheet to the shadow
+         assignDeathShadowSprite(enemyType, bodyAnim, shadowAnim, shadowObject);
+
+         // Play animation, leave the scope and do not use it again
+         shadowAnim.playAnimation(newAnimType);
+      }
+   }
+
+   public static void assignDeathShadowSprite (Enemy.Type enemyType, SimpleAnimation bodyAnim, SimpleAnimation shadowAnim, GameObject shadowObject) {
+      // Use animated shadow during death animation instead of static one
+      Sprite sprite = null;
+      if (enemyType.ToString().StartsWith("Skelly")) {
+         string name = bodyAnim.GetComponent<SpriteRenderer>().sprite.name;
+         if (name.Contains("skelly")) {
+            sprite = ImageManager.getSprite("Sprites/EnemyShadows/SkellyShadow.png");
+         }
+      }
+      // Standard case - use group type name
+      else {
+         sprite = ImageManager.getSprite("Sprites/EnemyShadows/" + shadowAnim.group.ToString() + "Shadow.png");
+      }
+
+      // Assign shadow sprite and use it during death animation instead of static shadow sprite
+      if (sprite) {
+         shadowAnim.GetComponent<SpriteRenderer>().sprite = sprite;
+         shadowAnim.transform.localScale = new Vector3(1f, 1f, 1f);
+         shadowObject.transform.localScale = new Vector3(0f, 0f, 0f);
+      } else {
+         shadowAnim.gameObject.SetActive(false);
+      }
    }
    
    public void assignBattleId (int newBattleId, NetEntity aggressor) {
@@ -425,6 +473,9 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
 
    // Gets set to true when the moving around behavior is running
    private bool _isMovingAround = false;
+
+   // Checks whether data has already been copied to shadow simple animation when playing dead animation
+   private bool _shadowAnimDataCopied = false;
 
    #endregion
 }

@@ -15,8 +15,9 @@ public class ServerMessageManager : MonoBehaviour
 
    [ServerOnly]
    public static void On_CheckVersionMessage (NetworkConnection conn, CheckVersionMessage checkVersionMessage) {
-      // Determine the minimum client version for the client's platform
       int minClientGameVersion;
+
+      // Determine the minimum client version for the client's platform
       if (checkVersionMessage.clientPlatform == RuntimePlatform.OSXPlayer) {
          minClientGameVersion = GameVersionManager.self.minClientGameVersionMac;
       } else if (checkVersionMessage.clientPlatform == RuntimePlatform.LinuxPlayer) {
@@ -26,7 +27,10 @@ public class ServerMessageManager : MonoBehaviour
       }
 
       if (checkVersionMessage.clientGameVersion < minClientGameVersion) {
-         sendError(ErrorMessage.Type.ClientOutdated, conn.connectionId);
+         string msg = string.Format("Refusing login, client version {0}, the current version in the cloud is {1}",  checkVersionMessage.clientGameVersion, minClientGameVersion);
+         D.debug(msg);
+         sendError(ErrorMessage.Type.ClientOutdated, conn.connectionId, minClientGameVersion.ToString());
+         return;
       } else {
          sendConfirmation(ConfirmMessage.Type.CorrectClientVersion, conn.connectionId);
       }
@@ -35,9 +39,9 @@ public class ServerMessageManager : MonoBehaviour
    [ServerOnly]
    public static void On_LogInUserMessage (NetworkConnection conn, LogInUserMessage logInUserMessage) {
       int selectedUserId = logInUserMessage.selectedUserId;
+      int minClientGameVersion;
 
       // Determine the minimum client version for the client's platform
-      int minClientGameVersion;
       if (logInUserMessage.clientPlatform == RuntimePlatform.OSXPlayer) {
          minClientGameVersion = GameVersionManager.self.minClientGameVersionMac;
       } else if (logInUserMessage.clientPlatform == RuntimePlatform.LinuxPlayer) {

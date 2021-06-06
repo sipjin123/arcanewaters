@@ -429,6 +429,12 @@ public class InstanceManager : MonoBehaviour {
          }
       }
 
+      // If it was a pvp instance, remove it from the pvp manager's internal mapping
+      if (instance.isPvP) {
+         PvpManager.self.tryRemoveEmptyGame(instance.id);
+      }
+      
+
       // Remove it from our internal mapping
       _instances.Remove(instance.id); 
 

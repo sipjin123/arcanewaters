@@ -113,7 +113,7 @@ public class ShipEntity : SeaEntity
 
    public override void playAttackSound () {
       // Play a sound effect
-      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.SHIP_CANNON, this.transform, true);
+      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.SHIP_CANNON, this.transform);
       //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Cannon_1, this.transform.position);
    }
 
@@ -349,7 +349,7 @@ public class ShipEntity : SeaEntity
       _ripplesStillSprites = ImageManager.getTexture(Ship.getRipplesPath(shipType));
       _ripplesMovingSprites = ImageManager.getTexture(Ship.getRipplesMovingPath(shipType));
       ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesStillSprites;
-      
+
       // Cache ship boost sprite
       if (!(this is BotShipEntity)) {
          if (shipSizeSpriteCache.shipSize != ShipSize.None) {

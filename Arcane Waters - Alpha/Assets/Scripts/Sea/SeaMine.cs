@@ -3,7 +3,8 @@ using Mirror;
 using System;
 using System.Collections;
 
-public class SeaMine : NetworkBehaviour {
+public class SeaMine : NetworkBehaviour
+{
    #region Public Variables
 
    // The force of the explosion for objects that are closer to the mine
@@ -47,12 +48,12 @@ public class SeaMine : NetworkBehaviour {
                // We only want to push away SeaEntities
                if (seaEntity != null && seaEntity.instanceId == instanceId) {
                   Rigidbody2D rb = col.GetComponent<Rigidbody2D>();
-                
+
                   if (rb != null) {
                      // Apply some damage to the entity
                      float distance = (seaEntity.transform.position - transform.position).magnitude;
                      float damageAmount = Mathf.InverseLerp(0, explosionRadius, distance);
-                     int damage = (int)Mathf.Lerp(minDamage, maxDamage, damageAmount);
+                     int damage = (int) Mathf.Lerp(minDamage, maxDamage, damageAmount);
                      int finalDamage = seaEntity.applyDamage(damage, netId);
 
                      seaEntity.Rpc_ShowDamageTaken(finalDamage, true);
@@ -72,7 +73,7 @@ public class SeaMine : NetworkBehaviour {
       }
    }
 
-   private IEnumerator CO_destroyDelayed () {      
+   private IEnumerator CO_destroyDelayed () {
       yield return new WaitForSeconds(1.0f);
       NetworkServer.Destroy(gameObject);
    }
@@ -82,7 +83,7 @@ public class SeaMine : NetworkBehaviour {
       GameObject explosionEffect = PrefabsManager.self.requestCannonExplosionPrefab(Attack.ImpactMagnitude.Strong);
       explosionEffect.transform.position = transform.position;
 
-      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.SHIP_CANNON, this.transform, true);
+      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.SHIP_CANNON, this.transform);
       //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Cannon_1, transform.position);
 
       _spriteRenderer.enabled = false;

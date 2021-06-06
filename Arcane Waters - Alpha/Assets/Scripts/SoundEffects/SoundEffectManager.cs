@@ -141,7 +141,7 @@ public class SoundEffectManager : MonoBehaviour
       if (_soundEffects.TryGetValue(id, out effect)) {
          if (effect.is3D) {
             playSoundEffect3D(effect, target);
-         }  else {
+         } else {
             source.clip = effect.clip;
             if (effect.clip == null) {
                D.debug("Missing Sound Effect ID: " + id);
@@ -152,17 +152,17 @@ public class SoundEffectManager : MonoBehaviour
             source.loop = false;
             source.Play();
          }
-         
+
       } else if (id >= 0) {
          D.debug("Could not find SoundEffect with 'id' : '" + id + "'");
       }
    }
 
-   public void playFmodSoundEffect(int id, Transform target, bool forceCamera = false) {
-      SoundEffect effect;
+   public void playFmodSoundEffect (int id, Transform target) {
+      SoundEffect effect = getSoundEffect(id);
 
-      if (_soundEffects.TryGetValue(id, out effect)) {
-         if (effect.is3D && !forceCamera) {
+      if (effect != null) {
+         if (effect.is3D) {
             playFmodSoundEffect3D(effect, target);
          } else {
             if (effect.fmodId.Length > 0) {
@@ -188,12 +188,11 @@ public class SoundEffectManager : MonoBehaviour
       Destroy(audioSource.gameObject, audioSource.clip.length);
    }
 
-   private void playFmodSoundEffect3D(SoundEffect effect, Transform target) {
+   private void playFmodSoundEffect3D (SoundEffect effect, Transform target) {
       StudioEventEmitter eventEmitter = Instantiate(PrefabsManager.self.fMod3dPrefab, target.position, Quaternion.identity);
-     
+
       eventEmitter.Event = effect.fmodId;
-      eventEmitter.transform.position = target.position;
-      eventEmitter.transform.SetParent(this.transform, true);
+      eventEmitter.transform.SetParent(target, true);
       eventEmitter.EventInstance.setVolume(effect.minVolume);
       eventEmitter.Play();
       StartCoroutine(CO_DestroyAfterEnd(eventEmitter));
@@ -226,7 +225,7 @@ public class SoundEffectManager : MonoBehaviour
             ser.Serialize(writer, sfx);
          }
          string xmlValue = sb.ToString();
-      
+
          content += sfx.id + "[space]" + xmlValue + "[next]\n";
       }
       return content;

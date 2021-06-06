@@ -8,6 +8,9 @@ using System;
 public class SimpleAnimation : ClientMonoBehaviour {
    #region Public Variables
 
+   // The default time per frame
+   public static float DEFAULT_TIME_PER_FRAME = 0.25f;
+
    // An initial delay before the animation starts playing
    public float initialDelay = 0f;
 
@@ -320,7 +323,7 @@ public class SimpleAnimation : ClientMonoBehaviour {
          return frameLengthOverride;
       }
 
-      return .25f;
+      return DEFAULT_TIME_PER_FRAME;
    }
 
    protected Texture2D getCurrentTexture () {

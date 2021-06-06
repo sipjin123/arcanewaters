@@ -766,6 +766,14 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestGod () {
+      // Don't allow the player to use /admin god when they're dead
+      PlayerShipEntity playerShip = _player.getPlayerShipEntity();
+      if (playerShip) {
+         if (playerShip.isDead()) {
+            return;
+         }
+      }
+
       Cmd_SetShipDamage("100000");
       Cmd_SetShipHealth("100000");
       requestGodWeapon();

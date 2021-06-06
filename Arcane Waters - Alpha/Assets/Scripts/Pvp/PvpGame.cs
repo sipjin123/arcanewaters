@@ -106,8 +106,8 @@ public class PvpGame {
       PvpTeam assignedTeam = _teams[bestTeam];
       assignedTeam.Add(player.userId);
 
-      // If the team is empty, create a new voyage group with this player
-      if (assignedTeam.Count == 0) {
+      // If the team only has us, create a new voyage group with this player
+      if (assignedTeam.Count == 1) {
          VoyageGroupManager.self.createGroup(player, voyageId, true);
          VoyageGroupInfo newGroup;
 

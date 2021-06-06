@@ -210,13 +210,18 @@ public class D : MonoBehaviour {
       }
 
       // Maybe write it to a client log file
-      if (writeThisToFile && !Util.isEmpty(_logFilePath)) {
-         using (StreamWriter file = new StreamWriter(@"" + _logFilePath, true)) {
-            string logTime = (SHOW_TIME) ? "[" + DateTime.Now + "] " : "";
-            string lineToWrite = logTime + prefix + msg;
+      try {
+         if (writeThisToFile && !Util.isEmpty(_logFilePath)) {
 
-            file.WriteLine(Util.stripHTML(lineToWrite));
+            using (StreamWriter file = new StreamWriter(@"" + _logFilePath, true)) {
+               string logTime = (SHOW_TIME) ? "[" + DateTime.Now + "] " : "";
+               string lineToWrite = logTime + prefix + msg;
+
+               file.WriteLine(Util.stripHTML(lineToWrite));
+            }
          }
+      } catch (Exception e) {
+         UnityEngine.Debug.LogError($"Error writing to client log. Message: {e.Message}");
       }
 
       // Check whether this specific message should display in chat

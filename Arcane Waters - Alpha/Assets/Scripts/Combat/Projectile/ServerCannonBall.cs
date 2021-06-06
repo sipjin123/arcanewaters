@@ -27,7 +27,10 @@ public class ServerCannonBall : NetworkBehaviour {
       if (!Util.isBatch()) {
          // Play an appropriate sound
          if (_playFiringSound) {
-            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.SHIP_CANNON, this.transform, true);
+            _fmodInstance = FMODUnity.RuntimeManager.CreateInstance(SoundEffectManager.self.getSoundEffect(SoundEffectManager.SHIP_CANNON).fmodId);
+            _fmodInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(transform));
+            _fmodInstance.start();
+            //SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.SHIP_CANNON, this.transform);
             //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Cannon_1, this.transform.position);
          }
 
@@ -97,6 +100,9 @@ public class ServerCannonBall : NetworkBehaviour {
             projectileVelocity = _rigidbody.velocity;
          }  
       }
+
+      // Following the cannonball
+      FMODUnity.RuntimeManager.AttachInstanceToGameObject(_fmodInstance, transform, _rigidbody);
    }
 
    private void updateHeight () {
@@ -450,6 +456,9 @@ public class ServerCannonBall : NetworkBehaviour {
 
    // When set to true, this will prevent processDestruction from destroying the cannonball once
    private bool _cancelDestruction = false;
+
+   // FMOD Event instance
+   FMOD.Studio.EventInstance _fmodInstance;
 
    #endregion
 

@@ -142,10 +142,10 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       // If we are the local player, assign us the audio listener
       if (isLocalPlayer && AudioListenerManager.self) {
          _audioListener = GetComponent<AudioListener>();
-         _fmodListener = GetComponent<FMODUnity.StudioListener>();
+         //_fmodListener = GetComponent<FMODUnity.StudioListener>();
 
          AudioListenerManager.self.setActiveListener(_audioListener);
-         AudioListenerManager.self.setActiveFmodListener(_fmodListener);
+         //AudioListenerManager.self.setActiveFmodListener(_fmodListener);
       }
 
       // Retrieve the current sprites for the guild icon
@@ -625,6 +625,12 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
    }
 
+   public void playInteractParticles () {
+      Weapon.ActionType currentActionType = weaponManager.actionType;
+      farmingTrigger.updateTriggerDirection();
+      farmingTrigger.playFarmingParticles(currentActionType);
+   }
+
    public void playFastInteractAnimation (Vector3 lookTarget, bool playLocalInstantly) {
       Direction newDirection = forceLookAt(lookTarget);
 
@@ -812,7 +818,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          // Make sure the game is using the player's audio listener
          if (_audioListener != AudioListenerManager.self.getActiveListener()) {
             AudioListenerManager.self.setActiveListener(_audioListener);
-            AudioListenerManager.self.setActiveFmodListener(_fmodListener);
+            //AudioListenerManager.self.setActiveFmodListener(_fmodListener);
          }
       } else if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getAudioListener() != null) {
          AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener());

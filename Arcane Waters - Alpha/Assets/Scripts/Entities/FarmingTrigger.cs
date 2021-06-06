@@ -62,6 +62,60 @@ public class FarmingTrigger : MonoBehaviour {
       Weapon.ActionType currentActionType = bodyEntity.weaponManager.actionType;
       Collider2D currentCollider = coneCollider;
 
+      updateTriggerDirection();
+
+      playFarmingParticles(currentActionType);
+
+      // Using pitch fork uses a different collider since it requires a closer range contact
+      if (currentActionType == Weapon.ActionType.HarvestCrop) {
+         currentCollider = arcCollider;
+      }
+      currentCollider.gameObject.SetActive(true);
+
+      // Interact with crops overlapping the cone collider
+      bool anyCropHarvested = false;
+      RaycastHit2D[] rayHits = new RaycastHit2D[10];
+      int hitNum = currentCollider.Cast(new Vector2(0, 0), rayHits);
+      foreach (RaycastHit2D hit in rayHits) {
+         if (hit.collider != null && hit.collider.GetComponent<CropSpot>() != null) {
+            CropSpot cropSpot = hit.collider.GetComponent<CropSpot>();
+            cropSpot.tryToInteractWithCropOnClient();
+
+            // Create dirt particle when colliding with crop spots with crops using a pitchfork
+            if (currentActionType == Weapon.ActionType.HarvestCrop && cropSpot.crop != null) {
+               if (cropSpot.crop.isMaxLevel() && !cropSpot.crop.hasBeenHarvested()) {
+                  anyCropHarvested = true;
+
+                  cropSpot.harvestCrop();
+               }
+            }
+         }
+
+         if (currentActionType == Weapon.ActionType.HarvestCrop) {
+            if (!anyCropHarvested) {
+               SoundManager.play2DClip(SoundManager.Type.Harvesting_Pitchfork_Miss);
+            }
+         }
+      }
+
+      _isFarming = false;
+   }
+
+   public void playFarmingParticles (Weapon.ActionType actionType) {
+      // Handle the effect to spawn
+      foreach (Transform spawnPoint in effectSpawnList) {
+         switch (actionType) {
+            case Weapon.ActionType.PlantCrop:
+               ExplosionManager.createFarmingParticle(actionType, spawnPoint.position, fadeSpeed, 4);
+               break;
+            case Weapon.ActionType.WaterCrop:
+               ExplosionManager.createFarmingParticle(actionType, spawnPoint.position, fadeSpeed, 2, false, 30, 60);
+               break;
+         }
+      }
+   }
+
+   public void updateTriggerDirection () {
       // Check if the user is stationary (the interact animation will have been triggered in PlayerBodyEntity)
       AnimatorClipInfo[] m_AnimatorClipInfo = animator.GetCurrentAnimatorClipInfo(0);
       float currentAngle = 0;
@@ -105,52 +159,6 @@ public class FarmingTrigger : MonoBehaviour {
 
          transform.localEulerAngles = new Vector3(0, 0, currentAngle);
       }
-
-      // Handle the effect to spawn
-      foreach (Transform spawnPoint in effectSpawnList) {
-         switch (currentActionType) {
-            case Weapon.ActionType.PlantCrop:
-               ExplosionManager.createFarmingParticle(currentActionType, spawnPoint.position, fadeSpeed, 4);
-               break;
-            case Weapon.ActionType.WaterCrop:
-               ExplosionManager.createFarmingParticle(currentActionType, spawnPoint.position, fadeSpeed, 2, false, 30, 60);
-               break;
-         }
-      }
-
-      // Using pitch fork uses a different collider since it requires a closer range contact
-      if (currentActionType == Weapon.ActionType.HarvestCrop) {
-         currentCollider = arcCollider;
-      }
-      currentCollider.gameObject.SetActive(true);
-
-      // Interact with crops overlapping the cone collider
-      bool anyCropHarvested = false;
-      RaycastHit2D[] rayHits = new RaycastHit2D[10];
-      int hitNum = currentCollider.Cast(new Vector2(0, 0), rayHits);
-      foreach (RaycastHit2D hit in rayHits) {
-         if (hit.collider != null && hit.collider.GetComponent<CropSpot>() != null) {
-            CropSpot cropSpot = hit.collider.GetComponent<CropSpot>();
-            cropSpot.tryToInteractWithCropOnClient();
-
-            // Create dirt particle when colliding with crop spots with crops using a pitchfork
-            if (currentActionType == Weapon.ActionType.HarvestCrop && cropSpot.crop != null) {
-               if (cropSpot.crop.isMaxLevel() && !cropSpot.crop.hasBeenHarvested()) {
-                  anyCropHarvested = true;
-
-                  cropSpot.harvestCrop();
-               }
-            }
-         }
-
-         if (currentActionType == Weapon.ActionType.HarvestCrop) {
-            if (!anyCropHarvested) {
-               SoundManager.play2DClip(SoundManager.Type.Harvesting_Pitchfork_Miss);
-            }
-         }
-      }
-
-      _isFarming = false;
    }
 
    #region Private Variables

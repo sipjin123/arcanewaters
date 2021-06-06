@@ -252,6 +252,13 @@ public class RPCManager : NetworkBehaviour
          return;
       }
       _player.requestAnimationPlay(animType);
+
+      if (!isLocalPlayer) {
+         PlayerBodyEntity playerBody = _player.getPlayerBodyEntity();
+         if (playerBody) {
+            playerBody.playInteractParticles();
+         }
+      }
    }
 
    [ClientRpc]
