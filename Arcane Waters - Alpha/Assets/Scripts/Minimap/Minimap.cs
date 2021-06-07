@@ -494,7 +494,7 @@ public class Minimap : ClientMonoBehaviour {
                continue;
             }
             // Spawn ship prefab
-            icon = Instantiate(shipIconPrefab, this.botShipIconContainer.transform);
+            icon = Instantiate(shipIconPrefab, this.playerShipIconContainer.transform);
             icon.shipEntity = ship;
             icon.currentArea = area;
             icon.setCorrectPosition();
