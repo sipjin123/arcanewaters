@@ -35,6 +35,14 @@ public class MM_GroupPlayerIcon : MM_Icon {
       }
    }
 
+   public void onHoverBegin () {
+      Minimap.self.displayIconInfo(player.entityName);
+   }
+
+   public void onHoverEnd () {
+      Minimap.self.disableIconInfo();
+   }
+
    #region Private Variables
 
    #endregion

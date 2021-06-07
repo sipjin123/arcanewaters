@@ -75,6 +75,14 @@ public class MM_PlayerIcon : ClientMonoBehaviour {
       return 0;
    }
 
+   public void onHoverBegin () {
+      Minimap.self.displayIconInfo("You");
+   }
+
+   public void onHoverEnd () {
+      Minimap.self.disableIconInfo();
+   }
+
    #region Private Variables
 
    // Our Image

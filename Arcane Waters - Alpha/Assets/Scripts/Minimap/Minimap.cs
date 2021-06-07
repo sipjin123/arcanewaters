@@ -115,6 +115,18 @@ public class Minimap : ClientMonoBehaviour {
    // Self
    public static Minimap self;
 
+   // The object containing the tooltip text
+   public GameObject toolTipContainer;
+
+   // The tooltip text
+   public Text tooltipText;
+
+   // The map value to determine that an icon is out of bounds
+   public const float MAP_CLAMP_VAL = 55.5f;
+
+   // Reference to the player icon
+   public MM_PlayerIcon playerIcon;
+
    #endregion
 
    protected override void Awake () {
@@ -198,6 +210,15 @@ public class Minimap : ClientMonoBehaviour {
       if (Global.player.areaKey != _previousAreaKey) {
          updateMinimapForNewArea();
       }
+   }
+
+   public void displayIconInfo (string description) {
+      tooltipText.text = description;
+      toolTipContainer.SetActive(true);
+   }
+
+   public void disableIconInfo () {
+      toolTipContainer.SetActive(false);
    }
 
    public float getMaxDistance () {
