@@ -51,6 +51,14 @@ public class MM_ShipEntityIcon : MonoBehaviour {
       if (Mathf.Abs(currentRectTransform.anchoredPosition.x) > Minimap.MAP_CLAMP_VAL || Mathf.Abs(currentRectTransform.anchoredPosition.y) > Minimap.MAP_CLAMP_VAL) {
          if (outBoundIcon == null) {
             outBoundIcon = Instantiate(outBoundIconPrefab, transform.parent).GetComponent<RectTransform>();
+
+            if (Global.player != null) {
+               if (Global.player.voyageGroupId == shipEntity.voyageGroupId) {
+                  outBoundIcon.GetComponentInChildren<Image>().color = Color.green;
+               } else {
+                  outBoundIcon.GetComponentInChildren<Image>().color = Color.red;
+               }
+            }
          }  
          outBoundIcon.gameObject.SetActive(true);
 
@@ -66,6 +74,20 @@ public class MM_ShipEntityIcon : MonoBehaviour {
             Destroy(outBoundIcon.gameObject);
          }
       }
+   }
+
+   public void onHoverBegin () {
+      if (shipEntity != null) { 
+         Minimap.self.displayIconInfo(shipEntity.entityName);
+      }
+   }
+
+   public void onHoverEnd () {
+      Minimap.self.disableIconInfo();
+   }
+
+   private void OnDestroy () {
+      Destroy(outBoundIcon.gameObject);
    }
 
    #region Private Variables
