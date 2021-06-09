@@ -9529,8 +9529,8 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO admin_game_settings (creationDate, battleAttackCooldown, battleJumpDuration, battleAttackDuration, battleTimePerFrame, seaSpawnsPerSpot, seaAttackCooldown) " +
-            "VALUES(@creationDate, @battleAttackCooldown, @battleJumpDuration, @battleAttackDuration, @battleTimePerFrame, @seaSpawnsPerSpot, @seaAttackCooldown);"
+            "INSERT INTO admin_game_settings (creationDate, battleAttackCooldown, battleJumpDuration, battleAttackDuration, battleTimePerFrame, seaSpawnsPerSpot, seaAttackCooldown, seaMaxHealth) " +
+            "VALUES(@creationDate, @battleAttackCooldown, @battleJumpDuration, @battleAttackDuration, @battleTimePerFrame, @seaSpawnsPerSpot, @seaAttackCooldown, @seaMaxHealth);"
             , conn)) {
             conn.Open();
             cmd.Prepare();
@@ -9541,6 +9541,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@battleTimePerFrame", settings.battleTimePerFrame);
             cmd.Parameters.AddWithValue("@seaSpawnsPerSpot", settings.seaSpawnsPerSpot);
             cmd.Parameters.AddWithValue("@seaAttackCooldown", settings.seaAttackCooldown);
+            cmd.Parameters.AddWithValue("@seaMaxHealth", settings.seaMaxHealth);
             DebugQuery(cmd);
 
             // Execute the command
@@ -9558,7 +9559,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
          "UPDATE admin_game_settings SET battleAttackCooldown=@battleAttackCooldown, battleJumpDuration=@battleJumpDuration, battleAttackDuration=@battleAttackDuration, " +
-         "battleTimePerFrame=@battleTimePerFrame, seaSpawnsPerSpot=@seaSpawnsPerSpot, seaAttackCooldown=@seaAttackCooldown " +
+         "battleTimePerFrame=@battleTimePerFrame, seaSpawnsPerSpot=@seaSpawnsPerSpot, seaAttackCooldown=@seaAttackCooldown, seaMaxHealth=@seaMaxHealth " +
          "WHERE id=@id", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -9569,6 +9570,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@battleTimePerFrame", settings.battleTimePerFrame);
             cmd.Parameters.AddWithValue("@seaSpawnsPerSpot", settings.seaSpawnsPerSpot);
             cmd.Parameters.AddWithValue("@seaAttackCooldown", settings.seaAttackCooldown);
+            cmd.Parameters.AddWithValue("@seaMaxHealth", settings.seaMaxHealth);
             DebugQuery(cmd);
 
             // Execute the command

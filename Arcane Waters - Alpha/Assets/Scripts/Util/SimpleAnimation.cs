@@ -116,16 +116,9 @@ public class SimpleAnimation : ClientMonoBehaviour {
          return;
       }
 
-      // TODO: Remove after confirming animation does not break after this update
-      CancelInvoke();
-
       // Update the sprite indexes accordingly
       updateIndexMinMax(info.minIndex, info.maxIndex);
       this.currentAnimation = newAnimType;
-
-      // TODO: Remove after confirming animation does not break after this update
-      float delay = this.delayStart ? (getTimePerFrame() * _sprites.Length / 2f) : initialDelay;
-      InvokeRepeating(nameof(changeSprite), delay, getTimePerFrame());
    }
 
    public void setNewTexture (Texture2D newTexture) {

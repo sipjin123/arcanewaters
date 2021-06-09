@@ -229,7 +229,6 @@ public class VoyageStatusPanel : ClientMonoBehaviour
          this.canvasGroup.alpha = 0f;
          this.canvasGroup.blocksRaycasts = false;
          this.canvasGroup.interactable = false;
-         setDefaultStatus();
       }
    }
 

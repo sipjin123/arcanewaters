@@ -48,10 +48,6 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    [SyncVar]
    public SeaMonsterEntity.Type monsterType = 0;
 
-   [SyncVar]
-   // The difficulty level of the instance this monster is int
-   public int difficultyLevel = 1;
-
    // Determines the location of this unit in relation to its spawn point
    public Vector2 directionFromSpawnPoint;
 
@@ -181,11 +177,21 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          getCombatCollider().setScale(new Vector3(seaMonsterData.battleColliderScaleX, seaMonsterData.battleColliderScaleY, 1));
       }
 
-      float reloadModifier = 1 + (((float) difficultyLevel - 1) / (Voyage.getMaxDifficulty() - 1));
-      reloadDelay = seaMonsterData.reloadDelay / (difficultyLevel > 0 ? reloadModifier : 1);
-      reloadDelay *= AdminGameSettingsManager.self.settings.seaAttackCooldown;
-      currentHealth = seaMonsterData.maxHealth * difficultyLevel;
-      maxHealth = seaMonsterData.maxHealth * difficultyLevel;
+      if (isServer) {
+         // Get the instance difficulty
+         int difficultyLevel = 1;
+         Instance instance = getInstance();
+         if (instance != null) {
+            difficultyLevel = instance.difficulty;
+         }
+
+         float reloadModifier = 1 + (((float) difficultyLevel - 1) / (Voyage.getMaxDifficulty() - 1));
+         reloadDelay = seaMonsterData.reloadDelay / (difficultyLevel > 0 ? reloadModifier : 1);
+         reloadDelay *= AdminGameSettingsManager.self.settings.seaAttackCooldown;
+         maxHealth = Mathf.RoundToInt(seaMonsterData.maxHealth * difficultyLevel * AdminGameSettingsManager.self.settings.seaMaxHealth);
+         currentHealth = maxHealth;
+      }
+
       invulnerable = seaMonsterData.isInvulnerable;
 
       if (seaMonsterData.projectileSpawnLocations.Count > 0) {
@@ -205,6 +211,17 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          } else {
             spritesContainer.GetComponent<SpriteRenderer>().sprite = ImageManager.getSprite(seaMonsterData.defaultSpritePath);
          }
+      }
+
+      // AI parameters
+      switch (seaMonsterData.seaMonsterType) {
+         case Type.Horror:
+            newWaypointsRadius = seaMonsterData.territoryRadius;
+            aggroConeDegrees = 360f;
+            break;
+         case Type.Horror_Tentacle:
+            aggroConeDegrees = 360f;
+            break;
       }
    }
 
@@ -522,7 +539,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       // Reduces the life of the parent entity if there is one
       if (seaMonsterData.roleType == RoleType.Minion && seaMonsterParentEntity != null) {
-         seaMonsterParentEntity.currentHealth -= 1000;
+         seaMonsterParentEntity.currentHealth -= Mathf.CeilToInt(seaMonsterParentEntity.maxHealth / 6);
          if (seaMonsterParentEntity.isDead()) {
             seaMonsterParentEntity.onDeath();
          }
@@ -722,14 +739,38 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
             // Tentacles also attack other targets in range
             if (monsterType == Type.Horror_Tentacle) {
-               foreach (NetEntity entity in _targetsInAttackRange) {
-                  if (entity != targetEntity && Random.value < TENTACLE_EXTRA_TARGET_CHANCE) {
+               foreach (KeyValuePair<uint, double> KV in _attackers) {
+                  NetEntity entity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(KV.Key);
+                  if (entity != null && entity != targetEntity && Random.value < TENTACLE_EXTRA_TARGET_CHANCE && isInRange(entity.transform.position)) {
                      launchProjectile(entity.transform.position, entity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
                   }
                }
             }
          }
       }
+   }
+
+   #endregion
+
+   #region Enemy AI
+
+   [Server]
+   protected override Vector3 findAttackerVicinityPosition (bool newAttacker) {
+      if (monsterType != Type.Horror) {
+         return base.findAttackerVicinityPosition(newAttacker);
+      }
+
+      // Horror monsters don't pursue attackers beyond their territory
+      Dictionary<uint, double> attackersInTerritory = new Dictionary<uint, double>();
+      foreach (KeyValuePair<uint, double> KV in _attackers) {
+         NetEntity attackerEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(KV.Key);
+         if (attackerEntity != null && isWithinTerritory(attackerEntity)) {
+            // Build a new dictionary with only attackers inside the territory
+            attackersInTerritory.Add(KV.Key, KV.Value);
+         }
+      }
+
+      return findAttackerVicinityPosition(newAttacker, attackersInTerritory);
    }
 
    #endregion

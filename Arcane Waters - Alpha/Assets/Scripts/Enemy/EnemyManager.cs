@@ -188,9 +188,6 @@ public class EnemyManager : MonoBehaviour {
       seaEntity.setAreaParent(area, true);
       seaEntity.transform.localPosition = localPosition;
 
-      // Update stats based on difficulty
-      seaEntity.difficultyLevel = instance.difficulty;
-
       // Network Setup
       InstanceManager.self.addSeaMonsterToInstance(seaEntity, instance);
       NetworkServer.Spawn(seaEntity.gameObject);

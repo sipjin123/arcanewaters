@@ -977,16 +977,20 @@ public class NetEntity : NetworkBehaviour
    }
 
    public Instance getInstance () {
-      // Check if the last requested instance is the one where we are located
-      if (_lastInstance != null && _lastInstance.id == instanceId) {
-         return _lastInstance;
+      if (isServer) {
+         return InstanceManager.self.getInstance(instanceId);
       } else {
-         // Look for the instance in the InstanceManager childs
-         foreach (Instance instance in InstanceManager.self.GetComponentsInChildren<Instance>()) {
-            if (instance.id == instanceId) {
-               // Store the instance for subsequent calls
-               _lastInstance = instance;
-               return instance;
+         // Check if the last requested instance is the one where we are located
+         if (_lastInstance != null && _lastInstance.id == instanceId) {
+            return _lastInstance;
+         } else {
+            // Look for the instance in the InstanceManager childs
+            foreach (Instance instance in InstanceManager.self.GetComponentsInChildren<Instance>()) {
+               if (instance.id == instanceId) {
+                  // Store the instance for subsequent calls
+                  _lastInstance = instance;
+                  return instance;
+               }
             }
          }
       }

@@ -495,10 +495,13 @@ public class VoyageGroupManager : MonoBehaviour
          return;
       }
 
+      // Copy the group members to avoid concurrent modifications errors in the background thread
+      List<int> groupMemberList = new List<int>(voyageGroup.members);
+
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Read in DB the group members info needed to display their portrait
-         List<VoyageGroupMemberCellInfo> groupMembersInfo = getGroupMembersInfo(voyageGroup);
+         List<VoyageGroupMemberCellInfo> groupMembersInfo = getGroupMembersInfo(groupMemberList);
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -515,10 +518,10 @@ public class VoyageGroupManager : MonoBehaviour
 
    // Must be called in the background thread!
    [Server]
-   public List<VoyageGroupMemberCellInfo> getGroupMembersInfo (VoyageGroupInfo voyageGroup) {
+   public List<VoyageGroupMemberCellInfo> getGroupMembersInfo (List<int> groupMemberList) {
       // Read in DB the group members info needed to display their portrait
       List<VoyageGroupMemberCellInfo> groupMembersInfo = new List<VoyageGroupMemberCellInfo>();
-      foreach (int userId in voyageGroup.members) {
+      foreach (int userId in groupMemberList) {
          UserObjects userObjects = DB_Main.getUserObjects(userId);
          VoyageGroupMemberCellInfo memberInfo = new VoyageGroupMemberCellInfo(userObjects);
          groupMembersInfo.Add(memberInfo);

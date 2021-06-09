@@ -20,6 +20,7 @@ public class AdminGameSettingsPanel : MonoBehaviour
    public AdminGameSettingsRow battleTimePerFrameRow;
    public AdminGameSettingsRow seaSpawnsPerSpotRow;
    public AdminGameSettingsRow seaAttackCooldownRow;
+   public AdminGameSettingsRow seaMaxHealthRow;
 
    // The number of enemy spawns per spawner in leagues after applying the admin parameter
    public Text spawnsPerSpot1;
@@ -61,6 +62,7 @@ public class AdminGameSettingsPanel : MonoBehaviour
       battleTimePerFrameRow.initialize(AdminGameSettingsManager.self.settings.battleTimePerFrame);
       seaSpawnsPerSpotRow.initialize(AdminGameSettingsManager.self.settings.seaSpawnsPerSpot);
       seaAttackCooldownRow.initialize(AdminGameSettingsManager.self.settings.seaAttackCooldown);
+      seaMaxHealthRow.initialize(AdminGameSettingsManager.self.settings.seaMaxHealth);
       updateSpawnsPerSpot();
       changesAppliedMessage.Show();
    }
@@ -84,7 +86,8 @@ public class AdminGameSettingsPanel : MonoBehaviour
          battleAttackDurationRow.getValue(),
          battleTimePerFrameRow.getValue(),
          seaSpawnsPerSpotRow.getValue(), 
-         seaAttackCooldownRow.getValue());
+         seaAttackCooldownRow.getValue(),
+         seaMaxHealthRow.getValue());
       Global.player.rpc.Cmd_SetAdminGameSettings(settings);
       changesAppliedMessage.Show();
    }

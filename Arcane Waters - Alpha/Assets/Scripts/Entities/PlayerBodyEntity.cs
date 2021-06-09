@@ -120,6 +120,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // A transform that will follow the player as they jump, as will child objects of it
    public Transform followJumpHeight;
 
+   // Reference to the Player's Level Tag
+   public PlayerLevelTag levelTag;
+
    #endregion
 
    protected override void Awake () {
@@ -172,7 +175,20 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             }
          };
 
-         PanelManager.self.hidePowerupPanel();
+         PanelManager.self.hidePowerupPanel();   
+      }
+
+      // Show the local player's level tag
+      showLevelTag(isLocalPlayer);
+   }
+
+   public void showLevelTag (bool show) {
+      if (levelTag != null) {
+         if (show) {
+            int level = LevelUtil.levelForXp(this.XP);
+            levelTag.setLevel(level.ToString());
+         }
+         levelTag.toggle(show);
       }
    }
 
@@ -247,11 +263,13 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    public void OnPointerEnter (PointerEventData pointerEventData) {
       showEntityName();
-
+      
       if (guildIcon != null) {
          updateGuildIconSprites();
          showGuildIcon();
       }
+
+      showLevelTag(true);
    }
 
    public void OnPointerExit (PointerEventData pointerEventData) {
@@ -261,6 +279,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       if ((entityName != null) && (OptionsPanel.onlyShowPlayerNamesOnMouseover)) {
          hideEntityName();
       }
+
+      showLevelTag(isLocalPlayer);
    }
 
    private void handleShortcutsInput () {

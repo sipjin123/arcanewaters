@@ -4321,10 +4321,13 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
+      // Copy the group members to avoid concurrent modifications errors in the background thread
+      List<int> groupMemberList = new List<int>(voyageGroup.members);
+
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Read in DB the group members info needed to display their portrait
-         List<VoyageGroupMemberCellInfo> groupMembersInfo = VoyageGroupManager.self.getGroupMembersInfo(voyageGroup);
+         List<VoyageGroupMemberCellInfo> groupMembersInfo = VoyageGroupManager.self.getGroupMembersInfo(groupMemberList);
 
          if (groupMembersInfo == null) {
             D.debug("Error here! Group member info is missing for voyage group" + " : " + voyageGroup.voyageId + " : " + voyageGroup.creationDate);

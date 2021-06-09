@@ -31,11 +31,14 @@ public class AdminGameSettings
    // A multiplier applied to all battler animations time per frame
    public float battleTimePerFrame = 1.0f;
 
-   // A multiplier applied to the enemy spawn count per spawner spot in sea leagues maps
+   // A multiplier applied to the enemy spawn count per spawner spot in sea maps
    public float seaSpawnsPerSpot = 1.0f;
 
-   // A multiplier applied to enemy attack cooldowns in sea league maps
+   // A multiplier applied to enemy attack cooldowns in sea maps
    public float seaAttackCooldown = 1.0f;
+
+   // A multiplier applied to enemy max health in sea maps
+   public float seaMaxHealth = 1.0f;
 
    #endregion
 
@@ -52,12 +55,13 @@ public class AdminGameSettings
       this.battleTimePerFrame = DataUtil.getFloat(dataReader, "battleTimePerFrame");
       this.seaSpawnsPerSpot = DataUtil.getFloat(dataReader, "seaSpawnsPerSpot");
       this.seaAttackCooldown = DataUtil.getFloat(dataReader, "seaAttackCooldown");
+      this.seaMaxHealth = DataUtil.getFloat(dataReader, "seaMaxHealth");
    }
 
 #endif
 
    public AdminGameSettings (int id, DateTime creationDate, float battleAttackCooldown, float battleJumpDuration, 
-      float battleAttackDuration, float battleTimePerFrame, float seaSpawnsPerSpot, float seaAttackCooldown) {
+      float battleAttackDuration, float battleTimePerFrame, float seaSpawnsPerSpot, float seaAttackCooldown, float seaMaxHealth) {
       this.id = id;
       this.creationDate = creationDate.ToBinary();
       this.battleAttackCooldown = battleAttackCooldown;
@@ -66,6 +70,7 @@ public class AdminGameSettings
       this.battleTimePerFrame = battleTimePerFrame;
       this.seaSpawnsPerSpot = seaSpawnsPerSpot;
       this.seaAttackCooldown = seaAttackCooldown;
+      this.seaMaxHealth = seaMaxHealth;
    }
 
    public override bool Equals (object rhs) {

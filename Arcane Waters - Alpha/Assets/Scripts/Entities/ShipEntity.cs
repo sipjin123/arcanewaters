@@ -73,8 +73,8 @@ public class ShipEntity : SeaEntity
    protected virtual void initializeAsSeaEnemy (SeaMonsterEntityData enemyData, ShipData shipData, int instanceDifficulty) {
       shipType = shipData.shipType;
       skinType = shipData.skinType;
-      currentHealth = enemyData.maxHealth * (instanceDifficulty > 0 ? instanceDifficulty : 1);
-      maxHealth = enemyData.maxHealth * (instanceDifficulty > 0 ? instanceDifficulty : 1);
+      maxHealth = Mathf.RoundToInt(enemyData.maxHealth * (instanceDifficulty > 0 ? instanceDifficulty : 1) * AdminGameSettingsManager.self.settings.seaMaxHealth);
+      currentHealth = maxHealth;
       attackRangeModifier = (int) enemyData.maxProjectileDistanceGap;
 
       float reloadModifier = 1 + (((float) instanceDifficulty - 1) / (Voyage.getMaxDifficulty() - 1));

@@ -1184,6 +1184,28 @@ public class PlayerShipEntity : ShipEntity
    [Command]
    public void Cmd_SetLifeboatVisibility (bool shouldShow) {
       Rpc_SetLifeboatVisibility(shouldShow);
+
+      if (shouldShow) {
+         foreach (Collider2D col in colliderList) {
+            col.enabled = true;
+            if (col is CircleCollider2D) {
+               ((CircleCollider2D) col).radius *= LIFEBOAT_COLLIDER_MULTIPLIER;
+            }
+         }
+
+         StartCoroutine(CO_DisableLifeboatCollider());
+      }
+   }
+
+   private IEnumerator CO_DisableLifeboatCollider () {
+      yield return new WaitForSeconds(0.05f);
+
+      foreach (Collider2D col in colliderList) {
+         col.enabled = false;
+         if (col is CircleCollider2D) {
+            ((CircleCollider2D) col).radius /= LIFEBOAT_COLLIDER_MULTIPLIER;
+         }
+      }
    }
 
    [ClientRpc]
@@ -1442,6 +1464,9 @@ public class PlayerShipEntity : ShipEntity
 
    // A reference to the FMOD Studio Listener that follows the ship
    private FMODUnity.StudioListener _fmodListener;
+
+   // How much lifeboat collider size should be increased for a short period of time to make sure that boat is not near shore
+   private const float LIFEBOAT_COLLIDER_MULTIPLIER = 3.0f;
 
    #endregion
 }

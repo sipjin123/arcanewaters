@@ -176,7 +176,11 @@ public class SeaEntity : NetEntity
       // If we've died, start slowing moving our sprites downward
       if (isDead()) {
          _outline.setVisibility(false);
-         setCollisions(false);
+
+         // Don't disable colliders on destroyed player ships - colliders are dealt with separately in PlayerShipEntity.cs when activating lifeboat 
+         if (!(this is PlayerShipEntity)) {
+            setCollisions(false);
+         }
 
          foreach (Coroutine coroutine in _burningCoroutines) {
             if (coroutine != null) {
@@ -1340,12 +1344,17 @@ public class SeaEntity : NetEntity
    }
 
    [Server]
-   private Vector3 findAttackerVicinityPosition (bool newAttacker) {
-      bool hasAttacker = _attackers.ContainsKey(_currentAttacker);
+   protected virtual Vector3 findAttackerVicinityPosition (bool newAttacker) {
+      return findAttackerVicinityPosition(newAttacker, _attackers);
+   }
+
+   [Server]
+   protected Vector3 findAttackerVicinityPosition (bool newAttacker, Dictionary<uint, double> attackers) {
+      bool hasAttacker = attackers.ContainsKey(_currentAttacker);
 
       // If we should choose a new attacker, and we have a selection available, pick a unique one randomly, which could be the same as the previous
-      if ((!hasAttacker || (hasAttacker && newAttacker)) && _attackers.Count > 0) {
-         _currentAttacker = _attackers.RandomKey();
+      if ((!hasAttacker || (hasAttacker && newAttacker)) && attackers.Count > 0) {
+         _currentAttacker = attackers.RandomKey();
          hasAttacker = true;
       }
 
