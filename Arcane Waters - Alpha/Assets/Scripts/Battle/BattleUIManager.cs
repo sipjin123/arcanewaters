@@ -173,7 +173,7 @@ public class BattleUIManager : MonoBehaviour {
       AbilityButton selectedButton = abilityTargetButtons.ToList().Find(_ => _.abilityIndex == keySlot);
 
       // If player is using keys 1-5 to attack with no target selected, then select a random target
-      if (BattleSelectionManager.self.selectedBattler == null) {
+      if ((BattleSelectionManager.self.selectedBattler == null) || BattleSelectionManager.self.selectedBattler.isDead()) {
          try {
             BattleSelectionManager.self.clickBattler(BattleSelectionManager.self.getRandomTarget());
          } catch {
@@ -262,6 +262,10 @@ public class BattleUIManager : MonoBehaviour {
                   if (BattleSelectionManager.self.selectedBattler == null) {
                      abilityButton.invalidButtonClick();
                   } else {
+                     if (BattleSelectionManager.self.selectedBattler.isDead()) {
+                        BattleSelectionManager.self.autoTargetNextOpponent();
+                     }
+
                      if (!abilityButton.cooldownImage.enabled) {
                         if (abilityType == AbilityType.Standard) {
                            attackPanel.requestAttackTarget(abilityButton.abilityTypeIndex);

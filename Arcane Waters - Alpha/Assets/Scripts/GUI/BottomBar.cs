@@ -82,6 +82,9 @@ public class BottomBar : MonoBehaviour {
       // If the panel is not showing, send a request to the server to get our exploration data
       if (!panel.isShowing()) {
          if (Global.player != null) {
+            // Open map sfx
+            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.MAP_OPEN, this.transform);
+
             panel.displayMap();
          }
       } else {

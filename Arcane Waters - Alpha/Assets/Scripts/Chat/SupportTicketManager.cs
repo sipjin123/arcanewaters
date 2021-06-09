@@ -17,19 +17,19 @@ public class SupportTicketManager : MonoBehaviour
       self = this;
    }
 
-   private void OnEnable () {
-      Application.logMessageReceived += addErrorLogMessage;
-   }
+   //private void OnEnable () {
+   //   Application.logMessageReceived += addErrorLogMessage;
+   //}
 
-   private void OnDisable () {
-      Application.logMessageReceived -= addErrorLogMessage;
-   }
+   //private void OnDisable () {
+   //   Application.logMessageReceived -= addErrorLogMessage;
+   //}
 
-   private void addErrorLogMessage (string logString, string stackTrace, LogType type) {
-      if (type == LogType.Exception) {
-         D.log("[EXCEPTION]: " + logString + "\n" + stackTrace);
-      }
-   }
+   //private void addErrorLogMessage (string logString, string stackTrace, LogType type) {
+   //   if (type == LogType.Exception) {
+   //      D.log("[EXCEPTION]: " + logString + "\n" + stackTrace);
+   //   }
+   //}
 
    public void sendComplaint (string message) {
       StopAllCoroutines();

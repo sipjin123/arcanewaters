@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using TMPro;
 
 public class LocationBanner : MonoBehaviour {
    #region Public Variables
@@ -11,7 +12,10 @@ public class LocationBanner : MonoBehaviour {
    public CanvasGroup canvasGroup;
 
    // The text name of this location
-   public Text locationText;
+   public TextMeshProUGUI locationText;
+
+   // The text name of this location (Outline)
+   public TextMeshProUGUI locationTextOutline;
 
    // Self
    public static LocationBanner self;
@@ -51,6 +55,7 @@ public class LocationBanner : MonoBehaviour {
 
       // Update the text
       locationText.text = locationName;
+      locationTextOutline.text = locationName;
 
       yield return new WaitForSeconds(.25f);
 

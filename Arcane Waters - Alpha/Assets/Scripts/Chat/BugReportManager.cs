@@ -23,19 +23,19 @@ public class BugReportManager : MonoBehaviour
       self = this;
    }
 
-   private void OnEnable () {
-      Application.logMessageReceived += addErrorLogMessage;
-   }
+   //private void OnEnable () {
+   //   Application.logMessageReceived += addErrorLogMessage;
+   //}
 
-   private void OnDisable () {
-      Application.logMessageReceived -= addErrorLogMessage;
-   }
+   //private void OnDisable () {
+   //   Application.logMessageReceived -= addErrorLogMessage;
+   //}
 
-   private void addErrorLogMessage (string logString, string stackTrace, LogType type) {
-      if (type == LogType.Exception) {
-         D.log("[EXCEPTION]: " + logString + "\n" + stackTrace);
-      }
-   }
+   //private void addErrorLogMessage (string logString, string stackTrace, LogType type) {
+   //   if (type == LogType.Exception) {
+   //      D.log("[EXCEPTION]: " + logString + "\n" + stackTrace);
+   //   }
+   //}
 
    [ServerOnly]
    public void storeBugReportOnServer (NetEntity player, string subject, string message, int ping, int fps, byte[] screenshotBytes, string screenResolution, string operatingSystem, string steamState, string ipAddress, int deploymentId) {

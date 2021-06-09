@@ -434,9 +434,12 @@ public class Battle : NetworkBehaviour {
       }
       if (battleActionType == BattleActionType.Stance) {
          // Stance action change
-         actionToSend = StanceAction.deserialize(actionStrings[0]);
-         AbilityManager.self.execute((StanceAction) actionToSend);
-
+         try {
+            actionToSend = StanceAction.deserialize(actionStrings[0]);
+            AbilityManager.self.execute((StanceAction) actionToSend);
+         } catch {
+            D.debug("Error here! Something went wrong with the stance action deserialization");
+         }
       } else if (battleActionType != BattleActionType.UNDEFINED) {
          // Standard attack
          foreach (string actionString in actionStrings) {

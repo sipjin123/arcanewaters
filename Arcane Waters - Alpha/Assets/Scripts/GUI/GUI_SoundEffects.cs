@@ -31,7 +31,8 @@ public class GUI_SoundEffects : MonoBehaviour, IPointerEnterHandler, IPointerCli
 
    public virtual void OnPointerDown (PointerEventData eventData) {
       if (_button && _button.IsInteractable()) {
-         play("Sound/Effects/GUI_Press");
+         SoundEffectManager.self.playFmodEventWithPath(SoundEffectManager.BUTTON_CONFIRM_PATH, this.transform);
+         //play("Sound/Effects/GUI_Press");
       }
    }
 

@@ -91,6 +91,9 @@ public class PanelManager : GenericGameManager {
          } else if (hasPanelInLinkedList()) {
             unlinkPanel();
          } else if (!((OptionsPanel) get(Panel.Type.Options)).isShowing()) {
+            // Play SFX
+            SoundEffectManager.self.playFmodEventWithPath(SoundEffectManager.MENU_OPEN_PATH, this.transform);
+
             linkPanel(Panel.Type.Options);
          } else {
             unlinkPanel();

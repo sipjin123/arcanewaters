@@ -74,37 +74,59 @@ public class AmbienceManager : ClientMonoBehaviour
 
       Biome.Type biomeType = AreaManager.self.getDefaultBiome(newAreaKey);
       bool isSea = AreaManager.self.isSeaArea(newAreaKey);
+      bool isInterior = AreaManager.self.isInteriorArea(newAreaKey);
 
       // Using one event, we can change the ambience using a parameter
-      if (isSea || biomeType == Biome.Type.Forest) {
-         if (!isEventReady) {
-            SoundEffect effect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.AMBIENCE_BED_MASTER);
+      //if (isSea || biomeType == Biome.Type.Forest || biomeType == Biome.Type.Desert || biomeType == Biome.Type.Snow) {
+      if (!isEventReady) {
+         SoundEffect effect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.AMBIENCE_BED_MASTER);
 
-            if (effect != null) {
-               ambienceEvent = RuntimeManager.CreateInstance(effect.fmodId);
-               isEventReady = true;
-            }
-         }
-
-         if (isEventReady) {
-            if (isSea) {
-               ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int)AmbienceType.SeaMap);
-            } else if(biomeType == Biome.Type.Forest) {
-               ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int)AmbienceType.Forest);
-            }
-
-            ambienceEvent.start();
-         }
-      } else {
-         if (isEventReady) {
-            ambienceEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-         }
-
-         // Add the new sounds
-         foreach (SoundManager.Type typeToPlay in ambienceTypes) {
-            playAmbience(typeToPlay);
+         if (effect != null) {
+            ambienceEvent = RuntimeManager.CreateInstance(effect.fmodId);
+            isEventReady = true;
          }
       }
+
+      if (isEventReady) {
+         if (isSea) {
+            ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.SeaMap);
+         } else if (isInterior) {
+            ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Interior);
+         } else {
+            switch (biomeType) {
+               case Biome.Type.Forest:
+                  ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Forest);
+                  break;
+               case Biome.Type.Desert:
+                  ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Desert);
+                  break;
+               case Biome.Type.Snow:
+                  ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Snow);
+                  break;
+               case Biome.Type.Lava:
+                  ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Lava);
+                  break;
+               case Biome.Type.Pine:
+                  ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Pine);
+                  break;
+               case Biome.Type.Mushroom:
+                  ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Shroom);
+                  break;
+            }
+         }
+
+         ambienceEvent.start();
+      }
+      //} else {
+      //   if (isEventReady) {
+      //      ambienceEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+      //   }
+
+      //   // Add the new sounds
+      //   foreach (SoundManager.Type typeToPlay in ambienceTypes) {
+      //      playAmbience(typeToPlay);
+      //   }
+      //}
    }
 
    protected List<SoundManager.Type> getAmbienceTypeForArea (string areaKey) {

@@ -77,6 +77,15 @@ public class SoundEffectManager : MonoBehaviour
    public const int LIGHTNING_FLASH = 96;
    public const int AMBIENCE_BED_MASTER = 97;
 
+   public const int MAP_OPEN = 99;
+   public const int LOCALE_UNLOCK = 100;
+   public const int CLICK_TAB = 101;
+   public const int MENU_OPEN = 102;
+   public const int BUTTON_CONFIRM = 103;
+
+   public const string MENU_OPEN_PATH = "event:/SFX/Game/UI/Menu_Open";
+   public const string BUTTON_CONFIRM_PATH = "event:/SFX/Game/UI/Button_Confirm";
+
    public const string SHIP_CHARGE_RELEASE_PARAM = "Ship_Charge_Release";
    public const string AMBIENCE_AUDIO_SWITCH_PARAM = "Ambience_Switch";
    public const string APPLY_CRIT_PARAM = "Apply_Crit";
@@ -173,6 +182,12 @@ public class SoundEffectManager : MonoBehaviour
          }
       } else {
          D.debug("Could not find SoundEffect with 'id' : '" + id + "'");
+      }
+   }
+
+   public void playFmodEventWithPath(string path, Transform target) {
+      if(path.Length > 0) {
+         RuntimeManager.PlayOneShot(path, mainCamReference.transform.position);
       }
    }
 

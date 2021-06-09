@@ -83,6 +83,9 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    // The z snap offset of boss monsters which have larger sprites
    public const float BOSS_Z_OFFSET = -0.48f;
 
+   // Prefab of special collider, used after golem boss death
+   public GameObject bossGolemPolygonCollider;
+
    #endregion
 
    protected override void Awake () {
@@ -201,6 +204,17 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
 
          if (shouldDisableColliderOnDeath()) {
             circleCollider.enabled = false;
+
+            if (this.enemyType == Type.Golem_Boss && bossGolemColliderRef == null) {
+               bossGolemColliderRef = Instantiate(bossGolemPolygonCollider);
+               bossGolemColliderRef.transform.SetParent(this.transform);
+               bossGolemColliderRef.transform.localPosition = Vector3.zero;
+               bossCollider.SetActive(false);
+
+               if (this.facing == Direction.West) {
+                  bossGolemColliderRef.transform.localScale = new Vector3(-1f, 1f, 1f);
+               }
+            }
          }
          if (MonsterManager.self.getBattlerData(this.enemyType).disableOnDeath) {
             bodyAnim.gameObject.SetActive(false);
@@ -415,6 +429,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       // Some enemies should stop blocking player movement after they die
       switch (this.enemyType) {
          case Type.Slime:
+         case Type.Golem_Boss:
             return true;
          default:
             return false;
@@ -476,6 +491,9 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
 
    // Checks whether data has already been copied to shadow simple animation when playing dead animation
    private bool _shadowAnimDataCopied = false;
+
+   // Reference which stores special collider for boss golem after death
+   private GameObject bossGolemColliderRef = null;
 
    #endregion
 }

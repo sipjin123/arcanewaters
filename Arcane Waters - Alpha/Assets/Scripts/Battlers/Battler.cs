@@ -981,7 +981,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public IEnumerator animateDeath () {
       if (_anims[0].currentAnimation == Anim.Type.Death_East) {
-         BattleSelectionManager.self.autoTargetNextOpponent();
          yield break;
       }
 
@@ -1006,8 +1005,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          // Play a "Poof" effect on our head
          EffectManager.playPoofEffect(this);
-
-         BattleSelectionManager.self.autoTargetNextOpponent();
       }
    }
 

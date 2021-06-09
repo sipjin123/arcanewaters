@@ -312,6 +312,8 @@ MonoBehaviour:
   - {fileID: 5141251002957823005}
   - {fileID: 1616126582292206316}
   walkSound: 0
+  bossGolemPolygonCollider: {fileID: 5075046003635432648, guid: aafa5fc8be4093746a3cfe6b6bcd378b,
+    type: 3}
 --- !u!50 &50000013307885518
 Rigidbody2D:
   serializedVersion: 4

@@ -34,12 +34,6 @@ public class BattleSelectionManager : MonoBehaviour {
    }
 
    void Update () {
-      // If our target has died, deselect it
-      if (selectedBattler != null && selectedBattler.isDead()) {
-         selectedBattler.deselectThis();
-         selectedBattler = null;
-      }
-
       // Whenever a mouse-click ends, check if it was on a Battle sprite
       if (KeyUtils.GetButtonUp(MouseButton.Left) && !Util.isButtonClick() && Global.isInBattle()) {
          if (Global.player == null || !(Global.player is PlayerBodyEntity)) {

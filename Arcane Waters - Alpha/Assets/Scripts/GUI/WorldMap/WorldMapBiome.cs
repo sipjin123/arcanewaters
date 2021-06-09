@@ -43,6 +43,9 @@ public class WorldMapBiome : MonoBehaviour
    }
 
    public void revealWithAnimation () {
+      // Playing the SFX
+      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.LOCALE_UNLOCK, this.transform);
+
       hideWithClouds();
 
       // Make the town canvasgroup interactable, but invisible

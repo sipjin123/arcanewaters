@@ -18,7 +18,8 @@ public class GUI_SoundEffectsTab : GUI_SoundEffects {
 
    public override void OnPointerDown (PointerEventData eventData) {
       if (_button && _button.IsInteractable()) {
-         SoundManager.play2DClip(SoundManager.Type.GUI_Change_Tab);
+         SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.CLICK_TAB, this.transform);
+         //SoundManager.play2DClip(SoundManager.Type.GUI_Change_Tab);
       }
    }
 
