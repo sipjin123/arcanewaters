@@ -113,7 +113,7 @@ public class PlayerShipEntity : ShipEntity
    // A reference to the bars script that displays the health of this ship
    public ShipBarsPlayer shipBars;
 
-   // If the dash button is pressed for the 
+   // If the dash button is pressed using gamepad
    public bool gamePadDashPressed = false;
 
    // References to animators for the player's boost circle
@@ -384,9 +384,9 @@ public class PlayerShipEntity : ShipEntity
 
    private void boostUpdate () {
       // Begin charging boost
-      if ((InputManager.isSpeedUpKeyPressed())) {
+      if (InputManager.isSpeedUpKeyPressed()) {
          pressBoost();
-      } else if ((InputManager.isSpeedUpKeyReleased())) {
+      } else if (InputManager.isSpeedUpKeyReleased()) {
          releaseBoost();
       }
 
@@ -413,19 +413,14 @@ public class PlayerShipEntity : ShipEntity
          _isChargingBoost = true;
 
          _boostState.start();
-         //boostEventEmitter.SetParameter(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 0);
-         //boostEventEmitter.Play();
          _boostState.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 0);
       }
    }
 
    private void releaseBoost () {
       if (!isBoostCoolingDown() && _isChargingBoost) {
-         // Activate boost
-         //SoundEffectManager.self.playSoundEffect(SoundEffectManager.SHIPBOOST_ID, transform);
-         // FMOD SFX
+         // Activate boost using FMOD SFX
          _boostState.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 2);
-         //boostEventEmitter.SetParameter(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 2);
 
          // If the player is pressing a direction, boost them that way, otherwise boost them the way they are facing
          Vector2 boostDirection = InputManager.getMovementInput();

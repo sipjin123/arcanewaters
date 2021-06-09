@@ -1887,7 +1887,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    private IEnumerator animateHit (Battler attacker, AttackAction action, BasicAbilityData ability) {
       if (hasDisplayedDeath()) {
-         yield return null;
+         yield break;
       }
 
       // Display the Hit animation frame for a short period
