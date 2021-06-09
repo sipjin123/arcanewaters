@@ -62,6 +62,12 @@ public class AmbienceManager : ClientMonoBehaviour
    }
 
    protected void updateAmbienceForArea (string newAreaKey) {
+      // TODO: This will be updated by Jose
+      bool ifTrue = true;
+      if (ifTrue) {
+         return;
+      }
+
       // Figure out what type we should be playing
       List<SoundManager.Type> ambienceTypes = getAmbienceTypeForArea(newAreaKey);
 
