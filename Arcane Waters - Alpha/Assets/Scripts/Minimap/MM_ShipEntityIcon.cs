@@ -40,6 +40,10 @@ public class MM_ShipEntityIcon : MonoBehaviour {
          return;
       }
 
+      if (currentRectTransform == null) {
+         return;
+      } 
+
       // Set correct ship entity icon position in minimap
       currentRectTransform.anchoredPosition = Minimap.self.getCorrectedPosition(shipEntity.transform, currentArea);
 

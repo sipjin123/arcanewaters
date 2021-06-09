@@ -369,7 +369,7 @@ public class NetEntity : NetworkBehaviour
       if (isPlayerEntity()) {
          nameText.text = this.entityName;
 
-         if (Global.player == getPlayerBodyEntity()) {
+         if (Global.player == getPlayerBodyEntity() && getPlayerBodyEntity() != null) {
             getPlayerBodyEntity().recolorNameText();
          }
       }
