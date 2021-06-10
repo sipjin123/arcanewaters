@@ -3888,7 +3888,6 @@ public class RPCManager : NetworkBehaviour
                AchievementManager.registerUserAchievement(_player, ActionType.CraftWeapon);
             }
 
-
             // Update the available ingredients for the displayed blueprint
             Target_RefreshCraftingPanel(_player.connectionToClient);
 
@@ -3908,7 +3907,7 @@ public class RPCManager : NetworkBehaviour
             }
 
             // Display the reward panel
-            Target_ReceiveItem(_player.connectionToClient, craftedItem);
+            Target_ReceiveCraftedItem(_player.connectionToClient, craftedItem);
          });
       });
    }
@@ -4515,7 +4514,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveItem (NetworkConnection connection, Item item) {
+   public void Target_ReceiveCraftedItem (NetworkConnection connection, Item item) {
       SoundEffectManager.self.playSoundEffect(SoundEffectManager.CRAFT_COMPLETE, SoundEffectManager.self.transform);
       RewardManager.self.showItemInRewardPanel(item);
    }
