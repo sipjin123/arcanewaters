@@ -40,6 +40,12 @@ public class AdminGameSettings
    // A multiplier applied to enemy max health in sea maps
    public float seaMaxHealth = 1.0f;
 
+   // The additional damage the land bosses receive depending on the party count, this value is set in %
+   public float bossDamagePerMember = 10;
+
+   // The additional health the land bosses receive depending on the party count, this value is set in %
+   public float bossHealthPerMember = 20;
+
    #endregion
 
    public AdminGameSettings () { }
@@ -56,12 +62,15 @@ public class AdminGameSettings
       this.seaSpawnsPerSpot = DataUtil.getFloat(dataReader, "seaSpawnsPerSpot");
       this.seaAttackCooldown = DataUtil.getFloat(dataReader, "seaAttackCooldown");
       this.seaMaxHealth = DataUtil.getFloat(dataReader, "seaMaxHealth");
+      this.bossDamagePerMember = DataUtil.getFloat(dataReader, "landBossAddedDamage");
+      this.bossHealthPerMember = DataUtil.getFloat(dataReader, "landBossAddedHealth");
    }
 
 #endif
 
    public AdminGameSettings (int id, DateTime creationDate, float battleAttackCooldown, float battleJumpDuration, 
-      float battleAttackDuration, float battleTimePerFrame, float seaSpawnsPerSpot, float seaAttackCooldown, float seaMaxHealth) {
+      float battleAttackDuration, float battleTimePerFrame, float seaSpawnsPerSpot, float seaAttackCooldown, float seaMaxHealth, 
+      float landBossAddedHealth, float landBossAddedDamage) {
       this.id = id;
       this.creationDate = creationDate.ToBinary();
       this.battleAttackCooldown = battleAttackCooldown;
@@ -71,6 +80,8 @@ public class AdminGameSettings
       this.seaSpawnsPerSpot = seaSpawnsPerSpot;
       this.seaAttackCooldown = seaAttackCooldown;
       this.seaMaxHealth = seaMaxHealth;
+      this.bossHealthPerMember = landBossAddedHealth;
+      this.bossDamagePerMember = landBossAddedDamage;
    }
 
    public override bool Equals (object rhs) {
