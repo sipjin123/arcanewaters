@@ -33,6 +33,9 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    // Self
    public static VoyageGroupPanel self;
 
+   // List of voyage indicators that displays the location of the allies
+   public List<VoyageGroupIndicator> voyageIndicatorList;
+
    #endregion
 
    protected override void Awake () {
@@ -63,12 +66,22 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    }
 
    private void updateMemberCellDamage () {
+      foreach (VoyageGroupIndicator voyageIndicatpr in voyageIndicatorList) {
+         voyageIndicatpr.gameObject.SetActive(false);
+      }
+
+      int i = 0;
       foreach (VoyageGroupMemberCell memberCell in _memberCells) {
          var entity = EntityManager.self.getEntity(memberCell.getUserId());
          if (entity != null) {
             if (entity is PlayerShipEntity) {
                memberCell.updateCellDamage(((PlayerShipEntity) entity).totalDamageDealt);
             }
+            voyageIndicatorList[i].arrowTarget = entity;
+            if (Vector3.Distance(Global.player.transform.position, entity.transform.position) > VoyageGroupIndicator.CLAM_HIDE_DISTANCE) {
+               voyageIndicatorList[i].gameObject.SetActive(true);
+            }
+            i++;
          }
       }
    }
