@@ -14,6 +14,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       None = 0, Tentacle = 1, Horror = 2, Worm = 3, Reef_Giant = 4, Fishman = 5, SeaSerpent = 6, Horror_Tentacle = 7, PirateShip = 8
    }
 
+   // Holds the trigger containing the death effect
+   public GameObject deathBubbleEffect;
+
    public static bool isSeaMonster (int subVarietyId) {
       return subVarietyId < 1;
    }
@@ -227,6 +230,8 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    protected override void Start () {
       base.Start();
+
+      deathBubbleEffect.SetActive(false);
 
       // Initializes the data from the scriptable object
       SeaMonsterEntityData monsterData = SeaMonsterManager.self.seaMonsterDataList.Find(_ => _.seaMonsterType == monsterType);
@@ -517,6 +522,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          if (hasBeenAttackedBy(Global.player) && TutorialManager3.self.getCurrentTrigger() == TutorialTrigger.KillBoss && monsterType == Type.Horror) {
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.KillBoss);
          }
+      }
+
+      if (isDead()) {
+         deathBubbleEffect.GetComponentInChildren<SimpleAnimation>().resetAnimation();
+         deathBubbleEffect.SetActive(true);
       }
 
       if (seaMonsterData.shouldDropTreasure) {
