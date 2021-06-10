@@ -161,7 +161,7 @@ public class Battle : NetworkBehaviour {
 
          // Basic Monster AI.
          // If any of our monsters are ready to attack, then do so
-         if (battler.isMonster() && NetworkTime.time > battler.animatingUntil && NetworkTime.time > bufferedCooldown) {
+         if (battler.isMonster() && NetworkTime.time > bufferedCooldown) {
             BattlePlan battlePlan = battler.getBattlePlan(this);
             BattlerData battlerData = MonsterManager.self.getBattlerData(battler.enemyType);
             List<Battler> battlerAllies = new List<Battler>();

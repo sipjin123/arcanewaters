@@ -5900,12 +5900,6 @@ public class RPCManager : NetworkBehaviour
          Target_ReceiveRefreshCasting(connectionToClient, false);
          return;
       }
-
-      // Make sure that the target being attacked is not already queueing an action, otherwise there will be overlap of attacks for a specific target
-      if (NetworkTime.time < targetBattler.animatingUntil) {
-         Target_ReceiveRefreshCasting(connectionToClient, false);
-         return;
-      }
       
       if (abilityType == AbilityType.Standard) {
          // If it's a Melee Ability, make sure the target isn't currently protected
