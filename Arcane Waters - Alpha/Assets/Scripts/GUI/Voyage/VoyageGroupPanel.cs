@@ -33,8 +33,11 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    // Self
    public static VoyageGroupPanel self;
 
-   // List of voyage indicators that displays the location of the allies
-   public List<VoyageGroupIndicator> voyageIndicatorList;
+   // List of arrow indicators
+   public List<ArrowIndicator> directionalArrowList;
+
+   // Distance before the indicator will be hidden, means its too near to the player already
+   public const float CLAMP_HIDE_DISTANCE = 1;
 
    #endregion
 
@@ -66,8 +69,8 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    }
 
    private void updateMemberCellDamage () {
-      foreach (VoyageGroupIndicator voyageIndicatpr in voyageIndicatorList) {
-         voyageIndicatpr.gameObject.SetActive(false);
+      foreach (ArrowIndicator arrowIndicator in directionalArrowList) {
+         arrowIndicator.gameObject.SetActive(false);
       }
 
       int i = 0;
@@ -77,9 +80,9 @@ public class VoyageGroupPanel : ClientMonoBehaviour
             if (entity is PlayerShipEntity) {
                memberCell.updateCellDamage(((PlayerShipEntity) entity).totalDamageDealt);
             }
-            voyageIndicatorList[i].arrowTarget = entity;
-            if (Vector3.Distance(Global.player.transform.position, entity.transform.position) > VoyageGroupIndicator.CLAM_HIDE_DISTANCE) {
-               voyageIndicatorList[i].gameObject.SetActive(true);
+            directionalArrowList[i].setTarget(entity.gameObject);
+            if (Vector3.Distance(Global.player.transform.position, entity.transform.position) > CLAMP_HIDE_DISTANCE) {
+               directionalArrowList[i].gameObject.SetActive(true);
             }
             i++;
          }
