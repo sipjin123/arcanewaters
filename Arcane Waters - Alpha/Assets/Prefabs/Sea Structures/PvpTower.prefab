@@ -1834,6 +1834,7 @@ GameObject:
   - component: {fileID: 6324359015635987835}
   - component: {fileID: 3867177553416723524}
   - component: {fileID: 8509244737951465977}
+  - component: {fileID: 8748965278172647228}
   m_Layer: 12
   m_Name: PvpTower
   m_TagString: Untagged
@@ -1951,7 +1952,7 @@ MonoBehaviour:
   pvpTeam: 0
   _ignoredAnimators: []
   _animators: []
-  damage: 3
+  damage: 1.75
   reloadDelay: 0.9
   attackCounter: 0
   localAttackCirclePrefab: {fileID: 0}
@@ -1975,6 +1976,7 @@ MonoBehaviour:
   newWaypointsRadius: 10
   secondsPatrolingUntilChoosingNewTreasureSite: 30
   patrolingWaypointsRadius: 1
+  unlockAfterDeath: {fileID: 0}
   attackRange: 3.5
   targetingBarrelSocket: {fileID: 1205177888247325137}
   projectileSpeedModifier: 2
@@ -2035,8 +2037,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offsetZ: 0
   inheritedOffsetZ: 0
-  isActive: 0
+  isActive: 1
   sortPoint: {fileID: 0}
+--- !u!114 &8748965278172647228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8749673822339455290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7b30fc1a8890e042ae5319745cb2d13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
 --- !u!1001 &578247586987025702
 PrefabInstance:
   m_ObjectHideFlags: 0

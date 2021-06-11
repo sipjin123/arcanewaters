@@ -241,6 +241,7 @@ namespace MapCreationTool
          List<ExportedPrefab001> treasureSiteData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> shipData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> bossSpawnerData = new List<ExportedPrefab001>();
+         List<ExportedPrefab001> pvpTowerData = new List<ExportedPrefab001>();
 
          int unrecognizedPrefabs = 0;
          int cropSpotCounter = 0;
@@ -274,6 +275,10 @@ namespace MapCreationTool
             } else if (original.GetComponent<OreSpot>() != null) {
                if (prefab.d != null) {
                   oreData.Add(prefab);
+               }
+            } else if (original.GetComponent<PvpTower>() != null) {
+               if (prefab.d != null) {
+                  pvpTowerData.Add(prefab);
                }
             } else if (original.GetComponent<BossSpawner>() != null) {
                if (prefab.d != null) {
@@ -389,7 +394,7 @@ namespace MapCreationTool
             Utilities.warning($"Could not recognize { unrecognizedPrefabs } prefabs of map { mapInfo.mapName }");
          }
 
-         area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData, shipData, seaMonstersData, bossSpawnerData);
+         area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData, shipData, seaMonstersData, bossSpawnerData, pvpTowerData);
       }
    }
 }

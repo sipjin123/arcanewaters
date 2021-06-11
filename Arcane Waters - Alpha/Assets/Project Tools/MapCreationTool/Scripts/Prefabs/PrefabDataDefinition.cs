@@ -133,6 +133,32 @@ namespace MapCreationTool
                   toolTip = customData.toolTip,
                   options = SecretsMapManager.instance.formInitialSprite()
                };
+            } else if (customData.type == CustomFieldType.PvpLane) {
+               List<string> stringList = new List<string>();
+               Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
+
+               foreach (string pvpLaneStr in Enum.GetNames(typeof(PvpLane))) {
+                  stringList.Add(pvpLaneStr);
+               }
+
+               selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
+                  name = customData.name,
+                  toolTip = customData.toolTip,
+                  options = SelectOption.formOptions(stringList)
+               };
+            } else if (customData.type == CustomFieldType.PvpTeamType) {
+               List<string> stringList = new List<string>();
+               Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
+
+               foreach (string pvpLaneStr in Enum.GetNames(typeof(PvpTeamType))) {
+                  stringList.Add(pvpLaneStr);
+               }
+
+               selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
+                  name = customData.name,
+                  toolTip = customData.toolTip,
+                  options = SelectOption.formOptions(stringList)
+               };
             }
          }
 
@@ -189,6 +215,8 @@ namespace MapCreationTool
          SecretInteractSprite,
          Ship,
          TreasureType,
+         PvpTeamType,
+         PvpLane,
       }
    }
 }

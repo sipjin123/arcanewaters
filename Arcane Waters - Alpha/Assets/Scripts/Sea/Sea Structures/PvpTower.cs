@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using DG.Tweening;
+using MapCreationTool.Serialization;
+using System;
 
-public class PvpTower : SeaStructure {
+public class PvpTower : SeaStructure, IMapEditorDataReceiver {
    #region Public Variables
 
    // How far away this unit can target and attack enemies
@@ -338,6 +340,37 @@ public class PvpTower : SeaStructure {
    private void OnDrawGizmosSelected () {
       Gizmos.color = Color.red;
       Gizmos.DrawWireSphere(transform.position, attackRange);
+   }
+
+   public void receiveData (DataField[] fields) {
+      foreach (DataField field in fields) {
+         if (field.k.CompareTo(DataField.PVP_LANE) == 0) {
+            try {
+               PvpLane pvpLane = (PvpLane) Enum.Parse(typeof(PvpLane), field.v);
+
+               // Do something with value
+               D.debug(field.k + " " + field.v);
+            } catch {
+               // Set default value
+            }
+         }
+         if (field.k.CompareTo(DataField.PVP_LANE_NUMBER) == 0) {
+            if (field.tryGetIntValue(out int pvpLaneNum)) {
+               // Do something with value
+               D.debug(field.k + " " + field.v);
+            }
+         }
+         if (field.k.CompareTo(DataField.PVP_TEAM_TYPE) == 0) {
+            try {
+               PvpTeamType pvpTeam = (PvpTeamType) Enum.Parse(typeof(PvpTeamType), field.v);
+
+               // Do something with value
+               D.debug(field.k + " " + field.v);
+            } catch {
+               // Set default value
+            }
+         }
+      }
    }
 
    #region Private Variables
