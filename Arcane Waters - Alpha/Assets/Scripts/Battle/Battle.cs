@@ -205,8 +205,8 @@ public class Battle : NetworkBehaviour {
                      int targetCounter = 0;
                      List<Battler> targetBattlers = new List<Battler>();
                      AttackAbilityData abilityData = AbilityManager.self.getAttackAbility(battler.basicAbilityIDList[1]);
-
-                     D.adminLog("Boss fetching ability :: " +
+                     battlePlan.targets = new List<Battler>();
+                     D.adminLog("1. Boss fetching ability :: " +
                         "Name:{" + abilityData.itemName + "} " +
                         "ID1:{" + battler.basicAbilityIDList[1] + "} " +
                         "ID2:{" + abilityData.itemID + "} " +
@@ -215,15 +215,16 @@ public class Battle : NetworkBehaviour {
                      // Setup the maximum targets affected by this ability
                      foreach (Battler attacker in getAttackers()) {
                         targetBattlers.Add(attacker);
-                        D.adminLog("Added attacker target {" + attacker.userId + " : " + attacker.enemyType + "}", D.ADMIN_LOG_TYPE.Boss);
+                        battlePlan.targets.Add(attacker);
+                        D.adminLog("2. Added attacker target {" + attacker.userId + " : " + attacker.enemyType + "}", D.ADMIN_LOG_TYPE.Boss);
                         targetCounter++;
                         if (targetCounter >= abilityData.maxTargets) {
-                           D.adminLog("Break target counter! Max target reached" + " Curr: " + targetCounter + " Max: " + abilityData.maxTargets, D.ADMIN_LOG_TYPE.Boss);
                            break;
                         }
                      }
 
-                     D.adminLog("Boss is attacking using AOE attack having {" + battlePlan.targets.Count + "} targets, AttackerCount:{" + getAttackers().Count + "}", D.ADMIN_LOG_TYPE.Boss);
+                     D.adminLog("3. Boss is attacking using AOE attack having {" + battlePlan.targets.Count + "} targets, " +
+                        "AttackerCount:{" + getAttackers().Count + "}", D.ADMIN_LOG_TYPE.Boss);
                      BattleManager.self.executeBattleAction(this, battler, targetBattlers, 1, AbilityType.Standard);
                   } else {
                      D.adminLog("Boss is attacking using regular attack", D.ADMIN_LOG_TYPE.Boss);

@@ -932,7 +932,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public void playAnim (Anim.Type animationType, float customSpeed = -1) {
       if (animationType != Anim.Type.Death_East && (isAlreadyDead || hasPlayedDeathAnim)) {
-         D.debug("Has attempted to play other animation {" + animationType + "} but battler is already dead!");
          return;
       }
       

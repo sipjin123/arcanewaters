@@ -708,7 +708,7 @@ public class BattleManager : MonoBehaviour {
                // Deduct 50% damage output if source just recently changed weapon
                damage -= damage * .5f;
             }
-
+            
             // Create the Action object
             AttackAction action = new AttackAction(battle.battleId, currentActionType, source.userId, target.userId,
                 (int) damage, timeAttackEnds, abilityInventoryIndex, wasCritical, wasBlocked, cooldownDuration, sourceApChange,
@@ -725,12 +725,13 @@ public class BattleManager : MonoBehaviour {
 
             // TODO: Remove after fixing bug wherein Golem boss action is stuck for a long time
             if (source.isBossType) {
-               D.adminLog("Golem is attacking: "
+               D.adminLog("Boss Monster is attacking: "
                   + " TimeToWait: " + (timeToWait)
-                  + " Cooldown: " + cooldownDuration
+                  + " Cooldown: " + cooldownDuration  
                   + " AtkEnds: " + timeAttackEnds.ToString("f2")
                   + " CurrTime: " + NetworkTime.time.ToString("f2")
-                  + " Target: " + target.userId + " - " + target.enemyType, D.ADMIN_LOG_TYPE.Boss);
+                  + " Target: " + target.userId + " - " + target.enemyType
+                  + " TotalTargets: " + targets.Count, D.ADMIN_LOG_TYPE.Boss);
             }
             actionEndTime = action.actionEndTime;
 
