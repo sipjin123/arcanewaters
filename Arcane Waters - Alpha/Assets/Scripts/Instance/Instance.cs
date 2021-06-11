@@ -471,6 +471,36 @@ public class Instance : NetworkBehaviour
          }
       }
 
+      if (area.baseDataFields.Count > 0) {
+         foreach (ExportedPrefab001 dataField in area.baseDataFields) {
+            // TODO: Will be modified by Tim depending on how the base should be created
+            PvpBase pvpBase = Instantiate(PrefabsManager.self.pvpBasePrefab);
+
+            // The data set in the map editor will be set to this pvp object, this will only occur on the server side, client side data will be set in MapImporter.cs script in the function instantiatePrefabs()
+            IMapEditorDataReceiver receiver = pvpBase.GetComponent<IMapEditorDataReceiver>();
+            if (receiver != null && dataField.d != null) {
+               receiver.receiveData(dataField.d);
+            }
+
+            NetworkServer.Spawn(pvpBase.gameObject);
+         }
+      }
+
+      if (area.shipyardDataFields.Count > 0) {
+         foreach (ExportedPrefab001 dataField in area.shipyardDataFields) {
+            // TODO: Will be modified by Tim depending on how the shipyard should be created
+            PvpShipyard pvpBase = Instantiate(PrefabsManager.self.pvpShipyardPrefab);
+
+            // The data set in the map editor will be set to this pvp object, this will only occur on the server side, client side data will be set in MapImporter.cs script in the function instantiatePrefabs()
+            IMapEditorDataReceiver receiver = pvpBase.GetComponent<IMapEditorDataReceiver>();
+            if (receiver != null && dataField.d != null) {
+               receiver.receiveData(dataField.d);
+            }
+
+            NetworkServer.Spawn(pvpBase.gameObject);
+         }
+      }
+
       // Spawn random enemies
       if (area.isSea) {
          EnemyManager.self.spawnShipsOnServerForInstance(this);

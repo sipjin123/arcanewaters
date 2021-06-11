@@ -111,6 +111,12 @@ public class Area : MonoBehaviour
    // Pvp tower to be loaded by the server
    public List<ExportedPrefab001> towerDataFields = new List<ExportedPrefab001>();
 
+   // Pvp shipyard to be loaded by the server
+   public List<ExportedPrefab001> shipyardDataFields = new List<ExportedPrefab001>();
+
+   // Pvp base to be loaded by the server
+   public List<ExportedPrefab001> baseDataFields = new List<ExportedPrefab001>();
+
    // Parent of generic prefabs
    public Transform prefabParent;
 
@@ -137,7 +143,7 @@ public class Area : MonoBehaviour
    public void registerNetworkPrefabData (List<ExportedPrefab001> npcDatafields, List<ExportedPrefab001> enemyDatafields,
       List<ExportedPrefab001> oreDataFields, List<ExportedPrefab001> treasureSiteDataFields,
       List<ExportedPrefab001> shipDataFields, List<ExportedPrefab001> seaMonsterDataFields, List<ExportedPrefab001> bossSpawnerDataFields, 
-      List<ExportedPrefab001> pvpTowerDataFields) {
+      List<ExportedPrefab001> pvpTowerDataFields, List<ExportedPrefab001> pvpBaseDataFields, List<ExportedPrefab001> pvpShipyardDataFields) {
       this.npcDatafields = npcDatafields;
       this.enemyDatafields = enemyDatafields;
       this.oreDataFields = oreDataFields;
@@ -146,6 +152,8 @@ public class Area : MonoBehaviour
       this.seaMonsterDataFields = seaMonsterDataFields;
       this.bossSpawnerDataFields = bossSpawnerDataFields;
       this.towerDataFields = pvpTowerDataFields;
+      this.shipyardDataFields = pvpShipyardDataFields;
+      this.baseDataFields = pvpBaseDataFields;
 
       if (CommandCodes.get(CommandCodes.Type.NPC_DISABLE) || Util.isForceServerLocalWithAutoDbconfig()) {
          this.npcDatafields.Clear();
