@@ -456,6 +456,21 @@ public class Instance : NetworkBehaviour
          }
       }
 
+      if (area.towerDataFields.Count > 0) {
+         foreach (ExportedPrefab001 dataField in area.towerDataFields) {
+            // TODO: Will be modified by Tim depending on how the tower should be created
+            PvpTower pvpTower = Instantiate(PrefabsManager.self.pvpTowerPrefab);
+
+            // The data set in the map editor will be set to this pvp tower object, this will only occur on the server side, client side data will be set in MapImporter.cs script in the function instantiatePrefabs()
+            IMapEditorDataReceiver receiver = pvpTower.GetComponent<IMapEditorDataReceiver>();
+            if (receiver != null && dataField.d != null) {
+               receiver.receiveData(dataField.d);
+            }
+
+            NetworkServer.Spawn(pvpTower.gameObject);
+         }
+      }
+
       // Spawn random enemies
       if (area.isSea) {
          EnemyManager.self.spawnShipsOnServerForInstance(this);

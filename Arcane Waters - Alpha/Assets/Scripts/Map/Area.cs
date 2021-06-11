@@ -108,6 +108,9 @@ public class Area : MonoBehaviour
    // Boss Spawners to be loaded by the server
    public List<ExportedPrefab001> bossSpawnerDataFields = new List<ExportedPrefab001>();
 
+   // Pvp tower to be loaded by the server
+   public List<ExportedPrefab001> towerDataFields = new List<ExportedPrefab001>();
+
    // Parent of generic prefabs
    public Transform prefabParent;
 
@@ -133,7 +136,8 @@ public class Area : MonoBehaviour
 
    public void registerNetworkPrefabData (List<ExportedPrefab001> npcDatafields, List<ExportedPrefab001> enemyDatafields,
       List<ExportedPrefab001> oreDataFields, List<ExportedPrefab001> treasureSiteDataFields,
-      List<ExportedPrefab001> shipDataFields, List<ExportedPrefab001> seaMonsterDataFields, List<ExportedPrefab001> bossSpawnerDataFields) {
+      List<ExportedPrefab001> shipDataFields, List<ExportedPrefab001> seaMonsterDataFields, List<ExportedPrefab001> bossSpawnerDataFields, 
+      List<ExportedPrefab001> pvpTowerDataFields) {
       this.npcDatafields = npcDatafields;
       this.enemyDatafields = enemyDatafields;
       this.oreDataFields = oreDataFields;
@@ -141,6 +145,7 @@ public class Area : MonoBehaviour
       this.shipDataFields = shipDataFields;
       this.seaMonsterDataFields = seaMonsterDataFields;
       this.bossSpawnerDataFields = bossSpawnerDataFields;
+      this.towerDataFields = pvpTowerDataFields;
 
       if (CommandCodes.get(CommandCodes.Type.NPC_DISABLE) || Util.isForceServerLocalWithAutoDbconfig()) {
          this.npcDatafields.Clear();
