@@ -276,8 +276,7 @@ namespace MapCreationTool.Serialization
    }
 
    [Serializable]
-   public class DataField
-   {
+   public class DataField {
       public static CultureInfo US_CULTURE => CultureInfo.CreateSpecificCulture("en-US");
 
       // For prefabs, the serializable data is saved as key-value pairs
@@ -365,6 +364,10 @@ namespace MapCreationTool.Serialization
       public const string GRAVE_NAME = "grave name";
 
       public const string DEBUG_OBJECT_ID = "debug map data";
+
+      public const string PVP_TEAM_TYPE = "pvp team type";
+      public const string PVP_LANE = "pvp lane";
+      public const string PVP_LANE_NUMBER = "pvp lane number";
 
       public string k; // Key
       public string v; // Value

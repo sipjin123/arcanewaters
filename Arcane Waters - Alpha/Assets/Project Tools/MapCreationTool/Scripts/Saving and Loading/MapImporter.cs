@@ -288,8 +288,6 @@ namespace MapCreationTool
                if (prefab.d != null) {
                   npcData.Add(prefab);
                }
-            } else if (original.GetComponent<Spawn>() != null) {
-               // TODO: Kamil will implement map collision fix here
             } else if (original.GetComponent<ShipEntity>() != null) {
                if (prefab.d != null) {
                   shipData.Add(prefab);
@@ -350,6 +348,8 @@ namespace MapCreationTool
                         D.debug("No warp assigned to secret entrance!");
                      }
                   }
+               } else if (original.GetComponent<Spawn>() != null) {
+                  pref.transform.localScale = new Vector3(0.16f, 0.16f, 1f);
                }
 
                foreach (IBiomable biomable in pref.GetComponentsInChildren<IBiomable>()) {
