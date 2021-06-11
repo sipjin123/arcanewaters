@@ -115,6 +115,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("clear_powerups", "Clears all of your current powerups", requestClearPowerups, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("unlock_world_map", "Unlocks all the biomes and town warps in the world map", unlockWorldMap, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("pvp_join", "Warps the player to the current pvp game", joinPvp, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("pvp_force_start", "Forces the pvp game the player is in to start, regardless of how many players are in it", forceStartPvp, requiredPrefix: CommandType.Admin));
 
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
@@ -188,6 +189,18 @@ public class AdminManager : NetworkBehaviour
       }
 
       return true;
+   }
+
+   private void forceStartPvp () {
+      Cmd_ForceStartPvp();
+   }
+
+   [Command]
+   private void Cmd_ForceStartPvp () {
+      PvpGame game = PvpManager.self.getGameWithPlayer(_player);
+      if (game != null) {
+         game.forceStart();
+      }
    }
 
    private void joinPvp () {

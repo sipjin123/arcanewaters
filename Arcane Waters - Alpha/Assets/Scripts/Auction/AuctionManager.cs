@@ -53,9 +53,21 @@ public class AuctionManager : MonoBehaviour
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (AuctionItemData auction in auctions) {
+               NetEntity seller = EntityManager.self.getEntity(auction.sellerId);
+
                // If someone won the auction, the user has 'sold an item'
                if (auction.highestBidUser > 0) {
                   AchievementManager.registerUserAchievement(auction.sellerId, ActionType.SellItem);
+
+                  // Send confirmation message - item sold
+                  if (seller) {
+                     ServerMessageManager.sendConfirmation(ConfirmMessage.Type.SoldAuctionItem, seller, "Your auction of " + auction.itemName + " has sold for " + auction.highestBidPrice + " gold.");
+                  }
+               } else {
+                  // Send confirmation message - item has not been sold
+                  if (seller) {
+                     ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ReturnAuctionItem, seller, "Your auction of " + auction.itemName + " has not sold.");
+                  }
                }
             }
          });

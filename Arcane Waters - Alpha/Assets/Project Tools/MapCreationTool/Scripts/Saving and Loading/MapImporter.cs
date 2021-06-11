@@ -285,7 +285,6 @@ namespace MapCreationTool
                }
             } else if (original.GetComponent<Spawn>() != null) {
                // TODO: Kamil will implement map collision fix here
-               D.debug("Spawning a SPAWN here");
             } else if (original.GetComponent<ShipEntity>() != null) {
                if (prefab.d != null) {
                   shipData.Add(prefab);

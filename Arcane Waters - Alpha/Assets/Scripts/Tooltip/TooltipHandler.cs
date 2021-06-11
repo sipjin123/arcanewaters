@@ -151,37 +151,30 @@ public class TooltipHandler : MonoBehaviour
       CanvasGroup canvasGroup = toolTipPanel.GetComponent<CanvasGroup>();
       TextMeshProUGUI[] textArray = toolTipPanel.GetComponentsInChildren<TextMeshProUGUI>();
 
-      // Give a default rarity level if none is detected
-      if (itemRarity.ToString() == "None") {
-         itemRarity = Rarity.Type.Common;
-      }
-
       Image backgroundSprite = backgroundImage;
       Image starSprite = starsImage;
 
       // Display correct background and stars for rarity level
-      switch ((int) itemRarity) {
-         case 0:
+      switch (itemRarity) {
+         case Rarity.Type.None:
+            break;
+         case Rarity.Type.Common:
             backgroundSprite.sprite = ImageManager.getSprite(RARITY_PATH + "CommonTooltip");
             starSprite.sprite = ImageManager.getSprite(RARITY_PATH + "CommonStars");
             break;
-         case 1:
-            backgroundSprite.sprite = ImageManager.getSprite(RARITY_PATH + "CommonTooltip");
-            starSprite.sprite = ImageManager.getSprite(RARITY_PATH + "CommonStars");
-            break;
-         case 2:
+         case Rarity.Type.Uncommon:
             backgroundSprite.sprite = ImageManager.getSprite(RARITY_PATH + "UncommonTooltip");
             starSprite.sprite = ImageManager.getSprite(RARITY_PATH + "UncommonStars");
             break;
-         case 3:
+         case Rarity.Type.Rare:
             backgroundSprite.sprite = ImageManager.getSprite(RARITY_PATH + "RareTooltip");
             starSprite.sprite = ImageManager.getSprite(RARITY_PATH + "RareStars");
             break;
-         case 4:
+         case Rarity.Type.Epic:
             backgroundSprite.sprite = ImageManager.getSprite(RARITY_PATH + "EpicTooltip");
             starSprite.sprite = ImageManager.getSprite(RARITY_PATH + "EpicStars");
             break;
-         case 5:
+         case Rarity.Type.Legendary:
             backgroundSprite.sprite = ImageManager.getSprite(RARITY_PATH + "LegendaryTooltip");
             starSprite.sprite = ImageManager.getSprite(RARITY_PATH + "LegendaryStars");
             break;

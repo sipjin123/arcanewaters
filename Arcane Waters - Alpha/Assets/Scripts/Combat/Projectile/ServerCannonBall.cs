@@ -136,6 +136,7 @@ public class ServerCannonBall : NetworkBehaviour {
       }
 
       SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
+      PlayerShipEntity sourcePlayerShipEntity = sourceEntity.getPlayerShipEntity();
 
       // Prevent players from being damaged by other players if they have not entered PvP yet
       if (sourceEntity != null && sourceEntity.isPlayerShip() && !hitEntity.canBeAttackedByPlayers()) {
@@ -188,6 +189,11 @@ public class ServerCannonBall : NetworkBehaviour {
          // Apply the status effect
          if (_statusType != Status.Type.None) {
             hitEntity.applyStatus(_statusType, 1.0f, _statusDuration, sourceEntity.netId);
+         }
+
+         // Notify any subscribers to this event that we have damaged a player
+         if (sourcePlayerShipEntity && sourceEntity.pvpTeam != PvpTeamType.None && hitEntity.pvpTeam != PvpTeamType.None && hitEntity.isPlayerShip()) {
+            sourcePlayerShipEntity.onDamagedPlayer?.Invoke(sourcePlayerShipEntity, hitEntity.pvpTeam);
          }
 
          // Have the server tell the clients where the explosion occurred

@@ -119,6 +119,9 @@ public class PlayerShipEntity : ShipEntity
    // References to animators for the player's boost circle
    public Animator boostCircleOutlineAnimator, boostCircleFillAnimator;
 
+   // Other objects can add callbacks to this event, to be notified when this player damages another player
+   public System.Action<PlayerShipEntity, PvpTeamType> onDamagedPlayer;
+
    // FMOD event instance for managing ship's boost SFX
    //FMOD.Studio.EventInstance boostState;
    //StudioEventEmitter boostEventEmitter;
@@ -1322,6 +1325,11 @@ public class PlayerShipEntity : ShipEntity
 
    [Command]
    public void Cmd_RespawnPlayerInInstance () {
+      respawnPlayerInInstance();
+   }
+
+   [Server]
+   public void respawnPlayerInInstance () {
       if (_respawningInInstanceCoroutine == null) {
          _respawningInInstanceCoroutine = StartCoroutine(CO_RespawnPlayerInInstance());
       }
@@ -1331,6 +1339,8 @@ public class PlayerShipEntity : ShipEntity
    private IEnumerator CO_RespawnPlayerInInstance () {
       restoreMaxShipHealth();
       currentHealth = maxHealth;
+      setIsInvulnerable(true);
+      PowerupManager.self.clearPowerupsForUser(userId);
 
       // Wait for currentHealth syncvar to be upated
       yield return new WaitForSeconds(1.0f);
@@ -1343,6 +1353,8 @@ public class PlayerShipEntity : ShipEntity
       }
 
       Rpc_OnRespawned();
+      setIsInvulnerable(false);
+      setCollisions(true);
 
       _respawningInInstanceCoroutine = null;
    }
@@ -1375,6 +1387,11 @@ public class PlayerShipEntity : ShipEntity
 
       // Reset this bool to ensure players can attack
       _shouldUpdateTargeting = true;
+
+      // Clear powerup GUI
+      if (isLocalPlayer) {
+         PowerupPanel.self.clearPowerups();
+      }
    }
 
    #region Private Variables

@@ -8,6 +8,38 @@ using MLAPI.Messaging;
 public class PvpManager : MonoBehaviour {
    #region Public Variables
 
+   #region Temp positions for spawning in game elements
+
+   // The positions to spawn each shipyard, in the order: Top_A, Mid_A, Bot_A, Top_B, Mid_B, Bot_B
+   public List<Vector3> shipyardSpawnPositions;
+
+   // The positions of the centers of each lane, in the order: Top, Mid, Bot
+   public List<Vector3> laneCenterPositions;
+
+   // The positions to spawn each tower, in the order: Top_A1, Top_A2, Mid_A1, Mid_A2, Bot_A1, Bot_A2, Base_A, Top_B1, Top_B2, Mid_B1, Mid_B2, Bot_B1, Bot_B2, Base_B
+   public List<Vector3> towerSpawnPositions;
+
+   // The positions to spawn each base, in the order: Base_A, Base_B
+   public List<Vector3> baseSpawnPositions;
+
+   #endregion
+
+   #region Wave / spawning variables
+
+   // How many ships will be spawned for each wave
+   public static int SHIPS_PER_WAVE = 3;
+
+   // The duration across which the ships are spawned
+   public static float WAVE_SPAWNING_DURATION = 5.0f;
+
+   // The interval inbetween waves
+   public static float WAVE_INTERVAL = 25.0f;
+
+   // The delay at the start of the game before waves are spawned
+   public static float INITIAL_WAVE_DELAY = 20.0f;
+
+   #endregion
+
    // A reference to the singleton instance of this class
    public static PvpManager self;
 
@@ -57,7 +89,7 @@ public class PvpManager : MonoBehaviour {
       int voyageId = response.Value;
 
       // Create an instance with that voyage id
-      VoyageManager.self.requestVoyageInstanceCreation(voyageId, areaKey, true);
+      VoyageManager.self.requestVoyageInstanceCreation(voyageId, areaKey, true, difficulty: 2, biome: Biome.Type.Forest);
       double instanceCreationStartTime = NetworkTime.time;
 
       // Wait for the instance to be created
@@ -73,7 +105,8 @@ public class PvpManager : MonoBehaviour {
          yield return null;
       }
 
-      PvpGame newGame = new PvpGame();
+      GameObject newGameObject = Instantiate(new GameObject("Pvp Game " + newGameVoyage.instanceId), transform);
+      PvpGame newGame = newGameObject.AddComponent<PvpGame>();
       newGame.init(voyageId, newGameVoyage.instanceId, areaKey);
       _activeGames[newGameVoyage.instanceId] = newGame;
 
@@ -126,9 +159,27 @@ public class PvpManager : MonoBehaviour {
    }
 
    public void tryRemoveEmptyGame (int instanceId) {
-      // If the game exists, remove itss
+      // If the game exists, remove it
       if (_activeGames.TryGetValue(instanceId, out PvpGame emptyGame)) {
+         if (emptyGame && emptyGame.gameObject) {
+            Destroy(emptyGame.gameObject);
+         }
          _activeGames.Remove(instanceId);
+      }
+   }
+
+   public static float getShipyardSpawnDelay () {
+      if (SHIPS_PER_WAVE <= 1) {
+         D.error("Ships per wave must be greater than one!");
+         return 0.0f;
+      }
+      return (WAVE_SPAWNING_DURATION / (SHIPS_PER_WAVE - 1));
+   }
+
+   public void assignPvpTeam (NetEntity entity, int instanceId) {
+      if (_activeGames.ContainsKey(instanceId)) {
+         PvpTeamType playerTeam = _activeGames[instanceId].getTeamForPlayer(entity.userId);
+         entity.pvpTeam = playerTeam;
       }
    }
 

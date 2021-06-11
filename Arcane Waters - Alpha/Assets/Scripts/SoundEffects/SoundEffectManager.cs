@@ -73,9 +73,14 @@ public class SoundEffectManager : MonoBehaviour
    public const int ROCK_MINE = 91;
    public const int SHIP_LAUNCH_CHARGE = 92;
    public const int PICKUP_CROP = 93;
+
    public const int ENEMY_SHIP_IMPACT = 94;
+   public const int PLAYER_SHIP_IMPACT = 95;
+
    public const int LIGHTNING_FLASH = 96;
    public const int AMBIENCE_BED_MASTER = 97;
+
+   public const int BLOCK_ATTACK = 98;
 
    public const int MAP_OPEN = 99;
    public const int LOCALE_UNLOCK = 100;
@@ -89,9 +94,6 @@ public class SoundEffectManager : MonoBehaviour
    public const string SHIP_CHARGE_RELEASE_PARAM = "Ship_Charge_Release";
    public const string AMBIENCE_AUDIO_SWITCH_PARAM = "Ambience_Switch";
    public const string APPLY_CRIT_PARAM = "Apply_Crit";
-
-   // Reference to the main camera
-   public Camera mainCamReference;
 
    #endregion
 
@@ -175,7 +177,7 @@ public class SoundEffectManager : MonoBehaviour
             playFmodSoundEffect3D(effect, target);
          } else {
             if (effect.fmodId.Length > 0) {
-               RuntimeManager.PlayOneShot(effect.fmodId, mainCamReference.transform.position);
+               RuntimeManager.PlayOneShot(effect.fmodId, CameraManager.getCurrentCamera().transform.position);
             } else {
                D.debug("This id {" + effect.id + "} does not have an FmodID assigned to it, please refer to the sound effect web tool");
             }
@@ -187,7 +189,7 @@ public class SoundEffectManager : MonoBehaviour
 
    public void playFmodEventWithPath(string path, Transform target) {
       if(path.Length > 0) {
-         RuntimeManager.PlayOneShot(path, mainCamReference.transform.position);
+         RuntimeManager.PlayOneShot(path, CameraManager.getCurrentCamera().transform.position);
       }
    }
 

@@ -24,6 +24,9 @@ public class Voyage
    public static int MAX_PLAYERS_PER_GROUP_MEDIUM = 4;
    public static int MAX_PLAYERS_PER_GROUP_HARD = 6;
 
+   // The maximum number of players in a group for a pvp game
+   public static int MAX_PLAYERS_PER_GROUP_PVP = 6;
+
    // The total number of maps in a league (series of voyages maps)
    public static int MAPS_PER_LEAGUE = 3;
 

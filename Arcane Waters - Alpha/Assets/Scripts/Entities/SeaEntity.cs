@@ -7,7 +7,6 @@ using Mirror;
 using System;
 using TMPro;
 using Pathfinding;
-using FMODUnity;
 
 public class SeaEntity : NetEntity
 {
@@ -121,13 +120,11 @@ public class SeaEntity : NetEntity
          StartCoroutine(CO_AttackEnemiesInRange(0.25f));
       }
 
-      if (useSeaEnemyAI() && Application.isEditor) {
-         editorGenerateAggroCone();
-      }
+      editorGenerateAggroCone();
    }
 
    [Server]
-   public int applyDamage (int amount, uint damageSourceNetId) {
+   public virtual int applyDamage (int amount, uint damageSourceNetId) {
       float damageMultiplier = 1.0f;
 
       // Apply damage reduction, if there is any
@@ -135,6 +132,12 @@ public class SeaEntity : NetEntity
          // Hard cap damage reduction at 75%, and damage addition at 100% extra
          damageMultiplier = Mathf.Clamp(damageMultiplier - PowerupManager.self.getPowerupMultiplierAdditive(userId, Powerup.Type.DamageReduction), 0.25f, 2.0f);
       }
+
+      // If we're invulnerable, take 0 damage
+      if (_isInvulnerable) {
+         damageMultiplier = 0.0f;
+      }
+
       amount = (int) (amount * damageMultiplier);
       currentHealth -= amount;
 
@@ -153,7 +156,13 @@ public class SeaEntity : NetEntity
          return;
       }
 
+      Rpc_OnDeath();
       _hasRunOnDeath = true;
+   }
+
+   [ClientRpc]
+   protected void Rpc_OnDeath () {
+      onDeath();
    }
 
    public GenericCombatCollider getCombatCollider () {
@@ -241,6 +250,7 @@ public class SeaEntity : NetEntity
          return;
       }
 
+      checkHasArrivedInLane();
       moveAlongCurrentPath();
       checkForPathUpdate();
 
@@ -354,6 +364,15 @@ public class SeaEntity : NetEntity
    }
 
    [ClientRpc]
+   public void Rpc_SpawnBossVenomResidue (uint creatorNetId, int instanceId, Vector3 location) {
+      VenomResidue venomResidue = Instantiate(PrefabsManager.self.bossVenomResiduePrefab, location, Quaternion.identity);
+      venomResidue.creatorNetId = creatorNetId;
+      venomResidue.instanceId = instanceId;
+      ExplosionManager.createSlimeExplosion(location);
+      SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Coralbow_Attack, this.transform.position);
+   }
+
+   [ClientRpc]
    public void Rpc_SpawnVenomResidue (uint creatorNetId, int instanceId, Vector3 location) {
       VenomResidue venomResidue = Instantiate(PrefabsManager.self.venomResiduePrefab, location, Quaternion.identity);
       venomResidue.creatorNetId = creatorNetId;
@@ -461,7 +480,7 @@ public class SeaEntity : NetEntity
          // Play the damage sound
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_1, pos);
       } else {
-         if (attackType == Attack.Type.Tentacle) {
+         if (attackType == Attack.Type.Tentacle || attackType == Attack.Type.Poison_Circle) {
             // If tentacle attack, calls tentacle collision effect
             Instantiate(PrefabsManager.self.tentacleCollisionPrefab, this.transform.position + new Vector3(0f, 0), Quaternion.identity);
          } else if (attackType == Attack.Type.Venom) {
@@ -494,17 +513,30 @@ public class SeaEntity : NetEntity
          // Play the damage sound (FMOD SFX)
          SeaEntity attackerEntity = SeaManager.self.getEntity(attackerNetId);
 
-         if (attackerEntity != null && this is BotShipEntity) {
-            SoundEffect hitEffect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.ENEMY_SHIP_IMPACT);
+         if (attackerEntity != null && this is ShipEntity) {
+            SoundEffect hitEffect = null;
 
-            if(hitEffect != null) {
+            bool isEnemy = this is BotShipEntity || !this.isLocalPlayer;
+            bool isPlayer = this.isLocalPlayer;
+
+            if (isEnemy) {
+               hitEffect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.ENEMY_SHIP_IMPACT);
+            } else if (isPlayer) {
+               hitEffect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.PLAYER_SHIP_IMPACT);
+            }
+
+            if (hitEffect != null) {
                GameObject hitGo = new GameObject();
                hitGo.transform.SetParent(this.transform);
                hitGo.transform.localPosition = Vector3.zero;
                hitGo.name = "Hit Emitter";
 
-               StudioEventEmitter hitEmitter = hitGo.AddComponent<StudioEventEmitter>();
-               hitEmitter.SetParameter(SoundEffectManager.APPLY_CRIT_PARAM, isCrit ? 1 : 0);
+               FMODUnity.StudioEventEmitter hitEmitter = hitGo.AddComponent<FMODUnity.StudioEventEmitter>();
+
+               if (isEnemy) {
+                  hitEmitter.SetParameter(SoundEffectManager.APPLY_CRIT_PARAM, isCrit ? 1 : 0);
+               }
+
                hitEmitter.AllowFadeout = true;
                hitEmitter.Event = hitEffect.fmodId;
                hitEmitter.Play();
@@ -665,7 +697,10 @@ public class SeaEntity : NetEntity
          return;
       }
 
-      if (isDead() || (!hasReloaded() && shipAbility.selectedAttackType != Attack.Type.Mini_Boulder && shipAbility.selectedAttackType != Attack.Type.Tentacle)) {
+      if (isDead() || (!hasReloaded()
+         && shipAbility.selectedAttackType != Attack.Type.Mini_Boulder
+         && shipAbility.selectedAttackType != Attack.Type.Tentacle
+         && shipAbility.selectedAttackType != Attack.Type.Poison_Circle)) {
          return;
       }
 
@@ -710,6 +745,23 @@ public class SeaEntity : NetEntity
                StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(-target, -diagonalTargetValue), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(-offset, -diagonalValue)));
             }
             break;
+         case Attack.Type.Poison_Circle:
+            // Fire multiple projectiles in a circle around the target
+            float innerRadius = .7f;
+            float outerRadius = .9f;
+            float angleStep = 60f;
+
+            // Inner circle
+            for (float angle = 0; angle < 360f; angle += angleStep) {
+               StartCoroutine(CO_FireAtSpotSingle(spot + new Vector2(innerRadius * Mathf.Cos(Mathf.Deg2Rad * angle), innerRadius * Mathf.Sin(Mathf.Deg2Rad * angle)), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
+            }
+
+            // Outer circle
+            for (float angle = angleStep/2; angle < 360f; angle += angleStep) {
+               StartCoroutine(CO_FireAtSpotSingle(spot + new Vector2(outerRadius * Mathf.Cos(Mathf.Deg2Rad * angle), outerRadius * Mathf.Sin(Mathf.Deg2Rad * angle)), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
+            }
+            break;
+
          default:
             D.adminLog("Trigger generic projectile at spot, Delay is: " + attackDelay, D.ADMIN_LOG_TYPE.Sea);
             StartCoroutine(CO_FireAtSpotSingle(spot, abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
@@ -896,12 +948,12 @@ public class SeaEntity : NetEntity
          }
       }
 
-      if (attackType == Attack.Type.Tentacle) {
+      if (attackType == Attack.Type.Tentacle || attackType == Attack.Type.Poison_Circle) {
          SeaEntity sourceEntity = SeaManager.self.getEntity(netId);
-         VenomResidue venomResidue = Instantiate(PrefabsManager.self.venomResiduePrefab, circleCenter, Quaternion.identity);
+         VenomResidue venomResidue = Instantiate(PrefabsManager.self.bossVenomResiduePrefab, circleCenter, Quaternion.identity);
          venomResidue.creatorNetId = netId;
          venomResidue.instanceId = instanceId;
-         sourceEntity.Rpc_SpawnVenomResidue(netId, instanceId, circleCenter);
+         sourceEntity.Rpc_SpawnBossVenomResidue(netId, instanceId, circleCenter);
       }
 
       // If we didn't hit an enemy, show an effect based on whether we hit land or water
@@ -1201,7 +1253,11 @@ public class SeaEntity : NetEntity
       return false;
    }
 
-   private void editorGenerateAggroCone () {
+   protected void editorGenerateAggroCone () {
+      if (!useSeaEnemyAI() || !Application.isEditor) {
+         return;
+      }
+
       float coneRadians = aggroConeDegrees * Mathf.Deg2Rad;
       float singleDegreeInRadian = 1 * Mathf.Deg2Rad;
 
@@ -1232,7 +1288,7 @@ public class SeaEntity : NetEntity
       _editorConeAggroGizmoMesh.SetIndices(triangles, MeshTopology.Triangles, 0);
    }
 
-   protected NetEntity getAttackerInRange () {
+   protected virtual NetEntity getAttackerInRange () {
       // Check if any of our attackers are within range
       foreach (uint attackerId in _attackers.Keys) {
          NetEntity attacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attackerId);
@@ -1295,6 +1351,7 @@ public class SeaEntity : NetEntity
 
    [Server]
    private void checkForPathUpdate () {
+      // Check if there are attackers to chase
       if (_attackers != null && _attackers.Count > 0) {
          double chaseDuration = NetworkTime.time - _chaseStartTime;
          if (!_isChasingEnemy || (chaseDuration > maxSecondsOnChasePath)) {
@@ -1310,6 +1367,22 @@ public class SeaEntity : NetEntity
          // Update attacking state with only Minor updates
          float tempMajorRef = 0.0f;
          updateState(ref _attackingWaypointState, secondsBetweenFindingAttackRoutes, 9001.0f, ref _currentSecondsBetweenAttackRoutes, ref tempMajorRef, findAttackerVicinityPosition);
+      
+      // If there are no attackers to chase, and we're in a pvp game, move towards the current objective
+      } else if (pvpTeam != PvpTeamType.None) {
+         // If we haven't reached the middle of the lane yet, move towards it
+         if (_pvpLaneTarget != null) {
+            updateState(ref _patrolingWaypointState, 0.0f, secondsPatrolingUntilChoosingNewTreasureSite, ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, (x) => { return _pvpLaneTarget.position; });
+
+         // If we've already reached the middle of the lane, look for the next target structure to attack
+         } else {
+            SeaStructure targetStructure = getTargetSeaStructure();
+            if (targetStructure) {
+               updateState(ref _patrolingWaypointState, 0.0f, secondsPatrolingUntilChoosingNewTreasureSite, ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, (x) => { return targetStructure.transform.position; });
+            } else {
+               updateState(ref _patrolingWaypointState, 0.0f, secondsPatrolingUntilChoosingNewTreasureSite, ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, findRandomVicinityPosition);
+            }
+         }
       } else {
          // Use treasure site only in maps with more than two treasure sites
          System.Func<bool, Vector3> findingFunction = findRandomVicinityPosition;
@@ -1476,6 +1549,42 @@ public class SeaEntity : NetEntity
       return findPositionAroundPosition(_originalPosition, patrolingWaypointsRadius);
    }
 
+   [Server]
+   public void setPvpLaneTarget (Transform laneTarget) {
+      _pvpLaneTarget = laneTarget;
+   }
+
+   [Server]
+   public void setPvpTargetStructures (List<SeaStructure> targetStructures) {
+      _pvpTargetStructures = targetStructures;
+   }
+
+   private void checkHasArrivedInLane () {
+      // Once we have arrived in the middle of the lane, set our lane target to null, and we will move to our target structure, the first enemy tower
+      const float ARRIVE_DIST = 2.0f;
+      if (pvpTeam != PvpTeamType.None && _pvpLaneTarget != null) {
+         Vector2 toLaneCenter = _pvpLaneTarget.position - transform.position;
+         if (toLaneCenter.sqrMagnitude < ARRIVE_DIST * ARRIVE_DIST) {
+            _pvpLaneTarget = null;
+         }
+      }
+   }
+
+   private SeaStructure getTargetSeaStructure () {
+      foreach (SeaStructure structure in _pvpTargetStructures) {
+         if (structure != null && !structure.isDead()) {
+            return structure;
+         }
+      }
+
+      return null;
+   }
+
+   [Server]
+   public void setIsInvulnerable (bool value) {
+      _isInvulnerable = value;
+   }
+
    private void OnDrawGizmosSelected () {
       if (Application.isPlaying) {
          Gizmos.color = new Color(1.0f, 0.0f, 0.0f, 0.5f);
@@ -1592,6 +1701,16 @@ public class SeaEntity : NetEntity
 
    // How many seconds have passed since we've started patrolling the current TreasureSite
    private float _currentSecondsPatroling;
+
+   // If in a pvp game, this is the list of enemy structures we are trying to destroy, in priority order
+   private List<SeaStructure> _pvpTargetStructures;
+
+   // If in a pvp game, this is a target point in the middle of the lane, used to help the units follow the lane
+   private Transform _pvpLaneTarget;
+
+   // When set to true, this sea entity won't take any damage
+   [SyncVar]
+   private bool _isInvulnerable = false;
 
    #endregion
 

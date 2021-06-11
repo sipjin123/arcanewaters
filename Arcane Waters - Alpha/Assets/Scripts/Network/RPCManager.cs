@@ -6956,8 +6956,6 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_AddPowerup (NetworkConnection connection, Powerup newPowerup) {
-      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.PICKUP_POWERUP, transform);
-      //SoundEffectManager.self.playSoundEffect(SoundEffectManager.PICKUP_POWERUP, transform);
       PowerupManager.self.addPowerupClient(newPowerup);
    }
 
@@ -6983,6 +6981,11 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceiveAdminBattleParameters (AdminGameSettings settings) {
       AdminGameSettingsManager.self.updateLocalSettings(settings);
+   }
+
+   [TargetRpc]
+   public void Target_DisplayServerMessage (string message) {
+      ChatPanel.self.addChatInfo(new ChatInfo(0, message, DateTime.Now, ChatInfo.Type.System));
    }
 
    #region Private Variables

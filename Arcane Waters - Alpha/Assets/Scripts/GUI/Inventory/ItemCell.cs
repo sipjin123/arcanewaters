@@ -36,6 +36,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    // The background image
    public Image backgroundImage;
 
+   // The rarity of the item in the cell
+   public Rarity.Type itemRarityType;
+
    // The click events
    public UnityEvent leftClickEvent;
    public UnityEvent rightClickEvent;
@@ -86,6 +89,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       onDragStarted.RemoveAllListeners();
       icon.sprite = null;      
       iconShadow.sprite = null;
+      itemRarityType = Rarity.Type.None;
 
       icon.enabled = false;
       iconShadow.enabled = false;
@@ -102,6 +106,8 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
       itemCache = item;
       setCellForItem(item, item.count);
+      itemRarityType = Item.getRarity(item);
+
    }
 
    public void setCellForItem (Item item, int count) {
@@ -249,6 +255,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       // Saves the item
       _item = item;
 
+      // Store the rarity type
+      itemRarityType = item.getRarity();
+
       // Hides the selection box
       hideSelectedBox();
    }
@@ -289,6 +298,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
       // Set the tooltip
       tooltip.message = item.getTooltip();
+
+      // Store the rarity type
+      itemRarityType = item.rarity;
 
       // Hides the selection box
       hideSelectedBox();

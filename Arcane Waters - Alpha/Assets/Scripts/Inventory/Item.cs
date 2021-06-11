@@ -163,6 +163,24 @@ public class Item {
       return Rarity.Type.Common;
    }
 
+   public static Rarity.Type getRarity (Item item) {
+      foreach (string kvp in item.data.Replace(" ", "").Split(',')) {
+         if (!kvp.Contains("=")) {
+            continue;
+         }
+
+         // Get the left and right side of the equal
+         string key = kvp.Split('=')[0];
+         string value = kvp.Split('=')[1];
+
+         if ("rarity".Equals(key)) {
+            return (Rarity.Type) System.Convert.ToInt32(value);
+         }
+      }
+
+      return Rarity.Type.Common;
+   }
+
    public int getSellPrice () {
       foreach (string kvp in this.data.Replace(" ", "").Split(',')) {
          if (!kvp.Contains("=")) {

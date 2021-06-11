@@ -839,6 +839,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          if (_audioListener != AudioListenerManager.self.getActiveListener()) {
             AudioListenerManager.self.setActiveListener(_audioListener);
             //AudioListenerManager.self.setActiveFmodListener(_fmodListener);
+            AudioListenerManager.self.setActiveFmodListener(CameraManager.defaultCamera.getFmodListener());
          }
       } else if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getAudioListener() != null) {
          AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener());

@@ -491,6 +491,9 @@ public class TreasureChest : NetworkBehaviour {
       yield return new WaitForSeconds(0.4f);
 
       // After a delay, have the popup icon move upwards
+      // Play sfx
+      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.PICKUP_POWERUP, transform);
+
       popupIcon.transform.DOBlendableLocalMoveBy(Vector3.up * 0.3f, 0.4f).SetEase(Ease.OutSine);
       yield return new WaitForSeconds(1.4f);
 

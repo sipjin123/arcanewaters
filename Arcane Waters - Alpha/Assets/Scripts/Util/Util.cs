@@ -1358,6 +1358,20 @@ public class Util : MonoBehaviour
       return enemies;
    }
 
+   public static List<SeaEntity> getAlliesInCircle (SeaEntity checkingEntity, Vector3 checkPosition, float circleRadius) {
+      Collider2D[] hits = Physics2D.OverlapCircleAll(checkPosition, circleRadius);
+      List<SeaEntity> enemies = new List<SeaEntity>();
+
+      foreach (Collider2D hit in hits) {
+         SeaEntity hitEntity = hit.GetComponent<SeaEntity>();
+         if (hitEntity && checkingEntity.isAllyOf(hitEntity) && hitEntity.instanceId == checkingEntity.instanceId) {
+            enemies.Add(hitEntity);
+         }
+      }
+
+      return enemies;
+   }
+
    // A Random instance we can use for generating random numbers
    private static System.Random r = new System.Random();
 

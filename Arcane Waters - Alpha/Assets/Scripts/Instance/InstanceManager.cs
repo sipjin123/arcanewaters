@@ -158,6 +158,13 @@ public class InstanceManager : MonoBehaviour {
       instance.treasureSiteCount++;
    }
 
+   public void addSeaStructureToInstance (SeaStructure seaStructure, Instance instance) {
+      instance.entities.Add(seaStructure);
+      instance.seaStructures.Add(seaStructure);
+      seaStructure.instanceId = instance.id;
+      instance.seaStructureCount++;
+   }
+
    public Instance getInstance (int instanceId) {
       if (_instances.ContainsKey(instanceId)) {
          return _instances[instanceId];

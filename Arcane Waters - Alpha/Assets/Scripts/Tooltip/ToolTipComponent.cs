@@ -86,13 +86,18 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
          currentParent = currentParent.parent;
       }
 
-      // If this tooptip belongs to an inventory item, store it's rarity level
-      Rarity.Type itemRarityType = Rarity.Type.Common;
-      if (this.tooltipType == Type.ItemCellInventory && this.GetComponent<ItemCellInventory>() != null) {
-         if (this.GetComponent<ItemCellInventory>().targetItem != null) {
-            itemRarityType = this.GetComponent<ItemCellInventory>().targetItem.rarity;
-         } else {
-            itemRarityType = Rarity.Type.Common;
+      // If this tooptip belongs to an inventory item, store it's rarity level and star level
+      Rarity.Type itemRarityType = Rarity.Type.None;
+
+      if (this.tooltipType == Type.ItemCellInventory) {
+         // Get the rarity level of weapon shop items
+         if (this.transform.parent.GetComponent<AdventureItemRow>() != null) {
+            itemRarityType = this.transform.parent.GetComponent<AdventureItemRow>().item.getRarity();
+         }
+
+         // Get rarity level of items in the user's inventory
+         if (this.GetComponent<ItemCellInventory>() != null) {
+            itemRarityType = this.GetComponent<ItemCellInventory>().itemRarityType;
          }
       }
 

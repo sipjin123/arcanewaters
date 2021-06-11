@@ -30,6 +30,9 @@ public class Instance : NetworkBehaviour
    // The list of treasure sites in this instance (server only)
    public List<TreasureSite> treasureSites = new List<TreasureSite>();
 
+   // The list of sea structures in this instance (server only)
+   public List<SeaStructure> seaStructures = new List<SeaStructure>();
+
    // For debugging in the Editor
    [SyncVar]
    public int entityCount;
@@ -45,6 +48,10 @@ public class Instance : NetworkBehaviour
    // For the number of npc in the instance
    [SyncVar]
    public int npcCount;
+
+   // For the number of sea structures in the instance
+   [SyncVar]
+   public int seaStructureCount;
 
    // The number of alive npc enemies in the instance (sea or land enemies)
    [SyncVar]

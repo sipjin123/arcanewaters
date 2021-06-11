@@ -42,7 +42,7 @@ public class AudioListenerManager : GenericGameManager {
 
       _activeFmodListener = newListener;
       _activeFmodListener.enabled = true;
-      //onListenerChanged?.Invoke();
+      onListenerChanged?.Invoke();
    }
 
    public AudioListener getActiveListener () {

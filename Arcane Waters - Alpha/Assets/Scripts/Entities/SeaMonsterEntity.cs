@@ -99,6 +99,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    // The probability that the tentacle monster will attack targets in range, apart from its main target
    public const float TENTACLE_EXTRA_TARGET_CHANCE = 0.3f;
 
+   // The number of seconds between tentacle secondary attacks without considering the difficulty
+   public const float TENTACLE_SECONDARY_ATTACK_BASE_INTERVAL = 3f;
+
    // Seamonster Animation
    public enum SeaMonsterAnimState
    {
@@ -182,16 +185,15 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       if (isServer) {
          // Get the instance difficulty
-         int difficultyLevel = 1;
          Instance instance = getInstance();
          if (instance != null) {
-            difficultyLevel = instance.difficulty;
+            _difficulty = instance.difficulty;
          }
 
-         float reloadModifier = 1 + (((float) difficultyLevel - 1) / (Voyage.getMaxDifficulty() - 1));
-         reloadDelay = seaMonsterData.reloadDelay / (difficultyLevel > 0 ? reloadModifier : 1);
+         float reloadModifier = 1 + (((float) _difficulty - 1) / (Voyage.getMaxDifficulty() - 1));
+         reloadDelay = seaMonsterData.reloadDelay / (_difficulty > 0 ? reloadModifier : 1);
          reloadDelay *= AdminGameSettingsManager.self.settings.seaAttackCooldown;
-         maxHealth = Mathf.RoundToInt(seaMonsterData.maxHealth * difficultyLevel * AdminGameSettingsManager.self.settings.seaMaxHealth);
+         maxHealth = Mathf.RoundToInt(seaMonsterData.maxHealth * _difficulty * AdminGameSettingsManager.self.settings.seaMaxHealth);
          currentHealth = maxHealth;
       }
 
@@ -221,9 +223,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          case Type.Horror:
             newWaypointsRadius = seaMonsterData.territoryRadius;
             aggroConeDegrees = 360f;
+            editorGenerateAggroCone();
             break;
          case Type.Horror_Tentacle:
             aggroConeDegrees = 360f;
+            editorGenerateAggroCone();
             break;
       }
    }
@@ -248,6 +252,15 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       _spawnPos = sortPoint.transform.position;
 
       _simpleAnim.playAnimation(Anim.Type.Idle_North);
+
+      if (!isServer) {
+         return;
+      }
+
+      // Custom behaviors
+      if (monsterType == Type.Horror) {
+         InvokeRepeating(nameof(commandMinionTentaclesToUseSecondaryAttack), 0, TENTACLE_SECONDARY_ATTACK_BASE_INTERVAL + (Voyage.getMaxDifficulty() / _difficulty));
+      }
    }
 
    protected override void Update () {
@@ -703,6 +716,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
    }
 
+   [Server]
    protected override IEnumerator CO_AttackEnemiesInRange (float delayInSecondsWhenNotReloading) {
       while (!isDead()) {
 
@@ -721,6 +735,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
    }
 
+   [Server]
    private void attackTarget () {
       // TODO: Setup a more efficient method for attack type setup
       Attack.Type attackType = Attack.Type.None;
@@ -747,17 +762,55 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
             float projectileDelay = seaMonsterData.projectileDelay;
             launchProjectile(targetEntity.transform.position, targetEntity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
 
-            // Tentacles also attack other targets in range
             if (monsterType == Type.Horror_Tentacle) {
-               foreach (KeyValuePair<uint, double> KV in _attackers) {
-                  NetEntity entity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(KV.Key);
-                  if (entity != null && entity != targetEntity && Random.value < TENTACLE_EXTRA_TARGET_CHANCE && isInRange(entity.transform.position)) {
-                     launchProjectile(entity.transform.position, entity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
+               if (_isNextAttackSecondary) {
+                  // Tentacle Minions can be commanded to fire a secondary attack
+                  attackRandomTargetWithTentacleSecondaryAttack();
+                  _isNextAttackSecondary = false;
+               } else {
+                  // Tentacles also attack other targets in range
+                  foreach (KeyValuePair<uint, double> KV in _attackers) {
+                     NetEntity entity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(KV.Key);
+                     if (entity != null && entity != targetEntity && Random.value < TENTACLE_EXTRA_TARGET_CHANCE && isInRange(entity.transform.position)) {
+                        launchProjectile(entity.transform.position, entity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
+                     }
                   }
                }
             }
          }
       }
+   }
+
+   [Server]
+   public void attackRandomTargetWithTentacleSecondaryAttack () {
+      if (monsterType != Type.Horror_Tentacle || _attackers.Count <= 0) {
+         return;
+      }
+
+      // Use the second monster skill
+      if (seaMonsterData.skillIdList.Count < 2) {
+         return;
+      }
+      int abilityId = seaMonsterData.skillIdList[1];
+
+      // List the attackers that are in range
+      List<NetEntity> attackersInRange = new List<NetEntity>();
+      foreach (KeyValuePair<uint, double> KV in _attackers) {
+         NetEntity entity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(KV.Key);
+         if (entity != null && isInRange(entity.transform.position)) {
+            attackersInRange.Add(entity);
+         }
+      }
+
+      // Pick a random attacker
+      NetEntity targetEntity = attackersInRange.ChooseRandom();
+
+      // Try to predict the target position
+      Vector2 predictedTargetPos = (Vector2)targetEntity.transform.position + targetEntity.getVelocity() * 1.5f;
+
+      float launchDelay = .4f;
+      float projectileDelay = seaMonsterData.projectileDelay;
+      launchProjectile(predictedTargetPos, targetEntity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
    }
 
    #endregion
@@ -781,6 +834,27 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
 
       return findAttackerVicinityPosition(newAttacker, attackersInTerritory);
+   }
+
+   [Server]
+   public void commandMinionTentaclesToUseSecondaryAttack () {
+      // List the child entities that are under attack
+      List<SeaMonsterEntity> childsUnderAttack = new List<SeaMonsterEntity>();
+      foreach (SeaMonsterEntity childEntity in seaMonsterChildrenList) {
+         if (!childEntity.isDead() && childEntity.hasAttackers()) {
+            childsUnderAttack.Add(childEntity);
+         }
+      }
+
+      // Command a random child to schedule a secondary attack
+      if (childsUnderAttack.Count > 0) {
+         childsUnderAttack.ChooseRandom().scheduleSecondaryAttack();
+      }
+   }
+
+   [Server]
+   private void scheduleSecondaryAttack () {
+      _isNextAttackSecondary = true;
    }
 
    #endregion
@@ -807,6 +881,12 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    // The current targets in attack range
    private List<NetEntity> _targetsInAttackRange = new List<NetEntity>();
+
+   // Gets set to true when the next attack must be a secondary attack
+   private bool _isNextAttackSecondary = false;
+
+   // The instance difficulty
+   private int _difficulty = 1;
 
    #endregion
 }

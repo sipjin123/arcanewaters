@@ -59,6 +59,9 @@ public class PrefabsManager : MonoBehaviour {
    // The Prefab we use for creating venom residue
    public VenomResidue venomResiduePrefab;
 
+   // The Prefab we use for creating venom residue for special boss attacks
+   public VenomResidue bossVenomResiduePrefab;
+
    // The Prefab we use for treasureChest spawning
    public GameObject treasureChestPrefab;
 
@@ -164,6 +167,15 @@ public class PrefabsManager : MonoBehaviour {
 
    // The prefab we use for creating treasure sites in league instances
    public TreasureSite treasureSiteLeaguePrefab;
+
+   // The prefab we use for creating shipyards in pvp maps
+   public PvpShipyard pvpShipyardPrefab;
+
+   // The prefab we use for creating towers in pvp maps
+   public PvpTower pvpTowerPrefab;
+
+   // The prefab we use for creating bases in pvp maps
+   public PvpBase pvpBasePrefab;
 
    [Header("Texture prefabs")]
    // Prefab used to create new palette texture for material

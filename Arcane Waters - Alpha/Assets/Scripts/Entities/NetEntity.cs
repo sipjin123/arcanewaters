@@ -245,6 +245,10 @@ public class NetEntity : NetworkBehaviour
    // Stores the last time this player talked to an NPC
    public float lastNPCTalkTime = -30.0f;
 
+   // What pvp team this entity is affiliated with
+   [SyncVar]
+   public PvpTeamType pvpTeam = PvpTeamType.None;
+
    #endregion
 
    protected virtual void Awake () {
@@ -788,7 +792,7 @@ public class NetEntity : NetworkBehaviour
          case Anim.Type.NC_Jump_East:
          case Anim.Type.NC_Jump_North:
          case Anim.Type.NC_Jump_South:
-            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.JUMP_START_ID, transform);
+            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.JUMP_START_ID, Global.player.transform);
             if (!freezeAnim) {
                StartCoroutine(CO_DelayExitAnim(animType, 0.5f));
             }
@@ -826,7 +830,7 @@ public class NetEntity : NetworkBehaviour
          case Anim.Type.NC_Jump_North:
          case Anim.Type.NC_Jump_South:
             shadow.transform.localScale = _shadowInitialScale;
-            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.JUMP_END_ID, transform);
+            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.JUMP_END_ID, Global.player.transform);
             //SoundEffectManager.self.playSoundEffect(SoundEffectManager.JUMP_END_ID, transform);
             break;
       }
@@ -1125,6 +1129,11 @@ public class NetEntity : NetworkBehaviour
          return false;
       }
 
+      // If both entities are on a pvp team, check if they're on our team
+      if (pvpTeam != PvpTeamType.None && otherEntity.pvpTeam != PvpTeamType.None) {
+         return (pvpTeam != otherEntity.pvpTeam);
+      }
+
       // If this is a bot ship and the other entity isn't (or viceversa), we're enemies
       if (isBotShip() != otherEntity.isBotShip()) {
          return true;
@@ -1167,6 +1176,10 @@ public class NetEntity : NetworkBehaviour
          } else {
             return false;
          }
+      }
+
+      if (pvpTeam != PvpTeamType.None && pvpTeam == otherEntity.pvpTeam) {
+         return true;
       }
 
       return false;
@@ -1969,6 +1982,8 @@ public class NetEntity : NetworkBehaviour
    public virtual bool isPlayerShip () { return false; }
 
    public virtual bool isBotShip () { return false; }
+
+   public virtual bool isSeaStructure () { return false; }
 
    public virtual bool isSeaMonster () { return false; }
 

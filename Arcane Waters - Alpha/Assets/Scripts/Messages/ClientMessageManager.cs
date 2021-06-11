@@ -310,6 +310,11 @@ public class ClientMessageManager : MonoBehaviour {
 
             return;
 
+         case ConfirmMessage.Type.SoldAuctionItem:
+         case ConfirmMessage.Type.ReturnAuctionItem:
+            ChatManager.self.addChat(msg.customMessage, msg.timestamp, ChatInfo.Type.System);
+            return;
+
          case ConfirmMessage.Type.CorrectClientVersion:
             TitleScreen.self.continueAfterCheckingClientVersion();
             return;
