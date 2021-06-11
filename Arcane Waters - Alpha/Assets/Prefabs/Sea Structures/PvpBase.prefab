@@ -270,6 +270,7 @@ GameObject:
   - component: {fileID: 5461396044878205993}
   - component: {fileID: 4493774060159638860}
   - component: {fileID: 7399940303887719925}
+  - component: {fileID: 9003118180681297419}
   m_Layer: 12
   m_Name: PvpBase
   m_TagString: Untagged
@@ -392,6 +393,7 @@ MonoBehaviour:
   newWaypointsRadius: 10
   secondsPatrolingUntilChoosingNewTreasureSite: 30
   patrolingWaypointsRadius: 1
+  unlockAfterDeath: {fileID: 0}
 --- !u!114 &2797493542807145785
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -422,7 +424,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offsetZ: 0
   inheritedOffsetZ: 0
-  isActive: 0
+  isActive: 1
   sortPoint: {fileID: 0}
 --- !u!50 &4493774060159638860
 Rigidbody2D:
@@ -478,6 +480,20 @@ PolygonCollider2D:
       - {x: 0.42076, y: -0.47286314}
       - {x: 0.6690802, y: -0.27079058}
       - {x: 0.59363025, y: 0.291066}
+--- !u!114 &9003118180681297419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1324125493278719682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7b30fc1a8890e042ae5319745cb2d13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
 --- !u!1 &1582774663460630234
 GameObject:
   m_ObjectHideFlags: 0
