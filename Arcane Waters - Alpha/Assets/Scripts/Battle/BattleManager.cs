@@ -737,10 +737,11 @@ public class BattleManager : MonoBehaviour {
 
             // Wait to apply the effects of the action here on the server until the appointed time
             StartCoroutine(applyActionAfterDelay(timeToWait, action, isMultiTarget));
+         }
 
-            foreach (AttackAction attackAction in actions) {
-               stringList.Add(action.serialize());
-            }
+         // Compile all attack actions in a string list to be sent across the rpc
+         foreach (AttackAction attackAction in actions) {
+            stringList.Add(attackAction.serialize());
          }
 
          switch (attackAbilityData.abilityActionType) {
