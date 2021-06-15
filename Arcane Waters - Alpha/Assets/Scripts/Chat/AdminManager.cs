@@ -2397,6 +2397,26 @@ public class AdminManager : NetworkBehaviour
             }
          }*/
 
+
+         // Create all the blueprints
+         foreach (CraftableItemRequirements craftData in CraftingManager.self.craftingDataList) {
+            Item newItem = new Item {
+               category = Item.Category.Blueprint,
+               itemTypeId = craftData.resultItem.itemTypeId,
+               count = 1
+            };
+            switch (craftData.resultItem.category) {
+               case Item.Category.Weapon:
+                  newItem.data = Blueprint.WEAPON_DATA_PREFIX;
+                  DB_Main.createItemOrUpdateItemCount(_player.userId, newItem);
+                  break;
+               case Item.Category.Armor:
+                  newItem.data = Blueprint.ARMOR_DATA_PREFIX;
+                  DB_Main.createItemOrUpdateItemCount(_player.userId, newItem);
+                  break;
+            }
+         }
+
          // Create all the crafting ingredients
          foreach (CraftingIngredients.Type craftingIngredientsType in Enum.GetValues(typeof(CraftingIngredients.Type))) {
             if (craftingIngredientsType != CraftingIngredients.Type.None) {
