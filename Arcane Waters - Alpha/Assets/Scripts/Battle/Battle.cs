@@ -318,8 +318,11 @@ public class Battle : NetworkBehaviour {
                participant.player.battleId = 0;
                if (participant.enemyType != Enemy.Type.PlayerBattler) {
                   D.adminLog("{" + participant.battleId + "} End battle state for enemy {" + participant.enemyType + "}", D.ADMIN_LOG_TYPE.CombatEnd);
-               } else { 
-                  participant.player.rpc.Target_ResetMoveDisable(participant.player.connectionToClient);
+               } else {
+                  // Allow refresh movement only when the winning battler is a player
+                  if (participant.teamType == winningTeam && participant.enemyType == Enemy.Type.PlayerBattler) {
+                     participant.player.rpc.Target_ResetMoveDisable(participant.player.connectionToClient);
+                  }
                }
             }
          }
