@@ -44,7 +44,7 @@ public class WorldMapBiome : MonoBehaviour
 
    public void revealWithAnimation () {
       // Playing the SFX
-      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.LOCALE_UNLOCK, this.transform);
+      SoundEffectManager.self.playFmod2D(SoundEffectManager.LOCALE_UNLOCK);
 
       hideWithClouds();
 

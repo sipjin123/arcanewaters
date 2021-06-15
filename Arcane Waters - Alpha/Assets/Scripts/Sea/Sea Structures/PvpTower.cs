@@ -41,7 +41,7 @@ public class PvpTower : SeaStructure {
       _triggerDetector.onTriggerEnter += onTriggerEnter2D;
       _triggerDetector.onTriggerExit += onTriggerExit2D;
 
-      attackRangeRenderer.material.SetFloat("_Radius", attackRange);
+      attackRangeRenderer.material.SetFloat("_Radius", ATTACK_RANGE);
       attackRangeRenderer.material.SetFloat("_FillAmount", 1.0f);
       attackRangeRenderer.material.SetColor("_Color", new Color(0.0f, 0.0f, 0.0f, 0.0f));
    }
@@ -337,7 +337,7 @@ public class PvpTower : SeaStructure {
 
    private void OnDrawGizmosSelected () {
       Gizmos.color = Color.red;
-      Gizmos.DrawWireSphere(transform.position, attackRange);
+      Gizmos.DrawWireSphere(transform.position, ATTACK_RANGE);
    }
 
 

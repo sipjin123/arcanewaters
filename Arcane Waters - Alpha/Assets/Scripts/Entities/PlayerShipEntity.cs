@@ -1232,7 +1232,8 @@ public class PlayerShipEntity : ShipEntity
    private void checkAudioListener () {
       if (AudioListenerManager.self.getActiveListener() != _audioListener) {
          AudioListenerManager.self.setActiveListener(_audioListener);
-         //AudioListenerManager.self.setActiveFmodListener(_fmodListener);
+         AudioListenerManager.self.setActiveFmodListener(null);
+
       }
    }
 

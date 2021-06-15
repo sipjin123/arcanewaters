@@ -49,20 +49,20 @@ public class FarmingTrigger : MonoBehaviour {
       yield return new WaitForSeconds(.1f);
 
       // Play weapon SFX upon triggering animation
-      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(bodyEntity.weaponManager.equipmentDataId);
-      if (weaponData != null && (weaponData.actionSfxDirectory.Length > 1 || weaponData.soundId > 0)) {
-         // If the weapon has a soundId attached, it's used for FMOD
-         if(weaponData.soundId > 0) {
-            SoundEffectManager.self.playFmodSoundEffect(weaponData.soundId, transform);
-         } else {
-            SoundManager.create3dSoundWithPath(weaponData.actionSfxDirectory, transform.position);
-         }
-      }
+      //WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(bodyEntity.weaponManager.equipmentDataId);
+      //if (weaponData != null && weaponData.actionSfxDirectory.Length > 1) {
+      //   SoundManager.create3dSoundWithPath(weaponData.actionSfxDirectory, transform.position);
+      //}
+      // Legacy support for previous implementation
+      SoundEffectManager.self.playLegacyInteractionOneShot(bodyEntity.weaponManager.equipmentDataId, transform);
 
       Weapon.ActionType currentActionType = bodyEntity.weaponManager.actionType;
       Collider2D currentCollider = coneCollider;
 
       updateTriggerDirection();
+
+      // Playing FMOD SFX for farming interactions
+      SoundEffectManager.self.playInteractionOneShot(currentActionType, transform);
 
       playFarmingParticles(currentActionType);
 

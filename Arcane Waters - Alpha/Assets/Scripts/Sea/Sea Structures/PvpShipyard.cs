@@ -14,10 +14,6 @@ public class PvpShipyard : SeaStructure {
    [HideInInspector]
    public SpawnLocation spawnLocation = SpawnLocation.Bottom;
 
-   // Which lane this shipyard will send its ships to
-   [HideInInspector]
-   public PvpLane laneType = PvpLane.None;
-
    // A target point in the center of this lane, which ships spawned from this shipyard will path to
    public Transform laneCenterTarget;
 

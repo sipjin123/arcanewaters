@@ -792,7 +792,7 @@ public class NetEntity : NetworkBehaviour
          case Anim.Type.NC_Jump_East:
          case Anim.Type.NC_Jump_North:
          case Anim.Type.NC_Jump_South:
-            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.JUMP_START_ID, Global.player.transform);
+            SoundEffectManager.self.playFmodOneShot(SoundEffectManager.JUMP_START_ID, this.transform);
             if (!freezeAnim) {
                StartCoroutine(CO_DelayExitAnim(animType, 0.5f));
             }
@@ -830,7 +830,8 @@ public class NetEntity : NetworkBehaviour
          case Anim.Type.NC_Jump_North:
          case Anim.Type.NC_Jump_South:
             shadow.transform.localScale = _shadowInitialScale;
-            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.JUMP_END_ID, Global.player.transform);
+            SoundEffectManager.self.playFmodOneShot(SoundEffectManager.JUMP_END_ID, this.transform);
+            //SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.JUMP_END_ID, Global.player.transform);
             //SoundEffectManager.self.playSoundEffect(SoundEffectManager.JUMP_END_ID, transform);
             break;
       }
@@ -1549,7 +1550,7 @@ public class NetEntity : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceiveUnreadMailNotification (NetworkConnection conn) {
       BottomBar.self.setUnreadMailNotificationStatus(true);
-      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.MAIL_NOTIF, transform);
+      SoundEffectManager.self.playFmod2D(SoundEffectManager.MAIL_NOTIF);
       //SoundEffectManager.self.playSoundEffect(SoundEffectManager.MAIL_NOTIF, transform);
    }
 

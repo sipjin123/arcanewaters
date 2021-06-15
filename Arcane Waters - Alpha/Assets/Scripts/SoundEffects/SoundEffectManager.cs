@@ -9,7 +9,7 @@ using System.Xml;
 using FMODUnity;
 using FMOD.Studio;
 
-public class SoundEffectManager : MonoBehaviour
+public class SoundEffectManager : GenericGameManager
 {
    #region Public Variables
 
@@ -69,6 +69,8 @@ public class SoundEffectManager : MonoBehaviour
 
    public const int SHIP_CANNON = 85;
    public const int FISH_JUMP = 86;
+   public const int THROW_SEEDS = 89;
+
    public const int CALMING_WATERFALL = 90;
    public const int ROCK_MINE = 91;
    public const int SHIP_LAUNCH_CHARGE = 92;
@@ -88,6 +90,8 @@ public class SoundEffectManager : MonoBehaviour
    public const int MENU_OPEN = 102;
    public const int BUTTON_CONFIRM = 103;
 
+   public const int ENEMY_SHIP_DESTROYED = 108;
+
    public const string MENU_OPEN_PATH = "event:/SFX/Game/UI/Menu_Open";
    public const string BUTTON_CONFIRM_PATH = "event:/SFX/Game/UI/Button_Confirm";
 
@@ -97,7 +101,7 @@ public class SoundEffectManager : MonoBehaviour
 
    #endregion
 
-   private void Awake () {
+   protected override void Awake () {
       self = this;
    }
 
@@ -169,26 +173,63 @@ public class SoundEffectManager : MonoBehaviour
       }
    }
 
-   public void playFmodSoundEffect (int id, Transform target) {
+   public void playFmodOneShot (int id, Transform target) {
+      if (Util.isBatch()) {
+         return;
+      }
+
       SoundEffect effect = getSoundEffect(id);
 
       if (effect != null) {
-         if (effect.is3D) {
-            playFmodSoundEffect3D(effect, target);
-         } else {
-            if (effect.fmodId.Length > 0) {
-               RuntimeManager.PlayOneShot(effect.fmodId, CameraManager.getCurrentCamera().transform.position);
-            } else {
-               D.debug("This id {" + effect.id + "} does not have an FmodID assigned to it, please refer to the sound effect web tool");
-            }
+         if (effect.fmodId.Length > 0) {
+            RuntimeManager.PlayOneShot(effect.fmodId, target.position);
          }
-      } else {
-         D.debug("Could not find SoundEffect with 'id' : '" + id + "'");
       }
    }
 
-   public void playFmodEventWithPath(string path, Transform target) {
-      if(path.Length > 0) {
+   public void playFmod2D (int id) {
+      if (Util.isBatch()) {
+         return;
+      }
+
+      playFmodOneShot(id, CameraManager.getCurrentCamera().transform);
+   }
+
+   public void playLegacyInteractionOneShot (int equipmentDataId, Transform target) {
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(equipmentDataId);
+      if (weaponData != null && weaponData.actionSfxDirectory.Length > 1) {
+         SoundManager.create3dSoundWithPath(weaponData.actionSfxDirectory, target.position);
+      }
+   }
+
+   public void playInteractionOneShot (Weapon.ActionType weaponAction, Transform target) {
+      switch (weaponAction) {
+         case Weapon.ActionType.PlantCrop:
+            self.playFmodOneShot(THROW_SEEDS, target);
+            break;
+      }
+   }
+
+   //public void playFmodSoundEffect (int id, Transform target) {
+   //   SoundEffect effect = getSoundEffect(id);
+
+   //   if (effect != null) {
+   //      if (effect.is3D) {
+   //         playFmodSoundEffect3D(effect, target);
+   //      } else {
+   //         if (effect.fmodId.Length > 0) {
+   //            RuntimeManager.PlayOneShot(effect.fmodId, CameraManager.getCurrentCamera().transform.position);
+   //         } else {
+   //            D.debug("This id {" + effect.id + "} does not have an FmodID assigned to it, please refer to the sound effect web tool");
+   //         }
+   //      }
+   //   } else {
+   //      D.debug("Could not find SoundEffect with 'id' : '" + id + "'");
+   //   }
+   //}
+
+   public void playFmod2DWithPath (string path) {
+      if (path.Length > 0) {
          RuntimeManager.PlayOneShot(path, CameraManager.getCurrentCamera().transform.position);
       }
    }
@@ -205,15 +246,15 @@ public class SoundEffectManager : MonoBehaviour
       Destroy(audioSource.gameObject, audioSource.clip.length);
    }
 
-   private void playFmodSoundEffect3D (SoundEffect effect, Transform target) {
-      StudioEventEmitter eventEmitter = Instantiate(PrefabsManager.self.fMod3dPrefab, target.position, Quaternion.identity);
+   //private void playFmodSoundEffect3D (SoundEffect effect, Transform target) {
+   //   StudioEventEmitter eventEmitter = Instantiate(PrefabsManager.self.fMod3dPrefab, target.position, Quaternion.identity);
 
-      eventEmitter.Event = effect.fmodId;
-      eventEmitter.transform.SetParent(target, true);
-      eventEmitter.EventInstance.setVolume(effect.minVolume);
-      eventEmitter.Play();
-      StartCoroutine(CO_DestroyAfterEnd(eventEmitter));
-   }
+   //   eventEmitter.Event = effect.fmodId;
+   //   eventEmitter.transform.SetParent(target, true);
+   //   eventEmitter.EventInstance.setVolume(effect.minVolume);
+   //   eventEmitter.Play();
+   //   StartCoroutine(CO_DestroyAfterEnd(eventEmitter));
+   //}
 
    public IEnumerator CO_DestroyAfterEnd (StudioEventEmitter emitter) {
       while (emitter != null && emitter.IsPlaying()) {

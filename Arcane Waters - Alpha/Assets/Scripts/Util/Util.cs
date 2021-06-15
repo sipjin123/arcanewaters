@@ -506,19 +506,7 @@ public class Util : MonoBehaviour
          return false;
       }
 
-      Vector3Int cellPos = area.worldToCell(pos);
-
-      foreach (TilemapLayer layer in area.getTilemapLayers()) {
-         if (layer.name.ToLower().StartsWith("mountain")) {
-            TileBase tile = layer.tilemap.GetTile(cellPos);
-
-            if (tile != null) {
-               return true;
-            }
-         }
-      }
-
-      return false;
+      return area.hasLandTile(pos);
    }
 
    public static Color getColor (int r, int g, int b) {

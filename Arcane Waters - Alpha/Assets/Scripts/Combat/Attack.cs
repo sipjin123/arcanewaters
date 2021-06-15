@@ -12,7 +12,7 @@ public class Attack : MonoBehaviour {
       None = 0, Cannon = 1, Ice = 2, Air = 3, Tentacle = 4, 
       Venom = 5, Boulder = 6, Shock_Ball = 7, Tentacle_Range = 8, 
       Mini_Boulder = 9, Fire = 10, Heal = 11, SpeedBoost = 12,
-      DamageAmplify = 13, SpawnStoneBlocker = 14,  
+      DamageAmplify = 13, SpawnStoneBlocker = 14, Poison_Circle = 15
    }
 
    public enum ImpactMagnitude
@@ -44,6 +44,8 @@ public class Attack : MonoBehaviour {
             case Type.Tentacle_Range:
                return .10f;
             case Type.Shock_Ball:
+               return .10f;
+            case Type.Poison_Circle:
                return .10f;
             default:
                return 1.0f;

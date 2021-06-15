@@ -65,6 +65,8 @@ public class AdminGameSettingsPanel : MonoBehaviour
       seaSpawnsPerSpotRow.initialize(AdminGameSettingsManager.self.settings.seaSpawnsPerSpot);
       seaAttackCooldownRow.initialize(AdminGameSettingsManager.self.settings.seaAttackCooldown);
       seaMaxHealthRow.initialize(AdminGameSettingsManager.self.settings.seaMaxHealth);
+      landBossAddedHealthRow.initialize(AdminGameSettingsManager.self.settings.bossHealthPerMember);
+      landBossAddedDamageRow.initialize(AdminGameSettingsManager.self.settings.bossDamagePerMember);
       updateSpawnsPerSpot();
       changesAppliedMessage.Show();
    }
@@ -74,6 +76,7 @@ public class AdminGameSettingsPanel : MonoBehaviour
       StartCoroutine(CO_ApplyChangesAfterDelay());
       changesAppliedMessage.Hide();
       updateSpawnsPerSpot();
+      _areChangesPending = true;
    }
 
    private IEnumerator CO_ApplyChangesAfterDelay () {
@@ -95,6 +98,7 @@ public class AdminGameSettingsPanel : MonoBehaviour
          );
       Global.player.rpc.Cmd_SetAdminGameSettings(settings);
       changesAppliedMessage.Show();
+      _areChangesPending = false;
    }
 
    private void updateSpawnsPerSpot () {
@@ -118,7 +122,7 @@ public class AdminGameSettingsPanel : MonoBehaviour
    public void hide (bool shouldApplyPendingChanges = false) {
       StopAllCoroutines();
 
-      if (shouldApplyPendingChanges) {
+      if (shouldApplyPendingChanges && _areChangesPending) {
          applyChanges();
       }
 
@@ -131,6 +135,9 @@ public class AdminGameSettingsPanel : MonoBehaviour
    }
 
    #region Private Variables
+
+   // Gets set to true when changes are pending
+   private bool _areChangesPending = false;
 
    #endregion
 }

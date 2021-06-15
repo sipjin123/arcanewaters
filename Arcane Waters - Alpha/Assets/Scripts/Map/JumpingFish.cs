@@ -20,7 +20,7 @@ public class JumpingFish : ClientMonoBehaviour
          yield return new WaitUntil(() => !anim.isWaitingForLoop());
          // Play fish sound only if player is in game
          if (Global.player != null) {
-            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.FISH_JUMP, transform);
+            SoundEffectManager.self.playFmodOneShot(SoundEffectManager.FISH_JUMP, transform);
             //SoundManager.playClipAtPoint(SoundManager.Type.Fish_Jump, transform.position);
          }
          yield return new WaitForSeconds(anim.loopDelay);

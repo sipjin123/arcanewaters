@@ -92,7 +92,7 @@ public class PanelManager : GenericGameManager {
             unlinkPanel();
          } else if (!((OptionsPanel) get(Panel.Type.Options)).isShowing()) {
             // Play SFX
-            SoundEffectManager.self.playFmodEventWithPath(SoundEffectManager.MENU_OPEN_PATH, this.transform);
+            SoundEffectManager.self.playFmod2DWithPath(SoundEffectManager.MENU_OPEN_PATH);
 
             linkPanel(Panel.Type.Options);
          } else {

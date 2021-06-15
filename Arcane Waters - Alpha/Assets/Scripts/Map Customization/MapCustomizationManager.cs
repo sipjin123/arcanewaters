@@ -351,7 +351,7 @@ namespace MapCustomization
             selectPrefab(hoveredPrefab);
             _draggedPrefab = hoveredPrefab;
             updatePrefabOutlines(worldPosition);
-            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.PICKUP_EDIT_OBJ, SoundEffectManager.self.transform);
+            SoundEffectManager.self.playFmod2D(SoundEffectManager.PICKUP_EDIT_OBJ);
             //SoundEffectManager.self.playSoundEffect(SoundEffectManager.PICKUP_EDIT_OBJ, SoundEffectManager.self.transform);
          } else {
             _selectedPrefab = null;
@@ -363,7 +363,7 @@ namespace MapCustomization
 
                if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _newPrefab.unappliedChanges, false, out string errorMessage)) {
                   Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges);
-                  SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.DROP_EDIT_OBJ, SoundEffectManager.self.transform);
+                  SoundEffectManager.self.playFmod2D(SoundEffectManager.DROP_EDIT_OBJ);
                   selectPrefab(_newPrefab);
 
                   // Decrease remaining prop item that corresponds to this prefab
@@ -407,7 +407,7 @@ namespace MapCustomization
          if (_selectedPrefab.anyUnappliedState()) {
             if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _selectedPrefab.unappliedChanges, false, out string errorMessage)) {
                Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _selectedPrefab.unappliedChanges);
-               SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.DROP_EDIT_OBJ, SoundEffectManager.self.transform);
+               SoundEffectManager.self.playFmod2D(SoundEffectManager.DROP_EDIT_OBJ);
                _selectedPrefab.submitUnappliedChanges();
             }
          }
@@ -440,7 +440,7 @@ namespace MapCustomization
          _newPrefab.setOutline(false, false, false, false);
 
          if (!soundHasBeenPlayed) {
-            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.DROP_EDIT_OBJ, SoundEffectManager.self.transform);
+            SoundEffectManager.self.playFmod2D(SoundEffectManager.DROP_EDIT_OBJ);
             soundHasBeenPlayed = true;
          }
       }

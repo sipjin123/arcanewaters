@@ -145,10 +145,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       // If we are the local player, assign us the audio listener
       if (isLocalPlayer && AudioListenerManager.self) {
          _audioListener = GetComponent<AudioListener>();
-         //_fmodListener = GetComponent<FMODUnity.StudioListener>();
 
          AudioListenerManager.self.setActiveListener(_audioListener);
-         //AudioListenerManager.self.setActiveFmodListener(_fmodListener);
+         AudioListenerManager.self.setActiveFmodListener(null);
       }
 
       // Retrieve the current sprites for the guild icon
@@ -175,7 +174,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             }
          };
 
-         PanelManager.self.hidePowerupPanel();   
+         PanelManager.self.hidePowerupPanel();
       }
 
       // Show the local player's level tag
@@ -263,7 +262,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    public void OnPointerEnter (PointerEventData pointerEventData) {
       showEntityName();
-      
+
       if (guildIcon != null) {
          updateGuildIconSprites();
          showGuildIcon();
@@ -313,8 +312,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
          float newShadowScale = 1.0f - (y / jumpUpMagnitude) / 2.0f;
          shadow.transform.localScale = _shadowInitialScale * newShadowScale;
-      }
-      else if (!isBouncingOnWeb()) {
+      } else if (!isBouncingOnWeb()) {
          y = 0.0f;
       }
 
@@ -367,7 +365,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          _sprintWindParticlesEmissionHorizontal.rateOverDistance = 0.0f;
          _sprintWindParticlesEmissionVertical.rateOverDistance = 0.0f;
       }
-      
+
       if (isLocalPlayer) {
          if (isSpeedingUp != isSprinting) {
             Cmd_SetSpeedingUp(isSprinting);
@@ -466,8 +464,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    private void playJumpAnimation () {
       if (facing == Direction.North) {
          requestAnimationPlay(Anim.Type.NC_Jump_North);
-      }
-      else if (facing == Direction.South) {
+      } else if (facing == Direction.South) {
          requestAnimationPlay(Anim.Type.NC_Jump_South);
       } else {
          requestAnimationPlay(Anim.Type.NC_Jump_East);
@@ -508,7 +505,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       if (InputManager.isRightClickKeyPressed()) {
-         triggerInteractAction();  
+         triggerInteractAction();
       }
 
       // Try to open chest through code (instead of UI) in case if UI is blocking raycasts casted to the chest Canvas
@@ -795,7 +792,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    public bool isJumpCoolingDown () {
-      float timeSinceLastJump = (float)(NetworkTime.time - _jumpStartTime);
+      float timeSinceLastJump = (float) (NetworkTime.time - _jumpStartTime);
       return (timeSinceLastJump < (JUMP_DURATION + JUMP_COOLDOWN));
    }
 
@@ -810,7 +807,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       float timeSinceBounce = (float) NetworkTime.time - _webBounceStartTime;
-      
+
       // If we're falling down, reverse t
       if (!_isGoingUpWeb) {
          timeSinceBounce = getWebBounceDuration() - timeSinceBounce;
@@ -825,7 +822,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       setDropShadowScale(tShadow);
    }
 
-   private void checkAudioListener () {      
+   private void checkAudioListener () {
       // If the player is in battle
       if (CameraManager.battleCamera.getCamera().isActiveAndEnabled) {
          // If the listener hasn't been switched, switch it
@@ -833,13 +830,12 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             AudioListenerManager.self.setActiveListener(CameraManager.battleCamera.getAudioListener());
             AudioListenerManager.self.setActiveFmodListener(CameraManager.battleCamera.getFmodListener());
          }
-      // If the player isn't in battle
+         // If the player isn't in battle
       } else if (_audioListener != null) {
          // Make sure the game is using the player's audio listener
          if (_audioListener != AudioListenerManager.self.getActiveListener()) {
             AudioListenerManager.self.setActiveListener(_audioListener);
-            //AudioListenerManager.self.setActiveFmodListener(_fmodListener);
-            AudioListenerManager.self.setActiveFmodListener(CameraManager.defaultCamera.getFmodListener());
+            AudioListenerManager.self.setActiveFmodListener(null);
          }
       } else if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getAudioListener() != null) {
          AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener());
@@ -872,9 +868,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    // A reference to the audiolistener attached to the player
    private AudioListener _audioListener;
-
-   // A reference to the FMOD Studio Listener attached to the player
-   private FMODUnity.StudioListener _fmodListener;
 
    // The 'startSizeMultiplier' of the dust trail particle
    private float _dustStartSizeMultiplier;

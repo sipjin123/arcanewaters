@@ -256,6 +256,11 @@ public class RPCManager : NetworkBehaviour
       if (!isLocalPlayer) {
          PlayerBodyEntity playerBody = _player.getPlayerBodyEntity();
          if (playerBody) {
+            // Legacy support for previous implementation
+            SoundEffectManager.self.playLegacyInteractionOneShot(playerBody.weaponManager.equipmentDataId, playerBody.transform);
+            // Playing FMOD SFX for interaction
+            SoundEffectManager.self.playInteractionOneShot(playerBody.weaponManager.actionType, playerBody.transform);
+
             playerBody.playInteractParticles();
          }
       }
@@ -750,15 +755,15 @@ public class RPCManager : NetworkBehaviour
       // Play some sounds
       switch (chest.chestType) {
          case ChestSpawnType.Sea:
-            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.OPEN_SEA_BAG, Global.player.transform);
+            SoundEffectManager.self.playFmodOneShot(SoundEffectManager.OPEN_SEA_BAG, Global.player.transform);
             //SoundEffectManager.self.playSoundEffect(SoundEffectManager.OPEN_SEA_BAG, Global.player.transform);
             break;
          case ChestSpawnType.Land:
-            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.OPEN_LAND_BAG, Global.player.transform);
+            SoundEffectManager.self.playFmodOneShot(SoundEffectManager.OPEN_LAND_BAG, Global.player.transform);
             //SoundEffectManager.self.playSoundEffect(SoundEffectManager.OPEN_LAND_BAG, Global.player.transform);
             break;
          case ChestSpawnType.Site:
-            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.OPEN_CHEST, Global.player.transform);
+            SoundEffectManager.self.playFmodOneShot(SoundEffectManager.OPEN_CHEST, Global.player.transform);
             //SoundEffectManager.self.playSoundEffect(SoundEffectManager.OPEN_CHEST, Global.player.transform);
             break;
       }
@@ -1211,7 +1216,7 @@ public class RPCManager : NetworkBehaviour
 
       if (area != null && area.version == latestVersion) {
          if (area.isInterior) {
-            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.ENTER_DOOR, transform);
+            SoundEffectManager.self.playFmodOneShot(SoundEffectManager.ENTER_DOOR, transform);
             //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ENTER_DOOR, transform);
             WeatherManager.self.setWeatherSimulation(WeatherEffectType.None);
          }
@@ -4430,6 +4435,7 @@ public class RPCManager : NetworkBehaviour
       if (playerShipEntity && playerShipEntity.tryGetVoyage(out Voyage voyage)) {
          if (voyage.isPvP) {
             playerShipEntity.hasEnteredPvP = true;
+            PvpManager.self.assignPvpTeam(playerShipEntity, voyage.instanceId);
          }
       }
    }
@@ -4515,7 +4521,8 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveCraftedItem (NetworkConnection connection, Item item) {
-      SoundEffectManager.self.playSoundEffect(SoundEffectManager.CRAFT_COMPLETE, SoundEffectManager.self.transform);
+      SoundEffectManager.self.playFmod2D(SoundEffectManager.CRAFT_COMPLETE);
+      //SoundEffectManager.self.playSoundEffect(SoundEffectManager.CRAFT_COMPLETE, SoundEffectManager.self.transform);
       RewardManager.self.showItemInRewardPanel(item);
    }
 
@@ -4550,7 +4557,7 @@ public class RPCManager : NetworkBehaviour
       oreNode.interactCount++;
       oreNode.updateSprite(oreNode.interactCount);
       ExplosionManager.createMiningParticle(oreNode.transform.position);
-      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.ROCK_MINE, transform);
+      SoundEffectManager.self.playFmodOneShot(SoundEffectManager.ROCK_MINE, oreNode.transform);
       //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ORE_MINE, transform);
 
       if (oreNode.interactCount > OreNode.MAX_INTERACT_COUNT) {

@@ -365,7 +365,9 @@ public class VoyageGroupManager : MonoBehaviour
                } else {
                   return false;
                }
-            } else if (voyageGroup.members.Count >= Voyage.getMaxGroupSize(voyage.difficulty)) {
+            } else if (!voyage.isPvP && voyageGroup.members.Count >= Voyage.getMaxGroupSize(voyage.difficulty)) {
+               return true;
+            } else if (voyage.isPvP && voyageGroup.members.Count >= Voyage.MAX_PLAYERS_PER_GROUP_PVP) {
                return true;
             }
          }

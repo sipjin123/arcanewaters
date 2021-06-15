@@ -28,7 +28,7 @@ public class CropPickup : MonoBehaviour {
          Global.player.Cmd_HarvestCrop(cropSpot.cropNumber);
 
          // Play a sound
-         SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.PICKUP_CROP, transform);
+         SoundEffectManager.self.playFmodOneShot(SoundEffectManager.PICKUP_CROP, transform);
          //SoundManager.play2DClip(SoundManager.Type.Harvesting_Picking);
 
          // Spawn collect harvest effect

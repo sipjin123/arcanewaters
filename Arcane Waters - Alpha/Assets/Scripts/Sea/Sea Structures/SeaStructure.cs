@@ -15,6 +15,13 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
    // The sea structure that will be able to be damaged after this dies
    public SeaStructure unlockAfterDeath;
 
+   // Which lane this structure is in
+   [HideInInspector]
+   public PvpLane laneType = PvpLane.None;
+
+   // An identifier for multiple structures in the same lane
+   public int indexInLane = 0;
+
    #endregion
 
    public override bool isSeaStructure () {
@@ -44,27 +51,22 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
          if (field.k.CompareTo(DataField.PVP_LANE) == 0) {
             try {
                PvpLane pvpLane = (PvpLane) Enum.Parse(typeof(PvpLane), field.v);
-
-               // Do something with value
-               D.debug(field.k + " " + field.v);
+               this.laneType = pvpLane;
             } catch {
-               // Set default value
+               this.laneType = PvpLane.None;
             }
          }
          if (field.k.CompareTo(DataField.PVP_LANE_NUMBER) == 0) {
             if (field.tryGetIntValue(out int pvpLaneNum)) {
-               // Do something with value
-               D.debug(field.k + " " + field.v);
+               indexInLane = pvpLaneNum;
             }
          }
          if (field.k.CompareTo(DataField.PVP_TEAM_TYPE) == 0) {
             try {
                PvpTeamType pvpTeam = (PvpTeamType) Enum.Parse(typeof(PvpTeamType), field.v);
-
-               // Do something with value
-               D.debug(field.k + " " + field.v);
+               this.pvpTeam = pvpTeam;
             } catch {
-               // Set default value
+               this.pvpTeam = PvpTeamType.None;
             }
          }
       }

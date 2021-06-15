@@ -134,7 +134,7 @@ public class EffectManager : MonoBehaviour {
 
    public static void playBlockEffect (Battler attacker, Battler target) {
       // Play block SFX
-      SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.BLOCK_ATTACK, target.transform);
+      SoundEffectManager.self.playFmodOneShot(SoundEffectManager.BLOCK_ATTACK, target.transform);
       //SoundManager.playClipAtPoint(SoundManager.Type.Character_Block, target.transform.position);
 
       // Find a point at which to display the effect

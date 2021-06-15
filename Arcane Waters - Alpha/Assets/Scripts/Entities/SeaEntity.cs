@@ -222,7 +222,12 @@ public class SeaEntity : NetEntity
             }
          } else if (!_playedDestroySound && this is ShipEntity && isClient) {
             _playedDestroySound = true;
-            SoundManager.play2DClip(SoundManager.Type.Ship_Destroyed);
+
+            if (this.isBot()) {
+               SoundEffectManager.self.playFmodOneShot(SoundEffectManager.ENEMY_SHIP_DESTROYED, this.transform);
+            } else {
+               SoundManager.play2DClip(SoundManager.Type.Ship_Destroyed);
+            }
 
             // Hide all the sprites
             foreach (SpriteRenderer renderer in _renderers) {
@@ -949,11 +954,15 @@ public class SeaEntity : NetEntity
       }
 
       if (attackType == Attack.Type.Tentacle || attackType == Attack.Type.Poison_Circle) {
-         SeaEntity sourceEntity = SeaManager.self.getEntity(netId);
-         VenomResidue venomResidue = Instantiate(PrefabsManager.self.bossVenomResiduePrefab, circleCenter, Quaternion.identity);
-         venomResidue.creatorNetId = netId;
-         venomResidue.instanceId = instanceId;
-         sourceEntity.Rpc_SpawnBossVenomResidue(netId, instanceId, circleCenter);
+         // Only spawn a venom residue on sea tiles
+         Area area = AreaManager.self.getArea(areaKey);
+         if (area != null && !area.hasLandTile(circleCenter)) {
+            SeaEntity sourceEntity = SeaManager.self.getEntity(netId);
+            VenomResidue venomResidue = Instantiate(PrefabsManager.self.bossVenomResiduePrefab, circleCenter, Quaternion.identity);
+            venomResidue.creatorNetId = netId;
+            venomResidue.instanceId = instanceId;
+            sourceEntity.Rpc_SpawnBossVenomResidue(netId, instanceId, circleCenter);
+         }
       }
 
       // If we didn't hit an enemy, show an effect based on whether we hit land or water

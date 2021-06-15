@@ -206,6 +206,14 @@ public class Area : MonoBehaviour
       // Store a reference to the grid
       _grid = GetComponentInChildren<Grid>();
 
+      // Store the mountain tilemap layers
+      _mountainTilemapLayers.Clear();
+      foreach (TilemapLayer layer in _tilemapLayers) {
+         if (layer.name.ToLower().StartsWith("mountain")) {
+            _mountainTilemapLayers.Add(layer);
+         }
+      }
+
       // Retrieve the z coordinate of the water tilemap
       foreach (TilemapLayer layer in getTilemapLayers()) {
          if (layer.name.ToLower().EndsWith("water")) {
@@ -275,6 +283,20 @@ public class Area : MonoBehaviour
 
    public List<TilemapLayer> getTilemapLayers () {
       return _tilemapLayers;
+   }
+
+   public bool hasLandTile (Vector3 worldPos) {
+      Vector3Int cellPos = worldToCell(worldPos);
+
+      foreach (TilemapLayer layer in _mountainTilemapLayers) {
+         TileBase tile = layer.tilemap.GetTile(cellPos);
+
+         if (tile != null) {
+            return true;
+         }
+      }
+
+      return false;
    }
 
    public void setTilemapLayers (List<TilemapLayer> layers) {
@@ -482,6 +504,9 @@ public class Area : MonoBehaviour
 
    // Stores the Tilemaps for this area
    protected List<TilemapLayer> _tilemapLayers = new List<TilemapLayer>();
+
+   // Stores the mountain tilemaps for this area
+   protected List<TilemapLayer> _mountainTilemapLayers = new List<TilemapLayer>();
 
    // The list of map collider chunks
    protected List<MapChunk> _colliderChunks = new List<MapChunk>();

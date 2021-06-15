@@ -83,7 +83,7 @@ public class BottomBar : MonoBehaviour {
       if (!panel.isShowing()) {
          if (Global.player != null) {
             // Open map sfx
-            SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.MAP_OPEN, this.transform);
+            SoundEffectManager.self.playFmod2D(SoundEffectManager.MAP_OPEN);
 
             panel.displayMap();
          }
