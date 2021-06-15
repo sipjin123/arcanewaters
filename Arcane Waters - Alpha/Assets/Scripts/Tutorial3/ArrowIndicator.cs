@@ -19,6 +19,12 @@ public class ArrowIndicator : MonoBehaviour {
    // The arrow pointing down, placed above the target, when it is visible
    public GameObject downArrow;
 
+   // If the target is on screen
+   public bool isOnScreen;
+
+   // The screen point in world view
+   public Vector3 screenPoint;
+
    #endregion
 
    protected virtual void Start () {
@@ -31,6 +37,9 @@ public class ArrowIndicator : MonoBehaviour {
       if (Global.player == null || _target == null || _mainCamera == null) {
          return;
       }
+
+      screenPoint = _mainCamera.WorldToViewportPoint(_target.transform.position, Camera.MonoOrStereoscopicEye.Mono);
+      isOnScreen = screenPoint.z > 0 && screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
 
       // Calculate the screen size
       Vector2 screenSize = new Vector2(
@@ -57,7 +66,7 @@ public class ArrowIndicator : MonoBehaviour {
       }
 
       // When the target is visible, switch to an arrow that points down on it
-      if (cameraRect.Contains(_target.transform.position)) {
+      if (cameraRect.Contains(_target.transform.position) || isOnScreen) {
          downArrow.SetActive(true);
       } else {
          // Show the correct arrow sprite
