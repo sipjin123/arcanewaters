@@ -26,7 +26,7 @@ namespace MapCreationTool {
       }
 
       public void dataFieldChanged (DataField field) {
-         if (this is PvpShipyardEditor || this is PvpBaseEditor) {
+         if (this is PvpShipyardEditor || this is PvpBaseEditor || this is PvpTowerMapEditor) {
             // Adjust the scale of this building when spawned in the drawing board
             if (transform.parent.GetComponent<Palette>() != null) {
                transform.localScale = new Vector3(startingScale / PALETTE_SCALE, startingScale / PALETTE_SCALE, 1);

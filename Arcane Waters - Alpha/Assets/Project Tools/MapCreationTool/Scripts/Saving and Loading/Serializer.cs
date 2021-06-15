@@ -368,6 +368,7 @@ namespace MapCreationTool.Serialization
       public const string PVP_TEAM_TYPE = "pvp team type";
       public const string PVP_LANE = "pvp lane";
       public const string PVP_LANE_NUMBER = "pvp lane number";
+      public const string PVP_TOWER_RANGE = "pvp tower range";
 
       public string k; // Key
       public string v; // Value
