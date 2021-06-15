@@ -66,26 +66,38 @@ namespace NubisDataHandling {
                      // Process the item as a weapon and extract the weapon data
                      if (craftableRequirements.resultItem.category == Item.Category.Weapon) {
                         WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(craftableRequirements.resultItem.itemTypeId);
-                        itemDesc = weaponData.equipmentDescription;
-                        itemIconPath = weaponData.equipmentIconPath;
-                        itemData = WeaponStatData.serializeWeaponStatData(weaponData);
+                        if (weaponData == null) {
+                           D.debug("Cant find crafting data for Weapon: " + craftableRequirements.resultItem.itemTypeId);
+                        } else {
+                           itemDesc = weaponData.equipmentDescription;
+                           itemIconPath = weaponData.equipmentIconPath;
+                           itemData = WeaponStatData.serializeWeaponStatData(weaponData);
+                        }
                      }
 
                      // Process the item as a armor and extract the armor data
                      if (craftableRequirements.resultItem.category == Item.Category.Armor) {
                         ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(craftableRequirements.resultItem.itemTypeId);
-                        itemDesc = armorData.equipmentDescription;
-                        itemIconPath = armorData.equipmentIconPath;
-                        itemData = ArmorStatData.serializeArmorStatData(armorData);
+                        if (armorData == null) {
+                           D.debug("Cant find crafting data for Armor: " + craftableRequirements.resultItem.itemTypeId);
+                        } else {
+                           itemDesc = armorData.equipmentDescription;
+                           itemIconPath = armorData.equipmentIconPath;
+                           itemData = ArmorStatData.serializeArmorStatData(armorData);
+                        }
                      }
 
                      // Process the item as a hat and extract the hat data
                      if (craftableRequirements.resultItem.category == Item.Category.Hats) {
                         HatStatData hatData = EquipmentXMLManager.self.getHatData(craftableRequirements.resultItem.itemTypeId);
-                        itemName = hatData.equipmentName;
-                        itemDesc = hatData.equipmentDescription;
-                        itemIconPath = hatData.equipmentIconPath;
-                        itemData = HatStatData.serializeHatStatData(hatData);
+                        if (hatData == null) {
+                           D.debug("Cant find crafting data for Hat: " + craftableRequirements.resultItem.itemTypeId);
+                        } else {
+                           itemName = hatData.equipmentName;
+                           itemDesc = hatData.equipmentDescription;
+                           itemIconPath = hatData.equipmentIconPath;
+                           itemData = HatStatData.serializeHatStatData(hatData);
+                        }
                      }
 
                      // Create the item
