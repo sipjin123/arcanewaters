@@ -131,7 +131,9 @@ public class ArmorManager : EquipmentManager {
       }
 
       if (armorData == null) {
-         D.debug("Armor data is null for {" + armorTypeId + "}");
+         if (armorTypeId != 0) {
+            D.debug("Armor data is null for {" + armorTypeId + "}");
+         }
          armorData = ArmorStatData.getDefaultData();
       }
       cachedArmorData = armorData;

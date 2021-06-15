@@ -79,7 +79,7 @@ public class AnimUtil : MonoBehaviour {
                   return new AnimInfo(animType, 30, 30);
 
                case Anim.Type.Death_East:
-                  return new AnimInfo(animType, 31, 31);
+                  return new AnimInfo(animType, 30, 31);
 
                case Anim.Type.Attack_East:
                   return new AnimInfo(animType, 32, 34);
