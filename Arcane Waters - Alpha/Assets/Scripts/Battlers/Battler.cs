@@ -297,6 +297,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    private void Start () {
+      StartCoroutine(CO_AssignBattle());
+
       // Look up our associated player object
       if (NetworkIdentity.spawned.ContainsKey(playerNetId)) {
          NetworkIdentity enemyIdent = NetworkIdentity.spawned[playerNetId];
@@ -305,6 +307,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          StartCoroutine(CO_AssignPlayerNetId());
          return;
       }
+
       initializeBattler();
 
       bool isLocalBattler = this.isLocalBattler();
@@ -321,6 +324,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       if (battlerType == BattlerType.PlayerControlled) {
          displayBattlerName(player.entityName);
       }
+   }
+
+   private IEnumerator CO_AssignBattle () {
+      while (transform.parent == null || transform.parent.GetComponent<Battle>() == null) {
+         yield return 0;
+      }
+      battle = transform.parent.GetComponent<Battle>();
+   }
 
    public void displayBattlerName (string name) {
       BattleBars bars = GetComponentInChildren<BattleBars>();
