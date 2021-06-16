@@ -19,7 +19,8 @@ public class CommandCodes : MonoBehaviour {
       NPC_DISABLE = 9,           // Disables NPCs for area (Area.npcDatafields)
       SERVER_DISABLE_COMMUNICATION = 10, // Disables ServerCommunicationHandler
       SERVER_DISABLE_DATA_HANDLER = 11, // Disables SharedServerDataHandler
-      SERVER_DB_DEBUG = 12 // Enables server DB debug 
+      SERVER_DB_DEBUG = 12, // Enables server DB debug 
+      AUTO_WARP = 13,             // Regularly request a random warp
    }
 
    #endregion

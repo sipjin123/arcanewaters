@@ -59,6 +59,7 @@ public class PowerupPopupIcon : MonoBehaviour {
             player.spritesContainer.transform.DORewind();
             player.spritesContainer.transform.DOPunchScale(Vector3.one * 0.25f, 0.25f);
             iconParent.gameObject.SetActive(false);
+            Instantiate(PrefabsManager.self.powerupPickupEffect, transform.position, Quaternion.identity, transform);
             break;
          }
 

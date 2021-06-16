@@ -164,6 +164,17 @@ public class InputManager : GenericGameManager {
       }
    }
 
+   public void simulateDirectionPress (Direction direction, float seconds) {
+      StartCoroutine(CO_SimulateDirectionPress(direction, seconds)); 
+   }
+
+   private IEnumerator CO_SimulateDirectionPress (Direction direction, float seconds) {
+      _isMoveSimulated = true;
+      _moveDirectionSimulated = direction;
+      yield return new WaitForSeconds(seconds);
+      _isMoveSimulated = false;
+   }
+
    private void loadDefaultKeybindings () {
       // Create empty bindings for all defined actions
       _keybindings.Clear();
@@ -196,13 +207,13 @@ public class InputManager : GenericGameManager {
    public static bool isPressingDirection (Direction direction) {
       switch (direction) {
          case Direction.North:
-            return getKeyAction(KeyAction.MoveUp) || self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE;
+            return getKeyAction(KeyAction.MoveUp) || self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.North);
          case Direction.East:
-            return getKeyAction(KeyAction.MoveRight) || self.joystickNavigation.x > JOYSTICK_ACTIVE_VALUE;
+            return getKeyAction(KeyAction.MoveRight) || self.joystickNavigation.x > JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.East);
          case Direction.South:
-            return getKeyAction(KeyAction.MoveDown) || self.joystickNavigation.y < -JOYSTICK_ACTIVE_VALUE;
+            return getKeyAction(KeyAction.MoveDown) || self.joystickNavigation.y < -JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.South);
          case Direction.West:
-            return getKeyAction(KeyAction.MoveLeft) || self.joystickNavigation.x < -JOYSTICK_ACTIVE_VALUE;
+            return getKeyAction(KeyAction.MoveLeft) || self.joystickNavigation.x < -JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.West);
          case Direction.NorthEast:
             return (self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE && self.joystickNavigation.x > JOYSTICK_ACTIVE_VALUE) 
                || (isPressingDirection(Direction.North) && isPressingDirection(Direction.East));
@@ -253,9 +264,9 @@ public class InputManager : GenericGameManager {
    public static int getHorizontalAxis () {
       int axis = 0;
 
-      if (getKeyAction(KeyAction.MoveLeft) || self.joystickNavigation.x < -JOYSTICK_ACTIVE_VALUE) {
+      if (getKeyAction(KeyAction.MoveLeft) || self.joystickNavigation.x < -JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.West)) {
          axis = -1;
-      } else if (getKeyAction(KeyAction.MoveRight) || self.joystickNavigation.x > JOYSTICK_ACTIVE_VALUE) {
+      } else if (getKeyAction(KeyAction.MoveRight) || self.joystickNavigation.x > JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.East)) {
          axis = 1;
       }
 
@@ -265,9 +276,9 @@ public class InputManager : GenericGameManager {
    public static int getVerticalAxis () {
       int axis = 0;
 
-      if (getKeyAction(KeyAction.MoveUp) || self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE) {
+      if (getKeyAction(KeyAction.MoveUp) || self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.North)) {
          axis = 1;
-      } else if (getKeyAction(KeyAction.MoveDown) || self.joystickNavigation.y < -JOYSTICK_ACTIVE_VALUE) {
+      } else if (getKeyAction(KeyAction.MoveDown) || self.joystickNavigation.y < -JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.South)) {
          axis = -1;
       }
 
@@ -463,6 +474,12 @@ public class InputManager : GenericGameManager {
 
    // A list of keys that will be ignored when getting inputs
    private List<Key> _disabledKeys = new List<Key>();
+
+   // Gets set to true when a direction movement is being simulated
+   private static bool _isMoveSimulated = false;
+
+   // The movement direction that is being simulated
+   private static Direction _moveDirectionSimulated = Direction.East;
 
    #endregion
 }

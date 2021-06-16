@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using TMPro;
 
 public class ShipBarsPlayer : ShipBars
 {
@@ -28,12 +29,27 @@ public class ShipBarsPlayer : ShipBars
    // The frame used if the portrait is not the local player's
    public Sprite nonLocalPlayerFrame;
 
+   // The component that holds the outline/outsides of the name's UI
+   public TextMeshProUGUI nameTextOutside;
+
+   // The component that holds the insides of the name's UI
+   public TextMeshProUGUI nameTextInside;
+
    // The width of the outline
    [Range(0.0f, 1.0f)]
    public float nameOutlineWidth;
 
-   // The coloro the outline
+   // The color the outline
    public Color32 nameOutlineColor;
+
+   // The color of the label
+   public Color32 nameColor;
+
+   // The color the outline for the local player
+   public Color32 nameOutlineColorLocalPlayer;
+
+   // The color of the label for the local Player
+   public Color32 nameColorLocalPlayer;
 
    #endregion
 

@@ -188,7 +188,8 @@ public class PvpGame : MonoBehaviour {
          Util.setLocalXY(player.transform, spawnPosition);
       }
 
-      spawnStructures();
+      detectStructures();
+
       _gameState = State.InGame;
       StartCoroutine(CO_SpawnWaves());
       sendGameMessage("Game has begun!");
@@ -223,120 +224,81 @@ public class PvpGame : MonoBehaviour {
       }
    }
 
-   private void spawnStructures () {
+   private void detectStructures () {
       Instance instance = InstanceManager.self.getInstance(instanceId);
-      Area area = AreaManager.self.getArea(instance.areaKey);
 
-      PvpShipyard.SpawnLocation[] shipyardSpawnSides = { PvpShipyard.SpawnLocation.Top, PvpShipyard.SpawnLocation.Top, PvpShipyard.SpawnLocation.Right, PvpShipyard.SpawnLocation.Left, PvpShipyard.SpawnLocation.Bottom, PvpShipyard.SpawnLocation.Bottom };
-
-      // We are spawning the structures into hard-coded positions for now, until we get them added to the map editor
-
-      // Spawn in and setup the bases
-      for (int i = 0; i < 2; i++) {
-         PvpBase pvpBase = GameObject.Instantiate(PrefabsManager.self.pvpBasePrefab).GetComponent<PvpBase>();
-         pvpBase.setAreaParent(area, true);
-         pvpBase.transform.localPosition = PvpManager.self.baseSpawnPositions[i];
-         pvpBase.areaKey = instance.areaKey;
-         pvpBase.pvpTeam = (i == 0) ? PvpTeamType.A : PvpTeamType.B;
-         pvpBase.onDeathAction += onStructureDestroyed;
-         _bases.Add(pvpBase);
-
-         InstanceManager.self.addSeaStructureToInstance(pvpBase, instance);
-         NetworkServer.Spawn(pvpBase.gameObject);
+      // Count how many towers we have first, to assist in registering towers
+      int numTowers = 0;
+      foreach (SeaStructure structure in instance.seaStructures) {
+         if (structure is PvpTower) {
+            numTowers++;
+         }
       }
 
-      // Spawn in and setup the towers
-      for (int i = 0; i < 14; i++) {
-         PvpTower tower = GameObject.Instantiate(PrefabsManager.self.pvpTowerPrefab).GetComponent<PvpTower>();
-         tower.setAreaParent(area, true);
-         tower.transform.localPosition = PvpManager.self.towerSpawnPositions[i];
-         tower.areaKey = instance.areaKey;
-         tower.pvpTeam = (i < 7) ? PvpTeamType.A : PvpTeamType.B;
-         tower.onDeathAction += onStructureDestroyed;
-         _towers.Add(tower);
-
-         InstanceManager.self.addSeaStructureToInstance(tower, instance);
-         NetworkServer.Spawn(tower.gameObject);
+      // We are currently assuming we'll have X towers per lane, plus one base tower each. So our total is 6 * X + 2.
+      // Check if we have an appropriate number of towers
+      if ((numTowers - 2) % 6 == 0) {
+         _towersPerLane = (numTowers - 2) / 6;
+         
+         // Set capacity of structure lists
+         int structuresPerLane = 3 + _towersPerLane;
+         _topStructuresA.Capacity = structuresPerLane;
+         _midStructuresA.Capacity = structuresPerLane;
+         _botStructuresA.Capacity = structuresPerLane;
+         _topStructuresB.Capacity = structuresPerLane;
+         _midStructuresB.Capacity = structuresPerLane;
+         _botStructuresB.Capacity = structuresPerLane;
+      } else {
+         D.error("This map doesn't have the correct number of towers. Aborting structure detection.");
+         return;
       }
 
-      // Setup the shipyards
-      for (int i = 0; i < 6; i++) {
-         PvpShipyard shipyard = GameObject.Instantiate(PrefabsManager.self.pvpShipyardPrefab).GetComponent<PvpShipyard>();
-         shipyard.setAreaParent(area, true);
-         shipyard.transform.localPosition = PvpManager.self.shipyardSpawnPositions[i];
-         shipyard.areaKey = instance.areaKey;
-         shipyard.spawnLocation = shipyardSpawnSides[i];
-         shipyard.pvpTeam = (i < 3) ? PvpTeamType.A : PvpTeamType.B;
-         shipyard.laneType = (PvpLane) ((i % 3) + 1);
-         shipyard.laneCenterTarget.localPosition = PvpManager.self.laneCenterPositions[(int) shipyard.laneType - 1] - shipyard.transform.localPosition;
-         shipyard.onDeathAction += onStructureDestroyed;
-         _shipyards.Add(shipyard);
+      // Register the sea structures in their appropriate places
+      foreach (SeaStructure structure in instance.seaStructures) {
+         if (structure is PvpTower) {
+            registerTower((PvpTower) structure);
+         } else if (structure is PvpShipyard) {
+            registerShipyard((PvpShipyard) structure);
+         } else if (structure is PvpBase) {
+            registerBase((PvpBase) structure);
+         }
       }
+
+      // Setup the invlunerability and structure unlocking
+      setupStructureUnlocking(_topStructuresA);
+      setupStructureUnlocking(_midStructuresA);
+      setupStructureUnlocking(_botStructuresA);
+      setupStructureUnlocking(_botStructuresB);
+      setupStructureUnlocking(_botStructuresB);
+      setupStructureUnlocking(_botStructuresB);
 
       // Setup the targetStructures for the shipyard, and then spawn them all in
-      foreach (PvpShipyard shipyard in _shipyards) {
-         shipyard.targetStructures = getTargetStructures(shipyard.pvpTeam, shipyard.laneType);
-         InstanceManager.self.addSeaStructureToInstance(shipyard, instance);
-         NetworkServer.Spawn(shipyard.gameObject);
-      }
+      foreach (SeaStructure structure in instance.seaStructures) {
+         if (structure is PvpShipyard) {
+            PvpShipyard shipyard = (PvpShipyard) structure;
+            shipyard.targetStructures = getStructures(shipyard.pvpTeam, shipyard.laneType);
 
-      setupStructureUnlocking();
+            // TODO: Replace this once the PvpWaypoints are implemented properly
+            shipyard.laneCenterTarget.localPosition = PvpManager.self.laneCenterPositions[(int) shipyard.laneType - 1] - shipyard.transform.localPosition;
+         }
+      }
    }
 
-   private void setupStructureUnlocking () {
-      // TODO: Set up a better way to do this
+   private void setupStructureUnlocking (List<SeaStructure> laneStructures) {
+      for (int i = 0; i < laneStructures.Count; i++) {
+         SeaStructure structure = laneStructures[i];
 
-      // Team A, Top Lane
-      getTower(PvpTowerType.TopA1).unlockAfterDeath = getTower(PvpTowerType.TopA2);
-      getTower(PvpTowerType.TopA2).unlockAfterDeath = getShipyard(PvpTeamType.A, PvpLane.Top);
-      getTower(PvpTowerType.TopA2).setIsInvulnerable(true);
-      getShipyard(PvpTeamType.A, PvpLane.Top).unlockAfterDeath = getTower(PvpTowerType.BaseA);
-      getShipyard(PvpTeamType.A, PvpLane.Top).setIsInvulnerable(true);
+         // All structures other than the first tower in each lane should be invulnerable
+         if (i > 0) {
+            structure.setIsInvulnerable(true);
+         }
 
-      // Team A, Mid Lane
-      getTower(PvpTowerType.MidA1).unlockAfterDeath = getTower(PvpTowerType.MidA2);
-      getTower(PvpTowerType.MidA2).unlockAfterDeath = getShipyard(PvpTeamType.A, PvpLane.Mid);
-      getTower(PvpTowerType.MidA2).setIsInvulnerable(true);
-      getShipyard(PvpTeamType.A, PvpLane.Mid).unlockAfterDeath = getTower(PvpTowerType.BaseA);
-      getShipyard(PvpTeamType.A, PvpLane.Mid).setIsInvulnerable(true);
-
-      // Team A, Bot Lane
-      getTower(PvpTowerType.BotA1).unlockAfterDeath = getTower(PvpTowerType.BotA2);
-      getTower(PvpTowerType.BotA2).unlockAfterDeath = getShipyard(PvpTeamType.A, PvpLane.Bot);
-      getTower(PvpTowerType.BotA2).setIsInvulnerable(true);
-      getShipyard(PvpTeamType.A, PvpLane.Bot).unlockAfterDeath = getTower(PvpTowerType.BaseA);
-      getShipyard(PvpTeamType.A, PvpLane.Bot).setIsInvulnerable(true);
-
-      // Team A, Base
-      getTower(PvpTowerType.BaseA).unlockAfterDeath = getBase(PvpTeamType.A);
-      getTower(PvpTowerType.BaseA).setIsInvulnerable(true);
-      getBase(PvpTeamType.A).setIsInvulnerable(true);
-
-      // Team B, Top Lane
-      getTower(PvpTowerType.TopB1).unlockAfterDeath = getTower(PvpTowerType.TopB2);
-      getTower(PvpTowerType.TopB2).unlockAfterDeath = getShipyard(PvpTeamType.B, PvpLane.Top);
-      getTower(PvpTowerType.TopB2).setIsInvulnerable(true);
-      getShipyard(PvpTeamType.B, PvpLane.Top).unlockAfterDeath = getTower(PvpTowerType.BaseB);
-      getShipyard(PvpTeamType.B, PvpLane.Top).setIsInvulnerable(true);
-
-      // Team B, Mid Lane
-      getTower(PvpTowerType.MidB1).unlockAfterDeath = getTower(PvpTowerType.MidB2);
-      getTower(PvpTowerType.MidB2).unlockAfterDeath = getShipyard(PvpTeamType.B, PvpLane.Mid);
-      getTower(PvpTowerType.MidB2).setIsInvulnerable(true);
-      getShipyard(PvpTeamType.B, PvpLane.Mid).unlockAfterDeath = getTower(PvpTowerType.BaseB);
-      getShipyard(PvpTeamType.B, PvpLane.Mid).setIsInvulnerable(true);
-
-      // Team B, Bot Lane
-      getTower(PvpTowerType.BotB1).unlockAfterDeath = getTower(PvpTowerType.BotB2);
-      getTower(PvpTowerType.BotB2).unlockAfterDeath = getShipyard(PvpTeamType.B, PvpLane.Bot);
-      getTower(PvpTowerType.BotB2).setIsInvulnerable(true);
-      getShipyard(PvpTeamType.B, PvpLane.Bot).unlockAfterDeath = getTower(PvpTowerType.BaseB);
-      getShipyard(PvpTeamType.B, PvpLane.Bot).setIsInvulnerable(true);
-
-      // Team B, Base
-      getTower(PvpTowerType.BaseB).unlockAfterDeath = getBase(PvpTeamType.B);
-      getTower(PvpTowerType.BaseB).setIsInvulnerable(true);
-      getBase(PvpTeamType.B).setIsInvulnerable(true);
+         // If there is a structure after this in the list, set it as the unlockondeath target
+         if (i + 1 != laneStructures.Count) {
+            SeaStructure nextStructure = laneStructures[i + 1];
+            structure.unlockAfterDeath = nextStructure;
+         }
+      }
    }
 
    public void removePlayerFromGame (NetEntity player) {
@@ -399,21 +361,12 @@ public class PvpGame : MonoBehaviour {
       sendGameMessage("Team " + winningTeam.ToString() + " has won the game!");
       StopAllCoroutines();
 
-      // Disable all sea structures
-      foreach (PvpTower tower in _towers) {
-         tower.gameObject.SetActive(false);
-         NetworkServer.Destroy(tower.gameObject);
-      }
-
-      foreach (PvpShipyard shipyard in _shipyards) {
-         shipyard.gameObject.SetActive(false);
-         NetworkServer.Destroy(shipyard.gameObject);
-      }
-
-      foreach (PvpBase pvpBase in _bases) {
-         pvpBase.gameObject.SetActive(false);
-         NetworkServer.Destroy(pvpBase.gameObject);
-      }
+      destroyStructures(_topStructuresA);
+      destroyStructures(_midStructuresA);
+      destroyStructures(_botStructuresA);
+      destroyStructures(_topStructuresB);
+      destroyStructures(_midStructuresB);
+      destroyStructures(_botStructuresB);
 
       foreach (BotShipEntity botShip in _ships) {
          if (botShip && botShip.gameObject) {
@@ -422,6 +375,13 @@ public class PvpGame : MonoBehaviour {
       }
 
       StartCoroutine(CO_PostGame());
+   }
+
+   private void destroyStructures (List<SeaStructure> structures) {
+      foreach (SeaStructure structure in structures) {
+         structure.gameObject.SetActive(false);
+         NetworkServer.Destroy(structure.gameObject);
+      }
    }
 
    private IEnumerator CO_PostGame () {
@@ -526,50 +486,6 @@ public class PvpGame : MonoBehaviour {
       return _usersInGame.Contains(userId);
    }
 
-   private List<SeaStructure> getTargetStructures (PvpTeamType team, PvpLane lane) {
-      if (team == PvpTeamType.A) {
-         switch (lane) {
-            case PvpLane.Top:
-               return new List<SeaStructure>() { getTower(PvpTowerType.TopB1), getTower(PvpTowerType.TopB2), getShipyard(team, lane), getTower(PvpTowerType.BaseB) };
-            case PvpLane.Mid:
-               return new List<SeaStructure>() { getTower(PvpTowerType.MidB1), getTower(PvpTowerType.MidB2), getShipyard(team, lane), getTower(PvpTowerType.BaseB) };
-            case PvpLane.Bot:
-               return new List<SeaStructure>() { getTower(PvpTowerType.BotB1), getTower(PvpTowerType.BotB2), getShipyard(team, lane), getTower(PvpTowerType.BaseB) };
-         }
-      } else if (team == PvpTeamType.B) {
-         switch (lane) {
-            case PvpLane.Top:
-               return new List<SeaStructure>() { getTower(PvpTowerType.TopA1), getTower(PvpTowerType.TopA2), getShipyard(team, lane), getTower(PvpTowerType.BaseA) };
-            case PvpLane.Mid:
-               return new List<SeaStructure>() { getTower(PvpTowerType.MidA1), getTower(PvpTowerType.MidA2), getShipyard(team, lane), getTower(PvpTowerType.BaseA) };
-            case PvpLane.Bot:
-               return new List<SeaStructure>() { getTower(PvpTowerType.BotA1), getTower(PvpTowerType.BotA2), getShipyard(team, lane), getTower(PvpTowerType.BaseA) };
-         }
-      }
-
-      return null;
-   }
-
-   private PvpTower getTower (PvpTowerType type) {
-      if (type == PvpTowerType.None) {
-         return null;
-      }
-      
-      return _towers[((int) type) - 1];
-   }
-
-   private PvpShipyard getShipyard (PvpTeamType teamType, PvpLane lane) {
-      int laneNum = ((int) lane) - 1;
-      int teamNum = ((int) teamType) - 1;
-      int shipyardIndex = teamNum * 3 + laneNum;
-      return _shipyards[shipyardIndex];
-   }
-
-   private PvpBase getBase (PvpTeamType teamType) {
-      int baseIndex = ((int) teamType) - 1;
-      return _bases[baseIndex];
-   }
-
    public PvpTeamType getTeamForPlayer (int userId) {
       foreach (PvpTeamType teamType in _teams.Keys) {
          if (_teams.ContainsKey(teamType) && _teams[teamType].Contains(userId)) {
@@ -579,6 +495,85 @@ public class PvpGame : MonoBehaviour {
 
       D.warning("PvpGame.getTeamForPlayer() couldn't find a team that the player was assigned to.");
       return PvpTeamType.None;
+   }
+
+   private List<SeaStructure> getStructures (PvpTeamType team, PvpLane lane) {
+      if (team == PvpTeamType.A) {
+         if (lane == PvpLane.Top) {
+            return _topStructuresA;
+         } else if (lane == PvpLane.Mid) {
+            return _midStructuresA;
+         } else if (lane == PvpLane.Bot) {
+            return _botStructuresA;
+         }
+      } else if (team == PvpTeamType.B) {
+         if (lane == PvpLane.Top) {
+            return _topStructuresB;
+         } else if (lane == PvpLane.Mid) {
+            return _midStructuresB;
+         } else if (lane == PvpLane.Bot) {
+            return _botStructuresB;
+         }
+      }
+      return null;
+   }
+
+   private void registerTower (PvpTower tower) {
+      tower.onDeathAction += onStructureDestroyed;
+      int indexInList = 0;
+
+      if (tower.laneType == PvpLane.Base) {
+         indexInList = _towersPerLane + 1;
+
+         // Base towers are registered in all lanes, for bot ship targeting and structure invulnerability purposes
+         getStructures(tower.pvpTeam, PvpLane.Top)[indexInList] = tower;
+         getStructures(tower.pvpTeam, PvpLane.Mid)[indexInList] = tower;
+         getStructures(tower.pvpTeam, PvpLane.Bot)[indexInList] = tower;
+      } else {
+         indexInList = tower.indexInLane;
+         getStructures(tower.pvpTeam, tower.laneType)[indexInList] = tower;
+      }
+   }
+   
+   private void registerShipyard (PvpShipyard shipyard) {
+      shipyard.onDeathAction += onStructureDestroyed;
+      int indexInList = _towersPerLane;
+      getStructures(shipyard.pvpTeam, shipyard.laneType)[indexInList] = shipyard;
+      _shipyards.Add(shipyard);
+   }
+
+   private void registerBase (PvpBase pvpBase) {
+      pvpBase.onDeathAction += onStructureDestroyed;
+      int indexInList = _towersPerLane + 2;
+
+      // Bases are registered in all lanes, for bot ship targeting and structure invulnerability purposes
+      getStructures(pvpBase.pvpTeam, PvpLane.Top)[indexInList] = pvpBase;
+      getStructures(pvpBase.pvpTeam, PvpLane.Mid)[indexInList] = pvpBase;
+      getStructures(pvpBase.pvpTeam, PvpLane.Bot)[indexInList] = pvpBase;
+   }
+
+   public static PvpShipyard.SpawnLocation getSpawnSideForShipyard (PvpTeamType teamType, PvpLane lane) {
+      if (teamType == PvpTeamType.A) {
+         switch (lane) {
+            case PvpLane.Top:
+               return PvpShipyard.SpawnLocation.Top;
+            case PvpLane.Mid:
+               return PvpShipyard.SpawnLocation.TopRight;
+            case PvpLane.Bot:
+               return PvpShipyard.SpawnLocation.Right;
+         }
+      } else if (teamType == PvpTeamType.B) {
+         switch (lane) {
+            case PvpLane.Top:
+               return PvpShipyard.SpawnLocation.Left;
+            case PvpLane.Mid:
+               return PvpShipyard.SpawnLocation.BottomLeft;
+            case PvpLane.Bot:
+               return PvpShipyard.SpawnLocation.Bottom;
+         }
+      }
+
+      return PvpShipyard.SpawnLocation.None;
    }
 
    #region Private Variables
@@ -604,14 +599,19 @@ public class PvpGame : MonoBehaviour {
    // A list of references to all the shipyards in this game
    private List<PvpShipyard> _shipyards = new List<PvpShipyard>();
 
-   // A list of references to all the towers in this game
-   private List<PvpTower> _towers = new List<PvpTower>();
-
-   // A list of references to all the bases in this game
-   private List<PvpBase> _bases = new List<PvpBase>();
+   // A list of references to the structures in each lane, for each team
+   private List<SeaStructure> _topStructuresA = new List<SeaStructure>();
+   private List<SeaStructure> _midStructuresA = new List<SeaStructure>();
+   private List<SeaStructure> _botStructuresA = new List<SeaStructure>();   
+   private List<SeaStructure> _topStructuresB = new List<SeaStructure>();
+   private List<SeaStructure> _midStructuresB = new List<SeaStructure>();
+   private List<SeaStructure> _botStructuresB = new List<SeaStructure>();
 
    // A list of all the bot ships in this game
    private List<BotShipEntity> _ships = new List<BotShipEntity>();
+
+   // How many towers are in this game
+   private int _towersPerLane = 0;
 
    #endregion
 }
@@ -632,24 +632,5 @@ public enum PvpLane
    Top = 1,
    Mid = 2,
    Bot = 3,
-}
-
-public enum PvpTowerType
-{
-   // Towers are named by their Lane + Team + Tier (Tier 1 tower is the first in the lane, closest to the enemy)
-   None = 0,
-   TopA1 = 1,
-   TopA2 = 2,
-   MidA1 = 3,
-   MidA2 = 4,
-   BotA1 = 5,
-   BotA2 = 6,
-   BaseA = 7,
-   TopB1 = 8,
-   TopB2 = 9,
-   MidB1 = 10,
-   MidB2 = 11,
-   BotB1 = 12,
-   BotB2 = 13,
-   BaseB = 14,
+   Base = 4,
 }

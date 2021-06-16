@@ -35,6 +35,9 @@ public class ServerNetworkingManager : MonoBehaviour
       RegisterSerializableClass<VoyageGroupInfo>();
       RegisterSerializableClass<Voyage>();
       RegisterSerializableClass<UserLocationBundle>();
+
+      // Log the number of connected players
+      InvokeRepeating(nameof(logNumberOfConnectedClients), 0f, 60f);
    }
 
    public static NetworkingManager get () {
@@ -56,6 +59,12 @@ public class ServerNetworkingManager : MonoBehaviour
             }
          }
       );
+   }
+
+   private void logNumberOfConnectedClients () {
+      if (server != null) {
+         D.debug($"Total client connections: {server.connectedUserIds.Count}");
+      }
    }
 
    public NetworkedServer findBestServerForConnectingPlayer (string areaKey, string username, int userId, string address,

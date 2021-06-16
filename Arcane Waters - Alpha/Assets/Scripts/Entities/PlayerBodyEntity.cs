@@ -107,15 +107,21 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // The cached battle stance player pref key
    public const string CACHED_STANCE_PREF = "CACHE_STANCE";
 
+   // The width of the outline around the local player's name
+   [Range(0.0f, 1.0f)]
+   public float playerNameOutlineWidth = 0.35f;
+
+   // The default color of a player's name
+   public Color playerNameColor = Color.white;
+
+   // The default color of the outline around a player's name
+   public Color playerNameOutlineColor = Color.black;
+
    // The color of the local player's name
    public Color localPlayerNameColor = Color.white;
 
    // The color of the outline around the local player's name
-   public Color localPlayerOutlineColor = Color.blue;
-
-   // The width of the outline around the local player's name
-   [Range(0.0f, 1.0f)]
-   public float localPlayerOutlineWidth = 0.35f;
+   public Color localPlayerNameOutlineColor = Color.blue;
 
    // A transform that will follow the player as they jump, as will child objects of it
    public Transform followJumpHeight;
@@ -847,14 +853,63 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    public override void recolorNameText () {
       nameText.fontMaterial = new Material(nameText.fontSharedMaterial);
-      nameText.fontMaterial.SetColor("_FaceColor", localPlayerNameColor);
 
       nameTextOutline.enabled = true;
-      nameTextOutline.text = this.entityName;
       nameTextOutline.fontMaterial = new Material(nameTextOutline.fontSharedMaterial);
-      nameTextOutline.fontMaterial.SetColor("_FaceColor", localPlayerNameColor);
-      nameTextOutline.fontMaterial.SetColor("_OutlineColor", localPlayerOutlineColor);
-      nameTextOutline.fontMaterial.SetFloat("_OutlineWidth", localPlayerOutlineWidth);
+      nameTextOutline.fontMaterial.SetFloat("_OutlineWidth", playerNameOutlineWidth);
+      nameTextOutline.text = this.entityName;
+
+      if (isLocalPlayer) {
+         nameText.fontMaterial.SetColor("_FaceColor", localPlayerNameColor);
+         nameTextOutline.fontMaterial.SetColor("_FaceColor", localPlayerNameColor);
+         nameTextOutline.fontMaterial.SetColor("_OutlineColor", localPlayerNameOutlineColor);
+      } else {
+         nameText.fontMaterial.SetColor("_FaceColor", playerNameColor);
+         nameTextOutline.fontMaterial.SetColor("_FaceColor", playerNameColor);
+         nameTextOutline.fontMaterial.SetColor("_OutlineColor", playerNameOutlineColor);
+      }
+   }
+
+   protected override void autoMove () {
+      if (Global.player == null || !isLocalPlayer || isInBattle()) {
+         return;
+      }
+
+      if (!Util.isGeneralInputAllowed()) {
+         // Try to close any opened panel
+         PanelManager.self.onEscapeKeyPressed();
+
+         return;
+      }
+
+      // Choose an action
+      int action = Random.Range(0, 7);
+
+      switch (action) {
+         case 0:
+            InputManager.self.simulateDirectionPress(Direction.East, Random.Range(0.5f, AUTO_MOVE_ACTION_DURATION));
+            break;
+         case 1:
+            InputManager.self.simulateDirectionPress(Direction.West, Random.Range(0.5f, AUTO_MOVE_ACTION_DURATION));
+            break;
+         case 2:
+            InputManager.self.simulateDirectionPress(Direction.North, Random.Range(0.5f, AUTO_MOVE_ACTION_DURATION));
+            break;
+         case 3:
+            InputManager.self.simulateDirectionPress(Direction.South, Random.Range(0.5f, AUTO_MOVE_ACTION_DURATION));
+            break;
+         case 4:
+            triggerJumpAction();
+            break;
+         case 5:
+            PanelManager.self.itemShortcutPanel.activateShortcut(Random.Range(1, 6));
+            break;
+         case 6:
+            triggerInteractAction();
+            break;
+         default:
+            break;
+      }
    }
 
    #region Private Variables

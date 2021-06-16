@@ -239,6 +239,9 @@ public class NetEntity : NetworkBehaviour
    // The speed multiplier when in ghost mode
    public static float GHOST_SPEED_MULTIPLIER = 6f;
 
+   // The duration of auto-move actions
+   public static float AUTO_MOVE_ACTION_DURATION = 2f;
+
    // If this unit is being controlled by another script
    public bool isUnderExternalControl;
 
@@ -335,6 +338,11 @@ public class NetEntity : NetworkBehaviour
 
          if (isPlayerEntity()) {
             StartCoroutine(CO_LoadWeather());
+         }
+
+         // Start auto-move and/or auto-basic-actions
+         if (_autoMove) {
+            InvokeRepeating(nameof(autoMove), UnityEngine.Random.Range(0f, AUTO_MOVE_ACTION_DURATION), AUTO_MOVE_ACTION_DURATION);
          }
       }
 
@@ -433,6 +441,11 @@ public class NetEntity : NetworkBehaviour
       // Hide our name while we're dead
       if (isDead()) {
          Util.setAlpha(nameText, 0f);
+      } else {
+         // Show player names if in pvp
+         if (pvpTeam != PvpTeamType.None && isPlayerShip()) {
+            Util.setAlpha(nameText, 1.0f);
+         }
       }
 
       // Check if we're showing a West sprite
@@ -729,7 +742,7 @@ public class NetEntity : NetworkBehaviour
 
    [TargetRpc]
    private void Target_SetPosition (Vector3 position) {
-      transform.position = position;
+      transform.localPosition = position;
    }
 
    [TargetRpc]
@@ -1993,6 +2006,8 @@ public class NetEntity : NetworkBehaviour
    public virtual bool isLandEnemy () { return false; }
 
    protected virtual void onMaxHealthChanged (int oldValue, int newValue) { }
+
+   protected virtual void autoMove () { }
 
    #region Private Variables
 

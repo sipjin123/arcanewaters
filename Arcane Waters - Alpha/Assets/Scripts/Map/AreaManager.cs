@@ -59,6 +59,7 @@ public class AreaManager : MonoBehaviour
    public void storeAreaInfo (Map map) {
       if (!_areaKeyToMapInfo.ContainsKey(map.name)) {
          _areaKeyToMapInfo.Add(map.name, map);
+         _areaNames.Add(map.name);
       }
 
       if (map.editorType == EditorType.Sea && !_seaAreaKeys.Contains(map.name)) {
@@ -176,6 +177,10 @@ public class AreaManager : MonoBehaviour
       return new List<string>(_areaKeyToMapInfo.Keys);
    }
 
+   public List<string> getAllAreaNames () {
+      return _areaNames;
+   }
+
    public List<Map> getAllMapInfo () {
       return _areaKeyToMapInfo.Values.ToList();
    }
@@ -274,6 +279,9 @@ public class AreaManager : MonoBehaviour
 
    // The list of areas that are sea maps
    protected List<string> _seaAreaKeys = new List<string>();
+
+   // The area names
+   protected List<string> _areaNames = new List<string>();
 
    // Managers of owned maps
    protected CustomMapManager[] _customMapManagers = new CustomMapManager[] { new CustomHouseManager(), new CustomFarmManager() };

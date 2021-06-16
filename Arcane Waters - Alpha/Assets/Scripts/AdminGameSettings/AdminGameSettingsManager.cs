@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 
-public class AdminGameSettingsManager : MonoBehaviour
+public class AdminGameSettingsManager : GenericGameManager
 {
    #region Public Variables
 
@@ -18,6 +18,7 @@ public class AdminGameSettingsManager : MonoBehaviour
    #endregion
 
    public void Awake () {
+      base.Awake();
       self = this;
    }
 

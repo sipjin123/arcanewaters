@@ -200,6 +200,9 @@ public class PrefabsManager : MonoBehaviour {
    // A reference to the explosive shot effect prefab
    public GameObject explosiveShotEffectPrefab;
 
+   // A reference to the powerup pickup effect prefab
+   public GameObject powerupPickupEffect;
+
    // Self
    public static PrefabsManager self;
 

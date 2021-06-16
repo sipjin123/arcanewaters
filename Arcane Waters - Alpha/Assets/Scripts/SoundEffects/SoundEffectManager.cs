@@ -91,6 +91,7 @@ public class SoundEffectManager : GenericGameManager
    public const int BUTTON_CONFIRM = 103;
 
    public const int ENEMY_SHIP_DESTROYED = 108;
+   public const int PURCHASE_ITEM = 110;
 
    public const string MENU_OPEN_PATH = "event:/SFX/Game/UI/Menu_Open";
    public const string BUTTON_CONFIRM_PATH = "event:/SFX/Game/UI/Button_Confirm";

@@ -322,11 +322,25 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       }
 
-      LocalPlayerIndicator indicator = this.GetComponentInChildren<LocalPlayerIndicator>();
-      if (indicator != null) {
-         indicator.toggle(isLocalBattler);
+      if (battlerType == BattlerType.PlayerControlled) {
+         displayBattlerName(player.entityName);
       }
 
+   public void displayBattlerName (string name) {
+      BattleBars bars = GetComponentInChildren<BattleBars>();
+      if (bars != null) {
+         bars.nameTextInside.text = name;
+         bars.nameTextOutside.text = name;
+         bars.nameTextInside.fontMaterial = new Material(bars.nameTextInside.fontSharedMaterial);
+         bars.nameTextInside.fontMaterial.SetColor("_FaceColor", bars.nameColor);
+         bars.nameTextInside.fontMaterial.SetColor("_OutlineColor", bars.nameOutlineColor);
+         bars.nameTextInside.fontMaterial.SetFloat("_OutlineWidth", bars.nameOutlineWidth);
+
+         if (isLocalBattler()) {
+            bars.nameTextInside.fontMaterial.SetColor("_FaceColor", bars.nameColorLocalPlayer);
+            bars.nameTextInside.fontMaterial.SetColor("_OutlineColor", bars.nameOutlineColor);
+         }
+      }
    }
 
    private void autoAttackSimulation () {
@@ -934,7 +948,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       if (animationType != Anim.Type.Death_East && (isAlreadyDead || hasPlayedDeathAnim)) {
          return;
       }
-      
+
+      // Set the animation speed
       if (customSpeed > 0) {
          modifyAnimSpeed(customSpeed * AdminGameSettingsManager.self.settings.battleTimePerFrame);
       } else {
@@ -970,6 +985,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       foreach (SimpleAnimation anim in _anims) {
          if (anim.enabled) {
             anim.modifyAnimSpeed(speed);
+
+            // Avoid skipping the first frame when changing the anim speed
+            anim.initialDelay = speed;
          }
       }
    }

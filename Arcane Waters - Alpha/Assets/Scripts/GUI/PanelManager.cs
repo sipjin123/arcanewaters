@@ -74,30 +74,7 @@ public class PanelManager : GenericGameManager {
 
       // Let us easily close panels with the Escape key
       if (KeyUtils.GetKeyUp(Key.Escape)) {
-         // Hide tooltips before closing the panel
-         hideToolTips();
-
-         // The chat input field might remain selected
-         if (EventSystem.current.currentSelectedGameObject == ChatPanel.self.inputField.gameObject || EventSystem.current.currentSelectedGameObject == ChatPanel.self.nameInputField.gameObject) {
-            EventSystem.current.SetSelectedGameObject(null);
-         } else if (confirmScreen.canvasGroup.alpha > 0f) {
-            confirmScreen.hide();
-         } else if (noticeScreen.canvasGroup.alpha > 0f) {
-            noticeScreen.hide();
-         } else if (PerksPanel.self.isShowing()) {
-            PerksPanel.self.hide();
-         } else if (get<AuctionPanel>(Panel.Type.Auction).auctionInfoPanel.isShowing()) {
-            AuctionPanel.self.auctionInfoPanel.hide();
-         } else if (hasPanelInLinkedList()) {
-            unlinkPanel();
-         } else if (!((OptionsPanel) get(Panel.Type.Options)).isShowing()) {
-            // Play SFX
-            SoundEffectManager.self.playFmod2DWithPath(SoundEffectManager.MENU_OPEN_PATH);
-
-            linkPanel(Panel.Type.Options);
-         } else {
-            unlinkPanel();
-         }
+         onEscapeKeyPressed();
       }
 
       // Don't check for keys if we're typing
@@ -134,6 +111,33 @@ public class PanelManager : GenericGameManager {
          adminGameSettingsPanel.togglePanel();
       }
 
+   }
+
+   public void onEscapeKeyPressed () {
+      // Hide tooltips before closing the panel
+      hideToolTips();
+
+      // The chat input field might remain selected
+      if (EventSystem.current.currentSelectedGameObject == ChatPanel.self.inputField.gameObject || EventSystem.current.currentSelectedGameObject == ChatPanel.self.nameInputField.gameObject) {
+         EventSystem.current.SetSelectedGameObject(null);
+      } else if (confirmScreen.canvasGroup.alpha > 0f) {
+         confirmScreen.hide();
+      } else if (noticeScreen.canvasGroup.alpha > 0f) {
+         noticeScreen.hide();
+      } else if (PerksPanel.self.isShowing()) {
+         PerksPanel.self.hide();
+      } else if (get<AuctionPanel>(Panel.Type.Auction).auctionInfoPanel.isShowing()) {
+         AuctionPanel.self.auctionInfoPanel.hide();
+      } else if (hasPanelInLinkedList()) {
+         unlinkPanel();
+      } else if (!((OptionsPanel) get(Panel.Type.Options)).isShowing()) {
+         // Play SFX
+         SoundEffectManager.self.playFmod2DWithPath(SoundEffectManager.MENU_OPEN_PATH);
+
+         linkPanel(Panel.Type.Options);
+      } else {
+         unlinkPanel();
+      }
    }
 
    public Panel currentPanel () {

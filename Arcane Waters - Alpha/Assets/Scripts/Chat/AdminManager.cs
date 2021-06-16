@@ -6,7 +6,6 @@ using Mirror;
 using System.Linq;
 using System;
 using System.IO;
-using MapCreationTool.Serialization;
 using Mirror.Profiler;
 using NubisDataHandling;
 using MLAPI.Messaging;
@@ -28,24 +27,14 @@ public class AdminManager : NetworkBehaviour
    void Start () {
       _player = GetComponent<NetEntity>();
 
-      // If we're testing clients, have them warp around repeatedly
-      if (Util.isAutoTesting()) {
-         InvokeRepeating("warpRandomly", 10f, 10f);
+      if (isLocalPlayer) {
+         // If we're testing clients, have them warp around repeatedly
+         if (Util.isAutoWarping()) {
+            InvokeRepeating("warpRandomly", 10f, 10f);
+         }
+
+         StartCoroutine(CO_AddCommands());
       }
-
-      // Request the list of blueprints from the server
-      if (isLocalPlayer && _blueprintNames.Count == 0) {
-         // TODO: Insert fetch blueprint data here
-      }
-
-      StartCoroutine(CO_AddCommands());
-
-      StartCoroutine(CO_CreateItemNamesDictionary());
-
-      #if IS_SERVER_BUILD
-         networkProfiler.MaxTicks = int.MaxValue;
-         networkProfiler.IsRecording = true;
-      #endif
    }
 
    private IEnumerator CO_AddCommands () {
@@ -116,6 +105,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("unlock_world_map", "Unlocks all the biomes and town warps in the world map", unlockWorldMap, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("pvp_join", "Warps the player to the current pvp game", joinPvp, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("pvp_force_start", "Forces the pvp game the player is in to start, regardless of how many players are in it", forceStartPvp, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("warp", "Warps you to an area", requestWarp, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "areaName" }, parameterAutocompletes: AreaManager.self.getAllAreaNames()));
 
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
@@ -128,14 +118,6 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("log", "Enables isolated debug loggers", requestLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType", "isTrue" }));
       cm.addCommand(new CommandData("network_profile", "Saves last 60 seconds of network profiling data", networkProfile, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("temp_password", "Temporary access any account using temporary password", overridePassword, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "accountName", "tempPassword" }));
-
-      List<Map> maps = AreaManager.self.getAllMapInfo();
-      List<string> mapNames = new List<string>();
-      foreach (Map map in maps) {
-         mapNames.Add(map.name);
-      }
-
-      cm.addCommand(new CommandData("warp", "Warps you to an area", requestWarp, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "areaName" }, parameterAutocompletes: mapNames));
 
       /*    NOT IMPLEMENTED
       _commands[Type.CreateTestUsers] = "create_test_users";
@@ -440,9 +422,6 @@ public class AdminManager : NetworkBehaviour
       }
    }
 
-
-   private readonly NetworkProfiler networkProfiler = new NetworkProfiler(60 * 60); // 60 seconds
-
    private void networkProfile (string parameters) {
       Cmd_NetworkProfile(parameters);
    }
@@ -493,9 +472,9 @@ public class AdminManager : NetworkBehaviour
       }
       string dumpFile = dumpsDirPath + DateTime.Now.ToString("MM_dd_yyyy_HH_mm_ss") + "_dump.netdata";
 
-      networkProfiler.IsRecording = false;
-      networkProfiler.Save(dumpFile);
-      networkProfiler.IsRecording = true;
+      AdminManagerSingleton.self.networkProfiler.IsRecording = false;
+      AdminManagerSingleton.self.networkProfiler.Save(dumpFile);
+      AdminManagerSingleton.self.networkProfiler.IsRecording = true;
    }
 
    private void requestDifficulty (string parameters) {
@@ -1278,7 +1257,7 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
-      if (!inputString.StartsWith("/admin get_item ")) {
+      if (!inputString.StartsWith("/admin get_item ") && !inputString.StartsWith("/a get_item ")) {
          return;
       }
 
@@ -1311,22 +1290,22 @@ public class AdminManager : NetworkBehaviour
          Dictionary<string, int> dictionary;
          switch (categoryStr.Substring(0, 1).ToLower()) {
             case "w":
-               dictionary = _weaponNames;
+               dictionary = AdminManagerSingleton.self.weaponNames;
                break;
             case "a":
-               dictionary = _armorNames;
+               dictionary = AdminManagerSingleton.self.armorNames;
                break;
             case "h":
-               dictionary = _hatNames;
+               dictionary = AdminManagerSingleton.self.hatNames;
                break;
             case "c":
-               dictionary = _craftingIngredientNames;
+               dictionary = AdminManagerSingleton.self.craftingIngredientNames;
                break;
             case "u":
-               dictionary = _usableNames;
+               dictionary = AdminManagerSingleton.self.usableNames;
                break;
             case "b":
-               dictionary = _blueprintNames;
+               dictionary = AdminManagerSingleton.self.blueprintNames;
                break;
             default:
                return;
@@ -1542,48 +1521,48 @@ public class AdminManager : NetworkBehaviour
       int itemTypeId;
       switch (category) {
          case Item.Category.Weapon:
-            if (_weaponNames.ContainsKey(itemName)) {
-               itemTypeId = _weaponNames[itemName];
+            if (AdminManagerSingleton.self.weaponNames.ContainsKey(itemName)) {
+               itemTypeId = AdminManagerSingleton.self.weaponNames[itemName];
             } else {
                ChatManager.self.addChat("Could not find the weapon " + itemName, ChatInfo.Type.Error);
                return;
             }
             break;
          case Item.Category.Armor:
-            if (_armorNames.ContainsKey(itemName)) {
-               itemTypeId = _armorNames[itemName];
+            if (AdminManagerSingleton.self.armorNames.ContainsKey(itemName)) {
+               itemTypeId = AdminManagerSingleton.self.armorNames[itemName];
             } else {
                ChatManager.self.addChat("Could not find the armor " + itemName, ChatInfo.Type.Error);
                return;
             }
             break;
          case Item.Category.Hats:
-            if (_hatNames.ContainsKey(itemName)) {
-               itemTypeId = _hatNames[itemName];
+            if (AdminManagerSingleton.self.hatNames.ContainsKey(itemName)) {
+               itemTypeId = AdminManagerSingleton.self.hatNames[itemName];
             } else {
                ChatManager.self.addChat("Could not find the hat " + itemName, ChatInfo.Type.Error);
                return;
             }
             break;
          case Item.Category.Usable:
-            if (_usableNames.ContainsKey(itemName)) {
-               itemTypeId = _usableNames[itemName];
+            if (AdminManagerSingleton.self.usableNames.ContainsKey(itemName)) {
+               itemTypeId = AdminManagerSingleton.self.usableNames[itemName];
             } else {
                ChatManager.self.addChat("Could not find the usable item " + itemName, ChatInfo.Type.Error);
                return;
             }
             break;
          case Item.Category.CraftingIngredients:
-            if (_craftingIngredientNames.ContainsKey(itemName)) {
-               itemTypeId = _craftingIngredientNames[itemName];
+            if (AdminManagerSingleton.self.craftingIngredientNames.ContainsKey(itemName)) {
+               itemTypeId = AdminManagerSingleton.self.craftingIngredientNames[itemName];
             } else {
                ChatManager.self.addChat("Could not find the crafting ingredient " + itemName, ChatInfo.Type.Error);
                return;
             }
             break;
          case Item.Category.Blueprint:
-            if (_blueprintNames.ContainsKey(itemName)) {
-               itemTypeId = _blueprintNames[itemName];
+            if (AdminManagerSingleton.self.blueprintNames.ContainsKey(itemName)) {
+               itemTypeId = AdminManagerSingleton.self.blueprintNames[itemName];
             } else {
                ChatManager.self.addChat("Could not find the blueprint " + itemName, ChatInfo.Type.Error);
                return;
@@ -2166,7 +2145,7 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
-      if (Util.isAutoTesting()) {
+      if (Util.isAutoWarping()) {
          D.debug("Player {" + _player.userId + "} is warping to: {" + closestAreaKey + "}");
       }
 
@@ -2271,13 +2250,13 @@ public class AdminManager : NetworkBehaviour
       // Get the item type ID
       switch (category) {
          case Item.Category.Armor:
-            itemTypeId = _armorNames[itemName];
+            itemTypeId = AdminManagerSingleton.self.armorNames[itemName];
             break;
          case Item.Category.Weapon:
-            itemTypeId = _weaponNames[itemName];
+            itemTypeId = AdminManagerSingleton.self.weaponNames[itemName];
             break;
          case Item.Category.Hats:
-            itemTypeId = _hatNames[itemName];
+            itemTypeId = AdminManagerSingleton.self.hatNames[itemName];
             break;
       }
 
@@ -2546,71 +2525,6 @@ public class AdminManager : NetworkBehaviour
       return wasItemCreated;
    }
 
-   private IEnumerator CO_CreateItemNamesDictionary () {
-      while (!EquipmentXMLManager.self.loadedAllEquipment) {
-         yield return null;
-      }
-
-      buildItemNamesDictionary();
-   }
-
-
-   public void buildItemNamesDictionary () {
-      // Clear all the dictionaries
-      _weaponNames.Clear();
-      _armorNames.Clear();
-      _hatNames.Clear();
-      _usableNames.Clear();
-      _craftingIngredientNames.Clear();
-
-      // Set all the weapon names
-      foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
-         addToItemNameDictionary(_weaponNames, Item.Category.Weapon, weaponData.sqlId, weaponData.equipmentName);
-      }
-
-      // Set all the armor names
-      foreach (ArmorStatData armorData in EquipmentXMLManager.self.armorStatList) {
-         addToItemNameDictionary(_armorNames, Item.Category.Armor, armorData.sqlId, armorData.equipmentName);
-      }
-
-      // Set all the hat names
-      foreach (HatStatData hatData in EquipmentXMLManager.self.hatStatList) {
-         addToItemNameDictionary(_hatNames, Item.Category.Hats, hatData.sqlId, hatData.equipmentName);
-      }
-
-      // Set all the usable items names
-      foreach (UsableItem.Type usableType in Enum.GetValues(typeof(UsableItem.Type))) {
-         addToItemNameDictionary(_usableNames, Item.Category.Usable, (int) usableType);
-      }
-
-      // Set all the crafting ingredients names
-      foreach (CraftingIngredients.Type craftingIngredientsType in Enum.GetValues(typeof(CraftingIngredients.Type))) {
-         addToItemNameDictionary(_craftingIngredientNames, Item.Category.CraftingIngredients, (int) craftingIngredientsType);
-      }
-   }
-
-   private void addToItemNameDictionary (Dictionary<string, int> dictionary, Item.Category category, int itemTypeId) {
-      // Create a base item
-      Item baseItem = new Item(-1, category, itemTypeId, 1, "", "", Item.MAX_DURABILITY);
-      baseItem = baseItem.getCastItem();
-
-      addToItemNameDictionary(dictionary, category, itemTypeId, baseItem.getName());
-   }
-
-   private void addToItemNameDictionary (Dictionary<string, int> dictionary, Item.Category category, int itemTypeId, string itemName) {
-      // Get the item name in lower case
-      itemName = itemName.ToLower();
-
-      // Add the new entry in the dictionary
-      if (!"undefined".Equals(itemName) && !"usable item".Equals(itemName) && !"undefined design".Equals(itemName) && !itemName.ToLower().Contains("none") && itemName != "") {
-         if (!dictionary.ContainsKey(itemName)) {
-            dictionary.Add(itemName, itemTypeId);
-         } else {
-            D.warning(string.Format("The {0} item name ({1}) is duplicated.", category.ToString(), itemName));
-         }
-      }
-   }
-
    [Command]
    public void Cmd_GetServerLogString () {
       // Transform into a byte array to avoid the 'buffer is too small' error
@@ -2634,16 +2548,6 @@ public class AdminManager : NetworkBehaviour
 
    // Our associated Player object
    protected NetEntity _player;
-
-   // The dictionary of item ids accessible by in-game item name
-   protected Dictionary<string, int> _weaponNames = new Dictionary<string, int>();
-   protected Dictionary<string, int> _armorNames = new Dictionary<string, int>();
-   protected Dictionary<string, int> _hatNames = new Dictionary<string, int>();
-   protected Dictionary<string, int> _usableNames = new Dictionary<string, int>();
-   protected Dictionary<string, int> _craftingIngredientNames = new Dictionary<string, int>();
-
-   // The dictionary of blueprint names
-   protected static Dictionary<string, int> _blueprintNames = new Dictionary<string, int>();
 
    // The last chat input that went through the auto complete process
    private string _lastAutoCompletedInput = "";

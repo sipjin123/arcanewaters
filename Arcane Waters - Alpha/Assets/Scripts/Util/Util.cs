@@ -854,8 +854,8 @@ public class Util : MonoBehaviour
       return false;
    }
 
-   public static bool isAutoTesting () {
-      return CommandCodes.get(CommandCodes.Type.AUTO_TEST);
+   public static bool isAutoWarping () {
+      return CommandCodes.get(CommandCodes.Type.AUTO_WARP);
    }
 
    public static void readFastLoginFile () {

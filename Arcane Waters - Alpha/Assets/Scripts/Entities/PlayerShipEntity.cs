@@ -8,7 +8,6 @@ using UnityEngine.EventSystems;
 using TMPro;
 using DG.Tweening;
 using UnityEngine.InputSystem;
-using FMODUnity;
 
 public class PlayerShipEntity : ShipEntity
 {
@@ -122,10 +121,6 @@ public class PlayerShipEntity : ShipEntity
    // Other objects can add callbacks to this event, to be notified when this player damages another player
    public System.Action<PlayerShipEntity, PvpTeamType> onDamagedPlayer;
 
-   // FMOD event instance for managing ship's boost SFX
-   //FMOD.Studio.EventInstance boostState;
-   //StudioEventEmitter boostEventEmitter;
-
    // The different flags the ship can display
    public enum Flag {
       None = 0,
@@ -224,7 +219,7 @@ public class PlayerShipEntity : ShipEntity
       InputManager.self.inputMaster.Player.Dash.performed += func => {
          if (gamePadDashPressed != true) {
             pressBoost();
-            gamePadDashPressed = true; 
+            gamePadDashPressed = true;
          }
       };
 
@@ -236,13 +231,8 @@ public class PlayerShipEntity : ShipEntity
       };
 
       // Creating the FMOD event Instance
-      _boostState = RuntimeManager.CreateInstance(SoundEffectManager.self.getSoundEffect(SoundEffectManager.SHIP_LAUNCH_CHARGE).fmodId);
-      _boostState.set3DAttributes(RuntimeUtils.To3DAttributes(this.transform));
-
-      //boostEventEmitter = gameObject.AddComponent<StudioEventEmitter>();
-      //boostEventEmitter.AllowFadeout = true;
-      //boostEventEmitter.StopEvent = EmitterGameEvent.ObjectDestroy;
-      //boostEventEmitter.Event = boostEffect.fmodId;
+      _boostState = FMODUnity.RuntimeManager.CreateInstance(SoundEffectManager.self.getSoundEffect(SoundEffectManager.SHIP_LAUNCH_CHARGE).fmodId);
+      _boostState.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(this.transform));
    }
 
    protected override void initialize (ShipInfo info) {
@@ -357,7 +347,7 @@ public class PlayerShipEntity : ShipEntity
       }
 
       // Update FMOD Studio Listener attachment
-      RuntimeManager.AttachInstanceToGameObject(_boostState, transform, _body);
+      FMODUnity.RuntimeManager.AttachInstanceToGameObject(_boostState, transform, _body);
    }
 
    private void LateUpdate () {
@@ -1279,6 +1269,13 @@ public class PlayerShipEntity : ShipEntity
    [ClientRpc]
    private void Rpc_NoteBoost () {
       if (!isLocalPlayer) {
+         // Play the ship boost release SFX
+         FMOD.Studio.EventInstance boostEvent = FMODUnity.RuntimeManager.CreateInstance(SoundEffectManager.self.getSoundEffect(SoundEffectManager.SHIP_LAUNCH_CHARGE).fmodId);
+         boostEvent.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 2);
+         boostEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(gameObject));
+         boostEvent.start();
+         boostEvent.release();
+
          _lastBoostTime = NetworkTime.time;
       }
    }
@@ -1303,18 +1300,19 @@ public class PlayerShipEntity : ShipEntity
       // Assign the ship name
       if (!Util.isEmpty(entityName)) {
          entityNameGO.SetActive(true);
-         entityNameGO.GetComponentInChildren<TextMeshProUGUI>(true).text = this.entityName;
-         if (isLocalPlayer) {
-            ShipBarsPlayer sbp = entityNameGO.GetComponentInParent<ShipBarsPlayer>();
-            TextMeshProUGUI entityNameLabel = entityNameGO.GetComponentInChildren<TextMeshProUGUI>(true);
-            entityNameLabel.outlineColor = sbp.nameOutlineColor;
-            entityNameLabel.outlineWidth = sbp.nameOutlineWidth;
+         ShipBarsPlayer sbp = entityNameGO.GetComponentInParent<ShipBarsPlayer>();
+         sbp.nameTextInside.text = this.entityName;
+         sbp.nameTextOutside.text = this.entityName;
+         sbp.nameTextInside.fontMaterial = new Material(sbp.nameTextInside.fontSharedMaterial);
+         sbp.nameTextInside.fontMaterial.SetColor("_FaceColor", sbp.nameColor);
+         sbp.nameTextInside.fontMaterial.SetColor("_OutlineColor", sbp.nameOutlineColor);
+         sbp.nameTextInside.fontMaterial.SetFloat("_OutlineWidth", sbp.nameOutlineWidth);
 
-            LocalPlayerIndicator indicator = this.GetComponentInChildren<LocalPlayerIndicator>();
-            if (indicator != null) {
-               indicator.toggle(isLocalPlayer);
-            }
+         if (isLocalPlayer) {
+            sbp.nameTextInside.fontMaterial.SetColor("_FaceColor", sbp.nameColorLocalPlayer);
+            sbp.nameTextInside.fontMaterial.SetColor("_OutlineColor", sbp.nameOutlineColor);
          }
+
       }
    }
 
@@ -1392,6 +1390,43 @@ public class PlayerShipEntity : ShipEntity
       // Clear powerup GUI
       if (isLocalPlayer) {
          PowerupPanel.self.clearPowerups();
+      }
+   }
+
+   protected override void autoMove () {
+      if (Global.player == null || !isLocalPlayer) {
+         return;
+      }
+
+      if (isDead()) {
+         requestRespawn();
+         return;
+      }
+
+      if (!Util.isGeneralInputAllowed()) {
+         // Try to close any opened panel
+         PanelManager.self.onEscapeKeyPressed();
+         return;
+      }
+
+      // Choose an action
+      int action = Random.Range(0, 4);
+
+      switch (action) {
+         case 0:
+            InputManager.self.simulateDirectionPress(Direction.East, Random.Range(0.5f, AUTO_MOVE_ACTION_DURATION));
+            break;
+         case 1:
+            InputManager.self.simulateDirectionPress(Direction.West, Random.Range(0.5f, AUTO_MOVE_ACTION_DURATION));
+            break;
+         case 2:
+            InputManager.self.simulateDirectionPress(Direction.North, Random.Range(0.5f, AUTO_MOVE_ACTION_DURATION));
+            break;
+         case 3:
+            InputManager.self.simulateDirectionPress(Direction.South, Random.Range(0.5f, AUTO_MOVE_ACTION_DURATION));
+            break;
+         default:
+            break;
       }
    }
 

@@ -92,10 +92,7 @@ public class BodyEntity : NetEntity
 
       if (nameText != null && !Util.isEmpty(this.entityName)) {
          nameText.text = this.entityName;
-
-         if (Global.player == this) {
-            recolorNameText();
-         }
+         recolorNameText();
       }
    }
 

@@ -93,6 +93,9 @@ public class ClientMessageManager : MonoBehaviour {
          case ErrorMessage.Type.NoCropsOfThatType:
             PanelManager.self.noticeScreen.show("You don't have any of those crops to sell!");
             return;
+         case ErrorMessage.Type.NotEnoughGold:
+            PanelManager.self.noticeScreen.show(msg.customMessage);
+            return;
          /*case ErrorMessage.Type.NoGoldForCargo:
          case ErrorMessage.Type.OutOfCargoSpace:
          case ErrorMessage.Type.PortOutOfCargo:
@@ -200,6 +203,9 @@ public class ClientMessageManager : MonoBehaviour {
             ChatManager.self.addChat(msg.customMessage, msg.timestamp, ChatInfo.Type.System);
             return;
          case ConfirmMessage.Type.StoreItemBought:
+            // Play the SFX for purchasing an item
+            SoundEffectManager.self.playFmod2D(SoundEffectManager.PURCHASE_ITEM);
+
             // Show the confirmation message in the notice screen
             PanelManager.self.noticeScreen.show(msg.customMessage);
             return;
@@ -385,6 +391,11 @@ public class ClientMessageManager : MonoBehaviour {
       // Wait for any fades to complete before processing anything
       while (Global.isScreenTransitioning) {
          yield return null;
+      }
+
+      if (Global.isFirstLogin) {
+         // Log the login the first time the player character spawns
+         D.debug("-- Login is completed --");
       }
 
       // Set our initial facing direction

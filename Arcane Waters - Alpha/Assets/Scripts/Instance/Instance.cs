@@ -458,8 +458,10 @@ public class Instance : NetworkBehaviour
 
       if (area.towerDataFields.Count > 0) {
          foreach (ExportedPrefab001 dataField in area.towerDataFields) {
-            // TODO: Will be modified by Tim depending on how the tower should be created
             PvpTower pvpTower = Instantiate(PrefabsManager.self.pvpTowerPrefab);
+            pvpTower.areaKey = area.areaKey;
+            pvpTower.instanceId = this.id;
+            pvpTower.setAreaParent(area, true);
 
             // The data set in the map editor will be set to this pvp tower object, this will only occur on the server side, client side data will be set in MapImporter.cs script in the function instantiatePrefabs()
             IMapEditorDataReceiver receiver = pvpTower.GetComponent<IMapEditorDataReceiver>();
@@ -467,14 +469,17 @@ public class Instance : NetworkBehaviour
                receiver.receiveData(dataField.d);
             }
 
+            InstanceManager.self.addSeaStructureToInstance(pvpTower, this);
             NetworkServer.Spawn(pvpTower.gameObject);
          }
       }
 
       if (area.baseDataFields.Count > 0) {
          foreach (ExportedPrefab001 dataField in area.baseDataFields) {
-            // TODO: Will be modified by Tim depending on how the base should be created
             PvpBase pvpBase = Instantiate(PrefabsManager.self.pvpBasePrefab);
+            pvpBase.areaKey = area.areaKey;
+            pvpBase.instanceId = this.id;
+            pvpBase.setAreaParent(area, true);
 
             // The data set in the map editor will be set to this pvp object, this will only occur on the server side, client side data will be set in MapImporter.cs script in the function instantiatePrefabs()
             IMapEditorDataReceiver receiver = pvpBase.GetComponent<IMapEditorDataReceiver>();
@@ -482,22 +487,27 @@ public class Instance : NetworkBehaviour
                receiver.receiveData(dataField.d);
             }
 
+            InstanceManager.self.addSeaStructureToInstance(pvpBase, this);
             NetworkServer.Spawn(pvpBase.gameObject);
          }
       }
 
       if (area.shipyardDataFields.Count > 0) {
          foreach (ExportedPrefab001 dataField in area.shipyardDataFields) {
-            // TODO: Will be modified by Tim depending on how the shipyard should be created
-            PvpShipyard pvpBase = Instantiate(PrefabsManager.self.pvpShipyardPrefab);
+            PvpShipyard pvpShipyard = Instantiate(PrefabsManager.self.pvpShipyardPrefab);
+            pvpShipyard.areaKey = area.areaKey;
+            pvpShipyard.instanceId = this.id;
+            pvpShipyard.setAreaParent(area, true);
 
             // The data set in the map editor will be set to this pvp object, this will only occur on the server side, client side data will be set in MapImporter.cs script in the function instantiatePrefabs()
-            IMapEditorDataReceiver receiver = pvpBase.GetComponent<IMapEditorDataReceiver>();
+            IMapEditorDataReceiver receiver = pvpShipyard.GetComponent<IMapEditorDataReceiver>();
             if (receiver != null && dataField.d != null) {
                receiver.receiveData(dataField.d);
             }
 
-            NetworkServer.Spawn(pvpBase.gameObject);
+            pvpShipyard.spawnLocation = PvpGame.getSpawnSideForShipyard(pvpShipyard.pvpTeam, pvpShipyard.laneType);
+            InstanceManager.self.addSeaStructureToInstance(pvpShipyard, this);
+            NetworkServer.Spawn(pvpShipyard.gameObject);
          }
       }
 

@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using DG.Tweening;
+using MapCreationTool.Serialization;
 
 public class PvpTower : SeaStructure {
    #region Public Variables
 
    // How far away this unit can target and attack enemies
-   public float attackRange = 1.0f;
+   public static float ATTACK_RANGE = 3.5f;
 
    // The position which projectiels are fired from
    public Transform targetingBarrelSocket;
@@ -216,9 +217,9 @@ public class PvpTower : SeaStructure {
       float targetDistance = toTarget.magnitude;
 
       // If the target is out of range, fire a max range shot in their direction
-      if (targetDistance > attackRange) {
-         targetPosition = spawnPosition + toTarget.normalized * attackRange;
-         targetDistance = attackRange;
+      if (targetDistance > ATTACK_RANGE) {
+         targetPosition = spawnPosition + toTarget.normalized * ATTACK_RANGE;
+         targetDistance = ATTACK_RANGE;
       }
 
       ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(Attack.Type.Cannon);
@@ -227,7 +228,7 @@ public class PvpTower : SeaStructure {
       ServerCannonBall netBall = Instantiate(PrefabsManager.self.serverCannonBallPrefab, spawnPosition, Quaternion.identity);
 
       // Set up the cannonball
-      float distanceModifier = Mathf.Clamp(targetDistance / attackRange, 0.1f, 1.0f);
+      float distanceModifier = Mathf.Clamp(targetDistance / ATTACK_RANGE, 0.1f, 1.0f);
       float lobHeight = 0.25f * distanceModifier;
       float lifetime = targetDistance / (Attack.getSpeedModifier(Attack.Type.Cannon) * projectileSpeedModifier);
       Vector2 velocity = toTarget.normalized * Attack.getSpeedModifier(Attack.Type.Cannon) * projectileSpeedModifier;
@@ -325,7 +326,7 @@ public class PvpTower : SeaStructure {
 
    protected override bool isInRange (Vector2 position) {
       Vector2 toTarget = position - (Vector2)transform.position;
-      return (toTarget.sqrMagnitude < attackRange * attackRange);
+      return (toTarget.sqrMagnitude < ATTACK_RANGE * ATTACK_RANGE);
    }
 
    private void updateAttackRangeCircle () {

@@ -8,7 +8,7 @@ public class PvpShipyard : SeaStructure {
    #region Public Variables
 
    // An enum describing where the shipyard will spawn ships around itself
-   public enum SpawnLocation { None = 0, Left = 1, Bottom = 2, Right = 3, Top = 4 }
+   public enum SpawnLocation { None = 0, Left = 1, Bottom = 2, Right = 3, Top = 4, TopRight = 5, BottomLeft = 6 }
 
    // Where the shipyard will spawn ships around itself
    [HideInInspector]
@@ -18,7 +18,7 @@ public class PvpShipyard : SeaStructure {
    public Transform laneCenterTarget;
 
    // The location at which this shipyard will spawn ships
-   public Transform leftSpawnLocation, bottomSpawnLocation, rightSpawnLocation, topSpawnLocation;
+   public Transform leftSpawnLocation, bottomSpawnLocation, rightSpawnLocation, topSpawnLocation, topRightSpawnLocation, bottomLeftSpawnLocation;
 
    // A list of sea structures that ships spawned from this shipyard will target
    public List<SeaStructure> targetStructures;
@@ -73,6 +73,10 @@ public class PvpShipyard : SeaStructure {
             return rightSpawnLocation.position;
          case SpawnLocation.Top:
             return topSpawnLocation.position;
+         case SpawnLocation.TopRight:
+            return topRightSpawnLocation.position;
+         case SpawnLocation.BottomLeft:
+            return bottomLeftSpawnLocation.position;
          default:
             return bottomSpawnLocation.position;
       }
