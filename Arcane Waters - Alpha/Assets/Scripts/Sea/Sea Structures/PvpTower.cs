@@ -276,21 +276,6 @@ public class PvpTower : SeaStructure {
       }
    }
 
-   public void receiveData (DataField[] fields) {
-      base.receiveData(fields);
-
-      foreach (DataField field in fields) {
-         if (field.k.CompareTo(DataField.PVP_TOWER_RANGE) == 0) {
-            try {
-               // TODO: Update range of tower here
-               float towerRange = float.Parse(field.v);
-            } catch {
-
-            }
-         }
-      }
-   }
-
    private void onTriggerExit2D (Collider2D collision) {
       PlayerShipEntity playerShip;
 
