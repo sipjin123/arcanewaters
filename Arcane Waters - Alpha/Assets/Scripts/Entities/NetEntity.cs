@@ -506,6 +506,11 @@ public class NetEntity : NetworkBehaviour
          _temporaryControllers[0].forceFastForward(this);
       }
 
+      // Reset weather effects since player will be spawned somewhere else, weather effect manager will be set again after that
+      if (this is PlayerBodyEntity || this is PlayerShipEntity) {
+         WeatherManager.self.setWeatherSimulation(WeatherEffectType.None);
+      }
+
       // Registering the game user destroy event
       if (NetworkServer.active && (this is PlayerBodyEntity || this is PlayerShipEntity)) {
          Util.tryToRunInServerBackground(() => DB_Main.storeGameUserDestroyEvent(this.userId, this.accountId, this.entityName, this.connectionToClient.address));
