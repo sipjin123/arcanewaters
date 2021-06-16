@@ -21,6 +21,10 @@ public class Battle : NetworkBehaviour {
    [SyncVar]
    public int difficultyLevel;
 
+   // Determines the number of player count which will be used to scale up the difficulty based on party member size
+   [SyncVar]
+   public int partyMemberCount = 1;
+
    // If this is a pvp battle
    [SyncVar]
    public bool isPvp;

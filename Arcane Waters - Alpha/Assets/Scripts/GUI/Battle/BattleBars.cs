@@ -111,7 +111,7 @@ public class BattleBars : MonoBehaviour {
       }
 
       // Can't do anything until we have our battler
-      if (_battler == null || _battler.player == null) {
+      if (_battler == null || _battler.player == null || _battler.battle == null) {
          _canvasGroup.alpha = 0f;
          return;
       }

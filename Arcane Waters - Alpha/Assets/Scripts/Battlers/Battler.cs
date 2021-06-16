@@ -39,10 +39,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [SyncVar]
    public int difficultyLevel = 1;
 
-   // The total party member count the player team has
-   [SyncVar]
-   public int playerPartyMemberCount = 1;
-
    // The companion id if is a companion of the player
    [SyncVar]
    public int companionId = -1;
@@ -2041,7 +2037,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // If this is a boss monster, add health (based from admin game settings) depending on number of team members
       if (battData.isBossType) {
          float healthPercentageValueRaw = health * (AdminGameSettingsManager.self.settings.bossHealthPerMember / 100);
-         float teamHealthValue = healthPercentageValueRaw * playerPartyMemberCount;
+         float teamHealthValue = healthPercentageValueRaw * battle.partyMemberCount;
          health += (int) teamHealthValue;
       } 
 

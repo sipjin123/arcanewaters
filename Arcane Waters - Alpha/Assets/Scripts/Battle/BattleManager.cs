@@ -91,6 +91,7 @@ public class BattleManager : MonoBehaviour {
       if (voyageGroup != null) {
          partyMemberCount = voyageGroup.members.Count;
       }
+      battle.partyMemberCount = partyMemberCount;
 
       Util.setXY(battle.transform, battleBoard.transform.position);
 
@@ -109,7 +110,7 @@ public class BattleManager : MonoBehaviour {
             if (battlerInfo.enemyType != Enemy.Type.PlayerBattler && battle.getTeam(Battle.TeamType.Defenders).Count < Battle.MAX_ENEMY_COUNT) {
                enemy.enemyType = battlerInfo.enemyType;
                enemyTypes.Add(battlerInfo.enemyType);
-               this.addEnemyToBattle(battle, enemy, Battle.TeamType.Defenders, playerBody, battlerInfo.companionId, battlerInfo.battlerXp, instance.difficulty, partyMemberCount);
+               this.addEnemyToBattle(battle, enemy, Battle.TeamType.Defenders, playerBody, battlerInfo.companionId, battlerInfo.battlerXp, instance.difficulty);
             }
          }
       }
@@ -119,7 +120,7 @@ public class BattleManager : MonoBehaviour {
             if (battlerInfo.enemyType != Enemy.Type.PlayerBattler) {
                enemy.enemyType = battlerInfo.enemyType;
                enemyTypes.Add(battlerInfo.enemyType);
-               this.addEnemyToBattle(battle, enemy, Battle.TeamType.Attackers, playerBody, battlerInfo.companionId, battlerInfo.battlerXp, instance.difficulty, partyMemberCount);
+               this.addEnemyToBattle(battle, enemy, Battle.TeamType.Attackers, playerBody, battlerInfo.companionId, battlerInfo.battlerXp, instance.difficulty);
             }
          }
       }
@@ -196,9 +197,9 @@ public class BattleManager : MonoBehaviour {
       rebuildObservers(battler, battle);
    }
    
-   public void addEnemyToBattle (Battle battle, Enemy enemy, Battle.TeamType teamType, PlayerBodyEntity aggressor, int companionId, int battlerXp, int difficultyLevel, int teamMemberCount) {
+   public void addEnemyToBattle (Battle battle, Enemy enemy, Battle.TeamType teamType, PlayerBodyEntity aggressor, int companionId, int battlerXp, int difficultyLevel) {
       // Create a Battler for this Enemy
-      Battler battler = createBattlerForEnemy(battle, enemy, teamType, companionId, battlerXp, difficultyLevel, teamMemberCount);
+      Battler battler = createBattlerForEnemy(battle, enemy, teamType, companionId, battlerXp, difficultyLevel);
       self.storeBattler(battler);
 
       // Add the Battler to the Battle
@@ -404,7 +405,7 @@ public class BattleManager : MonoBehaviour {
       }
    }
 
-   private Battler createBattlerForEnemy (Battle battle, Enemy enemy, Battle.TeamType teamType, int companionId, int battlerXp, int difficultyLevel, int teamMemberCount) {
+   private Battler createBattlerForEnemy (Battle battle, Enemy enemy, Battle.TeamType teamType, int companionId, int battlerXp, int difficultyLevel) {
       Enemy.Type overrideType = enemy.enemyType;
       Battler enemyPrefab = prefabTypes.Find(_ => _.enemyType == Enemy.Type.Lizard).enemyPrefab;
 
@@ -421,9 +422,9 @@ public class BattleManager : MonoBehaviour {
       battler.companionId = companionId;
       battler.XP = battlerXp;
       battler.difficultyLevel = difficultyLevel;
-      battler.playerPartyMemberCount = teamMemberCount;
 
       // Set starting stats
+      battler.battle = battle;
       battler.health = battler.getStartingHealth(overrideType);
       battler.displayedHealth = battler.getStartingHealth(overrideType);
 
@@ -611,7 +612,7 @@ public class BattleManager : MonoBehaviour {
             // If this is a boss monster, add damage (based from admin game settings) depending on number of team members
             if (source.isBossType) {
                float damagePercentageValueRaw = damage * (AdminGameSettingsManager.self.settings.bossDamagePerMember / 100);
-               float teamDamageValue = damagePercentageValueRaw * source.playerPartyMemberCount;
+               float teamDamageValue = damagePercentageValueRaw * battle.partyMemberCount;
                damage += (int) teamDamageValue;
             }
 
