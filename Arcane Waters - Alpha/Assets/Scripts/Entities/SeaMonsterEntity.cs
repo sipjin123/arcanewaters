@@ -4,6 +4,7 @@ using MapCreationTool.Serialization;
 using Mirror;
 using UnityEngine;
 using Pathfinding;
+using UnityEngine.Events;
 
 public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 {
@@ -46,6 +47,10 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    // Determines the variety of the monster sprite if there is one
    [SyncVar]
    public int variety = 0;
+
+   // Determines if this is a pvp monster which will behave differently
+   [SyncVar]
+   public bool isPvpMonster = false;
 
    // Determines the monster type index of this unit
    [SyncVar]
@@ -101,6 +106,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    // The number of seconds between tentacle secondary attacks without considering the difficulty
    public const float TENTACLE_SECONDARY_ATTACK_BASE_INTERVAL = 3f;
+
+   // Even triggered on death
+   public UnityEvent hasDiedEvent = new UnityEvent();
 
    // Seamonster Animation
    public enum SeaMonsterAnimState
@@ -542,7 +550,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          deathBubbleEffect.SetActive(true);
       }
 
-      if (seaMonsterData.shouldDropTreasure) {
+      if (seaMonsterData.shouldDropTreasure && !isPvpMonster) {
          NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(_lastAttackerNetId);
          if (lastAttacker) {
             spawnChest(lastAttacker.userId);
@@ -556,6 +564,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
 
       handleAnimations();
+      hasDiedEvent.Invoke();
 
       _clickableBox.gameObject.SetActive(false);
       seaMonsterBars.gameObject.SetActive(false);

@@ -1992,6 +1992,10 @@ public class NetEntity : NetworkBehaviour
       return _clickableBoxCanvas;
    }
 
+   public uint lastAttackerId () {
+      return _lastAttackerNetId;
+   }
+
    protected virtual void webBounceUpdate () { }
 
    protected virtual void onStartMoving () { }
