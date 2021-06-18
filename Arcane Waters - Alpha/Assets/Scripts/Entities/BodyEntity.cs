@@ -101,7 +101,7 @@ public class BodyEntity : NetEntity
 
    public void restartAnimations () {
       foreach (Animator animator in _animators) {
-         if (!_ignoredAnimators.Contains(animator)) {
+         if (!_ignoredAnimators.Contains(animator) && animator.gameObject.activeInHierarchy) {
             animator.Play(animator.GetCurrentAnimatorStateInfo(0).fullPathHash, 0, 0.0f);
          }
       }

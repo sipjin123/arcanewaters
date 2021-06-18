@@ -80,10 +80,15 @@ public class VoyageGroupPanel : ClientMonoBehaviour
             if (entity is PlayerShipEntity) {
                memberCell.updateCellDamage(((PlayerShipEntity) entity).totalDamageDealt);
             }
-            directionalArrowList[i].setTarget(entity.gameObject);
-            directionalArrowList[i].setTargetName(entity.entityName);
-            if (Vector3.Distance(Global.player.transform.position, entity.transform.position) > CLAMP_HIDE_DISTANCE) {
-               directionalArrowList[i].gameObject.SetActive(true);
+
+            if (i < directionalArrowList.Count) {
+               directionalArrowList[i].setTarget(entity.gameObject);
+               directionalArrowList[i].setTargetName(entity.entityName);
+               if (Global.player != null) {
+                  if (Vector3.Distance(Global.player.transform.position, entity.transform.position) > CLAMP_HIDE_DISTANCE) {
+                     directionalArrowList[i].gameObject.SetActive(true);
+                  }
+               }
             }
             i++;
          }
