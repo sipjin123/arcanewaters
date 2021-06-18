@@ -15,7 +15,7 @@ public class Area : MonoBehaviour
    #region Public Variables
 
    // The special type of the area
-   public enum SpecialType { None = 0, Voyage = 1, TreasureSite = 2, Town = 3, Private = 4, League = 5, LeagueLobby = 6, LeagueSeaBoss = 7 }
+   public enum SpecialType { None = 0, Voyage = 1, TreasureSite = 2, Town = 3, Private = 4, League = 5, LeagueLobby = 6, LeagueSeaBoss = 7, Pvp = 8 }
 
    // Hardcoded area keys
    public static string STARTING_TOWN = "Tutorial Town";
@@ -117,6 +117,12 @@ public class Area : MonoBehaviour
    // Pvp base to be loaded by the server
    public List<ExportedPrefab001> baseDataFields = new List<ExportedPrefab001>();
 
+   // Pvp waypoints to be loaded by the server
+   public List<ExportedPrefab001> waypointsDataFields = new List<ExportedPrefab001>();
+
+   // Pvp monster spawner to be loaded by the server
+   public List<ExportedPrefab001> pvpMonsterSpawnerDataFields = new List<ExportedPrefab001>();
+
    // Parent of generic prefabs
    public Transform prefabParent;
 
@@ -143,7 +149,8 @@ public class Area : MonoBehaviour
    public void registerNetworkPrefabData (List<ExportedPrefab001> npcDatafields, List<ExportedPrefab001> enemyDatafields,
       List<ExportedPrefab001> oreDataFields, List<ExportedPrefab001> treasureSiteDataFields,
       List<ExportedPrefab001> shipDataFields, List<ExportedPrefab001> seaMonsterDataFields, List<ExportedPrefab001> bossSpawnerDataFields, 
-      List<ExportedPrefab001> pvpTowerDataFields, List<ExportedPrefab001> pvpBaseDataFields, List<ExportedPrefab001> pvpShipyardDataFields) {
+      List<ExportedPrefab001> pvpTowerDataFields, List<ExportedPrefab001> pvpBaseDataFields, List<ExportedPrefab001> pvpShipyardDataFields, 
+      List<ExportedPrefab001> pvpWaypoints, List<ExportedPrefab001> pvpMonsterSpawnerFields) {
       this.npcDatafields = npcDatafields;
       this.enemyDatafields = enemyDatafields;
       this.oreDataFields = oreDataFields;
@@ -154,6 +161,8 @@ public class Area : MonoBehaviour
       this.towerDataFields = pvpTowerDataFields;
       this.shipyardDataFields = pvpShipyardDataFields;
       this.baseDataFields = pvpBaseDataFields;
+      this.waypointsDataFields = pvpWaypoints;
+      this.pvpMonsterSpawnerDataFields = pvpMonsterSpawnerFields;
 
       if (CommandCodes.get(CommandCodes.Type.NPC_DISABLE) || Util.isForceServerLocalWithAutoDbconfig()) {
          this.npcDatafields.Clear();
