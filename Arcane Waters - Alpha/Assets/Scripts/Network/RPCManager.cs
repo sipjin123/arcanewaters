@@ -1217,11 +1217,13 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_SetShipAbilities (NetworkConnection connection, int[] abilityIds) {
       CannonPanel.self.setAbilityTab(abilityIds);
+   public void Target_ReceiveMapInfo (Map map) {
+      AreaManager.self.storeAreaInfo(map);
    }
 
    [TargetRpc]
-   public void Target_ReceiveMapInfo (Map map) {
-      AreaManager.self.storeAreaInfo(map);
+   public void Target_ReceivePowerup (Powerup.Type powerupType) {
+      StartCoroutine(PowerupManager.self.CO_CreatingFloatingPowerupIcon(powerupType, Rarity.Type.Common, (PlayerShipEntity) _player));
    }
 
    [TargetRpc]

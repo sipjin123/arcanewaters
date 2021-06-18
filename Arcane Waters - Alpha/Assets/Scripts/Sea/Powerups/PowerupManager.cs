@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using DG.Tweening;
 
 public class PowerupManager : MonoBehaviour {
    #region Public Variables
@@ -76,6 +77,33 @@ public class PowerupManager : MonoBehaviour {
       }
 
       return boostFactor;
+   }
+
+   public IEnumerator CO_CreatingFloatingPowerupIcon (Powerup.Type powerupType, Rarity.Type powerupRarity, PlayerShipEntity player) {
+      // Create the popup icon, make it scale up in size
+      PowerupPopupIcon popupIcon = Instantiate(TreasureManager.self.powerupPopupIcon, Vector3.zero, Quaternion.identity).GetComponent<PowerupPopupIcon>();
+      popupIcon.transform.SetParent(player.transform);
+      popupIcon.transform.localPosition = new Vector3(0.0f, 0.04f);
+      popupIcon.transform.SetParent(AreaManager.self.getArea(player.areaKey).transform);
+      popupIcon.init(powerupType, powerupRarity);
+      popupIcon.transform.localScale = Vector3.one * 0.25f;
+      popupIcon.transform.DOScale(1.0f, 0.8f).SetEase(Ease.InElastic);
+      yield return new WaitForSeconds(0.4f);
+
+      // After a delay, have the popup icon move upwards
+      // Play sfx
+      SoundEffectManager.self.playFmodOneShot(SoundEffectManager.PICKUP_POWERUP, transform);
+
+      popupIcon.transform.DOBlendableLocalMoveBy(Vector3.up * 0.3f, 0.4f).SetEase(Ease.OutSine);
+      yield return new WaitForSeconds(1.4f);
+
+      // After another delay, have the popup icon move towards the player
+      popupIcon.gravitateToPlayer(player, 1.0f);
+
+      // Show a confirmation in chat
+      string powerupName = PowerupManager.self.getPowerupData(powerupType).powerupName;
+      string msg = string.Format("You received powerup! <color=red>{0}</color>!", powerupName);
+      ChatManager.self.addChat(msg, ChatInfo.Type.System);
    }
 
    private float getBoostFactor (Powerup.Type type, Rarity.Type rarity) {
