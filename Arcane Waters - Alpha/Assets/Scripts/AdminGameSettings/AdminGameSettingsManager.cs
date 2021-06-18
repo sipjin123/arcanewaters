@@ -17,7 +17,7 @@ public class AdminGameSettingsManager : GenericGameManager
 
    #endregion
 
-   public void Awake () {
+   protected override void Awake () {
       base.Awake();
       self = this;
    }

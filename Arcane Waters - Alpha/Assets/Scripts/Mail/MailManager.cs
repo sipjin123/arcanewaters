@@ -17,6 +17,9 @@ public class MailManager : GenericGameManager {
    // The number of seconds between unread mail checks
    public static float UNREAD_MAIL_CHECK_INTERVAL = 10;
 
+   // The amount of days after which a mail can be deleted. Non-positive values make mails eternal
+   public static int MAX_MAIL_LIFETIME_DAYS = 30;
+
    // Self
    public static MailManager self;
 
@@ -55,10 +58,18 @@ public class MailManager : GenericGameManager {
       });
    }
 
+   public static int getMailSendingCost () {
+      return Math.Max(0, MAIL_SENDING_COST);
+   }
+
+
    #region Private Variables
 
    // The last time the new mails were checked
    private DateTime _unreadMailsLastCheckTime = DateTime.UtcNow;
+
+   // The cost for sending a mail
+   private static int MAIL_SENDING_COST = 100;
 
    #endregion
 }

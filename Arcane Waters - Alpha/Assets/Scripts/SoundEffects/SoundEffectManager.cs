@@ -91,14 +91,24 @@ public class SoundEffectManager : GenericGameManager
    public const int BUTTON_CONFIRM = 103;
 
    public const int ENEMY_SHIP_DESTROYED = 108;
+   public const int CANNONBALL_IMPACT = 109;
    public const int PURCHASE_ITEM = 110;
+   public const int ASSIGN_PERK_POINT = 111;
+   public const int UNASSIGN_PERK_POINT = 112;
 
    public const string MENU_OPEN_PATH = "event:/SFX/Game/UI/Menu_Open";
    public const string BUTTON_CONFIRM_PATH = "event:/SFX/Game/UI/Button_Confirm";
 
+   public const string AUDIO_SWITCH_PARAM = "Audio_Switch";
    public const string SHIP_CHARGE_RELEASE_PARAM = "Ship_Charge_Release";
    public const string AMBIENCE_AUDIO_SWITCH_PARAM = "Ambience_Switch";
    public const string APPLY_CRIT_PARAM = "Apply_Crit";
+   public const string WEATHER_PARAM = "Weather_Effects";
+
+   public enum CannonballImpactType
+   {
+      Water = 0
+   }
 
    #endregion
 
@@ -185,6 +195,18 @@ public class SoundEffectManager : GenericGameManager
          if (effect.fmodId.Length > 0) {
             RuntimeManager.PlayOneShot(effect.fmodId, target.position);
          }
+      }
+   }
+
+   public void playCannonballImpact (CannonballImpactType impactType, Vector3 position) {
+      SoundEffect effect = getSoundEffect(CANNONBALL_IMPACT);
+
+      if (effect != null) {
+         EventInstance impactEvent = RuntimeManager.CreateInstance(effect.fmodId);
+         impactEvent.setParameterByName(AUDIO_SWITCH_PARAM, (int)impactType);
+         impactEvent.set3DAttributes(RuntimeUtils.To3DAttributes(position));
+         impactEvent.start();
+         impactEvent.release();
       }
    }
 

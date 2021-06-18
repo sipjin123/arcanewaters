@@ -156,8 +156,10 @@ public class SeaEntity : NetEntity
          return;
       }
 
-      Rpc_OnDeath();
-      _hasRunOnDeath = true;
+      if (isServer) {
+         Rpc_OnDeath();
+         _hasRunOnDeath = true;
+      }
    }
 
    [ClientRpc]
@@ -580,7 +582,10 @@ public class SeaEntity : NetEntity
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, pos);
       } else {
          Instantiate(PrefabsManager.self.requestCannonSplashPrefab(impactMagnitude), pos + new Vector3(0f, -.1f), Quaternion.identity);
-         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, pos);
+
+         // FMOD sfx for water
+         SoundEffectManager.self.playCannonballImpact(SoundEffectManager.CannonballImpactType.Water, pos);
+         //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, pos);
       }
    }
 

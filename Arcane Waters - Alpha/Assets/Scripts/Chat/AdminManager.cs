@@ -105,6 +105,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("unlock_world_map", "Unlocks all the biomes and town warps in the world map", unlockWorldMap, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("pvp_join", "Warps the player to the current pvp game", joinPvp, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("pvp_force_start", "Forces the pvp game the player is in to start, regardless of how many players are in it", forceStartPvp, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("pvp_set_map", "Changes which map pvp games will be created in", setPvpMap, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("warp", "Warps you to an area", requestWarp, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "areaName" }, parameterAutocompletes: AreaManager.self.getAllAreaNames()));
 
       // Used for combat simulation
@@ -171,6 +172,15 @@ public class AdminManager : NetworkBehaviour
       }
 
       return true;
+   }
+
+   private void setPvpMap (string mapName) {
+      Cmd_SetPvpMap(mapName);
+   }
+
+   [Command]
+   private void Cmd_SetPvpMap (string mapName) {
+      PvpManager.currentMap = mapName;
    }
 
    private void forceStartPvp () {

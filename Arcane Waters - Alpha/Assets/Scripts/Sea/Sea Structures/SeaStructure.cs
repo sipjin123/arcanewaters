@@ -24,6 +24,14 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
 
    #endregion
 
+   protected override void Start () {
+      base.Start();
+
+      if (_isActivated) {
+         onActivated();
+      }
+   }
+
    public override bool isSeaStructure () {
       return true;
    }
@@ -36,6 +44,10 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
    }
 
    protected override void Update () {
+      if (!_isActivated) {
+         return;
+      }
+      
       base.Update();
 
       if (isDead()) {
@@ -72,6 +84,28 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
       }
    }
 
+   public void setIsActivated (bool value) {
+      bool oldValue = _isActivated;
+      _isActivated = value;
+
+      if (value != oldValue) {
+         if (value) {
+            onActivated();
+         } else {
+            onDeactivated();
+         }
+      }      
+   }
+
+   protected virtual void onActivated () {}
+
+   protected virtual void onDeactivated () {}
+
+   [ClientRpc]
+   public void Rpc_SetIsActivated(bool value) {
+      setIsActivated(value);
+   }
+
    #region Private Variables
 
    // The timestamp for when this structure died
@@ -79,6 +113,9 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
 
    // How long this structure will wait after dying, before being disabled
    private const double DYING_TIME_BEFORE_DISABLE = 2.0;
+
+   // Whether this sea structure is active, and should perform its behaviour
+   protected bool _isActivated = false;
 
    #endregion
 }

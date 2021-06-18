@@ -283,11 +283,14 @@ public class ServerCannonBall : NetworkBehaviour {
             SoundManager.create3dSoundWithPath(projectileData.landHitSFX, transform.position, projectileData.landHitVol);
          }
       } else if(!hitEnemy) {
-         if (playDefaultSFX) {
-            SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position, true);
-         } else {
-            SoundManager.create3dSoundWithPath(projectileData.waterHitSFX, transform.position, projectileData.waterHitVol);
-         }
+         // FMOD sfx for water
+         SoundEffectManager.self.playCannonballImpact(SoundEffectManager.CannonballImpactType.Water, this.transform.position);
+
+         //if (playDefaultSFX) {
+         //   SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position, true);
+         //} else {
+         //   SoundManager.create3dSoundWithPath(projectileData.waterHitSFX, transform.position, projectileData.waterHitVol);
+         //}
       }
    }
 

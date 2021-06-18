@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using FMOD.Studio;
-using FMODUnity;
 using UnityEngine;
 
 public class AmbienceManager : ClientMonoBehaviour
@@ -9,9 +7,6 @@ public class AmbienceManager : ClientMonoBehaviour
 
    // Self
    public static AmbienceManager self;
-
-   // FMOD event instance
-   EventInstance ambienceEvent;
 
    // Is the FMOD event ready?
    bool isEventReady = false;
@@ -63,7 +58,7 @@ public class AmbienceManager : ClientMonoBehaviour
 
    protected void updateAmbienceForArea (string newAreaKey) {
       // Figure out what type we should be playing
-      List<SoundManager.Type> ambienceTypes = getAmbienceTypeForArea(newAreaKey);
+      //List<SoundManager.Type> ambienceTypes = getAmbienceTypeForArea(newAreaKey);
 
       // Remove any currently playing ambience
       this.gameObject.DestroyChildren();
@@ -82,40 +77,40 @@ public class AmbienceManager : ClientMonoBehaviour
          SoundEffect effect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.AMBIENCE_BED_MASTER);
 
          if (effect != null) {
-            ambienceEvent = RuntimeManager.CreateInstance(effect.fmodId);
+            _ambienceEvent = FMODUnity.RuntimeManager.CreateInstance(effect.fmodId);
             isEventReady = true;
          }
       }
 
       if (isEventReady) {
          if (isSea) {
-            ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.SeaMap);
+            _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.SeaMap);
          } else if (isInterior) {
-            ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Interior);
+            _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Interior);
          } else {
             switch (biomeType) {
                case Biome.Type.Forest:
-                  ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Forest);
+                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Forest);
                   break;
                case Biome.Type.Desert:
-                  ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Desert);
+                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Desert);
                   break;
                case Biome.Type.Snow:
-                  ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Snow);
+                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Snow);
                   break;
                case Biome.Type.Lava:
-                  ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Lava);
+                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Lava);
                   break;
                case Biome.Type.Pine:
-                  ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Pine);
+                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Pine);
                   break;
                case Biome.Type.Mushroom:
-                  ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Shroom);
+                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Shroom);
                   break;
             }
          }
 
-         ambienceEvent.start();
+         _ambienceEvent.start();
       }
       //} else {
       //   if (isEventReady) {
@@ -127,6 +122,23 @@ public class AmbienceManager : ClientMonoBehaviour
       //      playAmbience(typeToPlay);
       //   }
       //}
+   }
+
+   public void setAmbienceWeatherEffect (WeatherEffectType weatherEffect) {
+      if (_ambienceEvent.isValid()) {
+         int weatherValue = 0;
+
+         switch (weatherEffect) {
+            case WeatherEffectType.None:
+               weatherValue = 0;
+               break;
+            case WeatherEffectType.Rain:
+               weatherValue = 1;
+               break;
+         }
+
+         _ambienceEvent.setParameterByName(SoundEffectManager.WEATHER_PARAM, weatherValue);
+      }
    }
 
    protected List<SoundManager.Type> getAmbienceTypeForArea (string areaKey) {
@@ -154,6 +166,9 @@ public class AmbienceManager : ClientMonoBehaviour
 
    // The last area we were in
    protected string _lastArea = "";
+
+   // FMOD event instance
+   FMOD.Studio.EventInstance _ambienceEvent;
 
    #endregion
 }

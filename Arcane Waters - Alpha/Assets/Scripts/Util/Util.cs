@@ -1238,7 +1238,7 @@ public class Util : MonoBehaviour
       NotificationManager.self.onUserLogOut();
 
       // Close the admin settings panel
-      AdminGameSettingsPanel.self.onUserLogOut();
+      PanelManager.self.adminGameSettingsPanel.onUserLogOut();
 
       // Look up the background music for the Title Screen, if we have any
       SoundManager.setBackgroundMusic(SoundManager.Type.Intro_Music);

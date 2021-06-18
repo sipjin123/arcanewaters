@@ -56,17 +56,17 @@ public class SeaManager : MonoBehaviour {
       }
 
       // Allow pressing F1 through F3 to change the combat mode
-      if (KeyUtils.GetKeyDown(Key.Digit1)) {
-         selectedAbilityId = CannonPanel.self.getAbilityId(0);
-      }
+      //if (KeyUtils.GetKeyDown(Key.Digit1)) {
+      //   selectedAbilityId = CannonPanel.self.getAbilityId(0);
+      //}
 
-      if (KeyUtils.GetKeyDown(Key.Digit2)) {
-         selectedAbilityId = CannonPanel.self.getAbilityId(1);
-      }
+      //if (KeyUtils.GetKeyDown(Key.Digit2)) {
+      //   selectedAbilityId = CannonPanel.self.getAbilityId(1);
+      //}
 
-      if (KeyUtils.GetKeyDown(Key.Digit3)) {
-         selectedAbilityId = CannonPanel.self.getAbilityId(2);
-      }
+      //if (KeyUtils.GetKeyDown(Key.Digit3)) {
+      //   selectedAbilityId = CannonPanel.self.getAbilityId(2);
+      //}
 
       // Allow pressing F1 through F2 to change the move mode
       //if (KeyUtils.isKeyPressedUp(Key.F1)) {

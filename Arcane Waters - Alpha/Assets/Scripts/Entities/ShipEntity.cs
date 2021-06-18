@@ -52,6 +52,9 @@ public class ShipEntity : SeaEntity
    // A reference to the ship's Rigibody2D component
    public Rigidbody2D rb2d;
 
+   // A manual override for the ship's sprites
+   public Texture2D spritesOverride = null;
+
    #endregion
 
    protected virtual void initialize (ShipData data) {
@@ -369,7 +372,12 @@ public class ShipEntity : SeaEntity
       // Set the initial idle sprites
       string skinPath = Ship.getSkinPath(shipType, skinType, isBotShip());
       _shipSprites = ImageManager.getTexture(skinPath);
-      spritesContainer.GetComponent<SpriteSwap>().newTexture = _shipSprites;
+
+      if (spritesOverride) {
+         spritesContainer.GetComponent<SpriteSwap>().newTexture = spritesOverride;
+      } else {
+         spritesContainer.GetComponent<SpriteSwap>().newTexture = _shipSprites;
+      }
    }
 
    protected override void onStartMoving () {

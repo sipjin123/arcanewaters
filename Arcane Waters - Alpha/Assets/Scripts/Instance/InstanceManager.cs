@@ -165,6 +165,10 @@ public class InstanceManager : MonoBehaviour {
       instance.seaStructureCount++;
    }
 
+   public void addPvpWaypointToInstance (PvpWaypoint waypoint, Instance instance) {
+      instance.pvpWaypoints.Add(waypoint);
+   }
+
    public Instance getInstance (int instanceId) {
       if (_instances.ContainsKey(instanceId)) {
          return _instances[instanceId];

@@ -40,6 +40,12 @@ public class MailInfo
    // The number of attached items
    public int attachedItemsCount;
 
+   // Can this mail be auto deleted?
+   public bool autoDelete;
+
+   // Is this mail going to be sent back to the sender after expiration?
+   public bool sendBack;
+
    #endregion
 
    public MailInfo () { }
@@ -54,6 +60,8 @@ public class MailInfo
       this.receptionDate = DataUtil.getDateTime(dataReader, "receptionDate").ToBinary();
       this.isRead = DataUtil.getBoolean(dataReader, "isRead");
       this.mailSubject = DataUtil.getString(dataReader, "mailSubject");
+      this.autoDelete = DataUtil.getBoolean(dataReader, "autoDelete");
+      this.sendBack = DataUtil.getBoolean(dataReader, "sendBack");
       if (isForList) {
          this.attachedItemsCount = DataUtil.getInt(dataReader, "attachedItemCount");
       } else {
@@ -64,7 +72,7 @@ public class MailInfo
 #endif
 
    public MailInfo (int mailId, int recipientUserId, int senderUserId, DateTime receptionDate, bool isRead,
-      string mailSubject, string message) {
+      string mailSubject, string message, bool autoDelete, bool sendBack) {
       this.mailId = mailId;
       this.recipientUserId = recipientUserId;
       this.senderUserId = senderUserId;
@@ -72,6 +80,8 @@ public class MailInfo
       this.isRead = isRead;
       this.mailSubject = mailSubject;
       this.message = message;
+      this.autoDelete = autoDelete;
+      this.sendBack = sendBack;
    }
 
    public override bool Equals (object rhs) {

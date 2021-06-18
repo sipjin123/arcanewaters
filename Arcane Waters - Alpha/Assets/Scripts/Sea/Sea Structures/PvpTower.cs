@@ -47,9 +47,8 @@ public class PvpTower : SeaStructure {
       attackRangeRenderer.material.SetColor("_Color", new Color(0.0f, 0.0f, 0.0f, 0.0f));
    }
 
-   protected override void Start () {
-      base.Start();
-
+   protected override void onActivated () {
+      base.onActivated();
       if (isServer) {
          StartCoroutine(CO_AttackEnemiesInRange(0.25f));
       }
@@ -57,7 +56,16 @@ public class PvpTower : SeaStructure {
       StartCoroutine(CO_SetAttackRangeCirclePosition());
    }
 
+   protected override void onDeactivated () {
+      base.onDeactivated();
+      StopAllCoroutines();
+   }
+
    protected override void Update () {
+      if (!_isActivated) {
+         return;
+      }
+
       base.Update();
 
       updateAttackRangeCircle();
@@ -241,6 +249,10 @@ public class PvpTower : SeaStructure {
    }
 
    private void onTriggerEnter2D (Collider2D collision) {
+      if (!_isActivated) {
+         return;
+      }
+      
       PlayerShipEntity playerShip;
       
       // On the client, activate the attack range circle when we are in-range
@@ -277,6 +289,10 @@ public class PvpTower : SeaStructure {
    }
 
    private void onTriggerExit2D (Collider2D collision) {
+      if (!_isActivated) {
+         return;
+      }
+
       PlayerShipEntity playerShip;
 
       // On the client, deactivate the attack range circle when we are out of range

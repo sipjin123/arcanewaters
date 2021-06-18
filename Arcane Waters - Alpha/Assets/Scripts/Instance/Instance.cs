@@ -461,7 +461,9 @@ public class Instance : NetworkBehaviour
             PvpTower pvpTower = Instantiate(PrefabsManager.self.pvpTowerPrefab);
             pvpTower.areaKey = area.areaKey;
             pvpTower.instanceId = this.id;
-            pvpTower.setAreaParent(area, true);
+            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
+            pvpTower.transform.localPosition = targetLocalPos;
+            pvpTower.setAreaParent(area, false);
 
             // The data set in the map editor will be set to this pvp tower object, this will only occur on the server side, client side data will be set in MapImporter.cs script in the function instantiatePrefabs()
             IMapEditorDataReceiver receiver = pvpTower.GetComponent<IMapEditorDataReceiver>();
@@ -474,12 +476,31 @@ public class Instance : NetworkBehaviour
          }
       }
 
+      if (area.waypointsDataFields.Count > 0) {
+         foreach (ExportedPrefab001 dataField in area.waypointsDataFields) {
+            // TODO: Process waypoint info here
+            PvpWaypoint pvpWaypoint = Instantiate(new GameObject("PvpWaypoint")).AddComponent<PvpWaypoint>();
+            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
+            pvpWaypoint.transform.localPosition = targetLocalPos;
+            pvpWaypoint.transform.SetParent(area.transform, false);
+
+            IMapEditorDataReceiver receiver = pvpWaypoint.GetComponent<IMapEditorDataReceiver>();
+            if (receiver != null && dataField.d != null) {
+               receiver.receiveData(dataField.d);
+            }
+
+            InstanceManager.self.addPvpWaypointToInstance(pvpWaypoint, this);
+         }
+      }
+
       if (area.baseDataFields.Count > 0) {
          foreach (ExportedPrefab001 dataField in area.baseDataFields) {
             PvpBase pvpBase = Instantiate(PrefabsManager.self.pvpBasePrefab);
             pvpBase.areaKey = area.areaKey;
             pvpBase.instanceId = this.id;
-            pvpBase.setAreaParent(area, true);
+            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
+            pvpBase.transform.localPosition = targetLocalPos;
+            pvpBase.setAreaParent(area, false);
 
             // The data set in the map editor will be set to this pvp object, this will only occur on the server side, client side data will be set in MapImporter.cs script in the function instantiatePrefabs()
             IMapEditorDataReceiver receiver = pvpBase.GetComponent<IMapEditorDataReceiver>();
@@ -497,7 +518,9 @@ public class Instance : NetworkBehaviour
             PvpShipyard pvpShipyard = Instantiate(PrefabsManager.self.pvpShipyardPrefab);
             pvpShipyard.areaKey = area.areaKey;
             pvpShipyard.instanceId = this.id;
-            pvpShipyard.setAreaParent(area, true);
+            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
+            pvpShipyard.transform.localPosition = targetLocalPos;
+            pvpShipyard.setAreaParent(area, false);
 
             // The data set in the map editor will be set to this pvp object, this will only occur on the server side, client side data will be set in MapImporter.cs script in the function instantiatePrefabs()
             IMapEditorDataReceiver receiver = pvpShipyard.GetComponent<IMapEditorDataReceiver>();
@@ -505,6 +528,7 @@ public class Instance : NetworkBehaviour
                receiver.receiveData(dataField.d);
             }
 
+            pvpShipyard.initSprites();
             pvpShipyard.spawnLocation = PvpGame.getSpawnSideForShipyard(pvpShipyard.pvpTeam, pvpShipyard.laneType);
             InstanceManager.self.addSeaStructureToInstance(pvpShipyard, this);
             NetworkServer.Spawn(pvpShipyard.gameObject);

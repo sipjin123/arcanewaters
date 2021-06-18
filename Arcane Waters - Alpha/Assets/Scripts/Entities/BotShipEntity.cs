@@ -46,8 +46,20 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       base.Start();
 	   
 	   if (isServer) {
-		getRandomPowerup();
+		   getRandomPowerup();
 	   }
+
+      if (isClient) {
+         if (pvpTeam != PvpTeamType.None) {
+            string texturePath = (pvpTeam == PvpTeamType.A) ? TEAM_A_SKIN : TEAM_B_SKIN;
+            Texture2D newTexture = Resources.Load<Texture2D>(texturePath);
+            if (newTexture) {
+               spritesOverride = newTexture;
+            }
+
+            updateSprites();
+         }
+      }
    }
 
    protected override void Update () {
@@ -246,7 +258,11 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
    public void setShipData (int enemyXmlData, Ship.Type shipType, int instanceDifficulty) {
       ShipData shipData = ShipDataManager.self.getShipData(shipType);
-      if (shipData != null && (int) shipType != -1) {
+      
+      // If we've provided a sprite override, apply it
+      if (spritesOverride) {
+         spritesContainer.GetComponent<SpriteSwap>().newTexture = spritesOverride;
+      } else if (shipData != null && (int) shipType != -1) {
          if (shipData.spritePath != "") {
             spritesContainer.GetComponent<SpriteSwap>().newTexture = ImageManager.getSprite(shipData.spritePath).texture;
          }
@@ -332,6 +348,10 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
    // What powerup this bot ship has
    private Powerup.Type _powerup;
+
+   // The paths to sprites being used for team skins for the ships
+   private static string TEAM_A_SKIN = "Sprites/Ships/type_1_naturalist";
+   private static string TEAM_B_SKIN = "Sprites/Ships/type_1_privateer";
 
    #endregion
 }

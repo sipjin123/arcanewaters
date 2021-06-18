@@ -1173,7 +1173,15 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static List<MailInfo> getSentMailInfoList (int senderUsrId, int page, int mailsPerPage) {
+      return null;
+   }
+
    public static int getMailInfoCount (int userId) {
+      return 0;
+   }
+
+   public static int getSentMailInfoCount (int userId) {
       return 0;
    }
 

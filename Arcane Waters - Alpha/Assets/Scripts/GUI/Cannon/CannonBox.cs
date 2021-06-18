@@ -10,14 +10,23 @@ public class CannonBox : ClientMonoBehaviour {
    // The attack type that this box selects
    public Attack.Type attackType;
 
+   // The attack type that this box selects
+   public CannonPanel.CannonAttackOption cannonAttackOption;
+
    // Skill Icon
    public Image skillIcon;
 
    // The ability id
    public int abilityId;
 
+   // The box order from the left
+   public int boxIndex;
+
    // Skill highlight
    public GameObject highlightSkill;
+
+   // Skill cooldown
+   public Text cooldownText;
 
    #endregion
 
@@ -25,6 +34,10 @@ public class CannonBox : ClientMonoBehaviour {
       // Look up components
       _button = GetComponent<Button>();
       _containerImage = GetComponent<Image>();
+   }
+
+   public void boxPressed () {
+      CannonPanel.self.useCannonType(cannonAttackOption, boxIndex);
    }
 
    public void setCannons () {

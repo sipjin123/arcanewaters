@@ -29,7 +29,7 @@ public class AdminManagerSingleton : GenericGameManager
 
    #endregion
 
-   public void Awake () {
+   protected override void Awake () {
       base.Awake();
       self = this;
    }

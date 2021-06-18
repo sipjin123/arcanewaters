@@ -9,11 +9,19 @@ public class PvpBase : SeaStructure {
 
    #endregion
 
-   protected override void Start () {
-      base.Start();
+   protected override void onActivated () {
+      base.onActivated();
 
       if (isServer) {
          InvokeRepeating(nameof(healAllies), 1.0f, 1.0f);
+      }
+   }
+
+   protected override void onDeactivated () {
+      base.onDeactivated();
+
+      if (isServer) {
+         CancelInvoke(nameof(healAllies));
       }
    }
 

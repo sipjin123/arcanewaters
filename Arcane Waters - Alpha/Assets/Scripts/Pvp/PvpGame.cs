@@ -189,6 +189,7 @@ public class PvpGame : MonoBehaviour {
       }
 
       detectStructures();
+      setStructuresActivated(true);
 
       _gameState = State.InGame;
       StartCoroutine(CO_SpawnWaves());
@@ -240,14 +241,16 @@ public class PvpGame : MonoBehaviour {
       if ((numTowers - 2) % 6 == 0) {
          _towersPerLane = (numTowers - 2) / 6;
          
-         // Set capacity of structure lists
+         // Fill the lists with null for now, so we can access elements directly
          int structuresPerLane = 3 + _towersPerLane;
-         _topStructuresA.Capacity = structuresPerLane;
-         _midStructuresA.Capacity = structuresPerLane;
-         _botStructuresA.Capacity = structuresPerLane;
-         _topStructuresB.Capacity = structuresPerLane;
-         _midStructuresB.Capacity = structuresPerLane;
-         _botStructuresB.Capacity = structuresPerLane;
+         for (int i = 0; i < structuresPerLane; i++) {
+            _topStructuresA.Add(null);
+            _midStructuresA.Add(null);
+            _botStructuresA.Add(null);
+            _topStructuresB.Add(null);
+            _midStructuresB.Add(null);
+            _botStructuresB.Add(null);
+         }
       } else {
          D.error("This map doesn't have the correct number of towers. Aborting structure detection.");
          return;
@@ -262,24 +265,51 @@ public class PvpGame : MonoBehaviour {
          } else if (structure is PvpBase) {
             registerBase((PvpBase) structure);
          }
+
+         _allStructures.Add(structure);
       }
 
       // Setup the invlunerability and structure unlocking
       setupStructureUnlocking(_topStructuresA);
       setupStructureUnlocking(_midStructuresA);
       setupStructureUnlocking(_botStructuresA);
+      setupStructureUnlocking(_topStructuresB);
+      setupStructureUnlocking(_midStructuresB);
       setupStructureUnlocking(_botStructuresB);
-      setupStructureUnlocking(_botStructuresB);
-      setupStructureUnlocking(_botStructuresB);
+
+      PvpWaypoint topWaypoint = instance.pvpWaypoints.Find((x) => x.lane == PvpLane.Top);
+      PvpWaypoint midWaypoint = instance.pvpWaypoints.Find((x) => x.lane == PvpLane.Mid);
+      PvpWaypoint botWaypoint = instance.pvpWaypoints.Find((x) => x.lane == PvpLane.Bot);
+
+      if (!topWaypoint && !midWaypoint && !botWaypoint) {
+         D.error("Couldn't find all Pvp waypoints of types: Top, Mid and Bot, check the map in the editor.");
+         return;
+      }
 
       // Setup the targetStructures for the shipyard, and then spawn them all in
       foreach (SeaStructure structure in instance.seaStructures) {
          if (structure is PvpShipyard) {
             PvpShipyard shipyard = (PvpShipyard) structure;
-            shipyard.targetStructures = getStructures(shipyard.pvpTeam, shipyard.laneType);
+            PvpTeamType otherTeam = (shipyard.pvpTeam == PvpTeamType.A) ? PvpTeamType.B : PvpTeamType.A;
+            shipyard.targetStructures = getStructures(otherTeam, shipyard.laneType);
 
-            // TODO: Replace this once the PvpWaypoints are implemented properly
-            shipyard.laneCenterTarget.localPosition = PvpManager.self.laneCenterPositions[(int) shipyard.laneType - 1] - shipyard.transform.localPosition;
+            Vector3 waypointPosition;
+
+            switch (shipyard.laneType) {
+               case PvpLane.Top:
+                  waypointPosition = topWaypoint.transform.localPosition;
+                  break;
+               case PvpLane.Mid:
+                  waypointPosition = midWaypoint.transform.localPosition;
+                  break;
+               case PvpLane.Bot:
+                  waypointPosition = botWaypoint.transform.localPosition;
+                  break;
+               default:
+                  waypointPosition = Vector3.zero;
+                  break;
+            }
+            shipyard.laneCenterTarget.localPosition = waypointPosition - shipyard.transform.localPosition;
          }
       }
    }
@@ -396,13 +426,17 @@ public class PvpGame : MonoBehaviour {
             // If the player is in a voyage group, remove them from it
             if (player.tryGetGroup(out VoyageGroupInfo groupInfo)) {
                VoyageGroupManager.self.removeUserFromGroup(groupInfo, player.userId);
+               D.log("MT: Removed player from voyage group.");
             }
-         }
 
-         Vector2 spawnPos = SpawnManager.self.getLocalPosition(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            DB_Main.setNewLocalPosition(userId, spawnPos, Direction.South, Area.STARTING_TOWN);
-         });
+            player.spawnInBiomeHomeTown();
+         } else {
+            Vector2 spawnPos = SpawnManager.self.getLocalPosition(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               DB_Main.setNewLocalPosition(userId, spawnPos, Direction.South, Area.STARTING_TOWN);
+               D.log("BT: Set player's position in the DB.");
+            });
+         }
       }
    }
 
@@ -552,6 +586,13 @@ public class PvpGame : MonoBehaviour {
       getStructures(pvpBase.pvpTeam, PvpLane.Bot)[indexInList] = pvpBase;
    }
 
+   private void setStructuresActivated (bool value) {
+      foreach (SeaStructure structure in _allStructures) {
+         structure.setIsActivated(value);
+         structure.Rpc_SetIsActivated(value);
+      }
+   }
+
    public static PvpShipyard.SpawnLocation getSpawnSideForShipyard (PvpTeamType teamType, PvpLane lane) {
       if (teamType == PvpTeamType.A) {
          switch (lane) {
@@ -606,6 +647,9 @@ public class PvpGame : MonoBehaviour {
    private List<SeaStructure> _topStructuresB = new List<SeaStructure>();
    private List<SeaStructure> _midStructuresB = new List<SeaStructure>();
    private List<SeaStructure> _botStructuresB = new List<SeaStructure>();
+
+   // A list of references to all the structures in the game
+   private List<SeaStructure> _allStructures = new List<SeaStructure>();
 
    // A list of all the bot ships in this game
    private List<BotShipEntity> _ships = new List<BotShipEntity>();

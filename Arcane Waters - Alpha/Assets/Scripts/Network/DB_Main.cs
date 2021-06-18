@@ -8789,8 +8789,8 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO mails(recipientUsrId, senderUsrId, receptionDate, isRead, mailSubject, message) " +
-            "VALUES (@recipientUsrId, @senderUsrId, @receptionDate, @isRead, @mailSubject, @message)", conn)) {
+            "INSERT INTO mails(recipientUsrId, senderUsrId, receptionDate, isRead, mailSubject, message, autoDelete, sendBack) " +
+            "VALUES (@recipientUsrId, @senderUsrId, @receptionDate, @isRead, @mailSubject, @message, @autoDelete, @sendBack)", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -8800,6 +8800,8 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@isRead", mailInfo.isRead);
             cmd.Parameters.AddWithValue("@mailSubject", mailInfo.mailSubject);
             cmd.Parameters.AddWithValue("@message", mailInfo.message);
+            cmd.Parameters.AddWithValue("@autoDelete", mailInfo.autoDelete);
+            cmd.Parameters.AddWithValue("@sendBack", mailInfo.sendBack);
             DebugQuery(cmd);
 
             // Execute the command
@@ -8910,6 +8912,39 @@ public class DB_Main : DB_MainStub
       return mailList;
    }
 
+   public static new List<MailInfo> getSentMailInfoList (int senderUserId, int page, int mailsPerPage) {
+      List<MailInfo> mailList = new List<MailInfo>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT *, (SELECT COUNT(*) FROM items WHERE items.usrId = -mails.mailId) AS attachedItemCount " +
+            "FROM mails JOIN users ON mails.senderUsrId = users.usrId " +
+            "WHERE mails.senderUsrId=@senderUsrId " +
+            "ORDER BY mails.receptionDate DESC LIMIT @start, @perPage", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@senderUsrId", senderUserId);
+            cmd.Parameters.AddWithValue("@start", (page - 1) * mailsPerPage);
+            cmd.Parameters.AddWithValue("@perPage", mailsPerPage);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  MailInfo mail = new MailInfo(dataReader, true);
+                  mailList.Add(mail);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return mailList;
+   }
+
+
    public static new int getMailInfoCount (int recipientUserId) {
       int mailCount = 0;
 
@@ -8934,6 +8969,32 @@ public class DB_Main : DB_MainStub
 
       return mailCount;
    }
+
+   public static new int getSentMailInfoCount (int senderUserId) {
+      int mailCount = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT count(*) AS mailCount FROM mails WHERE mails.senderUsrId=@senderUsrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@senderUsrId", senderUserId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  mailCount = dataReader.GetInt32("mailCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return mailCount;
+   }
+
 
    public static new List<int> getUserIdsHavingUnreadMail (DateTime startDate) {
       List<int> userIdsList = new List<int>();

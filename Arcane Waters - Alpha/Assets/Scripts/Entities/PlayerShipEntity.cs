@@ -121,6 +121,12 @@ public class PlayerShipEntity : ShipEntity
    // Other objects can add callbacks to this event, to be notified when this player damages another player
    public System.Action<PlayerShipEntity, PvpTeamType> onDamagedPlayer;
 
+   // Defines the possible attack types for the player's right-click attack
+   public enum CannonAttackType { Normal = 0, Cone = 1, Circle = 2 }
+
+   // Determines what type of attack will trigger when right-clicking
+   public CannonAttackType cannonAttackType = CannonAttackType.Normal;
+
    // The different flags the ship can display
    public enum Flag {
       None = 0,
@@ -162,7 +168,6 @@ public class PlayerShipEntity : ShipEntity
          _audioListener = GetComponent<AudioListener>();
 
          // Notify UI panel to display the current skills this ship has
-         rpc.Cmd_RequestShipAbilities(shipId);
          Cmd_RequestAbilityList();
 
          _targetSelector = GetComponentInChildren<PlayerTargetSelector>();
@@ -281,6 +286,20 @@ public class PlayerShipEntity : ShipEntity
                setFlag(Flag.Group);
             }
          }
+
+         if (!_isChargingCannon) {
+            if (KeyUtils.GetKeyDown(Key.Digit1)) {
+               CannonPanel.self.useCannonType(CannonPanel.CannonAttackOption.Standard_NoEffect, 0);
+            } else if (KeyUtils.GetKeyDown(Key.Digit2)) {
+               CannonPanel.self.useCannonType(CannonPanel.CannonAttackOption.Standard_Slow, 1);
+            } else if (KeyUtils.GetKeyDown(Key.Digit3)) {
+               CannonPanel.self.useCannonType(CannonPanel.CannonAttackOption.Standard_Frozen, 2);
+            } else if (KeyUtils.GetKeyDown(Key.Digit4)) {
+               CannonPanel.self.useCannonType(CannonPanel.CannonAttackOption.Cone_NoEffect, 3);
+            } else if (KeyUtils.GetKeyDown(Key.Digit5)) {
+               CannonPanel.self.useCannonType(CannonPanel.CannonAttackOption.Circle_NoEffect, 4);
+            }
+         }
       }
 
       // Adjust the volume on our movement audio source
@@ -328,8 +347,8 @@ public class PlayerShipEntity : ShipEntity
 
          if (KeyUtils.GetKey(Key.X)) {
             if (KeyUtils.GetKeyDown(Key.F10)) {
-               _cannonAttackType = (CannonAttackType) (((int) _cannonAttackType + 1) % 3);
-               ChatPanel.self.addChatInfo(new ChatInfo(0, "Changed ship attack type to: " + _cannonAttackType.ToString(), System.DateTime.Now, ChatInfo.Type.System));
+               cannonAttackType = (CannonAttackType) (((int) cannonAttackType + 1) % 3);
+               ChatPanel.self.addChatInfo(new ChatInfo(0, "Changed ship attack type to: " + cannonAttackType.ToString(), System.DateTime.Now, ChatInfo.Type.System));
             }
 
             if (KeyUtils.GetKeyDown(Key.F11)) {
@@ -435,14 +454,14 @@ public class PlayerShipEntity : ShipEntity
    }
 
    private void cannonAttackPressed () {
-      if (!hasReloaded() || isPerformingAttack()) {
+      if (!hasReloaded() || isPerformingAttack() || CannonPanel.self.isOnCooldown()) {
          return;
       }
 
       _cannonChargeStartTime = NetworkTime.time;
       _isChargingCannon = true;
 
-      switch (_cannonAttackType) {
+      switch (cannonAttackType) {
          case CannonAttackType.Normal:
             _cannonTargeter.gameObject.SetActive(true);
             updateTargeting();
@@ -466,7 +485,9 @@ public class PlayerShipEntity : ShipEntity
          return;
       }
 
-      switch (_cannonAttackType) {
+      CannonPanel.self.cannonReleased();
+
+      switch (cannonAttackType) {
          case CannonAttackType.Normal:
             float normalCannonballLifetime = getCannonballLifetime();
             Vector2 targetPosition;
@@ -520,7 +541,7 @@ public class PlayerShipEntity : ShipEntity
          return;
       }
 
-      switch (_cannonAttackType) {
+      switch (cannonAttackType) {
          case CannonAttackType.Normal:
 
             Vector2 fireDir;
@@ -704,6 +725,11 @@ public class PlayerShipEntity : ShipEntity
    private void Cmd_ChangeCannonEffectType () {
       cannonEffectType = (Status.Type) (((int) cannonEffectType + 1) % System.Enum.GetValues(typeof(Status.Type)).Length);
       Target_NotifyCannonEffectChange(connectionToClient, (int) cannonEffectType);
+   }
+
+   [Command]
+   public void Cmd_RequestCannonEffectType (int type) {
+      cannonEffectType = (Status.Type) (type);
    }
 
    [TargetRpc]
@@ -1449,12 +1475,6 @@ public class PlayerShipEntity : ShipEntity
 
    // A multiplier for the force added locally in order to mask delay   
    private const float CLIENT_SIDE_FORCE = 0.1f;
-
-   // Defines the possible attack types for the player's right-click attack
-   private enum CannonAttackType { Normal = 0, Cone = 1, Circle = 2 }
-
-   // Determines what type of attack will trigger when right-clicking
-   private CannonAttackType _cannonAttackType = CannonAttackType.Normal;
 
    // When the player started charging their cannon
    private double _cannonChargeStartTime = -3.0f;

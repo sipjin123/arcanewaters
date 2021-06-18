@@ -83,6 +83,9 @@ public class MailPanel : Panel
    // The previous page button
    public Button previousPageButton;
 
+   // The send (persistent) button
+   public Button sendPersistentButton;
+
    // Self
    public static MailPanel self;
 
@@ -93,10 +96,21 @@ public class MailPanel : Panel
       self = this;
       messageInput.characterLimit = MailManager.MAX_MESSAGE_LENGTH;
       updateMessageWordCount();
+      displaySendPersistentButton();
+   }
+
+   private void displaySendPersistentButton () {
+      // Hide the send (persistent) button if we are not admins
+      if (Global.player.isAdmin()) {
+         if (sendPersistentButton != null) {
+            sendPersistentButton.gameObject.SetActive(true);
+         }
+      }
    }
 
    public void refreshMailList () {
       Global.player.rpc.Cmd_RequestMailListFromServer(_currentPage, ROWS_PER_PAGE);
+      Global.player.rpc.Cmd_ProcessOldMails(MailManager.MAX_MAIL_LIFETIME_DAYS);
    }
 
    public void displayMail (int mailId) {
@@ -149,6 +163,11 @@ public class MailPanel : Panel
       if (_currentMode == Mode.None) {
          configurePanelForMode(Mode.NoMailSelected);
       }
+
+   }
+
+   public void updateWithSentMailList (List<MailInfo> mailList, int pageNumber, int totalMailCount) {
+   
    }
 
    public void updatePanelWithSingleMail (MailInfo mail, List<Item> attachedItems, bool hasUnreadMail) {
@@ -292,7 +311,7 @@ public class MailPanel : Panel
       }
    }
 
-   public void confirmDeleteMail(int mailId) {
+   public void confirmDeleteMail (int mailId) {
       Global.player.rpc.Cmd_DeleteMail(mailId);
    }
 
@@ -306,11 +325,26 @@ public class MailPanel : Panel
          PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmSendMail());
 
          // Show a confirmation panel
-         PanelManager.self.confirmScreen.show("Are you sure you want to send this mail to " + recipientInput.text + "?");
+         PanelManager.self.confirmScreen.show("Are you sure you want to send this mail to " + recipientInput.text + "?. This mail will auto delete itself in " + MailManager.MAX_MAIL_LIFETIME_DAYS + " days.", MailManager.getMailSendingCost());
       }
    }
 
-   public void confirmSendMail () {
+   public void sendMailPersistent () {
+      // Check if the recipient name is entered
+      if ("".Equals(recipientInput.text)) {
+         PanelManager.self.noticeScreen.show("Enter a recipient name!");
+      } else {
+         // Associate a new function with the confirmation button
+         PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
+         PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmSendPersistentMail());
+
+         // Show a warning that tells the user, that the mail will persist and never be auto deleted.
+         PanelManager.self.confirmScreen.show("This mail will be sent to " + recipientInput.text + " and it will *not* be auto deleted. Do you want to proceed?", MailManager.getMailSendingCost());
+      }
+   }
+
+   private void prepareMail (bool autoDelete = true) {
+
       // Build the attached items ids and count lists
       List<int> attachedItemIds = new List<int>();
       List<int> attachedItemCounts = new List<int>();
@@ -322,9 +356,29 @@ public class MailPanel : Panel
       // Hide the confirm panel
       PanelManager.self.confirmScreen.hide();
 
+      // Mails sent from admin account that contain attachment, must persist.
+      if (Global.player.isAdmin() && attachedItemIds.Any()) {
+         autoDelete = false;
+      }
+
+      bool sendBack = false;
+
+      // If the mail has attachments and was sent by a player, the mail must be sent back and deleted.
+      if (!Global.player.isAdmin() && attachedItemIds.Any()) {
+         sendBack = true;
+      }
+
       // Create the mail
       Global.player.rpc.Cmd_CreateMail(recipientInput.text, subjectInput.text, messageInput.text,
-         attachedItemIds.ToArray(), attachedItemCounts.ToArray());
+      attachedItemIds.ToArray(), attachedItemCounts.ToArray(), MailManager.getMailSendingCost(), autoDelete, sendBack);
+   }
+
+   public void confirmSendMail () {
+      prepareMail();
+   }
+
+   public void confirmSendPersistentMail () {
+      prepareMail(false);
    }
 
    public void updateMessageWordCount () {

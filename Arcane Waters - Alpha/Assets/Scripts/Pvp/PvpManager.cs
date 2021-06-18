@@ -38,6 +38,9 @@ public class PvpManager : MonoBehaviour {
    // The delay at the start of the game before waves are spawned
    public static float INITIAL_WAVE_DELAY = 20.0f;
 
+   // The map we will use for pvp games
+   public static string currentMap = "pvp_lanes_64";
+
    #endregion
 
    // A reference to the singleton instance of this class
@@ -55,7 +58,7 @@ public class PvpManager : MonoBehaviour {
 
       // If there are no active games, create a game
       if (bestGame == null) {
-         createNewGame(onCreationComplete: (instanceId) => {
+         createNewGame(areaKey: currentMap, onCreationComplete: (instanceId) => {
             // Add the player to the game
             addPlayerToGame(instanceId, player);
          });

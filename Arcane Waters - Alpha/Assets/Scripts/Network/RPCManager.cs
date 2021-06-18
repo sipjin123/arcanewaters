@@ -917,6 +917,22 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
+   public void Target_ReceiveSentMailList (NetworkConnection connection,
+   MailInfo[] mailArray, int pageNumber, int totalMailCount) {
+      List<MailInfo> mailList = new List<MailInfo>(mailArray);
+
+      // Make sure the panel is showing
+      MailPanel panel = (MailPanel) PanelManager.self.get(Panel.Type.Mail);
+
+      if (!panel.isShowing()) {
+         PanelManager.self.linkPanel(panel.type);
+      }
+
+      // Pass the data to the panel
+      panel.updateWithSentMailList(mailList, pageNumber, totalMailCount);
+   }
+
+   [TargetRpc]
    public void Target_RefreshCraftingPanel (NetworkConnection connection) {
       // Get the crafting panel
       CraftingPanel panel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);

@@ -106,6 +106,8 @@ public class MyNetworkManager : NetworkManager
 
       base.Awake();
       D.adminLog("MyNetworkManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
+
+      D.debug("Command Line: " + System.Environment.CommandLine);
    }
 
    /*private void Start () {
@@ -232,6 +234,9 @@ public class MyNetworkManager : NetworkManager
 
       // Load perk data from database
       PerkManager.self.loadPerkDataFromDatabase();
+
+      // Start monitoring the client pings
+      LagMonitorManager.self.startLagMonitor();
    }
 
    private void initializeXmlData () {

@@ -28,6 +28,9 @@ public class MailRow : MonoBehaviour
    // The row sprite to use when the mail is selected
    public Sprite mailSelectedSprite;
 
+   // The date of reception
+   public TextMeshProUGUI expirationDateText;
+
    // The row image
    public Image rowImage;
 
@@ -73,6 +76,25 @@ public class MailRow : MonoBehaviour
       } else {
          // Before the current year: 11/26/2000
          receptionDateText.SetText(localReceptionDate.ToString("MM/dd/yyyy"));
+      }
+
+      // Set the expiration message for the Mail
+      if (expirationDateText != null) {
+         if (MailManager.MAX_MAIL_LIFETIME_DAYS > 0) {
+            DateTime expirationDate = localReceptionDate + TimeSpan.FromDays(MailManager.MAX_MAIL_LIFETIME_DAYS);
+            TimeSpan timeRemaining = expirationDate - DateTime.Now.ToLocalTime();
+            int daysRemaining = (int) Math.Floor(timeRemaining.TotalDays);
+            daysRemaining = Math.Max(daysRemaining, 0);
+            expirationDateText.text = daysRemaining.ToString() + " days left";
+            expirationDateText.color = Color.white;
+
+            // Make the emails that are going to be deleted soon, easier to find. 
+            if (daysRemaining == 0) {
+               expirationDateText.color = Color.red;
+            }
+         } else {
+            expirationDateText.text = "";
+         }
       }
    }
 
