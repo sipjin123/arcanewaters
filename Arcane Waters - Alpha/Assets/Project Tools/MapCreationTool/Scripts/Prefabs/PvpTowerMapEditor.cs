@@ -12,8 +12,9 @@ namespace MapCreationTool {
 
       #endregion
 
-      private void Start () {
-         rangeIndicatorObject.localScale = new Vector3(PvpTower.ATTACK_RANGE, PvpTower.ATTACK_RANGE, PvpTower.ATTACK_RANGE);
+      private void Update () {
+         rangeIndicatorObject.gameObject.SetActive(transform.parent.GetComponent<Palette>() == null);
+         rangeIndicatorObject.transform.localScale = new Vector3(PvpTower.ATTACK_RANGE, PvpTower.ATTACK_RANGE, 1);
       }
 
       // TODO: Set pvp base editor specific functionality here

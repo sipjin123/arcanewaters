@@ -21,7 +21,7 @@ namespace MapCreationTool {
       #endregion
 
       private void Awake () {
-         outline = GetComponentInChildren<SpriteOutline>();
+         _outline = GetComponentInChildren<SpriteOutline>();
          startingScale = transform.localScale.x;
       }
 
@@ -62,13 +62,13 @@ namespace MapCreationTool {
       }
 
       public void setHighlight (bool hovered, bool selected, bool deleting) {
-         setOutlineHighlight(outline, hovered, selected, deleting);
+         setOutlineHighlight(_outline, hovered, selected, deleting);
       }
 
       #region Private Variables
 
       // The outline
-      private SpriteOutline outline;
+      private SpriteOutline _outline;
 
       #endregion
    }

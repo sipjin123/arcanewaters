@@ -133,6 +133,19 @@ namespace MapCreationTool
                   toolTip = customData.toolTip,
                   options = SecretsMapManager.instance.formInitialSprite()
                };
+            } else if (customData.type == CustomFieldType.PvpMonsterPowerup) {
+               List<string> stringList = new List<string>();
+               Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
+
+               foreach (string powerupType in Enum.GetNames(typeof(Powerup.Type))) {
+                  stringList.Add(powerupType);
+               }
+
+               selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
+                  name = customData.name,
+                  toolTip = customData.toolTip,
+                  options = SelectOption.formOptions(stringList)
+               };
             } else if (customData.type == CustomFieldType.PvpLane) {
                List<string> stringList = new List<string>();
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
@@ -217,6 +230,7 @@ namespace MapCreationTool
          TreasureType,
          PvpTeamType,
          PvpLane,
+         PvpMonsterPowerup
       }
    }
 }
