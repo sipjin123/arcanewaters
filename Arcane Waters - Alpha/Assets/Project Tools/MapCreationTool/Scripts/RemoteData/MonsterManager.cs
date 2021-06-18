@@ -6,8 +6,7 @@ using UnityEngine;
 
 namespace MapCreationTool
 {
-   public class MonsterManager : MonoBehaviour
-   {
+   public class MonsterManager : MonoBehaviour {
       public static event System.Action OnLoaded;
       public static MonsterManager instance { get; private set; }
 
@@ -82,6 +81,10 @@ namespace MapCreationTool
          }
 
          return returnOptions.ToArray();
+      }
+
+      public List<SeaMonsterXMLContent> getSeaMonsters () {
+         return seaMonsters.ToList();
       }
 
       public int seaMonsterCount

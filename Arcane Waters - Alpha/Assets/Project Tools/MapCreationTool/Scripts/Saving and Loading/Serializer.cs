@@ -369,6 +369,8 @@ namespace MapCreationTool.Serialization
       public const string PVP_LANE = "pvp lane";
       public const string PVP_LANE_NUMBER = "pvp lane number";
       public const string PVP_TOWER_RANGE = "pvp tower range";
+      public const string IS_PVP_MONSTER = "is pvp monster";
+      public const string PVP_MONSTER_POWERUP = "pvp monster powerup";
 
       public string k; // Key
       public string v; // Value

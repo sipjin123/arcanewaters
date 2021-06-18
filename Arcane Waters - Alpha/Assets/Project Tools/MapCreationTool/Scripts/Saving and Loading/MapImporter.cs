@@ -244,6 +244,8 @@ namespace MapCreationTool
          List<ExportedPrefab001> pvpTowerData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> pvpBaseData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> pvpShipyardTowerData = new List<ExportedPrefab001>();
+         List<ExportedPrefab001> pvpWaypointsData = new List<ExportedPrefab001>();
+         List<ExportedPrefab001> pvpMonsterSpawnerData = new List<ExportedPrefab001>();
 
          int unrecognizedPrefabs = 0;
          int cropSpotCounter = 0;
@@ -290,6 +292,10 @@ namespace MapCreationTool
                if (prefab.d != null) {
                   pvpShipyardTowerData.Add(prefab);
                }
+            } else if (original.GetComponent<PvpWaypoint>() != null) {
+               if (prefab.d != null) {
+                  pvpWaypointsData.Add(prefab);
+               }
             } else if (original.GetComponent<BossSpawner>() != null) {
                if (prefab.d != null) {
                   bossSpawnerData.Add(prefab);
@@ -297,6 +303,10 @@ namespace MapCreationTool
             } else if (original.GetComponent<NPC>() != null) {
                if (prefab.d != null) {
                   npcData.Add(prefab);
+               }
+            } else if (original.GetComponent<PvpMonsterSpawner>() != null) {
+               if (prefab.d != null) {
+                  pvpMonsterSpawnerData.Add(prefab);
                }
             } else if (original.GetComponent<ShipEntity>() != null) {
                if (prefab.d != null) {
@@ -404,7 +414,9 @@ namespace MapCreationTool
             Utilities.warning($"Could not recognize { unrecognizedPrefabs } prefabs of map { mapInfo.mapName }");
          }
 
-         area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData, shipData, seaMonstersData, bossSpawnerData, pvpTowerData, pvpBaseData, pvpShipyardTowerData);
+         area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData, 
+            shipData, seaMonstersData, bossSpawnerData, pvpTowerData, 
+            pvpBaseData, pvpShipyardTowerData, pvpWaypointsData, pvpMonsterSpawnerData);
       }
    }
 }

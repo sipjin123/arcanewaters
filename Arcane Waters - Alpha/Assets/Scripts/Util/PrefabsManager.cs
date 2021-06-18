@@ -174,6 +174,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating towers in pvp maps
    public PvpTower pvpTowerPrefab;
 
+   // The prefab we use for creating monster spawner in pvp maps
+   public PvpMonsterSpawner pvpMonsterSpawnerPrefab;
+
    // The prefab we use for creating bases in pvp maps
    public PvpBase pvpBasePrefab;
 

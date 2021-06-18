@@ -33,6 +33,9 @@ public class Instance : NetworkBehaviour
    // The list of sea structures in this instance (server only)
    public List<SeaStructure> seaStructures = new List<SeaStructure>();
 
+   // The list of pvp waypoints in this instance (server only)
+   public List<PvpWaypoint> pvpWaypoints = new List<PvpWaypoint>();
+
    // For debugging in the Editor
    [SyncVar]
    public int entityCount;
@@ -473,6 +476,22 @@ public class Instance : NetworkBehaviour
 
             InstanceManager.self.addSeaStructureToInstance(pvpTower, this);
             NetworkServer.Spawn(pvpTower.gameObject);
+         }
+      }
+
+      if (area.pvpMonsterSpawnerDataFields.Count > 0) {
+         foreach (ExportedPrefab001 dataField in area.pvpMonsterSpawnerDataFields) {
+            PvpMonsterSpawner pvpMonsterSpawner = Instantiate(PrefabsManager.self.pvpMonsterSpawnerPrefab);
+            pvpMonsterSpawner.transform.SetParent(area.transform, false);
+            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
+            pvpMonsterSpawner.transform.localPosition = targetLocalPos;
+
+            pvpMonsterSpawner.instanceId = this.id;
+            IMapEditorDataReceiver receiver = pvpMonsterSpawner.GetComponent<IMapEditorDataReceiver>();
+            if (receiver != null && dataField.d != null) {
+               receiver.receiveData(dataField.d);
+            }
+            NetworkServer.Spawn(pvpMonsterSpawner.gameObject);
          }
       }
 
