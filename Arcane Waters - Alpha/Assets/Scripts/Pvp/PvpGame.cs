@@ -199,8 +199,20 @@ public class PvpGame : MonoBehaviour {
       setStructuresActivated(true);
 
       _gameState = State.InGame;
+      StartCoroutine(CO_SpawnSeamonsters());
       StartCoroutine(CO_SpawnWaves());
-      sendGameMessage("Game has begun!");
+   }
+
+   private IEnumerator CO_SpawnSeamonsters () {
+      Instance instance = InstanceManager.self.getInstance(instanceId);
+      while (instance.pvpMonsterSpawners.Count < 1) {
+         yield return 0;
+      }
+
+      foreach (PvpMonsterSpawner monsterSpawner in instance.pvpMonsterSpawners) {
+         monsterSpawner.instanceId = instanceId;
+         monsterSpawner.initializeSpawner();
+      }
    }
 
    private IEnumerator CO_SpawnWaves () {
@@ -525,6 +537,10 @@ public class PvpGame : MonoBehaviour {
 
    public bool containsUser (int userId) {
       return _usersInGame.Contains(userId);
+   }
+
+   public List<int> getAllUsersInGame () {
+      return _usersInGame;
    }
 
    public PvpTeamType getTeamForPlayer (int userId) {

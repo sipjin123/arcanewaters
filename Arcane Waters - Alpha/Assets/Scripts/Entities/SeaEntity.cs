@@ -157,6 +157,24 @@ public class SeaEntity : NetEntity
       }
 
       if (isServer) {
+         // Add pvp stat data
+         NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(_lastAttackerNetId);
+         if (lastAttacker != null) {
+            PvpGame pvpGame = PvpManager.self.getGameWithPlayer(lastAttacker.userId);
+            if (pvpGame != null) {
+               if (this is PlayerShipEntity) {
+                  pvpGame.addPlayerKillCount(lastAttacker.userId);
+                  pvpGame.addDeathCount(userId);
+               }
+               if (this is BotShipEntity) {
+                  pvpGame.addShipKillCount(lastAttacker.userId);
+               }
+               if (this is SeaMonsterEntity) {
+                  pvpGame.addMonsterKillCount(lastAttacker.userId);
+               }
+            }
+         }
+
          Rpc_OnDeath();
          _hasRunOnDeath = true;
       }

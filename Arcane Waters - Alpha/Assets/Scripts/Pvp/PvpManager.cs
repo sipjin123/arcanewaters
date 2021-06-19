@@ -151,14 +151,18 @@ public class PvpManager : MonoBehaviour {
       game.addPlayerToGame(player);
    }
 
-   public PvpGame getGameWithPlayer (NetEntity player) {
+   public PvpGame getGameWithPlayer (int playerUserId) {
       foreach (PvpGame activeGame in _activeGames.Values) {
-         if (activeGame.containsUser(player.userId)) {
+         if (activeGame.containsUser(playerUserId)) {
             return activeGame;
          }
       }
 
       return null;
+   }
+
+   public PvpGame getGameWithPlayer (NetEntity player) {
+      return getGameWithPlayer(player.userId);
    }
 
    public void tryRemoveEmptyGame (int instanceId) {

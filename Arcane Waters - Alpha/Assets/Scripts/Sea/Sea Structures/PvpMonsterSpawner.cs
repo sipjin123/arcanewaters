@@ -19,30 +19,23 @@ public class PvpMonsterSpawner : NetworkBehaviour, IMapEditorDataReceiver {
    public int instanceId;
 
    // The delay before the spawning starts
-   public const int START_DELAY = 10;
+   public const int START_DELAY = 30;
 
    // The delay before the the monster will respawn
    public const int RESPAWN_DELAY = 30;
 
    #endregion
 
-   private void Start () {
+   public void initializeSpawner () {
+      // TODO: Do initialization logic here
+      // This initializes the monster spawning everytime the previous monster dies, this function is continuous until the game ends
       Invoke(nameof(spawnMonster), START_DELAY);
    }
 
-   private void Update () {
-      if (!NetworkServer.active) {
-         return;
-      }
+   public void endSpawners () {
+      // TODO: Do end logic here
 
-      if (KeyUtils.GetKeyDown(UnityEngine.InputSystem.Key.X)) {
-         spawnMonster();
-      }
-   }
-
-   public void initializeSpawner () {
-      // TODO: This function should be called by the pvp game when the match officially starts
-      spawnMonster();
+      StopAllCoroutines();
    }
 
    private void spawnMonster () {
