@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7780025817837833029}
   - component: {fileID: 7733263235446510298}
   - component: {fileID: 6665238766149309251}
+  - component: {fileID: 6188362593926112546}
   m_Layer: 12
   m_Name: SpritesContainer
   m_TagString: Untagged
@@ -97,6 +98,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outlineRenderer: {fileID: 0}
   _renderers: []
+--- !u!114 &6188362593926112546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 158974697747247152}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialDelay: 0
+  frameLengthOverride: -1
+  delayStart: 0
+  destroyAtEnd: 0
+  stayAtLastFrame: 0
+  loopDelay: 0
+  isPaused: 0
+  minIndex: 0
+  maxIndex: 1000
+  currentAnimation: 0
+  group: 0
+  freezeAlpha: 0
+  _index: 0
 --- !u!1 &268860227602485980
 GameObject:
   m_ObjectHideFlags: 0
@@ -113,7 +139,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7710340498884825894
 Transform:
   m_ObjectHideFlags: 0
@@ -1059,7 +1085,6 @@ GameObject:
   m_Component:
   - component: {fileID: 116519551187001098}
   - component: {fileID: 8502622834602398066}
-  - component: {fileID: 3773083746145221403}
   - component: {fileID: 5631961755806889608}
   - component: {fileID: 523534740894633059}
   - component: {fileID: 4486003778837228066}
@@ -1202,31 +1227,6 @@ MonoBehaviour:
   topRightSpawnLocation: {fileID: 3967519241815570343}
   bottomLeftSpawnLocation: {fileID: 144918318103664921}
   targetStructures: []
---- !u!114 &3773083746145221403
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4620746816171269765}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialDelay: 0
-  frameLengthOverride: -1
-  delayStart: 0
-  destroyAtEnd: 0
-  stayAtLastFrame: 0
-  loopDelay: 0
-  isPaused: 0
-  minIndex: 0
-  maxIndex: 1000
-  currentAnimation: 0
-  group: 0
-  freezeAlpha: 0
-  _index: 0
 --- !u!114 &5631961755806889608
 MonoBehaviour:
   m_ObjectHideFlags: 0

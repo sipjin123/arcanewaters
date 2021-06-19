@@ -95,7 +95,7 @@ public class RPCManager : NetworkBehaviour
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Create a mail without recipient, with the auctioned item as attachment - this will also verify the item validity
-         int mailId = createMailCommon(-1, "Auction House - Item Delivery", "", new int[] { item.id }, new int[] { item.count });
+         int mailId = createMailCommon(-1, "Auction House - Item Delivery", "", new int[] { item.id }, new int[] { item.count }, false, false);
          if (mailId < 0) {
             return;
          }
@@ -1183,40 +1183,7 @@ public class RPCManager : NetworkBehaviour
       }
    }
 
-   [Command]
-   public void Cmd_RequestShipAbilities (int shipID) {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         ShipInfo shipInfo = DB_Main.getShipInfo(shipID);
-         if (shipInfo == null) {
-            D.editorLog("Ship info does not exist for ship: " + shipID, Color.red);
-            return;
-         }
-         if (shipInfo.shipAbilityXML == null || shipInfo.shipAbilityXML == "") {
-            D.error("XML Data does not exist for Ship ID: " + shipID + " Creating new Data with Default Ability: " + ShipAbilityInfo.DEFAULT_ABILITY);
-            int[] shipArray = new int[] { ShipAbilityInfo.DEFAULT_ABILITY };
-
-            shipInfo.shipAbilities = new ShipAbilityInfo { ShipAbilities = shipArray };
-
-            System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(shipInfo.shipAbilities.GetType());
-            var sb = new StringBuilder();
-            using (var writer = System.Xml.XmlWriter.Create(sb)) {
-               ser.Serialize(writer, shipInfo.shipAbilities);
-            }
-
-            string xmlString = sb.ToString();
-            shipInfo.shipAbilityXML = xmlString;
-            DB_Main.updateShipAbilities(shipID, xmlString);
-         }
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            ShipAbilityInfo shipAbility = Util.xmlLoad<ShipAbilityInfo>(shipInfo.shipAbilityXML);
-            Target_SetShipAbilities(_player.connectionToClient, shipAbility.ShipAbilities);
-         });
-      });
-   }
-
    [TargetRpc]
-   public void Target_SetShipAbilities (NetworkConnection connection, int[] abilityIds) {
-      CannonPanel.self.setAbilityTab(abilityIds);
    public void Target_ReceiveMapInfo (Map map) {
       AreaManager.self.storeAreaInfo(map);
    }
@@ -2821,7 +2788,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_CreateMail (string recipientName, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount) {
+   public void Cmd_CreateMail (string recipientName, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount, int price, bool autoDelete, bool sendBack) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -2837,14 +2804,27 @@ public class RPCManager : NetworkBehaviour
             return;
          }
 
+         int gold = DB_Main.getGold(_player.userId);
+
+         // Make sure they have enough gold and the price is positive
+         if (gold < price || price < 0) {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendError(ErrorMessage.Type.NotEnoughGold, _player, "You don't have " + price + " gold!");
+            });
+            return;
+         }
+
          // Create the mail
-         int mailId = createMailCommon(recipientUserInfo.userId, mailSubject, message, attachedItemsIds, attachedItemsCount);
+         int mailId = createMailCommon(recipientUserInfo.userId, mailSubject, message, attachedItemsIds, attachedItemsCount, autoDelete, sendBack);
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (mailId >= 0) {
                // Let the player know that the mail was sent
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.MailSent, _player, "The mail has been successfully sent to " + recipientName + "!");
+
+               // Make sure that we charge the player only if the message went through
+               DB_Main.addGold(_player.userId, -price);
 
                if (attachedItemsIds.Length > 0) {
                   // Update the shortcuts panel in case the transferred items were set in slots
@@ -2857,7 +2837,7 @@ public class RPCManager : NetworkBehaviour
 
    // This function must be called from the background thread!
    [Server]
-   private int createMailCommon (int recipientUserId, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount) {
+   private int createMailCommon (int recipientUserId, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount, bool autoDelete, bool sendBack) {
       // Verify that the number of attached items is below the maximum
       if (attachedItemsIds.Length > MailManager.MAX_ATTACHED_ITEMS) {
          D.error(string.Format("The mail from user {0} to recipient {1} has too many attached items ({2}).", _player.userId, recipientUserId, attachedItemsIds.Length));
@@ -2891,7 +2871,7 @@ public class RPCManager : NetworkBehaviour
       MailInfo mail = null;
 
       // Create the mail
-      mail = new MailInfo(-1, recipientUserId, _player.userId, DateTime.UtcNow, false, mailSubject, message);
+      mail = new MailInfo(-1, recipientUserId, _player.userId, DateTime.UtcNow, false, mailSubject, message, autoDelete, sendBack);
       mail.mailId = DB_Main.createMail(mail);
 
       if (mail.mailId == -1) {
@@ -3016,6 +2996,88 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
+   public void Cmd_ProcessOldMails (int maxMailLifetimeDays) {
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Get the number of items
+         int sentMailsCount = DB_Main.getSentMailInfoCount(_player.userId);
+
+         // TODO: arbitrarily chosen number
+         int itemsPerPage = 100;
+
+         // Calculate the maximum page number
+         int maxPage = Mathf.CeilToInt((float) sentMailsCount / itemsPerPage);
+         if (maxPage == 0) {
+            maxPage = 1;
+         }
+
+         List<MailInfo> droppedMails = new List<MailInfo>();
+         List<MailInfo> sentMails = null;
+
+         for (int pageNumber = 1; pageNumber < maxPage + 1; pageNumber++) {
+            sentMails = DB_Main.getSentMailInfoList(_player.userId, pageNumber, itemsPerPage);
+
+            if (sentMails == null) {
+               continue;
+            }
+
+            foreach (MailInfo sentMail in sentMails) {
+               bool isMailExpired = DateTime.FromBinary(sentMail.receptionDate).ToLocalTime() + TimeSpan.FromDays(maxMailLifetimeDays) < DateTime.Now.ToLocalTime();
+               if (isMailExpired) {
+                  if (sentMail.sendBack) {
+
+                     // Get the attached items
+                     List<Item> attachedItems = DB_Main.getItems(-sentMail.mailId, new Item.Category[] { Item.Category.None }, 1, MailManager.MAX_ATTACHED_ITEMS);
+
+                     // Fetch the full data for the mail info
+                     MailInfo fullSentMail = DB_Main.getMailInfo(sentMail.mailId);
+
+                     // Create the send back mail
+                     string mailSubject = fullSentMail.mailSubject + " [RE]";
+                     string dormantUserName = DB_Main.getUserName(fullSentMail.recipientUserId);
+                     string message = "The player '" + dormantUserName + "' didn't read your mail. The mail was sent back to you along with the included attachments. Original Message: <" + fullSentMail.message + ">";
+                     MailInfo sendBackMail = new MailInfo(-1, _player.userId, fullSentMail.recipientUserId, DateTime.UtcNow, false, mailSubject, message, false, false);
+                     sendBackMail.mailId = DB_Main.createMail(sendBackMail);
+
+                     if (sendBackMail.mailId == -1) {
+                        D.error(string.Format("Error when creating a mail from sender {0} to recipient {1}.", fullSentMail.recipientUserId, _player.userId));
+                        continue;
+                     }
+
+                     // Send the items back to the original user through the mail.
+                     foreach (var attachedItem in attachedItems) {
+
+                        // Check if the item was correctly retrieved
+                        if (attachedItem == null) {
+                           D.warning(string.Format("Could not retrieve the item {0} attached to mail {1} of user {2} targeted to {3}.", attachedItem.id, fullSentMail.mailId, fullSentMail.recipientUserId, _player.userId));
+                           continue;
+                        }
+
+                        // Transfer the item from the dormant player's mail to the send back mail
+                        DB_Main.transferItem(attachedItem, -fullSentMail.mailId, -sendBackMail.mailId, attachedItem.count);
+                     }
+
+                     // Delete the email.
+                     droppedMails.Add(fullSentMail);
+                  } else {
+                     // Check if the email should be deleted
+                     if (sentMail.autoDelete) {
+                        droppedMails.Add(sentMail);
+                     }
+                  }
+               }
+            }
+         }
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (MailInfo droppedMail in droppedMails) {
+               Cmd_DeleteMail(droppedMail.mailId);
+            }
+         });
+      });
+   }
+
+   [Command]
    public void Cmd_RequestMailListFromServer (int pageNumber, int itemsPerPage) {
       if (_player == null) {
          D.warning("No player object found.");
@@ -3051,6 +3113,46 @@ public class RPCManager : NetworkBehaviour
             Target_ReceiveMailList(_player.connectionToClient, mailList.ToArray(), pageNumber, totalMailCount);
          });
       });
+   }
+
+   [Command]
+   public void Cmd_RequestSentMailListFromServer (int pageNumber, int itemsPerPage) {
+
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Enforce a reasonable max here
+      if (itemsPerPage > 200) {
+         D.warning("Requesting too many items per page.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Get the number of items
+         int totalMailCount = DB_Main.getSentMailInfoCount(_player.userId);
+
+         // Calculate the maximum page number
+         int maxPage = Mathf.CeilToInt((float) totalMailCount / itemsPerPage);
+         if (maxPage == 0) {
+            maxPage = 1;
+         }
+
+         // Clamp the requested page number to the max page - the number of items could have changed
+         pageNumber = Mathf.Clamp(pageNumber, 1, maxPage);
+
+         // Get the items from the database
+         List<MailInfo> mailList = DB_Main.getSentMailInfoList(_player.userId, pageNumber, itemsPerPage);
+
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveSentMailList(_player.connectionToClient, mailList.ToArray(), pageNumber, totalMailCount);
+         });
+      });
+
    }
 
    [Server]
@@ -5879,7 +5981,6 @@ public class RPCManager : NetworkBehaviour
       AbilityType abilityType = (AbilityType) abilityTypeInt;
 
       if (_player == null || !(_player is PlayerBodyEntity)) {
-         D.editorLog("Invalid Source!");
          Target_ReceiveRefreshCasting(connectionToClient, false);
          return;
       }
@@ -5887,6 +5988,11 @@ public class RPCManager : NetworkBehaviour
       // Look up the player's Battle object
       PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
       Battle battle = BattleManager.self.getBattle(playerBody.battleId);
+      if (battle == null) {
+         Target_ReceiveRefreshCasting(connectionToClient, false);
+         return;
+      }
+
       Battler sourceBattler = battle.getBattler(_player.userId);
       Battler targetBattler = null;
       BasicAbilityData abilityData = new BasicAbilityData();
@@ -5915,7 +6021,6 @@ public class RPCManager : NetworkBehaviour
 
       // Ignore invalid or dead sources and targets
       if (sourceBattler == null || targetBattler == null || sourceBattler.isDead() || targetBattler.isDead()) {
-         D.debug("{" + sourceBattler.userId + "} Attack request denied! Enemy is Dead!}");
          Target_ReceiveRefreshCasting(connectionToClient, false);
          return;
       }
@@ -5996,7 +6101,6 @@ public class RPCManager : NetworkBehaviour
 
       // Ignore invalid or dead sources and targets
       if (sourceBattler == null || sourceBattler.isDead()) {
-         D.error("NULL here for player: " + _player.userId + " " + sourceBattler + " " + sourceBattler.isDead() + " " + sourceBattler.userId + " " + sourceBattler.health);
          return;
       }
 
@@ -7011,6 +7115,11 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_DisplayServerMessage (string message) {
       ChatPanel.self.addChatInfo(new ChatInfo(0, message, DateTime.Now, ChatInfo.Type.System));
+   }
+
+   [Command]
+   public void Cmd_ReceiveClientPing (float ping) {
+      LagMonitorManager.self.receiveClientPing(_player.userId, ping);
    }
 
    #region Private Variables

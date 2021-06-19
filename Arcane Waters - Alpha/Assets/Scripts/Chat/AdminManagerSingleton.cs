@@ -40,6 +40,8 @@ public class AdminManagerSingleton : GenericGameManager
       networkProfiler.IsRecording = true;
 #endif
 
+      InvokeRepeating("summarizeData", 0.0f, 5.0f);
+
       if (Util.isServerNonHost()) {
          return;
       }
@@ -50,6 +52,10 @@ public class AdminManagerSingleton : GenericGameManager
       }
 
       StartCoroutine(CO_CreateItemNamesDictionary());
+   }
+
+   public void Update () {
+      tickTotal += 1;
    }
 
    private IEnumerator CO_CreateItemNamesDictionary () {

@@ -70,7 +70,8 @@ public class CreationPerksGrid : MonoBehaviour {
          //SoundManager.play2DClip(SoundManager.Type.Perk_Point_Assigned);
          SoundEffectManager.self.playFmod2D(SoundEffectManager.ASSIGN_PERK_POINT);
       } else {
-         SoundEffectManager.self.playFmod2DWithPath(SoundEffectManager.BUTTON_CONFIRM_PATH);
+         SoundEffectManager.self.playGuiButtonConfirmSfx();
+         //SoundEffectManager.self.playFmod2DWithPath(SoundEffectManager.BUTTON_CONFIRM_PATH);
          //SoundManager.play2DClip(SoundManager.Type.GUI_Press);
       }
    }
@@ -87,8 +88,9 @@ public class CreationPerksGrid : MonoBehaviour {
          SoundEffectManager.self.playFmod2D(SoundEffectManager.UNASSIGN_PERK_POINT);
          //SoundManager.play2DClip(SoundManager.Type.Perk_Point_Unassigned);
       } else {
+         SoundEffectManager.self.playGuiButtonConfirmSfx();
          //SoundManager.play2DClip(SoundManager.Type.GUI_Press);
-         SoundEffectManager.self.playFmod2DWithPath(SoundEffectManager.BUTTON_CONFIRM_PATH);
+         //SoundEffectManager.self.playFmod2DWithPath(SoundEffectManager.BUTTON_CONFIRM_PATH);
       }
    }
 

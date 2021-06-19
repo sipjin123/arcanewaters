@@ -69,6 +69,8 @@ public class BottomBar : MonoBehaviour {
       // If the panel is not showing, send a request to the server to get our items
       if (!panel.isShowing()) {
          if (Global.player != null) {
+            SoundEffectManager.self.playGuiMenuOpenSfx();
+
             panel.refreshPanel();
          }
       } else {
@@ -97,7 +99,10 @@ public class BottomBar : MonoBehaviour {
 
       // If the panel is not showing, send a request to the server to get the info
       if (!panel.isShowing()) {
+
          if (Global.player != null) {
+            SoundEffectManager.self.playGuiMenuOpenSfx();
+
             Global.player.rpc.Cmd_RequestGuildInfoFromServer();
          }
       } else {
@@ -111,6 +116,8 @@ public class BottomBar : MonoBehaviour {
       // If the panel is not showing, send a request to the server to get our ships
       if (!panel.isShowing()) {
          if (Global.player != null) {
+            SoundEffectManager.self.playGuiMenuOpenSfx();
+
             Global.player.rpc.Cmd_RequestShipsFromServer();
          }
       } else {
@@ -123,6 +130,8 @@ public class BottomBar : MonoBehaviour {
 
       if (!panel.isShowing()) {
          if (Global.player != null) {
+            SoundEffectManager.self.playGuiMenuOpenSfx();
+
             Global.player.rpc.Cmd_RequestOptionsInfoFromServer();
          }
       } else {
@@ -145,6 +154,8 @@ public class BottomBar : MonoBehaviour {
 
       if (!panel.isShowing()) {
          if (Global.player != null) {
+            SoundEffectManager.self.playGuiMenuOpenSfx();
+
             Global.player.rpc.Cmd_RequestTradeHistoryInfoFromServer(0, TradeHistoryPanel.ROWS_PER_PAGE);
          }
       } else {
@@ -157,6 +168,8 @@ public class BottomBar : MonoBehaviour {
 
       if (!panel.isShowing()) {
          if (Global.player != null) {
+            SoundEffectManager.self.playGuiMenuOpenSfx();
+
             Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(LeaderBoardsPanel.DEFAULT_PERIOD);
          }
       } else {
@@ -169,6 +182,8 @@ public class BottomBar : MonoBehaviour {
 
       if (!panel.isShowing()) {
          if (Global.player != null) {
+            SoundEffectManager.self.playGuiMenuOpenSfx();
+
             panel.refreshPanel();
          }
       } else {
@@ -181,6 +196,8 @@ public class BottomBar : MonoBehaviour {
 
       if (!panel.isShowing()) {
          if (Global.player != null) {
+            SoundEffectManager.self.playGuiMenuOpenSfx();
+
             NubisDataFetcher.self.fetchUserAbilities();
          }
       } else {
@@ -193,6 +210,8 @@ public class BottomBar : MonoBehaviour {
 
       if (!panel.isShowing()) {
          if (Global.player != null) {
+            SoundEffectManager.self.playGuiMenuOpenSfx();
+
             panel.refreshMailList();
          }
       } else {

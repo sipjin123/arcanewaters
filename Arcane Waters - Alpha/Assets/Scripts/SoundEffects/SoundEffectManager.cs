@@ -203,7 +203,7 @@ public class SoundEffectManager : GenericGameManager
 
       if (effect != null) {
          EventInstance impactEvent = RuntimeManager.CreateInstance(effect.fmodId);
-         impactEvent.setParameterByName(AUDIO_SWITCH_PARAM, (int)impactType);
+         impactEvent.setParameterByName(AUDIO_SWITCH_PARAM, (int) impactType);
          impactEvent.set3DAttributes(RuntimeUtils.To3DAttributes(position));
          impactEvent.start();
          impactEvent.release();
@@ -216,6 +216,14 @@ public class SoundEffectManager : GenericGameManager
       }
 
       playFmodOneShot(id, CameraManager.getCurrentCamera().transform);
+   }
+
+   public void playGuiButtonConfirmSfx () {
+      playFmod2DWithPath(BUTTON_CONFIRM_PATH);
+   }
+
+   public void playGuiMenuOpenSfx () {
+      playFmod2DWithPath(MENU_OPEN_PATH);
    }
 
    public void playLegacyInteractionOneShot (int equipmentDataId, Transform target) {

@@ -2117,7 +2117,7 @@ public class AdminManager : NetworkBehaviour
       // If no partialAreaKey passed as parameter, then choosing random area to warp
       if (string.IsNullOrEmpty(partialAreaKey)) {
          // string[] testAreaKeys = { "Pineward_Shipyard", "Far Sands", "Snow Weapon Shop 1", "Andriusti", "Starting Sea Map", "Starting Treasure Site", "Andrius Ledge" };
-         string[] testAreaKeys = { "Snow Town Lite", "Far Sands", "Starting Treasure Site" };
+         string[] testAreaKeys = { "Snow Town Lite", "Far Sands" };
          closestAreaKey = testAreaKeys[UnityEngine.Random.Range(0, testAreaKeys.Count())];
       } else {
          // Try to find a custom map of this key

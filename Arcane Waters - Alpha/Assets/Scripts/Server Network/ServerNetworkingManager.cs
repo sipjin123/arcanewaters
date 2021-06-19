@@ -37,7 +37,11 @@ public class ServerNetworkingManager : MonoBehaviour
       RegisterSerializableClass<UserLocationBundle>();
 
       // Log the number of connected players
-      InvokeRepeating(nameof(logNumberOfConnectedClients), 0f, 60f);
+      if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {
+         InvokeRepeating(nameof(logNumberOfConnectedClients), 0f, 5f);
+      } else {
+         InvokeRepeating(nameof(logNumberOfConnectedClients), 0f, 60f);
+      }
    }
 
    public static NetworkingManager get () {

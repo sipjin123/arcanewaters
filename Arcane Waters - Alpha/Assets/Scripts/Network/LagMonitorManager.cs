@@ -10,12 +10,15 @@ public class LagMonitorManager : GenericGameManager
 {
    #region Public Variables
 
-   // The interval in seconds the clients sent the average ping value to the server
-   public static float CLIENT_MONITOR_INTERVAL = 60;
+   // The interval in seconds the clients log their ping
+   public static float CLIENT_MONITOR_INTERVAL = 5;
 
-   // The interval in seconds the server will calculate the average ping of all clients
-   public static float SERVER_MONITOR_INTERVAL = 60;
+   // The interval in seconds the server will calculate the ping and fps statistics
+   public static float SERVER_MONITOR_INTERVAL = 30;
 
+   // The time interval over which the server calculates the performance values
+   public static float SERVER_PERFORMANCE_CALCULATION_INTERVAL = 1f;
+   
    // The ping threshold in ms over which a warning must be logged on the server
    public static float PING_THRESHOLD = 500;
 
@@ -35,10 +38,17 @@ public class LagMonitorManager : GenericGameManager
    }
 
    public void startLagMonitor () {
-      InvokeRepeating(nameof(monitorClientPing), SERVER_MONITOR_INTERVAL, SERVER_MONITOR_INTERVAL);
+      InvokeRepeating(nameof(capturePerformance), SERVER_PERFORMANCE_CALCULATION_INTERVAL, SERVER_PERFORMANCE_CALCULATION_INTERVAL);
+      InvokeRepeating(nameof(monitorServer), SERVER_MONITOR_INTERVAL, SERVER_MONITOR_INTERVAL);
    }
 
    public void Update () {
+      if (NetworkServer.active) {
+         // Add this frame and the delta time for fps calculation
+         _fpsTotalTime += Time.unscaledDeltaTime;
+         _frameCount++;
+      }
+
       if (Util.isServerNonHost()) {
          return;
       }
@@ -86,12 +96,21 @@ public class LagMonitorManager : GenericGameManager
    }
 
    [Server]
+   private void capturePerformance () {
+      // Calculate the fps
+      int fps = Mathf.FloorToInt(((float) _frameCount) / _fpsTotalTime);
+      _serverFps.Add(fps);
+      _frameCount = 0;
+      _fpsTotalTime = 0f;
+   }
+
+   [Server]
    public void receiveClientPing (int userId, float ping) {
       _averageClientPings[userId] = ping;
    }
 
    [Server]
-   private void monitorClientPing () {
+   private void monitorServer () {
       if (!NetworkServer.active) {
          return;
       }
@@ -112,32 +131,52 @@ public class LagMonitorManager : GenericGameManager
          _averageClientPings.Remove(userId);
       }
 
-      // Default values
-      float min = 0;
-      float max = 0;
-      float mean = 0;
-      float median = 0;
+      getStatistics(_averageClientPings.Values, _averageClientPings.Count, out float pingMin, out float pingMax, out float pingMean, out float pingMedian);
+      getStatistics(_serverFps, _serverFps.Count, out float fpsMin, out float fpsMax, out float fpsMean, out float fpsMedian);
 
-      // Calculate ping statistics
-      if (_averageClientPings.Count > 0) {
-         min = _averageClientPings.Values.Min();
-         max = _averageClientPings.Values.Max();
-         mean = _averageClientPings.Values.Average();
+      // Clear the values captured in this time interval
+      _serverFps.Clear();
 
-         // Calculate the median ping
-         List<float> sortedPings = _averageClientPings.Values.OrderBy(n => n).ToList();
-         median = sortedPings[sortedPings.Count / 2] + sortedPings[(sortedPings.Count - 1) / 2];
-         median /= 2;
-      }
+      //if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {
+         if (true) { 
+         // The seconds since the server started
+         TimeSpan serverTime = TimeSpan.FromSeconds(NetworkTime.time);
+         string serverTimeStr = string.Format("{0:D2}m:{1:D2}s", serverTime.Minutes, serverTime.Seconds);
 
-      // Log the statistics in auto test mode
-      if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {
-         D.debug($"Ping statistics for {_averageClientPings.Count} connected clients: min: {(int) min} max: {(int) max} mean: {(int) mean} median: {(int) median}");
+         // Log the statistics
+         D.debug($"Server statistics:\n" +
+            $"The stress test started {serverTimeStr} ago.\n" +
+            $"Ping ({_averageClientPings.Count} clients) - min: {(int) pingMin} max: {(int) pingMax} mean: {(int) pingMean} median: {(int) pingMedian}\n" +
+            $"FPS (last {SERVER_MONITOR_INTERVAL} seconds) - min: {(int) fpsMin} max: {(int) fpsMax} mean: {(int) fpsMean} median: {(int) fpsMedian}");
+
+         // Broadcast the time since the server started
+         string message = "The stress test started " + serverTimeStr + " ago";
+         ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, ChatInfo.Type.System);
+         ServerNetworkingManager.self?.sendGlobalChatMessage(chatInfo);
       }
 
       // When the average ping goes over the threshold, log a warning
-      if (mean > PING_THRESHOLD) {
+      if (pingMean > PING_THRESHOLD) {
          D.warning("The server has become unresponsive!");
+      }
+   }
+
+   private void getStatistics (IEnumerable<float> data, int dataCount, out float min, out float max, out float mean, out float median) {
+      // Default values
+      min = 0;
+      max = 0;
+      mean = 0;
+      median = 0;
+
+      if (dataCount > 0) {
+         min = data.Min();
+         max = data.Max();
+         mean = data.Average();
+
+         // Calculate the median
+         List<float> sortedData = data.OrderBy(n => n).ToList();
+         median = sortedData[sortedData.Count / 2] + sortedData[(sortedData.Count - 1) / 2];
+         median /= 2;
       }
    }
 
@@ -155,8 +194,17 @@ public class LagMonitorManager : GenericGameManager
    // The last average ping calculated on this client
    private float _lastAveragePing = 0f;
 
+   // The number of frames counted for the fps calculation
+   private int _frameCount = 0;
+
+   // The total time the frames have been counted for the fps calculation
+   private float _fpsTotalTime = 0f;
+
    // The average pings for each connected user
    private Dictionary<int, float> _averageClientPings = new Dictionary<int, float>();
+
+   // All the server fps calculated since the last time statistics were logged
+   private List<float> _serverFps = new List<float>();
 
    #endregion
 }

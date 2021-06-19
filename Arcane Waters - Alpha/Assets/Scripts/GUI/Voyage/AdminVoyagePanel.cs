@@ -64,6 +64,8 @@ public class AdminVoyagePanel : Panel
       }
 
       if (!isShowing()) {
+         SoundEffectManager.self.playGuiMenuOpenSfx();
+
          refreshPanel();
       } else {
          PanelManager.self.togglePanel(Type.AdminVoyage);
