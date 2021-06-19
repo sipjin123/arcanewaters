@@ -73,7 +73,7 @@ public class PvpMonsterSpawner : MonoBehaviour, IMapEditorDataReceiver {
                foreach (int userId in voyageGroup.members) {
                   NetEntity memberEntity = EntityManager.self.getEntity(userId);
                   if (memberEntity != null && memberEntity is PlayerShipEntity) {
-                     memberEntity.rpc.Target_ReceivePowerup(powerupType);
+                     memberEntity.rpc.Target_ReceivePowerup(powerupType, seaEntity.transform.position);
                   }
                }
             }

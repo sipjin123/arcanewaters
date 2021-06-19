@@ -79,12 +79,11 @@ public class PowerupManager : MonoBehaviour {
       return boostFactor;
    }
 
-   public IEnumerator CO_CreatingFloatingPowerupIcon (Powerup.Type powerupType, Rarity.Type powerupRarity, PlayerShipEntity player) {
+   public IEnumerator CO_CreatingFloatingPowerupIcon (Powerup.Type powerupType, Rarity.Type powerupRarity, PlayerShipEntity player, Vector3 spawnSource) {
       // Create the popup icon, make it scale up in size
       PowerupPopupIcon popupIcon = Instantiate(TreasureManager.self.powerupPopupIcon, Vector3.zero, Quaternion.identity).GetComponent<PowerupPopupIcon>();
-      popupIcon.transform.SetParent(player.transform);
-      popupIcon.transform.localPosition = new Vector3(0.0f, 0.04f);
       popupIcon.transform.SetParent(AreaManager.self.getArea(player.areaKey).transform);
+      popupIcon.transform.position = new Vector3(spawnSource.x, spawnSource.y, player.transform.position.z);
       popupIcon.init(powerupType, powerupRarity);
       popupIcon.transform.localScale = Vector3.one * 0.25f;
       popupIcon.transform.DOScale(1.0f, 0.8f).SetEase(Ease.InElastic);

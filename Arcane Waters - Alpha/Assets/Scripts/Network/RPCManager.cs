@@ -1189,8 +1189,8 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceivePowerup (Powerup.Type powerupType) {
-      StartCoroutine(PowerupManager.self.CO_CreatingFloatingPowerupIcon(powerupType, Rarity.Type.Common, (PlayerShipEntity) _player));
+   public void Target_ReceivePowerup (Powerup.Type powerupType, Vector3 spawnSource) {
+      StartCoroutine(PowerupManager.self.CO_CreatingFloatingPowerupIcon(powerupType, Rarity.Type.Common, (PlayerShipEntity) _player, spawnSource));
    }
 
    [TargetRpc]
