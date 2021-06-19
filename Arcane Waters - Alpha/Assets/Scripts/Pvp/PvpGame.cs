@@ -32,6 +32,9 @@ public class PvpGame : MonoBehaviour {
    // Transforms showing where the center of each lane is
    public Transform topLaneCenter, midLaneCenter, botLaneCenter;
 
+   // The pvp stats
+   public PvpStatsData pvpStatData = new PvpStatsData();
+
    #endregion
 
    public void init (int voyageId, int instanceId, string areaKey) {
@@ -145,6 +148,7 @@ public class PvpGame : MonoBehaviour {
       sendGameMessage("Game will begin in 10 seconds!");
       yield return new WaitForSeconds(delay);
 
+      pvpStatData.playerStats = new List<PvpPlayerStat>();
       for (int i = 0; i < _usersInGame.Count; i++) {
          NetEntity player = EntityManager.self.getEntity(_usersInGame[i]);
          if (player.isDead()) {
@@ -161,6 +165,9 @@ public class PvpGame : MonoBehaviour {
          team.Add(player.userId);
          player.currentHealth = player.maxHealth;
          player.pvpTeam = teamType;
+
+         // Generate stat data for this player
+         pvpStatData.playerStats.Add(new PvpPlayerStat(player.userId, (int) teamType));
 
          // If a voyage group doesn't exist for the team, create it with this player
          if (!_teamVoyageGroupIds.ContainsKey(team.teamType)) {
@@ -616,6 +623,88 @@ public class PvpGame : MonoBehaviour {
 
       return PvpShipyard.SpawnLocation.None;
    }
+
+   #region Pvp stat functions
+
+   public void addPlayerKillCount (int userId) {
+      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
+      if (playerStat == null) {
+         return;
+      }
+
+      // TODO: Implement visual indication here that will notify player of this specific stat gain
+
+      // Stat Increase
+      playerStat.playerKills++;
+      D.adminLog("Added player kills for: " + userId + " Total of: " + playerStat.playerKills, D.ADMIN_LOG_TYPE.Pvp);
+   }
+
+   public void addShipKillCount (int userId) {
+      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
+      if (playerStat == null) {
+         return;
+      }
+
+      // TODO: Implement visual indication here that will notify player of this specific stat gain
+
+      // Stat Increase
+      playerStat.playerShipKills++;
+      D.adminLog("Added ship kills for: " + userId + " Total of: " + playerStat.playerShipKills, D.ADMIN_LOG_TYPE.Pvp);
+   }
+
+   public void addMonsterKillCount (int userId) {
+      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
+      if (playerStat == null) {
+         return;
+      }
+
+      // TODO: Implement visual indication here that will notify player of this specific stat gain
+
+      // Stat Increase
+      playerStat.playerMonsterKills++;
+      D.adminLog("Added monster kills for: " + userId + " Total of: " + playerStat.playerMonsterKills, D.ADMIN_LOG_TYPE.Pvp);
+   }
+
+   public void addBuildingDestroyedCount (int userId) {
+      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
+      if (playerStat == null) {
+         return;
+      }
+
+      // TODO: Implement visual indication here that will notify player of this specific stat gain
+
+      // Stat Increase
+      playerStat.playerStructuresDestroyed++;
+      D.adminLog("Added structure kills for: " + userId + " Total of: " + playerStat.playerStructuresDestroyed, D.ADMIN_LOG_TYPE.Pvp);
+   }
+
+   public void addAssistCount (int userId) {
+      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
+      if (playerStat == null) {
+         return;
+      }
+
+      // TODO: Implement visual indication here that will notify player of this specific stat gain
+
+      // Stat Increase
+      playerStat.playerAssists++;
+      D.adminLog("Added assist count for: " + userId + " Total of: " + playerStat.playerAssists, D.ADMIN_LOG_TYPE.Pvp);
+   }
+
+   public void addDeathCount (int userId) {
+      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
+      if (playerStat == null) {
+         return;
+      }
+
+      // TODO: Implement visual indication here that will notify player of this specific stat gain
+
+      // Stat Increase
+      playerStat.playerDeaths++;
+      D.adminLog("Added death count for: " + userId + " Total of: " + playerStat.playerDeaths, D.ADMIN_LOG_TYPE.Pvp);
+   }
+
+   #endregion
 
    #region Private Variables
 
