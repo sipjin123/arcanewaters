@@ -36,6 +36,9 @@ public class Instance : NetworkBehaviour
    // The list of pvp waypoints in this instance (server only)
    public List<PvpWaypoint> pvpWaypoints = new List<PvpWaypoint>();
 
+   // The list of pvp monster spawners in this instance (server only)
+   public List<PvpMonsterSpawner> pvpMonsterSpawners = new List<PvpMonsterSpawner>();
+
    // For debugging in the Editor
    [SyncVar]
    public int entityCount;
@@ -491,6 +494,7 @@ public class Instance : NetworkBehaviour
             if (receiver != null && dataField.d != null) {
                receiver.receiveData(dataField.d);
             }
+            InstanceManager.self.addSeaMonsterSpawnerToInstance(pvpMonsterSpawner, this);
             NetworkServer.Spawn(pvpMonsterSpawner.gameObject);
          }
       }

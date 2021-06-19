@@ -165,6 +165,12 @@ public class InstanceManager : MonoBehaviour {
       instance.seaStructureCount++;
    }
 
+   public void addSeaMonsterSpawnerToInstance (PvpMonsterSpawner monsterSpawner, Instance instance) {
+      instance.entities.Add(monsterSpawner);
+      instance.pvpMonsterSpawners.Add(monsterSpawner);
+      monsterSpawner.instanceId = instance.id;
+   }
+
    public void addPvpWaypointToInstance (PvpWaypoint waypoint, Instance instance) {
       instance.pvpWaypoints.Add(waypoint);
    }

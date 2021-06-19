@@ -6,7 +6,7 @@ using Mirror;
 using MapCreationTool.Serialization;
 using System;
 
-public class PvpMonsterSpawner : MonoBehaviour, IMapEditorDataReceiver {
+public class PvpMonsterSpawner : NetworkBehaviour, IMapEditorDataReceiver {
    #region Public Variables
 
    // The type of seamonster this spawner will generate
@@ -55,6 +55,7 @@ public class PvpMonsterSpawner : MonoBehaviour, IMapEditorDataReceiver {
       seaEntity.areaKey = instance.areaKey;
       seaEntity.facing = Direction.South;
       seaEntity.isPvpMonster = true;
+      seaEntity.instanceId = instanceId;
 
       // Transform setup
       seaEntity.transform.SetParent(transform, false);
