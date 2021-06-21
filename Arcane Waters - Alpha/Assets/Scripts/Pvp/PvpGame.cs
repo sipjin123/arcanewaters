@@ -167,7 +167,7 @@ public class PvpGame : MonoBehaviour {
          player.pvpTeam = teamType;
 
          // Generate stat data for this player
-         pvpStatData.playerStats.Add(new PvpPlayerStat(player.userId, (int) teamType));
+         pvpStatData.playerStats.Add(new PvpPlayerStat(player.userId, player.entityName, (int) teamType));
 
          // If a voyage group doesn't exist for the team, create it with this player
          if (!_teamVoyageGroupIds.ContainsKey(team.teamType)) {

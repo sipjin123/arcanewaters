@@ -19,6 +19,9 @@ public class PvpPlayerStat {
    // User id
    public int userId;
 
+   // The user name
+   public string playerName;
+
    // How many opposing player kill count
    public int playerKills;
 
@@ -40,8 +43,9 @@ public class PvpPlayerStat {
    // The team this player belongs to
    public int playerTeam;
 
-   public PvpPlayerStat (int userId, int playerTeam) {
+   public PvpPlayerStat (int userId, string playerName, int playerTeam) {
       this.userId = userId;
+      this.playerName = playerName;
       this.playerTeam = playerTeam;
    }
 }

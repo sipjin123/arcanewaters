@@ -164,7 +164,6 @@ public class SeaEntity : NetEntity
             if (pvpGame != null) {
                if (this is PlayerShipEntity) {
                   pvpGame.addPlayerKillCount(lastAttacker.userId);
-                  pvpGame.addDeathCount(userId);
                }
                if (this is BotShipEntity) {
                   pvpGame.addShipKillCount(lastAttacker.userId);
@@ -172,7 +171,12 @@ public class SeaEntity : NetEntity
                if (this is SeaMonsterEntity) {
                   pvpGame.addMonsterKillCount(lastAttacker.userId);
                }
-            }
+            } 
+         }
+
+         PvpGame thisPvpGame = PvpManager.self.getGameWithPlayer(userId);
+         if (thisPvpGame != null && this is PlayerShipEntity) {
+            thisPvpGame.addDeathCount(userId);
          }
 
          Rpc_OnDeath();
@@ -1141,6 +1145,7 @@ public class SeaEntity : NetEntity
             statusIcon.setLifetime(length);
             statusIcon.statusType = statusType;
             statusIcon.GetComponent<RectTransform>().sizeDelta = Vector2.one * 16;
+            statusIcon.transform.localPosition = Vector3.zero;
             _statusIcons[statusType] = statusIcon;
          }
       }

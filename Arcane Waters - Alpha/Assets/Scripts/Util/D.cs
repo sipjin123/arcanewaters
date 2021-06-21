@@ -31,7 +31,8 @@ public class D : MonoBehaviour {
       Blueprints = 18,
       AnimationFreeze = 19,
       CombatEnd = 20,
-      CancelAttack = 21
+      CancelAttack = 21,
+      Pvp = 22
    }
 
    // Any log files older than this will be deleted
