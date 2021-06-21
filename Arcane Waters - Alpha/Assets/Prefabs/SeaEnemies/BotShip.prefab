@@ -265,6 +265,7 @@ MonoBehaviour:
   groundChecker: {fileID: 0}
   waterChecker: {fileID: 0}
   nameText: {fileID: 0}
+  nameTextOutline: {fileID: 0}
   sortPoint: {fileID: 1307228615476472}
   facing: 3
   isSinglePlayer: 0
@@ -296,6 +297,8 @@ MonoBehaviour:
   statusEffectContainer: {fileID: 766467084607350867}
   entityNameGO: {fileID: 1761187325245707246}
   isUnderExternalControl: 0
+  lastNPCTalkTime: -30
+  pvpTeam: 0
   _ignoredAnimators: []
   _animators: []
   damage: 25
@@ -317,6 +320,15 @@ MonoBehaviour:
   currentImpactMagnitude: 0
   combatCollider: {fileID: 0}
   totalDamageDealt: 0
+  aggroConeDegrees: 35
+  aggroConeRadius: 2
+  maxSecondsOnChasePath: 2
+  attackingWaypointsRadius: 1
+  secondsBetweenFindingPatrolRoutes: 5
+  secondsBetweenFindingAttackRoutes: 0
+  newWaypointsRadius: 10
+  secondsPatrolingUntilChoosingNewTreasureSite: 30
+  patrolingWaypointsRadius: 1
   shipType: 101
   skinType: 0
   speed: 100
@@ -353,6 +365,8 @@ MonoBehaviour:
     boostCircleOutline: {fileID: 0}
     boostCircleFill: {fileID: 0}
   shipSize: 0
+  rb2d: {fileID: 0}
+  spritesOverride: {fileID: 0}
   seaEntityData:
     monsterName: 
     seaMonsterType: 0
@@ -406,15 +420,6 @@ MonoBehaviour:
     battleColliderOffsetY: 0.5
   maxForceOverride: 0
   isDebug: 0
-  newWaypointsRadius: 10
-  patrolingWaypointsRadius: 1
-  attackingWaypointsRadius: 1
-  secondsPatrolingUntilChoosingNewTreasureSite: 30
-  secondsBetweenFindingPatrolRoutes: 5
-  secondsBetweenFindingAttackRoutes: 0
-  maxSecondsOnChasePath: 2
-  aggroConeDegrees: 35
-  aggroConeRadius: 2
   targetingIndicatorAnimator: {fileID: 7972483738933391378}
   targetingIndicatorParent: {fileID: 13962812285585726}
   targetingBarrelSocket: {fileID: 3287338532659235771}
@@ -2327,7 +2332,7 @@ MonoBehaviour:
   m_Spacing: 0
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 1
+  m_ChildControlWidth: 0
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0

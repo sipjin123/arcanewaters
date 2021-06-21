@@ -293,7 +293,7 @@ public class PlayerShipEntity : ShipEntity
             } else if (KeyUtils.GetKeyDown(Key.Digit2)) {
                CannonPanel.self.useCannonType(CannonPanel.CannonAttackOption.Standard_Slow, 1);
             } else if (KeyUtils.GetKeyDown(Key.Digit3)) {
-               CannonPanel.self.useCannonType(CannonPanel.CannonAttackOption.Standard_Frozen, 2);
+               CannonPanel.self.useCannonType(CannonPanel.CannonAttackOption.Standard_Stunned, 2);
             } else if (KeyUtils.GetKeyDown(Key.Digit4)) {
                CannonPanel.self.useCannonType(CannonPanel.CannonAttackOption.Cone_NoEffect, 3);
             } else if (KeyUtils.GetKeyDown(Key.Digit5)) {
@@ -341,7 +341,7 @@ public class PlayerShipEntity : ShipEntity
             cannonAttackPressed();
          }
 
-         if ((InputManager.isFireCannonMouseUp() && _chargingWithMouse) || (InputManager.getKeyActionUp(KeyAction.FireMainCannon) && !_chargingWithMouse)) {
+         if (InputManager.isFireCannonMouseUp() || (InputManager.getKeyActionUp(KeyAction.FireMainCannon) && !_chargingWithMouse)) {
             cannonAttackReleased();
          }
 
@@ -546,9 +546,17 @@ public class PlayerShipEntity : ShipEntity
 
             Vector2 fireDir;
 
-            // If firing with the mouse, aim using the mouse
+            // Fire with mouse logic
             if (_chargingWithMouse) {
-               fireDir = Util.getMousePos() - transform.position;
+               // If there is no targeted enemy, aim in the direction of the mouse
+               if (_targetSelector.getTarget() == null) {
+                  fireDir = Util.getMousePos() - transform.position;
+               // Otherwise, aim in the direction of the target
+               } else {
+                  _chargingWithMouse = false;                  
+                  fireDir = _targetSelector.getTarget().transform.position - transform.position;
+               }
+            // Fire with keyboard logic
             } else {
                // If we don't have a target to aim at, cancel attack
                if (_targetSelector.getTarget() == null) {

@@ -23,7 +23,7 @@ public class CannonPanel : ClientMonoBehaviour {
    public enum CannonAttackOption {
       Standard_NoEffect = 0,
       Standard_Slow = 1,
-      Standard_Frozen = 2,
+      Standard_Stunned = 2,
       Cone_NoEffect = 3,
       Circle_NoEffect = 4
    }
@@ -44,6 +44,11 @@ public class CannonPanel : ClientMonoBehaviour {
       _currentAttackIndex = 0;
       _currentAttackOption = CannonAttackOption.Standard_NoEffect;
       cannonBoxList[0].setCannons();
+
+      _cooldownPerSkill.Add(CannonAttackOption.Standard_Slow, 10);
+      _cooldownPerSkill.Add(CannonAttackOption.Standard_Stunned, 20);
+      _cooldownPerSkill.Add(CannonAttackOption.Cone_NoEffect, 10);
+      _cooldownPerSkill.Add(CannonAttackOption.Circle_NoEffect, 20);
    }
 
    public void resetAllHighlights () {
@@ -53,21 +58,8 @@ public class CannonPanel : ClientMonoBehaviour {
    }
 
    public void cannonReleased () {
-      switch (_currentAttackOption) {
-         case CannonAttackOption.Standard_NoEffect:
-            break;
-         case CannonAttackOption.Standard_Slow:
-            _attackCooldown[_currentAttackIndex] += 10f;
-            break;
-         case CannonAttackOption.Standard_Frozen:
-            _attackCooldown[_currentAttackIndex] += 20f;
-            break;
-         case CannonAttackOption.Cone_NoEffect:
-            _attackCooldown[_currentAttackIndex] += 10f;
-            break;
-         case CannonAttackOption.Circle_NoEffect:
-            _attackCooldown[_currentAttackIndex] += 20f;
-            break;
+      if (_cooldownPerSkill.ContainsKey(_currentAttackOption)) {
+         _attackCooldown[_currentAttackIndex] += _cooldownPerSkill[_currentAttackOption];
       }
    }
 
@@ -99,9 +91,9 @@ public class CannonPanel : ClientMonoBehaviour {
             ship.cannonEffectType = Status.Type.Slowed;
             break;
 
-         case CannonAttackOption.Standard_Frozen:
+         case CannonAttackOption.Standard_Stunned:
             ship.cannonAttackType = PlayerShipEntity.CannonAttackType.Normal;
-            ship.cannonEffectType = Status.Type.Frozen;
+            ship.cannonEffectType = Status.Type.Stunned;
             break;
 
          case CannonAttackOption.Cone_NoEffect:
@@ -134,10 +126,8 @@ public class CannonPanel : ClientMonoBehaviour {
 
          if (_attackCooldown[i] <= 0.0f) {
             _attackCooldown[i] = 0.0f;
-            _boxes[i].cooldownText.gameObject.SetActive(false);
          } else {
-            _boxes[i].cooldownText.gameObject.SetActive(true);
-            _boxes[i].cooldownText.text = Mathf.FloorToInt(_attackCooldown[i]).ToString();
+            _boxes[i].setCooldown(_attackCooldown[i] / (float) _cooldownPerSkill[(CannonAttackOption)i]);
          }
       }
    }
@@ -158,6 +148,9 @@ public class CannonPanel : ClientMonoBehaviour {
 
    // Stored current attack index - 0 is the leftmost position in the panel
    protected int _currentAttackIndex;
+
+   // Cooldown value to set after using skill
+   protected Dictionary<CannonAttackOption, int> _cooldownPerSkill = new Dictionary<CannonAttackOption, int>();
 
    #endregion
 }

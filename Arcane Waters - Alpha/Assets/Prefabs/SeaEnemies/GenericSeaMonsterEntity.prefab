@@ -292,6 +292,7 @@ MonoBehaviour:
   entityNameGO: {fileID: 2883113982508800893}
   isUnderExternalControl: 0
   lastNPCTalkTime: -30
+  pvpTeam: 0
   _ignoredAnimators: []
   _animators: []
   damage: 10
@@ -2363,7 +2364,7 @@ MonoBehaviour:
   m_Spacing: 0
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 1
+  m_ChildControlWidth: 0
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0

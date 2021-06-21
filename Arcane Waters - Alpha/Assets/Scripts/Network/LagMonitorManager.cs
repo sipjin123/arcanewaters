@@ -137,8 +137,7 @@ public class LagMonitorManager : GenericGameManager
       // Clear the values captured in this time interval
       _serverFps.Clear();
 
-      //if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {
-         if (true) { 
+      if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {
          // The seconds since the server started
          TimeSpan serverTime = TimeSpan.FromSeconds(NetworkTime.time);
          string serverTimeStr = string.Format("{0:D2}m:{1:D2}s", serverTime.Minutes, serverTime.Seconds);

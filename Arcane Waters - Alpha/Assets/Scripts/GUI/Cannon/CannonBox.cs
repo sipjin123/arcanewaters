@@ -25,8 +25,9 @@ public class CannonBox : ClientMonoBehaviour {
    // Skill highlight
    public GameObject highlightSkill;
 
-   // Skill cooldown
-   public Text cooldownText;
+   // Image used to show cooldown progress
+   public Image cooldownHighlight;
+   public Image cooldownNormal;
 
    #endregion
 
@@ -43,7 +44,25 @@ public class CannonBox : ClientMonoBehaviour {
    public void setCannons () {
       CannonPanel.self.resetAllHighlights();
       SeaManager.selectedAbilityId = abilityId;
+
+      cooldownHighlight.fillAmount = cooldownNormal.fillAmount;
+      cooldownNormal.fillAmount = 0;
       highlightSkill.SetActive(true);
+   }
+
+   public void skillReady () {
+      cooldownHighlight.fillAmount = 0;
+      cooldownNormal.fillAmount = 0;
+   }
+
+   public void setCooldown (float cooldownAmount) {
+      if (highlightSkill.activeSelf) {
+         cooldownHighlight.fillAmount = cooldownAmount;
+         cooldownNormal.fillAmount = 0;
+      } else {
+         cooldownHighlight.fillAmount = 0;
+         cooldownNormal.fillAmount = cooldownAmount;
+      }
    }
 
    #region Private Variables

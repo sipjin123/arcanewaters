@@ -262,7 +262,8 @@ public class BattleUIManager : MonoBehaviour {
                   if (BattleSelectionManager.self.selectedBattler == null) {
                      abilityButton.invalidButtonClick();
                   } else {
-                     if (BattleSelectionManager.self.selectedBattler.isDead()) {
+                     // Only the local player can auto target
+                     if (BattleSelectionManager.self.selectedBattler.isDead() && _playerLocalBattler) {
                         BattleSelectionManager.self.autoTargetNextOpponent();
                      }
 

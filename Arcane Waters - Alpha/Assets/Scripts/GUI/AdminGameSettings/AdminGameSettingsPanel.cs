@@ -50,6 +50,8 @@ public class AdminGameSettingsPanel : MonoBehaviour
       }
 
       if (!isShowing()) {
+         SoundEffectManager.self.playGuiMenuOpenSfx();
+
          refreshPanel();
          show();
       } else {
