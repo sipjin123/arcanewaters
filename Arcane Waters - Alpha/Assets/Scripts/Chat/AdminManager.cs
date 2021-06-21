@@ -2386,7 +2386,6 @@ public class AdminManager : NetworkBehaviour
             }
          }*/
 
-
          // Create all the blueprints
          foreach (CraftableItemRequirements craftData in CraftingManager.self.craftingDataList) {
             Item newItem = new Item {

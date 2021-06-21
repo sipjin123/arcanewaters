@@ -19,6 +19,7 @@ public class PvpWaypointEditor : MapEditorPrefab, IPrefabDataListener, IHighligh
    #region Private Variables
 
    #endregion
+
    public void dataFieldChanged (DataField field) {
       if (field.k.CompareTo(DataField.PVP_LANE) == 0) {
          try {
