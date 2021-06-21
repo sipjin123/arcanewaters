@@ -89,6 +89,8 @@ public class PanelManager : GenericGameManager {
          BottomBar.self.toggleInventoryPanel();
       } else if (KeyUtils.GetKeyDown(Key.G)) {
          BottomBar.self.toggleGuildPanel();
+      } else if (KeyUtils.GetKeyDown(Key.Tab)) {
+         BottomBar.self.togglePvpStatPanel();
       } else if (KeyUtils.GetKeyDown(Key.L)) {
          BottomBar.self.toggleShipsPanel();
       } else if (KeyUtils.GetKeyDown(Key.O)) {

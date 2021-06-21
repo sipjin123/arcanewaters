@@ -7,7 +7,11 @@ using System;
 
 [Serializable]
 public class PvpStatsData {
+   // List of player stats
    public List<PvpPlayerStat> playerStats;
+
+   // If has been initialized
+   public bool isInitialized = false;
 }
 
 [Serializable]

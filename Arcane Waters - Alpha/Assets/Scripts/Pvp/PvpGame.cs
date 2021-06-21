@@ -194,6 +194,7 @@ public class PvpGame : MonoBehaviour {
          spawnPosition += (Vector2.one * 0.5f).Rotate(45.0f * indexInTeam);
          Util.setLocalXY(player.transform, spawnPosition);
       }
+      pvpStatData.isInitialized = true;
 
       detectStructures();
       setStructuresActivated(true);

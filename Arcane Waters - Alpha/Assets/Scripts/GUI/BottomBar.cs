@@ -110,6 +110,21 @@ public class BottomBar : MonoBehaviour {
       }
    }
 
+   public void togglePvpStatPanel () {
+      if (Global.player == null) {
+         return;
+      }
+
+      // Get the panel
+      PvpStatPanel panel = (PvpStatPanel) PanelManager.self.get(Panel.Type.PvpScoreBoard);
+      if (!panel.isShowing()) {
+         SoundEffectManager.self.playGuiMenuOpenSfx();
+         Global.player.rpc.Cmd_RequestPvpStatPanel();
+      } else {
+         PanelManager.self.togglePanel(Panel.Type.PvpScoreBoard);
+      }
+   }
+
    public void toggleShipsPanel () {
       FlagshipPanel panel = (FlagshipPanel) PanelManager.self.get(Panel.Type.Flagship);
 

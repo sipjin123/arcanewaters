@@ -4345,6 +4345,37 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
+   public void Cmd_RequestPvpStatPanel () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      PvpGame pvpGame = PvpManager.self.getGameWithPlayer(_player.userId);
+      if (pvpGame == null || pvpGame.pvpStatData == null || !pvpGame.pvpStatData.isInitialized) {
+         return;
+      }
+
+      Target_OpenPvpStatPanel(_player.connectionToClient, Util.serialize(pvpGame.pvpStatData.playerStats), pvpGame.instanceId);
+   }
+
+   [TargetRpc]
+   private void Target_OpenPvpStatPanel (NetworkConnection conn, string[] serializedPvpStat, int pvpGameId) {
+      // Get the panel
+      PvpStatPanel panel = (PvpStatPanel) PanelManager.self.get(Panel.Type.PvpScoreBoard);
+      if (!panel.isShowing()) {
+         panel.show();
+      }
+
+      List<PvpPlayerStat> pvpStatList = Util.unserialize<PvpPlayerStat>(serializedPvpStat);
+      PvpStatsData pvpStatData = new PvpStatsData {
+         playerStats = pvpStatList,
+         isInitialized = true
+      };
+      panel.populatePvpPanelData(pvpStatData);
+   }
+
+   [Command]
    public void Cmd_AcceptGroupInvitation (int destinationGroupId) {
       if (_player == null) {
          D.warning("No player object found.");
