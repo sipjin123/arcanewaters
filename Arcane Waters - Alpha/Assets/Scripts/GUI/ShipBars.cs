@@ -22,6 +22,9 @@ public class ShipBars : MonoBehaviour {
    // The Image icon that shows when we're considered an enemy
    public Image enemyIcon;
 
+   // The Image icon that shows enemy is regenerating
+   public Image regenerateIcon;
+
    // The Image that holds the background for our bars
    public Image barBackgroundImage;
 
@@ -63,7 +66,7 @@ public class ShipBars : MonoBehaviour {
       reloadBarImage.fillAmount = (float)(NetworkTime.time - _entity.getLastAttackTime()) / _entity.reloadDelay;
 
       // Hide our bars if we haven't had a combat action and if the player is not targetting this ship
-      barsContainer.SetActive(_entity.hasAnyCombat() || _entity.isAttackCursorOver());
+      barsContainer.SetActive(_entity.hasAnyCombat() || _entity.isAttackCursorOver() || _entity.regenerateHealth);
 
       // Hide and show our status icons accordingly
       handleStatusIcons();
@@ -99,6 +102,10 @@ public class ShipBars : MonoBehaviour {
          // Show the target icon if we're being attacked
          targetedIcon.gameObject.SetActiveIfNeeded(true);
          enemyIcon.gameObject.SetActiveIfNeeded(false);
+      }
+
+      if (_entity.isSeamonsterPvp()) {
+         regenerateIcon.gameObject.SetActive(_entity.regenerateHealth);
       }
    }
 

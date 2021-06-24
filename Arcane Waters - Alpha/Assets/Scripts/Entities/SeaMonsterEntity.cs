@@ -48,10 +48,6 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    [SyncVar]
    public int variety = 0;
 
-   // Determines if this is a pvp monster which will behave differently
-   [SyncVar]
-   public bool isPvpMonster = false;
-
    // Determines the monster type index of this unit
    [SyncVar]
    public SeaMonsterEntity.Type monsterType = 0;
@@ -108,6 +104,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    public const float TENTACLE_SECONDARY_ATTACK_BASE_INTERVAL = 3f;
 
    // Even triggered on death
+   [HideInInspector]
    public UnityEvent hasDiedEvent = new UnityEvent();
 
    // Seamonster Animation
@@ -268,6 +265,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       // Custom behaviors
       if (monsterType == Type.Horror) {
          InvokeRepeating(nameof(commandMinionTentaclesToUseSecondaryAttack), 0, TENTACLE_SECONDARY_ATTACK_BASE_INTERVAL + (Voyage.getMaxDifficulty() / _difficulty));
+      }
+
+      // Seamonster aggro for pvp is radius based instead of facing direction based
+      if (isPvpAI) {
+         aggroConeDegrees = 360f;
       }
    }
 
@@ -550,7 +552,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          deathBubbleEffect.SetActive(true);
       }
 
-      if (seaMonsterData.shouldDropTreasure && !isPvpMonster) {
+      if (seaMonsterData.shouldDropTreasure && !isPvpAI) {
          NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(_lastAttackerNetId);
          if (lastAttacker) {
             spawnChest(lastAttacker.userId);
@@ -735,8 +737,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          }
 
          targetEntity = getAttackerInRange();
-
-         if (targetEntity) {
+         if (targetEntity != null) {
             attackTarget();
          }
 
