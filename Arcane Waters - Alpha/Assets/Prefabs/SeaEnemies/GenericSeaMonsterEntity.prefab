@@ -240,18 +240,18 @@ MonoBehaviour:
   instanceId: 0
   areaKey: 
   isInvisible: 0
-  gender: 1
-  bodyType: 0
-  eyesType: 0
-  hairType: 0
-  eyesPalettes: 
-  hairPalettes: 
   entityName: 
   currentHealth: 1000
   maxHealth: 1000
   XP: 0
   desiredAngle: 0
   isStealthMuted: 0
+  gender: 1
+  bodyType: 0
+  eyesType: 0
+  hairType: 0
+  eyesPalettes: 
+  hairPalettes: 
   netIdent: {fileID: 0}
   rpc: {fileID: 0}
   cropManager: {fileID: 0}
@@ -261,15 +261,15 @@ MonoBehaviour:
   nameText: {fileID: 7411994986116116252}
   nameTextOutline: {fileID: 0}
   sortPoint: {fileID: 1307228615476472}
+  shadow: {fileID: 0}
+  statusEffectContainer: {fileID: 6472138581510055911}
+  entityNameGO: {fileID: 2883113982508800893}
   facing: 3
   isSinglePlayer: 0
   hasDiagonals: 0
   fallDirection: 0
   adminFlag: 0
   shipSpeedupFlag: 0
-  guildId: 0
-  guildPermissions: 0
-  guildRankPriority: 0
   battleId: 0
   voyageGroupId: -1
   isGhost: 0
@@ -277,6 +277,12 @@ MonoBehaviour:
   isNextBiomeUnlocked: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
+  isUnderExternalControl: 0
+  lastNPCTalkTime: -30
+  pvpTeam: 0
+  guildId: 0
+  guildPermissions: 0
+  guildRankPriority: 0
   guildIconBorder: 
   guildIconBackground: 
   guildIconSigil: 
@@ -287,23 +293,19 @@ MonoBehaviour:
   isAboutToWarpOnClient: 0
   interactingAnimation: 0
   isSpeedingUp: 0
-  shadow: {fileID: 0}
-  statusEffectContainer: {fileID: 6472138581510055911}
-  entityNameGO: {fileID: 2883113982508800893}
-  isUnderExternalControl: 0
-  lastNPCTalkTime: -30
-  pvpTeam: 0
   _ignoredAnimators: []
   _animators: []
+  spritesContainer: {fileID: 1013934132990528}
+  ripplesContainer: {fileID: 1658159506029436}
   damage: 10
+  isPvpAI: 0
+  regenerateHealth: 0
   reloadDelay: 1
   attackCounter: 0
   localAttackCirclePrefab: {fileID: 2921645448827512062, guid: 351ed76644c9d96439cd9bec5632f6a1,
     type: 3}
   defaultAttackCirclePrefab: {fileID: 6992640745960014782, guid: acbd3dfe8fd842543991f926eb18891a,
     type: 3}
-  spritesContainer: {fileID: 1013934132990528}
-  ripplesContainer: {fileID: 1658159506029436}
   leftSideTarget: {fileID: 2083341788368610960}
   rightSideTarget: {fileID: 6334897482679909241}
   invulnerable: 0
@@ -330,6 +332,8 @@ MonoBehaviour:
   currentImpactMagnitude: 0
   combatCollider: {fileID: 6710469785494565506}
   totalDamageDealt: 0
+  initialPosition: {x: 0, y: 0, z: 0}
+  distanceFromInitialPosition: 0
   aggroConeDegrees: 35
   aggroConeRadius: 2
   maxSecondsOnChasePath: 2
@@ -339,6 +343,10 @@ MonoBehaviour:
   newWaypointsRadius: 10
   secondsPatrolingUntilChoosingNewTreasureSite: 30
   patrolingWaypointsRadius: 1
+  _isChasingEnemy: 0
+  _attackingWaypointState: 1
+  _patrolingWaypointState: 1
+  _currentAttacker: 0
   deathBubbleEffect: {fileID: 7454719116518438919}
   seaMonsterChildrenList: []
   seaMonsterParentEntity: {fileID: 0}
@@ -408,6 +416,9 @@ MonoBehaviour:
   chestDropCount: 1
   cachedAnimSpeed: 0.25
   cachedAttackAnimSpeed: 0.35
+  hasDiedEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!50 &50644847342071564
 Rigidbody2D:
   serializedVersion: 4
@@ -7257,6 +7268,7 @@ RectTransform:
   - {fileID: 8271314772547933247}
   - {fileID: 2883113982508797310}
   - {fileID: 4525886095604927847}
+  - {fileID: 7610753869547879301}
   m_Father: {fileID: 3189226116438506810}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7327,6 +7339,101 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &6907504511282215710
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7610753869547879301}
+  - component: {fileID: 2243389945260293429}
+  - component: {fileID: 8417043391254191569}
+  - component: {fileID: 9049619454720818144}
+  m_Layer: 0
+  m_Name: RegenerateIcon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &7610753869547879301
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6907504511282215710}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8497341253838541607}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: 12, y: 5}
+  m_SizeDelta: {x: 13, y: 13}
+  m_Pivot: {x: 1, y: 0.5}
+--- !u!222 &2243389945260293429
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6907504511282215710}
+  m_CullTransparentMesh: 0
+--- !u!114 &8417043391254191569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6907504511282215710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: ae839b18b98f11047849bd6f68850796, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!114 &9049619454720818144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6907504511282215710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 1
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &7122030581644990077
 GameObject:
   m_ObjectHideFlags: 0
@@ -7962,6 +8069,7 @@ MonoBehaviour:
   barsContainer: {fileID: 6865492803373229415}
   targetedIcon: {fileID: 7848742050529229825}
   enemyIcon: {fileID: 3625824054032196252}
+  regenerateIcon: {fileID: 8417043391254191569}
   barBackgroundImage: {fileID: 2579565505197064094}
   barsBackgroundAlt: {fileID: 21300000, guid: 468e60adbe0887a429437702a2a8d82e, type: 3}
   shipHealthBlockPrefab: {fileID: 210412077248137537, guid: 1af460cda2e441d4aa4f2c9dab03d4a8,

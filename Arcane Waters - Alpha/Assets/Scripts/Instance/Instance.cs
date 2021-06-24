@@ -484,6 +484,7 @@ public class Instance : NetworkBehaviour
       }
 
       if (area.pvpMonsterSpawnerDataFields.Count > 0) {
+         int index = 0;
          foreach (ExportedPrefab001 dataField in area.pvpMonsterSpawnerDataFields) {
             PvpMonsterSpawner pvpMonsterSpawner = Instantiate(PrefabsManager.self.pvpMonsterSpawnerPrefab);
             pvpMonsterSpawner.transform.SetParent(area.transform, false);
@@ -491,6 +492,9 @@ public class Instance : NetworkBehaviour
             pvpMonsterSpawner.transform.localPosition = targetLocalPos;
 
             pvpMonsterSpawner.instanceId = this.id;
+            pvpMonsterSpawner.spawnId = index;
+            index++;
+
             IMapEditorDataReceiver receiver = pvpMonsterSpawner.GetComponent<IMapEditorDataReceiver>();
             if (receiver != null && dataField.d != null) {
                receiver.receiveData(dataField.d);

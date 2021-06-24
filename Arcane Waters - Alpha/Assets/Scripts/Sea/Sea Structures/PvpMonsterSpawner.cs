@@ -24,6 +24,10 @@ public class PvpMonsterSpawner : NetworkBehaviour, IMapEditorDataReceiver {
    // The delay before the the monster will respawn
    public const int RESPAWN_DELAY = 30;
 
+   // The index spawn id
+   [SyncVar]
+   public int spawnId = 0;
+
    #endregion
 
    public void initializeSpawner () {
@@ -47,7 +51,7 @@ public class PvpMonsterSpawner : NetworkBehaviour, IMapEditorDataReceiver {
       seaEntity.monsterType = data.seaMonsterType;
       seaEntity.areaKey = instance.areaKey;
       seaEntity.facing = Direction.South;
-      seaEntity.isPvpMonster = true;
+      seaEntity.isPvpAI = true;
       seaEntity.instanceId = instanceId;
 
       // Transform setup
@@ -67,6 +71,11 @@ public class PvpMonsterSpawner : NetworkBehaviour, IMapEditorDataReceiver {
                foreach (int userId in voyageGroup.members) {
                   NetEntity memberEntity = EntityManager.self.getEntity(userId);
                   if (memberEntity != null && memberEntity is PlayerShipEntity) {
+                     Powerup newPowerupData = new Powerup {
+                        powerupRarity = Rarity.Type.Common,
+                        powerupType = powerupType
+                     };
+                     PowerupManager.self.addPowerupServer(memberEntity.userId, newPowerupData);
                      memberEntity.rpc.Target_ReceivePowerup(powerupType, seaEntity.transform.position);
                   }
                }
