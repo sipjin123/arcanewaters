@@ -13,11 +13,7 @@ public class NetEntity : NetworkBehaviour
 {
    #region Public Variables
 
-   // The amount of time that must pass between movement changes
-   public static float MOVE_CHANGE_INTERVAL = .05f;
-
-   // The number of seconds after which an attacker stops being one
-   public static float ATTACKER_STATUS_DURATION = 30f;
+   [Header("UserData")]
 
    // The account ID for this entity
    [SyncVar]
@@ -42,24 +38,6 @@ public class NetEntity : NetworkBehaviour
    // Whether the admin user is invisible to other players and enemies
    [SyncVar]
    public bool isInvisible;
-
-   // The Gender of this entity
-   [SyncVar]
-   public Gender.Type gender = Gender.Type.Male;
-
-   // The types associated with our sprite layers
-   [SyncVar]
-   public BodyLayer.Type bodyType;
-   [SyncVar]
-   public EyesLayer.Type eyesType;
-   [SyncVar]
-   public HairLayer.Type hairType;
-
-   // Our colors
-   [SyncVar]
-   public string eyesPalettes;
-   [SyncVar]
-   public string hairPalettes;
 
    // The Name of this entity
    [SyncVar]
@@ -88,6 +66,28 @@ public class NetEntity : NetworkBehaviour
    // Is this player stealth muted?
    [SyncVar]
    public bool isStealthMuted;
+
+   [Header("PlayerAppearance")]
+
+   // The Gender of this entity
+   [SyncVar]
+   public Gender.Type gender = Gender.Type.Male;
+
+   // The types associated with our sprite layers
+   [SyncVar]
+   public BodyLayer.Type bodyType;
+   [SyncVar]
+   public EyesLayer.Type eyesType;
+   [SyncVar]
+   public HairLayer.Type hairType;
+
+   // Our colors
+   [SyncVar]
+   public string eyesPalettes;
+   [SyncVar]
+   public string hairPalettes;
+
+   [Header("Components")]
 
    // Convenient Network Identity reference so we aren't repeatedly calling GetComponent
    [HideInInspector]
@@ -120,6 +120,17 @@ public class NetEntity : NetworkBehaviour
    // The object we use for sorting our sprites
    public GameObject sortPoint;
 
+   // Reference to the shadow
+   public SpriteRenderer shadow;
+
+   // Reference to the parent transform of status effect icons
+   public Transform statusEffectContainer;
+
+   // GameObject that holds the name of the entity
+   public GameObject entityNameGO;
+
+   [Header("Stats")]
+
    // The direction we're facing
    [SyncVar]
    public Direction facing = Direction.East;
@@ -141,18 +152,6 @@ public class NetEntity : NetworkBehaviour
    // The flag that unlocks ship speed boost for this entity
    [SyncVar]
    public bool shipSpeedupFlag;
-
-   // The guild this user is in
-   [SyncVar]
-   public int guildId;
-
-   // The guild permissions that this user holds
-   [SyncVar]
-   public int guildPermissions;
-
-   // The guild rank priority that this user has
-   [SyncVar]
-   public int guildRankPriority;
 
    // The ID of the Battle this Enemy is currently in, if any
    [SyncVar]
@@ -182,6 +181,29 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public int customFarmBaseId;
 
+   // If this unit is being controlled by another script
+   public bool isUnderExternalControl;
+
+   // Stores the last time this player talked to an NPC
+   public float lastNPCTalkTime = -30.0f;
+
+   // What pvp team this entity is affiliated with
+   [SyncVar]
+   public PvpTeamType pvpTeam = PvpTeamType.None;
+
+   [Header("GuildInfo")]
+   // The guild this user is in
+   [SyncVar]
+   public int guildId;
+
+   // The guild permissions that this user holds
+   [SyncVar]
+   public int guildPermissions;
+
+   // The guild rank priority that this user has
+   [SyncVar]
+   public int guildRankPriority;
+
    // The guild icon layers
    [SyncVar]
    public string guildIconBorder;
@@ -199,6 +221,18 @@ public class NetEntity : NetworkBehaviour
    // The guild icon of the player
    public GuildIcon guildIcon;
 
+   [Header("Warping")] 
+
+   // Gets set to true when we're about to execute a warp on the server or client
+   public bool isAboutToWarpOnServer = false;
+   public bool isAboutToWarpOnClient = false;
+
+   // Determines if the player is animating an interact clip
+   public bool interactingAnimation = false;
+
+   // Determines if this unit is speeding
+   public bool isSpeedingUp;
+
    // Values that determines if the magnitude indicates moving
    public const float SPRINTING_MAGNITUDE = .2f;
    public const float SHIP_MOVING_MAGNITUDE = .005f;
@@ -212,24 +246,11 @@ public class NetEntity : NetworkBehaviour
    public const float NETWORK_PLAYER_SPEEDUP_MAGNITUDE = .02f;
    public const float NETWORK_SHIP_SPEEDUP_MAGNITUDE = .41f;
 
-   // Gets set to true when we're about to execute a warp on the server or client
-   public bool isAboutToWarpOnServer = false;
-   public bool isAboutToWarpOnClient = false;
+   // The amount of time that must pass between movement changes
+   public static float MOVE_CHANGE_INTERVAL = .05f;
 
-   // Determines if the player is animating an interact clip
-   public bool interactingAnimation = false;
-
-   // Determines if this unit is speeding
-   public bool isSpeedingUp;
-
-   // Reference to the shadow
-   public SpriteRenderer shadow;
-
-   // Reference to the parent transform of status effect icons
-   public Transform statusEffectContainer;
-
-   // GameObject that holds the name of the entity
-   public GameObject entityNameGO;
+   // The number of seconds after which an attacker stops being one
+   public static float ATTACKER_STATUS_DURATION = 30f;
 
    // The speed multiplied when speed boosting
    public static float SPEEDUP_MULTIPLIER_SHIP = 1.5f;
@@ -241,16 +262,6 @@ public class NetEntity : NetworkBehaviour
 
    // The duration of auto-move actions
    public static float AUTO_MOVE_ACTION_DURATION = 2f;
-
-   // If this unit is being controlled by another script
-   public bool isUnderExternalControl;
-
-   // Stores the last time this player talked to an NPC
-   public float lastNPCTalkTime = -30.0f;
-
-   // What pvp team this entity is affiliated with
-   [SyncVar]
-   public PvpTeamType pvpTeam = PvpTeamType.None;
 
    #endregion
 
@@ -2035,6 +2046,8 @@ public class NetEntity : NetworkBehaviour
    protected Canvas _clickableBoxCanvas;
    protected SpriteOutline _outline;
    protected NetworkLerpRigidbody2D _networkLerp;
+
+   [Header("PvtComponents")]
 
    [SerializeField]
    protected List<Animator> _ignoredAnimators = new List<Animator>();
