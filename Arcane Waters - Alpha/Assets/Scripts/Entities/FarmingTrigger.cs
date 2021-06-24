@@ -54,7 +54,7 @@ public class FarmingTrigger : MonoBehaviour {
       //   SoundManager.create3dSoundWithPath(weaponData.actionSfxDirectory, transform.position);
       //}
       // Legacy support for previous implementation
-      SoundEffectManager.self.playLegacyInteractionOneShot(bodyEntity.weaponManager.equipmentDataId, transform);
+      //SoundEffectManager.self.playLegacyInteractionOneShot(bodyEntity.weaponManager.equipmentDataId, transform);
 
       Weapon.ActionType currentActionType = bodyEntity.weaponManager.actionType;
       Collider2D currentCollider = coneCollider;

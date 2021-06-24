@@ -30,7 +30,15 @@ public class AdminManager : NetworkBehaviour
       if (isLocalPlayer) {
          // If we're testing clients, have them warp around repeatedly
          if (Util.isAutoWarping()) {
-            InvokeRepeating("warpRandomly", 10f, 10f);
+            if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {
+               int testerNumber = Util.getCommandLineInt(CommandCodes.Type.AUTO_TEST + "");
+
+               System.Random rand = new System.Random(testerNumber);
+
+               int randTime = rand.Next(8, 13);
+
+               InvokeRepeating(nameof(warpRandomly), randTime, randTime);
+            }
          }
 
          StartCoroutine(CO_AddCommands());
@@ -201,7 +209,7 @@ public class AdminManager : NetworkBehaviour
 
    [Command]
    private void Cmd_JoinPvp () {
-      PvpManager.self.tryJoinPvpGame(_player);
+      PvpManager.self.joinBestPvpGameOrCreateNew(_player);
    }
 
    private void requestPerkPoints (string parameters) {
@@ -2028,7 +2036,7 @@ public class AdminManager : NetworkBehaviour
       }
 
       // Handle warping to a sea voyage instance or land treasure site instance
-      if (VoyageManager.isVoyageOrLeagueArea(targetLocation.areaKey) || VoyageManager.isTreasureSiteArea(targetLocation.areaKey)) {
+      if (VoyageManager.isAnyLeagueArea(targetLocation.areaKey) || VoyageManager.isTreasureSiteArea(targetLocation.areaKey)) {
          // Make the admin join the voyage the target user is in
          if (VoyageManager.self.tryGetVoyageForGroup(targetLocation.voyageGroupId, out Voyage voyage)) {
             VoyageGroupManager.self.forceAdminJoinVoyage(_player, voyage.voyageId);

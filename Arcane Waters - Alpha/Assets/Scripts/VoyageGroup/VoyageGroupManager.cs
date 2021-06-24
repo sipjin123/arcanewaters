@@ -68,7 +68,7 @@ public class VoyageGroupManager : MonoBehaviour
       // Get the voyage group info
       if (!player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
          // If the player is not in a group, create one
-         yield return CO_CreateGroup(player, -1, true);
+         yield return CO_CreateGroup(player.userId, -1, true);
          player.tryGetGroup(out voyageGroup);
       }
 
@@ -106,14 +106,12 @@ public class VoyageGroupManager : MonoBehaviour
    }
 
    [Server]
-   public void createGroup (NetEntity player, int voyageId, bool isPrivate, bool isGhost = false) {
-      StartCoroutine(CO_CreateGroup(player, voyageId, isPrivate, isGhost));
+   public void createGroup (int userId, int voyageId, bool isPrivate, bool isGhost = false) {
+      StartCoroutine(CO_CreateGroup(userId, voyageId, isPrivate, isGhost));
    }
 
    [Server]
-   private IEnumerator CO_CreateGroup (NetEntity player, int voyageId, bool isPrivate, bool isGhost = false) {
-      int userId = player.userId;
-
+   private IEnumerator CO_CreateGroup (int userId, int voyageId, bool isPrivate, bool isGhost = false) {
       // To avoid duplicate group ids, only the master server generates new ones
       RpcResponse<int> response = ServerNetworkingManager.self.getNewVoyageGroupId();
 
@@ -132,9 +130,10 @@ public class VoyageGroupManager : MonoBehaviour
          yield return null;
       }
 
-      // If the player is still available (not warping), set its group id
-      if (player != null) {
-         player.voyageGroupId = voyageGroup.groupId;
+      // If the player is available in this server, set its group id
+      NetEntity playerEntity = EntityManager.self.getEntity(userId);
+      if (playerEntity != null) {
+         playerEntity.voyageGroupId = voyageGroup.groupId;
       }
 
       // Send the group composition update to all group members
@@ -142,17 +141,22 @@ public class VoyageGroupManager : MonoBehaviour
    }
 
    [Server]
-   public void addUserToGroup (VoyageGroupInfo voyageGroup, NetEntity player) {
+   public void addUserToGroup (VoyageGroupInfo voyageGroup, int userId, string userName) {
       if (isGroupFull(voyageGroup)) {
          return;
       }
 
-      if (voyageGroup.members.Contains(player.userId)) {
+      if (voyageGroup.members.Contains(userId)) {
          return;
       }
 
-      voyageGroup.members.Add(player.userId);
-      player.voyageGroupId = voyageGroup.groupId;
+      voyageGroup.members.Add(userId);
+
+      // If the player is available in this server, set its group id
+      NetEntity playerEntity = EntityManager.self.getEntity(userId);
+      if (playerEntity != null) {
+         playerEntity.voyageGroupId = voyageGroup.groupId;
+      }
 
       // If the group is now complete, disable its quickmatch
       if (voyageGroup.isQuickmatchEnabled) {
@@ -165,14 +169,14 @@ public class VoyageGroupManager : MonoBehaviour
       updateGroup(voyageGroup);
 
       // Send the confirmation to all online group members
-      ServerNetworkingManager.self.sendConfirmationMessageToGroup(ConfirmMessage.Type.General, voyageGroup.groupId, player.entityName + " has joined group!");
+      ServerNetworkingManager.self.sendConfirmationMessageToGroup(ConfirmMessage.Type.General, voyageGroup.groupId, userName + " has joined group!");
 
       // Send the group composition update to all group members
       StartCoroutine(CO_SendGroupCompositionToAllMembers(voyageGroup.groupId));
 
       // If the voyage group is in a voyage, the new member will have their powerups cleared
       if (voyageGroup.voyageId > 0) {
-         PowerupManager.self.clearPowerupsForUser(player.userId);
+         PowerupManager.self.clearPowerupsForUser(userId);
       }      
    }
 
@@ -273,7 +277,7 @@ public class VoyageGroupManager : MonoBehaviour
          if (voyageGroup.voyageId > 0) {
             // If the group is already linked to a voyage, make the admin leave and join a new one
             removeUserFromGroup(voyageGroup, admin);
-            createGroup(admin, voyageId, true);
+            createGroup(admin.userId, voyageId, true);
          } else {
             // If the group has not joined a voyage, make it join this one
             voyageGroup.voyageId = voyageId;
@@ -281,7 +285,7 @@ public class VoyageGroupManager : MonoBehaviour
          }
       } else {
          // If the admin is not in a group, create a new one
-         createGroup(admin, voyageId, true);
+         createGroup(admin.userId, voyageId, true);
       }
    }
 
@@ -511,6 +515,9 @@ public class VoyageGroupManager : MonoBehaviour
             foreach (int userId in voyageGroup.members) {
                NetEntity player = EntityManager.self.getEntity(userId);
                if (player != null) {
+                  // Make sure the player entity has the correct voyage group id set
+                  player.voyageGroupId = groupId;
+
                   player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, groupMembersInfo.ToArray());
                }
             }

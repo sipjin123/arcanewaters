@@ -134,7 +134,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          player.spawnInNewMap(voyageId, treasureSite.destinationArea, treasureSite.destinationSpawn, newFacingDirection);
       }
       // Any warp inside a league voyage map is considered an exit towards the next map
-      else if (VoyageGroupManager.isInGroup(player) && VoyageManager.isLeagueOrLobbyArea(player.areaKey)) {
+      else if (VoyageGroupManager.isInGroup(player) && VoyageManager.isAnyLeagueArea(player.areaKey)) {
          Instance instance = InstanceManager.self.getInstance(player.instanceId);
 
          // If the instance is not a voyage, warp the player to the starting town

@@ -61,7 +61,7 @@ public class RespawnScreen : MonoBehaviour
             }
 
             // When dying in a voyage area, show a tip explaining how to return
-            if (Global.player.isInGroup() && VoyageManager.isVoyageOrLeagueArea(Global.player.areaKey)) {
+            if (Global.player.isInGroup() && VoyageManager.isAnyLeagueArea(Global.player.areaKey)) {
                NotificationManager.self.add(Notification.Type.ReturnToVoyage);
             }
          }

@@ -112,9 +112,23 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    public void addNewVoyageInstance (NetworkedList<Voyage> voyageList, Instance instance, int groupCount) {
+      // PvP attributes
+      int playerCountTeamA = 0;
+      int playerCountTeamB = 0;
+      int pvpGameMaxPlayerCount = 0;
+      PvpGame.State pvpGameState = PvpGame.State.None;
+      
+      PvpGame pvpGame = PvpManager.self.getGameWithInstance(instance.id);
+      if (pvpGame != null) {
+         playerCountTeamA = pvpGame.getPlayerCountInTeam(PvpTeamType.A);
+         playerCountTeamB = pvpGame.getPlayerCountInTeam(PvpTeamType.B);
+         pvpGameState = pvpGame.getGameState();
+         pvpGameMaxPlayerCount = pvpGame.getMaxPlayerCount();
+      }
+
       Voyage voyage = new Voyage(instance.voyageId, instance.id, instance.areaKey, Area.getName(instance.areaKey), instance.difficulty, instance.biome, instance.isPvP,
             instance.isLeague, instance.leagueIndex, instance.leagueRandomSeed, instance.creationDate, instance.treasureSiteCount, instance.capturedTreasureSiteCount, instance.aliveNPCEnemiesCount,
-            instance.getTotalNPCEnemyCount(), groupCount, instance.getPlayerCount());
+            instance.getTotalNPCEnemyCount(), groupCount, instance.getPlayerCount(), playerCountTeamA, playerCountTeamB, pvpGameMaxPlayerCount, pvpGameState);
       voyageList.Add(voyage);
    }
 
@@ -459,6 +473,69 @@ public class NetworkedServer : NetworkedBehaviour
    [ClientRPC]
    public void Server_RegisterUserInTreasureSite (int userId, int voyageId, int instanceId) {
       VoyageManager.self.registerUserInTreasureSite(userId, voyageId, instanceId);
+   }
+
+   [ServerRPC]
+   public void MasterServer_JoinPvpGame (int voyageId, int userId, string userName) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerHostingVoyage(voyageId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_JoinPvpGame, voyageId, userId, userName);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_JoinPvpGame (int voyageId, int userId, string userName) {
+      PvpManager.self.joinPvpGame(voyageId, userId, userName);
+   }
+
+   [ServerRPC]
+   public void MasterServer_ClearPowerupsForUser (int userId) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_ClearPowerupsForUser, userId);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_ClearPowerupsForUser (int userId) {
+      PowerupManager.self.clearPowerupsForUser(userId);
+   }
+
+   [ServerRPC]
+   public void MasterServer_WarpUser (int userId, int voyageId, string areaKey, Direction newFacingDirection, string spawn) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_WarpUser, userId, voyageId, areaKey, newFacingDirection, spawn);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_WarpUser (int userId, int voyageId, string areaKey, Direction newFacingDirection, string spawn) {
+      NetEntity targetEntity = EntityManager.self.getEntity(userId);
+      if (targetEntity != null) {
+         targetEntity.spawnInNewMap(voyageId, areaKey, spawn, newFacingDirection);
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_DisplayNoticeScreenWithError (int userId, ErrorMessage.Type errorType, string message) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_DisplayNoticeScreenWithError, userId, errorType, message);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_DisplayNoticeScreenWithError (int userId, ErrorMessage.Type errorType, string message) {
+      NetEntity targetEntity = EntityManager.self.getEntity(userId);
+      if (targetEntity != null) {
+         ServerMessageManager.sendError(errorType, targetEntity, message);
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_Log (int originServerPort, string message) {
+      D.log($"{originServerPort}: {message}");
    }
 
    #region Private Variables

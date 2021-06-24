@@ -54,7 +54,7 @@ public class NotificationPanel : MonoBehaviour
       // Initialize the disable toggle
       disableNotificationToggle.SetIsOnWithoutNotify(false);
       disableToggleContainer.SetActive(notification.canBeDisabled());
-      
+
       text.text = notification.getMessage();
       buttonText.text = notification.getButtonText();
 
@@ -72,6 +72,11 @@ public class NotificationPanel : MonoBehaviour
 
       // Start the animation to reveal the panel
       animator.SetTrigger("reveal");
+
+      // Play sfx after delay
+      if (!Global.player.isDead()) {
+         SoundEffectManager.self.playFmodWithDelay(SoundEffectManager.TIP_FOLDOUT, 1.0f);
+      }
    }
 
    private void show () {

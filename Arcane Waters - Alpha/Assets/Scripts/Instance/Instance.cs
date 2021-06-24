@@ -287,7 +287,8 @@ public class Instance : NetworkBehaviour
       }
 
       // Sea voyage and treasure site instances exist as long as there is a group linked to them
-      if ((VoyageManager.isVoyageOrLeagueArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey)) && VoyageGroupManager.self.isAtLeastOneGroupInVoyage(voyageId)) {
+      if ((VoyageManager.isAnyLeagueArea(areaKey) || VoyageManager.isPvpArenaArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey))
+         && VoyageGroupManager.self.isAtLeastOneGroupInVoyage(voyageId)) {
          return;
       }
 

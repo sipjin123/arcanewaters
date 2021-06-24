@@ -1291,6 +1291,12 @@ public class Util : MonoBehaviour
    public static float getPointOnParabola (float apex, float width, float t) {
       // Parabola formula:
       // y = kt(t - w) where k  = -4a / w^2     w = width, a = apex
+      
+      // Avoid divide by 0 issues
+      if (width < Mathf.Epsilon && width > -Mathf.Epsilon) {
+         return 0.0f;
+      }
+      
       float k = -4 * apex / (width * width);
       float y = k * t * (t - width);
       return y;

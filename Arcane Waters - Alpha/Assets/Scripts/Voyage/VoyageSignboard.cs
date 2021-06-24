@@ -12,7 +12,7 @@ public class VoyageSignboard : Signboard
    #endregion
 
    protected override void onClick () {
-      VoyageManager.self.showVoyagePanel(Global.player);
+      ((PvpArenaPanel)PanelManager.self.get(Panel.Type.PvpArena)).togglePanel();
    }
 
    #region Private Variables

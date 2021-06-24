@@ -75,7 +75,7 @@ public class ServerNetworkingManager : MonoBehaviour
       bool isSinglePlayer, int voyageId) {
       // If the player is in a voyage group and warping to a voyage area or treasure site, get the unique server hosting it
       if (voyageId != -1 &&
-         (VoyageManager.isVoyageOrLeagueArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey))) {
+         (VoyageManager.isAnyLeagueArea(areaKey) || VoyageManager.isPvpArenaArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey))) {
          NetworkedServer server = getServerHostingVoyage(voyageId);
          if (server == null) {
             D.error("Couldn't find the server hosting the voyage " + voyageId);
@@ -295,6 +295,26 @@ public class ServerNetworkingManager : MonoBehaviour
 
    public void sendMemberPartialUpdateToGroup (int groupId, int userId, string userName, int XP, string areaKey) {
       server.InvokeServerRpc(server.MasterServer_SendMemberPartialUpdateToGroup, groupId, userId, userName, XP, areaKey);
+   }
+
+   public void joinPvpGame (int voyageId, int userId, string userName) {
+      server.InvokeServerRpc(server.MasterServer_JoinPvpGame, voyageId, userId, userName);
+   }
+
+   public void clearPowerupsForUser (int userId) {
+      server.InvokeServerRpc(server.MasterServer_ClearPowerupsForUser, userId);
+   }
+
+   public void warpUser (int userId, int voyageId, string areaKey, Direction newFacingDirection, string spawn = "") {
+      server.InvokeServerRpc(server.MasterServer_WarpUser, userId, voyageId, areaKey, newFacingDirection, spawn);
+   }
+
+   public void displayNoticeScreenWithError (int userId, ErrorMessage.Type errorType, string message) {
+      server.InvokeServerRpc(server.MasterServer_DisplayNoticeScreenWithError, userId, errorType, message);
+   }
+
+   public void logInMasterServer (string message) {
+      server.InvokeServerRpc(server.MasterServer_Log, this.server.networkedPort.Value, message);
    }
 
    #region Private Variables

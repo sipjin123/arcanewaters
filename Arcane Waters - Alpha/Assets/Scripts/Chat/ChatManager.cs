@@ -196,6 +196,11 @@ public class ChatManager : GenericGameManager
          }
       }
 
+      // Prevent user from sending empty message
+      if (message.Trim().Length == 0) {
+         return;
+      }
+
       // Pass the message along to the server
       Global.player.rpc.Cmd_SendChat(message, chatType);
    }

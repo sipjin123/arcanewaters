@@ -33,6 +33,9 @@ public class ColorCurveReferences : MonoBehaviour {
    // An animation curve controlling the movement of the powerup popup icon
    public AnimationCurve powerupPopupMovement;
 
+   // A gradient controlling the color of the bot ship targeting parabola
+   public Gradient botShipTargetingParabolaColor;
+
    #endregion
 
    private void Awake () {

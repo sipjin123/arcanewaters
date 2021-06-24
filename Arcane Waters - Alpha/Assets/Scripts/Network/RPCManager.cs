@@ -257,7 +257,7 @@ public class RPCManager : NetworkBehaviour
          PlayerBodyEntity playerBody = _player.getPlayerBodyEntity();
          if (playerBody) {
             // Legacy support for previous implementation
-            SoundEffectManager.self.playLegacyInteractionOneShot(playerBody.weaponManager.equipmentDataId, playerBody.transform);
+            //SoundEffectManager.self.playLegacyInteractionOneShot(playerBody.weaponManager.equipmentDataId, playerBody.transform);
             // Playing FMOD SFX for interaction
             SoundEffectManager.self.playInteractionOneShot(playerBody.weaponManager.actionType, playerBody.transform);
 
@@ -4130,7 +4130,7 @@ public class RPCManager : NetworkBehaviour
       if (VoyageGroupManager.self.tryGetGroupById(_player.voyageGroupId, out VoyageGroupInfo voyageGroup)) {
          VoyageGroupManager.self.removeUserFromGroup(voyageGroup, _player);
       }
-      VoyageGroupManager.self.createGroup(_player, voyageId, true, true);
+      VoyageGroupManager.self.createGroup(_player.userId, voyageId, true, true);
 
       // Warp the admin to the voyage map
       _player.spawnInNewMap(voyageId, areaKey, Direction.South);
@@ -4165,10 +4165,10 @@ public class RPCManager : NetworkBehaviour
             return;
          }
 
-         VoyageGroupManager.self.createGroup(_player, voyageId, false);
+         VoyageGroupManager.self.createGroup(_player.userId, voyageId, false);
       } else {
          // Add the user to the group
-         VoyageGroupManager.self.addUserToGroup(voyageGroup, _player);
+         VoyageGroupManager.self.addUserToGroup(voyageGroup, _player.userId, _player.entityName);
       }
 
       // Warp the player to the voyage map immediately
@@ -4231,7 +4231,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Create a new private group and add the user to it
-      VoyageGroupManager.self.createGroup(_player, -1, true);
+      VoyageGroupManager.self.createGroup(_player.userId, -1, true);
    }
 
    [Command]
@@ -4404,7 +4404,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Add the user to the group
-      VoyageGroupManager.self.addUserToGroup(destinationGroup, _player);
+      VoyageGroupManager.self.addUserToGroup(destinationGroup, _player.userId, _player.entityName);
    }
 
    [Command]
@@ -4436,7 +4436,7 @@ public class RPCManager : NetworkBehaviour
       // Warp player to other area and clean up panel only if player is currently online
       if (targetPlayerToKick) {
          // If the player is in a voyage area, warp him to the starting town
-         if (VoyageManager.isVoyageOrLeagueArea(targetPlayerToKick.areaKey) || VoyageManager.isTreasureSiteArea(targetPlayerToKick.areaKey)) {
+         if (VoyageManager.isAnyLeagueArea(targetPlayerToKick.areaKey) || VoyageManager.isPvpArenaArea(targetPlayerToKick.areaKey) || VoyageManager.isTreasureSiteArea(targetPlayerToKick.areaKey)) {
             targetPlayerToKick.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
          }
 
@@ -4460,7 +4460,7 @@ public class RPCManager : NetworkBehaviour
       VoyageGroupManager.self.removeUserFromGroup(voyageGroup, playerToRemove);
 
       // If the player is in a voyage area or is in ghost mode, warp him to the closest town
-      if (VoyageManager.isVoyageOrLeagueArea(playerToRemove.areaKey) || VoyageManager.isTreasureSiteArea(playerToRemove.areaKey) || playerToRemove.isGhost) {
+      if (VoyageManager.isAnyLeagueArea(playerToRemove.areaKey) || VoyageManager.isPvpArenaArea(playerToRemove.areaKey) || VoyageManager.isTreasureSiteArea(playerToRemove.areaKey) || playerToRemove.isGhost) {
          playerToRemove.spawnInBiomeHomeTown();
       }
    }
@@ -4574,7 +4574,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Verify the voyage consistency only if the user is in a voyage group or voyage area
-      if (!VoyageManager.isVoyageOrLeagueArea(_player.areaKey) && !VoyageManager.isTreasureSiteArea(_player.areaKey)) {
+      if (!VoyageManager.isAnyLeagueArea(_player.areaKey) && !VoyageManager.isPvpArenaArea(_player.areaKey) && !VoyageManager.isTreasureSiteArea(_player.areaKey)) {
          return;
       }
 
@@ -5797,11 +5797,11 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_StartNewBattle (uint enemyNetId, Battle.TeamType teamType, bool isGroupBattle) {
-      D.adminLog("Player is starting new battle, IsVoyageArea:{" + VoyageManager.isVoyageOrLeagueArea(_player.areaKey)
+      D.adminLog("Player is starting new battle, IsLeagueArea:{" + VoyageManager.isAnyLeagueArea(_player.areaKey) + "} IsPvpArena :{" + VoyageManager.isPvpArenaArea(_player.areaKey)
          + "} IsTreasureSite:{" + VoyageManager.isTreasureSiteArea(_player.areaKey) + "} CanPlayerStay{" + canPlayerStayInVoyage() + "}"
          + " SpecialType: {" + AreaManager.self.getAreaSpecialType(_player.areaKey) + "}", D.ADMIN_LOG_TYPE.Combat);
 
-      if ((VoyageManager.isVoyageOrLeagueArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)) && !canPlayerStayInVoyage()) {
+      if ((VoyageManager.isAnyLeagueArea(_player.areaKey) || VoyageManager.isPvpArenaArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)) && !canPlayerStayInVoyage()) {
          string reason = "";
          if (VoyageManager.isTreasureSiteArea(_player.areaKey)) {
             reason += "This is not a treasure area\n";
@@ -7151,6 +7151,43 @@ public class RPCManager : NetworkBehaviour
    [Command]
    public void Cmd_ReceiveClientPing (float ping) {
       LagMonitorManager.self.receiveClientPing(_player.userId, ping);
+   }
+
+   [Command]
+   public void Cmd_RequestPvpArenaListFromServer () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      List<Voyage> voyages = VoyageManager.self.getAllPvpInstances();
+      Target_ReceivePvpArenaList(_player.connectionToClient, voyages.ToArray());
+   }
+
+   [TargetRpc]
+   public void Target_ReceivePvpArenaList (NetworkConnection connection, Voyage[] voyageArray) {
+      List<Voyage> voyageList = new List<Voyage>(voyageArray);
+
+      // Make sure the panel is showing
+      PanelManager.self.linkIfNotShowing(Panel.Type.PvpArena);
+
+      // Pass the data to the panel
+      PvpArenaPanel panel = (PvpArenaPanel) PanelManager.self.get(Panel.Type.PvpArena);
+      panel.receivePvpArenasFromServer(voyageList);
+   }
+
+   [Command]
+   public void Cmd_JoinPvpArena (int voyageId) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Make sure the game instance (voyage) exists
+      if (VoyageManager.self.tryGetVoyage(voyageId, out Voyage voyage)) {
+         // Send the join request to the server hosting the game
+         ServerNetworkingManager.self.joinPvpGame(voyageId, _player.userId, _player.entityName);
+      }
    }
 
    #region Private Variables

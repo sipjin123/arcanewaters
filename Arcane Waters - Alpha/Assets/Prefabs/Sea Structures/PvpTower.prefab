@@ -149,7 +149,7 @@ Transform:
   m_Children:
   - {fileID: 3089580365470636714}
   m_Father: {fileID: 1415393884094564678}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &970295520265677036
 GameObject:
@@ -487,7 +487,7 @@ GameObject:
   - component: {fileID: 8113696637072491248}
   - component: {fileID: 8241716699696583303}
   m_Layer: 0
-  m_Name: TriggerDetector
+  m_Name: AttackTriggerDetector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -786,7 +786,7 @@ Transform:
   m_Children:
   - {fileID: 3032293618593390235}
   m_Father: {fileID: 1415393884094564678}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4678403388049555012
 GameObject:
@@ -818,7 +818,7 @@ Transform:
   m_LocalScale: {x: 8, y: 8, z: 1}
   m_Children: []
   m_Father: {fileID: 1415393884094564678}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &2680109038012644732
 MeshRenderer:
@@ -1752,6 +1752,66 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &8379782740842175912
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8300219056774963273}
+  - component: {fileID: 6329409222263908072}
+  - component: {fileID: 6499886750591246888}
+  m_Layer: 0
+  m_Name: WarningTriggerDetector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8300219056774963273
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8379782740842175912}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1415393884094564678}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6329409222263908072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8379782740842175912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76db001a9bff0dd42b23b39e583d638d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!58 &6499886750591246888
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8379782740842175912}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 4.5
 --- !u!1 &8401561506625377640
 GameObject:
   m_ObjectHideFlags: 0
@@ -1985,6 +2045,7 @@ Transform:
   - {fileID: 8375533036225409885}
   - {fileID: 2809950235068418219}
   - {fileID: 6992022904403340363}
+  - {fileID: 8300219056774963273}
   - {fileID: 1671211236633234062}
   - {fileID: 4895919337322927119}
   - {fileID: 7428129891076620372}
@@ -2117,8 +2178,10 @@ MonoBehaviour:
   targetingIndicatorParent: {fileID: 4895919337322927119}
   targetingIndicatorRenderer: {fileID: 1982581458498674730}
   dangerColor: {r: 1, g: 0, b: 0, a: 1}
-  safeColor: {r: 0.0382514, g: 1, b: 0, a: 0}
-  attackRangeDisplay: {fileID: 8407238646559361222}
+  safeColor: {r: 0.0382514, g: 1, b: 0, a: 1}
+  warningColor: {r: 1, g: 0.764781, b: 0, a: 1}
+  attackTriggerDetector: {fileID: 8113696637072491248}
+  warningTriggerDetector: {fileID: 6329409222263908072}
 --- !u!58 &6324359015635987835
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -2215,7 +2278,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1415393884094564678}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!58 &5916222671824747948
 CircleCollider2D:

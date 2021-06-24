@@ -25,13 +25,6 @@ public class VoyageManager : GenericGameManager {
    }
 
    public void startVoyageManagement () {
-      // At server startup, for dev builds, make all the sea maps accessible by creating one voyage for each
-      if (!Util.isCloudBuild()) {
-         StartCoroutine(CO_CreateInitialVoyages());
-      }
-
-      // Regularly check that there are enough voyage instances open and create more
-      InvokeRepeating(nameof(createVoyageInstanceIfNeeded), 20f, 10f);
    }
 
    /// <summary>
@@ -45,6 +38,8 @@ public class VoyageManager : GenericGameManager {
          List<string> seaMaps;
          if (isLeague) {
             seaMaps = getLeagueAreaKeys();
+         } else if (isPvP) {
+            seaMaps = getPvpArenaAreaKeys();
          } else {
             seaMaps = getVoyageAreaKeys();
          }
@@ -73,6 +68,11 @@ public class VoyageManager : GenericGameManager {
 
       // Immediately make the new voyage info accessible to other servers
       ServerNetworkingManager.self.server.addNewVoyageInstance(instance, 0);
+
+      // For pvp instances, create the associated pvp game
+      if (isPvP) {
+         PvpManager.self.createNewGameForPvpInstance(instance);
+      }
    }
 
    [Server]
@@ -138,6 +138,22 @@ public class VoyageManager : GenericGameManager {
    }
 
    [Server]
+   public List<Voyage> getAllPvpInstances () {
+      List<Voyage> voyages = new List<Voyage>();
+
+      // Get all the voyages we know about in all the servers we know about
+      foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
+         foreach (Voyage voyage in server.voyages) {
+            if (voyage.isPvP) {
+               voyages.Add(voyage);
+            }
+         }
+      }
+
+      return voyages;
+   }
+
+   [Server]
    public List<Voyage> getAllTreasureSiteInstancesLinkedToVoyages () {
       List<Voyage> voyages = new List<Voyage>();
 
@@ -173,14 +189,7 @@ public class VoyageManager : GenericGameManager {
       return tryGetVoyage(voyageId, out Voyage voyage);
    }
 
-   public static bool isVoyageOrLeagueArea (string areaKey) {
-      return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.Voyage
-         || AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.League
-         || AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.LeagueLobby
-         || AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.LeagueSeaBoss;
-   }
-
-   public static bool isLeagueOrLobbyArea (string areaKey) {
+   public static bool isAnyLeagueArea (string areaKey) {
       return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.League
          || AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.LeagueLobby
          || AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.LeagueSeaBoss;
@@ -201,9 +210,17 @@ public class VoyageManager : GenericGameManager {
    public static bool isTreasureSiteArea (string areaKey) {
       return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.TreasureSite;
    }
+   
+   public static bool isPvpArenaArea (string areaKey) {
+      return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.PvpArena;
+   }
 
    public List<string> getVoyageAreaKeys () {
       return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.Voyage).ToList();
+   }
+   
+   public List<string> getPvpArenaAreaKeys () {
+      return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.PvpArena).ToList();
    }
 
    public List<string> getLeagueAreaKeys () {
@@ -308,51 +325,8 @@ public class VoyageManager : GenericGameManager {
    }
 
    [Server]
-   protected void createVoyageInstanceIfNeeded () {
-      // Only the master server launches the creation of voyages instances
-      NetworkedServer server = ServerNetworkingManager.self.server;
-      if (server == null || !server.isMasterServer()) {
-         return;
-      }
-
-      // If there are missing voyages, create a new one
-      if (getAllOpenVoyageInstances().Count < Voyage.OPEN_VOYAGE_INSTANCES) {
-         // Alternate PvP and PvE instances
-         _isNewVoyagePvP = !_isNewVoyagePvP;
-
-         requestVoyageInstanceCreation("", _isNewVoyagePvP);
-      }
-   }
-
-   [Server]
-   private IEnumerator CO_CreateInitialVoyages () {
-      // Wait until our server is defined
-      while (ServerNetworkingManager.self == null || ServerNetworkingManager.self.server == null) {
-         yield return null;
-      }
-
-      // Wait until our server port is initialized
-      while (ServerNetworkingManager.self.server.networkedPort.Value == 0) {
-         yield return null;
-      }
-
-      // Only the master server launches the creation of voyages instances
-      if (ServerNetworkingManager.self.server.isMasterServer()) {
-
-         // Create a voyage instance for each available sea map
-         List<string> seaMaps = getVoyageAreaKeys();
-         foreach (string areaKey in seaMaps) {
-            // Alternate PvP and PvE instances
-            _isNewVoyagePvP = !_isNewVoyagePvP;
-
-            requestVoyageInstanceCreation(areaKey, _isNewVoyagePvP);
-         }
-      }
-   }
-
-   [Server]
    public void forceAdminWarpToVoyageAreas (NetEntity admin, string newArea) {
-      if (isVoyageOrLeagueArea(newArea)) {
+      if (isAnyLeagueArea(newArea)) {
          // Try to warp the admin to his current voyage if the area parameter fits
          if (admin.tryGetVoyage(out Voyage voyage) && voyage.areaKey.Equals(newArea)) {
             admin.spawnInNewMap(voyage.voyageId, newArea, Direction.South);
@@ -360,7 +334,7 @@ public class VoyageManager : GenericGameManager {
          }
 
          // If the destination is a league map, always create a new instance
-         if (isLeagueOrLobbyArea(newArea)) {
+         if (isAnyLeagueArea(newArea)) {
             if (VoyageGroupManager.self.tryGetGroupById(admin.voyageGroupId, out VoyageGroupInfo voyageGroup)) {
                VoyageGroupManager.self.removeUserFromGroup(voyageGroup, admin);
             }
@@ -506,7 +480,7 @@ public class VoyageManager : GenericGameManager {
       int difficulty;
       if (!player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
          // Create a new group for the player
-         VoyageGroupManager.self.createGroup(player, voyageId, true);
+         VoyageGroupManager.self.createGroup(player.userId, voyageId, true);
 
          difficulty = 1;
       } else {

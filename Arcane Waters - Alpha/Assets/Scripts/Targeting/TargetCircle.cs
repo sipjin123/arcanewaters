@@ -15,6 +15,9 @@ public class TargetCircle : MonoBehaviour {
    // Reference to the sprite that represents the center of the circle
    public SpriteRenderer circleCenter;
 
+   // If set to a positive value, the target circle will be limited to this distance from the player
+   public float maxRange = -1.0f;
+
    #endregion
 
    private void Awake () {
@@ -23,7 +26,17 @@ public class TargetCircle : MonoBehaviour {
 
    public void updateCircle (bool updateInputs) {
       if (updateInputs) {
-         transform.position = Util.getMousePos();
+         
+         if (maxRange > 0.0f) {
+            Vector2 toMousePos = Util.getMousePos() - getGlobalPlayerShip().transform.position;
+            if (toMousePos.sqrMagnitude > maxRange * maxRange) {
+               toMousePos = toMousePos.normalized * maxRange;
+            }
+
+            transform.position = (Vector2)getGlobalPlayerShip().transform.position + toMousePos;
+         } else {
+            transform.position = Util.getMousePos();
+         }
       }
       
       if (circleOutline.updateCircle) {
@@ -77,6 +90,13 @@ public class TargetCircle : MonoBehaviour {
       circleOutline.setCircleColor(newColor);
    }
 
+   private PlayerShipEntity getGlobalPlayerShip () {
+      if (!_globalPlayerShip && Global.player) {
+         _globalPlayerShip = Global.player.getPlayerShipEntity();
+      }
+      return _globalPlayerShip;
+   }
+
    #region Private Variables
 
    // Stores the initial radius used by the dotted circle
@@ -84,6 +104,9 @@ public class TargetCircle : MonoBehaviour {
 
    // Stores the last position we were set to
    private Vector3 _lastPosition;
+
+   // A reference to the global player's ship
+   private PlayerShipEntity _globalPlayerShip = null;
 
    #endregion
 }

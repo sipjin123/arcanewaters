@@ -286,46 +286,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Speak Chat Line
       objectReference: {fileID: 0}
-    - target: {fileID: 11400544, guid: 7069232444f48c44ea612f6b86ea21ea, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11436140, guid: 7069232444f48c44ea612f6b86ea21ea, type: 3}
-      propertyPath: m_Text
-      value: 'Hey!  This is some example chat. '
-      objectReference: {fileID: 0}
-    - target: {fileID: 11436140, guid: 7069232444f48c44ea612f6b86ea21ea, type: 3}
-      propertyPath: m_FontData.m_Alignment
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 11436140, guid: 7069232444f48c44ea612f6b86ea21ea, type: 3}
-      propertyPath: m_FontData.m_FontSize
-      value: 21
-      objectReference: {fileID: 0}
-    - target: {fileID: 11436140, guid: 7069232444f48c44ea612f6b86ea21ea, type: 3}
-      propertyPath: m_FontData.m_MinSize
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11436140, guid: 7069232444f48c44ea612f6b86ea21ea, type: 3}
-      propertyPath: m_FontData.m_RichText
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11436140, guid: 7069232444f48c44ea612f6b86ea21ea, type: 3}
-      propertyPath: m_FontData.m_LineSpacing
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11436140, guid: 7069232444f48c44ea612f6b86ea21ea, type: 3}
-      propertyPath: m_FontData.m_AlignByGeometry
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 11436140, guid: 7069232444f48c44ea612f6b86ea21ea, type: 3}
-      propertyPath: m_FontData.m_BestFit
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 11436140, guid: 7069232444f48c44ea612f6b86ea21ea, type: 3}
-      propertyPath: m_FontData.m_VerticalOverflow
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 22409032, guid: 7069232444f48c44ea612f6b86ea21ea, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

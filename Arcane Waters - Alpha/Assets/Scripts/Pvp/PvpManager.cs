@@ -52,103 +52,134 @@ public class PvpManager : MonoBehaviour {
       self = this;
    }
 
+   public void startPvpManagement () { 
+      // Regularly check that there are enough pvp games and create more if needed
+      InvokeRepeating(nameof(createPvpGamesIfNeeded), 5f, 10f);
+   }
+
    [Server]
-   public void tryJoinPvpGame (NetEntity player) {
-      PvpGame bestGame = getBestJoinableGame();
+   public void joinBestPvpGameOrCreateNew (NetEntity player) {
+      Voyage bestGameInstance = getBestJoinableGameInstance();
 
       // If there are no active games, create a game
-      if (bestGame == null) {
-         createNewGame(areaKey: currentMap, onCreationComplete: (instanceId) => {
-            // Add the player to the game
-            addPlayerToGame(instanceId, player);
-         });
+      if (bestGameInstance == null) {
+         StartCoroutine(CO_CreateNewGameAndJoin(player));
 
       // If there are active games, join the one with the highest number of players, that isn't in session
       } else {
-         addPlayerToGame(bestGame.instanceId, player);
+         ServerNetworkingManager.self.joinPvpGame(bestGameInstance.voyageId, player.userId, player.entityName);
       }
    }
 
    [Server]
-   public void createNewGame (string areaKey = "pvp_lanes", System.Action<int> onCreationComplete = null) {
-      if (_creatingPvpGame) {
-         D.warning("Can't create a new pvp game, one is already being created");
+   public void joinPvpGame (int voyageId, int userId, string userName) {
+      Voyage voyage;
+      if (!VoyageManager.self.tryGetVoyage(voyageId, out voyage)) {
+         ServerNetworkingManager.self.displayNoticeScreenWithError(userId, ErrorMessage.Type.PvpJoinError, "Could not join the PvP Game. The game does not exist.");
          return;
       }
 
-      StartCoroutine(CO_CreateNewGame(areaKey, onCreationComplete));
+      PvpGame pvpGame = getGameWithInstance(voyage.instanceId);
+      if (pvpGame == null) {
+         ServerNetworkingManager.self.displayNoticeScreenWithError(userId, ErrorMessage.Type.PvpJoinError, "Could not join the PvP Game. The game does not exist.");
+         return;
+      }
+
+      addPlayerToGame(voyage.instanceId, userId, userName);
    }
 
-   private IEnumerator CO_CreateNewGame (string areaKey, System.Action<int> onCreationComplete) {
-      _creatingPvpGame = true;
-      
-      Voyage newGameVoyage;
-
-      // Get a new voyage id from the master server
-      RpcResponse<int> response = ServerNetworkingManager.self.getNewVoyageId();
-      while (!response.IsDone) {
-         yield return null;
+   [Server]
+   protected void createPvpGamesIfNeeded () {
+      // Only the master server launches the creation of pvp instances
+      NetworkedServer server = ServerNetworkingManager.self.server;
+      if (server == null || !server.isMasterServer()) {
+         return;
       }
-      int voyageId = response.Value;
 
-      // Create an instance with that voyage id
-      VoyageManager.self.requestVoyageInstanceCreation(voyageId, areaKey, true, difficulty: 2, biome: Biome.Type.Forest);
+      // Count the number of pvp instances in pre-game state in all servers
+      int preGameCount = 0;
+      foreach (Voyage pvpInstance in VoyageManager.self.getAllPvpInstances()) {
+         if (pvpInstance.pvpGameState == PvpGame.State.PreGame) {
+            preGameCount++;
+         }
+      }
+
+      // If there are missing games, create one
+      if (preGameCount < PRE_GAME_INSTANCES_COUNT) {
+         VoyageManager.self.requestVoyageInstanceCreation(isPvP: true, difficulty: 2, biome: Biome.Type.Forest);
+      }
+   }
+
+   [Server]
+   public void createNewGameForPvpInstance (Instance instance) {
+      GameObject newGameObject = Instantiate(new GameObject("Pvp Game " + instance.id), transform);
+      PvpGame newGame = newGameObject.AddComponent<PvpGame>();
+      newGame.init(instance.voyageId, instance.id, instance.areaKey);
+      _activeGames[instance.id] = newGame;
+   }
+
+   [Server]
+   private IEnumerator CO_CreateNewGameAndJoin (NetEntity player) {
+      VoyageManager.self.requestVoyageInstanceCreation(isPvP: true, difficulty: 2, biome: Biome.Type.Forest);
+
+      // The voyage instance creation always takes at least two frames
+      yield return null;
+      yield return null;
+
+      // Wait until the voyage and game have been created
+      Voyage voyage = null;
       double instanceCreationStartTime = NetworkTime.time;
-
-      // Wait for the instance to be created
-      while (!VoyageManager.self.tryGetVoyage(voyageId, out newGameVoyage)) {
+      while (voyage == null) {
          // Check if the creation has timed out
          double elapsedCreationTime = NetworkTime.time - instanceCreationStartTime;
          if (elapsedCreationTime >= INSTANCE_CREATION_TIMEOUT) {
-            D.error("Voyage instance creation timed out for pvp game");
-            _creatingPvpGame = false;
+            if (player != null) {
+               ServerMessageManager.sendError(ErrorMessage.Type.PvpJoinError, player, "Could not join the pvp game. The instance creation timed out.");
+            }
             yield break;
          }
-         
+
+         voyage = getBestJoinableGameInstance();
          yield return null;
       }
 
-      GameObject newGameObject = Instantiate(new GameObject("Pvp Game " + newGameVoyage.instanceId), transform);
-      PvpGame newGame = newGameObject.AddComponent<PvpGame>();
-      newGame.init(voyageId, newGameVoyage.instanceId, areaKey);
-      _activeGames[newGameVoyage.instanceId] = newGame;
-
-      _creatingPvpGame = false;
-
-      onCreationComplete.Invoke(newGameVoyage.instanceId);
+      // Make the player join the game
+      if (player != null) {
+         ServerNetworkingManager.self.joinPvpGame(voyage.voyageId, player.userId, player.entityName);
+      }
    }
 
-   private PvpGame getBestJoinableGame () {
+   private Voyage getBestJoinableGameInstance () {
       // We will find the game with the highest number of players, that hasn't yet started
-      PvpGame bestGame = null;
+      Voyage bestGameInstance = null;
       int mostPlayers = 0;
       
-      foreach (PvpGame game in _activeGames.Values) {
+      foreach (Voyage pvpInstance in VoyageManager.self.getAllPvpInstances()) {
          // Ignore games that are in post-game / invalid
-         PvpGame.State gameState = game.getGameState();
-         if (gameState == PvpGame.State.None || gameState == PvpGame.State.PostGame) {
+         if (pvpInstance.pvpGameState == PvpGame.State.None || pvpInstance.pvpGameState == PvpGame.State.PostGame) {
             continue;
          }
 
          // If this game has a free spot, and has more players than the previous best, store it as the best
-         int numPlayers = game.getNumPlayers();
-         if (game.getAvailableSlots() > 0 && numPlayers > mostPlayers) {
-            bestGame = game;
+         int numPlayers = pvpInstance.playerCount;
+         if (pvpInstance.pvpGameMaxPlayerCount - pvpInstance.playerCount > 0 && numPlayers >= mostPlayers) {
+            bestGameInstance = pvpInstance;
             mostPlayers = numPlayers;
          }
       }
 
-      return bestGame;
+      return bestGameInstance;
    }
 
-   private void addPlayerToGame (int instanceId, NetEntity player) {      
+   private void addPlayerToGame (int instanceId, int userId, string userName) {      
       PvpGame game;
       if (!_activeGames.TryGetValue(instanceId, out game)) {
-         D.error("Failed to add player: " + player.name + " to game, game didn't exist in dictionary");
+         D.error("Failed to add player: " + userName + " to game, game didn't exist in dictionary");
+         ServerNetworkingManager.self.displayNoticeScreenWithError(userId, ErrorMessage.Type.PvpJoinError, "Could not join the PvP Game. The game does not exist.");
          return;
       }
 
-      game.addPlayerToGame(player);
+      game.addPlayerToGame(userId, userName);
    }
 
    public PvpGame getGameWithPlayer (int playerUserId) {
@@ -163,6 +194,13 @@ public class PvpManager : MonoBehaviour {
 
    public PvpGame getGameWithPlayer (NetEntity player) {
       return getGameWithPlayer(player.userId);
+   }
+
+   public PvpGame getGameWithInstance (int instanceId) {
+      if (_activeGames.ContainsKey(instanceId)) {
+         return _activeGames[instanceId];
+      }
+      return null;
    }
 
    public void tryRemoveEmptyGame (int instanceId) {
@@ -193,13 +231,13 @@ public class PvpManager : MonoBehaviour {
    #region Private Variables
 
    // After how long the game creation will time out
-   private const double INSTANCE_CREATION_TIMEOUT = 30.0;
+   private const double INSTANCE_CREATION_TIMEOUT = 1.0;
+
+   // The number of pvp games that must always be available in pre-game state
+   private const int PRE_GAME_INSTANCES_COUNT = 10;
 
    // A dictionary of all pvp games currently active on this server, indexed by instanceId
    Dictionary<int, PvpGame> _activeGames = new Dictionary<int, PvpGame>();
-
-   // Set to true when we are in the process of creating a pvp game
-   private bool _creatingPvpGame = false;
 
    #endregion
 }

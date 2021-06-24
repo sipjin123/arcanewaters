@@ -81,9 +81,6 @@ MonoBehaviour:
     isSenderMuted: 0
   creationTime: 0
   text: {fileID: 2670985640526164736}
-  hoverNotification: {fileID: 3061357011606169154}
-  senderName: 
-  senderUserId: 0
 --- !u!114 &2670985640526164736
 MonoBehaviour:
   m_ObjectHideFlags: 0

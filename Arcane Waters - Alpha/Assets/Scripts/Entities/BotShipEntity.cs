@@ -36,6 +36,15 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    // A reference to the renderer used to show where this ship is aiming
    public SpriteRenderer targetingIndicatorRenderer;
 
+   // A reference to the transform used to for the aiming reticle
+   public Transform aimTransform;
+
+   // A reference to the dotted parabola showing where this ship is aiming
+   public DottedParabola targetingParabola;
+
+   // References to the sprites used for targeting
+   public Sprite aimingReticle, lockedReticle;
+
    #endregion
 
    protected override void Awake () {
@@ -45,9 +54,9 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    protected override void Start () {
       base.Start();
 	   
-	   if (isServer) {
-		   getRandomPowerup();
-	   }
+      if (isServer) {
+         getRandomPowerup();
+      }
 
       if (isClient) {
          if (pvpTeam != PvpTeamType.None) {
@@ -60,6 +69,9 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             updateSprites();
          }
       }
+
+      _reticleRenderer = aimTransform.GetComponent<SpriteRenderer>();
+      aimTransform.SetParent(transform.parent);
    }
 
    protected override void Update () {
@@ -89,6 +101,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       } else {
          D.warning("Bot ship couldn't drop a chest, due to not being able to locate last attacker");
       }
+
+      aimTransform.gameObject.SetActive(false);
    }
 
    [Server]
@@ -102,23 +116,23 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    [Server]
    protected override IEnumerator CO_AttackEnemiesInRange (float delayInSecondsWhenNotReloading) {
       while (!isDead()) {
-
          NetEntity target = getAttackerInRange();
 
          // Show the charging animation on clients
          if (target) {
             Rpc_NotifyChargeUp(target.netId);
             _aimTarget = target;
+            aimTransform.position = target.transform.position;
          }
 
          // Wait for the charge-up animation to play
-         float chargeTimer = 1.0f;
+         float chargeTimer = ATTACK_CHARGE_TIME;
          while (chargeTimer > 0.0f) {
             if (!_aimTarget || _aimTarget.isDead() || isDead()) {
                break;
             }
 
-            float indicatorAngle = 360.0f - Util.angle(_aimTarget.transform.position - transform.position);
+            float indicatorAngle = 360.0f - Util.angle(aimTransform.position - transform.position);
             targetingIndicatorParent.transform.rotation = Quaternion.Euler(0.0f, 0.0f, indicatorAngle);
             chargeTimer -= Time.deltaTime;
             yield return null;
@@ -129,7 +143,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          // Fire a shot at our target, if we charge up fully
          if (chargeTimer <= 0.0f) {
             if (target) {
-               fireCannonAtTarget(target);
+               fireCannonAtTarget(aimTransform.position);
                triggerPowerupsOnFire();
                Rpc_NotifyCannonFired();
 
@@ -149,6 +163,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       }
 
       _aimTarget = target;
+      _attackChargeStartTime = (float) NetworkTime.time;
+      aimTransform.position = _aimTarget.transform.position;
 
       // Show the charging animation
       showTargetingEffects();
@@ -169,20 +185,67 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
       // If we are showing targeting effects, update the rotation of our effects to point at our target
       if (_isShowingTargetingIndicator) {
-         float indicatorAngle = 360.0f - Util.angle(_aimTarget.transform.position - transform.position);
+         float indicatorAngle = 360.0f - Util.angle(aimTransform.position - transform.position);
          targetingIndicatorParent.transform.rotation = Quaternion.Euler(0.0f, 0.0f, indicatorAngle);
+
+         // Update the targeting parabola
+         float range = getAttackRange();
+         Vector2 targetPosition = aimTransform.position;
+         Vector2 barrelSocketPosition = targetingBarrelSocket.position;
+         float targetDistance = (targetPosition - barrelSocketPosition).magnitude;
+         float distanceModifier = Mathf.Clamp(targetDistance / range, 0.1f, 1.0f);
+         float parabolaHeight = 0.25f * distanceModifier;
+         targetingParabola.parabolaHeight = parabolaHeight;
+
+         float timeSpentCharging = Mathf.Clamp01(((float) NetworkTime.time - _attackChargeStartTime) / ATTACK_CHARGE_TIME);
+         Color parabolaColor = ColorCurveReferences.self.botShipTargetingParabolaColor.Evaluate(timeSpentCharging);
+         targetingParabola.setParabolaColor(parabolaColor);
+         targetingParabola.parabolaStart.position = targetingBarrelSocket.position;
+         targetingParabola.parabolaEnd.position = aimTransform.position;
+         targetingParabola.updateParabola();
+
+         // If we haven't locked on yet, update the aim transform
+         if ((timeSpentCharging / ATTACK_CHARGE_TIME) < AIM_TARGET_LOCK_TIME_NORMALISED) {
+            // Find a point slightly ahead of the player's movement
+            Vector2 projectedPosition = _aimTarget.getProjectedPosition(1.0f * distanceModifier);
+            Vector2 toProjectedPosition = projectedPosition - (Vector2)_aimTarget.transform.position;
+            float maxReticleDistanceFromTarget = 1.0f;
+
+            // Clamp it so it doesn't extend too far when the player dashes
+            if (toProjectedPosition.sqrMagnitude > maxReticleDistanceFromTarget * maxReticleDistanceFromTarget) {
+               toProjectedPosition = toProjectedPosition.normalized * maxReticleDistanceFromTarget;
+            }
+
+            // Smoothly move the reticle to this position
+            Vector2 reticleTargetPosition = (Vector2)_aimTarget.transform.position + toProjectedPosition;
+            aimTransform.position = Vector2.Lerp(aimTransform.position, reticleTargetPosition, Time.deltaTime * AIM_TARGET_SPEED);
+         }
+
+         // If we've charged up enough to show the target lock effect, and haven't played it yet, play it
+         if ((timeSpentCharging / ATTACK_CHARGE_TIME) >= AIM_TARGET_LOCK_TIME_NORMALISED && !hasPlayedTargetLockEffect()) {
+            playTargetLockEffect();
+         }
       }
    }
 
    private void showTargetingEffects () {
+      targetingParabola.gameObject.SetActive(true);
       targetingIndicatorAnimator.gameObject.SetActive(true);
       targetingIndicatorRenderer.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
       targetingIndicatorRenderer.DOFade(1.0f, 0.1f);
       targetingIndicatorAnimator.SetTrigger("ChargeAndFire");
       _isShowingTargetingIndicator = true;
+
+      aimTransform.gameObject.SetActive(true);
+      aimTransform.localScale = Vector3.one * 1.25f;
+      aimTransform.DOScale(1.0f, 0.25f);
+      _reticleRenderer.enabled = true;
+      _reticleRenderer.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+      _reticleRenderer.DOFade(1.0f, 0.25f);
    }
 
    private void hideTargetingEffects () {
+      targetingParabola.gameObject.SetActive(false);
       DOTween.Kill(targetingIndicatorAnimator);
       DOTween.Kill(targetingIndicatorRenderer);
       targetingIndicatorAnimator.transform.DOPunchScale(Vector3.up * 0.15f, 0.25f, 1);
@@ -191,9 +254,26 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       _aimTarget = null;
    }
 
+   private void playTargetLockEffect () {
+      _reticleRenderer.sprite = lockedReticle;
+
+      Sequence sequence = DOTween.Sequence();
+      sequence.Append(aimTransform.DOBlendableLocalRotateBy(Vector3.forward * -45.0f, 0.25f).SetEase(Ease.InOutQuint));
+      sequence.AppendInterval(0.25f);
+      sequence.Append(_reticleRenderer.DOFade(0.0f, 0.25f).OnComplete(() => {
+         aimTransform.gameObject.SetActive(false);
+         aimTransform.rotation = Quaternion.identity;
+         _reticleRenderer.sprite = aimingReticle;
+         _reticleRenderer.color = Color.white;
+      }));
+   }
+
+   private bool hasPlayedTargetLockEffect () {
+      return _reticleRenderer.sprite == lockedReticle;
+   }
+
    [Server]
-   private void fireCannonAtTarget (NetEntity target) {
-      Vector2 targetPosition = target.transform.position;
+   private void fireCannonAtTarget (Vector2 targetPosition) {
       Vector2 spawnPosition = targetingBarrelSocket.position;
       Vector2 toTarget = targetPosition - spawnPosition;
       float targetDistance = toTarget.magnitude;
@@ -314,7 +394,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
          // Roll for powerup activation chance
          if (Random.Range(0.0f, 1.0f) <= activationChance) {
-            fireCannonAtTarget(enemy);
+            fireCannonAtTarget(enemy.transform.position);
             extraShotsCounter++;
          }
       }
@@ -352,6 +432,21 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    // The paths to sprites being used for team skins for the ships
    private static string TEAM_A_SKIN = "Sprites/Ships/type_1_naturalist";
    private static string TEAM_B_SKIN = "Sprites/Ships/type_1_privateer";
+
+   // When we last started charging our attack
+   private float _attackChargeStartTime = -1.0f;
+
+   // The ship's aim target will stop tracking the target after being this far through the charge up
+   private const float AIM_TARGET_LOCK_TIME_NORMALISED = 0.7f;
+
+   // The speed at which the aiming reticle will track the player
+   private const float AIM_TARGET_SPEED = 1.5f;
+
+   // A reference to the renderer for our targeting reticle
+   private SpriteRenderer _reticleRenderer;
+
+   // How long the attack takes to charge up
+   private const float ATTACK_CHARGE_TIME = 1.0f;
 
    #endregion
 }

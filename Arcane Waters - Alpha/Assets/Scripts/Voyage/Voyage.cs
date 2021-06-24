@@ -87,6 +87,18 @@ public class Voyage
    // The biome of the area the voyage is set in
    public Biome.Type biome = Biome.Type.None;
 
+   // The number of players in team A
+   public int playerCountTeamA = 0;
+
+   // The number of players in team B
+   public int playerCountTeamB = 0;
+
+   // The maximum number of players in the pvp game
+   public int pvpGameMaxPlayerCount = 0;
+
+   // The state of the game for pvp arenas
+   public PvpGame.State pvpGameState = PvpGame.State.None;
+
    #endregion
 
    public Voyage () {
@@ -95,7 +107,7 @@ public class Voyage
 
    public Voyage (int voyageId, int instanceId, string areaKey, string areaName, int difficulty, Biome.Type biome, bool isPvP,
       bool isLeague, int leagueIndex, int leagueRandomSeed, long creationDate, int treasureSiteCount, int capturedTreasureSiteCount, int aliveNPCEnemyCount, 
-      int totalNPCEnemyCount, int groupCount, int playerCount) {
+      int totalNPCEnemyCount, int groupCount, int playerCount, int playerCountTeamA, int playerCountTeamB, int pvpGameMaxPlayerCount, PvpGame.State pvpGameState) {
       this.voyageId = voyageId;
       this.instanceId = instanceId;
       this.areaKey = areaKey;
@@ -113,6 +125,10 @@ public class Voyage
       this.totalNPCEnemyCount = totalNPCEnemyCount;
       this.groupCount = groupCount;
       this.playerCount = playerCount;
+      this.playerCountTeamA = playerCountTeamA;
+      this.playerCountTeamB = playerCountTeamB;
+      this.pvpGameMaxPlayerCount = pvpGameMaxPlayerCount;
+      this.pvpGameState = pvpGameState;
    }
 
    public static Difficulty getDifficultyEnum (int difficulty) {

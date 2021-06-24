@@ -12,7 +12,10 @@ public class PvpTower : SeaStructure {
    // How far away this unit can target and attack enemies
    public static float ATTACK_RANGE = 3.5f;
 
-   // The position which projectiels are fired from
+   // The range at which the attack range circle will be displayed
+   public static float WARNING_RANGE = 4.5f;
+
+   // The position which projectiles are fired from
    public Transform targetingBarrelSocket;
 
    // How much faster our projectiles will move, compared to the normal cannonballs
@@ -31,16 +34,19 @@ public class PvpTower : SeaStructure {
    public SpriteRenderer targetingIndicatorRenderer;
 
    // References to the colors used for the attack range circle, when the player is being targeted, or safe
-   public Color dangerColor, safeColor;
+   public Color dangerColor, safeColor, warningColor;
+
+   // A child object that will pass on onTriggerEnter2D events, to avoid collision issues with having a trigger attached to the main seaentity object.
+   public TriggerDetector attackTriggerDetector;
 
    #endregion
 
    protected override void Awake () {
       base.Awake();
 
-      _triggerDetector = GetComponentInChildren<TriggerDetector>();
-      _triggerDetector.onTriggerEnter += onTriggerEnter2D;
-      _triggerDetector.onTriggerExit += onTriggerExit2D;
+      attackTriggerDetector.onTriggerEnter += onAttackTriggerEnter2D;
+      attackTriggerDetector.onTriggerExit += onAttackTriggerExit2D;
+      attackTriggerDetector.GetComponent<CircleCollider2D>().radius = ATTACK_RANGE;
 
       attackRangeRenderer.material.SetFloat("_Radius", ATTACK_RANGE);
       attackRangeRenderer.material.SetFloat("_FillAmount", 1.0f);
@@ -248,23 +254,8 @@ public class PvpTower : SeaStructure {
       Rpc_NoteAttack();
    }
 
-   private void onTriggerEnter2D (Collider2D collision) {
+   private void onAttackTriggerEnter2D (Collider2D collision) {
       if (!_isActivated) {
-         return;
-      }
-      
-      PlayerShipEntity playerShip;
-      
-      // On the client, activate the attack range circle when we are in-range
-      if (!isServer) {
-         playerShip = collision.GetComponent<PlayerShipEntity>();
-         if (!playerShip) {
-            playerShip = collision.GetComponentInParent<PlayerShipEntity>();
-         }
-         if (playerShip) {
-            _showAttackRangeCircle = true;
-         }
-
          return;
       }
 
@@ -277,7 +268,7 @@ public class PvpTower : SeaStructure {
          _attackers[seaEntity.netId] = NetworkTime.time;
       }
 
-      playerShip = collision.GetComponent<PlayerShipEntity>();
+      PlayerShipEntity playerShip = collision.GetComponent<PlayerShipEntity>();
       if (!playerShip) {
          playerShip = collision.GetComponentInParent<PlayerShipEntity>();
       }
@@ -288,27 +279,12 @@ public class PvpTower : SeaStructure {
       }
    }
 
-   private void onTriggerExit2D (Collider2D collision) {
+   private void onAttackTriggerExit2D (Collider2D collision) {
       if (!_isActivated) {
          return;
       }
 
-      PlayerShipEntity playerShip;
-
-      // On the client, deactivate the attack range circle when we are out of range
-      if (!isServer) {
-         playerShip = collision.GetComponent<PlayerShipEntity>();
-         if (!playerShip) {
-            playerShip = collision.GetComponentInParent<PlayerShipEntity>();
-         }
-         if (playerShip) {
-            _showAttackRangeCircle = true;
-         }
-
-         return;
-      }
-
-      playerShip = collision.GetComponent<PlayerShipEntity>();
+      PlayerShipEntity playerShip = collision.GetComponent<PlayerShipEntity>();
       if (!playerShip) {
          playerShip = collision.GetComponentInParent<PlayerShipEntity>();
       }
@@ -332,9 +308,22 @@ public class PvpTower : SeaStructure {
 
    private void updateAttackRangeCircle () {
       if (isClient && getGlobalPlayerShip().pvpTeam != pvpTeam) {
-         float lerpTargetAlpha = (isInRange(getGlobalPlayerShip().transform.position)) ? 0.5f : 0.0f;
+         float distanceToGlobalPlayerShip = Vector2.Distance(transform.position, getGlobalPlayerShip().transform.position);
+         bool isInWarningRange = (distanceToGlobalPlayerShip <= WARNING_RANGE);
+         bool isInAttackRange = (distanceToGlobalPlayerShip <= ATTACK_RANGE);
+         float lerpTargetAlpha = (isInWarningRange) ? 0.5f : 0.0f;
          _attackRangeCircleAlpha = Mathf.Lerp(_attackRangeCircleAlpha, lerpTargetAlpha, Time.deltaTime);
-         Color targetColor = (_aimTarget == getGlobalPlayerShip()) ? dangerColor : safeColor;
+
+         Color targetColor = safeColor;
+         // If the player is within attack range, show danger color if they're being targeted, otherwise show safe color
+         if (isInAttackRange) {
+            targetColor = (_aimTarget == getGlobalPlayerShip()) ? dangerColor : safeColor;
+
+         // If the player is within warning range, show warning color if no one is being targeted, otherwise show safe color
+         } else if (isInWarningRange) {
+            targetColor = (_aimTarget == null) ? warningColor : safeColor;
+         }
+
          targetColor.a = _attackRangeCircleAlpha;
          attackRangeRenderer.material.SetColor("_Color", targetColor);
       }
@@ -362,9 +351,6 @@ public class PvpTower : SeaStructure {
 
    // The entity we are aiming at, and intending to fire at
    private NetEntity _aimTarget = null;
-
-   // A child object that will pass on onTriggerEnter2D events, to avoid collision issues with having a trigger attached to the main seaentity object
-   private TriggerDetector _triggerDetector;
 
    // When set to true, we will show the attack range circle
    private bool _showAttackRangeCircle = false;

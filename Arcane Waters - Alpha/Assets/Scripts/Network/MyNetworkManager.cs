@@ -214,6 +214,9 @@ public class MyNetworkManager : NetworkManager
       // Start the voyage maps and voyage groups management
       VoyageManager.self.startVoyageManagement();
 
+      // Start the pvp games management
+      PvpManager.self.startPvpManagement();
+
       // Fetch discovery data from DB
       DiscoveryManager.self.fetchDiscoveriesOnServer();
 

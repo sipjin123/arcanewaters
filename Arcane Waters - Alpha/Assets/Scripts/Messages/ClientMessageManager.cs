@@ -96,6 +96,9 @@ public class ClientMessageManager : MonoBehaviour {
          case ErrorMessage.Type.NotEnoughGold:
             PanelManager.self.noticeScreen.show(msg.customMessage);
             return;
+         case ErrorMessage.Type.PvpJoinError:
+            PanelManager.self.noticeScreen.show(msg.customMessage);
+            return;
          /*case ErrorMessage.Type.NoGoldForCargo:
          case ErrorMessage.Type.OutOfCargoSpace:
          case ErrorMessage.Type.PortOutOfCargo:

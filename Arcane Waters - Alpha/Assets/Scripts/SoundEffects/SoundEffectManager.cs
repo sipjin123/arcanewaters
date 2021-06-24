@@ -35,6 +35,7 @@ public class SoundEffectManager : GenericGameManager
    public const int HARVESTING_FLYING = 44;
 
    // In game action sound effects
+   public const int WATERING_PLANTS = 51;
    public const int ORE_MINE = 52;
    public const int ORE_DROP = 53;
    public const int SHIPBOOST_ID = 54;
@@ -95,6 +96,7 @@ public class SoundEffectManager : GenericGameManager
    public const int PURCHASE_ITEM = 110;
    public const int ASSIGN_PERK_POINT = 111;
    public const int UNASSIGN_PERK_POINT = 112;
+   public const int TIP_FOLDOUT = 113;
 
    public const string MENU_OPEN_PATH = "event:/SFX/Game/UI/Menu_Open";
    public const string BUTTON_CONFIRM_PATH = "event:/SFX/Game/UI/Button_Confirm";
@@ -238,6 +240,9 @@ public class SoundEffectManager : GenericGameManager
          case Weapon.ActionType.PlantCrop:
             self.playFmodOneShot(THROW_SEEDS, target);
             break;
+         case Weapon.ActionType.WaterCrop:
+            self.playFmodOneShot(WATERING_PLANTS, target);
+            break;
       }
    }
 
@@ -286,6 +291,20 @@ public class SoundEffectManager : GenericGameManager
    //   eventEmitter.Play();
    //   StartCoroutine(CO_DestroyAfterEnd(eventEmitter));
    //}
+
+   public void playFmodWithDelay (int id, float delay, Transform target = null, bool is3D = false) {
+      StartCoroutine(CO_PlayFmodAfterDelay(id, delay, target, is3D));
+   }
+
+   private IEnumerator CO_PlayFmodAfterDelay (int id, float delay, Transform target = null, bool is3D = false) {
+      yield return new WaitForSeconds(delay);
+
+      if (is3D && target != null) {
+         self.playFmodOneShot(id, target);
+      } else {
+         self.playFmod2D(id);
+      }
+   }
 
    public IEnumerator CO_DestroyAfterEnd (StudioEventEmitter emitter) {
       while (emitter != null && emitter.IsPlaying()) {

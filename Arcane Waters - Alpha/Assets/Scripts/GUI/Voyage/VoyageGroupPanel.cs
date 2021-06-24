@@ -160,7 +160,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
          return;
       }
 
-      if (!Global.player.isGhost && (VoyageManager.isTreasureSiteArea(Global.player.areaKey) || VoyageManager.isVoyageOrLeagueArea(Global.player.areaKey))) {
+      if (!Global.player.isGhost && (VoyageManager.isTreasureSiteArea(Global.player.areaKey) || VoyageManager.isAnyLeagueArea(Global.player.areaKey) || VoyageManager.isPvpArenaArea(Global.player.areaKey))) {
          // Outside of safe areas, start a leave countdown
          PanelManager.self.countdownScreen.cancelButton.onClick.RemoveAllListeners();
          PanelManager.self.countdownScreen.onCountdownEndEvent.RemoveAllListeners();

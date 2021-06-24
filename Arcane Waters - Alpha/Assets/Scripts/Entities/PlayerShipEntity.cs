@@ -127,6 +127,9 @@ public class PlayerShipEntity : ShipEntity
    // Determines what type of attack will trigger when right-clicking
    public CannonAttackType cannonAttackType = CannonAttackType.Normal;
 
+   // What the max range of the cannon barrage attack is, compared to the player's normal attack
+   public const float CANNON_BARRAGE_RANGE_MULTIPLIER = 0.9f;
+
    // The different flags the ship can display
    public enum Flag {
       None = 0,
@@ -215,6 +218,9 @@ public class PlayerShipEntity : ShipEntity
       _targetCircle.gameObject.SetActive(false);
       _targetCone.gameObject.SetActive(false);
       _cannonTargeter.gameObject.SetActive(false);
+
+      // The target circle has a range slightly lower than the player's fully charged shot, since the range limits the center of the circle, and the edge of the circle can reach further
+      _targetCircle.maxRange = getCannonballDistance(1.0f) * CANNON_BARRAGE_RANGE_MULTIPLIER;
 
       if (isServer) {
          // When we enter a new scene, update powerups on the client
@@ -341,7 +347,7 @@ public class PlayerShipEntity : ShipEntity
             cannonAttackPressed();
          }
 
-         if (InputManager.isFireCannonMouseUp() || (InputManager.getKeyActionUp(KeyAction.FireMainCannon) && !_chargingWithMouse)) {
+         if ((InputManager.isFireCannonMouseUp() && _chargingWithMouse) || (InputManager.getKeyActionUp(KeyAction.FireMainCannon) && !_chargingWithMouse)) {
             cannonAttackReleased();
          }
 
@@ -370,9 +376,14 @@ public class PlayerShipEntity : ShipEntity
    }
 
    private void LateUpdate () {
-      // Update targeting UI
-      if (_isChargingCannon) {
-         updateTargeting();
+      if (isLocalPlayer) {
+         // Update targeting UI
+         if (_isChargingCannon) {
+            updateTargeting();
+         }
+
+         // Update charging state
+         CannonPanel.self.setIsChargingCannon(_isChargingCannon);
       }
    }
 
@@ -485,8 +496,6 @@ public class PlayerShipEntity : ShipEntity
          return;
       }
 
-      CannonPanel.self.cannonReleased();
-
       switch (cannonAttackType) {
          case CannonAttackType.Normal:
             float normalCannonballLifetime = getCannonballLifetime();
@@ -526,7 +535,7 @@ public class PlayerShipEntity : ShipEntity
                _shouldUpdateTargeting = true;
             });
 
-            StartCoroutine(CO_CannonBarrage(Util.getMousePos(), circleRadius));
+            StartCoroutine(CO_CannonBarrage(_targetCircle.transform.position, circleRadius));
             _targetCircle.setFillColor(Color.white);
             _targetCircle.updateCircle(true);
 
@@ -534,6 +543,8 @@ public class PlayerShipEntity : ShipEntity
       }
 
       _isChargingCannon = false;
+
+      CannonPanel.self.cannonReleased();
    }
 
    private void updateTargeting () {
@@ -546,17 +557,9 @@ public class PlayerShipEntity : ShipEntity
 
             Vector2 fireDir;
 
-            // Fire with mouse logic
+            // If firing with the mouse, aim using the mouse
             if (_chargingWithMouse) {
-               // If there is no targeted enemy, aim in the direction of the mouse
-               if (_targetSelector.getTarget() == null) {
-                  fireDir = Util.getMousePos() - transform.position;
-               // Otherwise, aim in the direction of the target
-               } else {
-                  _chargingWithMouse = false;                  
-                  fireDir = _targetSelector.getTarget().transform.position - transform.position;
-               }
-            // Fire with keyboard logic
+               fireDir = Util.getMousePos() - transform.position;
             } else {
                // If we don't have a target to aim at, cancel attack
                if (_targetSelector.getTarget() == null) {

@@ -60,6 +60,9 @@ public class CannonPanel : ClientMonoBehaviour {
    public void cannonReleased () {
       if (_cooldownPerSkill.ContainsKey(_currentAttackOption)) {
          _attackCooldown[_currentAttackIndex] += _cooldownPerSkill[_currentAttackOption];
+
+         _isChargingCannon = false;
+         useCannonType(CannonAttackOption.Standard_NoEffect, 0);
       }
    }
 
@@ -67,8 +70,12 @@ public class CannonPanel : ClientMonoBehaviour {
       return _attackCooldown[_currentAttackIndex] > 0.0f;
    }
 
+   public void setIsChargingCannon (bool isChargingCannon) {
+      _isChargingCannon = isChargingCannon;
+   }
+
    public void useCannonType (CannonAttackOption attackType, int index) {
-      if (Global.player == null) {
+      if (Global.player == null || _isChargingCannon) {
          return;
       }
 
@@ -151,6 +158,9 @@ public class CannonPanel : ClientMonoBehaviour {
 
    // Cooldown value to set after using skill
    protected Dictionary<CannonAttackOption, int> _cooldownPerSkill = new Dictionary<CannonAttackOption, int>();
+
+   // Check whether player ship is currently charging cannon
+   protected bool _isChargingCannon = false;
 
    #endregion
 }
