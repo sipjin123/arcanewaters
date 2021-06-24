@@ -110,7 +110,7 @@ public class BottomBar : MonoBehaviour {
       }
    }
 
-   public void togglePvpStatPanel () {
+   public void enablePvpStatPanel () {
       if (Global.player == null) {
          return;
       }
@@ -120,7 +120,13 @@ public class BottomBar : MonoBehaviour {
       if (!panel.isShowing()) {
          SoundEffectManager.self.playGuiMenuOpenSfx();
          Global.player.rpc.Cmd_RequestPvpStatPanel();
-      } else {
+      } 
+   }
+
+   public void disablePvpStatPanel () {
+      // Get the panel
+      PvpStatPanel panel = (PvpStatPanel) PanelManager.self.get(Panel.Type.PvpScoreBoard);
+      if (panel.isShowing()) {
          PanelManager.self.togglePanel(Panel.Type.PvpScoreBoard);
       }
    }

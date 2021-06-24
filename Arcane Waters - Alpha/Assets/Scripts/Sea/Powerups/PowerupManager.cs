@@ -103,6 +103,10 @@ public class PowerupManager : MonoBehaviour {
       string powerupName = PowerupManager.self.getPowerupData(powerupType).powerupName;
       string msg = string.Format("You received powerup! <color=red>{0}</color>!", powerupName);
       ChatManager.self.addChat(msg, ChatInfo.Type.System);
+      addPowerupClient(new Powerup {
+         powerupRarity = powerupRarity,
+         powerupType = powerupType
+      });
    }
 
    private float getBoostFactor (Powerup.Type type, Rarity.Type rarity) {

@@ -89,8 +89,6 @@ public class PanelManager : GenericGameManager {
          BottomBar.self.toggleInventoryPanel();
       } else if (KeyUtils.GetKeyDown(Key.G)) {
          BottomBar.self.toggleGuildPanel();
-      } else if (KeyUtils.GetKeyDown(Key.Tab)) {
-         BottomBar.self.togglePvpStatPanel();
       } else if (KeyUtils.GetKeyDown(Key.L)) {
          BottomBar.self.toggleShipsPanel();
       } else if (KeyUtils.GetKeyDown(Key.O)) {
@@ -113,6 +111,12 @@ public class PanelManager : GenericGameManager {
          adminGameSettingsPanel.togglePanel();
       }
 
+      if (KeyUtils.GetKeyDown(Key.Tab)) {
+         BottomBar.self.enablePvpStatPanel();
+      }
+      if (KeyUtils.GetKeyUp(Key.Tab)) {
+         BottomBar.self.disablePvpStatPanel();
+      }
    }
 
    public void onEscapeKeyPressed () {
