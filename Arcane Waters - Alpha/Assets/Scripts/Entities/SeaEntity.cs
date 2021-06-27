@@ -320,10 +320,13 @@ public class SeaEntity : NetEntity
          return;
       }
 
-      distanceFromInitialPosition = Vector2.Distance(transform.localPosition, initialPosition);
-      if (distanceFromInitialPosition > PVP_MONSTER_TERRITORY_RADIUS) {
-         retreatToSpawn();
-      } 
+      // If pvp sea monster moves away from its territory, retreat back to it
+      if (isSeamonsterPvp()) {
+         distanceFromInitialPosition = Vector2.Distance(transform.localPosition, initialPosition);
+         if (distanceFromInitialPosition > PVP_MONSTER_TERRITORY_RADIUS) {
+            retreatToSpawn();
+         }
+      }
 
       // Don't let minions pathfind and move
       if (isSeaMonsterMinion()) {
@@ -1607,13 +1610,9 @@ public class SeaEntity : NetEntity
 
    [Server]
    private void updateState (ref WaypointState state, float secondsBetweenMinorSearch, float secondsBetweenMajorSearch, ref float currentSecondsBetweenMinorSearch, ref float currentSecondsBetweenMajorSearch, System.Func<bool, Vector3> targetPositionFunction) {
-      if (_seeker == null) {
-         return;
-      }
-
       switch (state) {
          case WaypointState.RETREAT:
-            if (isSeamonsterPvp()) {
+            if (isSeamonsterPvp() && _seeker != null) {
                // Start path finding
                if (_seeker.IsDone() && (_currentPath == null || _currentPath.Count <= 0)) {
                   findAndSetPath_Asynchronous(targetPositionFunction(true));
@@ -1830,9 +1829,11 @@ public class SeaEntity : NetEntity
    protected Seeker _seeker;
 
    // The current path to the destination
+   [SerializeField]
    protected List<Vector3> _currentPath = new List<Vector3>();
 
    // The current Point Index of the path
+   [SerializeField]
    protected int _currentPathIndex;
 
    // In case there are no TreasureSites to pursue, use this to patrol the vicinity
@@ -1890,9 +1891,11 @@ public class SeaEntity : NetEntity
    private uint _currentAttacker;
 
    // How many seconds have passed since we last stopped on a patrol route
+   [SerializeField]
    private float _currentSecondsBetweenPatrolRoutes;
 
    // How many seconds have passed since we've started patrolling the current TreasureSite
+   [SerializeField]
    private float _currentSecondsPatroling;
 
    // If in a pvp game, this is the list of enemy structures we are trying to destroy, in priority order
