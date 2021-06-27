@@ -894,7 +894,7 @@ public class BattleManager : MonoBehaviour {
             // Create a Cancel Action to send to the clients
             if (source.canCancelAction) {
                CancelAction cancelAction = new CancelAction(action.battleId, action.sourceId, action.targetId, NetworkTime.time, timeToSubtract);
-               D.log("Target {" + target.userId + "} or Source {" + target.userId + "} is dead, Cancelling action " + (actionToApply is AttackAction ? "AttackAction" : "Non AttackAction"));
+               //D.log("Target {" + target.userId + "} or Source {" + target.userId + "} is dead, Cancelling action " + (actionToApply is AttackAction ? "AttackAction" : "Non AttackAction"));
                AbilityManager.self.execute(new[] { cancelAction });
                battle.Rpc_ReceiveCancelAction(action.battleId, action.sourceId, action.targetId, NetworkTime.time, timeToSubtract);
             } else {
@@ -993,6 +993,11 @@ public class BattleManager : MonoBehaviour {
          foreach (Battler participant in battle.getParticipants()) {
             if (participant.teamType == battle.teamThatWon) {
                DB_Main.addGoldAndXP(participant.userId, goldWon, xpWon);
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  if (participant.enemyType == Enemy.Type.PlayerBattler) {
+                     participant.player.Target_ReceiveBattleExp(participant.player.connectionToClient, xpWon);
+                  }
+               });
             }
          }
       });
@@ -1030,7 +1035,7 @@ public class BattleManager : MonoBehaviour {
       }
 
       foreach (Battler winner in winningBattlers) {
-         if (winner.enemyType == Enemy.Type.PlayerBattler) {
+         if (winner.enemyType == Enemy.Type.PlayerBattler && !battle.isPvp) {
             bool damageWeapon = false;
             bool damageArmor = false;
 
@@ -1047,6 +1052,8 @@ public class BattleManager : MonoBehaviour {
             }
             winner.player.rpc.modifyItemDurability(winner.player, damageWeapon == false ? -1 : winner.weaponManager.equippedWeaponId, Item.ITEM_DURABILITY_DEDUCTION,
                damageArmor == false ? -1 : winner.armorManager.equippedArmorId, Item.ITEM_DURABILITY_DEDUCTION);
+         } else if (winner.enemyType == Enemy.Type.PlayerBattler && battle.isPvp) {
+            winner.player.rpc.Target_DisplayServerMessage("You have defeated " + winningBattlers[0].player.entityName + " in a duel!");
          }
       }
 
@@ -1058,13 +1065,13 @@ public class BattleManager : MonoBehaviour {
             foreach (Battler participant in winningBattlers) {
                if (!participant.isMonster()) {
                   participant.player.rpc.endBattle();
-                  
+
                   // Registers the kill count of the combat
                   AchievementManager.registerUserAchievement(participant.player, ActionType.KillLandMonster, defeatedBattlers.Count);
 
                   // Registers the gold earned for achievement recording
                   AchievementManager.registerUserAchievement(participant.player, ActionType.EarnGold, goldWon);
-               } 
+               }
             }
          } else {
             if (battler.player is PlayerBodyEntity && !battle.isPvp) {
@@ -1080,6 +1087,8 @@ public class BattleManager : MonoBehaviour {
 
                   battler.player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);
                }
+            } else if (battler.player is PlayerBodyEntity && battle.isPvp) {
+               battler.player.rpc.Target_DisplayServerMessage("You have been defeated by " + winningBattlers[0].player.entityName + " in a duel!");
             }
          }
       }

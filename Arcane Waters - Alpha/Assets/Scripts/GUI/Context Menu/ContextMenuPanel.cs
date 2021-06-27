@@ -154,7 +154,7 @@ public class ContextMenuPanel : MonoBehaviour
          if (!FriendListManager.self.isFriend(userId)) {
             addButton("Friend Invite", () => FriendListManager.self.sendFriendshipInvite(userId, userName));
          }
-         addButton("Practice Duel", () => initializePVP(userId));
+         addButton("Practice Duel", () => initializePVP(userId, userName));
 
          // Only allow inviting to guild if we can locally see the invitee
          if (Global.player.canInviteGuild(targetEntity)) {
@@ -174,7 +174,8 @@ public class ContextMenuPanel : MonoBehaviour
       show(userName);
    }
 
-   private void initializePVP (int userId) {
+   private void initializePVP (int userId, string userName) {
+      ChatManager.self.addChat("Practice duel invite sent to " + userName, ChatInfo.Type.System);
       Global.player.rpc.Cmd_InviteToPvp(userId);
    }
 

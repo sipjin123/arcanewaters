@@ -1382,6 +1382,21 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
+   public void Target_ReceiveBattleExp (NetworkConnection connection, int xpGained) {
+      StartCoroutine(CO_ProcessBattleExp(xpGained));
+   }
+
+   private IEnumerator CO_ProcessBattleExp (int xpGained) {
+      yield return new WaitForSeconds(1.5f);
+      GameObject xpCanvas = Instantiate(PrefabsManager.self.xpGainPrefab);
+      Vector3 offset = new Vector3(.25f, .25f, 0);
+      xpCanvas.transform.position = transform.position + offset;
+      TextMeshProUGUI textObj = xpCanvas.GetComponentInChildren<TextMeshProUGUI>();
+      textObj.text = "+" + xpGained + " XP";
+      textObj.color = Color.magenta;
+   }
+
+   [TargetRpc]
    public void Target_GainedXP (NetworkConnection conn, int xpGained, Jobs jobs, Jobs.Type jobType, int cropNumber, bool showFloatingXp) {
       Vector3 pos = this.transform.position + new Vector3(0f, .32f);
 
