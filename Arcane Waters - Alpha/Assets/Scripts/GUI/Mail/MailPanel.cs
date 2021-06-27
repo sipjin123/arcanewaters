@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using System;
 using System.Linq;
 using TMPro;
+using UnityEngine.InputSystem;
 
 public class MailPanel : Panel
 {
@@ -74,6 +75,9 @@ public class MailPanel : Panel
    // The button used to delete the displayed mail
    public Button deleteMailButton;
 
+   // The button used to reply to the displayed mail
+   public Button replyMailButton;
+
    // The page number text
    public Text pageNumberText;
 
@@ -99,8 +103,37 @@ public class MailPanel : Panel
       displaySendPersistentButton();
    }
 
+   public override void Update () {
+      // UI Navigation
+      if (Keyboard.current.tabKey.wasPressedThisFrame && isShowing()) {
+
+         // Move focus down to subject text field. Trimming is required because tab is also added to input fields
+         if (recipientInput.isFocused) {
+            subjectInput.Select();
+            subjectInput.text = subjectInput.text.Trim();
+         }
+
+         // Move focus down to message text field
+         if (subjectInput.isFocused) {
+            if (Keyboard.current.shiftKey.isPressed) {
+               recipientInput.Select();
+               recipientInput.text = recipientInput.text.Trim();
+            } else {
+               messageInput.Select();
+               messageInput.text = messageInput.text.Trim();
+            }
+         }
+
+         // Move focus up to subject text field
+         if (messageInput.isFocused && Keyboard.current.shiftKey.isPressed) {
+            subjectInput.Select();
+            subjectInput.text = subjectInput.text.Trim();
+         }
+      }
+   }
+
    private void displaySendPersistentButton () {
-      // Hide the send (persistent) button if we are not admins
+      // Show the send (persistent) button only if we are admins
       if (Global.player.isAdmin()) {
          if (sendPersistentButton != null) {
             sendPersistentButton.gameObject.SetActive(true);
@@ -132,6 +165,11 @@ public class MailPanel : Panel
       composeNewMail();
       recipientInput.text = recipientName;
       subjectInput.Select();
+   }
+
+   public void composeReplyTo (string recipientName, string originalSubject) {
+      composeMailTo(recipientName);
+      subjectInput.text = "RE: " + originalSubject;
    }
 
    public void updatePanelWithMailList (List<MailInfo> mailList, int pageNumber, int totalMailCount) {
@@ -167,7 +205,7 @@ public class MailPanel : Panel
    }
 
    public void updateWithSentMailList (List<MailInfo> mailList, int pageNumber, int totalMailCount) {
-   
+
    }
 
    public void updatePanelWithSingleMail (MailInfo mail, List<Item> attachedItems, bool hasUnreadMail) {
@@ -186,6 +224,10 @@ public class MailPanel : Panel
       int mailIdForDeleteButton = mail.mailId;
       deleteMailButton.onClick.RemoveAllListeners();
       deleteMailButton.onClick.AddListener(() => deleteMail(mailIdForDeleteButton));
+
+      // Configure the reply button
+      replyMailButton.onClick.RemoveAllListeners();
+      replyMailButton.onClick.AddListener(() => composeReplyTo(mail.senderUserName, mail.mailSubject));
 
       // Configure the retrieve all items button
       retrieveAttachedItemsButton.onClick.RemoveAllListeners();
@@ -315,32 +357,53 @@ public class MailPanel : Panel
       Global.player.rpc.Cmd_DeleteMail(mailId);
    }
 
-   public void sendMail () {
-      // Check if the recipient name is entered
+   public bool checkComposedMail () {
+
+      // The entered name is null
       if ("".Equals(recipientInput.text)) {
          PanelManager.self.noticeScreen.show("Enter a recipient name!");
-      } else {
-         // Associate a new function with the confirmation button
-         PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
-         PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmSendMail());
-
-         // Show a confirmation panel
-         PanelManager.self.confirmScreen.show("Are you sure you want to send this mail to " + recipientInput.text + "?. This mail will auto delete itself in " + MailManager.MAX_MAIL_LIFETIME_DAYS + " days.", MailManager.getMailSendingCost());
+         return false;
       }
+
+      // The entered subject is null
+      if ("".Equals(subjectInput.text)) {
+         PanelManager.self.noticeScreen.show("Enter a subject!");
+         return false;
+      }
+
+      // Remove whitespace
+      recipientInput.text = recipientInput.text.Trim();
+      subjectInput.text = subjectInput.text.Trim();
+
+      return true;
+   }
+
+   public void sendMail () {
+      if (!checkComposedMail()) {
+         return;
+      }
+
+      // Associate a new function with the confirmation button
+      PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
+      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmSendMail());
+
+      // Show a confirmation panel
+      PanelManager.self.confirmScreen.show("Do you want to send this mail to " + recipientInput.text + "?", MailManager.getMailSendingCost(), "This mail will auto delete itself in " + MailManager.MAX_MAIL_LIFETIME_DAYS + " days.");
    }
 
    public void sendMailPersistent () {
-      // Check if the recipient name is entered
-      if ("".Equals(recipientInput.text)) {
-         PanelManager.self.noticeScreen.show("Enter a recipient name!");
-      } else {
-         // Associate a new function with the confirmation button
-         PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
-         PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmSendPersistentMail());
-
-         // Show a warning that tells the user, that the mail will persist and never be auto deleted.
-         PanelManager.self.confirmScreen.show("This mail will be sent to " + recipientInput.text + " and it will *not* be auto deleted. Do you want to proceed?", MailManager.getMailSendingCost());
+      if (!checkComposedMail()) {
+         return;
       }
+
+      // Associate a new function with the confirmation button
+      PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
+      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmSendPersistentMail());
+
+      // Show a warning that tells the user, that the mail will persist and never be auto deleted
+      // This mail is only sent by admins, so there is no need to pay for it
+      PanelManager.self.confirmScreen.show("Do you want to send this mail to " + recipientInput.text + "?", 0, "This mail will * not * be auto deleted.");
+
    }
 
    private void prepareMail (bool autoDelete = true) {
@@ -368,8 +431,11 @@ public class MailPanel : Panel
          sendBack = true;
       }
 
+      // Clean the recipient
+      string recipientName = recipientInput.text.Trim();
+
       // Create the mail
-      Global.player.rpc.Cmd_CreateMail(recipientInput.text, subjectInput.text, messageInput.text,
+      Global.player.rpc.Cmd_CreateMail(recipientName, subjectInput.text, messageInput.text,
       attachedItemIds.ToArray(), attachedItemCounts.ToArray(), MailManager.getMailSendingCost(), autoDelete, sendBack);
    }
 

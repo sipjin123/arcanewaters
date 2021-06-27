@@ -13,17 +13,11 @@ public class PvpArenaInfoPanel : MonoBehaviour, IPointerClickHandler
    // Our associated Canvas Group
    public CanvasGroup canvasGroup;
 
-   // The voyage id
-   public Text idText;
+   // The container for the map cell
+   public GameObject mapCellContainer;
 
-   // The area name
-   public Text areaText;
-
-   // The time since the instance was created
-   public Text timeText;
-
-   // The state of the pvp game
-   public Text gameState;
+   // The prefab we use for creating map cells
+   public VoyageMapCell mapCellPrefab;
 
    // The player count in team A
    public Text teamAPlayerCount;
@@ -31,30 +25,47 @@ public class PvpArenaInfoPanel : MonoBehaviour, IPointerClickHandler
    // The player count in team B
    public Text teamBPlayerCount;
 
-   // The join button
-   public Button joinButton;
+   // The join team A button
+   public Button joinTeamAButton;
+
+   // The join team A button
+   public Button joinTeamBButton;
 
    #endregion
 
    public void updatePanelWithPvpArena (Voyage pvpArena) {
       _pvpArena = pvpArena;
 
-      idText.text = pvpArena.voyageId.ToString();
-      areaText.text = pvpArena.areaName + " (" + pvpArena.areaKey + ")";
-      teamAPlayerCount.text = pvpArena.playerCountTeamA.ToString();
-      teamBPlayerCount.text = pvpArena.playerCountTeamB.ToString();
-      timeText.text = DateTime.UtcNow.Subtract(DateTime.FromBinary(pvpArena.creationDate)).ToString(@"mm\:ss");
-      gameState.text = PvpGame.getGameStateLabel(pvpArena.pvpGameState);
+      // Clear out any old info
+      mapCellContainer.DestroyChildren();
+
+      // Instantiate the cell
+      VoyageMapCell cell = Instantiate(mapCellPrefab, mapCellContainer.transform, false);
+      cell.setCellForVoyage(pvpArena);
+
+      teamAPlayerCount.text = pvpArena.playerCountTeamA.ToString() + " Players";
+      teamBPlayerCount.text = pvpArena.playerCountTeamB.ToString() + " Players";
 
       show();
 
-      // Disable the join button when the game cannot be joined
-      joinButton.interactable = pvpArena.pvpGameState != PvpGame.State.PostGame && pvpArena.playerCount < pvpArena.pvpGameMaxPlayerCount;
+      // Disable the join buttons when the game or team cannot be joined
+      if (pvpArena.pvpGameState == PvpGame.State.PostGame || pvpArena.playerCount >= pvpArena.pvpGameMaxPlayerCount) {
+         joinTeamAButton.interactable = false;
+         joinTeamBButton.interactable = false;
+      } else {
+         joinTeamAButton.interactable = pvpArena.playerCountTeamA <= pvpArena.playerCountTeamB && pvpArena.playerCountTeamA < Voyage.MAX_PLAYERS_PER_GROUP_PVP;
+         joinTeamBButton.interactable = pvpArena.playerCountTeamB <= pvpArena.playerCountTeamA && pvpArena.playerCountTeamB < Voyage.MAX_PLAYERS_PER_GROUP_PVP;
+      }
    }
 
-   public void onJoinButtonPressed () {
+   public void onJoinTeamAButtonPressed () {
       hide();
-      PvpArenaPanel.self.joinPvpArena(_pvpArena);
+      PvpArenaPanel.self.joinPvpArena(_pvpArena, PvpTeamType.A);
+   }
+
+   public void onJoinTeamBButtonPressed () {
+      hide();
+      PvpArenaPanel.self.joinPvpArena(_pvpArena, PvpTeamType.B);
    }
 
    public void show () {

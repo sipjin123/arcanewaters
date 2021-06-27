@@ -25,8 +25,7 @@ public class CargoBoxManager : MonoBehaviour
 
    #endregion
 
-   void Awake()
-   {
+   void Awake () {
       self = this;
 
       // We start out empty
@@ -37,6 +36,12 @@ public class CargoBoxManager : MonoBehaviour
       // Hide this panel in certain situations
       bool shouldHidePanel = TitleScreen.self.isShowing() || CharacterScreen.self.isShowing() || Global.isInBattle() || boxesCount < 1;
 
+      // Hide this panel, if the player is in a PvpMatch
+      if (Global.player != null) {
+         Instance instance = Global.player.getInstance();
+         shouldHidePanel = instance.isPvP;
+      }
+
       // Keep the panel hidden until we're in the game
       canvasGroup.alpha = shouldHidePanel ? 0 : 1f;
    }
@@ -44,7 +49,7 @@ public class CargoBoxManager : MonoBehaviour
    public void updateCargoBoxes (List<SiloInfo> siloInfo) {
       // Clear out the old
       this.gameObject.DestroyChildren();
-      
+
       boxesCount = 0;
 
       foreach (SiloInfo info in siloInfo) {

@@ -87,7 +87,11 @@ public class ClientMessageManager : MonoBehaviour {
             CharacterCreationPanel.self.onCharacterCreationFailed();
             return;
          case ErrorMessage.Type.InvalidUsername:
-            PanelManager.self.noticeScreen.show("That is not a valid username.");
+            if (string.IsNullOrWhiteSpace(msg.customMessage)) {
+               PanelManager.self.noticeScreen.show("That is not a valid username.");
+            } else {
+               PanelManager.self.noticeScreen.show(msg.customMessage);
+            }
             CharacterCreationPanel.self.onCharacterCreationFailed();
             return;
          case ErrorMessage.Type.NoCropsOfThatType:
@@ -98,6 +102,13 @@ public class ClientMessageManager : MonoBehaviour {
             return;
          case ErrorMessage.Type.PvpJoinError:
             PanelManager.self.noticeScreen.show(msg.customMessage);
+            return;
+         case ErrorMessage.Type.MailInvalidUserName:
+            if (string.IsNullOrWhiteSpace(msg.customMessage)) {
+               PanelManager.self.noticeScreen.show("That is not a valid username.");
+            } else {
+               PanelManager.self.noticeScreen.show(msg.customMessage);
+            }
             return;
          /*case ErrorMessage.Type.NoGoldForCargo:
          case ErrorMessage.Type.OutOfCargoSpace:

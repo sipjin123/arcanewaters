@@ -27,11 +27,101 @@ public class AdminManagerSingleton : GenericGameManager
    // Self
    public static AdminManagerSingleton self;
 
+   public int totalMessagesIn;
+   public int totalMessagesOut;
+
+   public float totalInSize;
+   public float totalOutObservers;
+   public float totalOutSize;
+
+   public float greatestNumberOfObserversOut;
+
+   public float largestSizeMessageIn;
+   public float largestSizeMessageOut;
+   public float largestSizeMessage;
+   public float averageMessagesPerTick;
+   public int beginningTick;
+   public int endingTick;
+   public int totalTicks;
+   public float beginningTime;
+   public float endingTime;
+   public int begginingFrame;
+   public int endingFrame;
+   public int previousBeginningTick;
+   public float previousBeginningTime;
+   public int previousBegginingFrame;
+
+   public float TESTDURATION = 5.0F;
+
    #endregion
+
+   IEnumerator CO_RecordEndingTestNumbers () {
+      // Store values at the beginging of duration
+      beginningTick = networkProfiler.ticks.Count;
+      beginningTime = networkProfiler.CurrentTick().time;
+      begginingFrame = networkProfiler.CurrentTick().frameCount;
+
+      yield return new WaitForSeconds(TESTDURATION);
+
+      // Store values at the end of duration
+      endingTick = networkProfiler.ticks.Count;
+      endingTime = networkProfiler.CurrentTick().time;
+      endingFrame = networkProfiler.CurrentTick().frameCount;
+
+      // Calculations
+      totalTicks = endingTick - beginningTick;
+      averageMessagesPerTick = totalMessagesIn + totalMessagesOut / (float) totalTicks;
+
+      // Print to log
+      string statHeader = $"************  Message stats for {TESTDURATION} second duration  ************";
+      D.adminLog(statHeader, D.ADMIN_LOG_TYPE.NetworkMessages);
+      D.adminLog("Total incoming messages = " + totalMessagesIn, D.ADMIN_LOG_TYPE.NetworkMessages);
+      D.adminLog("Total out going messages = " + totalMessagesOut, D.ADMIN_LOG_TYPE.NetworkMessages);
+      D.adminLog("Total number of ticks = " + totalTicks, D.ADMIN_LOG_TYPE.NetworkMessages);
+      if (totalTicks > 0) {
+         D.adminLog("Average messages per tick = " + (float)(((float)totalMessagesIn + totalMessagesOut) / totalTicks), D.ADMIN_LOG_TYPE.NetworkMessages);
+      }
+      if (totalMessagesOut > 0) {
+         D.adminLog("Average numbers of observers(clients) per message = " + totalOutObservers / totalMessagesOut, D.ADMIN_LOG_TYPE.NetworkMessages);
+      }
+      if (totalMessagesIn + totalMessagesOut > 0) {
+         D.adminLog("Average size of messages = " + ((totalInSize + totalOutSize) / (totalMessagesIn + totalMessagesOut)) + " bytes", D.ADMIN_LOG_TYPE.NetworkMessages);
+      }
+      D.adminLog("Largest message in bytes = " + (largestSizeMessage = largestSizeMessageIn > largestSizeMessageOut ? largestSizeMessageIn : largestSizeMessageOut), D.ADMIN_LOG_TYPE.NetworkMessages);
+
+      // Reset the values
+      totalMessagesIn = 0;
+      totalMessagesOut = 0;
+      totalInSize = 0;
+      totalOutObservers = 0;
+      totalOutSize = 0;
+      greatestNumberOfObserversOut = 0;
+      largestSizeMessageIn = 0;
+      largestSizeMessageOut = 0;
+      largestSizeMessage = 0;
+   }
 
    protected override void Awake () {
       base.Awake();
       self = this;
+
+      // Listen to message events
+      NetworkDiagnostics.InMessageEvent += NetworkDiagnostics_InMessageEvent;
+      NetworkDiagnostics.OutMessageEvent += NetworkDiagnostics_OutMessageEvent;
+   }
+
+   private void NetworkDiagnostics_InMessageEvent (NetworkDiagnostics.MessageInfo obj) {
+      totalMessagesIn += 1;
+      totalInSize += obj.bytes;
+      largestSizeMessageIn = obj.bytes > largestSizeMessageIn ? obj.bytes : largestSizeMessageIn;
+   }
+
+   private void NetworkDiagnostics_OutMessageEvent (NetworkDiagnostics.MessageInfo obj) {
+      totalMessagesOut += 1;
+      totalOutSize += obj.bytes;
+      largestSizeMessageOut = obj.bytes > largestSizeMessageOut ? obj.bytes : largestSizeMessageOut;
+      totalOutObservers += obj.count;
+      greatestNumberOfObserversOut = obj.count > greatestNumberOfObserversOut ? obj.count : greatestNumberOfObserversOut;
    }
 
    public void Start () {
@@ -39,8 +129,9 @@ public class AdminManagerSingleton : GenericGameManager
       networkProfiler.MaxTicks = int.MaxValue;
       networkProfiler.IsRecording = true;
 #endif
-
-      InvokeRepeating("summarizeData", 0.0f, 5.0f);
+      if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {
+         StartCoroutine(nameof(CO_RecordEndingTestNumbers));
+      }
 
       if (Util.isServerNonHost()) {
          return;
@@ -52,10 +143,6 @@ public class AdminManagerSingleton : GenericGameManager
       }
 
       StartCoroutine(CO_CreateItemNamesDictionary());
-   }
-
-   public void Update () {
-      tickTotal += 1;
    }
 
    private IEnumerator CO_CreateItemNamesDictionary () {

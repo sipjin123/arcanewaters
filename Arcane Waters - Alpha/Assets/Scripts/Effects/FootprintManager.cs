@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class FootprintManager : ClientMonoBehaviour {
+public class FootprintManager : ClientMonoBehaviour
+{
    #region Public Variables
 
    // The prefab we use for creating footprints
@@ -17,11 +18,18 @@ public class FootprintManager : ClientMonoBehaviour {
 
    void Start () {
       _player = GetComponent<BodyEntity>();
+
+      // Fmod init event
+      SoundEffect soundEffect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.FOOTSTEP);
+      if (soundEffect != null) {
+         _footstepEvent = FMODUnity.RuntimeManager.CreateInstance(soundEffect.fmodId);
+         _footstepEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(_player.transform));
+      }
    }
 
    private void Update () {
-      // If we're not moving, don't do anything
-      if (_player.getRigidbody().velocity.magnitude < MIN_VELOCITY) {
+      // If we're not moving or we're jumping, don't do anything
+      if (_player.getRigidbody().velocity.magnitude < MIN_VELOCITY || _player.getPlayerBodyEntity().isJumping()) {
          return;
       }
 
@@ -44,13 +52,38 @@ public class FootprintManager : ClientMonoBehaviour {
 
       // Toggle between left and right foot
       _isLeftFoot = !_isLeftFoot;
+
+      // Attach Fmod Event to player
+      FMODUnity.RuntimeManager.AttachInstanceToGameObject(_footstepEvent, _player.transform, _player.getRigidbody());
    }
 
    protected void footHitGround () {
       // Figure out what sound to play
       if (_player.isLocalPlayer) {
-         FootSound footSound = Instantiate(footSoundPrefab, this.transform.position, Quaternion.identity);
-         footSound.transform.SetParent(SoundManager.self.transform, true);
+         //FootSound footSound = Instantiate(footSoundPrefab, this.transform.position, Quaternion.identity);
+         //footSound.transform.SetParent(SoundManager.self.transform, true);
+
+         // New FMOD Sfx implementation, seems like we don't need FootSound.cs anymore
+         int audioParam = 0;
+
+         if (_player.waterChecker.inWater()) {
+            audioParam = 4;
+         } else if (_player.groundChecker.isOnWood) {
+            audioParam = 3;
+         } else if (_player.groundChecker.isOnStone) {
+            audioParam = 1;
+         } else if (_player.groundChecker.isOnGrass) {
+            audioParam = 0;
+         } else if (_player.groundChecker.isOnBridge) {
+            audioParam = 2;
+         }
+
+         if (!_lastSoundTime.ContainsKey(audioParam) || Time.time - _lastSoundTime[audioParam] > .25f) {
+            _footstepEvent.setParameterByName(SoundEffectManager.AUDIO_SWITCH_PARAM, audioParam);
+            _footstepEvent.start();
+
+            _lastSoundTime[audioParam] = Time.time;
+         }
       }
 
       // If the player wasn't recently in water, don't do anything else
@@ -103,6 +136,12 @@ public class FootprintManager : ClientMonoBehaviour {
 
    // Whether we should create the left foot or right foot
    protected bool _isLeftFoot = false;
+
+   // FMOD Event
+   protected FMOD.Studio.EventInstance _footstepEvent;
+
+   // Keeps track of when we last played sounds, key of audio switch param
+   protected static Dictionary<int, float> _lastSoundTime = new Dictionary<int, float>();
 
    #endregion
 }

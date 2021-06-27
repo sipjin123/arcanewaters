@@ -1982,7 +1982,7 @@ public class RPCManager : NetworkBehaviour
                      if (questDataNode.questDialogueNodes.Length > dialogueId) {
                         // When the user selects a quest, we show again the dialogues up to the previously completed reward or quest node
                         for (dialogueId--; dialogueId >= 0; dialogueId--) {
-                           if (questDataNode.questDialogueNodes[dialogueId].hasItemRequirements() 
+                           if (questDataNode.questDialogueNodes[dialogueId].hasItemRequirements()
                               || questDataNode.questDialogueNodes[dialogueId].hasItemRewards()
                               || questDataNode.questDialogueNodes[dialogueId].friendshipRewardPts > 0) {
                               // This node has already been rewarded/completed, so we continue from the next
@@ -2800,7 +2800,17 @@ public class RPCManager : NetworkBehaviour
          // Try to retrieve the recipient info
          UserInfo recipientUserInfo = DB_Main.getUserInfo(recipientName);
          if (recipientUserInfo == null) {
-            sendError("The player " + recipientName + " does not exist!");
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendError(ErrorMessage.Type.InvalidUsername, _player, "The player '" + recipientName + "' does not exist!");
+            });
+            return;
+         }
+
+         // Check if the recipient and the sender are the same person
+         if (recipientUserInfo.userId == _player.userId && !MailManager.ALLOW_SELF_MAILING) {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendError(ErrorMessage.Type.MailInvalidUserName, _player, "You can't send a mail to yourself!");
+            });
             return;
          }
 
@@ -4462,6 +4472,11 @@ public class RPCManager : NetworkBehaviour
       // If the player is in a voyage area or is in ghost mode, warp him to the closest town
       if (VoyageManager.isAnyLeagueArea(playerToRemove.areaKey) || VoyageManager.isPvpArenaArea(playerToRemove.areaKey) || VoyageManager.isTreasureSiteArea(playerToRemove.areaKey) || playerToRemove.isGhost) {
          playerToRemove.spawnInBiomeHomeTown();
+      }
+
+      // Unregister player from the silver system
+      if (VoyageManager.isPvpArenaArea(playerToRemove.areaKey)) {
+         SilverManager.self.removePlayer(playerToRemove.userId);
       }
    }
 

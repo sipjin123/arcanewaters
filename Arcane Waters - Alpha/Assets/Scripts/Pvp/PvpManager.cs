@@ -67,12 +67,12 @@ public class PvpManager : MonoBehaviour {
 
       // If there are active games, join the one with the highest number of players, that isn't in session
       } else {
-         ServerNetworkingManager.self.joinPvpGame(bestGameInstance.voyageId, player.userId, player.entityName);
+         ServerNetworkingManager.self.joinPvpGame(bestGameInstance.voyageId, player.userId, player.entityName, PvpTeamType.None);
       }
    }
 
    [Server]
-   public void joinPvpGame (int voyageId, int userId, string userName) {
+   public void joinPvpGame (int voyageId, int userId, string userName, PvpTeamType team) {
       Voyage voyage;
       if (!VoyageManager.self.tryGetVoyage(voyageId, out voyage)) {
          ServerNetworkingManager.self.displayNoticeScreenWithError(userId, ErrorMessage.Type.PvpJoinError, "Could not join the PvP Game. The game does not exist.");
@@ -85,7 +85,7 @@ public class PvpManager : MonoBehaviour {
          return;
       }
 
-      addPlayerToGame(voyage.instanceId, userId, userName);
+      addPlayerToGame(voyage.instanceId, userId, userName, team);
    }
 
    [Server]
@@ -145,7 +145,7 @@ public class PvpManager : MonoBehaviour {
 
       // Make the player join the game
       if (player != null) {
-         ServerNetworkingManager.self.joinPvpGame(voyage.voyageId, player.userId, player.entityName);
+         ServerNetworkingManager.self.joinPvpGame(voyage.voyageId, player.userId, player.entityName, PvpTeamType.None);
       }
    }
 
@@ -171,7 +171,7 @@ public class PvpManager : MonoBehaviour {
       return bestGameInstance;
    }
 
-   private void addPlayerToGame (int instanceId, int userId, string userName) {      
+   private void addPlayerToGame (int instanceId, int userId, string userName, PvpTeamType team) {      
       PvpGame game;
       if (!_activeGames.TryGetValue(instanceId, out game)) {
          D.error("Failed to add player: " + userName + " to game, game didn't exist in dictionary");
@@ -179,7 +179,7 @@ public class PvpManager : MonoBehaviour {
          return;
       }
 
-      game.addPlayerToGame(userId, userName);
+      game.addPlayerToGame(userId, userName, team);
    }
 
    public PvpGame getGameWithPlayer (int playerUserId) {
@@ -225,6 +225,40 @@ public class PvpManager : MonoBehaviour {
       if (_activeGames.ContainsKey(instanceId)) {
          PvpTeamType playerTeam = _activeGames[instanceId].getTeamForPlayer(entity.userId);
          entity.pvpTeam = playerTeam;
+      }
+   }
+
+   public void onPvpEntityDestroyed (NetEntity entity, NetEntity lastAttackerEntity) {
+      Instance instance = lastAttackerEntity.getInstance();
+      if (instance.isPvP) {
+         if (lastAttackerEntity == Global.player && lastAttackerEntity != null && lastAttackerEntity.isPlayerShip()) {
+            if (entity.TryGetComponent(out PvpTower tower) || entity.isPlayerShip() || entity.isBotShip() || entity.isSeaMonster()) {
+
+               // Increase the silver rank of the attacker
+               SilverManager.SilverInfo lastAttackerSilverInfo = SilverManager.self.getSilverInfo(lastAttackerEntity.userId);
+
+               SilverManager.self.setSilverRank(lastAttackerEntity.userId, lastAttackerSilverInfo.rank + 1);
+
+               // Add silver to the attacker
+               int silverGained = SilverManager.SILVER_KILL_REWARD * lastAttackerSilverInfo.rank;
+
+               // Take into account the silver rank of the destroyed entity
+               if (entity.isPlayerShip()) {
+                  SilverManager.SilverInfo entitySilverInfo = SilverManager.self.getSilverInfo(entity.userId);
+                  if (entitySilverInfo != null) {
+                     silverGained += Mathf.Max(entitySilverInfo.rank - 1, 0) * SilverManager.SILVER_KILL_REWARD;
+                  }
+               }
+               SilverManager.self.setSilverAmount(lastAttackerEntity.userId, lastAttackerSilverInfo.amount + silverGained);
+            }
+
+            SilverManager.SilverInfo silverInfo = SilverManager.self.getSilverInfo();
+            Global.player.rpc.Target_GetSilverInfo(silverInfo.amount, silverInfo.rank);
+         }
+         if (entity == Global.player && entity != null && entity.isPlayerShip()) {
+            // Reset the silver rank of the destroyed player
+            SilverManager.self.setSilverRank(entity.userId, 1);
+         }
       }
    }
 

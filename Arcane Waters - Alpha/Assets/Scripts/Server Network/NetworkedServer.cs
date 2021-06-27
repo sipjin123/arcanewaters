@@ -57,7 +57,7 @@ public class NetworkedServer : NetworkedBehaviour
 
          // Regularly update data shared between servers
          InvokeRepeating(nameof(updateConnectedAccountsAndPlayers), 5f, 1f);
-         InvokeRepeating(nameof(updateVoyageInstances), 5.5f, 2f);
+         InvokeRepeating(nameof(updateVoyageInstances), 5.5f, 1f);
       }
 
       // Register this server
@@ -476,16 +476,16 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ServerRPC]
-   public void MasterServer_JoinPvpGame (int voyageId, int userId, string userName) {
+   public void MasterServer_JoinPvpGame (int voyageId, int userId, string userName, PvpTeamType team) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServerHostingVoyage(voyageId);
       if (targetServer != null) {
-         targetServer.InvokeClientRpcOnOwner(Server_JoinPvpGame, voyageId, userId, userName);
+         targetServer.InvokeClientRpcOnOwner(Server_JoinPvpGame, voyageId, userId, userName, team);
       }
    }
 
    [ClientRPC]
-   public void Server_JoinPvpGame (int voyageId, int userId, string userName) {
-      PvpManager.self.joinPvpGame(voyageId, userId, userName);
+   public void Server_JoinPvpGame (int voyageId, int userId, string userName, PvpTeamType team) {
+      PvpManager.self.joinPvpGame(voyageId, userId, userName, team);
    }
 
    [ServerRPC]

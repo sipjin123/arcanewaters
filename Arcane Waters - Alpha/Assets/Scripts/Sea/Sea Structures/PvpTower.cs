@@ -39,6 +39,15 @@ public class PvpTower : SeaStructure {
    // A child object that will pass on onTriggerEnter2D events, to avoid collision issues with having a trigger attached to the main seaentity object.
    public TriggerDetector attackTriggerDetector;
 
+   // A reference to the transform used to for the aiming reticle
+   public Transform aimTransform;
+
+   // A reference to the dotted parabola showing where this ship is aiming
+   public DottedParabola targetingParabola;
+
+   // References to the sprites used for targeting
+   public Sprite aimingReticle, lockedReticle;
+
    #endregion
 
    protected override void Awake () {
@@ -51,6 +60,13 @@ public class PvpTower : SeaStructure {
       attackRangeRenderer.material.SetFloat("_Radius", ATTACK_RANGE);
       attackRangeRenderer.material.SetFloat("_FillAmount", 1.0f);
       attackRangeRenderer.material.SetColor("_Color", new Color(0.0f, 0.0f, 0.0f, 0.0f));
+   }
+
+   protected override void Start () {
+      base.Start();
+
+      _reticleRenderer = aimTransform.GetComponent<SpriteRenderer>();
+      aimTransform.SetParent(transform.parent);
    }
 
    protected override void onActivated () {
@@ -87,16 +103,17 @@ public class PvpTower : SeaStructure {
          if (target) {
             Rpc_NotifyChargeUp(target.netId);
             _aimTarget = target;
+            aimTransform.position = target.transform.position;
          }
 
          // Wait for the charge-up animation to play
-         float chargeTimer = 0.5f;
+         float chargeTimer = ATTACK_CHARGE_TIME;
          while (chargeTimer > 0.0f) {
             if (!_aimTarget || _aimTarget.isDead() || isDead()) {
                break;
             }
 
-            float indicatorAngle = 360.0f - Util.angle(_aimTarget.transform.position - transform.position);
+            float indicatorAngle = 360.0f - Util.angle(aimTransform.position - transform.position);
             targetingIndicatorParent.transform.rotation = Quaternion.Euler(0.0f, 0.0f, indicatorAngle);
             chargeTimer -= Time.deltaTime;
             yield return null;
@@ -111,7 +128,7 @@ public class PvpTower : SeaStructure {
          // Fire a shot at our target, if we charge up fully
          if (chargeTimer <= 0.0f) {
             if (target) {
-               fireCannonAtTarget(target);
+               fireCannonAtTarget(aimTransform.position);
                Rpc_NotifyCannonFired();
 
                waitTimeToUse = reloadDelay;
@@ -130,6 +147,8 @@ public class PvpTower : SeaStructure {
       }
 
       _aimTarget = target;
+      _attackChargeStartTime = (float) NetworkTime.time;
+      aimTransform.position = _aimTarget.transform.position;
 
       // Show the charging animation
       showTargetingEffects();
@@ -143,20 +162,28 @@ public class PvpTower : SeaStructure {
    }
 
    private void showTargetingEffects () {
+      targetingParabola.gameObject.SetActive(true);
       targetingIndicatorAnimator.gameObject.SetActive(true);
       targetingIndicatorRenderer.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
       targetingIndicatorRenderer.DOFade(1.0f, 0.1f);
       targetingIndicatorAnimator.SetTrigger("ChargeAndFire");
       _isShowingTargetingIndicator = true;
+
+      aimTransform.gameObject.SetActive(true);
+      aimTransform.localScale = Vector3.one * 1.25f;
+      aimTransform.DOScale(1.0f, 0.25f);
+      _reticleRenderer.enabled = true;
+      _reticleRenderer.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+      _reticleRenderer.DOFade(1.0f, 0.25f);
    }
 
    private void hideTargetingEffects () {
+      targetingParabola.gameObject.SetActive(false);
       DOTween.Kill(targetingIndicatorAnimator);
       DOTween.Kill(targetingIndicatorRenderer);
       targetingIndicatorAnimator.transform.DOPunchScale(Vector3.up * 0.15f, 0.25f, 1);
       targetingIndicatorRenderer.DOFade(0.0f, 0.25f).OnComplete(() => targetingIndicatorAnimator.gameObject.SetActive(false));
       _isShowingTargetingIndicator = false;
-      // _aimTarget = null;
    }
 
    public override void onDeath () {
@@ -172,9 +199,71 @@ public class PvpTower : SeaStructure {
 
       // If we are showing targeting effects, update the rotation of our effects to point at our target
       if (_isShowingTargetingIndicator) {
-         float indicatorAngle = 360.0f - Util.angle(_aimTarget.transform.position - transform.position);
+         float indicatorAngle = 360.0f - Util.angle(aimTransform.position - transform.position);
          targetingIndicatorParent.transform.rotation = Quaternion.Euler(0.0f, 0.0f, indicatorAngle);
+
+         // Update the targeting parabola
+         Vector2 targetPosition = aimTransform.position;
+         Vector2 barrelSocketPosition = targetingBarrelSocket.position;
+         float targetDistance = (targetPosition - barrelSocketPosition).magnitude;
+         float distanceModifier = Mathf.Clamp(targetDistance / ATTACK_RANGE, 0.1f, 1.0f);
+         float parabolaHeight = 0.25f * distanceModifier;
+         targetingParabola.parabolaHeight = parabolaHeight;
+
+         float timeSpentCharging = Mathf.Clamp01(((float) NetworkTime.time - _attackChargeStartTime) / ATTACK_CHARGE_TIME);
+         Color parabolaColor = ColorCurveReferences.self.botShipTargetingParabolaColor.Evaluate(timeSpentCharging);
+         targetingParabola.setParabolaColor(parabolaColor);
+         targetingParabola.parabolaStart.position = targetingBarrelSocket.position;
+         targetingParabola.parabolaEnd.position = aimTransform.position;
+         targetingParabola.updateParabola();
+
+         // If we haven't locked on yet, update the aim transform
+         if ((timeSpentCharging / ATTACK_CHARGE_TIME) < AIM_TARGET_LOCK_TIME_NORMALISED) {
+            // Find a point slightly ahead of the player's movement
+            Vector2 projectedPosition = _aimTarget.getProjectedPosition(1.0f * distanceModifier);
+            Vector2 toProjectedPosition = projectedPosition - (Vector2) _aimTarget.transform.position;
+            float maxReticleDistanceFromTarget = 1.0f;
+
+            // Clamp it so it doesn't extend too far when the player dashes
+            if (toProjectedPosition.sqrMagnitude > maxReticleDistanceFromTarget * maxReticleDistanceFromTarget) {
+               toProjectedPosition = toProjectedPosition.normalized * maxReticleDistanceFromTarget;
+            }
+
+            // Smoothly move the reticle to this position
+            Vector2 reticleTargetPosition = (Vector2) _aimTarget.transform.position + toProjectedPosition;
+
+            // If the reticle target position has moved out of range, clamp it in-range
+            Vector2 toReticleTargetPosition = reticleTargetPosition - (Vector2)transform.position;
+            if (toReticleTargetPosition.sqrMagnitude > ATTACK_RANGE * ATTACK_RANGE) {
+               reticleTargetPosition = (Vector2)transform.position + toReticleTargetPosition.normalized * ATTACK_RANGE;
+            }
+
+            aimTransform.position = Vector2.Lerp(aimTransform.position, reticleTargetPosition, Time.deltaTime * AIM_TARGET_SPEED);
+         }
+
+         // If we've charged up enough to show the target lock effect, and haven't played it yet, play it
+         if ((timeSpentCharging / ATTACK_CHARGE_TIME) >= AIM_TARGET_LOCK_TIME_NORMALISED && !hasPlayedTargetLockEffect()) {
+            playTargetLockEffect();
+         }
       }
+   }
+
+   private void playTargetLockEffect () {
+      _reticleRenderer.sprite = lockedReticle;
+
+      Sequence sequence = DOTween.Sequence();
+      sequence.Append(aimTransform.DOBlendableLocalRotateBy(Vector3.forward * -45.0f, 0.25f).SetEase(Ease.InOutQuint));
+      sequence.AppendInterval(0.25f);
+      sequence.Append(_reticleRenderer.DOFade(0.0f, 0.25f).OnComplete(() => {
+         aimTransform.gameObject.SetActive(false);
+         aimTransform.rotation = Quaternion.identity;
+         _reticleRenderer.sprite = aimingReticle;
+         _reticleRenderer.color = Color.white;
+      }));
+   }
+
+   private bool hasPlayedTargetLockEffect () {
+      return _reticleRenderer.sprite == lockedReticle;
    }
 
    protected override NetEntity getAttackerInRange () {
@@ -224,8 +313,7 @@ public class PvpTower : SeaStructure {
    }
 
    [Server]
-   private void fireCannonAtTarget (NetEntity target) {
-      Vector2 targetPosition = target.transform.position;
+   private void fireCannonAtTarget (Vector2 targetPosition) {
       Vector2 spawnPosition = targetingBarrelSocket.position;
       Vector2 toTarget = targetPosition - spawnPosition;
       float targetDistance = toTarget.magnitude;
@@ -321,7 +409,8 @@ public class PvpTower : SeaStructure {
 
          // If the player is within warning range, show warning color if no one is being targeted, otherwise show safe color
          } else if (isInWarningRange) {
-            targetColor = (_aimTarget == null) ? warningColor : safeColor;
+            bool playerWillBeAttacked = (_aimTarget == null || _aimTarget.userId == getGlobalPlayerShip().userId);
+            targetColor = (playerWillBeAttacked) ? warningColor : safeColor;
          }
 
          targetColor.a = _attackRangeCircleAlpha;
@@ -352,9 +441,6 @@ public class PvpTower : SeaStructure {
    // The entity we are aiming at, and intending to fire at
    private NetEntity _aimTarget = null;
 
-   // When set to true, we will show the attack range circle
-   private bool _showAttackRangeCircle = false;
-
    // The transparency value for our attack range circle
    private float _attackRangeCircleAlpha = 0.0f;
 
@@ -363,6 +449,21 @@ public class PvpTower : SeaStructure {
 
    // Whether we are currently showing targeting effects
    private bool _isShowingTargetingIndicator = false;
+
+   // When we last started charging our attack
+   private float _attackChargeStartTime = -1.0f;
+
+   // The ship's aim target will stop tracking the target after being this far through the charge up
+   private const float AIM_TARGET_LOCK_TIME_NORMALISED = 0.9f;
+
+   // The speed at which the aiming reticle will track the player
+   private const float AIM_TARGET_SPEED = 2.0f;
+
+   // A reference to the renderer for our targeting reticle
+   private SpriteRenderer _reticleRenderer;
+
+   // How long the attack takes to charge up
+   private const float ATTACK_CHARGE_TIME = 0.75f;
 
    #endregion
 }

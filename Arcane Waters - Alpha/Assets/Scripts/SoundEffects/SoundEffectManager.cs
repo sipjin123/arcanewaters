@@ -70,6 +70,7 @@ public class SoundEffectManager : GenericGameManager
 
    public const int SHIP_CANNON = 85;
    public const int FISH_JUMP = 86;
+   public const int FOOTSTEP = 88;
    public const int THROW_SEEDS = 89;
 
    public const int CALMING_WATERFALL = 90;

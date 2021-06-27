@@ -21,6 +21,7 @@ public class CommandCodes : MonoBehaviour {
       SERVER_DISABLE_DATA_HANDLER = 11, // Disables SharedServerDataHandler
       SERVER_DB_DEBUG = 12, // Enables server DB debug 
       AUTO_WARP = 13,             // Regularly request a random warp
+      IS_STRESS_TEST = 14 // Is current launch is stresstesting
    }
 
    #endregion

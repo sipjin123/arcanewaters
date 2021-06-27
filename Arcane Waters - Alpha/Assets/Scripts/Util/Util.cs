@@ -858,6 +858,9 @@ public class Util : MonoBehaviour
       return CommandCodes.get(CommandCodes.Type.AUTO_WARP);
    }
 
+   public static bool isStressTesting () {
+      return CommandCodes.get(CommandCodes.Type.IS_STRESS_TEST);
+   }
    public static void readFastLoginFile () {
       // If the file doesn't exist or there is an error, fast login is disabled
       Global.isFastLogin = false;

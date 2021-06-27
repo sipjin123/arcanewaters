@@ -111,15 +111,8 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
       while (numAttempts > 0) {
          tryPlaceJumpDownTrigger();
 
-         int colCount = Physics2D.OverlapCircle(
-            jumpDownTrigger.transform.position,
-            PLAYER_COLLIDER_RADIUS,
-            new ContactFilter2D { useTriggers = false },
-            _colliderBuffer
-         );
-
          // Successfully placed
-         if (colCount == 0) {
+         if (!checkForColliders(jumpDownTrigger.transform.position, PLAYER_COLLIDER_RADIUS)) {
             break;
          }
 
@@ -144,14 +137,7 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
       for (int i = 0; i < maxChecks; i++) {
          Vector3 checkLocation = transform.position + (Vector3.up * (i * distancePerCheck + minimumDistance));
 
-         int colCount = Physics2D.OverlapCircle(
-            checkLocation,
-            PLAYER_COLLIDER_RADIUS,
-            new ContactFilter2D { useTriggers = false },
-            _colliderBuffer
-         );
-
-         if (colCount > 0) {
+         if (checkForColliders(checkLocation, PLAYER_COLLIDER_RADIUS)) {
             continue;
          } else {
             placeLocation = checkLocation;
@@ -274,13 +260,8 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
       
       // Only check for colliders if  we're not bouncing to another web
       if (!bouncingToWebAbove && !bouncingToWebBelow) {
-         // Check that there's no colliders at the arriving position
-         int colCount = Physics2D.OverlapCircle(
-            calculateEndPos(player.transform.position),
-            player.getMainCollider().radius,
-            new ContactFilter2D { useTriggers = false },
-            _colliderBuffer);
-         if (colCount > 0) {
+         // Check that there are no colliders at the arriving position
+         if (checkForColliders(calculateEndPos(player.transform.position), player.getMainCollider().radius)) {
             return;
          }
       }
@@ -350,6 +331,21 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
 
    public float getBounceDuration () {
       return movementCurve.keys.Last().time;
+   }
+
+   private bool checkForColliders (Vector2 checkPosition, float checkRadius) {
+      // Find any colliders at the location
+      int colCount = Physics2D.OverlapCircle(checkPosition, checkRadius, new ContactFilter2D { useTriggers = false }, _colliderBuffer);
+      
+      // Ignore enemies
+      foreach (Collider2D collider in _colliderBuffer) {
+         if (collider.GetComponent<Enemy>()) {
+            colCount--;
+         }
+      }
+
+      // Return true if we found any colliders
+      return colCount > 0;
    }
 
    #region Private Variables

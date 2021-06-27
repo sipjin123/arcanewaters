@@ -21,7 +21,7 @@ public class RestartManager : GenericGameManager
 
       self = this;
 
-      if (!Application.isEditor) {
+      if (!Application.isEditor && !Util.isStressTesting()) {
          // Continually check if a Restart has been scheduled in the database
          InvokeRepeating("checkPendingServerRestarts", 0.0f, 60.0f);
       }

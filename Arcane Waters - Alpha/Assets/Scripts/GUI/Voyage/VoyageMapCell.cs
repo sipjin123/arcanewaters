@@ -24,12 +24,6 @@ public class VoyageMapCell : MonoBehaviour {
    // The stats plaque image
    public Image statsPlaqueImage;
 
-   // The PvP-PvE mode image
-   public Image pvpPveModeImage;
-
-   // The PvP-PvE text
-   public Text pvpPveText;
-   
    // The player count text
    public Text playerCountText;
 
@@ -39,26 +33,20 @@ public class VoyageMapCell : MonoBehaviour {
    // The time since the league started
    public Text timeLeagueText;
 
-   // The treasure site count text
-   public Text treasureSiteCountText;
-
    // The number of alive enemies
    public Text aliveEnemyCountText;
 
    // The index of the current league
    public Text leagueIndexText;
 
-   // The PvP-PvE text outline
-   public Outline pvpPveOutline;
+   // The voyage id
+   public Text voyageIdText;
 
-   // The player count text outline
-   public Outline playerCountOutline;
+   // The pvp game state
+   public Text pvpGameStateText;
 
-   // The time text outline
-   public Outline timeOutline;
-
-   // The treasure site count outline
-   public Outline treasureSiteCountOutline;
+   // The text outlines
+   public Outline[] outlines;
 
    // The colors for the outlines
    public Color bronzeOutlineColor;
@@ -69,14 +57,19 @@ public class VoyageMapCell : MonoBehaviour {
    public Sprite pvpIcon;
    public Sprite pveIcon;
 
-   // The statuses rows displayed in voyage and league instances
-   public GameObject[] voyageStatusRows = new GameObject[0];
+   // The statuses rows displayed in pvp arenas and league instances
+   public GameObject[] pvpArenaStatusRows = new GameObject[0];
    public GameObject[] leagueStatusRows = new GameObject[0];
 
    // The click event
    public UnityEvent buttonClickEvent;
 
    #endregion
+
+   public void setCellForVoyage (Voyage voyage) {
+      setCellForVoyage(voyage, null);
+      disablePointerEvents();
+   }
 
    public void setCellForVoyage (Voyage voyage, UnityAction action) {
       _voyage = voyage;
@@ -92,7 +85,7 @@ public class VoyageMapCell : MonoBehaviour {
 
       // Show different relevant statuses for voyage and league instances
       if (voyage.isLeague) {
-         foreach (GameObject gO in voyageStatusRows) {
+         foreach (GameObject gO in pvpArenaStatusRows) {
             if (gO.activeSelf) {
                gO.SetActive(false);
             }
@@ -110,27 +103,19 @@ public class VoyageMapCell : MonoBehaviour {
             }
          }
 
-         foreach (GameObject gO in voyageStatusRows) {
+         foreach (GameObject gO in pvpArenaStatusRows) {
             if (!gO.activeSelf) {
                gO.SetActive(true);
             }
          }
       }
 
-      // Set the PvP-PvE label
-      pvpPveText.text = voyage.isPvP ? "PvP" : "PvE";
-      pvpPveModeImage.sprite = voyage.isPvP ? pvpIcon : pveIcon;
-
       // Set the player count
-      playerCountText.text = (voyage.groupCount * Voyage.getMaxGroupSize(voyage.difficulty)) + "/" +
-         Voyage.getMaxGroupsPerInstance(voyage.difficulty) * Voyage.getMaxGroupSize(voyage.difficulty);
-
-      // Set the treasure site count
-      if (voyage.treasureSiteCount == 0) {
-         // If the number of sites is 0, the area has not yet been instantiated on the server
-         treasureSiteCountText.text = "?/?";
+      if (voyage.isPvP) {
+         playerCountText.text = voyage.playerCount + "/" + voyage.pvpGameMaxPlayerCount;
       } else {
-         treasureSiteCountText.text = (voyage.treasureSiteCount - voyage.capturedTreasureSiteCount).ToString() + "/" + voyage.treasureSiteCount;
+         playerCountText.text = (voyage.groupCount * Voyage.getMaxGroupSize(voyage.difficulty)) + "/" +
+            Voyage.getMaxGroupsPerInstance(voyage.difficulty) * Voyage.getMaxGroupSize(voyage.difficulty);
       }
 
       // Set the time since the voyage started
@@ -143,31 +128,31 @@ public class VoyageMapCell : MonoBehaviour {
       // Set the league index
       leagueIndexText.text = Voyage.getLeagueAreaName(voyage.leagueIndex);
 
+      // Set the pvp game attributes
+      voyageIdText.text = voyage.voyageId.ToString();
+      pvpGameStateText.text = PvpGame.getGameStateLabel(voyage.pvpGameState);
+
       // Set the plaque labels outline color
       switch (Voyage.getDifficultyEnum(voyage.difficulty)) {
          case Voyage.Difficulty.Easy:
-            playerCountOutline.effectColor = bronzeOutlineColor;
-            pvpPveOutline.effectColor = bronzeOutlineColor;
-            treasureSiteCountOutline.effectColor = bronzeOutlineColor;
-            timeOutline.effectColor = bronzeOutlineColor;
+            foreach (Outline outline in outlines) {
+               outline.effectColor = bronzeOutlineColor;
+            }
             break;
          case Voyage.Difficulty.Medium:
-            playerCountOutline.effectColor = silverOutlineColor;
-            pvpPveOutline.effectColor = silverOutlineColor;
-            treasureSiteCountOutline.effectColor = silverOutlineColor;
-            timeOutline.effectColor = silverOutlineColor;
+            foreach (Outline outline in outlines) {
+               outline.effectColor = silverOutlineColor;
+            }
             break;
          case Voyage.Difficulty.Hard:
-            playerCountOutline.effectColor = goldOutlineColor;
-            pvpPveOutline.effectColor = goldOutlineColor;
-            treasureSiteCountOutline.effectColor = goldOutlineColor;
-            timeOutline.effectColor = goldOutlineColor;
+            foreach (Outline outline in outlines) {
+               outline.effectColor = goldOutlineColor;
+            }
             break;
          default:
-            playerCountOutline.effectColor = Color.white;
-            pvpPveOutline.effectColor = Color.white;
-            treasureSiteCountOutline.effectColor = Color.white;
-            timeOutline.effectColor = Color.white;
+            foreach (Outline outline in outlines) {
+               outline.effectColor = Color.white;
+            }
             break;
       }
 

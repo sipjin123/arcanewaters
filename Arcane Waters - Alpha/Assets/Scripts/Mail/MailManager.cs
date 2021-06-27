@@ -20,6 +20,9 @@ public class MailManager : GenericGameManager {
    // The amount of days after which a mail can be deleted. Non-positive values make mails eternal
    public static int MAX_MAIL_LIFETIME_DAYS = 30;
 
+   // Allow users to send mails to themselves?
+   public static bool ALLOW_SELF_MAILING = false;
+
    // Self
    public static MailManager self;
 
@@ -61,7 +64,6 @@ public class MailManager : GenericGameManager {
    public static int getMailSendingCost () {
       return Math.Max(0, MAIL_SENDING_COST);
    }
-
 
    #region Private Variables
 

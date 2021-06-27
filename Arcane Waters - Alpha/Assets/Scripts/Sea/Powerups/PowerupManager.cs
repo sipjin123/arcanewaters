@@ -36,7 +36,7 @@ public class PowerupManager : MonoBehaviour {
 
       return getTotalBoostFactor(_localPlayerPowerups[type]);
    }
-
+   
    public float getPowerupMultiplierAdditive (Powerup.Type type) {
       return getPowerupMultiplier(type) - 1.0f;
    }
@@ -228,6 +228,9 @@ public class PowerupManager : MonoBehaviour {
    public void clearPowerupsForUser (int userId) {
       if (_serverPlayerPowerups.ContainsKey(userId)) {
          _serverPlayerPowerups.Remove(userId);
+      } else if (EntityManager.self.getEntity(userId) == null) {
+         // If the user is not connected to this server, try to find him in another
+         ServerNetworkingManager.self.clearPowerupsForUser(userId);
       }
    }
 

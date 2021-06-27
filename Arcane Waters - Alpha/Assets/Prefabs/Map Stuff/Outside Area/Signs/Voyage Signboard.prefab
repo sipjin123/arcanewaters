@@ -173,25 +173,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 1
-  blurSize: 0
-  color: {r: 1, g: 1, b: 1, a: 1}
-  blurAlphaMultiplier: 0.7
-  blurAlphaChoke: 1
-  invertBlur: 0
-  alphaThreshold: 0.05
-  buffer: 0
-  includeChildren: 0
-  childLayers:
-    serializedVersion: 2
-    m_Bits: 1
-  ignoreChildNames: []
-  sortMethod: 1
-  isAnimated: 0
-  useExportedFrame: 0
-  customFrameName: 
-  generatesOnStart: 1
-  generatesOnValidate: 1
+  outlineRenderer: {fileID: 0}
+  _renderers: []
 --- !u!114 &5999891951874673609
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,7 +187,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8382872b9a7d5f45887d8788d3265fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toolTipMessage: Voyages
+  toolTipMessage: Pvp Arenas
   toolTipPanel: {fileID: 3653827092330869024}
   toolTipRect: {fileID: 9179104630578400267}
   toolTipText: {fileID: 4544298159129342917}
@@ -363,7 +346,7 @@ PrefabInstance:
     - target: {fileID: 2909062362196865777, guid: 855227c06fce79540bc93dde802e88aa,
         type: 3}
       propertyPath: m_text
-      value: Voyages
+      value: Pvp Arenas
       objectReference: {fileID: 0}
     - target: {fileID: 2909062362196865777, guid: 855227c06fce79540bc93dde802e88aa,
         type: 3}

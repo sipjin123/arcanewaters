@@ -74,17 +74,44 @@ public class PvpGame : MonoBehaviour {
          return;
       }
 
+      // If no team is given, select the best
+      if (teamType == PvpTeamType.None) {
+         teamType = getBestTeamWithSpace();
+
+         if (teamType == PvpTeamType.None) {
+            D.error("Couldn't find a team for player: " + userName);
+            ServerNetworkingManager.self.displayNoticeScreenWithError(userId, ErrorMessage.Type.PvpJoinError, "Could not join the PvP Game. No teams were found.");
+            return;
+         }
+      }
+
+      // Check that the chosen team can be joined
+      PvpTeam assignedTeam;
+      if (_teams.TryGetValue(teamType, out assignedTeam)) {
+         foreach (PvpTeam team in _teams.Values) {
+            if (team.Count < assignedTeam.Count) {
+               D.error("The chosen team has more players than the others and cannot be joined by player: " + userName);
+               ServerNetworkingManager.self.displayNoticeScreenWithError(userId, ErrorMessage.Type.PvpJoinError, "Could not join the PvP Game. Please pick a team with less players!");
+               return;
+            }
+         }
+      } else {
+         ServerNetworkingManager.self.displayNoticeScreenWithError(userId, ErrorMessage.Type.PvpJoinError, $"Could not join the PvP Game. The team {teamType} does not exist.");
+         return;
+      }
+
       // If the player is in a voyage group, remove them from it
       if (VoyageGroupManager.self.tryGetGroupByUser(userId, out VoyageGroupInfo groupInfo)) {
          VoyageGroupManager.self.removeUserFromGroup(groupInfo, userId);
       }
 
       _usersInGame.Add(userId);
+      assignedTeam.Add(userId);
 
       if (_gameState == State.PreGame) {
          addPlayerToPreGame(userId, userName);
       } else if (_gameState == State.InGame) {
-         StartCoroutine(CO_AddPlayerToOngoingGame(userId, userName));
+         StartCoroutine(CO_AddPlayerToOngoingGame(userId, userName, assignedTeam));
       }
    }
 
@@ -102,23 +129,11 @@ public class PvpGame : MonoBehaviour {
       }
    }
 
-   private IEnumerator CO_AddPlayerToOngoingGame (int userId, string userName) {
-      PvpTeamType bestTeam = getBestTeamWithSpace();
-
-      // Check if any team was found
-      if (bestTeam == PvpTeamType.None) {
-         D.error("Couldn't find a team for player: " + userName);
-         ServerNetworkingManager.self.displayNoticeScreenWithError(userId, ErrorMessage.Type.PvpJoinError, "Could not join the PvP Game. No teams were found.");
-         yield break;
-      }
-
-      PvpTeam assignedTeam = _teams[bestTeam];
-      assignedTeam.Add(userId);
-
+   private IEnumerator CO_AddPlayerToOngoingGame (int userId, string userName, PvpTeam assignedTeam) {
       // If the team only has us, create a new voyage group with this player
       if (assignedTeam.Count == 1) {
          VoyageGroupManager.self.createGroup(userId, voyageId, true);
-
+         
          // It takes at least one frame to synchronize the groups in the server network
          yield return null;
 
@@ -129,20 +144,20 @@ public class PvpGame : MonoBehaviour {
          }
 
          // Store the team's voyage group id
-         _teamVoyageGroupIds[bestTeam] = newGroup.groupId;
-         D.debug("Adding player to game in-progress. Added player: " + userName + " to team: " + bestTeam.ToString() + ", and created group");
+         _teamVoyageGroupIds[assignedTeam.teamType] = newGroup.groupId;
+         D.debug("Adding player to game in-progress. Added player: " + userName + " to team: " + assignedTeam.teamType.ToString() + ", and created group");
 
       // If the team isn't empty, add the player to the existing voyage group
       } else {
-         if (VoyageGroupManager.self.tryGetGroupById(_teamVoyageGroupIds[bestTeam], out VoyageGroupInfo voyageGroup)) {
+         if (VoyageGroupManager.self.tryGetGroupById(_teamVoyageGroupIds[assignedTeam.teamType], out VoyageGroupInfo voyageGroup)) {
             VoyageGroupManager.self.addUserToGroup(voyageGroup, userId, userName);
-            D.debug("Adding player to game in-progress. Added player: " + userName + " to team: " + bestTeam.ToString());
+            D.debug("Adding player to game in-progress. Added player: " + userName + " to team: " + assignedTeam.teamType.ToString());
          } else {
-            D.error("Couldn't find the voyage group for team: " + bestTeam.ToString());
+            D.error("Couldn't find the voyage group for team: " + assignedTeam.teamType.ToString());
             yield break;
          }
       }
-      string teamSpawn = getSpawnForTeam(bestTeam);
+      string teamSpawn = getSpawnForTeam(assignedTeam.teamType);
       ServerNetworkingManager.self.warpUser(userId, voyageId, areaKey, Direction.South, teamSpawn);
    }
 
@@ -154,8 +169,22 @@ public class PvpGame : MonoBehaviour {
       yield return new WaitForSeconds(delay);
 
       pvpStatData.playerStats = new List<PvpPlayerStat>();
+
+      // Initialize the player indexes in each team
+      Dictionary<PvpTeamType, int> lastIndexInTeam = new Dictionary<PvpTeamType, int>();
+      foreach (PvpTeamType teamType in System.Enum.GetValues(typeof(PvpTeamType))) {
+         lastIndexInTeam.Add(teamType, -1);
+      }
+
       for (int i = 0; i < _usersInGame.Count; i++) {
          NetEntity player = EntityManager.self.getEntity(_usersInGame[i]);
+         
+         // If the player object doesn't exist yet, add them to a list, to setup later
+         if (!player) {
+            _latePlayers.Add(_usersInGame[i]);
+            continue;
+         }
+
          if (player.isDead()) {
             PlayerShipEntity playerShip = player.getPlayerShipEntity();
             if (playerShip) {
@@ -163,16 +192,13 @@ public class PvpGame : MonoBehaviour {
             }
          }
 
-         int teamIndex = i % _numTeams;
-         int indexInTeam = i / _numTeams;
-         PvpTeamType teamType = (PvpTeamType) (teamIndex + 1);
+         PvpTeamType teamType = getTeamForPlayer(_usersInGame[i]);
          PvpTeam team = _teams[teamType];
-         team.Add(player.userId);
          player.currentHealth = player.maxHealth;
          player.pvpTeam = teamType;
+         lastIndexInTeam[teamType] = lastIndexInTeam[teamType] + 1;
 
          // Generate stat data for this player
-         pvpStatData.playerStats.Add(new PvpPlayerStat(player.userId, player.entityName, (int) teamType));
 
          // If a voyage group doesn't exist for the team, create it with this player
          if (!_teamVoyageGroupIds.ContainsKey(team.teamType)) {
@@ -196,7 +222,7 @@ public class PvpGame : MonoBehaviour {
 
          // Move the player to their spawn position, with a small offset so players aren't stacked on eachother.
          Vector2 spawnPosition = getSpawnPositionForTeam(team.teamType);
-         spawnPosition += (Vector2.one * 0.5f).Rotate(45.0f * indexInTeam);
+         spawnPosition += (Vector2.one * 0.5f).Rotate(45.0f * lastIndexInTeam[teamType]);
          Util.setLocalXY(player.transform, spawnPosition);
       }
       pvpStatData.isInitialized = true;
@@ -207,6 +233,7 @@ public class PvpGame : MonoBehaviour {
       _gameState = State.InGame;
       StartCoroutine(CO_SpawnSeamonsters());
       StartCoroutine(CO_SpawnWaves());
+      StartCoroutine(CO_SetupLatePlayers());
    }
 
    private IEnumerator CO_SpawnSeamonsters () {
@@ -240,6 +267,65 @@ public class PvpGame : MonoBehaviour {
 
          // Wait the interval between waves
          yield return new WaitForSeconds(PvpManager.WAVE_INTERVAL);
+      }
+   }
+
+   private IEnumerator CO_SetupLatePlayers () {
+      while (_latePlayers.Count > 0) {
+         yield return new WaitForSeconds(5.0f);
+
+         for (int i = _latePlayers.Count - 1; i >= 0; i--) {
+            int userId = _latePlayers[i];
+            NetEntity player = EntityManager.self.getEntity(userId);
+            if (player) {
+               PvpTeamType bestTeam = getBestTeamWithSpace();
+               string userName = player.nameText.text;
+
+               // Check if any team was found
+               if (bestTeam == PvpTeamType.None) {
+                  D.error("Couldn't find a team for player: " + userName);
+                  ServerNetworkingManager.self.displayNoticeScreenWithError(userId, ErrorMessage.Type.PvpJoinError, "Could not join the PvP Game. No teams were found.");
+                  player.spawnInBiomeHomeTown();
+                  yield break;
+               }
+
+               PvpTeam assignedTeam = _teams[bestTeam];
+               assignedTeam.Add(userId);
+
+               // Generate stat data for this player
+               registerUserStatData(player, bestTeam);
+
+               // If the team only has us, create a new voyage group with this player
+               if (assignedTeam.Count == 1) {
+                  VoyageGroupManager.self.createGroup(userId, voyageId, true);
+
+                  // It takes at least one frame to synchronize the groups in the server network
+                  yield return null;
+
+                  // Wait for the group to be created
+                  VoyageGroupInfo newGroup;
+                  while (!VoyageGroupManager.self.tryGetGroupByUser(userId, out newGroup)) {
+                     yield return null;
+                  }
+
+                  // Store the team's voyage group id
+                  _teamVoyageGroupIds[bestTeam] = newGroup.groupId;
+                  D.debug("Adding player to game in-progress. Added player: " + userName + " to team: " + bestTeam.ToString() + ", and created group");
+
+                  // If the team isn't empty, add the player to the existing voyage group
+               } else {
+                  if (VoyageGroupManager.self.tryGetGroupById(_teamVoyageGroupIds[bestTeam], out VoyageGroupInfo voyageGroup)) {
+                     VoyageGroupManager.self.addUserToGroup(voyageGroup, userId, userName);
+                     D.debug("Adding player to game in-progress. Added player: " + userName + " to team: " + bestTeam.ToString());
+                  } else {
+                     D.error("Couldn't find the voyage group for team: " + bestTeam.ToString());
+                     yield break;
+                  }
+               }
+               Vector2 spawnPosition = getSpawnPositionForTeam(bestTeam);
+               Util.setLocalXY(player.transform, spawnPosition);
+            }
+         }
       }
    }
 
@@ -559,7 +645,9 @@ public class PvpGame : MonoBehaviour {
          }
       }
 
-      D.warning("PvpGame.getTeamForPlayer() couldn't find a team that the player was assigned to.");
+      if (_gameState == State.InGame) {
+         D.warning("PvpGame.getTeamForPlayer() couldn't find a team that the player was assigned to.");
+      }
       return PvpTeamType.None;
    }
 
@@ -791,6 +879,9 @@ public class PvpGame : MonoBehaviour {
 
    // How many towers are in this game
    private int _towersPerLane = 0;
+
+   // A list of player user ids who couldn't be setup at game start
+   private List<int> _latePlayers = new List<int>();
 
    #endregion
 }

@@ -67,7 +67,11 @@ public class ServerNetworkingManager : MonoBehaviour
 
    private void logNumberOfConnectedClients () {
       if (server != null) {
-         D.debug($"Total client connections: {server.connectedUserIds.Count}");
+         // If this is the master server
+         if (server.isMasterServer()) {
+            D.debug($"Total client connections: {self.servers.Sum(x => x.connectedUserIds.Count)}");
+         }
+         D.debug($"My client connections: {server.connectedUserIds.Count}");
       }
    }
 
@@ -297,8 +301,8 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_SendMemberPartialUpdateToGroup, groupId, userId, userName, XP, areaKey);
    }
 
-   public void joinPvpGame (int voyageId, int userId, string userName) {
-      server.InvokeServerRpc(server.MasterServer_JoinPvpGame, voyageId, userId, userName);
+   public void joinPvpGame (int voyageId, int userId, string userName, PvpTeamType team) {
+      server.InvokeServerRpc(server.MasterServer_JoinPvpGame, voyageId, userId, userName, team);
    }
 
    public void clearPowerupsForUser (int userId) {

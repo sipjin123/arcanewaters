@@ -174,12 +174,13 @@ public class ChatPanel : MonoBehaviour {
 
       // Focus the chat window if the forward slash key is released
       if (KeyUtils.GetKeyUp(Key.Slash)) {
+         if (MailPanel.self == null || !MailPanel.self.isWritingMail()) {
+            if (!wasJustFocused() && !nameInputField.isFocused) {
+               inputField.text = "/";
 
-         if (!wasJustFocused() && !nameInputField.isFocused) {
-            inputField.text = "/";
-
-            // Activate the input field in the next frame to avoid weird interactions
-            StartCoroutine(CO_FocusAfterDelay(inputField));
+               // Activate the input field in the next frame to avoid weird interactions
+               StartCoroutine(CO_FocusAfterDelay(inputField));
+            }
          }
       }
 

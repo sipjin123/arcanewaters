@@ -631,7 +631,8 @@ public class AdminManager : NetworkBehaviour
             D.debug("AttackDelay is invalid: " + list[0]);
          }
 
-         Cmd_AutoAttack(attackDelay);
+         float clampedAttackDelay = Mathf.Clamp(attackDelay, .1f, attackDelay);
+         Cmd_AutoAttack(clampedAttackDelay);
       } else {
          Cmd_AutoAttack(.5f);
       }
@@ -667,7 +668,8 @@ public class AdminManager : NetworkBehaviour
             D.debug("AttackDelay is invalid: " + list[1]);
          }
 
-         Cmd_ForceJoin(autoAttack == 1 ? true : false, attackDelay);
+         float clampedAttackDelay = Mathf.Clamp(attackDelay, .1f, attackDelay);
+         Cmd_ForceJoin(autoAttack == 1 ? true : false, clampedAttackDelay);
       } else {
          Cmd_ForceJoin(false, 1);
       }
@@ -1094,6 +1096,10 @@ public class AdminManager : NetworkBehaviour
             break;
          case "warp":
             newLogType = D.ADMIN_LOG_TYPE.Warp;
+            Global.updateAdminLog(newLogType, isEnabled);
+            break;
+         case "network":
+            newLogType = D.ADMIN_LOG_TYPE.NetworkMessages;
             Global.updateAdminLog(newLogType, isEnabled);
             break;
          case "boss":

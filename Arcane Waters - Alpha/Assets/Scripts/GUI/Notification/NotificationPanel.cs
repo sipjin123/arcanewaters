@@ -74,9 +74,7 @@ public class NotificationPanel : MonoBehaviour
       animator.SetTrigger("reveal");
 
       // Play sfx after delay
-      if (!Global.player.isDead()) {
-         SoundEffectManager.self.playFmodWithDelay(SoundEffectManager.TIP_FOLDOUT, 1.0f);
-      }
+      SoundEffectManager.self.playFmodWithDelay(SoundEffectManager.TIP_FOLDOUT, 1.0f);
    }
 
    private void show () {

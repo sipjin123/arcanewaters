@@ -92,8 +92,8 @@ public class PvpArenaPanel : Panel
       pvpArenaInfoPanel.updatePanelWithPvpArena(voyage);
    }
 
-   public void joinPvpArena (Voyage voyage) {
-      Global.player.rpc.Cmd_JoinPvpArena(voyage.voyageId);
+   public void joinPvpArena (Voyage voyage, PvpTeamType team) {
+      Global.player.rpc.Cmd_JoinPvpArena(voyage.voyageId, team);
       PanelManager.self.unlinkPanel();
    }
 

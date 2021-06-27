@@ -18,10 +18,12 @@ public class ConfirmScreen : FullScreenSeparatePanel
    public Text confirmButtonText;
    public Text costText;
    public Text linkText;
+   public Text descriptionText;
    public TMP_Text deleteText;
    public TMP_InputField deleteInputField;
    public Button confirmButton;
    public Button cancelButton;
+   public GameObject descriptionRow;
    public GameObject costRow;
    public GameObject goInputField;
 
@@ -56,6 +58,20 @@ public class ConfirmScreen : FullScreenSeparatePanel
 
       // Now make us visible
       show();
+   }
+
+   public void show (string newText, int cost, string newDescription) {
+
+      // Only show the description if it's not null
+      if (string.IsNullOrWhiteSpace(newDescription)) {
+         descriptionRow.SetActive(false);
+      } else {
+         descriptionRow.SetActive(true);
+         descriptionText.text = newDescription;
+      }
+
+      // Show the rest of the UI
+      show(newText, cost);
    }
 
    public void show() {
