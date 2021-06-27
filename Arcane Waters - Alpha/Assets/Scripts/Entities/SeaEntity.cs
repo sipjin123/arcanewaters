@@ -115,6 +115,9 @@ public class SeaEntity : NetEntity
    // The radius that indicates if the pvp monster should stop chasing players
    public const float PVP_MONSTER_CHASE_RADIUS = 3f;
 
+   // The idle duration the pvp monster before moving around its territory
+   public const float PVP_MONSTER_IDLE_DURATION = 5f;
+
    #endregion
 
    #endregion
@@ -1617,7 +1620,7 @@ public class SeaEntity : NetEntity
                }
 
                // If path finding has ended
-               if (_currentPathIndex >= _currentPath.Count) {
+               if (_currentPathIndex >= _currentPath.Count && currentSecondsBetweenMinorSearch > PVP_MONSTER_IDLE_DURATION) {
                   // If this unit is retreating and is fully regenerated, disable regenerate health command
                   if (distanceFromInitialPosition > 1) {
                      if (!regenerateHealth && currentHealth < maxHealth && !hasAnyCombat()) {
@@ -1627,9 +1630,12 @@ public class SeaEntity : NetEntity
                      regenerateHealth = false;
                   }
 
+                  currentSecondsBetweenMinorSearch = 0.0f;
+
                   // Move around the spawn point
                   findAndSetPath_Asynchronous(targetPositionFunction(true));
                }
+               currentSecondsBetweenMinorSearch += Time.fixedDeltaTime;
             } else {
                state = WaypointState.FINDING_PATH;
             }
