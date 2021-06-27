@@ -10,6 +10,9 @@ public class EnemyBattleCollider : MonoBehaviour {
    // Reference to the enemy
    public Enemy enemy;
 
+   // Collider component
+   public CircleCollider2D collider;
+
    #endregion
 
    #region Private Variables

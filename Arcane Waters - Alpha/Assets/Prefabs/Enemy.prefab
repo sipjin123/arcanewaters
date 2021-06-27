@@ -236,18 +236,18 @@ MonoBehaviour:
   instanceId: 0
   areaKey: 
   isInvisible: 0
-  gender: 1
-  bodyType: 0
-  eyesType: 0
-  hairType: 0
-  eyesPalettes: 
-  hairPalettes: 
   entityName: Enemy
   currentHealth: 1000
   maxHealth: 1000
   XP: 0
   desiredAngle: 0
   isStealthMuted: 0
+  gender: 1
+  bodyType: 0
+  eyesType: 0
+  hairType: 0
+  eyesPalettes: 
+  hairPalettes: 
   netIdent: {fileID: 0}
   rpc: {fileID: 0}
   cropManager: {fileID: 0}
@@ -257,15 +257,15 @@ MonoBehaviour:
   nameText: {fileID: 0}
   nameTextOutline: {fileID: 0}
   sortPoint: {fileID: 4162388096487284447}
+  shadow: {fileID: 0}
+  statusEffectContainer: {fileID: 0}
+  entityNameGO: {fileID: 0}
   facing: 3
   isSinglePlayer: 0
   hasDiagonals: 0
   fallDirection: 0
   adminFlag: 0
   shipSpeedupFlag: 0
-  guildId: 0
-  guildPermissions: 0
-  guildRankPriority: 0
   battleId: 0
   voyageGroupId: -1
   isGhost: 0
@@ -273,6 +273,12 @@ MonoBehaviour:
   isNextBiomeUnlocked: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
+  isUnderExternalControl: 0
+  lastNPCTalkTime: -30
+  pvpTeam: 0
+  guildId: 0
+  guildPermissions: 0
+  guildRankPriority: 0
   guildIconBorder: 
   guildIconBackground: 
   guildIconSigil: 
@@ -283,11 +289,6 @@ MonoBehaviour:
   isAboutToWarpOnClient: 0
   interactingAnimation: 0
   isSpeedingUp: 0
-  shadow: {fileID: 0}
-  statusEffectContainer: {fileID: 0}
-  entityNameGO: {fileID: 0}
-  isUnderExternalControl: 0
-  lastNPCTalkTime: -30
   _ignoredAnimators: []
   _animators: []
   animGroupType: 0
@@ -1693,7 +1694,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 0.5}
+  m_Size: {x: 0.75, y: 0.5}
   m_EdgeRadius: 0
 --- !u!1 &8050567566709183452
 GameObject:
@@ -1770,6 +1771,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemy: {fileID: 114000012734016052}
+  collider: {fileID: 3762967510940541283}
 --- !u!58 &3762967510940541283
 CircleCollider2D:
   m_ObjectHideFlags: 0

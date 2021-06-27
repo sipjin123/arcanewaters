@@ -86,6 +86,9 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    // Prefab of special collider, used after golem boss death
    public GameObject bossGolemPolygonCollider;
 
+   // The combat collider of boss type monsters
+   public const float BOSS_COMBAT_COLLIDER = 0.75f;
+
    #endregion
 
    protected override void Awake () {
@@ -157,6 +160,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       
       if (isBossType) {
          bossCollider.SetActive(true);
+         enemyBattleCollider.collider.radius = BOSS_COMBAT_COLLIDER;
          GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
          _zSnap.sortPoint.transform.localPosition = new Vector3(0, BOSS_Z_OFFSET, 0);
          _zSnap.initialize();
