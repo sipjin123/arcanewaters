@@ -52,6 +52,10 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    [SyncVar]
    public SeaMonsterEntity.Type monsterType = 0;
 
+   // The instance difficulty
+   [SyncVar]
+   public int difficulty = 1;
+
    // Determines the location of this unit in relation to its spawn point
    public Vector2 directionFromSpawnPoint;
 
@@ -867,6 +871,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       _isNextAttackSecondary = true;
    }
 
+   protected override void onMaxHealthChanged (int oldValue, int newValue) {
+      base.onMaxHealthChanged(oldValue, newValue);
+      seaMonsterBars.initializeHealthBar();
+   }
+
    #endregion
 
    #region Private Variables
@@ -894,9 +903,6 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    // Gets set to true when the next attack must be a secondary attack
    private bool _isNextAttackSecondary = false;
-
-   // The instance difficulty
-   private int _difficulty = 1;
 
    #endregion
 }

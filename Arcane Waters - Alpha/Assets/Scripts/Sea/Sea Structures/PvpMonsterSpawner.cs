@@ -53,6 +53,7 @@ public class PvpMonsterSpawner : NetworkBehaviour, IMapEditorDataReceiver {
       seaEntity.facing = Direction.South;
       seaEntity.isPvpAI = true;
       seaEntity.instanceId = instanceId;
+      seaEntity.difficulty = instance.difficulty;
 
       // Transform setup
       seaEntity.transform.SetParent(transform, false);
