@@ -799,6 +799,19 @@ public class PvpGame : MonoBehaviour {
       D.adminLog("Added monster kills for: " + userId + " Total of: " + playerStat.playerMonsterKills, D.ADMIN_LOG_TYPE.Pvp);
    }
 
+   public void addSilverCount (int userId, int total) {
+      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
+      if (playerStat == null) {
+         return;
+      }
+
+      // TODO: Implement visual indication here that will notify player of this specific stat gain
+
+      // Stat Increase
+      playerStat.silver += total;
+      D.adminLog("Added silver kills for: " + userId + " Total of: " + playerStat.silver, D.ADMIN_LOG_TYPE.Pvp);
+   }
+
    public void addBuildingDestroyedCount (int userId) {
       PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
       if (playerStat == null) {

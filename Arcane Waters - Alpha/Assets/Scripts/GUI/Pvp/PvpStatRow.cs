@@ -8,7 +8,10 @@ public class PvpStatRow : MonoBehaviour {
    #region Public Variables
 
    // The text fields representing each stat
-   public Text kills, deaths, shipKills, monsterKills, assists, userName, buildingsDestroyed;
+   public Text kills, deaths, shipKills, monsterKills, assists, userName, buildingsDestroyed, silver;
+
+   // Determines the team type
+   public PvpTeamType pvpTeamType;
 
    #endregion
 

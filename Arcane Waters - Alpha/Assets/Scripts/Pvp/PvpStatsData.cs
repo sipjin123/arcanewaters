@@ -43,6 +43,9 @@ public class PvpPlayerStat {
    // The team this player belongs to
    public int playerTeam;
 
+   // The currency awarded for this pvp session
+   public int silver;
+
    public PvpPlayerStat (int userId, string playerName, int playerTeam) {
       this.userId = userId;
       this.playerName = playerName;

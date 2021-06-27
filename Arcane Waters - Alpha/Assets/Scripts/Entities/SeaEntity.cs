@@ -191,14 +191,24 @@ public class SeaEntity : NetEntity
             PvpGame pvpGame = PvpManager.self.getGameWithPlayer(lastAttacker.userId);
             if (pvpGame != null) {
                if (this is PlayerShipEntity) {
+                  int silverReward = 50;
                   pvpGame.addPlayerKillCount(lastAttacker.userId);
+                  pvpGame.addSilverCount(lastAttacker.userId, silverReward);
+                  Target_ReceivePvpCurrency(lastAttacker.connectionToClient, silverReward);
                }
                if (this is BotShipEntity) {
+                  int silverReward = 20;
                   pvpGame.addShipKillCount(lastAttacker.userId);
+                  pvpGame.addSilverCount(lastAttacker.userId, silverReward);
+                  Target_ReceivePvpCurrency(lastAttacker.connectionToClient, silverReward);
                }
                if (this is SeaMonsterEntity) {
+                  int silverReward = 30;
                   pvpGame.addMonsterKillCount(lastAttacker.userId);
+                  pvpGame.addSilverCount(lastAttacker.userId, silverReward);
+                  Target_ReceivePvpCurrency(lastAttacker.connectionToClient, silverReward);
                }
+               PvpManager.self.onPvpEntityDestroyed(this, lastAttacker);
             }
          }
 

@@ -16,6 +16,9 @@ public class PvpStatPanel : Panel {
    // Self
    public static PvpStatPanel self;
 
+   // Icon of the silver currency
+   public Sprite silverIcon;
+
    #endregion
 
    public override void Awake () {
@@ -34,6 +37,7 @@ public class PvpStatPanel : Panel {
          statRow.monsterKills.text = playerStat.playerMonsterKills.ToString();
          statRow.buildingsDestroyed.text = playerStat.playerStructuresDestroyed.ToString();
          statRow.shipKills.text = playerStat.playerShipKills.ToString();
+         statRow.silver.text = playerStat.silver.ToString();
 
          statRow.userName.text = playerStat.playerName.ToString();
       }
