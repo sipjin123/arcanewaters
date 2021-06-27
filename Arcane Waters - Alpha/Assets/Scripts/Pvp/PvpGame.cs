@@ -59,7 +59,7 @@ public class PvpGame : MonoBehaviour {
       }
    }
 
-   public void addPlayerToGame (int userId, string userName) {
+   public void addPlayerToGame (int userId, string userName, PvpTeamType teamType) {
       // Check that the game is in a valid state to add the player
       if (_gameState == PvpGame.State.None || _gameState == PvpGame.State.PostGame) {
          D.error("Failed to add player: " + userName + " to game, game was in an invalid state");
@@ -109,8 +109,10 @@ public class PvpGame : MonoBehaviour {
       assignedTeam.Add(userId);
 
       if (_gameState == State.PreGame) {
+         registerUserStatData(userId, userName, assignedTeam.teamType);
          addPlayerToPreGame(userId, userName);
       } else if (_gameState == State.InGame) {
+         registerUserStatData(userId, userName, assignedTeam.teamType);
          StartCoroutine(CO_AddPlayerToOngoingGame(userId, userName, assignedTeam));
       }
    }
@@ -119,7 +121,7 @@ public class PvpGame : MonoBehaviour {
       VoyageGroupManager.self.createGroup(userId, voyageId, true);
       ServerNetworkingManager.self.warpUser(userId, voyageId, areaKey, Direction.South);
       D.debug("Adding player to pre-game. Added player: " + userName);
-
+      
       // If there are now enough players to start the game, start the game after a delay
       if (isGameReadyToBegin()) {
          StartCoroutine(CO_StartGame(delay: 10.0f));
@@ -199,6 +201,7 @@ public class PvpGame : MonoBehaviour {
          lastIndexInTeam[teamType] = lastIndexInTeam[teamType] + 1;
 
          // Generate stat data for this player
+         registerUserStatData(player, teamType);
 
          // If a voyage group doesn't exist for the team, create it with this player
          if (!_teamVoyageGroupIds.ContainsKey(team.teamType)) {
@@ -458,6 +461,11 @@ public class PvpGame : MonoBehaviour {
 
          // Remove the player from their voyage group
          VoyageGroupManager.self.removeUserFromGroup(voyageGroup, player.userId);
+      }
+
+      PvpPlayerStat pvpStatDataObj = pvpStatData.playerStats.Find(_ => _.userId == player.userId);
+      if (pvpStatDataObj != null) { 
+         pvpStatData.playerStats.Remove(pvpStatDataObj);
       }
 
       // Remove the player from _usersInGame
@@ -755,6 +763,19 @@ public class PvpGame : MonoBehaviour {
             return "Post Game";
          default:
             return "";
+      }
+   }
+
+   private void registerUserStatData (NetEntity user, PvpTeamType teamType) {
+      registerUserStatData(user.userId, user.entityName, teamType);
+   }
+
+   private void registerUserStatData (int userId, string userName, PvpTeamType teamType) {
+      if (pvpStatData.playerStats == null) {
+         return;
+      }
+      if (pvpStatData.playerStats.Find(_ => _.userId == userId) == null) {
+         pvpStatData.playerStats.Add(new PvpPlayerStat(userId, userName, (int) teamType));
       }
    }
 
