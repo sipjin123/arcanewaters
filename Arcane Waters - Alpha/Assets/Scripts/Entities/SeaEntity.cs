@@ -248,7 +248,7 @@ public class SeaEntity : NetEntity
       base.Update();
 
       // Regenerate health
-      if (NetworkServer.active && regenerateHealth && currentHealth < maxHealth) {
+      if (NetworkServer.active && isSeamonsterPvp() && regenerateHealth && currentHealth < maxHealth) {
          currentHealth += (int) HEALTH_REGEN_RATE;
       }
 
@@ -724,14 +724,14 @@ public class SeaEntity : NetEntity
          } else {
             // Stop health regeneration when hit by player and combat begins
             if (regenerateHealth) {
-               regenerateHealth = false;
+               setHealthRegeneration(false);
             }
          }
       }
    }
 
    protected void retreatToSpawn () {
-      regenerateHealth = true;
+      setHealthRegeneration(true);
       _attackers.Clear();
       _currentAttacker = 0;
       _patrolingWaypointState = WaypointState.RETREAT;
@@ -1624,10 +1624,10 @@ public class SeaEntity : NetEntity
                   // If this unit is retreating and is fully regenerated, disable regenerate health command
                   if (distanceFromInitialPosition > 1) {
                      if (!regenerateHealth && currentHealth < maxHealth && !hasAnyCombat()) {
-                        regenerateHealth = true;
+                        setHealthRegeneration(true);
                      }
                   } else if (regenerateHealth && currentHealth >= maxHealth) {
-                     regenerateHealth = false;
+                     setHealthRegeneration(false);
                   }
 
                   currentSecondsBetweenMinorSearch = 0.0f;
@@ -1768,6 +1768,12 @@ public class SeaEntity : NetEntity
          Gizmos.color = new Color(1.0f, 0.0f, 0.0f, 0.5f);
          Gizmos.DrawMesh(_editorConeAggroGizmoMesh, 0, transform.position, Quaternion.Euler(0.0f, 0.0f, -Vector2.SignedAngle(Util.getDirectionFromFacing(facing), Vector2.right)), Vector3.one);
          Gizmos.color = Color.white;
+      }
+   }
+
+   public void setHealthRegeneration (bool isOn) {
+      if (isSeamonsterPvp()) {
+         regenerateHealth = isOn;
       }
    }
 
