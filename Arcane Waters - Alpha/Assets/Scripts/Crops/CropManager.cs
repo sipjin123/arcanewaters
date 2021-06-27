@@ -177,19 +177,19 @@ public class CropManager : NetworkBehaviour {
       }
 
       if (cropToWater.cropType == Crop.Type.None) {
-         D.error("No crop in spot number: " + cropNumber);
+         D.adminLog("No crop in spot number: " + cropNumber, D.ADMIN_LOG_TYPE.Crop);
          return;
       }
 
       // Make sure it's ready for water
       if (!cropToWater.isReadyForWater()) {
-         D.error("Player {" + _player.userId + "} trying to water Crop, crop isn't ready for water: " + cropNumber);
+         D.adminLog("Player {" + _player.userId + "} trying to water Crop, crop isn't ready for water: " + cropNumber, D.ADMIN_LOG_TYPE.Crop);
          return;
       }
 
       // Make sure it's not already maxed out
       if (cropToWater.isMaxLevel()) {
-         D.error("Crop can't grow any more: " + cropNumber);
+         D.adminLog("Crop can't grow any more: " + cropNumber, D.ADMIN_LOG_TYPE.Crop);
          return;
       }
 

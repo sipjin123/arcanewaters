@@ -15,21 +15,25 @@ public class SpeakChatLine : ChatLine {
    #endregion
 
    public override void OnPointerClick (PointerEventData eventData) {
-      if (Global.player != null && Global.player.userId != chatInfo.senderId) {
+      if (isValidInteraction()) {
          PanelManager.self.contextMenuPanel.showDefaultMenuForUser(chatInfo.senderId, chatInfo.sender);
       }
    }
 
    public void chatLineHoverEnter () {
-      if (Global.player != null && Global.player.userId != chatInfo.senderId) {
+      if (isValidInteraction()) {
          text.alpha = .75f;
       }
    }
 
    public void chatLineHoverExit () {
-      if (Global.player != null && Global.player.userId != chatInfo.senderId) {
+      if (isValidInteraction()) {
          text.alpha = 1f;
       }
+   }
+
+   private bool isValidInteraction () {
+      return Global.player != null && Global.player.userId != chatInfo.senderId && chatInfo.senderId > 0;
    }
 
    #region Private Variables
