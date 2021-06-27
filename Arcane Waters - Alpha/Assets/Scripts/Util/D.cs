@@ -32,7 +32,8 @@ public class D : MonoBehaviour {
       AnimationFreeze = 19,
       CombatEnd = 20,
       CancelAttack = 21,
-      Pvp = 22
+      Pvp = 22,
+      NetworkMessages = 23
    }
 
    // Any log files older than this will be deleted

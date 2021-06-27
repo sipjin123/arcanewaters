@@ -886,15 +886,24 @@ public class NetEntity : NetworkBehaviour
 
       // Check if we need to apply a slow modifier
       float modifier = 1.0f;
-      if (StatusManager.self.hasStatus(this.netId, Status.Type.Frozen) || StatusManager.self.hasStatus(this.netId, Status.Type.Stunned)) {
-         modifier = 0f;
-      } else if (StatusManager.self.hasStatus(this.netId, Status.Type.Slowed)) {
-         modifier = Mathf.Clamp(1.0f - StatusManager.self.getStrongestStatus(this.netId, Status.Type.Slowed), 0.2f, 1.0f);
-      } else if (_isClimbing) {
-         if (Time.time - _lastBodySpriteChangetime <= .2f) {
-            modifier = 0;
-         } else {
-            modifier = .5f;
+
+      // Apply exclusive conditions here for entities that cannot be slowed
+      bool skipStatusModification = false;
+      if (isSeaMonsterMinion()) {
+         skipStatusModification = true;
+      }
+
+      if (!skipStatusModification) {
+         if (StatusManager.self.hasStatus(this.netId, Status.Type.Frozen) || StatusManager.self.hasStatus(this.netId, Status.Type.Stunned)) {
+            modifier = 0f;
+         } else if (StatusManager.self.hasStatus(this.netId, Status.Type.Slowed)) {
+            modifier = Mathf.Clamp(1.0f - StatusManager.self.getStrongestStatus(this.netId, Status.Type.Slowed), 0.2f, 1.0f);
+         } else if (_isClimbing) {
+            if (Time.time - _lastBodySpriteChangetime <= .2f) {
+               modifier = 0;
+            } else {
+               modifier = .5f;
+            }
          }
       }
 

@@ -364,12 +364,15 @@ public class BattleUIManager : MonoBehaviour {
             selectNextTarget();
          }
 
-         if (KeyUtils.GetKeyDown(Key.F1)) {
-            changeBattleStance((int) Battler.Stance.Defense);
-         } else if (KeyUtils.GetKeyDown(Key.F2)) {
-            changeBattleStance((int) Battler.Stance.Balanced);
-         } else if (KeyUtils.GetKeyDown(Key.F3)) {
-            changeBattleStance((int) Battler.Stance.Attack);
+         Battler localBattler = BattleManager.self.getPlayerBattler();
+         if (localBattler != null && !localBattler.isDead()) {
+            if (KeyUtils.GetKeyDown(Key.F1)) {
+               changeBattleStance((int) Battler.Stance.Defense);
+            } else if (KeyUtils.GetKeyDown(Key.F2)) {
+               changeBattleStance((int) Battler.Stance.Balanced);
+            } else if (KeyUtils.GetKeyDown(Key.F3)) {
+               changeBattleStance((int) Battler.Stance.Attack);
+            }
          }
 
          // Display the health of the ally

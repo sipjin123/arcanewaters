@@ -95,11 +95,13 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
       base.onDeath();
 
-      NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(_lastAttackerNetId);
-      if (lastAttacker) {
-         spawnChest(lastAttacker.userId);
-      } else {
-         D.warning("Bot ship couldn't drop a chest, due to not being able to locate last attacker");
+      if (NetworkServer.active) {
+         NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(_lastAttackerNetId);
+         if (lastAttacker) {
+            spawnChest(lastAttacker.userId);
+         } else {
+            D.warning("Bot ship couldn't drop a chest, due to not being able to locate last attacker");
+         }
       }
 
       aimTransform.gameObject.SetActive(false);
