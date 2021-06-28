@@ -395,8 +395,10 @@ public class PvpTower : SeaStructure {
    }
 
    private void updateAttackRangeCircle () {
-      if (isClient && getGlobalPlayerShip().pvpTeam != pvpTeam) {
-         float distanceToGlobalPlayerShip = Vector2.Distance(transform.position, getGlobalPlayerShip().transform.position);
+
+      PlayerShipEntity playerShipEntity = getGlobalPlayerShip();
+      if (isClient && playerShipEntity != null && playerShipEntity.pvpTeam != pvpTeam) {
+         float distanceToGlobalPlayerShip = Vector2.Distance(transform.position, playerShipEntity.transform.position);
          bool isInWarningRange = (distanceToGlobalPlayerShip <= WARNING_RANGE);
          bool isInAttackRange = (distanceToGlobalPlayerShip <= ATTACK_RANGE);
          float lerpTargetAlpha = (isInWarningRange) ? 0.5f : 0.0f;
@@ -405,11 +407,11 @@ public class PvpTower : SeaStructure {
          Color targetColor = safeColor;
          // If the player is within attack range, show danger color if they're being targeted, otherwise show safe color
          if (isInAttackRange) {
-            targetColor = (_aimTarget == getGlobalPlayerShip()) ? dangerColor : safeColor;
+            targetColor = (_aimTarget == playerShipEntity) ? dangerColor : safeColor;
 
          // If the player is within warning range, show warning color if no one is being targeted, otherwise show safe color
          } else if (isInWarningRange) {
-            bool playerWillBeAttacked = (_aimTarget == null || _aimTarget.userId == getGlobalPlayerShip().userId);
+            bool playerWillBeAttacked = (_aimTarget == null || _aimTarget.userId == playerShipEntity.userId);
             targetColor = (playerWillBeAttacked) ? warningColor : safeColor;
          }
 

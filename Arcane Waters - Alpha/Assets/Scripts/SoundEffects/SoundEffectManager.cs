@@ -247,6 +247,24 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
+   public void playEnemyHitOneShot (bool isShip, Transform target) {
+      SoundEffect effect = getSoundEffect(ENEMY_SHIP_IMPACT);
+
+      if (effect != null) {
+         EventInstance eventInstance = RuntimeManager.CreateInstance(effect.fmodId);
+
+         if (isShip) {
+            eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, 0);
+         } else {
+            eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, 1);
+         }
+
+         eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(target));
+         eventInstance.start();
+         eventInstance.release();
+      }
+   }
+
    //public void playFmodSoundEffect (int id, Transform target) {
    //   SoundEffect effect = getSoundEffect(id);
 

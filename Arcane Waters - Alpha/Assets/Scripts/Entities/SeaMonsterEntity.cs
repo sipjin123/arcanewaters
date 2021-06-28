@@ -10,8 +10,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 {
    #region Public Variables
 
-   public enum Type
-   {
+   public enum Type {
       None = 0, Tentacle = 1, Horror = 2, Worm = 3, Reef_Giant = 4, Fishman = 5, SeaSerpent = 6, Horror_Tentacle = 7, PirateShip = 8
    }
 
@@ -112,8 +111,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    public UnityEvent hasDiedEvent = new UnityEvent();
 
    // Seamonster Animation
-   public enum SeaMonsterAnimState
-   {
+   public enum SeaMonsterAnimState {
       Idle,
       Attack,
       EndAttack,
@@ -123,8 +121,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    }
 
    // Determines the current behavior of the Monster
-   public enum MonsterBehavior
-   {
+   public enum MonsterBehavior {
       Idle = 0,
       MoveToPosition = 1,
       MoveToAttackPosition = 2,
@@ -196,14 +193,20 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          // Get the instance difficulty
          Instance instance = getInstance();
          if (instance != null) {
-            _difficulty = instance.difficulty;
+            difficulty = instance.difficulty;
          }
 
-         float reloadModifier = 1 + (((float) _difficulty - 1) / (Voyage.getMaxDifficulty() - 1));
-         reloadDelay = seaMonsterData.reloadDelay / (_difficulty > 0 ? reloadModifier : 1);
+         float reloadModifier = 1 + (((float) difficulty - 1) / (Voyage.getMaxDifficulty() - 1));
+         reloadDelay = seaMonsterData.reloadDelay / (difficulty > 0 ? reloadModifier : 1);
          reloadDelay *= AdminGameSettingsManager.self.settings.seaAttackCooldown;
-         maxHealth = Mathf.RoundToInt(seaMonsterData.maxHealth * _difficulty * AdminGameSettingsManager.self.settings.seaMaxHealth);
+         maxHealth = Mathf.RoundToInt(seaMonsterData.maxHealth * difficulty * AdminGameSettingsManager.self.settings.seaMaxHealth);
          currentHealth = maxHealth;
+      }
+
+      // Seamonster aggro for pvp is radius based instead of facing direction based
+      if (isPvpAI) {
+         aggroConeDegrees = 360f;
+         seaMonsterBars.initializeHealthBar();
       }
 
       invulnerable = seaMonsterData.isInvulnerable;
@@ -268,12 +271,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       // Custom behaviors
       if (monsterType == Type.Horror) {
-         InvokeRepeating(nameof(commandMinionTentaclesToUseSecondaryAttack), 0, TENTACLE_SECONDARY_ATTACK_BASE_INTERVAL + (Voyage.getMaxDifficulty() / _difficulty));
-      }
-
-      // Seamonster aggro for pvp is radius based instead of facing direction based
-      if (isPvpAI) {
-         aggroConeDegrees = 360f;
+         InvokeRepeating(nameof(commandMinionTentaclesToUseSecondaryAttack), 0, TENTACLE_SECONDARY_ATTACK_BASE_INTERVAL + (Voyage.getMaxDifficulty() / difficulty));
       }
    }
 
@@ -343,7 +341,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
 
       // Only change our movement if enough time has passed
-      if (NetworkTime.time - _lastMoveChangeTime < (seaMonsterData.roleType != RoleType.Minion ? MOVE_CHANGE_INTERVAL : MOVE_CHANGE_INTERVAL/2)) {
+      if (NetworkTime.time - _lastMoveChangeTime < (seaMonsterData.roleType != RoleType.Minion ? MOVE_CHANGE_INTERVAL : MOVE_CHANGE_INTERVAL / 2)) {
          return;
       }
 
@@ -369,7 +367,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       if (_currentPathIndex < _currentPath.Count) {
          // Move towards our current waypoint
-         Vector2 waypointDirection = ((Vector2) _currentPath[_currentPathIndex] - (Vector2)sortPoint.transform.position).normalized;
+         Vector2 waypointDirection = ((Vector2) _currentPath[_currentPathIndex] - (Vector2) sortPoint.transform.position).normalized;
 
          _body.AddForce(waypointDirection * getMoveSpeed());
          _lastMoveChangeTime = NetworkTime.time;
@@ -601,7 +599,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
                offset += Random.insideUnitCircle * 0.3f;
             }
 
-            TreasureManager.self.createSeaMonsterChest(currentInstance, sortPoint.transform.position + (Vector3)offset, seaMonsterData.seaMonsterType, killerUserId);
+            TreasureManager.self.createSeaMonsterChest(currentInstance, sortPoint.transform.position + (Vector3) offset, seaMonsterData.seaMonsterType, killerUserId);
          }
       }
    }
@@ -710,7 +708,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    protected bool isWithinRangedAttackDistance (float sqrDistance) {
       return sqrDistance < seaMonsterData.maxProjectileDistanceGap * seaMonsterData.maxProjectileDistanceGap;
    }
-   
+
    protected bool isWithinMeleeAttackDistance (float sqrDistance) {
       return sqrDistance < seaMonsterData.maxMeleeDistanceGap * seaMonsterData.maxMeleeDistanceGap;
    }
@@ -820,7 +818,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       NetEntity targetEntity = attackersInRange.ChooseRandom();
 
       // Try to predict the target position
-      Vector2 predictedTargetPos = (Vector2)targetEntity.transform.position + targetEntity.getVelocity() * 1.5f;
+      Vector2 predictedTargetPos = (Vector2) targetEntity.transform.position + targetEntity.getVelocity() * 1.5f;
 
       float launchDelay = .4f;
       float projectileDelay = seaMonsterData.projectileDelay;

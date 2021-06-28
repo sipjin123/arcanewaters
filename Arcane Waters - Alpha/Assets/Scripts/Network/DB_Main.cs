@@ -8597,6 +8597,10 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void createServerHistoryEvent (DateTime eventDate, ServerHistoryInfo.EventType eventType, int serverVersion) {
+      if (Util.isStressTesting()) {
+         return; // skip adding server history for stresstesting server
+      }
+      
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(

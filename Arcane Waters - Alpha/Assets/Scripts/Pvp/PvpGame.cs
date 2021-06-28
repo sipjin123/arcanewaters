@@ -121,7 +121,7 @@ public class PvpGame : MonoBehaviour {
       VoyageGroupManager.self.createGroup(userId, voyageId, true);
       ServerNetworkingManager.self.warpUser(userId, voyageId, areaKey, Direction.South);
       D.debug("Adding player to pre-game. Added player: " + userName);
-      
+
       // If there are now enough players to start the game, start the game after a delay
       if (isGameReadyToBegin()) {
          StartCoroutine(CO_StartGame(delay: 10.0f));
@@ -135,7 +135,7 @@ public class PvpGame : MonoBehaviour {
       // If the team only has us, create a new voyage group with this player
       if (assignedTeam.Count == 1) {
          VoyageGroupManager.self.createGroup(userId, voyageId, true);
-         
+
          // It takes at least one frame to synchronize the groups in the server network
          yield return null;
 
@@ -149,7 +149,7 @@ public class PvpGame : MonoBehaviour {
          _teamVoyageGroupIds[assignedTeam.teamType] = newGroup.groupId;
          D.debug("Adding player to game in-progress. Added player: " + userName + " to team: " + assignedTeam.teamType.ToString() + ", and created group");
 
-      // If the team isn't empty, add the player to the existing voyage group
+         // If the team isn't empty, add the player to the existing voyage group
       } else {
          if (VoyageGroupManager.self.tryGetGroupById(_teamVoyageGroupIds[assignedTeam.teamType], out VoyageGroupInfo voyageGroup)) {
             VoyageGroupManager.self.addUserToGroup(voyageGroup, userId, userName);
@@ -180,7 +180,7 @@ public class PvpGame : MonoBehaviour {
 
       for (int i = 0; i < _usersInGame.Count; i++) {
          NetEntity player = EntityManager.self.getEntity(_usersInGame[i]);
-         
+
          // If the player object doesn't exist yet, add them to a list, to setup later
          if (!player) {
             _latePlayers.Add(_usersInGame[i]);
@@ -202,6 +202,11 @@ public class PvpGame : MonoBehaviour {
 
          // Generate stat data for this player
          registerUserStatData(player, teamType);
+
+         // Remove the user from its current group
+         if (player.tryGetGroup(out VoyageGroupInfo currentGroup)) {
+            VoyageGroupManager.self.removeUserFromGroup(currentGroup, player.userId);
+         }
 
          // If a voyage group doesn't exist for the team, create it with this player
          if (!_teamVoyageGroupIds.ContainsKey(team.teamType)) {
@@ -298,6 +303,11 @@ public class PvpGame : MonoBehaviour {
                // Generate stat data for this player
                registerUserStatData(player, bestTeam);
 
+               // Remove the user from its current group
+               if (player.tryGetGroup(out VoyageGroupInfo currentGroup)) {
+                  VoyageGroupManager.self.removeUserFromGroup(currentGroup, player.userId);
+               }
+
                // If the team only has us, create a new voyage group with this player
                if (assignedTeam.Count == 1) {
                   VoyageGroupManager.self.createGroup(userId, voyageId, true);
@@ -335,7 +345,7 @@ public class PvpGame : MonoBehaviour {
    private void spawnShips () {
       foreach (PvpShipyard shipyard in _shipyards) {
          if (shipyard && shipyard.gameObject && !shipyard.isDead())
-         _ships.Add(shipyard.spawnShip());
+            _ships.Add(shipyard.spawnShip());
       }
    }
 
@@ -354,7 +364,7 @@ public class PvpGame : MonoBehaviour {
       // Check if we have an appropriate number of towers
       if ((numTowers - 2) % 6 == 0) {
          _towersPerLane = (numTowers - 2) / 6;
-         
+
          // Fill the lists with null for now, so we can access elements directly
          int structuresPerLane = 3 + _towersPerLane;
          for (int i = 0; i < structuresPerLane; i++) {
@@ -464,7 +474,7 @@ public class PvpGame : MonoBehaviour {
       }
 
       PvpPlayerStat pvpStatDataObj = pvpStatData.playerStats.Find(_ => _.userId == player.userId);
-      if (pvpStatDataObj != null) { 
+      if (pvpStatDataObj != null) {
          pvpStatData.playerStats.Remove(pvpStatDataObj);
       }
 
@@ -538,16 +548,17 @@ public class PvpGame : MonoBehaviour {
       sendGameMessage("This game will close in 20 seconds.");
       yield return new WaitForSeconds(20.0f);
 
+      // Delete the team groups
+      foreach (int voyageGroupId in _teamVoyageGroupIds.Values) {
+         if (VoyageGroupManager.self.tryGetGroupById(voyageGroupId, out VoyageGroupInfo voyageGroupInfo)) {
+            VoyageGroupManager.self.deleteGroup(voyageGroupInfo);
+         }
+      }
+
       foreach (int userId in _usersInGame) {
          NetEntity player = EntityManager.self.getEntity(userId);
 
          if (player) {
-            // If the player is in a voyage group, remove them from it
-            if (player.tryGetGroup(out VoyageGroupInfo groupInfo)) {
-               VoyageGroupManager.self.removeUserFromGroup(groupInfo, player.userId);
-               D.log("MT: Removed player from voyage group.");
-            }
-
             player.spawnInBiomeHomeTown();
          } else {
             Vector2 spawnPos = SpawnManager.self.getLocalPosition(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
@@ -696,7 +707,7 @@ public class PvpGame : MonoBehaviour {
          getStructures(tower.pvpTeam, tower.laneType)[indexInList] = tower;
       }
    }
-   
+
    private void registerShipyard (PvpShipyard shipyard) {
       shipyard.onDeathAction += onStructureDestroyed;
       int indexInList = _towersPerLane;
@@ -833,6 +844,37 @@ public class PvpGame : MonoBehaviour {
       D.adminLog("Added silver kills for: " + userId + " Total of: " + playerStat.silver, D.ADMIN_LOG_TYPE.Pvp);
    }
 
+   public void addSilverRank (int userId, int total) {
+      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
+      if (playerStat == null) {
+         return;
+      }
+
+      // Stat Increase
+      playerStat.rank += total;
+      D.adminLog("Added silver rank for: " + userId + " Total of: " + playerStat.rank, D.ADMIN_LOG_TYPE.Pvp);
+   }
+
+   public void resetSilverRank (int userId) {
+      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
+      if (playerStat == null) {
+         return;
+      }
+
+      playerStat.rank = 1;
+      D.adminLog("Reset silver rank for: " + userId, D.ADMIN_LOG_TYPE.Pvp);
+   }
+
+   public int getSilverRank (int userId) {
+      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
+      if (playerStat == null) {
+         return 1;
+      }
+
+      // Stat Increase
+      return playerStat.rank;
+   }
+
    public void addBuildingDestroyedCount (int userId) {
       PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
       if (playerStat == null) {
@@ -872,6 +914,47 @@ public class PvpGame : MonoBehaviour {
       D.adminLog("Added death count for: " + userId + " Total of: " + playerStat.playerDeaths, D.ADMIN_LOG_TYPE.Pvp);
    }
 
+   public static Color getColorForTeam (PvpTeamType team) {
+      switch (team) {
+         case PvpTeamType.None:
+            return Color.white;
+         case PvpTeamType.A:
+            return Color.blue;
+         case PvpTeamType.B:
+            return Color.red;
+         case PvpTeamType.C:
+            return Color.green;
+         case PvpTeamType.D:
+            return Color.yellow;
+         default:
+            return Color.white;
+      }
+   }
+
+   public int computeSilverReward (NetEntity attacker, NetEntity target) {
+
+      PvpPlayerStat attackerPlayerStat = pvpStatData.playerStats.Find(_ => _.userId == attacker.userId);
+
+      if (target is PlayerShipEntity) {
+         PvpPlayerStat targetPlayerStat = pvpStatData.playerStats.Find(_ => _.userId == target.userId);
+         return (attackerPlayerStat.rank + targetPlayerStat.rank * 2) * SilverManager.SILVER_PLAYER_SHIP_KILL_REWARD; // TODO: The algorithm could be changed
+      }
+
+      if (target is BotShipEntity) {
+         return attackerPlayerStat.rank * SilverManager.SILVER_BOT_SHIP_KILL_REWARD;
+      }
+
+      if (target is SeaMonsterEntity) {
+         return attackerPlayerStat.rank * SilverManager.SILVER_SEA_MONSTER_KILL_REWARD;
+      }
+
+      if (target is SeaStructure) {
+         return attackerPlayerStat.rank * SilverManager.SILVER_SEA_STRUCTURE_KILL_REWARD;
+      }
+
+      return 0;
+   }
+
    #endregion
 
    #region Private Variables
@@ -900,7 +983,7 @@ public class PvpGame : MonoBehaviour {
    // A list of references to the structures in each lane, for each team
    private List<SeaStructure> _topStructuresA = new List<SeaStructure>();
    private List<SeaStructure> _midStructuresA = new List<SeaStructure>();
-   private List<SeaStructure> _botStructuresA = new List<SeaStructure>();   
+   private List<SeaStructure> _botStructuresA = new List<SeaStructure>();
    private List<SeaStructure> _topStructuresB = new List<SeaStructure>();
    private List<SeaStructure> _midStructuresB = new List<SeaStructure>();
    private List<SeaStructure> _botStructuresB = new List<SeaStructure>();

@@ -322,8 +322,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -255, y: 27.5}
-  m_SizeDelta: {x: 510, y: 55}
+  m_AnchoredPosition: {x: -230.46, y: 27.5}
+  m_SizeDelta: {x: 460.9121, y: 55}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6623986982617468462
 CanvasRenderer:
@@ -623,4 +623,4 @@ MonoBehaviour:
   tooltipType: 0
   message: 
   maxWidth: 0
-  forceFitOnScreen: 0
+  nudgeAwayFromBorder: 0

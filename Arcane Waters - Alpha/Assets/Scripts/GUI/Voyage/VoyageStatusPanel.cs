@@ -32,6 +32,9 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    // The player count in town text
    public TextMeshProUGUI playerCountTownText;
 
+   // The player count in pvp text
+   public TextMeshProUGUI playerCountPvpText;
+
    // The time since the voyage started
    public TextMeshProUGUI timeText;
 
@@ -46,6 +49,9 @@ public class VoyageStatusPanel : ClientMonoBehaviour
 
    // The lobby label
    public TextMeshProUGUI lobbyText;
+
+   // The id of the current voyage for pvp instances
+   public TextMeshProUGUI voyageIdText;
 
    // The ping
    public TextMeshProUGUI pingText;
@@ -69,8 +75,8 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    public Sprite expandButtonSprite;
    public Sprite collapseButtonSprite;
 
-   // The statuses that are only relevant in voyage instances or league instances (common statuses should not be set here)
-   public GameObject[] voyageStatuses = new GameObject[0];
+   // The statuses that are relevant in each instance type (common statuses should not be set here)
+   public GameObject[] pvpStatuses = new GameObject[0];
    public GameObject[] leagueStatuses = new GameObject[0];
    public GameObject[] lobbyStatuses = new GameObject[0];
    public GameObject[] townStatuses = new GameObject[0];
@@ -115,6 +121,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       }
 
       playerCountTownText.text = EntityManager.self.getEntityCount() + "/" + instance.getMaxPlayers();
+      playerCountPvpText.text = EntityManager.self.getEntityCount().ToString();
       
       // Update the color of the ping image based on the current ping
       int ping = Util.getPing();
@@ -154,6 +161,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       playerCountText.text = EntityManager.self.getEntityCount() + "/" + instance.getMaxPlayers();
       timeText.text = (DateTime.UtcNow - DateTime.FromBinary(instance.creationDate)).ToString(@"mm\:ss");
       leagueIndexText.text = Voyage.getLeagueAreaName(instance.leagueIndex);
+      voyageIdText.text = instance.voyageId.ToString();
    }
 
    public void onUserSpawn () {
@@ -166,29 +174,29 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       // Show different relevant statuses depending on the area type
       if (VoyageGroupManager.isInGroup(Global.player)) {
          if (instance.isLeague && VoyageManager.isLobbyArea(instance.areaKey)) {
-            voyageStatuses.Hide();
+            pvpStatuses.Hide();
             leagueStatuses.Hide();
             townStatuses.Hide();
             treasureSiteStatuses.Hide();
             lobbyStatuses.Show();
          } else if (instance.isLeague && !VoyageManager.isLobbyArea(instance.areaKey)) {
-            voyageStatuses.Hide();
+            pvpStatuses.Hide();
             lobbyStatuses.Hide();
             townStatuses.Hide();
             treasureSiteStatuses.Hide();
             leagueStatuses.Show();
          } else if (VoyageManager.isTreasureSiteArea(instance.areaKey)) {
-            voyageStatuses.Hide();
+            pvpStatuses.Hide();
             lobbyStatuses.Hide();
             townStatuses.Hide();
             leagueStatuses.Hide();
             treasureSiteStatuses.Show();
-         } else if (instance.isVoyage) {
+         } else if (instance.isPvP) {
             lobbyStatuses.Hide();
             leagueStatuses.Hide();
             townStatuses.Hide();
             treasureSiteStatuses.Hide();
-            voyageStatuses.Show();
+            pvpStatuses.Show();
          } else {
             setDefaultStatus();
          }
@@ -200,7 +208,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    private void setDefaultStatus () {
       lobbyStatuses.Hide();
       leagueStatuses.Hide();
-      voyageStatuses.Hide();
+      pvpStatuses.Hide();
       treasureSiteStatuses.Hide();
       townStatuses.Show();
 

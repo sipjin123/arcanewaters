@@ -29,9 +29,6 @@ public class Global
    // A reference to the player currency for display only
    public static int lastUserGold, lastUserGems;
 
-   // A reference to the player silver currency for display only
-   public static int lastUserSilver;
-
    // Gets set to true while we're redirecting a player to a new server
    public static bool isRedirecting = false;
 

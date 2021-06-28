@@ -658,7 +658,7 @@ public class RPCManager : NetworkBehaviour
             powerupRarity = newPowerupRarity,
             powerupType = newPowerupType
          };
-         
+
 
          PowerupManager.self.addPowerupServer(_player.userId, newPowerUp);
          Target_AddPowerup(_player.connectionToClient, newPowerUp);
@@ -4474,9 +4474,8 @@ public class RPCManager : NetworkBehaviour
          playerToRemove.spawnInBiomeHomeTown();
       }
 
-      // Unregister player from the silver system
-      if (VoyageManager.isPvpArenaArea(playerToRemove.areaKey)) {
-         SilverManager.self.removePlayer(playerToRemove.userId);
+      if (playerToRemove == _player) {
+         Target_ReceivePlayerRemovedFromGroup();
       }
    }
 
@@ -4604,6 +4603,8 @@ public class RPCManager : NetworkBehaviour
             PvpManager.self.assignPvpTeam(playerShipEntity, voyage.instanceId);
          }
       }
+
+      Target_ReceiveClientFinishedLoadingArea();
    }
 
    [Command]
@@ -5403,7 +5404,7 @@ public class RPCManager : NetworkBehaviour
 
                // If this is an admin group party, randomize delay before team member is forced to join
                if (isGroupBattle) {
-                  entity.rpc.Target_JoinTeamCombat(entity.connectionToClient, netId, Random.RandomRange(.25f,4));
+                  entity.rpc.Target_JoinTeamCombat(entity.connectionToClient, netId, Random.RandomRange(.25f, 4));
                }
             }
          }
@@ -6075,7 +6076,7 @@ public class RPCManager : NetworkBehaviour
          Target_ReceiveRefreshCasting(connectionToClient, false);
          return;
       }
-      
+
       if (abilityType == AbilityType.Standard) {
          // If it's a Melee Ability, make sure the target isn't currently protected
          if (((AttackAbilityData) abilityData).isMelee() && targetBattler.isProtected(battle)) {
@@ -7135,7 +7136,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_SetAdminGameSettings (AdminGameSettings settings) { 
+   public void Cmd_SetAdminGameSettings (AdminGameSettings settings) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -7192,7 +7193,28 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_JoinPvpArena (int voyageId) {
+   public void Cmd_RequestPvpArenaInfoFromServer (int voyageId) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      if (VoyageManager.self.tryGetVoyage(voyageId, out Voyage voyage) && voyage.isPvP) {
+         Target_ReceivePvpArenaInfo(_player.connectionToClient, voyage);
+      } else {
+         sendError("This pvp arena does not exist anymore!");
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ReceivePvpArenaInfo (NetworkConnection connection, Voyage voyage) {
+      // Pass the data to the panel
+      PvpArenaPanel panel = (PvpArenaPanel) PanelManager.self.get(Panel.Type.PvpArena);
+      panel.pvpArenaInfoPanel.updatePanelWithPvpArena(voyage);
+   }
+
+   [Command]
+   public void Cmd_JoinPvpArena (int voyageId, PvpTeamType team) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -7201,7 +7223,64 @@ public class RPCManager : NetworkBehaviour
       // Make sure the game instance (voyage) exists
       if (VoyageManager.self.tryGetVoyage(voyageId, out Voyage voyage)) {
          // Send the join request to the server hosting the game
-         ServerNetworkingManager.self.joinPvpGame(voyageId, _player.userId, _player.entityName);
+         ServerNetworkingManager.self.joinPvpGame(voyageId, _player.userId, _player.entityName, team);
+      }
+   }
+
+   public void BroadcastPvPKill (int attackerEntityUserId, int targetEntityUserId) {
+      NetEntity attackerEntity = EntityManager.self.getEntity(attackerEntityUserId);
+      Instance instance = attackerEntity.getInstance();
+      if (instance != null && instance.isPvP && attackerEntity.isPlayerShip()) {
+         var entities = instance.getPlayerShipEntities();
+         PvpGame game = PvpManager.self.getGameWithPlayer(attackerEntityUserId);
+         int attackerSilverRank = 1;
+         if (game != null) {
+            attackerSilverRank = game.getSilverRank(attackerEntityUserId);
+         }
+         foreach (var entity in entities) {
+            Target_ReceiveBroadcastPvPKill(entity.connectionToClient, attackerEntityUserId, targetEntityUserId, attackerSilverRank);
+         }
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveBroadcastPvPKill (NetworkConnection connection, int attackerEntityUserId, int targetEntityUserId, int attackerSilverRank) {
+      NetEntity attackerEntity = EntityManager.self.getEntity(attackerEntityUserId);
+      NetEntity targetEntity = EntityManager.self.getEntity(targetEntityUserId);
+      if (targetEntity != null) {
+         PvpStatusPanel.self.addKillEvent(attackerEntity.entityName, PvpGame.getColorForTeam(attackerEntity.pvpTeam), targetEntity.entityName, PvpGame.getColorForTeam(targetEntity.pvpTeam));
+         
+         // hides and stops any running effects
+         PvpAnnouncement.self.toggle(false);
+         PvpAnnouncement.self.toggle(true);
+         PvpAnnouncement.self.announceKill(attackerEntity, targetEntity);
+
+         // if the attacker's rank is high enough highlight the announcement
+         if (attackerSilverRank > 2) {
+            PvpAnnouncement.self.toggleBlink(true);
+         }
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ReceivePlayerRemovedFromGroup () {
+      if (_player != null) {
+         Instance instance = _player.getInstance();
+         if (instance != null && instance.isPvP) {
+            // We are leaving a PvP session
+            PvpStatusPanel.self.toggle(false);
+         }
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveClientFinishedLoadingArea () {
+      if (_player != null) {
+         Instance instance = _player.getInstance();
+         if (instance != null && instance.isPvP) {
+            // We have entered a PvP session
+            PvpStatusPanel.self.toggle(true);
+         }
       }
    }
 

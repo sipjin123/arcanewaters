@@ -5,43 +5,38 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 using UnityEngine.EventSystems;
+using TMPro;
 
 public class AdminVoyageRow : MonoBehaviour
 {
    #region Public Variables
 
    // The voyage id
-   public Text idText;
+   public TextMeshProUGUI idText;
 
    // The area name
-   public Text areaText;
+   public TextMeshProUGUI areaText;
 
    // The league index
-   public Text leagueIndexText;
+   public TextMeshProUGUI leagueIndexText;
 
    // The instance difficulty
-   public Text difficultyText;
+   public TextMeshProUGUI difficultyText;
 
    // The player count
-   public Text playerCountText;
+   public TextMeshProUGUI playerCountText;
 
    // The enemies count
-   public Text enemiesCountText;
+   public TextMeshProUGUI enemiesCountText;
 
    // The pvp status
-   public Text isPvPText;
+   public TextMeshProUGUI isPvPText;
 
    // The time since the instance was created
-   public Text timeText;
+   public TextMeshProUGUI timeText;
 
    // The instance biome
-   public Text biomeText;
-
-   // Sprite for currently chosen row background
-   public Sprite activeBackgroundSprite;
-
-   // Sprite for inactive row background
-   public Sprite inactiveBackgroundSprite;
+   public TextMeshProUGUI biomeText;
 
    // The voyage data
    [HideInInspector]

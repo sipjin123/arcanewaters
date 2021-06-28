@@ -97,8 +97,6 @@ public class PanelManager : GenericGameManager {
          BottomBar.self.toggleMapPanel();
       } else if (KeyUtils.GetKeyDown(Key.T)) {
          BottomBar.self.toggleTradeHistoryPanel();
-      } else if (KeyUtils.GetKeyDown(Key.B)) {
-         BottomBar.self.toggleLeaderBoardsPanel();
       } else if (KeyUtils.GetKeyDown(Key.F)) {
          BottomBar.self.toggleFriendListPanel();
       } else if (KeyUtils.GetKeyDown(Key.U)) {

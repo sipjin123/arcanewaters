@@ -1681,18 +1681,18 @@ MonoBehaviour:
   instanceId: 0
   areaKey: 
   isInvisible: 0
-  gender: 1
-  bodyType: 0
-  eyesType: 0
-  hairType: 0
-  eyesPalettes: 
-  hairPalettes: 
   entityName: 
   currentHealth: 1000
   maxHealth: 1000
   XP: 0
   desiredAngle: 0
   isStealthMuted: 0
+  gender: 1
+  bodyType: 0
+  eyesType: 0
+  hairType: 0
+  eyesPalettes: 
+  hairPalettes: 
   netIdent: {fileID: 0}
   rpc: {fileID: 0}
   cropManager: {fileID: 0}
@@ -1702,15 +1702,15 @@ MonoBehaviour:
   nameText: {fileID: 8751456998218315992}
   nameTextOutline: {fileID: 5746656028303495406}
   sortPoint: {fileID: 1896635536754660}
+  shadow: {fileID: 6461678907988035178}
+  statusEffectContainer: {fileID: 0}
+  entityNameGO: {fileID: 552798949345120264}
   facing: 3
   isSinglePlayer: 0
   hasDiagonals: 0
   fallDirection: 0
   adminFlag: 0
   shipSpeedupFlag: 0
-  guildId: 0
-  guildPermissions: 0
-  guildRankPriority: 0
   battleId: 0
   voyageGroupId: -1
   isGhost: 0
@@ -1718,6 +1718,12 @@ MonoBehaviour:
   isNextBiomeUnlocked: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
+  isUnderExternalControl: 0
+  lastNPCTalkTime: -30
+  pvpTeam: 0
+  guildId: 0
+  guildPermissions: 0
+  guildRankPriority: 0
   guildIconBorder: 
   guildIconBackground: 
   guildIconSigil: 
@@ -1728,12 +1734,6 @@ MonoBehaviour:
   isAboutToWarpOnClient: 0
   interactingAnimation: 0
   isSpeedingUp: 0
-  shadow: {fileID: 6461678907988035178}
-  statusEffectContainer: {fileID: 0}
-  entityNameGO: {fileID: 552798949345120264}
-  isUnderExternalControl: 0
-  lastNPCTalkTime: -30
-  pvpTeam: 0
   _ignoredAnimators:
   - {fileID: 0}
   - {fileID: 0}
@@ -2385,6 +2385,7 @@ MonoBehaviour:
   barsContainer: {fileID: 1542939184715096}
   targetedIcon: {fileID: 0}
   enemyIcon: {fileID: 0}
+  regenerateIcon: {fileID: 0}
   barBackgroundImage: {fileID: 0}
   barsBackgroundAlt: {fileID: 0}
   shipHealthBlockPrefab: {fileID: 0}

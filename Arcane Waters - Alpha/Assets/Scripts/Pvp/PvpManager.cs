@@ -228,40 +228,6 @@ public class PvpManager : MonoBehaviour {
       }
    }
 
-   public void onPvpEntityDestroyed (NetEntity entity, NetEntity lastAttackerEntity) {
-      Instance instance = lastAttackerEntity.getInstance();
-      if (instance.isPvP) {
-         if (lastAttackerEntity == Global.player && lastAttackerEntity != null && lastAttackerEntity.isPlayerShip()) {
-            if (entity.TryGetComponent(out PvpTower tower) || entity.isPlayerShip() || entity.isBotShip() || entity.isSeaMonster()) {
-
-               // Increase the silver rank of the attacker
-               SilverManager.SilverInfo lastAttackerSilverInfo = SilverManager.self.getSilverInfo(lastAttackerEntity.userId);
-
-               SilverManager.self.setSilverRank(lastAttackerEntity.userId, lastAttackerSilverInfo.rank + 1);
-
-               // Add silver to the attacker
-               int silverGained = SilverManager.SILVER_KILL_REWARD * lastAttackerSilverInfo.rank;
-
-               // Take into account the silver rank of the destroyed entity
-               if (entity.isPlayerShip()) {
-                  SilverManager.SilverInfo entitySilverInfo = SilverManager.self.getSilverInfo(entity.userId);
-                  if (entitySilverInfo != null) {
-                     silverGained += Mathf.Max(entitySilverInfo.rank - 1, 0) * SilverManager.SILVER_KILL_REWARD;
-                  }
-               }
-               SilverManager.self.setSilverAmount(lastAttackerEntity.userId, lastAttackerSilverInfo.amount + silverGained);
-            }
-
-            SilverManager.SilverInfo silverInfo = SilverManager.self.getSilverInfo();
-            Global.player.rpc.Target_GetSilverInfo(silverInfo.amount, silverInfo.rank);
-         }
-         if (entity == Global.player && entity != null && entity.isPlayerShip()) {
-            // Reset the silver rank of the destroyed player
-            SilverManager.self.setSilverRank(entity.userId, 1);
-         }
-      }
-   }
-
    #region Private Variables
 
    // After how long the game creation will time out

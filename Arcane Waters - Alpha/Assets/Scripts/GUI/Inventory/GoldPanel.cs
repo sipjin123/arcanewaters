@@ -10,7 +10,7 @@ public class GoldPanel : ClientMonoBehaviour
 
    // The panels that display the user gold
    public static HashSet<Panel.Type> PANELS_DISPLAYING_GOLD = new HashSet<Panel.Type> {
-      Panel.Type.Adventure, Panel.Type.Auction, Panel.Type.Merchant, Panel.Type.Shipyard
+      Panel.Type.Adventure, Panel.Type.Auction, Panel.Type.Merchant, Panel.Type.Shipyard, Panel.Type.Mail
    };
 
    // The user gold

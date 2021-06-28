@@ -5,25 +5,26 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 using UnityEngine.EventSystems;
+using TMPro;
 
 public class PvpArenaRow : MonoBehaviour
 {
    #region Public Variables
 
    // The voyage id
-   public Text idText;
+   public TextMeshProUGUI idText;
 
    // The area name
-   public Text areaText;
+   public TextMeshProUGUI areaText;
 
    // The player count
-   public Text playerCount;
+   public TextMeshProUGUI playerCount;
 
    // The time since the instance was created
-   public Text timeText;
+   public TextMeshProUGUI timeText;
 
    // The state of the pvp game
-   public Text gameState;
+   public TextMeshProUGUI gameState;
 
    // The voyage data
    [HideInInspector]

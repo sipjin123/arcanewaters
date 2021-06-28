@@ -194,24 +194,35 @@ public class SeaEntity : NetEntity
             PvpGame pvpGame = PvpManager.self.getGameWithPlayer(lastAttacker.userId);
             if (pvpGame != null) {
                if (this is PlayerShipEntity) {
-                  int silverReward = 50;
+                  int silverReward = pvpGame.computeSilverReward(lastAttacker, this);
                   pvpGame.addPlayerKillCount(lastAttacker.userId);
                   pvpGame.addSilverCount(lastAttacker.userId, silverReward);
+                  pvpGame.addSilverRank(lastAttacker.userId, 1);
+                  pvpGame.resetSilverRank(this.userId);
+                  this.rpc.BroadcastPvPKill(lastAttacker.userId, this.userId);
                   Target_ReceivePvpCurrency(lastAttacker.connectionToClient, silverReward);
                }
                if (this is BotShipEntity) {
-                  int silverReward = 20;
+                  int silverReward = pvpGame.computeSilverReward(lastAttacker, this);
                   pvpGame.addShipKillCount(lastAttacker.userId);
                   pvpGame.addSilverCount(lastAttacker.userId, silverReward);
+                  pvpGame.addSilverRank(lastAttacker.userId, 1);
                   Target_ReceivePvpCurrency(lastAttacker.connectionToClient, silverReward);
                }
                if (this is SeaMonsterEntity) {
-                  int silverReward = 30;
+                  int silverReward = pvpGame.computeSilverReward(lastAttacker, this);
                   pvpGame.addMonsterKillCount(lastAttacker.userId);
                   pvpGame.addSilverCount(lastAttacker.userId, silverReward);
+                  pvpGame.addSilverRank(lastAttacker.userId, 1);
                   Target_ReceivePvpCurrency(lastAttacker.connectionToClient, silverReward);
                }
-               PvpManager.self.onPvpEntityDestroyed(this, lastAttacker);
+               if (this is SeaStructure) {
+                  int silverReward = pvpGame.computeSilverReward(lastAttacker, this);
+                  pvpGame.addBuildingDestroyedCount(lastAttacker.userId);
+                  pvpGame.addSilverCount(lastAttacker.userId, silverReward);
+                  pvpGame.addSilverRank(lastAttacker.userId, 1);
+                  Target_ReceivePvpCurrency(lastAttacker.connectionToClient, silverReward);
+               }
             }
          }
 
@@ -223,6 +234,19 @@ public class SeaEntity : NetEntity
          Rpc_OnDeath();
          _hasRunOnDeath = true;
       }
+   }
+
+   [TargetRpc]
+   public void Target_ReceivePvpCurrency (NetworkConnection connection, int silverCount) {
+      // Show a message that they gained some XP along with the item they received
+      GameObject gainItemCanvas = Instantiate(PrefabsManager.self.itemReceivedPrefab);
+      gainItemCanvas.transform.position = transform.position;
+      gainItemCanvas.GetComponentInChildren<TextMeshProUGUI>().text = "+ " + silverCount;
+
+      PvpStatPanel panel = (PvpStatPanel) PanelManager.self.get(Panel.Type.PvpScoreBoard);
+      gainItemCanvas.GetComponentInChildren<Image>().sprite = panel.silverIcon;
+
+      PvpStatusPanel.self.addSilver(silverCount);
    }
 
    [ClientRpc]
@@ -594,44 +618,7 @@ public class SeaEntity : NetEntity
          noteAttacker(attackerNetId);
 
          // Play the damage sound (FMOD SFX)
-         SeaEntity attackerEntity = SeaManager.self.getEntity(attackerNetId);
-
-         if (attackerEntity != null && this is ShipEntity) {
-            SoundEffect hitEffect = null;
-
-            bool isEnemy = this is BotShipEntity || !this.isLocalPlayer;
-            bool isPlayer = this.isLocalPlayer;
-
-            if (isEnemy) {
-               hitEffect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.ENEMY_SHIP_IMPACT);
-            } else if (isPlayer) {
-               hitEffect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.PLAYER_SHIP_IMPACT);
-            }
-
-            if (hitEffect != null) {
-               GameObject hitGo = new GameObject();
-               hitGo.transform.SetParent(this.transform);
-               hitGo.transform.localPosition = Vector3.zero;
-               hitGo.name = "Hit Emitter";
-
-               FMODUnity.StudioEventEmitter hitEmitter = hitGo.AddComponent<FMODUnity.StudioEventEmitter>();
-
-               if (isEnemy) {
-                  hitEmitter.SetParameter(SoundEffectManager.APPLY_CRIT_PARAM, isCrit ? 1 : 0);
-               }
-
-               hitEmitter.AllowFadeout = true;
-               hitEmitter.Event = hitEffect.fmodId;
-               hitEmitter.Play();
-
-               // Destroy emitter after event end
-               StartCoroutine(SoundEffectManager.self.CO_DestroyAfterEnd(hitEmitter));
-            } else {
-               SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_2, pos);
-            }
-         } else {
-            SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_2, pos);
-         }
+         SoundEffectManager.self.playEnemyHitOneShot(this is ShipEntity, this.transform);
       }
 
       // If it was our ship, shake the camera
@@ -1501,13 +1488,13 @@ public class SeaEntity : NetEntity
          float tempMajorRef = 0.0f;
          updateState(ref _attackingWaypointState, secondsBetweenFindingAttackRoutes, 9001.0f, ref _currentSecondsBetweenAttackRoutes, ref tempMajorRef, findAttackerVicinityPosition);
 
-      // If there are no attackers to chase, and we're in a pvp game, move towards the current objective
+         // If there are no attackers to chase, and we're in a pvp game, move towards the current objective
       } else if (pvpTeam != PvpTeamType.None) {
          // If we haven't reached the middle of the lane yet, move towards it
          if (_pvpLaneTarget != null) {
             updateState(ref _patrolingWaypointState, 0.0f, secondsPatrolingUntilChoosingNewTreasureSite, ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, (x) => { return _pvpLaneTarget.position; });
 
-         // If we've already reached the middle of the lane, look for the next target structure to attack
+            // If we've already reached the middle of the lane, look for the next target structure to attack
          } else {
             // Sea monsters should not engage buildings
             if (isSeamonsterPvp()) {
@@ -1533,7 +1520,7 @@ public class SeaEntity : NetEntity
                _currentPath.Clear();
             }
             findAndSetPath_Asynchronous(findingFunction(true));
-         } 
+         }
 
          // Default behavior state of sea monster pvp should be patrolling around its spawn point
          if (isSeamonsterPvp()) {

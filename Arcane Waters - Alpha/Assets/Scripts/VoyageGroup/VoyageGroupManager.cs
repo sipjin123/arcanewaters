@@ -210,10 +210,10 @@ public class VoyageGroupManager : MonoBehaviour
 
          // Send the group composition update to all group members
          StartCoroutine(CO_SendGroupCompositionToAllMembers(voyageGroup.groupId));
-      }
 
-      // Clear user powerups on the server
-      PowerupManager.self.clearPowerupsForUser(userId);
+         // Clear user powerups on the server
+         PowerupManager.self.clearPowerupsForUser(userId);
+      }
    }
 
    [Server]
@@ -226,12 +226,23 @@ public class VoyageGroupManager : MonoBehaviour
       }
    }
 
+   /// <summary>
+   /// Note that this function will not update the group composition in clients.
+   /// Use it only when the group is empty or when the player will receive the update by other means (for example, by warping)
+   /// </summary>
    [Server]
    public void deleteGroup (VoyageGroupInfo voyageGroup) {
+      List<int> userList = new List<int>(voyageGroup.members);
+
       foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
          if (server.voyageGroups.ContainsKey(voyageGroup.groupId)) {
             server.voyageGroups.Remove(voyageGroup.groupId);
          }
+      }
+
+      // Clear all the members powerups
+      foreach (int userId in userList) {
+         PowerupManager.self.clearPowerupsForUser(userId);
       }
    }
 

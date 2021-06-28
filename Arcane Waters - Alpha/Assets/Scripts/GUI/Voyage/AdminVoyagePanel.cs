@@ -151,6 +151,7 @@ public class AdminVoyagePanel : Panel
 
    public void sortByPlayerCount (bool forceDesc = false) {
       if (forceDesc) {
+         disableAllSortIcons();
          playerCountAsc.SetActive(false);
          playerCountDesc.SetActive(true);
       } else {

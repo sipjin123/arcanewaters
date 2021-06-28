@@ -89,7 +89,7 @@ public class PvpArenaPanel : Panel
    }
 
    public void onPvpArenaRowPressed (Voyage voyage) {
-      pvpArenaInfoPanel.updatePanelWithPvpArena(voyage);
+      Global.player.rpc.Cmd_RequestPvpArenaInfoFromServer(voyage.voyageId);
    }
 
    public void joinPvpArena (Voyage voyage, PvpTeamType team) {
@@ -123,6 +123,7 @@ public class PvpArenaPanel : Panel
    }
 
    public void sortByPlayerCount () {
+      toggleIcons(playerCountAsc, playerCountDesc);
       _rows.Sort((a, b) => {
          return playerCountAsc.activeSelf ? a.voyage.playerCount.CompareTo(b.voyage.playerCount) : b.voyage.playerCount.CompareTo(a.voyage.playerCount);
       });
@@ -131,6 +132,7 @@ public class PvpArenaPanel : Panel
 
    public void sortByTime (bool forceDesc = false) {
       if (forceDesc) {
+         disableAllSortIcons();
          timeAsc.SetActive(false);
          timeDesc.SetActive(true);
       } else {

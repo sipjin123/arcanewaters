@@ -110,6 +110,8 @@ public class ShipBars : MonoBehaviour {
    }
 
    protected void handleHealthBar () {
+      bool isAnEnemy = _entity.isEnemyOf(Global.player);
+
       if (_entity.currentHealth == _lastHealth) {
          return;
       }
@@ -121,7 +123,7 @@ public class ShipBars : MonoBehaviour {
       int hpStep = 0;
       for (int i = 0; i < _healthBlocks.Count; i++) {
          float blockHealth = (float)((_entity.currentHealth - hpStep)) / hpPerBlock;
-         _healthBlocks[i].updateBlock(tier, blockHealth);
+         _healthBlocks[i].updateBlock(tier, blockHealth, isAnEnemy);
          hpStep += hpPerBlock;
       }
 
@@ -129,6 +131,8 @@ public class ShipBars : MonoBehaviour {
    }
 
    public void initializeHealthBar () {
+      bool isAnEnemy = _entity.isEnemyOf(Global.player);
+
       healthBlockContainer.DestroyChildren();
       _healthBlocks.Clear();
 
@@ -138,7 +142,7 @@ public class ShipBars : MonoBehaviour {
       // Instantiate enough hp blocks to display the entity max hp
       for (int i = 0; i < Mathf.Ceil((float) _entity.maxHealth / hpPerBlock); i++) {
          ShipHealthBlock block = Instantiate(shipHealthBlockPrefab, healthBlockContainer.transform, false);
-         block.updateBlock(tier, 1);
+         block.updateBlock(tier, 1, isAnEnemy);
          _healthBlocks.Add(block);
       }
    }

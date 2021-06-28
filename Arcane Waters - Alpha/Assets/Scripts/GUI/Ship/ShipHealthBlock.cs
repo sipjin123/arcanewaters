@@ -18,15 +18,20 @@ public class ShipHealthBlock : MonoBehaviour
    // The colors for the different block tiers or statuses
    public Color[] tierColors;
 
+   // The color for tier 1 of the enemy
+   public Color[] enemyTierColors;
+
    #endregion
 
-   public void updateBlock (int tier, float health) {
+   public void updateBlock (int tier, float health, bool isEnemy = false) {
       tier = Mathf.Clamp(tier, 0, tierColors.Length - 1);
       health = Mathf.Clamp(health, 0f, 1f);
-
-      image.color = new Color(tierColors[tier].r, tierColors[tier].g, tierColors[tier].b, health);
+      if (isEnemy) {
+         image.color = new Color(enemyTierColors[tier].r, enemyTierColors[tier].g, enemyTierColors[tier].b, health);
+      } else {
+         image.color = new Color(tierColors[tier].r, tierColors[tier].g, tierColors[tier].b, health);
+      }
    }
-
    #region Private Variables
 
    #endregion

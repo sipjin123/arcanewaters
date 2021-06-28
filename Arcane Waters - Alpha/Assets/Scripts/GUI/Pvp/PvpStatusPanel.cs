@@ -9,9 +9,6 @@ public class PvpStatusPanel : ClientMonoBehaviour
 {
    #region Public Variables
 
-   // Our Canvas Group
-   public CanvasGroup canvasGroup;
-
    // The Silver Amount text
    public TextMeshProUGUI silverCountText;
 
@@ -21,6 +18,15 @@ public class PvpStatusPanel : ClientMonoBehaviour
    // The Amount of time the increase will remain on the screen
    public int silverDeltaTextDurationSeconds;
 
+   // The container for the kill event indicators
+   public VerticalLayoutGroup killEventNotificationList;
+
+   // Reference to the prefab for the Kill Event Notification
+   public GameObject KillEventNotificationPrefab;
+
+   // Reference to the number of kill events
+   public int KillEventsCountMax;
+
    // Self
    public static PvpStatusPanel self;
 
@@ -29,45 +35,41 @@ public class PvpStatusPanel : ClientMonoBehaviour
    protected override void Awake () {
       base.Awake();
       self = this;
+      this.gameObject.SetActive(false);
    }
 
    public void Start () {
-      // Hide the panel by default
-      hide();
-      StartCoroutine(nameof(CO_Update));
+      InvokeRepeating(nameof(CO_Update), 0, 1);
    }
 
-   private IEnumerator CO_Update () {
-      while (true) {
-         hide();
-         if (Global.player != null) {
-            // Get the current instance
-            Instance instance = Global.player.getInstance();
-            if (instance != null && instance.isPvP) {
-               // Show the panel
-               show();
-               int delta = Global.lastUserSilver - _silverBeforeChange;
-               silverCountText.text = _silverBeforeChange.ToString();
-               if (_currentSilverDelta != delta){
-                  _deltaToggleStartTime = Time.realtimeSinceStartup;
-                  _currentSilverDelta = delta;
-                  if (delta > 0) {
-                     showDelta(delta);
-                  }
-               }
-               // Check if the delta panel should be hidden
-               if (isDeltaShowing()) {
-                  if (Time.realtimeSinceStartup > _deltaToggleStartTime + silverDeltaTextDurationSeconds) {
-                     hideDelta();
-                     // Update the displayed amount of silver
-                     silverCountText.text = Global.lastUserSilver.ToString();
-                     _silverBeforeChange = Global.lastUserSilver;
-                  }
-               }
-            }
+   private void CO_Update () {
+      // Check if the delta panel should be hidden
+      if (isDeltaShowing()) {
+         if (Time.realtimeSinceStartup > _deltaToggleStartTime + silverDeltaTextDurationSeconds) {
+            hideDelta();
+            // Update the displayed amount of silver
+            int silverAfterChange = _silverBeforeChange + _currentSilverDelta;
+            silverCountText.text = silverAfterChange.ToString();
+            _silverBeforeChange = silverAfterChange;
+            _currentSilverDelta = 0;
          }
-         yield return new WaitForSeconds(1);
       }
+   }
+
+   public void addSilver (int gain) {
+      if (Global.player == null) {
+         return;
+      }
+
+      Instance instance = Global.player.getInstance();
+      if (instance == null || !instance.isPvP) {
+         return;
+      }
+
+      silverCountText.text = _silverBeforeChange.ToString();
+      _currentSilverDelta += gain;
+      _deltaToggleStartTime = Time.realtimeSinceStartup;
+      showDelta();
    }
 
    public bool isDeltaShowing () {
@@ -79,36 +81,67 @@ public class PvpStatusPanel : ClientMonoBehaviour
       silverDeltaText.text = string.Empty;
    }
 
-   public void showDelta (int delta) {
+   public void showDelta () {
       silverDeltaText.gameObject.SetActive(true);
-      silverDeltaText.text = getDeltaDisplayString(delta);
+      silverDeltaText.text = getDisplayStringForDelta();
    }
 
-   private string getDeltaDisplayString (int delta) {
-      if (delta > 0) {
-         return "+" + delta.ToString();
-      }
-      return string.Empty;
-   }
-
-   public void show () {
-      if (this.canvasGroup.alpha < 1f) {
-         this.canvasGroup.alpha = 1f;
-         this.canvasGroup.blocksRaycasts = true;
-         this.canvasGroup.interactable = true;
-      }
-   }
-
-   public void hide () {
-      if (this.canvasGroup.alpha > 0f) {
-         this.canvasGroup.alpha = 0f;
-         this.canvasGroup.blocksRaycasts = false;
-         this.canvasGroup.interactable = false;
+   public void toggle (bool show) {
+      this.gameObject.SetActive(show);
+      if (!show) {
+         CancelInvoke(nameof(CO_Update));
       }
    }
 
    public bool isShowing () {
-      return this.gameObject.activeSelf && canvasGroup.alpha > 0f;
+      return this.gameObject.activeSelf;
+   }
+
+   public void addKillEvent (string attackerName, Color attackerColor, string targetName, Color targetColor) {
+
+      int displayedNotificationCount = killEventNotificationList.transform.childCount;
+
+      PvpKillEventNotification latestNotification = null;
+
+      if (displayedNotificationCount < KillEventsCountMax) {
+         GameObject newIndicator = Instantiate(KillEventNotificationPrefab);
+         latestNotification = newIndicator.GetComponent<PvpKillEventNotification>();
+         latestNotification.transform.SetParent(killEventNotificationList.transform);
+      } else {
+         if (displayedNotificationCount > 0) {
+            Transform t = killEventNotificationList.transform.GetChild(displayedNotificationCount - 1);
+            latestNotification = t.GetComponent<PvpKillEventNotification>();
+         }
+      }
+      latestNotification.transform.SetAsFirstSibling();
+
+      // Remove the indicators in excess
+      displayedNotificationCount = killEventNotificationList.transform.childCount;
+      if (displayedNotificationCount > Mathf.Max(KillEventsCountMax, 0)) {
+         while (killEventNotificationList.transform.childCount > KillEventsCountMax) {
+            var child = killEventNotificationList.transform.GetChild(killEventNotificationList.transform.childCount - 1);
+            child.transform.SetParent(null);
+            Destroy(child.gameObject);
+         }
+      }
+
+      if (latestNotification != null) {
+         updateKillEventNotification(latestNotification, attackerName, attackerColor, targetName, targetColor);
+      }
+   }
+
+   private string getDisplayStringForDelta () {
+      if (_currentSilverDelta > 0) {
+         return "+" + _currentSilverDelta.ToString();
+      }
+      return string.Empty;
+   }
+
+   private void updateKillEventNotification (PvpKillEventNotification indicator, string attackerName, Color attackerColor, string targetName, Color targetColor) {
+      indicator.txtAttacker.text = attackerName;
+      indicator.txtAttacker.color = attackerColor;
+      indicator.txtAttacked.text = targetName;
+      indicator.txtAttacked.color = targetColor;
    }
 
    #region Private Variables

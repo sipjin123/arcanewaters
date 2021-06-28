@@ -1779,7 +1779,7 @@ public class NetEntity : NetworkBehaviour
       NetworkedServer bestServer = ServerNetworkingManager.self.findBestServerForConnectingPlayer(newArea, this.entityName, this.userId, this.connectionToClient.address, isSinglePlayer, -1);
 
       // Only admins can warp to voyage areas without indicating the voyageId
-      if (isAdmin() && (VoyageManager.isVoyageOrLeagueArea(newArea) || VoyageManager.isTreasureSiteArea(newArea))) {
+      if (isAdmin() && (VoyageManager.isAnyLeagueArea(newArea) || VoyageManager.isTreasureSiteArea(newArea))) {
          VoyageManager.self.forceAdminWarpToVoyageAreas(this, newArea);
          return;
       }
@@ -1827,8 +1827,8 @@ public class NetEntity : NetworkBehaviour
       // Store the connection reference so that we don't lose it while on the background thread
       NetworkConnection connectionToClient = this.connectionToClient;
 
-      if (isPlayerShip() && VoyageManager.isLeagueOrLobbyArea(areaKey)) {
-         if (VoyageManager.isLeagueOrLobbyArea(newArea)) {
+      if (isPlayerShip() && VoyageManager.isAnyLeagueArea(areaKey)) {
+         if (VoyageManager.isAnyLeagueArea(newArea)) {
             // When warping between league maps, the hp is persistent
             ((PlayerShipEntity) this).storeCurrentShipHealth();
          } else {
@@ -1893,7 +1893,7 @@ public class NetEntity : NetworkBehaviour
          SoundManager.setBackgroundMusic(this.areaKey, getInstance().biome);
 
          // Show the Area name
-         if (VoyageManager.isLeagueOrLobbyArea(this.areaKey)) {
+         if (VoyageManager.isAnyLeagueArea(this.areaKey)) {
             LocationBanner.self.setText("League " + Voyage.getLeagueAreaName(getInstance().leagueIndex));
          } else {
             LocationBanner.self.setText(Area.getName(this.areaKey));
@@ -1905,7 +1905,7 @@ public class NetEntity : NetworkBehaviour
          // Trigger the tutorial
          if (VoyageManager.isLeagueArea(this.areaKey) || VoyageManager.isLeagueSeaBossArea(this.areaKey)) {
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInLeagueNotLobby);
-         } else if (VoyageManager.isVoyageOrLeagueArea(this.areaKey)) {
+         } else if (VoyageManager.isAnyLeagueArea(this.areaKey)) {
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInVoyage);
          }
          TutorialManager3.self.tryCompletingStepByLocation();
