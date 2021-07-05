@@ -12,11 +12,16 @@ public class SeaEntity : NetEntity
 {
    #region Public Variables
 
-   // The container for our sprites
-   public GameObject spritesContainer;
+   [Header("Debugging")]
 
-   // The container for our ripples
-   public GameObject ripplesContainer;
+   // The debug canvas
+   public GameObject debugImageHolder;
+
+   // Screen gui for debugging sea entities
+   public GameObject onScreenGUI;
+
+   // Displays the desired stats for the user
+   public Text statTextDisplay;
 
    [Header("Combat")]
 
@@ -76,6 +81,9 @@ public class SeaEntity : NetEntity
 
    [Header("AI")]
 
+   // The current seconds roaming around its territory
+   public float currentSecondsPatrolingTerritory = 0;
+
    // The initial position of this monster spawn
    public Vector3 initialPosition;
 
@@ -110,7 +118,7 @@ public class SeaEntity : NetEntity
    public float patrolingWaypointsRadius = 1.0f;
 
    // The radius that indicates if the pvp monster should retreat to spawn point
-   public const float PVP_MONSTER_TERRITORY_RADIUS = 2;
+   public const float PVP_MONSTER_TERRITORY_RADIUS = 2.5f;
 
    // The radius that indicates if the pvp monster should stop chasing players
    public const float PVP_MONSTER_CHASE_RADIUS = 3f;
@@ -119,6 +127,14 @@ public class SeaEntity : NetEntity
    public const float PVP_MONSTER_IDLE_DURATION = 5f;
 
    #endregion
+
+   [Header("Components")]
+
+   // The container for our sprites
+   public GameObject spritesContainer;
+
+   // The container for our ripples
+   public GameObject ripplesContainer;
 
    #endregion
 
@@ -737,10 +753,24 @@ public class SeaEntity : NetEntity
       setHealthRegeneration(true);
       _attackers.Clear();
       _currentAttacker = 0;
+      _attackingWaypointState = WaypointState.FINDING_PATH;
       _patrolingWaypointState = WaypointState.RETREAT;
 
-      _currentSecondsPatroling = 0;
-      _currentSecondsBetweenPatrolRoutes = 0;
+      // Timer reset
+      if (_currentSecondsPatroling > 0) {
+         _currentSecondsPatroling = 0;
+      }
+      if (_currentSecondsBetweenPatrolRoutes > 0) {
+         _currentSecondsBetweenPatrolRoutes = 0;
+      }
+
+      // If previous state was not retreating, reinitialize path and timer
+      bool isAlreadyRetreating = _patrolingWaypointState == WaypointState.RETREAT;
+      if (!isAlreadyRetreating) {
+         _currentPath.Clear();
+         currentSecondsPatrolingTerritory = 0;
+      }
+
       updateState(ref _patrolingWaypointState, 0.0f, 0, ref _currentSecondsBetweenPatrolRoutes,
          ref _currentSecondsPatroling, (x) => { return initialPosition; });
    }
@@ -1288,7 +1318,7 @@ public class SeaEntity : NetEntity
          return;
       }
 
-      if (_patrolingWaypointState == WaypointState.RETREAT) {
+      if (isSeamonsterPvp() && _patrolingWaypointState == WaypointState.RETREAT && distanceFromInitialPosition > PVP_MONSTER_TERRITORY_RADIUS) {
          return;
       }
 
@@ -1486,26 +1516,28 @@ public class SeaEntity : NetEntity
             }
             findAndSetPath_Asynchronous(findAttackerVicinityPosition(true));
             _chaseStartTime = NetworkTime.time;
+
+            // Update attacking state with only Minor updates
+            float tempMajorRef = 0.0f;
+            updateState(ref _attackingWaypointState, secondsBetweenFindingAttackRoutes, 9001.0f, ref _currentSecondsBetweenAttackRoutes, ref tempMajorRef, findAttackerVicinityPosition, true);
          } else {
             if (isSeamonsterPvp()) {
                // Immediately stop chasing enemy if the enemy is too far, this will cause monster to return to spawn point and regenerate
-               NetworkIdentity attackerIdentity = NetworkIdentity.spawned[_currentAttacker];
-               float enemyDist = Vector2.Distance(transform.position, attackerIdentity.transform.position);
-               if (attackerIdentity && enemyDist > PVP_MONSTER_CHASE_RADIUS) {
-                  retreatToSpawn();
+               if (NetworkIdentity.spawned.ContainsKey(_currentAttacker) && _currentAttacker != 0) {
+                  NetworkIdentity attackerIdentity = NetworkIdentity.spawned[_currentAttacker];
+                  float enemyDist = Vector2.Distance(transform.position, attackerIdentity.transform.position);
+                  if (attackerIdentity && enemyDist > PVP_MONSTER_CHASE_RADIUS) {
+                     retreatToSpawn();
+                  }
                }
             }
          }
-
-         // Update attacking state with only Minor updates
-         float tempMajorRef = 0.0f;
-         updateState(ref _attackingWaypointState, secondsBetweenFindingAttackRoutes, 9001.0f, ref _currentSecondsBetweenAttackRoutes, ref tempMajorRef, findAttackerVicinityPosition);
-
          // If there are no attackers to chase, and we're in a pvp game, move towards the current objective
       } else if (pvpTeam != PvpTeamType.None) {
          // If we haven't reached the middle of the lane yet, move towards it
          if (_pvpLaneTarget != null) {
-            updateState(ref _patrolingWaypointState, 0.0f, secondsPatrolingUntilChoosingNewTreasureSite, ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, (x) => { return _pvpLaneTarget.position; });
+            updateState(ref _patrolingWaypointState, 0.0f, secondsPatrolingUntilChoosingNewTreasureSite, 
+               ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, (x) => { return _pvpLaneTarget.position; });
 
             // If we've already reached the middle of the lane, look for the next target structure to attack
          } else {
@@ -1516,9 +1548,11 @@ public class SeaEntity : NetEntity
 
             SeaStructure targetStructure = getTargetSeaStructure();
             if (targetStructure) {
-               updateState(ref _patrolingWaypointState, 0.0f, secondsPatrolingUntilChoosingNewTreasureSite, ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, (x) => { return targetStructure.transform.position; });
+               updateState(ref _patrolingWaypointState, 0.0f, secondsPatrolingUntilChoosingNewTreasureSite, 
+                  ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, (x) => { return targetStructure.transform.position; });
             } else {
-               updateState(ref _patrolingWaypointState, 0.0f, secondsPatrolingUntilChoosingNewTreasureSite, ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, findRandomVicinityPosition);
+               updateState(ref _patrolingWaypointState, 0.0f, secondsPatrolingUntilChoosingNewTreasureSite, 
+                  ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, findRandomVicinityPosition);
             }
          }
       } else {
@@ -1540,7 +1574,8 @@ public class SeaEntity : NetEntity
             _patrolingWaypointState = WaypointState.RETREAT;
          }
 
-         updateState(ref _patrolingWaypointState, secondsBetweenFindingPatrolRoutes, secondsPatrolingUntilChoosingNewTreasureSite, ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, findingFunction);
+         updateState(ref _patrolingWaypointState, secondsBetweenFindingPatrolRoutes, secondsPatrolingUntilChoosingNewTreasureSite, 
+            ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, findingFunction);
       }
    }
 
@@ -1609,17 +1644,21 @@ public class SeaEntity : NetEntity
    }
 
    [Server]
-   private void updateState (ref WaypointState state, float secondsBetweenMinorSearch, float secondsBetweenMajorSearch, ref float currentSecondsBetweenMinorSearch, ref float currentSecondsBetweenMajorSearch, System.Func<bool, Vector3> targetPositionFunction) {
+   private void updateState (ref WaypointState state, float secondsBetweenMinorSearch, float secondsBetweenMajorSearch, ref float currentSecondsBetweenMinorSearch, ref float currentSecondsBetweenMajorSearch, System.Func<bool, Vector3> targetPositionFunction, bool isAtk = false) {
       switch (state) {
          case WaypointState.RETREAT:
             if (isSeamonsterPvp() && _seeker != null) {
+               _attackingWaypointState = WaypointState.FINDING_PATH;
+               _attackers.Clear();
+               _currentAttacker = 0;
+
                // Start path finding
                if (_seeker.IsDone() && (_currentPath == null || _currentPath.Count <= 0)) {
                   findAndSetPath_Asynchronous(targetPositionFunction(true));
                }
 
                // If path finding has ended
-               if (_currentPathIndex >= _currentPath.Count && currentSecondsBetweenMinorSearch > PVP_MONSTER_IDLE_DURATION) {
+               if (_currentPathIndex >= _currentPath.Count || currentSecondsPatrolingTerritory > PVP_MONSTER_IDLE_DURATION) {
                   // If this unit is retreating and is fully regenerated, disable regenerate health command
                   if (distanceFromInitialPosition > 1) {
                      if (!regenerateHealth && currentHealth < maxHealth && !hasAnyCombat()) {
@@ -1629,12 +1668,13 @@ public class SeaEntity : NetEntity
                      setHealthRegeneration(false);
                   }
 
-                  currentSecondsBetweenMinorSearch = 0.0f;
+                  currentSecondsPatrolingTerritory = 0.0f;
 
                   // Move around the spawn point
                   findAndSetPath_Asynchronous(targetPositionFunction(true));
                }
-               currentSecondsBetweenMinorSearch += Time.fixedDeltaTime;
+
+               currentSecondsPatrolingTerritory += Time.fixedDeltaTime;
             } else {
                state = WaypointState.FINDING_PATH;
             }
@@ -1869,10 +1909,10 @@ public class SeaEntity : NetEntity
    private double _chaseStartTime = 0.0f;
 
    // How many seconds have passed since we last stopped on an attack route
+   [SerializeField]
    private float _currentSecondsBetweenAttackRoutes;
 
-   private enum WaypointState
-   {
+   private enum WaypointState {
       NONE = 0,
       FINDING_PATH = 1,
       MOVING_TO = 2,
