@@ -90,6 +90,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3501c8f839e0894da1190798fb99cc7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 289160367598726219}
   silverCountText: {fileID: 8221872001921591388}
   silverDeltaText: {fileID: 1189674974466633742}
   silverDeltaTextDurationSeconds: 0

@@ -253,10 +253,10 @@ MonoBehaviour:
   blinkingColor: {r: 1, g: 0, b: 0, a: 1}
   announceLifetimeSeconds: -1
   announcePatterns:
-  - '{0} sank {1}!'
-  - '{0} destroyed {1}!'
-  - '{0} obliterated {1}!'
-  - '{0} wrecked {1}!'
+  - '{0}  sank  {1}!'
+  - '{0}  destroyed  {1}!'
+  - '{0}  obliterated  {1}!'
+  - '{0}  wrecked  {1}!'
 --- !u!1 &7731011554728551876
 GameObject:
   m_ObjectHideFlags: 0

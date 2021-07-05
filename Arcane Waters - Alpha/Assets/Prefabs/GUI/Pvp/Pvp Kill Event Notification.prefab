@@ -105,7 +105,7 @@ MonoBehaviour:
   txtAttacker: {fileID: 1097522000756138578}
   txtAttacked: {fileID: 4271350199287561188}
   lifetimeSeconds: 10
-  isPermanent: 1
+  isPermanent: 0
 --- !u!114 &5554957265948943338
 MonoBehaviour:
   m_ObjectHideFlags: 0
