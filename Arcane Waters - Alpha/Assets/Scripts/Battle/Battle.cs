@@ -352,7 +352,7 @@ public class Battle : NetworkBehaviour {
                } else {
                   // Allow refresh movement only when the winning battler is a player
                   if (participant.teamType == winningTeam && participant.enemyType == Enemy.Type.PlayerBattler) {
-                     participant.player.rpc.Target_ResetMoveDisable(participant.player.connectionToClient);
+                     participant.player.rpc.Target_ResetMoveDisable(participant.player.connectionToClient, participant.battleId.ToString());
                   }
                }
             }

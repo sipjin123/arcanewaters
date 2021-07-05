@@ -369,8 +369,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          BattleUIManager.self.triggerAbilityByKey(0);
       }
 
-      // Simulate changing battle stance once in a while
-      BattleUIManager.self.changeBattleStance(Random.Range(0, 3));
+      if (Random.Range(0,3) < 1) {
+         // Simulate changing battle stance once in a while
+         BattleUIManager.self.changeBattleStance(Random.Range(0, 3));
+      }
    }
 
    private void initializeBattler () {

@@ -342,17 +342,17 @@ public class BattleManager : MonoBehaviour {
       if (!ifFirstEquip) {
          if (battler.armorManager.armorType != player.armorManager.armorType) {
             // TODO: Setup a way to determine the duration of debuffs, maybe a debuff web tool?
-            // Add armor debuff to the player, lasts 60 seconds
+            // Add armor debuff to the player, lasts 15 seconds
             if (!battler.debuffList.ContainsKey(Status.Type.ArmorChangeDebuff)) {
-               battler.debuffList.Add(Status.Type.ArmorChangeDebuff, 60);
+               battler.debuffList.Add(Status.Type.ArmorChangeDebuff, 15);
             }
          }
 
          if (battler.weaponManager.weaponType != player.weaponManager.weaponType) {
             // TODO: Setup a way to determine the duration of debuffs, maybe a debuff web tool?
-            // Add damage debuff to the player, lasts 60 seconds
+            // Add damage debuff to the player, lasts 15 seconds
             if (!battler.debuffList.ContainsKey(Status.Type.WeaponChangeDebuff)) {
-               battler.debuffList.Add(Status.Type.WeaponChangeDebuff, 60);
+               battler.debuffList.Add(Status.Type.WeaponChangeDebuff, 15);
             }
          }
       } else {
