@@ -10,14 +10,14 @@ public class LagMonitorManager : GenericGameManager
 {
    #region Public Variables
 
-   // The interval in seconds the clients log their ping
+   // The interval in seconds the clients calculate and log their performance
    public static float CLIENT_MONITOR_INTERVAL = 5;
 
    // The interval in seconds the server will calculate the ping and fps statistics
    public static float SERVER_MONITOR_INTERVAL = 30;
 
    // The time interval over which the server calculates the performance values
-   public static float SERVER_PERFORMANCE_CALCULATION_INTERVAL = 1f;
+   public static float FPS_CAPTURE_INTERVAL = 1f;
    
    // The ping threshold in ms over which a warning must be logged on the server
    public static float PING_THRESHOLD = 500;
@@ -34,16 +34,16 @@ public class LagMonitorManager : GenericGameManager
 
    public void Start () {
       _lastPingSentToServerTime = NetworkTime.time;
-      InvokeRepeating(nameof(calculateAveragePing), CLIENT_MONITOR_INTERVAL, CLIENT_MONITOR_INTERVAL);
+      InvokeRepeating(nameof(capturePerformance), FPS_CAPTURE_INTERVAL, FPS_CAPTURE_INTERVAL);
+      InvokeRepeating(nameof(monitorClient), CLIENT_MONITOR_INTERVAL, CLIENT_MONITOR_INTERVAL);
    }
 
    public void startLagMonitor () {
-      InvokeRepeating(nameof(capturePerformance), SERVER_PERFORMANCE_CALCULATION_INTERVAL, SERVER_PERFORMANCE_CALCULATION_INTERVAL);
       InvokeRepeating(nameof(monitorServer), SERVER_MONITOR_INTERVAL, SERVER_MONITOR_INTERVAL);
    }
 
    public void Update () {
-      if (NetworkServer.active) {
+      if (Util.isStressTesting()) {
          // Add this frame and the delta time for fps calculation
          _fpsTotalTime += Time.unscaledDeltaTime;
          _frameCount++;
@@ -63,7 +63,7 @@ public class LagMonitorManager : GenericGameManager
       }
    }
 
-   private void calculateAveragePing () {
+   private void monitorClient () {
       if (Util.isServerNonHost()) {
          return;
       }
@@ -77,9 +77,20 @@ public class LagMonitorManager : GenericGameManager
          D.warning("The server has become unresponsive!");
       }
 
-      // Log the ping in auto test mode
-      if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {
-         D.debug($"Ping: {(int)_lastAveragePing}");
+      getStatistics(_fpsList, _fpsList.Count, out float fpsMin, out float fpsMax, out float fpsMean, out float fpsMedian);
+
+      // Clear the values captured in this time interval
+      _fpsList.Clear();
+
+      if (Util.isStressTesting()) {
+         // The seconds since the server started
+         TimeSpan serverTime = TimeSpan.FromSeconds(NetworkTime.time);
+         string serverTimeStr = string.Format("{0:D2}m:{1:D2}s", serverTime.Minutes, serverTime.Seconds);
+
+         D.debug($"Client statistics:\n" +
+            $"The stress test started {serverTimeStr} ago.\n" +
+            $"Ping {(int) _lastAveragePing}\n" +
+            $"FPS (last {CLIENT_MONITOR_INTERVAL} seconds) - min: {(int) fpsMin} max: {(int) fpsMax} mean: {(int) fpsMean} median: {(int) fpsMedian}");
       }
    }
 
@@ -95,11 +106,10 @@ public class LagMonitorManager : GenericGameManager
       Global.player.rpc.Cmd_ReceiveClientPing(_lastAveragePing);
    }
 
-   [Server]
    private void capturePerformance () {
       // Calculate the fps
       int fps = Mathf.FloorToInt(((float) _frameCount) / _fpsTotalTime);
-      _serverFps.Add(fps);
+      _fpsList.Add(fps);
       _frameCount = 0;
       _fpsTotalTime = 0f;
    }
@@ -107,6 +117,16 @@ public class LagMonitorManager : GenericGameManager
    [Server]
    public void receiveClientPing (int userId, float ping) {
       _averageClientPings[userId] = ping;
+   }
+
+   [Server]
+   public void noteAuthenticationDuration (string accountName, float authenticationDuration) {
+      _authenticationProcessDuration[accountName] = authenticationDuration;
+   }
+
+   [Server]
+   public void noteAccountLoginDuration (string accountName, float accountLoginDuration) {
+      _loginProcessDuration[accountName] = accountLoginDuration;
    }
 
    [Server]
@@ -132,10 +152,10 @@ public class LagMonitorManager : GenericGameManager
       }
 
       getStatistics(_averageClientPings.Values, _averageClientPings.Count, out float pingMin, out float pingMax, out float pingMean, out float pingMedian);
-      getStatistics(_serverFps, _serverFps.Count, out float fpsMin, out float fpsMax, out float fpsMean, out float fpsMedian);
+      getStatistics(_fpsList, _fpsList.Count, out float fpsMin, out float fpsMax, out float fpsMean, out float fpsMedian);
 
       // Clear the values captured in this time interval
-      _serverFps.Clear();
+      _fpsList.Clear();
 
       if (Util.isStressTesting()) {
          // The seconds since the server started
@@ -145,6 +165,8 @@ public class LagMonitorManager : GenericGameManager
          // Log the statistics
          D.debug($"Server statistics:\n" +
             $"The stress test started {serverTimeStr} ago.\n" +
+            $"Authentication Duration ({_authenticationProcessDuration.Count} accounts) - min: {_authenticationProcessDuration.Values.Min():N2} max: {_authenticationProcessDuration.Values.Max():N2} mean: {_authenticationProcessDuration.Values.Average():N2}\n" +
+            $"Login Duration ({_loginProcessDuration.Count} accounts) - min: {_loginProcessDuration.Values.Min():N2} max: {_loginProcessDuration.Values.Max():N2} mean: {_loginProcessDuration.Values.Average():N2}\n" +
             $"Ping ({_averageClientPings.Count} clients) - min: {(int) pingMin} max: {(int) pingMax} mean: {(int) pingMean} median: {(int) pingMedian}\n" +
             $"FPS (last {SERVER_MONITOR_INTERVAL} seconds) - min: {(int) fpsMin} max: {(int) fpsMax} mean: {(int) fpsMean} median: {(int) fpsMedian}");
 
@@ -181,6 +203,12 @@ public class LagMonitorManager : GenericGameManager
 
    #region Private Variables
 
+   // Tracks how long it took to authenticate each account, for troubleshooting purposes
+   protected static Dictionary<string, float> _authenticationProcessDuration = new Dictionary<string, float>();
+
+   // Tracks how long it took to log each account in, for troubleshooting purposes
+   protected static Dictionary<string, float> _loginProcessDuration = new Dictionary<string, float>();
+
    // The sum of pings
    private int _pingSum = 0;
 
@@ -203,7 +231,7 @@ public class LagMonitorManager : GenericGameManager
    private Dictionary<int, float> _averageClientPings = new Dictionary<int, float>();
 
    // All the server fps calculated since the last time statistics were logged
-   private List<float> _serverFps = new List<float>();
+   private List<float> _fpsList = new List<float>();
 
    #endregion
 }

@@ -65,7 +65,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_CreateAuction (Item item, int startingBid, int buyoutPrice, long expiryDateBinary) {
+   public void Cmd_CreateAuction (Item item, int startingBid, int buyoutPrice, long expiryDateBinary, int auctionCost) {
       DateTime expiryDate = DateTime.FromBinary(expiryDateBinary);
 
       if (_player == null) {
@@ -94,6 +94,16 @@ public class RPCManager : NetworkBehaviour
       }
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int gold = DB_Main.getGold(_player.userId);
+
+         // Make sure they have enough gold and the price is positive
+         if (gold < auctionCost || auctionCost < 0) {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendError(ErrorMessage.Type.NotEnoughGold, _player, "You don't have " + auctionCost + " gold!");
+            });
+            return;
+         }
+
          // Create a mail without recipient, with the auctioned item as attachment - this will also verify the item validity
          int mailId = createMailCommon(-1, "Auction House - Item Delivery", "", new int[] { item.id }, new int[] { item.count }, false, false);
          if (mailId < 0) {
@@ -103,6 +113,9 @@ public class RPCManager : NetworkBehaviour
          // Create the auction
          int newId = DB_Main.createAuction(_player.userId, _player.nameText.text, mailId, expiryDate, startingBid,
             buyoutPrice, item.category, EquipmentXMLManager.self.getItemName(item), item.count);
+
+         // Make sure that we charge the player only if the auction was set up correctly
+         DB_Main.addGold(_player.userId, -auctionCost);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ModifiedOwnAuction, _player, "Your item has been successfully submitted for auction!");
@@ -1275,6 +1288,37 @@ public class RPCManager : NetworkBehaviour
             if (_player.guildId > 0) {
                foreach (UserInfo member in info.guildMembers) {
                   member.isOnline = ServerNetworkingManager.self.isUserOnline(member.userId);
+               }
+            }
+
+            // There is no leader in this guild - choose new leader randomly, from highest ranking members
+            if (_player.guildId > 0) {
+               List<UserInfo> userInfos = info.guildMembers.ToList();
+               List<int> userRankPriorities = new List<int>();
+               List<int> userRankIDs = new List<int>();
+               if (!userInfos.Exists(x => x.guildRankId == 0)) {
+                  // Get rank priorities
+                  UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                     foreach (UserInfo userInfo in userInfos) {
+                        userRankPriorities.Add(DB_Main.getGuildMemberRankPriority(userInfo.userId));
+                        userRankIDs.Add(DB_Main.getGuildMemberRankId(userInfo.userId));
+                     }
+
+                     UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                        int minRankPriority = userRankPriorities.Min();
+                        int gldRankId = userInfos[userRankPriorities.FindIndex(x => x == minRankPriority)].guildRankId;
+                        List<UserInfo> highestRankUsers = userInfos.FindAll(x => x.guildRankId == gldRankId);
+
+                        // Choose leader randomly
+                        UserInfo newLeader = highestRankUsers.ChooseRandom();
+                        int index = userInfos.FindIndex(x => x == newLeader);
+
+                        // Set new leader in database
+                        UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                           DB_Main.assignRankGuild(info.guildMembers[index].userId, 0);
+                        });
+                     });
+                  });
                }
             }
 
@@ -4473,10 +4517,6 @@ public class RPCManager : NetworkBehaviour
       if (VoyageManager.isAnyLeagueArea(playerToRemove.areaKey) || VoyageManager.isPvpArenaArea(playerToRemove.areaKey) || VoyageManager.isTreasureSiteArea(playerToRemove.areaKey) || playerToRemove.isGhost) {
          playerToRemove.spawnInBiomeHomeTown();
       }
-
-      if (playerToRemove == _player) {
-         Target_ReceivePlayerRemovedFromGroup();
-      }
    }
 
    [TargetRpc]
@@ -4603,8 +4643,6 @@ public class RPCManager : NetworkBehaviour
             PvpManager.self.assignPvpTeam(playerShipEntity, voyage.instanceId);
          }
       }
-
-      Target_ReceiveClientFinishedLoadingArea();
    }
 
    [Command]
@@ -6701,7 +6739,9 @@ public class RPCManager : NetworkBehaviour
          List<Perk> userPerks = DB_Main.getPerkPointsForUser(_player.userId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_SetPerkPoints(netIdentity.connectionToClient, userPerks.ToArray());
+            if (netIdentity != null) {
+               Target_SetPerkPoints(netIdentity.connectionToClient, userPerks.ToArray());
+            }
          });
       });
    }
@@ -7227,60 +7267,51 @@ public class RPCManager : NetworkBehaviour
       }
    }
 
-   public void BroadcastPvPKill (int attackerEntityUserId, int targetEntityUserId) {
-      NetEntity attackerEntity = EntityManager.self.getEntity(attackerEntityUserId);
+   [Server]
+   public void broadcastPvPKill (NetEntity attackerEntity, NetEntity targetEntity) {
+      if (attackerEntity == null) {
+         return;
+      }
+      
       Instance instance = attackerEntity.getInstance();
-      if (instance != null && instance.isPvP && attackerEntity.isPlayerShip()) {
-         var entities = instance.getPlayerShipEntities();
-         PvpGame game = PvpManager.self.getGameWithPlayer(attackerEntityUserId);
-         int attackerSilverRank = 1;
-         if (game != null) {
-            attackerSilverRank = game.getSilverRank(attackerEntityUserId);
-         }
-         foreach (var entity in entities) {
-            Target_ReceiveBroadcastPvPKill(entity.connectionToClient, attackerEntityUserId, targetEntityUserId, attackerSilverRank);
-         }
+      if (instance == null || !instance.isPvP) {
+         return;
+      }
+
+      // Only Player vs Player kills are announced
+      if (!attackerEntity.isPlayerShip() || !targetEntity.isPlayerShip()) {
+         return;
+      }
+
+      List<PlayerShipEntity> entities = instance.getPlayerShipEntities();
+      PvpGame game = PvpManager.self.getGameWithInstance(instance.id);
+      int attackerSilverRank = 1;
+      if (game != null) {
+         attackerSilverRank = game.getSilverRank(attackerEntity.userId);
+      }
+
+      foreach (NetEntity entity in entities) {
+         Target_ReceiveBroadcastPvPKill(entity.connectionToClient, attackerEntity.netId, targetEntity.netId, attackerSilverRank);
       }
    }
 
    [TargetRpc]
-   public void Target_ReceiveBroadcastPvPKill (NetworkConnection connection, int attackerEntityUserId, int targetEntityUserId, int attackerSilverRank) {
-      NetEntity attackerEntity = EntityManager.self.getEntity(attackerEntityUserId);
-      NetEntity targetEntity = EntityManager.self.getEntity(targetEntityUserId);
-      if (targetEntity != null) {
-         PvpStatusPanel.self.addKillEvent(attackerEntity.entityName, PvpGame.getColorForTeam(attackerEntity.pvpTeam), targetEntity.entityName, PvpGame.getColorForTeam(targetEntity.pvpTeam));
-         
-         // hides and stops any running effects
-         PvpAnnouncement.self.toggle(false);
-         PvpAnnouncement.self.toggle(true);
-         PvpAnnouncement.self.announceKill(attackerEntity, targetEntity);
+   public void Target_ReceiveBroadcastPvPKill (NetworkConnection connection, uint attackerEntityNetId, uint targetEntityNetId, int attackerSilverRank) {
+      NetEntity attackerEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attackerEntityNetId);
+      NetEntity targetEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(targetEntityNetId);
 
-         // if the attacker's rank is high enough highlight the announcement
-         if (attackerSilverRank > 2) {
-            PvpAnnouncement.self.toggleBlink(true);
-         }
-      }
-   }
+      string attackerDisplayName = $"{attackerEntity.entityName}";
+      string targetDisplayName = $"{targetEntity.entityName}";
+      PvpStatusPanel.self.addKillEvent(attackerDisplayName, PvpGame.getColorForTeam(attackerEntity.pvpTeam), targetDisplayName, PvpGame.getColorForTeam(targetEntity.pvpTeam));
 
-   [TargetRpc]
-   public void Target_ReceivePlayerRemovedFromGroup () {
-      if (_player != null) {
-         Instance instance = _player.getInstance();
-         if (instance != null && instance.isPvP) {
-            // We are leaving a PvP session
-            PvpStatusPanel.self.toggle(false);
-         }
-      }
-   }
+      // Hides and stops any running effects
+      PvpAnnouncement.self.hide();
+      PvpAnnouncement.self.show();
+      PvpAnnouncement.self.announceKill(attackerEntity, targetEntity);
 
-   [TargetRpc]
-   public void Target_ReceiveClientFinishedLoadingArea () {
-      if (_player != null) {
-         Instance instance = _player.getInstance();
-         if (instance != null && instance.isPvP) {
-            // We have entered a PvP session
-            PvpStatusPanel.self.toggle(true);
-         }
+      // If the attacker's rank is high enough highlight the announcement
+      if (attackerSilverRank > 2) {
+         PvpAnnouncement.self.startBlink();
       }
    }
 

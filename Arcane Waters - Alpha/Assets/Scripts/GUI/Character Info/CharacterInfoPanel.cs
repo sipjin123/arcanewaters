@@ -32,6 +32,9 @@ public class CharacterInfoPanel : Panel {
          return;
       }
 
+      // SFX
+      SoundEffectManager.self.playGuiMenuOpenSfx();
+
       setPlayer(player);
       PanelManager.self.linkIfNotShowing(Panel.Type.CharacterInfo);      
       setPlayer(player);

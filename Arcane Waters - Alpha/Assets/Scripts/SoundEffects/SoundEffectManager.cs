@@ -89,7 +89,7 @@ public class SoundEffectManager : GenericGameManager
    public const int MAP_OPEN = 99;
    public const int LOCALE_UNLOCK = 100;
    public const int CLICK_TAB = 101;
-   public const int MENU_OPEN = 102;
+   //public const int MENU_OPEN = 102;
    public const int BUTTON_CONFIRM = 103;
 
    public const int ENEMY_SHIP_DESTROYED = 108;
@@ -99,8 +99,12 @@ public class SoundEffectManager : GenericGameManager
    public const int UNASSIGN_PERK_POINT = 112;
    public const int TIP_FOLDOUT = 113;
 
-   public const string MENU_OPEN_PATH = "event:/SFX/Game/UI/Menu_Open";
+   public const string MENU_OPEN = "event:/SFX/Game/UI/Menu_Open";
    public const string BUTTON_CONFIRM_PATH = "event:/SFX/Game/UI/Button_Confirm";
+   public const string HOVER_CURSOR_GENERIC = "event:/SFX/Game/UI/Hover_Cursor_Generic";
+   public const string HOVER_CURSOR_ITEMS = "event:/SFX/Game/UI/Hover_Cursor_Items";
+
+   public const string PLAYER_SHIP_DESTROYED = "event:/SFX/Game/Sea_Battle/Player_Ship_Destroyed";
 
    public const string AUDIO_SWITCH_PARAM = "Audio_Switch";
    public const string SHIP_CHARGE_RELEASE_PARAM = "Ship_Charge_Release";
@@ -187,6 +191,14 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
+   public void playFmodOneShotWithPath (string path, Transform target) {
+      if (Util.isBatch()) {
+         return;
+      }
+
+      RuntimeManager.PlayOneShot(path, target.position);
+   }
+
    public void playFmodOneShot (int id, Transform target) {
       if (Util.isBatch()) {
          return;
@@ -226,7 +238,18 @@ public class SoundEffectManager : GenericGameManager
    }
 
    public void playGuiMenuOpenSfx () {
-      playFmod2DWithPath(MENU_OPEN_PATH);
+      playFmod2DWithPath(MENU_OPEN);
+   }
+
+   public void playFmodGuiHover (string path) {
+      if(_lastPlayTime.ContainsKey(path) && Time.time - _lastPlayTime[path] < .10f) {
+         return;
+      }
+
+      // Make note of the time
+      _lastPlayTime[path] = Time.time;
+
+      self.playFmod2DWithPath(path);
    }
 
    public void playLegacyInteractionOneShot (int equipmentDataId, Transform target) {
@@ -265,24 +288,6 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   //public void playFmodSoundEffect (int id, Transform target) {
-   //   SoundEffect effect = getSoundEffect(id);
-
-   //   if (effect != null) {
-   //      if (effect.is3D) {
-   //         playFmodSoundEffect3D(effect, target);
-   //      } else {
-   //         if (effect.fmodId.Length > 0) {
-   //            RuntimeManager.PlayOneShot(effect.fmodId, CameraManager.getCurrentCamera().transform.position);
-   //         } else {
-   //            D.debug("This id {" + effect.id + "} does not have an FmodID assigned to it, please refer to the sound effect web tool");
-   //         }
-   //      }
-   //   } else {
-   //      D.debug("Could not find SoundEffect with 'id' : '" + id + "'");
-   //   }
-   //}
-
    public void playFmod2DWithPath (string path) {
       if (path.Length > 0) {
          RuntimeManager.PlayOneShot(path, CameraManager.getCurrentCamera().transform.position);
@@ -300,16 +305,6 @@ public class SoundEffectManager : GenericGameManager
       // Destroy object after clip finishes playing
       Destroy(audioSource.gameObject, audioSource.clip.length);
    }
-
-   //private void playFmodSoundEffect3D (SoundEffect effect, Transform target) {
-   //   StudioEventEmitter eventEmitter = Instantiate(PrefabsManager.self.fMod3dPrefab, target.position, Quaternion.identity);
-
-   //   eventEmitter.Event = effect.fmodId;
-   //   eventEmitter.transform.SetParent(target, true);
-   //   eventEmitter.EventInstance.setVolume(effect.minVolume);
-   //   eventEmitter.Play();
-   //   StartCoroutine(CO_DestroyAfterEnd(eventEmitter));
-   //}
 
    public void playFmodWithDelay (int id, float delay, Transform target = null, bool is3D = false) {
       StartCoroutine(CO_PlayFmodAfterDelay(id, delay, target, is3D));
@@ -371,6 +366,9 @@ public class SoundEffectManager : GenericGameManager
 
    // If xml data is initialized
    private bool _hasInitialized;
+
+   // The time at which we last player a specified clip
+   private static Dictionary<string, float> _lastPlayTime = new Dictionary<string, float>();
 
    #endregion
 }

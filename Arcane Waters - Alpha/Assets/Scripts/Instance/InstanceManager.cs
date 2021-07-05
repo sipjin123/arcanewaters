@@ -61,25 +61,14 @@ public class InstanceManager : MonoBehaviour {
          }
       }
 
-      // For private areas, we always create a new instance, to ensure that players don't join instances of other players
+      // Search for an existing private instance assigned to this user or create a new one
       if (AreaManager.self.isPrivateArea(areaKey)) {
-         Instance existingPrivateInstance = getPlayerPrivateOpenInstance(areaKey, player.userId);
-
-         if (existingPrivateInstance == null) {
+         instance = getPlayerPrivateOpenInstance(areaKey, player.userId);
+         if (instance == null) {
             instance = createNewInstance(areaKey, player.isSinglePlayer);
-         } else {
-            TimeSpan timeSinceStart = DateTime.UtcNow.Subtract(DateTime.FromBinary(existingPrivateInstance.startTime));
 
-            // Check if the instance has a player in it {less likely} / confirm if the private area user ID is the same with this player's user ID / if the active time is less than 10 minutes
-            if (existingPrivateInstance.getPlayerCount() < 1 && existingPrivateInstance.privateAreaUserId == player.userId && timeSinceStart.TotalMinutes < Instance.ACTIVE_MINUTES_CAP) {
-               instance = getOpenInstance(areaKey, player.isSinglePlayer);
-            } else {
-               // Return the player to the starting town if the instance does not exist anymore
-               instance = getOpenInstance(Area.STARTING_TOWN, false);
-               if (instance == null) {
-                  instance = createNewInstance(Area.STARTING_TOWN, false);
-               }
-            }
+            // Register the user id as the privateAreaUserId
+            instance.privateAreaUserId = player.userId;
          }
       }
 
@@ -98,12 +87,6 @@ public class InstanceManager : MonoBehaviour {
 
       // Add the player to the list
       instance.entities.Add(player);
-      instance.resetActiveTimer();
-
-      // Register the user id as the privateAreaUserId if the area is a private area
-      if (AreaManager.self.isPrivateArea(areaKey)) {
-         instance.privateAreaUserId = player.userId;
-      }
 
       // If we just hit the max number of players, we need to recheck which areas are open
       if (instance.getPlayerCount() >= instance.getMaxPlayers()) {

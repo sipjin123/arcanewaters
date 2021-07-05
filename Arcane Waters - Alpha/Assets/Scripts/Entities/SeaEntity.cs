@@ -320,7 +320,7 @@ public class SeaEntity : NetEntity
             if (this.isBot()) {
                SoundEffectManager.self.playFmodOneShot(SoundEffectManager.ENEMY_SHIP_DESTROYED, this.transform);
             } else {
-               SoundManager.play2DClip(SoundManager.Type.Ship_Destroyed);
+               SoundEffectManager.self.playFmodOneShotWithPath(SoundEffectManager.PLAYER_SHIP_DESTROYED, this.transform);
             }
 
             // Hide all the sprites
@@ -1735,9 +1735,11 @@ public class SeaEntity : NetEntity
    }
 
    private SeaStructure getTargetSeaStructure () {
-      foreach (SeaStructure structure in _pvpTargetStructures) {
-         if (structure != null && !structure.isDead()) {
-            return structure;
+      if (_pvpTargetStructures != null) {
+         foreach (SeaStructure structure in _pvpTargetStructures) {
+            if (structure != null && !structure.isDead()) {
+               return structure;
+            }
          }
       }
 

@@ -236,7 +236,9 @@ public class PaletteToolManager : XmlDataToolManager {
       GuildIconBackground = 8,
       GuildIconSigil = 9,
       Guild = 10,
-      MAX = 11
+      Flag = 11,
+      SeaStructure = 12,
+      MAX = 13
    }
 
    public static string[] paletteImageTypePaths = {
@@ -251,6 +253,8 @@ public class PaletteToolManager : XmlDataToolManager {
       "Assets/Sprites/GUI/Guild/Icons/Backgrounds/",
       "Assets/Sprites/GUI/Guild/Icons/Sigils/",
       "",
+      "Assets/Sprites/Ships/",
+      "Assets/Sprites/SeaStructures/",
       "",
    };
 
@@ -1088,6 +1092,13 @@ public class PaletteToolManager : XmlDataToolManager {
             break;
          case PaletteImageType.GuildIconSigil:
             break;
+         case PaletteImageType.Flag:
+            names.Add(PaletteDef.Flag.flag.name);
+            break;
+         case PaletteImageType.SeaStructure:
+            names.Add(PaletteDef.SeaStructure.fill.name);
+            names.Add(PaletteDef.SeaStructure.outline.name);
+            break;
       }
 
       return names;
@@ -1126,6 +1137,13 @@ public class PaletteToolManager : XmlDataToolManager {
          case PaletteImageType.GuildIconBackground:
             break;
          case PaletteImageType.GuildIconSigil:
+            break;
+         case PaletteImageType.Flag:
+            hexColors.AddRange(PaletteDef.Flag.flag.colorsHex);
+            break;
+         case PaletteImageType.SeaStructure:
+            hexColors.AddRange(PaletteDef.SeaStructure.fill.colorsHex);
+            hexColors.AddRange(PaletteDef.SeaStructure.outline.colorsHex);
             break;
       }
 
@@ -1170,6 +1188,13 @@ public class PaletteToolManager : XmlDataToolManager {
          case PaletteImageType.GuildIconBackground:
             break;
          case PaletteImageType.GuildIconSigil:
+            break;
+         case PaletteImageType.Flag:
+            indices.Add(PaletteDef.Flag.flag.colorsHex.Length);
+            break;
+         case PaletteImageType.SeaStructure:
+            indices.Add(PaletteDef.SeaStructure.fill.colorsHex.Length);
+            indices.Add(PaletteDef.SeaStructure.outline.colorsHex.Length);
             break;
       }
 

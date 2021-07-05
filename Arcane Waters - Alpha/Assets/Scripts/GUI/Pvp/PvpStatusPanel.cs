@@ -9,6 +9,9 @@ public class PvpStatusPanel : ClientMonoBehaviour
 {
    #region Public Variables
 
+   // The Reference to the CanvasGroup
+   public CanvasGroup canvasGroup;
+
    // The Silver Amount text
    public TextMeshProUGUI silverCountText;
 
@@ -35,15 +38,26 @@ public class PvpStatusPanel : ClientMonoBehaviour
    protected override void Awake () {
       base.Awake();
       self = this;
-      this.gameObject.SetActive(false);
    }
 
    public void Start () {
-      InvokeRepeating(nameof(CO_Update), 0, 1);
+      startVisibilityCheck();
    }
 
-   private void CO_Update () {
-      // Check if the delta panel should be hidden
+   private void updateVisibilityCheck () {
+      if (Global.player == null) {
+         hide();
+         return;
+      }
+
+      Instance instance = Global.player.getInstance();
+      if (instance == null || !instance.isPvP) {
+         hide();
+         return;
+      }
+
+      show();
+
       if (isDeltaShowing()) {
          if (Time.realtimeSinceStartup > _deltaToggleStartTime + silverDeltaTextDurationSeconds) {
             hideDelta();
@@ -67,18 +81,10 @@ public class PvpStatusPanel : ClientMonoBehaviour
       }
 
       silverCountText.text = _silverBeforeChange.ToString();
+
       _currentSilverDelta += gain;
       _deltaToggleStartTime = Time.realtimeSinceStartup;
       showDelta();
-   }
-
-   public bool isDeltaShowing () {
-      return silverDeltaText.gameObject.activeSelf;
-   }
-
-   public void hideDelta () {
-      silverDeltaText.gameObject.SetActive(false);
-      silverDeltaText.text = string.Empty;
    }
 
    public void showDelta () {
@@ -86,15 +92,42 @@ public class PvpStatusPanel : ClientMonoBehaviour
       silverDeltaText.text = getDisplayStringForDelta();
    }
 
-   public void toggle (bool show) {
-      this.gameObject.SetActive(show);
-      if (!show) {
-         CancelInvoke(nameof(CO_Update));
+   public void hideDelta () {
+      silverDeltaText.gameObject.SetActive(false);
+      silverDeltaText.text = string.Empty;
+   }
+
+   public bool isDeltaShowing () {
+      return silverDeltaText.gameObject.activeSelf;
+   }
+
+   public void show () {
+      canvasGroup.alpha = 1;
+   }
+
+   public void hide () {
+      canvasGroup.alpha = 0;
+      reset();
+   }
+
+   private void reset () {
+      _deltaToggleStartTime = 0;
+      _silverBeforeChange = 0;
+      _currentSilverDelta = 0;
+      if (silverCountText != null) {
+         silverCountText.text = "0";
+      }
+      if (silverDeltaText != null) {
+         silverDeltaText.text = string.Empty;
       }
    }
 
    public bool isShowing () {
-      return this.gameObject.activeSelf;
+      return this.gameObject.activeSelf && canvasGroup.alpha > 0;
+   }
+
+   private void startVisibilityCheck () {
+      InvokeRepeating(nameof(updateVisibilityCheck), 0, 1);
    }
 
    public void addKillEvent (string attackerName, Color attackerColor, string targetName, Color targetColor) {

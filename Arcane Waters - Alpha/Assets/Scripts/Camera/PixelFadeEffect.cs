@@ -6,12 +6,19 @@ using UnityEngine.Networking;
 using UnityEngine.Events;
 using DG.Tweening;
 
-public class PixelFadeEffect : MonoBehaviour, IScreenFader {
+public class PixelFadeEffect : MonoBehaviour, IScreenFader
+{
    #region Public Variables
 
    // If this is set to true, at the start it will perform a fade in effect
    // (currently used for the main camera, for the main menu when starting the game.)
    public bool startWithFade = false;
+
+   // Are we currently fading in?
+   public bool isFadingIn = false;
+
+   // Are we currently fading out?
+   public bool isFadingOut = false;
 
    // The Camera effect
    public CameraFilterPack_Pixel_Pixelisation camFX_Pixel;
@@ -40,6 +47,8 @@ public class PixelFadeEffect : MonoBehaviour, IScreenFader {
       // Get the current pixel amount
       float pixelAmount = getPixelAmount();
 
+      isFadingOut = true;
+
       // Tween the pixel amount towards MAX_PIXEL_AMOUNT
       _fadeTween = DOTween.To(() => pixelAmount, x => pixelAmount = x, MAX_PIXEL_AMOUNT, FADE_OUT_DURATION);
 
@@ -49,9 +58,11 @@ public class PixelFadeEffect : MonoBehaviour, IScreenFader {
       // Update the value of pixel amount on each step
       _fadeTween.OnUpdate(() => setNewPixelAmount(pixelAmount));
 
+      _fadeTween.OnComplete(() => isFadingOut = false);
+
       // Start a darkness color fade as well
       BrightnessManager.self.setNewTargetIntensity(0f, 1f);
-            
+
       return FADE_OUT_DURATION;
    }
 
@@ -66,10 +77,15 @@ public class PixelFadeEffect : MonoBehaviour, IScreenFader {
       _fadeTween?.Kill();
       float pixelAmount = getPixelAmount();
 
+      isFadingIn = true;
+
       _fadeTween = DOTween.To(() => pixelAmount, x => pixelAmount = x, MIN_PIXEL_AMOUNT, FADE_IN_DURATION);
       _fadeTween.OnUpdate(() => setNewPixelAmount(pixelAmount));
       _fadeTween.SetEase(Ease.Linear);
-      _fadeTween.OnComplete(() => camFX_Pixel.enabled = false);
+      _fadeTween.OnComplete(() => {
+         camFX_Pixel.enabled = false;
+         isFadingIn = false;
+      });
 
       // Start a darkness color fade as well
       BrightnessManager.self.setNewTargetIntensity(1f, 1f);

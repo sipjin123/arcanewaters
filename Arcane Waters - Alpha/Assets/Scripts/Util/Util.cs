@@ -861,6 +861,11 @@ public class Util : MonoBehaviour
    public static bool isStressTesting () {
       return CommandCodes.get(CommandCodes.Type.IS_STRESS_TEST);
    }
+
+   public static bool isNubisEnabled () {
+      return Global.isUsingNubis && !CommandCodes.get(CommandCodes.Type.CLIENT_DISABLE_NUBIS);
+   }
+
    public static void readFastLoginFile () {
       // If the file doesn't exist or there is an error, fast login is disabled
       Global.isFastLogin = false;

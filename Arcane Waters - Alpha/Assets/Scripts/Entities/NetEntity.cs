@@ -1854,8 +1854,11 @@ public class NetEntity : NetworkBehaviour
             RedirectMessage redirectMessage = new RedirectMessage(this.netId, MyNetworkManager.self.networkAddress, newServer.networkedPort.Value);
             this.connectionToClient.Send(redirectMessage);
 
+            D.debug($"Sending redirect to {MyNetworkManager.self.networkAddress}:{newServer.networkedPort.Value} for {this.entityName}");
+
             // If the player is warping to another server, it must be completely removed from this one
             if (newServer.networkedPort.Value != ServerNetworkingManager.self.server.networkedPort.Value) {
+               D.debug($"New port {newServer.networkedPort.Value} is different than our port {ServerNetworkingManager.self.server.networkedPort.Value}, so disconnecting {this.entityName} from the server.");
                MyNetworkManager.self.disconnectClient(connectionToClient, true);
             }
 

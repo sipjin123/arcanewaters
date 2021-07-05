@@ -1073,6 +1073,10 @@ public class DB_MainStub : MonoBehaviour
       return -1;
    }
 
+   public static int getGuildMemberRankPriority (int userId) {
+      return -1;
+   }
+
    public static void addJobXP (int userId, Jobs.Type jobType, int XP) {
 
    }

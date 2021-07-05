@@ -204,7 +204,7 @@ public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
 
       // Get the casted item
       _selectedItem = item.getCastItem();
-      
+
       // Instantiate and initalize the item cell
       ItemCell cell = Instantiate(itemCellPrefab, itemCellButton.transform, false);
       cell.setCellForItem(_selectedItem);
@@ -301,13 +301,13 @@ public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
          return;
       }
 
-      PanelManager.self.showConfirmationPanel("Are you sure you want to auction your " + EquipmentXMLManager.self.getItemName(_selectedItem) + "?",
+      PanelManager.self.showConfirmationPanel("Confirm Auction",
          () => {
             bid = int.Parse(startingBidCreate.text);
             buyout = int.Parse(buyoutPriceCreate.text);
             TimeSpan duration = getSelectedAuctionDuration();
-            Global.player.rpc.Cmd_CreateAuction(_selectedItem, bid, buyout, (DateTime.UtcNow + duration).ToBinary());
-         });
+            Global.player.rpc.Cmd_CreateAuction(_selectedItem, bid, buyout, (DateTime.UtcNow + duration).ToBinary(), AuctionManager.AUCTION_COST);
+         }, null, true, AuctionManager.AUCTION_COST, "Are you sure you want to auction \"" + EquipmentXMLManager.self.getItemName(_selectedItem) + "\" ?");
    }
 
    public void onBidButtonPressed () {
@@ -334,10 +334,10 @@ public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
    }
 
    public void onCancelAuctionButtonPressed () {
-      PanelManager.self.showConfirmationPanel("Are you sure you want to cancel your auction for " + _auction.itemName + "?",
+      PanelManager.self.showConfirmationPanel("Cancel Auction",
          () => {
             Global.player.rpc.Cmd_CancelAuction(_auction.auctionId);
-         });
+         }, null, true, 0, "Are you sure you want to cancel your auction for \"" + _auction.itemName + "\" ? ");
    }
 
    public void show () {

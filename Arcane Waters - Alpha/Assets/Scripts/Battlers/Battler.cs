@@ -510,6 +510,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          // Process the client side death animation, will trigger only once for this objects lifetime
          hasPlayedDeathAnim = true;
 
+         // If the client died, deselect it's target
+         if (_isClientBattler && isAlreadyDead) {
+            BattleUIManager.self.highlightLocalBattler(false);
+            if (BattleSelectionManager.self.selectedBattler != null) {
+               BattleSelectionManager.self.selectedBattler.deselectThis();
+            }
+            BattleSelectionManager.self.selectedBattler = null;
+         }
+
          // Disable all coroutines, attack display / collision effects / hit animations / battle spot repositioning
          if (currentActionCoroutine != null) { 
             StopCoroutine(currentActionCoroutine);
@@ -1327,6 +1336,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Pause for a moment after reaching our destination
             yield return new WaitForSeconds(getPauseLength());
+
+            // Disable targeting effects
+            if (sourceBattler.battlerType == BattlerType.PlayerControlled) {
+               sourceBattler.hideTargetingEffects();
+            }
 
             if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
                sourceBattler.playAnim(Anim.Type.Punch);

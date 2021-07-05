@@ -6,7 +6,8 @@ using Mirror;
 using TMPro;
 using UnityEngine.EventSystems;
 
-public class SpeakChatLine : ChatLine {
+public class SpeakChatLine : ChatLine, IScrollHandler
+{
    #region Public Variables
 
    // The Text component that we manage
@@ -18,6 +19,10 @@ public class SpeakChatLine : ChatLine {
       if (isValidInteraction()) {
          PanelManager.self.contextMenuPanel.showDefaultMenuForUser(chatInfo.senderId, chatInfo.sender);
       }
+   }
+
+   public void OnScroll (PointerEventData eventData) {
+      ChatPanel.self.scrollRect.OnScroll(eventData);
    }
 
    public void chatLineHoverEnter () {

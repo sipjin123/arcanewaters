@@ -53,6 +53,11 @@ public class ServerHistoryManager : MonoBehaviour
    }
 
    public bool isServerHistoryActive () {
+      // If we're running a stress test, we don't need to worry about the server history
+      if (Util.isStressTesting()) {
+         return false;
+      }
+
       return enableDebug || Util.isCloudBuild();
    }
 

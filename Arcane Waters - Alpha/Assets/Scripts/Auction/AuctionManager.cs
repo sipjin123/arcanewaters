@@ -13,6 +13,9 @@ public class AuctionManager : MonoBehaviour
 
    // Self
    public static AuctionManager self;
+   
+   // The cost for starting an auction
+   public static int AUCTION_COST = 10;
 
    #endregion
 

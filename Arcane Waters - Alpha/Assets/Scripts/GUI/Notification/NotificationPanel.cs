@@ -72,9 +72,12 @@ public class NotificationPanel : MonoBehaviour
 
       // Start the animation to reveal the panel
       animator.SetTrigger("reveal");
+   }
 
-      // Play sfx after delay
-      SoundEffectManager.self.playFmodWithDelay(SoundEffectManager.TIP_FOLDOUT, 1.0f);
+   public void playSfx () {
+      if (!CameraManager.defaultCamera.getPixelFadeEffect().isFadingOut) {
+         SoundEffectManager.self.playFmod2D(SoundEffectManager.TIP_FOLDOUT);
+      }
    }
 
    private void show () {

@@ -37,11 +37,8 @@ public class ConfirmScreen : FullScreenSeparatePanel
       confirmButtonText.text = "Yes";
    }
 
-   public void show (string newText) {
-      this.show(newText, 0);
-   }
+   public void show (string newText, int cost = 0, string newDescription = "") {
 
-   public void show(string newText, int cost) {
       text.text = newText;
 
       // Only show the Cost row if there's a cost associated
@@ -56,12 +53,6 @@ public class ConfirmScreen : FullScreenSeparatePanel
       cancelButtonText.text = "Cancel";
       confirmButtonText.text = "Confirm";
 
-      // Now make us visible
-      show();
-   }
-
-   public void show (string newText, int cost, string newDescription) {
-
       // Only show the description if it's not null
       if (string.IsNullOrWhiteSpace(newDescription)) {
          descriptionRow.SetActive(false);
@@ -70,11 +61,10 @@ public class ConfirmScreen : FullScreenSeparatePanel
          descriptionText.text = newDescription;
       }
 
-      // Show the rest of the UI
-      show(newText, cost);
+      show();
    }
 
-   public void show() {
+   public void show () {
       this.canvasGroup.alpha = 1f;
       this.canvasGroup.blocksRaycasts = true;
       this.canvasGroup.interactable = true;

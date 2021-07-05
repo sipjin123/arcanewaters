@@ -205,7 +205,7 @@ public class PowerupManager : MonoBehaviour {
    }
 
    private CannonballEffector getEffector (List<Powerup> powerups) {
-      Powerup.Type type = (Powerup.Type) powerups[0].powerupType;
+      Powerup.Type type = powerups[0].powerupType;
       float totalBoostFactor = getTotalBoostFactor(powerups);
       float totalBoostFactorAdditive = totalBoostFactor - 1.0f;
       

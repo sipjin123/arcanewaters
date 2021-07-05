@@ -229,8 +229,10 @@ namespace MapCustomization
          }
          updatePrefabOutlines(worldPosition);
 
-         // If we hover over a prefab, turn on selection arrows and allow middle mouse to change variations
-         hoveredPrefab = getPrefabAtPosition(worldPosition);
+         // If we hover over a prefab and we don't currently have a prefab in hand, turn on selection arrows and allow middle mouse to change variations
+         if (CustomizationUI.getSelectedPrefabData() == null) {
+            hoveredPrefab = getPrefabAtPosition(worldPosition);
+         }
          if (hoveredPrefab != null) {
             selectPrefab(hoveredPrefab);
 

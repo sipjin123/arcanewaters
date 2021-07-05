@@ -46,8 +46,7 @@ public class RespawnScreen : MonoBehaviour
          PlayerShipEntity playerShip = Global.player.getPlayerShipEntity();
 
          // If the player dies in a pvp area, respawn them in the same map
-         // TODO - Replace this check with something more robust
-         if (playerShip.areaKey.StartsWith("pvp")) {
+         if (VoyageManager.isPvpArenaArea(playerShip.areaKey)) { 
             setLifeboatVisibility(false);
             playerShip.Cmd_RespawnPlayerInInstance();
 

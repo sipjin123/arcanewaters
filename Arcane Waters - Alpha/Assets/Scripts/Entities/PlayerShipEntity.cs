@@ -134,7 +134,8 @@ public class PlayerShipEntity : ShipEntity
    public enum Flag {
       None = 0,
       White = 1,
-      Group = 2
+      Group = 2,
+      Pvp = 3,
    }
 
    #endregion
@@ -249,9 +250,13 @@ public class PlayerShipEntity : ShipEntity
    protected override void initialize (ShipInfo info) {
       base.initialize(info);
 
+      initHealth();
+   }
+
+   private void initHealth () {
       float healthMultiplierAdditive = 1.0f + PerkManager.self.getPerkMultiplierAdditive(userId, Perk.Category.ShipHealth) + PowerupManager.self.getPowerupMultiplierAdditive(userId, Powerup.Type.IncreasedHealth);
-      currentHealth = (int) (healthMultiplierAdditive * currentHealth);
-      maxHealth = (int) (healthMultiplierAdditive * maxHealth);
+      currentHealth = (int) (healthMultiplierAdditive * _baseHealth);
+      maxHealth = (int) (healthMultiplierAdditive * _baseHealth);
    }
 
    protected override void updateSprites () {
@@ -280,13 +285,8 @@ public class PlayerShipEntity : ShipEntity
       if (isClient) {
          Instance instance = getInstance();
          if (VoyageGroupManager.isInGroup(this) && instance != null && instance.isVoyage) {
-            if (instance.isPvP) {
-               // In PvP instances, the flag is white until the player enters PvP
-               if (hasEnteredPvP) {
-                  setFlag(Flag.Group);
-               } else {
-                  setFlag(Flag.White);
-               }
+            if (VoyageManager.isPvpArenaArea(areaKey)) {
+               setFlag(Flag.Pvp);
             } else {
                // In PvE instances, we always set the group flag color
                setFlag(Flag.Group);
@@ -453,7 +453,6 @@ public class PlayerShipEntity : ShipEntity
 
          Cmd_RequestServerAddBoostForce(boostDirection, getBoostChargeAmount());
          _lastBoostTime = NetworkTime.time;
-         Cmd_NoteBoost();
 
          _boostCircleTween?.Rewind();
          _boostCircleTween = DOTween.To(() => boostTimingSprites.alpha, (x) => boostTimingSprites.alpha = x, 0.0f, 0.25f);
@@ -913,7 +912,9 @@ public class PlayerShipEntity : ShipEntity
    protected void adjustMovementAudio () {
       if (isLocalPlayer) {
          float volumeModifier = isMoving() ? Time.deltaTime * .5f : -Time.deltaTime * .5f;
-         _movementAudioSource.volume += volumeModifier;
+         if (_movementAudioSource != null) {
+            _movementAudioSource.volume += volumeModifier;
+         }
       }
    }
 
@@ -989,13 +990,22 @@ public class PlayerShipEntity : ShipEntity
          return;
       }
 
+      bool isStunned = StatusManager.self.hasStatus(netId, Status.Type.Stunned);
+
       bool isWellTimed = (chargeAmount > 0.8f && chargeAmount < 0.99f);
+
+      // If stunned, boost won't work unless your dash was well-timed
+      if (isStunned && !isWellTimed) {
+         return;
+      }
 
       // A well-timed boost gives you the force of a fully-charged boost + 50%
       float finalBoostForce = (isWellTimed) ? boostForce * 1.5f : boostForce * chargeAmount;
 
       _body.AddForce(direction.normalized * finalBoostForce, ForceMode2D.Impulse);
       _lastBoostTime = NetworkTime.time;
+
+      Rpc_NoteBoost();
    }
 
    protected override void updateMassAndDrag (bool increasedMass) {
@@ -1092,6 +1102,16 @@ public class PlayerShipEntity : ShipEntity
          case Flag.Group:
             string flagPalette = VoyageGroupManager.getShipFlagPalette(voyageGroupId);
             spritesContainer.GetComponent<RecoloredSprite>().recolor(flagPalette);
+            break;
+         case Flag.Pvp:
+            string shipPalette = PvpManager.getShipPaletteForTeam(pvpTeam);
+            spritesContainer.GetComponent<RecoloredSprite>().recolor(shipPalette);
+            
+            // Return without updating _currentFlag if we don't have a pvp team, so it will be updated when we get one
+            if (shipPalette == VoyageGroupManager.WHITE_FLAG_PALETTE) {
+               return;
+            }
+            
             break;
          default:
             break;
@@ -1298,11 +1318,6 @@ public class PlayerShipEntity : ShipEntity
       return Mathf.Clamp01((float) (NetworkTime.time - _boostChargeStartTime) / BOOST_CHARGE_TIME);
    }
 
-   [Command]
-   private void Cmd_NoteBoost () {
-      Rpc_NoteBoost();
-   }
-
    [ClientRpc]
    private void Rpc_NoteBoost () {
       if (!isLocalPlayer) {
@@ -1372,23 +1387,26 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Server]
-   private IEnumerator CO_RespawnPlayerInInstance () {
-      restoreMaxShipHealth();
-      currentHealth = maxHealth;
+   private IEnumerator CO_RespawnPlayerInInstance () {      
       setIsInvulnerable(true);
       PowerupManager.self.clearPowerupsForUser(userId);
 
-      // Wait for currentHealth syncvar to be upated
-      yield return new WaitForSeconds(1.0f);
-
       // Move the player to their spawn point
       PvpGame game = PvpManager.self.getGameWithPlayer(this);
+      Vector3 spawnPosition = transform.localPosition;
+
       if (game != null) {
-         Vector3 spawnPosition = game.getSpawnPositionForUser(this);
+         spawnPosition = game.getSpawnPositionForUser(this);
          transform.localPosition = spawnPosition;
       }
 
-      Rpc_OnRespawned();
+      // Wait a small delay, so the player's camera can move, and see them respawn
+      yield return new WaitForSeconds(0.5f);
+
+      initHealth();
+      restoreMaxShipHealth();
+
+      Rpc_OnRespawnedInInstance();
       setIsInvulnerable(false);
       setCollisions(true);
 
@@ -1396,11 +1414,20 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [ClientRpc]
-   public void Rpc_OnRespawned () {
-      onRespawned();
+   public void Rpc_OnRespawnedInInstance () {
+      if (_respawnCoroutine != null) {
+         StopCoroutine(_respawnCoroutine);
+      }
+
+      _respawnCoroutine = StartCoroutine(CO_OnRespawnedInInstance());
    }
 
-   public void onRespawned () {
+   private IEnumerator CO_OnRespawnedInInstance () {
+      // Wait for currentHealth syncvar to be updated
+      while (currentHealth <= 0) {
+         yield return null;
+      }
+      
       // Show all the sprites
       foreach (SpriteRenderer renderer in _renderers) {
          renderer.enabled = true;
@@ -1546,6 +1573,9 @@ public class PlayerShipEntity : ShipEntity
 
    // How much lifeboat collider size should be increased for a short period of time to make sure that boat is not near shore
    private const float LIFEBOAT_COLLIDER_MULTIPLIER = 3.0f;
+
+   // A reference to the coroutine responsible for respawning this player in the same instance
+   private Coroutine _respawnCoroutine = null;
 
    #endregion
 }

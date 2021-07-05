@@ -30,6 +30,8 @@ public class ClientMessageManager : MonoBehaviour {
    }
 
    public static void On_Redirect (NetworkConnection conn, RedirectMessage msg) {
+      D.debug($"Received redirect message for {msg.newIpAddress}:{msg.newPort}, currently connected port {MyNetworkManager.self.telepathy.port}");
+
       // If the address and port are the same, we just send another login request
       if (Util.isSameIpAddress(msg.newIpAddress, NetworkManager.singleton.networkAddress) && msg.newPort == MyNetworkManager.self.telepathy.port) {
          ClientManager.sendAccountNameAndUserId();
@@ -109,6 +111,13 @@ public class ClientMessageManager : MonoBehaviour {
             } else {
                PanelManager.self.noticeScreen.show(msg.customMessage);
             }
+            return;
+         case ErrorMessage.Type.Disconnected:
+         case ErrorMessage.Type.ServerDown:
+         case ErrorMessage.Type.NotEnoughGems:
+         case ErrorMessage.Type.Misc:
+         case ErrorMessage.Type.ServerOffline:
+            PanelManager.self.noticeScreen.show(msg.customMessage);
             return;
          /*case ErrorMessage.Type.NoGoldForCargo:
          case ErrorMessage.Type.OutOfCargoSpace:
@@ -457,7 +466,9 @@ public class ClientMessageManager : MonoBehaviour {
       store.showPanel(msg.userObjects, msg.goldOnHand, msg.gemsOnHand);
    }
 
-   public static void On_ClientFailedToConnect () {
+   public static void On_ClientDisconnected () {
+      D.debug($"On_ClientDisconnected was triggered, Global.isRedirecting is set to: {Global.isRedirecting}");
+
       // Ignore this message if we're in the  middle of a redirect
       if (Global.isRedirecting) {
          return;

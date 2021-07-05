@@ -18,7 +18,7 @@ public class SilverManager : NetworkBehaviour
    public static int SILVER_SEA_MONSTER_KILL_REWARD = 30;
 
    // Amount of silver earned after destroying a sea structure
-   public static int SILVER_SEA_STRUCTURE_KILL_REWARD = 80;
+   public static int SILVER_SEA_STRUCTURE_KILL_REWARD = 400;
 
    // Amount of silver earned after destroying an enemy bot ship
    public static int SILVER_BOT_SHIP_KILL_REWARD = 20;

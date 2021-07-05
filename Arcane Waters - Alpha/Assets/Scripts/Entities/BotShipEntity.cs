@@ -67,6 +67,11 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             }
 
             updateSprites();
+
+            if (pvpTeam != PvpTeamType.None) {
+               string flagPalette = PvpManager.getFlagPaletteForTeam(pvpTeam);
+               spritesContainer.GetComponent<RecoloredSprite>().recolor(flagPalette);
+            }
          }
       }
 
@@ -250,6 +255,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       targetingParabola.gameObject.SetActive(false);
       DOTween.Kill(targetingIndicatorAnimator);
       DOTween.Kill(targetingIndicatorRenderer);
+      targetingIndicatorAnimator.transform.localScale = Vector3.one;
       targetingIndicatorAnimator.transform.DOPunchScale(Vector3.up * 0.15f, 0.25f, 1);
       targetingIndicatorRenderer.DOFade(0.0f, 0.25f).OnComplete(() => targetingIndicatorAnimator.gameObject.SetActive(false));
       _isShowingTargetingIndicator = false;
@@ -400,6 +406,10 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             extraShotsCounter++;
          }
       }
+   }
+
+   private void OnDisable () {
+      aimTransform.gameObject.SetActive(false);
    }
 
    private List<CannonballEffector> getCannonballEffectors () {

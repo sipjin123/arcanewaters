@@ -21,7 +21,7 @@ public class GUI_SoundEffects : MonoBehaviour, IPointerEnterHandler, IPointerCli
 
    public virtual void OnPointerEnter (PointerEventData eventData) {
       if (_button && _button.IsInteractable()) {
-         play("Sound/Effects/ui_hover");
+         playHover();
       }
    }
 
@@ -32,30 +32,11 @@ public class GUI_SoundEffects : MonoBehaviour, IPointerEnterHandler, IPointerCli
    public virtual void OnPointerDown (PointerEventData eventData) {
       if (_button && _button.IsInteractable()) {
          SoundEffectManager.self.playGuiButtonConfirmSfx();
-         //SoundEffectManager.self.playFmod2DWithPath(SoundEffectManager.BUTTON_CONFIRM_PATH);
-         //play("Sound/Effects/GUI_Press");
       }
    }
 
-   protected void play (string path) {
-      _audioSource.volume = SoundManager.effectsVolume;
-
-      // Don't play it if not enough time has passed
-      if (_lastPlayTime.ContainsKey(path) && Time.time - _lastPlayTime[path] < .10f) {
-         return;
-      }
-
-      // Make note of the time
-      _lastPlayTime[path] = Time.time;
-
-      // Check if we've cached the clip
-      AudioClip clip = _cachedClips.ContainsKey(path) ? _cachedClips[path] : Resources.Load<AudioClip>(path);
-
-      // Cache it for later
-      _cachedClips[path] = clip;
-
-      // Play a button hover sound effect
-      _audioSource.PlayOneShot(clip);
+   protected void playHover () {
+      SoundEffectManager.self.playFmodGuiHover(SoundEffectManager.HOVER_CURSOR_GENERIC);
    }
 
    #region Private Variables

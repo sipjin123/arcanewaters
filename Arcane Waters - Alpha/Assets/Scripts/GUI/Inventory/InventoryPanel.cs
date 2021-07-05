@@ -153,7 +153,12 @@ public class InventoryPanel : Panel {
 
       cell.rightClickEvent.AddListener(() => showContextMenu(cell));
       cell.doubleClickEvent.AddListener(() => InventoryManager.tryEquipOrUseItem(cell.getItem()));
-      cell.onPointerEnter.AddListener(() => characterInfoColumn.equipmentStats.setStatModifiers(cell.getItem()));
+      cell.onPointerEnter.AddListener(() => {
+         // Play hover sfx
+         SoundEffectManager.self.playFmodGuiHover(SoundEffectManager.HOVER_CURSOR_ITEMS);
+
+         characterInfoColumn.equipmentStats.setStatModifiers(cell.getItem());
+      });
       cell.onPointerExit.AddListener(() => characterInfoColumn.equipmentStats.clearStatModifiers());
       cell.onDragStarted.AddListener(() => tryGrabItem(cell as ItemCellInventory));
    }

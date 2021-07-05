@@ -26,19 +26,32 @@ public class PvpKillEventNotification : MonoBehaviour
    #endregion
 
    public void Start () {
-      _creationTime = Time.realtimeSinceStartup;
-      StartCoroutine(nameof(CO_Update));
+      show();
    }
 
-   private IEnumerator CO_Update () {
-      while (true) {
-         if (Time.realtimeSinceStartup > _creationTime + lifetimeSeconds && !isPermanent) {
-            StopCoroutine(nameof(CO_Update));
-            this.transform.SetParent(null);
-            Destroy(this.gameObject);
-         }
-         yield return new WaitForSeconds(1);
+   private void startCountdown () {
+      InvokeRepeating(nameof(updateNotification), 0, 1);
+   }
+
+   private void stopCountdown () {
+      CancelInvoke(nameof(updateNotification));
+   }
+
+   private void updateNotification () {
+      if (Time.realtimeSinceStartup > _creationTime + lifetimeSeconds && !isPermanent) {
+         hide();
       }
+   }
+
+   private void show () {
+      _creationTime = Time.realtimeSinceStartup;
+      startCountdown();
+   }
+
+   private void hide () {
+      stopCountdown();
+      this.transform.SetParent(null);
+      Destroy(this.gameObject);
    }
 
    #region Private Variables

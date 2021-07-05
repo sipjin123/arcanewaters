@@ -102,6 +102,7 @@ public class PaletteDef : MonoBehaviour
     public class Flag
     {
         public static string OnlyPalette = "ship_flag_nation";
+        public static Subcategory flag = new Subcategory("flag", PaletteToolManager.PaletteImageType.Flag, new string[1] { "#FF00FF" });
     }
 
     public class Ship
@@ -109,6 +110,12 @@ public class PaletteDef : MonoBehaviour
         public static Subcategory hull = new Subcategory("hull", PaletteToolManager.PaletteImageType.Ship, new string[4] { "#CC4435", "#A7322E", "#822028", "#5B111C" });
         public static Subcategory sail = new Subcategory("sail", PaletteToolManager.PaletteImageType.Ship, new string[3] { "#E1DCFF", "#B6ABED", "#6B60A2" });
         public static Subcategory flag = new Subcategory("flag", PaletteToolManager.PaletteImageType.Ship, new string[2] { "#91BDFF", "#3888FF" });
+    }
+
+    public class SeaStructure
+    {
+      public static Subcategory fill = new Subcategory("fill", PaletteToolManager.PaletteImageType.SeaStructure, new string[2] { "F230DF", "830269" });
+      public static Subcategory outline = new Subcategory("outline", PaletteToolManager.PaletteImageType.SeaStructure, new string[3] { "D100A7", "5C0854", "410B36" });
     }
 
     public class ShipHull

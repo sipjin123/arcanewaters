@@ -136,6 +136,10 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       Util.fadeCanvasGroup(this.canvasGroup, false, FADE_TIME);
    }
 
+   private void hideWithoutFade () {
+      this.canvasGroup.alpha = 0.0f;
+   }
+
    public bool isShowing () {
       return this.canvasGroup.interactable;
    }
@@ -209,7 +213,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
          NetworkClient.Send(new CreateUserMessage(Global.netId,
             _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalettes(), chosenPerks, SystemInfo.deviceName, Global.isFirstLogin, Global.lastSteamId, deploymentId));
 
-         hideWithTransition();
+         hideWithoutFade();
          CharacterCreationSpotFader.self.fadeOutColor();
          PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.CharacterCreation);
 

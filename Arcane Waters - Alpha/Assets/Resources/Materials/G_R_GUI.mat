@@ -93,13 +93,13 @@ Material:
     - _Range2: 0.75
     - _SrcBlend: 1
     - _Stencil: 3
-    - _StencilComp: 6
-    - _StencilOp: 1
+    - _StencilComp: 8
+    - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
     - _Threshold: 0.05
     - _UVSec: 0
-    - _UseHatStencil: 0
+    - _UseHatStencil: 1
     - _UseUIAlphaClip: 0
     - _WaterAlpha: 0
     - _WaterHeight: 0

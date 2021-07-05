@@ -25,22 +25,6 @@ public class PvpShipyard : SeaStructure {
 
    #endregion
 
-   protected override void Start () {
-      base.Start();
-
-      if (isClient) {
-         initSprites();
-      }
-   }
-
-   public void initSprites () {
-      string texturePath = (pvpTeam == PvpTeamType.A) ? TEAM_A_SKIN : TEAM_B_SKIN;
-      Sprite[] sprites = Resources.LoadAll<Sprite>(texturePath);
-      if (sprites != null && sprites.Length > 0) {
-         spritesContainer.GetComponent<SpriteRenderer>().sprite = sprites[0];
-      }
-   }
-
    [Server]
    public BotShipEntity spawnShip () {
       checkReferences();
@@ -109,10 +93,6 @@ public class PvpShipyard : SeaStructure {
 
    // A reference to the instance we are in
    private Instance _instance = null;
-
-   // The paths to sprites being used for team skins for the shipyards
-   private static string TEAM_A_SKIN = "Sprites/Sea Structures/shipyard_green";
-   private static string TEAM_B_SKIN = "Sprites/Sea Structures/shipyard_yellow";
 
    #endregion
 }

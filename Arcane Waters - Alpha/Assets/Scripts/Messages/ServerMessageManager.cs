@@ -41,6 +41,9 @@ public class ServerMessageManager : MonoBehaviour
       int selectedUserId = logInUserMessage.selectedUserId;
       int minClientGameVersion;
 
+      // The time at which we started processing this LogInUserMessage
+      float startTime = Time.realtimeSinceStartup;
+
       // Determine the minimum client version for the client's platform
       if (logInUserMessage.clientPlatform == RuntimePlatform.OSXPlayer) {
          minClientGameVersion = GameVersionManager.self.minClientGameVersionMac;
@@ -228,6 +231,9 @@ public class ServerMessageManager : MonoBehaviour
                   userObjects.accountEmail, userObjects.accountCreationTime, loginMessage);
                conn.Send(msg);
 
+               // Note how long it took us to finish the authentication process
+               LagMonitorManager.self.noteAuthenticationDuration(logInUserMessage.accountName, (Time.realtimeSinceStartup - startTime));
+
             } else if (accountId > 0 && logInUserMessage.selectedUserId == 0) {
                // We have to deal with these separately because of a bug in Unity
                string[] armorPalettes = new string[armorList.Count];
@@ -270,6 +276,9 @@ public class ServerMessageManager : MonoBehaviour
                // If there was an account ID but not user ID, send the info on all of their characters for display on the Character screen
                CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), armorItemList.ToArray(), weaponItemList.ToArray(), hatItemList.ToArray(), armorPalettes, startingEquipmentIds.ToArray(), startingSpriteIds.ToArray());
                conn.Send(msg);
+
+               // Note how long it took us to finish the authentication process
+               LagMonitorManager.self.noteAuthenticationDuration(logInUserMessage.accountName, (Time.realtimeSinceStartup - startTime));
             } else {
                D.debug("Error! Failed to process login for user");
                sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);

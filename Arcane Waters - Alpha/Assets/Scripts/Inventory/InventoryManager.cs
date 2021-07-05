@@ -46,7 +46,7 @@ public class InventoryManager : MonoBehaviour
          Global.player.rpc.Cmd_RequestSetWeaponId(itemIdToSend);
 
          // Trigger the tutorial
-         if (Global.getUserObjects().weapon != null && castedItem.itemTypeId == HAMMER_ID) {
+         if (Global.getUserObjects().weapon != null) {
             TutorialManager3.self.checkUneqipHammerStep();
          }
       } else if (castedItem.category == Item.Category.Armor) {

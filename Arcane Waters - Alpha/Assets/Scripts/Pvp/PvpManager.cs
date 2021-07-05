@@ -52,7 +52,12 @@ public class PvpManager : MonoBehaviour {
       self = this;
    }
 
-   public void startPvpManagement () { 
+   public void startPvpManagement () {
+      // At server startup, for dev builds, make all the pvp arena maps accessible by creating one instance for each
+      if (!Util.isCloudBuild()) {
+         StartCoroutine(CO_CreateInitialPvpArenas());
+      }
+
       // Regularly check that there are enough pvp games and create more if needed
       InvokeRepeating(nameof(createPvpGamesIfNeeded), 5f, 10f);
    }
@@ -89,6 +94,29 @@ public class PvpManager : MonoBehaviour {
    }
 
    [Server]
+   private IEnumerator CO_CreateInitialPvpArenas () {
+      // Wait until our server is defined
+      while (ServerNetworkingManager.self == null || ServerNetworkingManager.self.server == null) {
+         yield return null;
+      }
+
+      // Wait until our server port is initialized
+      while (ServerNetworkingManager.self.server.networkedPort.Value == 0) {
+         yield return null;
+      }
+
+      // Only the master server launches the creation of pvp instances
+      if (ServerNetworkingManager.self.server.isMasterServer()) {
+
+         // Create a pvp instance for each available arena map
+         List<string> pvpArenaMaps = VoyageManager.self.getPvpArenaAreaKeys();
+         foreach (string areaKey in pvpArenaMaps) {
+            VoyageManager.self.requestVoyageInstanceCreation(areaKey, true, difficulty: 2, biome: Biome.Type.Forest);
+         }
+      }
+   }
+
+   [Server]
    protected void createPvpGamesIfNeeded () {
       // Only the master server launches the creation of pvp instances
       NetworkedServer server = ServerNetworkingManager.self.server;
@@ -106,7 +134,21 @@ public class PvpManager : MonoBehaviour {
 
       // If there are missing games, create one
       if (preGameCount < PRE_GAME_INSTANCES_COUNT) {
-         VoyageManager.self.requestVoyageInstanceCreation(isPvP: true, difficulty: 2, biome: Biome.Type.Forest);
+         List<string> pvpArenaAreaKeys = VoyageManager.self.getPvpArenaAreaKeys();
+
+         if (pvpArenaAreaKeys.Count == 0) {
+            D.error("Cannot create pvp arena instances! There are no pvp arena maps available!");
+            return;
+         }
+
+         // Rotate through the pvp arena maps
+         lastPvpArenaAreaIndex++;
+         if (lastPvpArenaAreaIndex >= pvpArenaAreaKeys.Count) {
+            lastPvpArenaAreaIndex = 0;
+         }
+         string areaKey = pvpArenaAreaKeys[lastPvpArenaAreaIndex];
+
+         VoyageManager.self.requestVoyageInstanceCreation(areaKey, true, difficulty: 2, biome: Biome.Type.Forest);
       }
    }
 
@@ -223,8 +265,41 @@ public class PvpManager : MonoBehaviour {
 
    public void assignPvpTeam (NetEntity entity, int instanceId) {
       if (_activeGames.ContainsKey(instanceId)) {
-         PvpTeamType playerTeam = _activeGames[instanceId].getTeamForPlayer(entity.userId);
+         PvpTeamType playerTeam = _activeGames[instanceId].getTeamForUser(entity.userId);
          entity.pvpTeam = playerTeam;
+      }
+   }
+
+   public static string getFlagPaletteForTeam (PvpTeamType teamType) {
+      switch (teamType) {
+         case PvpTeamType.A:
+            return "flag_green";
+         case PvpTeamType.B:
+            return "flag_red";
+         default:
+            return "flag_white";
+      }
+   }
+
+   public static string getShipPaletteForTeam (PvpTeamType teamType) {
+      switch (teamType) {
+         case PvpTeamType.A:
+            return "ship_flag_green_3";
+         case PvpTeamType.B:
+            return "ship_flag_red";
+         default:
+            return "ship_flag_white";
+      }
+   }
+
+   public static string getStructurePaletteForTeam (PvpTeamType teamType) {
+      switch (teamType) {
+         case PvpTeamType.A:
+            return "structure_green_outline, structure_green_fill";
+         case PvpTeamType.B:
+            return "structure_red_outline, structure_red_fill";
+         default:
+            return "structure_white_outline, structure_white_fill";
       }
    }
 
@@ -238,6 +313,9 @@ public class PvpManager : MonoBehaviour {
 
    // A dictionary of all pvp games currently active on this server, indexed by instanceId
    Dictionary<int, PvpGame> _activeGames = new Dictionary<int, PvpGame>();
+
+   // The index of the last area that was used to create a pvp arena
+   private int lastPvpArenaAreaIndex = -1;
 
    #endregion
 }

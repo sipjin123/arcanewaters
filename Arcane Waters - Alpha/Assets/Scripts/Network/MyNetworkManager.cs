@@ -118,7 +118,7 @@ public class MyNetworkManager : NetworkManager
    #region Client Functions
 
    public override void OnStartClient () {
-      D.debug("Starting client: " + this.networkAddress + " with Cloud Build version: {" + Util.getGameVersion() + "}");
+      D.debug($"Starting client: {this.networkAddress}:{getCurrentPort()} with Cloud Build version: {Util.getGameVersion()}");
 
       clientStarting?.Invoke();
 
@@ -140,6 +140,8 @@ public class MyNetworkManager : NetworkManager
    public override void OnClientConnect (NetworkConnection conn) {
       // This code is called on the client after connecting to a server
 
+      D.debug($"OnClientConnect triggered, Global.netId is {Global.netId}");
+
       // Check version
       CheckVersionMessage checkVersionMessage = new CheckVersionMessage(Global.netId, Global.clientGameVersion, Application.platform);
       NetworkClient.Send(checkVersionMessage);
@@ -154,12 +156,16 @@ public class MyNetworkManager : NetworkManager
 
    public override void OnClientDisconnect (NetworkConnection conn) {
       clientDisconnected?.Invoke();
+
+      D.debug("OnClientDisconnect was triggered.");
    }
 
    public override void OnStopClient () {
       clientStopping?.Invoke();
 
-      // We want to unregister our existing handlers for network messages
+      D.debug($"OnStopClient is unregistering client handlers.");
+
+      // It's recommended to unregister our existing handlers for network messages, but we'll disable this for now since it might be causing problems
       MessageManager.unregisterClientHandlers();
 
       base.OnStopClient();
@@ -282,6 +288,9 @@ public class MyNetworkManager : NetworkManager
       int authenticatedUserId = -1;
       string steamUserId = "";
 
+      // The time at which we started processing this new player connection
+      float startTime = Time.realtimeSinceStartup;
+
       if (_players.TryGetValue(conn.connectionId, out ClientConnectionData data)) {
          authenicatedAccountId = data.accountId;
          authenticatedUserId = data.userId;
@@ -355,6 +364,12 @@ public class MyNetworkManager : NetworkManager
             GameObject prefab = AreaManager.self.isSeaArea(previousAreaKey) == true ? PrefabsManager.self.playerShipPrefab : PrefabsManager.self.playerBodyPrefab;
             GameObject playerObject = Instantiate(prefab);
             NetEntity player = playerObject.GetComponent<NetEntity>();
+
+            // User the syncvars to save guild data
+            player.guildId = userInfo.guildId;
+            if (guildRankInfo != null) {
+               player.guildPermissions = guildRankInfo.permissions;
+            }
 
             // Use the syncvars to populate the icon fields
             player.guildIconBackground = guildInfo.iconBackground;
@@ -479,6 +494,9 @@ public class MyNetworkManager : NetworkManager
 
             // Gives the user admin features if it has an admin flag
             player.rpc.Target_GrantAdminAccess(player.connectionToClient, player.isAdmin());
+
+            // Note how long it took to completely process the user login for this account
+            LagMonitorManager.self.noteAccountLoginDuration(userInfo.accountName, (Time.realtimeSinceStartup - startTime));
          });
       });
    }

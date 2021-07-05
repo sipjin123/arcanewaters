@@ -125,6 +125,12 @@ public class StatusManager : MonoBehaviour {
       yield return new WaitForSeconds(delay);
 
       removeStatus(netId, status);
+
+      // Sea entity cannot be stunned again for a few seconds
+      if (status.statusType == Status.Type.Stunned) {
+         SeaEntity seaEntity = SeaManager.self.getEntity(netId);
+         seaEntity.applyStatus(Status.Type.StunInvulnerable, 0.0f, 5.0f, netId);
+      }
    }
 
    #region Private Variables

@@ -22,6 +22,18 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
    // An identifier for multiple structures in the same lane
    public int indexInLane = 0;
 
+   // A reference to the sprite renderer used to render the main part of this structure (the building itself)
+   public SpriteRenderer mainRenderer;
+
+   // A reference to the sprite renderer used to render the island for this structure
+   public SpriteRenderer islandRenderer;
+
+   // A reference to the sprites for this sea structure, indexed by PvpTeamType
+   public List<Sprite> spriteByTeam;
+
+   // A list of gameobjects that this will disable when it dies
+   public List<GameObject> disableOnDeath;
+
    #endregion
 
    protected override void Start () {
@@ -30,6 +42,8 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
       if (_isActivated) {
          onActivated();
       }
+
+      setupSprites();
    }
 
    public override bool isSeaStructure () {
@@ -53,7 +67,14 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
       if (isDead()) {
          double timeSinceDeath = NetworkTime.time - _deathTime;
          if (timeSinceDeath >= DYING_TIME_BEFORE_DISABLE) {
-            gameObject.SetActive(false);
+            mainRenderer.enabled = false;
+            this.enabled = false;
+            
+            if (disableOnDeath != null) {
+               foreach (GameObject obj in disableOnDeath) {
+                  obj.SetActive(false);
+               }
+            }
          }
       }
    }
@@ -82,6 +103,8 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
             }
          }
       }
+
+      setupSprites();
    }
 
    public void setIsActivated (bool value) {
@@ -104,6 +127,15 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
    [ClientRpc]
    public void Rpc_SetIsActivated(bool value) {
       setIsActivated(value);
+   }
+
+   private void setupSprites () {
+      if (spriteByTeam != null && spriteByTeam.Count > (int) pvpTeam) {
+         mainRenderer.sprite = spriteByTeam[(int) pvpTeam];
+
+         string paletteDef = PvpManager.getStructurePaletteForTeam(pvpTeam);
+         mainRenderer.GetComponent<RecoloredSprite>().recolor(paletteDef);
+      }
    }
 
    #region Private Variables

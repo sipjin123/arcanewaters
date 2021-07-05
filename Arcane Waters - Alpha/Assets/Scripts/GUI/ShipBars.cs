@@ -45,7 +45,9 @@ public class ShipBars : MonoBehaviour {
       _entity = GetComponentInParent<SeaEntity>();
 
       // Start out hidden
-      barsContainer.SetActive(false);
+      if (barsContainer) {
+         barsContainer.SetActive(false);
+      }
    }
 
    protected virtual void Start () {
@@ -138,11 +140,29 @@ public class ShipBars : MonoBehaviour {
 
       int tier = getHealthBlockTier();
       int hpPerBlock = ShipHealthBlock.HP_PER_BLOCK[tier];
+      float cumulativeBlockTotal = 0f;
+      float blockOpacity = 0f;
+      float partialBlockHealth = 0;
 
       // Instantiate enough hp blocks to display the entity max hp
       for (int i = 0; i < Mathf.Ceil((float) _entity.maxHealth / hpPerBlock); i++) {
+         cumulativeBlockTotal += hpPerBlock;
+
+         // Analyze health to determine the opactiy of this block
+         if (_lastHealth > cumulativeBlockTotal) {
+            blockOpacity = 1f;
+         } else {
+            if (Mathf.Abs(_lastHealth - cumulativeBlockTotal) < hpPerBlock) {
+               partialBlockHealth = ((i + 1) * hpPerBlock) - _lastHealth;
+               blockOpacity = (partialBlockHealth / hpPerBlock);
+            }
+            else {
+               blockOpacity = 0;
+            }
+         }
+
          ShipHealthBlock block = Instantiate(shipHealthBlockPrefab, healthBlockContainer.transform, false);
-         block.updateBlock(tier, 1, isAnEnemy);
+         block.updateBlock(tier, blockOpacity, isAnEnemy);
          _healthBlocks.Add(block);
       }
    }

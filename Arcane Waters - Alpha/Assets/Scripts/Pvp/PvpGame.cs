@@ -107,6 +107,7 @@ public class PvpGame : MonoBehaviour {
 
       _usersInGame.Add(userId);
       assignedTeam.Add(userId);
+      PowerupManager.self.clearPowerupsForUser(userId);
 
       if (_gameState == State.PreGame) {
          registerUserStatData(userId, userName, assignedTeam.teamType);
@@ -127,7 +128,11 @@ public class PvpGame : MonoBehaviour {
          StartCoroutine(CO_StartGame(delay: 10.0f));
       } else {
          int playersNeededToStart = (_numTeams * MIN_PLAYERS_PER_TEAM_TO_START) - getNumPlayers();
-         sendGameMessage(userName + " has joined the game. " + playersNeededToStart + " more players needed to begin!");
+         if (_gameIsStarting) {
+            sendGameMessage(userName + " has joined the game. ");
+         } else {
+            sendGameMessage(userName + " has joined the game. " + playersNeededToStart + " more players needed to begin!");
+         }
       }
    }
 
@@ -167,16 +172,11 @@ public class PvpGame : MonoBehaviour {
       // For players who are currently in the game, create voyage groups for their teams, and add them to the groups
       _gameIsStarting = true;
 
-      sendGameMessage("Game will begin in 10 seconds!");
+      sendGameMessage("The game will begin in 10 seconds!");
       yield return new WaitForSeconds(delay);
+      sendGameMessage("The game has begun");
 
       pvpStatData.playerStats = new List<PvpPlayerStat>();
-
-      // Initialize the player indexes in each team
-      Dictionary<PvpTeamType, int> lastIndexInTeam = new Dictionary<PvpTeamType, int>();
-      foreach (PvpTeamType teamType in System.Enum.GetValues(typeof(PvpTeamType))) {
-         lastIndexInTeam.Add(teamType, -1);
-      }
 
       for (int i = 0; i < _usersInGame.Count; i++) {
          NetEntity player = EntityManager.self.getEntity(_usersInGame[i]);
@@ -194,11 +194,10 @@ public class PvpGame : MonoBehaviour {
             }
          }
 
-         PvpTeamType teamType = getTeamForPlayer(_usersInGame[i]);
+         PvpTeamType teamType = getTeamForUser(_usersInGame[i]);
          PvpTeam team = _teams[teamType];
          player.currentHealth = player.maxHealth;
          player.pvpTeam = teamType;
-         lastIndexInTeam[teamType] = lastIndexInTeam[teamType] + 1;
 
          // Generate stat data for this player
          registerUserStatData(player, teamType);
@@ -230,7 +229,6 @@ public class PvpGame : MonoBehaviour {
 
          // Move the player to their spawn position, with a small offset so players aren't stacked on eachother.
          Vector2 spawnPosition = getSpawnPositionForTeam(team.teamType);
-         spawnPosition += (Vector2.one * 0.5f).Rotate(45.0f * lastIndexInTeam[teamType]);
          Util.setLocalXY(player.transform, spawnPosition);
       }
       pvpStatData.isInitialized = true;
@@ -286,7 +284,7 @@ public class PvpGame : MonoBehaviour {
             int userId = _latePlayers[i];
             NetEntity player = EntityManager.self.getEntity(userId);
             if (player) {
-               PvpTeamType bestTeam = getBestTeamWithSpace();
+               PvpTeamType bestTeam = getTeamForUser(userId);
                string userName = player.nameText.text;
 
                // Check if any team was found
@@ -337,6 +335,8 @@ public class PvpGame : MonoBehaviour {
                }
                Vector2 spawnPosition = getSpawnPositionForTeam(bestTeam);
                Util.setLocalXY(player.transform, spawnPosition);
+
+               _latePlayers.Remove(player.userId);
             }
          }
       }
@@ -436,6 +436,11 @@ public class PvpGame : MonoBehaviour {
             shipyard.laneCenterTarget.localPosition = waypointPosition - shipyard.transform.localPosition;
          }
       }
+
+      // Store the positions of the bases
+      _basePositions.Add(Vector3.zero);
+      _basePositions.Add(_topStructuresA.Find((x) => x is PvpBase).transform.localPosition);
+      _basePositions.Add(_topStructuresB.Find((x) => x is PvpBase).transform.localPosition);
    }
 
    private void setupStructureUnlocking (List<SeaStructure> laneStructures) {
@@ -473,9 +478,11 @@ public class PvpGame : MonoBehaviour {
          VoyageGroupManager.self.removeUserFromGroup(voyageGroup, player.userId);
       }
 
-      PvpPlayerStat pvpStatDataObj = pvpStatData.playerStats.Find(_ => _.userId == player.userId);
-      if (pvpStatDataObj != null) {
-         pvpStatData.playerStats.Remove(pvpStatDataObj);
+      if (pvpStatData != null && pvpStatData.playerStats != null) {
+         PvpPlayerStat pvpStatDataObj = pvpStatData.playerStats.Find(_ => _.userId == player.userId);
+         if (pvpStatDataObj != null) {
+            pvpStatData.playerStats.Remove(pvpStatDataObj);
+         }
       }
 
       // Remove the player from _usersInGame
@@ -520,12 +527,7 @@ public class PvpGame : MonoBehaviour {
       sendGameMessage("Team " + winningTeam.ToString() + " has won the game!");
       StopAllCoroutines();
 
-      destroyStructures(_topStructuresA);
-      destroyStructures(_midStructuresA);
-      destroyStructures(_botStructuresA);
-      destroyStructures(_topStructuresB);
-      destroyStructures(_midStructuresB);
-      destroyStructures(_botStructuresB);
+      setStructuresActivated(false);
 
       foreach (BotShipEntity botShip in _ships) {
          if (botShip && botShip.gameObject) {
@@ -534,13 +536,6 @@ public class PvpGame : MonoBehaviour {
       }
 
       StartCoroutine(CO_PostGame());
-   }
-
-   private void destroyStructures (List<SeaStructure> structures) {
-      foreach (SeaStructure structure in structures) {
-         structure.gameObject.SetActive(false);
-         NetworkServer.Destroy(structure.gameObject);
-      }
    }
 
    private IEnumerator CO_PostGame () {
@@ -614,17 +609,41 @@ public class PvpGame : MonoBehaviour {
    }
 
    private Vector3 getSpawnPositionForTeam (PvpTeamType teamType) {
-      int teamIndex = (int) (teamType) - 1;
-      SpawnManager.MapSpawnData mapSpawnData = SpawnManager.self.getAllMapSpawnData(areaKey);
+      Vector3 spawnPosition;
 
-      return mapSpawnData.spawns.Values.ElementAt(teamIndex).localPosition;
+      // If base positions have been setup, return the position of the team's base
+      if ((int)teamType < _basePositions.Count) {
+         spawnPosition = _basePositions[(int) teamType];
+      
+      // Otherwise, use spawns from map editor
+      } else {
+         int teamIndex = (int) (teamType) - 1;
+         SpawnManager.MapSpawnData mapSpawnData = SpawnManager.self.getAllMapSpawnData(areaKey);
+
+         spawnPosition = mapSpawnData.spawns.Values.ElementAt(teamIndex).localPosition;
+      }
+
+      // Choose an area around the spawn position
+      Vector2 spawnPositionOffset = (teamType == PvpTeamType.A) ? Vector2.one : -Vector2.one;
+      spawnPositionOffset *= 0.5f;
+      int numTeamSpawns = (teamType == PvpTeamType.A) ? _teamASpawns++ : _teamBSpawns++;
+      numTeamSpawns = numTeamSpawns % 6;
+      float rotationAngle = numTeamSpawns * 60.0f;
+      spawnPositionOffset = spawnPositionOffset.Rotate(rotationAngle);
+      spawnPosition += (Vector3)spawnPositionOffset;
+
+      return spawnPosition;
    }
 
-   private PvpTeamType getTeamForUser (int userId) {
+   public PvpTeamType getTeamForUser (int userId) {
       foreach (PvpTeam team in _teams.Values) {
          if (team.Contains(userId)) {
             return team.teamType;
          }
+      }
+
+      if (_gameState == State.InGame) {
+         D.warning("PvpGame.getTeamForPlayer() couldn't find a team that the player was assigned to.");
       }
 
       return PvpTeamType.None;
@@ -655,19 +674,6 @@ public class PvpGame : MonoBehaviour {
 
    public List<int> getAllUsersInGame () {
       return _usersInGame;
-   }
-
-   public PvpTeamType getTeamForPlayer (int userId) {
-      foreach (PvpTeamType teamType in _teams.Keys) {
-         if (_teams.ContainsKey(teamType) && _teams[teamType].Contains(userId)) {
-            return teamType;
-         }
-      }
-
-      if (_gameState == State.InGame) {
-         D.warning("PvpGame.getTeamForPlayer() couldn't find a team that the player was assigned to.");
-      }
-      return PvpTeamType.None;
    }
 
    private List<SeaStructure> getStructures (PvpTeamType team, PvpLane lane) {
@@ -935,6 +941,10 @@ public class PvpGame : MonoBehaviour {
 
       PvpPlayerStat attackerPlayerStat = pvpStatData.playerStats.Find(_ => _.userId == attacker.userId);
 
+      if (attackerPlayerStat == null) {
+         return 0;
+      }
+
       if (target is PlayerShipEntity) {
          PvpPlayerStat targetPlayerStat = pvpStatData.playerStats.Find(_ => _.userId == target.userId);
          return (attackerPlayerStat.rank + targetPlayerStat.rank * 2) * SilverManager.SILVER_PLAYER_SHIP_KILL_REWARD; // TODO: The algorithm could be changed
@@ -999,6 +1009,13 @@ public class PvpGame : MonoBehaviour {
 
    // A list of player user ids who couldn't be setup at game start
    private List<int> _latePlayers = new List<int>();
+
+   // The positions of each pvp base, indexed by team
+   private List<Vector3> _basePositions = new List<Vector3>();
+
+   // How many times a player has spawned on each team
+   private int _teamASpawns = 0, _teamBSpawns = 0;
+
 
    #endregion
 }

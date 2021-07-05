@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using TMPro;
 
-public class PvpAnnouncement : MonoBehaviour
+public class PvpAnnouncement : ClientMonoBehaviour
 {
    #region Public Variables
 
@@ -24,24 +24,25 @@ public class PvpAnnouncement : MonoBehaviour
    // The color used for the Blinking effect
    public Color blinkingColor = Color.red;
 
-   // The duration of the announcement. If the value is not positive the announcement will not disappear automatically
+   // The duration of the announcement
    public int announceLifetimeSeconds = -1;
 
    // List of announce patterns
    public string[] announcePatterns;
 
-   // self
+   // Self
    public static PvpAnnouncement self;
 
    #endregion
 
-   private void Awake () {
+   protected override void Awake () {
+      base.Awake();
       self = this;
    }
 
    private void Start () {
       // Start hidden
-      toggle(false);
+      hide();
    }
 
    public void setText (string newText) {
@@ -64,48 +65,80 @@ public class PvpAnnouncement : MonoBehaviour
       return insideText.text;
    }
 
-   public void toggleBlink (bool blink) {
-      CancelInvoke(nameof(CO_Blink));
-      if (blink) {
-         outlineText.fontMaterial = new Material(outlineText.fontMaterial);
-         InvokeRepeating(nameof(CO_Blink), 0, 0.16f);
-      }
+   public void startBlink () {
+      stopBlink();
+      outlineText.fontMaterial = new Material(outlineText.fontMaterial);
+      InvokeRepeating(nameof(updateBlink), 0, 0.16f);
    }
 
-   public void toggle (bool show) {
-      if (show) {
-         if (announceLifetimeSeconds > 0) {
-            startCountdown();
-         }
-      } else {
-         toggleBlink(false);
-         stopCountdown();
-      }
-      this.gameObject.SetActive(show);
+   public void stopBlink () {
+      CancelInvoke(nameof(updateBlink));
    }
 
-   private void CO_Blink () {
+   private void updateBlink () {
       Color newColor = Color.Lerp(Color.white, blinkingColor, (Mathf.Sin(Time.time * blinkingFrequency) + 1) * 0.5f);
       setOutlineColor(newColor);
    }
 
-   private void CO_Update () {
+   public void show () {
+      if (announceLifetimeSeconds > 0) {
+         startCountdown();
+         startVisibilityCheck();
+      }
+      this.gameObject.SetActive(true);
+   }
+
+   public void hide () {
+      stopBlink();
+      stopCountdown();
+      stopVisibilityCheck();
+      this.gameObject.SetActive(false);
+   }
+
+   public bool isShowing () {
+      return this.gameObject.activeSelf;
+   }
+
+   private void startCountdown () {
+      _toggleTime = Time.realtimeSinceStartup;
+      InvokeRepeating(nameof(updateAnnouncement), 0, 1);
+   }
+
+   private void stopCountdown () {
+      CancelInvoke(nameof(updateAnnouncement));
+   }
+
+   private void updateAnnouncement () {
       if (announceLifetimeSeconds < 0) {
          return;
       }
 
       if (_toggleTime + announceLifetimeSeconds < Time.realtimeSinceStartup) {
-         toggle(false);
+         hide();
       }
    }
 
-   private void startCountdown () {
-      _toggleTime = Time.realtimeSinceStartup;
-      InvokeRepeating(nameof(CO_Update), 0, 1);
+   private void startVisibilityCheck () {
+      InvokeRepeating(nameof(updateVisibilityCheck), 0, 1);
    }
 
-   private void stopCountdown () {
-      CancelInvoke(nameof(CO_Update));
+   private void stopVisibilityCheck () {
+      CancelInvoke(nameof(updateVisibilityCheck));
+   }
+
+   private void updateVisibilityCheck () {
+      // Check if the panel should be hidden
+      if (isShowing()) {
+         if (Global.player == null) {
+            hide();
+            return;
+         }
+
+         Instance instance = Global.player.getInstance();
+         if (instance == null || !instance.isPvP) {
+            hide();
+         }
+      }
    }
 
    private void setOutlineColor (Color newColor) {

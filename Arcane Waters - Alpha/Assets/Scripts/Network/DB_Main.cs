@@ -6049,6 +6049,11 @@ public class DB_Main : DB_MainStub
                                     rankPriority = -1
                                  };
                               }
+                           } 
+                           // If leader - just indicate that user has all permissions
+                           else if (guildRankId == 0) {
+                              userObjects.guildRankInfo = new GuildRankInfo();
+                              userObjects.guildRankInfo.permissions = int.MaxValue;
                            }
                         } catch {
                            D.error("The player is in a guild, but doesn't have a rank");
@@ -7945,6 +7950,39 @@ public class DB_Main : DB_MainStub
 
       return rankId;
    }
+   public static new int getGuildMemberRankPriority (int userId) {
+      int rankPriority = -1;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT users.gldRankId, guild_ranks.rankPriority FROM users LEFT JOIN guild_ranks ON guild_ranks.id = users.gldRankId WHERE users.usrId=@userId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userId", userId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  int gldRankId = dataReader.GetInt32("gldRankId");
+
+                  if (gldRankId > 0) {
+                     rankPriority = dataReader.GetInt32("rankPriority");
+                  } else {
+                     rankPriority = gldRankId;
+                  }
+
+                  return rankPriority;
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return rankPriority;
+   }
+
 
    public static new void addJobXP (int userId, Jobs.Type jobType, int XP) {
       string columnName = Jobs.getColumnName(jobType);

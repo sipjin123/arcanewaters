@@ -336,7 +336,7 @@ public class PanelManager : GenericGameManager {
       }
    }
 
-   public void showConfirmationPanel (string message, UnityAction onConfirm, UnityAction onCancel, bool hideOnConfirmation = true) {
+   public void showConfirmationPanel (string message, UnityAction onConfirm, UnityAction onCancel = null, bool hideOnConfirmation = true, int cost = 0, string description = "") {
       confirmScreen.confirmButton.onClick.RemoveAllListeners();
       confirmScreen.confirmButton.onClick.AddListener(onConfirm);
 
@@ -345,24 +345,13 @@ public class PanelManager : GenericGameManager {
       }
 
       confirmScreen.cancelButton.onClick.RemoveAllListeners();
-      confirmScreen.cancelButton.onClick.AddListener(onCancel);
-      confirmScreen.cancelButton.onClick.AddListener(() => confirmScreen.hide());
-
-      confirmScreen.show(message);
-   }
-
-   public void showConfirmationPanel (string message, UnityAction onConfirm, bool hideOnConfirmation = true) {
-      confirmScreen.confirmButton.onClick.RemoveAllListeners();
-      confirmScreen.confirmButton.onClick.AddListener(onConfirm);
-
-      if (hideOnConfirmation) {
-         confirmScreen.confirmButton.onClick.AddListener(() => confirmScreen.hide());
+      if (onCancel != null) {
+         confirmScreen.cancelButton.onClick.AddListener(onCancel);
       }
 
-      confirmScreen.cancelButton.onClick.RemoveAllListeners();
       confirmScreen.cancelButton.onClick.AddListener(() => confirmScreen.hide());
 
-      confirmScreen.show(message);
+      confirmScreen.show(message, cost, description);
    }
 
    public void hideToolTips () {

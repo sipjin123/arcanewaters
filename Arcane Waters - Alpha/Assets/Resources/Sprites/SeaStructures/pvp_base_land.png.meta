@@ -1,19 +1,19 @@
 fileFormatVersion: 2
-guid: 328530650955ccb40bd1ced42a87d9f0
+guid: 40fdca6466f27ba429ca5c269ad536c7
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -9199047770603356418
-    second: shipyard_green_0
+      213: -4433027862200042765
+    second: pvp_base_land_0
   - first:
-      213: -8494149384959938143
-    second: shipyard_green_1
+      213: 8580366625792580873
+    second: pvp_base_land_1
   - first:
-      213: 2003904209773016920
-    second: shipyard_green_2
+      213: 2421492624463042221
+    second: pvp_base_land_2
   - first:
-      213: 1508965640204091520
-    second: shipyard_green_3
+      213: -4683009415250936941
+    second: pvp_base_land_3
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -99,13 +99,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: shipyard_green_0
+      name: pvp_base_land_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 160
-        height: 160
+        width: 112
+        height: 112
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -113,20 +113,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: efe76519aca665080800000000000000
-      internalID: -9199047770603356418
+      spriteID: 3fa382285a8ba72c0800000000000000
+      internalID: -4433027862200042765
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: shipyard_green_1
+      name: pvp_base_land_1
       rect:
         serializedVersion: 2
-        x: 160
+        x: 112
         y: 0
-        width: 160
-        height: 160
+        width: 112
+        height: 112
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -134,20 +134,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1a13c586328be1a80800000000000000
-      internalID: -8494149384959938143
+      spriteID: 90ddbf44cf5931770800000000000000
+      internalID: 8580366625792580873
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: shipyard_green_2
+      name: pvp_base_land_2
       rect:
         serializedVersion: 2
-        x: 320
+        x: 224
         y: 0
-        width: 160
-        height: 160
+        width: 112
+        height: 112
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -155,20 +155,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8573e6bf24c4fcb10800000000000000
-      internalID: 2003904209773016920
+      spriteID: da6195b56beda9120800000000000000
+      internalID: 2421492624463042221
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: shipyard_green_3
+      name: pvp_base_land_3
       rect:
         serializedVersion: 2
-        x: 480
+        x: 336
         y: 0
-        width: 160
-        height: 160
+        width: 112
+        height: 112
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -176,8 +176,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 08082a2414ce0f410800000000000000
-      internalID: 1508965640204091520
+      spriteID: 39b782c9fbb920fb0800000000000000
+      internalID: -4683009415250936941
       vertices: []
       indices: 
       edges: []
@@ -185,7 +185,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 4e9f800a22504c54292a2cd452c77488
     internalID: 0
     vertices: []
     indices: 

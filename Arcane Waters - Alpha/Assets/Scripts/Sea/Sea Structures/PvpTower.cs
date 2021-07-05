@@ -66,7 +66,6 @@ public class PvpTower : SeaStructure {
       base.Start();
 
       _reticleRenderer = aimTransform.GetComponent<SpriteRenderer>();
-      aimTransform.SetParent(transform.parent);
    }
 
    protected override void onActivated () {
@@ -110,6 +109,7 @@ public class PvpTower : SeaStructure {
          float chargeTimer = ATTACK_CHARGE_TIME;
          while (chargeTimer > 0.0f) {
             if (!_aimTarget || _aimTarget.isDead() || isDead()) {
+               Rpc_NotifyCancelCharge();
                break;
             }
 
@@ -120,6 +120,7 @@ public class PvpTower : SeaStructure {
          }
 
          if (isDead()) {
+            Rpc_NotifyCancelCharge();
             yield break;
          }
 
@@ -155,6 +156,12 @@ public class PvpTower : SeaStructure {
    }
 
    [ClientRpc]
+   private void Rpc_NotifyCancelCharge () {
+      hideTargetingEffects();
+      _reticleRenderer.enabled = false;
+   }
+
+   [ClientRpc]
    private void Rpc_NotifyCannonFired () {
       if (_isShowingTargetingIndicator) {
          hideTargetingEffects();
@@ -181,6 +188,7 @@ public class PvpTower : SeaStructure {
       targetingParabola.gameObject.SetActive(false);
       DOTween.Kill(targetingIndicatorAnimator);
       DOTween.Kill(targetingIndicatorRenderer);
+      targetingIndicatorAnimator.transform.localScale = Vector3.one;
       targetingIndicatorAnimator.transform.DOPunchScale(Vector3.up * 0.15f, 0.25f, 1);
       targetingIndicatorRenderer.DOFade(0.0f, 0.25f).OnComplete(() => targetingIndicatorAnimator.gameObject.SetActive(false));
       _isShowingTargetingIndicator = false;
@@ -189,6 +197,7 @@ public class PvpTower : SeaStructure {
    public override void onDeath () {
       base.onDeath();
       hideTargetingEffects();
+      Rpc_NotifyCancelCharge();
    }
 
    private void updateTargetingIndicator () {
@@ -402,9 +411,14 @@ public class PvpTower : SeaStructure {
          bool isInWarningRange = (distanceToGlobalPlayerShip <= WARNING_RANGE);
          bool isInAttackRange = (distanceToGlobalPlayerShip <= ATTACK_RANGE);
          float lerpTargetAlpha = (isInWarningRange) ? 0.5f : 0.0f;
+         
+         // Fade circle out as we are dying
+         if (isDead()) {
+            lerpTargetAlpha = 0.0f;
+         }
          _attackRangeCircleAlpha = Mathf.Lerp(_attackRangeCircleAlpha, lerpTargetAlpha, Time.deltaTime);
 
-         Color targetColor = safeColor;
+         Color targetColor = warningColor;
          // If the player is within attack range, show danger color if they're being targeted, otherwise show safe color
          if (isInAttackRange) {
             targetColor = (_aimTarget == playerShipEntity) ? dangerColor : safeColor;
