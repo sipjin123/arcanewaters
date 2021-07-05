@@ -33,7 +33,8 @@ public class D : MonoBehaviour {
       CombatEnd = 20,
       CancelAttack = 21,
       Pvp = 22,
-      NetworkMessages = 23
+      NetworkMessages = 23,
+      InstanceProcess = 24
    }
 
    // Any log files older than this will be deleted
@@ -52,6 +53,9 @@ public class D : MonoBehaviour {
 
    // Stores the contents of the last retrieved server log in a string
    public static string serverLogString = "";
+
+   // Directory of the private logs
+   public static string instanceProcessLogDirectory = "";
 
    #endregion
 
@@ -72,10 +76,14 @@ public class D : MonoBehaviour {
    public void Awake () {
       D.adminLog("D.Awake...", D.ADMIN_LOG_TYPE.Initialization);
 
+      Global.privateLogTypesToShow.Add(ADMIN_LOG_TYPE.InstanceProcess);
+
       // For now, we can't write to file in the web player
       if (Application.isMobilePlatform) {
          WRITE_TO_FILE = false;
       }
+
+      checkPrivateLogs();
 
       if (WRITE_TO_FILE) {
          // Create the "logs" directory and store the path to it
@@ -123,6 +131,27 @@ public class D : MonoBehaviour {
 
       }
       D.adminLog("D.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
+   }
+
+   private void checkPrivateLogs () { 
+      string logsDirectoryPath = Application.persistentDataPath + "\\pvtLogs\\";
+      Directory.CreateDirectory(logsDirectoryPath);
+
+      instanceProcessLogDirectory = logsDirectoryPath +
+         ADMIN_LOG_TYPE.InstanceProcess.ToString() + "_" +
+         DateTime.UtcNow.Year + "-" +
+         DateTime.UtcNow.Month + "-" +
+         DateTime.UtcNow.Day + "_" +
+         DateTime.UtcNow.Hour + "-" +
+         DateTime.UtcNow.Minute + "-" +
+         DateTime.UtcNow.Second + ".txt";
+
+      if (!File.Exists(instanceProcessLogDirectory)) {
+         StreamWriter sr = File.CreateText(instanceProcessLogDirectory);
+         sr.Close();
+      }
+      
+      File.WriteAllText(instanceProcessLogDirectory, "[" + DateTime.UtcNow + "] Initialize");
    }
 
    void OnEnable () {
@@ -270,6 +299,14 @@ public class D : MonoBehaviour {
    }
 
    public static void adminLog (string text, ADMIN_LOG_TYPE logType) {
+      if (Global.privateLogTypesToShow.Contains(logType)) {
+         string logTime = (SHOW_TIME) ? "[" + DateTime.Now + "] " : "";
+         string lineToWrite = "\n" + logTime + text;
+
+         File.AppendAllText(instanceProcessLogDirectory, lineToWrite);
+         return;
+      }
+
       if (!Global.logTypesToShow.Contains(logType)) {
          return;
       }

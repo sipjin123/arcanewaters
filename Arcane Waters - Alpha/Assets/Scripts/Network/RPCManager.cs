@@ -3275,6 +3275,9 @@ public class RPCManager : NetworkBehaviour
             // Create a new instance of the item
             if (shopItem.category == Item.Category.CraftingIngredients) {
                newItem = DB_Main.createItemOrUpdateItemCount(_player.userId, singleShopItem);
+               if (newItem.category == Item.Category.None) {
+                  D.debug("Error Here! Category Cant be none for Shop Item");
+               }
             } else {
                newItem = DB_Main.createNewItem(_player.userId, singleShopItem);
             }
@@ -4030,6 +4033,10 @@ public class RPCManager : NetworkBehaviour
 
          // Add the result item to the user inventory
          Item craftedItem = DB_Main.createItemOrUpdateItemCount(_player.userId, resultItem);
+
+         if (craftedItem.category == Item.Category.None) {
+            D.debug("Error Here! Category Cant be none for Crafting Rewards");
+         }
 
          // If the item could not be created, stop the process
          if (craftedItem == null) {
@@ -4987,6 +4994,9 @@ public class RPCManager : NetworkBehaviour
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          foreach (Item newDatabaseItem in newDatabaseItemList) {
+            if (newDatabaseItem.category == Item.Category.None) {
+               D.debug("Error Here! Category Cant be none for Group Item Rewards");
+            }
             DB_Main.createItemOrUpdateItemCount(userID, newDatabaseItem);
          }
       });
@@ -5068,6 +5078,9 @@ public class RPCManager : NetworkBehaviour
       // Add it to their inventory
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          item = DB_Main.createItemOrUpdateItemCount(_player.userId, item);
+         if (item.category == Item.Category.None) {
+            D.debug("Error Here! Category Cant be none for Chest Rewards");
+         }
 
          // Update the treasure chest status if is opened, except in treasure site areas since they can be visited again in voyages
          if (!VoyageManager.isTreasureSiteArea(chest.areaKey)) {
