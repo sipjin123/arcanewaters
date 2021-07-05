@@ -120,6 +120,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
       cm.addCommand(new CommandData("force_join", "During land combat, forces group memebers to join automatically", forceJoin, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "autoAttack", "attackDelay" }));
       cm.addCommand(new CommandData("battle_simulate", "Simulate the combat", battleSimulate, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "rounds" }));
+      cm.addCommand(new CommandData("freeze_ships", "Freezes all bot ships", freezeShips, requiredPrefix: CommandType.Admin));
 
       // Log Commands for investigation
       cm.addCommand(new CommandData("xml", "Logs the xml content of the specific manager", requestXmlLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "xmlType" }));
@@ -637,6 +638,21 @@ public class AdminManager : NetworkBehaviour
          Cmd_AutoAttack(.5f);
       }
    }
+
+   private void freezeShips () {
+      Cmd_FreezeShips();
+   }
+
+   [Command]
+   protected void Cmd_FreezeShips () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+      Global.freezeShips = !Global.freezeShips;
+
+      _player.Target_FloatingMessage(_player.connectionToClient, Global.freezeShips ? "All ships will now be frozen in place" : "All bot ships will now be unfrozen");
+   }
+
 
    [Command]
    protected void Cmd_AutoAttack (float attackDelay) {

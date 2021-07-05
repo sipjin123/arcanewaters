@@ -69,6 +69,9 @@ public class Global
    // Determine if the player should sprint without holding down sprint button
    public static bool sprintConstantly;
 
+   // If bot ships should be frozen in place
+   public static bool freezeShips;
+
    // Determine if the player should automatically farm crop spots they walk over
    public static bool autoFarm = false;
 
@@ -102,8 +105,14 @@ public class Global
    // Gets set to false when Nubis requests are executed as Mirror requests instead
    public static bool isUsingNubis = true;
 
+   // If the debug for bots are enabled
+   public static bool enableBotDebug;
+
    // List of logs to show
    public static List<D.ADMIN_LOG_TYPE> logTypesToShow = new List<D.ADMIN_LOG_TYPE>();
+
+   // List of private logs that are compiled in a different text file
+   public static List<D.ADMIN_LOG_TYPE> privateLogTypesToShow = new List<D.ADMIN_LOG_TYPE>();
 
    // The default settings for networked vars in the server network
    public static NetworkedVarSettings defaultNetworkedVarSettings = new NetworkedVarSettings { WritePermission = NetworkedVarPermission.OwnerOnly, SendChannel = "Fragmented" };
