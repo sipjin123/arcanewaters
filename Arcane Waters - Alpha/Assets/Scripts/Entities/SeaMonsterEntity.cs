@@ -5,6 +5,7 @@ using Mirror;
 using UnityEngine;
 using Pathfinding;
 using UnityEngine.Events;
+using System.Linq;
 
 public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 {
@@ -599,7 +600,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
                offset += Random.insideUnitCircle * 0.3f;
             }
 
-            TreasureManager.self.createSeaMonsterChest(currentInstance, sortPoint.transform.position + (Vector3) offset, seaMonsterData.seaMonsterType, killerUserId);
+            TreasureManager.self.createSeaMonsterChest(currentInstance, sortPoint.transform.position + (Vector3) offset, seaMonsterData.seaMonsterType, killerUserId, _attackers.Keys.ToArray());
          }
       }
    }

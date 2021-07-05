@@ -40,6 +40,15 @@ public class AttackAbilityData : BasicAbilityData
    // Makes use of a custom projectile sprite / otherwise it will use the projectile sprite of the weapon
    public bool useCustomProjectileSprite = true;
 
+   // Status type
+   public Status.Type statusType;
+
+   // Chance the status would take effect
+   public float statusChance;
+
+   // How long the status would take effect
+   public float statusDuration;
+
    #endregion
 
    public AttackAbilityData () { }
@@ -149,7 +158,7 @@ public class AttackAbilityData : BasicAbilityData
 
    public float getAimDuration () {
       if (classRequirement == Weapon.Class.Ranged) {
-         return Battler.getAimDuration() * 2;
+         return .5f + Battler.getAimDuration() * 2;
       }
       if (classRequirement == Weapon.Class.Rum) {
          return Battler.getAimDuration();
