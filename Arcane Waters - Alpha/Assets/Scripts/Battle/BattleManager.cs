@@ -925,6 +925,15 @@ public class BattleManager : MonoBehaviour {
                target.health = Util.clamp<int>(target.health, 0, target.getStartingHealth());
                source.canExecuteAction = true;
 
+               // TODO: Enable/Remove this after public playtest
+               bool forceDisableStatus = true;
+               if (!forceDisableStatus) {
+                  // Apply attack status here
+                  if (abilityDataReference.statusType != Status.Type.None) {
+                     StartCoroutine(CO_UpdateStatusAfterCollision(battle, target, abilityDataReference.statusType, abilityDataReference.statusDuration));
+                  }
+               }
+
                // Setup server to declare a battler is dead when the network time reaches the time action ends
                if (target.health <= 0) {
                   StartCoroutine(CO_KillBattlerAtEndTime(attackAction));
@@ -951,6 +960,16 @@ public class BattleManager : MonoBehaviour {
             }
          }
       }
+   }
+
+   protected IEnumerator CO_UpdateStatusAfterCollision (Battle battle, Battler battlerReference, Status.Type statusType, float statusDuration) {
+      // Wait for client side attack to finish before applying the status effect
+      while (battlerReference.health != battlerReference.displayedHealth) {
+         yield return 0;
+      }
+
+      battle.Rpc_DisplayStatus(statusType, battle.battleId, battlerReference.userId);
+      battlerReference.applyStatusEffect(statusType, statusDuration);
    }
 
    protected IEnumerator CO_KillBattlerAtEndTime (AttackAction attackAction) {

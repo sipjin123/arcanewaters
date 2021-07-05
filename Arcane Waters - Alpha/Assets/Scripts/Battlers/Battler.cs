@@ -200,6 +200,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [SyncVar]
    public bool isBossType;
 
+   // Determines if this battler is disabled by a debuff
+   [SyncVar]
+   public bool isDisabled;
+
    // Is pvp battler
    [SyncVar]
    public bool isPvp;
@@ -249,6 +253,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // A reference to the point where the target line should start / end
    public Transform targetPoint;
 
+   // Battle effect holder reference
+   public BattlerEffectHolder battleEffectHolder;
+
    // Returns simple animation list
    public List<SimpleAnimation> getAnim () { return _anims; }
 
@@ -263,6 +270,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    // References to images of the outline and fill of the attack timing indicator
    public Image attackingTimingOutline, attackTimingFill;
+
+   // The sprite containers
+   public Transform spriteContainers;
 
    #endregion
 
@@ -291,7 +301,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       _clickableBox = GetComponentInChildren<ClickableBox>();
 
       // Keep track of all of our Simple Animation components
-      _anims = new List<SimpleAnimation>(GetComponentsInChildren<SimpleAnimation>(true));
+      _anims = new List<SimpleAnimation>(spriteContainers.GetComponentsInChildren<SimpleAnimation>(true));
 
       AP = DEFAULT_AP;
    }
@@ -1927,7 +1937,36 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       playAnim(Anim.Type.Battle_East);
    }
 
-   private IEnumerator animateHit (Battler attacker, AttackAction action, BasicAbilityData ability) {
+   public IEnumerator animateStatusEffect (Status.Type statusType) {
+      yield return new WaitForSeconds(.1f);
+
+      battleEffectHolder.updateEffect(statusType, true);
+
+      // Do visual effects here
+      switch (statusType) {
+         case Status.Type.Burning:
+
+            break;
+         case Status.Type.Frozen:
+
+            break;
+         case Status.Type.Stunned:
+
+            break;
+         case Status.Type.Slowed:
+
+            break;
+      }
+   }
+
+   public void applyStatusEffect (Status.Type statusType, float duration) {
+      // Register debuff list if it does not exist yet
+      if (!debuffList.ContainsKey(statusType)) {
+         debuffList.Add(statusType, duration);
+      }
+   }
+
+   private IEnumerator CO_AnimateHit (Battler attacker, AttackAction action, BasicAbilityData ability, bool isLastHit) {
       if (hasDisplayedDeath()) {
          yield break;
       }

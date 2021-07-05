@@ -57,6 +57,9 @@ public class Battle : NetworkBehaviour {
    // The queued rpc action executed by the battle manager
    public List<QueuedRpcAction> queuedRpcActionList = new List<QueuedRpcAction>();
 
+   // The damager per tick of the burn status
+   public const int BURN_DAMAGE_PER_TICK = 10;
+
    #endregion
 
    public void Start () {
@@ -136,11 +139,35 @@ public class Battle : NetworkBehaviour {
                   // Mark the debuffs that recently ended for future game logic such as in game notification
                   if (!endedDebuffs.Contains(debuffData.Key)) {
                      endedDebuffs.Add(debuffData.Key);
+
+                     switch (debuffData.Key) {
+                        case Status.Type.Burning:
+
+                           break;
+                        case Status.Type.Frozen:
+                           battler.isDisabled = false;
+                           break;
+                        case Status.Type.Stunned:
+                           battler.isDisabled = false;
+                           break;
+                     }
                   }
                } else { 
                   // Deduct the timer value based on the tick interval
                   Status.Type currentStatusType = debuffData.Key;
                   float newValue = debuffData.Value - BattleManager.TICK_INTERVAL;
+
+                  switch (currentStatusType) {
+                     case Status.Type.Burning:
+                        battler.health -= BURN_DAMAGE_PER_TICK;
+                        break;
+                     case Status.Type.Frozen:
+                        battler.isDisabled = true;
+                        break;
+                     case Status.Type.Stunned:
+                        battler.isDisabled = true;
+                        break;
+                  }
 
                   // Add debuff to the new list that will override the synclist
                   newDebuffData.Add(currentStatusType, newValue);
@@ -424,6 +451,21 @@ public class Battle : NetworkBehaviour {
       Vector2 targetPosition = target.battleSpot.transform.position;
 
       return Vector2.Distance(sourcePosition, targetPosition);
+   }
+
+   [ClientRpc]
+   public void Rpc_DisplayStatus (Status.Type status, int battleId, int battlerId) {
+      Battle battle = BattleManager.self.getBattle(battleId);
+      if (battle == null) {
+         return;
+      }
+      Battler sourceBattler = battle.getBattler(battlerId);
+      if (sourceBattler == null) {
+         return;
+      }
+
+      // Apply status effect here
+      StartCoroutine(sourceBattler.animateStatusEffect(status));
    }
 
    [ClientRpc]
