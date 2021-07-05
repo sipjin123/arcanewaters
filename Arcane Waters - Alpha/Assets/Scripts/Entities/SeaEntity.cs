@@ -191,37 +191,50 @@ public class SeaEntity : NetEntity
          // Add pvp stat data
          NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(_lastAttackerNetId);
          if (lastAttacker != null) {
-            PvpGame pvpGame = PvpManager.self.getGameWithPlayer(lastAttacker.userId);
+            PvpGame pvpGame = PvpManager.self.getGameWithInstance(this.instanceId);
             if (pvpGame != null) {
+               int silverReward = pvpGame.computeSilverReward(lastAttacker, this);
                if (this is PlayerShipEntity) {
-                  int silverReward = pvpGame.computeSilverReward(lastAttacker, this);
                   pvpGame.addPlayerKillCount(lastAttacker.userId);
                   pvpGame.addSilverCount(lastAttacker.userId, silverReward);
                   pvpGame.addSilverRank(lastAttacker.userId, 1);
                   pvpGame.resetSilverRank(this.userId);
-                  this.rpc.BroadcastPvPKill(lastAttacker.userId, this.userId);
-                  Target_ReceivePvpCurrency(lastAttacker.connectionToClient, silverReward);
+                  this.rpc.broadcastPvPKill(lastAttacker, this);
+                  if (lastAttacker.isPlayerShip()) {
+                     Target_ReceivePvpCurrency(lastAttacker.getPlayerShipEntity().connectionToClient, silverReward);
+                  }
                }
                if (this is BotShipEntity) {
-                  int silverReward = pvpGame.computeSilverReward(lastAttacker, this);
                   pvpGame.addShipKillCount(lastAttacker.userId);
                   pvpGame.addSilverCount(lastAttacker.userId, silverReward);
                   pvpGame.addSilverRank(lastAttacker.userId, 1);
-                  Target_ReceivePvpCurrency(lastAttacker.connectionToClient, silverReward);
+                  if (lastAttacker.isPlayerShip()) {
+                     Target_ReceivePvpCurrency(lastAttacker.getPlayerShipEntity().connectionToClient, silverReward);
+                  }
                }
                if (this is SeaMonsterEntity) {
-                  int silverReward = pvpGame.computeSilverReward(lastAttacker, this);
                   pvpGame.addMonsterKillCount(lastAttacker.userId);
                   pvpGame.addSilverCount(lastAttacker.userId, silverReward);
                   pvpGame.addSilverRank(lastAttacker.userId, 1);
-                  Target_ReceivePvpCurrency(lastAttacker.connectionToClient, silverReward);
+                  if (lastAttacker.isPlayerShip()) {
+                     Target_ReceivePvpCurrency(lastAttacker.getPlayerShipEntity().connectionToClient, silverReward);
+                  }
                }
                if (this is SeaStructure) {
-                  int silverReward = pvpGame.computeSilverReward(lastAttacker, this);
                   pvpGame.addBuildingDestroyedCount(lastAttacker.userId);
                   pvpGame.addSilverCount(lastAttacker.userId, silverReward);
                   pvpGame.addSilverRank(lastAttacker.userId, 1);
-                  Target_ReceivePvpCurrency(lastAttacker.connectionToClient, silverReward);
+                  if (lastAttacker.isPlayerShip()) {
+                     Target_ReceivePvpCurrency(lastAttacker.getPlayerShipEntity().connectionToClient, silverReward);
+                  }
+               }
+
+               // Add assist points to the non last attacker user
+               foreach (KeyValuePair<uint, double> attacker in _attackers) {
+                  NetEntity attackerEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attacker.Key);
+                  if (attackerEntity != null && attackerEntity.userId != lastAttacker.userId) {
+                     pvpGame.addAssistCount(attackerEntity.userId);
+                  }
                }
             }
          }
