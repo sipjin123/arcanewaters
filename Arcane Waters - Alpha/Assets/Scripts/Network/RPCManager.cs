@@ -719,12 +719,15 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   public void endBattle () {
-      Target_ReceiveEndBattle(_player.connectionToClient);
+   public void endBattle (string battleId) {
+      Target_ReceiveEndBattle(_player.connectionToClient, battleId);
    }
 
    [TargetRpc]
-   public void Target_ReceiveEndBattle (NetworkConnection connection) {
+   public void Target_ReceiveEndBattle (NetworkConnection connection, string battleId) {
+      // Remove after confirming fix for battle end
+      D.debug("Player has Ended Battle with: " + battleId);
+
       BattleUIManager.self.abilitiesCG.Hide();
 
       // Trigger the tutorial
@@ -5398,7 +5401,7 @@ public class RPCManager : NetworkBehaviour
       if (enemy.isDefeated) {
          // Reset player movement restriction if the battle engagement is invalid
          D.debug("Error here! {" + _player.userId + "} is Attempting to engage combat with a defeated enemy! Enemy battle id is {" + enemy.battleId + "}");
-         Target_ResetMoveDisable(_player.connectionToClient);
+         Target_ResetMoveDisable(_player.connectionToClient, "NA");
          return;
       }
 
@@ -5922,13 +5925,16 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ResetMoveDisable (NetworkConnection connection) {
+   public void Target_ResetMoveDisable (NetworkConnection connection, string battleId) {
       if (Global.player == null) {
          D.debug("Player is missing!");
          return;
       }
 
       if (Global.player is PlayerBodyEntity) {
+         // Remove after confirming fix for battle end
+         D.debug("Player was granted ability to move again after finishing combat: " + battleId);
+
          PlayerBodyEntity playerBody = (PlayerBodyEntity) Global.player;
          playerBody.isWithinEnemyRadius = false;
          playerBody.playerBattleCollider.combatInitCollider.enabled = true;

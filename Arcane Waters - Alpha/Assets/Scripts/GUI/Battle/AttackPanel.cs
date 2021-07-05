@@ -81,8 +81,6 @@ public class AttackPanel : MonoBehaviour {
 
          // Trigger the tutorial
          TutorialManager3.self.tryCompletingStep(TutorialTrigger.AttackBattleTarget);
-      } else {
-         D.warning("Casting is on cooldown!");
       }
    }
 

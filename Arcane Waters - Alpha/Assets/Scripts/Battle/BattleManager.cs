@@ -1083,7 +1083,7 @@ public class BattleManager : MonoBehaviour {
 
             foreach (Battler participant in winningBattlers) {
                if (!participant.isMonster()) {
-                  participant.player.rpc.endBattle();
+                  participant.player.rpc.endBattle(battle.battleId.ToString());
 
                   // Registers the kill count of the combat
                   AchievementManager.registerUserAchievement(participant.player, ActionType.KillLandMonster, defeatedBattlers.Count);

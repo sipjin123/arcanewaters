@@ -39,7 +39,9 @@ public class CargoBoxManager : MonoBehaviour
       // Hide this panel, if the player is in a PvpMatch
       if (Global.player != null) {
          Instance instance = Global.player.getInstance();
-         shouldHidePanel = instance.isPvP;
+         if (instance != null) {
+            shouldHidePanel = instance.isPvP;
+         }
       }
 
       // Keep the panel hidden until we're in the game
