@@ -1537,14 +1537,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             Vector2 targetPos = targetBattler.getMagicGroundPosition() + new Vector2(0, projectileSpawnOffsetY);
 
             // Determines the animation speed modification when playing shoot animation
-            float shootAnimSpeed = 1.5f / AdminGameSettingsManager.self.settings.battleAttackDuration;
+            float shootAnimSpeed = .05f / AdminGameSettingsManager.self.settings.battleAttackDuration;
 
             // Disable targeting effects
             if (sourceBattler.battlerType == BattlerType.PlayerControlled) {
                sourceBattler.hideTargetingEffects();
             }
 
-            // Start the attack animation that will eventually create the magic effect
+            // Start the attack animation that will eventually create the projecitle effect
             if (isFirstAction) {
                // Aim gun animation
                sourceBattler.playAnim(Anim.Type.Ready_Attack);
@@ -1584,9 +1584,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                if (weaponData.weaponClass == Weapon.Class.Magic || weaponData.weaponClass == Weapon.Class.Rum) {
                   sourceBattler.playAnim(Anim.Type.Throw_Projectile, shootAnimSpeed);
                } else {
-                  sourceBattler.playAnim(Anim.Type.Finish_Attack, shootAnimSpeed);
+                  sourceBattler.playAnim(Anim.Type.Finish_Attack_Gun, shootAnimSpeed);
                }
             }
+
             yield return new WaitForSeconds(getPostShootDelay());
 
             // Return to battle stance
@@ -2184,7 +2185,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public static float getAimDuration () {
       // Determines the aiming duration
-      return .05f * AdminGameSettingsManager.self.settings.battleAttackDuration;
+      return .1f * AdminGameSettingsManager.self.settings.battleAttackDuration;
    }
 
    public static float getPreCastDelay () {
@@ -2199,12 +2200,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public static float getPreShootDelay () {
       // Determines the delay before animation the Shoot clip
-      return .1f * AdminGameSettingsManager.self.settings.battleAttackDuration;
+      return .05f * AdminGameSettingsManager.self.settings.battleAttackDuration;
    }
 
    public static float getPostShootDelay () {
       // Determines the delay before ending Shoot Pose
-      return .15f * AdminGameSettingsManager.self.settings.battleAttackDuration;
+      return .25f * AdminGameSettingsManager.self.settings.battleAttackDuration;
    }
    
    public static float getJumpLength () {

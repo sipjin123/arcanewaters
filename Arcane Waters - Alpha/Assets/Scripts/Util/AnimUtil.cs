@@ -103,6 +103,9 @@ public class AnimUtil : MonoBehaviour {
                case Anim.Type.Finish_Attack:
                   return new AnimInfo(animType, 34, 34);
 
+               case Anim.Type.Finish_Attack_Gun:
+                  return new AnimInfo(animType, 34, 34);
+
                case Anim.Type.Punch:
                   return new AnimInfo(animType, 32, 33);
 

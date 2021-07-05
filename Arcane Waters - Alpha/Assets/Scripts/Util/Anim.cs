@@ -40,6 +40,7 @@ public class Anim : MonoBehaviour {
       Fast_Interact_East = 35,
       Fast_Interact_North = 36,
       Fast_Interact_South = 37,
+      Finish_Attack_Gun = 38,
    }
 
    // The different animation groups
@@ -71,6 +72,7 @@ public class Anim : MonoBehaviour {
          case Type.Attack_South:
          case Type.Ready_Attack:
          case Type.Finish_Attack:
+         case Type.Finish_Attack_Gun:
          case Type.Play_Once:
          case Type.Punch:
          case Type.SpecialAnimationReady:
