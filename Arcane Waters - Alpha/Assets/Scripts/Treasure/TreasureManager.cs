@@ -84,7 +84,7 @@ public class TreasureManager : MonoBehaviour {
       return chest;
    }
 
-   public TreasureChest createSeaMonsterChest (Instance instance, Vector3 spot, SeaMonsterEntity.Type enemyType, int userId) {
+   public TreasureChest createSeaMonsterChest (Instance instance, Vector3 spot, SeaMonsterEntity.Type enemyType, int userId, uint[] attackers) {
       // Instantiate a new Treasure Chest
       TreasureChest chest = Instantiate(seaChestPrefab, spot, Quaternion.identity);
 
@@ -119,11 +119,22 @@ public class TreasureManager : MonoBehaviour {
       List<PlayerShipEntity> instancePlayerEntities = instance.getPlayerShipEntities();
       int playerVoyageGroupId = instancePlayerEntities.Find(_ => _.userId == userId).voyageGroupId;
 
-      if (playerVoyageGroupId > 0) {
-         foreach (PlayerShipEntity playerEntity in instancePlayerEntities) {
-            // If there are players in the instance that share the same voyage group id with the player, then add them to the allowed list of user interaction
-            if (playerEntity.userId != userId && playerEntity.voyageGroupId == playerVoyageGroupId) {
-               chest.allowedUserIds.Add(playerEntity.userId);
+      if (!instance.isPvP) {
+         // If this is a voyage, reward entire voyage party
+         if (playerVoyageGroupId > 0) {
+            foreach (PlayerShipEntity playerEntity in instancePlayerEntities) {
+               // If there are players in the instance that share the same voyage group id with the player, then add them to the allowed list of user interaction
+               if (playerEntity.userId != userId && playerEntity.voyageGroupId == playerVoyageGroupId) {
+                  chest.allowedUserIds.Add(playerEntity.userId);
+               }
+            }
+         }
+      } else {
+         // If its on pvp mode only reward the ones who engaged in battle
+         foreach (uint attacker in attackers) {
+            NetEntity entity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attacker);
+            if (entity != null && playerVoyageGroupId == entity.voyageGroupId) {
+               chest.allowedUserIds.Add(entity.userId);
             }
          }
       }

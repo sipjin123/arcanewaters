@@ -289,7 +289,7 @@ public class TreasureChest : NetworkBehaviour {
 
       Instance instance = InstanceManager.self.getInstance(instanceId);
       Biome.Type biome = instance.biome;
-      List<TreasureDropsData> treasureDropsList = TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome).ToList();
+      List<TreasureDropsData> treasureDropsList = TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome, rarity).ToList();
 
       if (treasureDropsList.Count < 1) {
          D.error("There are no treasure drops generated for Biome:{" + biome + "}");

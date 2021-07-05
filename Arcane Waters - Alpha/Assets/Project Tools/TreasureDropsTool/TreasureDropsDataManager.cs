@@ -47,16 +47,26 @@ public class TreasureDropsDataManager : MonoBehaviour {
       }
    }
 
-   public List<TreasureDropsData> getTreasureDropsFromBiome (Biome.Type biomeType) {
+   public List<TreasureDropsData> getTreasureDropsFromBiome (Biome.Type biomeType, Rarity.Type rarity) {
       List<LootGroupData> biomeLoots = lootDropsCollection.Values.ToList().FindAll(_ => _.biomeType == biomeType);
+      if (biomeLoots.Count < 1) {
+         return LootGroupData.DEFAULT_LOOT_GROUP.treasureDropsCollection;
+      }
+
       List<TreasureDropsData> newTreasureDropList = new List<TreasureDropsData>();
 
       // Collect all data from loot groups of the same biome
       if (biomeLoots.Count > 0) {
          foreach (LootGroupData lootGroups in biomeLoots) {
             foreach (TreasureDropsData lootData in lootGroups.treasureDropsCollection) {
-               newTreasureDropList.Add(lootData);
+               if (lootData.rarity == rarity) { 
+                  newTreasureDropList.Add(lootData);
+               }
             }
+         }
+
+         if (newTreasureDropList.Count < 1) {
+            return LootGroupData.DEFAULT_LOOT_GROUP.treasureDropsCollection;
          }
          return newTreasureDropList;
       }
