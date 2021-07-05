@@ -1394,6 +1394,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                }
             }
 
+            // Adjust the hit animation effects depending if this attack is the finishing blow, if yes prevent battle stance return, if not then return animation state to battle stance
+            bool isLastHit = (targetBattler.displayedHealth - action.damage) < 1;
+
             #region Display Block
             // If the action was blocked, animate that
             if (action.wasBlocked) {
@@ -1404,14 +1407,19 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
 
                // Make the target sprite display its "Hit" animation
-               targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action, attackerAbility));
+               targetBattler.StartCoroutine(targetBattler.CO_AnimateHit(sourceBattler, action, attackerAbility, isLastHit));
             }
 
             // Simulate the collision effect of the attack towards the target battler
             yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action, attackerAbility));
 
+            // Handle the return to idle for attacks with shake here
+            if (abilityDataReference.hasShake && !abilityDataReference.useSpecialAnimation && !isLastHit) {
+               targetBattler.playAnim(Anim.Type.Battle_East);
+            }
+
             Coroutine shakeCoroutine = null;
-            if (attackerAbility.useSpecialAnimation) {
+            if (attackerAbility.useSpecialAnimation && !targetBattler.hasDisplayedDeath()) {
                shakeCoroutine = targetBattler.StartCoroutine(targetBattler.CO_AnimateShake());
             }
 
@@ -1467,14 +1475,17 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
                // Setup target to un-freeze hit animation
                if (shakeCoroutine != null) {
-                  targetBattler.playAnim(Anim.Type.Battle_East, 0.2f / AdminGameSettingsManager.self.settings.battleAttackDuration);
+                  // Switch back to battle stance if target is still alive
+                  if (targetBattler.displayedHealth > 0) {
+                     targetBattler.playAnim(Anim.Type.Battle_East, 0.2f / AdminGameSettingsManager.self.settings.battleAttackDuration);
+                  }
                   targetBattler.StopCoroutine(shakeCoroutine);
                }
 
                yield return new WaitForSeconds(1.0f * AdminGameSettingsManager.self.settings.battleAttackDuration);
             }
 
-            // Switch back to our battle stance
+            // Switch back to our battle stance if target is still alive
             sourceBattler.playAnim(Anim.Type.Battle_East);
             sourceBattler.pauseAnim(false);
 
@@ -1588,7 +1599,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Play the magic vfx such as (Flame effect on fire element attacks)
             effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
-            
+
+            // Adjust the hit animation effects depending if this attack is the finishing blow, if yes prevent battle stance return, if not then return animation state to battle stance
+            isLastHit = (targetBattler.displayedHealth - action.damage) < 1;
+
             // If the action was blocked, animate that
             if (action.wasBlocked) {
                targetBattler.StartCoroutine(targetBattler.animateBlock(sourceBattler));
@@ -1598,11 +1612,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
 
                // Make the target sprite display its "Hit" animation
-               targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action, attackerAbility));
+               targetBattler.StartCoroutine(targetBattler.CO_AnimateHit(sourceBattler, action, attackerAbility, isLastHit));
             }
 
             // Simulate the collision effect of the attack towards the target battler
             yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action, attackerAbility));
+            if (abilityDataReference.hasShake && !abilityDataReference.useSpecialAnimation && !isLastHit) {
+               targetBattler.playAnim(Anim.Type.Battle_East);
+            }
 
             // Wait until the animation gets to the point that it deals damage
             yield return new WaitForSeconds(abilityDataReference.getPreDamageLength);
@@ -1724,6 +1741,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
             EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
 
+            // Adjust the hit animation effects depending if this attack is the finishing blow, if yes prevent battle stance return, if not then return animation state to battle stance
+            isLastHit = (targetBattler.displayedHealth - action.damage) < 1;
+
             // If the action was blocked, animate that
             if (action.wasBlocked) {
                targetBattler.StartCoroutine(targetBattler.animateBlock(sourceBattler));
@@ -1733,11 +1753,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
 
                // Make the target sprite display its "Hit" animation
-               targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action, attackerAbility));
+               targetBattler.StartCoroutine(targetBattler.CO_AnimateHit(sourceBattler, action, attackerAbility, isLastHit));
             }
 
             // Simulate the collision effect of the attack towards the target battler
             yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action, attackerAbility));
+            if (abilityDataReference.hasShake && !abilityDataReference.useSpecialAnimation && !isLastHit) {
+               targetBattler.playAnim(Anim.Type.Battle_East);
+            }
 
             // Wait until the animation gets to the point that it deals damage
             yield return new WaitForSeconds(abilityDataReference.getPreDamageLength);
@@ -1853,9 +1876,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             Coroutine shakeCoroutine = targetBattler.StartCoroutine(targetBattler.CO_AnimateShake());
             yield return new WaitForSeconds(getShakeLength());
             targetBattler.StopCoroutine(shakeCoroutine);
-            if (!abilityData.useSpecialAnimation) {
-               targetBattler.playAnim(Anim.Type.Battle_East);
-            }
          } else if (abilityDataReference.hasKnockBack) {
             // Move the sprite back and forward to simulate knockback
             targetBattler.playAnim(Anim.Type.Hurt_East);
@@ -1980,7 +2000,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       ability.playHitClipAtTarget(transform);
 
       // Return to battle idle
-      if (!ability.useSpecialAnimation) {
+      if (!ability.useSpecialAnimation && !isLastHit) {
          playAnim(Anim.Type.Battle_East);
       }
    }
