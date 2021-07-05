@@ -100,6 +100,17 @@ MonoBehaviour:
     statusSprite: {fileID: 21300000, guid: d10a7e5d04966874db14ccc6c5a7fb07, type: 3}
   - statusType: 8
     statusSprite: {fileID: 21300000, guid: 0934c735998cc6f4f903f0268fd280e5, type: 3}
+  - statusType: 2
+    statusSprite: {fileID: 21300010, guid: 2730f373dd17c3d41be3a0ec6feeb530, type: 3}
+  - statusType: 4
+    statusSprite: {fileID: -594492218196253237, guid: 5bd7be04c41a3964ea14583ba15a97b9,
+      type: 3}
+  - statusType: 3
+    statusSprite: {fileID: 6074942705544299991, guid: 5e4fc007df2500142a7ba2c2782f150d,
+      type: 3}
+  - statusType: 1
+    statusSprite: {fileID: 4446608818571410959, guid: 46cc5b9d395e21540b214bdeb958a5ee,
+      type: 3}
   statusType: 0
 --- !u!1 &7314403363517792499
 GameObject:
