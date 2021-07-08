@@ -107,9 +107,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shipEntity: {fileID: 0}
   currentArea: {fileID: 0}
-  outBoundIcon: {fileID: 0}
-  outBoundIconPrefab: {fileID: 5741828630631572801}
-  currentRectTransform: {fileID: 0}
+  outBoundIcon: {fileID: 5391886866108753527}
+  outBoundIconPrefab: {fileID: 632505227596633308, guid: 4566d24d17a7440469411c1ba2125fe8,
+    type: 3}
+  currentRectTransform: {fileID: 610508518731664793}
 --- !u!114 &1661350646278987439
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -277,12 +278,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4566d24d17a7440469411c1ba2125fe8, type: 3}
---- !u!1 &5741828630631572801 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 632505227596633308, guid: 4566d24d17a7440469411c1ba2125fe8,
-    type: 3}
-  m_PrefabInstance: {fileID: 5145378588334223773}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &5391886866108753527 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 989624344500918250, guid: 4566d24d17a7440469411c1ba2125fe8,

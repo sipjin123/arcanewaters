@@ -13,11 +13,15 @@ public class MM_ShipEntityIcon : MonoBehaviour {
    // Area in which ship should be (otherwise hide)
    public Area currentArea;
 
+   // The current rect transform
+   public RectTransform currentRectTransform;
+
    #endregion
 
    protected void Start () {
       // Lookup components
       _image = GetComponent<Image>();
+      currentRectTransform = GetComponent<RectTransform>();
    }
 
    private void Update () {
@@ -29,10 +33,17 @@ public class MM_ShipEntityIcon : MonoBehaviour {
          Destroy(this.gameObject);
          return;
       }
+
+      if (currentRectTransform == null) {
+         return;
+      }
+
+      // Set correct ship entity icon position in minimap
+      currentRectTransform.anchoredPosition = Minimap.self.getCorrectedPosition(shipEntity.transform, currentArea);
    }
 
    public void onHoverBegin () {
-      if (shipEntity != null) { 
+      if (shipEntity != null) {
          Minimap.self.displayIconInfo(shipEntity.entityName);
       }
    }
