@@ -16,8 +16,14 @@ public class PvpStatPanel : Panel {
    // Self
    public static PvpStatPanel self;
 
-   // Icon of the silver currency
+   // Icon of the silver currency awarded for kills
    public Sprite silverIcon;
+
+   // Icon of the silver currency awarded for assists
+   public Sprite assistSilverIcon;
+
+   // Reference to the title gameobject
+   public Text title;
 
    #endregion
 
@@ -26,14 +32,20 @@ public class PvpStatPanel : Panel {
       self = this;
    }
 
-   public void populatePvpPanelData (PvpStatsData pvpStatData) {
+   public void setTitle(string newTitle) {
+      if (title != null) {
+         title.text = newTitle;
+      }
+   }
+
+   public void populatePvpPanelData (GameStatsData pvpStatData) {
       pvpStatRowHolder.gameObject.DestroyChildren();
 
-      foreach (PvpPlayerStat playerStat in pvpStatData.playerStats) {
+      foreach (GameStats playerStat in pvpStatData.stats) {
          PvpStatRow statRow = Instantiate(pvpStatRowPrefab, pvpStatRowHolder);
-         statRow.kills.text = playerStat.playerKills.ToString();
+         statRow.kills.text = playerStat.PvpPlayerKills.ToString();
          statRow.assists.text = playerStat.playerAssists.ToString();
-         statRow.deaths.text = playerStat.playerDeaths.ToString();
+         statRow.deaths.text = playerStat.PvpPlayerDeaths.ToString();
          statRow.monsterKills.text = playerStat.playerMonsterKills.ToString();
          statRow.buildingsDestroyed.text = playerStat.playerStructuresDestroyed.ToString();
          statRow.shipKills.text = playerStat.playerShipKills.ToString();

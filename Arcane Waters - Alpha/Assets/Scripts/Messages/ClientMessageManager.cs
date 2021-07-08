@@ -44,11 +44,15 @@ public class ClientMessageManager : MonoBehaviour {
       Global.isRedirecting = true;
       bool wasHost = MyNetworkManager.isHost;
 
+      D.debug($"CO_Reconnect was called, so setting Global.isRedirecting to true, and wasHost: {wasHost}");
+
       // Disconnect from the current server
       if (wasHost) {
          MyNetworkManager.self.StopHost();
       } else {
-         MyNetworkManager.self.StopClient();
+         if (NetworkClient.active) {
+            MyNetworkManager.self.StopClient();
+         }
       }
 
       yield return new WaitForSeconds(.05f);
@@ -449,6 +453,8 @@ public class ClientMessageManager : MonoBehaviour {
    }
 
    public static void On_FailedToConnectToServer (NetworkConnection conn, DisconnectMessage msg) {
+      D.debug($"On_FailedToConnectToServer called, Global.isRedirecting: {Global.isRedirecting}");
+
       // Ignore this message if we're in the  middle of a redirect
       if (Global.isRedirecting) {
          return;

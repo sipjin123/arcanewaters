@@ -509,6 +509,12 @@ public class Area : MonoBehaviour
       _graph.Scan();
    }
 
+   public void rescanGraph () {
+      if (_graph != null) {
+         _graph.Scan();
+      }
+   }
+
    #region Private Variables
 
    // Stores the Tilemaps for this area

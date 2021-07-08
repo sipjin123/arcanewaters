@@ -505,7 +505,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
       if (InputManager.isLeftClickKeyPressed() && !PanelManager.self.hasPanelInLinkedList() && !PanelManager.self.isFullScreenSeparatePanelShowing()) {
          NetEntity body = getClickedBody();
-         if (body != null && body is PlayerBodyEntity) {
+         if (body != null && body is PlayerBodyEntity && !Global.player.isInBattle()) {
             PanelManager.self.contextMenuPanel.showDefaultMenuForUser(body.userId, body.entityName);
          }
       }

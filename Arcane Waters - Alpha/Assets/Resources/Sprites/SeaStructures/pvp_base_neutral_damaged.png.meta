@@ -1,19 +1,19 @@
 fileFormatVersion: 2
-guid: c9226407cee393c4b9df649ee92ba92c
+guid: bacbe8d8ced207744afc866fa6a5e227
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8028529754197117817
-    second: pvp_base_neutral_0
+      213: 3499291381234463449
+    second: pvp_base_neutral_damaged_0
   - first:
-      213: 2912905397504008943
-    second: pvp_base_neutral_1
+      213: -3719532916897757916
+    second: pvp_base_neutral_damaged_1
   - first:
-      213: -7100808839089095762
-    second: pvp_base_neutral_2
+      213: 7441327207579586341
+    second: pvp_base_neutral_damaged_2
   - first:
-      213: 1858795472578172066
-    second: pvp_base_neutral_3
+      213: -5133160035613573855
+    second: pvp_base_neutral_damaged_3
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -99,7 +99,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: pvp_base_neutral_0
+      name: pvp_base_neutral_damaged_0
       rect:
         serializedVersion: 2
         x: 0
@@ -113,14 +113,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7843d6cb9bee49090800000000000000
-      internalID: -8028529754197117817
+      spriteID: 9d2f010a8faff8030800000000000000
+      internalID: 3499291381234463449
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pvp_base_neutral_1
+      name: pvp_base_neutral_damaged_1
       rect:
         serializedVersion: 2
         x: 112
@@ -134,14 +134,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fe26b8a9608bc6820800000000000000
-      internalID: 2912905397504008943
+      spriteID: 425cfedd480916cc0800000000000000
+      internalID: -3719532916897757916
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pvp_base_neutral_2
+      name: pvp_base_neutral_damaged_2
       rect:
         serializedVersion: 2
         x: 224
@@ -155,14 +155,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: eabf3288bfbd47d90800000000000000
-      internalID: -7100808839089095762
+      spriteID: 52f0b316ba7e44760800000000000000
+      internalID: 7441327207579586341
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pvp_base_neutral_3
+      name: pvp_base_neutral_damaged_3
       rect:
         serializedVersion: 2
         x: 336
@@ -176,8 +176,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2a4502d42a4cbc910800000000000000
-      internalID: 1858795472578172066
+      spriteID: 12d750ee42a53c8b0800000000000000
+      internalID: -5133160035613573855
       vertices: []
       indices: 
       edges: []

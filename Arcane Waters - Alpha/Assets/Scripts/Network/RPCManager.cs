@@ -4415,27 +4415,30 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
-      PvpGame pvpGame = PvpManager.self.getGameWithPlayer(_player.userId);
-      if (pvpGame == null || pvpGame.pvpStatData == null || !pvpGame.pvpStatData.isInitialized) {
-         return;
-      }
-
-      Target_OpenPvpStatPanel(_player.connectionToClient, Util.serialize(pvpGame.pvpStatData.playerStats), pvpGame.instanceId);
+      GameStatsData instanceStatData = GameStatsManager.gameStatsData;
+      Target_OpenPvpStatPanel(_player.connectionToClient, Util.serialize(instanceStatData.stats));
    }
 
    [TargetRpc]
-   private void Target_OpenPvpStatPanel (NetworkConnection conn, string[] serializedPvpStat, int pvpGameId) {
+   private void Target_OpenPvpStatPanel (NetworkConnection conn, string[] serializedPvpStat) {
       // Get the panel
       PvpStatPanel panel = (PvpStatPanel) PanelManager.self.get(Panel.Type.PvpScoreBoard);
       if (!panel.isShowing()) {
          panel.show();
       }
 
-      List<PvpPlayerStat> pvpStatList = Util.unserialize<PvpPlayerStat>(serializedPvpStat);
-      PvpStatsData pvpStatData = new PvpStatsData {
-         playerStats = pvpStatList,
+      List<GameStats> pvpStatList = Util.unserialize<GameStats>(serializedPvpStat);
+      GameStatsData pvpStatData = new GameStatsData {
+         stats = pvpStatList,
          isInitialized = true
       };
+
+      Instance instance = _player.getInstance();
+      panel.setTitle("STATS");
+      if (instance.isPvP) {
+         panel.setTitle("PVP");
+      }
+
       panel.populatePvpPanelData(pvpStatData);
    }
 
@@ -4651,6 +4654,10 @@ public class RPCManager : NetworkBehaviour
          if (voyage.isPvP) {
             playerShipEntity.hasEnteredPvP = true;
             PvpManager.self.assignPvpTeam(playerShipEntity, voyage.instanceId);
+         } else {
+            // Not a PvP Voyage
+            Debug.LogWarning($"Player '{_player.entityName}' has entered a Voyage or League.");
+            Target_ReceiveUserEnteredVoyage(_player.connectionToClient, _player.userId);
          }
       }
    }
@@ -7291,7 +7298,7 @@ public class RPCManager : NetworkBehaviour
       if (attackerEntity == null) {
          return;
       }
-      
+
       Instance instance = attackerEntity.getInstance();
       if (instance == null || !instance.isPvP) {
          return;
@@ -7302,13 +7309,10 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
-      List<PlayerShipEntity> entities = instance.getPlayerShipEntities();
-      PvpGame game = PvpManager.self.getGameWithInstance(instance.id);
       int attackerSilverRank = 1;
-      if (game != null) {
-         attackerSilverRank = game.getSilverRank(attackerEntity.userId);
-      }
+      attackerSilverRank = GameStatsManager.self.getSilverRank(attackerEntity.userId);
 
+      List<PlayerShipEntity> entities = instance.getPlayerShipEntities();
       foreach (NetEntity entity in entities) {
          Target_ReceiveBroadcastPvPKill(entity.connectionToClient, attackerEntity.netId, targetEntity.netId, attackerSilverRank);
       }
@@ -7333,6 +7337,55 @@ public class RPCManager : NetworkBehaviour
          PvpAnnouncement.self.startBlink();
       }
    }
+
+   [Command]
+   public void Cmd_RequestResetPvpSilverPanel () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      ////PvpGame pvpGame = PvpManager.self.getGameWithPlayer(_player.userId);
+      //Instance instance = Global.player.getInstance();
+      //GameStatsData instanceStatData = instance.instanceStatData;
+      //if (instanceStatData == null || !instanceStatData.isInitialized) {
+      //   return;
+      //}
+
+      Target_ResetPvpSilverPanel(_player.connectionToClient, GameStatsManager.self.getSilverAmount(_player.userId));
+   }
+
+   [TargetRpc]
+   private void Target_ResetPvpSilverPanel (NetworkConnection conn, int silverCount) {
+      PvpStatusPanel.self.reset(silverCount);
+   }
+
+   [TargetRpc]
+   private void Target_ReceiveUserLeftVoyage (NetworkConnection connection, int userId) {
+      // Reset the Voyage Stats for the player
+      GameStatsManager.self.unregisterUser(userId);
+   }
+
+   [TargetRpc]
+   private void Target_ReceiveUserEnteredVoyage (NetworkConnection connection, int userId) {
+      // Remove and then add the user
+      //GameStatsManager.self.unregisterUser(userId);
+      GameStatsManager.self.registerUser(userId);
+
+      // Update the PvpStatusPanel
+      PvpStatusPanel.self.reset(GameStatsManager.self.getSilverAmount(userId));
+   }
+
+   [TargetRpc]
+   private void Target_ReceiveUserEnteredPvP (NetworkConnection connection, int userId) {
+      // Remove and then add the user
+      //GameStatsManager.self.unregisterUser(userId);
+      GameStatsManager.self.registerUser(userId);
+
+      // Update the PvpStatusPanel
+      PvpStatusPanel.self.reset(GameStatsManager.self.getSilverAmount(userId));
+   }
+
 
    #region Private Variables
 

@@ -6,16 +6,16 @@ using Mirror;
 using System;
 
 [Serializable]
-public class PvpStatsData {
+public class GameStatsData {
    // List of player stats
-   public List<PvpPlayerStat> playerStats;
+   public List<GameStats> stats;
 
    // If has been initialized
    public bool isInitialized = false;
 }
 
 [Serializable]
-public class PvpPlayerStat {
+public class GameStats {
    // User id
    public int userId;
 
@@ -23,10 +23,10 @@ public class PvpPlayerStat {
    public string playerName;
 
    // How many opposing player kill count
-   public int playerKills;
+   public int PvpPlayerKills;
 
    // How many time this player died
-   public int playerDeaths;
+   public int PvpPlayerDeaths;
 
    // How many assists this player has
    public int playerAssists;
@@ -49,7 +49,7 @@ public class PvpPlayerStat {
    // The rank of the player during the pvp session
    public int rank;
 
-   public PvpPlayerStat (int userId, string playerName, int playerTeam) {
+   public GameStats (int userId, string playerName, int playerTeam) {
       this.userId = userId;
       this.playerName = playerName;
       this.playerTeam = playerTeam;

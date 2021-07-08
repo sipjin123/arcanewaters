@@ -24,7 +24,7 @@ public class NetworkedServer : NetworkedBehaviour
    public NetworkedList<int> connectedUserIds = new NetworkedList<int>(Global.defaultNetworkedVarSettings);
 
    // The accounts connected to this server
-   public NetworkedList<int> connectedAccountIds = new NetworkedList<int>(new NetworkedVarSettings { WritePermission = NetworkedVarPermission.OwnerOnly, SendChannel = "Fragmented", SendTickrate = 0 });
+   public NetworkedDictionary<int, int> connectedAccountIds = new NetworkedDictionary<int, int>(new NetworkedVarSettings { WritePermission = NetworkedVarPermission.OwnerOnly, SendChannel = "Fragmented", SendTickrate = 0 });
 
    // The voyage groups stored in this server
    public NetworkedDictionary<int, VoyageGroupInfo> voyageGroups = new NetworkedDictionary<int, VoyageGroupInfo>(new NetworkedVarSettings { WritePermission = NetworkedVarPermission.Everyone, SendChannel = "Fragmented", SendTickrate = 0 });
@@ -56,7 +56,7 @@ public class NetworkedServer : NetworkedBehaviour
          ServerNetworkingManager.self.server = this;
 
          // Regularly update data shared between servers
-         InvokeRepeating(nameof(updateConnectedAccountsAndPlayers), 5f, 1f);
+         InvokeRepeating(nameof(updateConnectedPlayers), 5f, 1f);
          InvokeRepeating(nameof(updateVoyageInstances), 5.5f, 1f);
       }
 
@@ -69,17 +69,11 @@ public class NetworkedServer : NetworkedBehaviour
       this.name = "Networked Server #" + this.networkedPort.Value;
    }
 
-   private void updateConnectedAccountsAndPlayers () {
+   private void updateConnectedPlayers () {
       connectedUserIds.Clear();
-      connectedAccountIds.Clear();
 
       foreach (ClientConnectionData connData in MyNetworkManager.getClientConnectionData()) {
          if (connData != null) {
-            // Add the account
-            if (connData.isAuthenticated() && !DisconnectionManager.self.isUserPendingDisconnection(connData.userId)) {
-               connectedAccountIds.Add(connData.accountId);
-            }
-
             // Add the user
             if (connData.netEntity != null) {
                connectedUserIds.Add(connData.netEntity.userId);
@@ -130,6 +124,22 @@ public class NetworkedServer : NetworkedBehaviour
             instance.isLeague, instance.leagueIndex, instance.leagueRandomSeed, instance.creationDate, instance.treasureSiteCount, instance.capturedTreasureSiteCount, instance.aliveNPCEnemiesCount,
             instance.getTotalNPCEnemyCount(), groupCount, instance.getPlayerCount(), playerCountTeamA, playerCountTeamB, pvpGameMaxPlayerCount, pvpGameState);
       voyageList.Add(voyage);
+   }
+
+   public void synchronizeConnectedAccount (int accountId) {
+      bool isAccountConnected = false;
+      foreach (ClientConnectionData connData in MyNetworkManager.getClientConnectionData()) {
+         if (connData != null && connData.isAuthenticated() && connData.accountId == accountId && !DisconnectionManager.self.isUserPendingDisconnection(connData.userId)) {
+            isAccountConnected = true;
+            break;
+         }
+      }
+
+      if (isAccountConnected) {
+         connectedAccountIds[accountId] = 1;
+      } else {
+         connectedAccountIds.Remove(accountId);
+      }
    }
 
    public bool isMasterServer () {

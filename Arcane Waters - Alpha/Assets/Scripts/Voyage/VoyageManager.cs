@@ -81,6 +81,12 @@ public class VoyageManager : GenericGameManager {
 
       // Search the voyage in all the servers we know about
       foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
+         foreach (Voyage v in server.treasureSites) {
+            if (v.voyageId == voyageId) {
+               voyage = v;
+               return true;
+            }
+         }
          foreach (Voyage v in server.voyages) {
             if (v.voyageId == voyageId) {
                voyage = v;

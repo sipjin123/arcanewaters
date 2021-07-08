@@ -6203,6 +6203,32 @@ public class DB_Main : DB_MainStub
       return userList;
    }
 
+   public static new List<int> getAllUserIds () {
+      List<int> userIdList = new List<int>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT usrId FROM users", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  int userId = DataUtil.getInt(dataReader, "usrId");
+                  userIdList.Add(userId);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return userIdList;
+   }
+
    public static new Stats getStats (int userId) {
       Stats stats = new Stats(userId);
 
@@ -8696,6 +8722,50 @@ public class DB_Main : DB_MainStub
 
       return JsonConvert.SerializeObject(eventList);
    }
+
+   public static new void updateServerShutdown (bool shutdown) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE server_shutdown SET shutdown=" + ((shutdown)?"1":"0") + " WHERE id=1", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+   
+   public static new bool getServerShutdown () {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT shutdown FROM server_shutdown WHERE id=1", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Execute the command
+            using (var reader = cmd.ExecuteReader()) {
+               try {
+                  while (reader.Read()) {
+                     int shutdown = DataUtil.getInt(reader, "shutdown");
+                     return shutdown == 1;
+                  }
+               } catch (Exception ex) {
+                  return false;
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return false;
+      }
+
+      return false;
+   }   
 
    public static new string isServerOnline () {
       bool isOnline = false;

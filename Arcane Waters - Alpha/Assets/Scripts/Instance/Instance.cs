@@ -133,14 +133,12 @@ public class Instance : NetworkBehaviour
    // Our network ident
    public NetworkIdentity netIdent;
 
-   // The start time
-   public long startTime;
-
    // The user id registered to this area if this is a private area
    public int privateAreaUserId;
 
-   // Number of minutes that this instance can be active when it is a private area
-   public const int ACTIVE_MINUTES_CAP = 10;
+   // The number of times the instance must be found empty before being removed (see checkIfInstanceIsEmpty for time between checks)
+   public const int CHECKS_BEFORE_REMOVAL = 10;
+   public const int CHECKS_BEFORE_REMOVAL_PRIVATE_INSTANCES = 20;
 
    #endregion
 
@@ -150,8 +148,6 @@ public class Instance : NetworkBehaviour
    }
 
    private void Start () {
-      resetActiveTimer();
-
       // On clients, set the instance manager as the parent transform
       if (isClient) {
          transform.SetParent(InstanceManager.self.transform);
@@ -171,15 +167,11 @@ public class Instance : NetworkBehaviour
       }
    }
 
-   public void resetActiveTimer () {
-      startTime = DateTime.UtcNow.ToBinary();
-   }
-
-   public int getPlayerCount() {
+   public int getPlayerCount () {
       int count = 0;
 
       foreach (NetworkBehaviour entity in entities) {
-         if (entity != null  && (entity is PlayerBodyEntity || entity is PlayerShipEntity)) {
+         if (entity != null && (entity is PlayerBodyEntity || entity is PlayerShipEntity)) {
             count++;
          }
       }
@@ -195,17 +187,17 @@ public class Instance : NetworkBehaviour
       this.entities.Add(entity);
    }
 
-   public List<NetworkBehaviour> getEntities () { 
+   public List<NetworkBehaviour> getEntities () {
       return entities;
    }
 
    public List<NetworkBehaviour> getOreEntities () {
-      return entities.FindAll(_=>_ is OreNode);
+      return entities.FindAll(_ => _ is OreNode);
    }
 
    public List<PlayerBodyEntity> getPlayerBodyEntities () {
       List<PlayerBodyEntity> newEntityList = new List<PlayerBodyEntity>();
-      
+
       // Gathers all the player bodies in the area
       foreach (NetworkBehaviour existingEntity in entities) {
          if (existingEntity is PlayerBodyEntity) {
@@ -296,33 +288,21 @@ public class Instance : NetworkBehaviour
       if (getPlayerCount() <= 0) {
          _consecutiveEmptyChecks++;
 
-         TimeSpan timeSinceStart = DateTime.UtcNow.Subtract(DateTime.FromBinary(startTime));
-
-         // If this is a private area and the active minutes exceeds the cap, respawn player to starting town and remove this instance
-         if ((AreaManager.self.isPrivateArea(areaKey) && timeSinceStart.TotalMinutes >= ACTIVE_MINUTES_CAP)) {
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               UserObjects userObj = DB_Main.getUserObjects(privateAreaUserId);
-
-               // If the player saved area is still this instance, Update the player area in the database since this private area will now be removed
-               if (userObj.userInfo.areaKey == areaKey) {
-                  Vector2 spawnLocalPosition = SpawnManager.self.getDefaultLocalPosition(Area.STARTING_TOWN);
-                  DB_Main.setNewLocalPosition(privateAreaUserId, spawnLocalPosition, Direction.South, Area.STARTING_TOWN);
-               } 
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  // Remove the private area
-                  InstanceManager.self.removeEmptyInstance(this);
-               });
-            });
-         } else {
-            // If the Instance has been empty for long enough, just remove it
-            if (_consecutiveEmptyChecks > 10) {
-               InstanceManager.self.removeEmptyInstance(this);
-            }
+         // If the Instance has been empty for long enough, just remove it
+         if (_consecutiveEmptyChecks > getConsecutiveChecksBeforeRemoval()) {
+            InstanceManager.self.removeEmptyInstance(this);
          }
       } else {
          // There's someone in the instance, so reset the counter
          _consecutiveEmptyChecks = 0;
-         resetActiveTimer();
+      }
+   }
+
+   private int getConsecutiveChecksBeforeRemoval () {
+      if (AreaManager.self.isPrivateArea(areaKey)) {
+         return CHECKS_BEFORE_REMOVAL_PRIVATE_INSTANCES;
+      } else {
+         return CHECKS_BEFORE_REMOVAL;
       }
    }
 
@@ -420,7 +400,7 @@ public class Instance : NetworkBehaviour
             }
 
             InstanceManager.self.addEnemyToInstance(enemy, this);
-                  
+
             NetworkServer.Spawn(enemy.gameObject);
          }
       }
@@ -463,6 +443,8 @@ public class Instance : NetworkBehaviour
          }
       }
 
+      int pvpStructuresSpawned = 0;
+
       if (area.towerDataFields.Count > 0) {
          foreach (ExportedPrefab001 dataField in area.towerDataFields) {
             PvpTower pvpTower = Instantiate(PrefabsManager.self.pvpTowerPrefab);
@@ -480,6 +462,7 @@ public class Instance : NetworkBehaviour
 
             InstanceManager.self.addSeaStructureToInstance(pvpTower, this);
             NetworkServer.Spawn(pvpTower.gameObject);
+            pvpStructuresSpawned++;
          }
       }
 
@@ -538,6 +521,7 @@ public class Instance : NetworkBehaviour
 
             InstanceManager.self.addSeaStructureToInstance(pvpBase, this);
             NetworkServer.Spawn(pvpBase.gameObject);
+            pvpStructuresSpawned++;
          }
       }
 
@@ -556,11 +540,15 @@ public class Instance : NetworkBehaviour
                receiver.receiveData(dataField.d);
             }
 
-            pvpShipyard.initSprites();
             pvpShipyard.spawnLocation = PvpGame.getSpawnSideForShipyard(pvpShipyard.pvpTeam, pvpShipyard.laneType);
             InstanceManager.self.addSeaStructureToInstance(pvpShipyard, this);
             NetworkServer.Spawn(pvpShipyard.gameObject);
+            pvpStructuresSpawned++;
          }
+      }
+
+      if (pvpStructuresSpawned > 0) {
+         // area.rescanGraph();
       }
 
       // Spawn random enemies
@@ -607,7 +595,7 @@ public class Instance : NetworkBehaviour
          if (disabledNpcLog.Length > 1) {
             D.editorLog("Disabled Npc's for area: (" + this.areaKey + ") : " + disabledNpcLog, Color.red);
          }
-      } 
+      }
 
       if (area.treasureSiteDataFields.Count > 0) {
          foreach (ExportedPrefab001 dataField in area.treasureSiteDataFields) {
@@ -781,7 +769,7 @@ public class Instance : NetworkBehaviour
       } else {
          seaEntity = Instantiate(PrefabsManager.self.seaMonsterPrefab);
       }
-      
+
       seaEntity.areaKey = this.areaKey;
       seaEntity.facing = Direction.South;
       seaEntity.transform.localPosition = position;
@@ -803,7 +791,7 @@ public class Instance : NetworkBehaviour
          botShip.guildId = 2;
          botShip.setShipData(data.xmlId, shipType, this.difficulty);
 
-      // Handle as sea monster
+         // Handle as sea monster
       } else {
          SeaMonsterEntity seaMonster = seaEntity as SeaMonsterEntity;
          seaMonster.monsterType = data.seaMonsterType;

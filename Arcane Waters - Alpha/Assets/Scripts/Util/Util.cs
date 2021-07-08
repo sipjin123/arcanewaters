@@ -1223,6 +1223,8 @@ public class Util : MonoBehaviour
    }
 
    public static void stopHostAndReturnToTitleScreen () {
+      D.debug($"Util.stopHostAndReturnToTitleScreen() was called.");
+
       // Stop any client or server that may have been running
       MyNetworkManager.self.StopHost();
 

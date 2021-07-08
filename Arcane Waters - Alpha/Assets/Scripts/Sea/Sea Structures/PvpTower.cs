@@ -133,6 +133,8 @@ public class PvpTower : SeaStructure {
                Rpc_NotifyCannonFired();
 
                waitTimeToUse = reloadDelay;
+            } else {
+               Rpc_NotifyCancelCharge();
             }
          }
 
@@ -197,13 +199,17 @@ public class PvpTower : SeaStructure {
    public override void onDeath () {
       base.onDeath();
       hideTargetingEffects();
-      Rpc_NotifyCancelCharge();
+
+      if (isServer) {
+         Rpc_NotifyCancelCharge();
+      }
    }
 
    private void updateTargetingIndicator () {
       // If targeting effects are showing, and either: we have no target, the target is dead, or we are dead, hide targeting effects
       if (_isShowingTargetingIndicator && (!_aimTarget || _aimTarget.isDead() || isDead())) {
          hideTargetingEffects();
+         return;
       }
 
       // If we are showing targeting effects, update the rotation of our effects to point at our target
@@ -404,9 +410,8 @@ public class PvpTower : SeaStructure {
    }
 
    private void updateAttackRangeCircle () {
-
       PlayerShipEntity playerShipEntity = getGlobalPlayerShip();
-      if (isClient && playerShipEntity != null && playerShipEntity.pvpTeam != pvpTeam) {
+      if (isClient && playerShipEntity != null && playerShipEntity.pvpTeam != pvpTeam && playerShipEntity.pvpTeam != PvpTeamType.None) {
          float distanceToGlobalPlayerShip = Vector2.Distance(transform.position, playerShipEntity.transform.position);
          bool isInWarningRange = (distanceToGlobalPlayerShip <= WARNING_RANGE);
          bool isInAttackRange = (distanceToGlobalPlayerShip <= ATTACK_RANGE);
@@ -442,8 +447,10 @@ public class PvpTower : SeaStructure {
    }
 
    private IEnumerator CO_SetAttackRangeCirclePosition () {
-      yield return null;
-      attackRangeRenderer.material.SetVector("_Position", transform.position);
+      while (!isDead()) {
+         yield return new WaitForSeconds(1.0f);
+         attackRangeRenderer.material.SetVector("_Position", transform.position);
+      }
    }
 
    private void OnDrawGizmosSelected () {

@@ -108,6 +108,9 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          } else {
             D.warning("Bot ship couldn't drop a chest, due to not being able to locate last attacker");
          }
+
+         hideTargetingEffects();
+         Rpc_NotifyCancelCharge();
       }
 
       aimTransform.gameObject.SetActive(false);
@@ -137,6 +140,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          float chargeTimer = ATTACK_CHARGE_TIME;
          while (chargeTimer > 0.0f) {
             if (!_aimTarget || _aimTarget.isDead() || isDead()) {
+               Rpc_NotifyCancelCharge();
                break;
             }
 
@@ -144,6 +148,11 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             targetingIndicatorParent.transform.rotation = Quaternion.Euler(0.0f, 0.0f, indicatorAngle);
             chargeTimer -= Time.deltaTime;
             yield return null;
+         }
+
+         if (isDead()) {
+            Rpc_NotifyCancelCharge();
+            yield break;
          }
          
          float waitTimeToUse = delayInSecondsWhenNotReloading;
@@ -156,6 +165,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
                Rpc_NotifyCannonFired();
 
                waitTimeToUse = reloadDelay;
+            } else {
+               Rpc_NotifyCancelCharge();
             }
          }
 
@@ -176,6 +187,14 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
       // Show the charging animation
       showTargetingEffects();
+   }
+
+   [ClientRpc]
+   private void Rpc_NotifyCancelCharge () {
+      hideTargetingEffects();
+      if (_reticleRenderer) {
+         _reticleRenderer.enabled = false;
+      }
    }
 
    [ClientRpc]

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 214518899541219173}
   - component: {fileID: 4614342520831259580}
   - component: {fileID: 8793610682250798173}
-  - component: {fileID: 2203490977923291167}
+  - component: {fileID: 7419570973997501945}
   m_Layer: 5
   m_Name: Pvp Score Panel
   m_TagString: Untagged
@@ -89,7 +89,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &2203490977923291167
+--- !u!114 &7419570973997501945
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -98,17 +98,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 214518899541219170}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 10dbe585bd19ce64f870764cd37df86c, type: 3}
+  m_Script: {fileID: 11500000, guid: 838804738b66ff54bb89966fc7557324, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   type: 46
   canvasGroup: {fileID: 8793610682250798173}
-  draggableRect: {fileID: 0}
+  draggableRect: {fileID: 214518899541219169}
   pvpStatRowHolder: {fileID: 5784036694706155367}
   pvpStatRowPrefab: {fileID: 5463042994512993246, guid: 4258668c5222f814a913f01e816ca0e4,
     type: 3}
   silverIcon: {fileID: -3039264831666866282, guid: 184c9846c6658fd40b8dfecaf0a2b647,
     type: 3}
+  assistSilverIcon: {fileID: 6055918110530139994, guid: 184c9846c6658fd40b8dfecaf0a2b647,
+    type: 3}
+  title: {fileID: 6554234700614688157}
 --- !u!1 &490709585529164423
 GameObject:
   m_ObjectHideFlags: 0
@@ -568,7 +571,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ded4e8201b940724382ab79f6b8367e4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c7c94e8658139744da1e1b46e2f35680, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -2060,7 +2063,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 3d3e88b2c4a1a394a88cfce8ca1ee49b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6162416088d45404d98b6f5122dea8a3, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -4263,7 +4266,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8c22e9074308955499ba3778d530e8a0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f0a95dda36c04b34b983bd71cdc9b4c9, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1

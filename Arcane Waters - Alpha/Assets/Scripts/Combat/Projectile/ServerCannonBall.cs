@@ -240,7 +240,7 @@ public class ServerCannonBall : NetworkBehaviour {
          return;
       }
 
-      bool hitLand = Util.hasLandTile(transform.position);
+      bool hitLand = Util.hasLandTile(transform.position) || hitSeaStructureIsland();
 
       playHitSound(hitLand, _hitEnemy);
 
@@ -250,6 +250,20 @@ public class ServerCannonBall : NetworkBehaviour {
       } else {
          Instantiate(PrefabsManager.self.requestCannonSplashPrefab(_impactMagnitude), transform.position, Quaternion.identity);
       }
+   }
+
+   private bool hitSeaStructureIsland () {
+      int layerMask = LayerMask.GetMask(LayerUtil.SEA_STRUCTURES);
+
+      Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, 0.05f, layerMask);
+
+      foreach (Collider2D hit in hits) {
+         if (hit.GetComponent<SeaStructure>()) {
+            return true;
+         }
+      }
+
+      return false;
    }
 
    private void playHitSound (bool hitLand, bool hitEnemy) {

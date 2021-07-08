@@ -17,6 +17,9 @@ public class BasicAbilityData : BattleItemData
    // SoundEffect that will play whenever we start casting the ability (if required) -1 == no effect
    public int castSoundEffectId = -1;
 
+   // Delay, in seconds, for playing the cast sound effect.
+   public float castSoundEffectDelay = 0f;
+
    // Combat stances required to be able to use this ability
    public Battler.Stance[] allowedStances;
 

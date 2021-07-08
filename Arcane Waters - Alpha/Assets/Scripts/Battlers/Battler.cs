@@ -1326,11 +1326,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                // Play an appropriate jump sound
                sourceBattler.playJumpSound();
 
-               // Disable targeting effects
-               if (sourceBattler.battlerType == BattlerType.PlayerControlled) {
-                  sourceBattler.hideTargetingEffects();
-               }
-
                // Smoothly jump into position
                sourceBattler.playAnim(Anim.Type.Jump_East);
                Vector2 targetPosition = targetBattler.getMeleeStandPosition(sourceBattler.weaponManager.weaponType != 0);
@@ -1498,17 +1493,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             sourceBattler.displayedAP = Util.clamp<int>(sourceBattler.displayedAP + action.sourceApChange, 0, MAX_AP);
             targetBattler.displayedAP = Util.clamp<int>(targetBattler.displayedAP + action.targetApChange, 0, MAX_AP);
 
-            // If the target died, animate that death now
-            if (targetBattler.hasDisplayedDeath()) {
-               if (targetBattler.getAnim()[0].currentAnimation != Anim.Type.Death_East) {
-                  BattleSelectionManager.self.deselectTarget();
-
-                  // TODO: Remove this after confirming new death animation process causes no issue after playtest
-                  //targetBattler.StartCoroutine(targetBattler.animateDeath());
-               } else {
-                  //D.debug(userId+" Skip animating death for {" + enemyType + "} Anim:{" + targetBattler.getAnim()[0].currentAnimation + "}");
-               }
-            }
             onBattlerAttackEnd.Invoke();
             break;
          case AbilityActionType.Ranged:

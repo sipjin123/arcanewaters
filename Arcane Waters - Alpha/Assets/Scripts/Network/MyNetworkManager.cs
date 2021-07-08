@@ -163,10 +163,15 @@ public class MyNetworkManager : NetworkManager
    public override void OnStopClient () {
       clientStopping?.Invoke();
 
-      D.debug($"OnStopClient is unregistering client handlers.");
+      if (NetworkClient.active) {
+         D.debug($"OnStopClient is unregistering client handlers.");
 
-      // It's recommended to unregister our existing handlers for network messages, but we'll disable this for now since it might be causing problems
-      MessageManager.unregisterClientHandlers();
+         // It's recommended to unregister our existing handlers when the client stops
+         MessageManager.unregisterClientHandlers();
+      } else {
+         D.debug($"OnStopClient was called when NetworkClient.active was false, so not calling unregisterClientHandlers.");
+      }
+      
 
       base.OnStopClient();
    }
@@ -331,12 +336,8 @@ public class MyNetworkManager : NetworkManager
                conn.address, userObjects.isSinglePlayer, voyageId);
 
             if (bestServer != null && bestServer.networkedPort.Value != ServerNetworkingManager.self.server.networkedPort.Value) {
-               // Send a Redirect message to the client
-               RedirectMessage redirectMessage = new RedirectMessage(Global.netId, networkAddress, bestServer.networkedPort.Value);
-               conn.Send(redirectMessage);
-
-               // Disconnect the player from this server
-               disconnectClient(conn, true);
+               D.debug($"OnServerAddPlayer is sending redirect to {bestServer.networkedPort.Value} for {userInfo.username}");
+               StartCoroutine(CO_RedirectUser(bestServer, conn, userInfo.accountId));
                return;
             }
 
@@ -350,6 +351,8 @@ public class MyNetworkManager : NetworkManager
             // Check if the player disconnected a few seconds ago and its object is still in the server
             ClientConnectionData existingConnection = DisconnectionManager.self.getConnectionDataForUser(authenticatedUserId);
             if (existingConnection != null && existingConnection.isReconnecting) {
+               D.debug($"There was an existing connection for user id {authenticatedUserId}, so we're going to remove that user ID from the Disconnection Manager.");
+
                userInfo.localPos = existingConnection.netEntity.transform.localPosition;
                userInfo.facingDirection = (int) existingConnection.netEntity.facing;
                shipInfo.health = existingConnection.netEntity.currentHealth;
@@ -600,18 +603,51 @@ public class MyNetworkManager : NetworkManager
       NetEntity player = data.netEntity;
 
       if (player != null) {
+         D.debug($"In disconnectClient(), we found an existing NetEntity object for {player.entityName}, so we only call finishPlayerDisconnect() instead of removeClientConnectionData()");
+
          // Manage the voyage groups on user disconnection
          VoyageGroupManager.self.onUserDisconnectsFromServer(player.userId);
 
          if (player.getPlayerShipEntity() != null && !forceFinishDisconnection) {
             // If the player is a ship, keep it in the server for a few seconds
             DisconnectionManager.self.addToDisconnectedUsers(data);
+
+            // Remove the account from the connected accounts in the server network so that the user can reconnect anywhere
+            if (data.isAuthenticated()) {
+               ServerNetworkingManager.self.server.synchronizeConnectedAccount(data.accountId);
+            }
          } else {
             finishPlayerDisconnection(data);
          }
       } else {
          // The connection must be removed, so that it doesn't block further login attempts
          removeClientConnectionData(data);
+      }
+   }
+
+   public IEnumerator CO_RedirectUser (NetworkedServer destinationServer, NetworkConnection conn, int accountId) {
+      D.debug($"CO_RedirectUser Removing account {accountId} from the connected accounts");
+      ServerNetworkingManager.self.server.connectedAccountIds.Remove(accountId);
+
+      // Wait for the update of connected accounts to be serialized and sent to other servers
+      yield return null;
+      yield return null;
+
+      // Send a Redirect message to the client
+      RedirectMessage redirectMessage = new RedirectMessage(Global.netId, networkAddress, destinationServer.networkedPort.Value);
+      conn.Send(redirectMessage);
+
+      // Disconnect the player from this server
+      disconnectClient(conn, true);
+   }
+
+   public IEnumerator CO_RedirectUser (NetworkedServer destinationServer, NetworkConnection conn, int accountId, GameObject entityToDestroy) {
+      yield return CO_RedirectUser(destinationServer, conn, accountId);
+
+      // Destroy the old Player object
+      NetworkServer.DestroyPlayerForConnection(conn);
+      if (entityToDestroy != null) {
+         NetworkServer.Destroy(entityToDestroy);
       }
    }
 
@@ -631,12 +667,14 @@ public class MyNetworkManager : NetworkManager
       // Check if the account is already registered online with a different connection - in this server
       if (existingConnection != null && existingConnection.connectionId != conn.connectionId) {
          if (!DisconnectionManager.self.isUserPendingDisconnection(existingConnection.userId)) {
+            D.debug($"Account {accountId} is already online with another connection on this server.");
             return true;
          }
       }
 
       // Check if the account is registered online in another server
       if (ServerNetworkingManager.self.isAccountOnlineInAnotherServer(accountId)) {
+         D.debug($"Account {accountId} is already online in another server.");
          return true;
       }
 
@@ -646,6 +684,9 @@ public class MyNetworkManager : NetworkManager
    public static void noteAccountIdForConnection (int accountId, NetworkConnection conn) {
       // Keep track of the account ID that we're associating with this connection
       _players[conn.connectionId].accountId = accountId;
+
+      // Add the account to the connected accounts in the server network data
+      ServerNetworkingManager.self.server.synchronizeConnectedAccount(accountId);
    }
 
    public static void noteUserIdForConnection (int selectedUserId, string steamUserId, NetworkConnection conn) {
@@ -716,7 +757,9 @@ public class MyNetworkManager : NetworkManager
 
       // Immediately remove the connection from the server network, to avoid an 'account already online' error when warping between servers
       if (data.isAuthenticated()) {
-         ServerNetworkingManager.self.server.connectedAccountIds.Remove(data.accountId);
+         ServerNetworkingManager.self.server.synchronizeConnectedAccount(data.accountId);
+      } else {
+         D.debug($"The ClientConnectionData is not authenticated, so not removing account {data.accountId} from this server's connectedAccountIds.");
       }
    }
 

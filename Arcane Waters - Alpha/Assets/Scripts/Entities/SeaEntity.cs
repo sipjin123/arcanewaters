@@ -204,60 +204,53 @@ public class SeaEntity : NetEntity
       }
 
       if (isServer) {
-         // Add pvp stat data
          NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(_lastAttackerNetId);
+
          if (lastAttacker != null) {
-            PvpGame pvpGame = PvpManager.self.getGameWithInstance(this.instanceId);
-            if (pvpGame != null) {
-               int silverReward = pvpGame.computeSilverReward(lastAttacker, this);
+            GameStatsManager gameStatsManager = GameStatsManager.self;
+
+            if (gameStatsManager != null) {
+
+               if (lastAttacker.isPlayerShip()) {
+                  int silverReward = SilverManager.computeSilverReward(lastAttacker, this);
+                  gameStatsManager.addSilverRank(lastAttacker.userId, 1);
+                  gameStatsManager.addSilverAmount(lastAttacker.userId, silverReward);
+                  Target_ReceiveSilverCurrency(lastAttacker.getPlayerShipEntity().connectionToClient, silverReward, SilverManager.SilverRewardReason.Kill);
+               }
+
                if (this is PlayerShipEntity) {
-                  pvpGame.addPlayerKillCount(lastAttacker.userId);
-                  pvpGame.addSilverCount(lastAttacker.userId, silverReward);
-                  pvpGame.addSilverRank(lastAttacker.userId, 1);
-                  pvpGame.resetSilverRank(this.userId);
+                  gameStatsManager.addPlayerKillCount(lastAttacker.userId);
+                  gameStatsManager.resetSilverRank(this.userId);
+                  gameStatsManager.addDeathCount(this.userId);
                   this.rpc.broadcastPvPKill(lastAttacker, this);
-                  if (lastAttacker.isPlayerShip()) {
-                     Target_ReceivePvpCurrency(lastAttacker.getPlayerShipEntity().connectionToClient, silverReward);
-                  }
                }
+
                if (this is BotShipEntity) {
-                  pvpGame.addShipKillCount(lastAttacker.userId);
-                  pvpGame.addSilverCount(lastAttacker.userId, silverReward);
-                  pvpGame.addSilverRank(lastAttacker.userId, 1);
-                  if (lastAttacker.isPlayerShip()) {
-                     Target_ReceivePvpCurrency(lastAttacker.getPlayerShipEntity().connectionToClient, silverReward);
-                  }
+                  gameStatsManager.addShipKillCount(lastAttacker.userId);
                }
+
                if (this is SeaMonsterEntity) {
-                  pvpGame.addMonsterKillCount(lastAttacker.userId);
-                  pvpGame.addSilverCount(lastAttacker.userId, silverReward);
-                  pvpGame.addSilverRank(lastAttacker.userId, 1);
-                  if (lastAttacker.isPlayerShip()) {
-                     Target_ReceivePvpCurrency(lastAttacker.getPlayerShipEntity().connectionToClient, silverReward);
-                  }
+                  gameStatsManager.addMonsterKillCount(lastAttacker.userId);
                }
+
                if (this is SeaStructure) {
-                  pvpGame.addBuildingDestroyedCount(lastAttacker.userId);
-                  pvpGame.addSilverCount(lastAttacker.userId, silverReward);
-                  pvpGame.addSilverRank(lastAttacker.userId, 1);
-                  if (lastAttacker.isPlayerShip()) {
-                     Target_ReceivePvpCurrency(lastAttacker.getPlayerShipEntity().connectionToClient, silverReward);
-                  }
+                  gameStatsManager.addBuildingDestroyedCount(lastAttacker.userId);
                }
 
                // Add assist points to the non last attacker user
                foreach (KeyValuePair<uint, double> attacker in _attackers) {
                   NetEntity attackerEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attacker.Key);
                   if (attackerEntity != null && attackerEntity.userId != lastAttacker.userId) {
-                     pvpGame.addAssistCount(attackerEntity.userId);
+                     gameStatsManager.addAssistCount(attackerEntity.userId);
+
+                     if (attackerEntity.isPlayerShip()) {
+                        int assistReward = SilverManager.computeAssistReward(lastAttacker, attackerEntity, this);
+                        gameStatsManager.addSilverAmount(attackerEntity.userId, assistReward);
+                        Target_ReceiveSilverCurrency(attackerEntity.getPlayerShipEntity().connectionToClient, assistReward, SilverManager.SilverRewardReason.Assist);
+                     }
                   }
                }
             }
-         }
-
-         PvpGame thisPvpGame = PvpManager.self.getGameWithPlayer(userId);
-         if (thisPvpGame != null && this is PlayerShipEntity) {
-            thisPvpGame.addDeathCount(userId);
          }
 
          Rpc_OnDeath();
@@ -266,14 +259,42 @@ public class SeaEntity : NetEntity
    }
 
    [TargetRpc]
-   public void Target_ReceivePvpCurrency (NetworkConnection connection, int silverCount) {
+   public void Target_ReceiveSilverCurrency (NetworkConnection connection, int silverCount, SilverManager.SilverRewardReason rewardReason) {
+      Transform bodyTx = Global.player.getPlayerShipEntity().transform;
+      Vector3 pos = bodyTx.position;
+
+      // Move the already spawned messages a little up
+      FloatingCanvas[] spawnedCanvases = GameObject.FindObjectsOfType<FloatingCanvas>();
+      if (spawnedCanvases != null && spawnedCanvases.Length > 0) {
+         foreach (FloatingCanvas canvas in spawnedCanvases) {
+            if (canvas.customTag == Global.player.userId.ToString()) {
+               float interDiffTransform = canvas.transform.position.y - pos.y;
+
+               // The item notification is targeted to the current player
+               if (canvas.TryGetComponent(out RectTransform rectTransform)) {
+                  float nudge = rectTransform.rect.height - interDiffTransform;
+                  if (nudge > 0) {
+                     Vector3 scaledRect = rectTransform.localScale * (nudge);
+                     canvas.transform.position = canvas.transform.position + new Vector3(.0f, scaledRect.y, .0f);
+                  }
+               }
+            }
+         }
+      }
+
       // Show a message that they gained some XP along with the item they received
       GameObject gainItemCanvas = Instantiate(PrefabsManager.self.itemReceivedPrefab);
       gainItemCanvas.transform.position = transform.position;
       gainItemCanvas.GetComponentInChildren<TextMeshProUGUI>().text = "+ " + silverCount;
+      gainItemCanvas.GetComponentInChildren<FloatingCanvas>().customTag = Global.player.userId.ToString();
 
       PvpStatPanel panel = (PvpStatPanel) PanelManager.self.get(Panel.Type.PvpScoreBoard);
-      gainItemCanvas.GetComponentInChildren<Image>().sprite = panel.silverIcon;
+      if (rewardReason == SilverManager.SilverRewardReason.Kill) {
+         gainItemCanvas.GetComponentInChildren<Image>().sprite = panel.silverIcon;
+      } else if (rewardReason == SilverManager.SilverRewardReason.Assist) {
+         gainItemCanvas.GetComponentInChildren<Image>().sprite = panel.assistSilverIcon;
+      }
+      gainItemCanvas.GetComponentInChildren<Image>().SetNativeSize();
 
       PvpStatusPanel.self.addSilver(silverCount);
    }
@@ -361,7 +382,9 @@ public class SeaEntity : NetEntity
             Instantiate(isBot() ? PrefabsManager.self.pirateShipExplosionEffect : PrefabsManager.self.playerShipExplosionEffect, transform.position, Quaternion.identity);
          }
 
-         Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .03f * Time.smoothDeltaTime);
+         if (_sinkOnDeath) {
+            Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .03f * Time.smoothDeltaTime);
+         }
       }
    }
 
@@ -1230,6 +1253,11 @@ public class SeaEntity : NetEntity
    }
 
    public void applyStatus (Status.Type statusType, float strength, float duration, uint attackerNetId) {
+      // Sea Entity cannot be stunned more than once. Also, it becomes stun invulnerable for a short time after stun effect ends
+      if (statusType == Status.Type.Stunned && (StatusManager.self.hasStatus(netId, Status.Type.Stunned) || StatusManager.self.hasStatus(netId, Status.Type.StunInvulnerable))) {
+         return;
+      }
+
       Status newStatus = StatusManager.self.create(statusType, strength, duration, netId);
 
       if (statusType == Status.Type.Burning) {
@@ -1602,7 +1630,7 @@ public class SeaEntity : NetEntity
 
    [Server]
    protected Vector3 findAttackerVicinityPosition (bool newAttacker, Dictionary<uint, double> attackers) {
-      bool hasAttacker = attackers.ContainsKey(_currentAttacker);
+      bool hasAttacker = _currentAttacker != 0 && attackers.ContainsKey(_currentAttacker);
 
       // If we should choose a new attacker, and we have a selection available, pick a unique one randomly, which could be the same as the previous
       if ((!hasAttacker || (hasAttacker && newAttacker)) && attackers.Count > 0) {
@@ -1616,7 +1644,7 @@ public class SeaEntity : NetEntity
       }
 
       // If we have a registered attacker but it's not in the scene list of spawned NetworkIdentities, then return somewhere around yourself
-      if (!NetworkIdentity.spawned.ContainsKey(_currentAttacker)) {
+      if (!NetworkIdentity.spawned.ContainsKey(_currentAttacker) || _currentAttacker == 0) {
          return findPositionAroundPosition(transform.position, attackingWaypointsRadius);
       }
 
@@ -1949,6 +1977,9 @@ public class SeaEntity : NetEntity
    // When set to true, this sea entity won't take any damage
    [SyncVar]
    private bool _isInvulnerable = false;
+
+   // When set to true, the sprites for this sea entity will 'sink' on death
+   protected bool _sinkOnDeath = true;
 
    #endregion
 

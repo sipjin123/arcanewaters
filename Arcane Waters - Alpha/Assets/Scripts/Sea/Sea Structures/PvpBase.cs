@@ -7,7 +7,14 @@ using Mirror;
 public class PvpBase : SeaStructure {
    #region Public Variables
 
+   // A reference to the SimpleAnimation component on the sprite renderering the PvpBase structure
+   public SimpleAnimation mainRendererAnimation;
+
    #endregion
+
+   protected override void Awake () {
+      base.Awake();
+   }
 
    protected override void onActivated () {
       base.onActivated();
@@ -43,8 +50,26 @@ public class PvpBase : SeaStructure {
       }
       // Don't run base onDeath function, as we don't to start the coroutine in SeaStructure.onDeath
       onDeathAction?.Invoke(this);
-      Rpc_OnDeath();
+      if (isServer) {
+         Rpc_OnDeath();
+      }
+
       _hasRunOnDeath = true;
+   }
+
+   protected override void setupSprites () {
+      Sprite newSprite = getSprite();
+      if (newSprite != null) {
+         if (isDead()) {
+            mainRendererAnimation.enabled = false;
+            mainRenderer.sprite = newSprite;
+         } else {
+            mainRendererAnimation.setNewTexture(newSprite.texture);
+         }
+
+         string paletteDef = PvpManager.getStructurePaletteForTeam(pvpTeam);
+         mainRenderer.GetComponent<RecoloredSprite>().recolor(paletteDef);
+      }
    }
 
    #region Private Variables

@@ -1433,6 +1433,9 @@ public class PlayerShipEntity : ShipEntity
          renderer.enabled = true;
       }
 
+      // Restart charging cannon
+      _isChargingCannon = false;
+
       // Re-enable outline
       _outline.setVisibility(true);
 

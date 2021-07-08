@@ -44,14 +44,17 @@ public class PvpStatusPanel : ClientMonoBehaviour
       startVisibilityCheck();
    }
 
+   private bool isInstanceValid (Instance instance) {
+      return instance != null && (instance.isPvP || instance.isVoyage || instance.isLeague);
+   }
+
    private void updateVisibilityCheck () {
       if (Global.player == null) {
          hide();
          return;
       }
 
-      Instance instance = Global.player.getInstance();
-      if (instance == null || !instance.isPvP) {
+      if (!isInstanceValid(Global.player.getInstance())) {
          hide();
          return;
       }
@@ -75,8 +78,7 @@ public class PvpStatusPanel : ClientMonoBehaviour
          return;
       }
 
-      Instance instance = Global.player.getInstance();
-      if (instance == null || !instance.isPvP) {
+      if (!isInstanceValid(Global.player.getInstance())) {
          return;
       }
 
@@ -107,15 +109,17 @@ public class PvpStatusPanel : ClientMonoBehaviour
 
    public void hide () {
       canvasGroup.alpha = 0;
-      reset();
+      if (Global.player != null) {
+         Global.player.rpc.Cmd_RequestResetPvpSilverPanel();
+      }
    }
 
-   private void reset () {
+   public void reset (int currentSilverAmount) {
       _deltaToggleStartTime = 0;
-      _silverBeforeChange = 0;
+      _silverBeforeChange = currentSilverAmount;
       _currentSilverDelta = 0;
       if (silverCountText != null) {
-         silverCountText.text = "0";
+         silverCountText.text = _silverBeforeChange.ToString();
       }
       if (silverDeltaText != null) {
          silverDeltaText.text = string.Empty;

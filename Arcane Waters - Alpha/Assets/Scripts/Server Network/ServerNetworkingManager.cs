@@ -77,6 +77,13 @@ public class ServerNetworkingManager : MonoBehaviour
 
    public NetworkedServer findBestServerForConnectingPlayer (string areaKey, string username, int userId, string address,
       bool isSinglePlayer, int voyageId) {
+      // If this player is claimed by a server, we have to return to that server
+      foreach (NetworkedServer server in servers) {
+         if (server.claimedUserIds.Contains(userId)) {
+            return server;
+         }
+      }
+
       // If the player is in a voyage group and warping to a voyage area or treasure site, get the unique server hosting it
       if (voyageId != -1 &&
          (VoyageManager.isAnyLeagueArea(areaKey) || VoyageManager.isPvpArenaArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey))) {
@@ -87,8 +94,17 @@ public class ServerNetworkingManager : MonoBehaviour
          return server;
       }
 
-      // Check if there's an open area already on one of the servers
+      // Check if there is an open area on this server
+      if (InstanceManager.self.getOpenInstance(areaKey, isSinglePlayer) != null) {
+         return this.server;
+      }
+
+      // Check if there's an open area on another server
       foreach (NetworkedServer server in servers) {
+         if (server == this.server) {
+            continue;
+         }
+
          List<string> openAreas = new List<string>(server.openAreas);
          if (openAreas.Contains(areaKey)) {
             return server;
@@ -108,14 +124,6 @@ public class ServerNetworkingManager : MonoBehaviour
          D.debug(logMsg);
       } catch {
          D.debug("Found best server but cannot get details");
-      }
-
-      // If this player is claimed by a server, we have to return to that server
-      foreach (NetworkedServer server in servers) {
-         if (server.claimedUserIds.Contains(userId)) {
-            bestServer = server;
-            break;
-         }
       }
 
       return bestServer;
@@ -206,8 +214,8 @@ public class ServerNetworkingManager : MonoBehaviour
    }
 
    public bool isAccountOnlineInAnotherServer (int accountId) {
-      foreach (NetworkedServer server in servers) {
-         if (server.networkedPort != this.server.networkedPort && server.connectedAccountIds.Contains(accountId)) {
+      foreach (NetworkedServer otherServer in servers) {
+         if (otherServer.networkedPort != this.server.networkedPort && otherServer.connectedAccountIds.ContainsKey(accountId)) {
             return true;
          }
       }

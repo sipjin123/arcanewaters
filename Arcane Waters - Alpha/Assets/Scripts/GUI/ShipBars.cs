@@ -9,13 +9,13 @@ public class ShipBars : MonoBehaviour {
 
    // The maximum number of hp blocks in the hp bar
    public static int MAX_BLOCKS = 12;
-   
+
    // Our reload bar image
    public Image reloadBarImage;
 
    // The container for our bars
    public GameObject barsContainer;
-   
+
    // The Image icon that shows when we're being targeted
    public Image targetedIcon;
 
@@ -65,7 +65,7 @@ public class ShipBars : MonoBehaviour {
       handleHealthBar();
 
       // Update our reload bar when we recently fired
-      reloadBarImage.fillAmount = (float)(NetworkTime.time - _entity.getLastAttackTime()) / _entity.reloadDelay;
+      reloadBarImage.fillAmount = (float) (NetworkTime.time - _entity.getLastAttackTime()) / _entity.reloadDelay;
 
       // Hide our bars if we haven't had a combat action and if the player is not targetting this ship
       barsContainer.SetActive(_entity.hasAnyCombat() || _entity.isAttackCursorOver() || _entity.regenerateHealth);
@@ -77,7 +77,7 @@ public class ShipBars : MonoBehaviour {
       if (Global.player != null && _entity != Global.player) {
          barBackgroundImage.sprite = barsBackgroundAlt;
       }
-      
+
       // Hide the canvas if the ship is dead
       _canvasGroup.alpha = _entity.isDead() ? 0 : 1;
 
@@ -124,7 +124,7 @@ public class ShipBars : MonoBehaviour {
       // Update each hp block
       int hpStep = 0;
       for (int i = 0; i < _healthBlocks.Count; i++) {
-         float blockHealth = (float)((_entity.currentHealth - hpStep)) / hpPerBlock;
+         float blockHealth = (float) ((_entity.currentHealth - hpStep)) / hpPerBlock;
          _healthBlocks[i].updateBlock(tier, blockHealth, isAnEnemy);
          hpStep += hpPerBlock;
       }
@@ -149,14 +149,13 @@ public class ShipBars : MonoBehaviour {
          cumulativeBlockTotal += hpPerBlock;
 
          // Analyze health to determine the opactiy of this block
-         if (_lastHealth > cumulativeBlockTotal) {
+         if (_lastHealth >= cumulativeBlockTotal) {
             blockOpacity = 1f;
          } else {
             if (Mathf.Abs(_lastHealth - cumulativeBlockTotal) < hpPerBlock) {
                partialBlockHealth = ((i + 1) * hpPerBlock) - _lastHealth;
-               blockOpacity = (partialBlockHealth / hpPerBlock);
-            }
-            else {
+               blockOpacity = partialBlockHealth / hpPerBlock;
+            } else {
                blockOpacity = 0;
             }
          }

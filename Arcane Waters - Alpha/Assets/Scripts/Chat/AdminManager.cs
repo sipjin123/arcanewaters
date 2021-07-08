@@ -128,6 +128,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("log", "Enables isolated debug loggers", requestLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType", "isTrue" }));
       cm.addCommand(new CommandData("network_profile", "Saves last 60 seconds of network profiling data", networkProfile, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("temp_password", "Temporary access any account using temporary password", overridePassword, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "accountName", "tempPassword" }));
+      cm.addCommand(new CommandData("db_test", "Runs a given number of queries per seconds and returns execution time statistics", requestDBTest, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "queriesPerSecond" }));
 
       /*    NOT IMPLEMENTED
       _commands[Type.CreateTestUsers] = "create_test_users";
@@ -561,6 +562,111 @@ public class AdminManager : NetworkBehaviour
       } else {
          ChatManager.self.addChat("Could not parse the isEnabled parameter (only 0 or 1 values allowed): " + parameters, ChatInfo.Type.Error);
       }
+   }
+
+   private void requestDBTest (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      if (int.TryParse(parameters, out int queriesPerSecond)) {
+         Cmd_RunDBQueriesTest(queriesPerSecond);
+      } else {
+         ChatManager.self.addChat("Could not parse the queries per second parameter: " + parameters, ChatInfo.Type.Error);
+      }
+   }
+
+   [Command]
+   public void Cmd_RunDBQueriesTest (int queriesPerSecond) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      List<int> userIdList = new List<int>();
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         userIdList = DB_Main.getAllUserIds();
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (userIdList.Count <= 0) {
+               userIdList.Add(_player.userId);
+            }
+
+            StartCoroutine(CO_RunDBQueriesTest(userIdList, queriesPerSecond));
+         });
+      });
+   }
+
+   private IEnumerator CO_RunDBQueriesTest (List<int> userIdList, int queriesPerSecond) {
+      float testDuration = 1f;
+      float testDurationSafetyLimit = 20f;
+
+      int currentQueryCount = 0;
+      int targetQueryCount = Mathf.CeilToInt(testDuration * queriesPerSecond);
+
+      int userId = _player.userId;
+
+      List<float> queryDurationList = new List<float>();
+
+      DateTime startTime = DateTime.UtcNow;
+
+      while (currentQueryCount < targetQueryCount) {
+         int targetThisFrame = Mathf.FloorToInt((float) (DateTime.UtcNow - startTime).TotalSeconds * queriesPerSecond);
+         targetThisFrame = Mathf.Clamp(targetThisFrame, 0, targetQueryCount);
+
+         // Run all the db queries needed to catch up on the target count this frame
+         for (int i = 0; i < targetThisFrame - currentQueryCount; i++) {
+            runSingleTestDBQuery(userIdList.ChooseRandom(), queryDurationList, startTime, testDurationSafetyLimit);
+         }
+
+         currentQueryCount = targetThisFrame;
+         yield return null;
+      }
+
+      // Wait until all the queries have been executed
+      while (queryDurationList.Count < targetQueryCount && (DateTime.UtcNow - startTime).TotalSeconds < testDurationSafetyLimit) {
+         yield return null;
+      }
+
+      float timeSinceStart = (float)(DateTime.UtcNow - startTime).TotalSeconds;
+
+      if (timeSinceStart > testDurationSafetyLimit) {
+         _player.Target_ReceiveNormalChat($"The test was stopped earlier because it lasted more than {testDurationSafetyLimit}s", ChatInfo.Type.System);
+
+         // Wait a few more seconds so that the background threads can finish and log their results
+         yield return new WaitForSeconds(2f);
+      }
+      
+      // Calculate the statistics on the query durations
+      float averageDuration = 0;
+      float maxDuration = 0;
+      if (queryDurationList.Count > 0) {
+         averageDuration = queryDurationList.Average();
+         maxDuration = queryDurationList.Max();
+      }
+
+      string message = $"{queryDurationList.Count} getUserObjects queries ran over {timeSinceStart.ToString("F3")}s - avg: {averageDuration}ms max: {maxDuration}ms";
+
+      _player.Target_ReceiveNormalChat(message, ChatInfo.Type.System);
+   }
+
+   private void runSingleTestDBQuery (int userId, List<float> queryDurationList, DateTime startTime, float durationSafetyLimit) {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Don't execute the query if too much time has passed since the beginning of the test
+         if ((DateTime.UtcNow - startTime).TotalSeconds > durationSafetyLimit) {
+            return;
+         }
+
+         System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
+         stopWatch.Start();
+         UserObjects userObjects = DB_Main.getUserObjects(userId);
+         stopWatch.Stop();
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            queryDurationList.Add(stopWatch.ElapsedMilliseconds);
+         });
+      });
    }
 
    private void battleSimulate (string parameters) {
@@ -1937,6 +2043,25 @@ public class AdminManager : NetworkBehaviour
 
    [Command]
    protected void Cmd_Shutdown () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+      
+      ChatManager.self.addChat($"Server Shutdown Command Sent!]", ChatInfo.Type.Local);
+      
+      // To the database thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateServerShutdown(true);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            string message = $"Server will shutdown now!";
+            ChatInfo.Type chatType = ChatInfo.Type.Global;
+            ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType);
+            ServerNetworkingManager.self?.sendGlobalChatMessage(chatInfo);
+
+            RestartManager.self.onServerShutdown();
+         });
+      });
 
    }
 
@@ -2147,7 +2272,7 @@ public class AdminManager : NetworkBehaviour
       // If no partialAreaKey passed as parameter, then choosing random area to warp
       if (string.IsNullOrEmpty(partialAreaKey)) {
          // string[] testAreaKeys = { "Pineward_Shipyard", "Far Sands", "Snow Weapon Shop 1", "Andriusti", "Starting Sea Map", "Starting Treasure Site", "Andrius Ledge" };
-         string[] testAreaKeys = { "Snow Town Lite", "Far Sands" };
+         string[] testAreaKeys = { "bot_test" };
          closestAreaKey = testAreaKeys[UnityEngine.Random.Range(0, testAreaKeys.Count())];
       } else {
          // Try to find a custom map of this key

@@ -326,6 +326,8 @@ public class NetEntity : NetworkBehaviour
          // Now that we have a player, we know that the redirection process is complete
          Global.isRedirecting = false;
 
+         D.debug($"Our local NetEntity has been created, so setting Global.isRedirecting to false.");
+
          // The fast login is completed
          Global.isFastLogin = false;
 
@@ -1850,21 +1852,21 @@ public class NetEntity : NetworkBehaviour
             // Remove the player from the current instance
             InstanceManager.self.removeEntityFromInstance(this);
 
-            // Send a Redirect message to the client
-            RedirectMessage redirectMessage = new RedirectMessage(this.netId, MyNetworkManager.self.networkAddress, newServer.networkedPort.Value);
-            this.connectionToClient.Send(redirectMessage);
-
             D.debug($"Sending redirect to {MyNetworkManager.self.networkAddress}:{newServer.networkedPort.Value} for {this.entityName}");
 
             // If the player is warping to another server, it must be completely removed from this one
             if (newServer.networkedPort.Value != ServerNetworkingManager.self.server.networkedPort.Value) {
                D.debug($"New port {newServer.networkedPort.Value} is different than our port {ServerNetworkingManager.self.server.networkedPort.Value}, so disconnecting {this.entityName} from the server.");
-               MyNetworkManager.self.disconnectClient(connectionToClient, true);
-            }
+               MyNetworkManager.self.StartCoroutine(MyNetworkManager.self.CO_RedirectUser(newServer, this.connectionToClient, accountId, entityObject));
+            } else {
+               // Send a Redirect message to the client
+               RedirectMessage redirectMessage = new RedirectMessage(this.netId, MyNetworkManager.self.networkAddress, newServer.networkedPort.Value);
+               this.connectionToClient.Send(redirectMessage);
 
-            // Destroy the old Player object
-            NetworkServer.DestroyPlayerForConnection(connectionToClient);
-            NetworkServer.Destroy(entityObject);
+               // Destroy the old Player object
+               NetworkServer.DestroyPlayerForConnection(connectionToClient);
+               NetworkServer.Destroy(entityObject);
+            }
          });
       });
    }

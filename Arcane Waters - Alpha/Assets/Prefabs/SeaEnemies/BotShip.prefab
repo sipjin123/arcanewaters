@@ -304,17 +304,20 @@ MonoBehaviour:
   isSpeedingUp: 0
   _ignoredAnimators: []
   _animators: []
+  debugCanvas: {fileID: 0}
   lastFuncToCallPathfind: 
   pathFindingMessage: 
   vicinityFindMessage: 
   pathFindTimer: 0
   totalAttackers: 0
   totalPaths: 0
+  currPathIndex: 0
   lastPathValue: 
   hasReachedPvpTarget: 0
   arriveDst: 
   hasStructTarget: 
-  structDist: 
+  dynamicMsg: 
+  prevDynamicMsg: 
   structLoc: {x: 0, y: 0}
   debugImageHolder: {fileID: 5496365473809493967}
   onScreenGUI: {fileID: 2836318127835288167}
@@ -611,8 +614,8 @@ MonoBehaviour:
   detailedGizmos: 0
   startEndModifier:
     addPoints: 0
-    exactStartPoint: 0
-    exactEndPoint: 0
+    exactStartPoint: 4
+    exactEndPoint: 4
     useRaycasting: 0
     mask:
       serializedVersion: 2

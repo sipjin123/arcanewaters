@@ -29,12 +29,18 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
    public SpriteRenderer islandRenderer;
 
    // A reference to the sprites for this sea structure, indexed by PvpTeamType
-   public List<Sprite> spriteByTeam;
+   public List<Sprite> spritesByTeam, damagedSpritesByTeam, destroyedSpritesByTeam;
 
    // A list of gameobjects that this will disable when it dies
    public List<GameObject> disableOnDeath;
 
    #endregion
+
+   protected override void Awake () {
+      base.Awake();
+
+      _sinkOnDeath = false;
+   }
 
    protected override void Start () {
       base.Start();
@@ -57,8 +63,11 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
       unlockAfterDeath?.setIsInvulnerable(false);
    }
 
-   protected override void Update () {
+   protected override void Update () {      
       if (!_isActivated) {
+         if (isDead()) {
+            checkIntegrity();
+         }
          return;
       }
       
@@ -67,7 +76,6 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
       if (isDead()) {
          double timeSinceDeath = NetworkTime.time - _deathTime;
          if (timeSinceDeath >= DYING_TIME_BEFORE_DISABLE) {
-            mainRenderer.enabled = false;
             this.enabled = false;
             
             if (disableOnDeath != null) {
@@ -77,6 +85,8 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
             }
          }
       }
+
+      checkIntegrity();
    }
 
    public void receiveData (DataField[] fields) {
@@ -109,7 +119,10 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
 
    public void setIsActivated (bool value) {
       bool oldValue = _isActivated;
-      _isActivated = value;
+
+      if (isServer) {
+         _isActivated = value;
+      }
 
       if (value != oldValue) {
          if (value) {
@@ -129,12 +142,52 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
       setIsActivated(value);
    }
 
-   private void setupSprites () {
-      if (spriteByTeam != null && spriteByTeam.Count > (int) pvpTeam) {
-         mainRenderer.sprite = spriteByTeam[(int) pvpTeam];
+   protected virtual void setupSprites () {
+      Sprite newSprite = getSprite();
+      if (newSprite != null) {
+         mainRenderer.sprite = newSprite;
 
          string paletteDef = PvpManager.getStructurePaletteForTeam(pvpTeam);
          mainRenderer.GetComponent<RecoloredSprite>().recolor(paletteDef);
+      }
+   }
+
+   protected Sprite getSprite () {
+      int teamIndex = (int) pvpTeam;
+      List<Sprite> teamSprites;
+
+      if (isDead()) {
+         teamSprites = destroyedSpritesByTeam;
+      } else if (currentHealth < (maxHealth / 2)) {
+         teamSprites = damagedSpritesByTeam;
+      } else {
+         teamSprites = spritesByTeam;
+      }
+
+      if (teamSprites == null || teamIndex >= teamSprites.Count) {
+         D.warning("Couldn't find a sprite for this " + this.GetType().ToString());
+         return null;
+      }
+
+      return teamSprites[teamIndex];
+   }
+
+   private void checkIntegrity () {
+      StructureIntegrity newIntegrity;
+
+      if (isDead()) {
+         newIntegrity = StructureIntegrity.Destroyed;
+      } else if (currentHealth < maxHealth / 2) {
+         newIntegrity = StructureIntegrity.Damaged;
+      } else {
+         newIntegrity = StructureIntegrity.Healthy;
+      }
+
+      if (_structureIntegrity != newIntegrity) {
+         _structureIntegrity = newIntegrity;
+         setupSprites();
+      } else {
+         _structureIntegrity = newIntegrity;
       }
    }
 
@@ -147,7 +200,15 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
    private const double DYING_TIME_BEFORE_DISABLE = 2.0;
 
    // Whether this sea structure is active, and should perform its behaviour
+   [SyncVar]
    protected bool _isActivated = false;
+
+   // An enum representing how damaged the sea structure is, and which sprite it should show as a result
+   private StructureIntegrity _structureIntegrity = StructureIntegrity.Healthy;
+
+   // An enum to represent how damaged a sea structure is
+   private enum StructureIntegrity { Healthy = 0, Damaged = 1, Destroyed = 2 }
 
    #endregion
 }
+

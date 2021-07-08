@@ -114,7 +114,7 @@ public class PaletteDef : MonoBehaviour
 
     public class SeaStructure
     {
-      public static Subcategory fill = new Subcategory("fill", PaletteToolManager.PaletteImageType.SeaStructure, new string[2] { "F230DF", "830269" });
+      public static Subcategory fill = new Subcategory("fill", PaletteToolManager.PaletteImageType.SeaStructure, new string[3] { "F230DF", "830269", "#FF00FF" });
       public static Subcategory outline = new Subcategory("outline", PaletteToolManager.PaletteImageType.SeaStructure, new string[3] { "D100A7", "5C0854", "410B36" });
     }
 

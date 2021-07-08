@@ -1,34 +1,34 @@
 fileFormatVersion: 2
-guid: f37b6f65bb64db242ba16de20aa6b1bb
+guid: acca99df1c4b1704d9a41a8961e24b70
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1639480386781681990
-    second: pvp_shipyard_0
+      213: 3369717716855507782
+    second: pvp_tower_style_2_0
   - first:
-      213: -1567783242862515470
-    second: pvp_shipyard_1
+      213: -1201755854766060939
+    second: pvp_tower_style_2_1
   - first:
-      213: 9169446952302469099
-    second: pvp_shipyard_2
+      213: 7196576664124571501
+    second: pvp_tower_style_2_2
   - first:
-      213: 3641570482418978557
-    second: pvp_shipyard_3
+      213: 5201341848024425666
+    second: pvp_tower_style_2_3
   - first:
-      213: 1063493506729643312
-    second: pvp_shipyard_4
+      213: 5296073529733998722
+    second: pvp_tower_style_2_4
   - first:
-      213: -2554943300376027721
-    second: pvp_shipyard_5
+      213: -2259161765631763961
+    second: pvp_tower_style_2_5
   - first:
-      213: -2819869295274660539
-    second: pvp_shipyard_6
+      213: -4060305474275304909
+    second: pvp_tower_style_2_6
   - first:
-      213: -171288357447512670
-    second: pvp_shipyard_7
+      213: -6066379789980704557
+    second: pvp_tower_style_2_7
   - first:
-      213: 5915880737482256112
-    second: pvp_shipyard_8
+      213: 482394988243394757
+    second: pvp_tower_style_2_8
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -114,13 +114,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: pvp_shipyard_0
+      name: pvp_tower_style_2_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 128
-        width: 96
-        height: 64
+        y: 160
+        width: 48
+        height: 80
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,20 +128,41 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6499756b9ba90c610800000000000000
-      internalID: 1639480386781681990
+      spriteID: 64b4382f864a3ce20800000000000000
+      internalID: 3369717716855507782
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pvp_shipyard_1
+      name: pvp_tower_style_2_1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 160
+        width: 48
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 57a4ce1da61825fe0800000000000000
+      internalID: -1201755854766060939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_tower_style_2_2
       rect:
         serializedVersion: 2
         x: 96
-        y: 128
-        width: 96
-        height: 64
+        y: 160
+        width: 48
+        height: 80
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -149,41 +170,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2faae54727d1e3ae0800000000000000
-      internalID: -1567783242862515470
+      spriteID: d6fb200d8506fd360800000000000000
+      internalID: 7196576664124571501
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pvp_shipyard_2
-      rect:
-        serializedVersion: 2
-        x: 192
-        y: 128
-        width: 96
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: befd6cadb6b604f70800000000000000
-      internalID: 9169446952302469099
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: pvp_shipyard_3
+      name: pvp_tower_style_2_3
       rect:
         serializedVersion: 2
         x: 0
-        y: 64
-        width: 96
-        height: 64
+        y: 80
+        width: 48
+        height: 80
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -191,20 +191,41 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dfe81255f05798230800000000000000
-      internalID: 3641570482418978557
+      spriteID: 2c4aed65ad0ee2840800000000000000
+      internalID: 5201341848024425666
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pvp_shipyard_4
+      name: pvp_tower_style_2_4
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 80
+        width: 48
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 288e424c0de6f7940800000000000000
+      internalID: 5296073529733998722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_tower_style_2_5
       rect:
         serializedVersion: 2
         x: 96
-        y: 64
-        width: 96
-        height: 64
+        y: 80
+        width: 48
+        height: 80
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -212,41 +233,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 03d0e81b5b942ce00800000000000000
-      internalID: 1063493506729643312
+      spriteID: 70adf5df758d5a0e0800000000000000
+      internalID: -2259161765631763961
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pvp_shipyard_5
-      rect:
-        serializedVersion: 2
-        x: 192
-        y: 64
-        width: 96
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 7bd92dfda940b8cd0800000000000000
-      internalID: -2554943300376027721
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: pvp_shipyard_6
+      name: pvp_tower_style_2_6
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 96
-        height: 64
+        width: 48
+        height: 80
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -254,20 +254,41 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 54d6f16f0dfcdd8d0800000000000000
-      internalID: -2819869295274660539
+      spriteID: 33a1f3efea5e6a7c0800000000000000
+      internalID: -4060305474275304909
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pvp_shipyard_7
+      name: pvp_tower_style_2_7
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 48
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d06799d8b3efcba0800000000000000
+      internalID: -6066379789980704557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_tower_style_2_8
       rect:
         serializedVersion: 2
         x: 96
         y: 0
-        width: 96
-        height: 64
+        width: 48
+        height: 80
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -275,29 +296,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2ad4e2c75267f9df0800000000000000
-      internalID: -171288357447512670
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: pvp_shipyard_8
-      rect:
-        serializedVersion: 2
-        x: 192
-        y: 0
-        width: 96
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 0fea433ef2e691250800000000000000
-      internalID: 5915880737482256112
+      spriteID: 5c02dab9fafc1b600800000000000000
+      internalID: 482394988243394757
       vertices: []
       indices: 
       edges: []

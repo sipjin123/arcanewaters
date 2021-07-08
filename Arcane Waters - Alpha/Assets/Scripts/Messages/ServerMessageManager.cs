@@ -187,6 +187,7 @@ public class ServerMessageManager : MonoBehaviour
             if (accountId > 0) {
                // Stop the login process if the account is already logged in
                if (MyNetworkManager.isAccountAlreadyOnline(accountId, conn)) {
+                  D.debug($"Account {accountId} is already online, so stopping the login process!");
                   sendError(ErrorMessage.Type.AlreadyOnline, conn.connectionId);
                   return;
                }

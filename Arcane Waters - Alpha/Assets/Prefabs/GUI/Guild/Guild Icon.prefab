@@ -101,11 +101,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
+  tooltipPlacement: 1
   tooltipType: 6
   message: 
   maxWidth: 250
-  forceFitOnScreen: 1
+  nudgeAwayFromBorder: 0
 --- !u!1 &1699346556543120544
 GameObject:
   m_ObjectHideFlags: 0

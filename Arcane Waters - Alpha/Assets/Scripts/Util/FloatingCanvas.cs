@@ -17,6 +17,9 @@ public class FloatingCanvas : MonoBehaviour {
    // Main text component of this canvas
    public TextMeshProUGUI text;
 
+   // Simple value used to embed custom data
+   public string customTag;
+
    #endregion
 
    void Start () {

@@ -27,13 +27,10 @@ public class PvpGame : MonoBehaviour {
    public string areaKey;
 
    // How many players need to be on each team for the game to start
-   public static int MIN_PLAYERS_PER_TEAM_TO_START = 1;
+   public static int MIN_PLAYERS_PER_TEAM_TO_START = 3;
 
    // Transforms showing where the center of each lane is
    public Transform topLaneCenter, midLaneCenter, botLaneCenter;
-
-   // The pvp stats
-   public PvpStatsData pvpStatData = new PvpStatsData();
 
    #endregion
 
@@ -110,10 +107,10 @@ public class PvpGame : MonoBehaviour {
       PowerupManager.self.clearPowerupsForUser(userId);
 
       if (_gameState == State.PreGame) {
-         registerUserStatData(userId, userName, assignedTeam.teamType);
+         GameStatsManager.self.registerUser(userId, userName, assignedTeam.teamType);
          addPlayerToPreGame(userId, userName);
       } else if (_gameState == State.InGame) {
-         registerUserStatData(userId, userName, assignedTeam.teamType);
+         GameStatsManager.self.registerUser(userId, userName, assignedTeam.teamType);
          StartCoroutine(CO_AddPlayerToOngoingGame(userId, userName, assignedTeam));
       }
    }
@@ -176,8 +173,10 @@ public class PvpGame : MonoBehaviour {
       yield return new WaitForSeconds(delay);
       sendGameMessage("The game has begun");
 
-      pvpStatData.playerStats = new List<PvpPlayerStat>();
+      detectStructures();
+      setStructuresActivated(true);
 
+      //pvpStatData.playerStats = new List<InstancePlayerStat>();
       for (int i = 0; i < _usersInGame.Count; i++) {
          NetEntity player = EntityManager.self.getEntity(_usersInGame[i]);
 
@@ -186,6 +185,8 @@ public class PvpGame : MonoBehaviour {
             _latePlayers.Add(_usersInGame[i]);
             continue;
          }
+
+         GameStatsManager.self.unregisterUser(player.userId);
 
          if (player.isDead()) {
             PlayerShipEntity playerShip = player.getPlayerShipEntity();
@@ -200,7 +201,15 @@ public class PvpGame : MonoBehaviour {
          player.pvpTeam = teamType;
 
          // Generate stat data for this player
-         registerUserStatData(player, teamType);
+         //Instance currentInstance = player.getInstance();
+         //if (currentInstance == null) {
+         //   D.error($"Couldn't find the instance that the player '{player.entityName}' belongs to.");
+         //} else {
+         //   currentInstance.registerUserStatData(player, teamType);
+         //}
+         //registerUserStatData(player, teamType);
+         GameStatsManager.self.registerUser(player.userId);
+
 
          // Remove the user from its current group
          if (player.tryGetGroup(out VoyageGroupInfo currentGroup)) {
@@ -231,10 +240,7 @@ public class PvpGame : MonoBehaviour {
          Vector2 spawnPosition = getSpawnPositionForTeam(team.teamType);
          Util.setLocalXY(player.transform, spawnPosition);
       }
-      pvpStatData.isInitialized = true;
-
-      detectStructures();
-      setStructuresActivated(true);
+      //pvpStatData.isInitialized = true;
 
       _gameState = State.InGame;
       StartCoroutine(CO_SpawnSeamonsters());
@@ -299,7 +305,11 @@ public class PvpGame : MonoBehaviour {
                assignedTeam.Add(userId);
 
                // Generate stat data for this player
-               registerUserStatData(player, bestTeam);
+               //Instance currentInstance = player.getInstance();
+               //if (currentInstance != null) {
+               //   currentInstance.registerUserStatData(player, bestTeam);
+               //}
+               GameStatsManager.self.registerUser(player.userId);
 
                // Remove the user from its current group
                if (player.tryGetGroup(out VoyageGroupInfo currentGroup)) {
@@ -478,13 +488,7 @@ public class PvpGame : MonoBehaviour {
          VoyageGroupManager.self.removeUserFromGroup(voyageGroup, player.userId);
       }
 
-      if (pvpStatData != null && pvpStatData.playerStats != null) {
-         PvpPlayerStat pvpStatDataObj = pvpStatData.playerStats.Find(_ => _.userId == player.userId);
-         if (pvpStatDataObj != null) {
-            pvpStatData.playerStats.Remove(pvpStatDataObj);
-         }
-      }
-
+      GameStatsManager.self.unregisterUser(player.userId);
       // Remove the player from _usersInGame
       _usersInGame.Remove(player.userId);
    }
@@ -518,13 +522,13 @@ public class PvpGame : MonoBehaviour {
          PvpTeamType winningTeam = (structure.pvpTeam == PvpTeamType.A) ? PvpTeamType.B : PvpTeamType.A;
          onGameEnd(winningTeam);
       } else {
-         sendGameMessage("Team " + structure.pvpTeam + "'s " + structure.GetType().ToString() + " has been destroyed.");
+         sendGameMessage(getTeamName(structure.pvpTeam) + " Team's " + structure.GetType().ToString() + " has been destroyed.");
       }
    }
 
    private void onGameEnd (PvpTeamType winningTeam) {
       _gameState = State.PostGame;
-      sendGameMessage("Team " + winningTeam.ToString() + " has won the game!");
+      sendGameMessage(getTeamName(winningTeam) + " Team has won the game!");
       StopAllCoroutines();
 
       setStructuresActivated(false);
@@ -783,142 +787,7 @@ public class PvpGame : MonoBehaviour {
       }
    }
 
-   private void registerUserStatData (NetEntity user, PvpTeamType teamType) {
-      registerUserStatData(user.userId, user.entityName, teamType);
-   }
-
-   private void registerUserStatData (int userId, string userName, PvpTeamType teamType) {
-      if (pvpStatData.playerStats == null) {
-         return;
-      }
-      if (pvpStatData.playerStats.Find(_ => _.userId == userId) == null) {
-         pvpStatData.playerStats.Add(new PvpPlayerStat(userId, userName, (int) teamType));
-      }
-   }
-
    #region Pvp stat functions
-
-   public void addPlayerKillCount (int userId) {
-      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
-      if (playerStat == null) {
-         return;
-      }
-
-      // TODO: Implement visual indication here that will notify player of this specific stat gain
-
-      // Stat Increase
-      playerStat.playerKills++;
-      D.adminLog("Added player kills for: " + userId + " Total of: " + playerStat.playerKills, D.ADMIN_LOG_TYPE.Pvp);
-   }
-
-   public void addShipKillCount (int userId) {
-      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
-      if (playerStat == null) {
-         return;
-      }
-
-      // TODO: Implement visual indication here that will notify player of this specific stat gain
-
-      // Stat Increase
-      playerStat.playerShipKills++;
-      D.adminLog("Added ship kills for: " + userId + " Total of: " + playerStat.playerShipKills, D.ADMIN_LOG_TYPE.Pvp);
-   }
-
-   public void addMonsterKillCount (int userId) {
-      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
-      if (playerStat == null) {
-         return;
-      }
-
-      // TODO: Implement visual indication here that will notify player of this specific stat gain
-
-      // Stat Increase
-      playerStat.playerMonsterKills++;
-      D.adminLog("Added monster kills for: " + userId + " Total of: " + playerStat.playerMonsterKills, D.ADMIN_LOG_TYPE.Pvp);
-   }
-
-   public void addSilverCount (int userId, int total) {
-      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
-      if (playerStat == null) {
-         return;
-      }
-
-      // TODO: Implement visual indication here that will notify player of this specific stat gain
-
-      // Stat Increase
-      playerStat.silver += total;
-      D.adminLog("Added silver kills for: " + userId + " Total of: " + playerStat.silver, D.ADMIN_LOG_TYPE.Pvp);
-   }
-
-   public void addSilverRank (int userId, int total) {
-      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
-      if (playerStat == null) {
-         return;
-      }
-
-      // Stat Increase
-      playerStat.rank += total;
-      D.adminLog("Added silver rank for: " + userId + " Total of: " + playerStat.rank, D.ADMIN_LOG_TYPE.Pvp);
-   }
-
-   public void resetSilverRank (int userId) {
-      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
-      if (playerStat == null) {
-         return;
-      }
-
-      playerStat.rank = 1;
-      D.adminLog("Reset silver rank for: " + userId, D.ADMIN_LOG_TYPE.Pvp);
-   }
-
-   public int getSilverRank (int userId) {
-      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
-      if (playerStat == null) {
-         return 1;
-      }
-
-      // Stat Increase
-      return playerStat.rank;
-   }
-
-   public void addBuildingDestroyedCount (int userId) {
-      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
-      if (playerStat == null) {
-         return;
-      }
-
-      // TODO: Implement visual indication here that will notify player of this specific stat gain
-
-      // Stat Increase
-      playerStat.playerStructuresDestroyed++;
-      D.adminLog("Added structure kills for: " + userId + " Total of: " + playerStat.playerStructuresDestroyed, D.ADMIN_LOG_TYPE.Pvp);
-   }
-
-   public void addAssistCount (int userId) {
-      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
-      if (playerStat == null) {
-         return;
-      }
-
-      // TODO: Implement visual indication here that will notify player of this specific stat gain
-
-      // Stat Increase
-      playerStat.playerAssists++;
-      D.adminLog("Added assist count for: " + userId + " Total of: " + playerStat.playerAssists, D.ADMIN_LOG_TYPE.Pvp);
-   }
-
-   public void addDeathCount (int userId) {
-      PvpPlayerStat playerStat = pvpStatData.playerStats.Find(_ => _.userId == userId);
-      if (playerStat == null) {
-         return;
-      }
-
-      // TODO: Implement visual indication here that will notify player of this specific stat gain
-
-      // Stat Increase
-      playerStat.playerDeaths++;
-      D.adminLog("Added death count for: " + userId + " Total of: " + playerStat.playerDeaths, D.ADMIN_LOG_TYPE.Pvp);
-   }
 
    public static Color getColorForTeam (PvpTeamType team) {
       switch (team) {
@@ -937,32 +806,15 @@ public class PvpGame : MonoBehaviour {
       }
    }
 
-   public int computeSilverReward (NetEntity attacker, NetEntity target) {
-
-      PvpPlayerStat attackerPlayerStat = pvpStatData.playerStats.Find(_ => _.userId == attacker.userId);
-
-      if (attackerPlayerStat == null) {
-         return 0;
+   public static string getTeamName (PvpTeamType teamType) {
+      switch (teamType) {
+         case PvpTeamType.A:
+            return "Green";
+         case PvpTeamType.B:
+            return "Red";
+         default:
+            return "None";
       }
-
-      if (target is PlayerShipEntity) {
-         PvpPlayerStat targetPlayerStat = pvpStatData.playerStats.Find(_ => _.userId == target.userId);
-         return (attackerPlayerStat.rank + targetPlayerStat.rank * 2) * SilverManager.SILVER_PLAYER_SHIP_KILL_REWARD; // TODO: The algorithm could be changed
-      }
-
-      if (target is BotShipEntity) {
-         return attackerPlayerStat.rank * SilverManager.SILVER_BOT_SHIP_KILL_REWARD;
-      }
-
-      if (target is SeaMonsterEntity) {
-         return attackerPlayerStat.rank * SilverManager.SILVER_SEA_MONSTER_KILL_REWARD;
-      }
-
-      if (target is SeaStructure) {
-         return attackerPlayerStat.rank * SilverManager.SILVER_SEA_STRUCTURE_KILL_REWARD;
-      }
-
-      return 0;
    }
 
    #endregion

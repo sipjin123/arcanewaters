@@ -807,6 +807,10 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static List<int> getAllUserIds () {
+      return null;
+   }
+
    public static ShipInfo getShipInfo (int userId) {
       return null;
    }
@@ -1267,6 +1271,14 @@ public class DB_MainStub : MonoBehaviour
 
    public static List<ServerHistoryInfo> getServerHistoryList (string startDateString, string maxRowsString) {
       return null;
+   }
+
+   public static void updateServerShutdown (bool shutdown) {
+
+   }
+
+   public static bool getServerShutdown () {
+      return false;
    }
 
    public static string isServerOnline () {

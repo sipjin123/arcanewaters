@@ -49,6 +49,17 @@ public class RestartManager : GenericGameManager
       _isServerRestartScheduled = false;
    }
 
+   public void onServerShutdown () {
+      StopAllCoroutines();
+      
+      // Forcibly kick players
+      foreach (NetEntity player in EntityManager.self.getAllEntities()) {
+         if (player != null) {
+            player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Kicked, $"You were disconnected.\n\n Reason: Server is currently shutting down"));
+         }
+      }
+   }
+
    private void checkPendingServerRestarts () {
       try {
          // We only do this check on the server
@@ -58,10 +69,17 @@ public class RestartManager : GenericGameManager
 
          // Background thread to check the database
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            bool serverShutdown = DB_Main.getServerShutdown();
             DeployScheduleInfo info = DB_Main.getDeploySchedule();
 
             // Back to the Unity thread to handle the database info
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               // If server is shutting down - trigger shutdown function and exit 
+               if (serverShutdown) {
+                  onServerShutdown();
+                  return;
+               }
+               
                if (info == null || info.DateAsTicks < 0) {
                   return;
                }
