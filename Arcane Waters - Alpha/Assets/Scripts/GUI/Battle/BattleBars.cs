@@ -168,10 +168,11 @@ public class BattleBars : MonoBehaviour {
       if (!currentDebuffIcons.Exists(_ => _.statusType == statType)) {
          BuffIcon currentIcon = Instantiate(buffIconPrefab, buffIconParent);
          currentIcon.statusType = statType;
-         
+
          if (currentIcon.buffSpritePair.Find(_ => _.statusType == statType) != null) {
             currentIcon.buffIcon.sprite = currentIcon.buffSpritePair.Find(_ => _.statusType == statType).statusSprite;
             currentDebuffIcons.Add(currentIcon);
+            currentIcon.simpleAnim.enabled = true;
          } else {
             D.debug("Cannot find buff type {" + statType + "}");
          }

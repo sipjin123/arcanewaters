@@ -968,7 +968,6 @@ public class BattleManager : MonoBehaviour {
          yield return 0;
       }
 
-      battle.Rpc_DisplayStatus(statusType, battle.battleId, battlerReference.userId);
       battlerReference.applyStatusEffect(statusType, statusDuration);
    }
 

@@ -458,21 +458,6 @@ public class Battle : NetworkBehaviour {
    }
 
    [ClientRpc]
-   public void Rpc_DisplayStatus (Status.Type status, int battleId, int battlerId) {
-      Battle battle = BattleManager.self.getBattle(battleId);
-      if (battle == null) {
-         return;
-      }
-      Battler sourceBattler = battle.getBattler(battlerId);
-      if (sourceBattler == null) {
-         return;
-      }
-
-      // Apply status effect here
-      StartCoroutine(sourceBattler.animateStatusEffect(status));
-   }
-
-   [ClientRpc]
    public void Rpc_SendCombatAction (string[] actionStrings, BattleActionType battleActionType, bool cancelAbility) {
       processCombatAction(actionStrings, battleActionType, cancelAbility);
    }

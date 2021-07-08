@@ -253,9 +253,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // A reference to the point where the target line should start / end
    public Transform targetPoint;
 
-   // Battle effect holder reference
-   public BattlerEffectHolder battleEffectHolder;
-
    // Returns simple animation list
    public List<SimpleAnimation> getAnim () { return _anims; }
 
@@ -1943,28 +1940,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       EffectManager.playBlockEffect(attacker, this);
       yield return new WaitForSeconds(getPostContactLength());
       playAnim(Anim.Type.Battle_East);
-   }
-
-   public IEnumerator animateStatusEffect (Status.Type statusType) {
-      yield return new WaitForSeconds(.1f);
-
-      battleEffectHolder.updateEffect(statusType, true);
-
-      // Do visual effects here
-      switch (statusType) {
-         case Status.Type.Burning:
-
-            break;
-         case Status.Type.Frozen:
-
-            break;
-         case Status.Type.Stunned:
-
-            break;
-         case Status.Type.Slowed:
-
-            break;
-      }
    }
 
    public void applyStatusEffect (Status.Type statusType, float duration) {

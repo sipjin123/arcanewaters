@@ -15,6 +15,9 @@ public class BuffIcon : MonoBehaviour {
    // The current status type
    public Status.Type statusType;
 
+   // Reference to the simple anim component
+   public SimpleAnimation simpleAnim;
+
    #endregion
 
    #region Private Variables
