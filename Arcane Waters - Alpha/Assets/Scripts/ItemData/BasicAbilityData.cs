@@ -126,21 +126,63 @@ public class BasicAbilityData : BattleItemData
 
    #region Helper Methods
 
-   public void playCastClipAtTarget (Transform targetTransform) {
-      if (SoundEffectManager.self.isValidSoundEffect(castSoundEffectId)) {
-         SoundEffectManager.self.playSoundEffect(castSoundEffectId, targetTransform);
+   public void playCastSfxAtTarget (Transform targetTransform) {
+      SoundEffect soundEffect = SoundEffectManager.self.getSoundEffect(castSoundEffectId);
+      if (soundEffect != null) {
+         // Play the fmod sfx if the fmod id is valid
+         if (soundEffect.fmodId.Length > 1) {
+            SoundEffectManager.self.playFmod2DWithPath(soundEffect.fmodId);
+         } else {
+            if (SoundEffectManager.self.isValidSoundEffect(castSoundEffectId)) {
+               // Play intended sfx using legacy approach, referencing sfx in resource folder
+               SoundEffectManager.self.playSoundEffect(castSoundEffectId, targetTransform);
+            } else {
+               // Play a default clip
+               AudioClip castClip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultCastAudio).audioClip;
+               SoundManager.playClipAtPoint(castClip, targetTransform.position);
+            }
+         }
       } else {
-         AudioClip castClip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultCastAudio).audioClip;
-         SoundManager.playClipAtPoint(castClip, targetTransform.position);
+         if (castSoundEffectId > 0) {
+            D.debug("Failed to get sfx content for Cast ID: {" + castSoundEffectId + "}");
+         }
+
+         // The buff abilities should have a default Cast sfx
+         if (abilityType == AbilityType.BuffDebuff) {
+            // Play a default clip
+            AudioClip castClip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultCastAudio).audioClip;
+            SoundManager.playClipAtPoint(castClip, targetTransform.position);
+         }
       }
    }
 
-   public void playHitClipAtTarget (Transform targetTransform) {
-      if (SoundEffectManager.self.isValidSoundEffect(hitSoundEffectId)) {
-         SoundEffectManager.self.playSoundEffect(hitSoundEffectId, targetTransform);
+   public void playHitSfxAtTarget (Transform targetTransform) {
+      SoundEffect soundEffect = SoundEffectManager.self.getSoundEffect(hitSoundEffectId);
+      if (soundEffect != null) {
+         // Play the fmod sfx if the fmod id is valid
+         if (soundEffect.fmodId.Length > 1) {
+            SoundEffectManager.self.playFmod2DWithPath(soundEffect.fmodId);
+         } else {
+            if (SoundEffectManager.self.isValidSoundEffect(hitSoundEffectId)) {
+               // Play intended sfx using legacy approach, referencing sfx in resource folder
+               SoundEffectManager.self.playSoundEffect(hitSoundEffectId, targetTransform);
+            } else {
+               // Play a default clip
+               AudioClip hitClip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultHitAudio).audioClip;
+               SoundManager.playClipAtPoint(hitClip, targetTransform.position);
+            }
+         }
       } else {
-         AudioClip hitclip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultHitAudio).audioClip;
-         SoundManager.playClipAtPoint(hitclip, targetTransform.position);
+         if (hitSoundEffectId > 0) {
+            D.debug("Failed to get sfx content for Hit ID: {" + hitSoundEffectId + "}");
+         }
+
+         // The NON buff abilities should have a default Hit sfx
+         if (abilityType != AbilityType.BuffDebuff) {
+            // Play a default clip
+            AudioClip hitClip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultHitAudio).audioClip;
+            SoundManager.playClipAtPoint(hitClip, targetTransform.position);
+         }
       }
    }
 
