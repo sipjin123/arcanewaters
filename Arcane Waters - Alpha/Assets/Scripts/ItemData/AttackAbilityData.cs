@@ -81,7 +81,8 @@ public class AttackAbilityData : BasicAbilityData
 
    // Builder for the Item creation window
    public static AttackAbilityData CreateInstance (BasicAbilityData basicAbilityData, bool _hasKnockup, int _damage, bool _hasShake,
-      AbilityActionType _abilityActionType, bool _canBeBlocked, bool _hasKnockBack, float _projectileSpeed, string _projectileSpritePath, float _projectileScale, bool _useCustomProjectileSprite) {
+      AbilityActionType _abilityActionType, bool _canBeBlocked, bool _hasKnockBack, float _projectileSpeed, string _projectileSpritePath, 
+      float _projectileScale, bool _useCustomProjectileSprite) {
 
       AttackAbilityData data = new AttackAbilityData();
 

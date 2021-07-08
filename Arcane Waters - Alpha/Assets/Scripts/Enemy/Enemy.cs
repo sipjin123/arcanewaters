@@ -87,7 +87,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    public GameObject bossGolemPolygonCollider;
 
    // The combat collider of boss type monsters
-   public const float BOSS_COMBAT_COLLIDER = 0.75f;
+   public const float BOSS_COMBAT_COLLIDER = 0.45f;
 
    #endregion
 

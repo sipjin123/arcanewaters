@@ -101,17 +101,18 @@ MonoBehaviour:
   - statusType: 8
     statusSprite: {fileID: 21300000, guid: 0934c735998cc6f4f903f0268fd280e5, type: 3}
   - statusType: 2
-    statusSprite: {fileID: 21300010, guid: 2730f373dd17c3d41be3a0ec6feeb530, type: 3}
+    statusSprite: {fileID: 21300000, guid: 2730f373dd17c3d41be3a0ec6feeb530, type: 3}
   - statusType: 4
     statusSprite: {fileID: -594492218196253237, guid: 5bd7be04c41a3964ea14583ba15a97b9,
       type: 3}
   - statusType: 3
-    statusSprite: {fileID: 6074942705544299991, guid: 5e4fc007df2500142a7ba2c2782f150d,
+    statusSprite: {fileID: -508525261903117114, guid: 5e4fc007df2500142a7ba2c2782f150d,
       type: 3}
   - statusType: 1
     statusSprite: {fileID: 4446608818571410959, guid: 46cc5b9d395e21540b214bdeb958a5ee,
       type: 3}
   statusType: 0
+  simpleAnim: {fileID: 1401380022676523380}
 --- !u!1 &7314403363517792499
 GameObject:
   m_ObjectHideFlags: 0
@@ -123,6 +124,7 @@ GameObject:
   - component: {fileID: 5361928050688521155}
   - component: {fileID: 216995419303646521}
   - component: {fileID: 681839834918086700}
+  - component: {fileID: 1401380022676523380}
   m_Layer: 5
   m_Name: DebuffIcon
   m_TagString: Untagged
@@ -186,3 +188,28 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1401380022676523380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7314403363517792499}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialDelay: 0
+  frameLengthOverride: -1
+  delayStart: 0
+  destroyAtEnd: 0
+  stayAtLastFrame: 0
+  loopDelay: 0
+  isPaused: 0
+  minIndex: 0
+  maxIndex: 1000
+  currentAnimation: 0
+  group: 0
+  freezeAlpha: 0
+  _index: 0

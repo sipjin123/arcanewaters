@@ -1494,6 +1494,10 @@ public class SeaEntity : NetEntity
 
    [Server]
    private void moveAlongCurrentPath () {
+      if (Global.freezeShips) {
+         return;
+      }
+
       if (_currentPath != null && _currentPathIndex < _currentPath.Count) {
          // Only change our movement if enough time has passed
          double moveTime = NetworkTime.time - _lastMoveChangeTime;
@@ -1564,7 +1568,7 @@ public class SeaEntity : NetEntity
       } else if (pvpTeam != PvpTeamType.None) {
          // If we haven't reached the middle of the lane yet, move towards it
          if (_pvpLaneTarget != null) {
-            updateState(ref _patrolingWaypointState, 0.0f, secondsPatrolingUntilChoosingNewTreasureSite, 
+            updateState(ref _patrolingWaypointState, 0.0f, secondsPatrolingUntilChoosingNewTreasureSite,
                ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, (x) => { return _pvpLaneTarget.position; });
 
             // If we've already reached the middle of the lane, look for the next target structure to attack
@@ -1576,10 +1580,10 @@ public class SeaEntity : NetEntity
 
             SeaStructure targetStructure = getTargetSeaStructure();
             if (targetStructure) {
-               updateState(ref _patrolingWaypointState, 0.0f, secondsPatrolingUntilChoosingNewTreasureSite, 
+               updateState(ref _patrolingWaypointState, 0.0f, secondsPatrolingUntilChoosingNewTreasureSite,
                   ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, (x) => { return targetStructure.transform.position; });
             } else {
-               updateState(ref _patrolingWaypointState, 0.0f, secondsPatrolingUntilChoosingNewTreasureSite, 
+               updateState(ref _patrolingWaypointState, 0.0f, secondsPatrolingUntilChoosingNewTreasureSite,
                   ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, findRandomVicinityPosition);
             }
          }
@@ -1602,7 +1606,7 @@ public class SeaEntity : NetEntity
             _patrolingWaypointState = WaypointState.RETREAT;
          }
 
-         updateState(ref _patrolingWaypointState, secondsBetweenFindingPatrolRoutes, secondsPatrolingUntilChoosingNewTreasureSite, 
+         updateState(ref _patrolingWaypointState, secondsBetweenFindingPatrolRoutes, secondsPatrolingUntilChoosingNewTreasureSite,
             ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, findingFunction);
       }
    }
