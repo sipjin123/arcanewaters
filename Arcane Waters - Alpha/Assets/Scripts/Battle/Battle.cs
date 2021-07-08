@@ -336,6 +336,8 @@ public class Battle : NetworkBehaviour {
    }
 
    public void resetAllBattleIDs (Battle.TeamType winningTeam) {
+      string playerIds = "Players: {";
+
       // Remove the Battle ID for any participants
       foreach (Battler participant in this.getParticipants()) {
          if (participant == null) {
@@ -352,12 +354,14 @@ public class Battle : NetworkBehaviour {
                } else {
                   // Allow refresh movement only when the winning battler is a player
                   if (participant.teamType == winningTeam && participant.enemyType == Enemy.Type.PlayerBattler) {
+                     playerIds += ": " + participant.player.userId;
                      participant.player.rpc.Target_ResetMoveDisable(participant.player.connectionToClient, participant.battleId.ToString());
                   }
                }
             }
          }
       }
+      D.adminLog("3. {" + battleId + "} Movement Restored, PlayerCount: {" + this.getParticipants().Count + "} " + playerIds + "}", D.ADMIN_LOG_TYPE.CombatEnd);
    }
 
    public bool hasRoomLeft (TeamType teamType) {

@@ -34,7 +34,8 @@ public class D : MonoBehaviour {
       CancelAttack = 21,
       Pvp = 22,
       NetworkMessages = 23,
-      InstanceProcess = 24
+      InstanceProcess = 24,
+      Tutorial = 25
    }
 
    // Any log files older than this will be deleted
@@ -56,6 +57,8 @@ public class D : MonoBehaviour {
 
    // Directory of the private logs
    public static string instanceProcessLogDirectory = "";
+   public static string tutorialLogDirectory = "";
+   public static string combatEndLogDirectory = "";
 
    #endregion
 
@@ -77,6 +80,8 @@ public class D : MonoBehaviour {
       D.adminLog("D.Awake...", D.ADMIN_LOG_TYPE.Initialization);
 
       Global.privateLogTypesToShow.Add(ADMIN_LOG_TYPE.InstanceProcess);
+      Global.privateLogTypesToShow.Add(ADMIN_LOG_TYPE.Tutorial);
+      Global.privateLogTypesToShow.Add(ADMIN_LOG_TYPE.CombatEnd);
 
       // For now, we can't write to file in the web player
       if (Application.isMobilePlatform) {
@@ -137,8 +142,7 @@ public class D : MonoBehaviour {
       string logsDirectoryPath = Application.persistentDataPath + "\\pvtLogs\\";
       Directory.CreateDirectory(logsDirectoryPath);
 
-      instanceProcessLogDirectory = logsDirectoryPath +
-         ADMIN_LOG_TYPE.InstanceProcess.ToString() + "_" +
+      string fileNameAdditive = "_" +
          DateTime.UtcNow.Year + "-" +
          DateTime.UtcNow.Month + "-" +
          DateTime.UtcNow.Day + "_" +
@@ -146,12 +150,23 @@ public class D : MonoBehaviour {
          DateTime.UtcNow.Minute + "-" +
          DateTime.UtcNow.Second + ".txt";
 
-      if (!File.Exists(instanceProcessLogDirectory)) {
-         StreamWriter sr = File.CreateText(instanceProcessLogDirectory);
+      instanceProcessLogDirectory = logsDirectoryPath + ADMIN_LOG_TYPE.InstanceProcess.ToString() + fileNameAdditive;
+      privateLogSetup(instanceProcessLogDirectory);
+
+      tutorialLogDirectory = logsDirectoryPath + ADMIN_LOG_TYPE.Tutorial.ToString() + fileNameAdditive;
+      privateLogSetup(tutorialLogDirectory);
+
+      combatEndLogDirectory = logsDirectoryPath + ADMIN_LOG_TYPE.CombatEnd.ToString() + fileNameAdditive;
+      privateLogSetup(combatEndLogDirectory);
+   }
+
+   private void privateLogSetup (string directory) {
+      if (!File.Exists(directory)) {
+         StreamWriter sr = File.CreateText(directory);
          sr.Close();
       }
-      
-      File.WriteAllText(instanceProcessLogDirectory, "[" + DateTime.UtcNow + "] Initialize");
+
+      File.WriteAllText(directory, "[" + DateTime.UtcNow + "] Initialize");
    }
 
    void OnEnable () {
@@ -303,7 +318,17 @@ public class D : MonoBehaviour {
          string logTime = (SHOW_TIME) ? "[" + DateTime.Now + "] " : "";
          string lineToWrite = "\n" + logTime + text;
 
-         File.AppendAllText(instanceProcessLogDirectory, lineToWrite);
+         switch (logType) {
+            case ADMIN_LOG_TYPE.InstanceProcess:
+               File.AppendAllText(instanceProcessLogDirectory, lineToWrite);
+               break;
+            case ADMIN_LOG_TYPE.Tutorial:
+               File.AppendAllText(tutorialLogDirectory, lineToWrite);
+               break;
+            case ADMIN_LOG_TYPE.CombatEnd:
+               File.AppendAllText(combatEndLogDirectory, lineToWrite);
+               break;
+         }
          return;
       }
 

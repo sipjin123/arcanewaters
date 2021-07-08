@@ -245,7 +245,7 @@ public class BattleManager : MonoBehaviour {
          // Destroy the Battler from the Network
          NetworkServer.Destroy(battler.gameObject);
       }
-      D.adminLog("{" + battle.battleId + "} is now being destroyed", D.ADMIN_LOG_TYPE.CombatEnd);
+      D.adminLog("4. {" + battle.battleId + "} is now being destroyed", D.ADMIN_LOG_TYPE.CombatEnd);
 
       // Destroy the Battle from the Network
       NetworkServer.Destroy(battle.gameObject);
@@ -992,7 +992,7 @@ public class BattleManager : MonoBehaviour {
    }
 
    protected IEnumerator endBattleAfterDelay (Battle battle, float delay) {
-      D.adminLog("{" + battle.battleId + "} End battle after delay", D.ADMIN_LOG_TYPE.CombatEnd);
+      D.adminLog("1. {" + battle.battleId + "} End battle after delay", D.ADMIN_LOG_TYPE.CombatEnd);
       Battle.TeamType teamThatWon = battle.getTeamThatWon();
       List<Battler> defeatedBattlers = (battle.teamThatWon == Battle.TeamType.Attackers) ? battle.getDefenders() : battle.getAttackers();
       List<Battler> winningBattlers = (battle.teamThatWon == Battle.TeamType.Attackers) ? battle.getAttackers() : battle.getDefenders();
@@ -1053,8 +1053,11 @@ public class BattleManager : MonoBehaviour {
          }
       }
 
+      string playersEndedBattle = "Players: {";
       foreach (Battler winner in winningBattlers) {
          if (winner.enemyType == Enemy.Type.PlayerBattler && !battle.isPvp) {
+            playersEndedBattle += ": " + winner.player.userId;
+
             bool damageWeapon = false;
             bool damageArmor = false;
 
@@ -1111,7 +1114,7 @@ public class BattleManager : MonoBehaviour {
             }
          }
       }
-      D.adminLog("{" + battle.battleId + "} End battle done", D.ADMIN_LOG_TYPE.CombatEnd);
+      D.adminLog("2. {" + battle.battleId + "} End battle processing done, PlayerCount: {" + winningBattlers.Count + "} " + playersEndedBattle + "}", D.ADMIN_LOG_TYPE.CombatEnd);
 
       // Pass along the request to the Battle Manager to handle shutting everything down
       this.endBattle(battle, teamThatWon);

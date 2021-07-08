@@ -5947,7 +5947,7 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_ResetMoveDisable (NetworkConnection connection, string battleId) {
       if (Global.player == null) {
-         D.debug("Player is missing!");
+         D.debug("Player is missing! Battle ID: " + battleId);
          return;
       }
 
@@ -5959,7 +5959,7 @@ public class RPCManager : NetworkBehaviour
          playerBody.isWithinEnemyRadius = false;
          playerBody.playerBattleCollider.combatInitCollider.enabled = true;
       } else {
-         D.debug("Failed to restore player movement!");
+         D.debug("Failed to restore player movement! Battle ID: " + battleId);
       }
    }
 

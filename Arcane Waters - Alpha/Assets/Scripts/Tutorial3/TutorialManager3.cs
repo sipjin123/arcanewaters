@@ -160,6 +160,17 @@ public class TutorialManager3 : MonoBehaviour {
       }
 
       if (key == _currentTutorial.steps[_currentStep].completionTrigger) {
+         string userIdStr = Global.player == null ? "-1" : Global.player.userId.ToString();
+         if (_currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.SwitchToOffensiveStance) {
+            D.adminLog("The switch to offensive stance about to be finished for Tutorial: " + userIdStr, D.ADMIN_LOG_TYPE.Tutorial);
+         }
+         if (_currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.SwitchToDefensiveStance) {
+            D.adminLog("The switch to defense stance about to be finished for Tutorial: " + userIdStr, D.ADMIN_LOG_TYPE.Tutorial);
+         }
+         if (_currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.EndBattle) {
+            D.adminLog("The end battle trigger is about to be finished for Tutorial: " + userIdStr, D.ADMIN_LOG_TYPE.Tutorial);
+         }
+
          if (key == TutorialTrigger.EquipWeapon) {
             // Check if the required weapon is equipped
             tryCompletingStepByWeaponEquipped();
