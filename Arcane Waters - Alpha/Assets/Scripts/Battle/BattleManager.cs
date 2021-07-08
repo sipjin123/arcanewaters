@@ -1056,6 +1056,7 @@ public class BattleManager : MonoBehaviour {
       string playersEndedBattle = "Players: {";
       foreach (Battler winner in winningBattlers) {
          if (winner.enemyType == Enemy.Type.PlayerBattler && !battle.isPvp) {
+            winner.player.rpc.endBattle(battle.battleId.ToString());
             playersEndedBattle += ": " + winner.player.userId;
 
             bool damageWeapon = false;
@@ -1086,8 +1087,6 @@ public class BattleManager : MonoBehaviour {
 
             foreach (Battler participant in winningBattlers) {
                if (!participant.isMonster()) {
-                  participant.player.rpc.endBattle(battle.battleId.ToString());
-
                   // Registers the kill count of the combat
                   AchievementManager.registerUserAchievement(participant.player, ActionType.KillLandMonster, defeatedBattlers.Count);
 
@@ -1096,21 +1095,23 @@ public class BattleManager : MonoBehaviour {
                }
             }
          } else {
-            if (battler.player is PlayerBodyEntity && !battle.isPvp) {
-               // Registers the death of the player in combat
-               AchievementManager.registerUserAchievement(battler.player, ActionType.CombatDie);
+            if (battler.player is PlayerBodyEntity) {
+               if (!battle.isPvp) {
+                  // Registers the death of the player in combat
+                  AchievementManager.registerUserAchievement(battler.player, ActionType.CombatDie);
 
-               // TODO: Implement logic here that either warps the player to a different place or give invulnerability time so they can move away from previous enemy, otherwise its an unlimited battle until the player wins
-               if (battler.player != null) {
-                  // When dying in a voyage treasure site, send a tip to the user explaining how to return
-                  if (battler.player.isInGroup() && VoyageManager.isTreasureSiteArea(battler.player.areaKey)) {
-                     battler.player.rpc.sendNotification(Notification.Type.ReturnToVoyage);
+                  // TODO: Implement logic here that either warps the player to a different place or give invulnerability time so they can move away from previous enemy, otherwise its an unlimited battle until the player wins
+                  if (battler.player != null) {
+                     // When dying in a voyage treasure site, send a tip to the user explaining how to return
+                     if (battler.player.isInGroup() && VoyageManager.isTreasureSiteArea(battler.player.areaKey)) {
+                        battler.player.rpc.sendNotification(Notification.Type.ReturnToVoyage);
+                     }
+
+                     battler.player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);
                   }
-
-                  battler.player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);
+               } else {
+                  battler.player.rpc.Target_DisplayServerMessage("You have been defeated by " + winningBattlers[0].player.entityName + " in a duel!");
                }
-            } else if (battler.player is PlayerBodyEntity && battle.isPvp) {
-               battler.player.rpc.Target_DisplayServerMessage("You have been defeated by " + winningBattlers[0].player.entityName + " in a duel!");
             }
          }
       }
