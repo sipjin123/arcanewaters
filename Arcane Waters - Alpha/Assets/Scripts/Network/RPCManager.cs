@@ -676,6 +676,18 @@ public class RPCManager : NetworkBehaviour
          PowerupManager.self.addPowerupServer(_player.userId, newPowerUp);
          Target_AddPowerup(_player.connectionToClient, newPowerUp);
       } else {
+         if (item.category == Item.Category.None) {
+            if (_player) {
+               Instance currInstance = InstanceManager.self.getInstance(_player.instanceId);
+               D.debug("Cannot process Loot bag rewards for chest {" + chestId + "}! Category is None for: " + 
+                  _player.userId + " " + _player.areaKey + " " + 
+                  chest.rarity + " " + (currInstance == null ? "No Instance" : currInstance.biome.ToString()));
+            } else {
+               D.debug("Cannot process Loot bag rewards for chest {" + chestId + "}! Category is None, NetEntityNotFound");
+            }
+            return;
+         }
+
          // Grant the rewards to the user
          giveItemRewardsToPlayer(_player.userId, new List<Item>() { item }, false, chest.id);
 
@@ -4987,6 +4999,11 @@ public class RPCManager : NetworkBehaviour
          // Make sure that the loot bag armor has an assigned palette value
          if (item.category == Item.Category.Armor && string.IsNullOrEmpty(item.paletteNames)) {
             item.paletteNames = PaletteSwapManager.DEFAULT_ARMOR_PALETTE_NAMES;
+         }
+
+         if (newDatabaseItem.category == Item.Category.None) {
+            D.debug("Aborting item reward to player, None Category for: giveItemRewardsToPlayer()");
+            return;
          }
 
          // Add to list
