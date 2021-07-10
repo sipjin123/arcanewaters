@@ -735,6 +735,30 @@ public class BattleUIManager : MonoBehaviour {
 
    #region DamageText
 
+   public void showDamagePerTick (Battler damagedBattler, int damage, Element element = Element.Physical) {
+      // Create the Text instance from the prefab
+      GameObject damageTextObject = (GameObject) Instantiate(PrefabsManager.self.damageTextPrefab);
+      DamageText damageText = damageTextObject.GetComponent<DamageText>();
+
+      // Place the damage numbers just above where the impact occurred for the given ability
+      Vector3 damageSpawnPosition = new Vector3(damagedBattler.transform.position.x, damagedBattler.transform.position.y + .45f, -3f);
+
+      damageText.setDamageAmount(damage, false, false);
+      float offsetPosition = .2f;
+      damageText.transform.position = new Vector2(Random.Range(damageSpawnPosition.x - offsetPosition, damageSpawnPosition.x + offsetPosition), damageSpawnPosition.y);
+      damageText.transform.SetParent(EffectManager.self.transform, false);
+      damageText.name = "DamageText_" + element;
+
+      // Update the font
+      damageText.customizeForAction(element, false, DamageMagnitude.Default);
+
+      // The damage text should be on the same layer as the target's Battle Spot
+      damageText.gameObject.layer = damagedBattler.gameObject.layer;
+
+      // Make note of the time at which we were last damaged
+      damagedBattler.lastDamagedTime = Time.time;
+   }
+
    public void showDamageText (AttackAction action, Battler damagedBattler) {
       BattleSpot spot = damagedBattler.battleSpot;
 

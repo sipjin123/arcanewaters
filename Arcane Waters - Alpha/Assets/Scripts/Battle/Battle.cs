@@ -58,7 +58,7 @@ public class Battle : NetworkBehaviour {
    public List<QueuedRpcAction> queuedRpcActionList = new List<QueuedRpcAction>();
 
    // The damager per tick of the burn status
-   public const int BURN_DAMAGE_PER_TICK = 10;
+   public const int BURN_DAMAGE_PER_TICK = 2;
 
    #endregion
 
@@ -160,6 +160,8 @@ public class Battle : NetworkBehaviour {
                   switch (currentStatusType) {
                      case Status.Type.Burning:
                         battler.health -= BURN_DAMAGE_PER_TICK;
+                        battler.displayedHealth -= BURN_DAMAGE_PER_TICK;
+                        Rpc_DealDamagePerTick(battleId, battler.userId, BURN_DAMAGE_PER_TICK, Element.Fire);
                         break;
                      case Status.Type.Frozen:
                         battler.isDisabled = true;
@@ -453,6 +455,20 @@ public class Battle : NetworkBehaviour {
       Vector2 targetPosition = target.battleSpot.transform.position;
 
       return Vector2.Distance(sourcePosition, targetPosition);
+   }
+
+   [ClientRpc]
+   public void Rpc_DealDamagePerTick (int battleId, int battlerId, int damage, Element element) {
+      Battle battle = BattleManager.self.getBattle(battleId);
+      if (battle == null) {
+         return;
+      }
+      Battler target = battle.getBattler(battlerId);
+      if (target == null) {
+         return;
+      }
+
+      BattleUIManager.self.showDamagePerTick(target, damage, element);
    }
 
    [ClientRpc]
