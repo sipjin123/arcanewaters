@@ -71,7 +71,7 @@ public class PvpMonsterSpawner : NetworkBehaviour, IMapEditorDataReceiver {
                // Send the result to all group members
                foreach (int userId in voyageGroup.members) {
                   NetEntity memberEntity = EntityManager.self.getEntity(userId);
-                  if (memberEntity != null && memberEntity is PlayerShipEntity) {
+                  if (memberEntity != null && memberEntity is PlayerShipEntity && seaEntity.wasAttackedBy(memberEntity.netId)) {
                      Powerup newPowerupData = new Powerup {
                         powerupRarity = Rarity.Type.Common,
                         powerupType = powerupType

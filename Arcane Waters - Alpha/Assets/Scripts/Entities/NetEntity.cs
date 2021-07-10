@@ -1145,6 +1145,10 @@ public class NetEntity : NetworkBehaviour
       return AttackManager.self.isHoveringOver(this);
    }
 
+   public bool wasAttackedBy (uint netId) {
+      return _attackers.ContainsKey(netId);
+   }
+
    public bool hasAttackers () {
       return _attackers.Count > 0;
    }
