@@ -202,7 +202,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    // Determines if this battler is disabled by a debuff
    [SyncVar]
-   public bool isDisabled;
+   public bool isDisabledByDebuff;
 
    // Is pvp battler
    [SyncVar]

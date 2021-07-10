@@ -894,7 +894,6 @@ public class BattleManager : MonoBehaviour {
             // Create a Cancel Action to send to the clients
             if (source.canCancelAction) {
                CancelAction cancelAction = new CancelAction(action.battleId, action.sourceId, action.targetId, NetworkTime.time, timeToSubtract);
-               //D.log("Target {" + target.userId + "} or Source {" + target.userId + "} is dead, Cancelling action " + (actionToApply is AttackAction ? "AttackAction" : "Non AttackAction"));
                AbilityManager.self.execute(new[] { cancelAction });
                battle.Rpc_ReceiveCancelAction(action.battleId, action.sourceId, action.targetId, NetworkTime.time, timeToSubtract);
             } else {
@@ -926,7 +925,7 @@ public class BattleManager : MonoBehaviour {
                source.canExecuteAction = true;
 
                // TODO: Enable/Remove this after public playtest
-               bool forceDisableStatus = true;
+               bool forceDisableStatus = false;
                if (!forceDisableStatus) {
                   // Apply attack status here
                   if (abilityDataReference.statusType != Status.Type.None) {

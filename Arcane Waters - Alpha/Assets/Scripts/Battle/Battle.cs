@@ -145,10 +145,10 @@ public class Battle : NetworkBehaviour {
 
                            break;
                         case Status.Type.Frozen:
-                           battler.isDisabled = false;
+                           battler.isDisabledByDebuff = false;
                            break;
                         case Status.Type.Stunned:
-                           battler.isDisabled = false;
+                           battler.isDisabledByDebuff = false;
                            break;
                      }
                   }
@@ -164,10 +164,10 @@ public class Battle : NetworkBehaviour {
                         Rpc_DealDamagePerTick(battleId, battler.userId, BURN_DAMAGE_PER_TICK, Element.Fire);
                         break;
                      case Status.Type.Frozen:
-                        battler.isDisabled = true;
+                        battler.isDisabledByDebuff = true;
                         break;
                      case Status.Type.Stunned:
-                        battler.isDisabled = true;
+                        battler.isDisabledByDebuff = true;
                         break;
                   }
 
