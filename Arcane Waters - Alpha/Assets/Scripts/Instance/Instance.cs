@@ -416,6 +416,9 @@ public class Instance : NetworkBehaviour
             case Biome.Type.Desert:
                bossToSpawn = Enemy.Type.Golem_Boss;
                break;
+            default:
+               bossToSpawn = UnityEngine.Random.Range(0,2) == 0 ? Enemy.Type.Golem_Boss : Enemy.Type.Lizard_King;
+               break;
          }
 
          if (bossToSpawn != Enemy.Type.None) {

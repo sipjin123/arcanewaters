@@ -5470,8 +5470,9 @@ public class RPCManager : NetworkBehaviour
       }
       foreach (NetworkBehaviour enemyInstance in battleInstance.getEntities()) {
          if (enemyInstance is Enemy) {
-            if (enemy.animGroupType == ((Enemy) enemyInstance).animGroupType) {
-               enemyRoster.Add((Enemy) enemyInstance);
+            Enemy enemyInRoster = (Enemy) enemyInstance;
+            if (!enemyRoster.Exists(_ => _.enemyType == enemyInRoster.enemyType) && !enemyInRoster.isBossType) {
+               enemyRoster.Add(enemyInRoster);
             }
          }
       }
