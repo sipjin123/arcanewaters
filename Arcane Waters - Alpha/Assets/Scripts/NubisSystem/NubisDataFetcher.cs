@@ -374,8 +374,8 @@ namespace NubisDataHandling {
          string startDateString = startDate.ToBinary().ToString();
 
          // Call the functions
-         Task<string> isServerOnlineTask = NubisClient.call(nameof(DB_Main.isServerOnline));
-         Task<string> serverHistoryListTask = NubisClient.call(nameof(DB_Main.getServerHistoryList), startDateString, maxRows.ToString());
+         Task<string> isServerOnlineTask = NubisClient.call(nameof(DB_Main.isMasterServerOnline));
+         Task<string> serverHistoryListTask = NubisClient.call(nameof(DB_Main.getServerHistoryList), Global.MASTER_SERVER_PORT.ToString(), startDateString, maxRows.ToString());
 
          await Task.WhenAll(isServerOnlineTask, serverHistoryListTask);
 
@@ -397,15 +397,22 @@ namespace NubisDataHandling {
          ServerStatusPanel.self.updatePanelWithServerHistory(isServerOnline, serverHistoryList);
       }
 
-      public async void checkServerOnlineForClientLogin (bool isSteam) {
-         string isOnlineString = await NubisClient.call(nameof(DB_Main.isServerOnline));
-
-         if (!bool.TryParse(isOnlineString, out bool isOnline)) {
-            isOnline = false;
+      public async void getOnlineServersListForClientLogin (bool isSteam) {
+         string serverPortListString = await NubisClient.call(nameof(DB_Main.getOnlineServerList));
+         
+         List<int> serverPortList = null;
+         try {
+            serverPortList = JsonConvert.DeserializeObject<List<int>>(serverPortListString);
+         } catch (Exception e) {
+            D.debug("Failed to fetch the list of online servers.\n" + e.ToString());
          }
 
-         if (isOnline) {
-            TitleScreen.self.startUpNetworkClient(isSteam);
+         if (serverPortList == null) {
+            serverPortList = new List<int>();
+         }
+
+         if (serverPortList.Count > 0) {
+            TitleScreen.self.startUpNetworkClient(isSteam, serverPortList);
          } else {
             TitleScreen.self.displayError(ErrorMessage.Type.ServerOffline);
          }

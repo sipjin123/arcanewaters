@@ -4529,6 +4529,9 @@ public class RPCManager : NetworkBehaviour
       // If the player is in a voyage area or is in ghost mode, warp him to the closest town
       if (VoyageManager.isAnyLeagueArea(playerToRemove.areaKey) || VoyageManager.isPvpArenaArea(playerToRemove.areaKey) || VoyageManager.isTreasureSiteArea(playerToRemove.areaKey) || playerToRemove.isGhost) {
          playerToRemove.spawnInBiomeHomeTown();
+
+         // Notify the removal of the user from the voyage
+         Target_ReceiveUserLeftVoyage(playerToRemove.connectionToClient, playerToRemove.userId);
       }
    }
 
@@ -7345,13 +7348,6 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
-      ////PvpGame pvpGame = PvpManager.self.getGameWithPlayer(_player.userId);
-      //Instance instance = Global.player.getInstance();
-      //GameStatsData instanceStatData = instance.instanceStatData;
-      //if (instanceStatData == null || !instanceStatData.isInitialized) {
-      //   return;
-      //}
-
       Target_ResetPvpSilverPanel(_player.connectionToClient, GameStatsManager.self.getSilverAmount(_player.userId));
    }
 
@@ -7368,8 +7364,6 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    private void Target_ReceiveUserEnteredVoyage (NetworkConnection connection, int userId) {
-      // Remove and then add the user
-      //GameStatsManager.self.unregisterUser(userId);
       GameStatsManager.self.registerUser(userId);
 
       // Update the PvpStatusPanel
@@ -7378,8 +7372,6 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    private void Target_ReceiveUserEnteredPvP (NetworkConnection connection, int userId) {
-      // Remove and then add the user
-      //GameStatsManager.self.unregisterUser(userId);
       GameStatsManager.self.registerUser(userId);
 
       // Update the PvpStatusPanel

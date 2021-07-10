@@ -8660,7 +8660,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void createServerHistoryEvent (DateTime eventDate, ServerHistoryInfo.EventType eventType, int serverVersion) {
+   public static new void createServerHistoryEvent (DateTime eventDate, ServerHistoryInfo.EventType eventType, int serverVersion, int serverPort) {
       if (Util.isStressTesting()) {
          return; // skip adding server history for stresstesting server
       }
@@ -8668,14 +8668,15 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO server_history(eventDate, eventType, serverVersion) " +
-            "VALUES (@eventDate, @eventType, @serverVersion)", conn)) {
+            "INSERT INTO server_history(eventDate, eventType, serverVersion, serverPort) " +
+            "VALUES (@eventDate, @eventType, @serverVersion, @serverPort)", conn)) {
 
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@eventDate", eventDate);
             cmd.Parameters.AddWithValue("@eventType", (int) eventType);
             cmd.Parameters.AddWithValue("@serverVersion", serverVersion);
+            cmd.Parameters.AddWithValue("@serverPort", serverPort);
             DebugQuery(cmd);
 
             // Execute the command
@@ -8686,8 +8687,11 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new string getServerHistoryList (string startDateString, string maxRowsString) {
+   public static new string getServerHistoryList (string serverPortString, string startDateString, string maxRowsString) {
       // Parse the input parameters
+      int serverPort = 7777;
+      int.TryParse(serverPortString, out serverPort);
+
       DateTime startDate = DateTime.UtcNow - new TimeSpan(1, 0, 0, 0);
       if (long.TryParse(startDateString, out long startDateBinary)) {
          startDate = DateTime.FromBinary(startDateBinary);
@@ -8701,11 +8705,12 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM server_history WHERE eventDate>=@startDate ORDER BY eventDate DESC LIMIT @maxRows", conn)) {
+            "SELECT * FROM server_history WHERE eventDate>=@startDate AND serverPort=@serverPort ORDER BY eventDate DESC LIMIT @maxRows", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@startDate", startDate);
             cmd.Parameters.AddWithValue("@maxRows", maxRows);
+            cmd.Parameters.AddWithValue("@serverPort", serverPort);
             DebugQuery(cmd);
 
             // Create a data reader and Execute the command
@@ -8722,6 +8727,42 @@ public class DB_Main : DB_MainStub
 
       return JsonConvert.SerializeObject(eventList);
    }
+
+   public static new string getOnlineServerList () {
+      // If the master server is not online, return an empty list
+      if (!bool.TryParse(isMasterServerOnline(), out bool isOnline) || !isOnline) {
+         return JsonConvert.SerializeObject(new List<int>());
+      }
+      
+      List<int> serverPortList = new List<int>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT serverPort FROM server_history WHERE eventType=@eventTypeStart AND eventDate>=" +
+            "(SELECT eventDate FROM server_history WHERE serverPort=@masterServerPort AND eventType=@eventTypeStart ORDER BY eventDate DESC LIMIT 1)" +
+            "ORDER BY serverPort", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@eventTypeStart", (int) ServerHistoryInfo.EventType.ServerStart);
+            cmd.Parameters.AddWithValue("@masterServerPort", Global.MASTER_SERVER_PORT);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  int serverPort = DataUtil.getInt(dataReader, "serverPort");
+                  serverPortList.Add(serverPort);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return JsonConvert.SerializeObject(serverPortList);
+   }
+
 
    public static new void updateServerShutdown (bool shutdown) {
       try {
@@ -8767,15 +8808,16 @@ public class DB_Main : DB_MainStub
       return false;
    }   
 
-   public static new string isServerOnline () {
+   public static new string isMasterServerOnline () {
       bool isOnline = false;
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT eventType FROM server_history WHERE eventType IN (@eventTypeStart, @eventTypeStop, @eventTypeRestartRequested, @eventTypeRestartCancelled) ORDER BY eventDate DESC LIMIT 1", conn)) {
+            "SELECT eventType FROM server_history WHERE serverPort=@serverPort AND eventType IN (@eventTypeStart, @eventTypeStop, @eventTypeRestartRequested, @eventTypeRestartCancelled) ORDER BY eventDate DESC LIMIT 1", conn)) {
             conn.Open();
             cmd.Prepare();
+            cmd.Parameters.AddWithValue("@serverPort", Global.MASTER_SERVER_PORT);
             cmd.Parameters.AddWithValue("@eventTypeStart", (int) ServerHistoryInfo.EventType.ServerStart);
             cmd.Parameters.AddWithValue("@eventTypeStop", (int) ServerHistoryInfo.EventType.ServerStop);
             cmd.Parameters.AddWithValue("@eventTypeRestartRequested", (int) ServerHistoryInfo.EventType.RestartRequested);

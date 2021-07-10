@@ -13,6 +13,10 @@ public class ServerMessageManager : MonoBehaviour
 
    #endregion
 
+   private void Awake () {
+      _self = this;      
+   }
+
    [ServerOnly]
    public static void On_CheckVersionMessage (NetworkConnection conn, CheckVersionMessage checkVersionMessage) {
       int minClientGameVersion;
@@ -38,11 +42,22 @@ public class ServerMessageManager : MonoBehaviour
 
    [ServerOnly]
    public static void On_LogInUserMessage (NetworkConnection conn, LogInUserMessage logInUserMessage) {
+      _self.StartCoroutine(_self.CO_OnLoginUserMessage(conn, logInUserMessage));
+   }
+
+   [ServerOnly]
+   private IEnumerator CO_OnLoginUserMessage (NetworkConnection conn, LogInUserMessage logInUserMessage) {
       int selectedUserId = logInUserMessage.selectedUserId;
       int minClientGameVersion;
 
+      // If we are already authenticating the max amount of users, wait a second and try again
+      while (_numUsersAuthenticating >= MAX_AUTHENTICATIONS) {
+         yield return new WaitForSeconds(1.0f);
+      }
+
       // The time at which we started processing this LogInUserMessage
       float startTime = Time.realtimeSinceStartup;
+      _numUsersAuthenticating++;
 
       // Determine the minimum client version for the client's platform
       if (logInUserMessage.clientPlatform == RuntimePlatform.OSXPlayer) {
@@ -60,7 +75,8 @@ public class ServerMessageManager : MonoBehaviour
             string msg = string.Format("Refusing login for {0}, client version {1}, the current version in the cloud is {2}", logInUserMessage.accountName, logInUserMessage.clientGameVersion, minClientGameVersion);
             D.debug(msg);
             sendError(ErrorMessage.Type.ClientOutdated, conn.connectionId, minClientGameVersion.ToString());
-            return;
+            _numUsersAuthenticating--;
+            yield break;
          }
       }
 
@@ -99,6 +115,7 @@ public class ServerMessageManager : MonoBehaviour
             if (logInUserMessage.accountName.ToLower().Contains("@steam") && !masterServer.accountOverrides.ContainsKey(logInUserMessage.accountName)) {
                D.debug("A non steam user is trying to access a steam account!" + " : " + logInUserMessage.accountName);
                sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => { _numUsersAuthenticating--; });
                return;
             }
 
@@ -135,6 +152,7 @@ public class ServerMessageManager : MonoBehaviour
                   D.debug("This is a banned user! {" + accountId + "}");
                   sendError(ErrorMessage.Type.Banned, conn.connectionId, getPenaltyMessage(banInfo));
                });
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => { _numUsersAuthenticating--; });
                return;
             }
          }
@@ -172,6 +190,7 @@ public class ServerMessageManager : MonoBehaviour
                      D.debug("Successfully created account for Steam User: {" + logInUserMessage.accountName + "}");
                      On_LogInUserMessage(conn, logInUserMessage);
                   });
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => { _numUsersAuthenticating--; });
                   return;
                } else {
                   hasFailedToCreateAccount = true;
@@ -189,6 +208,7 @@ public class ServerMessageManager : MonoBehaviour
                if (MyNetworkManager.isAccountAlreadyOnline(accountId, conn)) {
                   D.debug($"Account {accountId} is already online, so stopping the login process!");
                   sendError(ErrorMessage.Type.AlreadyOnline, conn.connectionId);
+                  _numUsersAuthenticating--;
                   return;
                }
 
@@ -198,6 +218,7 @@ public class ServerMessageManager : MonoBehaviour
             if (isUnauthenticatedSteamUser && !hasFailedToCreateAccount) {
                // Steam user has not been authorized yet, start auth process
                processSteamUserAuth(conn, logInUserMessage);
+               _numUsersAuthenticating--;
                return;
             }
 
@@ -205,6 +226,7 @@ public class ServerMessageManager : MonoBehaviour
             if (hasFailedToCreateAccount) {
                D.debug("Failed to create an account for user: {" + logInUserMessage.accountName + "}" + " : {" + logInUserMessage.accountPassword + "}");
                sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
+               _numUsersAuthenticating--;
                return;
             }
 
@@ -284,6 +306,7 @@ public class ServerMessageManager : MonoBehaviour
                D.debug("Error! Failed to process login for user");
                sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
             }
+            _numUsersAuthenticating--;
          });
       });
    }
@@ -604,6 +627,15 @@ public class ServerMessageManager : MonoBehaviour
    }
 
    #region Private Variables
+
+   // A static reference to the instance of this class
+   private static ServerMessageManager _self;
+
+   // How many users we are in the process of authenticating the login of
+   private int _numUsersAuthenticating = 0;
+
+   // The max number of users we will try to authenticate simultaneously
+   private const int MAX_AUTHENTICATIONS = 10;
 
    #endregion
 }

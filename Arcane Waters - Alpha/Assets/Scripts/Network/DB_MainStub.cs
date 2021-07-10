@@ -1266,10 +1266,14 @@ public class DB_MainStub : MonoBehaviour
       return false;
    }
 
-   public static void createServerHistoryEvent (DateTime eventDate, ServerHistoryInfo.EventType eventType, int serverVersion) {
+   public static void createServerHistoryEvent (DateTime eventDate, ServerHistoryInfo.EventType eventType, int serverVersion, int serverPort) {
    }
 
-   public static List<ServerHistoryInfo> getServerHistoryList (string startDateString, string maxRowsString) {
+   public static List<ServerHistoryInfo> getServerHistoryList (string serverPort, string startDateString, string maxRowsString) {
+      return null;
+   }
+
+   public static string getOnlineServerList () {
       return null;
    }
 
@@ -1281,7 +1285,7 @@ public class DB_MainStub : MonoBehaviour
       return false;
    }
 
-   public static string isServerOnline () {
+   public static string isMasterServerOnline () {
       return null;
    }
 

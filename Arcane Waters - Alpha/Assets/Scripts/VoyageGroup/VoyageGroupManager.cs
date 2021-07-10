@@ -26,6 +26,9 @@ public class VoyageGroupManager : MonoBehaviour
    // Self
    public static VoyageGroupManager self;
 
+   // Referenece to the notice screen canvas component
+   public NoticeScreen noticeScreen;
+
    #endregion
 
    void Awake () {
@@ -43,18 +46,27 @@ public class VoyageGroupManager : MonoBehaviour
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (inviteeInfo == null) {
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, player, "The player " + inviteeName + " doesn't exists!");
+               noticeScreen.text.text = "The player " + inviteeName + " doesn't exists!";
+               noticeScreen.show();
+               noticeScreen.confirmButton.enabled = true;
                return;
             }
 
             // Prevent spamming invitations
             if (isGroupInvitationSpam(player.userId, inviteeInfo.username)) {
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, player, "You must wait " + GROUP_INVITE_MIN_INTERVAL.ToString() + " seconds before inviting " + inviteeName + " again!");
+               noticeScreen.text.text = "You must wait " + GROUP_INVITE_MIN_INTERVAL.ToString() + " seconds before inviting " + inviteeName + " again!";
+               noticeScreen.show();
+               noticeScreen.confirmButton.enabled = true;
                return;
             }
 
             // Check if the invitee is already in a group
             if (tryGetGroupByUser(inviteeInfo.userId, out VoyageGroupInfo inviteeVoyageGroup)) {
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, player, "The player " + inviteeName + " is already in a group!");
+               noticeScreen.text.text = "The player " + inviteeName + " is already in a group!";
+               noticeScreen.show();
+               noticeScreen.confirmButton.enabled = true;
                return;
             }
 

@@ -31,6 +31,7 @@ public class SilverManager : NetworkBehaviour
    public static int computeAssistReward (NetEntity mainAttacker, NetEntity assistAttacker, NetEntity target) {
       int computedReward = computeSilverReward(mainAttacker, target);
       float computedAssistRewardRaw = computedReward * SILVER_ASSIST_REWARD_MULTIPLIER;
+      
       // Rounds to the next multiple of 10
       int computedAssistRewardRounded = Mathf.CeilToInt(computedAssistRewardRaw / 10.0f) * 10;
       return computedAssistRewardRounded * GameStatsManager.self.getSilverRank(assistAttacker.userId);
@@ -59,9 +60,13 @@ public class SilverManager : NetworkBehaviour
       return 0;
    }
 
+   // The reason for awarding silver to a player
    public enum SilverRewardReason
    {
-      Kill,
-      Assist
+      // The player is rewarded for a kill
+      Kill = 0,
+
+      // The player is rewarded for an assist
+      Assist = 1
    }
 }

@@ -32,7 +32,7 @@ public class PvpStatPanel : Panel {
       self = this;
    }
 
-   public void setTitle(string newTitle) {
+   public void setTitle (string newTitle) {
       if (title != null) {
          title.text = newTitle;
       }

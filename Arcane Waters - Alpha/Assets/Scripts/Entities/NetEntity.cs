@@ -1830,7 +1830,7 @@ public class NetEntity : NetworkBehaviour
       NetworkConnection connectionToClient = this.connectionToClient;
 
       if (isPlayerShip() && VoyageManager.isAnyLeagueArea(areaKey)) {
-         if (VoyageManager.isAnyLeagueArea(newArea)) {
+         if (VoyageManager.isAnyLeagueArea(newArea) || (this.voyageGroupId > 0)) {
             // When warping between league maps, the hp is persistent
             ((PlayerShipEntity) this).storeCurrentShipHealth();
          } else {

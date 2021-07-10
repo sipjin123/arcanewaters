@@ -40,6 +40,11 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
       base.Awake();
 
       _sinkOnDeath = false;
+
+      // Sea structures will be invulnerable by default, and we will disable this when needed
+      if (isServer) {
+         setIsInvulnerable(true);
+      }
    }
 
    protected override void Start () {

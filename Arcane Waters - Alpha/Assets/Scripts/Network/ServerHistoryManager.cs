@@ -26,7 +26,7 @@ public class ServerHistoryManager : MonoBehaviour
 
    [Server]
    public void onServerStart () {
-      if (!isServerHistoryActive() || MyNetworkManager.getCurrentPort() != Global.MASTER_SERVER_PORT) {
+      if (!isServerHistoryActive()) {
          return;
       }
       
@@ -44,12 +44,12 @@ public class ServerHistoryManager : MonoBehaviour
 
    [Server]
    public void logServerEvent (ServerHistoryInfo.EventType e) {
-      if (!isServerHistoryActive() || MyNetworkManager.getCurrentPort() != Global.MASTER_SERVER_PORT) {
+      if (!isServerHistoryActive()) {
          return;
       }
 
       Util.tryToRunInServerBackground(() =>
-         DB_Main.createServerHistoryEvent(DateTime.UtcNow, e, _buildVersionNumber));
+         DB_Main.createServerHistoryEvent(DateTime.UtcNow, e, _buildVersionNumber, MyNetworkManager.getCurrentPort()));
    }
 
    public bool isServerHistoryActive () {

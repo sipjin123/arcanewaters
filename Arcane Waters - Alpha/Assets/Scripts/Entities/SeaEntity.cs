@@ -210,7 +210,6 @@ public class SeaEntity : NetEntity
             GameStatsManager gameStatsManager = GameStatsManager.self;
 
             if (gameStatsManager != null) {
-
                if (lastAttacker.isPlayerShip()) {
                   int silverReward = SilverManager.computeSilverReward(lastAttacker, this);
                   gameStatsManager.addSilverRank(lastAttacker.userId, 1);

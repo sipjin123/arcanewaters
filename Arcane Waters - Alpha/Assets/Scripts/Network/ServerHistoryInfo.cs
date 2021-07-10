@@ -24,6 +24,9 @@ public class ServerHistoryInfo
    // The server version
    public int serverVersion;
 
+   // The server port
+   public int serverPort;
+
    #endregion
 
    public ServerHistoryInfo () { }
@@ -34,6 +37,7 @@ public class ServerHistoryInfo
       this.eventDate = DataUtil.getDateTime(dataReader, "eventDate").ToBinary();
       this.eventType = (EventType) DataUtil.getInt(dataReader, "eventType");
       this.serverVersion = DataUtil.getInt(dataReader, "serverVersion");
+      this.serverPort = DataUtil.getInt(dataReader, "serverPort");
    }
 
 #endif

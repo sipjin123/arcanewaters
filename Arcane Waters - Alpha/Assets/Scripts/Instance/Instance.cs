@@ -453,6 +453,7 @@ public class Instance : NetworkBehaviour
             Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
             pvpTower.transform.localPosition = targetLocalPos;
             pvpTower.setAreaParent(area, false);
+            pvpTower.setIsInvulnerable(true);
 
             // The data set in the map editor will be set to this pvp tower object, this will only occur on the server side, client side data will be set in MapImporter.cs script in the function instantiatePrefabs()
             IMapEditorDataReceiver receiver = pvpTower.GetComponent<IMapEditorDataReceiver>();
@@ -512,6 +513,7 @@ public class Instance : NetworkBehaviour
             Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
             pvpBase.transform.localPosition = targetLocalPos;
             pvpBase.setAreaParent(area, false);
+            pvpBase.setIsInvulnerable(true);
 
             // The data set in the map editor will be set to this pvp object, this will only occur on the server side, client side data will be set in MapImporter.cs script in the function instantiatePrefabs()
             IMapEditorDataReceiver receiver = pvpBase.GetComponent<IMapEditorDataReceiver>();
@@ -533,6 +535,7 @@ public class Instance : NetworkBehaviour
             Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
             pvpShipyard.transform.localPosition = targetLocalPos;
             pvpShipyard.setAreaParent(area, false);
+            pvpShipyard.setIsInvulnerable(true);
 
             // The data set in the map editor will be set to this pvp object, this will only occur on the server side, client side data will be set in MapImporter.cs script in the function instantiatePrefabs()
             IMapEditorDataReceiver receiver = pvpShipyard.GetComponent<IMapEditorDataReceiver>();

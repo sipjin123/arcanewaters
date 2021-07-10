@@ -176,7 +176,6 @@ public class PvpGame : MonoBehaviour {
       detectStructures();
       setStructuresActivated(true);
 
-      //pvpStatData.playerStats = new List<InstancePlayerStat>();
       for (int i = 0; i < _usersInGame.Count; i++) {
          NetEntity player = EntityManager.self.getEntity(_usersInGame[i]);
 
@@ -188,11 +187,14 @@ public class PvpGame : MonoBehaviour {
 
          GameStatsManager.self.unregisterUser(player.userId);
 
-         if (player.isDead()) {
-            PlayerShipEntity playerShip = player.getPlayerShipEntity();
-            if (playerShip) {
+         PlayerShipEntity playerShip = player.getPlayerShipEntity();
+
+         if (playerShip) {
+            if (player.isDead()) {
                playerShip.respawnPlayerInInstance();
             }
+
+            playerShip.cancelCannonBarrage();
          }
 
          PvpTeamType teamType = getTeamForUser(_usersInGame[i]);
@@ -201,15 +203,7 @@ public class PvpGame : MonoBehaviour {
          player.pvpTeam = teamType;
 
          // Generate stat data for this player
-         //Instance currentInstance = player.getInstance();
-         //if (currentInstance == null) {
-         //   D.error($"Couldn't find the instance that the player '{player.entityName}' belongs to.");
-         //} else {
-         //   currentInstance.registerUserStatData(player, teamType);
-         //}
-         //registerUserStatData(player, teamType);
          GameStatsManager.self.registerUser(player.userId);
-
 
          // Remove the user from its current group
          if (player.tryGetGroup(out VoyageGroupInfo currentGroup)) {
@@ -240,7 +234,6 @@ public class PvpGame : MonoBehaviour {
          Vector2 spawnPosition = getSpawnPositionForTeam(team.teamType);
          Util.setLocalXY(player.transform, spawnPosition);
       }
-      //pvpStatData.isInitialized = true;
 
       _gameState = State.InGame;
       StartCoroutine(CO_SpawnSeamonsters());
@@ -305,10 +298,6 @@ public class PvpGame : MonoBehaviour {
                assignedTeam.Add(userId);
 
                // Generate stat data for this player
-               //Instance currentInstance = player.getInstance();
-               //if (currentInstance != null) {
-               //   currentInstance.registerUserStatData(player, bestTeam);
-               //}
                GameStatsManager.self.registerUser(player.userId);
 
                // Remove the user from its current group
@@ -458,8 +447,8 @@ public class PvpGame : MonoBehaviour {
          SeaStructure structure = laneStructures[i];
 
          // All structures other than the first tower in each lane should be invulnerable
-         if (i > 0) {
-            structure.setIsInvulnerable(true);
+         if (i == 0) {
+            structure.setIsInvulnerable(false);
          }
 
          // If there is a structure after this in the list, set it as the unlockondeath target

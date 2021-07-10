@@ -249,8 +249,11 @@ public class PlayerShipEntity : ShipEntity
 
    protected override void initialize (ShipInfo info) {
       base.initialize(info);
-
-      initHealth();
+	   
+      // If the player is not currently part of a voyage then initialize their health to full health
+      if (this.voyageGroupId < 1) {
+         initHealth();
+      }
    }
 
    private void initHealth () {
@@ -528,13 +531,17 @@ public class PlayerShipEntity : ShipEntity
 
             break;
          case CannonAttackType.Circle:
+            if (_cannonBarrageCoroutine != null) {
+               StopCoroutine(_cannonBarrageCoroutine);
+            }
+
             float circleRadius = (0.625f - (getCannonChargeAmount() * 0.125f));
             _shouldUpdateTargeting = false;
             _targetCircle.targetingConfirmed(() => {
                _shouldUpdateTargeting = true;
             });
 
-            StartCoroutine(CO_CannonBarrage(_targetCircle.transform.position, circleRadius));
+            _cannonBarrageCoroutine = StartCoroutine(CO_CannonBarrage(_targetCircle.transform.position, circleRadius));
             _targetCircle.setFillColor(Color.white);
             _targetCircle.updateCircle(true);
 
@@ -1460,6 +1467,12 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
+   public void cancelCannonBarrage () {
+      if (_cannonBarrageCoroutine != null) {
+         StopCoroutine(_cannonBarrageCoroutine);
+      }
+   }
+
    protected override void autoMove () {
       if (Global.player == null || !isLocalPlayer) {
          return;
@@ -1579,6 +1592,9 @@ public class PlayerShipEntity : ShipEntity
 
    // A reference to the coroutine responsible for respawning this player in the same instance
    private Coroutine _respawnCoroutine = null;
+
+   // A reference to the coroutine responsible for firing the cannon barrage ability
+   private Coroutine _cannonBarrageCoroutine = null;
 
    #endregion
 }

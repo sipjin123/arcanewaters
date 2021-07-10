@@ -155,13 +155,13 @@ public class TitleScreen : MonoBehaviour {
 
       if (ServerHistoryManager.self.isServerHistoryActive()) {
          // Check if the server is online by looking at the boot history using Nubis
-         NubisDataFetcher.self.checkServerOnlineForClientLogin(isSteam);
+         NubisDataFetcher.self.getOnlineServersListForClientLogin(isSteam);
       } else {
-         startUpNetworkClient(isSteam);
+         startUpNetworkClient(isSteam, new List<int>() { Global.MASTER_SERVER_PORT });
       }
    }
 
-   public void startUpNetworkClient (bool isSteam) {
+   public void startUpNetworkClient (bool isSteam, List<int> onlineServerPortList) {
       _hasClientVersionBeenApproved = false;
 
       // Stop the client in case we're already connected to the server
@@ -170,6 +170,9 @@ public class TitleScreen : MonoBehaviour {
       }
 
       if (isSteam || (!isSteam && passwordInputField.text.Length > 0 && accountInputField.text.Length > 0)) {
+         // Randomly choose a server among the available that are online
+         MyNetworkManager.self.telepathy.port = (ushort) onlineServerPortList.ChooseRandom();
+
          // Start up the Network Client, which triggers the rest of the login process
          MyNetworkManager.self.StartClient();
       } else {
