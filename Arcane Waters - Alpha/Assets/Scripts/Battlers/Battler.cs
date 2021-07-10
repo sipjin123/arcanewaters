@@ -1407,9 +1407,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Simulate the collision effect of the attack towards the target battler
             yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action, attackerAbility));
-
+            
             // Handle the return to idle for attacks with shake here
-            if (abilityDataReference.hasShake && !abilityDataReference.useSpecialAnimation && !isLastHit) {
+            if ((abilityDataReference.hasShake || abilityDataReference.hasKnockBack) && !abilityDataReference.useSpecialAnimation && !isLastHit) {
                targetBattler.playAnim(Anim.Type.Battle_East);
             }
 
@@ -1602,7 +1602,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Simulate the collision effect of the attack towards the target battler
             yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action, attackerAbility));
-            if (abilityDataReference.hasShake && !abilityDataReference.useSpecialAnimation && !isLastHit) {
+            if ((abilityDataReference.hasShake || abilityDataReference.hasKnockBack) && !abilityDataReference.useSpecialAnimation && !isLastHit) {
                targetBattler.playAnim(Anim.Type.Battle_East);
             }
 
@@ -1743,7 +1743,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Simulate the collision effect of the attack towards the target battler
             yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action, attackerAbility));
-            if (abilityDataReference.hasShake && !abilityDataReference.useSpecialAnimation && !isLastHit) {
+            if ((abilityDataReference.hasShake || abilityDataReference.hasKnockBack) && !abilityDataReference.useSpecialAnimation && !isLastHit) {
                targetBattler.playAnim(Anim.Type.Battle_East);
             }
 
