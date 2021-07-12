@@ -122,13 +122,16 @@ public class PvpGame : MonoBehaviour {
 
       // If there are now enough players to start the game, start the game after a delay
       if (isGameReadyToBegin()) {
-         StartCoroutine(CO_StartGame(delay: 10.0f));
+         StartCoroutine(CO_StartGame());
       } else {
          int playersNeededToStart = (_numTeams * MIN_PLAYERS_PER_TEAM_TO_START) - getNumPlayers();
          if (_gameIsStarting) {
-            sendGameMessage(userName + " has joined the game. ");
+            sendGameMessage(userName + " has joined the game.");
          } else {
-            sendGameMessage(userName + " has joined the game. " + playersNeededToStart + " more players needed to begin!");
+            // Don't send this message to the player joining the game, as it will display before they warp
+            List<int> playersToReceiveMessage = _usersInGame;
+            playersToReceiveMessage.Remove(userId);
+            sendGameMessage(userName + " has joined the game. Waiting for " + playersNeededToStart + " more players to begin!", playersToReceiveMessage);
          }
       }
    }
@@ -165,13 +168,20 @@ public class PvpGame : MonoBehaviour {
       ServerNetworkingManager.self.warpUser(userId, voyageId, areaKey, Direction.South, teamSpawn);
    }
 
-   private IEnumerator CO_StartGame (float delay) {
+   private IEnumerator CO_StartGame () {
       // For players who are currently in the game, create voyage groups for their teams, and add them to the groups
       _gameIsStarting = true;
 
-      sendGameMessage("The game will begin in 10 seconds!");
-      yield return new WaitForSeconds(delay);
-      sendGameMessage("The game has begun");
+      sendGameMessage("The game will begin in " + GAME_START_DELAY + " seconds!");
+      yield return new WaitForSeconds(GAME_START_DELAY - 3.0f);
+
+      sendGameMessage("The game will begin in 3 seconds!");
+      yield return new WaitForSeconds(1.0f);
+      sendGameMessage("The game will begin in 2 seconds!");
+      yield return new WaitForSeconds(1.0f);
+      sendGameMessage("The game will begin in 1 seconds!");
+      yield return new WaitForSeconds(1.0f);
+      sendGameMessage("The game has begun!");
 
       detectStructures();
       setStructuresActivated(true);
@@ -495,14 +505,14 @@ public class PvpGame : MonoBehaviour {
       foreach (int userId in receivingPlayers) {
          NetEntity playerEntity = EntityManager.self.getEntity(userId);
          if (playerEntity && playerEntity.rpc) {
-            playerEntity.rpc.Target_DisplayServerMessage(message);
+            playerEntity.rpc.Target_ReceiveBroadcastPvpAnnouncement(message);
          }
       }
    }
 
    public void forceStart () {
       if (!_gameIsStarting) {
-         StartCoroutine(CO_StartGame(delay: 10.0f));
+         StartCoroutine(CO_StartGame());
       }
    }
 
@@ -529,6 +539,13 @@ public class PvpGame : MonoBehaviour {
       }
 
       StartCoroutine(CO_PostGame());
+   }
+
+   public void onPlayerLoadedGameArea (int userId) {
+      if (_gameState == State.PreGame) {
+         sendGameMessageToPlayers("Waiting for " + " more players to begin.", new List<int>() { userId });
+         D.log("Waiting for players message displayed.");
+      }
    }
 
    private IEnumerator CO_PostGame () {
@@ -857,6 +874,8 @@ public class PvpGame : MonoBehaviour {
    // How many times a player has spawned on each team
    private int _teamASpawns = 0, _teamBSpawns = 0;
 
+   // How long the game will take to start, after enough players are present
+   private const float GAME_START_DELAY = 10.0f;
 
    #endregion
 }
