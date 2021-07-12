@@ -11,7 +11,7 @@ public class EnemyBattleCollider : MonoBehaviour {
    public Enemy enemy;
 
    // Collider component
-   public new CircleCollider2D collider;
+   public CircleCollider2D battleCollider;
 
    #endregion
 

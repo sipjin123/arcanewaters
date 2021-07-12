@@ -170,8 +170,8 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
@@ -249,9 +249,10 @@ MonoBehaviour:
   outlineText: {fileID: 3293608570995122655}
   insideText: {fileID: 4197838196156736354}
   outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  blinkingFrequency: 1
-  blinkingColor: {r: 1, g: 0, b: 0, a: 1}
-  announceLifetimeSeconds: -1
+  isBlinking: 0
+  blinkingFrequency: 10
+  blinkingColor: {r: 0.9622642, g: 0.5671339, b: 0, a: 1}
+  announceLifetimeSeconds: 5
   announcePatterns:
   - '{0}  sank  {1}!'
   - '{0}  destroyed  {1}!'

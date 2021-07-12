@@ -2199,7 +2199,7 @@ public class AdminManager : NetworkBehaviour
          }
 
          // Warp the admin to the voyage instance
-         _player.spawnInNewMap(voyage.voyageId, targetLocation.areaKey, targetLocation.getLocalPosition(), Direction.South);
+         _player.findBestServerAndWarp(targetLocation.areaKey, targetLocation.getLocalPosition(), voyage.voyageId, Direction.South);
          return;
       }
 

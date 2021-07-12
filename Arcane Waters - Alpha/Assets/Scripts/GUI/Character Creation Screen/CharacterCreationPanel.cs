@@ -212,15 +212,17 @@ public class CharacterCreationPanel : ClientMonoBehaviour
          // Send the creation request to the server
          NetworkClient.Send(new CreateUserMessage(Global.netId,
             _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalettes(), chosenPerks, SystemInfo.deviceName, Global.isFirstLogin, Global.lastSteamId, deploymentId));
+      });
+   }
 
-         hideWithoutFade();
-         CharacterCreationSpotFader.self.fadeOutColor();
-         PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.CharacterCreation);
+   private void continueUserCreationProcess () {
+      hideWithoutFade();
+      CharacterCreationSpotFader.self.fadeOutColor();
+      PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.CharacterCreation);
 
-         LoadingUtil.executeAfterFade(() => {
-            // Show loading screen until player warps to map
-            StartCoroutine(CO_WaitForCreationConfirmation());
-         });
+      LoadingUtil.executeAfterFade(() => {
+         // Show loading screen until player warps to map
+         StartCoroutine(CO_WaitForCreationConfirmation());
       });
    }
 
@@ -238,7 +240,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    }
 
    public void onCharacterCreationValid () {
-      hide();
+      continueUserCreationProcess();
 
       float fadeOutDuration = PanelManager.self.loadingScreen.getFader().getFadeOutDuration();
 
@@ -250,6 +252,8 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    }
 
    public void onCharacterCreationFailed () {
+      continueUserCreationProcess();
+
       _fadeCanvasTween?.Kill();
 
       // Notify the coroutine that's waiting for the map to be loaded so it stops

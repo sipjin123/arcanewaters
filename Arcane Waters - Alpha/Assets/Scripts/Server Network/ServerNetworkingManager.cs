@@ -35,6 +35,7 @@ public class ServerNetworkingManager : MonoBehaviour
       RegisterSerializableClass<VoyageGroupInfo>();
       RegisterSerializableClass<Voyage>();
       RegisterSerializableClass<UserLocationBundle>();
+      RegisterSerializableClass<AssignedUserInfo>();
 
       // Log the number of connected players
       if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {
@@ -69,65 +70,12 @@ public class ServerNetworkingManager : MonoBehaviour
       if (server != null) {
          // If this is the master server
          if (server.isMasterServer()) {
-            D.debug($"Total client connections: {self.servers.Sum(x => x.connectedUserIds.Count)}");
+            D.debug($"Total client connections: {self.servers.Sum(x => x.connectedUserIds.Count)}, Total assigned users: {self.servers.Sum(x => x.assignedUserIds.Count)}");
          }
-         D.debug($"My client connections: {server.connectedUserIds.Count}");
+         D.debug($"My client connections: {server.connectedUserIds.Count}, My assigned users: {server.assignedUserIds.Count}");
       }
    }
 
-   public NetworkedServer findBestServerForConnectingPlayer (string areaKey, string username, int userId, string address,
-      bool isSinglePlayer, int voyageId) {
-      // If this player is claimed by a server, we have to return to that server
-      foreach (NetworkedServer server in servers) {
-         if (server.claimedUserIds.Contains(userId)) {
-            return server;
-         }
-      }
-
-      // If the player is in a voyage group and warping to a voyage area or treasure site, get the unique server hosting it
-      if (voyageId != -1 &&
-         (VoyageManager.isAnyLeagueArea(areaKey) || VoyageManager.isPvpArenaArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey))) {
-         NetworkedServer server = getServerHostingVoyage(voyageId);
-         if (server == null) {
-            D.error("Couldn't find the server hosting the voyage " + voyageId);
-         }
-         return server;
-      }
-
-      // Check if there is an open area on this server
-      if (InstanceManager.self.getOpenInstance(areaKey, isSinglePlayer) != null) {
-         return this.server;
-      }
-
-      // Check if there's an open area on another server
-      foreach (NetworkedServer server in servers) {
-         if (server == this.server) {
-            continue;
-         }
-
-         List<string> openAreas = new List<string>(server.openAreas);
-         if (openAreas.Contains(areaKey)) {
-            return server;
-         }
-      }
-
-      // Find the server with the least people
-      NetworkedServer bestServer = getFirstServerWithLeastPlayers();
-
-      if (bestServer == null) {
-         D.error("Couldn't find a good server to connect to, server count: " + servers.Count);
-      }
-
-      try {
-         string logMsg = string.Format("Found best server {0} with player count {1} for {2} ({3}) ServerName:{4} ServerCount:{5}",
-            bestServer.networkedPort.Value, bestServer.connectedUserIds.Count, username, address, bestServer.name, servers.Count);
-         D.debug(logMsg);
-      } catch {
-         D.debug("Found best server but cannot get details");
-      }
-
-      return bestServer;
-   }
 
    public NetworkedServer getServerContainingUser (int userId) {
       foreach (NetworkedServer server in servers) {
@@ -147,20 +95,23 @@ public class ServerNetworkingManager : MonoBehaviour
       return null;
    }
 
-   public NetworkedServer getFirstServerWithLeastPlayers () {
-      List<NetworkedServer> bestServers = getServersWithLeastPlayers();
+   public NetworkedServer getFirstServerWithLeastAssignedPlayers () {
+      List<NetworkedServer> bestServers = getServersWithLeastAssignedPlayers();
 
       if (bestServers.Count == 0) {
          return null;
       } else {
          // If many servers have the same lowest number of players, select the first port
          List<NetworkedServer> similarServers = bestServers.OrderBy(_ => _.networkedPort.Value).ToList();
+         
+         // Reverse the list, to make the master server port (7777) the lowest priority
+         similarServers.Reverse();
          return similarServers[0];
       }
    }
 
-   public NetworkedServer getRandomServerWithLeastPlayers () {
-      List<NetworkedServer> bestServers = getServersWithLeastPlayers();
+   public NetworkedServer getRandomServerWithLeastAssignedPlayers () {
+      List<NetworkedServer> bestServers = getServersWithLeastAssignedPlayers();
 
       if (bestServers.Count == 0) {
          return null;
@@ -170,17 +121,24 @@ public class ServerNetworkingManager : MonoBehaviour
       }
    }
 
-   private List<NetworkedServer> getServersWithLeastPlayers () {
+   private List<NetworkedServer> getServersWithLeastAssignedPlayers () {
       int leastPlayers = int.MaxValue;
       List<NetworkedServer> bestServers = new List<NetworkedServer>();
 
       foreach (NetworkedServer server in servers) {
-         if (server.connectedUserIds.Count == leastPlayers) {
+         int serverPlayerCount = server.assignedUserIds.Count;
+         
+         // If this is the master server, we will act as though it has extra players, to only use it when the other servers have many more players
+         if (server.networkedPort.Value == Global.MASTER_SERVER_PORT) {
+            serverPlayerCount += MASTER_SERVER_PLAYER_OFFSET;
+         }
+
+         if (serverPlayerCount == leastPlayers) {
             bestServers.Add(server);
-         } else if (server.connectedUserIds.Count < leastPlayers) {
+         } else if (serverPlayerCount < leastPlayers) {
             bestServers.Clear();
             bestServers.Add(server);
-            leastPlayers = server.connectedUserIds.Count;
+            leastPlayers = serverPlayerCount;
          }
       }
 
@@ -329,33 +287,14 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_Log, this.server.networkedPort.Value, message);
    }
 
+   public RpcResponse<int> redirectUserToBestServer (int userId, string userName, int voyageId, bool isSinglePlayer, string destinationAreaKey, string currentAddress, string currentAreaKey) {
+      return server.InvokeServerRpc(server.MasterServer_RedirectUserToBestServer, userId, userName, voyageId, isSinglePlayer, destinationAreaKey, server.networkedPort.Value, currentAddress, currentAreaKey);
+   }
+
    #region Private Variables
 
-   #endregion
-}
-
-public class UserLocationBundle
-{
-   #region Public Variables
-   // The user id
-   public int userId;
-
-   // The area where the user is located
-   public string areaKey;
-
-   // The instance where the user is located
-   public int instanceId;
-
-   // The user local position in the area
-   public float localPositionX;
-   public float localPositionY;
-
-   // The group the user belongs to
-   public int voyageGroupId;
+   // Players will only be assigned to the master server if all other servers have this many more players
+   private const int MASTER_SERVER_PLAYER_OFFSET = 50;
 
    #endregion
-
-   public Vector2 getLocalPosition () {
-      return new Vector2(localPositionX, localPositionY);
-   }
 }

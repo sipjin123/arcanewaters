@@ -1418,6 +1418,9 @@ public class PlayerShipEntity : ShipEntity
       setCollisions(true);
 
       _respawningInInstanceCoroutine = null;
+
+      // Reset flag
+      _hasRunOnDeath = false;
    }
 
    [ClientRpc]
@@ -1465,6 +1468,9 @@ public class PlayerShipEntity : ShipEntity
       if (isLocalPlayer) {
          PowerupPanel.self.clearPowerups();
       }
+
+      // Reset flag
+      _hasRunOnDeath = false;
    }
 
    public void cancelCannonBarrage () {

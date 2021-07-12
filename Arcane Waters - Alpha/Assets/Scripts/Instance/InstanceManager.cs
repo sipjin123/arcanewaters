@@ -88,11 +88,6 @@ public class InstanceManager : MonoBehaviour {
       // Add the player to the list
       instance.entities.Add(player);
 
-      // If we just hit the max number of players, we need to recheck which areas are open
-      if (instance.getPlayerCount() >= instance.getMaxPlayers()) {
-         recalculateOpenAreas();
-      }
-
       // If they're entering their farm, send them their crops
       if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
          CustomFarmManager farmManager = customMapManager as CustomFarmManager;
@@ -200,8 +195,12 @@ public class InstanceManager : MonoBehaviour {
       // Keep track of it
       _instances.Add(instance.id, instance);
 
-      // Note the open Areas on this server
-      recalculateOpenAreas();
+      // Update the instance count in the server network
+      if (ServerNetworkingManager.self.server.areaToInstanceCount.ContainsKey(areaKey)) {
+         ServerNetworkingManager.self.server.areaToInstanceCount[areaKey]++;
+      } else {
+         ServerNetworkingManager.self.server.areaToInstanceCount.Add(areaKey, 1);
+      }
 
       // Spawn the network object on the Clients
       if (NetworkServer.active) {
@@ -246,9 +245,6 @@ public class InstanceManager : MonoBehaviour {
          // Make the other entities in this instance update their observer list
          rebuildInstanceObservers(entity, instance);
       }
-
-      // Make note of the change on our Server Network
-      recalculateOpenAreas();
 
       // Mark the entity as no longer having an instance
       entity.instanceId = 0;
@@ -380,15 +376,6 @@ public class InstanceManager : MonoBehaviour {
       return count;
    }
 
-   public void recalculateOpenAreas () {
-      if (ServerNetworkingManager.self.server != null) {
-         ServerNetworkingManager.self.server.openAreas.Clear();
-         foreach (string openArea in getOpenAreas()) {
-            ServerNetworkingManager.self.server.openAreas.Add(openArea);
-         }
-      }
-   }
-
    public void reset () {
       _instances.Clear();
    }
@@ -434,9 +421,16 @@ public class InstanceManager : MonoBehaviour {
          PvpManager.self.tryRemoveEmptyGame(instance.id);
       }
       
-
       // Remove it from our internal mapping
       _instances.Remove(instance.id); 
+
+      // Update the instance count in the server network
+      if (ServerNetworkingManager.self.server.areaToInstanceCount.TryGetValue(instance.areaKey, out int instanceCount)) {
+         if (instanceCount > 0) {
+            instanceCount--;
+         }
+         ServerNetworkingManager.self.server.areaToInstanceCount[instance.areaKey] = instanceCount;
+      }
 
       // Then destroy the instance
       NetworkServer.Destroy(instance.gameObject);

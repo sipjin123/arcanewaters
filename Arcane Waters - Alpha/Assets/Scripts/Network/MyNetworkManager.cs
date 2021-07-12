@@ -13,6 +13,7 @@ using MapCustomization;
 using System;
 using MLAPI;
 using System.Linq;
+using MLAPI.Messaging;
 
 public class MyNetworkManager : NetworkManager
 {
@@ -251,6 +252,9 @@ public class MyNetworkManager : NetworkManager
 
       // Start monitoring the client pings
       LagMonitorManager.self.startLagMonitor();
+
+      // Start the open areas management
+      RedirectionManager.self.startOpenAreasManagement();
    }
 
    private void initializeXmlData () {
@@ -331,15 +335,13 @@ public class MyNetworkManager : NetworkManager
             // Get the current voyage info the user is part of, if any
             int voyageId = VoyageGroupManager.self.tryGetGroupByUser(authenticatedUserId, out VoyageGroupInfo voyageGroupInfo) ? voyageGroupInfo.voyageId : -1;
 
-            // Check if we need to redirect to a different server
-            NetworkedServer bestServer = ServerNetworkingManager.self.findBestServerForConnectingPlayer(previousAreaKey, userInfo.username, userInfo.userId,
-               conn.address, userObjects.isSinglePlayer, voyageId);
-
-            if (bestServer != null && bestServer.networkedPort.Value != ServerNetworkingManager.self.server.networkedPort.Value) {
-               D.debug($"OnServerAddPlayer is sending redirect to {bestServer.networkedPort.Value} for {userInfo.username}");
-               StartCoroutine(CO_RedirectUser(bestServer, conn, userInfo.accountId));
+            // If the user is not assigned to this server, we must ask the master server where to redirect him
+            if (!ServerNetworkingManager.self.server.assignedUserIds.ContainsKey(authenticatedUserId)) {
+               D.debug($"OnServerAddPlayer The user {userInfo.username} is not assigned to this server - Redirecting.");
+               StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, previousAreaKey, ""));
                return;
             }
+            D.debug($"OnServerAddPlayer The user {userInfo.username} is assigned to this server.");
 
             // If this is a custom map, get the base key
             if (ownerInfo != null) {
@@ -625,24 +627,38 @@ public class MyNetworkManager : NetworkManager
       }
    }
 
-   public IEnumerator CO_RedirectUser (NetworkedServer destinationServer, NetworkConnection conn, int accountId) {
-      D.debug($"CO_RedirectUser Removing account {accountId} from the connected accounts");
+   public IEnumerator CO_RedirectUser (NetworkConnection conn, int accountId, int userId, string userName, int voyageId, bool isSinglePlayer, string destinationAreaKey, string currentAreaKey) {
+      // Ask the master server where to redirect this user
+      RpcResponse<int> bestServerPort = ServerNetworkingManager.self.redirectUserToBestServer(userId, userName, voyageId, isSinglePlayer, destinationAreaKey, conn.address, currentAreaKey);
+      while (!bestServerPort.IsDone) {
+         yield return null;
+      }
+
+      RedirectMessage redirectMessage = new RedirectMessage(Global.netId, networkAddress, bestServerPort.Value);
+
+      // If the destination server is this same server, we don't disconnect the client
+      if (bestServerPort.Value == getCurrentPort()) {
+         conn.Send(redirectMessage);
+         yield break;
+      }
+
       ServerNetworkingManager.self.server.connectedAccountIds.Remove(accountId);
 
       // Wait for the update of connected accounts to be serialized and sent to other servers
       yield return null;
       yield return null;
 
-      // Send a Redirect message to the client
-      RedirectMessage redirectMessage = new RedirectMessage(Global.netId, networkAddress, destinationServer.networkedPort.Value);
+      // Send the Redirect message to the client
       conn.Send(redirectMessage);
+
+      D.debug($"OnServerAddPlayer is sending redirect to {bestServerPort.Value} for {userName}");
 
       // Disconnect the player from this server
       disconnectClient(conn, true);
    }
 
-   public IEnumerator CO_RedirectUser (NetworkedServer destinationServer, NetworkConnection conn, int accountId, GameObject entityToDestroy) {
-      yield return CO_RedirectUser(destinationServer, conn, accountId);
+   public IEnumerator CO_RedirectUser (NetworkConnection conn, int accountId, int userId, string userName, int voyageId, bool isSinglePlayer, string destinationAreaKey, string currentAreaKey, GameObject entityToDestroy) {
+      yield return CO_RedirectUser(conn, accountId, userId, userName, voyageId, isSinglePlayer, destinationAreaKey, currentAreaKey);
 
       // Destroy the old Player object
       NetworkServer.DestroyPlayerForConnection(conn);

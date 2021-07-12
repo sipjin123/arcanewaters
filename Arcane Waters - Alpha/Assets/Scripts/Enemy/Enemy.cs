@@ -160,7 +160,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       
       if (isBossType) {
          bossCollider.SetActive(true);
-         enemyBattleCollider.collider.radius = BOSS_COMBAT_COLLIDER;
+         enemyBattleCollider.battleCollider.radius = BOSS_COMBAT_COLLIDER;
          GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
          _zSnap.sortPoint.transform.localPosition = new Vector3(0, BOSS_Z_OFFSET, 0);
          _zSnap.initialize();

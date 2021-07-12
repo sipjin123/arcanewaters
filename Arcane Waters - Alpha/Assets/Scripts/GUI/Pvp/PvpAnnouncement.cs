@@ -18,6 +18,9 @@ public class PvpAnnouncement : ClientMonoBehaviour
    // The color of the Outline
    public Color outlineColor = Color.white;
 
+   // Should the announcement blink?
+   public bool isBlinking = false;
+
    // The frequency of the blinking effect
    public float blinkingFrequency = 1.0f;
 
@@ -30,29 +33,22 @@ public class PvpAnnouncement : ClientMonoBehaviour
    // List of announce patterns
    public string[] announcePatterns;
 
-   // Self
-   public static PvpAnnouncement self;
-
    #endregion
 
-   protected override void Awake () {
-      base.Awake();
-      self = this;
+   public void Start () {
+      _creationTime = Time.realtimeSinceStartup;
+      outlineText.fontMaterial = new Material(outlineText.fontMaterial);
    }
 
-   private void Start () {
-      // Start hidden
-      hide();
-   }
-
-   public void setText (string newText) {
-      outlineText.text = newText;
-      insideText.text = newText;
+   public void Update () {
+      updateAnnouncement();
+      updateBlink();
    }
 
    public void announceKill (NetEntity attacker, NetEntity target) {
       string pattern = "{0} destroyed {1}!";
       if (announcePatterns != null && announcePatterns.Length > 0) {
+         Random.InitState(Mathf.FloorToInt(Time.realtimeSinceStartup));
          int randomPatternIndex = Random.Range(0, announcePatterns.Length);
          pattern = announcePatterns[randomPatternIndex];
       }
@@ -61,83 +57,33 @@ public class PvpAnnouncement : ClientMonoBehaviour
       setText(pattern);
    }
 
+   public void announce (string announcementText) {
+      setText(announcementText);
+   }
+
+   public void hide () {
+      Destroy(gameObject);
+   }
+
+   private void setText (string newText) {
+      outlineText.text = newText;
+      insideText.text = newText;
+   }
+
    public string getText () {
       return insideText.text;
    }
 
-   public void startBlink () {
-      stopBlink();
-      outlineText.fontMaterial = new Material(outlineText.fontMaterial);
-      InvokeRepeating(nameof(updateBlink), 0, 0.16f);
-   }
-
-   public void stopBlink () {
-      CancelInvoke(nameof(updateBlink));
-   }
-
    private void updateBlink () {
-      Color newColor = Color.Lerp(Color.white, blinkingColor, (Mathf.Sin(Time.time * blinkingFrequency) + 1) * 0.5f);
-      setOutlineColor(newColor);
-   }
-
-   public void show () {
-      if (announceLifetimeSeconds > 0) {
-         startCountdown();
-         startVisibilityCheck();
+      if (isBlinking) {
+         Color newColor = Color.Lerp(Color.white, blinkingColor, (Mathf.Sin(Time.time * blinkingFrequency) + 1) * 0.5f);
+         setOutlineColor(newColor);
       }
-      this.gameObject.SetActive(true);
-   }
-
-   public void hide () {
-      stopBlink();
-      stopCountdown();
-      stopVisibilityCheck();
-      this.gameObject.SetActive(false);
-   }
-
-   public bool isShowing () {
-      return this.gameObject.activeSelf;
-   }
-
-   private void startCountdown () {
-      _toggleTime = Time.realtimeSinceStartup;
-      InvokeRepeating(nameof(updateAnnouncement), 0, 1);
-   }
-
-   private void stopCountdown () {
-      CancelInvoke(nameof(updateAnnouncement));
    }
 
    private void updateAnnouncement () {
-      if (announceLifetimeSeconds < 0) {
-         return;
-      }
-
-      if (_toggleTime + announceLifetimeSeconds < Time.realtimeSinceStartup) {
+      if (announceLifetimeSeconds > 0 && _creationTime + announceLifetimeSeconds < Time.realtimeSinceStartup) {
          hide();
-      }
-   }
-
-   private void startVisibilityCheck () {
-      InvokeRepeating(nameof(updateVisibilityCheck), 0, 1);
-   }
-
-   private void stopVisibilityCheck () {
-      CancelInvoke(nameof(updateVisibilityCheck));
-   }
-
-   private void updateVisibilityCheck () {
-      // Check if the panel should be hidden
-      if (isShowing()) {
-         if (Global.player == null) {
-            hide();
-            return;
-         }
-
-         Instance instance = Global.player.getInstance();
-         if (instance == null || !instance.isPvP) {
-            hide();
-         }
       }
    }
 
@@ -148,7 +94,7 @@ public class PvpAnnouncement : ClientMonoBehaviour
    #region Private Variables
 
    // Toggle time
-   private float _toggleTime;
+   private float _creationTime;
 
    #endregion
 }

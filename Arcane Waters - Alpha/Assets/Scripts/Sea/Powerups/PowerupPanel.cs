@@ -25,6 +25,9 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
    // A reference to the rect transform of the layout group that contains this panel
    public RectTransform containingLayoutGroup;
 
+   // Reference to the container of this Powerup Panel
+   public RectTransform powerupPanelContainer;
+
    #endregion
 
    private void Awake () {
@@ -46,6 +49,9 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
       }
 
       newPowerup.transform.DOPunchScale(Vector3.one * 0.3f, 0.3f);
+
+      // Show the powerup container
+      powerupPanelContainer.gameObject.SetActive(true);
    }
 
    public void clearPowerups () {
@@ -53,6 +59,9 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
          Destroy(icon.gameObject);
       }
       _powerupIcons.Clear();
+
+      // Hide the panel container if there are no powerups
+      powerupPanelContainer.gameObject.SetActive(false);
    }
 
    public void updatePowerups (List<Powerup> powerups) {

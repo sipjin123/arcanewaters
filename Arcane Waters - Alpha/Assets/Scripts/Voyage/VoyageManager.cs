@@ -421,7 +421,7 @@ public class VoyageManager : GenericGameManager {
    [Server]
    public void requestVoyageInstanceCreation (int voyageId, string areaKey = "", bool isPvP = false, bool isLeague = false, int leagueIndex = 0, int leagueRandomSeed = -1, Biome.Type biome = Biome.Type.None, int difficulty = 0) {
       // Find the server with the least people
-      NetworkedServer bestServer = ServerNetworkingManager.self.getRandomServerWithLeastPlayers();
+      NetworkedServer bestServer = ServerNetworkingManager.self.getRandomServerWithLeastAssignedPlayers();
 
       if (bestServer != null) {
          ServerNetworkingManager.self.createVoyageInstanceInServer(bestServer.networkedPort.Value, voyageId, areaKey, isPvP, isLeague, leagueIndex, leagueRandomSeed, biome, difficulty);

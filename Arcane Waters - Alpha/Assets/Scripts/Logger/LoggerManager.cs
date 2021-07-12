@@ -43,9 +43,13 @@ public class LoggerManager : MonoBehaviour {
       var deploymentConfigAsset = Resources.Load<TextAsset>("config");
       Dictionary<string,object> deploymentConfig = Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string,object>;
       deploymentId = "0";
+      buildId = "0";
       
       if (deploymentConfig != null && deploymentConfig.ContainsKey("deploymentId")) {
          deploymentId = deploymentConfig["deploymentId"].ToString();
+      }
+      if (deploymentConfig != null && deploymentConfig.ContainsKey("buildId")) {
+         buildId = deploymentConfig["buildId"].ToString();
       }
 
       messagesDirPath = $"{Application.persistentDataPath}/{"messages"}";
@@ -89,6 +93,7 @@ public class LoggerManager : MonoBehaviour {
          Dictionary<string, string> messageData = new Dictionary<string, string>();
 
          messageData.Add("deploymentId", deploymentId);
+         messageData.Add("buildId", buildId);
          messageData.Add("message", logString);
          messageData.Add("stackTrace", stackTrace);
          messageData.Add("messageType", type.ToString());
@@ -256,7 +261,7 @@ public class LoggerManager : MonoBehaviour {
    }
    
    #region Private Variables
-   const string VERSION = "3";
+   const string VERSION = "4";
    // const string SERVER_URL = "https://localhost:5001/";
    const string SERVER_URL = "https://tools.arcanewaters.com/";
    const string API_MESSAGES_URL = SERVER_URL + "api/logger/add";
@@ -271,6 +276,6 @@ public class LoggerManager : MonoBehaviour {
    string messagesToSendDate;
    List <string> messagesIds;
 
-   string deploymentId;
+   string deploymentId, buildId;
    #endregion
 }

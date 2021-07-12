@@ -224,6 +224,13 @@ public class PvpManager : MonoBehaviour {
       game.addPlayerToGame(userId, userName, team);
    }
 
+   public void onPlayerLoadedGameArea (int userId) {
+      PvpGame game = getGameWithPlayer(userId);
+      if (game) {
+         game.onPlayerLoadedGameArea(userId);
+      }
+   }
+
    public PvpGame getGameWithPlayer (int playerUserId) {
       foreach (PvpGame activeGame in _activeGames.Values) {
          if (activeGame.containsUser(playerUserId)) {

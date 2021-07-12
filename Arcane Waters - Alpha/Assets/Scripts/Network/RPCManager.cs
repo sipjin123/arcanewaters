@@ -4669,6 +4669,7 @@ public class RPCManager : NetworkBehaviour
          if (voyage.isPvP) {
             playerShipEntity.hasEnteredPvP = true;
             PvpManager.self.assignPvpTeam(playerShipEntity, voyage.instanceId);
+            PvpManager.self.onPlayerLoadedGameArea(_player.userId);
          } else {
             // Not a PvP Voyage
             Debug.LogWarning($"Player '{_player.entityName}' has entered a Voyage or League.");
@@ -7348,15 +7349,13 @@ public class RPCManager : NetworkBehaviour
       string targetDisplayName = $"{targetEntity.entityName}";
       PvpStatusPanel.self.addKillEvent(attackerDisplayName, PvpGame.getColorForTeam(attackerEntity.pvpTeam), targetDisplayName, PvpGame.getColorForTeam(targetEntity.pvpTeam));
 
-      // Hides and stops any running effects
-      PvpAnnouncement.self.hide();
-      PvpAnnouncement.self.show();
-      PvpAnnouncement.self.announceKill(attackerEntity, targetEntity);
-
       // If the attacker's rank is high enough highlight the announcement
-      if (attackerSilverRank > 2) {
-         PvpAnnouncement.self.startBlink();
-      }
+      PvpAnnouncementHolder.self.addKillAnnouncement(attackerEntity, targetEntity, attackerSilverRank > 2, attackerEntity.pvpTeam);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveBroadcastPvpAnnouncement (string announcementText) {
+      PvpAnnouncementHolder.self.addAnnouncement(announcementText);
    }
 
    [Command]
@@ -7378,6 +7377,9 @@ public class RPCManager : NetworkBehaviour
    private void Target_ReceiveUserLeftVoyage (NetworkConnection connection, int userId) {
       // Reset the Voyage Stats for the player
       GameStatsManager.self.unregisterUser(userId);
+
+      // Hides the Announcement panel
+      PvpAnnouncementHolder.self.clearAnnouncements();
    }
 
    [TargetRpc]

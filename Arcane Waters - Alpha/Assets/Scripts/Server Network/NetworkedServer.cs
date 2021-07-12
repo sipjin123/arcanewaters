@@ -23,6 +23,9 @@ public class NetworkedServer : NetworkedBehaviour
    // The users connected to this server
    public NetworkedList<int> connectedUserIds = new NetworkedList<int>(Global.defaultNetworkedVarSettings);
 
+   // The users that have been assigned to this server - there can be userIds duplicates in multiple servers
+   public NetworkedDictionary<int, AssignedUserInfo> assignedUserIds = new NetworkedDictionary<int, AssignedUserInfo>(new NetworkedVarSettings { WritePermission = NetworkedVarPermission.Everyone, SendChannel = "Fragmented", SendTickrate = 0 });
+
    // The accounts connected to this server
    public NetworkedDictionary<int, int> connectedAccountIds = new NetworkedDictionary<int, int>(new NetworkedVarSettings { WritePermission = NetworkedVarPermission.OwnerOnly, SendChannel = "Fragmented", SendTickrate = 0 });
 
@@ -35,14 +38,17 @@ public class NetworkedServer : NetworkedBehaviour
    // The treasure site instances hosted in this server
    public NetworkedList<Voyage> treasureSites = new NetworkedList<Voyage>(Global.defaultNetworkedVarSettings);
 
-   // A listing of open area types on this server
-   public NetworkedList<string> openAreas = new NetworkedList<string>(Global.defaultNetworkedVarSettings);
-
    // Keeps track of the users claimed by this server
    public NetworkedList<int> claimedUserIds = new NetworkedList<int>(Global.defaultNetworkedVarSettings);
 
    // Account dictionary overrides
    public NetworkedDictionary<string, string> accountOverrides = new NetworkedDictionary<string, string>();
+
+   // The number of instances in each area that this server hosts
+   public NetworkedDictionary<string, int> areaToInstanceCount = new NetworkedDictionary<string, int>(Global.defaultNetworkedVarSettings);
+
+   // The number of players in each area (estimated by the master server)
+   public Dictionary<string, int> playerCountPerArea = new Dictionary<string, int>();
 
    #endregion
 
@@ -57,6 +63,7 @@ public class NetworkedServer : NetworkedBehaviour
 
          // Regularly update data shared between servers
          InvokeRepeating(nameof(updateConnectedPlayers), 5f, 1f);
+         InvokeRepeating(nameof(updateAssignedUsers), 5f, 1f);
          InvokeRepeating(nameof(updateVoyageInstances), 5.5f, 1f);
       }
 
@@ -78,6 +85,22 @@ public class NetworkedServer : NetworkedBehaviour
             if (connData.netEntity != null) {
                connectedUserIds.Add(connData.netEntity.userId);
             }
+         }
+      }
+   }
+
+   private void updateAssignedUsers () {
+      List<AssignedUserInfo> assignedUserInfoList = new List<AssignedUserInfo>(assignedUserIds.Values);
+      foreach (AssignedUserInfo userInfo in assignedUserInfoList) {
+         // Update the online time of the user
+         if (connectedUserIds.Contains(userInfo.userId)) {
+            // Note that this will not cause a synchronization of the dictionary entry in the server network (not needed)
+            userInfo.lastOnlineTime = DateTime.UtcNow.ToBinary();
+         }
+
+         // If the user has been offline for too long, remove him from the assigned users
+         if ((DateTime.UtcNow - DateTime.FromBinary(userInfo.lastOnlineTime)).TotalSeconds > DisconnectionManager.SECONDS_UNTIL_PLAYERS_DESTROYED * 1.5f) {
+            assignedUserIds.Remove(userInfo.userId);
          }
       }
    }
@@ -144,6 +167,41 @@ public class NetworkedServer : NetworkedBehaviour
 
    public bool isMasterServer () {
       return networkedPort.Value == Global.MASTER_SERVER_PORT;
+   }
+
+   [ServerRPC]
+   public void recalculateOpenAreas () {
+      if (!isMasterServer()) {
+         return;
+      }
+
+      // Count the number of players assigned to each area
+      playerCountPerArea.Clear();
+      foreach (KeyValuePair<int, AssignedUserInfo> KV in assignedUserIds) {
+         if (KV.Value.isSinglePlayer) {
+            continue;
+         }
+
+         if (playerCountPerArea.ContainsKey(KV.Value.areaKey)) {
+            playerCountPerArea[KV.Value.areaKey]++;
+         } else {
+            playerCountPerArea[KV.Value.areaKey] = 1;
+         }
+      }
+   }
+
+   [ServerRPC]
+   public bool hasOpenArea (string areaKey) {
+      if (playerCountPerArea.ContainsKey(areaKey)) {
+         // Get the number of instances in that area
+         areaToInstanceCount.TryGetValue(areaKey, out int instanceCount);
+
+         if (playerCountPerArea[areaKey] < Instance.getMaxPlayerCount(areaKey, false) * instanceCount) {
+            return true;
+         }
+      }
+
+      return false;
    }
 
    private void OnDestroy () {
@@ -546,6 +604,11 @@ public class NetworkedServer : NetworkedBehaviour
    [ServerRPC]
    public void MasterServer_Log (int originServerPort, string message) {
       D.log($"{originServerPort}: {message}");
+   }
+
+   [ServerRPC]
+   public int MasterServer_RedirectUserToBestServer (int userId, string userName, int voyageId, bool isSinglePlayer, string destinationAreaKey, int currentServerPort, string currentAddress, string currentAreaKey) {
+      return RedirectionManager.self.redirectUserToBestServer(userId, userName, voyageId, isSinglePlayer, destinationAreaKey, currentServerPort, currentAddress, currentAreaKey);
    }
 
    #region Private Variables

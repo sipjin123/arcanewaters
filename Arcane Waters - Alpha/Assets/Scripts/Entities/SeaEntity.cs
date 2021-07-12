@@ -175,7 +175,7 @@ public class SeaEntity : NetEntity
       float damageMultiplier = 1.0f;
 
       // Apply damage reduction, if there is any
-      if (this is PlayerShipEntity) {
+      if (this.isPlayerShip()) {
          // Hard cap damage reduction at 75%, and damage addition at 100% extra
          damageMultiplier = Mathf.Clamp(damageMultiplier - PowerupManager.self.getPowerupMultiplierAdditive(userId, Powerup.Type.DamageReduction), 0.25f, 2.0f);
       }
@@ -183,6 +183,11 @@ public class SeaEntity : NetEntity
       // If we're invulnerable, take 0 damage
       if (_isInvulnerable) {
          damageMultiplier = 0.0f;
+      }
+
+      if (isDead()) {
+         // Do not apply any damage if the entity is already dead
+         return 0;
       }
 
       amount = (int) (amount * damageMultiplier);
@@ -217,22 +222,22 @@ public class SeaEntity : NetEntity
                   Target_ReceiveSilverCurrency(lastAttacker.getPlayerShipEntity().connectionToClient, silverReward, SilverManager.SilverRewardReason.Kill);
                }
 
-               if (this is PlayerShipEntity) {
+               if (this.isPlayerShip()) {
                   gameStatsManager.addPlayerKillCount(lastAttacker.userId);
                   gameStatsManager.resetSilverRank(this.userId);
                   gameStatsManager.addDeathCount(this.userId);
                   this.rpc.broadcastPvPKill(lastAttacker, this);
                }
 
-               if (this is BotShipEntity) {
+               if (this.isBotShip()) {
                   gameStatsManager.addShipKillCount(lastAttacker.userId);
                }
 
-               if (this is SeaMonsterEntity) {
+               if (this.isSeaMonster()) {
                   gameStatsManager.addMonsterKillCount(lastAttacker.userId);
                }
 
-               if (this is SeaStructure) {
+               if (this.isSeaStructure()) {
                   gameStatsManager.addBuildingDestroyedCount(lastAttacker.userId);
                }
 

@@ -1771,7 +1771,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemy: {fileID: 114000012734016052}
-  collider: {fileID: 3762967510940541283}
+  battleCollider: {fileID: 3762967510940541283}
 --- !u!58 &3762967510940541283
 CircleCollider2D:
   m_ObjectHideFlags: 0

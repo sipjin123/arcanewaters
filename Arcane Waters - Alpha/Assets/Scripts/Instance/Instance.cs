@@ -233,29 +233,34 @@ public class Instance : NetworkBehaviour
    }
 
    public int getMaxPlayers () {
+      return _maxPlayerCount;
+   }
+
+   public void updateMaxPlayerCount (bool isSinglePlayer = false) {
+      _maxPlayerCount = getMaxPlayerCount(areaKey, isSinglePlayer);
+   }
+
+   public static int getMaxPlayerCount (string areaKey, bool isSinglePlayer = false) {
       if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
          if (customMapManager is CustomFarmManager || customMapManager is CustomHouseManager) {
             return 1;
          }
       }
 
-      return _maxPlayerCount;
-   }
-
-   public void updateMaxPlayerCount (bool isSinglePlayer = false) {
-      if (isSinglePlayer) {
-         _maxPlayerCount = 1;
-      } else if (isVoyage) {
-         _maxPlayerCount = Voyage.MAX_PLAYERS_PER_INSTANCE;
-      } else if (AreaManager.self.isPrivateArea(areaKey)) {
-         _maxPlayerCount = 1;
-      } else {
-         // Check if we've specified a max player count on the command line
-         if (CommandCodes.get(CommandCodes.Type.MAX_INSTANCE_PLAYERS)) {
-            _maxPlayerCount = Util.getCommandLineInt(CommandCodes.Type.MAX_INSTANCE_PLAYERS + "");
-            D.log("Setting max players-per-instance to: " + _maxPlayerCount);
-         }
+      if (isSinglePlayer || AreaManager.self.isPrivateArea(areaKey)) {
+         return 1;
       }
+      
+      if (VoyageManager.isAnyLeagueArea(areaKey) || VoyageManager.isPvpArenaArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey)) {
+         return Voyage.MAX_PLAYERS_PER_INSTANCE;
+      }
+      
+      // Check if we've specified a max player count on the command line
+      if (CommandCodes.get(CommandCodes.Type.MAX_INSTANCE_PLAYERS)) {
+         return Util.getCommandLineInt(CommandCodes.Type.MAX_INSTANCE_PLAYERS + "");
+      }
+
+      return 50;
    }
 
    public void removeEntityFromInstance (NetworkBehaviour entity) {
