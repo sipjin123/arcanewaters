@@ -48,6 +48,7 @@ public class AttackPanel : MonoBehaviour {
       }
 
       // Send the request to the server
+      D.adminLog("Cancel Ability: " + abilityType + " : " + abilityIndex, D.ADMIN_LOG_TYPE.AbilityCast);
       Global.player.rpc.Cmd_RequestAbility((int)abilityType, target.netId, abilityIndex, true);
    }
 
@@ -74,6 +75,9 @@ public class AttackPanel : MonoBehaviour {
          BattleManager.self.getPlayerBattler().setBattlerCanCastAbility(false);
 
          // Send an rpc request to the server
+         List<AttackAbilityData> battlerAbilities = BattleManager.self.getPlayerBattler().getAttackAbilities();
+         string abilityName = battlerAbilities.Count >= abilityIndex ? battlerAbilities[abilityIndex].itemName : "None";
+         D.adminLog("Attack Ability Request: {" + abilityIndex + "} {" + abilityName + "}", D.ADMIN_LOG_TYPE.AbilityCast);
          Global.player.rpc.Cmd_RequestAbility((int) AbilityType.Standard, target.netId, abilityIndex, false);
 
          // Show targeting effects locally
@@ -115,6 +119,7 @@ public class AttackPanel : MonoBehaviour {
          recentAbilityRequest.abilityType = AbilityType.BuffDebuff;
          recentAbilityRequest.targetNetId = target.netId;
          recentAbilityRequest.abilityIndex = abilityIndex;
+         D.adminLog("Buff Ability Request: " + abilityIndex, D.ADMIN_LOG_TYPE.AbilityCast);
          Global.player.rpc.Cmd_RequestAbility((int) AbilityType.BuffDebuff, target.netId, abilityIndex, false);
       }
    }

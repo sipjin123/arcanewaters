@@ -35,7 +35,8 @@ public class D : MonoBehaviour {
       Pvp = 22,
       NetworkMessages = 23,
       InstanceProcess = 24,
-      Tutorial = 25
+      Tutorial = 25, 
+      AbilityCast = 26
    }
 
    // Any log files older than this will be deleted
@@ -59,6 +60,7 @@ public class D : MonoBehaviour {
    public static string instanceProcessLogDirectory = "";
    public static string tutorialLogDirectory = "";
    public static string combatEndLogDirectory = "";
+   public static string abilityCastLogDirectory = "";
 
    #endregion
 
@@ -82,6 +84,7 @@ public class D : MonoBehaviour {
       Global.privateLogTypesToShow.Add(ADMIN_LOG_TYPE.InstanceProcess);
       Global.privateLogTypesToShow.Add(ADMIN_LOG_TYPE.Tutorial);
       Global.privateLogTypesToShow.Add(ADMIN_LOG_TYPE.CombatEnd);
+      Global.privateLogTypesToShow.Add(ADMIN_LOG_TYPE.AbilityCast);
 
       // For now, we can't write to file in the web player
       if (Application.isMobilePlatform) {
@@ -138,10 +141,14 @@ public class D : MonoBehaviour {
       D.adminLog("D.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
    }
 
-   private void checkPrivateLogs () { 
-      string logsDirectoryPath = Application.persistentDataPath + "\\pvtLogs\\";
-      Directory.CreateDirectory(logsDirectoryPath);
+   private void checkPrivateLogs () {
+      setupForLogType(ADMIN_LOG_TYPE.InstanceProcess);
+      setupForLogType(ADMIN_LOG_TYPE.Tutorial);
+      setupForLogType(ADMIN_LOG_TYPE.CombatEnd);
+      setupForLogType(ADMIN_LOG_TYPE.AbilityCast);
+   }
 
+   private void setupForLogType (ADMIN_LOG_TYPE logType) {
       string fileNameAdditive = "_" +
          DateTime.UtcNow.Year + "-" +
          DateTime.UtcNow.Month + "-" +
@@ -150,14 +157,29 @@ public class D : MonoBehaviour {
          DateTime.UtcNow.Minute + "-" +
          DateTime.UtcNow.Second + ".txt";
 
-      instanceProcessLogDirectory = logsDirectoryPath + ADMIN_LOG_TYPE.InstanceProcess.ToString() + fileNameAdditive;
-      privateLogSetup(instanceProcessLogDirectory);
+      string folderName = logType.ToString();
+      string logsDirectoryPath = Application.persistentDataPath + "\\pvtLogs\\" + folderName + "\\";
+      Directory.CreateDirectory(logsDirectoryPath);
+      string finalName = logsDirectoryPath + logType.ToString() + fileNameAdditive;
 
-      tutorialLogDirectory = logsDirectoryPath + ADMIN_LOG_TYPE.Tutorial.ToString() + fileNameAdditive;
-      privateLogSetup(tutorialLogDirectory);
-
-      combatEndLogDirectory = logsDirectoryPath + ADMIN_LOG_TYPE.CombatEnd.ToString() + fileNameAdditive;
-      privateLogSetup(combatEndLogDirectory);
+      switch (logType) {
+         case ADMIN_LOG_TYPE.InstanceProcess:
+            instanceProcessLogDirectory = finalName;
+            privateLogSetup(instanceProcessLogDirectory);
+            break;
+         case ADMIN_LOG_TYPE.Tutorial:
+            tutorialLogDirectory = finalName;
+            privateLogSetup(tutorialLogDirectory);
+            break;
+         case ADMIN_LOG_TYPE.CombatEnd:
+            combatEndLogDirectory = finalName;
+            privateLogSetup(combatEndLogDirectory);
+            break;
+         case ADMIN_LOG_TYPE.AbilityCast:
+            abilityCastLogDirectory = finalName;
+            privateLogSetup(abilityCastLogDirectory);
+            break;
+      }
    }
 
    private void privateLogSetup (string directory) {
@@ -321,6 +343,9 @@ public class D : MonoBehaviour {
          switch (logType) {
             case ADMIN_LOG_TYPE.InstanceProcess:
                File.AppendAllText(instanceProcessLogDirectory, lineToWrite);
+               break;
+            case ADMIN_LOG_TYPE.AbilityCast:
+               File.AppendAllText(abilityCastLogDirectory, lineToWrite);
                break;
             case ADMIN_LOG_TYPE.Tutorial:
                File.AppendAllText(tutorialLogDirectory, lineToWrite);
