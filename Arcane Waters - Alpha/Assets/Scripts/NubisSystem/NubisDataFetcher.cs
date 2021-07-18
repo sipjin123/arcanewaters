@@ -87,11 +87,14 @@ namespace NubisDataHandling {
          string returnCode = await NubisClient.call(nameof(DB_Main.fetchXmlVersion), getSlotIndex());
          try {
             int xmlVersion = int.Parse(returnCode);
+            if (xmlVersion < 1) {
+               D.error("Something went wrong with xml version fetching! Report: " + nameof(DB_Main.fetchXmlVersion));
+            }
             xmlVersionEvent.Invoke(xmlVersion);
          } catch {
             xmlVersionEvent.Invoke(0);
-            D.debug("Something went wrong with xml version fetching! Report: " + nameof(DB_Main.fetchXmlVersion));
-            D.debug("Return code is: " + returnCode);
+            D.error("Something went wrong with xml version fetching! Report: " + nameof(DB_Main.fetchXmlVersion));
+            D.error("Return code is: " + returnCode);
          }
       }
 

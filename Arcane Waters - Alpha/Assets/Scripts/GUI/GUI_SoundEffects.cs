@@ -30,13 +30,15 @@ public class GUI_SoundEffects : MonoBehaviour, IPointerEnterHandler, IPointerCli
    }
 
    public virtual void OnPointerDown (PointerEventData eventData) {
-      if (_button && _button.IsInteractable()) {
+      if (_button && _button.IsInteractable() && SoundEffectManager.self) {
          SoundEffectManager.self.playGuiButtonConfirmSfx();
       }
    }
 
    protected void playHover () {
-      SoundEffectManager.self.playFmodGuiHover(SoundEffectManager.HOVER_CURSOR_GENERIC);
+      if (SoundEffectManager.self) {
+         SoundEffectManager.self.playFmodGuiHover(SoundEffectManager.HOVER_CURSOR_GENERIC);
+      }
    }
 
    #region Private Variables
