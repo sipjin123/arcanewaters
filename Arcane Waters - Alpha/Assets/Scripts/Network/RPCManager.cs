@@ -4427,8 +4427,16 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
-      GameStatsData instanceStatData = GameStatsManager.gameStatsData;
-      Target_OpenPvpStatPanel(_player.connectionToClient, Util.serialize(instanceStatData.stats));
+      Instance userInstance = InstanceManager.self.getInstance(_player.instanceId);
+      if (userInstance == null) {
+         D.warning("Missing instance: " + _player.instanceId);
+         return;
+      }
+
+      if (userInstance.isPvP) {
+         GameStatsData instanceStatData = GameStatsManager.gameStatsData;
+         Target_OpenPvpStatPanel(_player.connectionToClient, Util.serialize(instanceStatData.stats));
+      }
    }
 
    [TargetRpc]
@@ -4439,6 +4447,7 @@ public class RPCManager : NetworkBehaviour
          panel.show();
       }
 
+      SoundEffectManager.self.playGuiMenuOpenSfx();
       List<GameStats> pvpStatList = Util.unserialize<GameStats>(serializedPvpStat);
       GameStatsData pvpStatData = new GameStatsData {
          stats = pvpStatList,

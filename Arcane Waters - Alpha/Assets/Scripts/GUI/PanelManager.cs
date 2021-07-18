@@ -113,11 +113,10 @@ public class PanelManager : GenericGameManager {
          }
       }
 
-      if (KeyUtils.GetKeyDown(Key.Tab)) {
-         BottomBar.self.enablePvpStatPanel();
-      }
       if (KeyUtils.GetKeyUp(Key.Tab)) {
          BottomBar.self.disablePvpStatPanel();
+      } else if (KeyUtils.GetKeyDown(Key.Tab)) {
+         BottomBar.self.enablePvpStatPanel();
       }
    }
 

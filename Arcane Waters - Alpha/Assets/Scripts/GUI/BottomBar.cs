@@ -119,7 +119,6 @@ public class BottomBar : MonoBehaviour {
       PvpStatPanel panel = (PvpStatPanel) PanelManager.self.get(Panel.Type.PvpScoreBoard);
       SoundEffectManager.self.playFmod2D(SoundEffectManager.CLICK_TAB);
       if (!panel.isShowing()) {
-         SoundEffectManager.self.playGuiMenuOpenSfx();
          Global.player.rpc.Cmd_RequestPvpStatPanel();
       } 
    }
