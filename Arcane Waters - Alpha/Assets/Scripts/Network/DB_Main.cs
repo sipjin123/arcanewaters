@@ -701,7 +701,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT version FROM global.xml_status where id = 1", conn)) {
+            "SELECT version FROM global.xml_status where id = " + NubisDataHandling.NubisDataFetcher.getSlotIndex(), conn)) {
 
             conn.Open();
             cmd.Prepare();

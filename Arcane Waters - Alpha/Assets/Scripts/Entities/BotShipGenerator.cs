@@ -17,7 +17,7 @@ public class BotShipGenerator
 
    // The list of areas where the bot ship generator is active
    public static HashSet<string> AREAS = new HashSet<string>() {
-      "Tutorial Sea Map" };
+      "Tutorial Bay" };
 
    // The distance from the spawn point where the bot ships will be generated
    public static float SPAWN_POSITION_DISTANCE_MIN = 0.9f;

@@ -36,7 +36,8 @@ public class D : MonoBehaviour {
       NetworkMessages = 23,
       InstanceProcess = 24,
       Tutorial = 25, 
-      AbilityCast = 26
+      AbilityCast = 26,
+      CombatStatus = 27
    }
 
    // Any log files older than this will be deleted
