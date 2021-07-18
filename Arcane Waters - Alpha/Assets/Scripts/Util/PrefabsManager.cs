@@ -177,6 +177,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating monster spawner in pvp maps
    public PvpMonsterSpawner pvpMonsterSpawnerPrefab;
 
+   // The prefab used for spawning pvp loots
+   public PvpLootSpawn pvpLootSpawnerPrefab;
+
    // The prefab we use for creating bases in pvp maps
    public PvpBase pvpBasePrefab;
 

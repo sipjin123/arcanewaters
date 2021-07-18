@@ -77,6 +77,14 @@ namespace MapCreationTool
                   toolTip = customData.toolTip,
                   options = MonsterManager.instance.formSeaMonsterSelectionOptions()
                };
+            } else if (customData.type == CustomFieldType.LootGroup) {
+               Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
+
+               selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
+                  name = customData.name,
+                  toolTip = customData.toolTip,
+                  options = MonsterManager.instance.formLootGroupSelectionOptions()
+               };
             } else if (customData.type == CustomFieldType.Book && BooksManager.instance.booksCount > 0) {
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
                selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
@@ -230,7 +238,8 @@ namespace MapCreationTool
          TreasureType,
          PvpTeamType,
          PvpLane,
-         PvpMonsterPowerup
+         PvpMonsterPowerup, 
+         LootGroup
       }
    }
 }

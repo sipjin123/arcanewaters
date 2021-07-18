@@ -496,6 +496,25 @@ public class Instance : NetworkBehaviour
          }
       }
 
+      if (area.pvpLootSpawners.Count > 0) {
+         int index = 0;
+         foreach (ExportedPrefab001 dataField in area.pvpLootSpawners) {
+            PvpLootSpawn pvpLootSpawner = Instantiate(PrefabsManager.self.pvpLootSpawnerPrefab);
+            pvpLootSpawner.transform.SetParent(area.transform, false);
+            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
+            pvpLootSpawner.transform.localPosition = targetLocalPos;
+
+            pvpLootSpawner.instanceId = this.id;
+            index++;
+
+            IMapEditorDataReceiver receiver = pvpLootSpawner.GetComponent<IMapEditorDataReceiver>();
+            if (receiver != null && dataField.d != null) {
+               receiver.receiveData(dataField.d);
+            }
+            NetworkServer.Spawn(pvpLootSpawner.gameObject);
+         }
+      }
+
       if (area.waypointsDataFields.Count > 0) {
          foreach (ExportedPrefab001 dataField in area.waypointsDataFields) {
             // TODO: Process waypoint info here
