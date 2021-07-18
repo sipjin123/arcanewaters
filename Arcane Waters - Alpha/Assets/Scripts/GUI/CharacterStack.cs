@@ -218,26 +218,82 @@ public class CharacterStack : MonoBehaviour {
    }
 
    public void rotateDirectionClockWise () {
-      if (_direction == Direction.South) {
-         setDirection(Direction.West);
-      } else if (_direction == Direction.West) {
-         setDirection(Direction.North);
-      } else if (_direction == Direction.North) {
-         setDirection(Direction.East);
-      } else if (_direction == Direction.East) {
-         setDirection(Direction.South);
+      Animator[] animList = GetComponentsInChildren<Animator>();
+
+      // Set the direction for offline character
+      if (GetComponentInParent<OfflineCharacter>()) {
+            if (_direction == Direction.South) {
+               foreach (Animator anim in animList) {
+               anim.SetInteger("facing", 7);
+            }
+            setDirection(Direction.West);
+            } else if (_direction == Direction.West) {
+               foreach (Animator anim in animList) {
+                  anim.SetInteger("facing", 1);
+               }
+            setDirection(Direction.North);
+            } else if (_direction == Direction.North) {
+               foreach (Animator anim in animList) {
+                  anim.SetInteger("facing", 3);
+               }
+            setDirection(Direction.East);
+            } else if (_direction == Direction.East) {
+               foreach (Animator anim in animList) {
+                  anim.SetInteger("facing", 5);
+               }
+            setDirection(Direction.South);
+            }
+      }  else {
+         // Set the direction for online character
+         if (_direction == Direction.South) {
+            setDirection(Direction.West);
+         } else if (_direction == Direction.West) {
+            setDirection(Direction.North);
+         } else if (_direction == Direction.North) {
+            setDirection(Direction.East);
+         } else if (_direction == Direction.East) {
+            setDirection(Direction.South);
+         }
       }
    }
 
    public void rotateDirectionCounterClockWise () {
-      if (_direction == Direction.South) {
-         setDirection(Direction.East);
-      } else if (_direction == Direction.East) {
-         setDirection(Direction.North);
-      } else if (_direction == Direction.North) {
-         setDirection(Direction.West);
-      } else if (_direction == Direction.West) {
-         setDirection(Direction.South);
+      Animator[] animList = GetComponentsInChildren<Animator>();
+
+      // Set the direction for offline character
+      if (GetComponentInParent<OfflineCharacter>()) {
+         if (_direction == Direction.South) {
+            foreach (Animator anim in animList) {
+               anim.SetInteger("facing", 3);
+            }
+            setDirection(Direction.East);
+         } else if (_direction == Direction.East) {
+            foreach (Animator anim in animList) {
+               anim.SetInteger("facing", 1);
+            }
+            setDirection(Direction.North);
+         } else if (_direction == Direction.North) {
+            foreach (Animator anim in animList) {
+               anim.SetInteger("facing", 7);
+            }
+            setDirection(Direction.West);
+         } else if (_direction == Direction.West) {
+            foreach (Animator anim in animList) {
+               anim.SetInteger("facing", 5);
+            }
+            setDirection(Direction.South);
+         }
+      } else {
+         // Set the direction for online character
+         if (_direction == Direction.South) {
+            setDirection(Direction.East);
+         } else if (_direction == Direction.East) {
+            setDirection(Direction.North);
+         } else if (_direction == Direction.North) {
+            setDirection(Direction.West);
+         } else if (_direction == Direction.West) {
+            setDirection(Direction.South);
+         }
       }
    }
 

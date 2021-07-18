@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using MLAPI.Messaging;
+using MapCreationTool.Serialization;
 
 public class PvpManager : MonoBehaviour {
    #region Public Variables
@@ -111,7 +112,8 @@ public class PvpManager : MonoBehaviour {
          // Create a pvp instance for each available arena map
          List<string> pvpArenaMaps = VoyageManager.self.getPvpArenaAreaKeys();
          foreach (string areaKey in pvpArenaMaps) {
-            VoyageManager.self.requestVoyageInstanceCreation(areaKey, true, difficulty: 2, biome: Biome.Type.Forest);
+            Map areaData = AreaManager.self.getMapInfo(areaKey);
+            VoyageManager.self.requestVoyageInstanceCreation(areaKey, true, difficulty: 2, biome: areaData == null ? Biome.Type.Forest : areaData.biome);
          }
       }
    }
@@ -147,8 +149,8 @@ public class PvpManager : MonoBehaviour {
             lastPvpArenaAreaIndex = 0;
          }
          string areaKey = pvpArenaAreaKeys[lastPvpArenaAreaIndex];
-
-         VoyageManager.self.requestVoyageInstanceCreation(areaKey, true, difficulty: 2, biome: Biome.Type.Forest);
+         Map areaData = AreaManager.self.getMapInfo(areaKey);
+         VoyageManager.self.requestVoyageInstanceCreation(areaKey, true, difficulty: 2, biome: areaData == null ? Biome.Type.Forest : areaData.biome);
       }
    }
 
@@ -162,7 +164,8 @@ public class PvpManager : MonoBehaviour {
 
    [Server]
    private IEnumerator CO_CreateNewGameAndJoin (NetEntity player) {
-      VoyageManager.self.requestVoyageInstanceCreation(isPvP: true, difficulty: 2, biome: Biome.Type.Forest);
+      // Create a random voyage instance biome
+      VoyageManager.self.requestVoyageInstanceCreation(isPvP: true, difficulty: 2, biome: (Biome.Type) Random.Range(1, 6));
 
       // The voyage instance creation always takes at least two frames
       yield return null;

@@ -252,6 +252,9 @@ public class NetEntity : NetworkBehaviour
    // The number of seconds after which an attacker stops being one
    public static float ATTACKER_STATUS_DURATION = 30f;
 
+   // The number of seconds one is 'in combat' for after taking damage
+   public static float IN_COMBAT_STATUS_DURATION = 15.0f;
+
    // The speed multiplied when speed boosting
    public static float SPEEDUP_MULTIPLIER_SHIP = 1.5f;
    public static float MAX_SHIP_SPEED = 150;
@@ -262,6 +265,10 @@ public class NetEntity : NetworkBehaviour
 
    // The duration of auto-move actions
    public static float AUTO_MOVE_ACTION_DURATION = 2f;
+
+   // If this netentity is under control by a temporary controller, and had control passed from another temporary controller
+   [SyncVar]
+   public bool passedOnTemporaryControl = false;
 
    #endregion
 
@@ -1523,11 +1530,8 @@ public class NetEntity : NetworkBehaviour
             _activeWeb = web;
             _webBounceStartTime = (float) NetworkTime.time;
 
-            // Figure out whether we are jumping up or down
-            _isGoingUpWeb = (transform.position.y < con.transform.position.y);
-
             // If we're continuing a bounce
-            if ((_isGoingUpWeb && web.hasWebBelow()) || (!_isGoingUpWeb && web.hasWebAbove())) {
+            if (passedOnTemporaryControl) {
                _isDoingHalfBounce = true;
             } else {
                _isDoingHalfBounce = false;
@@ -1684,10 +1688,13 @@ public class NetEntity : NetworkBehaviour
 
    [Command]
    public void Cmd_GoHome () {
-      // Don't allow users to go home if they are in PVP.
+      // Don't allow users to go home if they are in combat.
       if (hasAttackers()) {
-         ServerMessageManager.sendError(ErrorMessage.Type.Misc, this, "Cannot return to home location while in combat.");
-         return;
+         if (isInCombat()) {
+            int timeUntilCanLeave = (int)(IN_COMBAT_STATUS_DURATION - getTimeSinceAttacked());
+            ServerMessageManager.sendError(ErrorMessage.Type.Misc, this, "Cannot return to home location until out of combat for " + (int)IN_COMBAT_STATUS_DURATION + " seconds. \n(" + timeUntilCanLeave + " seconds left)");
+            return;
+         }
       }
 
       // If the user is currently in ghost mode, disable it
@@ -1781,9 +1788,6 @@ public class NetEntity : NetworkBehaviour
 
    [Server]
    public void spawnInNewMap (string newArea, Vector2 newLocalPosition, Direction newFacingDirection) {
-      // Check which server we're likely to redirect to
-      NetworkedServer bestServer = ServerNetworkingManager.self.findBestServerForConnectingPlayer(newArea, this.entityName, this.userId, this.connectionToClient.address, isSinglePlayer, -1);
-
       // Only admins can warp to voyage areas without indicating the voyageId
       if (isAdmin() && (VoyageManager.isAnyLeagueArea(newArea) || VoyageManager.isTreasureSiteArea(newArea))) {
          VoyageManager.self.forceAdminWarpToVoyageAreas(this, newArea);
@@ -1791,7 +1795,7 @@ public class NetEntity : NetworkBehaviour
       }
 
       // Now that we know the target server, redirect them there
-      spawnOnSpecificServer(bestServer, newArea, newLocalPosition, newFacingDirection);
+      findBestServerAndWarp(newArea, newLocalPosition, -1, newFacingDirection);
    }
 
    [Server]
@@ -1806,20 +1810,11 @@ public class NetEntity : NetworkBehaviour
             ? SpawnManager.self.getDefaultLocalPosition(newArea)
             : SpawnManager.self.getLocalPosition(newArea, spawn);
 
-      spawnInNewMap(voyageId, newArea, spawnLocalPosition, newFacingDirection);
+      findBestServerAndWarp(newArea, spawnLocalPosition, voyageId, newFacingDirection);
    }
 
    [Server]
-   public void spawnInNewMap (int voyageId, string newArea, Vector2 localPosition, Direction newFacingDirection) {
-      // Find the server hosting the voyage
-      NetworkedServer voyageServer = ServerNetworkingManager.self.getServerHostingVoyage(voyageId);
-
-      // Now that we know the target server, redirect them there
-      spawnOnSpecificServer(voyageServer, newArea, localPosition, newFacingDirection);
-   }
-
-   [Server]
-   public void spawnOnSpecificServer (NetworkedServer newServer, string newArea, Vector2 newLocalPosition, Direction newFacingDirection) {
+   public void findBestServerAndWarp (string newArea, Vector2 newLocalPosition, int voyageId, Direction newFacingDirection) {
       if (this.isAboutToWarpOnServer) {
          D.log($"The player {netId} is already being warped.");
          return;
@@ -1856,21 +1851,8 @@ public class NetEntity : NetworkBehaviour
             // Remove the player from the current instance
             InstanceManager.self.removeEntityFromInstance(this);
 
-            D.debug($"Sending redirect to {MyNetworkManager.self.networkAddress}:{newServer.networkedPort.Value} for {this.entityName}");
-
-            // If the player is warping to another server, it must be completely removed from this one
-            if (newServer.networkedPort.Value != ServerNetworkingManager.self.server.networkedPort.Value) {
-               D.debug($"New port {newServer.networkedPort.Value} is different than our port {ServerNetworkingManager.self.server.networkedPort.Value}, so disconnecting {this.entityName} from the server.");
-               MyNetworkManager.self.StartCoroutine(MyNetworkManager.self.CO_RedirectUser(newServer, this.connectionToClient, accountId, entityObject));
-            } else {
-               // Send a Redirect message to the client
-               RedirectMessage redirectMessage = new RedirectMessage(this.netId, MyNetworkManager.self.networkAddress, newServer.networkedPort.Value);
-               this.connectionToClient.Send(redirectMessage);
-
-               // Destroy the old Player object
-               NetworkServer.DestroyPlayerForConnection(connectionToClient);
-               NetworkServer.Destroy(entityObject);
-            }
+            // Redirect the player to the best server
+            MyNetworkManager.self.StartCoroutine(MyNetworkManager.self.CO_RedirectUser(this.connectionToClient, accountId, userId, entityName, voyageId, isSinglePlayer, newArea, areaKey, entityObject));
          });
       });
    }
@@ -2040,6 +2022,26 @@ public class NetEntity : NetworkBehaviour
       return _lastAttackerNetId;
    }
 
+   public double lastAttackedTime () {
+      if (_lastAttackerNetId == 0) {
+         return -IN_COMBAT_STATUS_DURATION;
+      }
+
+      if (_attackers.ContainsKey(_lastAttackerNetId)) {
+         return _attackers[_lastAttackerNetId];
+      }
+
+      return -IN_COMBAT_STATUS_DURATION;
+   }
+
+   public bool isInCombat () {
+      return (getTimeSinceAttacked() < IN_COMBAT_STATUS_DURATION);
+   }
+
+   public float getTimeSinceAttacked () {
+      return (float) (NetworkTime.time - lastAttackedTime());
+   }
+
    protected virtual void webBounceUpdate () { }
 
    protected virtual void onStartMoving () { }
@@ -2135,9 +2137,6 @@ public class NetEntity : NetworkBehaviour
 
    // The timestamp of our last web bounce start
    protected float _webBounceStartTime = 0.0f;
-
-   // Whether the player is bouncing up on a web, or falling down onto a web
-   protected bool _isGoingUpWeb = false;
 
    // Whether the player is doing a half bounce on a web, or a full bounce
    protected bool _isDoingHalfBounce = false;

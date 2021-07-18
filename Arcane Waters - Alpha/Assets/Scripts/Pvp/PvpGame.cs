@@ -129,7 +129,7 @@ public class PvpGame : MonoBehaviour {
             sendGameMessage(userName + " has joined the game.");
          } else {
             // Don't send this message to the player joining the game, as it will display before they warp
-            List<int> playersToReceiveMessage = _usersInGame;
+            List<int> playersToReceiveMessage = new List<int>(_usersInGame);
             playersToReceiveMessage.Remove(userId);
             sendGameMessage(userName + " has joined the game. Waiting for " + playersNeededToStart + " more players to begin!", playersToReceiveMessage);
          }
@@ -544,7 +544,6 @@ public class PvpGame : MonoBehaviour {
    public void onPlayerLoadedGameArea (int userId) {
       if (_gameState == State.PreGame) {
          sendGameMessageToPlayers("Waiting for " + " more players to begin.", new List<int>() { userId });
-         D.log("Waiting for players message displayed.");
       }
    }
 

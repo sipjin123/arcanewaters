@@ -362,8 +362,8 @@ public class MyNetworkManager : NetworkManager
                DisconnectionManager.self.removeFromDisconnectedUsers(authenticatedUserId);
             }
 
-            // Manage the voyage groups on user connection
-            VoyageGroupManager.self.onUserConnectsToServer(userInfo.userId);
+            // Notify the master server that a user connected to this server
+            ServerNetworkingManager.self.onUserConnectsToServer(userInfo.userId);
 
             // Create the Player object
             GameObject prefab = AreaManager.self.isSeaArea(previousAreaKey) == true ? PrefabsManager.self.playerShipPrefab : PrefabsManager.self.playerBodyPrefab;
@@ -604,11 +604,14 @@ public class MyNetworkManager : NetworkManager
       ClientConnectionData data = _players[conn.connectionId];
       NetEntity player = data.netEntity;
 
+      // Notify the master server that a user disconnected from this server
+      int userId = player != null ? player.userId : data.userId;
+      if (userId > 0) {
+         ServerNetworkingManager.self.onUserDisconnectsFromServer(userId);
+      }
+
       if (player != null) {
          D.debug($"In disconnectClient(), we found an existing NetEntity object for {player.entityName}, so we only call finishPlayerDisconnect() instead of removeClientConnectionData()");
-
-         // Manage the voyage groups on user disconnection
-         VoyageGroupManager.self.onUserDisconnectsFromServer(player.userId);
 
          if (player.getPlayerShipEntity() != null && !forceFinishDisconnection) {
             // If the player is a ship, keep it in the server for a few seconds

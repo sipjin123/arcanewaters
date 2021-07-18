@@ -6049,7 +6049,7 @@ public class DB_Main : DB_MainStub
                                     rankPriority = -1
                                  };
                               }
-                           } 
+                           }
                            // If leader - just indicate that user has all permissions
                            else if (guildRankId == 0) {
                               userObjects.guildRankInfo = new GuildRankInfo();
@@ -6317,6 +6317,86 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
+   #region RemoteSettings
+
+   public static new RemoteSetting getRemoteSetting (string rsName) {
+      RemoteSetting setting = null;
+
+      try {
+         string query = "SELECT * FROM remote_settings WHERE rsName=@rsName";
+
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
+            conn.Open();
+
+            cmd.Parameters.AddWithValue("@rsName", rsName);
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               if (dataReader.Read()) {
+                  setting = RemoteSetting.create(dataReader);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return setting;
+   }
+
+   public static new bool setRemoteSetting (string rsName, string rsValue, RemoteSetting.RemoteSettingValueType rsValueType) {
+      bool result = false;
+
+      try {
+         string query = "UPDATE remote_settings SET rsValue=@rsValue, rsValueType=@rsValueType WHERE rsName=@rsName";
+
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
+            conn.Open();
+
+            cmd.Parameters.AddWithValue("@rsName", rsName);
+            cmd.Parameters.AddWithValue("@rsValue", rsValue);
+            cmd.Parameters.AddWithValue("@rsValueType", (int) rsValueType);
+            cmd.Prepare();
+            DebugQuery(cmd);
+            int affectedRows = cmd.ExecuteNonQuery();
+            result = true;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return result;
+   }
+
+   public static new RemoteSettingCollection getRemoteSettings (string[] settingNames) {
+      RemoteSettingCollection collection = new RemoteSettingCollection();
+
+      foreach (string name in settingNames) {
+         RemoteSetting setting = getRemoteSetting(name);
+
+         if (setting != null) {
+            collection.addSetting(setting);
+         }
+      }
+      return collection;
+   }
+
+   public static new bool setRemoteSettings (RemoteSettingCollection collection) {
+      bool result = true;
+
+      foreach (RemoteSetting setting in collection.settings) {
+         bool success = setRemoteSetting(setting.name, setting.value, setting.valueType);
+         result = result && success;
+      }
+
+      return result;
+   }
+
+   #endregion
+
    #region Inventory Features
 
    public static new Item createNewItem (int userId, Item baseItem) {
@@ -6534,7 +6614,7 @@ public class DB_Main : DB_MainStub
       if (castedItem.canBeStacked() || castedItem.category == Item.Category.CraftingIngredients) {
          // Retrieve the item from the database, if it exists
          Item databaseItem = getFirstItem(userId, castedItem.category, castedItem.itemTypeId);
-         
+
          // If the item exist, update its count
          if (databaseItem != null) {
             databaseItem.count += castedItem.count;
@@ -8664,7 +8744,7 @@ public class DB_Main : DB_MainStub
       if (Util.isStressTesting()) {
          return; // skip adding server history for stresstesting server
       }
-      
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -8733,7 +8813,7 @@ public class DB_Main : DB_MainStub
       if (!bool.TryParse(isMasterServerOnline(), out bool isOnline) || !isOnline) {
          return JsonConvert.SerializeObject(new List<int>());
       }
-      
+
       List<int> serverPortList = new List<int>();
 
       try {
@@ -8767,7 +8847,7 @@ public class DB_Main : DB_MainStub
    public static new void updateServerShutdown (bool shutdown) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("UPDATE server_shutdown SET shutdown=" + ((shutdown)?"1":"0") + " WHERE id=1", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE server_shutdown SET shutdown=" + ((shutdown) ? "1" : "0") + " WHERE id=1", conn)) {
             conn.Open();
             cmd.Prepare();
             DebugQuery(cmd);
@@ -8779,7 +8859,7 @@ public class DB_Main : DB_MainStub
          D.error("MySQL Error: " + e.ToString());
       }
    }
-   
+
    public static new bool getServerShutdown () {
       try {
          using (MySqlConnection conn = getConnection())
@@ -8806,7 +8886,7 @@ public class DB_Main : DB_MainStub
       }
 
       return false;
-   }   
+   }
 
    public static new string isMasterServerOnline () {
       bool isOnline = false;
@@ -8862,19 +8942,15 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   protected static new bool setMetric (string machineId, string processName, string PID, string keySuffix, string value) {
+   #region Metrics
+
+   public static new bool setGameMetric (string machineId, string processId, string processName, string name, string value, Metric.MetricValueType valueType, string description = "") {
       bool result = false;
       try {
 
          if (string.IsNullOrEmpty(processName)) return false;
-         if (string.IsNullOrEmpty(PID)) return false;
-         if (string.IsNullOrEmpty(keySuffix)) return false;
-
-         string key = $"{processName}/{PID}/{keySuffix}";
-         if (!String.IsNullOrEmpty(machineId)) {
-            key = $"{machineId}/{key}";
-         }
-         key = key.Replace(" ", "_");
+         if (string.IsNullOrEmpty(processId)) return false;
+         if (string.IsNullOrEmpty(name)) return false;
 
          using (MySqlConnection conn = getConnection()) {
             // Open the connection.
@@ -8882,9 +8958,12 @@ public class DB_Main : DB_MainStub
             // A key is tracked if it is present in the database.
 
             bool IsKeyAlreadyTracked = false;
-            using (MySqlCommand cmd = new MySqlCommand($"SELECT COUNT(*) FROM `global`.`metrics` WHERE `key`=@key", conn)) {
+            using (MySqlCommand cmd = new MySqlCommand($"SELECT COUNT(*) FROM `metrics` WHERE `metName`=@metName AND `metMachineId`=@metMachineId AND `metProcessId`=@metProcessId AND `metProcessName`=@metProcessName", conn)) {
                //cmd.Prepare();
-               cmd.Parameters.AddWithValue("@key", key);
+               cmd.Parameters.AddWithValue("@metName", name);
+               cmd.Parameters.AddWithValue("@metMachineId", machineId);
+               cmd.Parameters.AddWithValue("@metProcessId", processId);
+               cmd.Parameters.AddWithValue("@metProcessName", processName);
                DebugQuery(cmd);
                using (var reader = cmd.ExecuteReader()) {
                   if (reader.Read()) {
@@ -8895,15 +8974,22 @@ public class DB_Main : DB_MainStub
 
             // create a new entry for the key if it's not present already,
             // and update the value if already present in the database.
-            string query = $"INSERT INTO `global`.`metrics` (`key`,`value`) VALUES (@key,@value)";
+            string query = $"INSERT INTO `metrics` (`metName`,`metMachineId`,`metProcessId`,`metProcessName`,`metValue`,`metValueType`,`metDescription`) " +
+               $"VALUES (@metName,@metMachineId,@metProcessId,@metProcessName,@metValue,@metValueType,@metDescription)";
             if (IsKeyAlreadyTracked) {
-               query = $"UPDATE `global`.`metrics` SET `value`=@value WHERE `key`=@key";
+               query = $"UPDATE `metrics` SET `metValue`=@metValue,`metValueType`=@metValueType,`metDescription`=@metDescription " +
+                  $"WHERE (`metName`=@metName AND `metMachineId`=@metMachineId AND `metProcessId`=@metProcessId AND `metProcessName`=@metProcessName)";
             }
 
             using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
                //cmd.Prepare();
-               cmd.Parameters.AddWithValue("@key", key);
-               cmd.Parameters.AddWithValue("@value", value);
+               cmd.Parameters.AddWithValue("@metName", name);
+               cmd.Parameters.AddWithValue("@metMachineId", machineId);
+               cmd.Parameters.AddWithValue("@metProcessId", processId);
+               cmd.Parameters.AddWithValue("@metProcessName", processName);
+               cmd.Parameters.AddWithValue("@metValue", value);
+               cmd.Parameters.AddWithValue("@metValueType", valueType);
+               cmd.Parameters.AddWithValue("@metDescription", description);
                DebugQuery(cmd);
                result = cmd.ExecuteNonQuery() > 0;
             }
@@ -8915,25 +9001,49 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
-   public static new bool setMetricPlayersCount (string machineId, string processName, string PID, int playerCount) {
-      return setMetric(machineId, processName, PID, "players_count", playerCount.ToString());
+   public static new void clearOldGameMetrics (int maxLifetimeSeconds = 300) {
+      try {
+         using (MySqlConnection conn = getConnection()) {
+            // Open the connection.
+            conn.Open();
+            string query = $"DELETE FROM `metrics` WHERE (`metTimestamp` < NOW() - INTERVAL {maxLifetimeSeconds} SECOND)";
+            using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
+               //cmd.Prepare();             
+               DebugQuery(cmd);
+               cmd.ExecuteNonQuery();
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+         return;
+      }
    }
 
-   public static new bool setMetricAreaInstancesCount (string machineId, string processName, string PID, int areaInstancesCount) {
-      return setMetric(machineId, processName, PID, "area_instances_count", areaInstancesCount.ToString());
+   public static new int getTotalPlayersCount () {
+      int playersCount = 0;
+      try {
+         using (MySqlConnection conn = getConnection()) {
+            // Open the connection.
+            conn.Open();
+            string query = "SELECT SUM(CAST(`metValue` AS UNSIGNED)) as metSum FROM `metrics` WHERE `metName`=@metName";
+            using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
+               //cmd.Prepare();             
+               cmd.Parameters.AddWithValue("@metName", "PLAYERS_COUNT");
+               DebugQuery(cmd);
+               using (MySqlDataReader reader = cmd.ExecuteReader()) {
+                  if (reader.Read()) {
+                     playersCount = reader.GetInt32("metSum");
+                  }
+               };
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+      return playersCount;
    }
 
-   public static new bool setMetricPort (string machineId, string processName, string PID, int port) {
-      return setMetric(machineId, processName, PID, "port", port.ToString());
-   }
-
-   public static new bool setMetricIP (string machineId, string processName, string PID, string ip) {
-      return setMetric(machineId, processName, PID, "ip", ip);
-   }
-
-   public static new bool setMetricUptime (string machineId, string processName, string PID, long uptime) {
-      return setMetric(machineId, processName, PID, "uptime", uptime.ToString());
-   }
+   #endregion
 
    #region Mail
 

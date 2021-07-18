@@ -322,6 +322,11 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          y = 0.0f;
       }
 
+      // If the player has finished jumping, re-enable the stair effectors
+      if (isLocalPlayer && !isJumping() && !StairEffector.effectorsEnabled) {
+         StairEffector.setEffectors(true);
+      }
+
       setSpritesHeight(y);
       Util.setLocalY(windEffectsParent, y);
       Util.setLocalY(nameAndHealthUI, y);
@@ -430,7 +435,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    private void triggerJumpAction () {
       if (!isJumpCoolingDown() && isLocalPlayer && !isBouncingOnWeb() && !_isClimbing) {
          // If we are in a spider web  trigger, and facing the right way, jump onto the spider web
-         if (collidingSpiderWebTrigger != null && collidingSpiderWebTrigger.isFacingWeb(facing)) {
+         if (collidingSpiderWebTrigger != null) {
             collidingSpiderWebTrigger.onPlayerJumped(this);
             return;
          }
@@ -461,6 +466,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          if (isLocalPlayer) {
             _jumpStartTime = NetworkTime.time;
             playJumpAnimation();
+            StairEffector.setEffectors(false);
          }
 
          Cmd_NoteJump();
@@ -813,11 +819,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       float timeSinceBounce = (float) NetworkTime.time - _webBounceStartTime;
-
-      // If we're falling down, reverse t
-      if (!_isGoingUpWeb) {
-         timeSinceBounce = getWebBounceDuration() - timeSinceBounce;
-      }
 
       // Update sprite height
       float tSprites = _activeWeb.getSpriteHeightCurve(_isDoingHalfBounce).Evaluate(timeSinceBounce);

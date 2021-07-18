@@ -156,8 +156,16 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
    public void OnLeaveGroupButtonClickedOn () {
       // Check if the player is already leaving the group or if it is in combat
-      if (PanelManager.self.countdownScreen.isShowing() || Global.player.hasAttackers()) {
+      if (PanelManager.self.countdownScreen.isShowing()) {
          return;
+      }
+
+      if (Global.player.hasAttackers()) {
+         if (Global.player.isInCombat()) {
+            int timeUntilCanLeave = (int) (NetEntity.IN_COMBAT_STATUS_DURATION - Global.player.getTimeSinceAttacked());
+            PanelManager.self.noticeScreen.show("Cannot leave group until out of combat for " + (int)NetEntity.IN_COMBAT_STATUS_DURATION + " seconds. \n(" + timeUntilCanLeave + " seconds left)");
+            return;
+         }
       }
 
       if (!Global.player.isGhost && (VoyageManager.isTreasureSiteArea(Global.player.areaKey) || VoyageManager.isAnyLeagueArea(Global.player.areaKey) || VoyageManager.isPvpArenaArea(Global.player.areaKey))) {

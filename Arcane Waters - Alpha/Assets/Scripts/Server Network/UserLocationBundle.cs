@@ -8,6 +8,7 @@ using System;
 public class UserLocationBundle
 {
    #region Public Variables
+
    // The user id
    public int userId;
 

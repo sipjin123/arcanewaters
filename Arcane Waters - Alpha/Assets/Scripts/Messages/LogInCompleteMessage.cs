@@ -12,6 +12,9 @@ public class LogInCompleteMessage : NetworkMessage
    // The network instance id associated with this message
    public uint netId;
 
+   // The user id associated with this login
+   public int userId;
+
    // The direction we should start off facing
    public Direction initialFacingDirection = Direction.South;
 
@@ -28,8 +31,9 @@ public class LogInCompleteMessage : NetworkMessage
 
    public LogInCompleteMessage () { }
 
-   public LogInCompleteMessage (uint netId, Direction initialFacingDirection, string accountEmail, long accountCreationTime, string loginMessage = "") {
+   public LogInCompleteMessage (uint netId, int userId, Direction initialFacingDirection, string accountEmail, long accountCreationTime, string loginMessage = "") {
       this.netId = netId;
+      this.userId = userId;
       this.initialFacingDirection = initialFacingDirection;
       this.accountEmail = accountEmail;
       this.accountCreationTime = accountCreationTime;

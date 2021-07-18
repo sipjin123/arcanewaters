@@ -103,9 +103,6 @@ public class ServerNetworkingManager : MonoBehaviour
       } else {
          // If many servers have the same lowest number of players, select the first port
          List<NetworkedServer> similarServers = bestServers.OrderBy(_ => _.networkedPort.Value).ToList();
-         
-         // Reverse the list, to make the master server port (7777) the lowest priority
-         similarServers.Reverse();
          return similarServers[0];
       }
    }
@@ -289,6 +286,14 @@ public class ServerNetworkingManager : MonoBehaviour
 
    public RpcResponse<int> redirectUserToBestServer (int userId, string userName, int voyageId, bool isSinglePlayer, string destinationAreaKey, string currentAddress, string currentAreaKey) {
       return server.InvokeServerRpc(server.MasterServer_RedirectUserToBestServer, userId, userName, voyageId, isSinglePlayer, destinationAreaKey, server.networkedPort.Value, currentAddress, currentAreaKey);
+   }
+
+   public void onUserConnectsToServer (int userId) {
+      server.InvokeServerRpc(server.MasterServer_OnUserConnectsToServer, userId);
+   }
+
+   public void onUserDisconnectsFromServer (int userId) {
+      server.InvokeServerRpc(server.MasterServer_OnUserDisconnectsFromServer, userId);
    }
 
    #region Private Variables

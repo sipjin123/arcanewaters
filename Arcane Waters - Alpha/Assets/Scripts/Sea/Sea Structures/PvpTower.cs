@@ -367,7 +367,7 @@ public class PvpTower : SeaStructure {
       if (!seaEntity) {
          seaEntity = collision.GetComponentInParent<SeaEntity>();
       }
-      if (seaEntity && seaEntity.pvpTeam != PvpTeamType.None && seaEntity.pvpTeam != pvpTeam) {
+      if (seaEntity && seaEntity.pvpTeam != PvpTeamType.None && seaEntity.pvpTeam != pvpTeam && seaEntity.instanceId == this.instanceId) {
          _attackers[seaEntity.netId] = NetworkTime.time;
       }
 

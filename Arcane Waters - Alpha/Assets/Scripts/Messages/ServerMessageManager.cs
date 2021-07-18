@@ -14,7 +14,7 @@ public class ServerMessageManager : MonoBehaviour
    #endregion
 
    private void Awake () {
-      _self = this;      
+      _self = this;
    }
 
    [ServerOnly]
@@ -31,7 +31,7 @@ public class ServerMessageManager : MonoBehaviour
       }
 
       if (checkVersionMessage.clientGameVersion < minClientGameVersion) {
-         string msg = string.Format("Refusing login, client version {0}, the current version in the cloud is {1}",  checkVersionMessage.clientGameVersion, minClientGameVersion);
+         string msg = string.Format("Refusing login, client version {0}, the current version in the cloud is {1}", checkVersionMessage.clientGameVersion, minClientGameVersion);
          D.debug(msg);
          sendError(ErrorMessage.Type.ClientOutdated, conn.connectionId, minClientGameVersion.ToString());
          return;
@@ -157,6 +157,48 @@ public class ServerMessageManager : MonoBehaviour
             }
          }
 
+         // Prevent login if the player count already reached the limit
+         if (accountId > 0) {
+            int playersCount = DB_Main.getTotalPlayersCount();
+            RemoteSetting setting = DB_Main.getRemoteSetting(RemoteSettingsManager.SettingNames.PLAYERS_COUNT_MAX);
+            int playersCountMax = setting.toInt();
+
+            if (playersCount >= playersCountMax) {
+               // No more logins allowed for now
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  D.debug($"Players Count Limit Reached. Players: {playersCount}. Limit: {playersCountMax}");
+                  sendError(ErrorMessage.Type.PlayerCountLimitReached, conn.connectionId, "The Game Servers are full. Please try again later.");
+               });
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => { _numUsersAuthenticating--; });
+               return;
+            }
+         }
+
+         // Prevent login if the current server is flagged as Admin Only
+         if (accountId > 0) {
+            RemoteSetting setting = DB_Main.getRemoteSetting(RemoteSettingsManager.SettingNames.ADMIN_ONLY_MODE);
+            bool isAdminOnlyModeEnabled = setting.toBool();
+
+            if (isAdminOnlyModeEnabled) {
+               bool isAdminAccount = DB_Main.getUsrAdminFlag(accountId) > 0;
+
+               if (!isAdminAccount) {
+                  setting = DB_Main.getRemoteSetting(RemoteSettingsManager.SettingNames.ADMIN_ONLY_MODE_MESSAGE);
+                  string adminOnlyModeMessage = setting.value;
+
+                  // Non-Admin accounts are not allowed for now
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     D.debug($"Admin Only Mode is enabled. The login attempt by account '{accountId}' was blocked.");
+                     sendError(ErrorMessage.Type.UserNotAdmin, conn.connectionId, adminOnlyModeMessage);
+                  });
+
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => { _numUsersAuthenticating--; });
+                  return;
+               }
+            }
+         }
+
          // Get the user objects for the selected user ID
          UserObjects userObjects = null;
          string selectedUsrName = "";
@@ -250,7 +292,7 @@ public class ServerMessageManager : MonoBehaviour
                D.adminLog("Account Log: Login Authentication Complete! {" + logInUserMessage.accountName + "}" + " : {" + accountId + "}", D.ADMIN_LOG_TYPE.Server_AccountLogin);
 
                // Now tell the client to move forward with the login process
-               LogInCompleteMessage msg = new LogInCompleteMessage(Global.netId, (Direction) users[0].facingDirection,
+               LogInCompleteMessage msg = new LogInCompleteMessage(Global.netId, users[0].userId, (Direction) users[0].facingDirection,
                   userObjects.accountEmail, userObjects.accountCreationTime, loginMessage);
                conn.Send(msg);
 
@@ -616,7 +658,7 @@ public class ServerMessageManager : MonoBehaviour
             MyNetworkManager.noteUserIdForConnection(userId, steamUserId, conn);
 
             // Now tell the client to move forward with the login process
-            LogInCompleteMessage loginCompleteMsg = new LogInCompleteMessage(Global.netId, (Direction) userInfo.facingDirection,
+            LogInCompleteMessage loginCompleteMsg = new LogInCompleteMessage(Global.netId, userId, (Direction) userInfo.facingDirection,
                userObjects.accountEmail, userObjects.accountCreationTime);
             conn.Send(loginCompleteMsg);
          } else {

@@ -106,6 +106,8 @@ public class SoundEffectManager : GenericGameManager
 
    public const string PLAYER_SHIP_DESTROYED = "event:/SFX/Game/Sea_Battle/Player_Ship_Destroyed";
 
+   public const string GENERIC_HIT_LAND = "event:/SFX/Game/Land_Battle/Generic_Hit_Land";
+
    public const string AUDIO_SWITCH_PARAM = "Audio_Switch";
    public const string SHIP_CHARGE_RELEASE_PARAM = "Ship_Charge_Release";
    public const string AMBIENCE_AUDIO_SWITCH_PARAM = "Ambience_Switch";
@@ -191,7 +193,7 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   public void playFmodOneShotWithPath (string path, Transform target) {
+   public void playFmodWithPath (string path, Transform target) {
       if (Util.isBatch()) {
          return;
       }

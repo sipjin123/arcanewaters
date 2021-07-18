@@ -4675,6 +4675,11 @@ public class RPCManager : NetworkBehaviour
             Debug.LogWarning($"Player '{_player.entityName}' has entered a Voyage or League.");
             Target_ReceiveUserEnteredVoyage(_player.connectionToClient, _player.userId);
          }
+
+         // After loading the new area, ensure powerups are cleared, in case they were cleared before we changed server
+         if (VoyageManager.isLobbyArea(playerShipEntity.areaKey)) {
+            PowerupManager.self.clearPowerupsForUser(_player.userId);
+         }
       }
    }
 
@@ -7398,6 +7403,68 @@ public class RPCManager : NetworkBehaviour
       PvpStatusPanel.self.reset(GameStatsManager.self.getSilverAmount(userId));
    }
 
+   [Command]
+   public void Cmd_RequestPlayersCount () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int totalPlayersCount = DB_Main.getTotalPlayersCount();
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceivePlayersCount(_player.connectionToClient, totalPlayersCount);
+         });
+      });
+   }
+
+   [TargetRpc]
+   private void Target_ReceivePlayersCount (NetworkConnection conn, int playersCount) {
+      OptionsPanel.self.onPlayersCountReceived(playersCount);
+   }
+
+   [Command]
+   public void Cmd_RequestRemoteSettings (string[] settingNames) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         RemoteSettingCollection collection = DB_Main.getRemoteSettings(settingNames);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveRemoteSettings(_player.connectionToClient, collection);
+         });
+      });
+   }
+
+   [TargetRpc]
+   private void Target_ReceiveRemoteSettings (NetworkConnection conn, RemoteSettingCollection collection) {
+      AdminPanel.self.onRemoteSettingsReceived(collection);
+   }
+
+   [Command]
+   public void Cmd_SetRemoteSettings (RemoteSettingCollection collection) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         bool success = DB_Main.setRemoteSettings(collection);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_SetRemoteSettings(_player.connectionToClient, success);
+         });
+      });
+   }
+
+   [TargetRpc]
+   private void Target_SetRemoteSettings (NetworkConnection conn, bool success) {
+      AdminPanel.self.onSetRemoteSettings(success);
+   }
 
    #region Private Variables
 

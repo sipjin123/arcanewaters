@@ -83,6 +83,9 @@ public class CharacterCreationSpotFader : ClientMonoBehaviour
       _currentSpotColorTween = spotMask.DOColor(_defaultColor, _totalEffectTime);
 
       Util.enableCanvasGroup(_canvasGroup);
+
+      // Need to stop blocking raycast so the character rotate buttons work
+      _canvasGroup.blocksRaycasts = false;
    }
 
    public bool isAnimatingAny () {

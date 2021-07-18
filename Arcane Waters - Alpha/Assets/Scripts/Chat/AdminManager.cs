@@ -115,6 +115,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("pvp_force_start", "Forces the pvp game the player is in to start, regardless of how many players are in it", forceStartPvp, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("pvp_set_map", "Changes which map pvp games will be created in", setPvpMap, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("warp", "Warps you to an area", requestWarp, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "areaName" }, parameterAutocompletes: AreaManager.self.getAllAreaNames()));
+      cm.addCommand(new CommandData("show_admin_panel", "Show the Admin Panel", showAdminPanel, requiredPrefix: CommandType.Admin));
 
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
@@ -2700,6 +2701,14 @@ public class AdminManager : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceiveServerLogString (NetworkConnection connection, byte[] serverLogData) {
       D.serverLogString = Encoding.ASCII.GetString(serverLogData);
+   }
+
+   protected void showAdminPanel () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      AdminPanel.self.show();
    }
 
    #region Private Variables

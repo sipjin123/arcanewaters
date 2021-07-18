@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1893789655731926596}
   - component: {fileID: 5571833853767627150}
   - component: {fileID: 6629020866051721654}
+  - component: {fileID: 2189860764723179792}
   m_Layer: 0
   m_Name: Stairs Effector
   m_TagString: Untagged
@@ -78,3 +79,15 @@ AreaEffector2D:
   m_ForceTarget: 0
   m_Drag: 60
   m_AngularDrag: 0
+--- !u!114 &2189860764723179792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3180560251837097660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a21d4fb4b0d17914894a6411756c1e38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

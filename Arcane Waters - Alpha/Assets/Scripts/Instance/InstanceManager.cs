@@ -436,6 +436,25 @@ public class InstanceManager : MonoBehaviour {
       NetworkServer.Destroy(instance.gameObject);
    }
 
+   public int getPlayerCountInInstance(int instanceId) {
+      Instance instance = getInstance(instanceId);
+      
+      if (instance == null) {
+         return 0;
+      } 
+
+      int playerCount = instance.getPlayerCount();
+      return playerCount;
+   }
+
+   public int getPlayerCountAllInstances () {
+      int total = 0;
+      foreach (KeyValuePair<int,Instance> pair in _instances) {
+         total += getPlayerCountInInstance(pair.Key);
+      }
+      return total;
+   }
+
    #region Private Variables
 
    // The instance ID we're up to

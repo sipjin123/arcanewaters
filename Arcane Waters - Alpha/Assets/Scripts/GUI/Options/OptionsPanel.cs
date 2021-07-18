@@ -101,11 +101,14 @@ public class OptionsPanel : Panel
    // A list of accepted fullscreen modes (windowed, borderless windowed, fullscreen)
    public List<FullScreenMode> fullScreenModes = new List<FullScreenMode>();
 
+   // The label that displays the total amount of active players
+   public Text activePlayersCountLabel;
+
    #endregion
 
    public override void Awake () {
       base.Awake();
-      
+
       self = this;
    }
 
@@ -119,20 +122,20 @@ public class OptionsPanel : Panel
       // Loads the saved gui scale
       float guiScaleValue = OptionsManager.GUIScale;
       guiScaleLabel.text = Mathf.RoundToInt(guiScaleValue) + " %";
-      guiScaleSlider.SetValueWithoutNotify(guiScaleValue / 25f);      
+      guiScaleSlider.SetValueWithoutNotify(guiScaleValue / 25f);
       guiScaleSlider.onValueChanged.AddListener(_ => guiScaleSliderChanged());
-      
+
       // Loads the saved minimap scale
       float minimapScaleValue = OptionsManager.minimapScale;
-      minimapScaleLabel.text = Mathf.RoundToInt(minimapScaleValue) + " %";      
+      minimapScaleLabel.text = Mathf.RoundToInt(minimapScaleValue) + " %";
       minimapScaleSlider.SetValueWithoutNotify(minimapScaleValue / 25f);
       minimapScaleSlider.onValueChanged.AddListener(_ => minimapScaleSliderChanged());
-      
+
       // If any of the screen resolution settings is changed, we want to enable the button if the new setting is different from the applied one
       vsyncToggle.onValueChanged.AddListener((isOn) => applyDisplaySettingsButton.interactable = isOn != OptionsManager.isVsyncEnabled());
       screenModeDropdown.onValueChanged.AddListener((index) => {
          applyDisplaySettingsButton.interactable = index != getScreenModeIndex(ScreenSettingsManager.fullScreenMode);
-      
+
          // In borderless fullscreen players can only use the native screen resolution
          bool isBorderlessWindow = index == getScreenModeIndex(FullScreenMode.FullScreenWindow);
          resolutionsDropdown.interactable = !isBorderlessWindow;
@@ -196,6 +199,8 @@ public class OptionsPanel : Panel
       applyDisplaySettingsButton.onClick.AddListener(() => applyDisplaySettings());
 
       refreshDisplaySettingsControls();
+
+      requestPlayersCount();
    }
 
    public void showAllGuildIcons (bool showGuildIcons) {
@@ -324,7 +329,7 @@ public class OptionsPanel : Panel
    }
 
    private void setResolution (int resolutionIndex) {
-      ScreenSettingsManager.setResolution(_supportedResolutions[resolutionIndex].width, _supportedResolutions[resolutionIndex].height, _supportedResolutions[resolutionIndex].refreshRate);      
+      ScreenSettingsManager.setResolution(_supportedResolutions[resolutionIndex].width, _supportedResolutions[resolutionIndex].height, _supportedResolutions[resolutionIndex].refreshRate);
    }
 
    private int getMaxRefreshRateForResolution (int width, int height) {
@@ -371,7 +376,7 @@ public class OptionsPanel : Panel
       setResolution(resolutionsDropdown.value);
       setVSync(vsyncToggle.isOn);
       ScreenSettingsManager.setFullscreenMode(fullScreenModes[screenModeDropdown.value]);
-      
+
       refreshDisplaySettingsControls();
    }
 
@@ -403,6 +408,14 @@ public class OptionsPanel : Panel
       }
 
       refreshDisplaySettingsControls();
+
+      requestPlayersCount();
+   }
+
+   private void requestPlayersCount () {
+      if (Global.player != null) {
+         Global.player.rpc.Cmd_RequestPlayersCount();
+      }
    }
 
    public void receiveDataFromServer (int instanceNumber, int totalInstances) {
@@ -436,7 +449,7 @@ public class OptionsPanel : Panel
       SoundManager.self.masterBus.setVolume(SoundManager.effectsVolume);
    }
 
-   public void guiScaleSliderChanged () {      
+   public void guiScaleSliderChanged () {
       guiScaleLabel.text = Mathf.RoundToInt(guiScaleSlider.value * 25) + " %";
    }
 
@@ -472,7 +485,7 @@ public class OptionsPanel : Panel
          if (CharacterScreen.self.isShowing()) {
             // Return to the title screen
             Util.stopHostAndReturnToTitleScreen();
-            
+
             if (CharacterCreationPanel.self.isShowing()) {
                CharacterCreationPanel.self.cancelCreating();
             }
@@ -558,13 +571,17 @@ public class OptionsPanel : Panel
 
       // Return to the title screen
       Util.stopHostAndReturnToTitleScreen();
-      
+
    }
 
    public void enableAdminButtons (bool isEnabled) {
       foreach (GameObject row in adminOnlyButtons) {
          row.SetActive(isEnabled);
       }
+   }
+
+   public void onPlayersCountReceived (int playersCount) {
+      activePlayersCountLabel.text = "Active Players: " + playersCount.ToString();
    }
 
    #region Private Variables

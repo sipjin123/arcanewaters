@@ -11,14 +11,7 @@ public class SpiderWebTrigger : MonoBehaviour {
    [HideInInspector]
    public SpiderWeb web;
 
-   [HideInInspector]
-   public Direction bounceDirection;
-
    #endregion
-
-   public bool isFacingWeb (Direction directionPressed) {
-      return (directionPressed == bounceDirection);
-   }
 
    public void onPlayerJumped (PlayerBodyEntity player) {
       web.tryBouncePlayer(player);

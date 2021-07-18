@@ -863,6 +863,22 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   protected static RemoteSetting getRemoteSetting (string settingName) {
+      return null;
+   }
+
+   protected static bool setRemoteSetting (string rsName, string rsValue, RemoteSetting.RemoteSettingValueType rsValueType) {
+      return false;
+   }
+
+   public static RemoteSettingCollection getRemoteSettings (string[] settingNames) {
+      return null;
+   }
+
+   public static bool setRemoteSettings (RemoteSettingCollection collection) {
+      return false;
+   }
+
    public static ShipInfo createStartingShip (int userId) {
       return null;
    }
@@ -1292,6 +1308,17 @@ public class DB_MainStub : MonoBehaviour
    public static void pruneServerHistory (DateTime untilDate) {
    }
 
+   public static bool setGameMetric (string machineId, string processId, string processName, string name, string value, Metric.MetricValueType valueType, string description = "") {
+      return false;
+   }
+
+   public static void clearOldGameMetrics (int maxLifetimeSeconds = 300) {
+   }
+
+   public static int getTotalPlayersCount () {
+      return 0;
+   }
+
    protected static bool setMetric (string machineId, string serverAddress, string serverPort, string keySuffix, string value) {
       return false;
    }
@@ -1385,7 +1412,7 @@ public class DB_MainStub : MonoBehaviour
    public static AdminGameSettings getAdminGameSettings () {
       return null;
    }
-    
+
    /*
 
    public static void refillSupplies (int userId) {

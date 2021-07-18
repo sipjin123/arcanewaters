@@ -23,141 +23,48 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
    // The prefab we use for the bouncing spider web effect
    public GameObject webBouncePrefab;
 
-   // References to the triggers that allow the player to jump up / down this web
-   public SpiderWebTrigger jumpUpTrigger, jumpDownTrigger;
+   // The (X,Y) coordinates of the destination for this spider web
+   public float destinationX, destinationY;
+
+   // The trigger that will detect if the player jumps
+   public SpiderWebTrigger jumpTrigger;
 
    #endregion
 
-   protected void Awake () {
-      jumpUpTrigger.web = this;
-      jumpDownTrigger.web = this;
-      jumpUpTrigger.bounceDirection = Direction.North;
-      jumpDownTrigger.bounceDirection = Direction.South;
+   private void Awake () {
+      jumpTrigger.web = this;
    }
 
    private void Start () {
       checkForOtherWebs();
-      StartCoroutine(CO_PlaceJumpDownTrigger());
    }
 
    private void checkForOtherWebs () {
-      // Half width of the spider web, for determining whether they are over one another
-      float hWidth = 0.15f;
-      float maxDistance = 1.0f;
+      // Do an overlap circle at the destination point, if a web is found, link to it
+      int layerMask = LayerMask.GetMask(LayerUtil.DEFAULT);
 
-      SpiderWeb[] webs = FindObjectsOfType<SpiderWeb>();
+      Collider2D[] hits = Physics2D.OverlapCircleAll(getDestination(), 0.15f, layerMask);
 
-      // Check above
-      foreach (SpiderWeb web in webs) {
-         // Ignore this web
-         if (web == this) {
-            continue;
-         }
-
-         // Ignore webs not higher than us, or out of range
-         float yDiff = web.transform.position.y - transform.position.y;
-         if (yDiff <= 0.0f || Mathf.Abs(yDiff) > maxDistance) {
-            continue;
-         }
-
-         // Check if it  is horizontally aligned above us
-         float xDiff = web.transform.position.x - transform.position.x;
-         if (Mathf.Abs(xDiff) > hWidth) {
-            continue;
-         }
-
-         // Found a web above
-         _webAbove = web;
-         jumpDownTrigger.gameObject.SetActive(false);
-         break;
-      }
-
-      // Check  below
-      foreach (SpiderWeb web in webs) {
-         // Ignore this web
-         if (web == this) {
-            continue;
-         }
-
-         // Ignore webs not lower than us, or out of range
-         float yDiff = web.transform.position.y - transform.position.y;
-         if (yDiff >= 0.0f || Mathf.Abs(yDiff) > maxDistance) {
-            continue;
-         }
-
-         // Check if it  is horizontally aligned above us
-         float xDiff = web.transform.position.x - transform.position.x;
-         if (Mathf.Abs(xDiff) > hWidth) {
-            continue;
-         }
-
-         // Found a web below
-         _webBelow = web;
-         jumpUpTrigger.gameObject.SetActive(false);
-         break;
-      }
-   }
-
-   private IEnumerator CO_PlaceJumpDownTrigger () {
-      if (_webAbove) {
-         yield break;
-      }
-      
-      // Wait for colliders to be setup
-      yield return new WaitForSeconds(2.0f);
-
-      int numAttempts = 10;
-
-      while (numAttempts > 0) {
-         tryPlaceJumpDownTrigger();
-
-         // Successfully placed
-         if (!checkForColliders(jumpDownTrigger.transform.position, PLAYER_COLLIDER_RADIUS)) {
+      foreach (Collider2D hit in hits) {
+         SpiderWeb web = hit.GetComponent<SpiderWeb>();
+         if (web && web != this) {
+            _linkedWeb = web;
             break;
          }
-
-         numAttempts--;
-         // Wait a second and try again
-         yield return new WaitForSeconds(1.0f);
-      }
-      
-      if (numAttempts == 0) {
-         Debug.LogWarning("Spider Web couldn't find a location for its Jump Down trigger");
-      }
-   }
-
-   private void tryPlaceJumpDownTrigger () {
-      float minimumDistance = 0.2f;
-      int maxChecks = 50;
-      float distancePerCheck = 0.05f;
-      Vector3 placeLocation = Vector3.zero;
-      bool foundLocation = false;
-
-      // Check a number of different places above us, to find a location for the player to land
-      for (int i = 0; i < maxChecks; i++) {
-         Vector3 checkLocation = transform.position + (Vector3.up * (i * distancePerCheck + minimumDistance));
-
-         if (checkForColliders(checkLocation, PLAYER_COLLIDER_RADIUS)) {
-            continue;
-         } else {
-            placeLocation = checkLocation;
-            foundLocation = true;
-            break;
-         }
-      }
-
-      if (foundLocation) {
-         jumpDownTrigger.transform.position = placeLocation;
-      } else {
-         Debug.LogWarning("Spider Web couldn't find a location for the player to land");
       }
    }
 
    public void receiveData (DataField[] dataFields) {
       foreach (DataField field in dataFields) {
-         if (field.k.CompareTo(DataField.SPIDER_WEB_HEIGHT_KEY) == 0) {
-            if (field.tryGetFloatValue(out float h)) {
-               jumpHeight = h + CONSTANT_HEIGHT;
+         if (field.k.CompareTo(DataField.SPIDER_WEB_X_KEY) == 0) {
+            if (field.tryGetFloatValue(out float value)) {
+               destinationX = value * MapCreationTool.SpiderWebMapEditor.EDITOR_SCALING_FACTOR;
+            }
+         }
+
+         if (field.k.CompareTo(DataField.SPIDER_WEB_Y_KEY) == 0) {
+            if (field.tryGetFloatValue(out float value)) {
+               destinationY = value * MapCreationTool.SpiderWebMapEditor.EDITOR_SCALING_FACTOR;
             }
          }
       }
@@ -169,20 +76,17 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
          AchievementManager.registerUserAchievement(puppet.entity, ActionType.JumpOnBouncePad);
       }
 
-      puppet.endPos = calculateEndPos(puppet.startPos);
+      puppet.endPos = getDestination();
 
       // Instantiate the bounce effect
       SimpleAnimation anim = Instantiate(webBouncePrefab, transform.position, Quaternion.identity).GetComponent<SimpleAnimation>();
 
-      if (isDroppingPuppet(puppet)) {
-         anim.delayStart = true;
-         anim.initialDelay = 0.5f;
-      }
-
       // Determine what direction the player should be facing in while they bounce / fall
-      Direction fallDir = isDroppingPuppet(puppet) ? Direction.South : Direction.North;
-      puppet.entity.fallDirection = (int) fallDir;
-      puppet.entity.facing = fallDir;
+      float bounceAngle = Util.angle(getDestination() - (Vector2) puppet.entity.transform.position);
+      Direction bounceDir = Util.getFacing(bounceAngle);
+
+      puppet.entity.fallDirection = (int) bounceDir;
+      puppet.entity.facing = bounceDir;
 
       if (puppet.entity.isLocalPlayer) {
          getPlayer(puppet).noteWebBounce(this);
@@ -194,7 +98,7 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
          updateLocalPlayerPosition(puppet);
       }
 
-      AnimationCurve moveCurve = (isContinuingWebBounce(puppet)) ? movementCurveHalf : movementCurve;
+      AnimationCurve moveCurve = (puppet.entity.passedOnTemporaryControl) ? movementCurveHalf : movementCurve;
 
       // End control if time has run out
       if (puppet.time >= moveCurve.keys.Last().time) {
@@ -208,39 +112,42 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
    }
 
    private void onControlEnded (ControlData puppet) {
-      if (isDroppingPuppet(puppet) && _webBelow) {
-         // Give control to lower web
-         _webBelow.tryBouncePlayer(puppet.entity.GetComponent<PlayerBodyEntity>());
-      } else if (!isDroppingPuppet(puppet) && _webAbove) {
-         // Give control to upper web
-         _webAbove.tryBouncePlayer(puppet.entity.GetComponent<PlayerBodyEntity>());
+      if (_linkedWeb) {
+         // Give control to linked web
+         puppet.entity.passedOnTemporaryControl = true;
+         _linkedWeb.tryBouncePlayer(puppet.entity.getPlayerBodyEntity());
+      } else {
+         puppet.entity.passedOnTemporaryControl = false;
       }
    }
 
    private void updateLocalPlayerPosition (ControlData puppet) {
       float timeSinceBounce = puppet.time;
 
-      // If player is falling, reverse curve
-      if (isDroppingPuppet(puppet)) {
-         float bounceTime = (isContinuingWebBounce(puppet)) ? getBounceDuration() / 2.0f : getBounceDuration();
-         timeSinceBounce = bounceTime - timeSinceBounce;
-      }
+      bool continuedBounce = puppet.entity.passedOnTemporaryControl;
 
-      AnimationCurve moveCurve = (isContinuingWebBounce(puppet)) ? movementCurveHalf : movementCurve;
+      AnimationCurve moveCurve = (continuedBounce) ? movementCurveHalf : movementCurve;
 
       // Move the player according to animation curves
       float t = moveCurve.Evaluate(timeSinceBounce);
 
-      if (isDroppingPuppet(puppet)) {
-         t = 1.0f - t;
-      }
-
       PlayerBodyEntity player = getPlayer(puppet);
-      puppet.entity.getRigidbody().MovePosition(Vector3.LerpUnclamped(puppet.startPos, puppet.endPos, t));
-   }
 
-   private bool isContinuingWebBounce (ControlData puppet) {
-      return (isDroppingPuppet(puppet) && _webAbove) || (!isDroppingPuppet(puppet) && _webBelow);
+      // If the player is jumping onto a web, we need to scale the animation
+      if (!continuedBounce) {
+         // Up until the player bounces, we want them to jump at a normal speed
+         if (t <= BOUNCE_POINT) {
+            t /= BOUNCE_POINT;
+            puppet.entity.getRigidbody().MovePosition(Vector3.LerpUnclamped(puppet.startPos, transform.position, t));
+
+         // Over the rest of the bounce, the player needs to make it to the end point
+         } else {
+            t = (t - BOUNCE_POINT) / (1.0f - BOUNCE_POINT);
+            puppet.entity.getRigidbody().MovePosition(Vector3.LerpUnclamped(transform.position, puppet.endPos, t));
+         }
+      } else {
+         puppet.entity.getRigidbody().MovePosition(Vector3.LerpUnclamped(transform.position, puppet.endPos, t));
+      }
    }
 
    protected override void onForceFastForward (ControlData puppet) {
@@ -254,52 +161,16 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
       if (player == null || !player.isLocalPlayer) {
          return;
       }
-
-      bool bouncingToWebBelow = isAboveWeb(player.transform) && _webBelow;
-      bool bouncingToWebAbove = !isAboveWeb(player.transform) && _webAbove;
       
       // Only check for colliders if  we're not bouncing to another web
-      if (!bouncingToWebAbove && !bouncingToWebBelow) {
+      if (!_linkedWeb) {
          // Check that there are no colliders at the arriving position
-         if (checkForColliders(calculateEndPos(player.transform.position), player.getMainCollider().radius)) {
+         if (checkForColliders(getDestination(), player.getMainCollider().radius)) {
             return;
          }
       }
 
       tryTriggerController(player);
-   }
-
-   private bool isAboveWeb (Transform entity) {
-      return (entity.position.y > transform.position.y);
-   }
-
-   private bool isDroppingPuppet (ControlData puppet) {
-      return (puppet.endPos.y < puppet.startPos.y);
-   }
-
-   private Vector2 calculateEndPos (Vector2 startPosition) {
-      Vector2 endPos;
-
-      Vector3 webOffset = Vector3.up * 0.1f;
-
-      if (Vector2.Distance(startPosition, jumpUpTrigger.transform.position) < Vector2.Distance(startPosition, jumpDownTrigger.transform.position)) {
-         // Player is jumping up
-         if (_webAbove) {
-            endPos = _webAbove.transform.position - webOffset;
-         } else {
-            endPos = jumpDownTrigger.transform.position;
-         }
-
-      } else {
-         // Player is jumping down
-         if (_webBelow) {
-            endPos = _webBelow.transform.position + webOffset;
-         } else {
-            endPos = jumpUpTrigger.transform.position;
-         }
-      }
-
-      return endPos;
    }
 
    private PlayerBodyEntity getPlayer (ControlData puppet) {
@@ -321,14 +192,6 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
       return (isHalfBounce) ? shadowCurveHalf : shadowCurve;
    }
 
-   public bool hasWebBelow () {
-      return _webBelow != null;
-   }
-
-   public bool hasWebAbove () {
-      return _webAbove != null;
-   }
-
    public float getBounceDuration () {
       return movementCurve.keys.Last().time;
    }
@@ -339,13 +202,22 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
       
       // Ignore enemies
       foreach (Collider2D collider in _colliderBuffer) {
-         if (collider.GetComponent<Enemy>()) {
+         if (collider?.GetComponent<Enemy>()) {
             colCount--;
          }
       }
 
       // Return true if we found any colliders
       return colCount > 0;
+   }
+
+   private Vector2 getDestination () {
+      return new Vector2(destinationX, destinationY) + (Vector2)transform.position;
+   }
+
+   private void OnDrawGizmosSelected () {
+      Gizmos.color = Color.red;
+      Gizmos.DrawWireSphere(transform.position + new Vector3(destinationX, destinationY, 0.0f), 0.15f);
    }
 
    #region Private Variables
@@ -356,8 +228,11 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
    // A dictionary of player IDs, with their PlayerBodyEntities
    private Dictionary<int, PlayerBodyEntity> _playerIDEntityPairs = new Dictionary<int, PlayerBodyEntity>();
 
-   // References to webs above or below this web, to link up with, if any
-   private SpiderWeb _webAbove = null, _webBelow = null;
+   // A reference to the web we are linked to, if we are linked to one.
+   private SpiderWeb _linkedWeb = null;
+
+   // How far through the animation the player 'bounces'
+   private const float BOUNCE_POINT = 0.25f;
 
    #endregion
 }

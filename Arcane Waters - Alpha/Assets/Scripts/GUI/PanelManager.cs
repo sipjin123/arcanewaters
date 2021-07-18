@@ -107,6 +107,10 @@ public class PanelManager : GenericGameManager {
          ((AdminVoyagePanel) get(Panel.Type.AdminVoyage)).togglePanel();
       } else if (KeyUtils.GetKeyDown(Key.F6)) {
          adminGameSettingsPanel.togglePanel();
+      } else if (KeyUtils.GetKeyDown(Key.F3)) {
+         if (Global.isLoggedInAsAdmin()) {
+            AdminPanel.self.show();
+         }
       }
 
       if (KeyUtils.GetKeyDown(Key.Tab)) {

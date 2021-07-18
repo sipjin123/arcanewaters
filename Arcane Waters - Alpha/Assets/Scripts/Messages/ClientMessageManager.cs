@@ -123,6 +123,11 @@ public class ClientMessageManager : MonoBehaviour {
          case ErrorMessage.Type.ServerOffline:
             PanelManager.self.noticeScreen.show(msg.customMessage);
             return;
+         case ErrorMessage.Type.PlayerCountLimitReached:
+         case ErrorMessage.Type.UserNotAdmin:
+            PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login);
+            TitleScreen.self.displayError(msg.errorType, msg);
+            return;
          /*case ErrorMessage.Type.NoGoldForCargo:
          case ErrorMessage.Type.OutOfCargoSpace:
          case ErrorMessage.Type.PortOutOfCargo:
@@ -429,6 +434,7 @@ public class ClientMessageManager : MonoBehaviour {
       Global.initialFacingDirection = msg.initialFacingDirection;
       Global.lastAccountEmail = msg.accountEmail;
       Global.lastAccountCreationTime = System.DateTime.FromBinary(msg.accountCreationTime);
+      Global.currentlySelectedUserId = msg.userId;
       // We have already logged in successfully for the first time
       Global.isFirstLogin = false;
 

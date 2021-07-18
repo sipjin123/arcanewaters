@@ -611,6 +611,16 @@ public class NetworkedServer : NetworkedBehaviour
       return RedirectionManager.self.redirectUserToBestServer(userId, userName, voyageId, isSinglePlayer, destinationAreaKey, currentServerPort, currentAddress, currentAreaKey);
    }
 
+   [ServerRPC]
+   public void MasterServer_OnUserConnectsToServer (int userId) {
+      VoyageGroupManager.self.onUserConnectsToServer(userId);
+   }
+
+   [ServerRPC]
+   public void MasterServer_OnUserDisconnectsFromServer (int userId) {
+      VoyageGroupManager.self.onUserDisconnectsFromServer(userId);
+   }
+
    #region Private Variables
 
    #endregion

@@ -27,7 +27,6 @@ namespace Assets.Scripts.Network
          startTime = DateTime.UtcNow;
          commandLineArgs = System.Environment.GetCommandLineArgs();
          D.adminLog(GetType().ToString() + " Performance Management Enabled: " + isPerformanceManagementEnabled(), D.ADMIN_LOG_TYPE.Initialization);
-         D.adminLog(GetType().ToString() + " Metrics Management Enabled: " + isMetricsManagementEnabled(), D.ADMIN_LOG_TYPE.Initialization);
          InvokeRepeating("execute", 0.0f, UpdateFrequencySecs);
       }
 
@@ -47,57 +46,8 @@ namespace Assets.Scripts.Network
          if (isPerformanceManagementEnabled()) {
             removeUnusedAssets();
          }
-
-         if (isMetricsManagementEnabled()) {
-            try {
-               string machineID = string.Empty;
-
-               #if UNITY_STANDALONE_WIN
-               machineID = System.Environment.MachineName;
-               #endif
-
-               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-
-                  var proc = Process.GetCurrentProcess();
-                  var procName = proc.ProcessName;
-                  var procID = proc.Id.ToString();
-
-                  //D.debug($"Metrics Manager: server={machineID} - users={server.connectedUserIds.Count}");
-                  DB_Main.setMetricPlayersCount(machineID, procName, procID, server.connectedUserIds.Count);
-
-                  // Server.area_instances
-                  var areaInstances = InstanceManager.self.getAreas();
-                  //D.debug($"Metrics Manager: server={machineID} - areaInstances={areaInstances.Length}");
-                  DB_Main.setMetricAreaInstancesCount(machineID, procName, procID, areaInstances.Length);
-
-                  // Server.port
-                  var port = MyNetworkManager.self.telepathy.port;
-                  //D.debug($"Metrics Manager: server={machineID} - areaInstances={areaInstances.Length}");
-                  DB_Main.setMetricPort(machineID, procName, procID, port);
-
-                  // Server.ip
-                  var ip = MyNetworkManager.self.networkAddress;
-                  //D.debug($"Metrics Manager: server={machineID} - areaInstances={areaInstances.Length}");
-                  DB_Main.setMetricIP(machineID, procName, procID, ip);
-
-                  // Server.uptime (Ticks)
-                  long uptime = DateTime.UtcNow.Ticks - startTime.Ticks;
-                  DB_Main.setMetricUptime(machineID, procName, procID, uptime);
-
-                  //D.debug($"Metrics Manager: address={ip} - port={port}");
-               });
-
-            } catch (Exception ex) {
-               D.warning("MetricsManager: Couldn't update metrics. | " + ex.Message);
-            }
-         }
-
       }
-
-      private bool isMetricsManagementEnabled () {
-         return commandLineArgs.Contains("METRICS");
-      }
-
+  
       private bool isPerformanceManagementEnabled () {
          return commandLineArgs.Contains("LEAN");
       }

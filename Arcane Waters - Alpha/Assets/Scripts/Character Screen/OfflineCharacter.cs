@@ -60,6 +60,12 @@ public class OfflineCharacter : ClientMonoBehaviour {
    // Guild Icon GameObject
    public GameObject guildIconGameObject;
 
+   // The left rotate button
+   public Button leftRotateButton;
+
+   // The right rotate button
+   public Button rightRotateButton;
+
    #endregion
 
    protected override void Awake () {
@@ -73,6 +79,19 @@ public class OfflineCharacter : ClientMonoBehaviour {
       // If we just started creating a new character, then update the panel to reflect our gender
       if (this.creationMode) {
          setTextsVisible(false);
+      }
+
+      // Get a reference to the buttons that rotate the character
+      foreach (Button button in this.gameObject.transform.parent.GetComponentsInChildren<Button>()) {
+         if (button.name.ToLower().Contains("left")) {
+            leftRotateButton = button;
+            leftRotateButton.onClick.AddListener(this.GetComponentInChildren<CharacterStack>().rotateDirectionClockWise);
+         } else {
+            if (button.name.ToLower().Contains("right")) {
+               rightRotateButton = button;
+               rightRotateButton.onClick.AddListener(this.GetComponentInChildren<CharacterStack>().rotateDirectionCounterClockWise);
+            }
+         }
       }
    }
 
