@@ -74,6 +74,7 @@ public class TreasureManager : MonoBehaviour {
 
       // Note which instance the chest is in
       chest.instanceId = instance.id;
+      chest.lootGroupId = spot.lootGroupId;
 
       // Keep track of the chests that we've created
       _chests.Add(chest.id, chest);

@@ -372,6 +372,9 @@ namespace MapCreationTool.Serialization
       public const string IS_PVP_MONSTER = "is pvp monster";
       public const string PVP_MONSTER_POWERUP = "pvp monster powerup";
 
+      public const string LOOT_GROUP_ID = "loot group id";
+      public const string SPAWN_FREQUENCY = "spawn frequency";
+      
       public string k; // Key
       public string v; // Value
 

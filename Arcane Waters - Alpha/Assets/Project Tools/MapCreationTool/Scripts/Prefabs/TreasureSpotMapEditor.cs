@@ -43,6 +43,7 @@ namespace MapCreationTool
                useCustomSprite = false;
             }
          }
+
          if (field.k.CompareTo(DataField.TREASURE_SPRITE_TYPE_KEY) == 0) {
             if (useCustomSprite) {
                GetComponent<SpriteRenderer>().sprite = ImageManager.getSprites(field.v)[0];

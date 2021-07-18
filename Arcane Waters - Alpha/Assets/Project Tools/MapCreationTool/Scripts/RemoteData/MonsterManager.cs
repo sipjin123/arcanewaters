@@ -16,6 +16,8 @@ namespace MapCreationTool
       public Dictionary<int, BattlerXMLContent> idToLandMonster { get; private set; }
       public Dictionary<int, SeaMonsterXMLContent> idToSeaMonster { get; private set; }
 
+      public List<LootGroupData> lootGroups = new List<LootGroupData>();
+
       public bool loaded { get; private set; }
 
       private void Awake () {
@@ -25,6 +27,7 @@ namespace MapCreationTool
       private IEnumerator Start () {
          yield return new WaitUntil(() => ImageManager.self != null);
 
+         loadAllLootGroupData();
          loadAllMonsters();
       }
 
@@ -58,6 +61,13 @@ namespace MapCreationTool
          return landMonsters.Select(n => new SelectOption(
             ((int) n.battler.enemyType).ToString(),
             n.battler.enemyType + ": " + n.battler.enemyName)
+         ).ToArray();
+      }
+
+      public SelectOption[] formLootGroupSelectionOptions () {
+         return lootGroups.Select(n => new SelectOption(
+            (n.xmlId).ToString(),
+            n.lootGroupName)
          ).ToArray();
       }
 
@@ -95,6 +105,25 @@ namespace MapCreationTool
       public int landMonsterCount
       {
          get { return landMonsters.Length; }
+      }
+
+      private void loadAllLootGroupData () {
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            List<XMLPair> lootDropXmlData = DB_Main.getBiomeTreasureDrops();
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               // Loads all the loot drops xml
+               foreach (XMLPair xmlPair in lootDropXmlData) {
+                  TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
+                  LootGroupData lootDropData = Util.xmlLoad<LootGroupData>(newTextAsset);
+                  int uniqueId = xmlPair.xmlId;
+
+                  if (!lootGroups.Exists(_=>_.xmlId == uniqueId)) {
+                     lootGroups.Add(lootDropData);
+                  }
+               }
+            });
+         });
       }
 
       private void loadAllMonsters () {

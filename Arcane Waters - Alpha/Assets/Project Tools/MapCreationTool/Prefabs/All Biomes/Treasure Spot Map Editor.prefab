@@ -61,6 +61,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -269,6 +270,7 @@ MonoBehaviour:
   title: Treasure Spot
   canInheritPosition: 0
   canControlPosition: 0
+  positionStep: {x: 0, y: 0}
   dataFields:
   - name: spawn chance
     defaultValue: 1
@@ -283,6 +285,9 @@ MonoBehaviour:
   - name: treasure sprite type
     toolTip: 
     type: 13
+  - name: loot group id
+    toolTip: 
+    type: 17
 --- !u!114 &7389063324670619871
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -295,25 +300,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 1
-  blurSize: 0
-  color: {r: 1, g: 1, b: 1, a: 1}
-  blurAlphaMultiplier: 0.7
-  blurAlphaChoke: 1
-  invertBlur: 0
-  alphaThreshold: 0.05
-  buffer: 0
-  includeChildren: 0
-  childLayers:
-    serializedVersion: 2
-    m_Bits: 1
-  ignoreChildNames: []
-  sortMethod: 1
-  isAnimated: 1
-  useExportedFrame: 0
-  customFrameName: 
-  generatesOnStart: 0
-  generatesOnValidate: 1
+  outlineRenderer: {fileID: 0}
+  _renderers: []
+  _isVisible: 0
 --- !u!58 &7753525932266648148
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -345,6 +334,7 @@ MonoBehaviour:
   spawnChance: 0
   useCustomSprite: 0
   customSpritePath: 
+  mapDataId: 0
 --- !u!1 &8551196386268900114
 GameObject:
   m_ObjectHideFlags: 0

@@ -246,6 +246,7 @@ namespace MapCreationTool
          List<ExportedPrefab001> pvpShipyardTowerData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> pvpWaypointsData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> pvpMonsterSpawnerData = new List<ExportedPrefab001>();
+         List<ExportedPrefab001> pvpLootSpawnData = new List<ExportedPrefab001>();
 
          int unrecognizedPrefabs = 0;
          int cropSpotCounter = 0;
@@ -311,6 +312,10 @@ namespace MapCreationTool
             } else if (original.GetComponent<ShipEntity>() != null) {
                if (prefab.d != null) {
                   shipData.Add(prefab);
+               }
+            } else if (original.GetComponent<PvpLootSpawn>() != null) {
+               if (prefab.d != null) {
+                  pvpLootSpawnData.Add(prefab);
                }
             } else {
                Vector3 targetLocalPos = new Vector3(prefab.x, prefab.y, 0) * 0.16f + Vector3.back * 10;
@@ -416,7 +421,7 @@ namespace MapCreationTool
 
          area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData, 
             shipData, seaMonstersData, bossSpawnerData, pvpTowerData, 
-            pvpBaseData, pvpShipyardTowerData, pvpWaypointsData, pvpMonsterSpawnerData);
+            pvpBaseData, pvpShipyardTowerData, pvpWaypointsData, pvpMonsterSpawnerData, pvpLootSpawnData);
       }
    }
 }

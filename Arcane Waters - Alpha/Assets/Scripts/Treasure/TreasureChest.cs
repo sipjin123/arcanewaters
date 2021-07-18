@@ -103,6 +103,9 @@ public class TreasureChest : NetworkBehaviour {
    // If is interacted locally
    public bool isLocallyInteracted;
 
+   // The loot group id reference
+   public int lootGroupId;
+
    // The areakey
    [SyncVar]
    public string areaKey;
@@ -289,7 +292,7 @@ public class TreasureChest : NetworkBehaviour {
 
       Instance instance = InstanceManager.self.getInstance(instanceId);
       Biome.Type biome = instance.biome;
-      List<TreasureDropsData> treasureDropsList = TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome, rarity).ToList();
+      List<TreasureDropsData> treasureDropsList = lootGroupId > 0 ? TreasureDropsDataManager.self.getTreasureDropsById(lootGroupId, rarity) : TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome, rarity).ToList();
 
       if (treasureDropsList.Count < 1) {
          D.error("There are no treasure drops generated for Biome:{" + biome + "}");
