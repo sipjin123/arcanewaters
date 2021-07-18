@@ -326,7 +326,7 @@ public class SeaEntity : NetEntity
       base.Update();
 
       // Regenerate health
-      if (NetworkServer.active && isSeamonsterPvp() && regenerateHealth && currentHealth < maxHealth) {
+      if (NetworkServer.active && isSeamonsterPvp() && regenerateHealth && currentHealth < maxHealth && currentHealth > 0) {
          currentHealth += (int) HEALTH_REGEN_RATE;
       }
 
@@ -1850,6 +1850,10 @@ public class SeaEntity : NetEntity
 
    public void setHealthRegeneration (bool isOn) {
       if (isSeamonsterPvp()) {
+         // Do not enable regeneration if this entity is already dead
+         if (isOn && currentHealth < 1) {
+            return; 
+         }
          regenerateHealth = isOn;
       }
    }
