@@ -264,7 +264,10 @@ public class Battle : NetworkBehaviour {
                      BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0, AbilityType.Standard);
                   }
                } else {
-                  BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0, AbilityType.Standard);
+                  if (!battler.isDisabledByDebuff) {
+                     BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0, AbilityType.Standard);
+                     D.adminLog("This battler {" + battler.enemyType + "} is disabled, skipping action", D.ADMIN_LOG_TYPE.CombatStatus);
+                  }
                }
             }
          } else {

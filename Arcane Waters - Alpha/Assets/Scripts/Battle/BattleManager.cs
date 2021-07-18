@@ -864,6 +864,11 @@ public class BattleManager : MonoBehaviour {
       // Get the Battler object
       Battler source = battle.getBattler(actionToApply.sourceId);
 
+      if (source.isDisabledByDebuff) {
+         D.adminLog("Cancel action because source is frozen", D.ADMIN_LOG_TYPE.CombatStatus);
+         yield break;
+      }
+
       if (actionToApply is AttackAction || actionToApply is BuffAction) {
          BattleAction action = (BattleAction) actionToApply;
          Battler target = battle.getBattler(action.targetId);
@@ -924,13 +929,9 @@ public class BattleManager : MonoBehaviour {
                target.health = Util.clamp<int>(target.health, 0, target.getStartingHealth());
                source.canExecuteAction = true;
 
-               // TODO: Enable/Remove this after public playtest
-               bool forceDisableStatus = false;
-               if (!forceDisableStatus) {
-                  // Apply attack status here
-                  if (abilityDataReference.statusType != Status.Type.None) {
-                     StartCoroutine(CO_UpdateStatusAfterCollision(battle, target, abilityDataReference.statusType, abilityDataReference.statusDuration));
-                  }
+               // Apply attack status here
+               if (abilityDataReference.statusType != Status.Type.None) {
+                  StartCoroutine(CO_UpdateStatusAfterCollision(target, abilityDataReference.statusType, abilityDataReference.statusDuration, action.actionEndTime));
                }
 
                // Setup server to declare a battler is dead when the network time reaches the time action ends

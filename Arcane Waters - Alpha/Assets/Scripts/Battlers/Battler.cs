@@ -1311,6 +1311,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield break;
             }
 
+            if (sourceBattler.isDisabledByDebuff) {
+               D.adminLog("Cancel attack display because source is disabled by status", D.ADMIN_LOG_TYPE.CombatStatus);
+               yield break;
+            }
+
             // Plays the melee cast VFX ability before jumping
             if (!abilityDataReference.useSpecialAnimation) {
                EffectManager.playCastAbilityVFX(sourceBattler, action, sourceBattler.transform.position, BattleActionType.Attack);
@@ -1514,6 +1519,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield break;
             }
 
+            if (sourceBattler.isDisabledByDebuff) {
+               D.adminLog("Cancel attack display because source is disabled by status", D.ADMIN_LOG_TYPE.CombatStatus);
+               yield break;
+            }
+
             const float offsetX = .3f;
             float projectileSpawnOffsetX = sourceBattler.isAttacker() ? offsetX : -offsetX;
             float projectileSpawnOffsetY = .28f;
@@ -1655,6 +1665,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Make sure the battlers are still alive at this point
             if (sourceBattler.isDead() || targetBattler.hasDisplayedDeath()) {
+               yield break;
+            }
+
+            if (sourceBattler.isDisabledByDebuff) {
+               D.adminLog("Cancel attack display because source is disabled by status", D.ADMIN_LOG_TYPE.CombatStatus);
                yield break;
             }
 
@@ -1943,9 +1958,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public void applyStatusEffect (Status.Type statusType, float duration) {
+      float durationModifier = duration / BattleManager.TICK_INTERVAL;
+
       // Register debuff list if it does not exist yet
       if (!debuffList.ContainsKey(statusType)) {
-         debuffList.Add(statusType, duration);
+         debuffList.Add(statusType, durationModifier);
       }
    }
 
