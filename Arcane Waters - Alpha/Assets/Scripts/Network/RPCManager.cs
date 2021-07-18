@@ -4549,7 +4549,11 @@ public class RPCManager : NetworkBehaviour
 
       // If the player is in a voyage area or is in ghost mode, warp him to the closest town
       if (VoyageManager.isAnyLeagueArea(playerToRemove.areaKey) || VoyageManager.isPvpArenaArea(playerToRemove.areaKey) || VoyageManager.isTreasureSiteArea(playerToRemove.areaKey) || playerToRemove.isGhost) {
-         playerToRemove.spawnInBiomeHomeTown();
+         if (VoyageManager.isPvpArenaArea(playerToRemove.areaKey)) {
+            playerToRemove.spawnInNewMap(Area.STARTING_TOWN);
+         } else {
+            playerToRemove.spawnInBiomeHomeTown();
+         }
 
          // Notify the removal of the user from the voyage
          Target_ReceiveUserLeftVoyage(playerToRemove.connectionToClient, playerToRemove.userId);
