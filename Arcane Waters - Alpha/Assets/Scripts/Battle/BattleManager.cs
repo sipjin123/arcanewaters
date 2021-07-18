@@ -962,9 +962,9 @@ public class BattleManager : MonoBehaviour {
       }
    }
 
-   protected IEnumerator CO_UpdateStatusAfterCollision (Battle battle, Battler battlerReference, Status.Type statusType, float statusDuration) {
+   protected IEnumerator CO_UpdateStatusAfterCollision (Battler battlerReference, Status.Type statusType, float statusDuration, double endTime) {
       // Wait for client side attack to finish before applying the status effect
-      while (battlerReference.health != battlerReference.displayedHealth) {
+      while (NetworkTime.time < endTime) {
          yield return 0;
       }
 
@@ -1075,7 +1075,7 @@ public class BattleManager : MonoBehaviour {
             winner.player.rpc.modifyItemDurability(winner.player, damageWeapon == false ? -1 : winner.weaponManager.equippedWeaponId, Item.ITEM_DURABILITY_DEDUCTION,
                damageArmor == false ? -1 : winner.armorManager.equippedArmorId, Item.ITEM_DURABILITY_DEDUCTION);
          } else if (winner.enemyType == Enemy.Type.PlayerBattler && battle.isPvp) {
-            winner.player.rpc.Target_DisplayServerMessage("You have defeated " + winningBattlers[0].player.entityName + " in a duel!");
+            winner.player.rpc.Target_DisplayServerMessage("You have defeated " + defeatedBattlers[0].player.entityName + " in a duel!");
          }
       }
 

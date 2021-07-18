@@ -75,6 +75,9 @@ public class AttackAbilityData : BasicAbilityData
       data.projectileSpritePath = datacopy.projectileSpritePath;
       data.projectileScale = datacopy.projectileScale;
       data.maxTargets = datacopy.maxTargets;
+      data.statusType = datacopy.statusType;
+      data.statusDuration = datacopy.statusDuration;
+      data.statusChance = datacopy.statusChance;
 
       return data;
    }
