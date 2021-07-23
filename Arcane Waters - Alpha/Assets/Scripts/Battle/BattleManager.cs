@@ -864,7 +864,7 @@ public class BattleManager : MonoBehaviour {
       // Get the Battler object
       Battler source = battle.getBattler(actionToApply.sourceId);
 
-      if (source.isDisabledByDebuff) {
+      if (source.isDisabledByStatus()) {
          D.adminLog("Cancel action because source is frozen", D.ADMIN_LOG_TYPE.CombatStatus);
          yield break;
       }

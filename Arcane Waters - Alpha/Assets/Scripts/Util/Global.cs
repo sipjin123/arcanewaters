@@ -47,6 +47,9 @@ public class Global
    // Gets set to true when the fast login should start in host mode
    public static bool isFastLoginHostMode = false;
 
+   // If stun status effects are enabled
+   public static bool enableStuns = false;
+
    // The ID of the currently selected user for our account
    public static int currentlySelectedUserId = 0;
 

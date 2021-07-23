@@ -1311,7 +1311,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield break;
             }
 
-            if (sourceBattler.isDisabledByDebuff) {
+            if (sourceBattler.isDisabledByStatus()) {
                D.adminLog("Cancel attack display because source is disabled by status", D.ADMIN_LOG_TYPE.CombatStatus);
                yield break;
             }
@@ -1519,7 +1519,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield break;
             }
 
-            if (sourceBattler.isDisabledByDebuff) {
+            if (sourceBattler.isDisabledByStatus()) {
                D.adminLog("Cancel attack display because source is disabled by status", D.ADMIN_LOG_TYPE.CombatStatus);
                yield break;
             }
@@ -1668,7 +1668,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield break;
             }
 
-            if (sourceBattler.isDisabledByDebuff) {
+            if (sourceBattler.isDisabledByStatus()) {
                D.adminLog("Cancel attack display because source is disabled by status", D.ADMIN_LOG_TYPE.CombatStatus);
                yield break;
             }
@@ -2396,6 +2396,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    #endregion 
 
    #region Bool functions
+
+   public bool isDisabledByStatus () {
+      if (!Global.enableStuns) {
+         return false;
+      }
+
+      return isDisabledByDebuff;
+   }
 
    public bool hasBuffOfType (int globalAbilityID) {
       foreach (BuffTimer buff in this.buffs) {
