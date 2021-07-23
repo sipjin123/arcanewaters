@@ -158,6 +158,12 @@ public class InstanceManager : MonoBehaviour {
       instance.pvpWaypoints.Add(waypoint);
    }
 
+   public void addLootSpawnerToInstance (PvpLootSpawn lootSpawn, Instance instance) {
+      instance.entities.Add(lootSpawn);
+      instance.lootSpawners.Add(lootSpawn);
+      lootSpawn.instanceId = instance.id;
+   }
+
    public Instance getInstance (int instanceId) {
       if (_instances.ContainsKey(instanceId)) {
          return _instances[instanceId];

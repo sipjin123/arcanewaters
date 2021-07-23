@@ -240,6 +240,7 @@ public class PvpGame : MonoBehaviour {
       StartCoroutine(CO_SpawnSeamonsters());
       StartCoroutine(CO_SpawnWaves());
       StartCoroutine(CO_SetupLatePlayers());
+      StartCoroutine(CO_SpawnPvpLootSpawners()); 
    }
 
    private IEnumerator CO_SpawnSeamonsters () {
@@ -251,6 +252,18 @@ public class PvpGame : MonoBehaviour {
       foreach (PvpMonsterSpawner monsterSpawner in instance.pvpMonsterSpawners) {
          monsterSpawner.instanceId = instanceId;
          monsterSpawner.initializeSpawner();
+      }
+   }
+
+   private IEnumerator CO_SpawnPvpLootSpawners () {
+      Instance instance = InstanceManager.self.getInstance(instanceId);
+      while (instance.lootSpawners.Count < 1) {
+         yield return 0;
+      }
+
+      foreach (PvpLootSpawn lootSpawn in instance.lootSpawners) {
+         lootSpawn.instanceId = instanceId;
+         lootSpawn.initializeSpawner(10);
       }
    }
 

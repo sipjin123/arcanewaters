@@ -14,13 +14,17 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
    [SyncVar]
    public int lootGroupId;
 
-   // The instance id
-   [SyncVar]
-   public int instanceId;
-
    // If this loot spawner is active
    [SyncVar]
    public bool isActive;
+
+   // The instance that this chest is in
+   [SyncVar]
+   public int instanceId;
+
+   // The area key
+   [SyncVar]
+   public string areaKey;
 
    // The powerup visual indicators
    public GameObject powerupIndicator;
@@ -45,10 +49,30 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
    }
 
    private void Start () {
-      if (NetworkServer.active) {
-         D.debug("Generating powerup");
-         Invoke(nameof(generatePowerup), 10);
+      spriteRendererList = GetComponentsInChildren<SpriteRenderer>(true).ToList();
+      StartCoroutine(CO_SetAreaParent());
+   }
+
+
+   protected IEnumerator CO_SetAreaParent () {
+      // Wait until we have finished instantiating the area
+      while (AreaManager.self.getArea(this.areaKey) == null) {
+         yield return 0;
       }
+
+      Area area = AreaManager.self.getArea(this.areaKey);
+      bool worldPositionStays = area.cameraBounds.bounds.Contains((Vector2) transform.position);
+      setAreaParent(area, worldPositionStays);
+   }
+
+   public void initializeSpawner (float delay) {
+      if (isServer) {
+         generatePowerup(delay);
+      }
+   }
+
+   public void setAreaParent (Area area, bool worldPositionStays) {
+      transform.SetParent(area.transform, worldPositionStays);
    }
 
    private void OnTriggerEnter2D (Collider2D collision) {
@@ -56,41 +80,51 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
          PlayerShipEntity playerEntity = collision.GetComponent<PlayerShipEntity>();
          if (playerEntity != null && playerEntity.instanceId == instanceId) {
             playerEntity.rpc.Target_ReceivePowerup(powerupType, collision.transform.position);
-            updatePowerup(false);
-
-            D.debug("Collided with powerup: " + powerupType);
-            Invoke(nameof(generatePowerup), spawnFrequency);
+            updatePowerup(false, 0);
+            Rpc_ToggleDisplay(false, 0);
+            initializeSpawner(spawnFrequency);
          }
       }
    }
 
-   public void generatePowerup () {
-      updatePowerup(true);
+   [Server]
+   public void generatePowerup (float delay) {
+      Invoke(nameof(delayPowerupTrigger), delay);
+   }
 
-      int rarityLength = Enum.GetValues(typeof(Rarity.Type)).Length;
-      rarity = (Rarity.Type) UnityEngine.Random.Range(1, rarityLength);
-      D.debug("Rarity is: " + rarity);
+   private void delayPowerupTrigger () {
+      rarity = (Rarity.Type) UnityEngine.Random.Range(1, Enum.GetValues(typeof(Rarity.Type)).Length);
+
       if (lootGroupId > 0) {
          List<TreasureDropsData> powerupDataList = TreasureDropsDataManager.self.getTreasureDropsById(lootGroupId, rarity).FindAll(_ => _.powerUp != Powerup.Type.None);
          if (powerupDataList.Count > 0) {
             TreasureDropsData treasureDropsData = powerupDataList.ChooseRandom();
             powerupType = treasureDropsData.powerUp;
-            D.debug("Found powerup level: " + powerupType);
          } else {
             D.debug("No powerup data found in loot group {" + lootGroupId + "} with rarity {" + rarity + "}");
             powerupType = Powerup.Type.SpeedUp;
          }
       }
 
-      powerupSprite.sprite = PowerupManager.self.getPowerupData(powerupType).spriteIcon;
+      updatePowerup(true, (int) powerupType);
+      Rpc_ToggleDisplay(true, (int) powerupType);
    }
 
-   private void updatePowerup (bool isEnabled) {
+   [ClientRpc]
+   public void Rpc_ToggleDisplay (bool isActive, int powerupVal) {
+      updatePowerup(isActive, powerupVal);
+   }
+
+   private void updatePowerup (bool isEnabled, int powerupVal) {
       isActive = isEnabled;
       powerupIndicator.SetActive(isEnabled);
 
       foreach (SpriteRenderer spriteRender in spriteRendererList) {
-         spriteRender.enabled = true;
+         spriteRender.enabled = isEnabled;
+      }
+
+      if (isEnabled) {
+         powerupSprite.sprite = PowerupManager.self.getPowerupData((Powerup.Type) powerupVal).spriteIcon;
       }
    }
 

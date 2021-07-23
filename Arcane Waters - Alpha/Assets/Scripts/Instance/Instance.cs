@@ -36,6 +36,9 @@ public class Instance : NetworkBehaviour
    // The list of pvp waypoints in this instance (server only)
    public List<PvpWaypoint> pvpWaypoints = new List<PvpWaypoint>();
 
+   // The list of pvp loot spaners in this instance (server only)
+   public List<PvpLootSpawn> lootSpawners = new List<PvpLootSpawn>();
+
    // The list of pvp monster spawners in this instance (server only)
    public List<PvpMonsterSpawner> pvpMonsterSpawners = new List<PvpMonsterSpawner>();
 
@@ -475,6 +478,28 @@ public class Instance : NetworkBehaviour
          }
       }
 
+      if (area.pvpLootSpawners.Count > 0) {
+         int index = 0;
+         foreach (ExportedPrefab001 dataField in area.pvpLootSpawners) {
+            PvpLootSpawn pvpLootSpawner = Instantiate(PrefabsManager.self.pvpLootSpawnerPrefab);
+            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
+            pvpLootSpawner.transform.localPosition = targetLocalPos;
+            pvpLootSpawner.setAreaParent(area, false);
+
+            pvpLootSpawner.instanceId = this.id;
+            pvpLootSpawner.areaKey = areaKey;
+            index++;
+
+            IMapEditorDataReceiver receiver = pvpLootSpawner.GetComponent<IMapEditorDataReceiver>();
+            if (receiver != null && dataField.d != null) {
+               receiver.receiveData(dataField.d);
+            }
+
+            InstanceManager.self.addLootSpawnerToInstance(pvpLootSpawner, this);
+            NetworkServer.Spawn(pvpLootSpawner.gameObject);
+         }
+      }
+
       if (area.pvpMonsterSpawnerDataFields.Count > 0) {
          int index = 0;
          foreach (ExportedPrefab001 dataField in area.pvpMonsterSpawnerDataFields) {
@@ -493,25 +518,6 @@ public class Instance : NetworkBehaviour
             }
             InstanceManager.self.addSeaMonsterSpawnerToInstance(pvpMonsterSpawner, this);
             NetworkServer.Spawn(pvpMonsterSpawner.gameObject);
-         }
-      }
-
-      if (area.pvpLootSpawners.Count > 0) {
-         int index = 0;
-         foreach (ExportedPrefab001 dataField in area.pvpLootSpawners) {
-            PvpLootSpawn pvpLootSpawner = Instantiate(PrefabsManager.self.pvpLootSpawnerPrefab);
-            pvpLootSpawner.transform.SetParent(area.transform, false);
-            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
-            pvpLootSpawner.transform.localPosition = targetLocalPos;
-
-            pvpLootSpawner.instanceId = this.id;
-            index++;
-
-            IMapEditorDataReceiver receiver = pvpLootSpawner.GetComponent<IMapEditorDataReceiver>();
-            if (receiver != null && dataField.d != null) {
-               receiver.receiveData(dataField.d);
-            }
-            NetworkServer.Spawn(pvpLootSpawner.gameObject);
          }
       }
 
