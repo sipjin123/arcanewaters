@@ -10,6 +10,13 @@ public class MetricsManager : GenericGameManager
 {
    #region Public Variables
 
+   // Contains the names of the available set of tracked metrics
+   public class MetricNames
+   {
+      // The "Players Count" Metric
+      public const string PLAYERS_COUNT = "PLAYERS_COUNT";
+   }
+
    #endregion
 
    protected override void Awake () {

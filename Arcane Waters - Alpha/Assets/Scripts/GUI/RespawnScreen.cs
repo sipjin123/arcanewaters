@@ -20,6 +20,9 @@ public class RespawnScreen : MonoBehaviour
    // Our associated Canvas Group
    public CanvasGroup canvasGroup;
 
+   // A reference to the text component displayed on the respawn screen button
+   public Text buttonText;
+
    #endregion
 
    public void Update () {
@@ -76,6 +79,8 @@ public class RespawnScreen : MonoBehaviour
          if (TutorialManager3.self.panel.getMode() != TutorialPanel3.Mode.Closed) {
             TutorialManager3.self.panel.gameObject.SetActive(false);
          }
+
+         updateButtonText();
          this.canvasGroup.Show();
       }
    }
@@ -114,10 +119,24 @@ public class RespawnScreen : MonoBehaviour
       return Global.player.getPlayerShipEntity().lifeboat.activeInHierarchy;
    }
 
+   private void updateButtonText () {
+      if (Global.player != null && VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
+         buttonText.text = BUTTON_TEXT_PVP;
+      } else {
+         buttonText.text = BUTTON_TEXT_NORMAL;
+      }
+   }
+
    #region Private Variables
 
    // The number of seconds the player has been dead
    private float _deadTime = 0;
+
+   // The text to be displayed on the button by default
+   private const string BUTTON_TEXT_NORMAL = "Go Home";
+
+   // The text to be displayed on the button when in a pvp game
+   private const string BUTTON_TEXT_PVP = "Respawn";
 
    #endregion
 }

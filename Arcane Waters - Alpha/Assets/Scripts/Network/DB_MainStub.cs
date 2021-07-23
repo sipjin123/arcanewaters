@@ -20,7 +20,7 @@ public class DB_MainStub : MonoBehaviour
       return "";
    }
 
-   public static string fetchZipRawData (string slot) {
+   public static string fetchZipRawData () {
       return "";
    }
 
@@ -34,7 +34,7 @@ public class DB_MainStub : MonoBehaviour
       return "0";
    }
 
-   public static string fetchXmlVersion (string slotstr) {
+   public static string fetchXmlVersion () {
       return "";
    }
 
@@ -1310,6 +1310,10 @@ public class DB_MainStub : MonoBehaviour
 
    public static bool setGameMetric (string machineId, string processId, string processName, string name, string value, Metric.MetricValueType valueType, string description = "") {
       return false;
+   }
+
+   public static MetricCollection getGameMetrics (string name) {
+      return null;
    }
 
    public static void clearOldGameMetrics (int maxLifetimeSeconds = 300) {

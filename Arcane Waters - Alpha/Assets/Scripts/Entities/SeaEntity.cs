@@ -194,6 +194,7 @@ public class SeaEntity : NetEntity
       currentHealth -= amount;
 
       noteAttacker(damageSourceNetId);
+      Rpc_NoteAttacker(damageSourceNetId);
 
       if (isDead()) {
          onDeath();
@@ -374,7 +375,7 @@ public class SeaEntity : NetEntity
             if (this.isBot()) {
                SoundEffectManager.self.playFmodOneShot(SoundEffectManager.ENEMY_SHIP_DESTROYED, this.transform);
             } else {
-               SoundEffectManager.self.playFmodOneShotWithPath(SoundEffectManager.PLAYER_SHIP_DESTROYED, this.transform);
+               SoundEffectManager.self.playFmodWithPath(SoundEffectManager.PLAYER_SHIP_DESTROYED, this.transform);
             }
 
             // Hide all the sprites
@@ -763,7 +764,7 @@ public class SeaEntity : NetEntity
       _lastAttackerNetId = netId;
 
       // If this is a seamonster and is attacked by a tower, immediately retreat to spawn point
-      if (isSeamonsterPvp()) {
+      if (isServer && isSeamonsterPvp()) {
          NetEntity entity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(_lastAttackerNetId);
          if (entity && entity is SeaStructure) {
             retreatToSpawn();
@@ -1366,6 +1367,14 @@ public class SeaEntity : NetEntity
 
          if (isSeamonsterPvp() && iEntity is SeaStructure) {
             continue;
+         }
+
+         // Bot ships shouldn't target invulnerable sea structures
+         if (isBotShip() && iEntity is SeaStructure) {
+            SeaStructure iStructure = iEntity as SeaStructure;
+            if (iStructure._isInvulnerable) {
+               continue;
+            }
          }
 
          // Ignore admins in ghost mode

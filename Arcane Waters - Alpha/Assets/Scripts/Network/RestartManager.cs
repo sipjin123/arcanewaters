@@ -58,6 +58,9 @@ public class RestartManager : GenericGameManager
             player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Kicked, $"You were disconnected.\n\n Reason: Server is currently shutting down"));
          }
       }
+      
+      // Quit application
+      Invoke("QuitWithDelay", 10);
    }
 
    private void checkPendingServerRestarts () {
@@ -107,13 +110,17 @@ public class RestartManager : GenericGameManager
 
       while (_isServerRestartScheduled && _timeOfNextServerRestart > DateTime.UtcNow) {
          double currSeconds = (double) (_timeOfNextServerRestart - DateTime.UtcNow).TotalSeconds;
-         for (int i = 0; i < secondsDiff.Length; i++) {
-            if (Math.Abs(currSeconds - secondsDiff[i]) <= 2.5f) {
-               string timeUnit = "seconds";
-               string message = $"Server will reboot in {secondsDiff[i]} {timeUnit}!";
-               ChatInfo.Type chatType = ChatInfo.Type.Global;
-               ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType);
-               ServerNetworkingManager.self?.sendGlobalChatMessage(chatInfo);
+         
+         // Send chat global notification from master server only 
+         if (ServerNetworkingManager.self.server.isMasterServer()) {
+            for (int i = 0; i < secondsDiff.Length; i++) {
+               if (Math.Abs(currSeconds - secondsDiff[i]) <= 2.5f) {
+                  string timeUnit = "seconds";
+                  string message = $"Server will reboot in {secondsDiff[i]} {timeUnit}!";
+                  ChatInfo.Type chatType = ChatInfo.Type.Global;
+                  ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType);
+                  ServerNetworkingManager.self?.sendGlobalChatMessage(chatInfo);
+               }
             }
          }
 
@@ -126,11 +133,17 @@ public class RestartManager : GenericGameManager
                }
             }
 
-            // Log the server stop event
-            ServerHistoryManager.self.logServerEvent(ServerHistoryInfo.EventType.ServerStop);
-
-            // Update schedule_date to -1 to let jenkins job know that server release job can be started
-            DB_Main.finishDeploySchedule();
+            // Do db updates from master server only 
+            if (ServerNetworkingManager.self.server.isMasterServer()) {
+               // Log the server stop event
+               ServerHistoryManager.self.logServerEvent(ServerHistoryInfo.EventType.ServerStop);
+               
+               // Update schedule_date to -1 to let jenkins job know that server release job can be started
+               DB_Main.finishDeploySchedule();
+               
+               // Quit application
+               Invoke("QuitWithDelay", 10);
+            }
 
             break;
          } else if (currSeconds < 9.0f) {
@@ -139,6 +152,10 @@ public class RestartManager : GenericGameManager
             yield return new WaitForSecondsRealtime(5.0f);
          }
       }
+   }
+
+   private void QuitWithDelay () {
+      Application.Quit();
    }
 
    private IEnumerator CO_LogServerRestartEvent () {

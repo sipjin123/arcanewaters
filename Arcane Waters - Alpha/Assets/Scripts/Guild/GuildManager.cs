@@ -55,28 +55,19 @@ public class GuildManager : MonoBehaviour {
    public void handleInvite (NetEntity sender, int recipientId, GuildInfo guildInfo) {
       NetEntity recipient = EntityManager.self.getEntity(recipientId);
       if (recipient == null) {
-         D.error("Guild invite recipient couldn't be found");
-         noticeScreen.text.text = "Guild invite recipient couldn't be found";
-         noticeScreen.show();
-         noticeScreen.confirmButton.enabled = true;
+         ServerMessageManager.sendError(ErrorMessage.Type.Misc, sender, "Guild invite recipient couldn't be found");
          return;
       }
 
       // Make sure the sender is in a guild and the recipient is not
       if (sender.guildId == 0 || recipient.guildId != 0) {
-         D.debug("Invalid guild invite from " + sender + " to: " + recipientId);
-         noticeScreen.text.text = "Invalid guild invite from " + sender + " to: " + recipientId;
-         noticeScreen.show();
-         noticeScreen.confirmButton.enabled = true;
+         ServerMessageManager.sendError(ErrorMessage.Type.Misc, sender, "Invalid guild invite from " + sender + " to: " + recipientId);
          return;
       }
 
       // Make sure the sender isn't spamming
       if (getRecentInviteCount(sender.userId) > 3) {
          ServerMessageManager.sendError(ErrorMessage.Type.Misc, sender, "You sent too many guild invites recently to send another.");
-         noticeScreen.text.text = "You sent too many guild invites recently to send another.";
-         noticeScreen.show();
-         noticeScreen.confirmButton.enabled = true;
          return;
       }
 
@@ -86,9 +77,6 @@ public class GuildManager : MonoBehaviour {
       // Make sure this invite doesn't already exist
       if (_pastInvites.Contains(invite)) {
          ServerMessageManager.sendError(ErrorMessage.Type.Misc, sender, "This invite has already been sent.");
-         noticeScreen.text.text = "This invite has already been sent.";
-         noticeScreen.show();
-         noticeScreen.confirmButton.enabled = true;
          return;
       }
 

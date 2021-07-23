@@ -12,10 +12,6 @@ public class PvpBase : SeaStructure {
 
    #endregion
 
-   protected override void Awake () {
-      base.Awake();
-   }
-
    protected override void onActivated () {
       base.onActivated();
 

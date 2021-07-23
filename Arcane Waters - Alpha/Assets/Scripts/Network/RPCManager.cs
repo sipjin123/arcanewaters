@@ -6734,7 +6734,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public async void Cmd_AddPrefabCustomization (int areaOwnerId, string areaKey, PrefabState changes) {
+   public async void Cmd_AddPrefabCustomization (int areaOwnerId, string areaKey, PrefabState changes, bool spawnVariation, bool spawnedFromAVariation) {
       Area area = AreaManager.self.getArea(areaKey);
       Instance instance = _player.getInstance();
 
@@ -7187,8 +7187,11 @@ public class RPCManager : NetworkBehaviour
 
       // Don't allow users to warp if they are in battle
       if (_player.hasAttackers()) {
-         ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "You cannot warp while in combat!");
-         return;
+         if (_player.isInCombat()) {
+            int timeUntilCanLeave = (int) (NetEntity.IN_COMBAT_STATUS_DURATION - _player.getTimeSinceAttacked());
+            ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "Cannot warp until out of combat for " + (int) NetEntity.IN_COMBAT_STATUS_DURATION + " seconds. \n(" + timeUntilCanLeave + " seconds left)");
+            return;
+         }
       }
 
       // Background thread
@@ -7415,7 +7418,7 @@ public class RPCManager : NetworkBehaviour
       // Update the PvpStatusPanel
       PvpStatusPanel.self.reset(GameStatsManager.self.getSilverAmount(userId));
    }
-
+   
    [Command]
    public void Cmd_RequestPlayersCount () {
       if (_player == null) {
@@ -7444,6 +7447,12 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
+      // Make sure this is an admin
+      if (!_player.isAdmin()) {
+         D.warning("Received admin command from non-admin!");
+         return;
+      }
+
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          RemoteSettingCollection collection = DB_Main.getRemoteSettings(settingNames);
 
@@ -7465,6 +7474,12 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
+      // Make sure this is an admin
+      if (!_player.isAdmin()) {
+         D.warning("Received admin command from non-admin!");
+         return;
+      }
+
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          bool success = DB_Main.setRemoteSettings(collection);
 
@@ -7477,6 +7492,49 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    private void Target_SetRemoteSettings (NetworkConnection conn, bool success) {
       AdminPanel.self.onSetRemoteSettings(success);
+   }
+
+   [Command]
+   public void Cmd_RequestKickAllNonAdminUsers (string message) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Make sure this is an admin
+      if (!_player.isAdmin()) {
+         D.warning("Received admin command from non-admin!");
+         return;
+      }
+
+      ServerNetworkingManager.self.forceDisconnectAllNonAdminUsers(_player.userId, message);
+   }
+
+   [Command]
+   public void Cmd_RequestPlayersCountMetrics () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+	  
+	  // Make sure this is an admin
+      if (!_player.isAdmin()) {
+         D.warning("Received admin command from non-admin!");
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         MetricCollection metrics = DB_Main.getGameMetrics(MetricsManager.MetricNames.PLAYERS_COUNT);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceivePlayersCountMetrics(_player.connectionToClient, metrics);
+         });
+      });
+   }
+
+   [TargetRpc]
+   private void Target_ReceivePlayersCountMetrics (NetworkConnection conn, MetricCollection metrics) {
+      AdminPanel.self.onPlayersCountMetricsReceived(metrics);
    }
 
    #region Private Variables

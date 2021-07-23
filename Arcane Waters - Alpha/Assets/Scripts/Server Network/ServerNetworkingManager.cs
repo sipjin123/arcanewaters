@@ -179,9 +179,7 @@ public class ServerNetworkingManager : MonoBehaviour
    }
 
    public void claimPlayer (int userId) {
-      if (!server.claimedUserIds.Contains(userId)) {
-         server.claimedUserIds.Add(userId);
-      }
+      server.claimedUserIds[userId] = true;
    }
 
    public void releasePlayerClaim (int userId) {
@@ -294,6 +292,10 @@ public class ServerNetworkingManager : MonoBehaviour
 
    public void onUserDisconnectsFromServer (int userId) {
       server.InvokeServerRpc(server.MasterServer_OnUserDisconnectsFromServer, userId);
+   }
+
+   public void forceDisconnectAllNonAdminUsers (int adminUserId, string message) {
+      server.InvokeServerRpc(server.MasterServer_ForceDisconnectAllNonAdminUsers, adminUserId, message);
    }
 
    #region Private Variables

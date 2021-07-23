@@ -127,7 +127,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    }
 
    public void OnKickPlayerButtonClickedOn (int playerToKick) {
-      PanelManager.self.showConfirmationPanel("Are you sure you want to kick player from the voyage group?",
+      PanelManager.self.showConfirmationPanel("Are you sure you want to kick player from the group?",
          () => {
             // Request the server to remove the user from the group
             if (Global.player != null) {
@@ -156,7 +156,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
    public void OnLeaveGroupButtonClickedOn () {
       // Check if the player is already leaving the group or if it is in combat
-      if (PanelManager.self.countdownScreen.isShowing()) {
+      if (PanelManager.self.countdownScreen.isShowing() || Global.player == null) {
          return;
       }
 
@@ -174,14 +174,14 @@ public class VoyageGroupPanel : ClientMonoBehaviour
          PanelManager.self.countdownScreen.onCountdownEndEvent.RemoveAllListeners();
          PanelManager.self.countdownScreen.cancelButton.onClick.AddListener(() => PanelManager.self.countdownScreen.hide());
          PanelManager.self.countdownScreen.onCountdownEndEvent.AddListener(() => onLeaveCountdownEnd());
-         PanelManager.self.countdownScreen.customText.text = "Leaving Voyage Group in";
+         PanelManager.self.countdownScreen.customText.text = "Leaving Group in";
 
          // Start the countdown
          PanelManager.self.countdownScreen.seconds = LEAVING_COUNTDOWN_SECONDS;
          PanelManager.self.countdownScreen.show();
       } else {
          // In safe areas or in ghost mode, ask confirmation and leave without countdown
-         PanelManager.self.showConfirmationPanel("Are you sure you want to leave the voyage group?", () => onLeaveCountdownEnd());
+         PanelManager.self.showConfirmationPanel("Are you sure you want to leave the group?", () => onLeaveCountdownEnd());
       }
 
       // Close the current voyage panel if it is open

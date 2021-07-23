@@ -1838,6 +1838,9 @@ public class NetEntity : NetworkBehaviour
          }
       }
 
+      // Release any claim on the user
+      ServerNetworkingManager.self.releasePlayerClaim(userId);
+
       // Update the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.setNewLocalPosition(this.userId, newLocalPosition, newFacingDirection, newArea);
@@ -1903,6 +1906,11 @@ public class NetEntity : NetworkBehaviour
 
          // Update the instance status panel
          VoyageStatusPanel.self.onUserSpawn();
+
+         // Setup the pvp structure status panel
+         if (VoyageManager.isPvpArenaArea(area.areaKey)) {
+            PvpStructureStatusPanel.self.onPlayerJoinedPvpGame();
+         }
 
          // Signal the server
          rpc.Cmd_OnClientFinishedLoadingArea();
@@ -2053,6 +2061,8 @@ public class NetEntity : NetworkBehaviour
    public virtual bool isBotShip () { return false; }
 
    public virtual bool isSeaStructure () { return false; }
+
+   public virtual bool isPvpCaptureTargetHolder () { return false; }
 
    public virtual bool isSeaMonster () { return false; }
 

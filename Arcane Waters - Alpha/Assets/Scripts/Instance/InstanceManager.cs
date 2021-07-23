@@ -143,6 +143,11 @@ public class InstanceManager : MonoBehaviour {
       instance.seaStructureCount++;
    }
 
+   public void addSeaEntityToInstance (SeaEntity seaEntity, Instance instance) {
+      instance.entities.Add(seaEntity);
+      seaEntity.instanceId = instance.id;
+   }
+
    public void addSeaMonsterSpawnerToInstance (PvpMonsterSpawner monsterSpawner, Instance instance) {
       instance.entities.Add(monsterSpawner);
       instance.pvpMonsterSpawners.Add(monsterSpawner);
@@ -196,11 +201,7 @@ public class InstanceManager : MonoBehaviour {
       _instances.Add(instance.id, instance);
 
       // Update the instance count in the server network
-      if (ServerNetworkingManager.self.server.areaToInstanceCount.ContainsKey(areaKey)) {
-         ServerNetworkingManager.self.server.areaToInstanceCount[areaKey]++;
-      } else {
-         ServerNetworkingManager.self.server.areaToInstanceCount.Add(areaKey, 1);
-      }
+      ServerNetworkingManager.self.server.areaToInstanceCount[areaKey] = getInstanceCount(areaKey);
 
       // Spawn the network object on the Clients
       if (NetworkServer.active) {
@@ -425,12 +426,7 @@ public class InstanceManager : MonoBehaviour {
       _instances.Remove(instance.id); 
 
       // Update the instance count in the server network
-      if (ServerNetworkingManager.self.server.areaToInstanceCount.TryGetValue(instance.areaKey, out int instanceCount)) {
-         if (instanceCount > 0) {
-            instanceCount--;
-         }
-         ServerNetworkingManager.self.server.areaToInstanceCount[instance.areaKey] = instanceCount;
-      }
+      ServerNetworkingManager.self.server.areaToInstanceCount[instance.areaKey] = getInstanceCount(instance.areaKey);
 
       // Then destroy the instance
       NetworkServer.Destroy(instance.gameObject);

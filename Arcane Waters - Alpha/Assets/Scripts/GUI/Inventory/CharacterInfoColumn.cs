@@ -166,16 +166,19 @@ public class CharacterInfoColumn : MonoBehaviour {
          objects.weapon = weaponData != null ? WeaponStatData.translateDataToWeapon(weaponData) : new Weapon();
          objects.weapon.itemTypeId = bodyEntity.weaponManager.equipmentDataId;
          objects.weapon.id = bodyEntity.weaponManager.equippedWeaponId;
+         objects.weapon.paletteNames = bodyEntity.weaponManager.palettes;
 
          ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(bodyEntity.armorManager.armorType);         
          objects.armor = armorData != null ? ArmorStatData.translateDataToArmor(armorData) : new Armor();
          objects.armor.itemTypeId = bodyEntity.armorManager.equipmentDataId;
          objects.armor.id = bodyEntity.armorManager.equippedArmorId;
+         objects.armor.paletteNames = bodyEntity.armorManager.palettes;
 
          HatStatData hatData = EquipmentXMLManager.self.getHatData(bodyEntity.hatsManager.hatType);         
          objects.hat = hatData != null ? HatStatData.translateDataToHat(hatData) : new Hat();
          objects.hat.itemTypeId = bodyEntity.hatsManager.equipmentDataId;
          objects.hat.id = bodyEntity.hatsManager.equippedHatId;
+         objects.hat.paletteNames = bodyEntity.hatsManager.palettes;
       }
 
       if (currentPlayer is PlayerShipEntity) {

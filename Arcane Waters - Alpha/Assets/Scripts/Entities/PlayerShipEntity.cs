@@ -794,8 +794,9 @@ public class PlayerShipEntity : ShipEntity
          Destroy(_cannonTargeter.gameObject);
       }
 
-      if (isLocalPlayer) {
+      if (hasAuthority) {
          PanelManager.self.hidePowerupPanel();
+         PvpStructureStatusPanel.self.onPlayerLeftPvpGame();
       }
 
       // Handle OnDestroy logic in a separate method so it can be correctly stripped

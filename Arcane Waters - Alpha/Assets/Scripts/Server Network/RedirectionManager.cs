@@ -79,7 +79,7 @@ public class RedirectionManager : GenericGameManager
    public NetworkedServer findBestServerForConnectingUser (int userId, string userName, int voyageId, string destinationAreaKey, bool isSinglePlayer, int currentServerPort, string currentAddress) {
       // If this player is claimed by a server, we have to return to that server
       foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
-         if (server.claimedUserIds.Contains(userId)) {
+         if (server.claimedUserIds.ContainsKey(userId)) {
             return server;
          }
       }

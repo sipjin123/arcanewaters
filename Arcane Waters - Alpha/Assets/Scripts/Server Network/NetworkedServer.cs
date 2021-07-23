@@ -39,7 +39,7 @@ public class NetworkedServer : NetworkedBehaviour
    public NetworkedList<Voyage> treasureSites = new NetworkedList<Voyage>(Global.defaultNetworkedVarSettings);
 
    // Keeps track of the users claimed by this server
-   public NetworkedList<int> claimedUserIds = new NetworkedList<int>(Global.defaultNetworkedVarSettings);
+   public NetworkedDictionary<int, bool> claimedUserIds = new NetworkedDictionary<int, bool>(new NetworkedVarSettings { WritePermission = NetworkedVarPermission.OwnerOnly, SendChannel = "Fragmented", SendTickrate = 0 });
 
    // Account dictionary overrides
    public NetworkedDictionary<string, string> accountOverrides = new NetworkedDictionary<string, string>();
@@ -619,6 +619,23 @@ public class NetworkedServer : NetworkedBehaviour
    [ServerRPC]
    public void MasterServer_OnUserDisconnectsFromServer (int userId) {
       VoyageGroupManager.self.onUserDisconnectsFromServer(userId);
+   }
+
+   [ServerRPC]
+   public void MasterServer_ForceDisconnectAllNonAdminUsers (int adminUserId, string message) {
+      InvokeClientRpcOnEveryone(Server_ForceDisconnectAllNonAdminUsers, adminUserId, message);
+   }
+
+   [ClientRPC]
+   public void Server_ForceDisconnectAllNonAdminUsers (int adminUserId, string message) {
+      int playerCount = 0;
+      foreach (NetEntity netEntity in MyNetworkManager.getPlayers()) {
+         if (netEntity != null && !netEntity.isAdmin()) {
+            netEntity.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Kicked, $"You were disconnected.\n\n Reason: {message}"));
+            playerCount++;
+         }
+      }
+      ServerNetworkingManager.self.sendConfirmationMessage(ConfirmMessage.Type.General, adminUserId, $"Server {ServerNetworkingManager.self.server.networkedPort.Value} kicked {playerCount} players offline.");
    }
 
    #region Private Variables

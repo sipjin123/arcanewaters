@@ -183,6 +183,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating bases in pvp maps
    public PvpBase pvpBasePrefab;
 
+   // The prefab we use for creating Pvp Capture Target Holders in pvp maps
+   public PvpCaptureTargetHolder pvpCaptureTargetHolderPrefab;
+
    [Header("Texture prefabs")]
    // Prefab used to create new palette texture for material
    public Texture2D textureSquare256;

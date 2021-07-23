@@ -16,10 +16,11 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
    public SeaStructure unlockAfterDeath;
 
    // Which lane this structure is in
-   [HideInInspector]
+   [HideInInspector][SyncVar]
    public PvpLane laneType = PvpLane.None;
 
    // An identifier for multiple structures in the same lane
+   [SyncVar]
    public int indexInLane = 0;
 
    // A reference to the sprite renderer used to render the main part of this structure (the building itself)
@@ -33,6 +34,9 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
 
    // A list of gameobjects that this will disable when it dies
    public List<GameObject> disableOnDeath;
+
+   // An enum to describe a type of sea structure
+   public enum Type { None = 0, Tower = 1, Shipyard = 2, Base = 3 }
 
    #endregion
 
@@ -148,6 +152,10 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
    }
 
    protected virtual void setupSprites () {
+      if (!mainRenderer) {
+         return;
+      }
+      
       Sprite newSprite = getSprite();
       if (newSprite != null) {
          mainRenderer.sprite = newSprite;
@@ -193,6 +201,18 @@ public class SeaStructure : SeaEntity, IMapEditorDataReceiver {
          setupSprites();
       } else {
          _structureIntegrity = newIntegrity;
+      }
+   }
+
+   public Type getStructureType () {
+      if (this is PvpTower) {
+         return Type.Tower;
+      } else if (this is PvpShipyard) {
+         return Type.Shipyard;
+      } else if (this is PvpBase) {
+         return Type.Base;
+      } else {
+         return Type.None;
       }
    }
 

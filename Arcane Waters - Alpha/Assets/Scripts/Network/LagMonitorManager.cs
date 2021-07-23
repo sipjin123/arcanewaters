@@ -158,6 +158,9 @@ public class LagMonitorManager : GenericGameManager
       _fpsList.Clear();
 
       if (Util.isStressTesting()) {
+         getStatistics(_authenticationProcessDuration.Values, _authenticationProcessDuration.Count, out float authDurationMin, out float authDurationMax, out float authDurationMean, out float authDurationMedian);
+         getStatistics(_loginProcessDuration.Values, _loginProcessDuration.Count, out float loginDurationMin, out float loginDurationMax, out float loginDurationMean, out float loginDurationMedian);
+
          // The seconds since the server started
          TimeSpan serverTime = TimeSpan.FromSeconds(NetworkTime.time);
          string serverTimeStr = string.Format("{0:D2}m:{1:D2}s", serverTime.Minutes, serverTime.Seconds);
@@ -165,15 +168,17 @@ public class LagMonitorManager : GenericGameManager
          // Log the statistics
          D.debug($"Server statistics:\n" +
             $"The stress test started {serverTimeStr} ago.\n" +
-            $"Authentication Duration ({_authenticationProcessDuration.Count} accounts) - min: {_authenticationProcessDuration.Values.Min():N2} max: {_authenticationProcessDuration.Values.Max():N2} mean: {_authenticationProcessDuration.Values.Average():N2}\n" +
-            $"Login Duration ({_loginProcessDuration.Count} accounts) - min: {_loginProcessDuration.Values.Min():N2} max: {_loginProcessDuration.Values.Max():N2} mean: {_loginProcessDuration.Values.Average():N2}\n" +
+            $"Authentication Duration ({_authenticationProcessDuration.Count} accounts) - min: {authDurationMin:N2} max: {authDurationMax:N2} mean: {authDurationMean:N2} median: {authDurationMedian:N2} \n" +
+            $"Login Duration ({_loginProcessDuration.Count} accounts) - min: {loginDurationMin:N2} max: {loginDurationMax:N2} mean: {loginDurationMean:N2} median: {loginDurationMedian:N2} \n" +
             $"Ping ({_averageClientPings.Count} clients) - min: {(int) pingMin} max: {(int) pingMax} mean: {(int) pingMean} median: {(int) pingMedian}\n" +
             $"FPS (last {SERVER_MONITOR_INTERVAL} seconds) - min: {(int) fpsMin} max: {(int) fpsMax} mean: {(int) fpsMean} median: {(int) fpsMedian}");
 
          // Broadcast the time since the server started
-         string message = "The stress test started " + serverTimeStr + " ago";
-         ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, ChatInfo.Type.System);
-         ServerNetworkingManager.self?.sendGlobalChatMessage(chatInfo);
+         if (ServerNetworkingManager.self.server.isMasterServer()) {
+            string message = "The stress test started " + serverTimeStr + " ago";
+            ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, ChatInfo.Type.System);
+            ServerNetworkingManager.self?.sendGlobalChatMessage(chatInfo);
+         }
       }
 
       // When the average ping goes over the threshold, log a warning

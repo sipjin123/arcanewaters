@@ -183,8 +183,29 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          PanelManager.self.hidePowerupPanel();
       }
 
+      // Check if an npc is above the player
+      if (isLocalPlayer) {
+         InvokeRepeating(nameof(npcCheck), 0.0f, 0.5f);
+      }
+
       // Show the local player's level tag
       showLevelTag(isLocalPlayer);
+   }
+
+   public void npcCheck () {
+      // If an npc is above the player, hide the guild icon
+      bool isNpcNear = false;
+      Collider2D[] colliders = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y + 0.5f), 0.25f);
+      foreach (Collider2D collider in colliders) {
+         if (collider.transform.GetComponent<NPC>()) {
+            isNpcNear = true;
+            this.hideGuildIcon();
+         }
+      }
+
+      if (!isNpcNear) {
+         this.showGuildIcon();
+      }
    }
 
    public void showLevelTag (bool show) {

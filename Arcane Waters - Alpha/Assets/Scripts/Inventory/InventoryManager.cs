@@ -9,7 +9,7 @@ public class InventoryManager : MonoBehaviour
    #region Public Variables
 
    // The weapons new characters start with
-   public static int[] STARTING_WEAPON_TYPE_IDS = new int[] { 34, 17, 16, 35, 30 };
+   public static int[] STARTING_WEAPON_TYPE_IDS = new int[] { 25, 17, 16, 35, 30 };
 
    // ID of the hammer item
    public const int HAMMER_ID = 30;

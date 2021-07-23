@@ -157,8 +157,8 @@ public class ServerMessageManager : MonoBehaviour
             }
          }
 
-         // Prevent login if the player count already reached the limit
-         if (accountId > 0) {
+         // Prevent login if the player count already reached the limit, but continue the login attempt if the player was redirected
+         if (accountId > 0 && !logInUserMessage.isRedirecting) {
             int playersCount = DB_Main.getTotalPlayersCount();
             RemoteSetting setting = DB_Main.getRemoteSetting(RemoteSettingsManager.SettingNames.PLAYERS_COUNT_MAX);
             int playersCountMax = setting.toInt();
@@ -184,17 +184,32 @@ public class ServerMessageManager : MonoBehaviour
                bool isAdminAccount = DB_Main.getUsrAdminFlag(accountId) > 0;
 
                if (!isAdminAccount) {
-                  setting = DB_Main.getRemoteSetting(RemoteSettingsManager.SettingNames.ADMIN_ONLY_MODE_MESSAGE);
-                  string adminOnlyModeMessage = setting.value;
+                  // If the account has no admin rights, check whether the selected user has admin rights
+                  bool ownsAdminUsers = false;
+                  List<UserInfo> accountUsers = DB_Main.getUsersForAccount(accountId);
 
-                  // Non-Admin accounts are not allowed for now
-                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     D.debug($"Admin Only Mode is enabled. The login attempt by account '{accountId}' was blocked.");
-                     sendError(ErrorMessage.Type.UserNotAdmin, conn.connectionId, adminOnlyModeMessage);
-                  });
+                  if (accountUsers.Count > 0) {
+                     if (selectedUserId > 0) {
+                        UserInfo accountUser = accountUsers.Find(_ => _.userId == selectedUserId);
+                        ownsAdminUsers = accountUser != null && accountUser.adminFlag > 0;
+                     } else {
+                        ownsAdminUsers = accountUsers.Any(_ => _.adminFlag > 0);
+                     }
+                  }
 
-                  UnityThreadHelper.UnityDispatcher.Dispatch(() => { _numUsersAuthenticating--; });
-                  return;
+                  if (!ownsAdminUsers) {
+                     setting = DB_Main.getRemoteSetting(RemoteSettingsManager.SettingNames.ADMIN_ONLY_MODE_MESSAGE);
+                     string adminOnlyModeMessage = setting.value;
+
+                     // Non-Admin accounts are not allowed for now
+                     UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                        D.debug($"Admin Only Mode is enabled. The login attempt by account '{accountId}' was blocked.");
+                        sendError(ErrorMessage.Type.UserNotAdmin, conn.connectionId, adminOnlyModeMessage);
+                     });
+
+                     UnityThreadHelper.UnityDispatcher.Dispatch(() => { _numUsersAuthenticating--; });
+                     return;
+                  }
                }
             }
          }

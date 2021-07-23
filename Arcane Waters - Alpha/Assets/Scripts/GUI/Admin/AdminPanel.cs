@@ -9,6 +9,7 @@ using static UnityEngine.UI.Dropdown;
 using System.Text;
 using System.Linq;
 using TMPro;
+using UnityEngine.Events;
 
 public class AdminPanel : Panel
 {
@@ -26,11 +27,26 @@ public class AdminPanel : Panel
    // The reference to the input field that displays the message shown to users when the server is in Admin Only mode
    public TMP_InputField txtAdminOnlyModeMessage;
 
-   // The reference to the Apply Button
+   // The reference to the Apply button
    public Button btnApply;
 
+   // The reference to the Refresh button
+   public Button btnRefresh;
+
+   // The message to display when kicking all users from the servers
+   public TMP_InputField txtKickAllUsersMessage;
+	
    // The reference to the load blocker
    public GameObject loadBlocker;
+
+   // Reference to the Tabs
+   public AdminPanelTabs tabs;
+
+   // Reference to the Tabs Switcher
+   public AdminPanelTabSwitcher tabSwitcher;
+
+   // Reference to the Player Count Metric Holder
+   public AdminPanelMetricsHolder playersCountMetricsHolder;
 
    // Self
    public static AdminPanel self;
@@ -40,6 +56,8 @@ public class AdminPanel : Panel
    public override void Awake () {
       base.Awake();
       self = this;
+
+      initializeTabs();
    }
 
    public override void Start () {
@@ -57,8 +75,10 @@ public class AdminPanel : Panel
 
       if (!isShowing()) {
          btnApply.interactable = true;
+         btnRefresh.interactable = true;
          toggleBlocker(true);
          requestRemoteSettings();
+         requestPlayersCountMetrics();
       }
 
       PanelManager.self.linkIfNotShowing(Panel.Type.Admin);
@@ -71,6 +91,10 @@ public class AdminPanel : Panel
                   RemoteSettingsManager.SettingNames.ADMIN_ONLY_MODE,
                   RemoteSettingsManager.SettingNames.ADMIN_ONLY_MODE_MESSAGE
          });
+   }
+
+   private void requestPlayersCountMetrics () {
+     Global.player.rpc.Cmd_RequestPlayersCountMetrics();
    }
 
    private void toggleBlocker (bool show) {
@@ -89,6 +113,31 @@ public class AdminPanel : Panel
       txtAdminOnlyModeMessage.text = collection.getSetting(RemoteSettingsManager.SettingNames.ADMIN_ONLY_MODE_MESSAGE).value;
 
       toggleBlocker(false);
+   }
+
+   public void onPlayersCountMetricsReceived (MetricCollection collection) {
+      if (!Global.isLoggedInAsAdmin()) {
+         return;
+      }
+
+      toggleBlocker(false);
+      btnRefresh.interactable = true;
+      playersCountMetricsHolder.clearMetrics();
+
+      if (collection == null || collection.metrics.Count() == 0) {
+         playersCountMetricsHolder.addMetric("No", "Metrics");
+         return;
+      }
+
+      // Compute total
+      int total = collection.metrics.Sum(_ => int.Parse(_.value));
+      playersCountMetricsHolder.addMetric("TOTAL", total.ToString());
+
+      // Show details
+      foreach (Metric metric in collection.metrics) {
+         string displayName = $"{metric.machineId} {metric.processName} ({metric.processId})";
+         playersCountMetricsHolder.addMetric(displayName, metric.value);
+      }
    }
 
    public void onApplyButtonPressed () {
@@ -145,6 +194,17 @@ public class AdminPanel : Panel
       btnApply.interactable = true;
    }
 
+   public void refreshMetrics () {
+      // Disable Refresh button
+      btnRefresh.interactable = false;
+
+      // Show loading blocker
+      toggleBlocker(true);
+
+      // Request the metrics again
+      requestPlayersCountMetrics();
+   }
+
    private void onTxtPlayersCountMaxValueChanged (string newText) {
       // Validate the new value
       if (int.TryParse(newText, out int newValue)) {
@@ -158,6 +218,38 @@ public class AdminPanel : Panel
 
    private void onSliderPlayersCountMaxValueChanged (float newValue) {
       txtPlayersCountMax.SetTextWithoutNotify(Mathf.FloorToInt(newValue).ToString());
+   }
+
+   private void initializeTabs () {
+      if (tabs == null) {
+         return;
+      }
+
+      tabs.onTabPressed.RemoveAllListeners();
+      tabs.onTabPressed.AddListener(onTabPressed);
+
+      // Switch to the first tab
+      tabs.performTabPressed(0);
+   }
+
+   private void onTabPressed(int tabIndex) {
+      if (tabSwitcher == null) {
+         return;
+      }
+
+      tabSwitcher.performSwitch(tabIndex);
+   }
+   
+   public void onKickAllNonAdminUsersButtonPressed () {
+      // Deactivate "Confirm" Button until admin types in the word "Confirm" into the inputfield
+      PanelManager.self.confirmScreen.enableConfirmInputField("CONFIRM");
+
+      // Ask the admin for confirmation.
+      PanelManager.self.showConfirmationPanel("Are you sure you want to kick all non-admins from the server?", () => onConfirmKickAllNonAdminUsers()) ;
+   }
+
+   private void onConfirmKickAllNonAdminUsers () {
+      Global.player.rpc.Cmd_RequestKickAllNonAdminUsers(txtKickAllUsersMessage.text);
    }
 
    #region Private Variables

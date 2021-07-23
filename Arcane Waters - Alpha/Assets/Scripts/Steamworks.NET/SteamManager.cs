@@ -73,9 +73,9 @@ public class SteamManager : MonoBehaviour
       DontDestroyOnLoad(gameObject);
 
       if (!Util.isCloudBuild()) {
-         Debug.Log("STEAM :: Build Type: NOT Cloud build, Steam should not initialize");
+         D.debug("STEAM :: Build Type: NOT Cloud build, Steam should not initialize");
       } else {
-         Debug.Log("STEAM :: Build Type: Cloud build, Steam is Initializing");
+         D.debug("STEAM :: Build Type: Cloud build, Steam is Initializing");
       }
 
 //#if UNITY_EDITOR || !UNITY_EDITOR // Uncomment for non jenkins build steam login test

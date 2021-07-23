@@ -20,7 +20,7 @@ public class ConfirmScreen : FullScreenSeparatePanel
    public Text linkText;
    public Text descriptionText;
    public TMP_Text deleteText;
-   public TMP_InputField deleteInputField;
+   public TMP_InputField confirmInputField;
    public Button confirmButton;
    public Button cancelButton;
    public GameObject descriptionRow;
@@ -71,6 +71,22 @@ public class ConfirmScreen : FullScreenSeparatePanel
       this.gameObject.SetActive(true);
    }
 
+   public void enableConfirmInputField (string keyWord) {
+      // Deactive "Confirm" Button until player types in the key word into the inputfield
+      PanelManager.self.confirmScreen.confirmButton.interactable = false;
+
+      // Activate inputfield
+      PanelManager.self.confirmScreen.goInputField.SetActive(true);
+      PanelManager.self.confirmScreen.confirmInputField.placeholder.GetComponent<TextMeshProUGUI>().text = "Type " + keyWord;
+
+      // Wait for input
+      PanelManager.self.confirmScreen.confirmInputField.onValueChanged.AddListener((inputWord) => {
+         if (inputWord.ToUpper() == keyWord.ToUpper()) {
+            PanelManager.self.confirmScreen.confirmButton.interactable = true;
+         }
+      });
+   }
+
    public void hide () {
       this.canvasGroup.alpha = 0f;
       this.canvasGroup.blocksRaycasts = false;
@@ -79,8 +95,8 @@ public class ConfirmScreen : FullScreenSeparatePanel
       this.gameObject.SetActive(false);
 
       // Undo the effects of the input field so it is not displayed the next time the confirm panel is used
-      PanelManager.self.confirmScreen.deleteInputField.placeholder.GetComponent<TextMeshProUGUI>().text = "Type Delete";
-      PanelManager.self.confirmScreen.deleteInputField.text = "";
+      PanelManager.self.confirmScreen.confirmInputField.text = "";
+      PanelManager.self.confirmScreen.confirmInputField.onValueChanged.RemoveAllListeners();
       PanelManager.self.confirmScreen.confirmButton.interactable = true;
       this.goInputField.SetActive(false);
    }

@@ -9001,6 +9001,39 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
+   public static new MetricCollection getGameMetrics (string name) {
+      MetricCollection collection = new MetricCollection();
+      try {
+         using (MySqlConnection conn = getConnection()) {
+            // Open the connection.
+            conn.Open();
+            string query = "SELECT * FROM `metrics` WHERE `metName`=@metName";
+            using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
+               //cmd.Prepare();             
+               cmd.Parameters.AddWithValue("@metName", name);
+               DebugQuery(cmd);
+               using (MySqlDataReader reader = cmd.ExecuteReader()) {
+                  while (reader.Read()) {
+                     Metric m = new Metric {
+                        name = reader.GetString("metName"),
+                        machineId = reader.GetString("metMachineId"),
+                        processId = reader.GetString("metProcessId"),
+                        processName = reader.GetString("metProcessName"),
+                        value = reader.GetString("metValue"),
+                        valueType = (Metric.MetricValueType) reader.GetInt32("metValueType"),
+                        timestamp = reader.GetDateTime("metTimestamp")
+                     };
+                     collection.metrics.Add(m);
+                  }
+               };
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+      return collection;
+   }
+
    public static new void clearOldGameMetrics (int maxLifetimeSeconds = 300) {
       try {
          using (MySqlConnection conn = getConnection()) {

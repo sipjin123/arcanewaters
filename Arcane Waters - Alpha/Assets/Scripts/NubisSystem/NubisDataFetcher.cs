@@ -417,7 +417,8 @@ namespace NubisDataHandling {
          if (serverPortList.Count > 0) {
             TitleScreen.self.startUpNetworkClient(isSteam, serverPortList);
          } else {
-            TitleScreen.self.displayError(ErrorMessage.Type.ServerOffline);
+            // If the request failed, try logging in to the master server anyway
+            TitleScreen.self.startUpNetworkClient(isSteam, new List<int>() { Global.MASTER_SERVER_PORT });
          }
       }
 

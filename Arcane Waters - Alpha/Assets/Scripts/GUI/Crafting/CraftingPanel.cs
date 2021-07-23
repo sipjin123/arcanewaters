@@ -430,7 +430,7 @@ public class CraftingPanel : Panel
 
       refinementTabButton.interactable = false;
       craftingTabButon.interactable = true;
-      titleText.text = "Refinement";
+      titleText.text = "Repair";
 
       foreach (GameObject ui in refinementPanelEntities) {
          ui.SetActive(true);

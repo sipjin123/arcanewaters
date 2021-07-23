@@ -26,6 +26,9 @@ public class PvpGame : MonoBehaviour {
    // The key for the area this pvp game is in
    public string areaKey;
 
+   // The current game mode for this pvp game
+   public PvpGameMode gameMode = PvpGameMode.None;
+
    // How many players need to be on each team for the game to start
    public static int MIN_PLAYERS_PER_TEAM_TO_START = 3;
 
@@ -139,16 +142,8 @@ public class PvpGame : MonoBehaviour {
    private IEnumerator CO_AddPlayerToOngoingGame (int userId, string userName, PvpTeam assignedTeam) {
       // If the team only has us, create a new voyage group with this player
       if (assignedTeam.Count == 1) {
-         VoyageGroupManager.self.createGroup(userId, voyageId, true);
-
-         // It takes at least one frame to synchronize the groups in the server network
-         yield return null;
-
-         // Wait for the group to be created
-         VoyageGroupInfo newGroup;
-         while (!VoyageGroupManager.self.tryGetGroupByUser(userId, out newGroup)) {
-            yield return null;
-         }
+         VoyageGroupInfo newGroup = null;
+         yield return VoyageGroupManager.self.CO_CreateGroup(userId, voyageId, true, result => newGroup = result);
 
          // Store the team's voyage group id
          _teamVoyageGroupIds[assignedTeam.teamType] = newGroup.groupId;
@@ -217,26 +212,22 @@ public class PvpGame : MonoBehaviour {
 
          // Remove the user from its current group
          if (player.tryGetGroup(out VoyageGroupInfo currentGroup)) {
-            VoyageGroupManager.self.removeUserFromGroup(currentGroup, player.userId);
+            VoyageGroupManager.self.removeUserFromGroup(currentGroup, player);
          }
 
          // If a voyage group doesn't exist for the team, create it with this player
          if (!_teamVoyageGroupIds.ContainsKey(team.teamType)) {
-            VoyageGroupManager.self.createGroup(player.userId, voyageId, true);
-            VoyageGroupInfo newGroup;
+            VoyageGroupInfo newGroup = null;
+            yield return VoyageGroupManager.self.CO_CreateGroup(player.userId, voyageId, true, result => newGroup = result);
 
-            // Wait for group to be created
-            while (!player.tryGetGroup(out newGroup)) {
-               yield return null;
-            }
             _teamVoyageGroupIds[team.teamType] = newGroup.groupId;
-            D.debug("Player: " + player.name + " created group for team: " + team.teamType.ToString());
+            D.debug("Player: " + player.entityName + " created group for team: " + team.teamType.ToString());
 
             // If a voyage group does exist for the team, add the player to it
          } else {
             if (VoyageGroupManager.self.tryGetGroupById(_teamVoyageGroupIds[team.teamType], out VoyageGroupInfo newGroup)) {
                VoyageGroupManager.self.addUserToGroup(newGroup, player.userId, player.entityName);
-               D.debug("Adding player: " + player.name + " to team: " + team.teamType.ToString());
+               D.debug("Adding player: " + player.entityName + " to team: " + team.teamType.ToString());
             }
          }
 
@@ -312,21 +303,13 @@ public class PvpGame : MonoBehaviour {
 
                // Remove the user from its current group
                if (player.tryGetGroup(out VoyageGroupInfo currentGroup)) {
-                  VoyageGroupManager.self.removeUserFromGroup(currentGroup, player.userId);
+                  VoyageGroupManager.self.removeUserFromGroup(currentGroup, player);
                }
 
                // If the team only has us, create a new voyage group with this player
                if (assignedTeam.Count == 1) {
-                  VoyageGroupManager.self.createGroup(userId, voyageId, true);
-
-                  // It takes at least one frame to synchronize the groups in the server network
-                  yield return null;
-
-                  // Wait for the group to be created
-                  VoyageGroupInfo newGroup;
-                  while (!VoyageGroupManager.self.tryGetGroupByUser(userId, out newGroup)) {
-                     yield return null;
-                  }
+                  VoyageGroupInfo newGroup = null;
+                  yield return VoyageGroupManager.self.CO_CreateGroup(userId, voyageId, true, result => newGroup = result);
 
                   // Store the team's voyage group id
                   _teamVoyageGroupIds[bestTeam] = newGroup.groupId;
@@ -545,6 +528,18 @@ public class PvpGame : MonoBehaviour {
       if (_gameState == State.PreGame) {
          sendGameMessageToPlayers("Waiting for " + " more players to begin.", new List<int>() { userId });
       }
+
+      // Ensure players are respawned if they were previously dead
+      NetEntity player = EntityManager.self.getEntity(userId);
+      if (player) {
+         PlayerShipEntity playerShip = player.getPlayerShipEntity();
+         if (playerShip) {
+            if (player.isDead()) {
+               playerShip.respawnPlayerInInstance();
+            }
+         }
+      }
+
    }
 
    private IEnumerator CO_PostGame () {
@@ -896,4 +891,11 @@ public enum PvpLane
    Mid = 2,
    Bot = 3,
    Base = 4,
+}
+
+public enum PvpGameMode
+{
+   None = 0,
+   BaseAssault = 1,
+   CaptureTheFlag = 2,
 }

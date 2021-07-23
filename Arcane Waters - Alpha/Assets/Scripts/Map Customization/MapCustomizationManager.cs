@@ -180,7 +180,7 @@ namespace MapCustomization
 
          if (_selectedPrefab.anyUnappliedState()) {
             if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _selectedPrefab.unappliedChanges, false, out string errorMessage)) {
-               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _selectedPrefab.unappliedChanges);
+               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _selectedPrefab.unappliedChanges, _selectedPrefab.spawnedAPrefabVariation, _selectedPrefab.variationSpawnedFromPrefab);
 
                // Increase remaining prop item that corresponds to this prefab if it was not placed in editor
                if (!_selectedPrefab.mapEditorState.created) {
@@ -267,16 +267,6 @@ namespace MapCustomization
                      string[] newString = prefab.name.Split('(');
                      if (newString[0] == prefabDataArray[i].prefab.name) {
 
-                        // Save information about current prefab before it is deleted
-                        Vector3 prefabPosition = prefab.transform.position;
-
-                        // Destroy prefab
-                        prefab.revertUnappliedChanges();
-                        removeTracked(prefab);
-                        _selectedPrefab = null;
-                        DestroyImmediate(prefab.gameObject);
-                        hideSelectionArrows();
-
                         if (scrollWheelUp == true) {
                            // Wrap around the array if this prefab is at the last index;
                            if (i == prefabDataArray.Length - 1) {
@@ -291,16 +281,13 @@ namespace MapCustomization
                               prefabSerializedID = prefabDataArray[prefabDataArray.Length - 1].serializationId;
 
                            } else {
-                              prefabSerializedID = prefabDataArray[i -1].serializationId;
+                              prefabSerializedID = prefabDataArray[i - 1].serializationId;
                            }
                         }
+                        prefab.customizedState.deleted = true;
+                        prefab.submitUnappliedChanges();    
 
-                        // Instantiate new prefab from array at index + 1
-                        CustomizablePrefab newPrefab = MapManager.self.createPrefab(currentArea, currentBiome, newPrefabState(prefabPosition, prefabSerializedID), false);
-                        selectPrefab(newPrefab);
-                        _customizablePrefabs.Add(newPrefab.customizedState.id, newPrefab);
-                        updatePrefabOutlines(newPrefab.gameObject.transform.position);
-                        soundHasBeenPlayed = false;
+                        replacePrefab(prefab, prefabSerializedID);
                      }
                   }
                }
@@ -364,7 +351,7 @@ namespace MapCustomization
                _customizablePrefabs.Add(_newPrefab.unappliedChanges.id, _newPrefab);
 
                if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _newPrefab.unappliedChanges, false, out string errorMessage)) {
-                  Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges);
+                  Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges, _newPrefab.spawnedAPrefabVariation, _newPrefab.variationSpawnedFromPrefab);
                   SoundEffectManager.self.playFmod2D(SoundEffectManager.DROP_EDIT_OBJ);
                   selectPrefab(_newPrefab);
 
@@ -408,13 +395,54 @@ namespace MapCustomization
 
          if (_selectedPrefab.anyUnappliedState()) {
             if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _selectedPrefab.unappliedChanges, false, out string errorMessage)) {
-               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _selectedPrefab.unappliedChanges);
+               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _selectedPrefab.unappliedChanges, _selectedPrefab.spawnedAPrefabVariation, _selectedPrefab.variationSpawnedFromPrefab);
                SoundEffectManager.self.playFmod2D(SoundEffectManager.DROP_EDIT_OBJ);
                _selectedPrefab.submitUnappliedChanges();
             }
          }
 
          updatePrefabOutlines(worldPosition);
+      }
+
+      private static void replacePrefab (CustomizablePrefab oldPrefab, int newPrefabSerializedId) {
+         Vector3 savedPosition = oldPrefab.transform.position;
+         GameObject parentOfPrefab = oldPrefab.transform.parent.gameObject;
+
+         // Remove the old prefab
+         if (oldPrefab != null) {
+            oldPrefab.spawnedAPrefabVariation = true;
+            oldPrefab.unappliedChanges.deleted = true;
+            oldPrefab.customizedState.created = false;
+            oldPrefab.mapEditorState.created = false;
+            
+            oldPrefab.revertUnappliedChanges();
+         }
+
+         // Create the new variation of the prefab
+         _newPrefab = null;
+         _newPrefab = MapManager.self.createPrefab(currentArea, currentBiome, newPrefabState(savedPosition, newPrefabSerializedId), false);
+         _newPrefab.variationSpawnedFromPrefab = true;
+         _newPrefab.submitUnappliedChanges();
+
+         // Parent the new prefab
+         _newPrefab.transform.SetParent(parentOfPrefab.transform);
+         _newPrefab.GetComponent<ZSnap>()?.snapZ();
+
+         _newPrefab.unappliedChanges.created = true;
+         _newPrefab.unappliedChanges.localPosition = currentArea.prefabParent.transform.InverseTransformPoint(new Vector2(savedPosition.x, savedPosition.y));
+         _newPrefab.setGameInteractionsActive(false);
+         _newPrefab.setOutline(false, false, false, false);
+
+         _customizablePrefabs.Add(_newPrefab.customizedState.id, _newPrefab);
+         Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges, _newPrefab.spawnedAPrefabVariation, _newPrefab.variationSpawnedFromPrefab);
+         _newPrefab.variationSpawnedFromPrefab = false;
+
+         soundHasBeenPlayed = false;
+
+         if (!soundHasBeenPlayed) {
+            SoundEffectManager.self.playFmod2D(SoundEffectManager.DROP_EDIT_OBJ);
+            soundHasBeenPlayed = true;
+         }
       }
 
       private static void updateToBePlacedPrefab (Vector3 worldPosition, int serializationId) {

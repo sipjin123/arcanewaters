@@ -35,6 +35,12 @@ namespace MapCustomization
       // Changes of state during user-end customization
       public PrefabState unappliedChanges;
 
+      // Is this prefab replaced by a variation?
+      public bool spawnedAPrefabVariation = false;
+
+      // Is this a variation spawned from another prefab?
+      public bool variationSpawnedFromPrefab = false;
+
       #endregion
 
       private void OnEnable () {

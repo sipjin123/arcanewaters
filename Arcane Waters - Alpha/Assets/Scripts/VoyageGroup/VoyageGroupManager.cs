@@ -45,28 +45,19 @@ public class VoyageGroupManager : MonoBehaviour
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (inviteeInfo == null) {
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, player, "The player " + inviteeName + " doesn't exists!");
-               noticeScreen.text.text = "The player " + inviteeName + " doesn't exists!";
-               noticeScreen.show();
-               noticeScreen.confirmButton.enabled = true;
+               ServerMessageManager.sendError(ErrorMessage.Type.Misc, player, "The player " + inviteeName + " doesn't exist!");
                return;
             }
 
             // Prevent spamming invitations
             if (isGroupInvitationSpam(player.userId, inviteeInfo.username)) {
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, player, "You must wait " + GROUP_INVITE_MIN_INTERVAL.ToString() + " seconds before inviting " + inviteeName + " again!");
-               noticeScreen.text.text = "You must wait " + GROUP_INVITE_MIN_INTERVAL.ToString() + " seconds before inviting " + inviteeName + " again!";
-               noticeScreen.show();
-               noticeScreen.confirmButton.enabled = true;
+               ServerMessageManager.sendError(ErrorMessage.Type.Misc, player, "You must wait " + GROUP_INVITE_MIN_INTERVAL.ToString() + " seconds before inviting " + inviteeName + " again!");
                return;
             }
 
             // Check if the invitee is already in a group
             if (tryGetGroupByUser(inviteeInfo.userId, out VoyageGroupInfo inviteeVoyageGroup)) {
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, player, "The player " + inviteeName + " is already in a group!");
-               noticeScreen.text.text = "The player " + inviteeName + " is already in a group!";
-               noticeScreen.show();
-               noticeScreen.confirmButton.enabled = true;
+               ServerMessageManager.sendError(ErrorMessage.Type.Misc, player, "The player " + inviteeName + " is already in a group!");
                return;
             }
 
@@ -80,7 +71,7 @@ public class VoyageGroupManager : MonoBehaviour
       // Get the voyage group info
       if (!player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
          // If the player is not in a group, create one
-         yield return CO_CreateGroup(player.userId, -1, true);
+         yield return CO_CreateGroup(player.userId, -1, true, null);
          player.tryGetGroup(out voyageGroup);
       }
 
@@ -119,11 +110,11 @@ public class VoyageGroupManager : MonoBehaviour
 
    [Server]
    public void createGroup (int userId, int voyageId, bool isPrivate, bool isGhost = false) {
-      StartCoroutine(CO_CreateGroup(userId, voyageId, isPrivate, isGhost));
+      StartCoroutine(CO_CreateGroup(userId, voyageId, isPrivate, null, isGhost));
    }
 
    [Server]
-   private IEnumerator CO_CreateGroup (int userId, int voyageId, bool isPrivate, bool isGhost = false) {
+   public IEnumerator CO_CreateGroup (int userId, int voyageId, bool isPrivate, Action<VoyageGroupInfo> newGroupAction, bool isGhost = false) {
       // To avoid duplicate group ids, only the master server generates new ones
       RpcResponse<int> response = ServerNetworkingManager.self.getNewVoyageGroupId();
 
@@ -150,6 +141,9 @@ public class VoyageGroupManager : MonoBehaviour
 
       // Send the group composition update to all group members
       StartCoroutine(CO_SendGroupCompositionToAllMembers(voyageGroup.groupId));
+
+      // Execute the custom action with the new group
+      newGroupAction?.Invoke(voyageGroup);
    }
 
    [Server]

@@ -321,7 +321,20 @@ public class MyNetworkManager : NetworkManager
          ShipInfo shipInfo = userObjects.shipInfo;
          GuildInfo guildInfo = userObjects.guildInfo;
          GuildRankInfo guildRankInfo = userObjects.guildRankInfo;
+         
+         // Check if the player's area is valid
+         string mapData = DB_Main.getMapInfo(userInfo.areaKey);
 
+         // TODO: Fix issue here
+         if (string.IsNullOrWhiteSpace(mapData)) {
+            D.debug("Cant process map data: " + mapData);
+            /*
+               // If the area is invalid, warp the player to the starting town as a fallback machamism
+               userInfo.areaKey = Area.STARTING_TOWN;
+               userInfo.localPos = Vector2.zero;
+               userInfo.facingDirection = (int) Direction.South;
+            */
+         }
          string previousAreaKey = userInfo.areaKey;
 
          // Get information about owned map
