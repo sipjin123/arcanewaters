@@ -64,18 +64,28 @@ public class Rarity : MonoBehaviour {
    }
 
    public static float getCropSellPriceModifier (Type rarityType) {
+      float returnPrice = 0;
+
+      // Represents percantage multiplier relative to the base price set in web tool, legendary items will display the max value set in web tool
       switch (rarityType) {
          case Type.Uncommon:
-            return Util.getBellCurveFloat(1.2f, .1f, .50f, 2.0f);
+            returnPrice = .5f;
+            break;
          case Type.Rare:
-            return Util.getBellCurveFloat(1.5f, .2f, .50f, 5.0f);
+            returnPrice = .75f;
+            break;
          case Type.Epic:
-            return Util.getBellCurveFloat(3.0f, 1.0f, 2f, 20f);
+            returnPrice = .9f;
+            break;
          case Type.Legendary:
-            return Util.getBellCurveFloat(5.0f, 3.0f, 3f, 30f);
+            returnPrice = 1;
+            break;
          default:
-            return Util.getBellCurveFloat(1.0f, .1f, .50f, 1.50f);
+            returnPrice = .35f;
+            break;
       }
+
+      return returnPrice;
    }
 
    public static float getXPModifier (Type rarityType) {

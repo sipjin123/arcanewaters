@@ -49,6 +49,7 @@ public class CropOffer {
    public void recalculatePrice () {
       pricePerUnit = (int) (basePricePerUnit * Rarity.getCropSellPriceModifier(rarity));
       pricePerUnit = Util.roundToPrettyNumber(pricePerUnit);
+      pricePerUnit = Mathf.Clamp(pricePerUnit, 1, basePricePerUnit);
    }
 
    public bool isLowestRarity () {
