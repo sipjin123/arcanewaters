@@ -113,8 +113,8 @@ public class XmlVersionManagerClient : GenericGameManager {
    }
 
    private void processClientData (int serverVersion) {
-      int clientXmlVersion = 0; 
-
+      int clientXmlVersion = 0;
+      D.debug("Processing server version: " + serverVersion);
       string fileDirectory = TEXT_PATH + VERSION_FILE + ".txt";
       if (!File.Exists(fileDirectory)) {
          D.debug("Missing file! Creating now: " + fileDirectory);
@@ -150,7 +150,7 @@ public class XmlVersionManagerClient : GenericGameManager {
          } else {
             clientMessage = "All files are existing, continue version checking";
             D.debug(clientMessage);
-
+            D.debug("DOWNLOAD NEW DATA! " + serverVersion);
             if (serverVersion > clientXmlVersion) {
                clientMessage = "Client is outdated ver: " + clientXmlVersion + ", downloading new version: " + serverVersion;
                D.debug(clientMessage);
@@ -213,7 +213,7 @@ public class XmlVersionManagerClient : GenericGameManager {
    }
    
    private async void downloadClientData (int targetVersion) {
-      string zipDataRequest = await NubisClient.call(nameof(DB_Main.fetchZipRawData), NubisDataFetcher.getSlotIndex());
+      string zipDataRequest = await NubisClient.call(nameof(DB_Main.fetchZipRawData));
       D.debug("ZipDownloadComplete: " + zipDataRequest.Length);
       _downloadProgress = 1f;
       updateLoadingProgress();
@@ -609,8 +609,6 @@ public class XmlVersionManagerClient : GenericGameManager {
                      actualData.shipID = dataId;
                      shipDataList.Add(dataId, actualData);
                      message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
-                  } else {
-                     D.debug("Skip add entry for Ship: " + dataId);
                   }
                }
             }

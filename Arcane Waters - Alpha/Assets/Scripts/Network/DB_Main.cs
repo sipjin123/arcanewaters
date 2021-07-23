@@ -73,8 +73,8 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new string fetchZipRawData (string slotStr) {
-      int slot = int.Parse(slotStr);
+   public static new string fetchZipRawData () {
+      //int slot = int.Parse(slotStr);
       UInt32 FileSize;
       byte[] rawData;
 
@@ -82,7 +82,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
 
-            string query = "SELECT * FROM global.xml_status where id = " + slot;
+            string query = "SELECT * FROM global.xml_status where id = " + XmlVersionManagerServer.XML_SLOT;
             using (MySqlCommand command = new MySqlCommand(query, connection)) {
                DebugQuery(command);
 
@@ -254,13 +254,12 @@ public class DB_Main : DB_MainStub
       return clause.ToString();
    }
 
-   public static new string fetchXmlVersion (string slotstr) {
-      int slot = int.Parse(slotstr);
+   public static new string fetchXmlVersion () {
       try {
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
             using (MySqlCommand command = new MySqlCommand(
-               "SELECT version FROM global.xml_status where id = " + slot,
+               "SELECT version FROM global.xml_status where id = " + XmlVersionManagerServer.XML_SLOT,
                connection)) {
                DebugQuery(command);
 
@@ -529,7 +528,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "UPDATE global.xml_status SET xmlZipData = @xmlZipData, version = version + 1, dataSize = @dataSize WHERE id = " + slot, conn)) {
+            "UPDATE global.xml_status SET xmlZipData = @xmlZipData, version = version + 1, dataSize = @dataSize WHERE id = " + XmlVersionManagerServer.XML_SLOT, conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -701,7 +700,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT version FROM global.xml_status where id = " + NubisDataHandling.NubisDataFetcher.getSlotIndex(), conn)) {
+            "SELECT version FROM global.xml_status where id = " + XmlVersionManagerServer.XML_SLOT, conn)) {
 
             conn.Open();
             cmd.Prepare();

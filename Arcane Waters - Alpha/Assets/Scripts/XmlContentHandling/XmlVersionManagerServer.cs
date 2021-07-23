@@ -17,6 +17,9 @@ public class XmlVersionManagerServer : GenericGameManager {
    // Self
    public static XmlVersionManagerServer self;
 
+   // The slot of the xml data
+   public const int XML_SLOT = 3;
+
    // The current version of the server
    public int newServerVersion;
 
@@ -377,7 +380,7 @@ public class XmlVersionManagerServer : GenericGameManager {
       string zipDirectory = SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE;
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          byte[] zipData = File.ReadAllBytes(zipDirectory);
-         DB_Main.writeZipData(zipData, (int) XmlSlotIndex.Default);
+         DB_Main.writeZipData(zipData, XML_SLOT);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             D.debug("Zip Upload Complete: Windows:" + zipData.Length);

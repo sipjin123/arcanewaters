@@ -84,7 +84,8 @@ namespace NubisDataHandling {
       }
 
       private async void processXmlVersion () {
-         string returnCode = await NubisClient.call(nameof(DB_Main.fetchXmlVersion), getSlotIndex());
+         string returnCode = await NubisClient.call(nameof(DB_Main.fetchXmlVersion));
+
          try {
             int xmlVersion = int.Parse(returnCode);
             if (xmlVersion < 1) {
