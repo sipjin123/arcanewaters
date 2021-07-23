@@ -247,6 +247,7 @@ namespace MapCreationTool
          List<ExportedPrefab001> pvpWaypointsData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> pvpMonsterSpawnerData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> pvpLootSpawnData = new List<ExportedPrefab001>();
+         List<ExportedPrefab001> pvpCaptureTargetHolderData = new List<ExportedPrefab001>();
 
          int unrecognizedPrefabs = 0;
          int cropSpotCounter = 0;
@@ -316,6 +317,10 @@ namespace MapCreationTool
             } else if (original.GetComponent<PvpLootSpawn>() != null) {
                if (prefab.d != null) {
                   pvpLootSpawnData.Add(prefab);
+               }
+            } else if (original.GetComponent<PvpCaptureTargetHolder>() != null) {
+               if (prefab.d != null) {
+                  pvpCaptureTargetHolderData.Add(prefab);
                }
             } else {
                Vector3 targetLocalPos = new Vector3(prefab.x, prefab.y, 0) * 0.16f + Vector3.back * 10;
@@ -419,9 +424,10 @@ namespace MapCreationTool
             Utilities.warning($"Could not recognize { unrecognizedPrefabs } prefabs of map { mapInfo.mapName }");
          }
 
-         area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData, 
-            shipData, seaMonstersData, bossSpawnerData, pvpTowerData, 
-            pvpBaseData, pvpShipyardTowerData, pvpWaypointsData, pvpMonsterSpawnerData, pvpLootSpawnData);
+         area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData,
+            shipData, seaMonstersData, bossSpawnerData, pvpTowerData,
+            pvpBaseData, pvpShipyardTowerData, pvpWaypointsData, pvpMonsterSpawnerData,
+            pvpLootSpawnData, pvpCaptureTargetHolderData);
       }
    }
 }

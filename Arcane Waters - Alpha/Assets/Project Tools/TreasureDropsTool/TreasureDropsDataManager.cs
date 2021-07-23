@@ -39,6 +39,7 @@ public class TreasureDropsDataManager : MonoBehaviour {
                   xmlId = lootDropCollection.Key,
                   treasureDropsCollection = newTreasureDropsData
                };
+
                _lootDropsList.Add(newTreasureCollection);
             } catch {
                D.debug("Failed to process Loot drops: {" + lootDropCollection.Key + "}");
@@ -116,6 +117,7 @@ public class TreasureDropsDataManager : MonoBehaviour {
                      foreach (TreasureDropsData treasureDrop in lootGroupData.treasureDropsCollection) {
                         newTreasureDropsData.Add(treasureDrop);
                      }
+
                      lootDropsCollection.Add(uniqueKey, lootGroupData);
 
                      // TODO: Remove after successful implementation

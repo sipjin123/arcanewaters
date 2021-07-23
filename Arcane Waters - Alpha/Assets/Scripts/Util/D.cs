@@ -65,20 +65,6 @@ public class D : MonoBehaviour {
 
    #endregion
 
-   private static void OnLogMessageReceived(string logString, string stackTrace, LogType type)
-   {
-      if (type == LogType.Exception)
-      {
-         error(logString);
-         error(stackTrace);
-      }
-      else
-      {
-         log(logString);
-         log(stackTrace);
-      }
-   }
-
    public void Awake () {
       D.adminLog("D.Awake...", D.ADMIN_LOG_TYPE.Initialization);
 
@@ -135,8 +121,7 @@ public class D : MonoBehaviour {
          // Log the startup time
          debug(appName + " started.");
 
-         // Application.logMessageReceived -= OnLogMessageReceived;
-         // Application.logMessageReceived += OnLogMessageReceived;
+         Application.logMessageReceived += HandleUnityLog;
 
       }
       D.adminLog("D.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
@@ -192,19 +177,11 @@ public class D : MonoBehaviour {
       File.WriteAllText(directory, "[" + DateTime.UtcNow + "] Initialize");
    }
 
-   void OnEnable () {
-      // Application.logMessageReceived += HandleUnityLog;
-   }
-
-   void OnDisable () {
-      // Application.logMessageReceived -= HandleUnityLog;
-   }
-
    void HandleUnityLog (string logString, string stackTrace, LogType type) {
       switch (type) {
          case LogType.Error:
          case LogType.Exception:
-            D.warning("Caught error: " + logString + "\n" + stackTrace);
+            error("Caught error: " + logString + "\n" + stackTrace);
             break;
       }
    }

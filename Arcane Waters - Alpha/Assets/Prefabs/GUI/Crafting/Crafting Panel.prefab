@@ -808,7 +808,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Refinement
+  m_Text: Repair
 --- !u!114 &2798203142487103770
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -875,8 +875,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 147.35, y: -224.15}
-  m_SizeDelta: {x: 284.7, y: 438.3}
+  m_AnchoredPosition: {x: 147.35, y: -65.325}
+  m_SizeDelta: {x: 284.7, y: 120.649994}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5847326500042733592
 CanvasRenderer:
@@ -2253,7 +2253,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 522.65, y: -257.65}
+  m_AnchoredPosition: {x: 923.55, y: -257.65}
   m_SizeDelta: {x: 385.9, y: 515.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1663150673241433693
@@ -3447,7 +3447,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Crafting & Refinement
+  m_Text: Crafting & Repair
 --- !u!114 &869247191405118218
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4391,8 +4391,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 154.85, y: -272.65}
-  m_SizeDelta: {x: 309.7, y: 485.3}
+  m_AnchoredPosition: {x: 154.85, y: -431.47498}
+  m_SizeDelta: {x: 309.7, y: 167.65}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3507589876758249117
 CanvasRenderer:
@@ -4941,8 +4941,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 157.35, y: -224.15}
-  m_SizeDelta: {x: 294.7, y: 448.3}
+  m_AnchoredPosition: {x: 157.35, y: -65.325}
+  m_SizeDelta: {x: 294.7, y: 130.65}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7820233555052624666
 MonoBehaviour:
@@ -7275,7 +7275,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 157.35, y: -469.3}
+  m_AnchoredPosition: {x: 157.35, y: -151.65}
   m_SizeDelta: {x: 274, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &4387834270967752068
@@ -13021,7 +13021,7 @@ PrefabInstance:
     - target: {fileID: 9212414937726179063, guid: 33d88b6511a22c8468827cfc121e37c8,
         type: 3}
       propertyPath: m_Text
-      value: Refine
+      value: Repair
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 33d88b6511a22c8468827cfc121e37c8, type: 3}

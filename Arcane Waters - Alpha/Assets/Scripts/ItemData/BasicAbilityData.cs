@@ -131,7 +131,7 @@ public class BasicAbilityData : BattleItemData
       if (soundEffect != null) {
          // Play the fmod sfx if the fmod id is valid
          if (soundEffect.fmodId.Length > 1) {
-            SoundEffectManager.self.playFmod2DWithPath(soundEffect.fmodId);
+            SoundEffectManager.self.playFmodWithPath(soundEffect.fmodId, targetTransform);
          } else {
             if (SoundEffectManager.self.isValidSoundEffect(castSoundEffectId)) {
                // Play intended sfx using legacy approach, referencing sfx in resource folder
@@ -161,15 +161,16 @@ public class BasicAbilityData : BattleItemData
       if (soundEffect != null) {
          // Play the fmod sfx if the fmod id is valid
          if (soundEffect.fmodId.Length > 1) {
-            SoundEffectManager.self.playFmod2DWithPath(soundEffect.fmodId);
+            SoundEffectManager.self.playFmodWithPath(soundEffect.fmodId, targetTransform);
          } else {
             if (SoundEffectManager.self.isValidSoundEffect(hitSoundEffectId)) {
                // Play intended sfx using legacy approach, referencing sfx in resource folder
                SoundEffectManager.self.playSoundEffect(hitSoundEffectId, targetTransform);
             } else {
                // Play a default clip
-               AudioClip hitClip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultHitAudio).audioClip;
-               SoundManager.playClipAtPoint(hitClip, targetTransform.position);
+               SoundEffectManager.self.playFmodWithPath(SoundEffectManager.GENERIC_HIT_LAND, targetTransform);
+               //AudioClip hitClip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultHitAudio).audioClip;
+               //SoundManager.playClipAtPoint(hitClip, targetTransform.position);
             }
          }
       } else {
@@ -180,8 +181,9 @@ public class BasicAbilityData : BattleItemData
          // The NON buff abilities should have a default Hit sfx
          if (abilityType != AbilityType.BuffDebuff) {
             // Play a default clip
-            AudioClip hitClip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultHitAudio).audioClip;
-            SoundManager.playClipAtPoint(hitClip, targetTransform.position);
+            //AudioClip hitClip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultHitAudio).audioClip;
+            //SoundManager.playClipAtPoint(hitClip, targetTransform.position);
+            SoundEffectManager.self.playFmodWithPath(SoundEffectManager.GENERIC_HIT_LAND, targetTransform);
          }
       }
    }
@@ -272,7 +274,7 @@ public class AbilityDataRecord
       foreach (int basicDataId in record.basicAbilityDataList) {
          basicList.Add(basicDataId);
 
-         BasicAbilityData abilityData = AbilityManager.self.allGameAbilities.Find(_=>_.itemID == basicDataId);
+         BasicAbilityData abilityData = AbilityManager.self.allGameAbilities.Find(_ => _.itemID == basicDataId);
          if (abilityData != null) {
             if (abilityData.abilityType == AbilityType.Standard) {
                attackList.Add(basicDataId);

@@ -97,8 +97,13 @@ public struct CropInfo {
          return false;
       }
 
-      long serverTimestamp = ((DateTimeOffset) TimeManager.self.getLastServerDateTime()).ToUnixTimeSeconds();
-      return (serverTimestamp - lastWaterTimestamp) > this.waterInterval;
+      return getTimeSinceWatered() > this.waterInterval;
+   }
+
+   private float getTimeSinceWatered () {
+      float perkMultiplier = PerkManager.self.getPerkMultiplier(userId, Perk.Category.CropGrowthSpeed);
+      float timeSinceWatered = (TimeManager.self.getLastServerUnixTimestamp() - lastWaterTimestamp);
+      return timeSinceWatered * perkMultiplier;
    }
 
    #region Private Variables

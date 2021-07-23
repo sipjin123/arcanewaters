@@ -332,7 +332,8 @@ namespace MapCreationTool.Serialization
       public const string NPC_PANEL_TYPE_KEY = "panel type";
       public const string NPC_DIRECTION_KEY = "direction default";
 
-      public const string SPIDER_WEB_HEIGHT_KEY = "height";
+      public const string SPIDER_WEB_X_KEY = "spider web x";
+      public const string SPIDER_WEB_Y_KEY = "spider web y";
 
       public const string TREASURE_SPOT_SPAWN_CHANCE_KEY = "spawn chance";
       public const string TREASURE_SPRITE_TYPE_KEY = "treasure sprite type";

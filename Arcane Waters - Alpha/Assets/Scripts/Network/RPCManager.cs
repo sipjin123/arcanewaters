@@ -6762,13 +6762,13 @@ public class RPCManager : NetworkBehaviour
       await DB_Main.execAsync((cmd) => DB_Main.setMapCustomizationChanges(cmd, baseMapId, areaOwnerId, currentState));
 
       // If creating a new prefab, remove an item from the inventory
-      if (changes.created) {
+      if (changes.created && !spawnedFromAVariation) {
          int itemId = remainingProps.FirstOrDefault(i => i.itemDefinitionId == prefab.propDefinitionId)?.id ?? -1;
          await DB_Main.execAsync((cmd) => DB_Main.decreaseOrDeleteItemInstance(cmd, itemId, 1));
       }
 
       // If deleting a prefab and it's not placed in map editor, return to inventory
-      if (changes.deleted && createdByUser) {
+      if (changes.deleted && createdByUser && !spawnVariation) {
          await DB_Main.execAsync((cmd) => DB_Main.createOrAppendItemInstance(cmd,
                   new ItemInstance { count = 1, itemDefinitionId = prefab.propDefinitionId, ownerUserId = _player.userId, id = -1 }));
       }

@@ -1734,6 +1734,7 @@ MonoBehaviour:
   isAboutToWarpOnClient: 0
   interactingAnimation: 0
   isSpeedingUp: 0
+  passedOnTemporaryControl: 0
   _ignoredAnimators:
   - {fileID: 0}
   - {fileID: 0}

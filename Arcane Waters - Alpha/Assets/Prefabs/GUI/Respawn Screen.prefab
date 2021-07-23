@@ -381,6 +381,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvasGroup: {fileID: 6454993619581770486}
+  buttonText: {fileID: 7853492520205130929}
 --- !u!1001 &1379270567075007046
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -574,6 +575,11 @@ PrefabInstance:
       propertyPath: m_Text
       value: Go Home
       objectReference: {fileID: 0}
+    - target: {fileID: 9212414937726179063, guid: 33d88b6511a22c8468827cfc121e37c8,
+        type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 22
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 33d88b6511a22c8468827cfc121e37c8, type: 3}
 --- !u!224 &6780637228311773774 stripped
@@ -582,3 +588,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1379270567075007046}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7853492520205130929 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9212414937726179063, guid: 33d88b6511a22c8468827cfc121e37c8,
+    type: 3}
+  m_PrefabInstance: {fileID: 1379270567075007046}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
