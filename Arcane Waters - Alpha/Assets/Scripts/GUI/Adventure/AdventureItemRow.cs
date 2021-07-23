@@ -146,27 +146,39 @@ public class AdventureItemRow : MonoBehaviour {
 
       // Set the tooltip Strength text
       string itemStrength = "";
+      string itemName = "";
       if (item.category == Item.Category.Weapon) {
          WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
          if (weaponData != null) {
             itemStrength = "Damage = " + weaponData.weaponBaseDamage.ToString();
+            itemName = weaponData.equipmentName;
          } else {
             D.debug("Missing weapon data with id: " + item.itemTypeId);
          }
       }
       if (item.category == Item.Category.Armor) {
-         ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(item.itemTypeId);
+         ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId);
          if (armorData != null) {
             itemStrength = "Defense = " + armorData.armorBaseDefense.ToString();
+            itemName = armorData.equipmentName;
          } else {
             D.debug("Missing armor data with id: " + item.itemTypeId);
+         }
+      }
+      if (item.category == Item.Category.Hats) {
+         HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
+         if (hatData != null) {
+            itemName = hatData.equipmentName;
+            itemStrength = "Defense = " + hatData.hatBaseDefense.ToString();
+         } else {
+            D.debug("Missing hat data with id: " + item.itemTypeId);
          }
       }
 
       // Set the tooltip Durability text
       string itemDurability = "Durability = " + item.durability.ToString();
 
-      string tooltipText = itemDescription + System.Environment.NewLine + System.Environment.NewLine + itemStrength + System.Environment.NewLine + itemDurability;
+      string tooltipText = itemName + System.Environment.NewLine + itemDescription + System.Environment.NewLine + System.Environment.NewLine + itemStrength + System.Environment.NewLine + itemDurability;
       return tooltipText;
    }
 
