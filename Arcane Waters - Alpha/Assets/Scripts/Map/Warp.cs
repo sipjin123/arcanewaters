@@ -105,6 +105,8 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          // If the voyage instance cannot be found, warp the player to the starting town
          if (!InstanceManager.self.tryGetVoyageInstance(voyageId, out Instance seaVoyageInstance)) {
             D.error(string.Format("Could not find the sea voyage instace when leaving a treasure site. userId: {0}, treasure site areaKey: {1}", player.userId, player.areaKey));
+
+            D.debug("This player {" + player.userId + " " + player.entityName + "} could not find sea voyage after treasure site, returning to Town");
             player.spawnInNewMap(Area.STARTING_TOWN);
             yield break;
          }
@@ -141,6 +143,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          if (instance == null || instance.voyageId <= 0) {
             D.error(string.Format("An instance in a league area is not a voyage. userId: {0}, league areaKey: {1}", player.userId, player.areaKey));
 
+            D.debug("This player {" + player.userId + " " + player.entityName + "} is accessing instance that is not a voyage, returning to Town");
             player.spawnInNewMap(Area.STARTING_TOWN);
             yield break;
          }
@@ -152,6 +155,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             if (!player.tryGetVoyage(out Voyage voyage)) {
                D.error("Error when retrieving the voyage during warp to next league instance.");
                player.rpc.sendError("Error when warping between league maps. Could not find the voyage.");
+               D.debug("This player {" + player.userId + " " + player.entityName + "} could not find Voyage during warp to league, returning to Town");
                player.spawnInNewMap(Area.STARTING_TOWN);
                yield break;
             }

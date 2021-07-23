@@ -4525,6 +4525,7 @@ public class RPCManager : NetworkBehaviour
       if (targetPlayerToKick) {
          // If the player is in a voyage area, warp him to the starting town
          if (VoyageManager.isAnyLeagueArea(targetPlayerToKick.areaKey) || VoyageManager.isPvpArenaArea(targetPlayerToKick.areaKey) || VoyageManager.isTreasureSiteArea(targetPlayerToKick.areaKey)) {
+            D.debug("This player {" + _player.userId + " " + _player.entityName + "} Has been kicked from Group, returning to Town");
             targetPlayerToKick.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
          }
 
@@ -4675,7 +4676,9 @@ public class RPCManager : NetworkBehaviour
 
       // If the player does not meet the voyage requirements, warp the player back to town
       if (!canPlayerStayInVoyage()) {
+         D.debug("This player {" + _player.userId + " " + _player.entityName + "} Cannot stay in Voyage, returning to Town");
          _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
+         return;
       }
 
       if (playerShipEntity && playerShipEntity.tryGetVoyage(out Voyage voyage)) {
@@ -5927,7 +5930,7 @@ public class RPCManager : NetworkBehaviour
             reason += "Player cant stay in the voyage\n";
          }
 
-         D.debug("Player {" + _player.userId + "}" + " attempted to engage in combat due invalid voyage conditions, returning to town" + " : " + reason);
+         D.debug("Player {" + _player.userId + "}" + " attempted to engage in combat due invalid voyage conditions, returning to town" + " Reason: {" + reason + "}");
          _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
          return;
       }
