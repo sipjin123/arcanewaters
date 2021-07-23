@@ -187,7 +187,9 @@ public class TreasureChest : NetworkBehaviour {
          gameObject.SetActive(false);
       }
 
-      StartCoroutine(CO_ReparentObject());
+      if (gameObject.activeInHierarchy) {
+         StartCoroutine(CO_ReparentObject());
+      }
    }
 
    public void Update () {

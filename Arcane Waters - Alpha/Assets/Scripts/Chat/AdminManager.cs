@@ -120,7 +120,7 @@ public class AdminManager : NetworkBehaviour
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
       cm.addCommand(new CommandData("force_join", "During land combat, forces group memebers to join automatically", forceJoin, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "autoAttack", "attackDelay" }));
-      cm.addCommand(new CommandData("battle_simulate", "Simulate the combat", battleSimulate, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "rounds" }));
+      cm.addCommand(new CommandData("battle_simulate", "Simulate the combat", battleSimulate, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "rounds", "enemy" }));
       cm.addCommand(new CommandData("freeze_ships", "Freezes all bot ships", freezeShips, requiredPrefix: CommandType.Admin));
 
       // Log Commands for investigation
@@ -687,7 +687,12 @@ public class AdminManager : NetworkBehaviour
          try {
             // Simulate the combat x number of times
             battleCount = int.Parse(list[0]);
-            StartCoroutine(CO_battleSimulate(battleCount));
+            try {
+               int enemyType = int.Parse(list[1]);
+               StartCoroutine(CO_battleSimulate(battleCount, enemyType));
+            } catch {
+               StartCoroutine(CO_battleSimulate(battleCount));
+            }
          } catch {
             // If parameter is invalid, simulate combat 10 times
             StartCoroutine(CO_battleSimulate(10));
@@ -698,10 +703,11 @@ public class AdminManager : NetworkBehaviour
       }
    }
 
-   private IEnumerator CO_battleSimulate (int battleCounter) {
+   private IEnumerator CO_battleSimulate (int battleCounter, int enemyId = (int) Enemy.Type.Pirate_Shooter) {
       // Spawns an enemy infront of the player that will trigger combat automatically
-      spawnCustomEnemy(Enemy.Type.Pirate_Shooter.ToString());
-
+      string enemyName = ((Enemy.Type) enemyId).ToString();
+      spawnCustomEnemy(enemyName);
+      
       // Wait for player to enter combat before proceeding
       if (!Global.player.isInBattle()) {
          while (!Global.player.isInBattle()) {
