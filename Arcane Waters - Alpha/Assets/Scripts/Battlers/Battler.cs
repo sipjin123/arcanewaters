@@ -14,11 +14,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 {
    #region Public Variables
 
+   [Header("Main Stats")]
+
    // Battler type (AI controlled or player controlled)
    public BattlerType battlerType;
-
-   // Reference to the main SpriteRenderer, always set to the body sprite renderer.
-   public SpriteRenderer mainSpriteRenderer;
 
    [Space(8)]
 
@@ -43,9 +42,17 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [SyncVar]
    public int companionId = -1;
 
+   // Our associated player net ID
+   [SyncVar]
+   public uint playerNetId;
+
    // The battle ID that this Battler is in
    [SyncVar]
    public int battleId;
+
+   // Determines the enemy type which is used to retrieve enemy data from XML
+   [SyncVar]
+   public Enemy.Type enemyType;
 
    // The type of Biome this battle is in
    [SyncVar]
@@ -59,25 +66,25 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [SyncVar]
    public Gender.Type gender = Gender.Type.Male;
 
+   // The anim group
+   public Anim.Group animGroup;
+
+   [Header("Network References")]
+
+   // The Network Player associated with this Battler, if any
+   public NetEntity player;
+
+   // The Battle that this Battler is in
+   public Battle battle;
+
+   // The Battle Spot at which this Battler has been placed
+   public BattleSpot battleSpot;
+
+   [Header("Main Stats")]
+
    // The amount of health we currently have
    [SyncVar]
    public int health = 1;
-
-   // The bonus attack stats provided by buffs
-   [SyncVar]
-   public int bonusFireAttack = 0,
-      bonusWaterAttack = 0,
-      bonusAirAttack = 0,
-      bonusEarthAttack = 0,
-      bonusPhysicalAttack = 0;
-
-   // The bonus defense stats provided by buffs
-   [SyncVar]
-   public int bonusFireDefense = 0,
-      bonusWaterDefense = 0,
-      bonusAirDefense = 0,
-      bonusEarthDefense = 0,
-      bonusPhysicalDefense = 0;
 
    // The amount of health displayed by the client
    public int displayedHealth;
@@ -104,7 +111,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // The time at which we can switch into another stance.
    [SyncVar]
    public double stanceCooldownEndTime;
-   
+
    // If this battler can execute its action
    [SyncVar]
    public bool canExecuteAction = false;
@@ -125,25 +132,23 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // The time at which this Battler is no longer busy displaying attack/hit animations
    public double animatingUntil;
 
-   // Determines the enemy type which is used to retrieve enemy data from XML
+   // The bonus attack stats provided by buffs
    [SyncVar]
-   public Enemy.Type enemyType;
+   public int bonusFireAttack = 0,
+      bonusWaterAttack = 0,
+      bonusAirAttack = 0,
+      bonusEarthAttack = 0,
+      bonusPhysicalAttack = 0;
 
-   // Our associated player net ID
+   // The bonus defense stats provided by buffs
    [SyncVar]
-   public uint playerNetId;
+   public int bonusFireDefense = 0,
+      bonusWaterDefense = 0,
+      bonusAirDefense = 0,
+      bonusEarthDefense = 0,
+      bonusPhysicalDefense = 0;
 
-   // The Network Player associated with this Battler, if any
-   public NetEntity player;
-
-   // The Battle that this Battler is in
-   public Battle battle;
-
-   // The Battle Spot at which this Battler has been placed
-   public BattleSpot battleSpot;
-
-   // Gets set to true while we're jumping across the board
-   public bool isJumping = false;
+   [Header("Character Visuals")]
 
    // Our body layers
    [SyncVar]
@@ -175,9 +180,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public WeaponManager weaponManager;
    public HatManager hatManager;
 
-   // Holds the reference to the battler bar
-   public BattleBars selectedBattleBar, minionBattleBar, bossBattleBar;
-
    // Base select/deselect battlers events. Hidden from inspector to avoid untracked events.
    [HideInInspector] public UnityEvent onBattlerSelect = new UnityEvent();
    [HideInInspector] public UnityEvent onBattlerDeselect = new UnityEvent();
@@ -186,15 +188,20 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    [HideInInspector] public BattlerDamagedEvent onBattlerDamaged = new BattlerDamagedEvent();
 
-   // Determines if the abilities have been initialized
-   [SyncVar]
-   public bool battlerAbilitiesInitialized = false;
+   // The current coroutine action
+   public IEnumerator currentActionCoroutine = null;
 
    // Determines the debuffs that are assigned to this battler
    public SyncDictionary<Status.Type, float> debuffList = new SyncDictionary<Status.Type, float>();
 
-   // The location where the ui will snap to upon selection
-   public Transform targetUISnapLocation;
+   [Header("Booleans")]
+
+   // Gets set to true while we're jumping across the board
+   public bool isJumping = false;
+
+   // Determines if the abilities have been initialized
+   [SyncVar]
+   public bool battlerAbilitiesInitialized = false;
 
    // Determines if this battler is a boss
    [SyncVar]
@@ -215,21 +222,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // If the client has processed the death handling on the client side
    public bool hasPlayedDeathAnim;
 
-   // Caches the sizes of the monsters in pixel for offset purposes
-   public const float LARGE_MONSTER_SIZE = 140;
-   public const float LARGE_MONSTER_OFFSET = .25f;
-
-   // The starting AP for all units
-   public const int DEFAULT_AP = 5;
-
-   // The current coroutine action
-   public IEnumerator currentActionCoroutine = null;
-
    // If cancel state was received
    public bool receivedCancelState;
-
-   // Reference to the shadow
-   public Transform shadowTransform;
 
    // If action can be cancelled
    public bool canCancelAction = true;
@@ -237,27 +231,25 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // If setup is completed
    public bool hasAssignedNetId = false;
 
-   // Debug text mesh
-   public GameObject debugLogCanvas;
-   public Text debugTextLog;
-
-   // The anim group
-   public Anim.Group animGroup;
-
-   // A reference to the dots that show when this battler has an attack queued
-   public SpriteRenderer waitingDots;
-
-   // A reference to the dotted line that shows which enemy this battler has targeted with their queued attack
-   public DottedLine targetLine;
-
-   // A reference to the point where the target line should start / end
-   public Transform targetPoint;
-
-   // Returns simple animation list
-   public List<SimpleAnimation> getAnim () { return _anims; }
+   // If this is the first attack
+   public bool useSpecialAttack = true;
 
    // If the battler is attacking
    public bool isAttacking;
+
+   [Header("Components")]
+
+   // Reference to the shadow
+   public Transform shadowTransform;
+
+   // Reference to the main SpriteRenderer, always set to the body sprite renderer.
+   public SpriteRenderer mainSpriteRenderer;
+
+   // Holds the reference to the battler bar
+   public BattleBars selectedBattleBar, minionBattleBar, bossBattleBar;
+
+   // The location where the ui will snap to upon selection
+   public Transform targetUISnapLocation;
 
    // A reference to the stance change effect for this battler
    public StanceChangeEffect stanceChangeEffect;
@@ -271,11 +263,31 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // The sprite containers
    public Transform spriteContainers;
 
+   // A reference to the dots that show when this battler has an attack queued
+   public SpriteRenderer waitingDots;
+
+   // A reference to the dotted line that shows which enemy this battler has targeted with their queued attack
+   public DottedLine targetLine;
+
+   // A reference to the point where the target line should start / end
+   public Transform targetPoint;
+
+   // Debug text mesh
+   public GameObject debugLogCanvas;
+   public Text debugTextLog;
+
+   // Caches the sizes of the monsters in pixel for offset purposes
+   public const float LARGE_MONSTER_SIZE = 140;
+   public const float LARGE_MONSTER_OFFSET = .25f;
+
+   // The starting AP for all units
+   public const int DEFAULT_AP = 5;
+
    #endregion
 
    public void stopActionCoroutine () {
       if (currentActionCoroutine != null) {
-         if (targetLine) { 
+         if (targetLine) {
             targetLine.gameObject.SetActive(false);
          }
 
@@ -283,7 +295,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          receivedCancelState = true;
          BattleUIManager.self.resetButtonAnimations();
          StartCoroutine(CO_ResetBattlerSpot());
-      } 
+      }
    }
 
    public void registerNewActionCoroutine (IEnumerator newEnumerator, BattleActionType battleActionType) {
@@ -366,7 +378,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          BattleUIManager.self.triggerAbilityByKey(0);
       }
 
-      if (Random.Range(0,3) < 1) {
+      if (Random.Range(0, 3) < 1) {
          // Simulate changing battle stance once in a while
          BattleUIManager.self.changeBattleStance(Random.Range(0, 3));
       }
@@ -529,7 +541,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          }
 
          // Disable all coroutines, attack display / collision effects / hit animations / battle spot repositioning
-         if (currentActionCoroutine != null) { 
+         if (currentActionCoroutine != null) {
             StopCoroutine(currentActionCoroutine);
          }
          StopAllCoroutines();
@@ -589,7 +601,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          if (battlerType == BattlerType.PlayerControlled) {
             battlerData = MonsterManager.self.getBattlerData(Enemy.Type.PlayerBattler);
-         } else { 
+         } else {
             // Sets the default monster if data is not yet created in xml editor
             if (battlerData == null) {
                battlerData = MonsterManager.self.getBattlerData(Enemy.Type.Lizard);
@@ -710,7 +722,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       } else {
          attackTimingIndicatorCanvasGroup.gameObject.SetActive(true);
          attackTimingIndicatorCanvasGroup.alpha = 1.0f;
-      }      
+      }
    }
 
    #region Stat Related Functions
@@ -955,7 +967,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                DB_Main.setNewLocalPosition(userId, pos, Direction.North, Area.STARTING_TOWN);
             });
          }
-      } 
+      }
    }
 
    public void playJumpSound () {
@@ -985,7 +997,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       foreach (SimpleAnimation anim in _anims) {
          if (anim.enabled) {
             anim.playAnimation(animationType);
-         } 
+         }
       }
    }
 
@@ -1412,7 +1424,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Simulate the collision effect of the attack towards the target battler
             yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action, attackerAbility));
-            
+
             // Handle the return to idle for attacks with shake here
             if ((abilityDataReference.hasShake || abilityDataReference.hasKnockBack) && !abilityDataReference.useSpecialAnimation && !isLastHit) {
                targetBattler.playAnim(Anim.Type.Battle_East);
@@ -1443,7 +1455,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             targetBattler.displayedHealth -= action.damage;
             targetBattler.displayedHealth = Util.clamp<int>(targetBattler.displayedHealth, 0, targetBattler.getStartingHealth());
-      
+
             #endregion
 
             yield return new WaitForSeconds(getPostContactLength());
@@ -1548,7 +1560,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
                yield return new WaitForSeconds(attackerAbility.getAimDuration());
             }
-            
+
             // Shoot the projectile after playing cast time
             string spriteProjectile = "";
             if (abilityDataReference.useCustomProjectileSprite) {
@@ -2096,14 +2108,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       int health = ((int) battData.baseHealth + (int) battData.healthPerlevel * level);
 
       // Based on the difficulty level, add additional health (Easy: + 10% health / Medium: + 20% health / Hard: + 30% health)
-      health = (int)(health + (health * (difficultyLevel * .1f)));
+      health = (int) (health + (health * (difficultyLevel * .1f)));
 
       // If this is a boss monster, add health (based from admin game settings) depending on number of team members
       if (battData.isBossType) {
          float healthPercentageValueRaw = health * (AdminGameSettingsManager.self.settings.bossHealthPerMember / 100);
          float teamHealthValue = healthPercentageValueRaw * battle.partyMemberCount;
          health += (int) teamHealthValue;
-      } 
+      }
 
       return (int) health;
    }
@@ -2186,7 +2198,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // Determines the delay before ending Shoot Pose
       return .25f * AdminGameSettingsManager.self.settings.battleAttackDuration;
    }
-   
+
    public static float getJumpLength () {
       // The amount of time a jump takes
       return .2f * AdminGameSettingsManager.self.settings.battleJumpDuration;
@@ -2543,6 +2555,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    #region Getters
 
+   // Returns simple animation list
+   public List<SimpleAnimation> getAnim () { return _anims; }
+
    public Vector2 getMagicGroundPosition () {
       return new Vector2(transform.position.x, transform.position.y - (mainSpriteRenderer.bounds.extents.y / 2));
    }
@@ -2748,6 +2763,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    #region Private Variables
 
+   [Header("PvtVariables")]
+   
    // If the user can cast an ability
    [SerializeField]
    private bool _canCastAbility = true;
