@@ -1697,6 +1697,25 @@ public class NetEntity : NetworkBehaviour
          }
       }
 
+      // End land combat is the user is in a battle
+      if (battleId > 0) {
+         Battle battle = BattleManager.self.getBattle(battleId);
+         if (battle == null) {
+            D.debug("Missing battle for user: {" + userId + "} using battle id: {" + battleId + "}, cant end battle properly");
+            return;
+         }
+
+         Battler battler = BattleManager.self.getBattle(battleId).getBattler(userId);
+         if (battler == null) {
+            D.debug("Missing battler for user: {" + userId + "}, cant end battle properly");
+            return;
+         }
+
+         battler.health = 0;
+         battle.onBattleEnded.Invoke();
+         return;
+      }
+
       // If the user is currently in ghost mode, disable it
       if (isGhost && tryGetGroup(out VoyageGroupInfo voyageGroup)) {
          VoyageGroupManager.self.removeUserFromGroup(voyageGroup, userId);
