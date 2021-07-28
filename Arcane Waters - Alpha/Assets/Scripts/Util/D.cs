@@ -68,17 +68,12 @@ public class D : MonoBehaviour {
    public void Awake () {
       D.adminLog("D.Awake...", D.ADMIN_LOG_TYPE.Initialization);
 
-      Global.privateLogTypesToShow.Add(ADMIN_LOG_TYPE.InstanceProcess);
-      Global.privateLogTypesToShow.Add(ADMIN_LOG_TYPE.Tutorial);
-      Global.privateLogTypesToShow.Add(ADMIN_LOG_TYPE.CombatEnd);
-      Global.privateLogTypesToShow.Add(ADMIN_LOG_TYPE.AbilityCast);
-
       // For now, we can't write to file in the web player
       if (Application.isMobilePlatform) {
          WRITE_TO_FILE = false;
       }
 
-      checkPrivateLogs();
+      //checkPrivateLogs();
 
       if (WRITE_TO_FILE) {
          // Create the "logs" directory and store the path to it
@@ -128,6 +123,11 @@ public class D : MonoBehaviour {
    }
 
    private void checkPrivateLogs () {
+      Global.privateLogTypesToShow.Add(ADMIN_LOG_TYPE.InstanceProcess);
+      Global.privateLogTypesToShow.Add(ADMIN_LOG_TYPE.Tutorial);
+      Global.privateLogTypesToShow.Add(ADMIN_LOG_TYPE.CombatEnd);
+      Global.privateLogTypesToShow.Add(ADMIN_LOG_TYPE.AbilityCast);
+
       setupForLogType(ADMIN_LOG_TYPE.InstanceProcess);
       setupForLogType(ADMIN_LOG_TYPE.Tutorial);
       setupForLogType(ADMIN_LOG_TYPE.CombatEnd);

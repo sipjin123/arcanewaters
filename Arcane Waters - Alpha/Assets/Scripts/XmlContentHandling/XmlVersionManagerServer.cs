@@ -24,8 +24,8 @@ public class XmlVersionManagerServer : GenericGameManager {
    public int newServerVersion;
 
    // Text directory of the xml text files
-   public static string XML_TEXT_DIRECTORY = "C:/XmlTextFiles";
-   public static string SERVER_ZIP_DIRECTORY = "C:/XmlZipFiles";
+   public static string XML_TEXT_DIRECTORY = "/XmlTextFiles";
+   public static string SERVER_ZIP_DIRECTORY = "/XmlZipFiles";
    public static string TEXT_FILE_NAME = "textFileName=";
    public static string SERVER_ZIP_FILE = "ServerXmlZip.zip";
 
@@ -100,8 +100,11 @@ public class XmlVersionManagerServer : GenericGameManager {
    public bool forceDisable;
 
    #endregion
-   
+
    protected override void Awake () {
+      XML_TEXT_DIRECTORY = Application.persistentDataPath + "/XmlTextFiles";
+      SERVER_ZIP_DIRECTORY = Application.persistentDataPath + "/XmlZipFiles";
+
       base.Awake();
       #if IS_SERVER_BUILD && CLOUD_BUILD
       forceDisable = false;
