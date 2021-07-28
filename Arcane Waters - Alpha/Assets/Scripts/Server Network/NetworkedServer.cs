@@ -467,6 +467,7 @@ public class NetworkedServer : NetworkedBehaviour
       if (player != null) {
          UserLocationBundle location = new UserLocationBundle();
          location.userId = player.userId;
+         location.serverPort = ServerNetworkingManager.self.server.networkedPort.Value;
          location.areaKey = player.areaKey;
          location.instanceId = player.instanceId;
          location.localPositionX = player.transform.localPosition.x;
@@ -488,7 +489,7 @@ public class NetworkedServer : NetworkedBehaviour
    public void Server_ReturnUserLocationForAdminGoTo (int adminUserId, UserLocationBundle location) {
       NetEntity adminEntity = EntityManager.self.getEntity(adminUserId);
       if (adminEntity != null) {
-         adminEntity.admin.returnUserLocationForAdminGoto(location);
+         adminEntity.admin.forceWarpToLocation(adminUserId, location);
       }
    }
 
@@ -566,6 +567,11 @@ public class NetworkedServer : NetworkedBehaviour
 
    [ClientRPC]
    public void Server_ClearPowerupsForUser (int userId) {
+      // If the user is not in this server, don't search again in others to prevent an infinite loop
+      if (EntityManager.self.getEntity(userId) == null) {
+         return;
+      }
+
       PowerupManager.self.clearPowerupsForUser(userId);
    }
 
@@ -636,6 +642,22 @@ public class NetworkedServer : NetworkedBehaviour
          }
       }
       ServerNetworkingManager.self.sendConfirmationMessage(ConfirmMessage.Type.General, adminUserId, $"Server {ServerNetworkingManager.self.server.networkedPort.Value} kicked {playerCount} players offline.");
+   }
+
+   [ServerRPC]
+   public void MasterServer_SummonUser (int targetUserId, UserLocationBundle adminLocation) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(targetUserId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_SummonUser, targetUserId, adminLocation);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_SummonUser (int targetUserId, UserLocationBundle adminLocation) {
+      NetEntity targetEntity = EntityManager.self.getEntity(targetUserId);
+      if (targetEntity != null) {
+         targetEntity.admin.forceWarpToLocation(adminLocation.userId, adminLocation);
+      }
    }
 
    #region Private Variables

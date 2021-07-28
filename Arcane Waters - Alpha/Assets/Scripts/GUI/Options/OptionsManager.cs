@@ -23,6 +23,9 @@ public class OptionsManager : GenericGameManager {
    // Player Prefs key for auto-farming
    public const string PREF_AUTO_FARM = "AUTO_FARM";
 
+   // Player Prefs key for lock cursor
+   public const string PREF_LOCK_CURSOR = "LOCK_CURSOR";
+
    // The reference to the UI Parent Canvas
    public Canvas mainGameCanvas;
 

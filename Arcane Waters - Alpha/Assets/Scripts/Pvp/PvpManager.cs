@@ -34,7 +34,7 @@ public class PvpManager : MonoBehaviour {
    public static float WAVE_SPAWNING_DURATION = 5.0f;
 
    // The interval inbetween waves
-   public static float WAVE_INTERVAL = 25.0f;
+   public static float WAVE_INTERVAL = 35.0f;
 
    // The delay at the start of the game before waves are spawned
    public static float INITIAL_WAVE_DELAY = 20.0f;

@@ -410,7 +410,7 @@ public class Area : MonoBehaviour
       }
 
       if (AreaManager.self.isInteriorArea(areaKey)) {
-         return SoundManager.Type.None;
+         return SoundManager.Type.Interior;
       } else if (VoyageManager.isLeagueSeaBossArea(areaKey)) {
          return SoundManager.Type.Sea_Lava;
       } else if (AreaManager.self.isSeaArea(areaKey)) {

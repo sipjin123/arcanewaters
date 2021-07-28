@@ -16,7 +16,7 @@ public class DB_MainStub : MonoBehaviour
 
    #region Nubis Requests
 
-   public static string fetchSingleBlueprint (string bpId, string usrId) {
+   public static string fetchSingleBlueprint (int bpId, int usrId) {
       return "";
    }
 
@@ -24,46 +24,46 @@ public class DB_MainStub : MonoBehaviour
       return "";
    }
 
-   public static string userInventory (string usrIdStr, string categoryFilterJSON, string itemIdsToExcludeJSON,
-      string mustExcludeEquippedItemsStr, string currentPageStr, string itemsPerPageStr, string durabilityFilter) {
+   public static string userInventory (int usrId, Item.Category[] categoryFilter, int[] itemIdsToExclude,
+      bool mustExcludeEquippedItems, int currentPage, int itemsPerPage, Item.DurabilityFilter itemDurabilityFilter) {
       return "";
    }
 
-   public static string userInventoryCount (string usrIdStr, string categoryFilterJSON, string itemIdsToExcludeJSON,
-      string mustExcludeEquippedItemsStr, string durabilityFilter) {
-      return "0";
+   public static int userInventoryCount (int usrId, Item.Category[] categoryFilter, int[] itemIdsToExclude,
+      bool mustExcludeEquippedItems, Item.DurabilityFilter itemDurabilityFilter) {
+      return 0;
    }
 
    public static string fetchXmlVersion () {
       return "";
    }
 
-   public static string fetchCraftableHats (string usrId) {
+   public static string fetchCraftableHats (int usrId) {
       return "";
    }
 
-   public static string fetchCraftableArmors (string usrId) {
+   public static string fetchCraftableArmors (int usrId) {
       return "";
    }
 
-   public static string fetchCraftableWeapons (string usrId) {
+   public static string fetchCraftableWeapons (int usrId) {
       return "";
    }
 
-   public static string fetchCraftingIngredients (string usrId) {
+   public static string fetchCraftingIngredients (int usrId) {
       return "";
    }
 
-   public static string fetchEquippedItems (string usrId) {
+   public static string fetchEquippedItems (int usrId) {
       return "";
    }
 
-   public static string fetchMapData (string mapName, string version) {
+   public static string fetchMapData (string mapName, int version) {
       return "";
    }
 
-   public static string userAbilities (string userIdString, string abilityEquipStatusString) {
-      return "";
+   public static List<AbilitySQLData> userAbilities (int usrId, AbilityEquipStatus abilityEquipStatus) {
+      return new List<AbilitySQLData>();
    }
 
    #endregion
@@ -80,12 +80,12 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
-   public static string getAuctionList (string pageNumberStr, string itemCountLimitStr, string categoryFilter, string userIdStr, string auctionFilter) {
-      return "";
+   public static List<AuctionItemData> getAuctionList (int pageNumber, int rowsPerPage, Item.Category[] categoryFilter, int userId, AuctionPanel.ListFilter auctionFilter) {
+      return new List<AuctionItemData>();
    }
 
-   public static string getAuctionListCount (string userIdStr, string filterData, string auctionFilter) {
-      return "0";
+   public static int getAuctionListCount (int userId, Item.Category[] filterData, AuctionPanel.ListFilter auctionFilter) {
+      return 0;
    }
 
    public static List<AuctionItemData> getAuctionsToDeliver () {
@@ -795,8 +795,12 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
-   public static string getUserInfoJSON (string userId) {
+   public static string getUserInfoJSON (int userId) {
       return "";
+   }
+
+   public static UserInfo getUserInfoById (int userId) {
+      return null;
    }
 
    public static UserInfo getUserInfo (string userName) {
@@ -939,8 +943,8 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
-   public static string getItemCount (string userId, string categoriesJSON, string itemIdsToFilterJSON, string categoriesToFilterJSON) {
-      return "0";
+   public static int getItemCount (int userId, Item.Category[] categories, int[] itemIdsToFilter, Item.Category[] categoriesToFilter) {
+      return 0;
    }
 
    public static List<Item> getItems (int userId, Item.Category[] categories, int page, int itemsPerPage) {
@@ -1285,12 +1289,12 @@ public class DB_MainStub : MonoBehaviour
    public static void createServerHistoryEvent (DateTime eventDate, ServerHistoryInfo.EventType eventType, int serverVersion, int serverPort) {
    }
 
-   public static List<ServerHistoryInfo> getServerHistoryList (string serverPort, string startDateString, string maxRowsString) {
-      return null;
+   public static List<ServerHistoryInfo> getServerHistoryList (int serverPort, long startDateBinary, int maxRows) {
+      return new List<ServerHistoryInfo>();
    }
 
-   public static string getOnlineServerList () {
-      return null;
+   public static List<int> getOnlineServerList () {
+      return new List<int>();
    }
 
    public static void updateServerShutdown (bool shutdown) {
@@ -1301,8 +1305,8 @@ public class DB_MainStub : MonoBehaviour
       return false;
    }
 
-   public static string isMasterServerOnline () {
-      return null;
+   public static bool isMasterServerOnline () {
+      return false;
    }
 
    public static void pruneServerHistory (DateTime untilDate) {

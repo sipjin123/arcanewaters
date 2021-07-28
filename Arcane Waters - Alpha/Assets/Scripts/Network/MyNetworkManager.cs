@@ -172,7 +172,6 @@ public class MyNetworkManager : NetworkManager
       } else {
          D.debug($"OnStopClient was called when NetworkClient.active was false, so not calling unregisterClientHandlers.");
       }
-      
 
       base.OnStopClient();
    }
@@ -321,27 +320,14 @@ public class MyNetworkManager : NetworkManager
          ShipInfo shipInfo = userObjects.shipInfo;
          GuildInfo guildInfo = userObjects.guildInfo;
          GuildRankInfo guildRankInfo = userObjects.guildRankInfo;
-         
-         // Check if the player's area is valid
-         string mapData = DB_Main.getMapInfo(userInfo.areaKey);
 
-         // TODO: Fix issue here
-         if (string.IsNullOrWhiteSpace(mapData)) {
-            D.debug("Cant process map data: " + mapData);
-            /*
-               // If the area is invalid, warp the player to the starting town as a fallback machamism
-               userInfo.areaKey = Area.STARTING_TOWN;
-               userInfo.localPos = Vector2.zero;
-               userInfo.facingDirection = (int) Direction.South;
-            */
-         }
          string previousAreaKey = userInfo.areaKey;
 
          // Get information about owned map
          string baseMapAreaKey = previousAreaKey;
 
          int mapOwnerId = CustomMapManager.isUserSpecificAreaKey(previousAreaKey) ? CustomMapManager.getUserId(previousAreaKey) : -1;
-         UserInfo ownerInfo = mapOwnerId < 0 ? null : (mapOwnerId == userInfo.userId ? userInfo : JsonUtility.FromJson<UserInfo>(DB_Main.getUserInfoJSON(mapOwnerId.ToString())));
+         UserInfo ownerInfo = mapOwnerId < 0 ? null : (mapOwnerId == userInfo.userId ? userInfo : DB_Main.getUserInfoById(mapOwnerId));
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -361,6 +347,21 @@ public class MyNetworkManager : NetworkManager
                if (AreaManager.self.tryGetCustomMapManager(previousAreaKey, out CustomMapManager customMapManager)) {
                   baseMapAreaKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(ownerInfo));
                }
+            }
+
+            // If the area is invalid, warp the player to the starting town as a fallback machamism
+            if (!AreaManager.self.doesAreaExists(baseMapAreaKey)) {
+               D.debug($"OnServerAddPlayer The user '{userInfo.username}' claims to be in the '{baseMapAreaKey}' area, but this area is not valid - Redirecting.");
+               
+               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                  DB_Main.setNewLocalPosition(userInfo.userId, Vector2.zero, Direction.South, Area.STARTING_TOWN);
+
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, Area.STARTING_TOWN, ""));
+                  });
+               });
+
+               return;
             }
 
             // Check if the player disconnected a few seconds ago and its object is still in the server

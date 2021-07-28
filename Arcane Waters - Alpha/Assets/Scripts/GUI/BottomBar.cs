@@ -139,7 +139,9 @@ public class BottomBar : MonoBehaviour {
          if (Global.player != null) {
             SoundEffectManager.self.playGuiMenuOpenSfx();
 
-            Global.player.rpc.Cmd_RequestShipsFromServer();
+            if (Global.player) {
+               Global.player.rpc.Cmd_RequestShipsFromServer();
+            }
          }
       } else {
          PanelManager.self.togglePanel(Panel.Type.Flagship);

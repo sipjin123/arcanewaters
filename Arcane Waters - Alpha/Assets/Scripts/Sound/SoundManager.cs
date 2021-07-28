@@ -12,8 +12,8 @@ public class SoundManager : GenericGameManager {
    public static float MIN_DELAY = .10f;
 
    // Master bus address
-   public static string MASTER_BUS_PATH = "Bus:/";
-   public string MASTER_VCA_PATH = "vca:/Master";
+   //public static string MASTER_BUS_PATH = "Bus:/";
+   //public string MASTER_VCA_PATH = "vca:/Master";
 
    // The minimum velocity we must be moving to trigger a footstep sound
    public static float MIN_FOOTSTEP_VELOCITY = .8f;
@@ -50,8 +50,15 @@ public class SoundManager : GenericGameManager {
    public AudioSource backgroundMusicAudioSource;
 
    // The master volume controls of FMOD
-   public FMOD.Studio.Bus masterBus;
-   public FMOD.Studio.VCA masterVCA;
+   //public FMOD.Studio.Bus masterBus;
+   //public FMOD.Studio.VCA masterVCA;
+
+   // FMOD volume variables
+   public string musicVCAPath = "vca:/Music";
+   public string sfxVCAPath = "vca:/Sound Effects";
+
+   public FMOD.Studio.VCA musicVCA;
+   public FMOD.Studio.VCA sfxVCA;
 
    // The type of sound to play
    public enum Type {
@@ -61,7 +68,7 @@ public class SoundManager : GenericGameManager {
       Sea_Forest = 100, Sea_Desert = 101, Sea_Pine = 102, Sea_Snow = 103, Sea_Mushroom = 104, Sea_Lava = 105,
 
       // Town Music
-      Town_Forest = 150, Town_Pine = 151, Town_Desert = 152, Town_Mushroom = 153, Town_Snow = 154, Town_Lava = 155,
+      Town_Forest = 150, Town_Pine = 151, Town_Desert = 152, Town_Mushroom = 153, Town_Snow = 154, Town_Lava = 155, Interior = 156,
 
       // Battle Music
       Battle_Music = 200,
@@ -126,16 +133,23 @@ public class SoundManager : GenericGameManager {
       base.Awake();
       self = this;
 
-      masterBus = RuntimeManager.GetBus(MASTER_BUS_PATH);
+      musicVCA = RuntimeManager.GetVCA(musicVCAPath);
+      sfxVCA = RuntimeManager.GetVCA(sfxVCAPath);
+
+      //masterBus = RuntimeManager.GetBus(MASTER_BUS_PATH);
       //masterVCA = RuntimeManager.GetVCA(MASTER_VCA_PATH);
 
       // Load the saved values if there are any
       if (PlayerPrefs.HasKey(SaveKeys.EFFECTS_VOLUME)) {
          effectsVolume = PlayerPrefs.GetFloat(SaveKeys.EFFECTS_VOLUME);
-         masterBus.setVolume(effectsVolume);
+         //masterBus.setVolume(effectsVolume);
+
+         sfxVCA.setVolume(effectsVolume);
       }
       if (PlayerPrefs.HasKey(SaveKeys.MUSIC_VOLUME)) {
          musicVolume = PlayerPrefs.GetFloat(SaveKeys.MUSIC_VOLUME);
+
+         musicVCA.setVolume(musicVolume);
       }
 
       // Look up the background music for the Title Screen, if we have any
@@ -262,7 +276,8 @@ public class SoundManager : GenericGameManager {
 
    public static void setEffectsVolume (float volume) {
       effectsVolume = volume;
-      self.masterBus.setVolume(effectsVolume);
+
+      self.sfxVCA.setVolume(effectsVolume);
 
       // Save the new volume
       PlayerPrefs.SetFloat(SaveKeys.EFFECTS_VOLUME, effectsVolume);
@@ -484,23 +499,24 @@ public class SoundManager : GenericGameManager {
    }
 
    public static void setBackgroundMusic (Type type) {
-      if (Util.isBatch()) {
-         return;
-      }
+      SoundEffectManager.self.playBgMusic(type);
+      //if (Util.isBatch()) {
+      //   return;
+      //}
 
-      // If we're already playing that music, there's nothing to do
-      if (_currentMusicType == type) {
-         return;
-      }
+      //// If we're already playing that music, there's nothing to do
+      //if (_currentMusicType == type) {
+      //   return;
+      //}
 
-      // Keep track of the previous music type, in case we need to switch back later
-      previousMusicType = _currentMusicType;
+      //// Keep track of the previous music type, in case we need to switch back later
+      //previousMusicType = _currentMusicType;
 
-      // Keep track of the music currently being played
-      _currentMusicType = type;
+      //// Keep track of the music currently being played
+      //_currentMusicType = type;
 
-      // Smoothly transition to the new music using a coroutine
-      self.StartCoroutine(self.transitionBackgroundMusic(type));
+      //// Smoothly transition to the new music using a coroutine
+      //self.StartCoroutine(self.transitionBackgroundMusic(type));
    }
 
    public static void create3dSound (string audioClipName, Vector3 position, int countToChooseFrom = 0) {

@@ -114,7 +114,7 @@ public class MapManager : MonoBehaviour
       D.editorLog("Attempting to fetch using Nubis Data", Color.green);
 
       // Request the map from Nubis Cloud
-      string mapData = await NubisClient.call(nameof(DB_Main.getMapInfo), areaKey);
+      string mapData = await NubisClient.call<string>(nameof(DB_Main.getMapInfo), areaKey);
       D.editorLog("Done fetching Nubis data: " + mapData.Length, Color.green);
       if (string.IsNullOrWhiteSpace(mapData) && mapData.Length < 10) {
          D.debug("Error in retrieving map data from NUBIS: (" + areaKey + ")");
@@ -425,7 +425,7 @@ public class MapManager : MonoBehaviour
 
    public async void downloadAndCreateMap (string areaKey, string baseMapAreaKey, int version, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type biome) {
       // Request the map from Nubis Cloud
-      string mapData = await NubisClient.call(nameof(DB_Main.fetchMapData), baseMapAreaKey, version);
+      string mapData = await NubisClient.call<string>(nameof(DB_Main.fetchMapData), baseMapAreaKey, version);
 
       if (string.IsNullOrWhiteSpace(mapData)) {
          D.debug("Error in retrieving map data from NUBIS: {" + areaKey + "}");

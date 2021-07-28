@@ -298,6 +298,10 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_ForceDisconnectAllNonAdminUsers, adminUserId, message);
    }
 
+   public void summonUser (int targetUserId, UserLocationBundle adminLocation) {
+      server.InvokeServerRpc(server.MasterServer_SummonUser, targetUserId, adminLocation);
+   }
+
    #region Private Variables
 
    // Players will only be assigned to the master server if all other servers have this many more players

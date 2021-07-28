@@ -48,6 +48,9 @@ public class MerchantCropRow : MonoBehaviour {
    // The Sell button tooltip component
    public ToolTipComponent sellButtonTooltip;
 
+   // The demand bar tooltip component
+   public ToolTipComponent demandMeterTooltip;
+
    #endregion
 
    public void setRowForCrop (CropOffer offer) {
@@ -66,6 +69,29 @@ public class MerchantCropRow : MonoBehaviour {
       demandIndex = Mathf.CeilToInt(demand * (DEMAND_METER_FILL_AMOUNTS.Length - 1));
       demandIndex = Mathf.Clamp(demandIndex, 0, DEMAND_METER_FILL_AMOUNTS.Length - 1);
       demandMeterImage.fillAmount = DEMAND_METER_FILL_AMOUNTS[demandIndex];
+
+      // Set demand description
+      int demandAsInteger = (int) (demand * 100);
+      if (demandAsInteger <= 20) {
+         _demandDescription = "very low";
+      } else {
+         if (demandAsInteger > 20 && demandAsInteger <= 40) {
+            _demandDescription = "low";
+         } else {
+            if (demandAsInteger > 40 && demandAsInteger <= 60) {
+               _demandDescription = "average";
+            } else {
+               if (demandAsInteger > 60 && demandAsInteger <= 80) {
+                  _demandDescription = "high";
+               } else {
+                  if (demandAsInteger > 80 && demandAsInteger <= 100) {
+                     _demandDescription = "very high";
+                  }
+               }
+            }
+         }
+      }
+      demandMeterTooltip.message = "Demand for " + cropName.text + ": " + demandAsInteger.ToString() + "%  " + "(" + _demandDescription + ")";
 
       goldAmount.text = offer.pricePerUnit + "";
 
@@ -98,6 +124,9 @@ public class MerchantCropRow : MonoBehaviour {
    // The fill amount values for the demand meter
    private static float[] DEMAND_METER_FILL_AMOUNTS = new float[]
    { 0f, 0.129f, 0.225f, 0.322f, 0.419f, 0.516f, 0.613f, 0.710f, 0.807f, 0.903f, 1f};
+
+   // The description of the demand status
+   private string _demandDescription;
 
    #endregion
 }

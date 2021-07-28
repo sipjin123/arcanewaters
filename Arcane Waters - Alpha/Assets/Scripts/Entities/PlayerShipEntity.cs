@@ -197,6 +197,23 @@ public class PlayerShipEntity : ShipEntity
 
          PanelManager.self.showPowerupPanel();
 
+         InputManager.self.inputMaster.Player.Dash.performed += func => {
+            if (gamePadDashPressed != true) {
+               pressBoost();
+               gamePadDashPressed = true;
+            }
+         };
+
+         InputManager.self.inputMaster.Player.Dash.canceled += func => {
+            if (gamePadDashPressed != false) {
+               releaseBoost();
+               gamePadDashPressed = false;
+            }
+         };
+
+         // Creating the FMOD event Instance
+         _boostState = FMODUnity.RuntimeManager.CreateInstance(SoundEffectManager.self.getSoundEffect(SoundEffectManager.SHIP_LAUNCH_CHARGE).fmodId);
+         _boostState.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(this.transform));
       } else if (isServer) {
          _movementInputDirection = Vector2.zero;
       } else {
@@ -227,24 +244,6 @@ public class PlayerShipEntity : ShipEntity
          // When we enter a new scene, update powerups on the client
          rpc.Target_UpdatePowerups(connectionToClient, PowerupManager.self.getPowerupsForUser(userId));
       }
-
-      InputManager.self.inputMaster.Player.Dash.performed += func => {
-         if (gamePadDashPressed != true) {
-            pressBoost();
-            gamePadDashPressed = true;
-         }
-      };
-
-      InputManager.self.inputMaster.Player.Dash.canceled += func => {
-         if (gamePadDashPressed != false) {
-            releaseBoost();
-            gamePadDashPressed = false;
-         }
-      };
-
-      // Creating the FMOD event Instance
-      _boostState = FMODUnity.RuntimeManager.CreateInstance(SoundEffectManager.self.getSoundEffect(SoundEffectManager.SHIP_LAUNCH_CHARGE).fmodId);
-      _boostState.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(this.transform));
    }
 
    protected override void initialize (ShipInfo info) {
@@ -1193,6 +1192,24 @@ public class PlayerShipEntity : ShipEntity
          // Force the character portrait to redraw
          playerPortrait.SetActive(false);
          playerPortrait.SetActive(true);
+
+         // Teleport ship to spawn position in case if it blocks on collider after spawning in new area
+         Spawn nearestSpawn = null;
+         float minDistance = float.MaxValue;
+         foreach (Spawn spawn in SpawnManager.self.mapSpawnList) {
+            if (Vector2.Distance(spawn.transform.position, transform.position) < minDistance) {
+               nearestSpawn = spawn;
+               minDistance = Vector2.Distance(spawn.transform.position, transform.position);
+            }
+         }
+
+         int layerMask = LayerMask.GetMask(LayerUtil.GRID_COLLIDERS);
+         RaycastHit2D[] hits = Physics2D.LinecastAll(transform.position, nearestSpawn.transform.position, layerMask);
+         foreach (RaycastHit2D hit in hits) {
+            if (hit.distance > 0) {
+               transform.position = nearestSpawn.transform.position;
+            }
+         }
       }
    }
 

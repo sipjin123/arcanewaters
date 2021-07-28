@@ -84,28 +84,28 @@ public class AmbienceManager : ClientMonoBehaviour
 
       if (isEventReady) {
          if (isSea) {
-            _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.SeaMap);
+            _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_SWITCH_PARAM, (int) AmbienceType.SeaMap);
          } else if (isInterior) {
-            _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Interior);
+            _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_SWITCH_PARAM, (int) AmbienceType.Interior);
          } else {
             switch (biomeType) {
                case Biome.Type.Forest:
-                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Forest);
+                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_SWITCH_PARAM, (int) AmbienceType.Forest);
                   break;
                case Biome.Type.Desert:
-                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Desert);
+                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_SWITCH_PARAM, (int) AmbienceType.Desert);
                   break;
                case Biome.Type.Snow:
-                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Snow);
+                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_SWITCH_PARAM, (int) AmbienceType.Snow);
                   break;
                case Biome.Type.Lava:
-                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Lava);
+                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_SWITCH_PARAM, (int) AmbienceType.Lava);
                   break;
                case Biome.Type.Pine:
-                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Pine);
+                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_SWITCH_PARAM, (int) AmbienceType.Pine);
                   break;
                case Biome.Type.Mushroom:
-                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_AUDIO_SWITCH_PARAM, (int) AmbienceType.Shroom);
+                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_SWITCH_PARAM, (int) AmbienceType.Shroom);
                   break;
             }
          }

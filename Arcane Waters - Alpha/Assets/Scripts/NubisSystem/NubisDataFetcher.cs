@@ -84,7 +84,7 @@ namespace NubisDataHandling {
       }
 
       private async void processXmlVersion () {
-         string returnCode = await NubisClient.call(nameof(DB_Main.fetchXmlVersion));
+         string returnCode = await NubisClient.call<string>(nameof(DB_Main.fetchXmlVersion));
 
          try {
             int xmlVersion = int.Parse(returnCode);
@@ -108,16 +108,12 @@ namespace NubisDataHandling {
          AuctionPanel panel = (AuctionPanel) PanelManager.self.get(Panel.Type.Auction);
          panel.setLoadBlocker(true);
 
-         // Prepare the category filter
-         List<int> categoryFilterInt = Array.ConvertAll(categoryFilters.ToArray(), x => (int) x).ToList();
-         string categoryFilterJSON = JsonConvert.SerializeObject(categoryFilterInt);
-
          // Call the nubis functions in parallel
-         Task<string> listTask = NubisClient.call(nameof(DB_Main.getAuctionList), pageNumber.ToString(),
-            rowsPerPage.ToString(), categoryFilterJSON, Global.player.userId.ToString(), auctionFilter.ToString());
-         Task<string> totalCountTask = NubisClient.call(nameof(DB_Main.getAuctionListCount),
-            Global.player.userId.ToString(), categoryFilterJSON, auctionFilter.ToString());
-         Task<string> userInfoTask = NubisClient.call(nameof(DB_Main.getUserInfoJSON), Global.player.userId.ToString());
+         Task<string> listTask = NubisClient.call<string>(nameof(DB_Main.getAuctionList), pageNumber,
+            rowsPerPage, categoryFilters, Global.player.userId, auctionFilter);
+         Task<int> totalCountTask = NubisClient.call<int>(nameof(DB_Main.getAuctionListCount),
+            Global.player.userId, categoryFilters, auctionFilter);
+         Task<UserInfo> userInfoTask = NubisClient.call<UserInfo>(nameof(DB_Main.getUserInfoById), Global.player.userId);
 
          await Task.WhenAll(listTask, totalCountTask, userInfoTask);
 
@@ -127,8 +123,8 @@ namespace NubisDataHandling {
          UserInfo userInfo = new UserInfo();
          try {
             auctionList = Util.xmlLoad<List<AuctionItemData>>(listTask.Result);
-            totalAuctionCount = int.Parse(totalCountTask.Result);
-            userInfo = JsonConvert.DeserializeObject<UserInfo>(userInfoTask.Result);
+            totalAuctionCount = totalCountTask.Result;
+            userInfo = userInfoTask.Result;
          } catch (Exception e) {
             D.error("Something went wrong with nubis fetching: " + nameof(DB_Main.getAuctionList) + ".\n" + e.ToString());
          }
@@ -160,9 +156,9 @@ namespace NubisDataHandling {
          List<Item> craftingIngredients = new List<Item>();
          List<CraftableItemData> craftableItems = new List<CraftableItemData>();
          
-         string rawBlueprintData = await NubisClient.call(nameof(DB_Main.fetchSingleBlueprint), bluePrintId, userId);
-         string craftingIngredientData = await NubisClient.call(nameof(DB_Main.fetchCraftingIngredients), userId);
-         string equippedItemContent = await NubisClient.call(nameof(DB_Main.fetchEquippedItems), userId);
+         string rawBlueprintData = await NubisClient.call<string>(nameof(DB_Main.fetchSingleBlueprint), bluePrintId, userId);
+         string craftingIngredientData = await NubisClient.call<string>(nameof(DB_Main.fetchCraftingIngredients), userId);
+         string equippedItemContent = await NubisClient.call<string>(nameof(DB_Main.fetchEquippedItems), userId);
 
          craftingIngredients = CraftingIngredients.processCraftingIngredients(craftingIngredientData);
          craftableItems = CraftableItem.processCraftableGroups(rawBlueprintData, craftingIngredients, Item.Category.None);
@@ -194,10 +190,10 @@ namespace NubisDataHandling {
          List<Item> craftableItems = new List<Item>();
          List<Blueprint.Status> blueprintStatus = new List<Blueprint.Status>();
 
-         string craftingIngredientXml = await NubisClient.call(nameof(DB_Main.fetchCraftingIngredients), userId);
-         string armorFetch = await NubisClient.call(nameof(DB_Main.fetchCraftableArmors), userId);
-         string weaponFetch = await NubisClient.call(nameof(DB_Main.fetchCraftableWeapons), userId);
-         string hatFetch = await NubisClient.call(nameof(DB_Main.fetchCraftableHats), userId);
+         string craftingIngredientXml = await NubisClient.call<string>(nameof(DB_Main.fetchCraftingIngredients), userId);
+         string armorFetch = await NubisClient.call<string>(nameof(DB_Main.fetchCraftableArmors), userId);
+         string weaponFetch = await NubisClient.call<string>(nameof(DB_Main.fetchCraftableWeapons), userId);
+         string hatFetch = await NubisClient.call<string>(nameof(DB_Main.fetchCraftableHats), userId);
 
          craftingIngredients = CraftingIngredients.processCraftingIngredients(craftingIngredientXml);
          List<CraftableItemData> weaponCraftables = CraftableItem.processCraftableGroups(weaponFetch, craftingIngredients, Item.Category.Weapon);
@@ -223,7 +219,7 @@ namespace NubisDataHandling {
 
       #region Equipment Features
 
-      public async void getUserInventory (List<Item.Category> categoryFilter, int pageIndex = 1, int itemsPerPage = 42, int itemDurabilityFilter = 0, Panel.Type panelType = Panel.Type.Inventory) {
+      public async void getUserInventory (List<Item.Category> categoryFilter, int pageIndex = 1, int itemsPerPage = 42, Item.DurabilityFilter itemDurabilityFilter = Item.DurabilityFilter.None, Panel.Type panelType = Panel.Type.Inventory) {
          if (Global.player == null) {
             return;
          }
@@ -235,8 +231,12 @@ namespace NubisDataHandling {
          InventoryBundle inventoryBundle = null;
 
          // Request the inventory to Nubis
-         string inventoryBundleString = await NubisClient.callDirect("getUserInventoryPage",
-            userId.ToString(), categoryFilterJSON, pageIndex.ToString(), itemsPerPage.ToString(), itemDurabilityFilter.ToString());
+         string inventoryBundleString = await NubisClient.callDirect<string>("getUserInventoryPage",
+            userId,
+            categoryFilter.ToArray(),
+            pageIndex,
+            itemsPerPage,
+            itemDurabilityFilter);
 
          try {
             inventoryBundle = JsonConvert.DeserializeObject<InventoryBundle>(inventoryBundleString);
@@ -314,22 +314,17 @@ namespace NubisDataHandling {
          PanelManager.self.itemSelectionScreen.setLoadBlocker(true);
 
          int userId = Global.player.userId;
-         int[] categoryFilterInt = Array.ConvertAll(categoryFilter.ToArray(), x => (int) x);
-         string categoryFilterJSON = JsonConvert.SerializeObject(categoryFilterInt);
-         string itemIdsToExcludeJSON = JsonConvert.SerializeObject(itemIdsToExclude);
 
          // Call the list and list count in parallel
-         Task<string> listTask = NubisClient.call(nameof(DB_Main.userInventory), userId.ToString(), categoryFilterJSON,
-            itemIdsToExcludeJSON, "1", pageIndex.ToString(), itemsPerPage.ToString(), "0");
-         Task<string> totalCountTask = NubisClient.call(nameof(DB_Main.userInventoryCount), userId.ToString(), categoryFilterJSON,
-            itemIdsToExcludeJSON, "1", "0");
+         Task<string> listTask = NubisClient.call<string>(nameof(DB_Main.userInventory), userId, categoryFilter,
+            itemIdsToExclude, true, pageIndex, itemsPerPage, Item.DurabilityFilter.None);
+         Task<int> totalCountTask = NubisClient.call<int>(nameof(DB_Main.userInventoryCount), userId, categoryFilter,
+            itemIdsToExclude, true, Item.DurabilityFilter.None);
 
          await Task.WhenAll(listTask, totalCountTask);
 
          // Parse the received data
-         if (!int.TryParse(totalCountTask.Result, out int totalCount)) {
-            totalCount = 0;
-         }
+         int totalCount = totalCountTask.Result;
 
          List<Item> itemList = UserInventory.processUserInventory(listTask.Result);
 
@@ -358,7 +353,7 @@ namespace NubisDataHandling {
          }
 
          // Fetch content from Nubis
-         List<AbilitySQLData> abilityList = await NubisClient.callJSONList<List<AbilitySQLData>>(nameof(DB_Main.userAbilities), userId, (int) AbilityEquipStatus.ALL);
+         List<AbilitySQLData> abilityList = await NubisClient.call<List<AbilitySQLData>>(nameof(DB_Main.userAbilities), userId, AbilityEquipStatus.ALL);
 
          if (abilityList == null || abilityList.Count < 1) {
             D.debug("Failed to fetch Nubis abilities");
@@ -375,21 +370,19 @@ namespace NubisDataHandling {
 
       public async void getServerHistory (int maxRows, DateTime startDate) {
          // Serialize input parameters
-         string startDateString = startDate.ToBinary().ToString();
+         long startDateBinary = startDate.ToBinary();
 
          // Call the functions
-         Task<string> isServerOnlineTask = NubisClient.call(nameof(DB_Main.isMasterServerOnline));
-         Task<string> serverHistoryListTask = NubisClient.call(nameof(DB_Main.getServerHistoryList), Global.MASTER_SERVER_PORT.ToString(), startDateString, maxRows.ToString());
+         Task<bool> isServerOnlineTask = NubisClient.call<bool>(nameof(DB_Main.isMasterServerOnline));
+         Task<List<ServerHistoryInfo>> serverHistoryListTask = NubisClient.call<List<ServerHistoryInfo>>(nameof(DB_Main.getServerHistoryList), Global.MASTER_SERVER_PORT, startDateBinary, maxRows);
 
          await Task.WhenAll(isServerOnlineTask, serverHistoryListTask);
 
          //Parse the received data
-         if (!bool.TryParse(isServerOnlineTask.Result, out bool isServerOnline)) {
-            isServerOnline = false;
-         }
+         bool isServerOnline = isServerOnlineTask.Result;
          List<ServerHistoryInfo> serverHistoryList = null;
          try {
-            serverHistoryList = JsonConvert.DeserializeObject<List<ServerHistoryInfo>>(serverHistoryListTask.Result);
+            serverHistoryList = serverHistoryListTask.Result;
          } catch (Exception e) {
             D.debug("Failed to fetch the server history.\n" + e.ToString());
          }
@@ -402,14 +395,7 @@ namespace NubisDataHandling {
       }
 
       public async void getOnlineServersListForClientLogin (bool isSteam) {
-         string serverPortListString = await NubisClient.call(nameof(DB_Main.getOnlineServerList));
-         
-         List<int> serverPortList = null;
-         try {
-            serverPortList = JsonConvert.DeserializeObject<List<int>>(serverPortListString);
-         } catch (Exception e) {
-            D.debug("Failed to fetch the list of online servers.\n" + e.ToString());
-         }
+         List<int> serverPortList = await NubisClient.call<List<int>>(nameof(DB_Main.getOnlineServerList));
 
          if (serverPortList == null) {
             serverPortList = new List<int>();

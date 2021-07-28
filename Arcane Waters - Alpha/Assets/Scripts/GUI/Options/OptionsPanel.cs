@@ -59,6 +59,9 @@ public class OptionsPanel : Panel
    // A toggle controlling whether the user will automatically farm
    public Toggle autoFarmToggle;
 
+   // Determines whether mouse cursor should be confied within the game screen
+   public Toggle mouseLockToggle;
+
    // The screen mode toggle
    public Dropdown screenModeDropdown;
 
@@ -171,6 +174,14 @@ public class OptionsPanel : Panel
          showPlayersName(value);
       });
 
+      // Set the player name toggle event
+      mouseLockToggle.isOn = PlayerPrefs.GetInt(OptionsManager.PREF_LOCK_CURSOR) == 1 ? true : false;
+      changeMouseLockState(mouseLockToggle.isOn);
+      mouseLockToggle.onValueChanged.AddListener(value => {
+         PlayerPrefs.SetInt(OptionsManager.PREF_LOCK_CURSOR, value ? 1 : 0);
+         changeMouseLockState(value);
+      });
+
       // Initialize the help tips toggle
       displayHelpTipsToggle.SetIsOnWithoutNotify(!NotificationManager.self.areAllNotificationsDisabled());
       displayHelpTipsToggle.onValueChanged.AddListener(value => {
@@ -236,6 +247,10 @@ public class OptionsPanel : Panel
             }
          }
       }
+   }
+
+   public void changeMouseLockState (bool mouseLock) {
+      Cursor.lockState = mouseLock ? CursorLockMode.Confined : CursorLockMode.None;
    }
 
    public void setHelpTipsDisplay () {

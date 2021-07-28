@@ -12,6 +12,9 @@ public class UserLocationBundle
    // The user id
    public int userId;
 
+   // The server where the user is located
+   public int serverPort;
+
    // The area where the user is located
    public string areaKey;
 

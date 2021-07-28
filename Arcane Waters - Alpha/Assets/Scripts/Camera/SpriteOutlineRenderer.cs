@@ -32,11 +32,15 @@ public class SpriteOutlineRenderer : MonoBehaviour
       }
 
       removeCommandBuffer();
+      _currentOutline = null;
+      updateRenderBuffer();
    }
 
    private void updateQuadSize () {
-      _renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
-      _renderTexture.filterMode = FilterMode.Point;
+      if (_renderTexture == null) {
+         _renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
+         _renderTexture.filterMode = FilterMode.Point;
+      }
 
       _quadRenderer.material.SetTexture("_MainTex", _renderTexture);
    }
@@ -179,7 +183,7 @@ public class SpriteOutlineRenderer : MonoBehaviour
    private MeshRenderer _quadRenderer;
 
    // The texture to which we draw
-   private RenderTexture _renderTexture;
+   private RenderTexture _renderTexture = null;
 
    // The command buffer
    private CommandBuffer _outlinesBuffer;

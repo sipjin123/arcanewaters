@@ -679,8 +679,8 @@ public class RPCManager : NetworkBehaviour
          if (item.category == Item.Category.None) {
             if (_player) {
                Instance currInstance = InstanceManager.self.getInstance(_player.instanceId);
-               D.debug("Cannot process Loot bag rewards for chest {" + chestId + "}! Category is None for: " + 
-                  _player.userId + " " + _player.areaKey + " " + 
+               D.debug("Cannot process Loot bag rewards for chest {" + chestId + "}! Category is None for: " +
+                  _player.userId + " " + _player.areaKey + " " +
                   chest.rarity + " " + (currInstance == null ? "No Instance" : currInstance.biome.ToString()));
             } else {
                D.debug("Cannot process Loot bag rewards for chest {" + chestId + "}! Category is None, NetEntityNotFound");
@@ -1493,7 +1493,7 @@ public class RPCManager : NetworkBehaviour
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         UserInfo userInfo = JsonUtility.FromJson<UserInfo>(DB_Main.getUserInfoJSON(_player.userId.ToString()));
+         UserInfo userInfo = DB_Main.getUserInfoById(_player.userId);
 
          // Check if this is an equipped armor or weapon
          bool wasEquippedArmor = (itemId == userInfo.armorId);
@@ -1557,21 +1557,23 @@ public class RPCManager : NetworkBehaviour
 
          // Get item about to be swapped
          List<ItemShortcutInfo> oldShortcutList = DB_Main.getItemShortcutList(_player.userId);
-         Item swappedItem = DB_Main.getItem(_player.userId, oldShortcutList[slotNumber - 1].itemId);
+         Item swappedItem = slotNumber <= oldShortcutList.Count ? DB_Main.getItem(_player.userId, oldShortcutList[slotNumber - 1].itemId) : null;
          Item equippedItem = null;
 
          // Check if we have an equipped item of the type we are swapping with
          UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
-         switch (swappedItem.category) {
-            case Item.Category.Armor:
-               equippedItem = userObjects.armor;
-               break;
-            case Item.Category.Weapon:
-               equippedItem = userObjects.weapon;
-               break;
-            case Item.Category.Hats:
-               equippedItem = userObjects.hat;
-               break;
+         if (swappedItem != null) {
+            switch (swappedItem.category) {
+               case Item.Category.Armor:
+                  equippedItem = userObjects.armor;
+                  break;
+               case Item.Category.Weapon:
+                  equippedItem = userObjects.weapon;
+                  break;
+               case Item.Category.Hats:
+                  equippedItem = userObjects.hat;
+                  break;
+            }
          }
 
          // Get updated list of shortcuts
@@ -1837,7 +1839,7 @@ public class RPCManager : NetworkBehaviour
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         UserInfo userInfo = JsonUtility.FromJson<UserInfo>(DB_Main.getUserInfoJSON(_player.userId.ToString()));
+         UserInfo userInfo = DB_Main.getUserInfoById(_player.userId);
 
          // Back to Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -2478,7 +2480,8 @@ public class RPCManager : NetworkBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Retrieve the friend user info
-         UserInfo friendUserInfo = JsonUtility.FromJson<UserInfo>(DB_Main.getUserInfoJSON(friendUserId.ToString()));
+         UserInfo friendUserInfo = DB_Main.getUserInfoById(friendUserId);
+
          if (friendUserInfo == null) {
             D.error(string.Format("The user {0} does not exist.", friendUserId));
             return;
@@ -2650,7 +2653,7 @@ public class RPCManager : NetworkBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Retrieve the user info of the friend
-         UserInfo friendInfo = JsonUtility.FromJson<UserInfo>(DB_Main.getUserInfoJSON(friendUserId.ToString()));
+         UserInfo friendInfo = DB_Main.getUserInfoById(friendUserId);
 
          // Verify that there is a pending invite
          FriendshipInfo friendshipInfo = DB_Main.getFriendshipInfo(friendUserId, _player.userId);
@@ -2928,8 +2931,7 @@ public class RPCManager : NetworkBehaviour
          }
 
          // Verify that the item is not equipped
-         string userInfoString = DB_Main.getUserInfoJSON(_player.userId.ToString());
-         UserInfo userInfo = JsonUtility.FromJson<UserInfo>(userInfoString);
+         UserInfo userInfo = DB_Main.getUserInfoById(_player.userId);
 
          if (userInfo.armorId == item.id || userInfo.weaponId == item.id) {
             sendError("You cannot select an equipped item!");
@@ -5701,8 +5703,7 @@ public class RPCManager : NetworkBehaviour
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Retrieve the skill list from database
-         string rawUserAbilityData = DB_Main.userAbilities(localBattler.userId.ToString(), ((int) AbilityEquipStatus.Equipped).ToString());
-         List<AbilitySQLData> abilityDataList = JsonConvert.DeserializeObject<List<AbilitySQLData>>(rawUserAbilityData);
+         List<AbilitySQLData> abilityDataList = DB_Main.userAbilities(localBattler.userId, AbilityEquipStatus.Equipped);
 
          // Determine if at least one ability is equipped
          hasAbilityEquipped = abilityDataList.Exists(_ => _.equipSlotIndex != -1);
@@ -6987,11 +6988,15 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_RequestDBData (int requestId, string functionName, string[] parameters) {
+   public void Cmd_RequestDBData (int requestId, string callInfoSerialized) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
       }
+
+      NubisCallInfo callInfo = NubisCallInfo.deserialize(callInfoSerialized);
+      string functionName = callInfo.functionName;
+      object[] parameters = Array.ConvertAll(callInfo.arguments, _ => _.getTypedValue());
 
       // Make sure the function is allowed to be called by clients
       if (!NubisStatics.WhiteList.Contains(functionName)) {
@@ -7001,19 +7006,24 @@ public class RPCManager : NetworkBehaviour
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         string result = "";
+         object result = "";
 
          if (string.Equals(functionName, "NubisDirect-getUserInventoryPage", StringComparison.OrdinalIgnoreCase)) {
-            result = getUserInventoryPage(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]);
+            result = getUserInventoryPage((int)parameters[0],
+               (Item.Category[])parameters[1],
+               (int) parameters[2],
+               (int) parameters[3],
+               (Item.DurabilityFilter)parameters[4]);
          } else {
             // Execute the DB query
-            result = (string) typeof(DB_Main).GetMethod(functionName).Invoke(null, parameters);
+            result = (object) typeof(DB_Main).GetMethod(functionName).Invoke(null, parameters);
          }
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Transform to a byte array
-            byte[] bytes = Encoding.ASCII.GetBytes(result);
+            NubisCallResult ncr = NubisCallResult.fromValue(result);
+            string serializedResult = ncr.serialize();
+            byte[] bytes = Encoding.ASCII.GetBytes(serializedResult);
 
             // Send the result to the client
             Target_ReceiveDBDataForClientDBRequest(_player.connectionToClient, requestId, bytes);
@@ -7023,10 +7033,10 @@ public class RPCManager : NetworkBehaviour
 
    // Must be called from the background thread!
    [Server]
-   public static string getUserInventoryPage (string userIdStr, string categoryFilterJSON,
-      string currentPageStr, string itemsPerPageStr, string durabilityFilter) {
+   public static string getUserInventoryPage (int userId, Item.Category[] categoryFilter,
+      int currentPage, int itemsPerPage, Item.DurabilityFilter durabilityFilter) {
 
-      if (int.TryParse(itemsPerPageStr, out int itemsPerPage) && itemsPerPage > 200) {
+      if (itemsPerPage > 200) {
          D.debug("Requesting too many items per page.");
          return string.Empty;
       }
@@ -7034,30 +7044,31 @@ public class RPCManager : NetworkBehaviour
       // Process user info
       UserInfo newUserInfo = new UserInfo();
       try {
-         newUserInfo = JsonConvert.DeserializeObject<UserInfo>(DB_Main.getUserInfoJSON(userIdStr));
+         newUserInfo = DB_Main.getUserInfoById(userId);
          if (newUserInfo == null) {
             D.debug("Something went wrong with Nubis Data Fetch!");
          }
       } catch {
-         D.debug("Failed to deserialize user info! {" + userIdStr + "}");
+         D.debug("Failed to deserialize user info! {" + userId + "}");
       }
 
       // Process guild info
       GuildInfo guildInfo = new GuildInfo();
+
       if (newUserInfo.guildId > 0) {
          string temp = DB_Main.getGuildInfoJSON(newUserInfo.guildId);
          try {
             guildInfo = JsonConvert.DeserializeObject<GuildInfo>(temp);
             if (guildInfo == null) {
-               D.debug("Something went wrong with guild info data fetch for user {" + userIdStr + "}");
+               D.debug("Something went wrong with guild info data fetch for user {" + userId + "}");
             }
          } catch {
-            D.debug("Failed to deserialize guild info! {" + userIdStr + "}");
+            D.debug("Failed to deserialize guild info! {" + userId + "}");
          }
       }
 
       // Process user equipped items
-      string equippedItemContent = DB_Main.fetchEquippedItems(userIdStr);
+      string equippedItemContent = DB_Main.fetchEquippedItems(userId);
       EquippedItemData equippedItemData = EquippedItems.processEquippedItemData(equippedItemContent);
       Item equippedWeapon = equippedItemData.weaponItem;
       Item equippedArmor = equippedItemData.armorItem;
@@ -7065,16 +7076,11 @@ public class RPCManager : NetworkBehaviour
 
       // Create an empty item id filter
       int[] itemIdsToExclude = new int[0];
-      string itemIdsToExcludeJSON = JsonConvert.SerializeObject(itemIdsToExclude);
 
-      string itemCountResponse = DB_Main.userInventoryCount(userIdStr, categoryFilterJSON, itemIdsToExcludeJSON, "1", durabilityFilter);
-      if (!int.TryParse(itemCountResponse, out int itemCount)) {
-         D.editorLog("Failed to parse: " + itemCountResponse);
-         itemCount = 0;
-      }
+      int itemCount = DB_Main.userInventoryCount(userId, categoryFilter, itemIdsToExclude, true, durabilityFilter);
 
-      string inventoryData = DB_Main.userInventory(userIdStr, categoryFilterJSON, itemIdsToExcludeJSON, "1",
-         currentPageStr, itemsPerPageStr, durabilityFilter);
+      string inventoryData = DB_Main.userInventory(userId, categoryFilter, itemIdsToExclude, true,
+         currentPage, itemsPerPage, durabilityFilter);
 
       InventoryBundle bundle = new InventoryBundle {
          inventoryData = inventoryData,
@@ -7085,6 +7091,7 @@ public class RPCManager : NetworkBehaviour
          guildInfo = guildInfo,
          totalItemCount = itemCount
       };
+
       return JsonConvert.SerializeObject(bundle, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
    }
 
@@ -7421,7 +7428,7 @@ public class RPCManager : NetworkBehaviour
       // Update the PvpStatusPanel
       PvpStatusPanel.self.reset(GameStatsManager.self.getSilverAmount(userId));
    }
-   
+
    [Command]
    public void Cmd_RequestPlayersCount () {
       if (_player == null) {
@@ -7519,8 +7526,8 @@ public class RPCManager : NetworkBehaviour
          D.warning("No player object found.");
          return;
       }
-	  
-	  // Make sure this is an admin
+
+      // Make sure this is an admin
       if (!_player.isAdmin()) {
          D.warning("Received admin command from non-admin!");
          return;

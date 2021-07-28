@@ -1714,15 +1714,26 @@ public class NetEntity : NetworkBehaviour
 
    [Server]
    public void spawnInBiomeHomeTown (Biome.Type biome) {
-      if (Area.homeTownForBiome.TryGetValue(biome, out string townAreaKey)) {
-         if (Area.dockSpawnForBiome.TryGetValue(biome, out string dockSpawn)) {
-            spawnInNewMap(townAreaKey, dockSpawn, Direction.South);
-         } else {
-            spawnInNewMap(townAreaKey);
-         }
-      } else {
-         spawnInNewMap(Area.STARTING_TOWN);
-      }
+      // Go to background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         bool isBiomeUnlocked = DB_Main.isBiomeUnlockedForUser(userId, biome);
+
+         // Back to unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            
+            // If the biome is unlocked, and we get an area key for the town, spawn them there
+            if (Area.homeTownForBiome.TryGetValue(biome, out string townAreaKey) && isBiomeUnlocked) {
+               if (Area.dockSpawnForBiome.TryGetValue(biome, out string dockSpawn)) {
+                  spawnInNewMap(townAreaKey, dockSpawn, Direction.South);
+               } else {
+                  spawnInNewMap(townAreaKey);
+               }
+            // Otherwise, spawn them in the starting town.
+            } else {
+               spawnInNewMap(Area.STARTING_TOWN);
+            }
+         });
+      });
    }
 
    [Command]

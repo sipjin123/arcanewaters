@@ -108,11 +108,17 @@ public class SoundEffectManager : GenericGameManager
 
    public const string GENERIC_HIT_LAND = "event:/SFX/Game/Land_Battle/Generic_Hit_Land";
 
+   public const string COLLECT_SILVER = "event:/SFX/Game/Collect_Silver";
+
    public const string AUDIO_SWITCH_PARAM = "Audio_Switch";
    public const string SHIP_CHARGE_RELEASE_PARAM = "Ship_Charge_Release";
-   public const string AMBIENCE_AUDIO_SWITCH_PARAM = "Ambience_Switch";
+   public const string AMBIENCE_SWITCH_PARAM = "Ambience_Switch";
    public const string APPLY_CRIT_PARAM = "Apply_Crit";
    public const string WEATHER_PARAM = "Weather_Effects";
+
+   public const string BG_MUSIC = "event:/Music/BGM_Master";
+
+   public EventInstance bgMusicEvent;
 
    public enum CannonballImpactType
    {
@@ -226,6 +232,67 @@ public class SoundEffectManager : GenericGameManager
          impactEvent.release();
       }
    }
+   public void playBgMusic (SoundManager.Type musicType) {
+      if (Util.isBatch()) {
+         return;
+      }
+
+      if (!bgMusicEvent.isValid()) {
+         bgMusicEvent = RuntimeManager.CreateInstance(BG_MUSIC);
+      }
+
+      int param = -1;
+
+      switch (musicType) {
+         case SoundManager.Type.Town_Forest:
+            param = 0;
+            break;
+         case SoundManager.Type.Town_Desert:
+            param = 1;
+            break;
+         case SoundManager.Type.Town_Snow:
+            param = 2;
+            break;
+         case SoundManager.Type.Town_Lava:
+            param = 3;
+            break;
+         case SoundManager.Type.Town_Pine:
+            param = 4;
+            break;
+         case SoundManager.Type.Town_Mushroom:
+            param = 5;
+            break;
+         case SoundManager.Type.Intro_Music:
+            param = 6;
+            break;
+         case SoundManager.Type.Farm_Music:
+            param = 7;
+            break;
+         case SoundManager.Type.Interior:
+            param = 8;
+            break;
+         case SoundManager.Type.Sea_Forest:
+         case SoundManager.Type.Sea_Desert:
+         case SoundManager.Type.Sea_Pine:
+         case SoundManager.Type.Sea_Snow:
+         case SoundManager.Type.Sea_Lava:
+         case SoundManager.Type.Sea_Mushroom:
+            param = 9;
+            break;
+      }
+
+      PLAYBACK_STATE playbackState;
+      bgMusicEvent.getPlaybackState(out playbackState);
+      if (playbackState != PLAYBACK_STATE.PLAYING) {
+         bgMusicEvent.start();
+      }
+
+      if (param == -1) {
+         bgMusicEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+      }
+
+      bgMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, param);
+   }
 
    public void playFmod2D (int id) {
       if (Util.isBatch()) {
@@ -244,7 +311,7 @@ public class SoundEffectManager : GenericGameManager
    }
 
    public void playFmodGuiHover (string path) {
-      if(_lastPlayTime.ContainsKey(path) && Time.time - _lastPlayTime[path] < .10f) {
+      if (_lastPlayTime.ContainsKey(path) && Time.time - _lastPlayTime[path] < .10f) {
          return;
       }
 
