@@ -116,6 +116,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("pvp_set_map", "Changes which map pvp games will be created in", setPvpMap, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("warp", "Warps you to an area", requestWarp, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "areaName" }, parameterAutocompletes: AreaManager.self.getAllAreaNames()));
       cm.addCommand(new CommandData("show_admin_panel", "Show the Admin Panel", showAdminPanel, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("reset_shop", "Refreshes all the shops", resetShops, requiredPrefix: CommandType.Admin));
 
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
@@ -2707,6 +2708,21 @@ public class AdminManager : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceiveServerLogString (NetworkConnection connection, byte[] serverLogData) {
       D.serverLogString = Encoding.ASCII.GetString(serverLogData);
+   }
+
+   protected void resetShops () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      Cmd_ResetShops();
+   }
+
+   [Command]
+   public void Cmd_ResetShops () {
+      D.debug("Shop items have now been regenerated!");
+      ShopManager.self.randomlyGenerateShips();
+      ShopManager.self.generateItemsFromXML();
    }
 
    protected void showAdminPanel () {

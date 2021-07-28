@@ -38,7 +38,7 @@ public class ShopManager : MonoBehaviour {
    private void checkIfDataSetupIsFinished () {
       // Initialize random generated ships only when ship data and ship abilities data are setup
       if ((ShipDataManager.self.hasInitialized && ShipDataManager.self.shipDataList.Count > 0) && ShipAbilityManager.self.hasInitialized && ShopXMLManager.self.hasInitialized) {
-         InvokeRepeating(nameof(randomlyGenerateShips), 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
+         InvokeRepeating(nameof(randomlyGenerateShips), 0f, (float) TimeSpan.FromHours(.5f).TotalSeconds);
       }
 
       // TODO: Confirm if palette swap manager is still needed for shop initialization
@@ -69,7 +69,7 @@ public class ShopManager : MonoBehaviour {
       return null;
    }
 
-   protected void generateItemsFromXML () {
+   public void generateItemsFromXML () {
       // If we've already generated something previously, we might not generate anything more this time
       if (_items.Count > 0 && UnityEngine.Random.Range(0f, 1f) <= .75f) {
          return;
@@ -210,12 +210,7 @@ public class ShopManager : MonoBehaviour {
       }
    }
 
-   protected void randomlyGenerateShips () {
-      // If we've already generated something previously, we might not generate anything more this time
-      if (_ships.Count > 0 && UnityEngine.Random.Range(0f, 1f) <= .75f) {
-         return;
-      }
-
+   public void randomlyGenerateShips () {
       // Generate ships for each of the areas
       foreach (string areaKey in AreaManager.self.getAreaKeys()) {
          // Clear out the previous list
@@ -244,27 +239,32 @@ public class ShopManager : MonoBehaviour {
          _shipsByShopName[shopData.shopName] = new List<int>();
          foreach (ShopItemData shopItem in ShopXMLManager.self.getShopDataByName(shopData.shopName).shopItems) {
             if (shopItem.shopItemCategory == ShopToolPanel.ShopCategory.Ship) {
-               float randomizedChance = UnityEngine.Random.Range(0, 100);
-               if (randomizedChance < shopItem.dropChance) {
-                  int shipXmlId = shopItem.shopItemTypeIndex;
-                  ShipData shipData = ShipDataManager.self.getShipData(shipXmlId);
-                  Ship.Type shipType = shipData.shipType;
-                  Rarity.Type rarity = Rarity.getRandom();
+               int shipXmlId = shopItem.shopItemTypeIndex;
+               ShipData shipData = ShipDataManager.self.getShipData(shipXmlId);
+               Ship.Type shipType = shipData.shipType;
+               Rarity.Type rarity = Rarity.getRandom();
 
-                  ShipInfo ship = Ship.generateNewShip(shipType, rarity);
-                  ship.shipId = _shipId--;
+               ShipInfo ship = Ship.generateNewShip(shipType, rarity);
+               ship.shipId = _shipId--;
 
-                  // Set a custom price
-                  int price = shopItem.shopItemCostMax;
-                  price = Util.roundToPrettyNumber(price);
-                  ship.price = price;
-
-                  // Store the ship
-                  _ships[ship.shipId] = ship;
-
-                  // Add it to the list
-                  _shipsByShopName[shopData.shopName].Add(ship.shipId);
+               if (shopData.shopName.ToLower().Contains("haven")) {
+                  D.debug("Shop is regenerating ship:" +
+                     " ID: " + ship.shipId +
+                     " T: " + shipType +
+                     " R: " + rarity +
+                     " ST: " + ship.shipType);
                }
+
+               // Set a custom price
+               int price = shopItem.shopItemCostMax;
+               price = Util.roundToPrettyNumber(price);
+               ship.price = price;
+
+               // Store the ship
+               _ships[ship.shipId] = ship;
+
+               // Add it to the list
+               _shipsByShopName[shopData.shopName].Add(ship.shipId);
             }
          }
       }
