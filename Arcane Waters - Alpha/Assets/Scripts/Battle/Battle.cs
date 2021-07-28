@@ -231,41 +231,45 @@ public class Battle : NetworkBehaviour {
                BattleManager.self.executeBattleAction(this, battler, battlerAllies, 0, AbilityType.BuffDebuff);
             } else {
                if (battler.isBossType) {
-                  int actionRandomizer = Random.Range(1, 10);
+                  if (!battler.isDisabledByStatus()) {
+                     if (battler.useSpecialAttack && battler.basicAbilityIDList.Count > 1) {
+                        battler.useSpecialAttack = false;
+                        int targetCounter = 0;
+                        List<Battler> targetBattlers = new List<Battler>();
+                        AttackAbilityData abilityData = AbilityManager.self.getAttackAbility(battler.basicAbilityIDList[1]);
+                        battlePlan.targets = new List<Battler>();
+                        D.adminLog("1. Boss fetching ability :: " +
+                           "Name:{" + abilityData.itemName + "} " +
+                           "ID1:{" + battler.basicAbilityIDList[1] + "} " +
+                           "ID2:{" + abilityData.itemID + "} " +
+                           "MaxTarget: {" + abilityData.maxTargets + "}", D.ADMIN_LOG_TYPE.Boss);
 
-                  // 50% chance to use AOE ability
-                  if (actionRandomizer > 5 && battler.basicAbilityIDList.Count > 1) {
-                     int targetCounter = 0;
-                     List<Battler> targetBattlers = new List<Battler>();
-                     AttackAbilityData abilityData = AbilityManager.self.getAttackAbility(battler.basicAbilityIDList[1]);
-                     battlePlan.targets = new List<Battler>();
-                     D.adminLog("1. Boss fetching ability :: " +
-                        "Name:{" + abilityData.itemName + "} " +
-                        "ID1:{" + battler.basicAbilityIDList[1] + "} " +
-                        "ID2:{" + abilityData.itemID + "} " +
-                        "MaxTarget: {" + abilityData.maxTargets + "}", D.ADMIN_LOG_TYPE.Boss);
-
-                     // Setup the maximum targets affected by this ability
-                     foreach (Battler attacker in getAttackers()) {
-                        targetBattlers.Add(attacker);
-                        battlePlan.targets.Add(attacker);
-                        D.adminLog("2. Added attacker target {" + attacker.userId + " : " + attacker.enemyType + "}", D.ADMIN_LOG_TYPE.Boss);
-                        targetCounter++;
-                        if (targetCounter >= abilityData.maxTargets) {
-                           break;
+                        // Setup the maximum targets affected by this ability
+                        foreach (Battler attacker in getAttackers()) {
+                           targetBattlers.Add(attacker);
+                           battlePlan.targets.Add(attacker);
+                           D.adminLog("2. Added attacker target {" + attacker.userId + " : " + attacker.enemyType + "}", D.ADMIN_LOG_TYPE.Boss);
+                           targetCounter++;
+                           if (targetCounter >= abilityData.maxTargets) {
+                              break;
+                           }
                         }
-                     }
 
-                     D.adminLog("3. Boss is attacking using AOE attack having {" + battlePlan.targets.Count + "} targets, " +
-                        "AttackerCount:{" + getAttackers().Count + "}", D.ADMIN_LOG_TYPE.Boss);
-                     BattleManager.self.executeBattleAction(this, battler, targetBattlers, 1, AbilityType.Standard);
-                  } else {
-                     D.adminLog("Boss is attacking using regular attack", D.ADMIN_LOG_TYPE.Boss);
-                     BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0, AbilityType.Standard);
+                        D.adminLog("3. Boss is attacking using AOE attack having {" + battlePlan.targets.Count + "} targets, " +
+                           "AttackerCount:{" + getAttackers().Count + "}", D.ADMIN_LOG_TYPE.Boss);
+                        BattleManager.self.executeBattleAction(this, battler, targetBattlers, 1, AbilityType.Standard);
+                     } else {
+                        battler.useSpecialAttack = true;
+                        D.adminLog("Boss is attacking using regular attack", D.ADMIN_LOG_TYPE.Boss);
+                        BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0, AbilityType.Standard);
+                     }
+                  } else { 
+                     // Do logic here if enemy is disabled by status, possibly launch a visual feedback to the clients
                   }
                } else {
                   if (!battler.isDisabledByStatus()) {
                      BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0, AbilityType.Standard);
+                  } else { 
                      D.adminLog("This battler {" + battler.enemyType + "} is disabled, skipping action", D.ADMIN_LOG_TYPE.CombatStatus);
                   }
                }

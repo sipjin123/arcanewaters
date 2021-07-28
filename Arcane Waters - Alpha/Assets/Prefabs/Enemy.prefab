@@ -289,6 +289,7 @@ MonoBehaviour:
   isAboutToWarpOnClient: 0
   interactingAnimation: 0
   isSpeedingUp: 0
+  passedOnTemporaryControl: 0
   _ignoredAnimators: []
   _animators: []
   animGroupType: 0
@@ -314,6 +315,8 @@ MonoBehaviour:
   - {fileID: 1616126582292206316}
   walkSound: 0
   bossGolemPolygonCollider: {fileID: 5075046003635432648, guid: aafa5fc8be4093746a3cfe6b6bcd378b,
+    type: 3}
+  bossLizardPolygonCollider: {fileID: 7173042075734772279, guid: c9aede9e60a57704dbccfe54fd01078f,
     type: 3}
 --- !u!50 &50000013307885518
 Rigidbody2D:

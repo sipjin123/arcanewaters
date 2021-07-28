@@ -416,7 +416,7 @@ public class BattleManager : MonoBehaviour {
 
       // Note that this battler is in a pvp or not
       battler.isPvp = battle.isPvp;
-
+      battler.useSpecialAttack = true;
       battler.isBossType = data.isBossType;
       battler.name = data.enemyName;
       battler.companionId = companionId;
@@ -864,9 +864,10 @@ public class BattleManager : MonoBehaviour {
       // Get the Battler object
       Battler source = battle.getBattler(actionToApply.sourceId);
 
+      bool forceCancelAction = false;
       if (source.isDisabledByStatus()) {
-         D.adminLog("Cancel action because source is frozen", D.ADMIN_LOG_TYPE.CombatStatus);
-         yield break;
+         forceCancelAction = true;
+         D.adminLog("Cancel action because source is disabled by status!", D.ADMIN_LOG_TYPE.CombatStatus);
       }
 
       if (actionToApply is AttackAction || actionToApply is BuffAction) {
@@ -874,9 +875,9 @@ public class BattleManager : MonoBehaviour {
          Battler target = battle.getBattler(action.targetId);
 
          // If the source or target is already dead, then send a Cancel Action
-         if (source.isDead() || target.isDead()) {
+         if (source.isDead() || target.isDead() || forceCancelAction) {
             // Don't create Cancel Actions for multi-target abilities
-            if (hasMultipleTargets) {
+            if (hasMultipleTargets && !forceCancelAction) {
                yield break;
             }
             float animLength = .6f;

@@ -58,6 +58,9 @@ public class BattleBars : MonoBehaviour {
    // The color of the label for the local Player
    public Color32 nameColorLocalPlayer;
 
+   // Holds the health bar, name, ap
+   public GameObject infoHolder;
+
    #endregion
 
    private void Awake () {
@@ -188,9 +191,7 @@ public class BattleBars : MonoBehaviour {
    }
 
    public void toggleDisplay (bool isShown) {
-      if (_canvasGroup != null) {
-         _canvasGroup.alpha = isShown ? 1 : 0;
-      }
+      infoHolder.SetActive(isShown);
    }
 
    #region Private Variables
