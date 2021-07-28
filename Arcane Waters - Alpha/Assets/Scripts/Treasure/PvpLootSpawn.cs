@@ -18,7 +18,7 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
    [SyncVar]
    public bool isActive;
 
-   // The instance that this chest is in
+   // The instance id
    [SyncVar]
    public int instanceId;
 

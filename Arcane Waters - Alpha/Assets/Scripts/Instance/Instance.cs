@@ -36,7 +36,7 @@ public class Instance : NetworkBehaviour
    // The list of pvp waypoints in this instance (server only)
    public List<PvpWaypoint> pvpWaypoints = new List<PvpWaypoint>();
 
-   // The list of pvp loot spaners in this instance (server only)
+   // The list of pvp loot spawners in this instance (server only)
    public List<PvpLootSpawn> lootSpawners = new List<PvpLootSpawn>();
 
    // The list of pvp monster spawners in this instance (server only)

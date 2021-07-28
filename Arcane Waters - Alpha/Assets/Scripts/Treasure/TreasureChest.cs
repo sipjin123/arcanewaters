@@ -13,7 +13,7 @@ public class TreasureChest : NetworkBehaviour {
    [SyncVar]
    public int id;
 
-   // The instance that this chest is in
+   // The instance id
    [SyncVar]
    public int instanceId;
 
