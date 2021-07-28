@@ -6518,7 +6518,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 5641317344864839710}
-        m_MethodName: selectCraftingTab
+        m_MethodName: refreshBlueprintList
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

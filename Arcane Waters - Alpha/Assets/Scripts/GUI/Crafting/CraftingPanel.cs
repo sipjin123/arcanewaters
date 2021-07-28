@@ -131,6 +131,7 @@ public class CraftingPanel : Panel
    }
 
    public void refreshBlueprintList () {
+      selectCraftingTab();
       toggleBlockers(true);
       NubisDataFetcher.self.fetchCraftableData(_currentPage, ROWS_PER_PAGE);
    }
@@ -141,7 +142,7 @@ public class CraftingPanel : Panel
 
       NubisDataFetcher.self.getUserInventory(new List<Item.Category> {
          Item.Category.Weapon, Item.Category.Armor, Item.Category.Hats
-      }, _currentPage, ROWS_PER_PAGE, (int) Item.DurabilityFilter.ReducedDurability, Type.Craft);
+      }, _currentPage, ROWS_PER_PAGE, Item.DurabilityFilter.ReducedDurability, Type.Craft);
    }
 
    public void displayBlueprint (int itemId) {
@@ -403,7 +404,7 @@ public class CraftingPanel : Panel
          }
       }
    }
-
+   
    public void selectCraftingTab () {
       refineableItemsHolder.gameObject.DestroyChildren();
       refinementIngredientsHolder.gameObject.DestroyChildren();
@@ -441,7 +442,7 @@ public class CraftingPanel : Panel
 
       NubisDataFetcher.self.getUserInventory(new List<Item.Category> { 
          Item.Category.Weapon, Item.Category.Armor, Item.Category.Hats
-      }, _currentPage, ROWS_PER_PAGE, (int)Item.DurabilityFilter.ReducedDurability, Panel.Type.Craft);
+      }, _currentPage, ROWS_PER_PAGE, Item.DurabilityFilter.ReducedDurability, Panel.Type.Craft);
    }
 
    public void receiveRefineableItems (List<Item> itemList, int currentPageIndex) {
