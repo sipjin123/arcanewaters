@@ -517,8 +517,10 @@ public class NPCEditScreen : MonoBehaviour
          string spritePath = EquipmentXMLManager.self.getWeaponData(itemID).equipmentIconPath;
          imageSprite.sprite = ImageManager.getSprite(spritePath);
       } else if (category == Item.Category.Armor) {
+         // Unity tool will be deprecated
+         /*
          string spritePath = EquipmentXMLManager.self.getArmorDataByType(itemID).equipmentIconPath;
-         imageSprite.sprite = ImageManager.getSprite(spritePath);
+         imageSprite.sprite = ImageManager.getSprite(spritePath);*/
       } else if (category == Item.Category.Blueprint) {
          if (data.StartsWith(Blueprint.WEAPON_DATA_PREFIX)) {
             int modifiedID = Blueprint.modifyID(Item.Category.Blueprint, itemID);
@@ -529,13 +531,15 @@ public class NPCEditScreen : MonoBehaviour
                Debug.LogError("Cant find this: " + modifiedID);
             }
          } else if (data.StartsWith(Blueprint.ARMOR_DATA_PREFIX)) {
+            // Unity tool will be deprecated
+            /*
             int modifiedID = Blueprint.modifyID(Item.Category.Blueprint, itemID);
             ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(modifiedID);
             if (armorData != null) {
                imageSprite.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
             } else {
                Debug.LogError("Cant find this: " + modifiedID);
-            }
+            }*/
          }
       } else {
          imageSprite.sprite = Util.getRawSpriteIcon(category, itemID);

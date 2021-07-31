@@ -682,10 +682,11 @@ public class GenericSelectionPopup : MonoBehaviour
                   itemName = weaponData.equipmentName;
                   prefix = Blueprint.WEAPON_ID_PREFIX;
                } else if (item.resultItem.category == Item.Category.Armor) {
-                  ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(item.resultItem.itemTypeId);
+                  // Unity tool will be deprecated
+                  /*ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(item.resultItem.itemTypeId);
                   itemData = Blueprint.createData(Item.Category.Armor, item.resultItem.itemTypeId);
                   itemName = armorData.equipmentName;
-                  prefix = Blueprint.ARMOR_ID_PREFIX;
+                  prefix = Blueprint.ARMOR_ID_PREFIX;*/
                }
 
                prefix = prefix + item.resultItem.itemTypeId;

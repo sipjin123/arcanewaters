@@ -57,11 +57,11 @@ public class GenericItemRow : MonoBehaviour {
                if (itemTypeID.ToString().StartsWith(Blueprint.ARMOR_ID_PREFIX)) {
                   modifiedID = int.Parse(itemTypeID.ToString().Replace(Blueprint.ARMOR_ID_PREFIX, ""));
                }
-               ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(modifiedID);
+               /*ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(modifiedID);
 
                itemTypeName.text = armorData.equipmentName;
                string spritePath = armorData.equipmentIconPath;
-               itemIcon.sprite = ImageManager.getSprite(spritePath);
+               itemIcon.sprite = ImageManager.getSprite(spritePath);*/
             }
          }
       } else if (category == Item.Category.Hats) {
@@ -72,7 +72,8 @@ public class GenericItemRow : MonoBehaviour {
          itemIcon.sprite = ImageManager.getSprite(spritePath);
       } else if (category == Item.Category.Armor) {
          itemCategoryName.text = category.ToString();
-
+         // Unity tool will be deprecated
+         /*
          ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(itemTypeID);
          if (armorData != null) {
             itemTypeName.text = armorData.equipmentName;
@@ -80,7 +81,7 @@ public class GenericItemRow : MonoBehaviour {
             itemIcon.sprite = ImageManager.getSprite(spritePath);
          } else {
             itemTypeName.text = "Error";
-         }
+         }*/
       } else if (category == Item.Category.Weapon) {
          itemCategoryName.text = category.ToString();
 
