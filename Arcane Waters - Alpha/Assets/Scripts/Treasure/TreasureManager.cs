@@ -133,7 +133,7 @@ public class TreasureManager : MonoBehaviour {
 
                int bonusChests = 0;
                if (PerkManager.self.perkActivationRoll(entity.userId, Perk.Category.ItemDropChances)) {
-                  D.debug("User {" + entity.userId + "} Received a Bonus loot using Poerks");
+                  D.debug("User {" + entity.userId + "} Received a Bonus loot using Perks");
                   bonusChests++;
                }
 

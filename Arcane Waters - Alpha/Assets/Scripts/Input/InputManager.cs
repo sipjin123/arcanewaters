@@ -64,14 +64,14 @@ public class InputManager : GenericGameManager {
       }
 
       if (Util.isCloudBuild()) {
-         D.debug("Initializing input system as {DynamicUpdate} " +
-            "SystLang: { " + Application.systemLanguage + "} " +
-            "Layout: { " + Keyboard.current.keyboardLayout + "}");
+         //D.debug("Initializing input system as {DynamicUpdate} " +
+         //   "SystLang: { " + Application.systemLanguage + "} " +
+         //   "Layout: { " + Keyboard.current.keyboardLayout + "}");
          inputSettings.updateMode = InputSettings.UpdateMode.ProcessEventsInDynamicUpdate;
       } else {
-         D.debug("Initializing input system as {ManualUpdate} " +
-            "SystLang: { " + Application.systemLanguage + "} " +
-            "Layout: { " + Keyboard.current.keyboardLayout + "}");
+         //D.debug("Initializing input system as {ManualUpdate} " +
+         //   "SystLang: { " + Application.systemLanguage + "} " +
+         //   "Layout: { " + Keyboard.current.keyboardLayout + "}");
          inputSettings.updateMode = InputSettings.UpdateMode.ProcessEventsManually;
       }
 

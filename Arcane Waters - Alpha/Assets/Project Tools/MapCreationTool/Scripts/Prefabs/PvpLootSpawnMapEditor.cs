@@ -6,7 +6,7 @@ public class PvpLootSpawnMapEditor : MapEditorPrefab, IPrefabDataListener, IHigh
    #region Public Variables
 
    // Components
-   private SpriteOutline outline;
+   public SpriteOutline outline;
 
    #endregion
 

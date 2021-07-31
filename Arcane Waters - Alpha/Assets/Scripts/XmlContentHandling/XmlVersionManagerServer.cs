@@ -24,8 +24,8 @@ public class XmlVersionManagerServer : GenericGameManager {
    public int newServerVersion;
 
    // Text directory of the xml text files
-   public static string XML_TEXT_DIRECTORY = "/XmlTextFiles";
-   public static string SERVER_ZIP_DIRECTORY = "/XmlZipFiles";
+   public static string xmlTextDirectory = "/XmlTextFiles";
+   public static string serverZipDirectory = "/XmlZipFiles";
    public static string TEXT_FILE_NAME = "textFileName=";
    public static string SERVER_ZIP_FILE = "ServerXmlZip.zip";
 
@@ -102,8 +102,8 @@ public class XmlVersionManagerServer : GenericGameManager {
    #endregion
 
    protected override void Awake () {
-      XML_TEXT_DIRECTORY = Application.persistentDataPath + "/XmlTextFiles";
-      SERVER_ZIP_DIRECTORY = Application.persistentDataPath + "/XmlZipFiles";
+      xmlTextDirectory = Application.persistentDataPath + "/XmlTextFiles";
+      serverZipDirectory = Application.persistentDataPath + "/XmlZipFiles";
 
       base.Awake();
       #if IS_SERVER_BUILD && CLOUD_BUILD
@@ -112,11 +112,11 @@ public class XmlVersionManagerServer : GenericGameManager {
       #endif
       
       // Make sure this directory exists
-      if (!Directory.Exists(XML_TEXT_DIRECTORY)) {
-         Directory.CreateDirectory(XML_TEXT_DIRECTORY);
+      if (!Directory.Exists(xmlTextDirectory)) {
+         Directory.CreateDirectory(xmlTextDirectory);
       }
-      if (!Directory.Exists(SERVER_ZIP_DIRECTORY)) {
-         Directory.CreateDirectory(SERVER_ZIP_DIRECTORY);
+      if (!Directory.Exists(serverZipDirectory)) {
+         Directory.CreateDirectory(serverZipDirectory);
       }
       confirmTextFiles();
       self = this;
@@ -153,7 +153,7 @@ public class XmlVersionManagerServer : GenericGameManager {
    }
 
    private void confirmTextFile (string fileName) {
-      string fileDirectory = XML_TEXT_DIRECTORY + "/" + fileName + ".txt";
+      string fileDirectory = xmlTextDirectory + "/" + fileName + ".txt";
       if (!File.Exists(fileDirectory)) {
          File.Create(fileDirectory).Close();
       }
@@ -312,37 +312,37 @@ public class XmlVersionManagerServer : GenericGameManager {
          string soundEffectsData = SoundEffectManager.self.getSoundEffectsStringData(soundEffectsRawData);
 
          // Write data to text files
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + LAND_MONSTER_FILE + ".txt", landMonsterData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + SEA_MONSTER_FILE + ".txt", seaMonsterData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + CRAFTING_FILE + ".txt", craftingData);
+         writeAndCache(xmlTextDirectory + "/" + LAND_MONSTER_FILE + ".txt", landMonsterData);
+         writeAndCache(xmlTextDirectory + "/" + SEA_MONSTER_FILE + ".txt", seaMonsterData);
+         writeAndCache(xmlTextDirectory + "/" + CRAFTING_FILE + ".txt", craftingData);
 
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + NPC_FILE + ".txt", npcData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + CROPS_FILE + ".txt", cropsData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + ABILITIES_FILE + ".txt", abilityData);
+         writeAndCache(xmlTextDirectory + "/" + NPC_FILE + ".txt", npcData);
+         writeAndCache(xmlTextDirectory + "/" + CROPS_FILE + ".txt", cropsData);
+         writeAndCache(xmlTextDirectory + "/" + ABILITIES_FILE + ".txt", abilityData);
 
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + ARMOR_FILE + ".txt", armorData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + WEAPON_FILE + ".txt", weaponData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + HAT_FILE + ".txt", hatData);
+         writeAndCache(xmlTextDirectory + "/" + ARMOR_FILE + ".txt", armorData);
+         writeAndCache(xmlTextDirectory + "/" + WEAPON_FILE + ".txt", weaponData);
+         writeAndCache(xmlTextDirectory + "/" + HAT_FILE + ".txt", hatData);
 
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + SHOP_FILE + ".txt", shopData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + SHIP_FILE + ".txt", shipData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + SHIP_ABILITY_FILE + ".txt", shipAbilityData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + BACKGROUND_DATA_FILE + ".txt", battleBGData);
+         writeAndCache(xmlTextDirectory + "/" + SHOP_FILE + ".txt", shopData);
+         writeAndCache(xmlTextDirectory + "/" + SHIP_FILE + ".txt", shipData);
+         writeAndCache(xmlTextDirectory + "/" + SHIP_ABILITY_FILE + ".txt", shipAbilityData);
+         writeAndCache(xmlTextDirectory + "/" + BACKGROUND_DATA_FILE + ".txt", battleBGData);
 
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + PERKS_FILE + ".txt", perkData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + PALETTE_FILE + ".txt", paletteData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + TREASURE_DROPS_FILE + ".txt", treasureDropsData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + QUEST_DATA_FILE + ".txt", questData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + ITEM_DEFINITIONS_FILE + ".txt", itemDefinitionsData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + TOOL_TIP_FILE + ".txt", tooltipData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + PROJECTILES_FILE + ".txt", projectileData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + TUTORIAL_FILE + ".txt", tutorialData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + MAP_FILE + ".txt", mapData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + SFX_FILE + ".txt", soundEffectsData);
+         writeAndCache(xmlTextDirectory + "/" + PERKS_FILE + ".txt", perkData);
+         writeAndCache(xmlTextDirectory + "/" + PALETTE_FILE + ".txt", paletteData);
+         writeAndCache(xmlTextDirectory + "/" + TREASURE_DROPS_FILE + ".txt", treasureDropsData);
+         writeAndCache(xmlTextDirectory + "/" + QUEST_DATA_FILE + ".txt", questData);
+         writeAndCache(xmlTextDirectory + "/" + ITEM_DEFINITIONS_FILE + ".txt", itemDefinitionsData);
+         writeAndCache(xmlTextDirectory + "/" + TOOL_TIP_FILE + ".txt", tooltipData);
+         writeAndCache(xmlTextDirectory + "/" + PROJECTILES_FILE + ".txt", projectileData);
+         writeAndCache(xmlTextDirectory + "/" + TUTORIAL_FILE + ".txt", tutorialData);
+         writeAndCache(xmlTextDirectory + "/" + MAP_FILE + ".txt", mapData);
+         writeAndCache(xmlTextDirectory + "/" + SFX_FILE + ".txt", soundEffectsData);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            string zipDirectory = SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE;
-            GZipUtility.compressDirectory(XML_TEXT_DIRECTORY + "/", zipDirectory, (fileName) => { debugLog("Compressing ..." + fileName, Color.gray); });
+            string zipDirectory = serverZipDirectory + "/" + SERVER_ZIP_FILE;
+            GZipUtility.compressDirectory(xmlTextDirectory + "/", zipDirectory, (fileName) => { debugLog("Compressing ..." + fileName, Color.gray); });
 
             finalizeZipData();
          });
@@ -380,7 +380,7 @@ public class XmlVersionManagerServer : GenericGameManager {
 
    private void finalizeZipData () {
       debugLog("Init Zip data sending", Color.green);
-      string zipDirectory = SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE;
+      string zipDirectory = serverZipDirectory + "/" + SERVER_ZIP_FILE;
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          byte[] zipData = File.ReadAllBytes(zipDirectory);
          DB_Main.writeZipData(zipData, XML_SLOT);

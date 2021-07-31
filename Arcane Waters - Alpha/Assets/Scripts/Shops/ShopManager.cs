@@ -247,12 +247,14 @@ public class ShopManager : MonoBehaviour {
                ShipInfo ship = Ship.generateNewShip(shipType, rarity);
                ship.shipId = _shipId--;
 
-               if (shopData.shopName.ToLower().Contains("haven")) {
-                  D.debug("Shop is regenerating ship:" +
-                     " ID: " + ship.shipId +
-                     " T: " + shipType +
-                     " R: " + rarity +
-                     " ST: " + ship.shipType);
+               if (Util.isCloudBuild()) {
+                  if (shopData.shopName.ToLower().Contains("haven")) {
+                     D.debug("Shop is regenerating ship:" +
+                        " ID: " + ship.shipId +
+                        " T: " + shipType +
+                        " R: " + rarity +
+                        " ST: " + ship.shipType);
+                  }
                }
 
                // Set a custom price
