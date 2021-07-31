@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 using System;
 using System.Linq;
 using UnityEngine.InputSystem;
+using Crosstales.BWF.Manager;
 
 public class ChatPanel : MonoBehaviour {
    #region Public Variables
@@ -469,6 +470,13 @@ public class ChatPanel : MonoBehaviour {
       bool isLocalPlayer = true;
       if (Global.player != null) {
          isLocalPlayer = chatInfo.senderId == Global.player.userId ? true : false;
+      }
+
+      // Filter out any bad words
+      bool containsBadWord = BadWordManager.Contains(chatInfo.text);
+      if (containsBadWord) {
+         string filteredMessage = BadWordManager.ReplaceAll(chatInfo.text);
+         chatInfo.text = filteredMessage;
       }
 
       // We'll set the message up differently based on whether a sender was defined

@@ -393,6 +393,17 @@ namespace Crosstales.BWF.Filter
                                     {
                                         result = true;
                                         break;
+                                    } else {
+                                       // Since the match function does not consider bad words after prefixes, loop through the entire word to check if bad words are added at the middle up to the end
+                                       int wordLength = _text.Length - 1;
+                                       for (int i = 0; i < wordLength; i++) {
+                                          string rePrefixedWord = _text.Remove(0, i);
+                                 
+                                          if (badWordRegex.Match(rePrefixedWord).Success) {
+                                             result = true;
+                                             break;
+                                          }
+                                       }
                                     }
                                 }
                             }
