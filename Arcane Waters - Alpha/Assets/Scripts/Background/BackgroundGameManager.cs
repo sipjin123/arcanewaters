@@ -22,6 +22,9 @@ public class BackgroundGameManager : MonoBehaviour {
    public static string BATTLE_POS_KEY_RIGHT = "Battle_Position_Right";
    public static string PLACEHOLDER = "Placeholder";
 
+   // The address of animated mid ground elements
+   public static string MID_GROUND_ANIMATED = "MidgroundAnimatedElements";
+
    // Determines if data is initialized
    public bool isInitialized;
 
@@ -187,9 +190,13 @@ public class BackgroundGameManager : MonoBehaviour {
                }
 
                // Add z snap component to interactives to have z axis adjustments with battlers
-               if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.Interactive) {
+               bool isAnimatedMidGround = spriteTempData.spritePath.ToLower().Contains(MID_GROUND_ANIMATED.ToLower()) && spriteTempData.contentCategory == ImageLoader.BGContentCategory.Animating;
+               if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.Interactive || isAnimatedMidGround) {
                   ZSnap zSnap = spriteTemp.gameObject.AddComponent<ZSnap>();
                   zSnap.isActive = true;
+                  if (isAnimatedMidGround) {
+                     zSnap.offsetZ = -0.04f;
+                  }
                }
 
                spriteTemp.spriteData.contentCategory = spriteTempData.contentCategory;
