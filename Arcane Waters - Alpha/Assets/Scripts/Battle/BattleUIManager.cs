@@ -756,7 +756,7 @@ public class BattleUIManager : MonoBehaviour {
       damageText.gameObject.layer = damagedBattler.gameObject.layer;
 
       // Make note of the time at which we were last damaged
-      damagedBattler.lastDamagedTime = Time.time;
+      damagedBattler.lastDamagedTime = (float) NetworkTime.time;
    }
 
    public void showDamageText (AttackAction action, Battler damagedBattler) {
@@ -793,7 +793,7 @@ public class BattleUIManager : MonoBehaviour {
       }
 
       // Make note of the time at which we were last damaged
-      damagedBattler.lastDamagedTime = Time.time;
+      damagedBattler.lastDamagedTime = (float) NetworkTime.time;
    }
 
    public void showHealText (BuffAction action, Battler buffedBattler) {
@@ -816,7 +816,7 @@ public class BattleUIManager : MonoBehaviour {
       regenText.gameObject.layer = spot.gameObject.layer;
 
       // Make note of the time at which we were last healed
-      buffedBattler.lastDamagedTime = Time.time;
+      buffedBattler.lastDamagedTime = (float) NetworkTime.time;
    }
 
    private void createBlockBattleText (Battler battler, float zValue) {

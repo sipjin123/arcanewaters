@@ -312,7 +312,6 @@ public class BattleManager : MonoBehaviour {
       battler.battlerType = BattlerType.PlayerControlled;
 
       // Set up our initial data and position
-      battler.playerNetId = player.netId;
       battler.player = player;
       battler.battle = battle;
       battler.userId = player.userId;
@@ -429,7 +428,6 @@ public class BattleManager : MonoBehaviour {
       battler.displayedHealth = battler.getStartingHealth(overrideType);
 
       // Set up our initial data and position
-      battler.playerNetId = enemy.netId;
       battler.player = enemy;
       battler.battle = battle;
       battler.battleId = battle.battleId;

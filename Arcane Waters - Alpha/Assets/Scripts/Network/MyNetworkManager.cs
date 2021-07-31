@@ -451,7 +451,6 @@ public class MyNetworkManager : NetworkManager
 
                   if (!activeBattle.isOver()) {
                      // Reassign the updated info
-                     activeBattlerObj.playerNetId = player.netId;
                      activeBattlerObj.player = player;
 
                      // Assign the Battle ID to the Sync Var

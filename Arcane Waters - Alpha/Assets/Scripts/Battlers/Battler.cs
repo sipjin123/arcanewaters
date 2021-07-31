@@ -42,10 +42,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [SyncVar]
    public int companionId = -1;
 
-   // Our associated player net ID
-   [SyncVar]
-   public uint playerNetId;
-
    // The battle ID that this Battler is in
    [SyncVar]
    public int battleId;
@@ -319,8 +315,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       StartCoroutine(CO_AssignBattle());
 
       // Look up our associated player object
-      if (NetworkIdentity.spawned.ContainsKey(playerNetId)) {
-         NetworkIdentity enemyIdent = NetworkIdentity.spawned[playerNetId];
+      if (NetworkIdentity.spawned.ContainsKey(player.netId)) {
+         NetworkIdentity enemyIdent = NetworkIdentity.spawned[player.netId];
          this.player = enemyIdent.GetComponent<NetEntity>();
       } else {
          StartCoroutine(CO_AssignPlayerNetId());
@@ -491,11 +487,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    private IEnumerator CO_AssignPlayerNetId () {
       // Wait until the player is available in the spawned network identities
-      while (NetworkIdentity.spawned.ContainsKey(playerNetId) == false) {
+      while (NetworkIdentity.spawned.ContainsKey(player.netId) == false) {
          yield return 0;
       }
 
-      NetworkIdentity enemyIdent = NetworkIdentity.spawned[playerNetId];
+      NetworkIdentity enemyIdent = NetworkIdentity.spawned[player.netId];
       this.player = enemyIdent.GetComponent<NetEntity>();
       initializeBattler();
    }
