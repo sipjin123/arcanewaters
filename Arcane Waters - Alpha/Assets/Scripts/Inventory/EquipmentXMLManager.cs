@@ -54,17 +54,6 @@ public class EquipmentXMLManager : MonoBehaviour {
       return null;
    }
 
-   public ArmorStatData getArmorDataByType (int armorType) {
-      ArmorStatData armorStatData = _armorStatList.Values.ToList().Find(_ => _.armorType == armorType);
-      if (armorStatData != null) {
-         return armorStatData;
-      }
-      if (armorType > 0) {
-         D.debug("Armor Does not exist: ArmorType: " + armorType);
-      }
-      return null;
-   }
-
    public ArmorStatData getArmorDataBySqlId (int sqlId) {
       if (_armorStatList.ContainsKey(sqlId)) {
          return _armorStatList[sqlId];
@@ -248,7 +237,7 @@ public class EquipmentXMLManager : MonoBehaviour {
          switch (dataItem.category) {
             case Item.Category.Armor:
                // Basic Info Setup
-               ArmorStatData armorStatData = self.getArmorDataByType(dataItem.itemTypeId);
+               ArmorStatData armorStatData = self.getArmorDataBySqlId(dataItem.itemTypeId);
                itemName = armorStatData.equipmentName;
                itemDesc = armorStatData.equipmentDescription;
                itemPath = armorStatData.equipmentIconPath;
@@ -360,7 +349,7 @@ public class EquipmentXMLManager : MonoBehaviour {
             newDescription = hatData.equipmentDescription;
             break;
          case Item.Category.Armor:
-            ArmorStatData armorData = getArmorDataByType(item.itemTypeId);
+            ArmorStatData armorData = getArmorDataBySqlId(item.itemTypeId);
             newDescription = armorData.equipmentDescription;
             break;
          case Item.Category.Weapon:
@@ -380,7 +369,7 @@ public class EquipmentXMLManager : MonoBehaviour {
                return fetchedData.equipmentDescription;
             }
             if (craftingItem.resultItem.category == Item.Category.Armor) {
-               ArmorStatData fetchedData = getArmorDataByType(craftingItem.resultItem.itemTypeId);
+               ArmorStatData fetchedData = getArmorDataBySqlId(craftingItem.resultItem.itemTypeId);
                return fetchedData.equipmentDescription;
             }
             if (craftingItem.resultItem.category == Item.Category.Hats) {

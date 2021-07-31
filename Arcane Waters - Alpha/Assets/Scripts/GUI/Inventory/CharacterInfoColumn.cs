@@ -168,7 +168,7 @@ public class CharacterInfoColumn : MonoBehaviour {
          objects.weapon.id = bodyEntity.weaponManager.equippedWeaponId;
          objects.weapon.paletteNames = bodyEntity.weaponManager.palettes;
 
-         ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(bodyEntity.armorManager.armorType);         
+         ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(bodyEntity.armorManager.armorType);         
          objects.armor = armorData != null ? ArmorStatData.translateDataToArmor(armorData) : new Armor();
          objects.armor.itemTypeId = bodyEntity.armorManager.equipmentDataId;
          objects.armor.id = bodyEntity.armorManager.equippedArmorId;
@@ -189,7 +189,7 @@ public class CharacterInfoColumn : MonoBehaviour {
             objects.weapon.id = weaponData.sqlId;
          }
 
-         ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(characterStack.armorLayer.getType());
+         ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(characterStack.armorLayer.getType());
          objects.armor = armorData != null ? ArmorStatData.translateDataToArmor(armorData) : new Armor();
          if (armorData != null) {
             objects.armor.itemTypeId = characterStack.armorLayer.getType();

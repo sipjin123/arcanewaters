@@ -203,7 +203,6 @@ public class CharacterStack : MonoBehaviour {
       // Only process this when the user is in avatar mode and not in ship mode
       // This syncs the users color scheme to the GUI material of the character stack(Inventory Char Preview)
       if (Global.player is PlayerBodyEntity) {
-         ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(armorType);
          PlayerBodyEntity playerEntity = Global.player as PlayerBodyEntity;
 
          armorLayer.recolor(playerEntity.armorManager.palettes);

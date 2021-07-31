@@ -6429,7 +6429,7 @@ public class RPCManager : NetworkBehaviour
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Armor armor = Armor.castItemToArmor(userObjects.armor);
             if (armor.data.Length < 1 && armor.itemTypeId > 0 && armor.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
-               armor.data = ArmorStatData.serializeArmorStatData(EquipmentXMLManager.self.getArmorDataByType(armor.itemTypeId));
+               armor.data = ArmorStatData.serializeArmorStatData(EquipmentXMLManager.self.getArmorDataBySqlId(armor.itemTypeId));
                userObjects.armor.data = armor.data;
             }
             if (body != null) {
