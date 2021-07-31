@@ -31,10 +31,10 @@ public class PenaltyInfo
    public PenaltyType penaltyType = PenaltyType.None;
 
    // When the account was penalized
-   public DateTime penaltyStart;
+   public long penaltyStart;
 
    // When the account's penalty is over
-   public DateTime penaltyEnd;
+   public long penaltyEnd;
 
    // Is this a permanent penalty?
    public bool isPermanent;
@@ -55,10 +55,10 @@ public class PenaltyInfo
          targetUsrName = DataUtil.getString(dataReader, "targetUsrName");
          penaltyReason = DataUtil.getString(dataReader, "penaltyReason");
          penaltyType = (PenaltyType) DataUtil.getInt(dataReader, "penaltyType");
-         penaltyStart = DataUtil.getDateTime(dataReader, "penaltyStart");
-         penaltyEnd = DataUtil.getDateTime(dataReader, "penaltyEnd");
+         penaltyStart = DataUtil.getDateTime(dataReader, "penaltyStart").ToBinary();
+         penaltyEnd = DataUtil.getDateTime(dataReader, "penaltyEnd").ToBinary();
 
-         isPermanent = penaltyEnd == DateTime.MinValue;
+         isPermanent = penaltyEnd == DateTime.MinValue.ToBinary();
       } catch (Exception ex) {
          D.debug("Error in parsing MySqlData for PenaltyInfo " + ex.ToString());
       }
@@ -74,14 +74,15 @@ public class PenaltyInfo
       this.penaltyReason = penaltyReason;
       this.isPermanent = isPermanent;
 
-      penaltyEnd = DateTime.UtcNow.AddMinutes(penaltyTime);
+      penaltyStart = DateTime.UtcNow.ToBinary();
+      penaltyEnd = DateTime.UtcNow.AddMinutes(penaltyTime).ToBinary();
    }
 
    public bool hasPenaltyExpired () {
-      if (penaltyEnd == DateTime.MinValue) {
+      if (DateTime.FromBinary(penaltyEnd)== DateTime.MinValue) {
          return false;
       } else {
-         return DateTime.Compare(DateTime.UtcNow, penaltyEnd) > 0;
+         return DateTime.Compare(DateTime.UtcNow, DateTime.FromBinary(penaltyEnd)) > 0;
       }
    }
 
@@ -116,7 +117,7 @@ public class PenaltyInfo
    }
 
    public bool isTemporary () {
-      return penaltyEnd > DateTime.MinValue;
+      return DateTime.FromBinary(penaltyEnd) > DateTime.MinValue;
    }
 
    #region Private Variables

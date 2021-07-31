@@ -102,38 +102,40 @@ public class BattleSelectionManager : MonoBehaviour {
    }
 
    public void clickBattler (Battler battler) {
-      // Check if the newly selected battler is the same as the previous one, we deselect it
+      BattleUIManager.self.highlightLocalBattler(false);
+
       if (selectedBattler == battler) {
-         selectedBattler.deselectThis();
-         selectedBattler = null;
-      } else {
-         BattleUIManager.self.highlightLocalBattler(false);
-
-         // If it is another battler
-         if (selectedBattler != null) {
-            selectedBattler.deselectThis();
-         }
-
-         Battler currentBattler = BattleManager.self.getBattler(Global.player.userId);
-         if (currentBattler == null) {
-            D.debug("Battler has not loaded yet");
-            return;
-         }
-         selectedBattler = battler;
-         bool selectedSameTeam = currentBattler.teamType == selectedBattler.teamType;
-
-         if (selectedSameTeam) {
-            D.adminLog("Selected Ally", D.ADMIN_LOG_TYPE.Ability);
-            enemySelection.SetActive(false);
-            allySelection.SetActive(true);
-         } else {
-            D.adminLog("Selected Enemy", D.ADMIN_LOG_TYPE.Ability);
-            currentEnemySprite.sprite = selectedBattler.isBossType ? largeEnemyTarget : smallEnemyTarget;
-            enemySelection.SetActive(true);
-            allySelection.SetActive(false);
-         }
-         selectedBattler.selectThis();
+         return;
       }
+
+      if (selectedBattler != null) {
+         selectedBattler.deselectThis();
+      }
+
+      // If it is another battler
+      if (selectedBattler != null) {
+         selectedBattler.deselectThis();
+      }
+
+      Battler currentBattler = BattleManager.self.getBattler(Global.player.userId);
+      if (currentBattler == null) {
+         D.debug("Battler has not loaded yet");
+         return;
+      }
+      selectedBattler = battler;
+      bool selectedSameTeam = currentBattler.teamType == selectedBattler.teamType;
+
+      if (selectedSameTeam) {
+         D.adminLog("Selected Ally", D.ADMIN_LOG_TYPE.Ability);
+         enemySelection.SetActive(false);
+         allySelection.SetActive(true);
+      } else {
+         D.adminLog("Selected Enemy", D.ADMIN_LOG_TYPE.Ability);
+         currentEnemySprite.sprite = selectedBattler.isBossType ? largeEnemyTarget : smallEnemyTarget;
+         enemySelection.SetActive(true);
+         allySelection.SetActive(false);
+      }
+      selectedBattler.selectThis();
    }
 
    public void deselectTarget () {

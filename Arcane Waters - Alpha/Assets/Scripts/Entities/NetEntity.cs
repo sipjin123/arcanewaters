@@ -538,7 +538,7 @@ public class NetEntity : NetworkBehaviour
 
       // Remove the entity from the manager
       if (this is PlayerBodyEntity || this is PlayerShipEntity) {
-         EntityManager.self.removeEntity(userId);
+         EntityManager.self.removeEntity(this);
       }
 
       Vector3 localPos = this.transform.localPosition;
@@ -770,12 +770,6 @@ public class NetEntity : NetworkBehaviour
       transform.localPosition = position;
    }
 
-   [TargetRpc]
-   public void Target_LiftMute () {
-      muteExpirationDate = DateTime.MinValue;
-      isStealthMuted = false;
-   }
-
    public void requestAnimationPlay (Anim.Type animType, bool freezeAnim = false) {
       if (interactingAnimation) {
          return;
@@ -824,6 +818,7 @@ public class NetEntity : NetworkBehaviour
          case Anim.Type.Pet_East:
          case Anim.Type.Pet_North:
          case Anim.Type.Pet_South:
+            SoundEffectManager.self.playFmodWithPath(SoundEffectManager.CRITTER_PET, this.transform);
             StartCoroutine(CO_DelayExitAnim(animType, 1.4f));
             interactingAnimation = true;
             break;
@@ -875,12 +870,6 @@ public class NetEntity : NetworkBehaviour
       }
 
       interactingAnimation = false;
-   }
-
-   [ClientRpc]
-   public void Rpc_ReceiveMuteInfo (PenaltyInfo muteInfo) {
-      muteExpirationDate = muteInfo.penaltyEnd;
-      isStealthMuted = muteInfo.penaltyType == PenaltyType.StealthMute;
    }
 
    [ClientRpc]

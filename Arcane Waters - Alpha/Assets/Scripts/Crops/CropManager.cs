@@ -111,11 +111,19 @@ public class CropManager : NetworkBehaviour {
          return;
       }
 
+      // Make sure it's not already processing
+      if (isCropProcessing(cropNumber)) {
+         D.adminLog("Crop is already processing : " + cropNumber, D.ADMIN_LOG_TYPE.Crop);
+         return;
+      }
+
       // Prepare crop data
       long now = DateTime.UtcNow.ToBinary();
       CropsData cropData = CropsDataManager.self.getCropData(cropType);
       CropInfo cropInfo = new CropInfo(cropType, userId, cropNumber, now, DateTimeOffset.UtcNow.ToUnixTimeSeconds(), (int)(cropData.minutesToRipe * 60));
       cropInfo.areaKey = areaKey;
+
+      _cropsProcessing.Add(cropNumber);
 
       // Insert it into the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -148,6 +156,10 @@ public class CropManager : NetworkBehaviour {
 
                // Store the result
                _crops.Add(cropInfo);
+
+               if (_cropsProcessing.Contains(cropNumber)) {
+                  _cropsProcessing.Remove(cropNumber);
+               }
 
                sendCropsToPlayer(cropInfo, false, quickGrow);
             }
@@ -192,9 +204,17 @@ public class CropManager : NetworkBehaviour {
          D.adminLog("Crop can't grow any more: " + cropNumber, D.ADMIN_LOG_TYPE.Crop);
          return;
       }
+      
+      // Make sure it's not already processing
+      if (isCropProcessing(cropNumber)) {
+         D.adminLog("Crop is already processing : " + cropNumber, D.ADMIN_LOG_TYPE.Crop);
+         return;
+      }
 
       double startWaterTime = NetworkTime.time;
       D.adminLog("Processing water crop for player {" + _player.userId + "}", D.ADMIN_LOG_TYPE.Crop);
+
+      _cropsProcessing.Add(cropNumber);
 
       // Update it in the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -213,6 +233,10 @@ public class CropManager : NetworkBehaviour {
             cropToWater.growthLevel++;
             cropToWater.lastWaterTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             _crops.Add(cropToWater);
+
+            if (_cropsProcessing.Contains(cropNumber)) {
+               _cropsProcessing.Remove(cropNumber);
+            }
 
             // Registers the watering action to the achievement database for recording
             AchievementManager.registerUserAchievement(_player, ActionType.WaterCrop);
@@ -379,8 +403,8 @@ public class CropManager : NetworkBehaviour {
             Jobs jobs = DB_Main.getJobXP(_player.userId);
 
             // Find the flagship id
-            string userInfoJson = DB_Main.getUserInfoJSON(_player.userId.ToString());
-            int flagshipId = JsonUtility.FromJson<UserInfo>(userInfoJson).flagshipId;
+            UserInfo userInfo = DB_Main.getUserInfoById(_player.userId);
+            int flagshipId = userInfo.flagshipId;
 
             // Add the exchange to the trade history
             TradeHistoryInfo tradeInfo = new TradeHistoryInfo(_player.userId, flagshipId, AreaManager.self.getArea(_player.areaKey).townAreaKey,
@@ -605,6 +629,10 @@ public class CropManager : NetworkBehaviour {
       }*/
    }
 
+   private bool isCropProcessing (int cropNumber) {
+      return _cropsProcessing.Contains(cropNumber);
+   }
+
    #region Private Variables
 
    // Our associated Player object
@@ -618,6 +646,9 @@ public class CropManager : NetworkBehaviour {
 
    // The time at which the specified user ID last sold something
    protected static Dictionary<int, float> _lastSellTime = new Dictionary<int, float>();
+
+   // A list of crops that are currently processing watering or planting
+   private List<int> _cropsProcessing = new List<int>();
 
    #endregion
 }

@@ -27,7 +27,7 @@ public class NetworkedServer : NetworkedBehaviour
    public NetworkedDictionary<int, AssignedUserInfo> assignedUserIds = new NetworkedDictionary<int, AssignedUserInfo>(new NetworkedVarSettings { WritePermission = NetworkedVarPermission.Everyone, SendChannel = "Fragmented", SendTickrate = 0 });
 
    // The accounts connected to this server
-   public NetworkedDictionary<int, int> connectedAccountIds = new NetworkedDictionary<int, int>(new NetworkedVarSettings { WritePermission = NetworkedVarPermission.OwnerOnly, SendChannel = "Fragmented", SendTickrate = 0 });
+   public NetworkedDictionary<int, bool> connectedAccountIds = new NetworkedDictionary<int, bool>(new NetworkedVarSettings { WritePermission = NetworkedVarPermission.OwnerOnly, SendChannel = "Fragmented", SendTickrate = 0 });
 
    // The voyage groups stored in this server
    public NetworkedDictionary<int, VoyageGroupInfo> voyageGroups = new NetworkedDictionary<int, VoyageGroupInfo>(new NetworkedVarSettings { WritePermission = NetworkedVarPermission.Everyone, SendChannel = "Fragmented", SendTickrate = 0 });
@@ -159,7 +159,7 @@ public class NetworkedServer : NetworkedBehaviour
       }
 
       if (isAccountConnected) {
-         connectedAccountIds[accountId] = 1;
+         connectedAccountIds[accountId] = true;
       } else {
          connectedAccountIds.Remove(accountId);
       }
@@ -657,6 +657,54 @@ public class NetworkedServer : NetworkedBehaviour
       NetEntity targetEntity = EntityManager.self.getEntity(targetUserId);
       if (targetEntity != null) {
          targetEntity.admin.forceWarpToLocation(adminLocation.userId, adminLocation);
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_SetPenaltyInPlayerEntityByUser (int userId, PenaltyInfo penaltyInfo) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_SetPenaltyInPlayerEntityByUser, userId, penaltyInfo);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_SetPenaltyInPlayerEntityByUser (int userId, PenaltyInfo penaltyInfo) {
+      NetEntity targetEntity = EntityManager.self.getEntity(userId);
+      if (targetEntity != null) {
+         targetEntity.admin.setPenaltyInPlayerEntity(targetEntity, penaltyInfo);
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_SetPenaltyInPlayerEntityByAccount (int accId, PenaltyInfo penaltyInfo) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingAccount(accId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_SetPenaltyInPlayerEntityByAccount, accId, penaltyInfo);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_SetPenaltyInPlayerEntityByAccount (int accId, PenaltyInfo penaltyInfo) {
+      NetEntity targetEntity = EntityManager.self.getEntityWithAccId(accId);
+      if (targetEntity != null) {
+         targetEntity.admin.setPenaltyInPlayerEntity(targetEntity, penaltyInfo);
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_LiftPenaltyInPlayerEntityByAccount (int accId, PenaltyType penaltyType) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingAccount(accId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_LiftPenaltyInPlayerEntityByAccount, accId, penaltyType);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_LiftPenaltyInPlayerEntityByAccount (int accId, PenaltyType penaltyType) {
+      NetEntity targetEntity = EntityManager.self.getEntityWithAccId(accId);
+      if (targetEntity != null) {
+         targetEntity.admin.liftPenaltyInPlayerEntity(targetEntity, penaltyType);
       }
    }
 

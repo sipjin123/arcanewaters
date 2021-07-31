@@ -491,7 +491,8 @@ public class MyNetworkManager : NetworkManager
                PenaltyInfo muteInfo = DB_Main.getPenaltyInfoForAccount(player.accountId, PenaltyType.Mute);
                if (muteInfo != null) {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     player.Rpc_ReceiveMuteInfo(muteInfo);
+                     player.muteExpirationDate = DateTime.FromBinary(muteInfo.penaltyEnd);
+                     player.isStealthMuted = muteInfo.penaltyType == PenaltyType.StealthMute;
                   });
                }
             });

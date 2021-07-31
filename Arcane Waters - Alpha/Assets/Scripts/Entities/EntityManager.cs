@@ -22,9 +22,9 @@ public class EntityManager : MonoBehaviour
       _entities[entity.userId] = entity;
    }
 
-   public void removeEntity (int userId) {
-      if (_entities.ContainsKey(userId)) {
-         _entities.Remove(userId);
+   public void removeEntity (NetEntity entity) {
+      if (_entities.ContainsKey(entity.userId) && _entities[entity.userId] == entity) {
+         _entities.Remove(entity.userId);
       }
    }
 

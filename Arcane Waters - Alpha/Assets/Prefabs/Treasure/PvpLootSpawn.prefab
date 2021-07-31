@@ -98,7 +98,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2503211080936574559
 Transform:
   m_ObjectHideFlags: 0
@@ -273,11 +273,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4298218442774226194}
+  - component: {fileID: 6187119841156971245}
   - component: {fileID: 4298218442774226192}
   - component: {fileID: 4298218442774226193}
   - component: {fileID: 3881789229965311541}
   - component: {fileID: 5999229419930281943}
-  - component: {fileID: 6187119841156971245}
   m_Layer: 0
   m_Name: PvpLootSpawn
   m_TagString: Untagged
@@ -304,6 +304,30 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6187119841156971245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4298218442774231790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcfd9d094b2c0cd47b35ccb604d549b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  lootGroupId: 0
+  isActive: 0
+  instanceId: 0
+  areaKey: 
+  powerupIndicator: {fileID: 812701593540020938}
+  powerupSprite: {fileID: 1248787629941644557}
+  powerupType: 0
+  spriteRendererList: []
+  spawnFrequency: 60
+  rarity: 0
 --- !u!114 &4298218442774226192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -366,28 +390,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: -0.05}
   serializedVersion: 2
   m_Radius: 0.2
---- !u!114 &6187119841156971245
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4298218442774231790}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bcfd9d094b2c0cd47b35ccb604d549b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  lootGroupId: 0
-  instanceId: 0
-  isActive: 0
-  powerupIndicator: {fileID: 812701593540020938}
-  powerupSprite: {fileID: 1248787629941644557}
-  powerupType: 0
-  spriteRendererList: []
-  spawnFrequency: 60
 --- !u!1 &4454081326584411422
 GameObject:
   m_ObjectHideFlags: 0

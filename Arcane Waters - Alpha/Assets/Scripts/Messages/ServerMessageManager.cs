@@ -379,7 +379,7 @@ public class ServerMessageManager : MonoBehaviour
             }
 
             if (penaltyInfo.isTemporary()) {
-               message = $"Your account has been suspended until {Util.getTimeInEST(penaltyInfo.penaltyEnd)} EST";
+               message = $"Your account has been suspended until {Util.getTimeInEST(DateTime.FromBinary(penaltyInfo.penaltyEnd))} EST";
             } else {
                message = $"Your account has been suspended indefinitely";
             }

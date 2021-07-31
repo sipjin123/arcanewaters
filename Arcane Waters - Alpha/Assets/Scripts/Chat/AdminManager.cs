@@ -865,15 +865,27 @@ public class AdminManager : NetworkBehaviour
 
       string[] list = parameters.Split(' ');
 
-      if (list.Length > 0) {
-         NetEntity player = EntityManager.self.getEntityWithName(list[0]);
-         string reason = parameters.Replace(list[0] + " ", "");
-
-         if (player != null) {
-            player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Kicked, $"You were kicked.\n\n Reason: {reason}"));
-            player.connectionToClient.Disconnect();
-         }
+      if (list.Length < 2) {
+         _player.Target_ReceiveNormalChat($"Could not parse the parameters for the command kick: {parameters}", ChatInfo.Type.System);
+         return;
       }
+
+      string playerName = list[0];
+      string reason = parameters.Replace(list[0] + " ", "");
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         var (accId, usrId, usrName) = DB_Main.getUserDataTuple(playerName);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (accId <= 0) {
+               _player.Target_ReceiveNormalChat($"The player {playerName} doesn't exist!", ChatInfo.Type.System);
+               return;
+            }
+
+            PenaltyInfo penaltyInfo = new PenaltyInfo(-1, -1, "", PenaltyType.Kick, reason, 0, false);
+            ServerNetworkingManager.self.setPenaltyInPlayerEntityByUser(usrId, penaltyInfo);
+         });
+      });
    }
 
    private void requestOre (string parameters) {
@@ -954,7 +966,7 @@ public class AdminManager : NetworkBehaviour
          string reason = parameters.Replace(list[0] + " ", "");
 
          PenaltyInfo penaltyInfo = new PenaltyInfo(_player.accountId, _player.userId, _player.entityName, PenaltyType.Ban, reason, 0, true);
-         penaltyInfo.penaltyEnd = DateTime.MinValue;
+         penaltyInfo.penaltyEnd = DateTime.MinValue.ToBinary();
          banPlayer(playerName, penaltyInfo);
       }
    }
@@ -984,16 +996,8 @@ public class AdminManager : NetworkBehaviour
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                // If the player is successfully muted
                if (status == PenaltyStatus.None) {
-                  _player.Target_ReceiveNormalChat($"Account for player {usrName} has been muted until {Util.getTimeInEST(muteInfo.penaltyEnd)} EST", ChatInfo.Type.System);
-
-                  NetEntity mutedPlayer = EntityManager.self.getEntity(usrId);
-                  if (mutedPlayer != null) {
-                     mutedPlayer.Rpc_ReceiveMuteInfo(muteInfo);
-
-                     if (muteInfo.penaltyType != PenaltyType.StealthMute) {
-                        mutedPlayer.Target_ReceiveNormalChat($"You have been muted until {Util.getTimeInEST(muteInfo.penaltyEnd)}", ChatInfo.Type.System);
-                     }
-                  }
+                  _player.Target_ReceiveNormalChat($"Account for player {usrName} has been muted until {Util.getTimeInEST(DateTime.FromBinary(muteInfo.penaltyEnd))} EST", ChatInfo.Type.System);
+                  ServerNetworkingManager.self.setPenaltyInPlayerEntityByUser(muteInfo.targetUsrId, muteInfo);
                } else if (status == PenaltyStatus.AlreadyMuted) {
                   _player.Target_ReceiveNormalChat($"Account for player {usrName} is already muted", ChatInfo.Type.System);
                } else {
@@ -1034,16 +1038,12 @@ public class AdminManager : NetworkBehaviour
                // If the player is successfully banned from the game
                if (status == PenaltyStatus.None) {
                   if (penaltyInfo.isTemporary()) {
-                     _player.Target_ReceiveNormalChat($"Account for player {usrName} has been temporarily banned until {Util.getTimeInEST(penaltyInfo.penaltyEnd)} EST", ChatInfo.Type.System);
+                     _player.Target_ReceiveNormalChat($"Account for player {usrName} has been temporarily banned until {Util.getTimeInEST(DateTime.FromBinary(penaltyInfo.penaltyEnd))} EST", ChatInfo.Type.System);
                   } else {
                      _player.Target_ReceiveNormalChat($"Account for player {usrName} has been indefinitely banned", ChatInfo.Type.System);
                   }
 
-                  NetEntity player = EntityManager.self.getEntityWithName(usrName);
-                  if (player != null) {
-                     player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Banned, ServerMessageManager.getPenaltyMessage(penaltyInfo)));
-                     player.connectionToClient.Disconnect();
-                  }
+                  ServerNetworkingManager.self.setPenaltyInPlayerEntityByUser(penaltyInfo.targetUsrId, penaltyInfo);
                   // If not...
                } else if (status == PenaltyStatus.AlreadyBanned) {
                   _player.Target_ReceiveNormalChat($"Account for player {usrName} is already banned", ChatInfo.Type.System);
@@ -1057,6 +1057,37 @@ public class AdminManager : NetworkBehaviour
             });
          }
       });
+   }
+
+   [Server]
+   public void setPenaltyInPlayerEntity (NetEntity player, PenaltyInfo penaltyInfo) {
+      switch (penaltyInfo.penaltyType) {
+         case PenaltyType.Mute:
+            player.muteExpirationDate = DateTime.FromBinary(penaltyInfo.penaltyEnd);
+            player.isStealthMuted = false;
+            player.Target_ReceiveNormalChat($"You have been muted until {Util.getTimeInEST(DateTime.FromBinary(penaltyInfo.penaltyEnd))} EST", ChatInfo.Type.System);
+            break;
+         case PenaltyType.StealthMute:
+            player.muteExpirationDate = DateTime.FromBinary(penaltyInfo.penaltyEnd);
+            player.isStealthMuted = true;
+            break;
+         case PenaltyType.Ban:
+            player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Banned, ServerMessageManager.getPenaltyMessage(penaltyInfo)));
+            break;
+         case PenaltyType.Kick:
+            player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Kicked, ServerMessageManager.getPenaltyMessage(penaltyInfo)));
+            break;
+         default:
+            break;
+      }
+   }
+
+   [Server]
+   public void liftPenaltyInPlayerEntity (NetEntity player, PenaltyType penaltyType) {
+      if (penaltyType == PenaltyType.Mute || penaltyType == PenaltyType.StealthMute) {
+         player.muteExpirationDate = DateTime.MinValue;
+         player.isStealthMuted = false;
+      }
    }
 
    [Command]
@@ -1570,6 +1601,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestSummonPlayer (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       string[] list = parameters.Split(' ');
       string targetPlayerName = "";
 
@@ -2135,17 +2170,41 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
-      NetEntity targetEntity = EntityManager.self.getEntityWithName(targetPlayerName);
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Try to retrieve the target info
+         UserInfo targetUserInfo = DB_Main.getUserInfo(targetPlayerName);
 
-      if (targetEntity == null) {
-         return;
-      }
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (targetUserInfo == null) {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The player " + targetPlayerName + " doesn't exists!");
+               return;
+            }
 
-      if (_player.areaKey != targetEntity.areaKey || _player.instanceId != targetEntity.instanceId) {
-         targetEntity.spawnInNewMap(_player.areaKey, _player.transform.localPosition, Direction.South);
-      } else {
-         targetEntity.moveToPosition(_player.transform.position);
-      }
+            if (!ServerNetworkingManager.self.isUserOnline(targetUserInfo.userId)) {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The player " + targetPlayerName + " is offline!");
+               return;
+            }
+
+            if (targetUserInfo.userId == _player.userId) {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "You cannot warp to yourself!");
+               return;
+            }
+
+            UserLocationBundle location = new UserLocationBundle();
+            location.userId = _player.userId;
+            location.serverPort = ServerNetworkingManager.self.server.networkedPort.Value;
+            location.areaKey = _player.areaKey;
+            location.instanceId = _player.instanceId;
+            location.localPositionX = _player.transform.localPosition.x;
+            location.localPositionY = _player.transform.localPosition.y;
+            location.voyageGroupId = _player.voyageGroupId;
+
+            // Find the target user in the server network and try to warp him here
+            ServerNetworkingManager.self.summonUser(targetUserInfo.userId, location);
+         });
+      });
    }
 
    [Command]
@@ -2183,31 +2242,38 @@ public class AdminManager : NetworkBehaviour
    }
 
    [Server]
-   public void returnUserLocationForAdminGoto (UserLocationBundle targetLocation) {
-      // If the admin is in the same area and instance than the target user, simply teleport him
-      if (_player.areaKey == targetLocation.areaKey && _player.instanceId == targetLocation.instanceId) {
+   public void forceWarpToLocation (int requesterUserId, UserLocationBundle targetLocation) {
+      // If our player is in the same instance than the target, simply teleport
+      if (ServerNetworkingManager.self.server.networkedPort.Value == targetLocation.serverPort && _player.areaKey == targetLocation.areaKey && _player.instanceId == targetLocation.instanceId) {
          _player.moveToPosition(targetLocation.getLocalPosition());
          return;
       }
 
-      // Handle warping to a sea voyage instance or land treasure site instance
-      if (VoyageManager.isAnyLeagueArea(targetLocation.areaKey) || VoyageManager.isTreasureSiteArea(targetLocation.areaKey)) {
-         // Make the admin join the voyage the target user is in
-         if (VoyageManager.self.tryGetVoyageForGroup(targetLocation.voyageGroupId, out Voyage voyage)) {
-            VoyageGroupManager.self.forceAdminJoinVoyage(_player, voyage.voyageId);
-         } else {
-            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Could not join the voyage in area " + targetLocation.areaKey);
-            D.error("Inconsistency in voyage instance during '/admin goto' command");
+      // Handle warping to an instance that is specific to a group
+      if (VoyageManager.isAnyLeagueArea(targetLocation.areaKey) || VoyageManager.isTreasureSiteArea(targetLocation.areaKey) || VoyageManager.isPvpArenaArea(targetLocation.areaKey)) {
+         if (!VoyageManager.self.tryGetVoyageForGroup(targetLocation.voyageGroupId, out Voyage targetVoyage)) {
+            ServerNetworkingManager.self.sendConfirmationMessage(ConfirmMessage.Type.General, requesterUserId, "Error when warping user: could not find the target voyage.");
             return;
          }
 
-         // For treasure sites, the admin must be registered in the treasure site object that warps to the instance
-         if (VoyageManager.isTreasureSiteArea(targetLocation.areaKey)) {
-            ServerNetworkingManager.self.registerUserInTreasureSite(_player.userId, voyage.voyageId, targetLocation.instanceId);
+         if (_player.isAdmin()) {
+            // If our user is an admin, we can warp anywhere
+            VoyageGroupManager.self.forceAdminJoinVoyage(_player, targetVoyage.voyageId);
+
+            // For treasure sites, the admin must be registered in the treasure site object that warps to the instance
+            if (VoyageManager.isTreasureSiteArea(targetLocation.areaKey)) {
+               ServerNetworkingManager.self.registerUserInTreasureSite(_player.userId, targetVoyage.voyageId, targetLocation.instanceId);
+            }
+         } else { 
+            // Non admins can only warp or be warped to instances that they have access to, through their current group
+            if (!_player.tryGetGroup(out VoyageGroupInfo ourGroup) || ourGroup.voyageId != targetVoyage.voyageId) {
+               ServerNetworkingManager.self.sendConfirmationMessage(ConfirmMessage.Type.General, requesterUserId, "Error when warping user: the user does not have access to the target instance.");
+               return;
+            }
          }
 
-         // Warp the admin to the voyage instance
-         _player.findBestServerAndWarp(targetLocation.areaKey, targetLocation.getLocalPosition(), voyage.voyageId, Direction.South);
+         // Warp to the specific instance
+         _player.findBestServerAndWarp(targetLocation.areaKey, targetLocation.getLocalPosition(), targetVoyage.voyageId, Direction.South);
          return;
       }
 

@@ -86,6 +86,9 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    // Prefab of special collider, used after golem boss death
    public GameObject bossGolemPolygonCollider;
 
+   // Prefab of special collider, used after lizard boss death
+   public GameObject bossLizardPolygonCollider;
+
    // The combat collider of boss type monsters
    public const float BOSS_COMBAT_COLLIDER = 0.45f;
 
@@ -209,14 +212,24 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          if (shouldDisableColliderOnDeath()) {
             circleCollider.enabled = false;
 
-            if (this.enemyType == Type.Golem_Boss && bossGolemColliderRef == null) {
-               bossGolemColliderRef = Instantiate(bossGolemPolygonCollider);
-               bossGolemColliderRef.transform.SetParent(this.transform);
-               bossGolemColliderRef.transform.localPosition = Vector3.zero;
+            if (this.enemyType == Type.Golem_Boss && _bossGolemColliderRef == null) {
+               _bossGolemColliderRef = Instantiate(bossGolemPolygonCollider);
+               _bossGolemColliderRef.transform.SetParent(this.transform);
+               _bossGolemColliderRef.transform.localPosition = Vector3.zero;
                bossCollider.SetActive(false);
 
                if (this.facing == Direction.West) {
-                  bossGolemColliderRef.transform.localScale = new Vector3(-1f, 1f, 1f);
+                  _bossGolemColliderRef.transform.localScale = new Vector3(-1f, 1f, 1f);
+               }
+            }
+            else if (this.enemyType == Type.Lizard_King && _bossLizardColliderRef == null) {
+               _bossLizardColliderRef = Instantiate(bossLizardPolygonCollider);
+               _bossLizardColliderRef.transform.SetParent(this.transform);
+               _bossLizardColliderRef.transform.localPosition = new Vector3(0.0f, -0.185f, 0.0f);
+               bossCollider.SetActive(false);
+
+               if (this.facing == Direction.East) {
+                  _bossLizardColliderRef.transform.localScale = new Vector3(-1f, 1f, 1f);
                }
             }
          }
@@ -434,6 +447,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       switch (this.enemyType) {
          case Type.Slime:
          case Type.Golem_Boss:
+         case Type.Lizard_King:
             return true;
          default:
             return false;
@@ -497,7 +511,10 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    private bool _shadowAnimDataCopied = false;
 
    // Reference which stores special collider for boss golem after death
-   private GameObject bossGolemColliderRef = null;
+   private GameObject _bossGolemColliderRef = null;
+
+   // Reference which stores special collider for boss lizard after death
+   private GameObject _bossLizardColliderRef = null;
 
    #endregion
 }

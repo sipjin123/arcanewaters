@@ -5772,8 +5772,8 @@ public class DB_Main : DB_MainStub
             // If the account doesn't have a current active ban
             try {
                using (MySqlConnection conn = getConnection())
-               using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.account_penalties (sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltyEnd) VALUES" +
-                  "(@sourceAccId, @sourceUsrId,  @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltyEnd)", conn)) {
+               using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.account_penalties (sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltyStart, penaltyEnd) VALUES" +
+                  "(@sourceAccId, @sourceUsrId,  @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltyStart, @penaltyEnd)", conn)) {
                   conn.Open();
                   cmd.Prepare();
 
@@ -5785,11 +5785,12 @@ public class DB_Main : DB_MainStub
                   cmd.Parameters.AddWithValue("@targetUsrName", penaltyInfo.targetUsrName);
                   cmd.Parameters.AddWithValue("@penaltyType", (int) penaltyInfo.penaltyType);
                   cmd.Parameters.AddWithValue("@penaltyReason", penaltyInfo.penaltyReason);
+                  cmd.Parameters.AddWithValue("@penaltyStart", DateTime.FromBinary(penaltyInfo.penaltyStart));
 
                   if (penaltyInfo.isPermanent) {
                      cmd.Parameters.AddWithValue("@penaltyEnd", null);
                   } else {
-                     cmd.Parameters.AddWithValue("@penaltyEnd", penaltyInfo.penaltyEnd);
+                     cmd.Parameters.AddWithValue("@penaltyEnd", DateTime.FromBinary(penaltyInfo.penaltyEnd));
                   }
 
                   DebugQuery(cmd);
@@ -9808,6 +9809,11 @@ public class DB_Main : DB_MainStub
    }
 
    public static new bool isBiomeUnlockedForUser (int userId, Biome.Type biome) {
+      // The forest biome is always unlocked
+      if (biome == Biome.Type.Forest) {
+         return true;
+      }
+
       bool isLocationUnlocked = false;
 
       try {

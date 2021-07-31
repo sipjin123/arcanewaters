@@ -118,6 +118,12 @@ public class SoundEffectManager : GenericGameManager
 
    public const string BG_MUSIC = "event:/Music/BGM_Master";
 
+   public const string CRITTER_PET = "event:/SFX/Player/Interactions/Diegetic/Critter_Pet";
+   public const string CRITTER_INFLECTION = "event:/SFX/NPC/Critter/Inflections";
+   public const string ANGER_EMOTE = "event:/SFX/NPC/Critter/Anger_Emote";
+   public const string QUESTION_EMOTE = "event:/SFX/NPC/Critter/Question_Emote";
+   public const string AFFECTION_EMOTE = "event:/SFX/NPC/Critter/Affection_Emote";
+
    public EventInstance bgMusicEvent;
 
    public enum CannonballImpactType
@@ -279,6 +285,9 @@ public class SoundEffectManager : GenericGameManager
          case SoundManager.Type.Sea_Mushroom:
             param = 9;
             break;
+         case SoundManager.Type.Battle_Music:
+            param = 10;
+            break;
       }
 
       PLAYBACK_STATE playbackState;
@@ -292,6 +301,53 @@ public class SoundEffectManager : GenericGameManager
       }
 
       bgMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, param);
+   }
+
+   public void playAnimalCry (string path, Transform target) {
+      string[] splits = path.Split('/');
+      if (splits.Length > 0) {
+         string name = splits[splits.Length - 1];
+         int param = -1;
+
+         // Each animal
+         if (name.Contains("fox")) {
+            param = 0;
+         } else if (name.Contains("cow")) {
+            param = 1;
+         } else if (name.Contains("cat")) {
+            param = 2;
+         } else if (name.Contains("badger")) {
+            param = 3;
+         } else if (name.Contains("little_chicken")) {
+            param = 5;
+         } else if (name.Contains("chicken")) {
+            param = 4;
+         } else if (name.Contains("monkey")) {
+            param = 6;
+         } else if (name.Contains("racoon")) {
+            param = 7;
+         } else if (name.Contains("rat")) {
+            param = 8;
+         } else if (name.Contains("rooster")) {
+            param = 9;
+         } else if (name.Contains("scorpion")) {
+            param = 10;
+         } else if (name.Contains("spider")) {
+            param = 11;
+         } else if (name.Contains("skunk")) {
+            param = 12;
+         } else if (name.Contains("snail")) {
+            param = 13;
+         }
+
+         if (param > -1) {
+            EventInstance animalEvent = RuntimeManager.CreateInstance(CRITTER_INFLECTION);
+            animalEvent.setParameterByName(AUDIO_SWITCH_PARAM, param);
+            animalEvent.set3DAttributes(RuntimeUtils.To3DAttributes(target.position));
+            animalEvent.start();
+            animalEvent.release();
+         }
+      }
    }
 
    public void playFmod2D (int id) {

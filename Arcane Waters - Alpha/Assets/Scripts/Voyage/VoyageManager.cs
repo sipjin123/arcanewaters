@@ -76,15 +76,17 @@ public class VoyageManager : GenericGameManager {
    }
 
    [Server]
-   public bool tryGetVoyage (int voyageId, out Voyage voyage) {
+   public bool tryGetVoyage (int voyageId, out Voyage voyage, bool includeTreasureSites = false) {
       voyage = default;
 
       // Search the voyage in all the servers we know about
       foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
-         foreach (Voyage v in server.treasureSites) {
-            if (v.voyageId == voyageId) {
-               voyage = v;
-               return true;
+         if (includeTreasureSites) {
+            foreach (Voyage v in server.treasureSites) {
+               if (v.voyageId == voyageId) {
+                  voyage = v;
+                  return true;
+               }
             }
          }
          foreach (Voyage v in server.voyages) {

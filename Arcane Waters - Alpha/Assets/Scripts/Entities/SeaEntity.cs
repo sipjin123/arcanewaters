@@ -293,6 +293,9 @@ public class SeaEntity : NetEntity
       gainItemCanvas.GetComponentInChildren<TextMeshProUGUI>().text = "+ " + silverCount;
       gainItemCanvas.GetComponentInChildren<FloatingCanvas>().customTag = Global.player.userId.ToString();
 
+      // Play SFX
+      SoundEffectManager.self.playFmod2DWithPath(SoundEffectManager.COLLECT_SILVER);
+
       PvpStatPanel panel = (PvpStatPanel) PanelManager.self.get(Panel.Type.PvpScoreBoard);
       if (rewardReason == SilverManager.SilverRewardReason.Kill) {
          gainItemCanvas.GetComponentInChildren<Image>().sprite = panel.silverIcon;

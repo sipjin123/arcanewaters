@@ -36,6 +36,7 @@ public class ServerNetworkingManager : MonoBehaviour
       RegisterSerializableClass<Voyage>();
       RegisterSerializableClass<UserLocationBundle>();
       RegisterSerializableClass<AssignedUserInfo>();
+      RegisterSerializableClass<PenaltyInfo>();
 
       // Log the number of connected players
       if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {
@@ -80,6 +81,15 @@ public class ServerNetworkingManager : MonoBehaviour
    public NetworkedServer getServerContainingUser (int userId) {
       foreach (NetworkedServer server in servers) {
          if (server.connectedUserIds.Contains(userId)) {
+            return server;
+         }
+      }
+      return null;
+   }
+
+   public NetworkedServer getServerContainingAccount (int accId) {
+      foreach (NetworkedServer server in servers) {
+         if (server.connectedAccountIds.ContainsKey(accId)) {
             return server;
          }
       }
@@ -300,6 +310,18 @@ public class ServerNetworkingManager : MonoBehaviour
 
    public void summonUser (int targetUserId, UserLocationBundle adminLocation) {
       server.InvokeServerRpc(server.MasterServer_SummonUser, targetUserId, adminLocation);
+   }
+
+   public void setPenaltyInPlayerEntityByUser (int userId, PenaltyInfo penaltyInfo) {
+      server.InvokeServerRpc(server.MasterServer_SetPenaltyInPlayerEntityByUser, userId, penaltyInfo);
+   }
+
+   public void setPenaltyInPlayerEntityByAccount (int accId, PenaltyInfo penaltyInfo) {
+      server.InvokeServerRpc(server.MasterServer_SetPenaltyInPlayerEntityByAccount, accId, penaltyInfo);
+   }
+
+   public void liftPenaltyInPlayerEntityByAccount (int accId, PenaltyType penaltyType) {
+      server.InvokeServerRpc(server.MasterServer_LiftPenaltyInPlayerEntityByAccount, accId, penaltyType);
    }
 
    #region Private Variables

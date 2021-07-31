@@ -1110,6 +1110,7 @@ public class RPCManager : NetworkBehaviour
       GuildIconData guildIconData = null;
       string guildIconDataString = "";
       bool muted = _player.isMuted();
+      bool stealthMuted = muted && _player.isStealthMuted;
 
       if (_player.guildId > 0) {
          guildIconData = new GuildIconData(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
@@ -1119,7 +1120,7 @@ public class RPCManager : NetworkBehaviour
          guildIconDataString = GuildIconData.guildIconDataToString(guildIconData);
       }
 
-      ChatInfo chatInfo = new ChatInfo(0, message, DateTime.UtcNow, chatType, _player.entityName, "", _player.userId, guildIconData, _player.isStealthMuted, _player.isAdmin());
+      ChatInfo chatInfo = new ChatInfo(0, message, DateTime.UtcNow, chatType, _player.entityName, "", _player.userId, guildIconData, stealthMuted, _player.isAdmin());
 
       // Replace bad words
       message = BadWordManager.ReplaceAll(message);
@@ -1132,7 +1133,7 @@ public class RPCManager : NetworkBehaviour
 
       // Pass this message along to the relevant people
       if (chatType == ChatInfo.Type.Local || chatType == ChatInfo.Type.Emote) {
-         _player.Rpc_ChatWasSent(chatInfo.chatId, message, chatInfo.chatTime.ToBinary(), chatType, guildIconDataString, _player.isStealthMuted, _player.isAdmin());
+         _player.Rpc_ChatWasSent(chatInfo.chatId, message, chatInfo.chatTime.ToBinary(), chatType, guildIconDataString, stealthMuted, _player.isAdmin());
       } else if (chatType == ChatInfo.Type.Global) {
          ServerNetworkingManager.self.sendGlobalChatMessage(chatInfo);
       } else if (chatType == ChatInfo.Type.Whisper) {
@@ -1158,12 +1159,12 @@ public class RPCManager : NetworkBehaviour
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                if (destinationUserInfo == null) {
                   string errorMsg = "Recipient does not exist!";
-                  _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, errorMsg, "", "", chatInfo.chatTime.ToBinary(), ChatInfo.Type.Error, null, 0, _player.isStealthMuted);
+                  _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, errorMsg, "", "", chatInfo.chatTime.ToBinary(), ChatInfo.Type.Error, null, 0, stealthMuted);
                   return;
                }
 
                ServerNetworkingManager.self.sendSpecialChatMessage(destinationUserInfo.userId, chatInfo);
-               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, extractedUserName, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.senderId, _player.isStealthMuted);
+               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, extractedUserName, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.senderId, stealthMuted);
             });
          });
       } else if (chatType == ChatInfo.Type.Group) {
@@ -1204,7 +1205,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Store chat message in database, if the player is not muted
-      if (!_player.isStealthMuted) {
+      if (!stealthMuted) {
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, connectionToClient.address);
          });
@@ -4319,8 +4320,13 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
+      if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
+         sendError("An error occurred when searching for the voyage group.");
+         return;
+      }
+
       // Retrieve the voyage data
-      if (!_player.tryGetVoyage(out Voyage voyage)) {
+      if (!VoyageManager.self.tryGetVoyage(voyageGroup.voyageId, out Voyage voyage, true)) {
          D.error(string.Format("Could not find the voyage for user {0}.", _player.userId));
          sendError("An error occurred when searching for the voyage.");
          return;
@@ -6039,8 +6045,8 @@ public class RPCManager : NetworkBehaviour
    [Command]
    public void Cmd_SwapAbility (int abilityID, int equipSlot) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         string rawAbilityData = DB_Main.userAbilities(_player.userId.ToString(), ((int) AbilityEquipStatus.Equipped).ToString());
-         List<AbilitySQLData> abilityDataList = JsonConvert.DeserializeObject<List<AbilitySQLData>>(rawAbilityData);
+         List<AbilitySQLData> abilityDataList = DB_Main.userAbilities(_player.userId, AbilityEquipStatus.Equipped);
+         
          AbilitySQLData abilityInSlot = abilityDataList.Find(_ => _.equipSlotIndex == equipSlot);
          AbilitySQLData abilityReplacement = abilityDataList.Find(_ => _.abilityID == abilityID);
 
@@ -6071,8 +6077,9 @@ public class RPCManager : NetworkBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          foreach (PlayerBodyEntity entity in playerEntities) {
             // Retrieves skill list from database
-            string rawAbilityData = DB_Main.userAbilities(entity.userId.ToString(), ((int) AbilityEquipStatus.ALL).ToString());
-            List<AbilitySQLData> abilityDataList = JsonConvert.DeserializeObject<List<AbilitySQLData>>(rawAbilityData);
+            List<AbilitySQLData> abilityDataList = DB_Main.userAbilities(entity.userId, AbilityEquipStatus.ALL);
+            //string rawAbilityData = DB_Main.userAbilities(entity.userId.ToString(), ((int) AbilityEquipStatus.ALL).ToString());
+            //List<AbilitySQLData> abilityDataList = JsonConvert.DeserializeObject<List<AbilitySQLData>>(rawAbilityData);
 
             // Set user to only use skill if no weapon is equipped
             if (entity.weaponManager.weaponType == 0) {
@@ -7211,11 +7218,6 @@ public class RPCManager : NetworkBehaviour
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // The forest biome is always unlocked
-            if (biome == Biome.Type.Forest) {
-               isBiomeUnlocked = true;
-            }
-
             if (!isBiomeUnlocked) {
                sendError("The " + biome.ToString() + " biome is locked!");
             } else {

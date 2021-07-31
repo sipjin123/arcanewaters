@@ -40,6 +40,15 @@ public class AdventureItemRow : MonoBehaviour {
    // An icon that is enabled if the item is a blueprint
    public GameObject blueprintIndicator;
 
+   // Name of the blueprint item;
+   public string blueprintName;
+
+   // Description of the blueprint item
+   public string blueprintDescription;
+
+   // Strength value of the blueprint item
+   public string blueprintStrength;
+
    #endregion
 
    public void setRowForItem (Item item) {
@@ -83,25 +92,37 @@ public class AdventureItemRow : MonoBehaviour {
                   ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(craftingData.resultItem.itemTypeId);
                   if (armorData == null) {
                      itemName.text = AdventureShopScreen.UNKNOWN_ITEM;
+                     blueprintName = itemName.text;
                   } else {
                      path = armorData.equipmentIconPath;
                      itemName.text = armorData.equipmentName + " Design";
+                     blueprintName = itemName.text;
+                     blueprintDescription = armorData.equipmentDescription;
+                     blueprintStrength = "Defense = " + armorData.armorBaseDefense.ToString();
                   }
                } else if (craftingData.resultItem.category == Item.Category.Weapon) {
                   WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(craftingData.resultItem.itemTypeId);
                   if (weaponData == null) {
                      itemName.text = AdventureShopScreen.UNKNOWN_ITEM;
+                     blueprintName = itemName.text;
                   } else {
                      path = weaponData.equipmentIconPath;
                      itemName.text = weaponData.equipmentName + " Design";
+                     blueprintName = itemName.text;
+                     blueprintDescription = weaponData.equipmentDescription;
+                     blueprintStrength = "Damage = " + weaponData.weaponBaseDamage.ToString();
                   }
                } else if (craftingData.resultItem.category == Item.Category.Hats) {
                   HatStatData hatData = EquipmentXMLManager.self.getHatData(craftingData.resultItem.itemTypeId);
                   if (hatData == null) {
                      itemName.text = AdventureShopScreen.UNKNOWN_ITEM;
+                     blueprintName = itemName.text;
                   } else {
                      path = hatData.equipmentIconPath;
                      itemName.text = hatData.equipmentName + " Design";
+                     blueprintName = itemName.text;
+                     blueprintDescription = hatData.equipmentDescription;
+                     blueprintStrength = "Defense = " + hatData.hatBaseDefense.ToString();
                   }
                }
 
@@ -173,6 +194,11 @@ public class AdventureItemRow : MonoBehaviour {
          } else {
             D.debug("Missing hat data with id: " + item.itemTypeId);
          }
+      }
+      if (item.category == Item.Category.Blueprint) {
+         itemName = blueprintName;
+         itemDescription = blueprintDescription;
+         itemStrength = blueprintStrength;
       }
 
       // Set the tooltip Durability text
