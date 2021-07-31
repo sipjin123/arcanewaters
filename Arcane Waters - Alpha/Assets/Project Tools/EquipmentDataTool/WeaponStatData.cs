@@ -74,6 +74,16 @@ public class WeaponStatData : EquipmentStatData
          return null;
       }
 
+      if (data.Length < 1) {
+         D.debug("Invalid xml data for weapon type: " + itemTypeId + " " + data);
+         return null;
+      }
+
+      if (!data.Contains(EquipmentXMLManager.VALID_XML_FORMAT)) {
+         D.debug("Invalid xml data format for weapon type: " + itemTypeId + " " + data);
+         return null;
+      }
+
       try {
          WeaponStatData castedData = Util.xmlLoad<WeaponStatData>(newTextAsset);
          return castedData;

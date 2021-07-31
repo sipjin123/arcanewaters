@@ -212,7 +212,11 @@ public class TutorialManager3 : MonoBehaviour {
       if (string.IsNullOrEmpty(Global.getUserObjects().weapon.data)) {
          weaponData = EquipmentXMLManager.self.getWeaponData(Global.getUserObjects().weapon.itemTypeId);
       } else {
-         weaponData = WeaponStatData.getStatData(Global.getUserObjects().weapon.data, Global.getUserObjects().weapon.itemTypeId);
+         if (!Global.getUserObjects().weapon.data.Contains(EquipmentXMLManager.VALID_XML_FORMAT)) {
+            weaponData = EquipmentXMLManager.self.getWeaponData(Global.getUserObjects().weapon.itemTypeId);
+         } else {
+            weaponData = WeaponStatData.getStatData(Global.getUserObjects().weapon.data, Global.getUserObjects().weapon.itemTypeId);
+         }
       }
 
       if (weaponData != null) {
