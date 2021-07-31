@@ -21,12 +21,12 @@ public class PvpShopPanel : Panel {
       self = this;
    }
 
-   public void populateShop (List<PvpShopData> pvpDataList) {
+   public void populateShop (List<PvpShopItem> pvpItemDataList) {
       shopTemplateHolder.gameObject.DestroyChildren();
 
-      foreach (PvpShopData shopData in pvpDataList) {
+      foreach (PvpShopItem shopItemData in pvpItemDataList) {
          PvpShopTemplate shopTemplate = Instantiate(shopTemplatePrefab, shopTemplateHolder);
-         shopTemplate.setupData(shopData);
+         shopTemplate.setupData(shopItemData);
          shopTemplate.buyButton.onClick.AddListener(() => {
             D.debug("Attempted to buy");
          });

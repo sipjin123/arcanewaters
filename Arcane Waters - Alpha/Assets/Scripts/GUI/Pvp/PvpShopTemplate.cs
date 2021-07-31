@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
-using static PvpShopData;
+using static PvpShopItem;
 
 public class PvpShopTemplate : MonoBehaviour {
    #region Public Variables
@@ -24,20 +24,20 @@ public class PvpShopTemplate : MonoBehaviour {
    public PvpShopItemType shopItemType;
 
    // The data cache of the item
-   public PvpShopData shopData;
+   public PvpShopItem itemData;
 
    // Buy Button
    public Button buyButton;
 
    #endregion
 
-   public void setupData (PvpShopData data) {
-      shopData = data;
-      itemId = data.itemId;
-      nameText.text = shopData.itemName;
-      currencyText.text = shopData.itemCost.ToString();
-      itemIcon.sprite = ImageManager.getSprite(shopData.spritePath);
-      shopItemType = shopData.shopItemType;
+   public void setupData (PvpShopItem data) {
+      itemData = data;
+      itemId = itemData.itemId;
+      nameText.text = itemData.itemName;
+      currencyText.text = itemData.itemCost.ToString();
+      itemIcon.sprite = ImageManager.getSprite(itemData.spritePath);
+      shopItemType = itemData.shopItemType;
    }
 
    #region Private Variables

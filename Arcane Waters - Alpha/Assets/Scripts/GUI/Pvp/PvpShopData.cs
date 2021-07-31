@@ -1,26 +1,17 @@
-﻿public class PvpShopData {
+﻿using System.Collections.Generic;
+
+public class PvpShopData {
    #region Public Variables
 
-   // Auto generated id
-   public int itemId;
+   // Id referencing database entry
+   public int shopId;
 
-   // Name of the item
-   public string itemName;
+   // Basic shop info
+   public string shopName;
+   public string shopDescription;
 
-   // How much the item cost
-   public int itemCost;
-
-   // The resource path of the sprite image
-   public string spritePath;
-
-   // The type of shop item
-   public PvpShopItemType shopItemType;
-
-   public enum PvpShopItemType {
-      None = 0,
-      Ship = 1,
-      Powerup = 2,
-   }
+   // The shop items in this specific shop data
+   public List<PvpShopItem> shopItems;
 
    #endregion
 }
