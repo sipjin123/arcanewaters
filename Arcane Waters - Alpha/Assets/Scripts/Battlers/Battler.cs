@@ -2156,7 +2156,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // TODO ZERONEV: When buffs are implemented, implement this
    public float getCooldownModifier () {
       // Some buffs affect our cooldown durations
-
+      if (debuffList.ContainsKey(Status.Type.Slowed)) {
+         return 2;
+      }
       return 1f;
    }
 

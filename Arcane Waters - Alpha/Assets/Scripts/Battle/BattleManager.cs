@@ -930,7 +930,23 @@ public class BattleManager : MonoBehaviour {
 
                // Apply attack status here
                if (abilityDataReference.statusType != Status.Type.None) {
-                  StartCoroutine(CO_UpdateStatusAfterCollision(target, abilityDataReference.statusType, abilityDataReference.statusDuration, action.actionEndTime));
+                  bool canBeDisabled = true;
+                  if (target.isBossType) {
+                     switch (abilityDataReference.statusType) {
+                        case Status.Type.Frozen:
+                        case Status.Type.Slowed:
+                        case Status.Type.Stunned:
+                           canBeDisabled = false;
+                           break;
+                     }
+                  }
+
+                  if (canBeDisabled) {
+                     float randomizedChance = Random.Range(1, 100);
+                     if (randomizedChance < abilityDataReference.statusChance) {
+                        StartCoroutine(CO_UpdateStatusAfterCollision(target, abilityDataReference.statusType, abilityDataReference.statusDuration, action.actionEndTime));
+                     }
+                  }
                }
 
                // Setup server to declare a battler is dead when the network time reaches the time action ends

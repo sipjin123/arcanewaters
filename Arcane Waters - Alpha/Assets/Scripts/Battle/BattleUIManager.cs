@@ -745,7 +745,7 @@ public class BattleUIManager : MonoBehaviour {
 
       damageText.setDamageAmount(damage, false, false);
       float offsetPosition = .2f;
-      damageText.transform.position = new Vector2(Random.Range(damageSpawnPosition.x - offsetPosition, damageSpawnPosition.x + offsetPosition), damageSpawnPosition.y);
+      damageText.transform.position = new Vector3(Random.Range(damageSpawnPosition.x - offsetPosition, damageSpawnPosition.x + offsetPosition), damageSpawnPosition.y, damageSpawnPosition.z);
       damageText.transform.SetParent(EffectManager.self.transform, false);
       damageText.name = "DamageText_" + element;
 

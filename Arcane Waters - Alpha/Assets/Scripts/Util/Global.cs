@@ -48,7 +48,7 @@ public class Global
    public static bool isFastLoginHostMode = false;
 
    // If stun status effects are enabled
-   public static bool enableStuns = false;
+   public static bool enableStuns = true;
 
    // The ID of the currently selected user for our account
    public static int currentlySelectedUserId = 0;
