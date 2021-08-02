@@ -472,11 +472,24 @@ public class ChatPanel : MonoBehaviour {
          isLocalPlayer = chatInfo.senderId == Global.player.userId ? true : false;
       }
 
-      // Filter out any bad words
-      bool containsBadWord = BadWordManager.Contains(chatInfo.text);
-      if (containsBadWord) {
-         string filteredMessage = BadWordManager.ReplaceAll(chatInfo.text);
-         chatInfo.text = filteredMessage;
+      // If sender is a non system chat
+      bool isUserChat = false;
+      switch (chatInfo.messageType) {
+         case ChatInfo.Type.Whisper:
+         case ChatInfo.Type.Global:
+         case ChatInfo.Type.Guild:
+         case ChatInfo.Type.Group:
+            isUserChat = true;
+            break;
+      }
+
+      if (chatInfo.senderId > 0 && isUserChat) {
+         // Filter out any bad words
+         bool containsBadWord = BadWordManager.Contains(chatInfo.text);
+         if (containsBadWord) {
+            string filteredMessage = BadWordManager.ReplaceAll(chatInfo.text);
+            chatInfo.text = filteredMessage;
+         }
       }
 
       // We'll set the message up differently based on whether a sender was defined
