@@ -46,6 +46,10 @@ public class Instance : NetworkBehaviour
    [SyncVar]
    public int entityCount;
 
+   // The maximum number of players allowed in the instance
+   [SyncVar]
+   public int maxPlayerCount = 50;
+
    // For the number of enemies in the instance
    [SyncVar]
    public int enemyCount;
@@ -236,11 +240,11 @@ public class Instance : NetworkBehaviour
    }
 
    public int getMaxPlayers () {
-      return _maxPlayerCount;
+      return maxPlayerCount;
    }
 
    public void updateMaxPlayerCount (bool isSinglePlayer = false) {
-      _maxPlayerCount = getMaxPlayerCount(areaKey, isSinglePlayer);
+      maxPlayerCount = getMaxPlayerCount(areaKey, isSinglePlayer);
    }
 
    public static int getMaxPlayerCount (string areaKey, bool isSinglePlayer = false) {
@@ -844,8 +848,6 @@ public class Instance : NetworkBehaviour
    // The number of consecutive times we've checked this instance and found it empty
    protected int _consecutiveEmptyChecks = 0;
 
-   // The maximum number of players allowed in an instance
-   protected int _maxPlayerCount = 50;
 
    #endregion
 }

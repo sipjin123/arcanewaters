@@ -73,7 +73,10 @@ public class AuctionPanel : Panel
       onMyAuctionsToggleValueChanged();
    }
 
-   public void displayAllAuctions () {
+   public void displayAllAuctions (bool firstPage = false) {
+      if (firstPage) {
+         _currentPage = 1;
+      }
       allToggle.SetIsOnWithoutNotify(true);
       onAllToggleValueChanged();
    }

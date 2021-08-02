@@ -166,6 +166,7 @@ public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
 
          // Set the item name stored in the auction data
          itemName.text = auction.itemName;
+         itemDescription.text = "";
       } else {
          // Since the item is still available, set its full info
          setItem(auction.item);

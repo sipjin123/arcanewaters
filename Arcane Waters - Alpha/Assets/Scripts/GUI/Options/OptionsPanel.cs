@@ -59,7 +59,7 @@ public class OptionsPanel : Panel
    // A toggle controlling whether the user will automatically farm
    public Toggle autoFarmToggle;
 
-   // Determines whether mouse cursor should be confied within the game screen
+   // Determines whether mouse cursor should be confined within the game screen
    public Toggle mouseLockToggle;
 
    // The screen mode toggle
@@ -452,6 +452,8 @@ public class OptionsPanel : Panel
       }
 
       SoundManager.musicVolume = musicSlider.value;
+
+      SoundManager.self.musicVCA.setVolume(SoundManager.musicVolume);
    }
 
    public void effectsSliderChanged () {
@@ -461,7 +463,8 @@ public class OptionsPanel : Panel
       }
 
       SoundManager.effectsVolume = effectsSlider.value;
-      SoundManager.self.masterBus.setVolume(SoundManager.effectsVolume);
+
+      SoundManager.self.sfxVCA.setVolume(SoundManager.effectsVolume);
    }
 
    public void guiScaleSliderChanged () {

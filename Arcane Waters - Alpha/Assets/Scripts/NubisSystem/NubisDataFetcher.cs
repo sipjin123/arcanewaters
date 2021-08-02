@@ -316,10 +316,10 @@ namespace NubisDataHandling {
          int userId = Global.player.userId;
 
          // Call the list and list count in parallel
-         Task<string> listTask = NubisClient.call<string>(nameof(DB_Main.userInventory), userId, categoryFilter,
-            itemIdsToExclude, true, pageIndex, itemsPerPage, Item.DurabilityFilter.None);
-         Task<int> totalCountTask = NubisClient.call<int>(nameof(DB_Main.userInventoryCount), userId, categoryFilter,
-            itemIdsToExclude, true, Item.DurabilityFilter.None);
+         Task<string> listTask = NubisClient.call<string>(nameof(DB_Main.userInventory), userId, categoryFilter.ToArray(),
+            itemIdsToExclude.ToArray(), true, pageIndex, itemsPerPage, Item.DurabilityFilter.None);
+         Task<int> totalCountTask = NubisClient.call<int>(nameof(DB_Main.userInventoryCount), userId, categoryFilter.ToArray(),
+            itemIdsToExclude.ToArray(), true, Item.DurabilityFilter.None);
 
          await Task.WhenAll(listTask, totalCountTask);
 

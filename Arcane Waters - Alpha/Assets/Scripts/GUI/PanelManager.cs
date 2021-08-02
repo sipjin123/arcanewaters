@@ -133,6 +133,8 @@ public class PanelManager : GenericGameManager {
          noticeScreen.hide();
       } else if (PerksPanel.self.isShowing()) {
          PerksPanel.self.hide();
+      } else if (itemSelectionScreen.isShowing()) {
+         itemSelectionScreen.hide();
       } else if (get<AuctionPanel>(Panel.Type.Auction).auctionInfoPanel.isShowing()) {
          AuctionPanel.self.auctionInfoPanel.hide();
       } else if (hasPanelInLinkedList()) {

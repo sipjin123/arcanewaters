@@ -150,7 +150,7 @@ public class XmlVersionManagerClient : GenericGameManager {
          } else {
             clientMessage = "All files are existing, continue version checking";
             D.debug(clientMessage);
-            D.debug("DOWNLOAD NEW DATA! " + serverVersion);
+
             if (serverVersion > clientXmlVersion) {
                clientMessage = "Client is outdated ver: " + clientXmlVersion + ", downloading new version: " + serverVersion;
                D.debug(clientMessage);
@@ -213,7 +213,7 @@ public class XmlVersionManagerClient : GenericGameManager {
    }
    
    private async void downloadClientData (int targetVersion) {
-      string zipDataRequest = await NubisClient.call(nameof(DB_Main.fetchZipRawData));
+      string zipDataRequest = await NubisClient.call<string>(nameof(DB_Main.fetchZipRawData));
       D.debug("ZipDownloadComplete: " + zipDataRequest.Length);
       _downloadProgress = 1f;
       updateLoadingProgress();
@@ -411,7 +411,7 @@ public class XmlVersionManagerClient : GenericGameManager {
                   int dataId = int.Parse(xmlSubGroup[0]);
                   CropsData actualData = Util.xmlLoad<CropsData>(xmlSubGroup[1]);
                   cropData.Add(actualData);
-                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.xmlName + " - " + ((Crop.Type)actualData.cropsType);
+                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.xmlName + " - " + ((Crop.Type) actualData.cropsType);
                }
             }
             CropsDataManager.self.receiveCropsFromZipData(cropData);
@@ -422,7 +422,7 @@ public class XmlVersionManagerClient : GenericGameManager {
 
             foreach (string subGroup in xmlGroup) {
                string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
-             
+
                // Extract the segregated data and assign to the xml manager
                if (xmlSubGroup.Length == 2) {
                   int abilityXmlContentIndex = 1;
@@ -439,7 +439,7 @@ public class XmlVersionManagerClient : GenericGameManager {
                      attackAbility.itemID = abilityId;
                      attackAbilityList.Add(attackAbility);
                   } else if (abilityType == AbilityType.BuffDebuff) {
-                     BuffAbilityData buffAbility = Util.xmlLoad<BuffAbilityData>(xmlSubGroup[abilityXmlContentIndex]); 
+                     BuffAbilityData buffAbility = Util.xmlLoad<BuffAbilityData>(xmlSubGroup[abilityXmlContentIndex]);
                      buffAbility.itemID = abilityId;
                      buffAbilityList.Add(buffAbility);
                      message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[abilityXmlContentIndex];
@@ -478,6 +478,7 @@ public class XmlVersionManagerClient : GenericGameManager {
             break;
          case EditorToolType.Equipment_Weapon:
             List<WeaponStatData> weaponList = new List<WeaponStatData>();
+            string weaponIdsSkipped = "";
             foreach (string subGroup in xmlGroup) {
                string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
 
@@ -495,10 +496,12 @@ public class XmlVersionManagerClient : GenericGameManager {
                         D.debug("WARNING! A weapon has no assigned weapon type! " + dataId + " : " + actualData.weaponType);
                      }
                   } else {
-                     D.debug("Skip add entry for Weapon:" + dataId);
+                     weaponIdsSkipped += dataId + " ";
                   }
                }
             }
+
+            D.debug("Skip add entry for Weapons: {" + weaponIdsSkipped + "}");
             EquipmentXMLManager.self.receiveWeaponDataFromZipData(weaponList);
             break;
          case EditorToolType.Equipment_Hat:
@@ -931,7 +934,7 @@ public class XmlVersionManagerClient : GenericGameManager {
    }
 
    public static async void downloadTooltipCacheForPreExport () {
-      string dataRequest = await NubisClient.call(nameof(DB_Main.getTooltipXmlContent));
+      string dataRequest = await NubisClient.call<string>(nameof(DB_Main.getTooltipXmlContent));
       D.debug("Tooltip data downloaded, now writing to file: " + dataRequest.Length);
 
       string fileDirectory = TEXT_PATH + XML_BASE_TOOLTIP + ".txt";
@@ -946,7 +949,7 @@ public class XmlVersionManagerClient : GenericGameManager {
    }
 
    public async void downloadTooltipCache (bool assignAutomatically) {
-      string dataRequest = await NubisClient.call(nameof(DB_Main.getTooltipXmlContent));
+      string dataRequest = await NubisClient.call<string>(nameof(DB_Main.getTooltipXmlContent));
       D.debug("Tooltip data downloaded, now writing to file: " + dataRequest.Length);
 
       StartCoroutine(CO_ProcessDataCreation(dataRequest, assignAutomatically));

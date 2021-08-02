@@ -108,11 +108,7 @@ public class InventoryPanel : Panel {
 
       // Create the item cells
       foreach (Item item in itemArray) {
-         if (item.itemTypeId != 0 && item.category != 0) {
-            instantiateItemCell(item, itemCellsContainer.transform);
-         } else {
-            D.debug("Skipping item cell, Invalid category and item");
-         }
+         instantiateItemCell(item, itemCellsContainer.transform);
       }
 
       // Update the CharacterInfo column

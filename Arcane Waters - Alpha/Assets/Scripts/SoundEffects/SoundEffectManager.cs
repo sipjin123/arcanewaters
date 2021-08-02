@@ -78,7 +78,7 @@ public class SoundEffectManager : GenericGameManager
    public const int SHIP_LAUNCH_CHARGE = 92;
    public const int PICKUP_CROP = 93;
 
-   public const int ENEMY_SHIP_IMPACT = 94;
+   //public const int ENEMY_SHIP_IMPACT = 94;
    public const int PLAYER_SHIP_IMPACT = 95;
 
    public const int LIGHTNING_FLASH = 96;
@@ -124,7 +124,7 @@ public class SoundEffectManager : GenericGameManager
    public const string QUESTION_EMOTE = "event:/SFX/NPC/Critter/Question_Emote";
    public const string AFFECTION_EMOTE = "event:/SFX/NPC/Critter/Affection_Emote";
 
-   public EventInstance bgMusicEvent;
+   public const string ENEMY_SHIP_HIT = "event:/SFX/Game/Sea_Battle/Enemy_Ship_Impact";
 
    public enum CannonballImpactType
    {
@@ -135,6 +135,8 @@ public class SoundEffectManager : GenericGameManager
 
    protected override void Awake () {
       self = this;
+
+      _bgMusicEvent = RuntimeManager.CreateInstance(BG_MUSIC);
    }
 
    private void Start () {
@@ -243,10 +245,6 @@ public class SoundEffectManager : GenericGameManager
          return;
       }
 
-      if (!bgMusicEvent.isValid()) {
-         bgMusicEvent = RuntimeManager.CreateInstance(BG_MUSIC);
-      }
-
       int param = -1;
 
       switch (musicType) {
@@ -290,17 +288,13 @@ public class SoundEffectManager : GenericGameManager
             break;
       }
 
-      PLAYBACK_STATE playbackState;
-      bgMusicEvent.getPlaybackState(out playbackState);
-      if (playbackState != PLAYBACK_STATE.PLAYING) {
-         bgMusicEvent.start();
-      }
+      _bgMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, param);
+      _bgMusicEvent.start();
 
+      // If the type of music is "None"
       if (param == -1) {
-         bgMusicEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+         _bgMusicEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
       }
-
-      bgMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, param);
    }
 
    public void playAnimalCry (string path, Transform target) {
@@ -396,21 +390,17 @@ public class SoundEffectManager : GenericGameManager
    }
 
    public void playEnemyHitOneShot (bool isShip, Transform target) {
-      SoundEffect effect = getSoundEffect(ENEMY_SHIP_IMPACT);
+      EventInstance eventInstance = RuntimeManager.CreateInstance(ENEMY_SHIP_HIT);
 
-      if (effect != null) {
-         EventInstance eventInstance = RuntimeManager.CreateInstance(effect.fmodId);
-
-         if (isShip) {
-            eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, 0);
-         } else {
-            eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, 1);
-         }
-
-         eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(target));
-         eventInstance.start();
-         eventInstance.release();
+      if (isShip) {
+         eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, 0);
+      } else {
+         eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, 1);
       }
+
+      eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(target));
+      eventInstance.start();
+      eventInstance.release();
    }
 
    public void playFmod2DWithPath (string path) {
@@ -494,6 +484,9 @@ public class SoundEffectManager : GenericGameManager
 
    // The time at which we last player a specified clip
    private static Dictionary<string, float> _lastPlayTime = new Dictionary<string, float>();
+
+   // Event for main background music
+   private EventInstance _bgMusicEvent;
 
    #endregion
 }

@@ -5,8 +5,9 @@ using TMPro;
 using Mirror;
 using System.Text;
 using NubisDataHandling;
+using UnityEngine.EventSystems;
 
-public class ItemSelectionScreen : FullScreenSeparatePanel
+public class ItemSelectionScreen : FullScreenSeparatePanel, IPointerClickHandler
 {
    #region Public Variables
 
@@ -223,6 +224,13 @@ public class ItemSelectionScreen : FullScreenSeparatePanel
 
       // Disables the select button
       selectButton.interactable = false;
+   }
+
+   public virtual void OnPointerClick (PointerEventData eventData) {
+      // If the black background outside is clicked, hide the panel
+      if (eventData.rawPointerPress == this.gameObject) {
+         hide();
+      }
    }
 
    #region Private Variables

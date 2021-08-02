@@ -115,7 +115,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
             using (MySqlCommand command = new MySqlCommand(
-            "SELECT * FROM items " + whereClause + " order by itmCategory limit " + itemsPerPage +
+            "SELECT * FROM items " + whereClause + " order by itmCategory, itmId limit " + itemsPerPage +
             " offset " + offset, connection)) {
                D.editorLog(command.CommandText);
                DebugQuery(command);
@@ -200,6 +200,9 @@ public class DB_Main : DB_MainStub
          }
          clause.Append(") ");
       }
+
+      // Exclude invalid categories and types
+      clause.Append("AND itmCategory != 0 AND itmType != 0 ");
 
       // Exclude item ids (not necesarily equipped items)
       if (itemIdsToExclude.Length > 0) {
@@ -9151,7 +9154,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM mails JOIN users ON mails.senderUsrId = users.usrId WHERE mails.mailId=@mailId", conn)) {
+            "SELECT * FROM mails LEFT JOIN users ON mails.senderUsrId = users.usrId WHERE mails.mailId=@mailId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@mailId", mailId);
@@ -9178,7 +9181,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT *, (SELECT COUNT(*) FROM items WHERE items.usrId = -mails.mailId) AS attachedItemCount " +
-            "FROM mails JOIN users ON mails.senderUsrId = users.usrId " +
+            "FROM mails LEFT JOIN users ON mails.senderUsrId = users.usrId " +
             "WHERE mails.recipientUsrId=@recipientUsrId " +
             "ORDER BY mails.receptionDate DESC LIMIT @start, @perPage", conn)) {
             conn.Open();
@@ -9210,7 +9213,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT *, (SELECT COUNT(*) FROM items WHERE items.usrId = -mails.mailId) AS attachedItemCount " +
-            "FROM mails JOIN users ON mails.senderUsrId = users.usrId " +
+            "FROM mails LEFT JOIN users ON mails.senderUsrId = users.usrId " +
             "WHERE mails.senderUsrId=@senderUsrId " +
             "ORDER BY mails.receptionDate DESC LIMIT @start, @perPage", conn)) {
             conn.Open();
