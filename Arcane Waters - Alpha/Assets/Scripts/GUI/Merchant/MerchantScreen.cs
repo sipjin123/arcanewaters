@@ -25,8 +25,8 @@ public class MerchantScreen : Panel {
    // Self
    public static MerchantScreen self;
 
-   // Name of the shop reference
-   public string shopName = ShopManager.DEFAULT_SHOP_NAME;
+   // The shop id
+   public int shopId = 0;
 
    // The sprite of the animated head icon
    public Sprite headIconSprite = null;
@@ -43,7 +43,7 @@ public class MerchantScreen : Panel {
 
    public void refreshPanel () {
       // Show the correct offers based on our current area
-      Global.player.rpc.Cmd_GetCropOffersForShop(shopName);
+      Global.player.rpc.Cmd_GetCropOffersForShop(shopId);
    }
 
    public override void close () {
@@ -97,7 +97,7 @@ public class MerchantScreen : Panel {
       PanelManager.self.confirmScreen.hide();
 
       // Send the request to the server
-      Global.player.rpc.Cmd_SellCrops(offerId, amountToSell, rarityToSellAt, shopName);
+      Global.player.rpc.Cmd_SellCrops(offerId, amountToSell, rarityToSellAt, shopId);
    }
 
    public void updatePanelWithOffers (int gold, List<CropOffer> offers, string greetingText) {
