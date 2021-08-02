@@ -120,8 +120,8 @@ public class ShopManager : MonoBehaviour {
 
    private void generateShopItems () {
       foreach (ShopData shopData in ShopXMLManager.self.shopDataList) {
-         _itemsByShopName[shopData.shopName] = new List<int>();
-         foreach (ShopItemData rawItemData in ShopXMLManager.self.getShopDataByName(shopData.shopName).shopItems) {
+         _itemsByShopId[shopData.shopId] = new List<int>();
+         foreach (ShopItemData rawItemData in ShopXMLManager.self.getShopDataById(shopData.shopId).shopItems) {
             if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Armor || rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Weapon) {
                float randomizedChance = UnityEngine.Random.Range(0, 100);
                if (randomizedChance < rawItemData.dropChance) {
@@ -165,7 +165,7 @@ public class ShopManager : MonoBehaviour {
                   _items[item.id] = item.getCastItem();
 
                   // Add it to the list
-                  _itemsByShopName[shopData.shopName].Add(item.id);
+                  _itemsByShopId[shopData.shopId].Add(item.id);
                }
             } else if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.CraftingIngredient) {
                Rarity.Type rarity = Rarity.getRandom();
@@ -187,7 +187,7 @@ public class ShopManager : MonoBehaviour {
                _items[item.id] = item;
 
                // Add it to the list
-               _itemsByShopName[shopData.shopName].Add(item.id);
+               _itemsByShopId[shopData.shopId].Add(item.id);
             } else if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Blueprint) {
                Rarity.Type rarity = Rarity.getRandom();
                int randomizedPrice = rawItemData.shopItemCostMax;
@@ -204,7 +204,7 @@ public class ShopManager : MonoBehaviour {
                item.data = data;
 
                _items[item.id] = item;
-               _itemsByShopName[shopData.shopName].Add(item.id);
+               _itemsByShopId[shopData.shopId].Add(item.id);
             }
          }
       }
@@ -236,8 +236,8 @@ public class ShopManager : MonoBehaviour {
    
    private void generateShopShips () {
       foreach (ShopData shopData in ShopXMLManager.self.shopDataList) {
-         _shipsByShopName[shopData.shopName] = new List<int>();
-         foreach (ShopItemData shopItem in ShopXMLManager.self.getShopDataByName(shopData.shopName).shopItems) {
+         _shipsByShopId[shopData.shopId] = new List<int>();
+         foreach (ShopItemData shopItem in ShopXMLManager.self.getShopDataById(shopData.shopId).shopItems) {
             if (shopItem.shopItemCategory == ShopToolPanel.ShopCategory.Ship) {
                int shipXmlId = shopItem.shopItemTypeIndex;
                ShipData shipData = ShipDataManager.self.getShipData(shipXmlId);
@@ -266,7 +266,7 @@ public class ShopManager : MonoBehaviour {
                _ships[ship.shipId] = ship;
 
                // Add it to the list
-               _shipsByShopName[shopData.shopName].Add(ship.shipId);
+               _shipsByShopId[shopData.shopId].Add(ship.shipId);
             }
          }
       }
@@ -278,8 +278,8 @@ public class ShopManager : MonoBehaviour {
       }
 
       foreach (ShopData shopData in ShopXMLManager.self.shopDataList) {
-         _offersByShopName[shopData.shopName] = new List<CropOffer>();
-         foreach (ShopItemData rawItemData in ShopXMLManager.self.getShopDataByName(shopData.shopName).shopItems) {
+         _offersByShopId[shopData.shopId] = new List<CropOffer>();
+         foreach (ShopItemData rawItemData in ShopXMLManager.self.getShopDataById(shopData.shopId).shopItems) {
             if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Crop) {
                // Set the offer characteristics
                Crop.Type cropType = (Crop.Type) rawItemData.shopItemTypeIndex;
@@ -291,7 +291,7 @@ public class ShopManager : MonoBehaviour {
                _offers[offer.id] = offer;
 
                // Add it to the list
-               _offersByShopName[shopData.shopName].Add(offer);
+               _offersByShopId[shopData.shopId].Add(offer);
             }
          }
       }
@@ -299,9 +299,9 @@ public class ShopManager : MonoBehaviour {
       _areCropOffersInitialized = true;
    }
 
-   public List<CropOffer> getOffersByShopName (string shopName) {
-      if (_offersByShopName.ContainsKey(shopName)) {
-         return _offersByShopName[shopName];
+   public List<CropOffer> getOffersByShopId (int shopId) {
+      if (_offersByShopId.ContainsKey(shopId)) {
+         return _offersByShopId[shopId];
       }
 
       return new List<CropOffer>();
@@ -322,13 +322,13 @@ public class ShopManager : MonoBehaviour {
       return list;
    }
 
-   public List<Item> getItemsByShopName (string shopName) {
+   public List<Item> getItemsByShopId (int shopId) {
       List<Item> list = new List<Item>();
 
-      if (!_itemsByShopName.ContainsKey(shopName)) {
-         D.debug("Shop name does not exist!: " + shopName + " : " + _itemsByShopName.Count);
+      if (!_itemsByShopId.ContainsKey(shopId)) {
+         D.debug("Shop name does not exist!: " + shopId + " : " + _itemsByShopId.Count);
       } else {
-         foreach (int itemId in _itemsByShopName[shopName]) {
+         foreach (int itemId in _itemsByShopId[shopId]) {
             if (_items.ContainsKey(itemId)) {
                Item item = _items[itemId];
                list.Add(item);
@@ -361,11 +361,11 @@ public class ShopManager : MonoBehaviour {
       return list;
    }
 
-   public List<ShipInfo> getShipsByShopName (string shopName) {
+   public List<ShipInfo> getShipsByShopId (int shopId) {
       List<ShipInfo> list = new List<ShipInfo>();
 
-      if (_shipsByShopName.ContainsKey(shopName)) {
-         foreach (int shipId in _shipsByShopName[shopName]) {
+      if (_shipsByShopId.ContainsKey(shopId)) {
+         foreach (int shipId in _shipsByShopId[shopId]) {
             ShipInfo ship = (ShipInfo) _ships[shipId];
 
             XmlSerializer ser = new XmlSerializer(ship.shipAbilities.GetType());
@@ -383,8 +383,8 @@ public class ShopManager : MonoBehaviour {
       return list;
    }
 
-   public void onUserSellCrop (string shopName, int offerId, float amount) {
-      if (!_offersByShopName.TryGetValue(shopName, out List<CropOffer> shopOffers) || shopOffers.Count == 0) {
+   public void onUserSellCrop (int shopId, int offerId, float amount) {
+      if (!_offersByShopId.TryGetValue(shopId, out List<CropOffer> shopOffers) || shopOffers.Count == 0) {
          return;
       }
 
@@ -500,14 +500,14 @@ public class ShopManager : MonoBehaviour {
    // Keeps lists of ships based on Area
    protected Dictionary<string, List<int>> _shipsByArea = new Dictionary<string, List<int>>();
 
-   // Keeps lists of items based on Shop Name
-   protected Dictionary<string, List<int>> _itemsByShopName = new Dictionary<string, List<int>>();
+   // Keeps lists of items based on Shop id
+   protected Dictionary<int, List<int>> _itemsByShopId = new Dictionary<int, List<int>>();
 
-   // Keeps lists of ships based on Shop Name
-   protected Dictionary<string, List<int>> _shipsByShopName = new Dictionary<string, List<int>>();
+   // Keeps lists of ships based on Shop id
+   protected Dictionary<int, List<int>> _shipsByShopId = new Dictionary<int, List<int>>();
 
-   // Keeps lists of Crop Offers based on Shop Name
-   protected Dictionary<string, List<CropOffer>> _offersByShopName = new Dictionary<string, List<CropOffer>>();
+   // Keeps lists of Crop Offers based on Shop id
+   protected Dictionary<int, List<CropOffer>> _offersByShopId = new Dictionary<int, List<CropOffer>>();
 
    #endregion
 }

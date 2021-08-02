@@ -322,7 +322,7 @@ public class CropManager : NetworkBehaviour {
    }
 
    [Server]
-   public void sellCrops (int offerId, int amountToSell, Rarity.Type rarityToSellAt, string shopName) {
+   public void sellCrops (int offerId, int amountToSell, Rarity.Type rarityToSellAt, int shopId) {
       // Make sure they aren't spamming requests
       if (recentlySoldCrops(_player.userId)) {
          D.log("Ignoring spam sell request from player: " + _player);
@@ -332,10 +332,10 @@ public class CropManager : NetworkBehaviour {
       // Make sure the offer exists at the current area
       CropOffer offer = new CropOffer();
 
-      if (Util.isEmpty(shopName)) {
+      if (shopId < 1) {
          D.error("A crop shop in area " + _player.areaKey + " has no defined shop name.");
       } else {
-         foreach (CropOffer availableOffer in ShopManager.self.getOffersByShopName(shopName)) {
+         foreach (CropOffer availableOffer in ShopManager.self.getOffersByShopId(shopId)) {
             if (availableOffer.id == offerId) {
                offer = availableOffer;
             }
@@ -391,7 +391,7 @@ public class CropManager : NetworkBehaviour {
             DB_Main.addToSilo(_player.userId, info.cropType, -amountToSell);
 
             // Handle crop demand
-            ShopManager.self.onUserSellCrop(shopName, offerId, amountToSell);
+            ShopManager.self.onUserSellCrop(shopId, offerId, amountToSell);
 
             // Keep a sum of the total gold
             totalGoldMade += goldForThisCrop;
@@ -577,7 +577,7 @@ public class CropManager : NetworkBehaviour {
       SoundManager.create3dSound("ui_buy_sell", Global.player.transform.position);
 
       // Updates the offers in the merchant panel
-      Global.player.rpc.Cmd_GetCropOffersForShop(MerchantScreen.self.shopName);
+      Global.player.rpc.Cmd_GetCropOffersForShop(MerchantScreen.self.shopId);
 
       // Trigger the tutorial
       TutorialManager3.self.tryCompletingStep(TutorialTrigger.SellCrops);
@@ -586,7 +586,7 @@ public class CropManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_CloseTradeScreenAndReloadCropOffers (NetworkConnection connection) {
       PanelManager.self.tradeConfirmScreen.hide();
-      Global.player.rpc.Cmd_GetCropOffersForShop(MerchantScreen.self.shopName);
+      Global.player.rpc.Cmd_GetCropOffersForShop(MerchantScreen.self.shopId);
    }
 
    public static int getCropSellXP (Crop.Type cropType, string areaKey, int cropCount, CropOffer offer) {

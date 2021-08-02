@@ -24,7 +24,7 @@ public class TipManager : MonoBehaviour {
       foreach (Area area in AreaManager.self.getAreas()) {
          // Loop over all of the NPCs in that Area
          foreach (NPC npc in area.GetComponentsInChildren<NPC>()) {
-            List<CropOffer> offers = ShopManager.self.getOffersByShopName(npc.shopName);
+            List<CropOffer> offers = ShopManager.self.getOffersByShopId(npc.shopId);
 
             // If there are no offers available, continue
             if (offers.Count == 0)

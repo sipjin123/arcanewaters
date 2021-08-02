@@ -48,7 +48,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
    // Shop Name (if any)
    [SyncVar]
-   public string shopName = ShopManager.DEFAULT_SHOP_NAME;
+   public int shopId = 0;
 
    // The type of shop panel this npc will generate if this is a shop npc
    [SyncVar]
@@ -372,19 +372,19 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          switch (_shopTrigger.panelType) {
             case Panel.Type.Adventure:
                AdventureShopScreen adventurePanel = (AdventureShopScreen) PanelManager.self.get(_shopTrigger.panelType);
-               adventurePanel.shopName = shopName;
+               adventurePanel.shopId = shopId;
                adventurePanel.headIconSprite = getHeadIconSprite();
                adventurePanel.refreshPanel();
                break;
             case Panel.Type.Shipyard:
                ShipyardScreen shipyardPanel = (ShipyardScreen) PanelManager.self.get(_shopTrigger.panelType);
-               shipyardPanel.shopName = shopName;
+               shipyardPanel.shopId = shopId;
                shipyardPanel.headIconSprite = getHeadIconSprite();
                shipyardPanel.refreshPanel();
                break;
             case Panel.Type.Merchant:
                MerchantScreen merchantPanel = (MerchantScreen) PanelManager.self.get(_shopTrigger.panelType);
-               merchantPanel.shopName = shopName;
+               merchantPanel.shopId = shopId;
                merchantPanel.headIconSprite = getHeadIconSprite();
                merchantPanel.refreshPanel();
                break;
@@ -512,7 +512,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
    public void receiveData (DataField[] dataFields) {
       // This map data setup is processed on the server side only
-      string shopName = "";
+      int shopId = 0;
       string panelName = "None";
       int id = 0;
       foreach (DataField field in dataFields) {
@@ -537,8 +537,12 @@ public class NPC : NetEntity, IMapEditorDataReceiver
             Area area = GetComponentInParent<Area>();
             areaKey = area.areaKey;
          } else if (field.k.CompareTo(DataField.NPC_SHOP_NAME_KEY) == 0) {
-            // Get Shop Name (if any)
-            shopName = field.v.Split(':')[0];
+            // Get Shop id (if any)
+            try {
+               shopId = int.Parse(field.v.Split(':')[0]);
+            } catch {
+               shopId = 0;
+            }
          } else if (field.k.CompareTo(DataField.NPC_PANEL_TYPE_KEY) == 0) {
             // Get Shop Panel Type (if any)
             panelName = field.v.Split(':')[0];
@@ -556,7 +560,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
       if (panelName != "None") {
          _shopTrigger = gameObject.AddComponent<ShopTrigger>();
-         this.shopName = shopName;
+         this.shopId = shopId;
          _shopTrigger.panelType = (Panel.Type) Enum.Parse(typeof(Panel.Type), panelName);
          isShopNpc = true;
          shopPanelType = _shopTrigger.panelType;

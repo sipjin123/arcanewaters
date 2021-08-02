@@ -37,7 +37,7 @@ namespace MapCreationTool
       }
 
       public SelectOption[] formSelectionOptions () {
-         return _shopDataArray.Select(n => new SelectOption(n.shopName)).ToArray();
+         return _shopDataArray.Select(n => new SelectOption(n.shopId.ToString(), n.shopName)).ToArray();
       }
 
       private void loadAllShop () {

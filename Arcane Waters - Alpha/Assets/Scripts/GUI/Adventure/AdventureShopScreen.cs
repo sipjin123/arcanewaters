@@ -24,8 +24,8 @@ public class AdventureShopScreen : Panel {
    // Self
    public static AdventureShopScreen self;
 
-   // Name of the shop reference
-   public string shopName = ShopManager.DEFAULT_SHOP_NAME;
+   // The shop id
+   public int shopId = 0;
 
    // The sprite of the animated head icon
    public Sprite headIconSprite = null;
@@ -49,7 +49,7 @@ public class AdventureShopScreen : Panel {
 
    public void refreshPanel() {
       // Show the correct contents based on our current area
-      Global.player.rpc.Cmd_GetItemsForArea(shopName);
+      Global.player.rpc.Cmd_GetItemsForArea(shopId);
    }
 
    public void buyButtonPressed (int itemId) {
@@ -105,7 +105,7 @@ public class AdventureShopScreen : Panel {
       PanelManager.self.confirmScreen.hide();
 
       // Send the request to the server
-      Global.player.rpc.Cmd_BuyItem(itemId, shopName);
+      Global.player.rpc.Cmd_BuyItem(itemId, shopId);
 
       // Trigger the tutorial
       TutorialManager3.self.tryCompletingStep(TutorialTrigger.BuyWeapon);

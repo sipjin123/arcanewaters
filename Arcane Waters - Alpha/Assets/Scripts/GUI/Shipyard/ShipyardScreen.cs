@@ -25,8 +25,8 @@ public class ShipyardScreen : Panel {
    // Self
    public static ShipyardScreen self;
 
-   // Name of the shop reference
-   public string shopName = ShopManager.DEFAULT_SHOP_NAME;
+   // The shop id
+   public int shopId = 0;
 
    // The sprite of the animated head icon
    public Sprite headIconSprite = null;
@@ -47,7 +47,7 @@ public class ShipyardScreen : Panel {
 
    public void refreshPanel () {
       // Show the correct contents based on our current area
-      Global.player.rpc.Cmd_GetShipsForArea(shopName);
+      Global.player.rpc.Cmd_GetShipsForArea(shopId);
    }
 
    public void buyButtonPressed (int shipId) {

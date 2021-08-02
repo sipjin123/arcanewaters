@@ -1657,8 +1657,8 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_SellCrops (int offerId, int amountToSell, Rarity.Type rarityToSellAt, string shopName) {
-      _player.cropManager.sellCrops(offerId, amountToSell, rarityToSellAt, shopName);
+   public void Cmd_SellCrops (int offerId, int amountToSell, Rarity.Type rarityToSellAt, int shopId) {
+      _player.cropManager.sellCrops(offerId, amountToSell, rarityToSellAt, shopId);
    }
 
    [Command]
@@ -1850,13 +1850,13 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_GetCropOffersForShop (string shopName) {
-      bool useShopName = shopName == ShopManager.DEFAULT_SHOP_NAME ? false : true;
+   public void Cmd_GetCropOffersForShop (int shopId) {
+      bool useShopName = shopId > 0 ? true : false;
 
       // Get the current list of offers for the area
       List<CropOffer> list = new List<CropOffer>();
       if (useShopName) {
-         list = ShopManager.self.getOffersByShopName(shopName);
+         list = ShopManager.self.getOffersByShopId(shopId);
       } else {
          D.error("A crop shop in area " + _player.areaKey + " has no defined shopName");
       }
@@ -1869,7 +1869,7 @@ public class RPCManager : NetworkBehaviour
             string greetingText = "";
             if (useShopName) {
                ShopData shopData = new ShopData();
-               shopData = ShopXMLManager.self.getShopDataByName(shopName);
+               shopData = ShopXMLManager.self.getShopDataById(shopId);
                greetingText = shopData.shopGreetingText;
             }
 
@@ -1879,13 +1879,13 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_GetItemsForArea (string shopName) {
-      getItemsForArea(shopName);
+   public void Cmd_GetItemsForArea (int shopId) {
+      getItemsForArea(shopId);
    }
 
    [Command]
-   public void Cmd_GetShipsForArea (string shopName) {
-      getShipsForArea(shopName);
+   public void Cmd_GetShipsForArea (int shopId) {
+      getShipsForArea(shopId);
    }
 
    #region NPCQuest
@@ -3243,7 +3243,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_BuyItem (int shopItemId, string shopName) {
+   public void Cmd_BuyItem (int shopItemId, int shopId) {
       Item newItem = null;
       Item shopItem = ShopManager.self.getItem(shopItemId);
 
@@ -3342,7 +3342,7 @@ public class RPCManager : NetworkBehaviour
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.StoreItemBought, _player, "You have purchased a " + itemName + "!");
 
             // Make sure their gold display gets updated
-            getItemsForArea(shopName);
+            getItemsForArea(shopId);
          });
       });
    }
@@ -6280,13 +6280,13 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   protected void getShipsForArea (string shopName) {
-      bool findByShopName = shopName == ShopManager.DEFAULT_SHOP_NAME ? false : true;
+   protected void getShipsForArea (int shopId) {
+      bool findByShopName = shopId > 0 ? true : false;
 
       // Get the current list of ships for the area
       List<ShipInfo> list = new List<ShipInfo>();
       if (findByShopName) {
-         list = ShopManager.self.getShipsByShopName(shopName);
+         list = ShopManager.self.getShipsByShopId(shopId);
       } else {
          list = ShopManager.self.getShips(_player.areaKey);
       }
@@ -6297,13 +6297,13 @@ public class RPCManager : NetworkBehaviour
 
          ShopData shopData = new ShopData();
          if (findByShopName) {
-            shopData = ShopXMLManager.self.getShopDataByName(shopName);
+            shopData = ShopXMLManager.self.getShopDataById(shopId);
          } else {
             shopData = ShopXMLManager.self.getShopDataByArea(_player.areaKey);
          }
 
          if (shopData == null) {
-            D.debug("Shop data is missing for: " + shopName + " - " + _player.areaKey);
+            D.debug("Shop data is missing for: " + shopId + " - " + _player.areaKey);
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                _player.rpc.Target_ReceiveShipyard(_player.connectionToClient, gold, new string[0], "");
             });
@@ -6345,13 +6345,13 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   protected void getItemsForArea (string shopName) {
-      bool findByShopName = shopName == ShopManager.DEFAULT_SHOP_NAME ? false : true;
+   protected void getItemsForArea (int shopId) {
+      bool findByShopName = shopId > 0 ? true : false;
 
       // Get the current list of items for the area
       List<Item> list = new List<Item>();
       if (findByShopName) {
-         list = ShopManager.self.getItemsByShopName(shopName);
+         list = ShopManager.self.getItemsByShopId(shopId);
       } else {
          list = ShopManager.self.getItems(_player.areaKey);
       }
@@ -6398,13 +6398,13 @@ public class RPCManager : NetworkBehaviour
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             ShopData shopData = new ShopData();
             if (findByShopName) {
-               shopData = ShopXMLManager.self.getShopDataByName(shopName);
+               shopData = ShopXMLManager.self.getShopDataById(shopId);
             } else {
                shopData = ShopXMLManager.self.getShopDataByArea(_player.areaKey);
             }
 
             if (shopData == null) {
-               D.debug("Problem Fetching Shop Name!" + " : " + shopName);
+               D.debug("Problem Fetching Shop Name!" + " : " + shopId);
             } else {
                string greetingText = shopData.shopGreetingText;
                _player.rpc.Target_ReceiveShopItems(_player.connectionToClient, gold, Util.serialize(sortedList), greetingText);

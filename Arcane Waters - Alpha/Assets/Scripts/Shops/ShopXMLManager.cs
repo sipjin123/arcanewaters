@@ -65,10 +65,6 @@ public class ShopXMLManager : MonoBehaviour {
       }
    }
 
-   public ShopData getShopDataByName (string name) {
-      return _shopData.Values.ToList().Find(_=>_.shopName == name);
-   }
-
    public ShopData getShopDataById (int shopId) {
       return _shopData[shopId];
    }
