@@ -35,6 +35,9 @@ public class Powerup {
    // Where the border sprites for the powerups are located
    public static string BORDER_SPRITES_LOCATION = "Sprites/Powerups/PowerUpBorders";
 
+   // How long the powerup will take place
+   public float powerupDuration = -1;
+
    #endregion
 
    public Powerup () { }

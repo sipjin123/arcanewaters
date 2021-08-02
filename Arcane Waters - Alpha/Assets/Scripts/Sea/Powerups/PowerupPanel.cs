@@ -54,6 +54,27 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
       powerupPanelContainer.gameObject.SetActive(true);
    }
 
+   public void removePowerup (Powerup.Type type, Rarity.Type rarity) {
+      PowerupIcon powerupIcon = _powerupIcons.Find(_ => _.type == type && _.rarity == rarity);
+
+      if (_powerupIcons.Count < 1 || transform.childCount < 1) {
+         return;
+      }
+
+      _powerupIcons.RemoveAt(0);
+      Destroy(transform.GetChild(0).gameObject);
+
+      // When a new powerup icon is removed, sort the list by rarity
+      PowerupIcon[] orderedIcons = _powerupIcons.OrderBy(x => (int) x.rarity).ToArray();
+      for (int i = 0; i < orderedIcons.Length; i++) {
+         orderedIcons[i].transform.SetSiblingIndex(i);
+      }
+
+      if (transform.childCount < 1) {
+         powerupPanelContainer.gameObject.SetActive(false);
+      }
+   }
+
    public void clearPowerups () {
       foreach (PowerupIcon icon in _powerupIcons) {
          Destroy(icon.gameObject);

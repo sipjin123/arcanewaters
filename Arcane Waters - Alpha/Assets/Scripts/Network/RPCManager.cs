@@ -7256,6 +7256,11 @@ public class RPCManager : NetworkBehaviour
       PowerupManager.self.addPowerupClient(newPowerup);
    }
 
+   [TargetRpc]
+   public void Target_RemovePowerup (NetworkConnection connection, Powerup newPowerup) {
+      PowerupManager.self.removePowerupClient(newPowerup);
+   }
+
    [Command]
    public void Cmd_SetAdminGameSettings (AdminGameSettings settings) {
       if (_player == null) {
