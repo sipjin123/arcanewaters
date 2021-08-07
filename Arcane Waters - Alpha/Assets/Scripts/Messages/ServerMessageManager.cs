@@ -6,6 +6,7 @@ using Mirror;
 using SteamLoginSystem;
 using System;
 using System.Linq;
+using Steam;
 
 public class ServerMessageManager : MonoBehaviour
 {
@@ -94,10 +95,10 @@ public class ServerMessageManager : MonoBehaviour
 
          if (logInUserMessage.isSteamLogin) {
             // If the app id is the playtest id then alter the user name
-            if (logInUserMessage.steamAppId == SteamLoginManagerServer.GAMEPLAYTEST_APPID && !logInUserMessage.accountName.Contains("@playtest")) {
+            if (logInUserMessage.steamAppId == SteamStatics.GAMEPLAYTEST_APPID && !logInUserMessage.accountName.Contains("@playtest")) {
                logInUserMessage.accountName = logInUserMessage.accountName + "@playtest";
             }
-            if (logInUserMessage.steamAppId == SteamLoginManagerServer.GAME_APPID && !logInUserMessage.accountName.Contains("@steam")) {
+            if (logInUserMessage.steamAppId == SteamStatics.GAME_APPID && !logInUserMessage.accountName.Contains("@steam")) {
                logInUserMessage.accountName = logInUserMessage.accountName + "@steam";
             }
             D.adminLog("Account Log: Is Steam Login as account:{" + logInUserMessage.accountName + "}", D.ADMIN_LOG_TYPE.Server_AccountLogin);

@@ -11,13 +11,29 @@ public class StoreHaircutBox : StoreItemBox {
    public Image hairBack;
    public Image hairFront;
 
-   // The recolor, if any
-   public HairLayer.Type hairType;
+   // The metadata
+   public StoreHaircutBoxMetadata metadata;
 
    #endregion
 
-   public void OnEnable () {
-      if (this.imageIcon == null || Util.isBatch()) {
+   private bool assignHairSpriteToImage(Image image, string backFront, string gender, string type, string hairColor) {
+      Sprite[] sprites = ImageManager.getSprites("Hair/" + gender + "/" + backFront + "/" + type);
+      
+      if (sprites.Length == 1) {
+         return false;
+      }
+
+      if (sprites.Length > 8) {
+         image.sprite = sprites[8];
+      }
+
+      image.material = new Material(this.imageIcon.material);
+      image.GetComponent<RecoloredSprite>().recolor(hairColor);
+      return true;
+   }
+
+   public void initialize () {
+      if (this.imageIcon == null || Util.isBatch() || metadata == null) {
          return;
       }
 
@@ -29,18 +45,19 @@ public class StoreHaircutBox : StoreItemBox {
       }
 
       string gender = Global.player != null && Global.player.isMale() ? "Male" : "Female";
-      
+
       foreach (Image image in getHairImages()) {
-         string number = hairType.ToString().Split('_')[2];
+         string number = metadata.hairType.ToString().Split('_')[2];
          string backFront = (image == hairBack) ? "Back" : "Front";
          string typeString = gender + "_hair_" + backFront + "_" + number;
-         Sprite[] sprites = ImageManager.getSprites("Hair/" + gender + "/" + backFront + "/" + typeString);
-         if (sprites.Length == 0) {
-            sprites = ImageManager.getSprites("Empty_Layer");
+         bool assigned = assignHairSpriteToImage(image, backFront, gender, typeString, hairColor);
+
+         if (!assigned) {
+            // Try to find the corresponding back hair. If not use the same
+            string oppositeBackFront = (image != hairBack) ? "Back" : "Front";
+            typeString = gender + "_hair_" + oppositeBackFront + "_" + number;
+            assignHairSpriteToImage(image, oppositeBackFront, gender, typeString, hairColor);
          }
-         image.sprite = sprites[8];
-         image.material = new Material(this.imageIcon.material);
-         image.GetComponent<RecoloredSprite>().recolor(hairColor);
       }
    }
 
@@ -49,7 +66,11 @@ public class StoreHaircutBox : StoreItemBox {
    }
 
    public bool isFemale () {
-      return hairType.ToString().ToLower().Contains("female");
+      if (metadata == null) {
+         return false;
+      }
+
+      return metadata.hairType.ToString().ToLower().Contains("female");
    }
 
    #region Private Variables

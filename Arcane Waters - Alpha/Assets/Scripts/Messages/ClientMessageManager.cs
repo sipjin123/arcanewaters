@@ -128,6 +128,9 @@ public class ClientMessageManager : MonoBehaviour {
             PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login);
             TitleScreen.self.displayError(msg.errorType, msg);
             return;
+         case ErrorMessage.Type.PurchaseError:
+            PanelManager.self.noticeScreen.show(msg.customMessage);
+            return;
          /*case ErrorMessage.Type.NoGoldForCargo:
          case ErrorMessage.Type.OutOfCargoSpace:
          case ErrorMessage.Type.PortOutOfCargo:
@@ -420,6 +423,11 @@ public class ClientMessageManager : MonoBehaviour {
    }
 
    private static IEnumerator CO_OnLoginIsComplete (NetworkConnection conn, LogInCompleteMessage msg) {
+      // Wait for any existing player to be destroyed
+      while (ClientScene.localPlayer != null) {
+         yield return null;
+      }
+
       // Wait for any fades to complete before processing anything
       while (Global.isScreenTransitioning) {
          yield return null;

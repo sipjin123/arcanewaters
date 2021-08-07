@@ -228,6 +228,16 @@ public class SeaEntity : NetEntity
                   gameStatsManager.resetSilverRank(this.userId);
                   gameStatsManager.addDeathCount(this.userId);
                   this.rpc.broadcastPvPKill(lastAttacker, this);
+
+                  int silverPenalty = SilverManager.computeSilverPenalty(this);
+                  gameStatsManager.addSilverAmount(this.userId, -silverPenalty);
+                  Target_ReceiveSilverCurrency(this.connectionToClient, -silverPenalty, SilverManager.SilverRewardReason.Death);
+
+                  PvpGame pvpGame = PvpManager.self.getGameWithPlayer(this.userId);
+
+                  if (pvpGame != null) {
+                     pvpGame.noteDeath(this.userId);
+                  }
                }
 
                if (this.isBotShip()) {
@@ -261,50 +271,6 @@ public class SeaEntity : NetEntity
          Rpc_OnDeath();
          _hasRunOnDeath = true;
       }
-   }
-
-   [TargetRpc]
-   public void Target_ReceiveSilverCurrency (NetworkConnection connection, int silverCount, SilverManager.SilverRewardReason rewardReason) {
-      Transform bodyTx = Global.player.getPlayerShipEntity().transform;
-      Vector3 pos = bodyTx.position;
-
-      // Move the already spawned messages a little up
-      FloatingCanvas[] spawnedCanvases = GameObject.FindObjectsOfType<FloatingCanvas>();
-      if (spawnedCanvases != null && spawnedCanvases.Length > 0) {
-         foreach (FloatingCanvas canvas in spawnedCanvases) {
-            if (canvas.customTag == Global.player.userId.ToString()) {
-               float interDiffTransform = canvas.transform.position.y - pos.y;
-
-               // The item notification is targeted to the current player
-               if (canvas.TryGetComponent(out RectTransform rectTransform)) {
-                  float nudge = rectTransform.rect.height - interDiffTransform;
-                  if (nudge > 0) {
-                     Vector3 scaledRect = rectTransform.localScale * (nudge);
-                     canvas.transform.position = canvas.transform.position + new Vector3(.0f, scaledRect.y, .0f);
-                  }
-               }
-            }
-         }
-      }
-
-      // Show a message that they gained some XP along with the item they received
-      GameObject gainItemCanvas = Instantiate(PrefabsManager.self.itemReceivedPrefab);
-      gainItemCanvas.transform.position = transform.position;
-      gainItemCanvas.GetComponentInChildren<TextMeshProUGUI>().text = "+ " + silverCount;
-      gainItemCanvas.GetComponentInChildren<FloatingCanvas>().customTag = Global.player.userId.ToString();
-
-      // Play SFX
-      SoundEffectManager.self.playFmod2DWithPath(SoundEffectManager.COLLECT_SILVER);
-
-      PvpStatPanel panel = (PvpStatPanel) PanelManager.self.get(Panel.Type.PvpScoreBoard);
-      if (rewardReason == SilverManager.SilverRewardReason.Kill) {
-         gainItemCanvas.GetComponentInChildren<Image>().sprite = panel.silverIcon;
-      } else if (rewardReason == SilverManager.SilverRewardReason.Assist) {
-         gainItemCanvas.GetComponentInChildren<Image>().sprite = panel.assistSilverIcon;
-      }
-      gainItemCanvas.GetComponentInChildren<Image>().SetNativeSize();
-
-      PvpStatusPanel.self.addSilver(silverCount);
    }
 
    [ClientRpc]
@@ -678,7 +644,7 @@ public class SeaEntity : NetEntity
          noteAttacker(attackerNetId);
 
          // Play the damage sound (FMOD SFX)
-         SoundEffectManager.self.playEnemyHitOneShot(this is ShipEntity, this.transform);
+         // SoundEffectManager.self.playEnemyHitSfx(this is ShipEntity, this.transform);
       }
 
       // If it was our ship, shake the camera
@@ -1329,6 +1295,11 @@ public class SeaEntity : NetEntity
       effect.transform.localScale = Vector3.one * tempEffectScale * radius;
    }
 
+   [ClientRpc]
+   public void Rpc_PlayHitSfx (bool isShip, bool isCrit, CannonballEffector.Type effectorType, Vector3 position) {
+      SoundEffectManager.self.playEnemyHitSfx(isShip, isCrit, effectorType, position);
+   }
+
    #region Enemy AI
 
    private bool useSeaEnemyAI () {
@@ -1864,7 +1835,7 @@ public class SeaEntity : NetEntity
       if (isSeamonsterPvp()) {
          // Do not enable regeneration if this entity is already dead
          if (isOn && currentHealth < 1) {
-            return; 
+            return;
          }
          regenerateHealth = isOn;
       }
@@ -1964,7 +1935,8 @@ public class SeaEntity : NetEntity
    [SerializeField]
    private float _currentSecondsBetweenAttackRoutes;
 
-   private enum WaypointState {
+   private enum WaypointState
+   {
       NONE = 0,
       FINDING_PATH = 1,
       MOVING_TO = 2,

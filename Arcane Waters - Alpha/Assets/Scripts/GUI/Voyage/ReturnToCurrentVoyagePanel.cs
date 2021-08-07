@@ -13,8 +13,11 @@ public class ReturnToCurrentVoyagePanel : Panel
    // The container for the map cell
    public GameObject mapCellContainer;
 
-   // The prefab we use for creating map cells
+   // The prefab we use for creating voyage map cells
    public VoyageMapCell mapCellPrefab;
+
+   // The prefab we use for creating pvp map cells
+   public PvpArenaCell pvpArenaCellPrefab;
 
    // Self
    public static ReturnToCurrentVoyagePanel self;
@@ -31,8 +34,13 @@ public class ReturnToCurrentVoyagePanel : Panel
       mapCellContainer.DestroyChildren();
 
       // Instantiate the cell
-      VoyageMapCell cell = Instantiate(mapCellPrefab, mapCellContainer.transform, false);
-      cell.setCellForVoyage(voyage, () => warpToCurrentVoyageMap());
+      if (voyage.isPvP) {
+         PvpArenaCell cell = Instantiate(pvpArenaCellPrefab, mapCellContainer.transform, false);
+         cell.setCellForPvpArena(voyage, () => warpToCurrentVoyageMap());
+      } else {
+         VoyageMapCell cell = Instantiate(mapCellPrefab, mapCellContainer.transform, false);
+         cell.setCellForVoyage(voyage, () => warpToCurrentVoyageMap());
+      }
    }
 
    public void warpToCurrentVoyageMap () {

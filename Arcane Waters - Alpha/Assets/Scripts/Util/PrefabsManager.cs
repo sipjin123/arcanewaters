@@ -150,6 +150,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating ship skins
    public StoreShipBox shipBoxPrefab;
 
+   // The prefab we use for creating gem boxes
+   public StoreGemBox gemBoxPrefab;
+
    // A prefab we can use for showing minor generic messages, ex. that an object is too far away
    public FloatingCanvas floatingCanvasPrefab;
 

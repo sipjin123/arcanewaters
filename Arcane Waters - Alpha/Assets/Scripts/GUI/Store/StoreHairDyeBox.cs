@@ -7,20 +7,23 @@ using Mirror;
 public class StoreHairDyeBox : StoreItemBox {
    #region Public Variables
 
-   // The recolor, if any
-   public string paletteName;
+   // The metadata for this box
+   public StoreHairDyeBoxMetadata metadata;
 
    #endregion
 
-   public override void Start () {
-      base.Start();
-
+   public void initialize () {
       if (this.imageIcon == null) {
          return;
       }
-      
+
       this.imageIcon.material = new Material(this.imageIcon.material);
-      this.imageIcon.GetComponent<RecoloredSprite>().recolor(this.paletteName);
+
+      if (metadata == null) {
+         return;
+      }
+
+      this.imageIcon.GetComponent<RecoloredSprite>().recolor(this.metadata.paletteName);
    }
 
    #region Private Variables

@@ -424,19 +424,12 @@ public class MailPanel : Panel
          autoDelete = false;
       }
 
-      bool sendBack = false;
-
-      // If the mail has attachments and was sent by a player, the mail must be sent back and deleted.
-      if (!Global.player.isAdmin() && attachedItemIds.Any()) {
-         sendBack = true;
-      }
-
       // Clean the recipient
       string recipientName = recipientInput.text.Trim();
 
       // Create the mail
       Global.player.rpc.Cmd_CreateMail(recipientName, subjectInput.text, messageInput.text,
-      attachedItemIds.ToArray(), attachedItemCounts.ToArray(), MailManager.getMailSendingCost(), autoDelete, sendBack);
+      attachedItemIds.ToArray(), attachedItemCounts.ToArray(), MailManager.getMailSendingCost(), autoDelete);
    }
 
    public void confirmSendMail () {

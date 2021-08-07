@@ -97,11 +97,11 @@ public class Util : MonoBehaviour
    }
 
    public static Texture2D getScreenshot () {
-#if UNITY_EDITOR
+      #if UNITY_EDITOR
       if (!Application.isPlaying) {
          D.error("Screenshots can only be taken in playmode.");
       }
-#endif
+      #endif
 
       // Prepare data
       int width = Screen.width;
@@ -533,9 +533,9 @@ public class Util : MonoBehaviour
    public static bool isServerBuild () {
       bool isServerBuild = false;
 
-#if IS_SERVER_BUILD
+      #if IS_SERVER_BUILD
       isServerBuild = true;
-#endif
+      #endif
 
       return isServerBuild;
    }
@@ -575,9 +575,9 @@ public class Util : MonoBehaviour
    }
 
    public static bool isCloudBuild () {
-#if CLOUD_BUILD
+      #if CLOUD_BUILD
       return true;
-#endif
+      #endif
       return false;
    }
 
@@ -716,13 +716,13 @@ public class Util : MonoBehaviour
    }
 
    public static string createSalt (string UserName) {
-#if IS_SERVER_BUILD
+      #if IS_SERVER_BUILD
       Rfc2898DeriveBytes hasher = new Rfc2898DeriveBytes(UserName.ToLower(),
          System.Text.Encoding.Default.GetBytes("saltmZ8HxZEL7PTsalt"), 1000);
       return System.Convert.ToBase64String(hasher.GetBytes(25));
-#else
+      #else
          return "";
-#endif
+      #endif
    }
 
    public static string invertLetterCapitalization (string text) {
@@ -744,13 +744,13 @@ public class Util : MonoBehaviour
    }
 
    public static string hashPassword (string Salt, string Password) {
-#if IS_SERVER_BUILD
+      #if IS_SERVER_BUILD
       Rfc2898DeriveBytes Hasher = new Rfc2898DeriveBytes(Password,
                System.Text.Encoding.Default.GetBytes(Salt), 1000);
       return System.Convert.ToBase64String(Hasher.GetBytes(25));
-#else
+      #else
          return "";
-#endif
+      #endif
    }
 
    public static string UppercaseFirst (string s) {
@@ -907,9 +907,9 @@ public class Util : MonoBehaviour
                   // Database server - not mandatory
                   line = reader.ReadLine();
                   if (line != null) {
-#if IS_SERVER_BUILD
+                     #if IS_SERVER_BUILD
                      DB_Main.setServer(line);
-#endif
+                     #endif
                   }
                }
 
@@ -1368,7 +1368,7 @@ public class Util : MonoBehaviour
 
       foreach (Collider2D hit in hits) {
          SeaEntity hitEntity = hit.GetComponent<SeaEntity>();
-         if (hitEntity && checkingEntity.isAllyOf(hitEntity) && hitEntity.instanceId == checkingEntity.instanceId) {
+         if (hitEntity && checkingEntity.isAllyOf(hitEntity) && hitEntity.instanceId == checkingEntity.instanceId && !enemies.Contains(hitEntity)) {
             enemies.Add(hitEntity);
          }
       }

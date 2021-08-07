@@ -73,8 +73,9 @@ public class PvpStructureStatusPanel : MonoBehaviour {
       // Wait a small delay, to ensure all structures are created on the client
       yield return new WaitForSeconds(3.0f);
 
-      detectStructures();
-      show();
+      if (detectStructures()) {
+         show();
+      }
    }
 
    public void onPlayerLeftPvpGame () {
@@ -83,7 +84,7 @@ public class PvpStructureStatusPanel : MonoBehaviour {
       _hasSetup = false;
    }
 
-   private void detectStructures () {
+   private bool detectStructures () {
       clearStructureLists();
 
       // Count how many towers we have first, to assist in registering towers
@@ -119,7 +120,8 @@ public class PvpStructureStatusPanel : MonoBehaviour {
          }
       } else {
          D.error("This map doesn't have the correct number of towers. It has " + numTowers + ". Aborting structure detection.");
-         return;
+         StopAllCoroutines();
+         return false;
       }
 
       // Register the sea structures in their appropriate places
@@ -134,6 +136,8 @@ public class PvpStructureStatusPanel : MonoBehaviour {
 
          _allStructures.Add(structure);
       }
+
+      return true;
    }
 
    private void updateDisplayedStructures () {

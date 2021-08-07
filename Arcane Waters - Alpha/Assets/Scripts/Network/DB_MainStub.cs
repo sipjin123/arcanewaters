@@ -7,6 +7,8 @@ using System.Text;
 using MapCreationTool.Serialization;
 using MapCustomization;
 using System.Threading.Tasks;
+using Steam;
+using Store;
 
 public class DB_MainStub : MonoBehaviour
 {
@@ -867,11 +869,11 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   protected static RemoteSetting getRemoteSetting (string settingName) {
+   public static RemoteSetting getRemoteSetting (string settingName) {
       return null;
    }
 
-   protected static bool setRemoteSetting (string rsName, string rsValue, RemoteSetting.RemoteSettingValueType rsValueType) {
+   public static bool setRemoteSetting (string rsName, string rsValue, RemoteSetting.RemoteSettingValueType rsValueType) {
       return false;
    }
 
@@ -1419,6 +1421,46 @@ public class DB_MainStub : MonoBehaviour
 
    public static AdminGameSettings getAdminGameSettings () {
       return null;
+   }
+
+   public static ulong createSteamOrder () {
+      return 0;
+   }
+
+   public static bool deleteSteamOrder (ulong orderId) {
+      return false;
+   }
+
+   public static bool toggleSteamOrder (ulong orderId, bool closed) {
+      return false;
+   }
+
+   public static bool updateSteamOrder (ulong orderId, int userId, string status, string content) {
+      return false;
+   }
+
+   public static SteamOrder getSteamOrder (ulong orderId) {
+      return null;
+   }
+
+   public static ulong getLastSteamOrderId () {
+      return 0;
+   }
+
+   public static int createStoreItem () {
+      return 0;
+   }
+
+   public static bool deleteStoreItem (ulong itemId) {
+      return false;
+   }
+
+   public static StoreItem getStoreItem (ulong itemId) {
+      return null;
+   }
+
+   public static List<StoreItem> getAllStoreItems () {
+      return new List<StoreItem>();
    }
 
    /*

@@ -22,9 +22,10 @@ public class TooltipHandler : MonoBehaviour
    public static int WIDTH_THRESHOLD = 150;
    public Image backgroundImage;
    public Image starsImage;
-   public ToolTipComponent.Type toolipType;
+   public ToolTipComponent.Type toolTipType;
    public GameObject defaultTooltipPanel;
    public GameObject inventoryTooltipPanel;
+   public CanvasGroup tooltipCanvasGroup;
 
    // The Y value of the top edge of the tooltip owner
    public float tooltipOwnerTopEdge;
@@ -53,15 +54,15 @@ public class TooltipHandler : MonoBehaviour
 
    public void callToolTip (Rarity.Type itemRarityType, GameObject tooltipOwner, ToolTipComponent.Type type, string msg, ToolTipComponent.TooltipPlacement placement, Vector3 elementPosition, GameObject panelRoot, float width) {
       // Choose the inventory style panel for the tooltip display
-      toolipType = type;
-      if (toolipType == ToolTipComponent.Type.ItemCellInventory) {
+      toolTipType = type;
+      if (toolTipType == ToolTipComponent.Type.ItemCellInventory) {
          toolTipPanel = inventoryTooltipPanel;
          backgroundRect = toolTipPanel.GetComponentInChildren<RectTransform>();
          prepTooltipForInventoryItem(msg, itemRarityType);
 
       } else {
          // Choose the default style panel for the tooltip display
-         toolTipPanel = GameObject.Find("Tooltip");
+         toolTipPanel = defaultTooltipPanel;
          backgroundRect = toolTipPanel.GetComponentInChildren<RectTransform>();
          backgroundHorizontalLayoutGroup = backgroundRect.GetComponent<HorizontalLayoutGroup>();
          tooltipHorizontalLayoutGroup = toolTipPanel.GetComponent<HorizontalLayoutGroup>();
@@ -69,11 +70,14 @@ public class TooltipHandler : MonoBehaviour
          toolTipPanel.GetComponentInChildren<TextMeshProUGUI>().SetText(msg);
       }
 
+      // Get a reference to the tooltip canvas group
+      tooltipCanvasGroup = toolTipPanel.GetComponent<CanvasGroup>();
+
       // Add to list of currently open tooltips
       UIToolTipManager.openTooltips.Add(toolTipPanel);
 
       // Coroutine needed to allow TMP rect transform to update at end of frame
-      StartCoroutine(CO_placeTooltip(tooltipOwner, placement, toolipType, elementPosition, panelRoot, width));
+      StartCoroutine(CO_placeTooltip(tooltipOwner, placement, toolTipType, elementPosition, panelRoot, width));
    }
 
    public IEnumerator CO_placeTooltip (GameObject tooltipOwner, ToolTipComponent.TooltipPlacement placement, ToolTipComponent.Type type, Vector3 elementPosition, GameObject panelRoot, float width) {
@@ -214,20 +218,22 @@ public class TooltipHandler : MonoBehaviour
    }
 
    public void cancelToolTip () {
-      if (toolTipPanel) {
-         toolTipPanel.GetComponent<CanvasGroup>().alpha = 0;
-         if (tooltipHorizontalLayoutGroup != null) {
-            tooltipHorizontalLayoutGroup.childControlWidth = true;
-         }
-         if (backgroundHorizontalLayoutGroup != null) {
-            backgroundHorizontalLayoutGroup.childForceExpandWidth = false;
-         }
-         if (tooltipHorizontalLayoutGroup != null) {
-            tooltipHorizontalLayoutGroup.childForceExpandWidth = false;
-         }
+      if (tooltipCanvasGroup != null) {
+         if (tooltipCanvasGroup.alpha != 0) {
+            tooltipCanvasGroup.alpha = 0;
+            if (tooltipHorizontalLayoutGroup != null) {
+               tooltipHorizontalLayoutGroup.childControlWidth = true;
+            }
+            if (backgroundHorizontalLayoutGroup != null) {
+               backgroundHorizontalLayoutGroup.childForceExpandWidth = false;
+            }
+            if (tooltipHorizontalLayoutGroup != null) {
+               tooltipHorizontalLayoutGroup.childForceExpandWidth = false;
+            }
 
-         // Remove this tooltip from the list of currently open tooltips
-         UIToolTipManager.openTooltips.Remove(toolTipPanel);
+            // Remove this tooltip from the list of currently open tooltips
+            UIToolTipManager.openTooltips.Remove(toolTipPanel);
+         }
       }
    }
 
@@ -251,7 +257,7 @@ public class TooltipHandler : MonoBehaviour
    }
 
    public void placeOnLeftSideOfPanel (float leftEdge, float middleOfEdge, Vector2 _tooltipDimensions) {
-      if (toolipType != ToolTipComponent.Type.ItemCellInventory) {
+      if (toolTipType != ToolTipComponent.Type.ItemCellInventory) {
          tooltipHorizontalLayoutGroup.childControlWidth = false;
          tooltipHorizontalLayoutGroup.childForceExpandWidth = true;
          if (backgroundHorizontalLayoutGroup != null) {
@@ -262,7 +268,7 @@ public class TooltipHandler : MonoBehaviour
    }
 
    public void placeOnRightSideOfPanel (float rightEdge, float middleOfEdge, Vector2 _tooltipDimensions) {
-      if (toolipType != ToolTipComponent.Type.ItemCellInventory) {
+      if (toolTipType != ToolTipComponent.Type.ItemCellInventory) {
          tooltipHorizontalLayoutGroup.childControlWidth = false;
          tooltipHorizontalLayoutGroup.childForceExpandWidth = true;
          if (backgroundHorizontalLayoutGroup != null) {

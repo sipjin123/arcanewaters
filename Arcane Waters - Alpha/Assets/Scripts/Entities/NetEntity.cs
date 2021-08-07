@@ -221,7 +221,7 @@ public class NetEntity : NetworkBehaviour
    // The guild icon of the player
    public GuildIcon guildIcon;
 
-   [Header("Warping")] 
+   [Header("Warping")]
 
    // Gets set to true when we're about to execute a warp on the server or client
    public bool isAboutToWarpOnServer = false;
@@ -1368,7 +1368,7 @@ public class NetEntity : NetworkBehaviour
       if (autoAttack) {
          Global.autoAttack = true;
          Global.attackDelay = attackDelay;
-      } 
+      }
    }
 
    [TargetRpc]
@@ -1680,8 +1680,8 @@ public class NetEntity : NetworkBehaviour
       // Don't allow users to go home if they are in combat.
       if (hasAttackers()) {
          if (isInCombat()) {
-            int timeUntilCanLeave = (int)(IN_COMBAT_STATUS_DURATION - getTimeSinceAttacked());
-            ServerMessageManager.sendError(ErrorMessage.Type.Misc, this, "Cannot return to home location until out of combat for " + (int)IN_COMBAT_STATUS_DURATION + " seconds. \n(" + timeUntilCanLeave + " seconds left)");
+            int timeUntilCanLeave = (int) (IN_COMBAT_STATUS_DURATION - getTimeSinceAttacked());
+            ServerMessageManager.sendError(ErrorMessage.Type.Misc, this, "Cannot return to home location until out of combat for " + (int) IN_COMBAT_STATUS_DURATION + " seconds. \n(" + timeUntilCanLeave + " seconds left)");
             return;
          }
       }
@@ -1728,7 +1728,7 @@ public class NetEntity : NetworkBehaviour
 
          // Back to unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            
+
             // If the biome is unlocked, and we get an area key for the town, spawn them there
             if (Area.homeTownForBiome.TryGetValue(biome, out string townAreaKey) && isBiomeUnlocked) {
                if (Area.dockSpawnForBiome.TryGetValue(biome, out string dockSpawn)) {
@@ -1736,7 +1736,7 @@ public class NetEntity : NetworkBehaviour
                } else {
                   spawnInNewMap(townAreaKey);
                }
-            // Otherwise, spawn them in the starting town.
+               // Otherwise, spawn them in the starting town.
             } else {
                spawnInNewMap(Area.STARTING_TOWN);
             }
@@ -1797,7 +1797,7 @@ public class NetEntity : NetworkBehaviour
             SpawnManager.SpawnData spawnData = SpawnManager.self.getMapSpawnData(newArea, spawn);
             if (spawnData != null) {
                newFacingDirection = (Direction) spawnData.arriveFacing;
-               D.adminLog("Override facing direction, Spawn is" + " " + newArea + " " + SpawnManager.self.getMapSpawnData(newArea, spawn)+ " " + newFacingDirection, D.ADMIN_LOG_TYPE.Warp);
+               D.adminLog("Override facing direction, Spawn is" + " " + newArea + " " + SpawnManager.self.getMapSpawnData(newArea, spawn) + " " + newFacingDirection, D.ADMIN_LOG_TYPE.Warp);
             }
          }
       }
@@ -1929,6 +1929,7 @@ public class NetEntity : NetworkBehaviour
          // Setup the pvp structure status panel
          if (VoyageManager.isPvpArenaArea(area.areaKey)) {
             PvpStructureStatusPanel.self.onPlayerJoinedPvpGame();
+            PvpScorePanel.self.onPlayerJoinedPvpGame();
          }
 
          // Signal the server
@@ -1946,6 +1947,10 @@ public class NetEntity : NetworkBehaviour
 
    public bool canInviteGuild (NetEntity targetEntity) {
       return this.guildId > 0 && targetEntity != null && targetEntity.guildId == 0 && canPerformAction(GuildPermission.Invite);
+   }
+
+   public bool canInvitePracticeDuel (NetEntity targetEntity) {
+      return targetEntity != null && !targetEntity.isInBattle();
    }
 
    protected NetEntity getClickedBody () {
@@ -2092,6 +2097,75 @@ public class NetEntity : NetworkBehaviour
    protected virtual void onMaxHealthChanged (int oldValue, int newValue) { }
 
    protected virtual void autoMove () { }
+
+   [TargetRpc]
+   public void Target_ReceiveSilverCurrency (NetworkConnection connection, int silverCount, SilverManager.SilverRewardReason rewardReason) {
+      Transform bodyTx = Global.player.transform;
+
+      if (Global.player.isPlayerShip()) {
+         bodyTx = Global.player.getPlayerShipEntity().transform;
+      }
+
+      NetEntity playerBody = Global.player.getPlayerBodyEntity();
+
+      if (playerBody != null) {
+         bodyTx = playerBody.transform;
+      }
+
+      Vector3 pos = bodyTx.position;
+
+      if (silverCount > 0) {
+         // Move the already spawned messages a little up
+         FloatingCanvas[] spawnedCanvases = GameObject.FindObjectsOfType<FloatingCanvas>();
+         if (spawnedCanvases != null && spawnedCanvases.Length > 0) {
+            foreach (FloatingCanvas canvas in spawnedCanvases) {
+               if (canvas.customTag == Global.player.userId.ToString()) {
+                  float interDiffTransform = canvas.transform.position.y - pos.y;
+
+                  // The item notification is targeted to the current player
+                  if (canvas.TryGetComponent(out RectTransform rectTransform)) {
+                     float nudge = rectTransform.rect.height - interDiffTransform;
+                     if (nudge > 0) {
+                        Vector3 scaledRect = rectTransform.localScale * (nudge);
+                        canvas.transform.position = canvas.transform.position + new Vector3(.0f, scaledRect.y, .0f);
+                     }
+                  }
+               }
+            }
+         }
+      }
+
+      // Show a message that they gained some XP along with the item they received
+      GameObject gainItemCanvas = Instantiate(PrefabsManager.self.itemReceivedPrefab);
+      gainItemCanvas.transform.position = transform.position;
+      gainItemCanvas.GetComponentInChildren<TextMeshProUGUI>().text = silverCount.ToString();
+      gainItemCanvas.GetComponentInChildren<FloatingCanvas>().customTag = Global.player.userId.ToString();
+
+      if (silverCount < 0) {
+         gainItemCanvas.GetComponentInChildren<TextMeshProUGUI>().color = Color.red;
+      }
+
+      if (silverCount > 0) {
+         gainItemCanvas.GetComponentInChildren<TextMeshProUGUI>().text = "+ " + silverCount;
+      }
+
+      // Adjust the displayed icon based on the reason for the award
+      PvpStatPanel panel = (PvpStatPanel) PanelManager.self.get(Panel.Type.PvpScoreBoard);
+
+      if (rewardReason == SilverManager.SilverRewardReason.Kill || rewardReason == SilverManager.SilverRewardReason.Death || rewardReason == SilverManager.SilverRewardReason.Heal || rewardReason == SilverManager.SilverRewardReason.None) {
+         gainItemCanvas.GetComponentInChildren<Image>().sprite = panel.silverIcon;
+      } else if (rewardReason == SilverManager.SilverRewardReason.Assist) {
+         gainItemCanvas.GetComponentInChildren<Image>().sprite = panel.assistSilverIcon;
+      }
+
+      gainItemCanvas.GetComponentInChildren<Image>().SetNativeSize();
+
+      // Play SFX
+      SoundEffectManager.self.playFmod2DWithPath(SoundEffectManager.COLLECT_SILVER);
+
+      // Update the Silver indicator
+      PvpStatusPanel.self.addSilver(silverCount);
+   }
 
    #region Private Variables
 

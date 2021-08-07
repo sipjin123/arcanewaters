@@ -116,10 +116,16 @@ public class TitleScreen : MonoBehaviour {
 
          // Check for an assortment of keys
          bool moveToNextField = KeyUtils.GetKeyDown(Key.Tab) || KeyUtils.GetEnterKeyDown() || KeyUtils.GetKeyDown(Key.DownArrow);
+         bool tryToLogin = KeyUtils.GetKeyDown(Key.Enter) || KeyUtils.GetKeyDown(Key.NumpadEnter);
 
          // If we're in the account field, let us move to the password field
          if (moveToNextField && Util.isSelected(accountInputField)) {
             Util.select(passwordInputField);
+         }
+
+         // If user pressed login keyboard button and login/password fields are not empty, send login signal
+         if (tryToLogin && accountInputField.text != "" && passwordInputField.text != "") {
+            onLoginButtonPressed(true);
          }
 
          // Make sure the canvas group is visible if the screen is active

@@ -14,58 +14,67 @@ public class PvpCaptureTargetHolder : SeaStructure, IMapEditorDataReceiver {
    // A reference to the transform determining where the target will spawn
    public Transform targetHolderTransform;
 
+   // A reference to the transform that the target will be a child of, when dropped.
+   public Transform targetHolderDroppedTransform;
+
    #endregion
 
-   protected override void Update () {
-      base.Update();
-
-      // Temp for testing
-      if (KeyUtils.GetKeyDown(UnityEngine.InputSystem.Key.P)) {
-         setIsActivated(!_isActivated);
-      }
+   public void toggleActivation () {
+      setIsActivated(!_isActivated);
    }
 
    protected override void onActivated () {
       base.onActivated();
+      
+      // Spawn target here
+      if (isServer) {   
+         Instance instance = InstanceManager.self.getInstance(instanceId);
 
-      // Spawn target here?
-      Instance instance = InstanceManager.self.getInstance(instanceId);
+         _captureTarget = Instantiate(pvpCaptureTargetPrefab, targetHolderTransform.position, Quaternion.identity, targetHolderTransform).GetComponent<PvpCaptureTarget>();
+         _captureTarget.areaKey = areaKey;
+         _captureTarget.pvpTeam = pvpTeam;
+         _captureTarget.targetHolder = this;
+         _captureTarget.assignHoldingEntity(this);
 
-      _captureTarget = Instantiate(pvpCaptureTargetPrefab, targetHolderTransform.position, Quaternion.identity, transform).GetComponent<PvpCaptureTarget>();
-      _captureTarget.pvpTeam = pvpTeam;
-      _captureTarget.targetHolder = this;
-
-      InstanceManager.self.addSeaEntityToInstance(_captureTarget, instance);
-      NetworkServer.Spawn(_captureTarget.gameObject);
+         InstanceManager.self.addSeaEntityToInstance(_captureTarget, instance);
+         NetworkServer.Spawn(_captureTarget.gameObject);
+      }
    }
 
    protected override void onDeactivated () {
       base.onDeactivated();
 
-      // Despawn target here?
-      NetworkServer.Destroy(_captureTarget.gameObject);
-      _captureTarget = null;
+      // Despawn target here
+      if (_captureTarget && _captureTarget.gameObject) {
+         NetworkServer.Destroy(_captureTarget.gameObject);
+         _captureTarget = null;
+      }
    }
 
    public override bool isPvpCaptureTargetHolder () {
       return true;
    }
 
-   public void tryCaptureTarget (PvpCaptureTarget target, PlayerShipEntity playerShip) {
+   public bool tryCaptureTarget (PvpCaptureTarget target, PlayerShipEntity playerShip) {
       // Check if our own target is at base before allowing capture of the enemy target
-      if (_captureTarget.holdingEntity == this) {
-         D.log(playerShip.nameText.text + " has captured the " + PvpGame.getTeamName(target.pvpTeam) + " team's flag.");
-         // TODO: Add logic here for incrementing score
+      if (_captureTarget.getHoldingEntity() == this) {
+         PvpGame activeGame = PvpManager.self.getGameWithPlayer(playerShip.userId);
+         activeGame.addScoreForTeam(1, playerShip.pvpTeam);
+         activeGame.sendGameMessage(playerShip.entityName + " captured the " + PvpGame.getTeamName(target.pvpTeam) + "' flag.");
 
          // Return the captured flag to its holder
-         returnTarget();
+         target.returnFlag();
+         return true;
       }
+
+      return false;
    }
 
-   public void returnTarget () {
-      _captureTarget.holdingEntity = this;
-      _captureTarget.transform.SetParent(targetHolderTransform);
-      Util.setLocalXY(_captureTarget.transform, Vector3.zero);
+   public void returnTarget (PvpCaptureTarget target) {
+      target.assignHoldingEntity(this);
+      
+      target.transform.SetParent(targetHolderTransform);
+      Util.setLocalXY(target.transform, Vector3.zero);
    }
 
    #region Private Variables

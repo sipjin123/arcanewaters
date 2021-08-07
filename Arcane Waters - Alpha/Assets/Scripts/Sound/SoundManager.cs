@@ -499,21 +499,22 @@ public class SoundManager : GenericGameManager {
    }
 
    public static void setBackgroundMusic (Type type) {
+      if (Util.isBatch()) {
+         return;
+      }
+
+      // If we're already playing that music, there's nothing to do
+      if (_currentMusicType == type) {
+         return;
+      }
+
+      // Keep track of the previous music type, in case we need to switch back later
+      previousMusicType = _currentMusicType;
+
+      // Keep track of the music currently being played
+      _currentMusicType = type;
+
       SoundEffectManager.self.playBgMusic(type);
-      //if (Util.isBatch()) {
-      //   return;
-      //}
-
-      //// If we're already playing that music, there's nothing to do
-      //if (_currentMusicType == type) {
-      //   return;
-      //}
-
-      //// Keep track of the previous music type, in case we need to switch back later
-      //previousMusicType = _currentMusicType;
-
-      //// Keep track of the music currently being played
-      //_currentMusicType = type;
 
       //// Smoothly transition to the new music using a coroutine
       //self.StartCoroutine(self.transitionBackgroundMusic(type));

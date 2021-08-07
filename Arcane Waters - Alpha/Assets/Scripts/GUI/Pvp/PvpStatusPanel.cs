@@ -25,10 +25,16 @@ public class PvpStatusPanel : ClientMonoBehaviour
    public VerticalLayoutGroup killEventNotificationList;
 
    // Reference to the prefab for the Kill Event Notification
-   public GameObject KillEventNotificationPrefab;
+   public GameObject killEventNotificationPrefab;
 
    // Reference to the number of kill events
-   public int KillEventsCountMax;
+   public int killEventsCountMax;
+
+   // The color of the delta indicator when the delta is positive
+   public Color positiveDeltaColor;
+
+   // The color of the delta indicator when the delta is negative
+   public Color negativeDeltaColor;
 
    // Self
    public static PvpStatusPanel self;
@@ -45,7 +51,11 @@ public class PvpStatusPanel : ClientMonoBehaviour
    }
 
    private bool isInstanceValid (Instance instance) {
-      return instance != null && (instance.isPvP || instance.isVoyage || instance.isLeague);
+      if (instance == null) {
+         return false;
+      }
+
+      return instance.isPvP || instance.isVoyage || instance.isLeague || VoyageManager.isTreasureSiteArea(instance.areaKey);
    }
 
    private void updateVisibilityCheck () {
@@ -64,6 +74,7 @@ public class PvpStatusPanel : ClientMonoBehaviour
       if (isDeltaShowing()) {
          if (Time.realtimeSinceStartup > _deltaToggleStartTime + silverDeltaTextDurationSeconds) {
             hideDelta();
+
             // Update the displayed amount of silver
             int silverAfterChange = _silverBeforeChange + _currentSilverDelta;
             silverCountText.text = silverAfterChange.ToString();
@@ -92,11 +103,26 @@ public class PvpStatusPanel : ClientMonoBehaviour
    public void showDelta () {
       silverDeltaText.gameObject.SetActive(true);
       silverDeltaText.text = getDisplayStringForDelta();
+
+      // Adjust the color the delta
+      updateDeltaColor();
    }
 
    public void hideDelta () {
       silverDeltaText.gameObject.SetActive(false);
       silverDeltaText.text = string.Empty;
+   }
+
+   private void updateDeltaColor () {
+      if (silverDeltaText == null) {
+         return;
+      }
+
+      if (_currentSilverDelta >= 0) {
+         silverDeltaText.color = positiveDeltaColor;
+      } else {
+         silverDeltaText.color = negativeDeltaColor;
+      }
    }
 
    public bool isDeltaShowing () {
@@ -140,8 +166,8 @@ public class PvpStatusPanel : ClientMonoBehaviour
 
       PvpKillEventNotification latestNotification = null;
 
-      if (displayedNotificationCount < KillEventsCountMax) {
-         GameObject newIndicator = Instantiate(KillEventNotificationPrefab);
+      if (displayedNotificationCount < killEventsCountMax) {
+         GameObject newIndicator = Instantiate(killEventNotificationPrefab);
          latestNotification = newIndicator.GetComponent<PvpKillEventNotification>();
          latestNotification.transform.SetParent(killEventNotificationList.transform);
       } else {
@@ -154,8 +180,8 @@ public class PvpStatusPanel : ClientMonoBehaviour
 
       // Remove the indicators in excess
       displayedNotificationCount = killEventNotificationList.transform.childCount;
-      if (displayedNotificationCount > Mathf.Max(KillEventsCountMax, 0)) {
-         while (killEventNotificationList.transform.childCount > KillEventsCountMax) {
+      if (displayedNotificationCount > Mathf.Max(killEventsCountMax, 0)) {
+         while (killEventNotificationList.transform.childCount > killEventsCountMax) {
             var child = killEventNotificationList.transform.GetChild(killEventNotificationList.transform.childCount - 1);
             child.transform.SetParent(null);
             Destroy(child.gameObject);
@@ -171,6 +197,10 @@ public class PvpStatusPanel : ClientMonoBehaviour
       if (_currentSilverDelta > 0) {
          return "+" + _currentSilverDelta.ToString();
       }
+      else if (_currentSilverDelta < 0) {
+         return _currentSilverDelta.ToString();
+      }
+
       return string.Empty;
    }
 

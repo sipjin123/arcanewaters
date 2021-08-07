@@ -254,6 +254,7 @@ MonoBehaviour:
   isAboutToWarpOnClient: 0
   interactingAnimation: 0
   isSpeedingUp: 0
+  passedOnTemporaryControl: 0
   _ignoredAnimators: []
   _animators: []
   debugImageHolder: {fileID: 0}
@@ -341,7 +342,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e851007333b54a4190716c035b83695, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offsetZ: 0
+  offsetZ: -0.05
   inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 0}

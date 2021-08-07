@@ -7,21 +7,23 @@ using Mirror;
 public class StoreShipBox : StoreItemBox {
    #region Public Variables
 
-   // The Type of Skin to apply
-   public Ship.SkinType skinType;
+   // The Type of ship skin to apply
+   public StoreShipBoxMetadata metadata;
 
    #endregion
 
-   public override void Start () {
-      base.Start();
-
+   public void initialize () {
       if (Util.isBatch()) {
          return;
       }
 
+      if (metadata == null) {
+         return;
+      }
+
       // Show the east-facing sprite
-      string shipType = skinType.ToString().Split('_')[0];
-      Sprite[] sprites = ImageManager.getSprites("Ships/" + shipType + "/" + skinType);
+      string shipType = metadata.skinType.ToString().Split('_')[0];
+      Sprite[] sprites = ImageManager.getSprites("Ships/" + shipType + "/" + metadata.skinType);
       this.imageIcon.sprite = sprites[4];
 
       // The sprite sizes aren't standardized right now, so compensate for that

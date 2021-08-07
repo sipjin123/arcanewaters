@@ -184,11 +184,15 @@ public class LoggerManager : MonoBehaviour {
          DirectoryInfo messagesDailyDir = new DirectoryInfo(messagesDirs[d]);
          messagesToSendDate = messagesDailyDir.Name;
 
-         Hashtable data = new Hashtable();
+         Hashtable data = new Hashtable(); 
 
          // get messages files lists, check and process
          string[] messagesFiles = Directory.GetFiles(messagesDirs[d]);
-         for (int f=0; f<messagesFiles.Length; f++) {
+         int messagesCount = messagesFiles.Length;
+         if (messagesCount > MESSAGES_LIMIT) {
+            messagesCount = MESSAGES_LIMIT;
+         }
+         for (int f=0; f<messagesCount; f++) {
             FileInfo file = new FileInfo(messagesFiles[f]);
             string id = file.Name;
             data[id] = File.ReadAllText(messagesFiles[f]);
@@ -267,7 +271,8 @@ public class LoggerManager : MonoBehaviour {
    const string API_MESSAGES_URL = SERVER_URL + "api/logger/add";
    const string API_SALT = "as5HU5_YhkPaRWpr+dxmBMq#eTWAx98fu8XJF-b2Rg@AWtgF*8EqaEvLedMexk";
    const int SEND_INTERVAL = 20; // seconds
-
+   const int MESSAGES_LIMIT = 1000;
+   
    string messagesDirPath;
    float currentSendDelay = 0;
 

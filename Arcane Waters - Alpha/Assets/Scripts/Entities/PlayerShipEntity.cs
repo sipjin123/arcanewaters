@@ -121,6 +121,9 @@ public class PlayerShipEntity : ShipEntity
    // Other objects can add callbacks to this event, to be notified when this player damages another player
    public System.Action<PlayerShipEntity, PvpTeamType> onDamagedPlayer;
 
+   // Other objects can add callbacks to these events, to be notified when this player performs those actions (Server only)
+   public System.Action<PlayerShipEntity> onPlayerBoosted, onPlayerDied;
+
    // Defines the possible attack types for the player's right-click attack
    public enum CannonAttackType { Normal = 0, Cone = 1, Circle = 2 }
 
@@ -129,6 +132,10 @@ public class PlayerShipEntity : ShipEntity
 
    // What the max range of the cannon barrage attack is, compared to the player's normal attack
    public const float CANNON_BARRAGE_RANGE_MULTIPLIER = 0.9f;
+
+   // The PvpCaptureTarget that this player is holding, if any
+   [HideInInspector]
+   public PvpCaptureTarget heldPvpCaptureTarget = null;
 
    // The different flags the ship can display
    public enum Flag {
@@ -796,6 +803,8 @@ public class PlayerShipEntity : ShipEntity
       if (hasAuthority) {
          PanelManager.self.hidePowerupPanel();
          PvpStructureStatusPanel.self.onPlayerLeftPvpGame();
+         PvpScorePanel.self.onPlayerLeftPvpGame();
+         PvpGameEndPanel.self.onPlayerLeftPvpGame();
       }
 
       // Handle OnDestroy logic in a separate method so it can be correctly stripped
@@ -1012,6 +1021,8 @@ public class PlayerShipEntity : ShipEntity
       _body.AddForce(direction.normalized * finalBoostForce, ForceMode2D.Impulse);
       _lastBoostTime = NetworkTime.time;
 
+      heldPvpCaptureTarget?.onPlayerBoosted(this);
+
       Rpc_NoteBoost();
    }
 
@@ -1068,6 +1079,27 @@ public class PlayerShipEntity : ShipEntity
 
    public override void setAreaParent (Area area, bool worldPositionStays) {
       this.transform.SetParent(area.userParent, worldPositionStays);
+
+      if (!isServer) {
+         return;
+      }
+
+      // Teleport ship to spawn position in case if it blocks on collider after spawning in new area
+      Vector2 nearestSpawnPos = transform.position;
+      float minDistance = float.MaxValue;
+      
+      foreach (SpawnManager.SpawnData spawn in SpawnManager.self.getAllSpawnsInArea(area.areaKey)) {
+         if (Vector2.Distance(spawn.localPosition, transform.localPosition) < minDistance) {
+            nearestSpawnPos = (Vector2)area.transform.position + spawn.localPosition;
+            minDistance = Vector2.Distance(spawn.localPosition, transform.localPosition);
+         }
+      }
+
+      int layerMask = LayerMask.GetMask(LayerUtil.GRID_COLLIDERS);
+      RaycastHit2D[] hits = Physics2D.LinecastAll(transform.position, nearestSpawnPos, layerMask);
+      if (hits.Length > 0) {
+         transform.position = nearestSpawnPos;
+      }
    }
 
    public override bool isAdversaryInPveInstance (NetEntity otherEntity) {
@@ -1192,24 +1224,6 @@ public class PlayerShipEntity : ShipEntity
          // Force the character portrait to redraw
          playerPortrait.SetActive(false);
          playerPortrait.SetActive(true);
-
-         // Teleport ship to spawn position in case if it blocks on collider after spawning in new area
-         Spawn nearestSpawn = null;
-         float minDistance = float.MaxValue;
-         foreach (Spawn spawn in SpawnManager.self.mapSpawnList) {
-            if (Vector2.Distance(spawn.transform.position, transform.position) < minDistance) {
-               nearestSpawn = spawn;
-               minDistance = Vector2.Distance(spawn.transform.position, transform.position);
-            }
-         }
-
-         int layerMask = LayerMask.GetMask(LayerUtil.GRID_COLLIDERS);
-         RaycastHit2D[] hits = Physics2D.LinecastAll(transform.position, nearestSpawn.transform.position, layerMask);
-         foreach (RaycastHit2D hit in hits) {
-            if (hit.distance > 0) {
-               transform.position = nearestSpawn.transform.position;
-            }
-         }
       }
    }
 
@@ -1532,6 +1546,12 @@ public class PlayerShipEntity : ShipEntity
          default:
             break;
       }
+   }
+
+   public override void onDeath () {
+      base.onDeath();
+
+      heldPvpCaptureTarget?.onPlayerDied(this);
    }
 
    #region Private Variables

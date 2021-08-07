@@ -9,11 +9,11 @@ public class PvpArenaPanel : Panel
 {
    #region Public Variables
 
-   // The container for the rows
-   public GameObject rowsContainer;
+   // The container for the cells
+   public GameObject cellContainer;
 
-   // The prefab we use for creating rows
-   public PvpArenaRow pvpArenaRowPrefab;
+   // The prefab we use for creating cells
+   public PvpArenaCell pvpArenaCellPrefab;
 
    // Load Blocker when data is fetching
    public GameObject loadBlocker;
@@ -31,7 +31,7 @@ public class PvpArenaPanel : Panel
       self = this;
 
       // Clear out any current rows
-      rowsContainer.DestroyChildren();
+      cellContainer.DestroyChildren();
    }
 
    public void togglePanel () {
@@ -57,14 +57,14 @@ public class PvpArenaPanel : Panel
       setLoadBlocker(false);
 
       // Clear out any current rows
-      rowsContainer.DestroyChildren();
+      cellContainer.DestroyChildren();
 
       // Sort by time
       pvpArenaList.Sort((a, b) => { return a.creationDate.CompareTo(b.creationDate); });
 
-      for (int i = 0; i < pvpArenaList.Count; i++) {
-         PvpArenaRow row = Instantiate(pvpArenaRowPrefab, rowsContainer.transform);
-         row.setRowForVoyage(pvpArenaList[i], i == 0, i == pvpArenaList.Count - 1);
+      foreach (Voyage pvpArena in pvpArenaList) {
+         PvpArenaCell cell = Instantiate(pvpArenaCellPrefab, cellContainer.transform);
+         cell.setCellForPvpArena(pvpArena, () => onPvpArenaRowPressed(pvpArena));
       }
    }
 

@@ -13,6 +13,8 @@ using MapCustomization;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using MiniJSON;
+using Steam;
+using Store;
 
 #if IS_SERVER_BUILD || NUBIS
 using MySql.Data.MySqlClient;
@@ -9964,6 +9966,214 @@ public class DB_Main : DB_MainStub
       }
 
       return settings;
+   }
+
+   #endregion
+
+   #region Purchases
+
+   public static new ulong createSteamOrder () {
+      try {
+         using (MySqlConnection conn = getConnection()) {
+            // Open the connection.
+            conn.Open();
+            using (MySqlCommand cmd = new MySqlCommand($"INSERT INTO `steam_orders` DEFAULT VALUES", conn)) {
+               int rowsAffected = cmd.ExecuteNonQuery();
+
+               if (rowsAffected == 0) {
+                  return 0;
+               }
+
+               return Convert.ToUInt64(cmd.LastInsertedId);
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+      return 0;
+   }
+
+   public static new bool deleteSteamOrder (ulong orderId) {
+      try {
+         using (MySqlConnection conn = getConnection()) {
+            // Open the connection.
+            conn.Open();
+            using (MySqlCommand cmd = new MySqlCommand($"DELETE FROM `steam_orders` WHERE `soOrderId` = @orderId", conn)) {
+               cmd.Parameters.AddWithValue("@orderId", orderId);
+               int rowsAffected = cmd.ExecuteNonQuery();
+               return rowsAffected > 0;
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+      return false;
+   }
+
+   public static new bool toggleSteamOrder (ulong orderId, bool closed) {
+      try {
+         using (MySqlConnection conn = getConnection()) {
+            // Open the connection.
+            conn.Open();
+            using (MySqlCommand cmd = new MySqlCommand($"UPDATE `steam_orders` SET `soClosed` = @closed WHERE `soOrderId` = @orderId", conn)) {
+               cmd.Parameters.AddWithValue("@orderId", orderId);
+               cmd.Parameters.AddWithValue("@closed", closed);
+               int rowsAffected = cmd.ExecuteNonQuery();
+               return rowsAffected > 0;
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+      return false;
+   }
+
+   public static new bool updateSteamOrder (ulong orderId, int userId, string status, string content) {
+      try {
+         using (MySqlConnection conn = getConnection()) {
+            // Open the connection.
+            conn.Open();
+            using (MySqlCommand cmd = new MySqlCommand($"UPDATE `steam_orders` SET `soStatus` = @status, `soUserId` = @userId, `soOrderContent` = @content WHERE `soOrderId` = @orderId", conn)) {
+               cmd.Parameters.AddWithValue("@orderId", orderId);
+               cmd.Parameters.AddWithValue("@status", status);
+               cmd.Parameters.AddWithValue("@userId", userId);
+               cmd.Parameters.AddWithValue("@content", content);
+               int rowsAffected = cmd.ExecuteNonQuery();
+               return rowsAffected > 0;
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+      return false;
+   }
+
+   public static new SteamOrder getSteamOrder (ulong orderId) {
+      SteamOrder order = null;
+      try {
+         using (MySqlConnection conn = getConnection()) {
+            // Open the connection.
+            conn.Open();
+            using (MySqlCommand cmd = new MySqlCommand($"SELECT * FROM `steam_orders` WHERE `soOrderId` = @orderId", conn)) {
+               cmd.Parameters.AddWithValue("@orderId", orderId);
+               using (MySqlDataReader reader = cmd.ExecuteReader()) {
+                  if (reader.Read()) {
+                     order = SteamOrder.create(reader);
+                  }
+               }
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return order;
+   }
+
+   public static new ulong getLastSteamOrderId () {
+      ulong lastSteamOrderId = 0;
+      try {
+         using (MySqlConnection conn = getConnection()) {
+            // Open the connection.
+            conn.Open();
+            using (MySqlCommand cmd = new MySqlCommand($"SELECT MAX(soOrderId) FROM `steam_orders`", conn)) {
+               using (MySqlDataReader reader = cmd.ExecuteReader()) {
+                  if (reader.Read()) {
+                     lastSteamOrderId = reader.GetUInt64(0);
+                  }
+               }
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return lastSteamOrderId;
+   }
+
+   #endregion
+
+   #region Store
+
+   public static new ulong createStoreItem () {
+      try {
+         using (MySqlConnection conn = getConnection()) {
+            // Open the connection.
+            conn.Open();
+            using (MySqlCommand cmd = new MySqlCommand($"INSERT INTO `store_items` DEFAULT VALUES", conn)) {
+               int rowsAffected = cmd.ExecuteNonQuery();
+
+               if (rowsAffected == 0) {
+                  return 0;
+               }
+
+               return Convert.ToUInt64(cmd.LastInsertedId);
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+      return 0;
+   }
+
+   public static new bool deleteStoreItem (ulong itemId) {
+      try {
+         using (MySqlConnection conn = getConnection()) {
+            // Open the connection.
+            conn.Open();
+            using (MySqlCommand cmd = new MySqlCommand($"DELETE FROM `store_items` WHERE `siItemId` = @itemId", conn)) {
+               cmd.Parameters.AddWithValue("@itemId", itemId);
+               int rowsAffected = cmd.ExecuteNonQuery();
+               return rowsAffected > 0;
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+      return false;
+   }
+
+   public static new StoreItem getStoreItem (ulong itemId) {
+      StoreItem storeItem = null;
+      try {
+         using (MySqlConnection conn = getConnection()) {
+            // Open the connection.
+            conn.Open();
+            using (MySqlCommand cmd = new MySqlCommand($"SELECT * FROM `store_items` WHERE `siItemId` = @itemId", conn)) {
+               cmd.Parameters.AddWithValue("@itemId", itemId);
+               using (MySqlDataReader reader = cmd.ExecuteReader()) {
+                  if (reader.Read()) {
+                     storeItem = StoreItem.create(reader);
+                  }
+               }
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return storeItem;
+   }
+
+   public static new List<StoreItem> getAllStoreItems () {
+      List<StoreItem> storeItems = new List<StoreItem>();
+      try {
+         using (MySqlConnection conn = getConnection()) {
+            // Open the connection.
+            conn.Open();
+            using (MySqlCommand cmd = new MySqlCommand($"SELECT * FROM `store_items`",conn)) {
+               using (MySqlDataReader reader = cmd.ExecuteReader()) {
+                  while (reader.Read()) {
+                     storeItems.Add(StoreItem.create(reader));
+                  }
+               }
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return storeItems;
    }
 
    #endregion

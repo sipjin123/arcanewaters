@@ -15,6 +15,9 @@ using MapCreationTool;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.IO;
+using Store;
+using Steam.Purchasing;
+using Steam;
 
 public class RPCManager : NetworkBehaviour
 {
@@ -1463,6 +1466,22 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
+   public void Cmd_RequestStoreItems () {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<StoreItem> storeItems = DB_Main.getAllStoreItems();
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveStoreItems(storeItems);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveStoreItems (List<StoreItem> items) {
+      StoreScreen.self.onReceiveStoreItems(items);
+   }
+
+   [Command]
    public void Cmd_RequestSetWeaponId (int weaponId) {
       requestSetWeaponId(weaponId);
    }
@@ -1662,53 +1681,213 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_BuyStoreItem (int itemId) {
+   public void Cmd_BuyStoreItem (ulong itemId) {
       if (_player == null) {
          return;
       }
 
-      // Look up the item box for the specified item id
-      StoreItemBox itemBox = GemStoreManager.self.getItemBox(itemId);
-
       // Off to the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         bool success = false;
-         int gems = DB_Main.getGems(_player.accountId);
+         // Look up the item box for the specified item id
+         StoreItem storeItem = DB_Main.getStoreItem(itemId);
 
-         // Make sure they can afford it
-         if (gems >= itemBox.itemCost) {
-            // Remove the gems
-            DB_Main.addGems(_player.accountId, -itemBox.itemCost);
-            success = true;
+         // Check if the item should be paid with gems or with real money (e.g. through Steam)
+         if (storeItem.currencyMode == StoreItem.CurrencyMode.Game) {
+            bool success = false;
+            int gems = DB_Main.getGems(_player.accountId);
 
-            // Insert the different item types here
-            if (itemBox is StoreHairDyeBox) {
-               StoreHairDyeBox dyeBox = (StoreHairDyeBox) itemBox;
-               DB_Main.insertNewUsableItem(_player.userId, UsableItem.Type.HairDye, dyeBox.paletteName);
-            } else if (itemBox is StoreShipBox) {
-               StoreShipBox box = (StoreShipBox) itemBox;
-               DB_Main.insertNewUsableItem(_player.userId, UsableItem.Type.ShipSkin, box.skinType);
-            } else if (itemBox is StoreHaircutBox) {
-               StoreHaircutBox box = (StoreHaircutBox) itemBox;
-               DB_Main.insertNewUsableItem(_player.userId, UsableItem.Type.Haircut, box.hairType);
+            // Make sure they can afford it
+            if (gems >= storeItem.price) {
+               // Remove the gems
+               DB_Main.addGems(_player.accountId, -storeItem.price);
+               success = true;
+
+               // Insert the different item types here
+               switch (storeItem.category) {
+                  case StoreItem.Category.HairDye:
+                     StoreHairDyeBoxMetadata hairDyeMetadata = JsonConvert.DeserializeObject<StoreHairDyeBoxMetadata>(storeItem.serializedMetadata);
+                     DB_Main.insertNewUsableItem(_player.userId, UsableItem.Type.HairDye, hairDyeMetadata.paletteName);
+                     break;
+                  case StoreItem.Category.ShipSkin:
+                     StoreShipBoxMetadata shipMetadata = JsonConvert.DeserializeObject<StoreShipBoxMetadata>(storeItem.serializedMetadata);
+                     DB_Main.insertNewUsableItem(_player.userId, UsableItem.Type.ShipSkin, shipMetadata.skinType);
+                     break;
+                  case StoreItem.Category.Haircut:
+                     StoreHaircutBoxMetadata haircutMetadata = JsonConvert.DeserializeObject<StoreHaircutBoxMetadata>(storeItem.serializedMetadata);
+                     DB_Main.insertNewUsableItem(_player.userId, UsableItem.Type.Haircut, haircutMetadata.hairType);
+                     break;
+                  default:
+                     break;
+               }
             }
-         }
 
-         // Back to Unity
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (success) {
-               string feedback = "You have purchased " + itemBox.itemName + "!";
-               if (itemBox is StoreHairDyeBox || itemBox is StoreHaircutBox || itemBox is StoreShipBox) {
-                  feedback += "  It has been placed in your backpack as a usable item.";
+            // Back to Unity
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               if (success) {
+                  string feedback = "You have purchased " + storeItem.name + "!";
+                  if (storeItem.category == StoreItem.Category.HairDye ||
+                  storeItem.category == StoreItem.Category.Haircut ||
+                  storeItem.category == StoreItem.Category.ShipSkin) {
+                     feedback += "  It has been placed in your backpack as a usable item.";
+                  }
+
+                  // Let the player know that we gave them their item
+                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.StoreItemBought, _player, feedback);
+               } else {
+                  ServerMessageManager.sendError(ErrorMessage.Type.NotEnoughGems, _player, "You don't have " + storeItem.price + " gems!");
+               }
+            });
+         } else {
+            try {
+               bool isSteamIdValid = ulong.TryParse(Global.lastSteamId, out ulong steamId);
+
+               if (!isSteamIdValid) {
+                  #if UNITY_EDITOR
+                     // Try to use the debug Steam Id instead
+                     steamId = SteamPurchaseManagerServer.self.debugSteamId;
+                     D.debug($"Purchase Warning: Couldn't get the steamId for user '{_player.userId}'. Using the debug Steam ID...");
+                  #endif
                }
 
-               // Let the player know that we gave them their item
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.StoreItemBought, _player, feedback);
-            } else {
-               ServerMessageManager.sendError(ErrorMessage.Type.NotEnoughGems, _player, "You don't have " + itemBox.itemCost + " gems!");
+               if (steamId == 0) {
+                  D.debug($"Steam Purchase Error: Steam ID '{steamId}' is not valid. Can't process the purchase for user '{_player.userId}'.");
+                  return;
+               }
+
+               Task<GetUserInfoResult> t = SteamPurchaseManagerServer.self.getUserInfo(steamId);
+               t.Wait();
+
+               D.debug("Steam Purchase. GetUserInfo: " + JsonConvert.SerializeObject(t.Result));
+
+               // Check if the user can make this purchase
+               GetUserInfoParameters.UserStatus status = t.Result.parameters.getStatus();
+               if (status == GetUserInfoParameters.UserStatus.LockedFromPurchasing) {
+                  D.debug($"Steam Purchase Error: User '{_player.userId}' is not allowed to make Steam purchases. Can't process the purchase.");
+                  return;
+               }
+
+               // Create the Steam Order
+               ulong newOrderId = DB_Main.createSteamOrder();
+
+               // Create a Steam Purchase Item from the selected item
+               SteamPurchaseItem item = new SteamPurchaseItem() {
+                  quantity = 1,
+                  category = storeItem.category.ToString(),
+                  description = storeItem.description,
+                  itemId = storeItem.itemId.ToString(),
+                  totalCost = storeItem.price
+               };
+
+               // Bundle the items into a Purchase Info
+               SteamPurchaseInfo purchase = new SteamPurchaseInfo(newOrderId, steamId, Convert.ToUInt32(SteamStatics.GAME_APPID), "en", "usd", new List<SteamPurchaseItem> { item });
+
+               // Update the order
+               DB_Main.updateSteamOrder(newOrderId, _player.userId, "pending", JsonConvert.SerializeObject(purchase));
+
+               // Open order
+               DB_Main.toggleSteamOrder(newOrderId, false);
+
+               // Start the purchase workflow
+               Task<InitTxnResult> t2 = SteamPurchaseManagerServer.self.initTxn(purchase);
+               t2.Wait();
+               D.debug("Steam Purchase. InitTxn: " + JsonConvert.SerializeObject(t2.Result));
+
+               if (!t2.Result.isSuccess()) {
+                  D.debug("Steam Purchase Error: Couldn't start the purchase transaction. Reverting...");
+                  DB_Main.deleteSteamOrder(newOrderId);
+                  return;
+               }
+            } catch (Exception ex) {
+               D.debug(ex.Message);
             }
-         });
+         }
       });
+   }
+
+   [Command]
+   public void Cmd_CompleteSteamPurchase (ulong orderId, uint appId, bool purchaseAuthorized) {
+      D.log($"Steam Purchase: Received Authorization Response! orderId:'{orderId}' authorized:'{purchaseAuthorized}'");
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         try {
+            // Check if the order exists
+            SteamOrder order = DB_Main.getSteamOrder(orderId);
+
+            if (order == null) {
+               D.error($"Steam Purchase Error: Couldn't find order '{orderId}'. Can't complete steam purchase.");
+               return;
+            }
+
+            // Ensure the order belongs to the current user
+            if (order.userId != _player.userId) {
+               D.error($"Purchase Error: The order '{orderId}' belongs to user '{order.userId}' and not to the current user '{_player.userId}'.");
+               return;
+            }
+
+            // If the order is already closed, skip the process
+            if (order.closed) {
+               D.error($"Purchase Error: The order '{orderId}' is already closed.");
+               return;
+            }
+
+            // Finalize the transaction
+            var task = SteamPurchaseManagerServer.self.finalizeTxn(orderId, appId);
+            task.Wait();
+            var result = task.Result;
+
+            if (!result.isSuccess()) {
+               D.error("Purchase Finalization failed. response: " + JsonConvert.SerializeObject(result.result));
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  ServerMessageManager.sendError(ErrorMessage.Type.PurchaseError, _player, "Error encountered during the purchase.");
+               });
+               return;
+            }
+
+            // Update the order - applying
+            DB_Main.updateSteamOrder(orderId, _player.userId, "applying", order.content);
+
+            // Assign the purchased item
+            if (purchaseAuthorized) {
+               SteamPurchaseInfo purchase = JsonConvert.DeserializeObject<SteamPurchaseInfo>(order.content);
+               foreach (SteamPurchaseItem item in purchase.items) {
+                  StoreItem storeItem = DB_Main.getStoreItem(ulong.Parse(item.itemId));
+
+                  if (storeItem.category == StoreItem.Category.Gems) {
+                     // Assign the gems
+                     int accountId = DB_Main.getAccountId(_player.userId);
+                     DB_Main.addGems(accountId, storeItem.quantity);
+                  }
+               }
+            }
+
+            // Update the order - complete
+            DB_Main.updateSteamOrder(orderId, _player.userId, "complete", order.content);
+
+            // Close the order
+            DB_Main.toggleSteamOrder(orderId, true);
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               Target_OnCompleteSteamPurchase(_player.connectionToClient, orderId, purchaseAuthorized);
+            });
+         } catch (Exception ex) {
+            D.error(ex.Message);
+            D.error(ex.StackTrace);
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendError(ErrorMessage.Type.PurchaseError, _player, "Error encountered during the purchase.");
+            });
+         }
+      });
+   }
+
+   [TargetRpc]
+   public void Target_OnCompleteSteamPurchase (NetworkConnection connection, ulong orderId, bool purchaseAuthorized) {
+      if (purchaseAuthorized) {
+         PanelManager.self.noticeScreen.show("Thank you for the purchase!");
+      } else {
+         PanelManager.self.noticeScreen.show("Purchase canceled.");
+      }
    }
 
    [Command]
@@ -2851,10 +3030,17 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_CreateMail (string recipientName, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount, int price, bool autoDelete, bool sendBack) {
+   public void Cmd_CreateMail (string recipientName, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount, int price, bool autoDelete) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
+      }
+
+      bool sendBack = false;
+
+      // If the mail has attachments and was sent by a player, the mail must be sent back and deleted.
+      if (!_player.isAdmin() && attachedItemsIds.Any()) {
+         sendBack = true;
       }
 
       // Background thread
@@ -2864,7 +3050,7 @@ public class RPCManager : NetworkBehaviour
          UserInfo recipientUserInfo = DB_Main.getUserInfo(recipientName);
          if (recipientUserInfo == null) {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               ServerMessageManager.sendError(ErrorMessage.Type.InvalidUsername, _player, "The player '" + recipientName + "' does not exist!");
+               ServerMessageManager.sendError(ErrorMessage.Type.MailInvalidUserName, _player, "The player '" + recipientName + "' does not exist!");
             });
             return;
          }
@@ -5200,6 +5386,13 @@ public class RPCManager : NetworkBehaviour
                // Notify the client that a new location has been unlocked
                Target_DisplayNotificationForVoyageCompleted(_player.connectionToClient, Notification.Type.NewLocationUnlocked, nextBiome);
             }
+
+            // Check if the voyage group has opened all the chests in the treasure site
+            if (_player.tryGetGroup(out VoyageGroupInfo groupInfo) && TreasureManager.self.areAllChestsOpenedForGroup(instance.id, groupInfo.members)) {
+               // Unlink the group from this instance so that another voyage can be started without disbanding
+               groupInfo.voyageId = -1;
+               VoyageGroupManager.self.updateGroup(groupInfo);
+            }
          });
       });
    }
@@ -7016,11 +7209,11 @@ public class RPCManager : NetworkBehaviour
          object result = "";
 
          if (string.Equals(functionName, "NubisDirect-getUserInventoryPage", StringComparison.OrdinalIgnoreCase)) {
-            result = getUserInventoryPage((int)parameters[0],
-               (Item.Category[])parameters[1],
+            result = getUserInventoryPage((int) parameters[0],
+               (Item.Category[]) parameters[1],
                (int) parameters[2],
                (int) parameters[3],
-               (Item.DurabilityFilter)parameters[4]);
+               (Item.DurabilityFilter) parameters[4]);
          } else {
             // Execute the DB query
             result = (object) typeof(DB_Main).GetMethod(functionName).Invoke(null, parameters);
@@ -7552,6 +7745,36 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    private void Target_ReceivePlayersCountMetrics (NetworkConnection conn, MetricCollection metrics) {
       AdminPanel.self.onPlayersCountMetricsReceived(metrics);
+   }
+
+   [TargetRpc]
+   public void Target_UpdatePvpScore (NetworkConnection conn, int newScoreValue, PvpTeamType teamType) {
+      PvpScorePanel.self.updateScoreForTeam(newScoreValue, teamType);
+   }
+
+   [TargetRpc]
+   public void Target_ShowPvpPostGameScreen (NetworkConnection conn, bool wonGame) {
+      PvpGameEndPanel.self.show(wonGame);
+      BottomBar.self.enablePvpStatPanel();
+   }
+
+   [Command]
+   public void Cmd_RequestPvpRespawnTimeout () {
+      float timeout = PvpGame.RESPAWN_TIMEOUT;
+
+      try {
+         PvpGame pvpGame = PvpManager.self.getGameWithPlayer(_player);
+         timeout = pvpGame.computeRespawnTimeoutFor(_player.userId);
+      } catch {
+
+      }
+
+      Target_ReceivePvpRespawnTimeout(timeout);
+   }
+
+   [TargetRpc]
+   public void Target_ReceivePvpRespawnTimeout (float timeout) {
+      RespawnScreen.self.onRespawnTimeoutReceived(timeout);
    }
 
    #region Private Variables

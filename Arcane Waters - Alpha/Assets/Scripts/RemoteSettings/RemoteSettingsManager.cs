@@ -10,8 +10,11 @@
       // The "Admin-Only Mode" Setting
       public const string ADMIN_ONLY_MODE = "ADMIN_ONLY_MODE";
 
-      // The  "Admin-Only Mode Message" Setting
+      // The "Admin-Only Mode Message" Setting
       public const string ADMIN_ONLY_MODE_MESSAGE = "ADMIN_ONLY_MODE_MESSAGE";
+
+      // The "Sandbox mode switch for Steam purchases" Setting
+      public const string STEAM_PURCHASES_SANDBOX_MODE_ACTIVE = "STEAM_PURCHASES_SANDBOX_MODE_ACTIVE";
 
       #endregion
    } 

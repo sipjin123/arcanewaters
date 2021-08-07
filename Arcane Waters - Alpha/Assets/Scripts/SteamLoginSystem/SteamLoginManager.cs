@@ -85,7 +85,7 @@ namespace SteamLoginSystem
          // Check steam state
          if (SteamAPI.IsSteamRunning() && SteamManager.Initialized) {
             steamState += "Steam : ";
-            if (SteamUtils.GetAppID().ToString() == SteamLoginManagerServer.GAMEPLAYTEST_APPID) {
+            if (SteamUtils.GetAppID().ToString() == Steam.SteamStatics.GAMEPLAYTEST_APPID) {
                steamState += "Playtest : Production";
             } else {
                steamState += "Main : " + clientBuildState;

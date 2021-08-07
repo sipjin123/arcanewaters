@@ -68,7 +68,7 @@ public class SoundEffectManager : GenericGameManager
    public const int BATTLE_INTRO = 81;
    public const int BATTLE_OUTRO = 82;
 
-   public const int SHIP_CANNON = 85;
+   //public const int SHIP_CANNON = 85;
    public const int FISH_JUMP = 86;
    public const int FOOTSTEP = 88;
    public const int THROW_SEEDS = 89;
@@ -93,7 +93,7 @@ public class SoundEffectManager : GenericGameManager
    public const int BUTTON_CONFIRM = 103;
 
    public const int ENEMY_SHIP_DESTROYED = 108;
-   public const int CANNONBALL_IMPACT = 109;
+   //public const int CANNONBALL_IMPACT = 109;
    public const int PURCHASE_ITEM = 110;
    public const int ASSIGN_PERK_POINT = 111;
    public const int UNASSIGN_PERK_POINT = 112;
@@ -115,6 +115,7 @@ public class SoundEffectManager : GenericGameManager
    public const string AMBIENCE_SWITCH_PARAM = "Ambience_Switch";
    public const string APPLY_CRIT_PARAM = "Apply_Crit";
    public const string WEATHER_PARAM = "Weather_Effects";
+   public const string APPLY_PUP_PARAM = "Apply_Powerup";
 
    public const string BG_MUSIC = "event:/Music/BGM_Master";
 
@@ -124,7 +125,12 @@ public class SoundEffectManager : GenericGameManager
    public const string QUESTION_EMOTE = "event:/SFX/NPC/Critter/Question_Emote";
    public const string AFFECTION_EMOTE = "event:/SFX/NPC/Critter/Affection_Emote";
 
-   public const string ENEMY_SHIP_HIT = "event:/SFX/Game/Sea_Battle/Enemy_Ship_Impact";
+   public const string SHIP_CANNON = "event:/SFX/Player/Interactions/Diegetic/Ship_Cannon_Fire";
+   public const string ENEMY_SHIP_IMPACT = "event:/SFX/Game/Sea_Battle/Enemy_Ship_Impact";
+
+   public const string MOVEMENT_WHOOSH = "event:/SFX/Game/Land_Battle/Movement_Whoosh";
+
+   public const string CANNONBALL_IMPACT = "event:/SFX/Player/Interactions/Diegetic/Cannonball_Impact";
 
    public enum CannonballImpactType
    {
@@ -135,8 +141,6 @@ public class SoundEffectManager : GenericGameManager
 
    protected override void Awake () {
       self = this;
-
-      _bgMusicEvent = RuntimeManager.CreateInstance(BG_MUSIC);
    }
 
    private void Start () {
@@ -182,6 +186,10 @@ public class SoundEffectManager : GenericGameManager
 
    public bool isValidSoundEffect (int id) {
       return _soundEffects.ContainsKey(id);
+   }
+
+   public EventInstance getEventInstance (string eventPath) {
+      return RuntimeManager.CreateInstance(eventPath);
    }
 
    public void playSoundEffect (int id, Transform target) {
@@ -230,19 +238,15 @@ public class SoundEffectManager : GenericGameManager
    }
 
    public void playCannonballImpact (CannonballImpactType impactType, Vector3 position) {
-      SoundEffect effect = getSoundEffect(CANNONBALL_IMPACT);
-
-      if (effect != null) {
-         EventInstance impactEvent = RuntimeManager.CreateInstance(effect.fmodId);
-         impactEvent.setParameterByName(AUDIO_SWITCH_PARAM, (int) impactType);
-         impactEvent.set3DAttributes(RuntimeUtils.To3DAttributes(position));
-         impactEvent.start();
-         impactEvent.release();
-      }
+      EventInstance impactEvent = RuntimeManager.CreateInstance(CANNONBALL_IMPACT);
+      impactEvent.setParameterByName(AUDIO_SWITCH_PARAM, (int) impactType);
+      impactEvent.set3DAttributes(RuntimeUtils.To3DAttributes(position));
+      impactEvent.start();
+      impactEvent.release();
    }
    public void playBgMusic (SoundManager.Type musicType) {
-      if (Util.isBatch()) {
-         return;
+      if (!_bgMusicEvent.isValid()) {
+         _bgMusicEvent = RuntimeManager.CreateInstance(BG_MUSIC);
       }
 
       int param = -1;
@@ -289,12 +293,18 @@ public class SoundEffectManager : GenericGameManager
       }
 
       _bgMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, param);
-      _bgMusicEvent.start();
+
+      PLAYBACK_STATE bgState;
+      _bgMusicEvent.getPlaybackState(out bgState);
+      if (bgState == PLAYBACK_STATE.STOPPED) {
+         _bgMusicEvent.start();
+      }
 
       // If the type of music is "None"
       if (param == -1) {
          _bgMusicEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
       }
+
    }
 
    public void playAnimalCry (string path, Transform target) {
@@ -389,16 +399,24 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   public void playEnemyHitOneShot (bool isShip, Transform target) {
-      EventInstance eventInstance = RuntimeManager.CreateInstance(ENEMY_SHIP_HIT);
+   public void playEnemyHitSfx (bool isShip, bool isCrit, CannonballEffector.Type effectorType, Vector3 position) {
+      EventInstance eventInstance = RuntimeManager.CreateInstance(ENEMY_SHIP_IMPACT);
 
-      if (isShip) {
-         eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, 0);
-      } else {
+      if (!isShip) {
          eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, 1);
       }
 
-      eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(target));
+      if (isCrit) {
+         eventInstance.setParameterByName(APPLY_CRIT_PARAM, 1);
+      }
+
+      switch (effectorType) {
+         case CannonballEffector.Type.Explosion:
+            eventInstance.setParameterByName(APPLY_PUP_PARAM, 1);
+            break;
+      }
+
+      eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(position));
       eventInstance.start();
       eventInstance.release();
    }

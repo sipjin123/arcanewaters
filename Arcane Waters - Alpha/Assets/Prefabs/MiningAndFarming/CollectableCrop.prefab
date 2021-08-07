@@ -51,6 +51,7 @@ MonoBehaviour:
   spriteRender: {fileID: 2931902825396700473}
   cropCollected: {fileID: 8204852957498122313, guid: 8b3ab5bcd2b745441b9122843e9d9c9d,
     type: 3}
+  shadow: {fileID: 7803531087494748841}
 --- !u!114 &7479097142518977920
 MonoBehaviour:
   m_ObjectHideFlags: 0

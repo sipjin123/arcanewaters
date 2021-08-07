@@ -6,7 +6,8 @@ using Mirror;
 using System;
 using DG.Tweening;
 
-public class ServerCannonBall : NetworkBehaviour {
+public class ServerCannonBall : NetworkBehaviour
+{
    #region Public Variables
 
    // The force of the cannonball when fired
@@ -27,9 +28,10 @@ public class ServerCannonBall : NetworkBehaviour {
       if (!Util.isBatch()) {
          // Play an appropriate sound
          if (_playFiringSound) {
-            _fmodInstance = FMODUnity.RuntimeManager.CreateInstance(SoundEffectManager.self.getSoundEffect(SoundEffectManager.SHIP_CANNON).fmodId);
-            _fmodInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(transform));
-            _fmodInstance.start();
+            _shipCannonEvent = SoundEffectManager.self.getEventInstance(SoundEffectManager.SHIP_CANNON);
+            _shipCannonEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(transform));
+            _shipCannonEvent.start();
+
             //SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.SHIP_CANNON, this.transform);
             //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Cannon_1, this.transform.position);
          }
@@ -78,7 +80,7 @@ public class ServerCannonBall : NetworkBehaviour {
       _effectors.AddRange(effectors);
    }
 
-   private IEnumerator CO_SetColliderAfter(float seconds, bool value) {
+   private IEnumerator CO_SetColliderAfter (float seconds, bool value) {
       yield return new WaitForSeconds(seconds);
       _ballCollider.enabled = value;
    }
@@ -98,11 +100,11 @@ public class ServerCannonBall : NetworkBehaviour {
          } else if (NetworkTime.time - _lastVelocitySyncTime > 0.2) {
             _lastVelocitySyncTime = NetworkTime.time;
             projectileVelocity = _rigidbody.velocity;
-         }  
+         }
       }
 
-      // Following the cannonball
-      FMODUnity.RuntimeManager.AttachInstanceToGameObject(_fmodInstance, transform, _rigidbody);
+      // Attaching the SFX to our position
+      FMODUnity.RuntimeManager.AttachInstanceToGameObject(_shipCannonEvent, transform, _rigidbody);
    }
 
    private void updateHeight () {
@@ -174,7 +176,7 @@ public class ServerCannonBall : NetworkBehaviour {
             perkDamage = (int) (projectileBaseDamage * PerkManager.self.getPerkMultiplierAdditive(sourceEntity.userId, Perk.Category.ShipDamage));
          }
          int totalInitialDamage = projectileBaseDamage + shipDamage + abilityDamage + critDamage + perkDamage;
-         
+
          int totalFinalDamage = hitEntity.applyDamage(totalInitialDamage, sourceEntity.netId);
          sourceEntity.totalDamageDealt += totalFinalDamage;
 
@@ -203,7 +205,7 @@ public class ServerCannonBall : NetworkBehaviour {
          hitEntity.Rpc_NetworkProjectileDamage(_creatorNetId, Attack.Type.Cannon, transform.position);
 
          // Apply on-hit effectors to the target
-         applyEffectorsOnHit(hitEntity);
+         applyEffectorsOnHit(hitEntity, _isCrit);
 
          // Destroy the projectile
          processDestruction();
@@ -250,6 +252,8 @@ public class ServerCannonBall : NetworkBehaviour {
       } else {
          Instantiate(PrefabsManager.self.requestCannonSplashPrefab(_impactMagnitude), transform.position, Quaternion.identity);
       }
+
+      _shipCannonEvent.release();
    }
 
    private bool hitSeaStructureIsland () {
@@ -296,7 +300,7 @@ public class ServerCannonBall : NetworkBehaviour {
          } else {
             SoundManager.create3dSoundWithPath(projectileData.landHitSFX, transform.position, projectileData.landHitVol);
          }
-      } else if(!hitEnemy) {
+      } else if (!hitEnemy) {
          // FMOD sfx for water
          SoundEffectManager.self.playCannonballImpact(SoundEffectManager.CannonballImpactType.Water, this.transform.position);
 
@@ -312,7 +316,7 @@ public class ServerCannonBall : NetworkBehaviour {
       return _instanceId;
    }
 
-   private void applyEffectorsOnHit (SeaEntity hitEntity) {
+   private void applyEffectorsOnHit (SeaEntity hitEntity, bool isCrit) {
       SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
 
       // Execute the effects of any effectors attached to this cannonball
@@ -341,6 +345,14 @@ public class ServerCannonBall : NetworkBehaviour {
                handleBounceEffect(effector, hitEntity);
                break;
          }
+
+         // Play SFX for effector
+         hitEntity.Rpc_PlayHitSfx(hitEntity is ShipEntity, isCrit, effector.effectorType, transform.position);
+      }
+
+      // If the cannonball doesn't have effectors applied
+      if (_effectors.Count == 0) {
+         hitEntity.Rpc_PlayHitSfx(hitEntity is ShipEntity, isCrit, CannonballEffector.Type.None, transform.position);
       }
    }
 
@@ -354,7 +366,7 @@ public class ServerCannonBall : NetworkBehaviour {
       }
 
       List<SeaEntity> nearbyEnemies = Util.getEnemiesInCircle(sourceEntity, transform.position, explosionRadius);
-      foreach(SeaEntity enemy in nearbyEnemies) {
+      foreach (SeaEntity enemy in nearbyEnemies) {
          // The enemy hit by the cannonball won't take splash damage
          if (enemy.netId != hitEntity.netId && !enemy.isDead()) {
             // Apply damage            
@@ -381,9 +393,9 @@ public class ServerCannonBall : NetworkBehaviour {
 
       // Roll for chance to bounce
       if (UnityEngine.Random.Range(0.0f, 1.0f) <= bounceActivationChance) {
-         
+
          // Find an enemy to bounce to, that isn't the one we hit
-         List<SeaEntity> nearbyEnemies = Util.getEnemiesInCircle(sourceEntity, transform.position,  effector.effectRange);
+         List<SeaEntity> nearbyEnemies = Util.getEnemiesInCircle(sourceEntity, transform.position, effector.effectRange);
          foreach (SeaEntity enemy in nearbyEnemies) {
             if (enemy.netId != hitEntity.netId) {
                // Setup cannonball variables for new target
@@ -481,7 +493,7 @@ public class ServerCannonBall : NetworkBehaviour {
    private bool _cancelDestruction = false;
 
    // FMOD Event instance
-   FMOD.Studio.EventInstance _fmodInstance;
+   FMOD.Studio.EventInstance _shipCannonEvent;
 
    #endregion
 

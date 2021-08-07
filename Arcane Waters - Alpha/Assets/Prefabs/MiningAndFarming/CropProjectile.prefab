@@ -95,6 +95,7 @@ MonoBehaviour:
   cropReference: {fileID: 0}
   blockMovement: 0
   colliderComponent: {fileID: 5480539660200816459}
+  cropPickableConfig: {fileID: 11400000, guid: 736a44a08d53d704a86c2d0197cd24d2, type: 2}
 --- !u!50 &-5885895751040643318
 Rigidbody2D:
   serializedVersion: 4

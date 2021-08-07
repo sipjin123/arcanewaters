@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.Linq;
 
 public class ShipHealthPanel : ClientMonoBehaviour
 {
@@ -68,6 +69,13 @@ public class ShipHealthPanel : ClientMonoBehaviour
             _sailors[i].setStatus(SailorHP.Status.Hidden);
          }
          hpStep += HP_PER_SAILOR;
+      }
+
+      // If current health is 100% or greater, make sure all sailor icons are showing full health
+      if (Global.player.currentHealth >= Global.player.maxHealth) {
+         foreach (SailorHP sailorIcon in _sailors.Where(s => s.isActiveAndEnabled)) {
+            sailorIcon.setStatus(SailorHP.Status.Healthy);
+         }
       }
 
       if (Global.player.currentHealth > 0 && Global.player.currentHealth < _lastHealth) {

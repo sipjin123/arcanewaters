@@ -692,6 +692,7 @@ MonoBehaviour:
   quantityText: {fileID: 3483069997417476312}
   animateTransform: 1
   border: {fileID: 765429477106755800}
+  startSetZ: -0.00001
 --- !u!95 &300669396496485651
 Animator:
   serializedVersion: 3

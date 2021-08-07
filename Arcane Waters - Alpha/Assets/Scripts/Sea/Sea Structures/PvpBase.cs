@@ -32,8 +32,26 @@ public class PvpBase : SeaStructure {
       List<SeaEntity> allies = Util.getAlliesInCircle(this, transform.position, 2.0f);
 
       foreach (SeaEntity ally in allies) {
-         // Only heal friendly player ships
-         if (ally.isPlayerShip()) {
+         // Only heal live and damaged friendly player ships
+         if (!ally.isPlayerShip() || ally.isDead() || (ally.currentHealth >= ally.maxHealth)) {
+            continue;
+         }
+
+         // Healing the ship comes with a silver penalty
+         if (GameStatsManager.self.isUserRegistered(ally.userId)) {
+            int silverPenalty = SilverManager.computeHealSilverPenalty(ally);
+            int currentSilver = GameStatsManager.self.getSilverAmount(ally.userId);
+
+            if (currentSilver < silverPenalty) {
+               // The user doesn't have enough silver. Skip the healing process
+               continue;
+            }
+
+            // Apply the penalty
+            GameStatsManager.self.addSilverAmount(ally.userId, -silverPenalty);
+            ally.Target_ReceiveSilverCurrency(ally.connectionToClient, -silverPenalty, SilverManager.SilverRewardReason.Heal);
+
+            // Heal the ship
             int healValue = (int) (ally.maxHealth * 0.1f);
             ally.currentHealth = Mathf.Clamp(ally.currentHealth + healValue, 0, ally.maxHealth);
          }

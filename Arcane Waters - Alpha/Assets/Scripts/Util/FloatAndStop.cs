@@ -29,12 +29,17 @@ public class FloatAndStop : MonoBehaviour {
    // The icon border
    public GameObject border;
 
+   // Initial z position
+   public float startSetZ = -.32f;
+
    #endregion
 
-   void Start () {
+   private void Awake () {
       // Make sure we show up in front
-      Util.setZ(this.transform, -.32f);
+      Util.setZ(this.transform, startSetZ);
+   }
 
+   void Start () {
       _startTime = Time.time;
       _startPos = this.transform.position;
 

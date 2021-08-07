@@ -16,8 +16,8 @@ public class PvpArenaInfoPanel : MonoBehaviour, IPointerClickHandler
    // The container for the map cell
    public GameObject mapCellContainer;
 
-   // The prefab we use for creating map cells
-   public VoyageMapCell mapCellPrefab;
+   // The prefab we use for creating pvp arena cells
+   public PvpArenaCell pvpArenaCellPrefab;
 
    // The player count in team A
    public Text teamAPlayerCount;
@@ -40,8 +40,8 @@ public class PvpArenaInfoPanel : MonoBehaviour, IPointerClickHandler
       mapCellContainer.DestroyChildren();
 
       // Instantiate the cell
-      VoyageMapCell cell = Instantiate(mapCellPrefab, mapCellContainer.transform, false);
-      cell.setCellForVoyage(pvpArena);
+      PvpArenaCell cell = Instantiate(pvpArenaCellPrefab, mapCellContainer.transform, false);
+      cell.setCellForPvpArena(pvpArena);
 
       teamAPlayerCount.text = pvpArena.playerCountTeamA.ToString() + " Players";
       teamBPlayerCount.text = pvpArena.playerCountTeamB.ToString() + " Players";
@@ -49,7 +49,7 @@ public class PvpArenaInfoPanel : MonoBehaviour, IPointerClickHandler
       show();
 
       // Disable the join buttons when the game or team cannot be joined
-      if (!canPvpArenaBeJoined(pvpArena)) {
+      if (!PvpGame.canGameBeJoined(pvpArena)) {
          joinTeamAButton.interactable = false;
          joinTeamBButton.interactable = false;
       } else {
@@ -66,10 +66,6 @@ public class PvpArenaInfoPanel : MonoBehaviour, IPointerClickHandler
    public void onJoinTeamBButtonPressed () {
       hide();
       PvpArenaPanel.self.joinPvpArena(_pvpArena, PvpTeamType.B);
-   }
-
-   public static bool canPvpArenaBeJoined (Voyage pvpArena) {
-      return pvpArena.pvpGameState != PvpGame.State.PostGame && pvpArena.playerCount < pvpArena.pvpGameMaxPlayerCount;
    }
 
    public void show () {

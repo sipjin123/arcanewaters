@@ -11,6 +11,9 @@ public class RespawnScreen : MonoBehaviour
 {
    #region Public Variables
 
+   // Singleton instance
+   public static RespawnScreen self;
+
    // The number of seconds after the player ship dies before the screen is shown
    public static float SHOW_DELAY = 3f;
 
@@ -23,7 +26,14 @@ public class RespawnScreen : MonoBehaviour
    // A reference to the text component displayed on the respawn screen button
    public Text buttonText;
 
+   // Reference to the respawn button
+   public Button button;
+
    #endregion
+
+   private void Awake () {
+      self = this;
+   }
 
    public void Update () {
       if (Global.player == null || !Global.player.isPlayerShip() || !Global.player.isDead()) {
@@ -44,33 +54,57 @@ public class RespawnScreen : MonoBehaviour
       }
    }
 
-   public void onRespawnButtonPress() {
+   public void onRespawnButtonPress () {
+      if (PanelManager.self.countdownScreen.isShowing()) {
+         return;
+      }
+
       if (Global.player != null) {
          PlayerShipEntity playerShip = Global.player.getPlayerShipEntity();
 
          // If the player dies in a pvp area, respawn them in the same map
-         if (VoyageManager.isPvpArenaArea(playerShip.areaKey)) { 
+         if (VoyageManager.isPvpArenaArea(playerShip.areaKey)) {
             setLifeboatVisibility(false);
             playerShip.Cmd_RespawnPlayerInInstance();
 
-         // Otherwise, return them to town
+            // Otherwise, return them to town
          } else {
-            playerShip.requestRespawn();
-
-            // Re enable the tutorial panel
-            if (TutorialManager3.self.panel.getMode() != TutorialPanel3.Mode.Closed) {
-               TutorialManager3.self.panel.gameObject.SetActive(true);
-            }
-
-            // When dying in a voyage area, show a tip explaining how to return
-            if (Global.player.isInGroup() && VoyageManager.isAnyLeagueArea(Global.player.areaKey)) {
-               NotificationManager.self.add(Notification.Type.ReturnToVoyage);
-            }
+            respawnPlayerShipInTown(playerShip);
          }
       }
 
       _deadTime = 0;
       hide();
+   }
+
+   private void onCountDownElapsed () {
+      if (button == null) {
+         return;
+      }
+
+      button.interactable = true;
+   }
+
+   public void respawnPlayerShipInTown (PlayerShipEntity playerShip) {
+      playerShip.requestRespawn();
+
+      // Re enable the tutorial panel
+      if (TutorialManager3.self.panel.getMode() != TutorialPanel3.Mode.Closed) {
+         TutorialManager3.self.panel.gameObject.SetActive(true);
+      }
+
+      // When dying in a voyage area, show a tip explaining how to return
+      if (Global.player.isInGroup() && VoyageManager.isAnyLeagueArea(Global.player.areaKey)) {
+         NotificationManager.self.add(Notification.Type.ReturnToVoyage);
+      }
+   }
+
+   public void onRespawnTimeoutReceived (float timeout) {
+      PanelManager.self.countdownScreen.onCountdownEndEvent.RemoveAllListeners();
+      PanelManager.self.countdownScreen.onCountdownEndEvent.AddListener(onCountDownElapsed);
+      PanelManager.self.countdownScreen.seconds = timeout;
+      PanelManager.self.countdownScreen.toggleCancelButton(false);
+      PanelManager.self.countdownScreen.show();
    }
 
    public void show () {
@@ -82,6 +116,19 @@ public class RespawnScreen : MonoBehaviour
 
          updateButtonText();
          this.canvasGroup.Show();
+
+         // Enable the button
+         if (button != null) {
+            button.interactable = true;
+         }
+
+         if (Global.player != null && !PanelManager.self.countdownScreen.isShowing() && VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
+            if (button != null) {
+               button.interactable = false;
+            }
+
+            Global.player.rpc.Cmd_RequestPvpRespawnTimeout();
+         }
       }
    }
 

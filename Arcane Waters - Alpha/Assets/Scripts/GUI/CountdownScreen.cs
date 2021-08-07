@@ -70,10 +70,21 @@ public class CountdownScreen : MonoBehaviour
       this.canvasGroup.blocksRaycasts = false;
       this.canvasGroup.interactable = false;
       this.gameObject.SetActive(false);
+
+      // Reset the Cancel Button
+      toggleCancelButton(true);
    }
 
    public bool isShowing () {
       return gameObject.activeSelf;
+   }
+
+   public void toggleCancelButton (bool show) {
+      if (cancelButton == null) {
+         return;
+      }
+
+      cancelButton.gameObject.SetActive(show);
    }
 
    #region Private Variables

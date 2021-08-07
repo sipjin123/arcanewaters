@@ -6,6 +6,7 @@ using Mirror;
 using System;
 using System.Text;
 using UnityEngine.Networking;
+using static Steam.SteamStatics;
 
 namespace SteamLoginSystem
 {
@@ -15,10 +16,6 @@ namespace SteamLoginSystem
       // Self
       public static SteamLoginManagerServer self;
 
-      // Steam key parameters for web api request
-      public static string STEAM_WEB_USER_API_KEY = "1EB0664926636257A9861504BE93721B";
-      public static string STEAM_WEB_PUBLISHER_API_KEY = "16FBA4602CFF4C139DC40E01D58F8869";
-
       // The WEB API request for ticket authentication
       public const string STEAM_AUTHENTICATE_TICKET = "https://api.steampowered.com/ISteamUserAuth/AuthenticateUserTicket/v1/?";
       public const string OWNERSHIP_WEB_REQUEST = "https://partner.steam-api.com/ISteamUser/CheckAppOwnership/v2/?";
@@ -26,16 +23,6 @@ namespace SteamLoginSystem
       // Unity events lists containing response data
       public List<AuthenticateTicketEvent> authenticateTicketEventActiveList, authenticateTicketEventDisposedList;
       public List<AppOwnershipEvent> appOwnershipEventActiveList, appOwnershipEventDisposeList;
-
-      // The various parameters used for the web api requests
-      public const string PARAM_STEAM_ID = "steamid=";
-      public const string PARAM_KEY = "key=";
-      public const string PARAM_APPID = "appid=";
-      public const string PARAM_TICKET = "ticket=";
-
-      // The arcane waters steam app id
-      public const string GAMEPLAYTEST_APPID = "1489170";
-      public const string GAME_APPID = "1266340";
 
       // Shows the fetched data logs
       public bool isLogActive;

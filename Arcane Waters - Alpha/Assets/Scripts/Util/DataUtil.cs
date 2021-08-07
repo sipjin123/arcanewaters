@@ -13,6 +13,17 @@ public class DataUtil {
 
    #endregion
 
+   public static ulong getUInt64 (MySqlDataReader dataReader, string key) {
+      var ordinal = dataReader.GetOrdinal(key);
+
+      // Default to 0
+      if (dataReader.IsDBNull(ordinal)) {
+         return 0;
+      }
+
+      return dataReader.GetUInt64(key);
+   }
+
    public static int getInt (MySqlDataReader dataReader, string key) {
       var ordinal = dataReader.GetOrdinal(key);
 

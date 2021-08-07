@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.Linq;
+using System;
 
 public class PvpGame : MonoBehaviour {
    #region Public Variables
@@ -35,6 +36,9 @@ public class PvpGame : MonoBehaviour {
    // Transforms showing where the center of each lane is
    public Transform topLaneCenter, midLaneCenter, botLaneCenter;
 
+   // Default Respawn Timeout (Seconds)
+   public const float RESPAWN_TIMEOUT = 5.0f;
+
    #endregion
 
    public void init (int voyageId, int instanceId, string areaKey) {
@@ -56,7 +60,12 @@ public class PvpGame : MonoBehaviour {
          PvpTeamType teamType = (PvpTeamType) (i + 1);
          _teams[teamType] = new PvpTeam();
          _teams[teamType].teamType = teamType;
+
+         _teamScores.Add(0);
       }
+
+      // We need to add an extra entry in team scores, because the enum has a type 'None'
+      _teamScores.Add(0);
    }
 
    public void addPlayerToGame (int userId, string userName, PvpTeamType teamType) {
@@ -159,6 +168,7 @@ public class PvpGame : MonoBehaviour {
             yield break;
          }
       }
+
       string teamSpawn = getSpawnForTeam(assignedTeam.teamType);
       ServerNetworkingManager.self.warpUser(userId, voyageId, areaKey, Direction.South, teamSpawn);
    }
@@ -178,7 +188,15 @@ public class PvpGame : MonoBehaviour {
       yield return new WaitForSeconds(1.0f);
       sendGameMessage("The game has begun!");
 
-      detectStructures();
+      // Determine what game mode this pvp game will be
+      detectGameMode();
+
+      if (gameMode == PvpGameMode.BaseAssault) {
+         detectBaseAssaultStructures();
+      } else {
+         detectCaptureTheFlagStructures();
+      }
+
       setStructuresActivated(true);
 
       for (int i = 0; i < _usersInGame.Count; i++) {
@@ -240,7 +258,9 @@ public class PvpGame : MonoBehaviour {
       StartCoroutine(CO_SpawnSeamonsters());
       StartCoroutine(CO_SpawnWaves());
       StartCoroutine(CO_SetupLatePlayers());
-      StartCoroutine(CO_SpawnPvpLootSpawners()); 
+      StartCoroutine(CO_SpawnPvpLootSpawners());
+
+      _startTime = Time.realtimeSinceStartup;
    }
 
    private IEnumerator CO_SpawnSeamonsters () {
@@ -268,6 +288,11 @@ public class PvpGame : MonoBehaviour {
    }
 
    private IEnumerator CO_SpawnWaves () {
+      // Only spawn waves in the Base Assault game mode currently
+      if (gameMode != PvpGameMode.BaseAssault) {
+         yield break;
+      }
+
       // Wait an initial delay at the start of the game
       yield return new WaitForSeconds(PvpManager.INITIAL_WAVE_DELAY);
 
@@ -354,7 +379,7 @@ public class PvpGame : MonoBehaviour {
       }
    }
 
-   private void detectStructures () {
+   private void detectBaseAssaultStructures () {
       Instance instance = InstanceManager.self.getInstance(instanceId);
 
       // Count how many towers we have first, to assist in registering towers
@@ -448,6 +473,17 @@ public class PvpGame : MonoBehaviour {
       _basePositions.Add(_topStructuresB.Find((x) => x is PvpBase).transform.localPosition);
    }
 
+   private void detectCaptureTheFlagStructures () {
+      Instance instance = InstanceManager.self.getInstance(instanceId);
+      foreach (SeaStructure structure in instance.seaStructures) {
+         _allStructures.Add(structure);
+      }
+
+      _basePositions.Add(Vector3.zero);
+      _basePositions.Add(_allStructures.Find((x) => x.pvpTeam == PvpTeamType.A && x is PvpCaptureTargetHolder).transform.localPosition);
+      _basePositions.Add(_allStructures.Find((x) => x.pvpTeam == PvpTeamType.B && x is PvpCaptureTargetHolder).transform.localPosition);
+   }
+
    private void setupStructureUnlocking (List<SeaStructure> laneStructures) {
       for (int i = 0; i < laneStructures.Count; i++) {
          SeaStructure structure = laneStructures[i];
@@ -488,7 +524,7 @@ public class PvpGame : MonoBehaviour {
       _usersInGame.Remove(player.userId);
    }
 
-   private void sendGameMessage (string message, List<int> receivingPlayers = null) {
+   public void sendGameMessage (string message, List<int> receivingPlayers = null) {
       // If players aren't specified, send the message to all players
       if (receivingPlayers == null) {
          receivingPlayers = _usersInGame;
@@ -517,13 +553,13 @@ public class PvpGame : MonoBehaviour {
          PvpTeamType winningTeam = (structure.pvpTeam == PvpTeamType.A) ? PvpTeamType.B : PvpTeamType.A;
          onGameEnd(winningTeam);
       } else {
-         sendGameMessage(getTeamName(structure.pvpTeam) + " Team's " + structure.GetType().ToString() + " has been destroyed.");
+         sendGameMessage("The " + getTeamName(structure.pvpTeam) + "' " + structure.GetType().ToString() + " has been destroyed.");
       }
    }
 
    private void onGameEnd (PvpTeamType winningTeam) {
       _gameState = State.PostGame;
-      sendGameMessage(getTeamName(winningTeam) + " Team has won the game!");
+      sendGameMessage("The " + getTeamName(winningTeam) + " have won the game!");
       StopAllCoroutines();
 
       setStructuresActivated(false);
@@ -531,6 +567,31 @@ public class PvpGame : MonoBehaviour {
       foreach (BotShipEntity botShip in _ships) {
          if (botShip && botShip.gameObject) {
             NetworkServer.Destroy(botShip.gameObject);
+         }
+      }
+
+      foreach (int userId in _usersInGame) {
+         NetEntity player = EntityManager.self.getEntity(userId);
+         if (player) {
+            bool playerWon = (player.pvpTeam == winningTeam);
+            player.rpc.Target_ShowPvpPostGameScreen(player.connectionToClient, playerWon);
+
+            int goldAwarded = (playerWon) ? WINNER_GOLD : LOSER_GOLD;
+            int xpAwarded = (playerWon) ? WINNER_XP : LOSER_XP;
+
+            // Go to background thread to award gold and xp
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               DB_Main.addGoldAndXP(userId, goldAwarded, xpAwarded);
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  // Show battle xp to player
+                  player.Target_ReceiveBattleExp(player.connectionToClient, xpAwarded);
+
+                  // Update xp value on player object
+                  player.onGainedXP(player.XP, player.XP + xpAwarded);
+                  player.XP += xpAwarded;
+               });
+            });
          }
       }
 
@@ -550,15 +611,32 @@ public class PvpGame : MonoBehaviour {
             if (player.isDead()) {
                playerShip.respawnPlayerInInstance();
             }
+
+            // Move the player to their spawn position, with a small offset so players aren't stacked on eachother.
+            Vector2 spawnPosition = getSpawnPositionForTeam(player.pvpTeam);
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               DB_Main.setNewLocalPosition(userId, spawnPosition, Direction.North, areaKey);
+            });
+               
+            Util.setLocalXY(player.transform, spawnPosition);
          }
       }
 
+      updateScoresForClient(userId);
    }
 
    private IEnumerator CO_PostGame () {
+      yield return new WaitForSeconds(POST_GAME_DURATION - 20.0f);
+
+      for (int i = 0; i < POST_GAME_DURATION; i++) {
+         yield return new WaitForSeconds(1.0f);
+         if (_usersInGame.Count <= 0) {
+            break;
+         }
+      }
+
+      sendGameMessage("This game will close in 10 seconds.");
       yield return new WaitForSeconds(10.0f);
-      sendGameMessage("This game will close in 20 seconds.");
-      yield return new WaitForSeconds(20.0f);
 
       // Delete the team groups
       foreach (int voyageGroupId in _teamVoyageGroupIds.Values) {
@@ -576,10 +654,12 @@ public class PvpGame : MonoBehaviour {
             Vector2 spawnPos = SpawnManager.self.getLocalPosition(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                DB_Main.setNewLocalPosition(userId, spawnPos, Direction.South, Area.STARTING_TOWN);
-               D.log("BT: Set player's position in the DB.");
+               D.debug("BT: Set player's position in the DB.");
             });
          }
       }
+
+      clearDeathRegistry();
    }
 
    public Vector3 getSpawnPositionForUser (PlayerShipEntity playerShip) {
@@ -599,11 +679,19 @@ public class PvpGame : MonoBehaviour {
    }
 
    public int getMaxPlayerCount () {
+      if (areaKey == "pvp_lanes_128" || areaKey == "pvp_ctf_medium_1") {
+         return 48;
+      }
+
       return _numTeams * Voyage.MAX_PLAYERS_PER_GROUP_PVP;
    }
 
    public int getNumPlayers () {
       return _usersInGame.Count;
+   }
+
+   public static bool canGameBeJoined (Voyage pvpArena) {
+      return pvpArena.pvpGameState != State.None && pvpArena.pvpGameState != State.PostGame && pvpArena.playerCount < pvpArena.pvpGameMaxPlayerCount;
    }
 
    public bool isGameReadyToBegin () {
@@ -800,6 +888,55 @@ public class PvpGame : MonoBehaviour {
       }
    }
 
+   public void noteDeath(int userId) {
+      if (_deathsRegistry == null) {
+         _deathsRegistry = new Dictionary<int, PvPGameDeathInfo>();
+      }
+
+      if (!_deathsRegistry.ContainsKey(userId)) {
+         _deathsRegistry.Add(userId, new PvPGameDeathInfo());
+      }
+
+      _deathsRegistry[userId].deathTimes.Add(Time.realtimeSinceStartup);
+   }
+
+   private void clearDeathRegistry () {
+      if (_deathsRegistry == null) {
+         return;
+      }
+
+      _deathsRegistry.Clear();
+   }
+
+   public float getStartTime () {
+      return _startTime;
+   }
+
+   public float computeRespawnTimeoutFor(int userId) {
+      float timeout = RESPAWN_TIMEOUT;
+
+      if (_startTime <= 0) {
+         return timeout;
+      }
+
+      float gameSecondsSoFar = Time.realtimeSinceStartup - _startTime;
+      float minutesSoFar = gameSecondsSoFar / 60.0f;
+      float timeUnits = Mathf.Ceil(minutesSoFar / RESPAWN_TIMEOUT_TIME_UNIT);
+
+      // The countdown grows as the PvP game plays out
+      float timeoutDelta = timeUnits * RESPAWN_TIMEOUT_INCREASE_DELTA;
+
+      // Add a time penalty for dying too frequently
+      if (_deathsRegistry.ContainsKey(userId)) {
+         int lastDeathsCount = _deathsRegistry[userId].getLastDeaths(Time.realtimeSinceStartup, RESPAWN_TIMEOUT_TIME_UNIT * 60.0f);
+
+         // Add a second penalty for each death in the last time unit
+         timeoutDelta += lastDeathsCount;
+      }
+
+      return timeout + timeoutDelta;
+   }
+
    #region Pvp stat functions
 
    public static Color getColorForTeam (PvpTeamType team) {
@@ -822,11 +959,51 @@ public class PvpGame : MonoBehaviour {
    public static string getTeamName (PvpTeamType teamType) {
       switch (teamType) {
          case PvpTeamType.A:
-            return "Green";
+            return "Naturalists";
          case PvpTeamType.B:
-            return "Red";
+            return "Privateers";
          default:
             return "None";
+      }
+   }
+
+   public void addScoreForTeam (int score, PvpTeamType teamType) {
+      int teamIndex = (int) teamType;
+      _teamScores[teamIndex] += score;
+
+      updateScoreOnAllClients(_teamScores[teamIndex], teamType);
+
+      if (_teamScores[teamIndex] >= WINNING_SCORE) {
+         onGameEnd(teamType);
+      }
+   }
+
+   private void updateScoreOnAllClients (int score, PvpTeamType teamType) {
+      Instance instance = InstanceManager.self.getInstance(instanceId);
+      List<PlayerShipEntity> playerShips = instance.getPlayerShipEntities();
+      foreach (PlayerShipEntity playerShip in playerShips) {
+         playerShip.rpc.Target_UpdatePvpScore(playerShip.connectionToClient, score, teamType);
+      }
+   }
+
+   private void updateScoresForClient (int userId) {
+      NetEntity player = EntityManager.self.getEntity(userId);
+      if (player) {
+         for (int i = 0; i < _teamScores.Count; i++) {
+            PvpTeamType teamType = (PvpTeamType) i;
+            if (teamType != PvpTeamType.None) {
+               player.rpc.Target_UpdatePvpScore(player.connectionToClient, _teamScores[i], teamType);
+            }
+         }
+      }
+   }
+
+   private void detectGameMode () {
+      // TODO: Find a better way to detect the game mode
+      if (areaKey.Contains("ctf")) {
+         gameMode = PvpGameMode.CaptureTheFlag;
+      } else {
+         gameMode = PvpGameMode.BaseAssault;
       }
    }
 
@@ -869,6 +1046,9 @@ public class PvpGame : MonoBehaviour {
    // A list of all the bot ships in this game
    private List<BotShipEntity> _ships = new List<BotShipEntity>();
 
+   // A list of the scores for each team in this game
+   private List<int> _teamScores = new List<int>();
+
    // How many towers are in this game
    private int _towersPerLane = 0;
 
@@ -883,6 +1063,30 @@ public class PvpGame : MonoBehaviour {
 
    // How long the game will take to start, after enough players are present
    private const float GAME_START_DELAY = 10.0f;
+
+   // How many points a team will need to reach, in order to win
+   private const int WINNING_SCORE = 3;
+
+   // After the game has ended, how long it will take for the lobby to forcefully close
+   private const int POST_GAME_DURATION = 300;
+
+   // How much XP the winners / losers of the pvp game will receive at the end
+   private const int WINNER_XP = 100, LOSER_XP = 50;
+
+   // How much gold the winners / losers of the pvp game will receive at the end
+   private const int WINNER_GOLD = 100, LOSER_GOLD = 50;
+
+   // Respawn Timeout Increase Time Unit (Minutes). Every time this amount of time passes the respawn timeout is increased
+   private const float RESPAWN_TIMEOUT_TIME_UNIT = 5.0f;
+
+   // Represents the amount of seconds added to the Respawn Timeout after every time unit passes (Seconds)
+   private const float RESPAWN_TIMEOUT_INCREASE_DELTA = 2.0f;
+
+   // Deaths Registry
+   private Dictionary<int, PvPGameDeathInfo> _deathsRegistry = new Dictionary<int, PvPGameDeathInfo>();
+
+   // Start Time
+   private float _startTime;
 
    #endregion
 }

@@ -154,7 +154,10 @@ public class ContextMenuPanel : MonoBehaviour
          if (!FriendListManager.self.isFriend(userId)) {
             addButton("Friend Invite", () => FriendListManager.self.sendFriendshipInvite(userId, userName));
          }
-         addButton("Practice Duel", () => initializePVP(userId, userName));
+
+         if (Global.player.canInvitePracticeDuel(targetEntity)) {
+            addButton("Practice Duel", () => initializePVP(userId, userName));
+         }
 
          // Only allow inviting to guild if we can locally see the invitee
          if (Global.player.canInviteGuild(targetEntity)) {

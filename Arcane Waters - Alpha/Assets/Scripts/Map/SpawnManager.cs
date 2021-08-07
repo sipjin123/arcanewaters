@@ -115,6 +115,14 @@ public partial class SpawnManager : MonoBehaviour
       return null;
    }
 
+   public List<SpawnData> getAllSpawnsInArea (string areaKey) {
+      if (_mapSpawns.TryGetValue(areaKey, out MapSpawnData mapSpawnData)) {
+         return mapSpawnData.spawns.Values.ToList();
+      }
+
+      return new List<SpawnData>();
+   }
+
    #region Private Variables
 
    // On server, track all the spawns from the database

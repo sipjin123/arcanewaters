@@ -207,7 +207,9 @@ public class InstanceManager : MonoBehaviour {
       _instances.Add(instance.id, instance);
 
       // Update the instance count in the server network
-      ServerNetworkingManager.self.server.areaToInstanceCount[areaKey] = getInstanceCount(areaKey);
+      if (ServerNetworkingManager.self != null && ServerNetworkingManager.self.server != null) {
+         ServerNetworkingManager.self.server.areaToInstanceCount[areaKey] = getInstanceCount(areaKey);
+      }
 
       // Spawn the network object on the Clients
       if (NetworkServer.active) {

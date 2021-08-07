@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
+using static Store.StoreItem;
 
 public class StoreItemBox : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, IPointerDownHandler {
    #region Public Variables
 
    // A unique identifier for the item
-   public int itemId;
+   public ulong itemId;
 
    // The name of the item
    public string itemName;
@@ -20,11 +21,17 @@ public class StoreItemBox : MonoBehaviour, IPointerEnterHandler, IPointerClickHa
    // A description of the item
    public string itemDescription;
 
+   // The category of the item
+   public Category itemCategory;
+
+   // The quantity of the item
+   public int itemQuantity;
+
    // The text object that contains the item name
-   public Text nameText;
+   public TMPro.TextMeshProUGUI nameText;
 
    // The text object that contains the item cost
-   public Text costText;
+   public TMPro.TextMeshProUGUI costText;
 
    // The image icon
    public Image imageIcon;

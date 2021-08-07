@@ -482,6 +482,27 @@ public class Instance : NetworkBehaviour
          }
       }
 
+      if (area.pvpCaptureTargetHolders.Count > 0) {
+         foreach (ExportedPrefab001 dataField in area.pvpCaptureTargetHolders) {
+            PvpCaptureTargetHolder captureTargetHolder = Instantiate(PrefabsManager.self.pvpCaptureTargetHolderPrefab);
+            captureTargetHolder.areaKey = area.areaKey;
+            captureTargetHolder.instanceId = this.id;
+            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
+            captureTargetHolder.transform.localPosition = targetLocalPos;
+            captureTargetHolder.setAreaParent(area, false);
+            captureTargetHolder.setIsInvulnerable(true);
+
+            IMapEditorDataReceiver receiver = captureTargetHolder.GetComponent<IMapEditorDataReceiver>();
+            if (receiver != null && dataField.d != null) {
+               receiver.receiveData(dataField.d);
+            }
+
+            InstanceManager.self.addSeaStructureToInstance(captureTargetHolder, this);
+            NetworkServer.Spawn(captureTargetHolder.gameObject);
+            pvpStructuresSpawned++;
+         }
+      }
+
       if (area.pvpLootSpawners.Count > 0) {
          int index = 0;
          foreach (ExportedPrefab001 dataField in area.pvpLootSpawners) {
@@ -847,7 +868,6 @@ public class Instance : NetworkBehaviour
 
    // The number of consecutive times we've checked this instance and found it empty
    protected int _consecutiveEmptyChecks = 0;
-
 
    #endregion
 }

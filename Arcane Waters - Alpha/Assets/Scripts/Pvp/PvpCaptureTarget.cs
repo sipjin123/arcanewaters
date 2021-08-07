@@ -7,76 +7,224 @@ using Mirror;
 public class PvpCaptureTarget : SeaEntity {
    #region Public Variables
 
-   // A reference to the entity currently holding the target
-   public SeaEntity holdingEntity = null;
-
    // A reference to the target holder that spawned us
    public PvpCaptureTargetHolder targetHolder;
 
    #endregion
 
+   protected override void Start () {
+      base.Start();
+
+      findHolder();
+      getHoldingEntity();
+      updateParent();
+   }
+
+   private void findHolder () {
+      foreach (PvpCaptureTargetHolder holder in FindObjectsOfType<PvpCaptureTargetHolder>()) {
+         if (holder.pvpTeam == this.pvpTeam && holder.instanceId == this.instanceId) {
+            targetHolder = holder;
+            break;
+         }
+      }
+
+      if (targetHolder == null) {
+         D.warning("PvpCaptureTarget couldn't find its holder.");
+      }
+   }
+
+   protected override void Update () {
+      base.Update();
+      updateParent();
+   }
+
    private void OnTriggerEnter2D (Collider2D collision) {
+      checkCollisions(collision);
+   }
+
+   private void OnTriggerStay2D (Collider2D collision) {
+      checkCollisions(collision);
+   }
+
+   private void checkCollisions (Collider2D collision) {
       // Handle picking up / returning on the server
       if (!isServer) {
          return;
       }
 
+      // Only collide with other entities in our instance
+      NetEntity otherNetEntity = collision.GetComponent<NetEntity>();
+      if (otherNetEntity && otherNetEntity.instanceId != this.instanceId) {
+         return;
+      }
+
       // If a player ship is holding the capture target, check for collisions with the PvpCaptureTargetHolder, for capturing
-      if (holdingEntity != null && holdingEntity.isPlayerShip()) {
+      if (_holdingEntity != null && _holdingEntity.isPlayerShip()) {
          PvpCaptureTargetHolder targetHolder = collision.GetComponent<PvpCaptureTargetHolder>();
-         if (targetHolder) {
-            targetHolder.tryCaptureTarget(this, holdingEntity.getPlayerShipEntity());
+         if (targetHolder && targetHolder.pvpTeam != this.pvpTeam) {
+            if (targetHolder.tryCaptureTarget(this, _holdingEntity.getPlayerShipEntity())) {
+               _lastCaptureTime = (float) NetworkTime.time;
+            }
          }
 
-      // If a PvpCaptureTargetHolder is holding the capture target, check for collisions with an enemy player ship, for picking it up
-      } else if (holdingEntity != null && holdingEntity.isPvpCaptureTargetHolder()) {
+         // If a PvpCaptureTargetHolder is holding the capture target, check for collisions with an enemy player ship, for picking it up
+      } else if (_holdingEntity != null && _holdingEntity.isPvpCaptureTargetHolder()) {
          PlayerShipEntity playerShip = collision.GetComponent<PlayerShipEntity>();
-         if (playerShip && playerShip.pvpTeam != pvpTeam && pvpTeam != PvpTeamType.None) {
-            playerPickedUpFlag(playerShip);
+         if (playerShip && playerShip.pvpTeam != pvpTeam && pvpTeam != PvpTeamType.None && playerShip.pvpTeam != PvpTeamType.None && !playerShip.isDead()) {
+
+            // Make sure enough time has passed since the last capture, and since it was last dropped
+            if (getTimeSinceCaptured() > CAPTURE_COOLDOWN && getTimeSinceDropped() > DROPPED_PICKUP_COOLDOWN) {
+               playerPickedUpTarget(playerShip);
+            }
          }
 
-      // If no one is holding the capture target, check for collisions with player ships, for picking it up or returning it
-      } else if (holdingEntity == null) {
+         // If no one is holding the capture target, check for collisions with player ships, for picking it up or returning it
+      } else if (_holdingEntity == null) {
          PlayerShipEntity playerShip = collision.GetComponent<PlayerShipEntity>();
          if (playerShip) {
-            if (playerShip.pvpTeam == pvpTeam && pvpTeam != PvpTeamType.None) {
-               playerReturnedFlag(playerShip);
-            } else if (playerShip.pvpTeam != pvpTeam && pvpTeam != PvpTeamType.None) {
-               playerPickedUpFlag(playerShip);
+            if (playerShip.pvpTeam == pvpTeam && pvpTeam != PvpTeamType.None && playerShip.pvpTeam != PvpTeamType.None && !playerShip.isDead()) {
+               playerReturnedTarget(playerShip);
+            } else if (playerShip.pvpTeam != pvpTeam && pvpTeam != PvpTeamType.None && playerShip.pvpTeam != PvpTeamType.None && !playerShip.isDead()) {
+               
+               // Check that enough time has passed since the target was last dropped
+               if (getTimeSinceDropped() > DROPPED_PICKUP_COOLDOWN) {
+                  playerPickedUpTarget(playerShip);
+               }
             }
          }
       }
    }
 
-   private void playerPickedUpFlag (PlayerShipEntity player) {
-      // Assign holdingEntity
-      holdingEntity = player;
-
+   public void playerPickedUpTarget (PlayerShipEntity player) {
       // Attach to player
-      transform.SetParent(player.transform);
+      attachToTransform(player.transform);
 
-      // Add visual effect to player?
+      // Add visual effect to player? 
 
+      PvpGame activeGame = PvpManager.self.getGameWithInstance(instanceId);
+      activeGame?.sendGameMessage(player.entityName + " picked up the " + PvpGame.getTeamName(pvpTeam) + "' flag.");
+
+      // Assign holdingEntity
+      assignHoldingEntity(player);
+
+      player.heldPvpCaptureTarget = this;
    }
 
-   private void playerReturnedFlag (PlayerShipEntity player) {
-      D.log(player.nameText.text + " returned the " + PvpGame.getTeamName(player.pvpTeam) + " team's flag.");
-      targetHolder.returnTarget();
+   private void playerReturnedTarget (PlayerShipEntity player) {
+      PvpGame activeGame = PvpManager.self.getGameWithInstance(instanceId);
+      activeGame?.sendGameMessage(player.entityName + " returned the " + PvpGame.getTeamName(player.pvpTeam) + "' flag.");
+
+      returnFlag();
    }
 
-   private void playerDroppedFlag (PlayerShipEntity player) {
-      // Called on player death / dash
+   public void returnFlag () {
+      targetHolder.returnTarget(this);
+   }
+
+   private void playerDroppedTarget (PlayerShipEntity player) {
+      PvpGame activeGame = PvpManager.self.getGameWithInstance(instanceId);
+      activeGame?.sendGameMessage(player.entityName + " dropped the " + PvpGame.getTeamName(pvpTeam) + "' flag.");
 
       // Remove visual effect from player
 
       // Set holdingEntity to null
-      holdingEntity = null;
+      assignHoldingEntity(null);
 
       // Detach from player
       transform.SetParent(targetHolder.transform);
+
+      // Track when we were last dropped
+      _lastDroppedTime = (float) NetworkTime.time;
+
+      player.heldPvpCaptureTarget = null;
+   }
+
+   private float getTimeSinceCaptured () {
+      return (float)NetworkTime.time - _lastCaptureTime;
+   }
+
+   private float getTimeSinceDropped () {
+      return (float) NetworkTime.time - _lastDroppedTime;
+   }
+
+   public void onPlayerBoosted (PlayerShipEntity player) {
+      if (getHoldingEntity() == player) {
+         playerDroppedTarget(player);
+      }
+   }
+
+   public void onPlayerDied (PlayerShipEntity player) {
+      if (getHoldingEntity() == player) {
+         playerDroppedTarget(player);
+      }
+   }
+
+   private void updateParent () {
+      _holdingEntity = getHoldingEntity();
+
+      // If we should be attached to a player, attach to a player
+      if (_holdingEntity is PlayerShipEntity && transform.parent != _holdingEntity.transform) {
+         attachToTransform(_holdingEntity.transform);
+
+      // If we should be attached to the target holder, attach to it
+      } else if (_holdingEntity == targetHolder && transform.parent != targetHolder.targetHolderTransform) {
+         attachToTransform(targetHolder.targetHolderTransform);
+
+         // If we should be dropped, make sure we are dropped
+      } else if (_holdingEntity == null && transform.parent != targetHolder.targetHolderDroppedTransform) {
+         transform.SetParent(targetHolder.targetHolderDroppedTransform);
+      }
+
+      // If we are back at base, or held by a player, ensure our local position is zeroed
+      if (transform.parent != targetHolder.targetHolderDroppedTransform) {
+         Util.setLocalXY(transform, Vector3.zero);
+      }
+   }
+
+   public void attachToTransform (Transform newParent) {
+      transform.SetParent(newParent);
+      Util.setLocalXY(transform, Vector3.zero);
+   }
+
+   public void assignHoldingEntity (SeaEntity newHoldingEntity) {
+      _holdingEntity = newHoldingEntity;
+
+      if (newHoldingEntity == null) {
+         _holdingEntityNetId = 0;
+      } else {
+         _holdingEntityNetId = newHoldingEntity.netId;
+      }
+   }
+
+   public SeaEntity getHoldingEntity () {
+      if (isServer) {
+         return _holdingEntity;
+      } else {
+         _holdingEntity = MyNetworkManager.fetchEntityFromNetId<SeaEntity>(_holdingEntityNetId);
+         return _holdingEntity;
+      }
    }
 
    #region Private Variables
+
+   // A reference to the entity currently holding the target
+   private SeaEntity _holdingEntity = null;
+
+   // The net id of the holding entity
+   [SyncVar]
+   private uint _holdingEntityNetId = 0;
+
+   // The last time this flag was captured
+   private float _lastCaptureTime = 0.0f;
+
+   // The last time this flag was dropped
+   private float _lastDroppedTime = 0.0f;
+
+   // After the flag is captured, how long players have to wait to pick it up again
+   private const float CAPTURE_COOLDOWN = 0.1f;
+
+   // After the flag is dropped, how long players have to wait to pick it up again
+   private const float DROPPED_PICKUP_COOLDOWN = 0.5f;
 
    #endregion
 }

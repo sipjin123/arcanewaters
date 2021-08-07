@@ -254,9 +254,9 @@ public class AchievementManager : MonoBehaviour {
       }
 
       WWWForm form = new WWWForm();
-      form.AddField("key", SteamLoginSystem.SteamLoginManagerServer.STEAM_WEB_PUBLISHER_API_KEY);
+      form.AddField("key", Steam.SteamStatics.STEAM_WEB_PUBLISHER_API_KEY);
       form.AddField("steamid", steamUserId);
-      form.AddField("appid", SteamLoginSystem.SteamLoginManagerServer.GAME_APPID);
+      form.AddField("appid", Steam.SteamStatics.GAME_APPID);
       form.AddField("count", "1");
       form.AddField("name[0]", achievementName);
       form.AddField("value[0]", progressCount);

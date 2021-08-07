@@ -352,6 +352,14 @@ public class CharacterStack : MonoBehaviour {
       return 0;
    }
 
+   public void toggleHat(bool show) {
+      if (hatLayer == null) {
+         return;
+      }
+
+      hatLayer.gameObject.SetActive(show);
+   }
+
    #region Private Variables
 
    // The direction our character is facing

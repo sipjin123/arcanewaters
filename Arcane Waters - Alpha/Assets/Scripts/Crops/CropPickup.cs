@@ -16,6 +16,9 @@ public class CropPickup : MonoBehaviour {
    // The crop collected prefab
    public CropCollected cropCollected;
 
+   // The shadow rendered underneath crop
+   public GameObject shadow;
+
    #endregion
 
    private void Start () {

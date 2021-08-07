@@ -112,6 +112,7 @@ public class GameStatsManager : MonoBehaviour
 
       // Stat Increase
       playerStat.silver += gain;
+      playerStat.silver = Mathf.Max(playerStat.silver, 0);
       D.adminLog("Added silver kills for: " + userId + " Total of: " + playerStat.silver, D.ADMIN_LOG_TYPE.Pvp);
    }
 

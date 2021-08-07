@@ -34,6 +34,9 @@ public class CropProjectile : MonoBehaviour {
    // Reference to the collider component
    public Collider2D colliderComponent;
 
+   // Reference to scriptable object which modifies spawned crop pickable object transform
+   public CropPickableConfig cropPickableConfig;
+
    #endregion
 
    private void Update () {
@@ -104,6 +107,27 @@ public class CropProjectile : MonoBehaviour {
       CropPickup cropPickup = spawnedObj.GetComponent<CropPickup>();
       cropPickup.cropSpot = _cropSpot;
       cropPickup.spriteRender.sprite = projectileSpriteObj.GetComponent<SpriteRenderer>().sprite;
+
+      // Adjust crop pickup transform based on config file
+      CropPickableConfig.SinglePickableConfig config = cropPickableConfig.config.Find(_ => _.cropType == cropReference.cropType);
+      if (config != null) {
+         // Set new position
+         Vector3 newPosition = new Vector3(config.finalPositionX != 0 ? config.finalPositionX : cropPickup.spriteRender.transform.localPosition.x, 
+            config.finalPositionY != 0 ? config.finalPositionY : cropPickup.spriteRender.transform.localPosition.y,
+            cropPickup.spriteRender.transform.localPosition.z);
+         cropPickup.spriteRender.transform.localPosition = newPosition;
+
+         // Set new rotation
+         cropPickup.spriteRender.transform.localEulerAngles = new Vector3(cropPickup.spriteRender.transform.localEulerAngles.x,
+            cropPickup.spriteRender.transform.localEulerAngles.y, 
+            config.finalRotation);
+
+         // Set new shadow size
+         Vector3 newShadowSize = new Vector3(config.shadowWidth != 0 ? config.shadowWidth : cropPickup.shadow.transform.localScale.x, 
+            config.shadowHeight != 0 ? config.shadowHeight : cropPickup.shadow.transform.localScale.y, 
+            cropPickup.shadow.transform.localScale.z);
+         cropPickup.shadow.transform.localScale = newShadowSize;
+      }
 
       SoundManager.playClipAtPoint(SoundManager.Type.Harvesting_Hit, transform.position);
 

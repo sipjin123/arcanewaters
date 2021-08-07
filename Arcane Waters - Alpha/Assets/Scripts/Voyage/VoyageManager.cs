@@ -67,7 +67,9 @@ public class VoyageManager : GenericGameManager {
       Instance instance = InstanceManager.self.createNewInstance(areaKey, false, true, voyageId, isPvP, isLeague, leagueIndex, leagueRandomSeed, difficulty, biome);
 
       // Immediately make the new voyage info accessible to other servers
-      ServerNetworkingManager.self.server.addNewVoyageInstance(instance, 0);
+      if (ServerNetworkingManager.self != null && ServerNetworkingManager.self.server != null) {
+         ServerNetworkingManager.self.server.addNewVoyageInstance(instance, 0);
+      }
 
       // For pvp instances, create the associated pvp game
       if (isPvP) {
