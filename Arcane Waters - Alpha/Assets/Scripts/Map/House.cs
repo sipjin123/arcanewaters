@@ -9,11 +9,8 @@ public class House : MonoBehaviour, IMapEditorDataReceiver
    // The tooltip game object
    public GameObject toolTipGameObj;
 
-   // The text label of the house
-   public TextMeshProUGUI textLabel;
-
-   // If this has shop data
-   public bool hasShopData = false;
+   // The display name of the target area
+   public string targetDisplayName = "";
 
    #endregion
 
@@ -31,12 +28,6 @@ public class House : MonoBehaviour, IMapEditorDataReceiver
                targetMapField = field;
                warp.gameObject.SetActive(true);
                break;
-            case DataField.NPC_SHOP_NAME_KEY:
-               if (textLabel) {
-                  hasShopData = true;
-                  textLabel.text = field.v;
-               }
-               break;
             case DataField.HOUSE_TARGET_SPAWN_KEY:
                if (string.IsNullOrWhiteSpace(field.v)) {
                   continue;
@@ -51,22 +42,11 @@ public class House : MonoBehaviour, IMapEditorDataReceiver
       }
 
       if (targetMapField != null) {
+         targetDisplayName = warp.targetInfo.displayName;
          warp.setAreaTarget(targetMapField);
       }
 
       warp.updateArrow();
-   }
-
-   public void onHoverEnter () {
-      if (toolTipGameObj && hasShopData) { 
-         toolTipGameObj.SetActive(true);
-      }
-   }
-
-   public void onHoverExit () {
-      if (toolTipGameObj && hasShopData) {
-         toolTipGameObj.SetActive(false);
-      }
    }
 
    #region Private Variables

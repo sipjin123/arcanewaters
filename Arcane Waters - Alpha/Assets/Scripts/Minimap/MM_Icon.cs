@@ -57,6 +57,17 @@ public class MM_Icon : ClientMonoBehaviour {
       return _image = GetComponent<Image>();
    }
 
+   public void onHoverEnter () {
+      if (tooltip != null && tooltip.text.Length > 0) {
+         Minimap.self.tooltipText.text = tooltip.text;
+         Minimap.self.toolTipContainer.SetActive(true);
+      }
+   }
+
+   public void onHoverExit () {
+      Minimap.self.toolTipContainer.SetActive(false);
+   }
+
    #region Private Variables
 
    // Our Image

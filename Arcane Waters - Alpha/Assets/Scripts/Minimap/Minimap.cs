@@ -333,8 +333,17 @@ public class Minimap : ClientMonoBehaviour {
          }
       }
 
+      foreach (House houseRef in area.GetComponentsInChildren<House>()) {
+         MM_Icon icon = Instantiate(buildingIconPrefab, this.iconContainer.transform);
+         icon.target = houseRef.gameObject;
+         icon.tooltip.text = houseRef.targetDisplayName;
+         icon.getImage().sprite = null;
+         icon.getImage().color = new Color(0, 0, 0, 0);
+         icon.transform.localScale = new Vector2(15, 15);
+      }
+
       // Create icons for all treasure chests
-      foreach(TreasureChest chest in TreasureManager.self.GetComponentsInChildren<TreasureChest>()) {
+      foreach (TreasureChest chest in TreasureManager.self.GetComponentsInChildren<TreasureChest>()) {
          if (!chest.hasBeenOpened()) {
             addTreasureChestIcon(chest.gameObject);
          }

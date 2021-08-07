@@ -32,7 +32,8 @@ public class ScreenSettingsManager : GenericGameManager {
 
    // The screen size that we consider 'large' and alter scaling for
    public static int largeScreenWidth = 2048;
-   public static int largeScreenHeight = 1536;
+   public static int largeScreenHeight = 1440;
+   public static int ultraLargeScreenWidth = 3048;
 
    // The time to wait before we finish applying screen mode settings
    public const float SCREEN_TRANSITION_TIME = 0.05f;
