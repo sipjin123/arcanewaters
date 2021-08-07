@@ -1560,6 +1560,18 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
+   public void Target_ReceivePvpChat (NetworkConnection conn, int instanceId, string message) {
+      ChatInfo chatInfo = new ChatInfo {
+         chatId = instanceId,
+         messageType = ChatInfo.Type.PvpAnnouncement,
+         text = message
+      };
+
+      // Add it to the Chat Manager
+      ChatManager.self.addChatInfo(chatInfo);
+   }
+
+   [TargetRpc]
    public void Target_ReceiveGroupInvitationNotification (NetworkConnection conn, int voyageGroupId, string inviterName) {
       VoyageGroupManager.self.receiveGroupInvitation(voyageGroupId, inviterName);
    }

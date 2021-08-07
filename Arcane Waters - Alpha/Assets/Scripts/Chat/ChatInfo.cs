@@ -27,6 +27,7 @@ public class ChatInfo
       Global = 12,
       Group = 13,
       Officer = 14,
+      PvpAnnouncement = 15
    };
 
    // The Chat ID from the database
