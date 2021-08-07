@@ -17,7 +17,11 @@ public class SpeakChatLine : ChatLine, IScrollHandler
 
    public override void OnPointerClick (PointerEventData eventData) {
       if (isValidInteraction()) {
-         PanelManager.self.contextMenuPanel.showDefaultMenuForUser(chatInfo.senderId, chatInfo.sender);
+         if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
+            ((PvpArenaPanel) PanelManager.self.get(Panel.Type.PvpArena)).togglePanel();
+         } else {
+            PanelManager.self.contextMenuPanel.showDefaultMenuForUser(chatInfo.senderId, chatInfo.sender);
+         }
       }
    }
 
@@ -37,7 +41,11 @@ public class SpeakChatLine : ChatLine, IScrollHandler
       }
    }
 
-   private bool isValidInteraction () {
+   public bool isValidInteraction () {
+      if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
+         return true;
+      }
+      
       return Global.player != null && Global.player.userId != chatInfo.senderId && chatInfo.senderId > 0;
    }
 

@@ -5,25 +5,41 @@ using UnityEngine.UI;
 using Mirror;
 using MLAPI.Messaging;
 using MapCreationTool.Serialization;
+using System;
+
+[Serializable]
+public class PvpAnnouncementClass {
+   // The state of the pvp session
+   public PvpGame.State pvpState;
+
+   #region Temp positions for spawning in game elements
+   // The pvp id
+   public int pvpId;
+
+   // The positions to spawn each shipyard, in the order: Top_A, Mid_A, Bot_A, Top_B, Mid_B, Bot_B
+   public List<Vector3> shipyardSpawnPositions;
+   // The instance id this pvp belongs to
+   public int instanceId;
+
+   // The positions of the centers of each lane, in the order: Top, Mid, Bot
+   public List<Vector3> laneCenterPositions;
+   // Last time the announcement has been triggered
+   public DateTime lastAnnouncementTime;
+
+   // The positions to spawn each tower, in the order: Top_A1, Top_A2, Mid_A1, Mid_A2, Bot_A1, Bot_A2, Base_A, Top_B1, Top_B2, Mid_B1, Mid_B2, Bot_B1, Bot_B2, Base_B
+   public List<Vector3> towerSpawnPositions;
+   // The timestamp per player that receives the announcement
+   public Dictionary<int, DateTime> playerTimeStamp = new Dictionary<int, DateTime>();
+}
 
 public class PvpManager : MonoBehaviour {
    #region Public Variables
 
-   #region Temp positions for spawning in game elements
+   // List of pvp announcement data
+   public List<PvpAnnouncementClass> pvpAnnouncementDataList = new List<PvpAnnouncementClass>();
 
-   // The positions to spawn each shipyard, in the order: Top_A, Mid_A, Bot_A, Top_B, Mid_B, Bot_B
-   public List<Vector3> shipyardSpawnPositions;
-
-   // The positions of the centers of each lane, in the order: Top, Mid, Bot
-   public List<Vector3> laneCenterPositions;
-
-   // The positions to spawn each tower, in the order: Top_A1, Top_A2, Mid_A1, Mid_A2, Bot_A1, Bot_A2, Base_A, Top_B1, Top_B2, Mid_B1, Mid_B2, Bot_B1, Bot_B2, Base_B
-   public List<Vector3> towerSpawnPositions;
-
-   // The positions to spawn each base, in the order: Base_A, Base_B
-   public List<Vector3> baseSpawnPositions;
-
-   #endregion
+   // If pvp maps are initialized
+   public bool pvpMapsInitialized;
 
    #region Wave / spawning variables
 
@@ -47,10 +63,85 @@ public class PvpManager : MonoBehaviour {
    // A reference to the singleton instance of this class
    public static PvpManager self;
 
+   // Interval between announcements in minutes
+   public const float ANNOUNCEMENT_INTERVAL = 5f;
+
+   // Interval between announcement checks in seconds
+   public const float ANNOUNCEMENT_CHECK_INTERVAL = 1;
+
    #endregion
 
    private void Awake () {
       self = this;
+   }
+
+   private void checkPvpForAnnouncement () {
+      if (!pvpMapsInitialized) {
+         return;
+      }
+
+      foreach (PvpAnnouncementClass pvpAnnouncement in pvpAnnouncementDataList) {
+         double announcementInterval = DateTime.UtcNow.Subtract(pvpAnnouncement.lastAnnouncementTime).TotalMinutes;
+
+         // If the pvp game is not a pregame or the announcement interval is less than the expected, skip
+         if (pvpAnnouncement.pvpState != PvpGame.State.PreGame) {
+            continue;
+         }
+
+         // Reset the timer
+         pvpAnnouncement.lastAnnouncementTime = DateTime.UtcNow;
+
+         if (_activeGames.ContainsKey(pvpAnnouncement.instanceId)) {
+            PvpGame activePvpGame = _activeGames[pvpAnnouncement.instanceId];
+            pvpAnnouncement.pvpState = activePvpGame.getGameState();
+            if (activePvpGame.getAllUsersInGame().Count > 0) {
+               foreach (NetworkedServer currServer in ServerNetworkingManager.self.servers) {
+                  foreach (KeyValuePair<int, AssignedUserInfo> userAssignedInfo in currServer.assignedUserIds) {
+                     // Only send the message to the players that are outside the pvp game
+                     if (activePvpGame.getAllUsersInGame().Contains(userAssignedInfo.Key)) {
+                        // Remove user from recipient of pvp announcement if they are already in the pvp game
+                        if (pvpAnnouncement.playerTimeStamp.ContainsKey(userAssignedInfo.Key)) {
+                           pvpAnnouncement.playerTimeStamp.Remove(userAssignedInfo.Key);
+                        }
+                        continue;
+                     }
+
+                     string mapName = AreaManager.self.getMapInfo(activePvpGame.areaKey).displayName;
+                     string message = "A battle is breaking out in " + mapName + "!  Click here to take part!";
+
+                     // Check if user is already registered, if so then check if time stamp meets the required announcement interval
+                     if (pvpAnnouncement.playerTimeStamp.ContainsKey(userAssignedInfo.Key)) {
+                        double playerAnnouncementInterval = DateTime.UtcNow.Subtract(pvpAnnouncement.playerTimeStamp[userAssignedInfo.Key]).TotalMinutes;
+                        if (playerAnnouncementInterval < ANNOUNCEMENT_INTERVAL) {
+                           continue;
+                        } else {
+                           pvpAnnouncement.playerTimeStamp[userAssignedInfo.Key] = DateTime.UtcNow;
+
+                           ChatInfo newChatInfo = new ChatInfo {
+                              senderId = pvpAnnouncement.instanceId,
+                              text = message,
+                              sender = mapName,
+                              recipient = userAssignedInfo.Key.ToString()
+                           };
+                           ServerNetworkingManager.self?.sendDirectChatMessage(newChatInfo);
+                        }
+                     } else {
+                        // Register user and send message announcing the new pvp
+                        pvpAnnouncement.playerTimeStamp.Add(userAssignedInfo.Key, DateTime.UtcNow);
+
+                        ChatInfo newChatInfo = new ChatInfo {
+                           senderId = pvpAnnouncement.instanceId,
+                           text = message,
+                           sender = mapName,
+                           recipient = userAssignedInfo.Key.ToString()
+                        };
+                        ServerNetworkingManager.self?.sendDirectChatMessage(newChatInfo);
+                     }
+                  }
+               }
+            }
+         }
+      }
    }
 
    public void startPvpManagement () {
@@ -116,6 +207,9 @@ public class PvpManager : MonoBehaviour {
             VoyageManager.self.requestVoyageInstanceCreation(areaKey, true, difficulty: 2, biome: areaData == null ? Biome.Type.Forest : areaData.biome);
          }
       }
+
+      pvpMapsInitialized = true;
+      InvokeRepeating(nameof(checkPvpForAnnouncement), 1, ANNOUNCEMENT_CHECK_INTERVAL);
    }
 
    [Server]
@@ -160,12 +254,19 @@ public class PvpManager : MonoBehaviour {
       PvpGame newGame = newGameObject.AddComponent<PvpGame>();
       newGame.init(instance.voyageId, instance.id, instance.areaKey);
       _activeGames[instance.id] = newGame;
+
+      pvpAnnouncementDataList.Add(new PvpAnnouncementClass {
+         instanceId = instance.id,
+         pvpState = PvpGame.State.PreGame,
+         lastAnnouncementTime = DateTime.UtcNow,
+         pvpId = instance.voyageId
+      });
    }
 
    [Server]
    private IEnumerator CO_CreateNewGameAndJoin (NetEntity player) {
       // Create a random voyage instance biome
-      VoyageManager.self.requestVoyageInstanceCreation(isPvP: true, difficulty: 2, biome: (Biome.Type) Random.Range(1, 6));
+      VoyageManager.self.requestVoyageInstanceCreation(isPvP: true, difficulty: 2, biome: (Biome.Type) UnityEngine.Random.Range(1, 6));
 
       // The voyage instance creation always takes at least two frames
       yield return null;

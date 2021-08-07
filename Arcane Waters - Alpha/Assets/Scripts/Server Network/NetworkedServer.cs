@@ -209,6 +209,37 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ServerRPC]
+   public void MasterServer_SendPvpAnnouncement (int chatId, string message, string senderName, string recipient) {
+      InvokeClientRpcOnEveryone(ClientRPCReceivePvpAnnouncement, chatId, message, senderName, recipient);
+   }
+
+   [ClientRPC]
+   public void ClientRPCReceivePvpAnnouncement (int chatId, string message, string senderName, string recipient) {
+      int recipientId = 0;
+      try {
+         recipientId = int.Parse(recipient);
+      } catch {
+      
+      }
+
+      if (recipientId < 1) {
+         return;
+      }
+
+      // Send the chat message to all users connected to this server
+      foreach (NetEntity netEntity in MyNetworkManager.getPlayers()) {
+         // Make sure that only players in voyage or battle will not receive this announcement
+         if (netEntity.battleId > 0 || netEntity is PlayerShipEntity) {
+            continue;
+         }
+
+         if (netEntity.userId == recipientId) {
+            netEntity.Target_ReceivePvpChat(netEntity.connectionToClient, chatId, message);
+         }
+      }
+   }
+
+   [ServerRPC]
    public void MasterServer_SendGlobalMessage (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, bool isSenderMuted, bool isSenderAdmin) {
       InvokeClientRpcOnEveryone(Server_ReceiveGlobalChatMessage, chatId, message, timestamp, senderName, senderUserId, guildIconDataString, isSenderMuted, isSenderAdmin);
    }

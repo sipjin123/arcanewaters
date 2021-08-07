@@ -457,6 +457,11 @@ public class ChatPanel : MonoBehaviour {
       chatLine.name = "Chat Message";
       chatLine.chatInfo = chatInfo;
 
+      if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
+         chatLine.text.text = string.Format("<color={0}>[PVP]:</color> <color={1}>{2}</color>", getSenderNameColor(chatInfo.messageType, false), getColorString(chatInfo.messageType, false), chatInfo.text);
+         return;
+      }
+
       // Assign guild icon parts if the guild info of the sender is available
       if (chatInfo.guildIconData != null) {
          rowGuildIcon.gameObject.SetActive(true);
@@ -472,18 +477,7 @@ public class ChatPanel : MonoBehaviour {
          isLocalPlayer = chatInfo.senderId == Global.player.userId ? true : false;
       }
 
-      // If sender is a non system chat
-      bool isUserChat = false;
-      switch (chatInfo.messageType) {
-         case ChatInfo.Type.Whisper:
-         case ChatInfo.Type.Global:
-         case ChatInfo.Type.Guild:
-         case ChatInfo.Type.Group:
-            isUserChat = true;
-            break;
-      }
-
-      if (chatInfo.senderId > 0 && isUserChat) {
+      if (chatInfo.senderId > 0) {
          // Filter out any bad words
          bool containsBadWord = BadWordManager.Contains(chatInfo.text);
          if (containsBadWord) {
@@ -568,6 +562,9 @@ public class ChatPanel : MonoBehaviour {
             }
             break;
          case ChatInfo.Type.System:
+            newColor = systemNameColor;
+            break;
+         case ChatInfo.Type.PvpAnnouncement:
             newColor = systemNameColor;
             break;
          case ChatInfo.Type.Whisper:
@@ -881,6 +878,8 @@ public class ChatPanel : MonoBehaviour {
             return isLocalPlayer ? officerChatLocalColor : officerChatOtherColor;
          case ChatInfo.Type.Group:
             return isLocalPlayer ? groupMessageLocalColor : groupMessageOtherColor;
+         case ChatInfo.Type.PvpAnnouncement:
+            return Color.magenta;
          case ChatInfo.Type.Emote:
             return Color.magenta;
          default:

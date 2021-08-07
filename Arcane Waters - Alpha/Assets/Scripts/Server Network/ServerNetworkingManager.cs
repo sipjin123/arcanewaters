@@ -216,6 +216,10 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_RegisterUserInTreasureSite, userId, voyageId, treasureSiteInstanceId);
    }
 
+   public void sendDirectChatMessage (ChatInfo chatInfo) {
+      server.InvokeServerRpc(server.MasterServer_SendPvpAnnouncement, chatInfo.chatId, chatInfo.text,chatInfo.sender, chatInfo.recipient);
+   }
+
    public void sendGlobalChatMessage (ChatInfo chatInfo) {
       server.InvokeServerRpc(server.MasterServer_SendGlobalMessage, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.isSenderMuted, chatInfo.isSenderAdmin);
    }
