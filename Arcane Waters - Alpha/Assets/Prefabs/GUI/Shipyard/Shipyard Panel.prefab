@@ -1105,7 +1105,7 @@ MonoBehaviour:
   rowsContainer: {fileID: 8539277744896419978}
   headAnim: {fileID: 2885897407543934504}
   greetingText: {fileID: 2885897406573963188}
-  shopName: None
+  shopId: 0
   headIconSprite: {fileID: 0}
   loadBlocker: {fileID: 327713467658568452}
   shipAbilityTooltip: {fileID: 45067076329174481}
@@ -2147,7 +2147,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 420, y: 390}
+  m_CellSize: {x: 420, y: 420}
   m_Spacing: {x: 0, y: 0}
   m_Constraint: 1
   m_ConstraintCount: 2
