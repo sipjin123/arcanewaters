@@ -166,7 +166,9 @@ public class BottomBar : MonoBehaviour {
       StoreScreen panel = (StoreScreen) PanelManager.self.get(Panel.Type.Store);
 
       if (!panel.isShowing()) {
-         Global.player.rpc.Cmd_RequestStoreFromServer();
+         if (Global.player != null) {
+            Global.player.rpc.Cmd_RequestStoreFromServer();
+         }
       } else {
          PanelManager.self.togglePanel(Panel.Type.Store);
       }

@@ -99,6 +99,11 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
          if (this.GetComponent<ItemCellInventory>() != null) {
             itemRarityType = this.GetComponent<ItemCellInventory>().itemRarityType;
          }
+         
+         // Get rarity level of items in the pvp shop panel
+         if (this.GetComponentInParent<PvpShopTemplate>() != null) {
+            itemRarityType = this.GetComponentInParent<PvpShopTemplate>().rarityType;
+         }
       }
 
       // Check if the tooltip text is being created dynamically at runtime (if so, there will be no entry in the xml document)
