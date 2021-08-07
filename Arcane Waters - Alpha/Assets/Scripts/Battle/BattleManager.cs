@@ -294,6 +294,7 @@ public class BattleManager : MonoBehaviour {
       battler = assignBattlerData(battle, battler, player, teamType);
       battler.health = battler.getStartingHealth(Enemy.Type.PlayerBattler);
       battler.enemyType = Enemy.Type.PlayerBattler;
+      battler.playerNetId = player.netId;
 
       // Figure out which Battle Spot we should be placed in
       battler.boardPosition = battle.getTeam(teamType).Count + 1;
@@ -421,6 +422,7 @@ public class BattleManager : MonoBehaviour {
       battler.companionId = companionId;
       battler.XP = battlerXp;
       battler.difficultyLevel = difficultyLevel;
+      battler.playerNetId = enemy.netId;
 
       // Set starting stats
       battler.battle = battle;

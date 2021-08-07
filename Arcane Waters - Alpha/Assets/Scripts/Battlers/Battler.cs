@@ -46,6 +46,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [SyncVar]
    public int battleId;
 
+   // Reference the net id of the player or the enemy body so that the client battler can fetch their player entity reference
+   [SyncVar]
+   public uint playerNetId;
+
    // Determines the enemy type which is used to retrieve enemy data from XML
    [SyncVar]
    public Enemy.Type enemyType;
@@ -315,8 +319,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       StartCoroutine(CO_AssignBattle());
 
       // Look up our associated player object
-      if (NetworkIdentity.spawned.ContainsKey(player.netId)) {
-         NetworkIdentity enemyIdent = NetworkIdentity.spawned[player.netId];
+      if (NetworkIdentity.spawned.ContainsKey(playerNetId)) {
+         NetworkIdentity enemyIdent = NetworkIdentity.spawned[playerNetId];
          this.player = enemyIdent.GetComponent<NetEntity>();
       } else {
          StartCoroutine(CO_AssignPlayerNetId());
@@ -487,11 +491,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    private IEnumerator CO_AssignPlayerNetId () {
       // Wait until the player is available in the spawned network identities
-      while (NetworkIdentity.spawned.ContainsKey(player.netId) == false) {
+      while (NetworkIdentity.spawned.ContainsKey(playerNetId) == false) {
          yield return 0;
       }
 
-      NetworkIdentity enemyIdent = NetworkIdentity.spawned[player.netId];
+      NetworkIdentity enemyIdent = NetworkIdentity.spawned[playerNetId];
       this.player = enemyIdent.GetComponent<NetEntity>();
       initializeBattler();
    }
