@@ -245,6 +245,13 @@ public class ShopManager : MonoBehaviour {
                Rarity.Type rarity = Rarity.getRandom();
 
                ShipInfo ship = Ship.generateNewShip(shipType, rarity);
+               List<int> abilityIdList = new List<int>();
+               foreach (ShipAbilityPair shipAbilities in shipData.shipAbilities) {
+                  abilityIdList.Add(shipAbilities.abilityId);
+               }
+               ship.shipAbilities = new ShipAbilityInfo {
+                  ShipAbilities = abilityIdList.ToArray()
+               };
                ship.shipId = _shipId--;
 
                if (Util.isCloudBuild()) {

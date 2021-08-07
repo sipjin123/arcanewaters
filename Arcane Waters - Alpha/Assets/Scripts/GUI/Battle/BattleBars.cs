@@ -119,6 +119,11 @@ public class BattleBars : MonoBehaviour {
          return;
       }
 
+      if (_battler.isDead()) {
+         _canvasGroup.alpha = 0f;
+         return;
+      }
+
       // Set our text values
       if (_battler.battlerType == BattlerType.AIEnemyControlled) {
          nameText.text = _battler.getBattlerData().enemyName;
