@@ -375,7 +375,8 @@ namespace MapCreationTool.Serialization
 
       public const string LOOT_GROUP_ID = "loot group id";
       public const string SPAWN_FREQUENCY = "spawn frequency";
-      
+      public const string POWERUP_DURATION = "powerup duration";
+
       public const string SHOP_ID = "shop id";
 
       public string k; // Key

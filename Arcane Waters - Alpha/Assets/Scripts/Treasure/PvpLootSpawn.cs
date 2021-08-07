@@ -14,6 +14,9 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
    [SyncVar]
    public int lootGroupId;
 
+   // The powerup duration
+   public int powerupDuration;
+
    // If this loot spawner is active
    [SyncVar]
    public bool isActive;
@@ -79,7 +82,13 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
       if (NetworkServer.active && isActive) {
          PlayerShipEntity playerEntity = collision.GetComponent<PlayerShipEntity>();
          if (playerEntity != null && playerEntity.instanceId == instanceId) {
-            playerEntity.rpc.Target_ReceivePowerup(powerupType, collision.transform.position);
+            Rarity.Type randomRarity = Rarity.getRandom();
+            playerEntity.rpc.Target_ReceivePowerup(powerupType, randomRarity, collision.transform.position);
+            PowerupManager.self.addPowerupServer(playerEntity.userId, new Powerup {
+               powerupDuration = powerupDuration,
+               powerupRarity = randomRarity,
+               powerupType = powerupType
+            });
             updatePowerup(false, 0);
             Rpc_ToggleDisplay(false, 0);
             initializeSpawner(spawnFrequency);
@@ -133,6 +142,14 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
          if (field.k.CompareTo(DataField.LOOT_GROUP_ID) == 0) {
             try {
                lootGroupId = int.Parse(field.v);
+            } catch {
+
+            }
+         }
+
+         if (field.k.CompareTo(DataField.POWERUP_DURATION) == 0) {
+            try {
+               powerupDuration = int.Parse(field.v);
             } catch {
 
             }

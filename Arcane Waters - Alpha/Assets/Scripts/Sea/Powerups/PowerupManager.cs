@@ -141,6 +141,9 @@ public class PowerupManager : MonoBehaviour {
    private float getTotalBoostFactor (List<Powerup> powerups) {
       float boostFactor = 1.0f;
 
+      if (powerups == null || powerups.Count < 1) {
+         return boostFactor;
+      }
       PowerupData data = getPowerupData(powerups[0].powerupType);
 
       foreach (Powerup powerup in powerups) {
@@ -341,6 +344,10 @@ public class PowerupManager : MonoBehaviour {
    }
 
    private CannonballEffector getEffector (List<Powerup> powerups) {
+      if (powerups.Count < 1) {
+         return null;
+      }
+
       Powerup.Type type = powerups[0].powerupType;
       float totalBoostFactor = getTotalBoostFactor(powerups);
       float totalBoostFactorAdditive = totalBoostFactor - 1.0f;

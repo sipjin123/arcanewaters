@@ -330,6 +330,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42673b8d6e2f160428bc5af03a7a5a7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  outline: {fileID: 0}
 --- !u!114 &-7266159090695321493
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -350,6 +351,10 @@ MonoBehaviour:
   - name: spawn frequency
     defaultValue: 60
     toolTip: How frequent will this loot spawn in seconds
+    type: 1
+  - name: powerup duration
+    defaultValue: 60
+    toolTip: How long the powerup will take effect
     type: 1
   selectDataFields: []
   customDataFields:
@@ -847,7 +852,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outlineRenderer: {fileID: 0}
   _renderers: []
-  _isVisible: 0
 --- !u!1 &6740449294071130297
 GameObject:
   m_ObjectHideFlags: 0
