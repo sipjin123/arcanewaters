@@ -95,9 +95,11 @@ MonoBehaviour:
   silverDeltaText: {fileID: 1189674974466633742}
   silverDeltaTextDurationSeconds: 0
   killEventNotificationList: {fileID: 8655019171349889492}
-  KillEventNotificationPrefab: {fileID: 2553925257659274683, guid: 9514b698c1b749643bc60f14b12c22bc,
+  killEventNotificationPrefab: {fileID: 2553925257659274683, guid: 9514b698c1b749643bc60f14b12c22bc,
     type: 3}
-  KillEventsCountMax: 5
+  killEventsCountMax: 5
+  positiveDeltaColor: {r: 0.18431373, g: 0.62352943, b: 0.21960784, a: 1}
+  negativeDeltaColor: {r: 0.8490566, g: 0.26032397, b: 0.26032397, a: 1}
 --- !u!114 &5326953934425623717
 MonoBehaviour:
   m_ObjectHideFlags: 0
