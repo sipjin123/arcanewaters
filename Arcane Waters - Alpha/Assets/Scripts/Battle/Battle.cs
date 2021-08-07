@@ -162,6 +162,10 @@ public class Battle : NetworkBehaviour {
                         battler.health -= BURN_DAMAGE_PER_TICK;
                         battler.displayedHealth -= BURN_DAMAGE_PER_TICK;
                         Rpc_DealDamagePerTick(battleId, battler.userId, BURN_DAMAGE_PER_TICK, Element.Fire);
+
+                        if (battler.health < 1) {
+                           battler.isAlreadyDead = true;
+                        }
                         break;
                      case Status.Type.Frozen:
                         battler.isDisabledByDebuff = true;
