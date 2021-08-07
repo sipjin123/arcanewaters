@@ -679,7 +679,7 @@ public class RPCManager : NetworkBehaviour
          PowerupManager.self.addPowerupServer(_player.userId, newPowerUp);
          Target_AddPowerup(_player.connectionToClient, newPowerUp);
       } else {
-         if (item.category == Item.Category.None) {
+         if (!Item.isValidItem(item)) {
             if (_player) {
                Instance currInstance = InstanceManager.self.getInstance(_player.instanceId);
                D.debug("Cannot process Loot bag rewards for chest {" + chestId + "}! Category is None for: " +
@@ -688,7 +688,9 @@ public class RPCManager : NetworkBehaviour
             } else {
                D.debug("Cannot process Loot bag rewards for chest {" + chestId + "}! Category is None, NetEntityNotFound");
             }
-            return;
+
+            // Replace invalid item into default item
+            item = Item.defaultLootItem();
          }
 
          // Grant the rewards to the user
@@ -5282,8 +5284,9 @@ public class RPCManager : NetworkBehaviour
       // Create or update the database item
       List<Item> newDatabaseItemList = new List<Item>();
       foreach (Item item in rewardList) {
-         Item newDatabaseItem = new Item { category = Item.Category.Blueprint, count = item.count, data = "" };
+         Item newDatabaseItem = Item.defaultLootItem();
          if (item.category == Item.Category.Blueprint) {
+            newDatabaseItem = new Item { category = Item.Category.Blueprint, count = item.count, data = "" };
             CraftableItemRequirements itemCache = CraftingManager.self.getCraftableData(item.itemTypeId);
             if (itemCache == null) {
                D.debug("Failed to get crafting data of itemType: " + item.itemTypeId);
@@ -5315,9 +5318,9 @@ public class RPCManager : NetworkBehaviour
             item.paletteNames = PaletteSwapManager.DEFAULT_ARMOR_PALETTE_NAMES;
          }
 
-         if (newDatabaseItem.category == Item.Category.None) {
+         if (!Item.isValidItem(newDatabaseItem)) {
             D.debug("Aborting item reward to player, None Category for: giveItemRewardsToPlayer()");
-            return;
+            newDatabaseItem = Item.defaultLootItem();
          }
 
          // Add to list

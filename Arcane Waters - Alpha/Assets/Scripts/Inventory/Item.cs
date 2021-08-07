@@ -9,7 +9,7 @@ public class Item {
    #region Public Variables
 
    // The category of item this is
-   public enum Category { None = 0, Weapon = 1, Armor = 2, Hats = 3, Potion = 4, Usable = 5, CraftingIngredients = 6 , Blueprint  = 7, Currency = 8, Quest_Item = 9 }
+   public enum Category { None = 0, Weapon = 1, Armor = 2, Hats = 3, Potion = 4, Usable = 5, CraftingIngredients = 6, Blueprint = 7, Currency = 8, Quest_Item = 9 }
 
    // The durability filter being used by the item
    public enum DurabilityFilter { None = 0, MaxDurability = 1, ReducedDurability = 2 }
@@ -63,6 +63,25 @@ public class Item {
 
    public Item () {
 
+   }
+
+   public static bool isValidItem (Item item) {
+      bool isValid = (item.category != Item.Category.None && item.itemTypeId > 0 && item.count > 0);
+      if (!isValid) {
+         D.debug("An invalid Item was being used! I:{" + item.id + "} C:{" + item.category + "} T:{" + item.itemTypeId + "}");
+      }
+      return isValid;
+   }
+
+   public static Item defaultLootItem () {
+      return new Item {
+         category = Category.CraftingIngredients,
+         count = 1,
+         itemTypeId = (int) CraftingIngredients.Type.Wood,
+         data = "",
+         durability = 100,
+         itemName = CraftingIngredients.Type.Wood.ToString(),
+      };
    }
 
    public void setBasicInfo (string name, string description, string iconPath) {

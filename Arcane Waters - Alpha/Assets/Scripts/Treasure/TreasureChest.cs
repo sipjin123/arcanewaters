@@ -300,18 +300,14 @@ public class TreasureChest : NetworkBehaviour {
          D.error("There are no treasure drops generated for Biome:{" + biome + "}");
       } else {
          TreasureDropsData randomEntry = treasureDropsList.ChooseRandom();
-         if (randomEntry.item != null) {
+         if (randomEntry.item != null && Item.isValidItem(randomEntry.item)) {
             return randomEntry.item;
          } else {
             D.error("Random Entry found is: NULL for biome {" + biome + "}");
          }
       }
 
-      return new Item {
-         category = Item.Category.CraftingIngredients,
-         count = 1,
-         itemTypeId = (int) CraftingIngredients.Type.Wood,
-      };
+      return Item.defaultLootItem();
    }
 
    public Powerup.Type getPowerUp () {
@@ -329,23 +325,23 @@ public class TreasureChest : NetworkBehaviour {
       SeaMonsterEntity.Type monsterType = (SeaMonsterEntity.Type) enemyType;
       SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getMonster(monsterType);
       D.adminLog("Getting sea monster contents {" + seaMonsterData.lootGroupId + "}", D.ADMIN_LOG_TYPE.Treasure);
-      return getGenericMonsterContent(seaMonsterData.lootGroupId, seaMonsterData.monsterName);
+      return getGenericMonsterContent(seaMonsterData.lootGroupId, seaMonsterData.monsterName, false);
    }
 
    public Item getLandMonsterLootContents () {
       Enemy.Type monsterType = (Enemy.Type) enemyType;
       BattlerData battlerData = MonsterManager.self.getBattlerData(monsterType);
       D.adminLog("Getting land monster contents {" + battlerData.lootGroupId + "}", D.ADMIN_LOG_TYPE.Treasure);
-      return getGenericMonsterContent(battlerData.lootGroupId, monsterType.ToString());
+      return getGenericMonsterContent(battlerData.lootGroupId, monsterType.ToString(), true);
    }
 
-   private Item getGenericMonsterContent (int lootGroupId, string monsterName) {
+   private Item getGenericMonsterContent (int lootGroupId, string monsterName, bool isLandMonster) {
       List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(lootGroupId, rarity);
       if (treasureDropsDataList.Count < 1) {
          D.debug("Error here! Something went wrong with treasure drops (Blank List), Loot ID: {" + lootGroupId + "} Rarity is {" + rarity + "}");
       } else {
          foreach (TreasureDropsData newData in treasureDropsDataList) {
-            if (newData.item != null) {
+            if (newData.item != null && Item.isValidItem(newData.item)) {
                D.adminLog("Treasure drops Content :: " +
                   "Category: {" + newData.item.category + "} " +
                   "TypeID: {" + newData.item.itemTypeId + "} " +
@@ -358,19 +354,17 @@ public class TreasureChest : NetworkBehaviour {
             D.debug("Error here! Something went wrong with treasure drops (NULL Data)," +
                " Loot ID: {" + lootGroupId + "} Rarity is {" + rarity + "} for monster {" + monsterName + "}");
          } else {
-            if (treasureData.item != null) {
-               treasureData.item.count = Random.Range(treasureData.dropMinCount, treasureData.dropMaxCount);
+            if (treasureData.item != null && Item.isValidItem(treasureData.item)) {
+               treasureData.item.count = Random.Range(treasureData.dropMinCount > 0 ? treasureData.dropMinCount : 1, treasureData.dropMaxCount);
+               return treasureData.item;
             }
-            return treasureData.item;
          }
       }
-
-      return new Item {
-         category = Item.Category.CraftingIngredients,
-         itemTypeId = (int) CraftingIngredients.Type.Wood,
-         count = 1,
-         data = ""
-      };
+      if (isLandMonster) {
+         return Item.defaultLootItem();
+      } else {
+         return new Item();
+      }
    }
 
    public bool hasBeenOpened () {
