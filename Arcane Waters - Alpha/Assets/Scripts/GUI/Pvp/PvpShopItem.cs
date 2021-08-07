@@ -4,6 +4,9 @@
 public class PvpShopItem {
    #region Public Variables
 
+   // If this item is disabled
+   public bool isDisabled;
+
    // Auto generated id
    public int itemId;
 
@@ -25,6 +28,9 @@ public class PvpShopItem {
 
    // The type of shop item
    public PvpShopItemType shopItemType;
+
+   // The rarity type
+   public Rarity.Type rarityType;
 
    public enum PvpShopItemType
    {

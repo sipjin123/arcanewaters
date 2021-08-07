@@ -267,6 +267,7 @@ public class MyNetworkManager : NetworkManager
       MonsterManager.self.initializeLandMonsterDataCache();
       ShipAbilityManager.self.initializDataCache();
       ShopXMLManager.self.initializDataCache();
+      PvpShopManager.self.initializDataCache();
       AbilityManager.self.initializeAbilities();
       BackgroundGameManager.self.initializeDataCache();
       EquipmentXMLManager.self.initializeDataCache();

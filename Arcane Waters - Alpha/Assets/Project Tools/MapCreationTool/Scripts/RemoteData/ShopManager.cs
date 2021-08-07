@@ -21,6 +21,9 @@ namespace MapCreationTool
       // Shop data cache
       public Dictionary<int, ShopData> shopDataCollection { get; private set; }
 
+      // Pvp Shop data cache
+      public Dictionary<int, PvpShopData> pvpShopDataCollection { get; private set; }
+
       // Finished loading
       public bool loaded { get; private set; }
 
@@ -40,19 +43,26 @@ namespace MapCreationTool
          return _shopDataArray.Select(n => new SelectOption(n.shopId.ToString(), n.shopName)).ToArray();
       }
 
+      public SelectOption[] formPvpShopSelectionOptions () {
+         return _pvpShopDataArray.Select(n => new SelectOption(n.shopId.ToString(), n.shopName)).ToArray();
+      }
+
       private void loadAllShop () {
          shopDataCollection = new Dictionary<int, ShopData>();
+         pvpShopDataCollection = new Dictionary<int, PvpShopData>();
 
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             List<XMLPair> rawXMLData = DB_Main.getShopXML();
+            List<XMLPair> rawPvpXMLData = DB_Main.getPvpShopXML();
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               setData(rawXMLData);
+               setShopData(rawXMLData);
+               setPvpShopData(rawPvpXMLData);
             });
          });
       }
 
-      private void setData (List<XMLPair> xmlPairGroup) {
+      private void setShopData (List<XMLPair> xmlPairGroup) {
          try {
             foreach (XMLPair xmlPair in xmlPairGroup) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
@@ -79,6 +89,33 @@ namespace MapCreationTool
          OnLoaded?.Invoke();
       }
 
+      private void setPvpShopData (List<XMLPair> xmlPairGroup) {
+         try {
+            foreach (XMLPair xmlPair in xmlPairGroup) {
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
+               PvpShopData shopData = Util.xmlLoad<PvpShopData>(newTextAsset);
+               shopData.shopId = xmlPair.xmlId;
+               if (shopData == null) {
+                  Utilities.warning($"Failed to load shopData");
+                  continue;
+               }
+
+               // Save the Shop data in the memory cache
+               if (!pvpShopDataCollection.ContainsKey(xmlPair.xmlId)) {
+                  pvpShopDataCollection.Add(xmlPair.xmlId, shopData);
+               }
+            }
+
+            _pvpShopDataArray = pvpShopDataCollection.OrderBy(n => n.Key).Select(n => n.Value).ToArray();
+         } catch (Exception ex) {
+            Utilities.warning("Failed to load shop manager. Exception:\n" + ex);
+            UI.messagePanel.displayError("Failed to load shop manager. Exception:\n" + ex);
+         }
+
+         loaded = true;
+         OnLoaded?.Invoke();
+      }
+
       public int shopEntryCount
       {
          get { return _shopDataArray.Length; }
@@ -88,6 +125,9 @@ namespace MapCreationTool
 
       // Array of shop data loaded
       private ShopData[] _shopDataArray = new ShopData[0];
+
+      // Array of pvp shop data loaded
+      private PvpShopData[] _pvpShopDataArray = new PvpShopData[0];
 
       #endregion
    }

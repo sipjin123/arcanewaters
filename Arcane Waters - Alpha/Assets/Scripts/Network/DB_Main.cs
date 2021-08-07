@@ -3058,6 +3058,45 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new List<XMLPair> getPvpShopXML () {
+      List<XMLPair> rawDataList = new List<XMLPair>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM global.pvp_shop_xml", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  bool isActive = dataReader.GetInt32("isActive") == 1 ? true : false;
+                  string xmlContent = dataReader.GetString("xmlContent");
+                  int xmlId = dataReader.GetInt32("xmlId");
+                  int creatorId = dataReader.GetInt32("creatorUserId");
+
+                  XMLPair newPair = new XMLPair {
+                     isEnabled = isActive,
+                     rawXmlData = xmlContent,
+                     xmlId = xmlId,
+                     xmlOwnerId = creatorId
+                  };
+                  if (newPair.isEnabled) {
+                     rawDataList.Add(newPair);
+                  } else {
+                     D.editorLog("Ignoring shop entry id: " + newPair.xmlId, Color.red);
+                  }
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return rawDataList;
+   }
+
    public static new List<XMLPair> getShopXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {

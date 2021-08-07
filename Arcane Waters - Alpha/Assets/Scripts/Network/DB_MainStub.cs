@@ -74,6 +74,10 @@ public class DB_MainStub : MonoBehaviour
       return "";
    }
 
+   public static List<XMLPair> getPvpShopXML () {
+      return new List<XMLPair>();
+   }
+
    public static TreasureStateData getTreasureStateForChest (int userId, int chestId, string areaId) {
       return new TreasureStateData();
    }

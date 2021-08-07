@@ -3429,6 +3429,104 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
+   public void Cmd_RequestPvpShopData (int shopId) {
+      PvpShopData shopData = PvpShopManager.self.getShopData(shopId);
+
+      if (shopData == null) {
+         D.debug("Invalid Shop Data! " + shopId);
+         return;
+      }
+
+      if (GameStatsManager.self.isUserRegistered(_player.userId)) {
+         // Disabled shop items here if needed
+         foreach (PvpShopItem shopItem in shopData.shopItems) {
+            if (shopItem.shopItemType == PvpShopItem.PvpShopItemType.Stats) {
+               shopItem.isDisabled = true;
+            }
+         }
+
+         int userSilver = GameStatsManager.self.getSilverAmount(_player.userId);
+         Target_ProcessShopData(_player.connectionToClient, shopData.shopId, userSilver, shopData.shopName, shopData.shopDescription, Util.serialize(shopData.shopItems));
+      } else {
+         D.debug("Warning, user {" + _player.userId + "} does not exist in the game stat manager");
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ProcessShopData (NetworkConnection conn, int shopId, int userSilver, string shopName, string shopInfo, string[] serializedShopItems) {
+      List<PvpShopItem> pvpShopList = Util.unserialize<PvpShopItem>(serializedShopItems);
+
+      PvpShopPanel panel = PvpShopPanel.self;
+      panel.showEntirePanel();
+      panel.displayName.text = shopName;
+      panel.description.text = shopInfo;
+      panel.userSilver = userSilver;
+      panel.shopId = shopId;
+      panel.userSilverText.text = userSilver.ToString();
+      panel.populateShop(pvpShopList);
+   }
+
+   [Command]
+   public void Cmd_BuyPvpItem (int shopItemId, int shopId) {
+      PvpShopData shopData = PvpShopManager.self.getShopData(shopId);
+      if (shopData == null) {
+         D.debug("Shop data is null for id: " + shopId);
+         return;
+      }
+
+      PvpShopItem shopItem = shopData.shopItems.Find(_ => _.itemId == shopItemId);
+      if (shopItem == null) {
+         D.debug("Shop item is null for id: " + shopItemId);
+         return;
+      }
+
+      if (_player is PlayerShipEntity) {
+         SeaEntity seaEntity = (SeaEntity) _player;
+         if (GameStatsManager.self.isUserRegistered(_player.userId)) {
+            GameStatsManager.self.addSilverAmount(_player.userId, -shopItem.itemCost);
+            int userSilver = GameStatsManager.self.getSilverAmount(_player.userId);
+            Target_ReceivePvpShopResult(seaEntity.connectionToClient, userSilver, Util.serialize(new List<PvpShopItem> { shopItem }));
+            seaEntity.Target_ReceiveSilverCurrency(seaEntity.connectionToClient, -shopItem.itemCost, SilverManager.SilverRewardReason.None);
+
+            switch (shopItem.shopItemType) {
+               case PvpShopItem.PvpShopItemType.Powerup:
+                  seaEntity.rpc.Target_ReceivePowerup((Powerup.Type) shopItem.itemId, shopItem.rarityType, seaEntity.transform.position);
+                  PowerupManager.self.addPowerupServer(seaEntity.userId, new Powerup {
+                     powerupRarity = shopItem.rarityType,
+                     powerupType = (Powerup.Type) shopItem.itemId
+                  });
+                  break;
+               case PvpShopItem.PvpShopItemType.Ship:
+
+                  break;
+               case PvpShopItem.PvpShopItemType.Ability:
+
+                  break;
+            }
+         } else {
+            D.debug("Warning, user {" + _player.userId + "} does not exist in the game stat manager");
+         }
+      } else {
+         D.debug("Warning, user {" + _player.userId + "} is not a ship");
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ReceivePvpShopResult (NetworkConnection conn, int remainingSilver, string[] serializedShopItems) {
+      List<PvpShopItem> pvpShopList = Util.unserialize<PvpShopItem>(serializedShopItems);
+      if (pvpShopList.Count < 1) {
+         return;
+      }
+
+      PvpShopPanel panel = PvpShopPanel.self;
+      panel.hideEntirePanel();
+      panel.enableShopButton(true);
+      panel.userSilver = remainingSilver;
+      panel.userSilverText.text = remainingSilver.ToString();
+      panel.receivePurchaseResult(pvpShopList[0]);
+   }
+
+   [Command]
    public void Cmd_BuyItem (int shopItemId, int shopId) {
       Item newItem = null;
       Item shopItem = ShopManager.self.getItem(shopItemId);
