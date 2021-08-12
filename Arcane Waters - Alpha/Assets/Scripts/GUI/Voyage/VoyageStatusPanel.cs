@@ -146,7 +146,8 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       } else {
          treasureSiteCountText.text = (instance.treasureSiteCount - instance.capturedTreasureSiteCount).ToString() + "/" + instance.treasureSiteCount;
       }
-      aliveEnemiesCountText.text = instance.aliveNPCEnemiesCount.ToString() + "/" + (instance.getTotalNPCEnemyCount()).ToString();
+      string aliveEnemiesCount = (instance.aliveNPCEnemiesCount == -1) ? "0" : instance.aliveNPCEnemiesCount.ToString();
+      aliveEnemiesCountText.text = aliveEnemiesCount + "/" + (instance.getTotalNPCEnemyCount()).ToString();
       lobbyText.text = Voyage.getLeagueAreaName(instance.leagueIndex);
 
       // If the panel is collapsed, there is no need to update the rest

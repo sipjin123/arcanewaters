@@ -315,11 +315,10 @@ public class SeaEntity : NetEntity
             }
          }
 
-         if (Global.player != null) {
-            // If the tutorial is waiting for a bot ship defeat, test if the conditions are met
-            if (hasBeenAttackedBy(Global.player) && isClient && TutorialManager3.self.getCurrentTrigger() == TutorialTrigger.DefeatPirateShip) {
-               TutorialManager3.self.tryCompletingStep(TutorialTrigger.DefeatPirateShip);
-            }
+         // If the tutorial is waiting for a bot ship defeat, test if the conditions are met
+         if (Global.player != null && TutorialManager3.self.getCurrentTrigger() == TutorialTrigger.DefeatPirateShip && !_isDefeatShipTutorialTriggered && hasBeenAttackedBy(Global.player)) {
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.DefeatPirateShip);
+            _isDefeatShipTutorialTriggered = true;
          }
 
          if (this is SeaMonsterEntity) {
@@ -1976,6 +1975,9 @@ public class SeaEntity : NetEntity
 
    // When set to true, the sprites for this sea entity will 'sink' on death
    protected bool _sinkOnDeath = true;
+
+   // Gets set to true when the 'defeatship' tutorial has been triggered
+   protected bool _isDefeatShipTutorialTriggered = false;
 
    #endregion
 

@@ -119,7 +119,6 @@ public class PvpGame : MonoBehaviour {
       PowerupManager.self.clearPowerupsForUser(userId);
 
       if (_gameState == State.PreGame) {
-         GameStatsManager.self.registerUser(userId, userName, assignedTeam.teamType);
          addPlayerToPreGame(userId, userName);
       } else if (_gameState == State.InGame) {
          GameStatsManager.self.registerUser(userId, userName, assignedTeam.teamType);
@@ -226,7 +225,7 @@ public class PvpGame : MonoBehaviour {
          player.pvpTeam = teamType;
 
          // Generate stat data for this player
-         GameStatsManager.self.registerUser(player.userId);
+         GameStatsManager.self.registerUser(player.userId, player.entityName, player.pvpTeam);
 
          // Remove the user from its current group
          if (player.tryGetGroup(out VoyageGroupInfo currentGroup)) {
@@ -337,7 +336,7 @@ public class PvpGame : MonoBehaviour {
                assignedTeam.Add(userId);
 
                // Generate stat data for this player
-               GameStatsManager.self.registerUser(player.userId);
+               GameStatsManager.self.registerUser(player.userId, player.entityName, bestTeam);
 
                // Remove the user from its current group
                if (player.tryGetGroup(out VoyageGroupInfo currentGroup)) {
@@ -617,7 +616,7 @@ public class PvpGame : MonoBehaviour {
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                DB_Main.setNewLocalPosition(userId, spawnPosition, Direction.North, areaKey);
             });
-               
+
             Util.setLocalXY(player.transform, spawnPosition);
          }
       }
@@ -719,8 +718,8 @@ public class PvpGame : MonoBehaviour {
       // If base positions have been setup, return the position of the team's base
       if ((int)teamType < _basePositions.Count) {
          spawnPosition = _basePositions[(int) teamType];
-      
-      // Otherwise, use spawns from map editor
+
+         // Otherwise, use spawns from map editor
       } else {
          int teamIndex = (int) (teamType) - 1;
          SpawnManager.MapSpawnData mapSpawnData = SpawnManager.self.getAllMapSpawnData(areaKey);

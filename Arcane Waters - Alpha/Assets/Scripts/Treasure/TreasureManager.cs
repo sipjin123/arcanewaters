@@ -293,6 +293,19 @@ public class TreasureManager : MonoBehaviour {
       return true;
    }
 
+   [Server]
+   public bool areAllChestsOpenedForGroup (int instanceId, List<int> userList) {
+      foreach (TreasureChest chest in _chests.Values) {
+         if (chest.instanceId == instanceId && chest.chestType == ChestSpawnType.Site) {
+            if (userList.Except(chest.userIds).Any()) {
+               return false;
+            }
+         }
+      }
+
+      return true;
+   }
+
    #region Private Variables
 
    // Stores the treasure chests we've created

@@ -12,22 +12,15 @@ public class PvpAnnouncementClass {
    // The state of the pvp session
    public PvpGame.State pvpState;
 
-   #region Temp positions for spawning in game elements
    // The pvp id
    public int pvpId;
 
-   // The positions to spawn each shipyard, in the order: Top_A, Mid_A, Bot_A, Top_B, Mid_B, Bot_B
-   public List<Vector3> shipyardSpawnPositions;
    // The instance id this pvp belongs to
    public int instanceId;
 
-   // The positions of the centers of each lane, in the order: Top, Mid, Bot
-   public List<Vector3> laneCenterPositions;
    // Last time the announcement has been triggered
    public DateTime lastAnnouncementTime;
 
-   // The positions to spawn each tower, in the order: Top_A1, Top_A2, Mid_A1, Mid_A2, Bot_A1, Bot_A2, Base_A, Top_B1, Top_B2, Mid_B1, Mid_B2, Bot_B1, Bot_B2, Base_B
-   public List<Vector3> towerSpawnPositions;
    // The timestamp per player that receives the announcement
    public Dictionary<int, DateTime> playerTimeStamp = new Dictionary<int, DateTime>();
 }
@@ -220,16 +213,16 @@ public class PvpManager : MonoBehaviour {
          return;
       }
 
-      // Count the number of pvp instances in pre-game state in all servers
-      int preGameCount = 0;
+      // Count the number of open pvp instances in all servers
+      int openGameCount = 0;
       foreach (Voyage pvpInstance in VoyageManager.self.getAllPvpInstances()) {
-         if (pvpInstance.pvpGameState == PvpGame.State.PreGame) {
-            preGameCount++;
+         if (PvpGame.canGameBeJoined(pvpInstance)) {
+            openGameCount++;
          }
       }
 
       // If there are missing games, create one
-      if (preGameCount < PRE_GAME_INSTANCES_COUNT) {
+      if (openGameCount < OPEN_GAME_INSTANCES_COUNT) {
          List<string> pvpArenaAreaKeys = VoyageManager.self.getPvpArenaAreaKeys();
 
          if (pvpArenaAreaKeys.Count == 0) {
@@ -299,8 +292,27 @@ public class PvpManager : MonoBehaviour {
       // We will find the game with the highest number of players, that hasn't yet started
       Voyage bestGameInstance = null;
       int mostPlayers = 0;
+
+      List<Voyage> voyages = VoyageManager.self.getAllPvpInstances();
+
+      #if UNITY_EDITOR
+
+      if (voyages == null) {
+         return bestGameInstance;
+      }
+
+      // Try searching for the chosen map
+      bestGameInstance = voyages.Find(_ => _.areaKey == currentMap || _.areaName == currentMap);
       
-      foreach (Voyage pvpInstance in VoyageManager.self.getAllPvpInstances()) {
+      if (bestGameInstance != null) {
+         if (bestGameInstance.pvpGameState == PvpGame.State.InGame || bestGameInstance.pvpGameState == PvpGame.State.PreGame) {
+            return bestGameInstance;
+         }
+      }
+
+      #endif
+
+      foreach (Voyage pvpInstance in voyages) {
          // Ignore games that are in post-game / invalid
          if (pvpInstance.pvpGameState == PvpGame.State.None || pvpInstance.pvpGameState == PvpGame.State.PostGame) {
             continue;
@@ -384,9 +396,9 @@ public class PvpManager : MonoBehaviour {
    public static string getFlagPaletteForTeam (PvpTeamType teamType) {
       switch (teamType) {
          case PvpTeamType.A:
-            return "flag_green";
+            return "flag_naturalists";
          case PvpTeamType.B:
-            return "flag_red";
+            return "flag_privateers";
          default:
             return "flag_white";
       }
@@ -395,9 +407,9 @@ public class PvpManager : MonoBehaviour {
    public static string getShipPaletteForTeam (PvpTeamType teamType) {
       switch (teamType) {
          case PvpTeamType.A:
-            return "ship_flag_green_3";
+            return "ship_flag_naturalists";
          case PvpTeamType.B:
-            return "ship_flag_red";
+            return "ship_flag_privateers";
          default:
             return "ship_flag_white";
       }
@@ -406,9 +418,9 @@ public class PvpManager : MonoBehaviour {
    public static string getStructurePaletteForTeam (PvpTeamType teamType) {
       switch (teamType) {
          case PvpTeamType.A:
-            return "structure_green_outline, structure_green_fill";
+            return "structure_naturalists_outline, structure_naturalists_fill";
          case PvpTeamType.B:
-            return "structure_red_outline, structure_red_fill";
+            return "structure_privateers_outline, structure_privateers_fill";
          default:
             return "structure_white_outline, structure_white_fill";
       }
@@ -419,8 +431,8 @@ public class PvpManager : MonoBehaviour {
    // After how long the game creation will time out
    private const double INSTANCE_CREATION_TIMEOUT = 1.0;
 
-   // The number of pvp games that must always be available in pre-game state
-   private const int PRE_GAME_INSTANCES_COUNT = 10;
+   // The number of pvp games that must always be available
+   private const int OPEN_GAME_INSTANCES_COUNT = 3;
 
    // A dictionary of all pvp games currently active on this server, indexed by instanceId
    Dictionary<int, PvpGame> _activeGames = new Dictionary<int, PvpGame>();

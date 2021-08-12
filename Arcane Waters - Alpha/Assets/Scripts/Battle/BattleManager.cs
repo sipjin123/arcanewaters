@@ -450,7 +450,7 @@ public class BattleManager : MonoBehaviour {
       // Actually spawn the Battler as a Network object now
       NetworkServer.Spawn(battler.gameObject);
       battler.transform.SetParent(battle.transform, false);
-      battler.upateBattleSpots();
+      battler.updateBattleSpots();
 
       return battler;
    }
@@ -1010,11 +1010,12 @@ public class BattleManager : MonoBehaviour {
    protected IEnumerator endBattleAfterDelay (Battle battle, float delay) {
       D.adminLog("1. {" + battle.battleId + "} End battle after delay", D.ADMIN_LOG_TYPE.CombatEnd);
       Battle.TeamType teamThatWon = battle.getTeamThatWon();
-      List<Battler> defeatedBattlers = (battle.teamThatWon == Battle.TeamType.Attackers) ? battle.getDefenders() : battle.getAttackers();
-      List<Battler> winningBattlers = (battle.teamThatWon == Battle.TeamType.Attackers) ? battle.getAttackers() : battle.getDefenders();
 
       // Wait a bit for the death animations to finish
       yield return new WaitForSeconds(delay);
+
+      List<Battler> defeatedBattlers = (battle.teamThatWon == Battle.TeamType.Attackers) ? battle.getDefenders() : battle.getAttackers();
+      List<Battler> winningBattlers = (battle.teamThatWon == Battle.TeamType.Attackers) ? battle.getAttackers() : battle.getDefenders();
 
       // Calculate how much gold to give the winners
       int goldWon = getGoldForDefeated(defeatedBattlers);
@@ -1174,6 +1175,16 @@ public class BattleManager : MonoBehaviour {
       }
 
       return 0.25f;
+   }
+
+   public void onBattlerDeath(Battler battler) {
+      if (GameStatsManager.self.isUserRegistered(battler.userId)) {
+         D.debug($"Battler '{battler.userId}' died in battle.");
+         int penalty = SilverManager.computeSilverPenalty(battler.player);
+         D.debug($"Battler '{battler.userId}' received a penalty of {penalty} silver.");
+         GameStatsManager.self.addSilverAmount(battler.userId, -penalty);
+         battler.player.Target_ReceiveSilverCurrency(battler.player.connectionToClient, -penalty, SilverManager.SilverRewardReason.Death);
+      }
    }
 
    #region Private Variables

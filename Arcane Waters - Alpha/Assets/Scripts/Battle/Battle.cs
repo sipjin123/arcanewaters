@@ -128,6 +128,12 @@ public class Battle : NetworkBehaviour {
 
          // Dead battlers don't do anything
          if (battler.isDead()) {
+            if (!getDeadBattlersPreviousTick().Contains(battler)) {
+               BattleManager.self.onBattlerDeath(battler);
+
+               getDeadBattlersPreviousTick().Add(battler);
+            }
+
             continue;
          }
 
@@ -316,6 +322,18 @@ public class Battle : NetworkBehaviour {
       participants.AddRange(getDefenders());
 
       return participants;
+   }
+
+   public List<Battler> getDeadBattlers () {
+     return getParticipants().FindAll(_ => _.isDead());
+   }
+
+   public List<Battler> getDeadBattlersPreviousTick () {
+      if (_previousDeadBattlers == null) {
+         _previousDeadBattlers = new List<Battler>();
+      }
+
+      return _previousDeadBattlers;
    }
 
    public List<Battler> getAttackers () {
@@ -548,6 +566,9 @@ public class Battle : NetworkBehaviour {
 
    // A small buffer time we use to make monsters wait slightly longer than their attack cooldowns
    protected static float MONSTER_ATTACK_BUFFER = 1.5f;
+
+   // The set of battlers that died so far
+   protected List<Battler> _previousDeadBattlers;
 
    #endregion
 }

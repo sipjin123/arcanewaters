@@ -155,10 +155,8 @@ public class ServerNetworkingManager : MonoBehaviour
    public NetworkedServer getServerHostingVoyage (int voyageId) {
       // Search the voyage in all the servers we know about
       foreach (NetworkedServer server in servers) {
-         foreach (Voyage voyage in server.voyages) {
-            if (voyage.voyageId == voyageId) {
-               return server;
-            }
+         if (server.voyages.TryGetValue(voyageId, out Voyage voyage)) {
+            return server;
          }
       }
 

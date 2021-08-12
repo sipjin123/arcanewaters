@@ -195,8 +195,10 @@ public class BattleBars : MonoBehaviour {
       }
    }
 
-   public void toggleDisplay (bool isShown) {
+   public void toggleDisplay (bool isShown, bool showName = true) {
+      transform.gameObject.SetActive(isShown);
       infoHolder.SetActive(isShown);
+      nameText.gameObject.SetActive(showName);
    }
 
    #region Private Variables

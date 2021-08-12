@@ -94,7 +94,7 @@ public class BaseCamera : MonoBehaviour {
    public static float getConstantCameraScalingFactor (bool isBattleScreen = false, bool isTitleScene = false) {
       // NOTE: as of writing, we are using the 'battle' screen for title and character screens,
       // so for them isBattleScreen should be set to 'true'
-
+      
       float sizeFactor =
          (Screen.width >= ScreenSettingsManager.largeScreenWidth && Screen.height >= ScreenSettingsManager.largeScreenHeight)
          ? 2f

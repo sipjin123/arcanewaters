@@ -49,6 +49,10 @@ public class GameStats {
    // The rank of the player during the pvp session
    public int rank;
 
+   public GameStats () {
+
+   }
+
    public GameStats (int userId, string playerName, int playerTeam) {
       this.userId = userId;
       this.playerName = playerName;

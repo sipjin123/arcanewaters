@@ -172,6 +172,20 @@ public class Instance : NetworkBehaviour
       if (voyageId > 0) {
          InvokeRepeating(nameof(countAliveEnemies), 0f, 1f);
       }
+
+      // Update this instance in the server network
+      if (NetworkServer.active && voyageId > 0) {
+         InvokeRepeating(nameof(updateInServerNetwork), UnityEngine.Random.Range(0f, 1f), 1f);
+      }
+   }
+
+   [Server]
+   private void updateInServerNetwork () {
+      if (!NetworkServer.active || ServerNetworkingManager.self == null || ServerNetworkingManager.self.server == null) {
+         return;
+      }
+
+      ServerNetworkingManager.self.server.updateVoyageInstance(this);
    }
 
    public int getPlayerCount () {

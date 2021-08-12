@@ -68,7 +68,7 @@ public class VoyageManager : GenericGameManager {
 
       // Immediately make the new voyage info accessible to other servers
       if (ServerNetworkingManager.self != null && ServerNetworkingManager.self.server != null) {
-         ServerNetworkingManager.self.server.addNewVoyageInstance(instance, 0);
+         ServerNetworkingManager.self.server.updateVoyageInstance(instance);
       }
 
       // For pvp instances, create the associated pvp game
@@ -84,18 +84,13 @@ public class VoyageManager : GenericGameManager {
       // Search the voyage in all the servers we know about
       foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
          if (includeTreasureSites) {
-            foreach (Voyage v in server.treasureSites) {
-               if (v.voyageId == voyageId) {
-                  voyage = v;
-                  return true;
-               }
-            }
-         }
-         foreach (Voyage v in server.voyages) {
-            if (v.voyageId == voyageId) {
-               voyage = v;
+            if (server.treasureSites.TryGetValue(voyageId, out voyage)) {
                return true;
             }
+         }
+
+         if (server.voyages.TryGetValue(voyageId, out voyage)) {
+            return true;
          }
       }
       
@@ -108,7 +103,7 @@ public class VoyageManager : GenericGameManager {
 
       // Search the first active voyage in the given area
       foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
-         foreach (Voyage v in server.voyages) {
+         foreach (Voyage v in server.voyages.Values) {
             if (string.Equals(v.areaKey, areaKey, StringComparison.InvariantCultureIgnoreCase)) {
                voyage = v;
                return true;
@@ -139,9 +134,7 @@ public class VoyageManager : GenericGameManager {
 
       // Get all the voyages we know about in all the servers we know about
       foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
-         foreach (Voyage voyage in server.voyages) {
-            voyages.Add(voyage);
-         }
+         voyages.AddRange(server.voyages.Values);
       }
 
       return voyages;
@@ -153,7 +146,7 @@ public class VoyageManager : GenericGameManager {
 
       // Get all the voyages we know about in all the servers we know about
       foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
-         foreach (Voyage voyage in server.voyages) {
+         foreach (Voyage voyage in server.voyages.Values) {
             if (voyage.isPvP) {
                voyages.Add(voyage);
             }
@@ -169,9 +162,7 @@ public class VoyageManager : GenericGameManager {
 
       // Get all the voyages we know about in all the servers we know about
       foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
-         foreach (Voyage voyage in server.treasureSites) {
-            voyages.Add(voyage);
-         }
+         voyages.AddRange(server.treasureSites.Values);
       }
 
       return voyages;

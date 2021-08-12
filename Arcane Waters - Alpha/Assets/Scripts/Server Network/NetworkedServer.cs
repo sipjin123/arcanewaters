@@ -12,6 +12,7 @@ using MLAPI.Serialization.Pooled;
 using Newtonsoft.Json;
 using MLAPI.Messaging;
 using System;
+using System.Linq;
 
 public class NetworkedServer : NetworkedBehaviour
 {
@@ -33,10 +34,10 @@ public class NetworkedServer : NetworkedBehaviour
    public NetworkedDictionary<int, VoyageGroupInfo> voyageGroups = new NetworkedDictionary<int, VoyageGroupInfo>(new NetworkedVarSettings { WritePermission = NetworkedVarPermission.Everyone, SendChannel = "Fragmented", SendTickrate = 0 });
 
    // The voyage instances hosted in this server
-   public NetworkedList<Voyage> voyages = new NetworkedList<Voyage>(Global.defaultNetworkedVarSettings);
+   public NetworkedDictionary<int, Voyage> voyages = new NetworkedDictionary<int, Voyage>(Global.defaultNetworkedVarSettings);
 
    // The treasure site instances hosted in this server
-   public NetworkedList<Voyage> treasureSites = new NetworkedList<Voyage>(Global.defaultNetworkedVarSettings);
+   public NetworkedDictionary<int, Voyage> treasureSites = new NetworkedDictionary<int, Voyage>(Global.defaultNetworkedVarSettings);
 
    // Keeps track of the users claimed by this server
    public NetworkedDictionary<int, bool> claimedUserIds = new NetworkedDictionary<int, bool>(new NetworkedVarSettings { WritePermission = NetworkedVarPermission.OwnerOnly, SendChannel = "Fragmented", SendTickrate = 0 });
@@ -64,7 +65,6 @@ public class NetworkedServer : NetworkedBehaviour
          // Regularly update data shared between servers
          InvokeRepeating(nameof(updateConnectedPlayers), 5f, 1f);
          InvokeRepeating(nameof(updateAssignedUsers), 5f, 1f);
-         InvokeRepeating(nameof(updateVoyageInstances), 5.5f, 1f);
       }
 
       // Register this server
@@ -105,30 +105,7 @@ public class NetworkedServer : NetworkedBehaviour
       }
    }
 
-   private void updateVoyageInstances () {
-      voyages.Clear();
-      treasureSites.Clear();
-
-      // Get the number of groups in all voyage instances
-      Dictionary<int, int> allGroupCount = VoyageGroupManager.self.getGroupCountInAllVoyages();
-
-      foreach (Instance instance in InstanceManager.self.getVoyageInstances()) {
-         allGroupCount.TryGetValue(instance.voyageId, out int groupCount);
-         addNewVoyageInstance(instance, groupCount);
-      }
-
-      // Get the treasure site instances that are linked to a voyage
-      foreach (Instance instance in InstanceManager.self.getTreasureSiteInstancesLinkedToVoyages()) {
-         allGroupCount.TryGetValue(instance.voyageId, out int groupCount);
-         addNewVoyageInstance(treasureSites, instance, groupCount);
-      }
-   }
-
-   public void addNewVoyageInstance (Instance instance, int groupCount) {
-      addNewVoyageInstance(voyages, instance, groupCount);
-   }
-
-   public void addNewVoyageInstance (NetworkedList<Voyage> voyageList, Instance instance, int groupCount) {
+   public void updateVoyageInstance (Instance instance) {
       // PvP attributes
       int playerCountTeamA = 0;
       int playerCountTeamB = 0;
@@ -143,10 +120,26 @@ public class NetworkedServer : NetworkedBehaviour
          pvpGameMaxPlayerCount = pvpGame.getMaxPlayerCount();
       }
 
+      int groupCount = VoyageGroupManager.self.getGroupCountInVoyage(instance.voyageId);
+
       Voyage voyage = new Voyage(instance.voyageId, instance.id, instance.areaKey, Area.getName(instance.areaKey), instance.difficulty, instance.biome, instance.isPvP,
             instance.isLeague, instance.leagueIndex, instance.leagueRandomSeed, instance.creationDate, instance.treasureSiteCount, instance.capturedTreasureSiteCount, instance.aliveNPCEnemiesCount,
             instance.getTotalNPCEnemyCount(), groupCount, instance.getPlayerCount(), playerCountTeamA, playerCountTeamB, pvpGameMaxPlayerCount, pvpGameState);
-      voyageList.Add(voyage);
+
+      if (VoyageManager.isTreasureSiteArea(voyage.areaKey)) {
+         treasureSites[voyage.voyageId] = voyage;
+      } else {
+         voyages[voyage.voyageId] = voyage;
+      }
+   }
+
+   public void removeVoyageInstance (Instance instance) {
+      if (instance.voyageId <= 0) {
+         return;
+      }
+
+      voyages.Remove(instance.voyageId);
+      treasureSites.Remove(instance.voyageId);
    }
 
    public void synchronizeConnectedAccount (int accountId) {

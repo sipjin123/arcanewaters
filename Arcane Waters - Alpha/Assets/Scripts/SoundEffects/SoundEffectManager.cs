@@ -22,19 +22,11 @@ public class SoundEffectManager : GenericGameManager
    // The AudioSource used to play 3D SoundEffects
    public AudioSource source3D;
 
-   // The database id of the jump start
+   // Sound effects ids, from the Sound Effects web tool
    public const int JUMP_START_ID = 3;
-
-   // The database id of the jump end
    public const int JUMP_END_ID = 6;
-
-   // The database id of the sound effect
    public const int HARVESTING_PITCHFORK_HIT = 43;
-
-   // The database id of the sound effect
    public const int HARVESTING_FLYING = 44;
-
-   // In game action sound effects
    public const int WATERING_PLANTS = 51;
    public const int ORE_MINE = 52;
    public const int ORE_DROP = 53;
@@ -43,55 +35,42 @@ public class SoundEffectManager : GenericGameManager
    public const int PICKUP_EDIT_OBJ = 56;
    public const int DROP_EDIT_OBJ = 57;
    public const int NEXTPREFAB_SELECTION = 58;
-
    public const int PICKUP_POWERUP = 59;
    public const int SHORTCUT_SELECTION = 60;
    public const int ABILITY_SELECTION = 61;
    public const int STANCE_SELECTION = 62;
-
    public const int INVENTORY_HOVER = 63;
    public const int INVENTORY_DRAG_START = 64;
    public const int INVENTORY_DROP = 65;
-
    public const int NPC_PANEL_POPUP = 66;
    public const int ENTER_DOOR = 67;
    public const int CRAFT_COMPLETE = 68;
    public const int REFINE_COMPLETE = 69;
    public const int MAIL_NOTIF = 70;
-
    public const int OPEN_SEA_BAG = 71;
    public const int OPEN_LAND_BAG = 72;
    public const int OPEN_CHEST = 73;
-
    public const int OCEAN_PAD = 74;
-
    public const int BATTLE_INTRO = 81;
    public const int BATTLE_OUTRO = 82;
-
    //public const int SHIP_CANNON = 85;
    public const int FISH_JUMP = 86;
    public const int FOOTSTEP = 88;
    public const int THROW_SEEDS = 89;
-
    public const int CALMING_WATERFALL = 90;
-   public const int ROCK_MINE = 91;
+   //public const int ROCK_MINE = 91;
    public const int SHIP_LAUNCH_CHARGE = 92;
    public const int PICKUP_CROP = 93;
-
    //public const int ENEMY_SHIP_IMPACT = 94;
    public const int PLAYER_SHIP_IMPACT = 95;
-
    public const int LIGHTNING_FLASH = 96;
    public const int AMBIENCE_BED_MASTER = 97;
-
    public const int BLOCK_ATTACK = 98;
-
    public const int MAP_OPEN = 99;
    public const int LOCALE_UNLOCK = 100;
    public const int CLICK_TAB = 101;
    //public const int MENU_OPEN = 102;
    public const int BUTTON_CONFIRM = 103;
-
    public const int ENEMY_SHIP_DESTROYED = 108;
    //public const int CANNONBALL_IMPACT = 109;
    public const int PURCHASE_ITEM = 110;
@@ -99,38 +78,31 @@ public class SoundEffectManager : GenericGameManager
    public const int UNASSIGN_PERK_POINT = 112;
    public const int TIP_FOLDOUT = 113;
 
+   // FMOD event paths
    public const string MENU_OPEN = "event:/SFX/Game/UI/Menu_Open";
    public const string BUTTON_CONFIRM_PATH = "event:/SFX/Game/UI/Button_Confirm";
    public const string HOVER_CURSOR_GENERIC = "event:/SFX/Game/UI/Hover_Cursor_Generic";
    public const string HOVER_CURSOR_ITEMS = "event:/SFX/Game/UI/Hover_Cursor_Items";
-
    public const string PLAYER_SHIP_DESTROYED = "event:/SFX/Game/Sea_Battle/Player_Ship_Destroyed";
-
    public const string GENERIC_HIT_LAND = "event:/SFX/Game/Land_Battle/Generic_Hit_Land";
-
    public const string COLLECT_SILVER = "event:/SFX/Game/Collect_Silver";
-
    public const string AUDIO_SWITCH_PARAM = "Audio_Switch";
    public const string SHIP_CHARGE_RELEASE_PARAM = "Ship_Charge_Release";
    public const string AMBIENCE_SWITCH_PARAM = "Ambience_Switch";
    public const string APPLY_CRIT_PARAM = "Apply_Crit";
    public const string WEATHER_PARAM = "Weather_Effects";
    public const string APPLY_PUP_PARAM = "Apply_Powerup";
-
    public const string BG_MUSIC = "event:/Music/BGM_Master";
-
    public const string CRITTER_PET = "event:/SFX/Player/Interactions/Diegetic/Critter_Pet";
    public const string CRITTER_INFLECTION = "event:/SFX/NPC/Critter/Inflections";
    public const string ANGER_EMOTE = "event:/SFX/NPC/Critter/Anger_Emote";
    public const string QUESTION_EMOTE = "event:/SFX/NPC/Critter/Question_Emote";
    public const string AFFECTION_EMOTE = "event:/SFX/NPC/Critter/Affection_Emote";
-
    public const string SHIP_CANNON = "event:/SFX/Player/Interactions/Diegetic/Ship_Cannon_Fire";
    public const string ENEMY_SHIP_IMPACT = "event:/SFX/Game/Sea_Battle/Enemy_Ship_Impact";
-
    public const string MOVEMENT_WHOOSH = "event:/SFX/Game/Land_Battle/Movement_Whoosh";
-
    public const string CANNONBALL_IMPACT = "event:/SFX/Player/Interactions/Diegetic/Cannonball_Impact";
+   public const string MINING_ROCKS = "event:/SFX/Player/Interactions/Diegetic/Mine_Rocks";
 
    public enum CannonballImpactType
    {

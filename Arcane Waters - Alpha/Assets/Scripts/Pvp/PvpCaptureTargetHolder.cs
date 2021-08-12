@@ -61,6 +61,7 @@ public class PvpCaptureTargetHolder : SeaStructure, IMapEditorDataReceiver {
          PvpGame activeGame = PvpManager.self.getGameWithPlayer(playerShip.userId);
          activeGame.addScoreForTeam(1, playerShip.pvpTeam);
          activeGame.sendGameMessage(playerShip.entityName + " captured the " + PvpGame.getTeamName(target.pvpTeam) + "' flag.");
+         playerShip.holdingPvpCaptureTarget = false;
 
          // Return the captured flag to its holder
          target.returnFlag();

@@ -99,7 +99,8 @@ public class PvpCaptureTarget : SeaEntity {
       // Attach to player
       attachToTransform(player.transform);
 
-      // Add visual effect to player? 
+      // Add visual effect to player
+      player.holdingPvpCaptureTarget = true;
 
       PvpGame activeGame = PvpManager.self.getGameWithInstance(instanceId);
       activeGame?.sendGameMessage(player.entityName + " picked up the " + PvpGame.getTeamName(pvpTeam) + "' flag.");
@@ -126,6 +127,7 @@ public class PvpCaptureTarget : SeaEntity {
       activeGame?.sendGameMessage(player.entityName + " dropped the " + PvpGame.getTeamName(pvpTeam) + "' flag.");
 
       // Remove visual effect from player
+      player.holdingPvpCaptureTarget = false;
 
       // Set holdingEntity to null
       assignHoldingEntity(null);

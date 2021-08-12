@@ -147,7 +147,7 @@ public class RestartManager : GenericGameManager
                DB_Main.finishDeploySchedule();
                
                // Quit application
-               Invoke("QuitWithDelay", 10);
+               // Invoke("QuitWithDelay", 10);
             }
 
             break;

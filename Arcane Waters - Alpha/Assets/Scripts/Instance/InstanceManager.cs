@@ -433,6 +433,9 @@ public class InstanceManager : MonoBehaviour {
       // Remove it from our internal mapping
       _instances.Remove(instance.id); 
 
+      // Remove the instance from the server network if it is a voyage
+      ServerNetworkingManager.self.server.removeVoyageInstance(instance);
+
       // Update the instance count in the server network
       ServerNetworkingManager.self.server.areaToInstanceCount[instance.areaKey] = getInstanceCount(instance.areaKey);
 

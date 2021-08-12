@@ -32,6 +32,9 @@ public class SpriteOutlineRenderer : MonoBehaviour
       }
 
       removeCommandBuffer();
+      if (_currentOutline) {
+         _currentOutline.setVisibility(false);
+      }
       _currentOutline = null;
       updateRenderBuffer();
    }

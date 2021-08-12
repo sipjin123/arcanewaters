@@ -195,6 +195,28 @@ public class GameStatsManager : MonoBehaviour
       D.adminLog("Added death count for: " + userId + " Total of: " + playerStat.PvpPlayerDeaths, D.ADMIN_LOG_TYPE.Pvp);
    }
 
+   public List<GameStats> getStatsForInstance (int instanceId) {
+      List<GameStats> instanceStats = new List<GameStats>();
+
+      foreach (GameStats s in gameStatsData.stats) {
+         if (s == null) {
+            continue;
+         }
+
+         NetEntity userEntity = EntityManager.self.getEntity(s.userId);
+         
+         if (userEntity == null) {
+            continue;
+         }
+
+         if (userEntity.instanceId == instanceId) {
+            instanceStats.Add(s);
+         }
+      }
+
+      return instanceStats;
+   }
+
    #endregion
 
    #region Private Variables

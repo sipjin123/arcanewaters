@@ -123,7 +123,8 @@ public class VoyageMapCell : MonoBehaviour {
       timeLeagueText.text = timeText.text;
 
       // Set the enemy count
-      aliveEnemyCountText.text = voyage.aliveNPCEnemyCount.ToString() + "/" + (voyage.totalNPCEnemyCount).ToString();
+      string aliveEnemiesCount = (voyage.aliveNPCEnemyCount == -1) ? "0" : voyage.aliveNPCEnemyCount.ToString();
+      aliveEnemyCountText.text = aliveEnemiesCount + "/" + (voyage.totalNPCEnemyCount).ToString();
 
       // Set the league index
       leagueIndexText.text = Voyage.getLeagueAreaName(voyage.leagueIndex);

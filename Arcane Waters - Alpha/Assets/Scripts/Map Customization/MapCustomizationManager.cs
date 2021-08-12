@@ -60,6 +60,12 @@ namespace MapCustomization
       // Keep track of scroll wheel direction
       public static bool scrollWheelUp;
 
+      // Store the position of the prefab when dragging first starts
+      public static Vector2 dragStartPosition;
+
+      // Flag to keep track of when the dragging of a prefab is starting
+      public static bool isBeginningOfDrag = true;
+
       #endregion
 
       private void OnEnable () {
@@ -300,7 +306,13 @@ namespace MapCustomization
       /// </summary>
       /// <param name="worldPosition"></param>
       public static void pointerDrag (Vector2 delta) {
+         // Save starting position of drag operation
          if (_selectedPrefab != null && _draggedPrefab != null) {
+            if (isBeginningOfDrag) {
+               dragStartPosition = _selectedPrefab.unappliedChanges.localPosition;
+               isBeginningOfDrag = false;
+            }
+
             if (!_selectedPrefab.unappliedChanges.isLocalPositionSet()) {
                _selectedPrefab.unappliedChanges.localPosition = _selectedPrefab.customizedState.localPosition + delta;
             } else {
@@ -389,16 +401,16 @@ namespace MapCustomization
       }
 
       public static void pointerUp (Vector2 worldPosition) {
-         _draggedPrefab = null;
-
-         if (_selectedPrefab == null) return;
-
-         if (_selectedPrefab.anyUnappliedState()) {
-            if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _selectedPrefab.unappliedChanges, false, out string errorMessage)) {
-               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _selectedPrefab.unappliedChanges, _selectedPrefab.spawnedAPrefabVariation, _selectedPrefab.variationSpawnedFromPrefab);
-               SoundEffectManager.self.playFmod2D(SoundEffectManager.DROP_EDIT_OBJ);
+         // If dragging a prefab before mouse pointer up, validate the prefab now that the dragging is over
+         if (_draggedPrefab != null) {
+            // Do not allow placing of a prefab in an invalid location
+            if (!validatePrefabChanges(currentArea, currentBiome, remainingProps, _draggedPrefab.unappliedChanges, false, out string errorMessage)) {
+               selectPrefab(_draggedPrefab);
+               _selectedPrefab.unappliedChanges.localPosition = dragStartPosition;
                _selectedPrefab.submitUnappliedChanges();
             }
+            _draggedPrefab = null;
+            isBeginningOfDrag = true;
          }
 
          updatePrefabOutlines(worldPosition);

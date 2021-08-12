@@ -642,7 +642,6 @@ public class BattleUIManager : MonoBehaviour {
 
                playerBattler.onBattlerDeselect.AddListener(() => {
                   playerBattleCG.Hide();
-                  playerBattler.selectedBattleBar.toggleDisplay(false);
                });
 
                // Auto select a random enemy at the beginning of the battle
@@ -666,8 +665,6 @@ public class BattleUIManager : MonoBehaviour {
 
       Vector3 pointOffset = new Vector3(playerBattler.clickBox.bounds.size.x / 4, playerBattler.clickBox.bounds.size.y * 1.75f);
       setRectToScreenPosition(mainPlayerRect, playerBattler.battleSpot.transform.position, pointOffset);
-
-      playerBattler.selectedBattleBar.toggleDisplay(false);
 
       if (showAbilities) {
          playerBattleCG.Show();

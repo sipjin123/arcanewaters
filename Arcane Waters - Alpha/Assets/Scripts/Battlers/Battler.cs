@@ -509,7 +509,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
    }
 
-   public void upateBattleSpots () {
+   public void updateBattleSpots () {
       // Look up the Battle Board that contains this Battler
       BattleBoard battleBoard = BattleManager.self.battleBoard;
 
@@ -534,6 +534,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          // If the client died, deselect it's target
          if (_isClientBattler && isAlreadyDead) {
             BattleUIManager.self.highlightLocalBattler(false);
+
             if (BattleSelectionManager.self.selectedBattler != null) {
                BattleSelectionManager.self.selectedBattler.deselectThis();
             }
@@ -567,6 +568,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // Handle the drawing or hiding of our outline
       if (!Util.isBatch()) {
          handleSpriteOutline();
+         handleBattlerBarsVisibility();
 
          // Update the target line
          if (battlerType == BattlerType.PlayerControlled && _hasAttackQueued) {
@@ -638,7 +640,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                shadowTransform.localScale = new Vector2(_alteredBattlerData.shadowScale, _alteredBattlerData.shadowScale);
                shadowTransform.localPosition = new Vector3(_alteredBattlerData.shadowOffset.x, _alteredBattlerData.shadowOffset.y, shadowTransform.localPosition.z);
             }
-            selectedBattleBar.toggleDisplay(true);
 
             setBattlerAbilities(new List<int>(battlerData.battlerAbilities.basicAbilityDataList), battlerType);
 
@@ -647,19 +648,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          } else if (battlerType == BattlerType.PlayerControlled && Global.player != null) {
             if (userId != Global.player.userId) {
                selectedBattleBar = minionBattleBar;
-               selectedBattleBar.toggleDisplay(false);
             } else {
                BattleUIManager.self.abilitiesCG.Show();
                selectedBattleBar = minionBattleBar;
                selectedBattleBar.nameText.text = Global.player.nameText.text;
                BattleUIManager.self.playerBattleCG.Hide();
-               selectedBattleBar.toggleDisplay(true);
             }
-         }
-
-         if (selectedBattleBar != null) {
-            selectedBattleBar.gameObject.SetActive(true);
-            selectedBattleBar.toggleDisplay(false);
          }
 
          updateAnimGroup(battlerData.animGroup);
@@ -834,28 +828,24 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       Color color = battlerType.Equals(BattlerType.AIEnemyControlled) ? Color.red : Color.green;
       _outline.setNewColor(color);
       _outline.setVisibility(isMouseHovering() && !hasDisplayedDeath());
+   }
 
-      // Hide or show battler Name
-      if (battlerType.Equals(BattlerType.PlayerControlled) && Global.player != null) {
-         bool hoverPlayerNames = false;
-         if (BattleSelectionManager.self.selectedBattler != null) {
-            hoverPlayerNames = BattleSelectionManager.self.selectedBattler.enemyType != Enemy.Type.PlayerBattler;
-         } else {
-            hoverPlayerNames = true;
-         }
+   private void handleBattlerBarsVisibility () {
+      // Hide or show battler bars
+      // The local player's battler's bar is always visible
+      bool showBattleBar = isLocalBattler();
 
-         if (!isLocalBattler()) {
-            if (hoverPlayerNames) {
-               selectedBattleBar.toggleDisplay(isMouseHovering() && !hasDisplayedDeath());
-            } else {
-               selectedBattleBar.toggleDisplay(false);
-            }
-         }
-      } else {
-         if (selectedBattleBar != null) {
-            selectedBattleBar.toggleDisplay(isMouseHovering() && !hasDisplayedDeath());
+      if (!isLocalBattler()) {
+         // Other players' bars and the enemies' bars are visible on hover
+         showBattleBar = isMouseHovering() && !hasDisplayedDeath();
+
+         // Targeted enemies should display their bar
+         if (battlerType == BattlerType.AIEnemyControlled && BattleSelectionManager.self.selectedBattler == this) {
+            showBattleBar = true;
          }
       }
+
+      selectedBattleBar.toggleDisplay(showBattleBar, showName: false);
    }
 
    public void setBattlerAbilities (List<int> basicAbilityIds, BattlerType battlerType) {
@@ -971,14 +961,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public void playJumpSound () {
-      SoundEffect jumpSoundEffect = SoundEffectManager.self.getSoundEffect(getBattlerData().jumpSoundEffectId);
+      //SoundEffect jumpSoundEffect = SoundEffectManager.self.getSoundEffect(getBattlerData().jumpSoundEffectId);
 
-      if (jumpSoundEffect == null) {
-         Debug.LogWarning("Battler does not have a jump sound effect");
-         return;
-      }
+      //if (jumpSoundEffect == null) {
+      //   Debug.LogWarning("Battler does not have a jump sound effect");
+      //   return;
+      //}
 
-      SoundEffectManager.self.playSoundEffect(jumpSoundEffect.id, transform);
+      //SoundEffectManager.self.playSoundEffect(jumpSoundEffect.id, transform);
+      SoundEffectManager.self.playFmodWithPath(SoundEffectManager.MOVEMENT_WHOOSH, transform);
    }
 
    public void playAnim (Anim.Type animationType, float customSpeed = -1) {
@@ -1556,7 +1547,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                sourceBattler.playAnim(Anim.Type.Ready_Attack);
 
                // Play the sound associated for casting
-               attackerAbility.playCastSfxAtTarget(targetBattler.transform);
+               //attackerAbility.playCastSfxAtTarget(targetBattler.transform);
 
                yield return new WaitForSeconds(attackerAbility.getAimDuration());
             }
@@ -1582,6 +1573,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             EffectManager.show(Effect.Type.Cannon_Smoke, sourcePos);
             yield return new WaitForSeconds(getPreShootDelay());
 
+            // Play the sound associated for casting.
+            attackerAbility.playCastSfxAtTarget(targetBattler.transform);
+
             // Speed up animation then Animate Shoot clip for a Recoil Effect
             sourceBattler.pauseAnim(false);
             if (weaponData == null) {
@@ -1594,6 +1588,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                }
             }
 
+            // Play 
             yield return new WaitForSeconds(getPostShootDelay());
 
             // Return to battle stance
@@ -1986,10 +1981,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // Display the Hit animation frame for a short period
       playAnim(Anim.Type.Hurt_East);
 
+      // Play the ability hit SFX after the hurt animation frame
+      ability.playHitSfxAtTarget(transform);
+
       yield return new WaitForSeconds(getPostContactLength());
 
       // Play the ability hit SFX after the hurt animation frame
-      ability.playHitSfxAtTarget(transform);
+      //ability.playHitSfxAtTarget(transform);
 
       // Return to battle idle
       if (!ability.useSpecialAnimation && !isLastHit) {
@@ -2766,7 +2764,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    #region Private Variables
 
    [Header("PvtVariables")]
-   
+
    // If the user can cast an ability
    [SerializeField]
    private bool _canCastAbility = true;
