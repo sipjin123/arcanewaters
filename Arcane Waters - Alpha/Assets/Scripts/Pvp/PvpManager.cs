@@ -78,62 +78,87 @@ public class PvpManager : MonoBehaviour {
 
          // If the pvp game is not a pregame or the announcement interval is less than the expected, skip
          if (pvpAnnouncement.pvpState != PvpGame.State.PreGame) {
+            D.adminLog("This is not a pvp state: " + pvpAnnouncement.instanceId + " " + pvpAnnouncement.pvpState, D.ADMIN_LOG_TYPE.PvpAnnouncement);
             continue;
          }
 
          // Reset the timer
          pvpAnnouncement.lastAnnouncementTime = DateTime.UtcNow;
 
-         if (_activeGames.ContainsKey(pvpAnnouncement.instanceId)) {
-            PvpGame activePvpGame = _activeGames[pvpAnnouncement.instanceId];
-            pvpAnnouncement.pvpState = activePvpGame.getGameState();
-            if (activePvpGame.getAllUsersInGame().Count > 0) {
-               foreach (NetworkedServer currServer in ServerNetworkingManager.self.servers) {
-                  foreach (KeyValuePair<int, AssignedUserInfo> userAssignedInfo in currServer.assignedUserIds) {
-                     // Only send the message to the players that are outside the pvp game
-                     if (activePvpGame.getAllUsersInGame().Contains(userAssignedInfo.Key)) {
-                        // Remove user from recipient of pvp announcement if they are already in the pvp game
-                        if (pvpAnnouncement.playerTimeStamp.ContainsKey(userAssignedInfo.Key)) {
-                           pvpAnnouncement.playerTimeStamp.Remove(userAssignedInfo.Key);
-                        }
-                        continue;
-                     }
+         if (!_activeGames.ContainsKey(pvpAnnouncement.instanceId)) {
+            D.adminLog("There are no active games in: " + pvpAnnouncement.instanceId, D.ADMIN_LOG_TYPE.PvpAnnouncement);
+            continue;
+         }
 
-                     string mapName = AreaManager.self.getMapInfo(activePvpGame.areaKey).displayName;
-                     string message = "A battle is breaking out in " + mapName + "!  Click here to take part!";
+         PvpGame activePvpGame = _activeGames[pvpAnnouncement.instanceId];
+         pvpAnnouncement.pvpState = activePvpGame.getGameState();
 
-                     // Check if user is already registered, if so then check if time stamp meets the required announcement interval
-                     if (pvpAnnouncement.playerTimeStamp.ContainsKey(userAssignedInfo.Key)) {
-                        double playerAnnouncementInterval = DateTime.UtcNow.Subtract(pvpAnnouncement.playerTimeStamp[userAssignedInfo.Key]).TotalMinutes;
-                        if (playerAnnouncementInterval < ANNOUNCEMENT_INTERVAL) {
-                           continue;
-                        } else {
-                           pvpAnnouncement.playerTimeStamp[userAssignedInfo.Key] = DateTime.UtcNow;
+         if (activePvpGame.getAllUsersInGame().Count < 1) {
+            D.adminLog("There are no users in game: " + activePvpGame.instanceId, D.ADMIN_LOG_TYPE.PvpAnnouncement);
+            continue;
+         }
 
-                           ChatInfo newChatInfo = new ChatInfo {
-                              senderId = pvpAnnouncement.instanceId,
-                              text = message,
-                              sender = mapName,
-                              recipient = userAssignedInfo.Key.ToString()
-                           };
-                           ServerNetworkingManager.self?.sendDirectChatMessage(newChatInfo);
-                        }
-                     } else {
-                        // Register user and send message announcing the new pvp
-                        pvpAnnouncement.playerTimeStamp.Add(userAssignedInfo.Key, DateTime.UtcNow);
-
-                        ChatInfo newChatInfo = new ChatInfo {
-                           senderId = pvpAnnouncement.instanceId,
-                           text = message,
-                           sender = mapName,
-                           recipient = userAssignedInfo.Key.ToString()
-                        };
-                        ServerNetworkingManager.self?.sendDirectChatMessage(newChatInfo);
-                     }
+         // Cycle through all servers
+         foreach (NetworkedServer currServer in ServerNetworkingManager.self.servers) {
+            // Check all users in in each server
+            foreach (KeyValuePair<int, AssignedUserInfo> userAssignedInfo in currServer.assignedUserIds) {
+               // Only send the message to the players that are outside the pvp game
+               if (activePvpGame.getAllUsersInGame().Contains(userAssignedInfo.Key)) {
+                  // Remove user from recipient of pvp announcement if they are already in the pvp game
+                  if (pvpAnnouncement.playerTimeStamp.ContainsKey(userAssignedInfo.Key)) {
+                     pvpAnnouncement.playerTimeStamp.Remove(userAssignedInfo.Key);
+                     D.adminLog("User is already in a pvp game: " + userAssignedInfo.Key, D.ADMIN_LOG_TYPE.PvpAnnouncement);
                   }
+                  continue;
+               }
+
+               string mapName = AreaManager.self.getMapInfo(activePvpGame.areaKey).displayName;
+               string message = "A battle is breaking out in " + mapName + "!  Click here to take part!";
+
+               // Check if user is already registered, if so then check if time stamp meets the required announcement interval
+               if (pvpAnnouncement.playerTimeStamp.ContainsKey(userAssignedInfo.Key)) {
+                  double playerAnnouncementInterval = DateTime.UtcNow.Subtract(pvpAnnouncement.playerTimeStamp[userAssignedInfo.Key]).TotalMinutes;
+                  if (playerAnnouncementInterval < ANNOUNCEMENT_INTERVAL) {
+                     continue;
+                  } else {
+                     pvpAnnouncement.playerTimeStamp[userAssignedInfo.Key] = DateTime.UtcNow;
+                     ChatInfo newChatInfo = new ChatInfo {
+                        senderId = pvpAnnouncement.instanceId,
+                        text = message,
+                        sender = mapName,
+                        recipient = userAssignedInfo.Key.ToString()
+                     };
+
+                     NetEntity localEntiy = EntityManager.self.getEntity(userAssignedInfo.Key);
+                     StartCoroutine(sendMessageToPlayer(localEntiy, newChatInfo, userAssignedInfo.Key));
+                  }
+               } else {
+                  // Register user and send message announcing the new pvp
+                  pvpAnnouncement.playerTimeStamp.Add(userAssignedInfo.Key, DateTime.UtcNow);
+                  ChatInfo newChatInfo = new ChatInfo {
+                     senderId = pvpAnnouncement.instanceId,
+                     text = message,
+                     sender = mapName,
+                     recipient = userAssignedInfo.Key.ToString()
+                  };
+
+                  NetEntity localEntiy = EntityManager.self.getEntity(userAssignedInfo.Key);
+                  StartCoroutine(sendMessageToPlayer(localEntiy, newChatInfo, userAssignedInfo.Key));
                }
             }
          }
+      }
+   }
+
+   private IEnumerator sendMessageToPlayer (NetEntity localEntiy, ChatInfo newChatInfo, int targetUser) {
+      yield return new WaitForSeconds(5);
+
+      if (localEntiy == null) {
+         D.adminLog("Sending Global message to: " + targetUser, D.ADMIN_LOG_TYPE.PvpAnnouncement);
+         ServerNetworkingManager.self?.sendDirectChatMessage(newChatInfo);
+      } else {
+         D.adminLog("Sending private message to: " + targetUser, D.ADMIN_LOG_TYPE.PvpAnnouncement);
+         localEntiy.Target_ReceivePvpChat(localEntiy.connectionToClient, newChatInfo.senderId, newChatInfo.text);
       }
    }
 

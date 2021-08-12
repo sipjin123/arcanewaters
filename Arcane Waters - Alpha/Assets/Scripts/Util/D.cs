@@ -37,7 +37,9 @@ public class D : MonoBehaviour {
       InstanceProcess = 24,
       Tutorial = 25, 
       AbilityCast = 26,
-      CombatStatus = 27
+      CombatStatus = 27,
+      PvpAnnouncement = 28,
+      SeaAbility = 29
    }
 
    // Any log files older than this will be deleted

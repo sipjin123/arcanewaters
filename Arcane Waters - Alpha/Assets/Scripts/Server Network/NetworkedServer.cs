@@ -202,12 +202,12 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ServerRPC]
-   public void MasterServer_SendPvpAnnouncement (int chatId, string message, string senderName, string recipient) {
-      InvokeClientRpcOnEveryone(ClientRPCReceivePvpAnnouncement, chatId, message, senderName, recipient);
+   public void MasterServer_SendPvpAnnouncement (int instanceId, string message, string senderName, string recipient) {
+      InvokeClientRpcOnEveryone(ClientRPCReceivePvpAnnouncement, instanceId, message, senderName, recipient);
    }
 
    [ClientRPC]
-   public void ClientRPCReceivePvpAnnouncement (int chatId, string message, string senderName, string recipient) {
+   public void ClientRPCReceivePvpAnnouncement (int instanceId, string message, string senderName, string recipient) {
       int recipientId = 0;
       try {
          recipientId = int.Parse(recipient);
@@ -227,7 +227,7 @@ public class NetworkedServer : NetworkedBehaviour
          }
 
          if (netEntity.userId == recipientId) {
-            netEntity.Target_ReceivePvpChat(netEntity.connectionToClient, chatId, message);
+            netEntity.Target_ReceivePvpChat(netEntity.connectionToClient, instanceId, message);
          }
       }
    }

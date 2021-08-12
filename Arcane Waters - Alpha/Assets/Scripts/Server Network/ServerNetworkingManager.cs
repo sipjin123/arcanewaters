@@ -215,7 +215,7 @@ public class ServerNetworkingManager : MonoBehaviour
    }
 
    public void sendDirectChatMessage (ChatInfo chatInfo) {
-      server.InvokeServerRpc(server.MasterServer_SendPvpAnnouncement, chatInfo.chatId, chatInfo.text,chatInfo.sender, chatInfo.recipient);
+      server.InvokeServerRpc(server.MasterServer_SendPvpAnnouncement, chatInfo.senderId, chatInfo.text,chatInfo.sender, chatInfo.recipient);
    }
 
    public void sendGlobalChatMessage (ChatInfo chatInfo) {

@@ -1279,6 +1279,10 @@ public class AdminManager : NetworkBehaviour
             newLogType = D.ADMIN_LOG_TYPE.Equipment;
             Global.updateAdminLog(newLogType, isEnabled);
             break;
+         case "announcement":
+            newLogType = D.ADMIN_LOG_TYPE.PvpAnnouncement;
+            Global.updateAdminLog(newLogType, isEnabled);
+            break;
          case "quest":
             newLogType = D.ADMIN_LOG_TYPE.Quest;
             Global.updateAdminLog(newLogType, isEnabled);
