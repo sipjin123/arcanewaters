@@ -3431,7 +3431,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_RequestPvpShopData (int shopId) {
+   public void Cmd_RequestPvpShopData (int shopId, int itemCategoryType) {
       PvpShopData shopData = PvpShopManager.self.getShopData(shopId);
 
       if (shopData == null) {
@@ -3440,15 +3440,17 @@ public class RPCManager : NetworkBehaviour
       }
 
       if (GameStatsManager.self.isUserRegistered(_player.userId)) {
+         List<PvpShopItem> shopItemList = new List<PvpShopItem>();
+         
          // Disabled shop items here if needed
          foreach (PvpShopItem shopItem in shopData.shopItems) {
-            if (shopItem.shopItemType == PvpShopItem.PvpShopItemType.Stats) {
-               shopItem.isDisabled = true;
+            if (shopItem.shopItemType == (PvpShopItem.PvpShopItemType) itemCategoryType) {
+               shopItemList.Add(shopItem);
             }
          }
 
          int userSilver = GameStatsManager.self.getSilverAmount(_player.userId);
-         Target_ProcessShopData(_player.connectionToClient, shopData.shopId, userSilver, shopData.shopName, shopData.shopDescription, Util.serialize(shopData.shopItems));
+         Target_ProcessShopData(_player.connectionToClient, shopData.shopId, userSilver, shopData.shopName, shopData.shopDescription, Util.serialize(shopItemList));
       } else {
          D.debug("Warning, user {" + _player.userId + "} does not exist in the game stat manager");
       }

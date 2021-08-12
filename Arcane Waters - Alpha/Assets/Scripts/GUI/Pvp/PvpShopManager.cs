@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.Xml.Serialization;
+using System.Text;
+using System.Xml;
 
 public class PvpShopManager : MonoBehaviour {
    #region Public Variables
@@ -31,7 +34,21 @@ public class PvpShopManager : MonoBehaviour {
    }
 
    public void initializDataCache () {
+      ShipDataManager.self.finishedDataSetup.AddListener(() => {
+         if (ShipDataManager.self.hasInitialized && ShipAbilityManager.self.hasInitialized) {
+            finalizeDataSetup();
+         }
+      });
+      ShipAbilityManager.self.finishedDataSetup.AddListener(() => {
+         if (ShipDataManager.self.hasInitialized && ShipAbilityManager.self.hasInitialized) {
+            finalizeDataSetup();
+         }
+      });
+   }
+
+   private void finalizeDataSetup () {
       if (!hasInitialized) {
+         hasInitialized = true;
          shopDataList = new List<PvpShopData>();
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             List<XMLPair> rawXMLData = DB_Main.getPvpShopXML();
@@ -41,16 +58,42 @@ public class PvpShopManager : MonoBehaviour {
                   TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                   PvpShopData pvpShopData = Util.xmlLoad<PvpShopData>(newTextAsset);
                   pvpShopData.shopId = xmlPair.xmlId;
-                  if (shopDataList.Find(_=> _.shopId == xmlPair.xmlId) == null) {
+                  if (shopDataList.Find(_ => _.shopId == xmlPair.xmlId) == null) {
                      // Generate rarity randomizer for this shop
                      foreach (PvpShopItem pvpShopItem in pvpShopData.shopItems) {
                         pvpShopItem.rarityType = Rarity.getRandom();
+
+                        // Inject ship info data to item data variable
+                        if (pvpShopItem.shopItemType == PvpShopItem.PvpShopItemType.Ship) {
+                           ShipData shipData = ShipDataManager.self.getShipData(pvpShopItem.itemId);
+                           ShipInfo newShipData = Ship.generateNewShip(shipData.shipType, pvpShopItem.rarityType);
+
+                           // Assign abilities
+                           List<int> abilityIdList = new List<int>();
+                           foreach (ShipAbilityPair shipAbilities in shipData.shipAbilities) {
+                              abilityIdList.Add(shipAbilities.abilityId);
+                           }
+                           newShipData.shipAbilities = new ShipAbilityInfo {
+                              ShipAbilities = abilityIdList.ToArray()
+                           };
+
+                           // Serialize ability data
+                           if (shipData != null) {
+                              XmlSerializer ser = new XmlSerializer(newShipData.GetType());
+                              StringBuilder sb = new StringBuilder();
+                              using (XmlWriter writer = XmlWriter.Create(sb)) {
+                                 ser.Serialize(writer, newShipData);
+                              }
+
+                              string newXmlData = sb.ToString();
+                              pvpShopItem.itemData = newXmlData;
+                           }
+                        }
                      }
 
                      shopDataList.Add(pvpShopData);
                   }
                }
-               hasInitialized = true;
             });
          });
       }

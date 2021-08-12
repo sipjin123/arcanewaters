@@ -43,6 +43,12 @@ public class PvpShopTemplate : MonoBehaviour {
    // If this item was selected
    public UnityEvent selectTemplateEvent = new UnityEvent();
 
+   // The highlighted object indicator
+   public GameObject highlightObj;
+
+   // The selected object indicator
+   public GameObject selectedObj;
+
    #endregion
 
    public void setupData (PvpShopItem data) {
@@ -67,14 +73,35 @@ public class PvpShopTemplate : MonoBehaviour {
       }
    }
 
+   public void onHoverEnter () {
+      highlightObj.SetActive(true);
+   }
+
+   public void onHoverExit () {
+      highlightObj.SetActive(false);
+   }
+
    public void selectThisTemplate () {
+      PvpShopPanel.self.clearSelectedObj();
       PvpItemInfo itemInfo = PvpShopPanel.self.getPvpItemInfo(itemData);
       if (itemInfo != null) {
          PvpShopPanel.self.itemName.text = itemInfo.name;
          PvpShopPanel.self.itemDescription.text = itemInfo.description;
          PvpShopPanel.self.itemIconFrameInfo.sprite = PvpShopPanel.self.borderSprites[(int) rarityType - 1];
          PvpShopPanel.self.itemIconInfo.sprite = itemInfo.sprite;
+
+         if (itemData.shopItemType == PvpShopItemType.Ship && itemData.itemData.Contains(EquipmentXMLManager.VALID_XML_FORMAT)) {
+            ShipInfo serverDeclaredData = Util.xmlLoad<ShipInfo>(itemData.itemData);
+            PvpShopPanel.self.shipAttackText.text = (serverDeclaredData.damage * 100).ToString("f1") + "%";
+            PvpShopPanel.self.shipSpeedText.text = serverDeclaredData.speed.ToString();
+            PvpShopPanel.self.shipRangeText.text = serverDeclaredData.attackRange.ToString();
+            PvpShopPanel.self.shipCargoText.text = serverDeclaredData.cargoMax.ToString();
+            PvpShopPanel.self.shipSupplyText.text = serverDeclaredData.supplies.ToString();
+            PvpShopPanel.self.shipSailorsText.text = serverDeclaredData.sailors.ToString();
+            PvpShopPanel.self.shipDefenseText.text = serverDeclaredData.health.ToString();
+         }
       }
+      selectedObj.SetActive(true);
       selectTemplateEvent.Invoke();
    }
 

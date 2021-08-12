@@ -60,6 +60,7 @@ public class ShipInfo {
    public int sailors;
 
    // The rarity of the ship
+   [XmlElement(Namespace = "RarityType")]
    public Rarity.Type rarity;
 
    // The price of the ship, only valid for shops

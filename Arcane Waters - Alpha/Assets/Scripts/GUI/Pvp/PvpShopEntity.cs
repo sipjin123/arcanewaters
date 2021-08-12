@@ -44,6 +44,7 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
       PlayerShipEntity playerEntity = collision.GetComponent<PlayerShipEntity>();
       if (Global.player != null && playerEntity != null) {
          if (Global.player.userId == playerEntity.userId && playerEntity.pvpTeam == pvpTeamType) {
+            PvpShopPanel.self.shopId = shopId;
             PvpShopPanel.self.enableShopButton(true);
          }
       }
