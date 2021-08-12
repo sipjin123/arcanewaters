@@ -504,7 +504,7 @@ MonoBehaviour:
   tooltipType: 0
   message: 
   maxWidth: 0
-  forceFitOnScreen: 0
+  nudgeAwayFromBorder: 0
 --- !u!1 &2704525477987585060
 GameObject:
   m_ObjectHideFlags: 0
@@ -803,7 +803,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 420, y: 390}
+  m_CellSize: {x: 420, y: 420}
   m_Spacing: {x: 0, y: 0}
   m_Constraint: 1
   m_ConstraintCount: 2
@@ -1785,7 +1785,7 @@ MonoBehaviour:
   tooltipType: 0
   message: 
   maxWidth: 0
-  forceFitOnScreen: 0
+  nudgeAwayFromBorder: 0
 --- !u!114 &8786821926358875388
 MonoBehaviour:
   m_ObjectHideFlags: 0

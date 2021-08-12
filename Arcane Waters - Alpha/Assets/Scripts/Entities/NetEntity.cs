@@ -1562,7 +1562,7 @@ public class NetEntity : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceivePvpChat (NetworkConnection conn, int instanceId, string message) {
       ChatInfo chatInfo = new ChatInfo {
-         chatId = instanceId,
+         senderId = instanceId,
          messageType = ChatInfo.Type.PvpAnnouncement,
          text = message
       };
