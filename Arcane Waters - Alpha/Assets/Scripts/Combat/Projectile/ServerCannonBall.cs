@@ -18,6 +18,9 @@ public class ServerCannonBall : NetworkBehaviour
    [SyncVar]
    public int projectileId;
 
+   // The sprite renderer reference
+   public SpriteRenderer[] spriteRenderers;
+
    #endregion
 
    private void Awake () {
@@ -37,6 +40,16 @@ public class ServerCannonBall : NetworkBehaviour
          }
 
          Instantiate(PrefabsManager.self.poofPrefab, transform.position, Quaternion.identity);
+         updateVisuals();
+      }
+   }
+
+   private void updateVisuals () {
+      ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(projectileId);
+      if (projectileData != null) {
+         foreach (SpriteRenderer spriteRenderer in spriteRenderers) {
+            spriteRenderer.sprite = ImageManager.getSprite(projectileData.projectileSpritePath);
+         }
       }
    }
 
@@ -64,8 +77,9 @@ public class ServerCannonBall : NetworkBehaviour
       _distance = velocity.magnitude * _lifetime;
       _isCrit = isCrit;
 
-      this.projectileVelocity = velocity;
+      updateVisuals();
 
+      this.projectileVelocity = velocity;
       _rigidbody.velocity = velocity;
 
       // High shots have their colliders disabled until the cannonball falls back near the water

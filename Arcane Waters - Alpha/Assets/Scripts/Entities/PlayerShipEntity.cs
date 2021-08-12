@@ -137,6 +137,9 @@ public class PlayerShipEntity : ShipEntity
    [HideInInspector]
    public PvpCaptureTarget heldPvpCaptureTarget = null;
 
+   // The current ship ability
+   public int currentShipAbility;
+
    // The different flags the ship can display
    public enum Flag {
       None = 0,
@@ -304,15 +307,25 @@ public class PlayerShipEntity : ShipEntity
 
          if (!_isChargingCannon) {
             if (KeyUtils.GetKeyDown(Key.Digit1)) {
-               CannonPanel.self.useCannonType(CannonPanel.CannonAttackOption.Standard_NoEffect, 0);
+               int newAbilityId = CannonPanel.self.cannonBoxList[0].abilityId;
+               CannonPanel.self.useCannonType(newAbilityId, 0);
+               Cmd_ChangeAttackOption(newAbilityId);
             } else if (KeyUtils.GetKeyDown(Key.Digit2)) {
-               CannonPanel.self.useCannonType(CannonPanel.CannonAttackOption.Standard_Slow, 1);
+               int newAbilityId = CannonPanel.self.cannonBoxList[1].abilityId;
+               CannonPanel.self.useCannonType(newAbilityId, 1);
+               Cmd_ChangeAttackOption(newAbilityId);
             } else if (KeyUtils.GetKeyDown(Key.Digit3)) {
-               CannonPanel.self.useCannonType(CannonPanel.CannonAttackOption.Standard_Stunned, 2);
+               int newAbilityId = CannonPanel.self.cannonBoxList[2].abilityId;
+               CannonPanel.self.useCannonType(newAbilityId, 2);
+               Cmd_ChangeAttackOption(newAbilityId);
             } else if (KeyUtils.GetKeyDown(Key.Digit4)) {
-               CannonPanel.self.useCannonType(CannonPanel.CannonAttackOption.Cone_NoEffect, 3);
+               int newAbilityId = CannonPanel.self.cannonBoxList[3].abilityId;
+               CannonPanel.self.useCannonType(newAbilityId, 3);
+               Cmd_ChangeAttackOption(newAbilityId);
             } else if (KeyUtils.GetKeyDown(Key.Digit5)) {
-               CannonPanel.self.useCannonType(CannonPanel.CannonAttackOption.Circle_NoEffect, 4);
+               int newAbilityId = CannonPanel.self.cannonBoxList[4].abilityId;
+               CannonPanel.self.useCannonType(newAbilityId, 4);
+               Cmd_ChangeAttackOption(newAbilityId);
             }
          }
       }
@@ -345,7 +358,7 @@ public class PlayerShipEntity : ShipEntity
          }
       }
 
-      if (!isDead() && !isGhost && SeaManager.getAttackType() != Attack.Type.Air) {
+      if (!isDead() && !isGhost) {// && SeaManager.getAttackType() != Attack.Type.Air) {
          // Start charging attack with mouse
          if (InputManager.isFireCannonMouseDown() || (InputManager.isFireCannonMouse() && !_isChargingCannon)) {
             _chargingWithMouse = true;
@@ -556,7 +569,13 @@ public class PlayerShipEntity : ShipEntity
 
       _isChargingCannon = false;
 
+      // Release as default attack
       CannonPanel.self.cannonReleased();
+
+      // Reset ability to default ability
+      int defaultAbilityId = CannonPanel.self.cannonBoxList[0].abilityId;
+      Cmd_ChangeAttackOption(defaultAbilityId);
+      CannonPanel.self.useCannonType(defaultAbilityId, 0);
    }
 
    private void updateTargeting () {
@@ -667,6 +686,17 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Command]
+   public void Cmd_ChangeAttackOption (int abilityId) {
+      currentShipAbility = abilityId;
+      Target_ReceiveAttackOption(abilityId);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveAttackOption (int abilityId) {
+      currentShipAbility = abilityId;
+   }
+
+   [Command]
    protected void Cmd_FireMainCannonAtTarget (GameObject target, float chargeAmount, Vector3 spawnPosition, Vector2 requestedTargetPoint, bool checkReload, bool playSound) {
       if (isDead() || (checkReload && !hasReloaded())) {
          return;
@@ -742,6 +772,18 @@ public class PlayerShipEntity : ShipEntity
    [TargetRpc]
    public void Target_ReceiveAbilityList (NetworkConnection connection, int[] abilityIds) {
       shipAbilities = new List<int>(abilityIds);
+
+      for (int i = 0; i < 5; i++) {
+         CannonPanel.self.setAbilityIcon(i, -1);
+      }
+
+      int index = 0;
+      foreach (int shipAbilityId in shipAbilities) {
+         CannonPanel.self.cannonBoxList[index].abilityId = shipAbilityId;
+         CannonPanel.self.setAbilityIcon(index, shipAbilityId);
+         index++;
+      }
+      CannonPanel.self.overwriteShipCooldowns();
    }
 
    [Command]
@@ -841,7 +883,7 @@ public class PlayerShipEntity : ShipEntity
 
       int abilityId = -1;
       if (shipAbilities.Count > 0) {
-         ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(shipAbilities[0]);
+         ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(currentShipAbility);
          if (shipAbilityData != null) {
             abilityId = shipAbilityData.abilityId;
          }
@@ -902,9 +944,18 @@ public class PlayerShipEntity : ShipEntity
 
       initialize(shipInfo);
 
+      for (int i = 0; i < 5; i++) {
+         CannonPanel.self.setAbilityIcon(i, -1);
+      }
+
+      int index = 0;
       foreach (int newShipAbility in shipInfo.shipAbilities.ShipAbilities) {
          shipAbilities.Add(newShipAbility);
+         CannonPanel.self.setAbilityIcon(index, newShipAbility);
+         CannonPanel.self.cannonBoxList[index].abilityId = newShipAbility;
+         index++;
       }
+      CannonPanel.self.overwriteShipCooldowns();
 
       if (shipAbilities.Count > 0) {
          primaryAbilityId = shipAbilities[0];

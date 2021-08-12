@@ -741,7 +741,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackType: 10
-  cannonAttackOption: 0
   skillIcon: {fileID: 0}
   abilityId: 0
   boxIndex: 0
@@ -1007,7 +1006,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackType: 3
-  cannonAttackOption: 0
   skillIcon: {fileID: 0}
   abilityId: 0
   boxIndex: 0
@@ -1437,7 +1435,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackType: 1
-  cannonAttackOption: 0
   skillIcon: {fileID: 1479564997088082368}
   abilityId: 0
   boxIndex: 0
@@ -1752,7 +1749,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackType: 1
-  cannonAttackOption: 0
   skillIcon: {fileID: 1479564998402670638}
   abilityId: 0
   boxIndex: 0
@@ -2120,7 +2116,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackType: 2
-  cannonAttackOption: 0
   skillIcon: {fileID: 0}
   abilityId: 0
   boxIndex: 0
@@ -2375,6 +2370,11 @@ PrefabInstance:
       propertyPath: cannonAttackOption
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 7710277635469007940, guid: cc32e2ed497e67140a2f151a988f2b6a,
+        type: 3}
+      propertyPath: attackType
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 8762895500142596015, guid: cc32e2ed497e67140a2f151a988f2b6a,
         type: 3}
       propertyPath: m_Sprite
@@ -2543,6 +2543,11 @@ PrefabInstance:
         type: 3}
       propertyPath: cannonAttackOption
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7710277635469007940, guid: cc32e2ed497e67140a2f151a988f2b6a,
+        type: 3}
+      propertyPath: attackType
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 8762895500142596015, guid: cc32e2ed497e67140a2f151a988f2b6a,
         type: 3}
@@ -2718,6 +2723,11 @@ PrefabInstance:
       propertyPath: cannonAttackOption
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 7710277635469007940, guid: cc32e2ed497e67140a2f151a988f2b6a,
+        type: 3}
+      propertyPath: attackType
+      value: 19
+      objectReference: {fileID: 0}
     - target: {fileID: 8762895500142596015, guid: cc32e2ed497e67140a2f151a988f2b6a,
         type: 3}
       propertyPath: m_Sprite
@@ -2870,6 +2880,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Canon Box 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7710277635469007940, guid: cc32e2ed497e67140a2f151a988f2b6a,
+        type: 3}
+      propertyPath: attackType
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 8762895500142596015, guid: cc32e2ed497e67140a2f151a988f2b6a,
         type: 3}
@@ -3033,6 +3048,11 @@ PrefabInstance:
         type: 3}
       propertyPath: cannonAttackOption
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7710277635469007940, guid: cc32e2ed497e67140a2f151a988f2b6a,
+        type: 3}
+      propertyPath: attackType
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 8762895500142596015, guid: cc32e2ed497e67140a2f151a988f2b6a,
         type: 3}

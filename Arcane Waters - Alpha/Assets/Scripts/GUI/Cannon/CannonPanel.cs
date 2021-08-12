@@ -19,15 +19,6 @@ public class CannonPanel : ClientMonoBehaviour {
    // List of abilities in the cannon panel
    public List<CannonBox> cannonBoxList;
 
-   // Type of attack (cannon, cone, circle) + attack effect (slow, stun etc.)
-   public enum CannonAttackOption {
-      Standard_NoEffect = 0,
-      Standard_Slow = 1,
-      Standard_Stunned = 2,
-      Cone_NoEffect = 3,
-      Circle_NoEffect = 4
-   }
-
    #endregion
 
    protected override void Awake () {
@@ -42,13 +33,34 @@ public class CannonPanel : ClientMonoBehaviour {
       _boxes = GetComponentsInChildren<CannonBox>();
 
       _currentAttackIndex = 0;
-      _currentAttackOption = CannonAttackOption.Standard_NoEffect;
+      _currentAttackOption = Attack.Type.Standard_NoEffect;
       cannonBoxList[0].setCannons();
 
-      _cooldownPerSkill.Add(CannonAttackOption.Standard_Slow, 10);
-      _cooldownPerSkill.Add(CannonAttackOption.Standard_Stunned, 20);
-      _cooldownPerSkill.Add(CannonAttackOption.Cone_NoEffect, 10);
-      _cooldownPerSkill.Add(CannonAttackOption.Circle_NoEffect, 20);
+      _cooldownPerSkill.Add(ShipAbilityManager.SHIP_ABILITY_DEFAULT[1], 10);
+      _cooldownPerSkill.Add(ShipAbilityManager.SHIP_ABILITY_DEFAULT[2], 20);
+      _cooldownPerSkill.Add(ShipAbilityManager.SHIP_ABILITY_DEFAULT[3], 10);
+      _cooldownPerSkill.Add(ShipAbilityManager.SHIP_ABILITY_DEFAULT[4], 20);
+   }
+
+   public void overwriteShipCooldowns () {
+      _cooldownPerSkill = new Dictionary<int, int>();
+
+      if (cannonBoxList.Count > 0) {
+         foreach (CannonBox cannonBox in cannonBoxList) {
+            ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(cannonBox.abilityId);
+            if (shipAbilityData != null) {
+               if (!_cooldownPerSkill.ContainsKey(shipAbilityData.abilityId)) {
+                  _cooldownPerSkill.Add(shipAbilityData.abilityId, (int) shipAbilityData.coolDown);
+               }
+            }
+         }
+
+         cannonBoxList[0].setCannons();
+      }
+   }
+
+   public void setAbilityIcon (int index, int abilityId) {
+      cannonBoxList[index].setAbilityIcon(abilityId);
    }
 
    public void resetAllHighlights () {
@@ -58,11 +70,9 @@ public class CannonPanel : ClientMonoBehaviour {
    }
 
    public void cannonReleased () {
-      if (_cooldownPerSkill.ContainsKey(_currentAttackOption)) {
-         _attackCooldown[_currentAttackIndex] += _cooldownPerSkill[_currentAttackOption];
-
+      if (_cooldownPerSkill.ContainsKey(_currentAttackAbility)) {
+         _attackCooldown[_currentAttackIndex] += _cooldownPerSkill[_currentAttackAbility];
          _isChargingCannon = false;
-         useCannonType(CannonAttackOption.Standard_NoEffect, 0);
       }
    }
 
@@ -74,7 +84,7 @@ public class CannonPanel : ClientMonoBehaviour {
       _isChargingCannon = isChargingCannon;
    }
 
-   public void useCannonType (CannonAttackOption attackType, int index) {
+   public void useCannonType (int abilityId, int index) {
       if (Global.player == null || _isChargingCannon) {
          return;
       }
@@ -84,33 +94,40 @@ public class CannonPanel : ClientMonoBehaviour {
          return;
       }
 
+      ShipAbilityData shipAbility = ShipAbilityManager.self.getAbility(abilityId);
+      if (shipAbility == null) {
+         D.debug("No ability with id: {" + abilityId + "}");
+         return;
+      }
+
+      D.adminLog("Using cannon type: ID: " 
+         + abilityId + " INDEX: " 
+         + index + " Name: " 
+         + shipAbility.abilityName + " Attack: " 
+         + shipAbility.selectedAttackType, D.ADMIN_LOG_TYPE.SeaAbility);
+
       _currentAttackIndex = index;
-      _currentAttackOption = attackType;
+      _currentAttackOption = shipAbility.selectedAttackType;
+      _currentAttackAbility = shipAbility.abilityId;
 
-      switch (attackType) {
-         case CannonAttackOption.Standard_NoEffect:
+      ship.cannonEffectType = (Status.Type) shipAbility.statusType;
+      switch (shipAbility.selectedAttackType) {
+         case Attack.Type.Standard_NoEffect:
+         case Attack.Type.Standard_Slow:
+         case Attack.Type.Standard_Stunned:
             ship.cannonAttackType = PlayerShipEntity.CannonAttackType.Normal;
-            ship.cannonEffectType = Status.Type.None;
             break;
 
-         case CannonAttackOption.Standard_Slow:
-            ship.cannonAttackType = PlayerShipEntity.CannonAttackType.Normal;
-            ship.cannonEffectType = Status.Type.Slowed;
-            break;
-
-         case CannonAttackOption.Standard_Stunned:
-            ship.cannonAttackType = PlayerShipEntity.CannonAttackType.Normal;
-            ship.cannonEffectType = Status.Type.Stunned;
-            break;
-
-         case CannonAttackOption.Cone_NoEffect:
+         case Attack.Type.Cone_NoEffect:
             ship.cannonAttackType = PlayerShipEntity.CannonAttackType.Cone;
-            ship.cannonEffectType = Status.Type.None;
             break;
 
-         case CannonAttackOption.Circle_NoEffect:
+         case Attack.Type.Circle_NoEffect:
             ship.cannonAttackType = PlayerShipEntity.CannonAttackType.Circle;
-            ship.cannonEffectType = Status.Type.None;
+            break;
+
+         default:
+            ship.cannonAttackType = PlayerShipEntity.CannonAttackType.Normal;
             break;
       }
 
@@ -134,7 +151,7 @@ public class CannonPanel : ClientMonoBehaviour {
          if (_attackCooldown[i] <= 0.0f) {
             _attackCooldown[i] = 0.0f;
          } else {
-            _boxes[i].setCooldown(_attackCooldown[i] / (float) _cooldownPerSkill[(CannonAttackOption)i]);
+            _boxes[i].setCooldown(_attackCooldown[i] / (float) _cooldownPerSkill[cannonBoxList[i].abilityId]);
          }
       }
    }
@@ -151,13 +168,16 @@ public class CannonPanel : ClientMonoBehaviour {
    protected float[] _attackCooldown = new float[5];
 
    // Stored current attack option
-   protected CannonAttackOption _currentAttackOption;
+   protected Attack.Type _currentAttackOption;
+
+   // Stored current attack ability
+   protected int _currentAttackAbility; 
 
    // Stored current attack index - 0 is the leftmost position in the panel
    protected int _currentAttackIndex;
 
    // Cooldown value to set after using skill
-   protected Dictionary<CannonAttackOption, int> _cooldownPerSkill = new Dictionary<CannonAttackOption, int>();
+   protected Dictionary<int, int> _cooldownPerSkill = new Dictionary<int, int>();
 
    // Check whether player ship is currently charging cannon
    protected bool _isChargingCannon = false;

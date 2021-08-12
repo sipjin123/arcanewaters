@@ -100,8 +100,7 @@ public class ShipData
 }
 
 [Serializable]
-public class ShipAbilityPair
-{
+public class ShipAbilityPair {
    // Name of the ability
    public string abilityName;
 
@@ -111,4 +110,13 @@ public class ShipAbilityPair
    // The ship data
    [XmlIgnore]
    public ShipAbilityData shipAbilityData;
+}
+
+[Serializable]
+public class PvpShipIconPair {
+   // Ship type
+   public Ship.Type shipType;
+
+   // The sprite counterpart
+   public Sprite shipSprite;
 }

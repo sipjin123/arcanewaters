@@ -106,6 +106,10 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   projectileVelocity: {x: 0, y: 0}
+  projectileId: 0
+  spriteRenderers:
+  - {fileID: 3222192111568099543}
+  - {fileID: 5210753793174941015}
   _rigidbody: {fileID: 1036786386496551606}
 --- !u!114 &3748842707968269389
 MonoBehaviour:

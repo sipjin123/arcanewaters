@@ -12,7 +12,9 @@ public class Attack : MonoBehaviour {
       None = 0, Cannon = 1, Ice = 2, Air = 3, Tentacle = 4, 
       Venom = 5, Boulder = 6, Shock_Ball = 7, Tentacle_Range = 8, 
       Mini_Boulder = 9, Fire = 10, Heal = 11, SpeedBoost = 12,
-      DamageAmplify = 13, SpawnStoneBlocker = 14, Poison_Circle = 15
+      DamageAmplify = 13, SpawnStoneBlocker = 14, Poison_Circle = 15,
+      Standard_NoEffect = 16, Standard_Slow = 17, Standard_Stunned = 18,
+      Cone_NoEffect = 19, Circle_NoEffect = 20
    }
 
    public enum ImpactMagnitude

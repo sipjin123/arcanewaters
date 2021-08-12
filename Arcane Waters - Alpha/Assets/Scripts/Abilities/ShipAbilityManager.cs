@@ -21,6 +21,9 @@ public class ShipAbilityManager : MonoBehaviour {
    // Determines if data setup is done
    public UnityEvent finishedDataSetup = new UnityEvent();
 
+   // The default ship ability id
+   public static int[] SHIP_ABILITY_DEFAULT = { 1, 33, 34, 35, 36 };
+
    #endregion
 
    private void Awake () {

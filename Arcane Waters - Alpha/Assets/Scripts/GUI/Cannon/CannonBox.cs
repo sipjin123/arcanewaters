@@ -10,9 +10,6 @@ public class CannonBox : ClientMonoBehaviour {
    // The attack type that this box selects
    public Attack.Type attackType;
 
-   // The attack type that this box selects
-   public CannonPanel.CannonAttackOption cannonAttackOption;
-
    // Skill Icon
    public Image skillIcon;
 
@@ -38,7 +35,11 @@ public class CannonBox : ClientMonoBehaviour {
    }
 
    public void boxPressed () {
-      CannonPanel.self.useCannonType(cannonAttackOption, boxIndex);
+      CannonPanel.self.useCannonType(abilityId, boxIndex);
+      if (Global.player != null && Global.player is PlayerShipEntity) {
+         PlayerShipEntity playerShip = (PlayerShipEntity) Global.player;
+         playerShip.Cmd_ChangeAttackOption(abilityId);
+      }
    }
 
    public void setCannons () {
@@ -48,6 +49,28 @@ public class CannonBox : ClientMonoBehaviour {
       cooldownHighlight.fillAmount = cooldownNormal.fillAmount;
       cooldownNormal.fillAmount = 0;
       highlightSkill.SetActive(true);
+   }
+
+   public void setAbilityIcon (int id) {
+      bool allowDynamicAbilities = true;
+      if (allowDynamicAbilities) {
+         if (id < 1) {
+            skillIcon.gameObject.SetActive(false);
+            _containerImage.gameObject.SetActive(false);
+            return;
+         }
+
+         skillIcon.gameObject.SetActive(true);
+         _containerImage.gameObject.SetActive(true);
+
+         ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(id);
+         if (shipAbilityData == null) {
+            D.debug("Missing ability info: {" + id + "}");
+            return;
+         }
+
+         skillIcon.sprite = ImageManager.getSprite(shipAbilityData.skillIconPath);
+      }
    }
 
    public void skillReady () {
