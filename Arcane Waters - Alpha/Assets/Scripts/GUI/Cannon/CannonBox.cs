@@ -53,7 +53,7 @@ public class CannonBox : ClientMonoBehaviour {
 
    public void setAbilityIcon (int id) {
       bool allowDynamicAbilities = true;
-      if (allowDynamicAbilities) {
+      if (allowDynamicAbilities && _containerImage && skillIcon) {
          if (id < 1) {
             skillIcon.gameObject.SetActive(false);
             _containerImage.gameObject.SetActive(false);
@@ -69,7 +69,9 @@ public class CannonBox : ClientMonoBehaviour {
             return;
          }
 
-         skillIcon.sprite = ImageManager.getSprite(shipAbilityData.skillIconPath);
+         if (!Util.isBatch()) {
+            skillIcon.sprite = ImageManager.getSprite(shipAbilityData.skillIconPath);
+         }
       }
    }
 

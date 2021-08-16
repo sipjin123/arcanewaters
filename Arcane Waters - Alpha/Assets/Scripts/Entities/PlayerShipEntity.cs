@@ -264,8 +264,31 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
-   protected override void initialize (ShipInfo info) {
-      base.initialize(info);
+   public void changeShipInfo (ShipInfo info) {
+      initialize(info);
+      Target_ReceiveAbilityList(connectionToClient, shipAbilities.ToArray());
+   }
+
+   protected override void initialize (ShipInfo shipInfo) {
+      base.initialize(shipInfo);
+
+      for (int i = 0; i < CannonPanel.MAX_ABILITY_COUNT; i++) {
+         CannonPanel.self.setAbilityIcon(i, -1);
+      }
+
+      shipAbilities = new List<int>();
+      int index = 0;
+      foreach (int newShipAbility in shipInfo.shipAbilities.ShipAbilities) {
+         shipAbilities.Add(newShipAbility);
+         CannonPanel.self.setAbilityIcon(index, newShipAbility);
+         CannonPanel.self.cannonBoxList[index].abilityId = newShipAbility;
+         index++;
+      }
+      CannonPanel.self.overwriteShipCooldowns();
+
+      if (shipAbilities.Count > 0) {
+         primaryAbilityId = shipAbilities[0];
+      }
 
       // If the player is not currently part of a voyage then initialize their health to full health
       if (this.voyageGroupId < 1) {
@@ -791,7 +814,7 @@ public class PlayerShipEntity : ShipEntity
    public void Target_ReceiveAbilityList (NetworkConnection connection, int[] abilityIds) {
       shipAbilities = new List<int>(abilityIds);
 
-      for (int i = 0; i < 5; i++) {
+      for (int i = 0; i < CannonPanel.MAX_ABILITY_COUNT; i++) {
          CannonPanel.self.setAbilityIcon(i, -1);
       }
 
@@ -802,6 +825,11 @@ public class PlayerShipEntity : ShipEntity
          index++;
       }
       CannonPanel.self.overwriteShipCooldowns();
+   }
+
+   [TargetRpc]
+   public void Target_RefreshSprites (NetworkConnection connection, int shipType, int shipSize, int shipSkinType) {
+      overrideSprite((Ship.Type)shipType, (ShipSize) shipSize, (Ship.SkinType) shipSkinType);
    }
 
    [Command]
@@ -961,23 +989,6 @@ public class PlayerShipEntity : ShipEntity
       shipId = shipInfo.shipId;
 
       initialize(shipInfo);
-
-      for (int i = 0; i < 5; i++) {
-         CannonPanel.self.setAbilityIcon(i, -1);
-      }
-
-      int index = 0;
-      foreach (int newShipAbility in shipInfo.shipAbilities.ShipAbilities) {
-         shipAbilities.Add(newShipAbility);
-         CannonPanel.self.setAbilityIcon(index, newShipAbility);
-         CannonPanel.self.cannonBoxList[index].abilityId = newShipAbility;
-         index++;
-      }
-      CannonPanel.self.overwriteShipCooldowns();
-
-      if (shipAbilities.Count > 0) {
-         primaryAbilityId = shipAbilities[0];
-      }
 
       // Store the equipped items characteristics
       weaponType = weapon.itemTypeId;

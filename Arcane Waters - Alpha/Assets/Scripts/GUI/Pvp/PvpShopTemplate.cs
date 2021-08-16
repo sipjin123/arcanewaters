@@ -75,6 +75,7 @@ public class PvpShopTemplate : MonoBehaviour {
 
    public void onHoverEnter () {
       highlightObj.SetActive(true);
+      displayData();
    }
 
    public void onHoverExit () {
@@ -82,6 +83,12 @@ public class PvpShopTemplate : MonoBehaviour {
    }
 
    public void selectThisTemplate () {
+      displayData();
+      selectedObj.SetActive(true);
+      selectTemplateEvent.Invoke();
+   }
+
+   private void displayData () {
       PvpShopPanel.self.clearSelectedObj();
       PvpItemInfo itemInfo = PvpShopPanel.self.getPvpItemInfo(itemData);
       if (itemInfo != null) {
@@ -101,8 +108,6 @@ public class PvpShopTemplate : MonoBehaviour {
             PvpShopPanel.self.shipDefenseText.text = serverDeclaredData.health.ToString();
          }
       }
-      selectedObj.SetActive(true);
-      selectTemplateEvent.Invoke();
    }
 
    #region Private Variables

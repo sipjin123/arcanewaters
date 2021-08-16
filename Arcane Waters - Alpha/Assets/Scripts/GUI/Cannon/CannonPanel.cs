@@ -19,6 +19,9 @@ public class CannonPanel : ClientMonoBehaviour {
    // List of abilities in the cannon panel
    public List<CannonBox> cannonBoxList;
 
+   // The max ability count of player ships
+   public const int MAX_ABILITY_COUNT = 5;
+
    #endregion
 
    protected override void Awake () {
@@ -52,6 +55,9 @@ public class CannonPanel : ClientMonoBehaviour {
                if (!_cooldownPerSkill.ContainsKey(shipAbilityData.abilityId)) {
                   _cooldownPerSkill.Add(shipAbilityData.abilityId, (int) shipAbilityData.coolDown);
                }
+            } else {
+               cannonBox.setAbilityIcon(-1);
+               D.debug("Cannot process the cooldown of ability {" + shipAbilityData.abilityId + "}, missing data");
             }
          }
 
@@ -151,7 +157,9 @@ public class CannonPanel : ClientMonoBehaviour {
          if (_attackCooldown[i] <= 0.0f) {
             _attackCooldown[i] = 0.0f;
          } else {
-            _boxes[i].setCooldown(_attackCooldown[i] / (float) _cooldownPerSkill[cannonBoxList[i].abilityId]);
+            if (_cooldownPerSkill.ContainsKey(cannonBoxList[i].abilityId)) {
+               _boxes[i].setCooldown(_attackCooldown[i] / (float) _cooldownPerSkill[cannonBoxList[i].abilityId]);
+            }
          }
       }
    }

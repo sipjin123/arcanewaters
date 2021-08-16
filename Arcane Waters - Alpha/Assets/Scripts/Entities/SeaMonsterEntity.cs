@@ -388,8 +388,10 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    public override void requestAnimationPlay (Anim.Type animType) {
       isAttacking = true;
       _attackEndAnimateTime = NetworkTime.time + getAttackDuration();
-      _simpleAnim.modifyAnimSpeed(cachedAttackAnimSpeed);
-      _simpleAnim.playAnimation(animType);
+      if (_simpleAnim != null) {
+         _simpleAnim.modifyAnimSpeed(cachedAttackAnimSpeed);
+         _simpleAnim.playAnimation(animType);
+      }
    }
 
    private float getAttackDuration () {

@@ -3483,7 +3483,6 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_ProcessShopData (NetworkConnection conn, int shopId, int userSilver, string shopName, string shopInfo, string[] serializedShopItems) {
       List<PvpShopItem> pvpShopList = Util.unserialize<PvpShopItem>(serializedShopItems);
-
       PvpShopPanel panel = PvpShopPanel.self;
       panel.showEntirePanel();
       panel.displayName.text = shopName;
@@ -3525,7 +3524,18 @@ public class RPCManager : NetworkBehaviour
                   });
                   break;
                case PvpShopItem.PvpShopItemType.Ship:
-
+                  int shipSqlId = shopItem.itemId;
+                  ShipData shipData = ShipDataManager.self.getShipData(shipSqlId);
+                  if (shipData != null) {
+                     PlayerShipEntity playerShip = (PlayerShipEntity) seaEntity;
+                     ShipInfo startingShip = Ship.generateNewShip(shipData.shipType, Rarity.Type.Common);
+                     startingShip.shipAbilities = ShipDataManager.self.getShipAbilities(shipSqlId);
+                     playerShip.changeShipInfo(startingShip);
+                     ShipSizeSpritePair shipSizeSprite = playerShip.shipSizeSpriteList.Find(_ => _.shipSize == shipData.shipSize);
+                     playerShip.Target_RefreshSprites(connectionToClient, (int) startingShip.shipType, (int) shipSizeSprite.shipSize, (int) startingShip.skinType);
+                  } else {
+                     D.debug("Cant process shop purchase: {" + shipSqlId + "} does not exist");
+                  }
                   break;
                case PvpShopItem.PvpShopItemType.Ability:
 

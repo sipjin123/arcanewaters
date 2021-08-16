@@ -39,6 +39,9 @@ public class PvpGame : MonoBehaviour {
    // Default Respawn Timeout (Seconds)
    public const float RESPAWN_TIMEOUT = 5.0f;
 
+   // Holds the current ship data of each player in the pvp game
+   public Dictionary<int, ShipInfo> playerShipCache = new Dictionary<int, ShipInfo>();
+
    #endregion
 
    public void init (int voyageId, int instanceId, string areaKey) {
@@ -116,6 +119,7 @@ public class PvpGame : MonoBehaviour {
 
       _usersInGame.Add(userId);
       assignedTeam.Add(userId);
+      StartCoroutine(CO_InitializePlayerShip(userId));
       PowerupManager.self.clearPowerupsForUser(userId);
 
       if (_gameState == State.PreGame) {
@@ -124,6 +128,19 @@ public class PvpGame : MonoBehaviour {
          GameStatsManager.self.registerUser(userId, userName, assignedTeam.teamType);
          StartCoroutine(CO_AddPlayerToOngoingGame(userId, userName, assignedTeam));
       }
+   }
+
+   private IEnumerator CO_InitializePlayerShip (int userId) {
+      DateTime startTime = DateTime.UtcNow;
+      while (EntityManager.self.getEntity(userId) == null || !(EntityManager.self.getEntity(userId) is PlayerShipEntity)) {
+         yield return 0;
+      }
+
+      PlayerShipEntity playerShip = (PlayerShipEntity) EntityManager.self.getEntity(userId);
+      int shipId = ShipDataManager.STARTING_SHIP_ID;
+      ShipInfo startingShip = Ship.generateNewShip(Ship.Type.Type_1, Rarity.Type.Common);
+      startingShip.shipAbilities = ShipDataManager.self.getShipAbilities(shipId);
+      playerShip.changeShipInfo(startingShip);
    }
 
    private void addPlayerToPreGame (int userId, string userName) {
