@@ -69,9 +69,6 @@ public class ShipAbilityData
    // Type of effect that occurs upon collision
    public ShipCastCollisionType shipCastCollisionType;
 
-   // Determines the ability effect
-   public ShipAbilityEffect shipAbilityEffect;
-
    // The strength of the impact
    public Attack.ImpactMagnitude impactMagnitude = Attack.ImpactMagnitude.None;
 
@@ -111,15 +108,6 @@ public class ShipAbilityData
       }
 
       return Attack.ImpactMagnitude.Weak;
-   }
-
-   public enum ShipAbilityEffect
-   {
-      None = 0,
-      Damage = 1,
-      Heal = 2,
-      StatBuff = 3,
-      StatDebuff = 4,
    }
 
    public enum ShipCastType

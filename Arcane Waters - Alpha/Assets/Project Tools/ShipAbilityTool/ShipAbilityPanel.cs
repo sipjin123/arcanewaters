@@ -56,7 +56,7 @@ public class ShipAbilityPanel : MonoBehaviour {
 
       _shipCastType.maxValue = Enum.GetValues(typeof(ShipAbilityData.ShipCastType)).Length - 1;
       _shipCastCollisionType.maxValue = Enum.GetValues(typeof(ShipAbilityData.ShipCastCollisionType)).Length - 1;
-      _shipAbilityEffect.maxValue = Enum.GetValues(typeof(ShipAbilityData.ShipAbilityEffect)).Length - 1;
+      //_shipAbilityEffect.maxValue = Enum.GetValues(typeof(ShipAbilityData.ShipAbilityEffect)).Length - 1;
       _shipAbilityAttackType.maxValue = Enum.GetValues(typeof(Attack.Type)).Length - 1;
       _impactMagnitude.maxValue = Enum.GetValues(typeof(Attack.ImpactMagnitude)).Length - 1;
       _statusSlider.maxValue = Enum.GetValues(typeof(Status.Type)).Length - 1;
@@ -83,7 +83,7 @@ public class ShipAbilityPanel : MonoBehaviour {
       });
 
       _shipAbilityEffect.onValueChanged.AddListener(_ => {
-         _shipAbilityEffectText.text = ((ShipAbilityData.ShipAbilityEffect) _).ToString();
+         //_shipAbilityEffectText.text = ((ShipAbilityData.ShipAbilityEffect) _).ToString();
       });
 
       _shipAbilityAttackType.onValueChanged.AddListener(_ => {
@@ -163,7 +163,7 @@ public class ShipAbilityPanel : MonoBehaviour {
       // Loads all slider data
       _shipCastText.text = shipAbilityData.shipCastType.ToString();
       _shipCastCollisionText.text = shipAbilityData.shipCastCollisionType.ToString();
-      _shipAbilityEffectText.text = shipAbilityData.shipAbilityEffect.ToString();
+      //_shipAbilityEffectText.text = shipAbilityData.shipAbilityEffect.ToString();
       _shipAbilityAttackTypeText.text = shipAbilityData.selectedAttackType.ToString();
       _impactMagnitudeText.text = shipAbilityData.impactMagnitude.ToString();
 
@@ -171,7 +171,7 @@ public class ShipAbilityPanel : MonoBehaviour {
       _shipAbilityAttackType.value  = (int) shipAbilityData.selectedAttackType;
       _shipCastType.value = (int) shipAbilityData.shipCastType;
       _shipCastCollisionType.value = (int) shipAbilityData.shipCastCollisionType;
-      _shipAbilityEffect.value = (int) shipAbilityData.shipAbilityEffect;
+      //_shipAbilityEffect.value = (int) shipAbilityData.shipAbilityEffect;
 
       _hasArch.isOn = shipAbilityData.hasArch;
       _hasTrail.isOn = shipAbilityData.hasTrail;
@@ -201,7 +201,7 @@ public class ShipAbilityPanel : MonoBehaviour {
 
       abilityData.shipCastType = (ShipAbilityData.ShipCastType) Enum.Parse(typeof(ShipAbilityData.ShipCastType), _shipCastText.text);
       abilityData.shipCastCollisionType = (ShipAbilityData.ShipCastCollisionType) Enum.Parse(typeof(ShipAbilityData.ShipCastCollisionType), _shipCastCollisionText.text);
-      abilityData.shipAbilityEffect = (ShipAbilityData.ShipAbilityEffect) Enum.Parse(typeof(ShipAbilityData.ShipAbilityEffect), _shipAbilityEffectText.text);
+      //abilityData.shipAbilityEffect = (ShipAbilityData.ShipAbilityEffect) Enum.Parse(typeof(ShipAbilityData.ShipAbilityEffect), _shipAbilityEffectText.text);
       abilityData.selectedAttackType = (Attack.Type) Enum.Parse(typeof(Attack.Type), _shipAbilityAttackTypeText.text);
       abilityData.impactMagnitude = (Attack.ImpactMagnitude) Enum.Parse(typeof(Attack.ImpactMagnitude), _impactMagnitudeText.text);
 
