@@ -137,6 +137,68 @@ public class InventoryManager : MonoBehaviour
       return false;
    }
 
+   public static UserObjects getUserObjectsForPlayer (NetEntity player) {
+      if (player == null) {
+         D.error("Could not get user objects because player is null");
+         return null;
+      }
+
+      UserObjects objects = new UserObjects();
+
+      PlayerBodyEntity bodyEntity = player.getPlayerBodyEntity();
+      if (bodyEntity != null) {
+         WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(bodyEntity.weaponManager.equipmentDataId);
+         objects.weapon = weaponData != null ? WeaponStatData.translateDataToWeapon(weaponData) : new Weapon();
+         objects.weapon.itemTypeId = bodyEntity.weaponManager.equipmentDataId;
+         objects.weapon.id = bodyEntity.weaponManager.equippedWeaponId;
+         objects.weapon.paletteNames = bodyEntity.weaponManager.palettes;
+
+         ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(bodyEntity.armorManager.equipmentDataId);
+         objects.armor = armorData != null ? ArmorStatData.translateDataToArmor(armorData) : new Armor();
+         objects.armor.itemTypeId = bodyEntity.armorManager.equipmentDataId;
+         objects.armor.id = bodyEntity.armorManager.equippedArmorId;
+         objects.armor.paletteNames = bodyEntity.armorManager.palettes;
+
+         HatStatData hatData = EquipmentXMLManager.self.getHatData(bodyEntity.hatsManager.equipmentDataId);
+         objects.hat = hatData != null ? HatStatData.translateDataToHat(hatData) : new Hat();
+         objects.hat.itemTypeId = bodyEntity.hatsManager.equipmentDataId;
+         objects.hat.id = bodyEntity.hatsManager.equippedHatId;
+         objects.hat.paletteNames = bodyEntity.hatsManager.palettes;
+      }
+
+      objects.guildInfo = getGuildInfoForPlayer(player);
+      objects.userInfo = getUserInfoForPlayer(player);
+
+      return objects;
+   }
+
+   public static GuildInfo getGuildInfoForPlayer (NetEntity player) {
+      GuildInfo info = new GuildInfo();
+      info.iconBackground = player.guildIconBackground;
+      info.iconBackPalettes = player.guildIconBackPalettes;
+      info.iconBorder = player.guildIconBorder;
+      info.iconSigil = player.guildIconSigil;
+      info.iconSigilPalettes = player.guildIconSigilPalettes;
+      info.guildId = player.guildId;
+
+      return info;
+   }
+
+   public static UserInfo getUserInfoForPlayer (NetEntity player) {
+      UserInfo info = new UserInfo();
+      info.areaKey = player.areaKey;
+      info.gender = player.gender;
+      info.XP = player.XP;
+
+      info.bodyType = player.bodyType;
+      info.eyesPalettes = player.eyesPalettes;
+      info.eyesType = player.eyesType;
+      info.hairPalettes = player.hairPalettes;
+      info.hairType = player.hairType;
+
+      return info;
+   }
+
    #region Private Variables
 
    #endregion

@@ -408,6 +408,8 @@ namespace MapCustomization
                selectPrefab(_draggedPrefab);
                _selectedPrefab.unappliedChanges.localPosition = dragStartPosition;
                _selectedPrefab.submitUnappliedChanges();
+            } else {
+               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _draggedPrefab.unappliedChanges, _draggedPrefab.spawnedAPrefabVariation, _draggedPrefab.variationSpawnedFromPrefab);
             }
             _draggedPrefab = null;
             isBeginningOfDrag = true;

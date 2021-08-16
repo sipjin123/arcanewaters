@@ -6,7 +6,8 @@ using Mirror;
 using DG.Tweening;
 using MapCreationTool.Serialization;
 
-public class PvpTower : SeaStructure {
+public class PvpTower : SeaStructure
+{
    #region Public Variables
 
    // How far away this unit can target and attack enemies
@@ -248,9 +249,9 @@ public class PvpTower : SeaStructure {
             Vector2 reticleTargetPosition = (Vector2) _aimTarget.transform.position + toProjectedPosition;
 
             // If the reticle target position has moved out of range, clamp it in-range
-            Vector2 toReticleTargetPosition = reticleTargetPosition - (Vector2)transform.position;
+            Vector2 toReticleTargetPosition = reticleTargetPosition - (Vector2) transform.position;
             if (toReticleTargetPosition.sqrMagnitude > ATTACK_RANGE * ATTACK_RANGE) {
-               reticleTargetPosition = (Vector2)transform.position + toReticleTargetPosition.normalized * ATTACK_RANGE;
+               reticleTargetPosition = (Vector2) transform.position + toReticleTargetPosition.normalized * ATTACK_RANGE;
             }
 
             aimTransform.position = Vector2.Lerp(aimTransform.position, reticleTargetPosition, Time.deltaTime * AIM_TARGET_SPEED);
@@ -286,7 +287,7 @@ public class PvpTower : SeaStructure {
       if (_aimTarget && _aimTarget.isPlayerShip() && isInRange(_aimTarget.transform.position)) {
          return _aimTarget;
       }
-      
+
       // First check for non-players
       // Check if any of our attackers are within range
       foreach (uint attackerId in _attackers.Keys) {
@@ -350,7 +351,8 @@ public class PvpTower : SeaStructure {
       float lifetime = targetDistance / (Attack.getSpeedModifier(Attack.Type.Cannon) * projectileSpeedModifier);
       Vector2 velocity = toTarget.normalized * Attack.getSpeedModifier(Attack.Type.Cannon) * projectileSpeedModifier;
 
-      netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityData.abilityId, velocity, lobHeight, false, lifetime: lifetime);
+      netBall.initAbilityProjectile(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityData.abilityId, velocity, lobHeight, lifetime: lifetime);
+      netBall.setPlayFiringSound(true);
 
       NetworkServer.Spawn(netBall.gameObject);
 
@@ -405,7 +407,7 @@ public class PvpTower : SeaStructure {
    }
 
    protected override bool isInRange (Vector2 position) {
-      Vector2 toTarget = position - (Vector2)transform.position;
+      Vector2 toTarget = position - (Vector2) transform.position;
       return (toTarget.sqrMagnitude < ATTACK_RANGE * ATTACK_RANGE);
    }
 
@@ -416,7 +418,7 @@ public class PvpTower : SeaStructure {
          bool isInWarningRange = (distanceToGlobalPlayerShip <= WARNING_RANGE);
          bool isInAttackRange = (distanceToGlobalPlayerShip <= ATTACK_RANGE);
          float lerpTargetAlpha = (isInWarningRange) ? 0.5f : 0.0f;
-         
+
          // Fade circle out as we are dying
          if (isDead()) {
             lerpTargetAlpha = 0.0f;
@@ -428,7 +430,7 @@ public class PvpTower : SeaStructure {
          if (isInAttackRange) {
             targetColor = (_aimTarget == playerShipEntity) ? dangerColor : safeColor;
 
-         // If the player is within warning range, show warning color if no one is being targeted, otherwise show safe color
+            // If the player is within warning range, show warning color if no one is being targeted, otherwise show safe color
          } else if (isInWarningRange) {
             bool playerWillBeAttacked = (_aimTarget == null || _aimTarget.userId == playerShipEntity.userId);
             targetColor = (playerWillBeAttacked) ? warningColor : safeColor;

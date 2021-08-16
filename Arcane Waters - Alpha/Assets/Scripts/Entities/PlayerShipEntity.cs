@@ -137,11 +137,19 @@ public class PlayerShipEntity : ShipEntity
    [HideInInspector]
    public PvpCaptureTarget heldPvpCaptureTarget = null;
 
+   // A reference to the coin trail effect for this player ship
+   public GameObject coinTrailEffect;
+
+   // Whether this player ship is currently holding a pvp capture target
+   [SyncVar]
+   public bool holdingPvpCaptureTarget = false;
+
    // The current ship ability
    public int currentShipAbility;
 
    // The different flags the ship can display
-   public enum Flag {
+   public enum Flag
+   {
       None = 0,
       White = 1,
       Group = 2,
@@ -258,7 +266,7 @@ public class PlayerShipEntity : ShipEntity
 
    protected override void initialize (ShipInfo info) {
       base.initialize(info);
-	   
+
       // If the player is not currently part of a voyage then initialize their health to full health
       if (this.voyageGroupId < 1) {
          initHealth();
@@ -292,6 +300,7 @@ public class PlayerShipEntity : ShipEntity
       }
 
       updateSpeedUpDisplay();
+      updateCoinTrail();
 
       // Recolor the ship flag if needed
       if (isClient) {
@@ -1196,12 +1205,12 @@ public class PlayerShipEntity : ShipEntity
          case Flag.Pvp:
             string shipPalette = PvpManager.getShipPaletteForTeam(pvpTeam);
             spritesContainer.GetComponent<RecoloredSprite>().recolor(shipPalette);
-            
+
             // Return without updating _currentFlag if we don't have a pvp team, so it will be updated when we get one
             if (shipPalette == VoyageGroupManager.WHITE_FLAG_PALETTE) {
                return;
             }
-            
+
             break;
          default:
             break;
@@ -1477,7 +1486,7 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Server]
-   private IEnumerator CO_RespawnPlayerInInstance () {      
+   private IEnumerator CO_RespawnPlayerInInstance () {
       setIsInvulnerable(true);
       PowerupManager.self.clearPowerupsForUser(userId);
 
@@ -1520,7 +1529,7 @@ public class PlayerShipEntity : ShipEntity
       while (currentHealth <= 0) {
          yield return null;
       }
-      
+
       // Show all the sprites
       foreach (SpriteRenderer renderer in _renderers) {
          renderer.enabled = true;
@@ -1603,6 +1612,15 @@ public class PlayerShipEntity : ShipEntity
       base.onDeath();
 
       heldPvpCaptureTarget?.onPlayerDied(this);
+   }
+
+   private void updateCoinTrail () {
+      // Enable / disable the coin trail effect, based on the status of the syncvar
+      if (holdingPvpCaptureTarget && !coinTrailEffect.activeSelf) {
+         coinTrailEffect.SetActive(true);
+      } else if (!holdingPvpCaptureTarget && coinTrailEffect.activeSelf) {
+         coinTrailEffect.SetActive(false);
+      }
    }
 
    #region Private Variables

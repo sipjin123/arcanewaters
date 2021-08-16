@@ -95,6 +95,8 @@ public class PanelManager : GenericGameManager {
          BottomBar.self.toggleOptionsPanel();
       } else if (KeyUtils.GetKeyDown(Key.M)) {
          BottomBar.self.toggleMapPanel();
+      } else if (KeyUtils.GetKeyDown(Key.B)) {
+         BottomBar.self.toggleStorePanel();
       } else if (KeyUtils.GetKeyDown(Key.T)) {
          BottomBar.self.toggleTradeHistoryPanel();
       } else if (KeyUtils.GetKeyDown(Key.F)) {
@@ -107,9 +109,9 @@ public class PanelManager : GenericGameManager {
          ((AdminVoyagePanel) get(Panel.Type.AdminVoyage)).togglePanel();
       } else if (KeyUtils.GetKeyDown(Key.F6)) {
          adminGameSettingsPanel.togglePanel();
-      } else if (KeyUtils.GetKeyDown(Key.F3)) {
+      } else if (KeyUtils.GetKeyDown(Key.V)) {
          if (Global.isLoggedInAsAdmin()) {
-            AdminPanel.self.show();
+               AdminPanel.self.show();
          }
       }
 

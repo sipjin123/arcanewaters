@@ -209,8 +209,8 @@ public class PrefabsManager : MonoBehaviour {
    // A reference to the poof effect prefab
    public GameObject poofPrefab;
 
-   // A reference to the explosive shot effect prefab
-   public GameObject explosiveShotEffectPrefab;
+   // A reference to the explosive shot projectile prefab
+   public SeaProjectile explosiveShotProjectilePrefab;
 
    // A reference to the powerup pickup effect prefab
    public GameObject powerupPickupEffect;

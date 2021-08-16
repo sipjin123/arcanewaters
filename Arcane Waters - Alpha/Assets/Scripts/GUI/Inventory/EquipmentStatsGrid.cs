@@ -16,6 +16,47 @@ public class EquipmentStatsGrid : MonoBehaviour {
 
    #endregion
 
+   public void refreshStats (NetEntity player) {
+      UserObjects userObjects = InventoryManager.getUserObjectsForPlayer(player);
+      refreshStats(userObjects);
+   }
+
+   public void refreshStats (UserObjects userObjects) {
+      clearAll();
+
+      if (userObjects.weapon.itemTypeId != 0) {
+         WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(userObjects.weapon.itemTypeId);
+         Weapon weapon = weaponData != null ? WeaponStatData.translateDataToWeapon(weaponData) : new Weapon();
+         weapon.itemTypeId = userObjects.weapon.itemTypeId;
+         weapon.id = userObjects.weapon.id;
+         weapon.paletteNames = userObjects.weapon.paletteNames;
+
+         refreshStats(weapon);
+      }
+
+      if (userObjects.armor.itemTypeId != 0) {
+         ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(userObjects.armor.itemTypeId);
+         Armor armor = armorData != null ? ArmorStatData.translateDataToArmor(armorData) : new Armor();
+         armor.itemTypeId = userObjects.armor.itemTypeId;
+         armor.id = userObjects.armor.id;
+         armor.paletteNames = userObjects.armor.paletteNames;
+
+         refreshStats(armor);
+      }
+
+      if (userObjects.hat.itemTypeId != 0) {
+         HatStatData hatData = EquipmentXMLManager.self.getHatData(userObjects.hat.itemTypeId);
+         Hat hat = hatData != null ? HatStatData.translateDataToHat(hatData) : new Hat();
+         hat.itemTypeId = userObjects.hat.itemTypeId;
+         hat.id = userObjects.hat.id;
+         hat.paletteNames = userObjects.hat.paletteNames;
+
+         if (hat.getHatDefense() > 0) {
+            refreshStats(hat);
+         }
+      }
+   }
+
    public void refreshStats (Weapon equippedWeapon) {
       physicalStatRow.setEquippedWeapon(equippedWeapon);
       fireStatRow.setEquippedWeapon(equippedWeapon);

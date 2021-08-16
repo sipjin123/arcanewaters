@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class CannonObserverManager : NetworkVisibility
+public class SeaProjectileObserverManager : NetworkVisibility
 {
    #region Public Variables
 
    #endregion
 
    void Awake () {
-      _ball = GetComponent<ServerCannonBall>();
+      _projectile = GetComponent<SeaProjectile>();
    }
 
    // Called when a new player enters
@@ -24,7 +24,7 @@ public class CannonObserverManager : NetworkVisibility
       connectionsToObserve.Clear();
 
       // Look up our instance
-      Instance instance = InstanceManager.self.getInstance(_ball.getInstanceId());
+      Instance instance = InstanceManager.self.getInstance(_projectile.getInstanceId());
 
       if (instance == null) {
          return;
@@ -44,8 +44,8 @@ public class CannonObserverManager : NetworkVisibility
 
    #region Private Variables
 
-   // Our associated Player
-   protected ServerCannonBall _ball;
+   // Our associated sea projectile
+   protected SeaProjectile _projectile;
 
    #endregion
 }

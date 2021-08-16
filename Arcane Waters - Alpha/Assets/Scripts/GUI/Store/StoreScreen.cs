@@ -228,11 +228,16 @@ public class StoreScreen : Panel
 
       // Can't buy a null item
       if (selectedItem == null) {
+         D.debug("Store item selected was null. Canceling Purchase.");
          return;
       }
 
+      D.debug("Store purchase confirmed. Transfering control to server...");
+
       // Send the request off to the server
       Global.player.rpc.Cmd_BuyStoreItem(selectedItem.itemId);
+
+      D.debug("Store purchase: Control transferred.");
    }
 
    protected void checkGems () {

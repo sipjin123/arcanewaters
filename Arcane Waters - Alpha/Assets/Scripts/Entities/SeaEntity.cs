@@ -7,6 +7,7 @@ using Mirror;
 using System;
 using TMPro;
 using Pathfinding;
+using DG.Tweening;
 
 public class SeaEntity : NetEntity
 {
@@ -1289,9 +1290,7 @@ public class SeaEntity : NetEntity
 
    [ClientRpc]
    public void Rpc_ShowExplosiveShotEffect (Vector2 position, float radius) {
-      GameObject effect = Instantiate(PrefabsManager.self.explosiveShotEffectPrefab, position, Quaternion.identity, null);
-      float tempEffectScale = 3.0f;
-      effect.transform.localScale = Vector3.one * tempEffectScale * radius;
+      GameObject centerExplosion = Instantiate(PrefabsManager.self.requestCannonExplosionPrefab(Attack.ImpactMagnitude.Strong), position, Quaternion.identity, null);
    }
 
    [ClientRpc]

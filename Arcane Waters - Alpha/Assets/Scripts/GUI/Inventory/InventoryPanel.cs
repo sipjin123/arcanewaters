@@ -40,8 +40,17 @@ public class InventoryPanel : Panel {
    // The item tab filters
    public ItemTabs itemTabs;
 
-   // The character info column
-   public CharacterInfoColumn characterInfoColumn;
+   // The gold text field
+   public Text goldText;
+
+   // The gems text field
+   public Text gemsText;
+
+   // The character info section
+   public CharacterInfoSection characterInfoSection;
+
+   // The equipment stats section
+   public EquipmentStatsGrid equipmentStats;
 
    // Self
    public static InventoryPanel self;
@@ -70,7 +79,17 @@ public class InventoryPanel : Panel {
 
       // Load the character stack using the cached user info
       if (Global.player != null) {
-         characterInfoColumn.setPlayer(Global.player);
+         characterInfoSection.setPlayer(Global.player);
+         updateGoldAndGems(Global.player);
+         equipmentStats.refreshStats(Global.player);
+      }
+   }
+
+   private void updateGoldAndGems (NetEntity player) {
+      if (Global.player != null && player == Global.player) {
+         // Update the gold and gems count, with commas in thousands place
+         goldText.text = string.Format("{0:n0}", Global.lastUserGold);
+         gemsText.text = string.Format("{0:n0}", Global.lastUserGems);
       }
    }
 
@@ -111,22 +130,24 @@ public class InventoryPanel : Panel {
          instantiateItemCell(item, itemCellsContainer.transform);
       }
 
-      // Update the CharacterInfo column
-      characterInfoColumn.setPlayer(Global.player);
+      // Update the CharacterInfo section
+      characterInfoSection.setPlayer(Global.player);
+      updateGoldAndGems(Global.player);
+      equipmentStats.refreshStats(Global.player);
 
       int equippedWeaponId = (Global.player as PlayerBodyEntity).weaponManager.weaponType;
       if (equippedWeaponId != 0) {
-         subscribeClickEventsForCell(characterInfoColumn.equippedWeaponCell);
+         subscribeClickEventsForCell(characterInfoSection.equippedWeaponCell);
       }
 
       int equippedArmorId = (Global.player as PlayerBodyEntity).armorManager.armorType;
       if (equippedArmorId != 0) {
-         subscribeClickEventsForCell(characterInfoColumn.equippedArmorCell);
+         subscribeClickEventsForCell(characterInfoSection.equippedArmorCell);
       } 
 
       int equippedHatId = (Global.player as PlayerBodyEntity).hatsManager.hatType;
       if (equippedHatId != 0) {
-         subscribeClickEventsForCell(characterInfoColumn.equippedHatCell);
+         subscribeClickEventsForCell(characterInfoSection.equippedHatCell);
       }
 
       // Trigger the tutorial
@@ -153,9 +174,9 @@ public class InventoryPanel : Panel {
          // Play hover sfx
          SoundEffectManager.self.playFmodGuiHover(SoundEffectManager.HOVER_CURSOR_ITEMS);
 
-         characterInfoColumn.equipmentStats.setStatModifiers(cell.getItem());
+         equipmentStats.setStatModifiers(cell.getItem());
       });
-      cell.onPointerExit.AddListener(() => characterInfoColumn.equipmentStats.clearStatModifiers());
+      cell.onPointerExit.AddListener(() => equipmentStats.clearStatModifiers());
       cell.onDragStarted.AddListener(() => tryGrabItem(cell as ItemCellInventory));
    }
 

@@ -330,7 +330,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       float lifetime = targetDistance / Attack.getSpeedModifier(Attack.Type.Cannon);
       Vector2 velocity = toTarget.normalized * Attack.getSpeedModifier(Attack.Type.Cannon);
 
-      netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityData.abilityId, velocity, lobHeight, false, lifetime: lifetime);
+      netBall.initAbilityProjectile(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityData.abilityId, velocity, lobHeight, lifetime: lifetime);
+      netBall.setPlayFiringSound(true);
 
       netBall.addEffectors(getCannonballEffectors());
 

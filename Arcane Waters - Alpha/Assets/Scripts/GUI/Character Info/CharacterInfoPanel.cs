@@ -7,43 +7,42 @@ using Mirror;
 public class CharacterInfoPanel : Panel {
    #region Public Variables
 
-   // The info column
-   public CharacterInfoColumn infoColumn;
+   // The character info section
+   public CharacterInfoSection characterInfo;
+
+   // The equipment stats section
+   public EquipmentStatsGrid equipmentStats;
+
+   // The job xp bars
+   public XPBar farmerXPBar;
+   public XPBar traderXPBar;
+   public XPBar crafterXPBar;
+   public XPBar minerXPBar;
+   public XPBar explorerXPBar;
+   public XPBar sailorXPBar;
 
    #endregion
 
-   public override void show () {
-      if (_currentPlayer == null) {
-         D.warning("Using default show method for character info panel without setting a player first. Either use show(NetEntity) or call setPlayer(NetEntity) before showing.");
-         return;
-      }
-
-      base.show();
+   public void refreshPanel (int userId) {
+      Global.player.rpc.Cmd_RequestUserInfoForCharacterInfoPanelFromServer(userId);
    }
 
-   public void setPlayer (NetEntity player) {
-      infoColumn.setPlayer(player);
-      _currentPlayer = player;
-   }
+   public void receiveUserObjectsFromServer (UserObjects userObjects, Jobs jobXP) {
+      characterInfo.setUserObjects(userObjects);
+      equipmentStats.refreshStats(userObjects);
 
-   public void show (NetEntity player) {
-      if (player == null) {
-         D.error("Trying to show info column for null player.");
-         return;
-      }
+      farmerXPBar.setProgress(jobXP.farmerXP);
+      traderXPBar.setProgress(jobXP.traderXP);
+      crafterXPBar.setProgress(jobXP.crafterXP);
+      minerXPBar.setProgress(jobXP.minerXP);
+      explorerXPBar.setProgress(jobXP.explorerXP);
+      sailorXPBar.setProgress(jobXP.sailorXP);
 
       // SFX
       SoundEffectManager.self.playGuiMenuOpenSfx();
-
-      setPlayer(player);
-      PanelManager.self.linkIfNotShowing(Panel.Type.CharacterInfo);      
-      setPlayer(player);
    }
 
    #region Private Variables
-
-   // The player we're currently showing
-   private NetEntity _currentPlayer;
 
    #endregion
 }

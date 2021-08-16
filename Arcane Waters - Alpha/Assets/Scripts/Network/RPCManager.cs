@@ -1741,14 +1741,16 @@ public class RPCManager : NetworkBehaviour
             });
          } else {
             try {
-               bool isSteamIdValid = ulong.TryParse(Global.lastSteamId, out ulong steamId);
+               D.debug($"Steam Purchase Request Received from User {_player.userId}");
+
+               bool isSteamIdValid = ulong.TryParse(_player.steamId, out ulong steamId);
 
                if (!isSteamIdValid) {
-                  #if UNITY_EDITOR
-                     // Try to use the debug Steam Id instead
-                     steamId = SteamPurchaseManagerServer.self.debugSteamId;
-                     D.debug($"Purchase Warning: Couldn't get the steamId for user '{_player.userId}'. Using the debug Steam ID...");
-                  #endif
+               #if UNITY_EDITOR
+                  // Try to use the debug Steam Id instead
+                  steamId = SteamPurchaseManagerServer.self.debugSteamId;
+                  D.debug($"Purchase Warning: Couldn't get the steamId for user '{_player.userId}'. Using the debug Steam ID...");
+               #endif
                }
 
                if (steamId == 0) {
@@ -1768,8 +1770,19 @@ public class RPCManager : NetworkBehaviour
                   return;
                }
 
+               D.debug("Steam Purchase. Creating new order...");
+
                // Create the Steam Order
                ulong newOrderId = DB_Main.createSteamOrder();
+
+               if (newOrderId <= 0) {
+                  D.debug("Steam Purchase. Creating new order: Failed.");
+                  return;
+               }
+
+               D.debug("Steam Purchase. Creating new order: OK");
+
+               D.debug("Steam Purchase. Creating Purchase Information...");
 
                // Create a Steam Purchase Item from the selected item
                SteamPurchaseItem item = new SteamPurchaseItem() {
@@ -1783,24 +1796,35 @@ public class RPCManager : NetworkBehaviour
                // Bundle the items into a Purchase Info
                SteamPurchaseInfo purchase = new SteamPurchaseInfo(newOrderId, steamId, Convert.ToUInt32(SteamStatics.GAME_APPID), "en", "usd", new List<SteamPurchaseItem> { item });
 
+               D.debug("Steam Purchase. Creating Purchase Information: OK");
+               
                // Update the order
+               D.debug("Steam Purchase. Updating Steam Order...");
                DB_Main.updateSteamOrder(newOrderId, _player.userId, "pending", JsonConvert.SerializeObject(purchase));
+               D.debug("Steam Purchase. Updating Steam Order: OK");
 
                // Open order
+               D.debug("Steam Purchase. Toggling Steam Order...");
                DB_Main.toggleSteamOrder(newOrderId, false);
+               D.debug("Steam Purchase. Toggling Steam Order: OK");
 
                // Start the purchase workflow
+               D.debug("Steam Purchase. Transferring Control to Steam...");
                Task<InitTxnResult> t2 = SteamPurchaseManagerServer.self.initTxn(purchase);
                t2.Wait();
                D.debug("Steam Purchase. InitTxn: " + JsonConvert.SerializeObject(t2.Result));
 
                if (!t2.Result.isSuccess()) {
+                  D.debug("Steam Purchase. Transferring Control to Steam: Failed");
                   D.debug("Steam Purchase Error: Couldn't start the purchase transaction. Reverting...");
                   DB_Main.deleteSteamOrder(newOrderId);
                   return;
                }
+
+               D.debug("Steam Purchase. Transfer Control to Steam: OK");
             } catch (Exception ex) {
-               D.debug(ex.Message);
+               D.error(ex.Message);
+               D.error(ex.StackTrace);
             }
          }
       });
@@ -1808,7 +1832,7 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_CompleteSteamPurchase (ulong orderId, uint appId, bool purchaseAuthorized) {
-      D.log($"Steam Purchase: Received Authorization Response! orderId:'{orderId}' authorized:'{purchaseAuthorized}'");
+      D.debug($"Steam Purchase: Received Authorization Response! orderId:'{orderId}' authorized:'{purchaseAuthorized}'");
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          try {
@@ -3441,7 +3465,7 @@ public class RPCManager : NetworkBehaviour
 
       if (GameStatsManager.self.isUserRegistered(_player.userId)) {
          List<PvpShopItem> shopItemList = new List<PvpShopItem>();
-         
+
          // Disabled shop items here if needed
          foreach (PvpShopItem shopItem in shopData.shopItems) {
             if (shopItem.shopItemType == (PvpShopItem.PvpShopItemType) itemCategoryType) {
@@ -4730,21 +4754,20 @@ public class RPCManager : NetworkBehaviour
       }
 
       if (userInstance.isPvP) {
-         GameStatsData instanceStatData = GameStatsManager.gameStatsData;
-         Target_OpenPvpStatPanel(_player.connectionToClient, Util.serialize(instanceStatData.stats));
+         List<GameStats> instanceStatData = GameStatsManager.self.getStatsForInstance(_player.instanceId);
+         Target_OpenPvpStatPanel(_player.connectionToClient, instanceStatData.ToArray());
       }
    }
 
    [TargetRpc]
-   private void Target_OpenPvpStatPanel (NetworkConnection conn, string[] serializedPvpStat) {
+   private void Target_OpenPvpStatPanel (NetworkConnection conn, GameStats[] stats) {
       // Get the panel
       PvpStatPanel panel = (PvpStatPanel) PanelManager.self.get(Panel.Type.PvpScoreBoard);
-      if (!panel.isShowing()) {
-         panel.show();
-      }
+
+      PanelManager.self.linkIfNotShowing(Panel.Type.PvpScoreBoard);
 
       SoundEffectManager.self.playGuiMenuOpenSfx();
-      List<GameStats> pvpStatList = Util.unserialize<GameStats>(serializedPvpStat);
+      List<GameStats> pvpStatList = stats.ToList();
       GameStatsData pvpStatData = new GameStatsData {
          stats = pvpStatList,
          isInitialized = true
@@ -4752,6 +4775,7 @@ public class RPCManager : NetworkBehaviour
 
       Instance instance = _player.getInstance();
       panel.setTitle("STATS");
+
       if (instance.isPvP) {
          panel.setTitle("PVP");
       }
@@ -4847,13 +4871,10 @@ public class RPCManager : NetworkBehaviour
       // If the player is in a voyage area or is in ghost mode, warp him to the closest town
       if (VoyageManager.isAnyLeagueArea(playerToRemove.areaKey) || VoyageManager.isPvpArenaArea(playerToRemove.areaKey) || VoyageManager.isTreasureSiteArea(playerToRemove.areaKey) || playerToRemove.isGhost) {
          if (VoyageManager.isPvpArenaArea(playerToRemove.areaKey)) {
-            playerToRemove.spawnInNewMap(Area.STARTING_TOWN);
+            playerToRemove.spawnInBiomeHomeTown(Biome.Type.Forest);
          } else {
             playerToRemove.spawnInBiomeHomeTown();
          }
-
-         // Notify the removal of the user from the voyage
-         Target_ReceiveUserLeftVoyage(playerToRemove.connectionToClient, playerToRemove.userId);
       }
    }
 
@@ -4965,6 +4986,15 @@ public class RPCManager : NetworkBehaviour
          playerShipEntity.isDisabled = false;
       }
 
+      // If the area is a PvP area, a Voyage or a TreasureSite, add the player to the GameStats System
+      Target_ResetPvpSilverPanel(_player.connectionToClient, GameStatsManager.self.getSilverAmount(_player.userId));
+      if (_player.tryGetVoyage(out Voyage v) || VoyageManager.isAnyLeagueArea(_player.areaKey) || VoyageManager.isPvpArenaArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)) {
+         GameStatsManager.self.registerUser(_player.userId);
+      } else {
+         PvpAnnouncementHolder.self.clearAnnouncements();
+         GameStatsManager.self.unregisterUser(_player.userId);
+      }
+
       // Verify the voyage consistency only if the user is in a voyage group or voyage area
       if (!VoyageManager.isAnyLeagueArea(_player.areaKey) && !VoyageManager.isPvpArenaArea(_player.areaKey) && !VoyageManager.isTreasureSiteArea(_player.areaKey)) {
          return;
@@ -4985,7 +5015,6 @@ public class RPCManager : NetworkBehaviour
          } else {
             // Not a PvP Voyage
             Debug.LogWarning($"Player '{_player.entityName}' has entered a Voyage or League.");
-            Target_ReceiveUserEnteredVoyage(_player.connectionToClient, _player.userId);
          }
 
          // After loading the new area, ensure powerups are cleared, in case they were cleared before we changed server
@@ -5112,8 +5141,9 @@ public class RPCManager : NetworkBehaviour
       oreNode.interactCount++;
       oreNode.updateSprite(oreNode.interactCount);
       ExplosionManager.createMiningParticle(oreNode.transform.position);
-      SoundEffectManager.self.playFmodOneShot(SoundEffectManager.ROCK_MINE, oreNode.transform);
-      //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ORE_MINE, transform);
+
+      // SFX
+      SoundEffectManager.self.playFmodWithPath(SoundEffectManager.MINING_ROCKS, oreNode.transform);
 
       if (oreNode.interactCount > OreNode.MAX_INTERACT_COUNT) {
          D.adminLog("Exceeded max interact count!", D.ADMIN_LOG_TYPE.Mine);
@@ -6342,7 +6372,7 @@ public class RPCManager : NetworkBehaviour
    public void Cmd_SwapAbility (int abilityID, int equipSlot) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<AbilitySQLData> abilityDataList = DB_Main.userAbilities(_player.userId, AbilityEquipStatus.Equipped);
-         
+
          AbilitySQLData abilityInSlot = abilityDataList.Find(_ => _.equipSlotIndex == equipSlot);
          AbilitySQLData abilityReplacement = abilityDataList.Find(_ => _.abilityID == abilityID);
 
@@ -7707,31 +7737,6 @@ public class RPCManager : NetworkBehaviour
       PvpStatusPanel.self.reset(silverCount);
    }
 
-   [TargetRpc]
-   private void Target_ReceiveUserLeftVoyage (NetworkConnection connection, int userId) {
-      // Reset the Voyage Stats for the player
-      GameStatsManager.self.unregisterUser(userId);
-
-      // Hides the Announcement panel
-      PvpAnnouncementHolder.self.clearAnnouncements();
-   }
-
-   [TargetRpc]
-   private void Target_ReceiveUserEnteredVoyage (NetworkConnection connection, int userId) {
-      GameStatsManager.self.registerUser(userId);
-
-      // Update the PvpStatusPanel
-      PvpStatusPanel.self.reset(GameStatsManager.self.getSilverAmount(userId));
-   }
-
-   [TargetRpc]
-   private void Target_ReceiveUserEnteredPvP (NetworkConnection connection, int userId) {
-      GameStatsManager.self.registerUser(userId);
-
-      // Update the PvpStatusPanel
-      PvpStatusPanel.self.reset(GameStatsManager.self.getSilverAmount(userId));
-   }
-
    [Command]
    public void Cmd_RequestPlayersCount () {
       if (_player == null) {
@@ -7878,6 +7883,37 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceivePvpRespawnTimeout (float timeout) {
       RespawnScreen.self.onRespawnTimeoutReceived(timeout);
+   }
+
+   [Command]
+   public void Cmd_RequestUserInfoForCharacterInfoPanelFromServer (int userId) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         UserObjects userObjects = DB_Main.getUserObjects(userId);
+         Jobs jobXP = DB_Main.getJobXP(userId);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Send the result to the client
+            Target_ReceiveUserInfoForCharacterInfoPanel(_player.connectionToClient, userObjects, jobXP);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveUserInfoForCharacterInfoPanel (NetworkConnection connection, UserObjects userObjects, Jobs jobXP) {
+
+      // Make sure the panel is showing
+      PanelManager.self.linkIfNotShowing(Panel.Type.CharacterInfo);
+
+      // Pass the data to the panel
+      CharacterInfoPanel panel = (CharacterInfoPanel) PanelManager.self.get(Panel.Type.CharacterInfo);
+      panel.receiveUserObjectsFromServer(userObjects, jobXP);
    }
 
    #region Private Variables

@@ -11,6 +11,7 @@ using NubisDataHandling;
 using MLAPI.Messaging;
 using UnityEngine.InputSystem;
 using System.Text;
+using Steam.Purchasing;
 
 public class AdminManager : NetworkBehaviour
 {
@@ -117,6 +118,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("warp", "Warps you to an area", requestWarp, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "areaName" }, parameterAutocompletes: AreaManager.self.getAllAreaNames()));
       cm.addCommand(new CommandData("show_admin_panel", "Show the Admin Panel", showAdminPanel, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("reset_shop", "Refreshes all the shops", resetShops, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("simulate_steam_purchase_response", "Simulates the response received by the server", simulateSteamPurchaseAuthorizationResponse, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "orderId", "appId", "orderAuthorized" }));
 
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
@@ -2793,6 +2795,32 @@ public class AdminManager : NetworkBehaviour
       D.debug("Shop items have now been regenerated!");
       ShopManager.self.randomlyGenerateShips();
       ShopManager.self.generateItemsFromXML();
+   }
+
+   protected void simulateSteamPurchaseAuthorizationResponse (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+      ulong orderId;
+      uint appId;
+      byte authorized;
+
+      try {
+         orderId = ulong.Parse(list[0]);
+         appId = uint.Parse(list[1]);
+         authorized = byte.Parse(list[2]);
+      } catch (System.Exception e) {
+         D.warning("Unable to parse parameters from: " + parameters + ", exception: " + e);
+         return;
+      }
+
+      SteamPurchaseManager.self.onMicroTxnAuthorizationResponse(new Steamworks.MicroTxnAuthorizationResponse_t {
+         m_ulOrderID = orderId,
+         m_unAppID = appId,
+         m_bAuthorized = authorized
+      });
    }
 
    protected void showAdminPanel () {

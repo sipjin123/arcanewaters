@@ -138,8 +138,11 @@ public class NetworkedServer : NetworkedBehaviour
          return;
       }
 
-      voyages.Remove(instance.voyageId);
-      treasureSites.Remove(instance.voyageId);
+      if (VoyageManager.isTreasureSiteArea(instance.areaKey)) {
+         treasureSites.Remove(instance.voyageId);
+      } else {
+         voyages.Remove(instance.voyageId);
+      }
    }
 
    public void synchronizeConnectedAccount (int accountId) {
