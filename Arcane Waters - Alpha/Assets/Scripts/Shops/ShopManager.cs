@@ -222,6 +222,7 @@ public class ShopManager : MonoBehaviour {
             Rarity.Type rarity = Rarity.getRandom();
 
             ShipInfo ship = Ship.generateNewShip(shipType, rarity);
+            ship.shipAbilities = ShipDataManager.self.getShipAbilities(ShipDataManager.self.getShipData(shipType).shipID);
             ship.shipId = _shipId--;
 
             // Store the ship
@@ -236,7 +237,11 @@ public class ShopManager : MonoBehaviour {
    
    private void generateShopShips () {
       foreach (ShopData shopData in ShopXMLManager.self.shopDataList) {
-         _shipsByShopId[shopData.shopId] = new List<int>();
+         if (_shipsByShopId.ContainsKey(shopData.shopId)) {
+            _shipsByShopId[shopData.shopId] = new List<int>();
+         } else {
+            _shipsByShopId.Add(shopData.shopId, new List<int>());
+         }
          foreach (ShopItemData shopItem in ShopXMLManager.self.getShopDataById(shopData.shopId).shopItems) {
             if (shopItem.shopItemCategory == ShopToolPanel.ShopCategory.Ship) {
                int shipXmlId = shopItem.shopItemTypeIndex;
@@ -245,13 +250,7 @@ public class ShopManager : MonoBehaviour {
                Rarity.Type rarity = Rarity.getRandom();
 
                ShipInfo ship = Ship.generateNewShip(shipType, rarity);
-               List<int> abilityIdList = new List<int>();
-               foreach (ShipAbilityPair shipAbilities in shipData.shipAbilities) {
-                  abilityIdList.Add(shipAbilities.abilityId);
-               }
-               ship.shipAbilities = new ShipAbilityInfo {
-                  ShipAbilities = abilityIdList.ToArray()
-               };
+               ship.shipAbilities = ShipDataManager.self.getShipAbilities(shipData.shipID);
                ship.shipId = _shipId--;
 
                if (Util.isCloudBuild()) {
@@ -273,7 +272,12 @@ public class ShopManager : MonoBehaviour {
                _ships[ship.shipId] = ship;
 
                // Add it to the list
-               _shipsByShopId[shopData.shopId].Add(ship.shipId);
+               if (_shipsByShopId.ContainsKey(shopData.shopId)) {
+                  _shipsByShopId[shopData.shopId].Add(ship.shipId);
+               } else {
+                  _shipsByShopId.Add(shopData.shopId, new List<int>());
+                  _shipsByShopId[shopData.shopId].Add(ship.shipId);
+               }
             }
          }
       }

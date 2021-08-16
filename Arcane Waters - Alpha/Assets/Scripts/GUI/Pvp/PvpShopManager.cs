@@ -25,6 +25,15 @@ public class PvpShopManager : MonoBehaviour {
       self = this;
    }
 
+   public void initializeDataCache () {
+      ShipDataManager.self.finishedDataSetup.AddListener(() => {
+         finalizeDataSetup();
+      });
+      ShipAbilityManager.self.finishedDataSetup.AddListener(() => {
+         finalizeDataSetup();
+      });
+   }
+
    public PvpShopData getShopData (int shopId) {
       PvpShopData fetchedData = shopDataList.Find(_ => _.shopId == shopId);
       if (fetchedData == null) {
@@ -33,21 +42,8 @@ public class PvpShopManager : MonoBehaviour {
       return fetchedData;
    }
 
-   public void initializDataCache () {
-      ShipDataManager.self.finishedDataSetup.AddListener(() => {
-         if (ShipDataManager.self.hasInitialized && ShipAbilityManager.self.hasInitialized) {
-            finalizeDataSetup();
-         }
-      });
-      ShipAbilityManager.self.finishedDataSetup.AddListener(() => {
-         if (ShipDataManager.self.hasInitialized && ShipAbilityManager.self.hasInitialized) {
-            finalizeDataSetup();
-         }
-      });
-   }
-
    private void finalizeDataSetup () {
-      if (!hasInitialized) {
+      if (!hasInitialized && ShipDataManager.self.hasInitialized && ShipAbilityManager.self.hasInitialized) {
          hasInitialized = true;
          shopDataList = new List<PvpShopData>();
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -67,15 +63,7 @@ public class PvpShopManager : MonoBehaviour {
                         if (pvpShopItem.shopItemType == PvpShopItem.PvpShopItemType.Ship) {
                            ShipData shipData = ShipDataManager.self.getShipData(pvpShopItem.itemId);
                            ShipInfo newShipData = Ship.generateNewShip(shipData.shipType, pvpShopItem.rarityType);
-
-                           // Assign abilities
-                           List<int> abilityIdList = new List<int>();
-                           foreach (ShipAbilityPair shipAbilities in shipData.shipAbilities) {
-                              abilityIdList.Add(shipAbilities.abilityId);
-                           }
-                           newShipData.shipAbilities = new ShipAbilityInfo {
-                              ShipAbilities = abilityIdList.ToArray()
-                           };
+                           newShipData.shipAbilities = ShipDataManager.self.getShipAbilities(shipData.shipID);
 
                            // Serialize ability data
                            if (shipData != null) {

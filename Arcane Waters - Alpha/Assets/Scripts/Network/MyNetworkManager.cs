@@ -258,6 +258,7 @@ public class MyNetworkManager : NetworkManager
 
    private void initializeXmlData () {
       // Loads all SQL Data from server
+      PvpShopManager.self.initializeDataCache();
       NPCManager.self.initializeQuestCache();
       ShipDataManager.self.initializeDataCache();
       CraftingManager.self.initializeDataCache();
@@ -267,7 +268,6 @@ public class MyNetworkManager : NetworkManager
       MonsterManager.self.initializeLandMonsterDataCache();
       ShipAbilityManager.self.initializDataCache();
       ShopXMLManager.self.initializDataCache();
-      PvpShopManager.self.initializDataCache();
       AbilityManager.self.initializeAbilities();
       BackgroundGameManager.self.initializeDataCache();
       EquipmentXMLManager.self.initializeDataCache();

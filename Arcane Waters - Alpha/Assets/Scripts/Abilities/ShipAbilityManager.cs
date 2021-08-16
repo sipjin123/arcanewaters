@@ -41,18 +41,18 @@ public class ShipAbilityManager : MonoBehaviour {
                   TextAsset newTextAsset = new TextAsset(rawData.rawXmlData);
                   ShipAbilityData shipAbilityData = Util.xmlLoad<ShipAbilityData>(newTextAsset);
 
-                  if (!shipAbilityDataList.Exists(_=>_.abilityId == rawData.xmlId) && rawData.isEnabled) {
+                  if (!shipAbilityDataList.Exists(_ => _.abilityId == rawData.xmlId) && rawData.isEnabled) {
                      shipAbilityData.abilityId = rawData.xmlId;
 
-                     shipAbilityDataList.Add(new ShipAbilityPair { 
+                     shipAbilityDataList.Add(new ShipAbilityPair {
                         abilityId = rawData.xmlId,
                         abilityName = shipAbilityData.abilityName,
                         shipAbilityData = shipAbilityData
                      });
                   }
                }
-               finishedDataSetup.Invoke();
                hasInitialized = true;
+               finishedDataSetup.Invoke();
             });
          });
       }
@@ -72,8 +72,8 @@ public class ShipAbilityManager : MonoBehaviour {
                });
             }
          }
-         finishedDataSetup.Invoke();
          hasInitialized = true;
+         finishedDataSetup.Invoke();
       }
    }
 
