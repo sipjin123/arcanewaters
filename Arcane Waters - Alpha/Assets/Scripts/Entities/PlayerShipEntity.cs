@@ -145,7 +145,7 @@ public class PlayerShipEntity : ShipEntity
    public bool holdingPvpCaptureTarget = false;
 
    // The current ship ability
-   public int currentShipAbility;
+   public int currentShipAbility = 0;
 
    // The different flags the ship can display
    public enum Flag
@@ -288,6 +288,12 @@ public class PlayerShipEntity : ShipEntity
       boostCircleFillSpriteSwap.newTexture = _boostCircleFill;
    }
 
+   private void selectAbilityAbility (int abilitySlotIndex) {
+      int newAbilityId = CannonPanel.self.cannonBoxList[abilitySlotIndex].abilityId;
+      CannonPanel.self.useCannonType(newAbilityId, abilitySlotIndex);
+      Cmd_ChangeAttackOption(newAbilityId);
+   }
+
    protected override void Update () {
       base.Update();
 
@@ -316,25 +322,15 @@ public class PlayerShipEntity : ShipEntity
 
          if (!_isChargingCannon) {
             if (KeyUtils.GetKeyDown(Key.Digit1)) {
-               int newAbilityId = CannonPanel.self.cannonBoxList[0].abilityId;
-               CannonPanel.self.useCannonType(newAbilityId, 0);
-               Cmd_ChangeAttackOption(newAbilityId);
+               selectAbilityAbility(0);
             } else if (KeyUtils.GetKeyDown(Key.Digit2)) {
-               int newAbilityId = CannonPanel.self.cannonBoxList[1].abilityId;
-               CannonPanel.self.useCannonType(newAbilityId, 1);
-               Cmd_ChangeAttackOption(newAbilityId);
+               selectAbilityAbility(1);
             } else if (KeyUtils.GetKeyDown(Key.Digit3)) {
-               int newAbilityId = CannonPanel.self.cannonBoxList[2].abilityId;
-               CannonPanel.self.useCannonType(newAbilityId, 2);
-               Cmd_ChangeAttackOption(newAbilityId);
+               selectAbilityAbility(2);
             } else if (KeyUtils.GetKeyDown(Key.Digit4)) {
-               int newAbilityId = CannonPanel.self.cannonBoxList[3].abilityId;
-               CannonPanel.self.useCannonType(newAbilityId, 3);
-               Cmd_ChangeAttackOption(newAbilityId);
+               selectAbilityAbility(3);
             } else if (KeyUtils.GetKeyDown(Key.Digit5)) {
-               int newAbilityId = CannonPanel.self.cannonBoxList[4].abilityId;
-               CannonPanel.self.useCannonType(newAbilityId, 4);
-               Cmd_ChangeAttackOption(newAbilityId);
+               selectAbilityAbility(4);
             }
          }
       }
@@ -526,56 +522,69 @@ public class PlayerShipEntity : ShipEntity
          return;
       }
 
-      switch (cannonAttackType) {
-         case CannonAttackType.Normal:
-            float normalCannonballLifetime = getCannonballLifetime();
-            Vector2 targetPosition;
-
-            if (_chargingWithMouse) {
-               targetPosition = Util.getMousePos();
-            } else {
-               targetPosition = _targetSelector.getTarget().transform.position;
-            }
-
-            Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), _cannonTargeter.barrelSocket.position, targetPosition, true, true);
-            _shouldUpdateTargeting = false;
-            _cannonTargeter.targetingConfirmed(() => _shouldUpdateTargeting = true);
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
-            break;
-         case CannonAttackType.Cone:
-            Vector2 toMouse = Util.getMousePos() - transform.position;
-            Vector2 pos = transform.position;
-
-            float cannonballLifetime = getCannonballLifetime();
-            float rotAngle = (40.0f - (getCannonChargeAmount() * 25.0f)) / 2.0f;
-
-            // Fire cone of cannonballs
-            Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, rotAngle), false, true);
-            Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, Util.getMousePos(), false, false);
-            Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, -rotAngle), false, false);
-
-            _shouldUpdateTargeting = false;
-            _targetCone.targetingConfirmed(() => _shouldUpdateTargeting = true);
-
-            break;
-         case CannonAttackType.Circle:
-            if (_cannonBarrageCoroutine != null) {
-               StopCoroutine(_cannonBarrageCoroutine);
-            }
-
-            float circleRadius = (0.625f - (getCannonChargeAmount() * 0.125f));
-            _shouldUpdateTargeting = false;
-            _targetCircle.targetingConfirmed(() => {
-               _shouldUpdateTargeting = true;
-            });
-
-            _cannonBarrageCoroutine = StartCoroutine(CO_CannonBarrage(_targetCircle.transform.position, circleRadius));
-            _targetCircle.setFillColor(Color.white);
-            _targetCircle.updateCircle(true);
-
-            break;
+      bool useCannonAttack = true;
+      ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(currentShipAbility);
+      if (abilityData != null) {
+         switch (abilityData.selectedAttackType) {
+            case Attack.Type.SpeedBoost:
+            case Attack.Type.Heal:
+               Cmd_CastAbility(abilityData.abilityId);
+               useCannonAttack = false;
+               break;
+         }
       }
 
+      if (useCannonAttack) {
+         switch (cannonAttackType) {
+            case CannonAttackType.Normal:
+               float normalCannonballLifetime = getCannonballLifetime();
+               Vector2 targetPosition;
+
+               if (_chargingWithMouse) {
+                  targetPosition = Util.getMousePos();
+               } else {
+                  targetPosition = _targetSelector.getTarget().transform.position;
+               }
+
+               Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), _cannonTargeter.barrelSocket.position, targetPosition, true, true);
+               _shouldUpdateTargeting = false;
+               _cannonTargeter.targetingConfirmed(() => _shouldUpdateTargeting = true);
+               TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
+               break;
+            case CannonAttackType.Cone:
+               Vector2 toMouse = Util.getMousePos() - transform.position;
+               Vector2 pos = transform.position;
+
+               float cannonballLifetime = getCannonballLifetime();
+               float rotAngle = (40.0f - (getCannonChargeAmount() * 25.0f)) / 2.0f;
+
+               // Fire cone of cannonballs
+               Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, rotAngle), false, true);
+               Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, Util.getMousePos(), false, false);
+               Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, -rotAngle), false, false);
+
+               _shouldUpdateTargeting = false;
+               _targetCone.targetingConfirmed(() => _shouldUpdateTargeting = true);
+
+               break;
+            case CannonAttackType.Circle:
+               if (_cannonBarrageCoroutine != null) {
+                  StopCoroutine(_cannonBarrageCoroutine);
+               }
+
+               float circleRadius = (0.625f - (getCannonChargeAmount() * 0.125f));
+               _shouldUpdateTargeting = false;
+               _targetCircle.targetingConfirmed(() => {
+                  _shouldUpdateTargeting = true;
+               });
+
+               _cannonBarrageCoroutine = StartCoroutine(CO_CannonBarrage(_targetCircle.transform.position, circleRadius));
+               _targetCircle.setFillColor(Color.white);
+               _targetCircle.updateCircle(true);
+
+               break;
+         }
+      }
       _isChargingCannon = false;
 
       // Release as default attack

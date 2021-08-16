@@ -224,7 +224,11 @@ public class PrefabsManager : MonoBehaviour {
       self = this;
    }
 
-   public ShipDamageText getTextPrefab (Attack.Type attackType) {
+   public ShipDamageText getTextPrefab (Attack.Type attackType, bool useNegative = false) {
+      if (useNegative) {
+         return shipDamageTextPrefab;
+      }
+
       switch (attackType) {
          case Attack.Type.Ice:
             return shipDamageTextIcePrefab;

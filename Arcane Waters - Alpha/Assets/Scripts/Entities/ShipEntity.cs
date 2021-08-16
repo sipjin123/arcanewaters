@@ -212,7 +212,7 @@ public class ShipEntity : SeaEntity
    }
 
    [Command]
-   public void Cmd_CastAbility (Attack.Type attackType) {
+   public void Cmd_CastAbility (int shipAbilityId) {
       if (isDead() || !hasReloaded()) {
          return;
       }
@@ -220,26 +220,46 @@ public class ShipEntity : SeaEntity
       // Note the time at which we last successfully attacked
       _lastAttackTime = NetworkTime.time;
 
-      ShipAbilityData shipData = ShipAbilityManager.self.getAbility(attackType);
+      ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(shipAbilityId);
 
       // Attributes set up by server only
-      switch (attackType) {
+      switch (shipAbilityData.selectedAttackType) {
          case Attack.Type.Heal:
-            currentHealth += (int) shipData.damageModifier;
+            int healValue = (int) (shipAbilityData.damageModifier * 100);
+            currentHealth += healValue;
+            Rpc_CastSkill(shipAbilityId, shipAbilityData, transform.position, healValue);
             break;
          case Attack.Type.SpeedBoost:
-            speed += (int) shipData.damageModifier;
+            StartCoroutine(CO_TriggerTemporaryBuff(shipAbilityData, shipAbilityData.statusDuration));
             break;
       }
 
       // Casting a skill is considered a PvP action
       hasEnteredPvP = true;
+   }
 
-      Rpc_CastSkill(attackType, shipData, transform.position);
+   private IEnumerator CO_TriggerTemporaryBuff (ShipAbilityData shipAbilityData, float statusDuration) {
+      int value = (int) (shipAbilityData.damageModifier * 100);
+
+      modifyStats(shipAbilityData, value);
+      yield return new WaitForSeconds(statusDuration);
+      modifyStats(shipAbilityData, -value);
+   }
+
+   private void modifyStats (ShipAbilityData shipAbilityData, int value) {
+      switch (shipAbilityData.selectedAttackType) {
+         case Attack.Type.SpeedBoost:
+            speed += value;
+            break;
+         case Attack.Type.DamageAmplify:
+            damage += value;
+            break;
+      }
+      Rpc_CastSkill(shipAbilityData.abilityId, shipAbilityData, transform.position, value);
    }
 
    [ClientRpc]
-   public void Rpc_CastSkill (Attack.Type attackType, ShipAbilityData shipData, Vector2 pos) {
+   public void Rpc_CastSkill (int abilityId, ShipAbilityData shipData, Vector2 pos, int displayValue) {
       // Play The effect of the buff
       EffectManager.createDynamicEffect(shipData.castSpritePath, pos, shipData.abilitySpriteFXPerFrame);
 
@@ -252,11 +272,13 @@ public class ShipEntity : SeaEntity
       }
 
       // Show the damage text
-      ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(attackType), pos, Quaternion.identity);
+      ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(shipData.selectedAttackType, displayValue < 1), pos, Quaternion.identity);
       damageText.setIcon(shipData.skillIconPath);
-      damageText.negativeEffect = false;
-      damageText.setDamage((int) shipData.damageModifier);
-      damageText.notificationText.text = shipData.abilityName;
+      damageText.negativeEffect = displayValue < 1;
+      damageText.setDamage(displayValue);
+      if (damageText.notificationText != null) {
+         damageText.notificationText.text = shipData.abilityName;
+      }
    }
 
    [Command]
@@ -348,25 +370,25 @@ public class ShipEntity : SeaEntity
 
    protected override void updateSprites () {
       base.updateSprites();
+      overrideSprite(shipType, shipSize, skinType);
+   }
 
+   public void overrideSprite (Ship.Type shipType, ShipSize shipSize, Ship.SkinType skinType) {
       // Store the ripple sprites for later so we can quickly swap them once the entity starts/stops moving
       _ripplesStillSprites = ImageManager.getTexture(Ship.getRipplesPath(shipType));
       _ripplesMovingSprites = ImageManager.getTexture(Ship.getRipplesMovingPath(shipType));
       ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesStillSprites;
 
       // Cache ship boost sprite
+      shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);
       if (!(this is BotShipEntity)) {
-         if (shipSizeSpriteCache.shipSize != ShipSize.None) {
+         if (shipSizeSpriteCache != null && shipSizeSpriteCache.shipSize != ShipSize.None) {
             _shipBoostSpritesFront = shipSizeSpriteCache.speedBoostSpriteFront.texture;
             _shipBoostSpritesBack = shipSizeSpriteCache.speedBoostSpriteBack.texture;
             _boostCircleOutline = shipSizeSpriteCache.boostCircleOutline.texture;
             _boostCircleFill = shipSizeSpriteCache.boostCircleFill.texture;
          } else {
-            shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);
-            _shipBoostSpritesFront = shipSizeSpriteCache.speedBoostSpriteFront.texture;
-            _shipBoostSpritesBack = shipSizeSpriteCache.speedBoostSpriteBack.texture;
-            _boostCircleOutline = shipSizeSpriteCache.boostCircleOutline.texture;
-            _boostCircleFill = shipSizeSpriteCache.boostCircleFill.texture;
+            D.debug("cant find ship with size: " + shipSize);
          }
       }
 

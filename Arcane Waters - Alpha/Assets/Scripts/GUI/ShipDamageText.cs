@@ -58,7 +58,7 @@ public class ShipDamageText : MonoBehaviour {
    }
 
    public void setDamage (int amount) {
-      this.text.text = negativeEffect ? "-" : "+" + amount;
+      this.text.text = (negativeEffect ? "-" : "+") + Mathf.Abs(amount);
    }
 
    protected void floatUp () {

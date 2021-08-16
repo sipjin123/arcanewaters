@@ -12,7 +12,7 @@ public class ShipDataManager : MonoBehaviour {
 
    // Self
    public static ShipDataManager self;
-   
+
    // Determines if the list is generated already
    public bool hasInitialized;
 
@@ -20,7 +20,10 @@ public class ShipDataManager : MonoBehaviour {
    public List<ShipData> shipDataList = new List<ShipData>();
 
    // Determines if data setup is done
-   public UnityEvent finishedDataSetup = new UnityEvent(); 
+   public UnityEvent finishedDataSetup = new UnityEvent();
+
+   // The starting ship id
+   public const int STARTING_SHIP_ID = 118;
 
    #endregion
 
@@ -72,6 +75,24 @@ public class ShipDataManager : MonoBehaviour {
             });
          });
       }
+   }
+
+   public ShipAbilityInfo getShipAbilities (int shipId) {
+      ShipData shipData = getShipData(shipId);
+      if (shipData == null) {
+         return new ShipAbilityInfo();
+      }
+
+      List<int> abilityIdList = new List<int>();
+      foreach (ShipAbilityPair shipAbilities in shipData.shipAbilities) {
+         abilityIdList.Add(shipAbilities.abilityId);
+      }
+
+      ShipAbilityInfo newShipAbilityInfo = new ShipAbilityInfo {
+         ShipAbilities = abilityIdList.ToArray()
+      };
+
+      return newShipAbilityInfo;
    }
 
    public void receiveShipDataFromZipData (Dictionary<int, ShipData> shipDataList) {
