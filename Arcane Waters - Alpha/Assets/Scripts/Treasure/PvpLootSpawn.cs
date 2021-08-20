@@ -29,11 +29,16 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
    [SyncVar]
    public string areaKey;
 
+   // If the powerup is showing
+   [SyncVar]
+   public bool isShowingPowerup;
+
    // The powerup visual indicators
    public GameObject powerupIndicator;
    public SpriteRenderer powerupSprite;
 
    // The powerup type this loot spawner will provide
+   [SyncVar]
    public Powerup.Type powerupType;
 
    // List of sprite renderers
@@ -54,6 +59,11 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
    private void Start () {
       spriteRendererList = GetComponentsInChildren<SpriteRenderer>(true).ToList();
       StartCoroutine(CO_SetAreaParent());
+
+      // Enable powerups on client side if joining the match right after the active trigger was called
+      if (!NetworkServer.active && isShowingPowerup) {
+         updatePowerup(true, (int) powerupType);
+      }
    }
 
 
@@ -82,6 +92,7 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
       if (NetworkServer.active && isActive) {
          PlayerShipEntity playerEntity = collision.GetComponent<PlayerShipEntity>();
          if (playerEntity != null && playerEntity.instanceId == instanceId) {
+            isShowingPowerup = false;
             Rarity.Type randomRarity = Rarity.getRandom();
             playerEntity.rpc.Target_ReceivePowerup(powerupType, randomRarity, collision.transform.position);
             PowerupManager.self.addPowerupServer(playerEntity.userId, new Powerup {
@@ -114,7 +125,7 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
             powerupType = Powerup.Type.SpeedUp;
          }
       }
-
+      isShowingPowerup = true;
       updatePowerup(true, (int) powerupType);
       Rpc_ToggleDisplay(true, (int) powerupType);
    }
