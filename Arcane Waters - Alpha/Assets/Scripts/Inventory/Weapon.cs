@@ -105,21 +105,14 @@ public class Weapon : EquippableItem {
       string colorHex = ColorUtility.ToHtmlStringRGBA(color);
 
       string palettes = Item.trimItmPalette(paletteNames);
+      float modifiedDamage = getDamage() * getDamageModifier(getRarity());
 
       return string.Format("<color={0}>{1}</color> (" + palettes + ")\n\n{2}\n\nDamage = <color=red>{3}</color>",
-         "#" +colorHex, getName(), getDescription(), getDamage());
+         "#" +colorHex, getName(), getDescription(), (int) modifiedDamage);
    }
 
    public override string getName () {
       return itemName;
-   }
-
-   public override Rarity.Type getRarity () {
-      if (getWeaponData() != null) {
-         return getWeaponData().rarity;
-      }
-
-      return Rarity.Type.Common;
    }
 
    public override bool isEquipped () {
@@ -156,11 +149,7 @@ public class Weapon : EquippableItem {
    }
 
    public int getDamage () {
-      if (getWeaponData() != null) {
-         return getWeaponData().weaponBaseDamage;
-      }
-
-      return 0;
+      return getWeaponData().weaponBaseDamage;
    }
 
    public virtual float getDamage (Element element) {
@@ -184,19 +173,17 @@ public class Weapon : EquippableItem {
    }
 
    public static float getDamageModifier (Rarity.Type rarity) {
-      float randomModifier = Util.getBellCurveFloat(1.0f, .1f, .90f, 1.10f);
-
       switch (rarity) {
          case Rarity.Type.Uncommon:
-            return randomModifier * 1.2f;
+            return 1.25f;
          case Rarity.Type.Rare:
-            return randomModifier * 1.5f;
+            return 1.5f;
          case Rarity.Type.Epic:
-            return randomModifier * 1.5f;
+            return 1.75f;
          case Rarity.Type.Legendary:
-            return randomModifier * 3f; ;
+            return 2;
          default:
-            return randomModifier;
+            return 1;
       }
    }
 
@@ -266,7 +253,15 @@ public class Weapon : EquippableItem {
 
    private WeaponStatData getWeaponData () {
       if (_weaponStatData == null) {
-         _weaponStatData = WeaponStatData.getStatData(data, itemTypeId);
+         if (!data.Contains(EquipmentXMLManager.VALID_XML_FORMAT)) {
+            WeaponStatData fetchedData = EquipmentXMLManager.self.getWeaponData(itemTypeId);
+            if (fetchedData == null) {
+               D.debug("Missing weapon data: " + itemTypeId);
+            } else {
+               return fetchedData;
+            }
+         }
+         return WeaponStatData.getStatData(data, itemTypeId);
       }
 
       return _weaponStatData;

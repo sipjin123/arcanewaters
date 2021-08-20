@@ -26,7 +26,7 @@ public class HatStatData : EquipmentStatData
    public static Hat translateDataToHat (HatStatData hatStatData) {
       Hat newHat = new Hat {
          id = hatStatData.sqlId,
-         itemTypeId = hatStatData.hatType,
+         itemTypeId = hatStatData.sqlId,
          itemName = hatStatData.equipmentName,
          itemDescription = hatStatData.equipmentDescription,
          category = Item.Category.Hats,

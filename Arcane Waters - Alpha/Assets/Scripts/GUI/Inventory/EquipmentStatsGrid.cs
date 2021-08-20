@@ -30,7 +30,7 @@ public class EquipmentStatsGrid : MonoBehaviour {
          weapon.itemTypeId = userObjects.weapon.itemTypeId;
          weapon.id = userObjects.weapon.id;
          weapon.paletteNames = userObjects.weapon.paletteNames;
-
+         weapon.data = userObjects.weapon.data;
          refreshStats(weapon);
       }
 
@@ -40,7 +40,7 @@ public class EquipmentStatsGrid : MonoBehaviour {
          armor.itemTypeId = userObjects.armor.itemTypeId;
          armor.id = userObjects.armor.id;
          armor.paletteNames = userObjects.armor.paletteNames;
-
+         armor.data = userObjects.armor.data;
          refreshStats(armor);
       }
 
@@ -50,6 +50,7 @@ public class EquipmentStatsGrid : MonoBehaviour {
          hat.itemTypeId = userObjects.hat.itemTypeId;
          hat.id = userObjects.hat.id;
          hat.paletteNames = userObjects.hat.paletteNames;
+         hat.data = userObjects.hat.data;
 
          if (hat.getHatDefense() > 0) {
             refreshStats(hat);

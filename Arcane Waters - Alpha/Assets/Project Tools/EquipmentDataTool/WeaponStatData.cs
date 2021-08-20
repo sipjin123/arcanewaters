@@ -46,7 +46,7 @@ public class WeaponStatData : EquipmentStatData
    public static Weapon translateDataToWeapon (WeaponStatData weaponData) {
       Weapon newWeapon = new Weapon {
          id = weaponData.sqlId,
-         itemTypeId = weaponData.weaponType,
+         itemTypeId = weaponData.sqlId,
          itemName = weaponData.equipmentName,
          itemDescription = weaponData.equipmentDescription,
          category = Item.Category.Weapon,

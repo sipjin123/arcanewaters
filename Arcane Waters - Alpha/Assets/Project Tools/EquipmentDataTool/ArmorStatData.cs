@@ -25,7 +25,7 @@ public class ArmorStatData : EquipmentStatData
    public static Armor translateDataToArmor (ArmorStatData armorData) {
       Armor newArmor = new Armor {
          id = armorData.sqlId,
-         itemTypeId = armorData.armorType,
+         itemTypeId = armorData.sqlId,
          itemName = armorData.equipmentName,
          itemDescription = armorData.equipmentDescription,
          category = Item.Category.Armor,

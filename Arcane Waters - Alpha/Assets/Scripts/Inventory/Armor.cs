@@ -88,9 +88,10 @@ public class Armor : EquippableItem {
       string colorHex = ColorUtility.ToHtmlStringRGBA(color);
 
       string palettes = Item.trimItmPalette(paletteNames);
-
+      float modifiedArmor = getArmorValue() * getArmorModifier(getRarity());
+     
       return string.Format("<color={0}>{1}</color> (" + palettes + ")\n\n{2}\n\nArmor = <color=red>{3}</color>",
-         "#" + colorHex, getName(), getDescription(), getArmorValue());
+         "#" + colorHex, getName(), getDescription(), (int) modifiedArmor);
    }
 
    public override string getName () {
@@ -98,11 +99,7 @@ public class Armor : EquippableItem {
    }
 
    public int getArmorValue () {
-      if (getArmorData() != null) {
-         return getArmorData().armorBaseDefense;
-      }
-
-      return 0;
+      return getArmorData().armorBaseDefense;
    }
 
    public virtual float getDefense (Element element) {
@@ -135,19 +132,17 @@ public class Armor : EquippableItem {
    }
 
    public static float getArmorModifier (Rarity.Type rarity) {
-      float randomModifier = Util.getBellCurveFloat(1.0f, .1f, .90f, 1.10f);
-
       switch (rarity) {
          case Rarity.Type.Uncommon:
-            return randomModifier * 1.2f;
+            return 1.25f;
          case Rarity.Type.Rare:
-            return randomModifier * 1.5f;
+            return 1.5f;
          case Rarity.Type.Epic:
-            return randomModifier * 1.5f;
+            return 1.75f;
          case Rarity.Type.Legendary:
-            return randomModifier * 3f; ;
+            return 2f;
          default:
-            return randomModifier;
+            return 1;
       }
    }
 
@@ -241,7 +236,16 @@ public class Armor : EquippableItem {
 
    private ArmorStatData getArmorData () {
       if (_armorStatData == null) {
-         _armorStatData = ArmorStatData.getStatData(data, itemTypeId);
+         if (!data.Contains(EquipmentXMLManager.VALID_XML_FORMAT)) {
+            ArmorStatData fetchedData = EquipmentXMLManager.self.getArmorDataBySqlId(itemTypeId);
+            if (fetchedData == null) {
+               D.debug("Missing armor data: " + itemTypeId);
+            } else {
+               return fetchedData;
+            }
+         } else {
+            return ArmorStatData.getStatData(data, itemTypeId);
+         }
       }
 
       return _armorStatData;

@@ -42,24 +42,33 @@ public class InventoryStatRow : MonoBehaviour
    }
 
    public void setEquippedWeapon (Weapon weapon) {
-      _equippedAttackValue = weapon.getDamage(element);
+      Rarity.Type equipmentRarity = Weapon.getRarity(weapon);
+      float rarityModier = Weapon.getDamageModifier(equipmentRarity);
+
+      _equippedAttackValue = (int) (rarityModier * weapon.getDamage(element));
       attackText.text = _equippedAttackValue.ToString();
    }
 
    public void setEquippedArmor (Armor armor) {
-      _equippedDefenseValue = armor.getDefense(element);
+      Rarity.Type equipmentRarity = Armor.getRarity(armor);
+      float rarityModier = Armor.getArmorModifier(equipmentRarity);
+
+      _equippedDefenseValue = (int) (rarityModier * armor.getDefense(element));
       defenseText.text = _equippedDefenseValue.ToString();
    }
 
    public void setEquippedHat (Hat hat) {
-      _equippedDefenseValue = hat.getDefense(element);
+      Rarity.Type equipmentRarity = Hat.getRarity(hat);
+      float rarityModier = Hat.getDefenseModifier(equipmentRarity);
+
+      _equippedDefenseValue = (int) (rarityModier * hat.getDefense(element));
       defenseText.text = _equippedDefenseValue.ToString();
    }
 
    public void setStatModifiersForWeapon (Weapon weapon) {
       // Calculate the attack modifier
-      float newAttack = weapon.getDamage(element);
-      float attackDifference = newAttack - _equippedAttackValue;
+      float newAttack = weapon.getDamage(element) * Weapon.getDamageModifier(weapon.getRarity());
+      float attackDifference = (int) (newAttack - _equippedAttackValue);
       attackText.text = newAttack.ToString();
 
       // Display the stat difference and color according to its positive or negative effect
@@ -76,8 +85,8 @@ public class InventoryStatRow : MonoBehaviour
 
    public void setStatModifiersForArmor (Armor armor) {
       // Calculate the defense modifier
-      float newDefense = armor.getDefense(element);
-      float defenseDifference = newDefense - _equippedDefenseValue;
+      float newDefense = armor.getDefense(element) * Armor.getArmorModifier(armor.getRarity());
+      float defenseDifference = (int) (newDefense - _equippedDefenseValue);
       defenseText.text = newDefense.ToString();
 
       // Display the stat difference and color according to its positive or negative effect

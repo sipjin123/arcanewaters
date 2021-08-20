@@ -131,9 +131,9 @@ public class InventoryPanel : Panel {
       }
 
       // Update the CharacterInfo section
-      characterInfoSection.setPlayer(Global.player);
+      characterInfoSection.setUserObjects(userObjects);
       updateGoldAndGems(Global.player);
-      equipmentStats.refreshStats(Global.player);
+      equipmentStats.refreshStats(userObjects);
 
       int equippedWeaponId = (Global.player as PlayerBodyEntity).weaponManager.weaponType;
       if (equippedWeaponId != 0) {

@@ -111,6 +111,8 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    }
 
    public void setCellForItem (Item item, int count) {
+      string rawItemData = item.data;
+
       // Retrieve the icon sprite and coloring depending on the type
       switch (item.category) {
          case Item.Category.Weapon:
@@ -128,6 +130,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                newWeapon.paletteNames = item.paletteNames;
                newWeapon.durability = item.durability;
                item = newWeapon;
+               item.data = rawItemData;
 
                icon.sprite = ImageManager.getSprite(weaponData.equipmentIconPath);
                itemSpriteId = weaponData.weaponType;
@@ -149,6 +152,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                newArmor.paletteNames = item.paletteNames;
                newArmor.durability = item.durability;
                item = newArmor;
+               item.data = rawItemData;
 
                icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
                itemSpriteId = armorData.armorType;
@@ -170,6 +174,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                newHat.paletteNames = item.paletteNames;
                newHat.durability = item.durability;
                item = newHat;
+               item.data = rawItemData;
 
                icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
                itemSpriteId = hatData.hatType;

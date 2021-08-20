@@ -99,11 +99,7 @@ public class Hat : EquippableItem
    }
 
    public int getHatDefense () {
-      if (getHatData() != null) {
-         return getHatData().hatBaseDefense;
-      }
-
-      return 0;
+      return getHatData().hatBaseDefense;
    }
 
    public virtual float getDefense (Element element) {
@@ -136,19 +132,17 @@ public class Hat : EquippableItem
    }
 
    public static float getDefenseModifier (Rarity.Type rarity) {
-      float randomModifier = Util.getBellCurveFloat(1.0f, .1f, .90f, 1.10f);
-
       switch (rarity) {
          case Rarity.Type.Uncommon:
-            return randomModifier * 1.2f;
+            return 1.25f;
          case Rarity.Type.Rare:
-            return randomModifier * 1.5f;
+            return 1.5f;
          case Rarity.Type.Epic:
-            return randomModifier * 1.5f;
+            return 1.75f;
          case Rarity.Type.Legendary:
-            return randomModifier * 3f; ;
+            return 2;
          default:
-            return randomModifier;
+            return 1;
       }
    }
 
@@ -243,7 +237,15 @@ public class Hat : EquippableItem
 
    private HatStatData getHatData () {
       if (_hatStatData == null) {
-         _hatStatData = HatStatData.getStatData(data, itemTypeId);
+         if (!data.Contains(EquipmentXMLManager.VALID_XML_FORMAT)) {
+            HatStatData fetchedData = EquipmentXMLManager.self.getHatData(itemTypeId);
+            if (fetchedData == null) {
+               D.debug("Missing hat data: " + itemTypeId);
+            } else {
+               return fetchedData;
+            }
+         }
+         return HatStatData.getStatData(data, itemTypeId);
       }
 
       return _hatStatData;
