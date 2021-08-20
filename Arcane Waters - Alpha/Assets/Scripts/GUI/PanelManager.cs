@@ -89,6 +89,11 @@ public class PanelManager : GenericGameManager {
 
       // TODO: Setup gamepad keybindings here using actions instead of keyboard keys
 
+      // Disable hotkeys when not focused on game window
+      if (!InputManager.self.isFocused) {
+         return;
+      }
+
       // Bottom button panels
       if (KeyUtils.GetKeyDown(Key.I)) {
          BottomBar.self.toggleInventoryPanel();
