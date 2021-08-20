@@ -252,27 +252,21 @@ namespace NubisDataHandling {
          // Update sql id of each equipment cache loaded
          if (inventoryBundle.equippedWeapon.itemTypeId != 0) {
             WeaponStatData xmlWeaponData = EquipmentXMLManager.self.getWeaponData(inventoryBundle.equippedWeapon.itemTypeId);
-            if (xmlWeaponData != null) {
-               inventoryBundle.equippedWeapon.data = WeaponStatData.serializeWeaponStatData(xmlWeaponData);
-            } else {
+            if (xmlWeaponData == null) {
                D.debug("NUBIS DATA FETCHER :: Weapon data missing! ID:" + inventoryBundle.equippedWeapon.itemTypeId + " WeaponDataContent: " + EquipmentXMLManager.self.weaponStatList.Count);
                inventoryBundle.equippedWeapon.itemTypeId = 0;
             }
          }
          if (inventoryBundle.equippedArmor.itemTypeId != 0) {
             ArmorStatData xmlArmorData = EquipmentXMLManager.self.getArmorDataBySqlId(inventoryBundle.equippedArmor.itemTypeId);
-            if (xmlArmorData != null) {
-               inventoryBundle.equippedArmor.data = ArmorStatData.serializeArmorStatData(xmlArmorData);
-            } else {
+            if (xmlArmorData == null) {
                D.debug("NUBIS DATA FETCHER :: Armor data missing! ID:" + inventoryBundle.equippedArmor.itemTypeId + " ArmorDataContent: " + EquipmentXMLManager.self.armorStatList.Count);
                inventoryBundle.equippedArmor.itemTypeId = 0;
             }
          }
          if (inventoryBundle.equippedHat.itemTypeId != 0) {
             HatStatData xmlHatData = EquipmentXMLManager.self.getHatData(inventoryBundle.equippedHat.itemTypeId);
-            if (xmlHatData != null) {
-               inventoryBundle.equippedHat.data = HatStatData.serializeHatStatData(xmlHatData);
-            } else {
+            if (xmlHatData == null) {
                D.debug("NUBIS DATA FETCHER :: Hat data missing! ID:" + inventoryBundle.equippedHat.itemTypeId + " HatDataContent: " + EquipmentXMLManager.self.hatStatList.Count);
                inventoryBundle.equippedHat.itemTypeId = 0;
             }

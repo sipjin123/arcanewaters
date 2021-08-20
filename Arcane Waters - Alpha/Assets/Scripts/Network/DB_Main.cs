@@ -397,7 +397,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
             using (MySqlCommand command = new MySqlCommand(
-               "SELECT itmId, itmCategory, itmType, itmPalettes, durability " +
+               "SELECT itmId, itmCategory, itmType, itmPalettes, durability, itmData " +
                "FROM items " +
                "left join users on armId = itmId or wpnId = itmId or hatId = itmId " +
                "where(armId = itmId or wpnId = itmId or hatId = itmId) and items.usrId = @usrId",
@@ -413,7 +413,8 @@ public class DB_Main : DB_MainStub
                      int itmType = reader.GetInt32("itmType");
                      string itemPalette = reader.GetString("itmPalettes");
                      int itmDurability = reader.GetInt32("durability");
-                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{itemPalette}[space]{itmDurability}[space]";
+                     string itmData = reader.GetString("itmData");
+                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{itemPalette}[space]{itmDurability}[space]{itmData}[space]";
                      stringBuilder.AppendLine(result);
                   }
                }

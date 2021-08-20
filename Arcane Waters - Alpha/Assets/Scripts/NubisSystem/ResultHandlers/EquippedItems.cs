@@ -50,6 +50,15 @@ namespace NubisDataHandling {
                   } catch {
                      paletteNames = "armor_one_white, armor_two_white, , ";
                   }
+                  int itemDurability = 0;
+                  string itemData = "";
+
+                  try {
+                     itemDurability = int.Parse(dataGroup[4]);
+                     itemData = dataGroup[5];
+                  } catch {
+                     D.log("Failed to parse durability and item data");
+                  }
 
                   switch (itemCategory) {
                      case Item.Category.Weapon:
@@ -57,8 +66,9 @@ namespace NubisDataHandling {
                            id = itemID,
                            category = Item.Category.Weapon,
                            itemTypeId = itemTypeID,
-                           data = "",
-                           paletteNames = paletteNames
+                           data = itemData,
+                           paletteNames = paletteNames,
+                           durability = itemDurability
                         };
                         break;
                      case Item.Category.Armor:
@@ -66,8 +76,9 @@ namespace NubisDataHandling {
                            id = itemID,
                            category = Item.Category.Armor,
                            itemTypeId = itemTypeID,
-                           data = "",
-                           paletteNames = paletteNames
+                           data = itemData,
+                           paletteNames = paletteNames,
+                           durability = itemDurability
                         };
                         break;
                      case Item.Category.Hats:
@@ -75,8 +86,9 @@ namespace NubisDataHandling {
                            id = itemID,
                            category = Item.Category.Hats,
                            itemTypeId = itemTypeID,
-                           data = "",
-                           paletteNames = paletteNames
+                           data = itemData,
+                           paletteNames = paletteNames,
+                           durability = itemDurability
                         };
                         break;
                   }
