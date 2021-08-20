@@ -3528,14 +3528,14 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_BuyPvpItem (int shopItemId, int shopId) {
+   public void Cmd_BuyPvpItem (int shopItemId, int shopId, int category) {
       PvpShopData shopData = PvpShopManager.self.getShopData(shopId);
       if (shopData == null) {
          D.debug("Shop data is null for id: " + shopId);
          return;
       }
 
-      PvpShopItem shopItem = shopData.shopItems.Find(_ => _.itemId == shopItemId);
+      PvpShopItem shopItem = shopData.shopItems.Find(_ => _.itemId == shopItemId && _.shopItemType == (PvpShopItem.PvpShopItemType) category);
       if (shopItem == null) {
          D.debug("Shop item is null for id: " + shopItemId);
          return;
@@ -3565,14 +3565,19 @@ public class RPCManager : NetworkBehaviour
                      ShipInfo startingShip = Ship.generateNewShip(shipData.shipType, Rarity.Type.Common);
                      startingShip.shipAbilities = ShipDataManager.self.getShipAbilities(shipSqlId);
                      playerShip.changeShipInfo(startingShip);
-                     ShipSizeSpritePair shipSizeSprite = playerShip.shipSizeSpriteList.Find(_ => _.shipSize == shipData.shipSize);
-                     playerShip.Target_RefreshSprites(connectionToClient, (int) startingShip.shipType, (int) shipSizeSprite.shipSize, (int) startingShip.skinType);
+                     playerShip.Target_RefreshSprites(playerShip.connectionToClient, (int) shipData.shipType, (int) shipData.shipSize, (int) startingShip.skinType);
                   } else {
                      D.debug("Cant process shop purchase: {" + shipSqlId + "} does not exist");
                   }
                   break;
                case PvpShopItem.PvpShopItemType.Ability:
 
+                  break;
+               case PvpShopItem.PvpShopItemType.Item:
+                  PlayerShipEntity playersShip = (PlayerShipEntity) seaEntity;
+                  int repairValue = 100;
+                  playersShip.currentHealth = Mathf.Clamp(playersShip.currentHealth + repairValue, 0, playersShip.maxHealth);
+                  Target_RepairShip(playersShip.connectionToClient, repairValue);
                   break;
             }
          } else {
@@ -3581,6 +3586,13 @@ public class RPCManager : NetworkBehaviour
       } else {
          D.debug("Warning, user {" + _player.userId + "} is not a ship");
       }
+   }
+
+   [TargetRpc]
+   public void Target_RepairShip (NetworkConnection conn, int repairValue) {
+      // Show the damage text
+      ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(Attack.Type.Heal), transform.position, Quaternion.identity);
+      damageText.setDamage(repairValue);
    }
 
    [TargetRpc]
@@ -6827,8 +6839,11 @@ public class RPCManager : NetworkBehaviour
                   BattleManager.self.onPlayerEquipItem(body);
                }
             }
-
-            Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+            if (userObjects == null) {
+               D.debug("Null user objects!");
+            } else {
+               Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+            }
          });
       });
    }
@@ -6858,8 +6873,11 @@ public class RPCManager : NetworkBehaviour
                   BattleManager.self.onPlayerEquipItem(body);
                }
             }
-
-            Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+            if (userObjects == null) {
+               D.debug("Null user objects!");
+            } else {
+               Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+            }
          });
       });
    }
@@ -6903,7 +6921,11 @@ public class RPCManager : NetworkBehaviour
             }
 
             if (_player != null) {
-               Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+               if (userObjects == null) {
+                  D.debug("Null user objects!");
+               } else {
+                  Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+               }
             } else {
                D.debug("Cant change equipment while player is destroyed");
             }

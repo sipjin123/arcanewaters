@@ -246,7 +246,18 @@ public class PvpShopPanel : ClientMonoBehaviour {
                   newItemInfo.description = shipAbilityData.abilityDescription;
                }
                break;
-            case PvpShopItemType.Stats:
+            case PvpShopItemType.Item:
+               switch ((PvpConsumableItem) itemData.itemId) {
+                  case PvpConsumableItem.RepairTool:
+                     newItemInfo.name = "Repair Tool";
+                     newItemInfo.description = "Repairs your ship for 100 hp";
+                     newItemInfo.sprite = ImageManager.getSprite(itemData.spritePath);
+                     break;
+                  default:
+                     newItemInfo.name = "Unsupported";
+                     newItemInfo.description = "";
+                     break;
+               }
                break;
          }
       }

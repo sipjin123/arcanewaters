@@ -38,8 +38,28 @@ public class PvpShopItem {
       Powerup = 1,
       Ship = 2,
       Ability = 3,
-      Stats = 4
+      Stats = 4,
+      Item = 5
+   }
+
+   public static PvpShopItem defaultConsumableItem () {
+      PvpShopItem newShopItem = new PvpShopItem {
+         itemCost = 100,
+         itemId = (int) PvpConsumableItem.RepairTool,
+         shopItemType = PvpShopItem.PvpShopItemType.Item,
+         itemName = "Repair Tool",
+         rarityType = Rarity.Type.Common,
+         spritePath = "Sprites/GUI/PvpShop/icons/items_on",
+      };
+
+      return newShopItem;
    }
 
    #endregion
+}
+
+public enum PvpConsumableItem {
+   None = 0,
+   RepairTool = 1,
+   Beacon = 2,
 }
