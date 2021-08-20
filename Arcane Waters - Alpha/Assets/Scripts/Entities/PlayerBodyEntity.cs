@@ -518,7 +518,11 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private bool canSprint () {
-      return ((Global.sprintConstantly || InputManager.isSpeedUpKeyDown()) && !isWithinEnemyRadius && getVelocity().magnitude > SPRINTING_MAGNITUDE);
+      if (Global.sprintConstantly) {
+         return true;
+      }
+
+      return (InputManager.isSpeedUpKeyDown() && !isWithinEnemyRadius && getVelocity().magnitude > SPRINTING_MAGNITUDE);
    }
 
    private void processActionLogic () {
@@ -548,6 +552,10 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private void triggerInteractAction (bool faceMouseDirection = true) {
+      if (isJumping()) {
+         return;
+      }
+
       // First check under the mouse
       bool foundInteractable = tryInteractUnderMouse();
 

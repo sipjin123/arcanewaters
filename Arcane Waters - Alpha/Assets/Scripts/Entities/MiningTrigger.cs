@@ -32,6 +32,9 @@ public class MiningTrigger : MonoBehaviour
    // Animator Key for check if final destination will be in water (if so - trigger short animation)
    public const string IS_IN_WATER = "isShort";
 
+   // The minimum distance for interaction
+   public const float INTERACT_DISTANCE = .45f;
+
    #endregion
 
    public void interactOres () {
@@ -74,7 +77,7 @@ public class MiningTrigger : MonoBehaviour
          RaycastHit2D[] rayHits = new RaycastHit2D[10];
          int hitNum = currentCollider.Cast(new Vector2(0, 0), rayHits);
          foreach (RaycastHit2D hit in rayHits) {
-            if (hit.collider != null) { 
+            if (hit.collider != null && Vector2.Distance(transform.position, hit.collider.transform.position) < INTERACT_DISTANCE) {
                if (hit.collider.GetComponent<OreNode>() != null) {
                   OreNode oreNode = hit.collider.GetComponent<OreNode>();
 
