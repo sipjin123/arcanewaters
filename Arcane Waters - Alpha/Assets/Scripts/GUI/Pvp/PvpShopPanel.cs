@@ -12,8 +12,9 @@ public class PvpShopPanel : ClientMonoBehaviour {
    #region Public Variables
 
    // Prefab spawning components
-   public PvpShopTemplate shopTemplatePrefab;
-   public Transform shopTemplateHolder;
+   public PvpShopTemplate shopTemplatePrefab, shipTemplatePrefab;
+   public Transform shopTemplateHolder, shipTemplateHolder;
+   public Transform shopTemplateScroller, shipTemplateScroller;
 
    // Text ui to be shown in the panel
    public TextMeshProUGUI displayName;
@@ -61,8 +62,9 @@ public class PvpShopPanel : ClientMonoBehaviour {
    public Sprite[] borderSprites;
 
    // The category icons on the left side of the panel
-   public RectTransform shipCategoryObj, powerupCategoryObj, abilityCategoryObj;
-   public RectTransform shipCategoryObjHover, powerupCategoryObjHover, abilityCategoryObjHover;
+   public RectTransform shipCategoryObj, powerupCategoryObj, abilityCategoryObj, itemCategoryObj;
+   public RectTransform shipCategoryObjHover, powerupCategoryObjHover, abilityCategoryObjHover, itemCategoryObjHover;
+   public RectTransform shipCategoryObjSelect, powerupCategoryObjSelect, abilityCategoryObjSelect, itemCategoryObjSelect;
 
    // The coordinates of the category icons depending on their button state
    public const int IDLE_POS = -55;
@@ -79,6 +81,9 @@ public class PvpShopPanel : ClientMonoBehaviour {
 
    // The stat tab of the ship
    public GameObject shipStatTab;
+
+   // The current category
+   public PvpShopItemType selectedCategory;
 
    public class PvpItemInfo {
       public string name, description;
@@ -102,31 +107,22 @@ public class PvpShopPanel : ClientMonoBehaviour {
       powerupCategoryObj.GetComponent<Button>().onClick.AddListener(() => {
          onSelectPowerupCategory();
       });
+      itemCategoryObj.GetComponent<Button>().onClick.AddListener(() => {
+         onSelectItemCategory();
+      });
 
       // Setup the hover functionalities
       EventTrigger shipEventTrigger = shipCategoryObj.GetComponent<EventTrigger>();
-      Utilities.addPointerListener(shipEventTrigger, EventTriggerType.PointerEnter, (e) => {
-         hoverPvpItemCategory(PvpShopItemType.Ship);
-      });
-      Utilities.addPointerListener(shipEventTrigger, EventTriggerType.PointerExit, (e) => {
-         hoverPvpItemCategory(PvpShopItemType.None);
-      });
+      setupHovering(shipEventTrigger, PvpShopItemType.Ship);
 
       EventTrigger abilityEventTrigger = abilityCategoryObj.GetComponent<EventTrigger>();
-      Utilities.addPointerListener(abilityEventTrigger, EventTriggerType.PointerEnter, (e) => {
-         hoverPvpItemCategory(PvpShopItemType.Ability);
-      });
-      Utilities.addPointerListener(abilityEventTrigger, EventTriggerType.PointerExit, (e) => {
-         hoverPvpItemCategory(PvpShopItemType.None);
-      });
+      setupHovering(abilityEventTrigger, PvpShopItemType.Ability);
 
       EventTrigger powerupEventTrigger = powerupCategoryObj.GetComponent<EventTrigger>();
-      Utilities.addPointerListener(powerupEventTrigger, EventTriggerType.PointerEnter, (e) => {
-         hoverPvpItemCategory(PvpShopItemType.Powerup);
-      });
-      Utilities.addPointerListener(powerupEventTrigger, EventTriggerType.PointerExit, (e) => {
-         hoverPvpItemCategory(PvpShopItemType.None);
-      });
+      setupHovering(powerupEventTrigger, PvpShopItemType.Powerup);
+
+      EventTrigger itemEventTrigger = itemCategoryObj.GetComponent<EventTrigger>();
+      setupHovering(itemEventTrigger, PvpShopItemType.Item);
 
       shipAttackText.text = "";
       shipSpeedText.text = "";
@@ -135,6 +131,15 @@ public class PvpShopPanel : ClientMonoBehaviour {
       shipSupplyText.text = "";
       shipSailorsText.text = "";
       shipDefenseText.text = "";
+   }
+
+   private void setupHovering (EventTrigger eventTrigger, PvpShopItemType pvpShopItem) {
+      Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerEnter, (e) => {
+         hoverPvpItemCategory(pvpShopItem);
+      });
+      Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerExit, (e) => {
+         hoverPvpItemCategory(PvpShopItemType.None);
+      });
    }
 
    public void clearSelectedObj () {
@@ -160,29 +165,39 @@ public class PvpShopPanel : ClientMonoBehaviour {
    public void populateShop (List<PvpShopItem> pvpItemDataList) {
       loadingPanel.SetActive(false);
       shopTemplateHolder.gameObject.DestroyChildren();
+      shipTemplateHolder.gameObject.DestroyChildren();
 
       // Enable stat panel if shop list has ship item
-      if (pvpItemDataList.FindAll(_ => _.shopItemType == PvpShopItemType.Ship).Count > 0) {
+      if (selectedCategory == PvpShopItemType.Ship) {
+         shopTemplateScroller.gameObject.SetActive(false);
+         shipTemplateScroller.gameObject.SetActive(true);
          shipStatTab.SetActive(true);
       } else {
+         shopTemplateScroller.gameObject.SetActive(true);
+         shipTemplateScroller.gameObject.SetActive(false);
          shipStatTab.SetActive(false);
       }
 
       foreach (PvpShopItem shopItemData in pvpItemDataList) {
-         PvpShopTemplate shopTemplate = Instantiate(shopTemplatePrefab, shopTemplateHolder);
+         PvpShopTemplate shopTemplate = selectedCategory == PvpShopItemType.Ship ? 
+            Instantiate(shipTemplatePrefab, shipTemplateHolder) : Instantiate(shopTemplatePrefab, shopTemplateHolder);
          shopTemplate.setupData(shopItemData);
-         shopTemplate.buyButton.onClick.AddListener(() => {
+         shopTemplate.selectTemplateEvent.AddListener(() => {
             if (Global.player != null && Global.player is PlayerShipEntity) {
                PlayerShipEntity playerShip = (PlayerShipEntity) Global.player;
-               playerShip.rpc.Cmd_BuyPvpItem(shopItemData.itemId, shopId);
+               playerShip.rpc.Cmd_BuyPvpItem(shopItemData.itemId, shopId, (int) shopItemData.shopItemType);
                loadingPanel.SetActive(true);
+               shopTemplate.selectedObj.SetActive(true);
             }
          });
+
          if (userSilver < shopItemData.itemCost) {
             shopTemplate.buyButton.interactable = false;
+            shopTemplate.disabledIcon.SetActive(true);
          }
          if (shopItemData.isDisabled) {
             shopTemplate.buyButton.interactable = false;
+            shopTemplate.disabledIcon.SetActive(true);
          }
       }
    }
@@ -240,31 +255,42 @@ public class PvpShopPanel : ClientMonoBehaviour {
    }
 
    public void onShopButtonPressed () {
-      onSelectPowerupCategory();
+      onSelectShipCategory();
    }
 
    public void onSelectShipCategory () {
       Global.player.rpc.Cmd_RequestPvpShopData(shopId, (int) PvpShopItemType.Ship);
       loadingPanel.SetActive(true);
-      hoverPvpItemCategory(PvpShopItemType.Ship);
+      selectedCategory = PvpShopItemType.Ship;
+      selectPvpItemCategory(selectedCategory);
    }
 
    public void onSelectAbilityCategory () {
       Global.player.rpc.Cmd_RequestPvpShopData(shopId, (int) PvpShopItemType.Ability);
       loadingPanel.SetActive(true);
-      hoverPvpItemCategory(PvpShopItemType.Ability);
+      selectedCategory = PvpShopItemType.Ability;
+      selectPvpItemCategory(selectedCategory);
+   }
+
+   public void onSelectItemCategory () {
+      Global.player.rpc.Cmd_RequestPvpShopData(shopId, (int) PvpShopItemType.Item);
+      loadingPanel.SetActive(true);
+      selectedCategory = PvpShopItemType.Item;
+      selectPvpItemCategory(selectedCategory);
    }
 
    public void onSelectPowerupCategory () {
       Global.player.rpc.Cmd_RequestPvpShopData(shopId, (int) PvpShopItemType.Powerup);
       loadingPanel.SetActive(true);
-      hoverPvpItemCategory(PvpShopItemType.Powerup);
+      selectedCategory = PvpShopItemType.Powerup;
+      selectPvpItemCategory(selectedCategory);
    }
 
    private void hoverPvpItemCategory (PvpShopItemType itemType) {
       powerupCategoryObjHover.gameObject.SetActive(false);
       shipCategoryObjHover.gameObject.SetActive(false);
       abilityCategoryObjHover.gameObject.SetActive(false);
+      itemCategoryObjHover.gameObject.SetActive(false);
 
       switch (itemType) {
          case PvpShopItemType.Ability:
@@ -275,6 +301,31 @@ public class PvpShopPanel : ClientMonoBehaviour {
             break;
          case PvpShopItemType.Powerup:
             powerupCategoryObjHover.gameObject.SetActive(true);
+            break;
+         case PvpShopItemType.Item:
+            itemCategoryObjHover.gameObject.SetActive(true);
+            break;
+      }
+   }
+
+   private void selectPvpItemCategory (PvpShopItemType itemType) {
+      powerupCategoryObjSelect.gameObject.SetActive(false);
+      shipCategoryObjSelect.gameObject.SetActive(false);
+      abilityCategoryObjSelect.gameObject.SetActive(false); 
+      itemCategoryObjSelect.gameObject.SetActive(false);
+
+      switch (itemType) {
+         case PvpShopItemType.Ability:
+            abilityCategoryObjSelect.gameObject.SetActive(true);
+            break;
+         case PvpShopItemType.Ship:
+            shipCategoryObjSelect.gameObject.SetActive(true);
+            break;
+         case PvpShopItemType.Powerup:
+            powerupCategoryObjSelect.gameObject.SetActive(true);
+            break;
+         case PvpShopItemType.Item:
+            itemCategoryObjSelect.gameObject.SetActive(true);
             break;
       }
    }

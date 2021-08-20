@@ -84,7 +84,6 @@ public class PvpShopTemplate : MonoBehaviour {
 
    public void selectThisTemplate () {
       displayData();
-      selectedObj.SetActive(true);
       selectTemplateEvent.Invoke();
    }
 

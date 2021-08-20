@@ -79,6 +79,7 @@ public class PvpShopManager : MonoBehaviour {
                         }
                      }
 
+                     pvpShopData.shopItems.Add(PvpShopItem.defaultConsumableItem());
                      shopDataList.Add(pvpShopData);
                   }
                }
