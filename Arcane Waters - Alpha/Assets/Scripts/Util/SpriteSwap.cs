@@ -44,10 +44,13 @@ public class SpriteSwap : ClientMonoBehaviour
       if (oldSprite != ImageManager.self.blankSprite && oldSprite != null) {
          currentFrameNumber = Util.getFrameNumber(oldSprite);
       }
-      Sprite newSprite = null;
-      _spritesToSwapIn.TryGetValue(currentFrameNumber, out newSprite);
-      if (newSprite != null || newSprite == ImageManager.self.blankSprite || newTexture == ImageManager.self.blankTexture) {
+
+      _spritesToSwapIn.TryGetValue(currentFrameNumber, out Sprite newSprite);
+
+      if (newSprite != null) {
          setNewSprite(newSprite);
+      } else if (newSprite == ImageManager.self.blankSprite || newTexture == ImageManager.self.blankTexture) {
+         setNewSprite(ImageManager.self.blankSprite);
       } else {
          if (!Util.isBatch()) {
             D.debug("Sprite Frame '" + currentFrameNumber + "' did not exist in the Sheet '" + newTexture.name + "'. Please update the Sprite Sheet for game object: " + gameObject.name);

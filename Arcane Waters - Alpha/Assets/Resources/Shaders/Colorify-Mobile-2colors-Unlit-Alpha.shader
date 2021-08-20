@@ -5,6 +5,7 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent" {
 	{
 		_Color ("Main Color", Color) = (1,1,1,1)
 		_MainTex ("Base (RGB) Trans (A)", 2D) = "white" {}
+		_ClipTex ("Clip (R)", 2D) = "white" {}
 		_WaterHeight("Water Height", Range(0, 1)) = 0.0
 		_WaterAlpha("Water Alpha", Range(0, 1)) = 0.0
 		_Palette ("Palette", 2D) = "black" {}
@@ -26,6 +27,9 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent" {
 
 		[Toggle(CLEAR_STENCIL)]
 		_UseHatStencil("Clear Stencil", Float) = 0
+		_StencilWriteMask("Stencil Write Mask", Float) = 255
+		_StencilReadMask("Stencil Read Mask", Float) = 255
+		_ColorMask("Color Mask", Float) = 15
 	}
 
 		SubShader
@@ -68,6 +72,7 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent" {
 			};
 
 			sampler2D _MainTex;
+			sampler2D _ClipTex;
 			sampler2D _MainTex2;
 			float4 _MainTex_ST;
 
@@ -144,15 +149,19 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent" {
 			fixed4 frag (v2f i) : SV_Target
 			{
 				sampler2D mainTex = _MainTex;
-				
 				fixed4 c = tex2D(mainTex, i.texcoord);
+
+				#ifdef SHOW_HAT_CLIPPING
+					fixed4 clipmask_c = tex2D(_ClipTex, i.texcoord);
+					clip(clipmask_c.r - 0.5);
+				#endif
 
 				// Get the Y position of the pixel in object space. The 6 is the number of rows in the spritesheet.
 				// As of writing this comment, Unity doesn't provide a way of accessing that value directly. Sprites don't use _MainTex_ST.
 				fixed yPosition = frac(i.texcoord.y * 6);
 								
 				// If this is the hat layer, we need to clip transparent pixels above the "bottom of the hat" line
-				#ifdef USE_HAT_STENCIL
+				/*#ifdef USE_HAT_STENCIL
 					float shouldClip = min(1, hasPixelsUp(i.texcoord, 3) + hasPixelsSides(i.texcoord, 6));
 					
 					#ifdef SHOW_HAT_CLIPPING
@@ -161,7 +170,7 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent" {
 					#endif
 
 					clip(-shouldClip * isTransparent(c.a));
-				#endif
+				#endif*/
 				
 				// Apply alpha and color changes if we're partially underwater
 				const half3 waterColor = half3(.24, .39, .62);

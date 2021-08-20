@@ -141,6 +141,27 @@ public class WaterChecker : ClientMonoBehaviour
       }
    }
 
+   public static bool dynamicCheckIsInWater (Area area, Vector3 position) {
+      Vector3Int cellPos = area.worldToCell(position);
+      bool isInWater = false;
+
+      // Locate the Water tilemap within the area
+      List<TilemapLayer> layers = area.getTilemapLayers();
+      for (int i = layers.Count - 1; i >= 0; i--) {
+         TileBase tile = layers[i].tilemap.GetTile(cellPos);
+         if (tile != null && !Exporter.nonWaterBlockingTiles.Contains(tile.name)) {
+            if (layers[i].name.ToLower().EndsWith("water")) {
+               string currentTile = tile.name;
+               isInWater |= Exporter.fullWaterTiles.Contains(currentTile) || Exporter.waterFallTiles.Contains(currentTile);
+               isInWater |= Exporter.partialWaterTiles.Contains(currentTile);
+            }
+            break;
+         }
+      }
+
+      return isInWater;
+   }
+
    private void cachedCheck (CellTypesContainer cellTypes) {
       CellTypesContainer.MapCellType cellType = cellTypes.getCellType(_player.sortPoint.transform.position);
 

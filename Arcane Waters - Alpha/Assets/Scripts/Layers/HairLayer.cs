@@ -41,10 +41,34 @@ public class HairLayer : SpriteLayer {
       _stencilCompPropertyId = Shader.PropertyToID("_StencilComp");
 
       Material mat = getMaterial();
-      mat.SetInt("_StencilOp", (int)StencilOp.Zero);
+      mat.SetInt("_StencilOp", (int) StencilOp.Zero);
       mat.SetInt("_StencilFail", (int) StencilOp.Zero);
       mat.SetInt("_StencilComp", (int) CompareFunction.NotEqual);
       mat.SetInt("_Stencil", HAT_STENCIL_ID);
+   }
+
+   public void setClipMaskForHat (int hatType) {
+      Material _material = getMaterial();
+
+      if (_material == null) {
+         return;
+      }
+
+      if (hatType == 0) {
+         _material.DisableKeyword("SHOW_HAT_CLIPPING");
+         return;
+      }
+
+      string path = "Hats/" + "hat_" + (int) hatType + "_clipmask";
+      Texture2D clipMask = ImageManager.getTexture(path);
+
+      if (clipMask == null) {
+         _material.DisableKeyword("SHOW_HAT_CLIPPING");
+         return;
+      }
+
+      _material.SetTexture("_ClipTex", clipMask);
+      _material.EnableKeyword("SHOW_HAT_CLIPPING");
    }
 
    private void Update () {

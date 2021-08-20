@@ -102,6 +102,9 @@ public class BattleUIManager : MonoBehaviour {
    // The battle camera
    public Camera battleCamera;
 
+   // Keep track of when an enemy is targeted to start the battle
+   public bool isInitialEnemySelected = false;
+
    #endregion
 
    private void Awake () {
@@ -348,20 +351,27 @@ public class BattleUIManager : MonoBehaviour {
       // Normally I would only update these values when needed (updating when action timer var is not full, or when the player received damage)
       // But for now I will just update them every frame
       if (_playerLocalBattler != null) {
+         if (!isInitialEnemySelected) {
+            BattleSelectionManager.self.clickBattler(BattleSelectionManager.self.getRandomTarget());
+            isInitialEnemySelected = true;
+         }
          updateAbilityButtons();
 
-         if (KeyUtils.GetKeyDown(Key.Digit1)) {
-            triggerAbilityByKey(0);
-         } else if (KeyUtils.GetKeyDown(Key.Digit2)) {
-            triggerAbilityByKey(1);
-         } else if (KeyUtils.GetKeyDown(Key.Digit3)) {
-            triggerAbilityByKey(2);
-         } else if (KeyUtils.GetKeyDown(Key.Digit4)) {
-            triggerAbilityByKey(3);
-         } else if (KeyUtils.GetKeyDown(Key.Digit5)) {
-            triggerAbilityByKey(4);
-         } else if (KeyUtils.GetKeyDown(Key.Tab)) {
-            selectNextTarget();
+         // If the player is in the middle of an attack, ignore input
+         if ((_playerLocalBattler != null) && !_playerLocalBattler.isAttacking) {
+            if (KeyUtils.GetKeyDown(Key.Digit1)) {
+               triggerAbilityByKey(0);
+            } else if (KeyUtils.GetKeyDown(Key.Digit2)) {
+               triggerAbilityByKey(1);
+            } else if (KeyUtils.GetKeyDown(Key.Digit3)) {
+               triggerAbilityByKey(2);
+            } else if (KeyUtils.GetKeyDown(Key.Digit4)) {
+               triggerAbilityByKey(3);
+            } else if (KeyUtils.GetKeyDown(Key.Digit5)) {
+               triggerAbilityByKey(4);
+            } else if (KeyUtils.GetKeyDown(Key.Tab)) {
+               selectNextTarget();
+            }
          }
 
          Battler localBattler = BattleManager.self.getPlayerBattler();
@@ -643,12 +653,6 @@ public class BattleUIManager : MonoBehaviour {
                playerBattler.onBattlerDeselect.AddListener(() => {
                   playerBattleCG.Hide();
                });
-
-               // Auto select a random enemy at the beginning of the battle
-               BattleSelectionManager.self.selectedBattler = null;
-               BattleSelectionManager.self.clickBattler(BattleSelectionManager.self.getRandomTarget());
-
-               _playerLocalBattler = playerBattler;
             } catch {
                D.debug("Something went wrong with battle ui setup for player");
             }

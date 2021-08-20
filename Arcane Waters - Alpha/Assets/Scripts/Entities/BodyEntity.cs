@@ -21,7 +21,7 @@ public class BodyEntity : NetEntity
       _bodyLayer = GetComponentInChildren<BodyLayer>();
       _eyesLayer = GetComponentInChildren<EyesLayer>();
       _armorLayer = GetComponentInChildren<ArmorLayer>();
-      _hatLater = GetComponentInChildren<HatLayer>();
+      _hatLayer = GetComponentInChildren<HatLayer>();
       _hairLayers = GetComponentsInChildren<HairLayer>();
       _waterChecker = GetComponentInChildren<WaterChecker>();
    }
@@ -71,6 +71,11 @@ public class BodyEntity : NetEntity
 
          // Update colors
          hairLayer.recolor(newHairPalettes);
+
+         // Apply clip mask
+         if (hairLayer.isFront) {
+            hairLayer.setClipMaskForHat(_hatLayer.getType());
+         }
       }
    }
 
@@ -85,6 +90,11 @@ public class BodyEntity : NetEntity
 
          // Update colors
          hairLayer.recolor(hairPalettes);
+
+         // Apply clip mask
+         if (hairLayer.isFront) {
+            hairLayer.setClipMaskForHat(_hatLayer.getType());
+         }
       }
 
       // Update colors
@@ -123,10 +133,10 @@ public class BodyEntity : NetEntity
          yield return null;
       }
 
-      updateBodySpriteSheets();
       this.armorManager.updateSprites(this.armorManager.armorType, this.armorManager.palettes);
       this.weaponManager.updateSprites(this.weaponManager.weaponType, this.weaponManager.palettes);
       this.hatsManager.updateSprites(this.hatsManager.hatType, this.hatsManager.palettes);
+      updateBodySpriteSheets();
    }
 
    protected IEnumerator CO_ShowFallEffect () {
@@ -152,7 +162,7 @@ public class BodyEntity : NetEntity
    protected BodyLayer _bodyLayer;
    protected EyesLayer _eyesLayer;
    protected ArmorLayer _armorLayer;
-   protected HatLayer _hatLater;
+   protected HatLayer _hatLayer;
    protected HairLayer[] _hairLayers;
 
    // Our Water Checker

@@ -29,6 +29,9 @@ public class LoadingScreen : FullScreenSeparatePanel
    // The bar image
    public Image barImage;
 
+   // The error notice section
+   public GameObject errorSection;
+
    #endregion
 
    private void Awake () {
@@ -49,6 +52,10 @@ public class LoadingScreen : FullScreenSeparatePanel
          mainCanvasGroup.interactable = true;
          elementsCanvasGroup.alpha = 0f;
          loadingFinishedMessage.enabled = false;
+         errorSection.SetActive(false);
+
+         // Disable input
+         InputManager.toggleInput(false);
 
          StartCoroutine(CO_Show(_pixelEffectFader, _pixelEffectFader));
       }
@@ -71,7 +78,7 @@ public class LoadingScreen : FullScreenSeparatePanel
 
    private IEnumerator CO_Show (IScreenFader fadeOutEffect, IScreenFader fadeInEffect) {
       // Remember start time of the loading screen
-      float startTime = Time.time;
+      _startTime = Time.time;
 
       // If we have a fade out effect, display it
       if (fadeOutEffect != null) {
@@ -107,9 +114,9 @@ public class LoadingScreen : FullScreenSeparatePanel
          barImage.fillAmount = progress;
 
          // Check if we exceeded maximum wait time
-         if (Time.time - startTime > LOADING_TIMEOUT) {
+         if (!errorSection.activeSelf && Time.time - _startTime > LOADING_TIMEOUT) {
+            errorSection.SetActive(true);
             D.log("The maximum loading time was exceeded.");
-            break;
          }
 
          yield return null;
@@ -145,6 +152,9 @@ public class LoadingScreen : FullScreenSeparatePanel
       mainCanvasGroup.interactable = false;
       _isShowing = false;
       Global.isScreenTransitioning = false;
+
+      // Re-enable input
+      InputManager.toggleInput(true);
    }
 
    public bool isShowing () {
@@ -160,6 +170,18 @@ public class LoadingScreen : FullScreenSeparatePanel
       return _pixelEffectFader;
    }
 
+   public void onLogOutButtonPressed () {
+      hide(Enum.GetValues(typeof(LoadingType)).Cast<LoadingType>().ToArray());
+      errorSection.SetActive(false);
+      _startTime = Time.time;
+      Util.stopHostAndReturnToTitleScreen();
+   }
+
+   public void onWaitButtonPressed () {
+      _startTime = Time.time;
+      errorSection.SetActive(false);
+   }
+
    #region Private Variables
 
    // List of processes that require the loading screen at a given point of time
@@ -173,13 +195,16 @@ public class LoadingScreen : FullScreenSeparatePanel
    private const float MIN_TIME_BEFORE_SHOWING_BAR = 1f;
 
    // A timeout in case the loading screen gets frozen
-   private const float LOADING_TIMEOUT = 45.0f;
+   private const float LOADING_TIMEOUT = 35.0f;
 
    // Some extra time to wait after a fade transition ended
    private const float ADDITIONAL_WAIT_TIME = 0.25f;
 
    // A reference to the screen fader used for transitions
    private IScreenFader _pixelEffectFader;
+
+   // The time at which the loading screen started to show
+   private float _startTime = 0f;
 
    [Serializable]
    public class LoadingProcess

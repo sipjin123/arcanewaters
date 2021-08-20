@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 52876b1ef2ebc5f43a6a680b8151993f
+guid: 6802ce7b3f088114e9af7425f91a5f2a
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -29,6 +29,51 @@ TextureImporter:
   - first:
       213: -5132956563514898567
     second: pvp_tower_style_1_8
+  - first:
+      213: 6851214452285648099
+    second: pvp_tower_style_1_9
+  - first:
+      213: -5842816670961163819
+    second: pvp_tower_style_1_10
+  - first:
+      213: 9008042336697493843
+    second: pvp_tower_style_1_11
+  - first:
+      213: -3435993006911644849
+    second: pvp_tower_style_1_12
+  - first:
+      213: -6110687732913903632
+    second: pvp_tower_style_1_13
+  - first:
+      213: 4610160783084776463
+    second: pvp_tower_style_1_14
+  - first:
+      213: -914906656553500769
+    second: pvp_tower_style_1_15
+  - first:
+      213: 6771416262350822907
+    second: pvp_tower_style_1_16
+  - first:
+      213: -7120792418119142187
+    second: pvp_tower_style_1_17
+  - first:
+      213: 2334102329581699849
+    second: pvp_tower_style_1_18
+  - first:
+      213: -5704502402327684753
+    second: pvp_tower_style_1_19
+  - first:
+      213: -6510778153989517717
+    second: pvp_tower_style_1_20
+  - first:
+      213: 6023718051079385968
+    second: pvp_tower_style_1_21
+  - first:
+      213: -6337002009410300769
+    second: pvp_tower_style_1_22
+  - first:
+      213: -4043039691175094041
+    second: pvp_tower_style_1_23
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -118,7 +163,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 160
+        y: 560
         width: 48
         height: 80
       alignment: 0
@@ -139,7 +184,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 48
-        y: 160
+        y: 560
         width: 48
         height: 80
       alignment: 0
@@ -160,7 +205,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 96
-        y: 160
+        y: 560
         width: 48
         height: 80
       alignment: 0
@@ -181,7 +226,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 80
+        y: 480
         width: 48
         height: 80
       alignment: 0
@@ -202,7 +247,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 48
-        y: 80
+        y: 480
         width: 48
         height: 80
       alignment: 0
@@ -223,7 +268,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 96
-        y: 80
+        y: 480
         width: 48
         height: 80
       alignment: 0
@@ -244,7 +289,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 400
         width: 48
         height: 80
       alignment: 0
@@ -265,7 +310,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 48
-        y: 0
+        y: 400
         width: 48
         height: 80
       alignment: 0
@@ -286,7 +331,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 96
-        y: 0
+        y: 400
         width: 48
         height: 80
       alignment: 0
@@ -302,10 +347,325 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: pvp_tower_style_1_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 320
+        width: 48
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ec228cbe37641f50800000000000000
+      internalID: 6851214452285648099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_tower_style_1_10
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 320
+        width: 48
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d121afb1352aeea0800000000000000
+      internalID: -5842816670961163819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_tower_style_1_11
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 320
+        width: 48
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 359a88057cef20d70800000000000000
+      internalID: 9008042336697493843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_tower_style_1_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 240
+        width: 48
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4b1e4c9096e050d0800000000000000
+      internalID: -3435993006911644849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_tower_style_1_13
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 240
+        width: 48
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f7645af1e9723ba0800000000000000
+      internalID: -6110687732913903632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_tower_style_1_14
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 240
+        width: 48
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0c64397ec49aff30800000000000000
+      internalID: 4610160783084776463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_tower_style_1_15
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 160
+        width: 48
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9ffc754e399d43f0800000000000000
+      internalID: -914906656553500769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_tower_style_1_16
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 160
+        width: 48
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bfd59bfc637e8fd50800000000000000
+      internalID: 6771416262350822907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_tower_style_1_17
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 160
+        width: 48
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d4b6b6f50ddd2d90800000000000000
+      internalID: -7120792418119142187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_tower_style_1_18
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 80
+        width: 48
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9030120c3b5646020800000000000000
+      internalID: 2334102329581699849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_tower_style_1_19
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 80
+        width: 48
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6955e0f94985d0b0800000000000000
+      internalID: -5704502402327684753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_tower_style_1_20
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 80
+        width: 48
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6ec418b3c115a5a0800000000000000
+      internalID: -6510778153989517717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_tower_style_1_21
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 48
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 073f1b507ab889350800000000000000
+      internalID: 6023718051079385968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_tower_style_1_22
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 48
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9499205f327e08a0800000000000000
+      internalID: -6337002009410300769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_tower_style_1_23
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 48
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e814b262dc34e7c0800000000000000
+      internalID: -4043039691175094041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: e5af6f6c01606784d82c111b2b63d671
     internalID: 0
     vertices: []
     indices: 

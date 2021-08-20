@@ -45,7 +45,7 @@ public class MouseManager : ClientMonoBehaviour
          } else if (KeyUtils.GetButtonUp(MouseButton.Left)) {
             _boxBeingHovered.onMouseButtonUp(MouseButton.Left);
          }
-         
+
          if (KeyUtils.GetButtonDown(MouseButton.Right)) {
             _boxBeingHovered.onMouseButtonDown(MouseButton.Right);
          } else if (KeyUtils.GetButtonUp(MouseButton.Right)) {
@@ -96,6 +96,11 @@ public class MouseManager : ClientMonoBehaviour
       }
 
       if (gameObjectUnderMouse == null) {
+         return false;
+      }
+
+      // Only consider clickable boxes if no context menu is opened
+      if (PanelManager.self.contextMenuPanel != null && PanelManager.self.contextMenuPanel.isShowing()) {
          return false;
       }
 

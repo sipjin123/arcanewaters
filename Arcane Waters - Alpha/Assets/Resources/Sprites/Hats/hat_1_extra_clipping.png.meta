@@ -1,0 +1,1736 @@
+fileFormatVersion: 2
+guid: 25e6d70db6c99e9428902a62010faf07
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7351448935353966311
+    second: Bandana_0
+  - first:
+      213: 431892549176955724
+    second: Bandana_1
+  - first:
+      213: -4234030654632335456
+    second: Bandana_2
+  - first:
+      213: 5712208786392871336
+    second: Bandana_3
+  - first:
+      213: 5048639983552520025
+    second: Bandana_4
+  - first:
+      213: -4581170365029147128
+    second: Bandana_5
+  - first:
+      213: 2556988682264583598
+    second: Bandana_6
+  - first:
+      213: 4892153099552482818
+    second: Bandana_7
+  - first:
+      213: 1065219045719674563
+    second: Bandana_8
+  - first:
+      213: 6155315293651419691
+    second: Bandana_9
+  - first:
+      213: 1184630115636968919
+    second: Bandana_10
+  - first:
+      213: 5625834896562370420
+    second: Bandana_11
+  - first:
+      213: 4704140155514332199
+    second: Bandana_12
+  - first:
+      213: 5188425791275093775
+    second: Bandana_13
+  - first:
+      213: 167574314845072346
+    second: Bandana_14
+  - first:
+      213: 5088900259849651788
+    second: Bandana_15
+  - first:
+      213: -3327869470430754312
+    second: Bandana_16
+  - first:
+      213: 2246812875258461252
+    second: Bandana_17
+  - first:
+      213: -6244431101655775648
+    second: Bandana_18
+  - first:
+      213: -3628885690542333316
+    second: Bandana_19
+  - first:
+      213: 5720767726908091235
+    second: Bandana_20
+  - first:
+      213: 8744349844436149104
+    second: Bandana_21
+  - first:
+      213: 4220990295746520716
+    second: Bandana_22
+  - first:
+      213: 2392971888569914075
+    second: Bandana_23
+  - first:
+      213: -2231791239446746181
+    second: Bandana_24
+  - first:
+      213: -9076084194116230186
+    second: Bandana_25
+  - first:
+      213: -869554809193982641
+    second: Bandana_26
+  - first:
+      213: 2939036487506363094
+    second: Bandana_27
+  - first:
+      213: 368812296323375201
+    second: Bandana_28
+  - first:
+      213: -7193957735934233422
+    second: Bandana_29
+  - first:
+      213: 5446052258727525735
+    second: Bandana_30
+  - first:
+      213: -790661234931381226
+    second: Bandana_31
+  - first:
+      213: -9196885701797987256
+    second: Bandana_32
+  - first:
+      213: 2719750181416257508
+    second: Bandana_33
+  - first:
+      213: -8762743036273001001
+    second: Bandana_34
+  - first:
+      213: 6052042736604946507
+    second: Bandana_35
+  - first:
+      213: 7443050029900941926
+    second: Bandana_36
+  - first:
+      213: 6770636113550945221
+    second: Bandana_37
+  - first:
+      213: -9035389950466763281
+    second: Bandana_38
+  - first:
+      213: -8629484423116128559
+    second: Bandana_39
+  - first:
+      213: 5872211941999797097
+    second: Bandana_40
+  - first:
+      213: -1761623074335455931
+    second: Bandana_41
+  - first:
+      213: 7726490567376420645
+    second: Bandana_42
+  - first:
+      213: 1063676503862663341
+    second: Bandana_43
+  - first:
+      213: -6920864155431075820
+    second: Bandana_44
+  - first:
+      213: 2281419599124283624
+    second: Bandana_45
+  - first:
+      213: -5609455767759035701
+    second: Bandana_46
+  - first:
+      213: 5126711496020753810
+    second: Bandana_47
+  - first:
+      213: -5240974842107565374
+    second: Bandana_48
+  - first:
+      213: 7238568391943898718
+    second: Bandana_49
+  - first:
+      213: -5099097510245851544
+    second: Bandana_50
+  - first:
+      213: -1766707378361408613
+    second: Bandana_51
+  - first:
+      213: -8358458268478116374
+    second: Bandana_52
+  - first:
+      213: 4544956937418643259
+    second: Bandana_53
+  - first:
+      213: -1644902000401231900
+    second: hat_1_0
+  - first:
+      213: 3390899813590273786
+    second: hat_1_1
+  - first:
+      213: 131845874159359060
+    second: hat_1_2
+  - first:
+      213: -8406860614665409428
+    second: hat_1_3
+  - first:
+      213: 8950265090804928327
+    second: hat_1_4
+  - first:
+      213: 5158943676669307542
+    second: hat_1_5
+  - first:
+      213: -6097924290457310721
+    second: hat_1_6
+  - first:
+      213: 6765675334562492637
+    second: hat_1_7
+  - first:
+      213: 8909848013503133070
+    second: hat_1_8
+  - first:
+      213: -2516929231164815325
+    second: hat_1_9
+  - first:
+      213: 4942045905676685864
+    second: hat_1_10
+  - first:
+      213: -3468577775491032959
+    second: hat_1_11
+  - first:
+      213: 4583257494468529052
+    second: hat_1_12
+  - first:
+      213: -6594942557672574477
+    second: hat_1_13
+  - first:
+      213: -6472647459420463873
+    second: hat_1_14
+  - first:
+      213: 129012396075299349
+    second: hat_1_15
+  - first:
+      213: -3726774100400921306
+    second: hat_1_16
+  - first:
+      213: -3985660174796322539
+    second: hat_1_17
+  - first:
+      213: 7322239217053866295
+    second: hat_1_18
+  - first:
+      213: -1337195182744772071
+    second: hat_1_19
+  - first:
+      213: 8968059294823190969
+    second: hat_1_20
+  - first:
+      213: -4974837620316269277
+    second: hat_1_21
+  - first:
+      213: -762137592150515493
+    second: hat_1_22
+  - first:
+      213: 8109812045816891566
+    second: hat_1_23
+  - first:
+      213: -1573453009167385317
+    second: hat_1_24
+  - first:
+      213: -495692017985844892
+    second: hat_1_25
+  - first:
+      213: 8263141775203762209
+    second: hat_1_26
+  - first:
+      213: -1225057754201905701
+    second: hat_1_27
+  - first:
+      213: -7589457369360401531
+    second: hat_1_28
+  - first:
+      213: 3524746460182711794
+    second: hat_1_29
+  - first:
+      213: -2397035960821333181
+    second: hat_1_30
+  - first:
+      213: -4503613535952783107
+    second: hat_1_31
+  - first:
+      213: 910435669224482749
+    second: hat_1_32
+  - first:
+      213: -7885381129498037224
+    second: hat_1_33
+  - first:
+      213: 754938885907623986
+    second: hat_1_34
+  - first:
+      213: -8764932868061984820
+    second: hat_1_35
+  - first:
+      213: 2350942510785319215
+    second: hat_1_36
+  - first:
+      213: -2411086299550066795
+    second: hat_1_37
+  - first:
+      213: 7248622799642400623
+    second: hat_1_38
+  - first:
+      213: -2046564563298653009
+    second: hat_1_39
+  - first:
+      213: 2639778551568330251
+    second: hat_1_40
+  - first:
+      213: 417180371507827532
+    second: hat_1_41
+  - first:
+      213: -3949253867776456508
+    second: hat_1_42
+  - first:
+      213: 5948650844129534789
+    second: hat_1_43
+  - first:
+      213: -5996869262080871918
+    second: hat_1_44
+  - first:
+      213: 2762622979745137167
+    second: hat_1_45
+  - first:
+      213: -232168608443192669
+    second: hat_1_46
+  - first:
+      213: 7180104902254557797
+    second: hat_1_47
+  - first:
+      213: -3143160531423156702
+    second: hat_1_48
+  - first:
+      213: -1569530739758326057
+    second: hat_1_49
+  - first:
+      213: -9013045536641938103
+    second: hat_1_50
+  - first:
+      213: -5957285119414709545
+    second: hat_1_51
+  - first:
+      213: -788438759380983898
+    second: hat_1_52
+  - first:
+      213: -4910787962001802515
+    second: hat_1_53
+  - first:
+      213: -950741781381918460
+    second: hat_1_CM_0
+  - first:
+      213: 6642725523655331895
+    second: hat_1_CM_1
+  - first:
+      213: -4821148260018060747
+    second: hat_1_CM_2
+  - first:
+      213: 2837938281770078860
+    second: hat_1_CM_3
+  - first:
+      213: 462983112179999795
+    second: hat_1_CM_4
+  - first:
+      213: -6073128716168056987
+    second: hat_1_CM_5
+  - first:
+      213: 8568848541640240531
+    second: hat_1_CM_6
+  - first:
+      213: -5884629603120686534
+    second: hat_1_CM_7
+  - first:
+      213: -7978703749698912863
+    second: hat_1_CM_8
+  - first:
+      213: 1461917179411827967
+    second: hat_1_CM_9
+  - first:
+      213: 8816459275424615734
+    second: hat_1_CM_10
+  - first:
+      213: -8546305784320647944
+    second: hat_1_CM_11
+  - first:
+      213: 1223838779922251447
+    second: hat_1_CM_12
+  - first:
+      213: -1737904954689462656
+    second: hat_1_CM_13
+  - first:
+      213: -6037355969082749731
+    second: hat_1_CM_14
+  - first:
+      213: -2674287130228899092
+    second: hat_1_CM_15
+  - first:
+      213: -9189698551526890637
+    second: hat_1_CM_16
+  - first:
+      213: -5289968808433925479
+    second: hat_1_CM_17
+  - first:
+      213: 3517633838846634365
+    second: hat_1_CM_18
+  - first:
+      213: 5272276873806821714
+    second: hat_1_CM_19
+  - first:
+      213: -1240646744591898367
+    second: hat_1_CM_20
+  - first:
+      213: 6497318614266326942
+    second: hat_1_CM_21
+  - first:
+      213: 4445789910388486158
+    second: hat_1_CM_22
+  - first:
+      213: 5223430817257921905
+    second: hat_1_CM_23
+  - first:
+      213: -4053826141384505522
+    second: hat_1_CM_24
+  - first:
+      213: -3415098812701831095
+    second: hat_1_CM_25
+  - first:
+      213: -296679492608547426
+    second: hat_1_CM_26
+  - first:
+      213: -9213125609202836578
+    second: hat_1_CM_27
+  - first:
+      213: -8079344352584626753
+    second: hat_1_CM_28
+  - first:
+      213: 8547883068845413417
+    second: hat_1_CM_29
+  - first:
+      213: 982770656459863315
+    second: hat_1_CM_30
+  - first:
+      213: -1038652351411366756
+    second: hat_1_CM_31
+  - first:
+      213: 8242195276123840183
+    second: hat_1_CM_32
+  - first:
+      213: -119305993173220837
+    second: hat_1_CM_33
+  - first:
+      213: -3030860402861877026
+    second: hat_1_CM_34
+  - first:
+      213: 6082922827413940012
+    second: hat_1_CM_35
+  - first:
+      213: 5343129790063768561
+    second: hat_1_CM_36
+  - first:
+      213: -3892604250605372889
+    second: hat_1_CM_37
+  - first:
+      213: -3841137038136275831
+    second: hat_1_CM_38
+  - first:
+      213: 8137024754198960626
+    second: hat_1_CM_39
+  - first:
+      213: -1617134271509122415
+    second: hat_1_CM_40
+  - first:
+      213: -8672474014982293794
+    second: hat_1_CM_41
+  - first:
+      213: 231467373032521670
+    second: hat_1_CM_42
+  - first:
+      213: 2728227732350349085
+    second: hat_1_CM_43
+  - first:
+      213: -6014544807026923487
+    second: hat_1_CM_44
+  - first:
+      213: 320835571356454954
+    second: hat_1_CM_45
+  - first:
+      213: -5550041365501041741
+    second: hat_1_CM_46
+  - first:
+      213: 5444381580919253454
+    second: hat_1_CM_47
+  - first:
+      213: -5412167822627328870
+    second: hat_1_CM_48
+  - first:
+      213: -5433781335760949149
+    second: hat_1_CM_49
+  - first:
+      213: 5690795434723306391
+    second: hat_1_CM_50
+  - first:
+      213: 8879509357318360942
+    second: hat_1_CM_51
+  - first:
+      213: -7239165399788553888
+    second: hat_1_CM_52
+  - first:
+      213: -6886313583458785504
+    second: hat_1_CM_53
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: hat_1_CM_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 488
+        width: 85
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 401db9713694ec2f0800000000000000
+      internalID: -950741781381918460
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_1
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 487
+        width: 85
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73095e94ba3bf2c50800000000000000
+      internalID: 6642725523655331895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_2
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 486
+        width: 85
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 53281287337d71db0800000000000000
+      internalID: -4821148260018060747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_3
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 487
+        width: 85
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c82536bc4d1626720800000000000000
+      internalID: 2837938281770078860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_4
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 486
+        width: 85
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3346e7200b8dc6600800000000000000
+      internalID: 462983112179999795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_5
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 485
+        width: 85
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56f24950c99e7bba0800000000000000
+      internalID: -6073128716168056987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_6
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 484
+        width: 85
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39d2792595aaae670800000000000000
+      internalID: 8568848541640240531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_7
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 485
+        width: 85
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a3a5e37dd88955ea0800000000000000
+      internalID: -5884629603120686534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_8
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 487
+        width: 85
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ad7e1f6633f54190800000000000000
+      internalID: -7978703749698912863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_9
+      rect:
+        serializedVersion: 2
+        x: 765
+        y: 486
+        width: 85
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ffc02e9dde5c94410800000000000000
+      internalID: 1461917179411827967
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_10
+      rect:
+        serializedVersion: 2
+        x: 850
+        y: 485
+        width: 85
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63dc168dffa5a5a70800000000000000
+      internalID: 8816459275424615734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_11
+      rect:
+        serializedVersion: 2
+        x: 935
+        y: 486
+        width: 85
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8fc93bf5b2c656980800000000000000
+      internalID: -8546305784320647944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 400
+        width: 85
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7befc9bd2e2fbf010800000000000000
+      internalID: 1223838779922251447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_13
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 401
+        width: 85
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08ed75ac6a8b1e7e0800000000000000
+      internalID: -1737904954689462656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_14
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 404
+        width: 85
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ddc0d30cbb0073ca0800000000000000
+      internalID: -6037355969082749731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_15
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 400
+        width: 85
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce2ce47260603ead0800000000000000
+      internalID: -2674287130228899092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_16
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 401
+        width: 85
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37361534bd1a77080800000000000000
+      internalID: -9189698551526890637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_17
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 404
+        width: 85
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 992466c65614696b0800000000000000
+      internalID: -5289968808433925479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_18
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 399
+        width: 85
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d79e856d65521d030800000000000000
+      internalID: 3517633838846634365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_19
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 400
+        width: 85
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25933cc02e3ea2940800000000000000
+      internalID: 5272276873806821714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_20
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 397
+        width: 85
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 109ead8eb5658cee0800000000000000
+      internalID: -1240646744591898367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_21
+      rect:
+        serializedVersion: 2
+        x: 765
+        y: 399
+        width: 85
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9fa0ebfadc1b2a50800000000000000
+      internalID: 6497318614266326942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_22
+      rect:
+        serializedVersion: 2
+        x: 850
+        y: 399
+        width: 85
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e00b8b26e5e92bd30800000000000000
+      internalID: 4445789910388486158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_23
+      rect:
+        serializedVersion: 2
+        x: 935
+        y: 398
+        width: 85
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 17d9c7347aa5d7840800000000000000
+      internalID: 5223430817257921905
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 314
+        width: 85
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e47859d3a9aedb7c0800000000000000
+      internalID: -4053826141384505522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_25
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 313
+        width: 85
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9409c0c49b12b90d0800000000000000
+      internalID: -3415098812701831095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_26
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 315
+        width: 85
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e95ace6c29bf1ebf0800000000000000
+      internalID: -296679492608547426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_27
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 314
+        width: 85
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9b19685217642080800000000000000
+      internalID: -9213125609202836578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_28
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 313
+        width: 85
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbd82261e1760ef80800000000000000
+      internalID: -8079344352584626753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_29
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 315
+        width: 85
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9245b1ccc5e20a670800000000000000
+      internalID: 8547883068845413417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_30
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 316
+        width: 85
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 315b7f184b083ad00800000000000000
+      internalID: 982770656459863315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_31
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 257
+        width: 31
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c94500d7037f591f0800000000000000
+      internalID: -1038652351411366756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_32
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 311
+        width: 85
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7be93c24fe8226270800000000000000
+      internalID: 8242195276123840183
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_33
+      rect:
+        serializedVersion: 2
+        x: 765
+        y: 311
+        width: 85
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b12c551d4d3285ef0800000000000000
+      internalID: -119305993173220837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_34
+      rect:
+        serializedVersion: 2
+        x: 850
+        y: 311
+        width: 85
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed8de93958830f5d0800000000000000
+      internalID: -3030860402861877026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_35
+      rect:
+        serializedVersion: 2
+        x: 935
+        y: 313
+        width: 85
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c276f143512ea6450800000000000000
+      internalID: 6082922827413940012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_36
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 227
+        width: 85
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f3fe852c3c962a40800000000000000
+      internalID: 5343129790063768561
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_37
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 226
+        width: 85
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 72abd77de01baf9c0800000000000000
+      internalID: -3892604250605372889
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_38
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 227
+        width: 85
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 98c8a4c073a81bac0800000000000000
+      internalID: -3841137038136275831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_39
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 227
+        width: 85
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f9d692f6e48ce070800000000000000
+      internalID: 8137024754198960626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_40
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 226
+        width: 85
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 192b690b2f8ce89e0800000000000000
+      internalID: -1617134271509122415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_41
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 225
+        width: 85
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed6bc2505de25a780800000000000000
+      internalID: -8672474014982293794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_42
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 226
+        width: 85
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6cf32b27956563300800000000000000
+      internalID: 231467373032521670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_43
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 229
+        width: 85
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1fac15faac9cd520800000000000000
+      internalID: 2728227732350349085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_44
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 228
+        width: 85
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1286d7b4d5b088ca0800000000000000
+      internalID: -6014544807026923487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_45
+      rect:
+        serializedVersion: 2
+        x: 765
+        y: 227
+        width: 85
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a20d2069046d37400800000000000000
+      internalID: 320835571356454954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_46
+      rect:
+        serializedVersion: 2
+        x: 850
+        y: 228
+        width: 85
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b3269098ca4af2b0800000000000000
+      internalID: -5550041365501041741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_47
+      rect:
+        serializedVersion: 2
+        x: 935
+        y: 228
+        width: 85
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec92f58c3345e8b40800000000000000
+      internalID: 5444381580919253454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 139
+        width: 85
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a9caf7b4a0e14e4b0800000000000000
+      internalID: -5412167822627328870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_49
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 141
+        width: 85
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36032de1aa45794b0800000000000000
+      internalID: -5433781335760949149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_50
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 141
+        width: 85
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79be818fb44c9fe40800000000000000
+      internalID: 5690795434723306391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_51
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 141
+        width: 85
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6fc7bef6ba5a3b70800000000000000
+      internalID: 8879509357318360942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_52
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 140
+        width: 85
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 069fd437c61598b90800000000000000
+      internalID: -7239165399788553888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hat_1_CM_53
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 140
+        width: 85
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 027edf5f746ee60a0800000000000000
+      internalID: -6886313583458785504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -119,6 +119,7 @@ namespace Steam.Purchasing
                   D.error(contentStr);
                }
 
+               D.debug(contentStr);
                JObject obj = JObject.Parse(contentStr);
                JToken r = obj["response"];
                T result = JsonConvert.DeserializeObject<T>(r.ToString());

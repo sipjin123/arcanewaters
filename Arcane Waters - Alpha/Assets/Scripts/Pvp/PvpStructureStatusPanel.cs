@@ -21,9 +21,6 @@ public class PvpStructureStatusPanel : MonoBehaviour {
    // References to the images showing what lane a structure is in
    public List<Image> laneImages;
 
-   // References to the icons for each structure, for each team, indexed by SeaStructure.Type
-   public List<Sprite> structureIconsA, structureIconsB;
-
    // References to the icon assets showing what lane a structure is in
    public List<Sprite> laneIcons;
 
@@ -119,7 +116,7 @@ public class PvpStructureStatusPanel : MonoBehaviour {
             _botStructuresB.Add(null);
          }
       } else {
-         D.error("This map doesn't have the correct number of towers. It has " + numTowers + ". Aborting structure detection.");
+         D.warning("This map doesn't have the correct number of towers. It has " + numTowers + ". Aborting structure detection.");
          StopAllCoroutines();
          return false;
       }
@@ -137,7 +134,22 @@ public class PvpStructureStatusPanel : MonoBehaviour {
          _allStructures.Add(structure);
       }
 
+      if (_allStructures[0].faction == Faction.Type.None) {
+         StartCoroutine(CO_UpdateOnGameStart());
+      }
+
       return true;
+   }
+
+   private IEnumerator CO_UpdateOnGameStart () {
+      // Once the game starts, the structures will be assigned a faction
+      while (_allStructures[0].faction == Faction.Type.None) {
+         yield return null;
+      }
+
+      yield return null;
+
+      forceUpdateDisplayedStructures();
    }
 
    private void updateDisplayedStructures () {
@@ -145,51 +157,39 @@ public class PvpStructureStatusPanel : MonoBehaviour {
       SeaStructure midStructure = _trackedStructures[(int) PvpLane.Mid];
       SeaStructure botStructure = _trackedStructures[(int) PvpLane.Bot];
 
-      List<Sprite> structureIcons = (_playerTeam == PvpTeamType.A) ? structureIconsA : structureIconsB;
-
-      // Check if we need to change the displayed structure
+      // Check if we need to change the displayed structure in the top lane
       if (topStructure == null || topStructure.isDead()) {
-         SeaStructure newStructure = getStructureToDisplay(_playerTeam, PvpLane.Top);
-         if (newStructure != null) {
-            _trackedStructures[(int) PvpLane.Top] = newStructure;
-            SeaStructure.Type structureType = _trackedStructures[(int) PvpLane.Top].getStructureType();
-            structureImages[(int) PvpLane.Top].sprite = structureIcons[(int) structureType];
-            laneImages[(int) PvpLane.Top].sprite = laneIcons[(int) newStructure.laneType];
-            
-            // Recolor the image
-            string paletteDef = PvpManager.getStructurePaletteForTeam(_playerTeam);
-            structureImages[(int) PvpLane.Top].GetComponent<RecoloredSprite>().recolor(paletteDef);
-         }
+         forceUpdateDisplayedStructure(PvpLane.Top);
       }
 
-      // Check if we need to change the displayed structure
+      // Check if we need to change the displayed structure in the middle lane
       if (midStructure == null || midStructure.isDead()) {
-         SeaStructure newStructure = getStructureToDisplay(_playerTeam, PvpLane.Mid);
-         if (newStructure != null) {
-            _trackedStructures[(int) PvpLane.Mid] = newStructure;
-            SeaStructure.Type structureType = _trackedStructures[(int) PvpLane.Mid].getStructureType();
-            structureImages[(int) PvpLane.Mid].sprite = structureIcons[(int) structureType];
-            laneImages[(int) PvpLane.Mid].sprite = laneIcons[(int) newStructure.laneType];
-
-            // Recolor the image
-            string paletteDef = PvpManager.getStructurePaletteForTeam(_playerTeam);
-            structureImages[(int) PvpLane.Mid].GetComponent<RecoloredSprite>().recolor(paletteDef);
-         }
+         forceUpdateDisplayedStructure(PvpLane.Mid);
       }
 
-      // Check if we need to change the displayed structure
+      // Check if we need to change the displayed structure in the bottom lane
       if (botStructure == null || botStructure.isDead()) {
-         SeaStructure newStructure = getStructureToDisplay(_playerTeam, PvpLane.Bot);
-         if (newStructure != null) {
-            _trackedStructures[(int) PvpLane.Bot] = newStructure;
-            SeaStructure.Type structureType = _trackedStructures[(int) PvpLane.Bot].getStructureType();
-            structureImages[(int) PvpLane.Bot].sprite = structureIcons[(int) structureType];
-            laneImages[(int) PvpLane.Bot].sprite = laneIcons[(int) newStructure.laneType];
+         forceUpdateDisplayedStructure(PvpLane.Bot);
+      }
+   }
 
-            // Recolor the image
-            string paletteDef = PvpManager.getStructurePaletteForTeam(_playerTeam);
-            structureImages[(int) PvpLane.Bot].GetComponent<RecoloredSprite>().recolor(paletteDef);
-         }
+   private void forceUpdateDisplayedStructures () {
+      forceUpdateDisplayedStructure(PvpLane.Top);
+      forceUpdateDisplayedStructure(PvpLane.Mid);
+      forceUpdateDisplayedStructure(PvpLane.Bot);
+   }
+
+   private void forceUpdateDisplayedStructure (PvpLane laneType) {
+      SeaStructure newStructure = getStructureToDisplay(_playerTeam, laneType);
+      if (newStructure != null) {
+         int laneTypeIndex = (int) laneType;
+         _trackedStructures[laneTypeIndex] = newStructure;
+         structureImages[laneTypeIndex].sprite = getSpriteForStructure(newStructure);
+         laneImages[laneTypeIndex].sprite = laneIcons[laneTypeIndex];
+
+         // Recolor the image
+         string paletteDef = PvpManager.getStructurePaletteForTeam(_playerTeam);
+         structureImages[laneTypeIndex].GetComponent<RecoloredSprite>().recolor(paletteDef);
       }
    }
 
@@ -238,15 +238,30 @@ public class PvpStructureStatusPanel : MonoBehaviour {
    }
 
    private Sprite getSpriteForStructure (SeaStructure structure) {
-      int iconIndex = (int) structure.getStructureType();
+      SeaStructure.Type structureType = structure.getStructureType();
+      int factionIndex = (int) structure.faction;
+      int towerStyle = PvpTower.towerStylesByFaction[factionIndex];
+      int startIndex = 0;
 
-      if (structure.pvpTeam == PvpTeamType.A) {
-         return structureIconsA[iconIndex];
-      } else if (structure.pvpTeam == PvpTeamType.B) {
-         return structureIconsB[iconIndex];
+      switch (structureType) {
+         case SeaStructure.Type.Tower:
+            if (towerStyle == 0) {
+               startIndex = 0;
+            } else {
+               startIndex = 8;
+            }
+            break;
+         case SeaStructure.Type.Shipyard:
+            startIndex = 16;
+            break;
+         case SeaStructure.Type.Base:
+            startIndex = 24;
+            break;
       }
 
-      return null;
+      Sprite[] iconSprites = ImageManager.getSprites(ICONS_FILEPATH);
+      int spriteIndex = startIndex + factionIndex;
+      return iconSprites[spriteIndex];
    }
 
    public void show () {
@@ -374,6 +389,9 @@ public class PvpStructureStatusPanel : MonoBehaviour {
 
    // Whether this panel has been setup
    private bool _hasSetup = false;
+
+   // The filepath of the image containing the icons for all the pvp structures
+   private const string ICONS_FILEPATH = "Sprites/SeaStructures/Icons/pvp_structure_icons";
 
    #endregion
 }

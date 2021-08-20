@@ -71,7 +71,7 @@ public class SoundEffectManager : GenericGameManager
    public const int CLICK_TAB = 101;
    //public const int MENU_OPEN = 102;
    public const int BUTTON_CONFIRM = 103;
-   public const int ENEMY_SHIP_DESTROYED = 108;
+   //public const int ENEMY_SHIP_DESTROYED = 108;
    //public const int CANNONBALL_IMPACT = 109;
    public const int PURCHASE_ITEM = 110;
    public const int ASSIGN_PERK_POINT = 111;
@@ -103,6 +103,11 @@ public class SoundEffectManager : GenericGameManager
    public const string MOVEMENT_WHOOSH = "event:/SFX/Game/Land_Battle/Movement_Whoosh";
    public const string CANNONBALL_IMPACT = "event:/SFX/Player/Interactions/Diegetic/Cannonball_Impact";
    public const string MINING_ROCKS = "event:/SFX/Player/Interactions/Diegetic/Mine_Rocks";
+   public const string NPC_STRIKE = "event:/SFX/Game/Land_Battle/NPC_Strike";
+   public const string ENEMY_SHIP_DESTROYED = "event:/SFX/Game/Sea_Battle/Enemy_Ship_Destroyed";
+
+   // Horror Boss
+   public const string HORROR_DEATH = "event:/SFX/Game/Sea_Battle/Horror/Death";
 
    public enum CannonballImpactType
    {
@@ -326,6 +331,13 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
+   public void playSeaBossDeathSfx (SeaMonsterEntity.Type monsterType, Transform target) {
+      switch (monsterType) {
+         case SeaMonsterEntity.Type.Horror:
+            playFmodWithPath(HORROR_DEATH, target);
+            break;
+      }
+   }
    public void playFmod2D (int id) {
       if (Util.isBatch()) {
          return;

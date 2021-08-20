@@ -85,7 +85,7 @@ public class AbilityPanel : Panel {
 
    private bool userHasWeapon () {
       // Handle indicators that no weapon is equipped
-      if (Global.player != null) {
+      if (Global.player != null && getPlayerBody() != null) {
          return getPlayerBody().weaponManager.weaponType != 0;
       }
       return false;
@@ -94,7 +94,9 @@ public class AbilityPanel : Panel {
    private PlayerBodyEntity getPlayerBody () {
       if (Global.player != null) {
          if (playerBody == null) {
-            playerBody = (PlayerBodyEntity) Global.player;
+            if (Global.player is PlayerBodyEntity) {
+               playerBody = (PlayerBodyEntity) Global.player;
+            }
          }
          return playerBody;
       }

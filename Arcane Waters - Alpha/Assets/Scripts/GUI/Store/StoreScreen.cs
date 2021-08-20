@@ -8,6 +8,7 @@ using System.Linq;
 using Store;
 using static Store.StoreItem;
 using Newtonsoft.Json;
+using Steamworks;
 
 public class StoreScreen : Panel
 {
@@ -100,12 +101,6 @@ public class StoreScreen : Panel
          }
       }
 
-      // Hats are disable for the time being. This code should be removed when hats are implemented. This line removes the unsightly pop effect that the character stack shows when hats are not found
-      this.characterStack.toggleHat(false);
-
-      // Update our character preview stack
-      this.characterStack.updateLayers(_userObjects);
-
       // Update our tabs
       changeDisplayedItems();
 
@@ -114,6 +109,9 @@ public class StoreScreen : Panel
 
       // Initialize tabs
       initializeTabs();
+
+      characterStack.synchronizeAnimationIndexes();
+      characterStack.setDirection(Direction.South);
 
       toggleBlocker(false);
    }
@@ -178,6 +176,8 @@ public class StoreScreen : Panel
             characterStack.updateHair(hairBox.metadata.hairType, _userObjects.userInfo.hairPalettes);
          }
       }
+
+      characterStack.synchronizeAnimationIndexes();
    }
 
    private List<string> updateHairDyeBox (StoreHairDyeBox hairBox) {
@@ -235,7 +235,13 @@ public class StoreScreen : Panel
       D.debug("Store purchase confirmed. Transfering control to server...");
 
       // Send the request off to the server
-      Global.player.rpc.Cmd_BuyStoreItem(selectedItem.itemId);
+      uint appId = 0;
+
+      if (SteamManager.Initialized) {
+         appId = SteamUtils.GetAppID().m_AppId;
+      }
+
+      Global.player.rpc.Cmd_BuyStoreItem(selectedItem.itemId, appId);
 
       D.debug("Store purchase: Control transferred.");
    }

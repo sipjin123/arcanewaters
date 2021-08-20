@@ -2401,7 +2401,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e9d3db546d15b8e49b4722c015f7658f, type: 2}
+  - {fileID: 2100000, guid: 66200c48c90116e43b823ec11d383386, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3051,6 +3051,7 @@ MonoBehaviour:
   difficultyLevel: 1
   companionId: -1
   battleId: 0
+  playerNetId: 0
   enemyType: 305
   biomeType: 0
   teamType: 0

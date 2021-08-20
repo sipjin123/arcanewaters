@@ -29,6 +29,9 @@ public class MiningTrigger : MonoBehaviour
    // Animator Key for direction
    public const string FACING_KEY = "facing";
 
+   // Animator Key for check if final destination will be in water (if so - trigger short animation)
+   public const string IS_IN_WATER = "isShort";
+
    #endregion
 
    public void interactOres () {
@@ -74,6 +77,10 @@ public class MiningTrigger : MonoBehaviour
             if (hit.collider != null) { 
                if (hit.collider.GetComponent<OreNode>() != null) {
                   OreNode oreNode = hit.collider.GetComponent<OreNode>();
+
+                  // RPC for playing SFX. It doesn't matter if the ore node is full or empty
+                  bodyEntity.rpc.Cmd_PlayOreSfx(oreNode.id);
+
                   if (!oreNode.hasBeenMined() && !oreIdsInteracted.Exists(_ => _ == oreNode.id) && !oreNode.finishedMining()) {
                      if (oreNode.voyageId > 0) {
                         D.adminLog("Player attempting to mine ore {" + oreNode.id + "}", D.ADMIN_LOG_TYPE.Mine);

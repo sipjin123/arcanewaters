@@ -30,6 +30,10 @@ public class ChatPanel : MonoBehaviour {
    public static float MIN_WIDTH = 415;
    public static float MAX_WIDTH = 850;
 
+   // The panel min and max height
+   public static float MIN_HEIGHT = 100;
+   public static float MAX_HEIGHT = 600;
+
    // The input field where the whisper recipient name will be input
    public InputField nameInputField;
 
@@ -41,10 +45,12 @@ public class ChatPanel : MonoBehaviour {
    public const string WHISPER_PREFIX_FULL = "/whisper ";
 
    // The panel modes
-   public enum Mode {
+   public enum Mode
+   {
       Minimized = 0,
       Normal = 1,
-      Expanded = 2
+      Expanded = 2,
+      Freeform = 3
    }
 
    // The chat tabs
@@ -215,50 +221,50 @@ public class ChatPanel : MonoBehaviour {
       // Enable resizing mode when clicking the resize handle
       Vector2 mousePosition = MouseUtils.mousePosition;
       if (KeyUtils.GetButtonDown(MouseButton.Left) && _mode != Mode.Minimized && RectTransformUtility.RectangleContainsScreenPoint(resizeHandleZone, mousePosition)) {
-         _isResizing = true;
-         _resizingStartDeltaX = mousePosition.x - (messageBackgroundRect.anchoredPosition.x + messageBackgroundRect.sizeDelta.x);
+         _isResizing = true;        
       }
 
       // Maintain the resize mode while the mouse button is held
       if (KeyUtils.GetButton(MouseButton.Left)) {
          if (_isResizing) {
-            float targetWidth = mousePosition.x - _resizingStartDeltaX - messageBackgroundRect.anchoredPosition.x;
+            setMode(Mode.Freeform);
+            float targetWidth = mousePosition.x - messageBackgroundRect.anchoredPosition.x;
             targetWidth = Mathf.Clamp(targetWidth, MIN_WIDTH, MAX_WIDTH);
-            messageBackgroundRect.sizeDelta = new Vector2(targetWidth, messageBackgroundRect.sizeDelta.y);
+            float targetHeight = mousePosition.y - messageBackgroundRect.anchoredPosition.y;
+            targetHeight = Mathf.Clamp(targetHeight, MIN_HEIGHT, MAX_HEIGHT);
+            messageBackgroundRect.sizeDelta = new Vector2(targetWidth, targetHeight);
          }
       } else {
          _isResizing = false;
       }
 
+      toggleResizeHandle(true);
+
       // Handle panel animations depending on the mode
       switch (_mode) {
+         case Mode.Freeform:
+            animatePanelBackgroundAlpha(1f);
+            animateToolbarAlpha(1f);
+            break;
          case Mode.Minimized:
             if (choosingChatType.activeSelf) {
                choosingChatType.SetActive(false);
             }
+
             if (_isMouseOverInputField) {
-               // While the mouse is over the input box, switch to normal mode without toolbar
-               animateToolbarAlpha(0f);
+               // While the mouse is over the input box, switch to normal mode without toolbar              
                animatePanelBackgroundAlpha(1f);
                animatePanelHeight(CHAT_LINES_NORMAL);
             } else {
-               animateToolbarAlpha(0f);
                animatePanelBackgroundAlpha(0f);
                animatePanelHeight(CHAT_LINES_MINIMIZED);
             }
+
+            animateToolbarAlpha(0f);
+            toggleResizeHandle(false);
             break;
          case Mode.Normal:
-            // Display the toolbar if the mouse is over the panel
-            if (RectTransformUtility.RectangleContainsScreenPoint(messagePanelHoveringZone, MouseUtils.mousePosition)) {
-               animateToolbarAlpha(1f);
-            } else {
-               // Keep toolbar visible when chat type panel is opened
-               if (choosingChatType.activeSelf) {
-                  toolbarCanvas.alpha = 1.0f;
-               } else {
-                  animateToolbarAlpha(0f);
-               }
-            }
+            animateToolbarAlpha(1f);
             animatePanelBackgroundAlpha(1f);
             animatePanelHeight(CHAT_LINES_NORMAL);
             break;
@@ -297,7 +303,7 @@ public class ChatPanel : MonoBehaviour {
    }
 
    private void animatePanelHeight (int visibleLinesCount) {
-      float targetHeight = toolbarRect.sizeDelta.y + 12 + visibleLinesCount * chatLineHeight;
+      float targetHeight = computeTargetHeight(visibleLinesCount);
 
       if (Mathf.Approximately(messageBackgroundRect.sizeDelta.y, targetHeight)) {
          return;
@@ -312,13 +318,17 @@ public class ChatPanel : MonoBehaviour {
             scrollRect.verticalNormalizedPosition = 0f;
          }
       } else {
-         scrollRect.movementType = ScrollRect.MovementType.Elastic;         
+         scrollRect.movementType = ScrollRect.MovementType.Elastic;
       }
 
       messageBackgroundRect.sizeDelta = new Vector2(
          messageBackgroundRect.sizeDelta.x,
          Mathf.SmoothDamp(messageBackgroundRect.sizeDelta.y, targetHeight, ref _messagePanelVelocity,
             SMOOTH_TIME, float.MaxValue, Time.deltaTime));
+   }
+
+   private void toggleResizeHandle (bool show) {
+      resizeHandleZone.gameObject.SetActive(show);
    }
 
    void processGuiInputfield () {
@@ -393,10 +403,12 @@ public class ChatPanel : MonoBehaviour {
       }
    }
 
-   public void onExpandButtonPressed () {      
-      if (_mode == Mode.Normal) {
-         setMode(Mode.Expanded);
-      }
+   private float computeTargetHeight (int visibleLinesCount) {
+      return toolbarRect.sizeDelta.y + 12 + visibleLinesCount * chatLineHeight;
+   }
+
+   public void onExpandButtonPressed () {
+      setMode(Mode.Expanded);
    }
 
    public void onCollapseButtonPressed () {
@@ -406,6 +418,13 @@ public class ChatPanel : MonoBehaviour {
             break;
          case Mode.Expanded:
             setMode(Mode.Normal);
+            break;
+         case Mode.Freeform:
+            if (messageBackgroundRect.sizeDelta.y <= computeTargetHeight(CHAT_LINES_NORMAL)) {
+               setMode(Mode.Minimized);
+            } else {
+               setMode(Mode.Normal);
+            }
             break;
          default:
             break;
@@ -697,7 +716,7 @@ public class ChatPanel : MonoBehaviour {
          customTabToggle.isOn = true;
          _tabPressed = false;
 
-         if (PlayerPrefs.HasKey("ChatPrefs")) {            
+         if (PlayerPrefs.HasKey("ChatPrefs")) {
             _modifiedByCode = true;
             int chatPrefs = PlayerPrefs.GetInt("ChatPrefs");
             choosingChatType.GetComponentsInChildren<Toggle>().ToList().ForEach(x => x.isOn = false);
@@ -914,43 +933,44 @@ public class ChatPanel : MonoBehaviour {
       field.MoveTextEnd(false);
    }
 
-   private void setMode(Mode mode) {
-      if (_mode == mode) {
-         return;
-      }
-
+   private void setMode (Mode mode) {
       _mode = mode;
 
       // Panel show, hide and resize is handled in the update
       switch (_mode) {
+         case Mode.Freeform:
+            expandButton.SetActive(messageBackgroundRect.sizeDelta.y < computeTargetHeight(CHAT_LINES_EXPANDED));
+            break;
          case Mode.Minimized:
             // Allow minimizing even if the input field is focused
             _lastFocusTime = 0;
-
             toolbarCanvas.gameObject.SetActive(false);
             scrollBarContainer.SetActive(false);
-            resizeHandle.SetActive(false);
             messageBackgroundImage.raycastTarget = false;
 
-            // Need to rebuild the message list since some messages may toggle their visibility
-            rebuildMessageList();
+            if (_mode != mode) {
+               // Need to rebuild the message list since some messages may toggle their visibility
+               rebuildMessageList();
+            }
+
             break;
          case Mode.Normal:
             toolbarCanvas.gameObject.SetActive(true);
             scrollBarContainer.SetActive(true);
-            resizeHandle.SetActive(true);
             expandButton.SetActive(true);
             collapseButton.SetActive(true);
             messageBackgroundImage.raycastTarget = true;
             scrollRect.vertical = true;
 
-            // Need to rebuild the message list since some messages may toggle their visibility
-            rebuildMessageList();
+            if (_mode != mode) {
+               // Need to rebuild the message list since some messages may toggle their visibility
+               rebuildMessageList();
+            }
+
             break;
          case Mode.Expanded:
             toolbarCanvas.gameObject.SetActive(true);
             scrollBarContainer.SetActive(true);
-            resizeHandle.SetActive(true);
             expandButton.SetActive(false);
             collapseButton.SetActive(true);
             messageBackgroundImage.raycastTarget = true;
@@ -1004,9 +1024,6 @@ public class ChatPanel : MonoBehaviour {
 
    // Gets set to true when the user is resizing the panel
    protected bool _isResizing = false;
-
-   // The mouse x position relative to the panel border, at the start of the resizing
-   protected float _resizingStartDeltaX = 0;
 
    #endregion
 }

@@ -125,7 +125,6 @@ public class SimpleAnimation : ClientMonoBehaviour {
       if (newTexture == ImageManager.self.blankTexture || newTexture == null) {
          setSprite(ImageManager.self.blankSprite);
          reloadSprites(newTexture);
-         toggleRenderers(false);
          return;
       }
       toggleRenderers(true);
@@ -200,7 +199,6 @@ public class SimpleAnimation : ClientMonoBehaviour {
 
    protected void reloadSprites (Texture2D newTexture) {
       if (newTexture == ImageManager.self.blankTexture) {
-         toggleRenderers(false);
          _sprites = new Sprite []{
             ImageManager.self.blankSprite
          };

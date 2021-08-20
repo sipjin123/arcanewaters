@@ -15,9 +15,6 @@ public class HatLayer : SpriteLayer
    #endregion
 
    public void setType (Gender.Type gender, int newType, bool immediate = true) {
-      // Temporarily hardcode disabled hats until we figure out a new way of handling them
-      newType = 0;
-
       _type = newType;
 
       // Update our Animated Sprite
@@ -28,19 +25,6 @@ public class HatLayer : SpriteLayer
          GetComponent<SpriteSwap>().newTexture = result;
       } else {
          StartCoroutine(CO_SwapTexture(result));
-      }
-
-      _material = getMaterial();
-            
-      _material.SetInt("_StencilOp", newType != 0 ? (int) StencilOp.Replace : (int) StencilOp.Keep);
-      _material.SetInt("_StencilComp", (int) CompareFunction.Always);
-      _material.SetInt("_Stencil", HAT_STENCIL_ID);
-      _material.SetFloat("_UseHatStencil", 1);
-
-      if (newType != 0) {
-         _material.EnableKeyword("USE_HAT_STENCIL");
-      } else {
-         _material.DisableKeyword("USE_HAT_STENCIL");
       }
    }
 

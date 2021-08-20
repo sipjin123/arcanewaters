@@ -121,9 +121,6 @@ public class PlayerShipEntity : ShipEntity
    // Other objects can add callbacks to this event, to be notified when this player damages another player
    public System.Action<PlayerShipEntity, PvpTeamType> onDamagedPlayer;
 
-   // Other objects can add callbacks to these events, to be notified when this player performs those actions (Server only)
-   public System.Action<PlayerShipEntity> onPlayerBoosted, onPlayerDied;
-
    // Defines the possible attack types for the player's right-click attack
    public enum CannonAttackType { Normal = 0, Cone = 1, Circle = 2 }
 
@@ -155,6 +152,9 @@ public class PlayerShipEntity : ShipEntity
       Group = 2,
       Pvp = 3,
    }
+
+   // The xp rewarded to attackers when being killed, in pvp
+   public const int REWARDED_XP = 10;
 
    #endregion
 
@@ -944,8 +944,8 @@ public class PlayerShipEntity : ShipEntity
       float lifetime = getCannonballLifetime(chargeAmount) / critModifier;
 
       // Setup cannonball
-      netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, false, statusType: cannonEffectType,
-         playFiringSound: playSound, lifetime: lifetime, isCrit: isCritical);
+      netBall.initAbilityProjectile(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, statusType: cannonEffectType, lifetime: lifetime, isCrit: isCritical);
+      netBall.setPlayFiringSound(playSound);
 
       // Add effectors to cannonball
       netBall.addEffectors(PowerupManager.self.getEffectors(userId));
@@ -974,8 +974,8 @@ public class PlayerShipEntity : ShipEntity
       Vector2 velocity = speed * toEndPos.normalized;
 
       // Setup cannonball
-      netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, true, statusType: cannonEffectType,
-         playFiringSound: playSound, lifetime: lifetime);
+      netBall.initAbilityProjectile(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, statusType: cannonEffectType, lifetime: lifetime);
+      netBall.setPlayFiringSound(playSound);
 
       netBall.addEffectors(PowerupManager.self.getEffectors(userId));
 
@@ -1167,10 +1167,10 @@ public class PlayerShipEntity : ShipEntity
       // Teleport ship to spawn position in case if it blocks on collider after spawning in new area
       Vector2 nearestSpawnPos = transform.position;
       float minDistance = float.MaxValue;
-      
+
       foreach (SpawnManager.SpawnData spawn in SpawnManager.self.getAllSpawnsInArea(area.areaKey)) {
          if (Vector2.Distance(spawn.localPosition, transform.localPosition) < minDistance) {
-            nearestSpawnPos = (Vector2)area.transform.position + spawn.localPosition;
+            nearestSpawnPos = (Vector2) area.transform.position + spawn.localPosition;
             minDistance = Vector2.Distance(spawn.localPosition, transform.localPosition);
          }
       }
@@ -1641,6 +1641,11 @@ public class PlayerShipEntity : ShipEntity
       } else if (!holdingPvpCaptureTarget && coinTrailEffect.activeSelf) {
          coinTrailEffect.SetActive(false);
       }
+   }
+
+   [Server]
+   protected override int getRewardedXP () {
+      return REWARDED_XP;
    }
 
    #region Private Variables

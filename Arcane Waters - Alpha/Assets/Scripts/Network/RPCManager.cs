@@ -860,6 +860,11 @@ public class RPCManager : NetworkBehaviour
 
       // Trigger the tutorial
       TutorialManager3.self.tryCompletingStepByWeaponEquipped();
+
+      // Update hair
+      if (_player is PlayerBodyEntity) {
+         _player.getPlayerBodyEntity().updateHair(_player.getPlayerBodyEntity().hairType, _player.getPlayerBodyEntity().hairPalettes);
+      }
    }
 
    [TargetRpc]
@@ -1683,7 +1688,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_BuyStoreItem (ulong itemId) {
+   public void Cmd_BuyStoreItem (ulong itemId, uint appId) {
       if (_player == null) {
          return;
       }
@@ -1743,14 +1748,30 @@ public class RPCManager : NetworkBehaviour
             try {
                D.debug($"Steam Purchase Request Received from User {_player.userId}");
 
+               if (_player == null) {
+                  D.debug($"The reference to the player is null.");
+                  return;
+               }
+
+               D.debug($"The appID is {appId}");
+
+               if (appId == 0) {
+                  D.debug($"The appId is not valid.");
+                  return;
+               }
+
                bool isSteamIdValid = ulong.TryParse(_player.steamId, out ulong steamId);
 
+               if (isSteamIdValid) {
+                  D.debug($"Parsed steamId for user '{_player.userId}' is {steamId}");
+               }
+
                if (!isSteamIdValid) {
-               #if UNITY_EDITOR
+                  #if UNITY_EDITOR
                   // Try to use the debug Steam Id instead
                   steamId = SteamPurchaseManagerServer.self.debugSteamId;
                   D.debug($"Purchase Warning: Couldn't get the steamId for user '{_player.userId}'. Using the debug Steam ID...");
-               #endif
+                  #endif
                }
 
                if (steamId == 0) {
@@ -1794,10 +1815,10 @@ public class RPCManager : NetworkBehaviour
                };
 
                // Bundle the items into a Purchase Info
-               SteamPurchaseInfo purchase = new SteamPurchaseInfo(newOrderId, steamId, Convert.ToUInt32(SteamStatics.GAME_APPID), "en", "usd", new List<SteamPurchaseItem> { item });
+               SteamPurchaseInfo purchase = new SteamPurchaseInfo(newOrderId, steamId, appId, "en", "usd", new List<SteamPurchaseItem> { item });
 
                D.debug("Steam Purchase. Creating Purchase Information: OK");
-               
+
                // Update the order
                D.debug("Steam Purchase. Updating Steam Order...");
                DB_Main.updateSteamOrder(newOrderId, _player.userId, "pending", JsonConvert.SerializeObject(purchase));
@@ -1840,41 +1861,52 @@ public class RPCManager : NetworkBehaviour
             SteamOrder order = DB_Main.getSteamOrder(orderId);
 
             if (order == null) {
-               D.error($"Steam Purchase Error: Couldn't find order '{orderId}'. Can't complete steam purchase.");
+               D.error($"Steam Purchase Error: Couldn't find order '{orderId}'. Can't complete the Steam purchase.");
                return;
             }
 
             // Ensure the order belongs to the current user
             if (order.userId != _player.userId) {
-               D.error($"Purchase Error: The order '{orderId}' belongs to user '{order.userId}' and not to the current user '{_player.userId}'.");
+               D.error($"Steam Purchase Error: The order '{orderId}' belongs to user '{order.userId}' and not to the current user '{_player.userId}'.");
                return;
             }
 
             // If the order is already closed, skip the process
             if (order.closed) {
-               D.error($"Purchase Error: The order '{orderId}' is already closed.");
+               D.error($"Steam Purchase Error: The order '{orderId}' is already closed.");
                return;
             }
 
-            // Finalize the transaction
-            var task = SteamPurchaseManagerServer.self.finalizeTxn(orderId, appId);
-            task.Wait();
-            var result = task.Result;
+            if (!purchaseAuthorized) {
+               // Update the order - canceled
+               DB_Main.updateSteamOrder(orderId, _player.userId, "canceled", order.content);
+            } else {
+               // Update the order - finalizing
+               DB_Main.updateSteamOrder(orderId, _player.userId, "finalizing", order.content);
 
-            if (!result.isSuccess()) {
-               D.error("Purchase Finalization failed. response: " + JsonConvert.SerializeObject(result.result));
+               // Finalize the transaction
+               var task = SteamPurchaseManagerServer.self.finalizeTxn(orderId, appId);
+               task.Wait();
+               var result = task.Result;
 
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  ServerMessageManager.sendError(ErrorMessage.Type.PurchaseError, _player, "Error encountered during the purchase.");
-               });
-               return;
-            }
+               if (!result.isSuccess()) {
+                  D.error("Steam Purchase Finalization failed. response: " + JsonConvert.SerializeObject(result.result));
 
-            // Update the order - applying
-            DB_Main.updateSteamOrder(orderId, _player.userId, "applying", order.content);
+                  // Update the order - error
+                  DB_Main.updateSteamOrder(orderId, _player.userId, "error", order.content);
 
-            // Assign the purchased item
-            if (purchaseAuthorized) {
+                  // Report to the user - error
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     ServerMessageManager.sendError(ErrorMessage.Type.PurchaseError, _player, "Error encountered during the purchase.");
+                  });
+
+                  return;
+               }
+
+               // Update the order - applying
+               DB_Main.updateSteamOrder(orderId, _player.userId, "applying", order.content);
+
+               // Assign the purchased item
                SteamPurchaseInfo purchase = JsonConvert.DeserializeObject<SteamPurchaseInfo>(order.content);
                foreach (SteamPurchaseItem item in purchase.items) {
                   StoreItem storeItem = DB_Main.getStoreItem(ulong.Parse(item.itemId));
@@ -1885,14 +1917,15 @@ public class RPCManager : NetworkBehaviour
                      DB_Main.addGems(accountId, storeItem.quantity);
                   }
                }
-            }
 
-            // Update the order - complete
-            DB_Main.updateSteamOrder(orderId, _player.userId, "complete", order.content);
+               // Update the order - success
+               DB_Main.updateSteamOrder(orderId, _player.userId, "success", order.content);
+            }
 
             // Close the order
             DB_Main.toggleSteamOrder(orderId, true);
 
+            // Report to the user
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                Target_OnCompleteSteamPurchase(_player.connectionToClient, orderId, purchaseAuthorized);
             });
@@ -3064,7 +3097,7 @@ public class RPCManager : NetworkBehaviour
 
       bool sendBack = false;
 
-      // If the mail has attachments and was sent by a player, the mail must be sent back and deleted.
+      // If the mail has attachments and was sent by a player, the mail must be sent back and deleted
       if (!_player.isAdmin() && attachedItemsIds.Any()) {
          sendBack = true;
       }
@@ -3483,6 +3516,7 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_ProcessShopData (NetworkConnection conn, int shopId, int userSilver, string shopName, string shopInfo, string[] serializedShopItems) {
       List<PvpShopItem> pvpShopList = Util.unserialize<PvpShopItem>(serializedShopItems);
+
       PvpShopPanel panel = PvpShopPanel.self;
       panel.showEntirePanel();
       panel.displayName.text = shopName;
@@ -5021,6 +5055,7 @@ public class RPCManager : NetworkBehaviour
          if (voyage.isPvP) {
             playerShipEntity.hasEnteredPvP = true;
             PvpManager.self.assignPvpTeam(playerShipEntity, voyage.instanceId);
+            PvpManager.self.assignPvpFaction(playerShipEntity, voyage.instanceId);
             PvpManager.self.onPlayerLoadedGameArea(_player.userId);
          } else {
             // Not a PvP Voyage
@@ -5153,7 +5188,7 @@ public class RPCManager : NetworkBehaviour
       ExplosionManager.createMiningParticle(oreNode.transform.position);
 
       // SFX
-      SoundEffectManager.self.playFmodWithPath(SoundEffectManager.MINING_ROCKS, oreNode.transform);
+      //SoundEffectManager.self.playFmodWithPath(SoundEffectManager.MINING_ROCKS, oreNode.transform);
 
       if (oreNode.interactCount > OreNode.MAX_INTERACT_COUNT) {
          D.adminLog("Exceeded max interact count!", D.ADMIN_LOG_TYPE.Mine);
@@ -5177,6 +5212,22 @@ public class RPCManager : NetworkBehaviour
       } else {
          D.adminLog("Player successfully interacted ore {" + oreNode.id + "} Mining is not Finished: {" + oreNode.interactCount + "}", D.ADMIN_LOG_TYPE.Mine);
       }
+   }
+
+   [ClientRpc]
+   public void Rpc_PlayMineSfx (int oreId) {
+      OreNode oreNode = OreManager.self.getOreNode(oreId);
+      if(oreNode == null) {
+         D.debug("Error! Missing Ore Node:{" + oreId + "}. Cannot play sfx");
+         return;
+      }
+      // SFX
+      SoundEffectManager.self.playFmodWithPath(SoundEffectManager.MINING_ROCKS, oreNode.transform);
+   }
+
+   [Command]
+   public void Cmd_PlayOreSfx (int oreId) {
+      Rpc_PlayMineSfx(oreId);
    }
 
    [Command]
@@ -7924,6 +7975,20 @@ public class RPCManager : NetworkBehaviour
       // Pass the data to the panel
       CharacterInfoPanel panel = (CharacterInfoPanel) PanelManager.self.get(Panel.Type.CharacterInfo);
       panel.receiveUserObjectsFromServer(userObjects, jobXP);
+   }
+
+   [Command]
+   public void Cmd_RequestPvpGameFactions (int gameInstanceId) {
+      PvpGame game = PvpManager.self.getGameWithInstance(gameInstanceId);
+      if (game) {
+         Target_SendPvpGameFaction(_player.connectionToClient, PvpTeamType.A, game.getFactionForTeam(PvpTeamType.A));
+         Target_SendPvpGameFaction(_player.connectionToClient, PvpTeamType.B, game.getFactionForTeam(PvpTeamType.B));
+      }
+   }
+
+   [TargetRpc]
+   public void Target_SendPvpGameFaction (NetworkConnection connection, PvpTeamType teamType, Faction.Type factionType) {
+      PvpScorePanel.self.assignFactionToTeam(teamType, factionType);
    }
 
    #region Private Variables

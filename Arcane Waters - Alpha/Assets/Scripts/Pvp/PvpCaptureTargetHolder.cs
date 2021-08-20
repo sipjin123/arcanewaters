@@ -19,8 +19,11 @@ public class PvpCaptureTargetHolder : SeaStructure, IMapEditorDataReceiver {
 
    #endregion
 
-   public void toggleActivation () {
-      setIsActivated(!_isActivated);
+   protected override void Start () {
+      base.Start();
+
+      _hasTarget = hasTarget();
+      updateSprites();
    }
 
    protected override void onActivated () {
@@ -33,6 +36,7 @@ public class PvpCaptureTargetHolder : SeaStructure, IMapEditorDataReceiver {
          _captureTarget = Instantiate(pvpCaptureTargetPrefab, targetHolderTransform.position, Quaternion.identity, targetHolderTransform).GetComponent<PvpCaptureTarget>();
          _captureTarget.areaKey = areaKey;
          _captureTarget.pvpTeam = pvpTeam;
+         _captureTarget.faction = faction;
          _captureTarget.targetHolder = this;
          _captureTarget.assignHoldingEntity(this);
 
@@ -51,6 +55,33 @@ public class PvpCaptureTargetHolder : SeaStructure, IMapEditorDataReceiver {
       }
    }
 
+   protected override void Update () {
+      base.Update();
+
+      if (isServer && _captureTarget) {
+         if (_hasTarget && !hasTarget()) {
+            _hasTarget = false;
+            updateSprites();
+         } else if (!_hasTarget && hasTarget()) {
+            _hasTarget = true;
+            updateSprites();
+         }
+      } else if (isClient) {
+         updateSprites();
+      }
+   }
+
+   protected override void updateSprites () {
+      mainRenderer.sprite = getSprite();
+   }
+
+   private bool hasTarget () {
+      if (!_isActivated) {
+         return true;
+      }
+      return (_captureTarget.getHoldingEntity() == this);
+   }
+
    public override bool isPvpCaptureTargetHolder () {
       return true;
    }
@@ -60,7 +91,7 @@ public class PvpCaptureTargetHolder : SeaStructure, IMapEditorDataReceiver {
       if (_captureTarget.getHoldingEntity() == this) {
          PvpGame activeGame = PvpManager.self.getGameWithPlayer(playerShip.userId);
          activeGame.addScoreForTeam(1, playerShip.pvpTeam);
-         activeGame.sendGameMessage(playerShip.entityName + " captured the " + PvpGame.getTeamName(target.pvpTeam) + "' flag.");
+         activeGame.sendGameMessage(playerShip.entityName + " captured the " + target.faction + "' flag.");
          playerShip.holdingPvpCaptureTarget = false;
 
          // Return the captured flag to its holder
@@ -78,10 +109,23 @@ public class PvpCaptureTargetHolder : SeaStructure, IMapEditorDataReceiver {
       Util.setLocalXY(target.transform, Vector3.zero);
    }
 
+   protected override Sprite getSprite () {
+      Sprite[] sprites = ImageManager.getSprites(TREASURE_ISLAND_SPRITES_PATH);
+      int spriteIndex = (_hasTarget) ? 0 : 1;
+      return sprites[spriteIndex];
+   }
+
    #region Private Variables
 
    // A reference to the pvp capture target for this holder
    private PvpCaptureTarget _captureTarget;
+
+   // Whether this target holder currently has its target
+   [SyncVar]
+   private bool _hasTarget = true;
+
+   // The filepath for the sprites for the treasure island
+   private const string TREASURE_ISLAND_SPRITES_PATH = "Sprites/Pvp/pvp_ctf_treasure_island";
 
    #endregion
 }

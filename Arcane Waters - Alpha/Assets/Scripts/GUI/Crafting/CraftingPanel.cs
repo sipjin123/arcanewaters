@@ -49,7 +49,7 @@ public class CraftingPanel : Panel
    public ItemCell itemCellPrefab;
 
    // The name of the result item
-   public Text itemNameText;
+   public Text itemNameText, refinementItemNameText;
 
    // The description of the result item
    public Text descriptionText, refinementDescriptionText;
@@ -128,6 +128,8 @@ public class CraftingPanel : Panel
       descriptionText.text = "";
       refinementDescriptionText.text = "";
       itemNameText.text = "";
+      refinementItemNameText.text = "";
+      durabilityText.text = "";
    }
 
    public void refreshBlueprintList () {
@@ -450,36 +452,44 @@ public class CraftingPanel : Panel
       loadBlockerRefinementList.SetActive(false);
       loadBlockerRefinementIngredients.SetActive(false);
       refineButton.interactable = false;
+      durabilityText.text = "";
+
       foreach (Item item in itemList) {
          ItemCell itemCell = Instantiate(itemCellPrefab, refineableItemsHolder);
          itemCell.setCellForItem(item);
          itemCell.leftClickEvent.RemoveAllListeners();
-         itemCell.leftClickEvent.AddListener(() => {
-            loadBlockerRefinementIngredients.SetActive(true);
-
-            // Remove highlight of the recent item selected
-            if (latestRefineableItem) {
-               latestRefineableItem.hideSelectedBox();
-            }
-
-            // Cache this new item cell as the latest item cell selected
-            latestRefineableItem = itemCell;
-
-            // Highlight item cell
-            itemCell.showSelectedBox();
-
-            // Generate item to the item preview panel
-            refineAbleItemSelection.gameObject.DestroyChildren();
-            ItemCell selectedItemCell = Instantiate(itemCellPrefab, refineAbleItemSelection);
-            selectedItemCell.setCellForItem(item);
-            refinementIngredientsHolder.gameObject.DestroyChildren();
-
-            // Display item durability
-            durabilityText.text = item.durability.ToString();
-
-            Global.player.rpc.Cmd_RequestRefinementRequirement(item.id);
-         });
+         itemCell.leftClickEvent.AddListener(() => onRefineableItemClicked(item, itemCell));
       }
+   }
+
+   private void onRefineableItemClicked (Item item, ItemCell itemCell) {
+      loadBlockerRefinementIngredients.SetActive(true);
+
+      // Remove highlight of the recent item selected
+      if (latestRefineableItem) {
+         latestRefineableItem.hideSelectedBox();
+      }
+
+      // Cache this new item cell as the latest item cell selected
+      latestRefineableItem = itemCell;
+
+      // Highlight item cell
+      itemCell.showSelectedBox();
+
+      // Generate item to the item preview panel
+      refineAbleItemSelection.gameObject.DestroyChildren();
+      ItemCell selectedItemCell = Instantiate(itemCellPrefab, refineAbleItemSelection);
+      selectedItemCell.setCellForItem(item);
+      refinementIngredientsHolder.gameObject.DestroyChildren();
+
+      // Display item durability
+      durabilityText.text = item.durability.ToString();
+
+      // Set title and description
+      refinementItemNameText.text = EquipmentXMLManager.self.getItemName(item);
+      refinementDescriptionText.text = EquipmentXMLManager.self.getItemDescription(item);
+
+      Global.player.rpc.Cmd_RequestRefinementRequirement(item.id);
    }
 
    public void receiveRefineRequirementsForItem (int xmlId, Item[] currentPlayerItems, Item itemToRefine) {
@@ -503,7 +513,7 @@ public class CraftingPanel : Panel
             hasSufficientRequirements = false;
          }
       }
-      refinementDescriptionText.text = EquipmentXMLManager.self.getItemDescription(itemToRefine);
+
       loadBlockerRefinementIngredients.SetActive(false);
       refineButton.interactable = hasSufficientRequirements;
    }

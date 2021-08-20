@@ -183,6 +183,10 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          if (monsterType == Type.Horror) {
             sortPoint.transform.localPosition = new Vector3(sortPoint.transform.localPosition.x, BOSS_SORT_POINT, sortPoint.transform.localPosition.z);
          }
+
+         if (seaMonsterData.roleType == RoleType.Minion) {
+            sinkOnDeath = false;
+         }
       }
 
       // Update the collider scale and offset
@@ -280,13 +284,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       base.Update();
 
       // If we're dead and have finished sinking, remove us
-      if (seaMonsterData.roleType != RoleType.Minion) {
-         if (isServer && isDead() && spritesContainer.transform.localPosition.y < -.25f) {
-            InstanceManager.self.removeEntityFromInstance(this);
+      if (isServer && isDead() && spritesContainer.transform.localPosition.y < -.25f) {
+         InstanceManager.self.removeEntityFromInstance(this);
 
-            // Destroy the object
-            NetworkServer.Destroy(this.gameObject);
-         }
+         // Destroy the object
+         NetworkServer.Destroy(this.gameObject);
       }
 
       // Alters the simple animation data
@@ -553,6 +555,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
 
       if (isDead()) {
+         // Play SFX
+         SoundEffectManager.self.playSeaBossDeathSfx(monsterType, this.transform);
+
          deathBubbleEffect.GetComponentInChildren<SimpleAnimation>().resetAnimation();
          deathBubbleEffect.SetActive(true);
       }
@@ -576,6 +581,10 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       _clickableBox.gameObject.SetActive(false);
       seaMonsterBars.gameObject.SetActive(false);
 
+      if (!isServer) {
+         return;
+      }
+
       // Reduces the life of the parent entity if there is one
       if (seaMonsterData.roleType == RoleType.Minion && seaMonsterParentEntity != null) {
          seaMonsterParentEntity.currentHealth -= Mathf.CeilToInt(seaMonsterParentEntity.maxHealth / 6);
@@ -586,7 +595,8 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       if (seaMonsterData.roleType == RoleType.Master) {
          foreach (SeaMonsterEntity childEntity in seaMonsterChildrenList) {
-            NetworkServer.Destroy(childEntity.gameObject);
+            childEntity.currentHealth = 0;
+            childEntity.sinkOnDeath = true;
          }
       }
    }
@@ -875,6 +885,28 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    protected override void onMaxHealthChanged (int oldValue, int newValue) {
       base.onMaxHealthChanged(oldValue, newValue);
       seaMonsterBars.initializeHealthBar();
+   }
+
+
+   [Server]
+   protected override void customRegisterDamageReceived (int userId, int amount) {
+      if (seaMonsterData.roleType == RoleType.Minion && seaMonsterParentEntity != null) {
+         seaMonsterParentEntity.registerDamageReceivedByMinion(userId, amount);
+      }
+   }
+
+   [Server]
+   protected void registerDamageReceivedByMinion (int userId, int amount) {
+      if (_damageReceivedPerAttacker.ContainsKey(userId)) {
+         _damageReceivedPerAttacker[userId] += amount;
+      } else {
+         _damageReceivedPerAttacker[userId] = amount;
+      }
+   }
+
+   [Server]
+   protected override int getRewardedXP () {
+      return seaMonsterData.rewardedExp;
    }
 
    #endregion

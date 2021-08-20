@@ -38,6 +38,66 @@ TextureImporter:
   - first:
       213: 2509008188061851645
     second: pvp_structure_icons_11
+  - first:
+      213: -7675340062837069837
+    second: pvp_structure_icons_12
+  - first:
+      213: 6186265731788125832
+    second: pvp_structure_icons_13
+  - first:
+      213: -5195576837783701403
+    second: pvp_structure_icons_14
+  - first:
+      213: 235803003289012617
+    second: pvp_structure_icons_15
+  - first:
+      213: 8101782499294779999
+    second: pvp_structure_icons_16
+  - first:
+      213: -6729220804938347388
+    second: pvp_structure_icons_17
+  - first:
+      213: 6301027180426417849
+    second: pvp_structure_icons_18
+  - first:
+      213: -2938626357558184017
+    second: pvp_structure_icons_19
+  - first:
+      213: 7645146669487491699
+    second: pvp_structure_icons_20
+  - first:
+      213: 9014983363966848706
+    second: pvp_structure_icons_21
+  - first:
+      213: 4581203685406210776
+    second: pvp_structure_icons_22
+  - first:
+      213: -1169905732683749040
+    second: pvp_structure_icons_23
+  - first:
+      213: -7219656568843196116
+    second: pvp_structure_icons_24
+  - first:
+      213: 669060129849313048
+    second: pvp_structure_icons_25
+  - first:
+      213: 5406241178254845453
+    second: pvp_structure_icons_26
+  - first:
+      213: 4518951680451346398
+    second: pvp_structure_icons_27
+  - first:
+      213: -6857282541431029755
+    second: pvp_structure_icons_28
+  - first:
+      213: 242844161379589303
+    second: pvp_structure_icons_29
+  - first:
+      213: 855738569463452772
+    second: pvp_structure_icons_30
+  - first:
+      213: 1085358979632734430
+    second: pvp_structure_icons_31
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -56,7 +116,7 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   grayScaleToAlpha: 0
@@ -189,8 +249,8 @@ TextureImporter:
       name: pvp_structure_icons_3
       rect:
         serializedVersion: 2
-        x: 0
-        y: 52
+        x: 60
+        y: 78
         width: 20
         height: 26
       alignment: 0
@@ -210,8 +270,8 @@ TextureImporter:
       name: pvp_structure_icons_4
       rect:
         serializedVersion: 2
-        x: 20
-        y: 52
+        x: 80
+        y: 78
         width: 20
         height: 26
       alignment: 0
@@ -231,8 +291,8 @@ TextureImporter:
       name: pvp_structure_icons_5
       rect:
         serializedVersion: 2
-        x: 40
-        y: 52
+        x: 100
+        y: 78
         width: 20
         height: 26
       alignment: 0
@@ -252,8 +312,8 @@ TextureImporter:
       name: pvp_structure_icons_6
       rect:
         serializedVersion: 2
-        x: 0
-        y: 26
+        x: 120
+        y: 78
         width: 20
         height: 26
       alignment: 0
@@ -273,8 +333,8 @@ TextureImporter:
       name: pvp_structure_icons_7
       rect:
         serializedVersion: 2
-        x: 20
-        y: 26
+        x: 140
+        y: 78
         width: 20
         height: 26
       alignment: 0
@@ -294,8 +354,8 @@ TextureImporter:
       name: pvp_structure_icons_8
       rect:
         serializedVersion: 2
-        x: 40
-        y: 26
+        x: 0
+        y: 52
         width: 20
         height: 26
       alignment: 0
@@ -315,8 +375,8 @@ TextureImporter:
       name: pvp_structure_icons_9
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
+        x: 20
+        y: 52
         width: 20
         height: 26
       alignment: 0
@@ -336,8 +396,8 @@ TextureImporter:
       name: pvp_structure_icons_10
       rect:
         serializedVersion: 2
-        x: 20
-        y: 0
+        x: 40
+        y: 52
         width: 20
         height: 26
       alignment: 0
@@ -357,8 +417,8 @@ TextureImporter:
       name: pvp_structure_icons_11
       rect:
         serializedVersion: 2
-        x: 40
-        y: 0
+        x: 60
+        y: 52
         width: 20
         height: 26
       alignment: 0
@@ -374,10 +434,430 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_12
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 52
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f7a548e0e6bb7590800000000000000
+      internalID: -7675340062837069837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_13
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 52
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 886376528e70ad550800000000000000
+      internalID: 6186265731788125832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_14
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 52
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 568b7a4b46a95e7b0800000000000000
+      internalID: -5195576837783701403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_15
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 52
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9890308059db54300800000000000000
+      internalID: 235803003289012617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 26
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5a11fd02405f6070800000000000000
+      internalID: 8101782499294779999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_17
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 26
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48c4b72b4510d92a0800000000000000
+      internalID: -6729220804938347388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_18
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 26
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b6d56916deb17750800000000000000
+      internalID: 6301027180426417849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_19
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 26
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa7f426b5e6e737d0800000000000000
+      internalID: -2938626357558184017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_20
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 26
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37a0092e364091a60800000000000000
+      internalID: 7645146669487491699
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_21
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 26
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2cecc492b97ab1d70800000000000000
+      internalID: 9014983363966848706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_22
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 26
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8daf858ca74b39f30800000000000000
+      internalID: 4581203685406210776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_23
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 26
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05921be3fe8a3cfe0800000000000000
+      internalID: -1169905732683749040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2929cd1a90aecb90800000000000000
+      internalID: -7219656568843196116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_25
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 0
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8178b0da4aaf84900800000000000000
+      internalID: 669060129849313048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_26
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 0
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0628f745b3d60b40800000000000000
+      internalID: 5406241178254845453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_27
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 0
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: edff4766c9a86be30800000000000000
+      internalID: 4518951680451346398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_28
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 0
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50004892cd906d0a0800000000000000
+      internalID: -6857282541431029755
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_29
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 0
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bcdec66a71ce5300800000000000000
+      internalID: 242844161379589303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_30
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 0
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 464587de1b130eb00800000000000000
+      internalID: 855738569463452772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pvp_structure_icons_31
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 0
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed02ac2dd38ff0f00800000000000000
+      internalID: 1085358979632734430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 9fc9b6e7f9ce5394f88e88239f422272
     internalID: 0
     vertices: []
     indices: 

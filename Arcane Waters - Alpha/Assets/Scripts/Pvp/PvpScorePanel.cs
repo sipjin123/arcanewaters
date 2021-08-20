@@ -24,6 +24,11 @@ public class PvpScorePanel : MonoBehaviour {
       _panelCanvasGroup = GetComponent<CanvasGroup>();
 
       self = this;
+
+      // Populate the factions list with 'None'
+      for (int i = 0; i < 3; i++) {
+         _teamFactions.Add(Faction.Type.None);
+      }
    }
 
    public void show () {
@@ -60,8 +65,8 @@ public class PvpScorePanel : MonoBehaviour {
    }
 
    private IEnumerator CO_OnPlayerJoinedPvpGame () {
-      // Wait for the player to be assigned a team
-      while (Global.player.pvpTeam == PvpTeamType.None) {
+      // Wait for the player to be assigned a faction
+      while (Global.player.faction == Faction.Type.None) {
          yield return null;
       }
 
@@ -76,8 +81,12 @@ public class PvpScorePanel : MonoBehaviour {
 
       // We currently only show the score panel for capture the flag games
       if (isCaptureTheFlag) {
-         show();
+         requestTeamFactions();
       }
+   }
+
+   private void requestTeamFactions () {
+      Global.player.rpc.Cmd_RequestPvpGameFactions(Global.player.instanceId);
    }
 
    public void onPlayerLeftPvpGame () {
@@ -88,6 +97,19 @@ public class PvpScorePanel : MonoBehaviour {
 
    public void updateScoreForTeam (int newScoreValue, PvpTeamType teamType) {
       teamScoreLabels[(int) teamType].text = newScoreValue.ToString();
+   }
+
+   public void assignFactionToTeam (PvpTeamType teamType, Faction.Type factionType) {
+      _teamFactions[(int) teamType] = factionType;
+      teamNameLabels[(int) teamType].text = factionType.ToString();
+
+      if (isReadyToShow()) {
+         show();
+      }
+   }
+
+   private bool isReadyToShow () {
+      return (_teamFactions[(int) PvpTeamType.A] != Faction.Type.None && _teamFactions[(int) PvpTeamType.B] != Faction.Type.None);
    }
 
    #region Private Variables
@@ -103,6 +125,9 @@ public class PvpScorePanel : MonoBehaviour {
 
    // Whether this panel has been setup
    private bool _hasSetup = false;
+
+   // What faction each pvp team is associated with
+   private List<Faction.Type> _teamFactions = new List<Faction.Type>();
 
    #endregion
 }

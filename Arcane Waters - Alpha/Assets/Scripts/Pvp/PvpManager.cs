@@ -418,12 +418,20 @@ public class PvpManager : MonoBehaviour {
       }
    }
 
+   public void assignPvpFaction (NetEntity entity, int instanceId) {
+      if (_activeGames.ContainsKey(instanceId)) {
+         PvpTeamType playerTeam = _activeGames[instanceId].getTeamForUser(entity.userId);
+         Faction.Type playerFaction = _activeGames[instanceId].getFactionForTeam(playerTeam);
+         entity.faction = playerFaction;
+      }
+   }
+
    public static string getFlagPaletteForTeam (PvpTeamType teamType) {
       switch (teamType) {
          case PvpTeamType.A:
-            return "flag_naturalists";
+            return "flag_pvp_blue";
          case PvpTeamType.B:
-            return "flag_privateers";
+            return "flag_pvp_orange";
          default:
             return "flag_white";
       }
@@ -432,9 +440,9 @@ public class PvpManager : MonoBehaviour {
    public static string getShipPaletteForTeam (PvpTeamType teamType) {
       switch (teamType) {
          case PvpTeamType.A:
-            return "ship_flag_naturalists";
+            return "ship_flag_pvp_blue";
          case PvpTeamType.B:
-            return "ship_flag_privateers";
+            return "ship_flag_pvp_orange";
          default:
             return "ship_flag_white";
       }
@@ -443,9 +451,9 @@ public class PvpManager : MonoBehaviour {
    public static string getStructurePaletteForTeam (PvpTeamType teamType) {
       switch (teamType) {
          case PvpTeamType.A:
-            return "structure_naturalists_outline, structure_naturalists_fill";
+            return "structure_blue_outline, structure_blue_fill";
          case PvpTeamType.B:
-            return "structure_privateers_outline, structure_privateers_fill";
+            return "structure_orange_outline, structure_orange_fill";
          default:
             return "structure_white_outline, structure_white_fill";
       }

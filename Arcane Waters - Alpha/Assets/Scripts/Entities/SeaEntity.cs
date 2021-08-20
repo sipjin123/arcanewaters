@@ -78,6 +78,10 @@ public class SeaEntity : NetEntity
    [SyncVar]
    public int totalDamageDealt = 0;
 
+   // When set to true, the sprites for this sea entity will 'sink' on death
+   [SyncVar]
+   public bool sinkOnDeath = true;
+
    #region Enemy AI
 
    [Header("AI")]
@@ -194,6 +198,18 @@ public class SeaEntity : NetEntity
       amount = (int) (amount * damageMultiplier);
       currentHealth -= amount;
 
+      // Keep track of the damage each attacker has done on this entity
+      NetEntity entity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(damageSourceNetId);
+      if (entity != null && entity.userId > 0) {
+         if (_damageReceivedPerAttacker.ContainsKey(entity.userId)) {
+            _damageReceivedPerAttacker[entity.userId] += amount;
+         } else {
+            _damageReceivedPerAttacker[entity.userId] = amount;
+         }
+
+         customRegisterDamageReceived(entity.userId, amount);
+      }
+
       noteAttacker(damageSourceNetId);
       Rpc_NoteAttacker(damageSourceNetId);
 
@@ -203,6 +219,11 @@ public class SeaEntity : NetEntity
 
       // Return the final amount of damage dealt
       return amount;
+   }
+
+
+   [Server]
+   protected virtual void customRegisterDamageReceived (int userId, int amount) {
    }
 
    public virtual void onDeath () {
@@ -269,6 +290,8 @@ public class SeaEntity : NetEntity
             }
          }
 
+         rewardXPToAllAttackers();
+
          Rpc_OnDeath();
          _hasRunOnDeath = true;
       }
@@ -277,6 +300,53 @@ public class SeaEntity : NetEntity
    [ClientRpc]
    protected void Rpc_OnDeath () {
       onDeath();
+   }
+
+   [Server]
+   protected void rewardXPToAllAttackers () {
+      Instance instance = getInstance();
+      if (instance == null) {
+         return;
+      }
+
+      int rewardedXP = getRewardedXP();
+      if (rewardedXP <= 0) {
+         return;
+      }
+
+      Jobs.Type jobType = Jobs.Type.Sailor;
+      rewardedXP = instance.difficulty > 0 ? rewardedXP * instance.difficulty : rewardedXP;
+
+      // Make sure we correctly divide the xp among attackers, based on the total damage done
+      int totalDamage = 0;
+      foreach (int amount in _damageReceivedPerAttacker.Values) {
+         totalDamage += amount;
+      }
+
+      // Reward xp to each attacker that has done damage on this entity
+      foreach (KeyValuePair<int, int> KV in _damageReceivedPerAttacker) {
+         int targetUserId = KV.Key;
+         int xp = Mathf.RoundToInt(((float) KV.Value / totalDamage) * rewardedXP);
+
+         // Background thread
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            DB_Main.addJobXP(targetUserId, jobType, xp);
+            Jobs jobs = DB_Main.getJobXP(targetUserId);
+
+            // Back to the Unity thread
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               NetEntity entity = EntityManager.self.getEntity(targetUserId);
+               if (entity != null) {
+                  entity.Target_GainedXP(entity.connectionToClient, xp, jobs, jobType, 0, true);
+               }
+            });
+         });
+      }
+   }
+
+   [Server]
+   protected virtual int getRewardedXP () {
+      return 0;
    }
 
    public GenericCombatCollider getCombatCollider () {
@@ -322,16 +392,20 @@ public class SeaEntity : NetEntity
             _isDefeatShipTutorialTriggered = true;
          }
 
-         if (this is SeaMonsterEntity) {
+         if (this.isSeaMonster()) {
             SeaMonsterEntity monsterEntity = GetComponent<SeaMonsterEntity>();
 
             if (monsterEntity.seaMonsterData.roleType == RoleType.Minion) {
                monsterEntity.corpseHolder.SetActive(true);
                spritesContainer.SetActive(false);
-               return;
-            } else {
+               if (sinkOnDeath) {
+                  Util.setLocalY(monsterEntity.corpseHolder.transform, monsterEntity.corpseHolder.transform.localPosition.y - .09f * Time.smoothDeltaTime);
+               }
+            }
+
+            if (sinkOnDeath) {
+               Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .06f * Time.smoothDeltaTime);
                foreach (SpriteRenderer renderer in _renderers) {
-                  Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .03f * Time.smoothDeltaTime);
                   if (renderer.enabled) {
                      float newAlpha = Mathf.Lerp(1f, 0f, spritesContainer.transform.localPosition.y * -10f);
                      Util.setMaterialBlockAlpha(renderer, newAlpha);
@@ -342,7 +416,7 @@ public class SeaEntity : NetEntity
             _playedDestroySound = true;
 
             if (this.isBot()) {
-               SoundEffectManager.self.playFmodOneShot(SoundEffectManager.ENEMY_SHIP_DESTROYED, this.transform);
+               SoundEffectManager.self.playFmodWithPath(SoundEffectManager.ENEMY_SHIP_DESTROYED, this.transform);
             } else {
                SoundEffectManager.self.playFmodWithPath(SoundEffectManager.PLAYER_SHIP_DESTROYED, this.transform);
             }
@@ -356,7 +430,7 @@ public class SeaEntity : NetEntity
             Instantiate(isBot() ? PrefabsManager.self.pirateShipExplosionEffect : PrefabsManager.self.playerShipExplosionEffect, transform.position, Quaternion.identity);
          }
 
-         if (_sinkOnDeath) {
+         if (sinkOnDeath) {
             Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .03f * Time.smoothDeltaTime);
          }
       }
@@ -725,7 +799,9 @@ public class SeaEntity : NetEntity
    }
 
    public virtual void noteAttacker (NetEntity entity) {
-      noteAttacker(entity.netId);
+      if (entity != null) {
+         noteAttacker(entity.netId);
+      }
    }
 
    public virtual void noteAttacker (uint netId) {
@@ -1972,11 +2048,12 @@ public class SeaEntity : NetEntity
    [SyncVar]
    private bool _isInvulnerable = false;
 
-   // When set to true, the sprites for this sea entity will 'sink' on death
-   protected bool _sinkOnDeath = true;
 
    // Gets set to true when the 'defeatship' tutorial has been triggered
    protected bool _isDefeatShipTutorialTriggered = false;
+
+   // The damage amount each attacker has done on this entity
+   protected Dictionary<int, int> _damageReceivedPerAttacker = new Dictionary<int, int>();
 
    #endregion
 

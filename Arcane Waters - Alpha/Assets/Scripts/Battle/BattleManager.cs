@@ -221,6 +221,7 @@ public class BattleManager : MonoBehaviour {
 
    public void endBattle (Battle battle, Battle.TeamType winningTeam) {
       BattleUIManager.self.disableBattleUI();
+      BattleUIManager.self.isInitialEnemySelected = false;
 
       if (battle == null) {
          D.error("ERROR HERE! Battle should not be null before ending it!!!");

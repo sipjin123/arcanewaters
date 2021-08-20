@@ -162,6 +162,9 @@ public class OfflineCharacter : ClientMonoBehaviour {
          armor = newArmor,
          hat = newHat,
       });
+
+      // Depending on the hat chosen, update the hair again
+      setHairLayer(userInfo);
    }
 
    public void setBodyLayers (UserInfo userInfo) {
@@ -177,12 +180,21 @@ public class OfflineCharacter : ClientMonoBehaviour {
       // Set the colors we're going to allow
       CharacterCreationPanel.self.updateColorBoxes(userInfo.gender);
 
+      setHairLayer(userInfo);
+   }
+
+   public void setHairLayer (UserInfo userInfo) {
       // Update both the back and front hair layers
       foreach (HairLayer hairLayer in hairLayers) {
          hairLayer.setType(userInfo.hairType);
 
          // Update colors
          hairLayer.recolor(userInfo.hairPalettes);
+
+         // Apply clip mask
+         if (hairLayer.isFront) {
+            hairLayer.setClipMaskForHat(hatLayer.getType());
+         }
       }
 
       // Update colors
@@ -190,7 +202,7 @@ public class OfflineCharacter : ClientMonoBehaviour {
       if (Global.getUserObjects() != null) {
          Global.userObjects.userInfo = userInfo;
       } else {
-         Global.setUserObject(new UserObjects { 
+         Global.setUserObject(new UserObjects {
             userInfo = userInfo,
          });
       }

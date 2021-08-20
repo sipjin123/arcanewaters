@@ -67,6 +67,8 @@ public class PvpGame : MonoBehaviour {
          _teamScores.Add(0);
       }
 
+      assignFactionsToTeams();
+
       // We need to add an extra entry in team scores, because the enum has a type 'None'
       _teamScores.Add(0);
    }
@@ -213,6 +215,7 @@ public class PvpGame : MonoBehaviour {
          detectCaptureTheFlagStructures();
       }
 
+      assignFactionsToStructures();
       setStructuresActivated(true);
 
       for (int i = 0; i < _usersInGame.Count; i++) {
@@ -240,6 +243,7 @@ public class PvpGame : MonoBehaviour {
          PvpTeam team = _teams[teamType];
          player.currentHealth = player.maxHealth;
          player.pvpTeam = teamType;
+         player.faction = getFactionForTeam(teamType);
 
          // Generate stat data for this player
          GameStatsManager.self.registerUser(player.userId, player.entityName, player.pvpTeam);
@@ -569,13 +573,13 @@ public class PvpGame : MonoBehaviour {
          PvpTeamType winningTeam = (structure.pvpTeam == PvpTeamType.A) ? PvpTeamType.B : PvpTeamType.A;
          onGameEnd(winningTeam);
       } else {
-         sendGameMessage("The " + getTeamName(structure.pvpTeam) + "' " + structure.GetType().ToString() + " has been destroyed.");
+         sendGameMessage("The " + structure.faction.ToString() + "' " + structure.GetType().ToString() + " has been destroyed.");
       }
    }
 
    private void onGameEnd (PvpTeamType winningTeam) {
       _gameState = State.PostGame;
-      sendGameMessage("The " + getTeamName(winningTeam) + " have won the game!");
+      sendGameMessage("The " + _teamFactions[winningTeam].ToString() + " have won the game!");
       StopAllCoroutines();
 
       setStructuresActivated(false);
@@ -953,6 +957,30 @@ public class PvpGame : MonoBehaviour {
       return timeout + timeoutDelta;
    }
 
+   private void assignFactionsToTeams () {
+      List<Faction.Type> allTypes = Faction.getAllValidTypes();
+
+      for (int i = 0; i < _numTeams; i++) {
+         Faction.Type assignedFaction = allTypes.ChooseRandom();
+         
+         // Add one to account for 'None' type in PvpTeamType
+         PvpTeamType teamType = (PvpTeamType) i + 1;
+         _teamFactions[teamType] = assignedFaction;
+         allTypes.Remove(assignedFaction);
+      }
+   }
+
+   public Faction.Type getFactionForTeam (PvpTeamType teamType) {
+      return _teamFactions[teamType];
+   }
+
+   private void assignFactionsToStructures () {
+      foreach (SeaStructure structure in _allStructures) {
+         structure.faction = getFactionForTeam(structure.pvpTeam);
+         structure.setupSprites();
+      }
+   }
+
    #region Pvp stat functions
 
    public static Color getColorForTeam (PvpTeamType team) {
@@ -969,17 +997,6 @@ public class PvpGame : MonoBehaviour {
             return Color.yellow;
          default:
             return Color.white;
-      }
-   }
-
-   public static string getTeamName (PvpTeamType teamType) {
-      switch (teamType) {
-         case PvpTeamType.A:
-            return "Naturalists";
-         case PvpTeamType.B:
-            return "Privateers";
-         default:
-            return "None";
       }
    }
 
@@ -1032,6 +1049,9 @@ public class PvpGame : MonoBehaviour {
 
    // A dictionary of the voyage group ids for each team
    private Dictionary<PvpTeamType, int> _teamVoyageGroupIds = new Dictionary<PvpTeamType, int>();
+
+   // A dictionary of the faction types for each pvp team
+   private Dictionary<PvpTeamType, Faction.Type> _teamFactions = new Dictionary<PvpTeamType, Faction.Type>();
 
    // A list of all the users in this pvp game, by userId
    private List<int> _usersInGame = new List<int>();

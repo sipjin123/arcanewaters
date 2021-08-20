@@ -77,6 +77,14 @@ public partial class SpawnManager : MonoBehaviour
             Spawn spawn = mapSpawnList.Find(_ => spawnData.spawnId == _.spawnId);
             return spawnData.localPosition + (spawn ? spawn.getRandomPositionOffset() : Vector2.zero);
          }
+
+         // Try using any valid spawn point for the area
+         if (mapSpawnData.spawns.Any()) {
+            return mapSpawnData.spawns.First().Value.localPosition;
+         }
+
+         // Try using the default location
+         return getDefaultLocalPosition(mapName);
       }
 
       D.warning($"Could not find position of spawn [{ mapName }:{ spawnName }]");

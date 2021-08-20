@@ -6,28 +6,21 @@ using Mirror;
 using System;
 using DG.Tweening;
 
-public class ServerCannonBall : NetworkBehaviour
+public class ServerCannonBall : SeaProjectile
 {
    #region Public Variables
 
-   // The force of the cannonball when fired
-   [SyncVar]
-   public Vector2 projectileVelocity;
-
-   // The projectile id
-   [SyncVar]
-   public int projectileId;
-
-   // The sprite renderer reference
-   public SpriteRenderer[] spriteRenderers;
-
    #endregion
 
-   private void Awake () {
-      _ballCollider = GetComponentInChildren<CircleCollider2D>();
+   protected override void Awake () {
+      base.Awake();
+
+      _showDamageNumber = false;
    }
 
-   private void Start () {
+   protected override void Start () {
+      base.Start();
+
       if (!Util.isBatch()) {
          // Play an appropriate sound
          if (_playFiringSound) {
@@ -40,53 +33,6 @@ public class ServerCannonBall : NetworkBehaviour
          }
 
          Instantiate(PrefabsManager.self.poofPrefab, transform.position, Quaternion.identity);
-         updateVisuals();
-      }
-   }
-
-   private void updateVisuals () {
-      ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(projectileId);
-      if (projectileData != null) {
-         foreach (SpriteRenderer spriteRenderer in spriteRenderers) {
-            spriteRenderer.sprite = ImageManager.getSprite(projectileData.projectileSpritePath);
-         }
-      }
-   }
-
-   public override void OnStartClient () {
-      base.OnStartClient();
-
-      _rigidbody.velocity = projectileVelocity;
-      _startTime = NetworkTime.time;
-   }
-
-   public void init (uint creatorID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 velocity, float lobHeight, bool highShot,
-      Status.Type statusType = Status.Type.None, float statusDuration = 3.0f, float lifetime = -1.0f, bool playFiringSound = true, bool isCrit = false) {
-
-      _startTime = NetworkTime.time;
-      _creatorNetId = creatorID;
-      _instanceId = instanceID;
-      _impactMagnitude = impactType;
-      _abilityData = ShipAbilityManager.self.getAbility(abilityId);
-      _lifetime = lifetime > 0 ? lifetime : DEFAULT_LIFETIME;
-      _lobHeight = lobHeight;
-      _statusType = statusType;
-      _statusDuration = statusDuration;
-      _playFiringSound = playFiringSound;
-      projectileId = _abilityData.projectileId;
-      _distance = velocity.magnitude * _lifetime;
-      _isCrit = isCrit;
-
-      updateVisuals();
-
-      this.projectileVelocity = velocity;
-      _rigidbody.velocity = velocity;
-
-      // High shots have their colliders disabled until the cannonball falls back near the water
-      if (highShot) {
-         _ballCollider = GetComponentInChildren<CircleCollider2D>();
-         _ballCollider.enabled = false;
-         StartCoroutine(CO_SetColliderAfter(_lifetime * 0.9f, true));
       }
    }
 
@@ -94,163 +40,30 @@ public class ServerCannonBall : NetworkBehaviour
       _effectors.AddRange(effectors);
    }
 
-   private IEnumerator CO_SetColliderAfter (float seconds, bool value) {
-      yield return new WaitForSeconds(seconds);
-      _ballCollider.enabled = value;
-   }
+   protected override void Update () {
+      base.Update();
 
-   private void Update () {
       if (_hasCollided) {
          return;
-      }
-
-      updateHeight();
-
-      if (isServer) {
-         double timeAlive = NetworkTime.time - _startTime;
-
-         if (timeAlive > _lifetime) {
-            processDestruction();
-         } else if (NetworkTime.time - _lastVelocitySyncTime > 0.2) {
-            _lastVelocitySyncTime = NetworkTime.time;
-            projectileVelocity = _rigidbody.velocity;
-         }
       }
 
       // Attaching the SFX to our position
       FMODUnity.RuntimeManager.AttachInstanceToGameObject(_shipCannonEvent, transform, _rigidbody);
    }
 
-   private void updateHeight () {
-      // Updates the height of the cannonball, to follow a parabolic curve
-      float timeAlive = Mathf.Clamp((float) (NetworkTime.time - _startTime), 0.0f, _lifetime);
-      float t = (_distance / _lifetime) * timeAlive;
-      float cannonBallHeight = Util.getPointOnParabola(_lobHeight, _distance, t);
-      Vector3 ballPos = _ballCollider.transform.localPosition;
+   protected override void onHitEnemy (SeaEntity hitEntity, SeaEntity sourceEntity, int finalDamage) {
+      base.onHitEnemy(hitEntity, sourceEntity, finalDamage);
 
-      ballPos.y = cannonBallHeight;
-      _ballCollider.transform.localPosition = ballPos;
+      // Have the server tell the clients where the explosion occurred
+      hitEntity.Rpc_ShowExplosion(sourceEntity.netId, transform.position, finalDamage, Attack.Type.Cannon, _isCrit);
+
+      // Apply on-hit effectors to the target
+      applyEffectorsOnHit(hitEntity, _isCrit);
    }
 
-   private void FixedUpdate () {
-      if (isServer) {
-         _rigidbody.velocity = projectileVelocity;
-      }
-   }
+   protected override void OnDestroy () {
+      base.OnDestroy();
 
-   private void OnTriggerEnter2D (Collider2D other) {
-      // Check if the other object is a Sea Entity
-      SeaEntity hitEntity = other.transform.GetComponent<SeaEntity>();
-
-      if (hitEntity == null) {
-         hitEntity = other.transform.GetComponentInParent<SeaEntity>();
-      }
-
-      // We only care about hitting other sea entities in our instance
-      if (hitEntity == null || hitEntity.instanceId != this._instanceId || hitEntity.netId == this._creatorNetId) {
-         return;
-      }
-
-      SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
-      PlayerShipEntity sourcePlayerShipEntity = sourceEntity.getPlayerShipEntity();
-
-      // Prevent players from being damaged by other players if they have not entered PvP yet
-      if (sourceEntity != null && sourceEntity.isPlayerShip() && !hitEntity.canBeAttackedByPlayers()) {
-         return;
-      }
-
-      // Ship process if the owner of the projectile and the collided entity has the same voyage, this prevents friendly fire
-      if ((sourceEntity.voyageGroupId > 0 || hitEntity.voyageGroupId > 0) && (sourceEntity.voyageGroupId == hitEntity.voyageGroupId)) {
-         return;
-      }
-
-      // Cannonballs won't hit dead entities
-      if (hitEntity.isDead()) {
-         return;
-      }
-
-      if (!sourceEntity.isEnemyOf(hitEntity)) {
-         return;
-      }
-
-      _hasCollided = true;
-
-      // The Server will handle applying damage
-      if (isServer) {
-         _hitEnemy = true;
-         Rpc_NotifyHitEnemy();
-
-         ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(_abilityData.projectileId);
-         int projectileBaseDamage = (int) projectileData.projectileDamage;
-         int shipDamage = (int) (sourceEntity.damage * projectileBaseDamage);
-         int abilityDamage = (int) (_abilityData.damageModifier * projectileBaseDamage);
-         int critDamage = (int) (_isCrit ? projectileBaseDamage * 0.5f : 0.0f);
-         int perkDamage = 0;
-         if (sourceEntity.userId != 0) {
-            perkDamage = (int) (projectileBaseDamage * PerkManager.self.getPerkMultiplierAdditive(sourceEntity.userId, Perk.Category.ShipDamage));
-         }
-         int totalInitialDamage = projectileBaseDamage + shipDamage + abilityDamage + critDamage + perkDamage;
-
-         int totalFinalDamage = hitEntity.applyDamage(totalInitialDamage, sourceEntity.netId);
-         sourceEntity.totalDamageDealt += totalFinalDamage;
-
-         // TODO: Observe damage formula on live build
-         D.adminLog("Total damage of network Cannonball is" + " : " + totalFinalDamage +
-            " Projectile: " + projectileBaseDamage +
-            " Ship: " + shipDamage + " Dmg: {" + (sourceEntity.damage * 100) + "%}" +
-            " Ability: " + abilityDamage + "Dmg: {" + (_abilityData.damageModifier * 100) + "%}" +
-            " Perk: " + perkDamage
-            , D.ADMIN_LOG_TYPE.Sea);
-
-         // Apply the status effect
-         if (_statusType != Status.Type.None) {
-            hitEntity.applyStatus(_statusType, 1.0f, _statusDuration, sourceEntity.netId);
-         }
-
-         // Notify any subscribers to this event that we have damaged a player
-         if (sourcePlayerShipEntity && sourceEntity.pvpTeam != PvpTeamType.None && hitEntity.pvpTeam != PvpTeamType.None && hitEntity.isPlayerShip()) {
-            sourcePlayerShipEntity.onDamagedPlayer?.Invoke(sourcePlayerShipEntity, hitEntity.pvpTeam);
-         }
-
-         // Have the server tell the clients where the explosion occurred
-         hitEntity.Rpc_ShowExplosion(sourceEntity.netId, transform.position, totalFinalDamage, Attack.Type.Cannon, _isCrit);
-
-         // Registers Damage throughout the clients
-         hitEntity.Rpc_NetworkProjectileDamage(_creatorNetId, Attack.Type.Cannon, transform.position);
-
-         // Apply on-hit effectors to the target
-         applyEffectorsOnHit(hitEntity, _isCrit);
-
-         // Destroy the projectile
-         processDestruction();
-      }
-   }
-
-   private void processDestruction () {
-      if (_cancelDestruction) {
-         _cancelDestruction = false;
-         return;
-      }
-
-      // Detach the Trail Renderer so that it continues to show up a little while longer
-      TrailRenderer trail = this.gameObject.GetComponentInChildren<TrailRenderer>();
-      if (trail != null) {
-         trail.autodestruct = true;
-         trail.transform.SetParent(null);
-
-         // For some reason, autodestruct doesn't always work resulting in infinite TrailRenderers being left in the scene, so we force it.
-         Destroy(trail.gameObject, 3.0f);
-      }
-
-      NetworkServer.Destroy(gameObject);
-   }
-
-   [ClientRpc]
-   private void Rpc_NotifyHitEnemy () {
-      _hitEnemy = true;
-   }
-
-   private void OnDestroy () {
       // Don't need to handle any of these effects in Batch Mode
       if (Util.isBatch() || ClientManager.isApplicationQuitting) {
          return;
@@ -289,7 +102,7 @@ public class ServerCannonBall : NetworkBehaviour
 
       bool hitSolid = hitLand || hitEnemy;
 
-      ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(projectileId);
+      ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(projectileTypeId);
       if (projectileData == null) {
          playDefaultSFX = true;
       } else {
@@ -324,10 +137,6 @@ public class ServerCannonBall : NetworkBehaviour
          //   SoundManager.create3dSoundWithPath(projectileData.waterHitSFX, transform.position, projectileData.waterHitVol);
          //}
       }
-   }
-
-   public int getInstanceId () {
-      return _instanceId;
    }
 
    private void applyEffectorsOnHit (SeaEntity hitEntity, bool isCrit) {
@@ -372,24 +181,38 @@ public class ServerCannonBall : NetworkBehaviour
 
    private void createOnHitExplosion (CannonballEffector effector, SeaEntity hitEntity) {
       float explosionRadius = effector.effectRange;
-      int explosionDamage = (int) effector.effectStrength;
       SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
 
       if (sourceEntity) {
          sourceEntity.Rpc_ShowExplosiveShotEffect(transform.position, explosionRadius);
       }
 
-      List<SeaEntity> nearbyEnemies = Util.getEnemiesInCircle(sourceEntity, transform.position, explosionRadius);
-      foreach (SeaEntity enemy in nearbyEnemies) {
-         // The enemy hit by the cannonball won't take splash damage
-         if (enemy.netId != hitEntity.netId && !enemy.isDead()) {
-            // Apply damage            
-            int finalDamage = enemy.applyDamage(explosionDamage, sourceEntity.netId);
-            sourceEntity.totalDamageDealt += finalDamage;
+      // Gives us a value from ~0.1-0.6, more if powerups are stacked
+      float effectorRangeMultiplier = ((effector.effectRange / 0.6f) - 1.0f);
+      int numProjectiles = 3 + Mathf.RoundToInt(effectorRangeMultiplier * 10.0f);
+      numProjectiles = Mathf.Clamp(numProjectiles, 3, 16);
+      float projectileVelocity = 1.5f * (1.0f + effectorRangeMultiplier * 0.5f);
 
-            // Registers Damage throughout the clients
-            enemy.Rpc_NetworkProjectileDamage(_creatorNetId, Attack.Type.Cannon, enemy.transform.position);
-            enemy.Rpc_ShowDamage(Attack.Type.Cannon, enemy.transform.position, finalDamage);
+      const float ANIM_DURATION = 1.05f;
+      float anglePerProjectile = 360.0f / numProjectiles;
+      float spawnAngle = 0.0f;
+
+      for (int i = 0; i < numProjectiles; i++) {
+         Quaternion spawnAngleQuaternion = Quaternion.Euler(0.0f, 0.0f, spawnAngle);
+         SeaProjectile projectile = Instantiate(PrefabsManager.self.explosiveShotProjectilePrefab, transform.position, spawnAngleQuaternion, null);
+         if (projectile) {
+            projectile.linearDrag = 1.0f;
+
+            Vector2 velocity = spawnAngleQuaternion * Vector3.up * projectileVelocity;
+
+            projectile.initProjectile(_creatorNetId, _instanceId, Attack.ImpactMagnitude.Normal, EXPLOSIVE_SHOT_PROJECTILE_ID, velocity, 0.0f, lifetime: ANIM_DURATION, disableColliderAfter: 0.75f);
+            projectile.addIgnoredEnemy(hitEntity.netId);
+
+            NetworkServer.Spawn(projectile.gameObject);
+
+            spawnAngle += anglePerProjectile;
+         } else {
+            D.debug("Missing Prefab for SeaProjectile!");
          }
       }
    }
@@ -440,65 +263,14 @@ public class ServerCannonBall : NetworkBehaviour
       _hasCollided = false;
    }
 
+   public void setPlayFiringSound (bool value) {
+      _playFiringSound = value;
+   }
+
    #region Private Variables
-
-   // Our rigidbody
-   [SerializeField]
-   protected Rigidbody2D _rigidbody;
-
-   // The last time we synched velocity
-   protected double _lastVelocitySyncTime;
-
-   // Our Start Time
-   protected double _startTime;
-
-   // Blocks update func if the projectile collided
-   protected bool _hasCollided;
-
-   // The source of this attack
-   protected uint _creatorNetId;
-
-   // The instance id for this projectile
-   protected int _instanceId;
-
-   // Determines the impact level of this projectile
-   protected Attack.ImpactMagnitude _impactMagnitude = Attack.ImpactMagnitude.None;
-
-   // The ability data cache
-   protected ShipAbilityData _abilityData;
-
-   // The time in seconds before the cannonball is destroyed
-   [SyncVar]
-   protected float _lifetime;
-
-   // The distance that this cannonball will travel
-   [SyncVar]
-   protected float _distance;
-
-   // The default lifetime if none is provided
-   protected const float DEFAULT_LIFETIME = 1.25f;
-
-   // A reference to the child object that contains the cannonball
-   private CircleCollider2D _ballCollider;
-
-   // How high this cannonball was lobbed
-   [SyncVar]
-   private float _lobHeight = 0.0f;
-
-   // The status effect that this cannonball will apply to a sea entity it hits
-   private Status.Type _statusType = Status.Type.None;
-
-   // How long the status effect applied by this cannonball will last for
-   private float _statusDuration = 0.0f;
 
    // Whether this will play a firing sound effect
    private bool _playFiringSound = true;
-
-   // True if this cannonball hit an enemy
-   private bool _hitEnemy = false;
-
-   // Whether this cannonball will deal critical damage
-   private bool _isCrit = false;
 
    // All effectors that will apply effects to this cannonball
    private List<CannonballEffector> _effectors = new List<CannonballEffector>();
@@ -508,6 +280,9 @@ public class ServerCannonBall : NetworkBehaviour
 
    // FMOD Event instance
    FMOD.Studio.EventInstance _shipCannonEvent;
+
+   // The projectile id for the explosive shot projectile
+   private const int EXPLOSIVE_SHOT_PROJECTILE_ID = 33;
 
    #endregion
 

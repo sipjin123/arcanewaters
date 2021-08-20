@@ -191,6 +191,9 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public PvpTeamType pvpTeam = PvpTeamType.None;
 
+   [SyncVar]
+   public Faction.Type faction = Faction.Type.None;
+
    [Header("GuildInfo")]
    // The guild this user is in
    [SyncVar]
@@ -270,6 +273,9 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public bool passedOnTemporaryControl = false;
 
+   // Renderers added to this list will not be added to the _renderers list, and therefore not be modified by the NetEntity
+   public List<SpriteRenderer> ignoredRenderers;
+
    #endregion
 
    protected virtual void Awake () {
@@ -284,7 +290,7 @@ public class NetEntity : NetworkBehaviour
       _clickableBoxCanvas = _clickableBox?.GetComponentInParent<Canvas>();
       _networkLerp = GetComponent<NetworkLerpRigidbody2D>();
       _animators.AddRange(GetComponentsInChildren<Animator>());
-      _renderers.AddRange(GetComponentsInChildren<SpriteRenderer>());
+      _renderers.AddRange(GetComponentsInChildren<SpriteRenderer>(true));
 
       if (this.gameObject.HasComponent<Animator>()) {
          _animators.Add(GetComponent<Animator>());
@@ -296,6 +302,12 @@ public class NetEntity : NetworkBehaviour
 
       if (this.gameObject.HasComponent<SpriteRenderer>()) {
          _renderers.Add(GetComponent<SpriteRenderer>());
+      }
+
+      if (ignoredRenderers != null && ignoredRenderers.Count > 0) {
+         foreach (SpriteRenderer renderer in ignoredRenderers) {
+            _renderers.Remove(renderer);
+         }
       }
 
       // Make the camera follow our player
@@ -1723,7 +1735,7 @@ public class NetEntity : NetworkBehaviour
       }
 
       D.debug("Returning player to town: Go Home Command!");
-      spawnInNewMap(Area.STARTING_TOWN);
+      spawnInBiomeHomeTown(Biome.Type.Forest);
    }
 
    [Server]
@@ -1902,6 +1914,16 @@ public class NetEntity : NetworkBehaviour
       setAreaParent(area, worldPositionStays);
 
       if (isLocalPlayer) {
+         yield return null;
+
+         // If the player is still outside of the area bounds, send him back home and show an error
+         if (!area.cameraBounds.bounds.Contains((Vector2) transform.position)) {
+            Global.player.Cmd_GoHome();
+            D.error($"The player {entityName} position {transform.position} was outside of the area {area.areaKey} bounds, centered at {area.transform.position}");
+            PanelManager.self.noticeScreen.show("Error when warping: the player was outside of the area bounds");
+            yield break;
+         }
+
          // Toggles the weather layer in the camera render if the player is inside buildings
          if (AreaManager.self.getArea(areaKey).isInterior) {
             WeatherManager.self.muteWeather();

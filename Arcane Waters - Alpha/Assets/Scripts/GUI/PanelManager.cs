@@ -67,6 +67,11 @@ public class PanelManager : GenericGameManager {
    }
 
    private void Update () {
+      // Skip if the game window is not in focus
+      if (!Application.isFocused) {
+         return;
+      }
+
       // If a panel was loading and one shows up, disable the loading status
       if (isLoading && hasPanelInLinkedList()) {
          isLoading = false;

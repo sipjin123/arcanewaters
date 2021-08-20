@@ -109,6 +109,40 @@ MonoBehaviour:
   linearDrag: 0
   spriteRenderers:
   - {fileID: 4859631592357017430}
+  fadeOverLifetime: 1
+  alphaOverLifetime:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.35
+      value: 1
+      inSlope: -0
+      outSlope: 0.0028887044
+      tangentMode: 5
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.1805861
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -1.5384616
+      outSlope: -1.5384616
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &648262035298888231
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -240,7 +274,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialDelay: 0
-  frameLengthOverride: 0.1
+  frameLengthOverride: 0.15
   delayStart: 0
   destroyAtEnd: 0
   stayAtLastFrame: 1
@@ -250,7 +284,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 0
-  freezeAlpha: 1
+  freezeAlpha: 0
   _index: 0
 --- !u!58 &6667720769715284354
 CircleCollider2D:

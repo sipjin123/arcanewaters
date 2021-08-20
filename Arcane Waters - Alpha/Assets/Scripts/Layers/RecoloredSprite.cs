@@ -55,31 +55,50 @@ public class RecoloredSprite : MonoBehaviour {
    public void setNewMaterial (Material oldMaterial) {
       Material newMaterial = new Material(oldMaterial);
 
-      if (_spriteRenderer == null && _image == null) {
-         _image = GetComponent<Image>();
-         _spriteRenderer = GetComponent<SpriteRenderer>();
+      SpriteRenderer renderer = getSpriteRenderer();
+
+      if (renderer != null) {
+         renderer.material = newMaterial;
+         return;
       }
 
-      if (_spriteRenderer != null) {
-         _spriteRenderer.material = newMaterial;
-      } else if (_image != null) {
-         _image.material = newMaterial;
+      Image image = getImage();
+
+      if (image != null) {
+         image.material = newMaterial;
       }
    }
 
    public Material getMaterial () {
-      if (_spriteRenderer == null && _image == null) {
-         _image = GetComponent<Image>();
-         _spriteRenderer = GetComponent<SpriteRenderer>();
+      SpriteRenderer renderer = getSpriteRenderer();
+      
+      if (renderer != null) {
+         return renderer.material;
       }
 
-      if (_spriteRenderer != null) {
-         return _spriteRenderer.material;
-      } else if (_image != null) {
-         return _image.material;
+      Image image = getImage();
+
+      if (image != null) {
+         return image.material;
       }
 
       return null;
+   }
+
+   private SpriteRenderer getSpriteRenderer () {
+      if (_spriteRenderer == null) {
+         TryGetComponent<SpriteRenderer>(out _spriteRenderer);
+      }
+
+      return _spriteRenderer;
+   }
+
+   private Image getImage () {
+      if (_image == null) {
+         TryGetComponent<Image>(out _image);
+      }
+
+      return _image;
    }
 
    public string getPalettes () {

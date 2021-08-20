@@ -515,7 +515,8 @@ public class Area : MonoBehaviour
          _graph.collision.type = ColliderType.Sphere;
          _graph.collision.diameter = 6f;
       } else if (AreaManager.self.isSeaArea(areaKey)) {
-         _graph.collision.type = ColliderType.Ray;
+         _graph.collision.type = ColliderType.Sphere;
+         _graph.collision.diameter = 0.15f;
       } else {
          // For non-sea maps, use collider sphere to avoid NPCs moving through colliders
          _graph.collision.type = ColliderType.Sphere;

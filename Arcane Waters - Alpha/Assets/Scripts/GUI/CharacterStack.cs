@@ -40,7 +40,6 @@ public class CharacterStack : MonoBehaviour {
       bodyLayer.setType(info.bodyType);
       eyesLayer.setType(info.eyesType);
       eyesLayer.recolor(info.eyesPalettes);
-      updateHair(info.hairType, info.hairPalettes);
 
       ArmorStatData armorData = ArmorStatData.getDefaultData();
       if (userObjects.armor.data != "" && userObjects.armor.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
@@ -120,6 +119,9 @@ public class CharacterStack : MonoBehaviour {
          updateHats(info.gender, hatData.hatType, hatData.palettes, updatePalettes);
       }
 
+      // Update the hair here, to accomodate for the hat
+      updateHair(info.hairType, info.hairPalettes);
+
       synchronizeAnimationIndexes();
    }
 
@@ -131,10 +133,10 @@ public class CharacterStack : MonoBehaviour {
       bodyLayer.setType(bodyType);
       eyesLayer.setType(eyesType);
       eyesLayer.recolor(eyesPalettes);
-      updateHair(hairType, hairPalettes);
       updateArmor(gender, armor.itemTypeId, armor.paletteNames);
       updateWeapon(gender, weapon.itemTypeId, weapon.paletteNames);
       updateHats(gender, hat.itemTypeId, hat.paletteNames);
+      updateHair(hairType, hairPalettes);
 
       synchronizeAnimationIndexes();
    }
@@ -214,6 +216,9 @@ public class CharacterStack : MonoBehaviour {
       hairBackLayer.recolor(palettes);
       hairFrontLayer.setType(hairType);
       hairFrontLayer.recolor(palettes);
+
+      // Apply clip mask
+      hairFrontLayer.setClipMaskForHat(hatLayer.getType());
    }
 
    public void rotateDirectionClockWise () {
@@ -350,14 +355,6 @@ public class CharacterStack : MonoBehaviour {
       }
 
       return 0;
-   }
-
-   public void toggleHat(bool show) {
-      if (hatLayer == null) {
-         return;
-      }
-
-      hatLayer.gameObject.SetActive(show);
    }
 
    #region Private Variables

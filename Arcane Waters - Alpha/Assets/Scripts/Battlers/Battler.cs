@@ -474,11 +474,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // Flip sprites for the attackers
       checkIfSpritesShouldFlip();
 
-      // This simulates the click on the enemy battler on client side
-      if (!isLocalBattler() && BattleSelectionManager.self.selectedBattler == null && enemyType != Enemy.Type.PlayerBattler) {
-         StartCoroutine(CO_SelectEnemyBattler());
-      }
-
       if (isBossType) {
          targetPoint.position += Vector3.right * -0.4f;
       }
@@ -498,15 +493,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       NetworkIdentity enemyIdent = NetworkIdentity.spawned[playerNetId];
       this.player = enemyIdent.GetComponent<NetEntity>();
       initializeBattler();
-   }
-
-   private IEnumerator CO_SelectEnemyBattler () {
-      // Simulate battle selection upon entering combat
-      yield return new WaitForSeconds(2);
-
-      if (BattleSelectionManager.self.selectedBattler != this) {
-         BattleSelectionManager.self.clickedArea(transform.position);
-      }
    }
 
    public void updateBattleSpots () {
@@ -807,15 +793,20 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             eyesLayer.setType(eyesType);
             eyesLayer.recolor(eyesPalettes);
          }
-         foreach (HairLayer hairLayer in GetComponentsInChildren<HairLayer>()) {
-            hairLayer.setType(hairType);
-            hairLayer.recolor(hairPalettes);
-         }
 
          // Update the Armor, hat and Weapon
          armorManager.updateSprites();
          weaponManager.updateSprites();
          hatManager.updateSprites();
+
+         foreach (HairLayer hairLayer in GetComponentsInChildren<HairLayer>()) {
+            hairLayer.setType(hairType);
+            hairLayer.recolor(hairPalettes);
+
+            if (hairLayer.isFront) {
+               hairLayer.setClipMaskForHat(hatManager.hatType);
+            }
+         }
       }
    }
 
@@ -941,6 +932,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public void handleEndOfBattle (Battle.TeamType winningTeam) {
+      // Turn off targeting arrows at the end of the battle
+      if (BattleSelectionManager.self.enemySelection) {
+         BattleSelectionManager.self.enemySelection.SetActive(false);
+      }
+      if (BattleSelectionManager.self.allySelection) {
+         BattleSelectionManager.self.allySelection.SetActive(false);
+      }
+
       if (teamType != winningTeam) {
          if (isMonster()) {
             // Monster battler

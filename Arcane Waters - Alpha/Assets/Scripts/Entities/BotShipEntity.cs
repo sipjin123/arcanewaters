@@ -61,7 +61,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
       if (isClient) {
          if (pvpTeam != PvpTeamType.None) {
-            string texturePath = (pvpTeam == PvpTeamType.A) ? TEAM_A_SKIN : TEAM_B_SKIN;
+            string texturePath = Faction.getShipSpritePath(faction);
             Texture2D newTexture = Resources.Load<Texture2D>(texturePath);
             if (newTexture) {
                spritesOverride = newTexture;
@@ -449,6 +449,11 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       }
 
       return effectors;
+   }
+
+   [Server]
+   protected override int getRewardedXP () {
+      return seaEntityData.rewardedExp;
    }
 
    #region Private Variables
