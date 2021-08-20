@@ -40,6 +40,9 @@ public class CharacterScreen : GenericGameManager {
    // The number of starting armor options
    public const int STARTING_ARMOR_COUNT = 3;
 
+   // The list of starting armors
+   public static List<int> STARTING_ARMOR_ID_LIST = new List<int>() { 40, 41, 42 };
+
    public class StartingArmorData {
       // The sql id 
       public int equipmentId;

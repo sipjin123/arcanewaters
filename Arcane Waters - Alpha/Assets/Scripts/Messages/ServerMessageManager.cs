@@ -335,8 +335,7 @@ public class ServerMessageManager : MonoBehaviour
                List<int> startingEquipmentIds = new List<int>();
                List<int> startingSpriteIds = new List<int>();
 
-               int currentArmorId = 1;
-               for (int i = 1; i < 4; i++) {
+               foreach (int currentArmorId in CharacterScreen.STARTING_ARMOR_ID_LIST) {
                   ArmorStatData startArmorData = EquipmentXMLManager.self.getArmorDataBySqlId(currentArmorId);
                   if (startArmorData != null) {
                      // Only output visually unique armors
@@ -347,11 +346,11 @@ public class ServerMessageManager : MonoBehaviour
                      } else {
                         D.debug("Failed to fetch the armor content of: " + currentArmorId);
                      }
-                     currentArmorId++;
                   } else {
                      D.debug("Cannot process starting armor equipment: ArmorType:" + currentArmorId);
                   }
                }
+
                D.adminLog("Account Log: Login Complete with No Characters! {" + logInUserMessage.accountName + "}" + " : {" + accountId + "}", D.ADMIN_LOG_TYPE.Server_AccountLogin);
 
                // If there was an account ID but not user ID, send the info on all of their characters for display on the Character screen

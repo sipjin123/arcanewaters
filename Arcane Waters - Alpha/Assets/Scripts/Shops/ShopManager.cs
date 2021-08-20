@@ -253,16 +253,6 @@ public class ShopManager : MonoBehaviour {
                ship.shipAbilities = ShipDataManager.self.getShipAbilities(shipData.shipID);
                ship.shipId = _shipId--;
 
-               if (Util.isCloudBuild()) {
-                  if (shopData.shopName.ToLower().Contains("haven")) {
-                     D.debug("Shop is regenerating ship:" +
-                        " ID: " + ship.shipId +
-                        " T: " + shipType +
-                        " R: " + rarity +
-                        " ST: " + ship.shipType);
-                  }
-               }
-
                // Set a custom price
                int price = shopItem.shopItemCostMax;
                price = Util.roundToPrettyNumber(price);
