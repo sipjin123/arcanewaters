@@ -145,8 +145,8 @@ public class InventoryManager : MonoBehaviour
 
       UserObjects objects = new UserObjects();
 
-      PlayerBodyEntity bodyEntity = player.getPlayerBodyEntity();
-      if (bodyEntity != null) {
+      if (player is PlayerBodyEntity) {
+         PlayerBodyEntity bodyEntity = player.getPlayerBodyEntity();
          WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(bodyEntity.weaponManager.equipmentDataId);
          objects.weapon = weaponData != null ? WeaponStatData.translateDataToWeapon(weaponData) : new Weapon();
          objects.weapon.itemTypeId = bodyEntity.weaponManager.equipmentDataId;
@@ -164,6 +164,25 @@ public class InventoryManager : MonoBehaviour
          objects.hat.itemTypeId = bodyEntity.hatsManager.equipmentDataId;
          objects.hat.id = bodyEntity.hatsManager.equippedHatId;
          objects.hat.paletteNames = bodyEntity.hatsManager.palettes;
+      } else if(player is PlayerShipEntity) {
+         PlayerShipEntity shipEntity = player.getPlayerShipEntity();
+         WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(shipEntity.weaponType);
+         objects.weapon = weaponData != null ? WeaponStatData.translateDataToWeapon(weaponData) : new Weapon();
+         objects.weapon.itemTypeId = shipEntity.weaponType;
+         objects.weapon.id = shipEntity.weaponType;
+         objects.weapon.paletteNames = shipEntity.weaponColors;
+
+         ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(shipEntity.armorType);
+         objects.armor = armorData != null ? ArmorStatData.translateDataToArmor(armorData) : new Armor();
+         objects.armor.itemTypeId = shipEntity.armorType;
+         objects.armor.id = shipEntity.armorType;
+         objects.armor.paletteNames = shipEntity.armorColors;
+
+         HatStatData hatData = EquipmentXMLManager.self.getHatData(shipEntity.hatType);
+         objects.hat = hatData != null ? HatStatData.translateDataToHat(hatData) : new Hat();
+         objects.hat.itemTypeId = shipEntity.hatType;
+         objects.hat.id = shipEntity.hatType;
+         objects.hat.paletteNames = shipEntity.hatColors;
       }
 
       objects.guildInfo = getGuildInfoForPlayer(player);

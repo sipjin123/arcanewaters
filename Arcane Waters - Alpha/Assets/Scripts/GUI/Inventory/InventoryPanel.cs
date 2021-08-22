@@ -98,7 +98,7 @@ public class InventoryPanel : Panel {
       loadBlocker.SetActive(false);
       Global.lastUserGold = userObjects.userInfo.gold;
       Global.lastUserGems = userObjects.userInfo.gems;
- 
+
       // Update the current page number
       _currentPage = pageIndex;
 
@@ -135,17 +135,27 @@ public class InventoryPanel : Panel {
       updateGoldAndGems(Global.player);
       equipmentStats.refreshStats(userObjects);
 
-      int equippedWeaponId = (Global.player as PlayerBodyEntity).weaponManager.weaponType;
+      int equippedWeaponId = 0;
+      int equippedHatId = 0;
+      int equippedArmorId = 0;
+      if (Global.player is PlayerBodyEntity) {
+         equippedWeaponId = (Global.player as PlayerBodyEntity).weaponManager.weaponType;
+         equippedHatId = (Global.player as PlayerBodyEntity).hatsManager.hatType;
+         equippedArmorId = (Global.player as PlayerBodyEntity).armorManager.armorType;
+      } else if (Global.player is PlayerShipEntity) {
+         equippedWeaponId = (Global.player as PlayerShipEntity).weaponType;
+         equippedHatId = (Global.player as PlayerShipEntity).hatType;
+         equippedArmorId = (Global.player as PlayerShipEntity).armorType;
+      }
+
       if (equippedWeaponId != 0) {
          subscribeClickEventsForCell(characterInfoSection.equippedWeaponCell);
       }
 
-      int equippedArmorId = (Global.player as PlayerBodyEntity).armorManager.armorType;
       if (equippedArmorId != 0) {
          subscribeClickEventsForCell(characterInfoSection.equippedArmorCell);
       } 
 
-      int equippedHatId = (Global.player as PlayerBodyEntity).hatsManager.hatType;
       if (equippedHatId != 0) {
          subscribeClickEventsForCell(characterInfoSection.equippedHatCell);
       }
