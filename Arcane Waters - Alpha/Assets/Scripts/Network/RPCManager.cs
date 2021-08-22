@@ -5424,7 +5424,7 @@ public class RPCManager : NetworkBehaviour
          }
 
          if (!Item.isValidItem(newDatabaseItem)) {
-            D.debug("Aborting item reward to player, None Category for: giveItemRewardsToPlayer()");
+            D.debug("Generating default loot item for player due to None Category: giveItemRewardsToPlayer()");
             newDatabaseItem = Item.defaultLootItem();
          }
 

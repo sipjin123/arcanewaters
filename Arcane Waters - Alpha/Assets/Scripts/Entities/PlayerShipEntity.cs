@@ -386,7 +386,7 @@ public class PlayerShipEntity : ShipEntity
          }
       }
 
-      if (!isDead() && !isGhost) {// && SeaManager.getAttackType() != Attack.Type.Air) {
+      if (!isDead() && !isGhost) {
          // Start charging attack with mouse
          if (InputManager.isFireCannonMouseDown() || (InputManager.isFireCannonMouse() && !_isChargingCannon)) {
             _chargingWithMouse = true;

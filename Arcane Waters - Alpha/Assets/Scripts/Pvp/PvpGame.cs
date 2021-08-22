@@ -133,7 +133,6 @@ public class PvpGame : MonoBehaviour {
    }
 
    private IEnumerator CO_InitializePlayerShip (int userId) {
-      DateTime startTime = DateTime.UtcNow;
       while (EntityManager.self.getEntity(userId) == null || !(EntityManager.self.getEntity(userId) is PlayerShipEntity)) {
          yield return 0;
       }
