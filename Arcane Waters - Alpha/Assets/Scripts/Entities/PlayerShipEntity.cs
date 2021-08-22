@@ -560,19 +560,23 @@ public class PlayerShipEntity : ShipEntity
       if (useCannonAttack) {
          switch (cannonAttackType) {
             case CannonAttackType.Normal:
-               float normalCannonballLifetime = getCannonballLifetime();
-               Vector2 targetPosition;
-
-               if (_chargingWithMouse) {
-                  targetPosition = Util.getMousePos();
+               if (abilityData.splitsAfterAttackCap) {
+                  splitAttackCap(abilityData);
                } else {
-                  targetPosition = _targetSelector.getTarget().transform.position;
-               }
+                  float normalCannonballLifetime = getCannonballLifetime();
+                  Vector2 targetPosition;
 
-               Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), _cannonTargeter.barrelSocket.position, targetPosition, true, true);
-               _shouldUpdateTargeting = false;
-               _cannonTargeter.targetingConfirmed(() => _shouldUpdateTargeting = true);
-               TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
+                  if (_chargingWithMouse) {
+                     targetPosition = Util.getMousePos();
+                  } else {
+                     targetPosition = _targetSelector.getTarget().transform.position;
+                  }
+
+                  Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), _cannonTargeter.barrelSocket.position, targetPosition, true, true);
+                  _shouldUpdateTargeting = false;
+                  _cannonTargeter.targetingConfirmed(() => _shouldUpdateTargeting = true);
+                  TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
+               }
                break;
             case CannonAttackType.Cone:
                Vector2 toMouse = Util.getMousePos() - transform.position;
@@ -606,6 +610,11 @@ public class PlayerShipEntity : ShipEntity
                _targetCircle.updateCircle(true);
 
                break;
+            default:
+               if (abilityData.splitsAfterAttackCap) {
+                  splitAttackCap(abilityData);
+               }
+               break;
          }
       }
       _isChargingCannon = false;
@@ -617,6 +626,25 @@ public class PlayerShipEntity : ShipEntity
       int defaultAbilityId = CannonPanel.self.cannonBoxList[0].abilityId;
       Cmd_ChangeAttackOption(defaultAbilityId);
       CannonPanel.self.useCannonType(defaultAbilityId, 0);
+   }
+
+   private void splitAttackCap (ShipAbilityData abilityData) {
+      Vector2 toMouse = Util.getMousePos() - transform.position;
+      Vector2 pos = transform.position;
+
+      float rotAngle = (90.0f - (getCannonChargeAmount() * 25.0f)) / 2.0f;
+      abilityData.splitAttackCap = 8;
+      float rotAngleDivider = rotAngle / abilityData.splitAttackCap;
+
+      // Fire barrage of cannonballs
+      for (int i = 1; i < (abilityData.splitAttackCap / 2) + 1; i++) {
+         Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, rotAngleDivider * i), false, true);
+      }
+      Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, Util.getMousePos(), false, false);
+
+      for (int i = 1; i < (abilityData.splitAttackCap / 2) + 1; i++) {
+         Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, -rotAngleDivider * i), false, false);
+      }
    }
 
    private void updateTargeting () {

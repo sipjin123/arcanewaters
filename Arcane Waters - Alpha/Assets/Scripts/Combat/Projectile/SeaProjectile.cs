@@ -97,6 +97,14 @@ public class SeaProjectile : NetworkBehaviour
 
       this.projectileVelocity = velocity;
       _rigidbody.velocity = velocity;
+      if (_abilityData != null) {
+         ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(_abilityData.projectileId);
+         if (projectileData != null) {
+            _rigidbody.velocity *= (_abilityData == null ? 1 : projectileData.animationSpeed);
+            _rigidbody.mass = projectileData.projectileMass;
+            transform.localScale = new Vector3(projectileData.projectileScale, projectileData.projectileScale, projectileData.projectileScale);
+         }
+      }
       _rigidbody.drag = linearDrag;
       _circleCollider = GetComponentInChildren<CircleCollider2D>();
 
@@ -123,6 +131,8 @@ public class SeaProjectile : NetworkBehaviour
          foreach (SpriteRenderer spriteRenderer in spriteRenderers) {
             spriteRenderer.sprite = ImageManager.getSprite(projectileData.projectileSpritePath, true);
          }
+
+         transform.localScale = new Vector3(projectileData.projectileScale, projectileData.projectileScale, projectileData.projectileScale);
       }
       D.adminLog("Projectile id is: " + projectileTypeId, D.ADMIN_LOG_TYPE.SeaAbility);
    }
