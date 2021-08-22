@@ -57,7 +57,7 @@ public class PvpShopManager : MonoBehaviour {
                   if (shopDataList.Find(_ => _.shopId == xmlPair.xmlId) == null) {
                      // Generate rarity randomizer for this shop
                      foreach (PvpShopItem pvpShopItem in pvpShopData.shopItems) {
-                        pvpShopItem.rarityType = Rarity.getRandom();
+                        pvpShopItem.rarityType = Rarity.Type.Common;
 
                         // Inject ship info data to item data variable
                         if (pvpShopItem.shopItemType == PvpShopItem.PvpShopItemType.Ship) {

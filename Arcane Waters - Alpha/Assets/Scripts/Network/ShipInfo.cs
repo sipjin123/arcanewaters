@@ -176,6 +176,9 @@ public class ShipAbilityInfo
    // The default attack ability of the ship
    public const int DEFAULT_ABILITY = 1;
 
+   // The starting abilities for ships
+   public static List<int> STARTING_ABILITIES = new List<int> { 1, 33, 34, 35, 36 };
+
    // Holds the collection of ability names
    public int[] ShipAbilities = new int[0];
 
