@@ -447,13 +447,17 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          return;
       }
 
-      // Can't jump while interacting
-      if (InputManager.isJumpKeyPressed() && !interactingAnimation) {
+      if (InputManager.isJumpKeyPressed()) {
          triggerJumpAction();
       }
    }
 
    private void triggerJumpAction () {
+      // Can't jump while interacting
+      if (interactingAnimation) {
+         return;
+      }
+
       if (!isJumpCoolingDown() && isLocalPlayer && !isBouncingOnWeb() && !_isClimbing) {
          // If we are in a spider web  trigger, and facing the right way, jump onto the spider web
          if (collidingSpiderWebTrigger != null) {
