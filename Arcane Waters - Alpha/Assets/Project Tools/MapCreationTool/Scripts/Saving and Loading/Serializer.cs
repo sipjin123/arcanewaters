@@ -354,6 +354,7 @@ namespace MapCreationTool.Serialization
       public const string POSSIBLE_DISCOVERY = "possible discovery";
 
       public const string SHIP_DATA_KEY = "ship data";
+      public const string RANDOMIZE_SHIP = "randomize ship";
 
       public const string PLACED_PREFAB_ID = "id";
       public const string IS_PERMANENT_KEY = "is permanent";
@@ -378,7 +379,7 @@ namespace MapCreationTool.Serialization
       public const string POWERUP_DURATION = "powerup duration";
 
       public const string SHOP_ID = "shop id";
-
+      
       public string k; // Key
       public string v; // Value
 

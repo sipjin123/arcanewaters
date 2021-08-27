@@ -770,13 +770,27 @@ public class Instance : NetworkBehaviour
    public BotShipEntity spawnBotShip (ExportedPrefab001 dataField, Vector3 localPos, Area area, Biome.Type biome) {
       int xmlId = SeaMonsterEntityData.DEFAULT_SHIP_ID;
       int guildId = 1;
-
+      bool randomizeShip = true;
+      
+      // Randomize xml id of ships by biome as default
       xmlId = EnemyManager.self.randomizeShipXmlId(biome);
-
+      int xmlIdOverride = 0;
       foreach (DataField field in dataField.d) {
          if (field.k.CompareTo(DataField.SHIP_GUILD_ID) == 0) {
             guildId = int.Parse(field.v.Split(':')[0]);
          }
+         if (field.k.CompareTo(DataField.SHIP_DATA_KEY) == 0) {
+            xmlIdOverride = int.Parse(field.v.Split(':')[0]);
+         }
+         if (field.k.CompareTo(DataField.RANDOMIZE_SHIP) == 0) {
+            string randomizeShipData = field.v.Split(':')[0];
+            randomizeShip = randomizeShipData.ToLower() == "true" ? true : false;
+         }
+      }
+
+      // If randomize ship is set in web tool, override randomized xml id
+      if (randomizeShip) {
+         xmlId = xmlIdOverride;
       }
 
       if (SeaMonsterManager.self.getMonster(xmlId) == null) {
