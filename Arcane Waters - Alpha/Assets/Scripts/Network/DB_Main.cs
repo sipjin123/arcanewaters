@@ -7687,8 +7687,7 @@ public class DB_Main : DB_MainStub
       shipInfo.sailPalette1 = PaletteDef.ShipSail.White;
       shipInfo.sailPalette2 = PaletteDef.ShipSail.White;
       shipInfo.shipAbilities = new ShipAbilityInfo(false);
-
-      shipInfo.shipAbilities.ShipAbilities = new int[] { ShipAbilityInfo.DEFAULT_ABILITY };
+      shipInfo.shipAbilities.ShipAbilities = ShipAbilityInfo.STARTING_ABILITIES.ToArray();
 
       System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(shipInfo.shipAbilities.GetType());
       var sb = new StringBuilder();

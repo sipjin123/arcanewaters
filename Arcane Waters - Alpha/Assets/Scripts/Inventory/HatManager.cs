@@ -93,6 +93,7 @@ public class HatManager : EquipmentManager {
 
    [ClientRpc]
    public void Rpc_BroadcastEquipHat (string rawHatData, string palettes) {
+      if (rawHatData.Contains(EquipmentXMLManager.VALID_XML_FORMAT)) {
          HatStatData hatData = Util.xmlLoad<HatStatData>(rawHatData);
          cachedHatData = hatData;
 
@@ -102,6 +103,7 @@ public class HatManager : EquipmentManager {
 
          // Update the hair
          _body.updateHair(_body.hairType, _body.hairPalettes);
+      }
    }
 
    [Server]
@@ -122,6 +124,9 @@ public class HatManager : EquipmentManager {
       this.hatType = hatData.hatType;
       this.palettes = hatData.palettes;
 
+      if (hatData.hatType < 1) {
+         return;
+      }
 	  
       Rpc_EquipHat(HatStatData.serializeHatStatData(hatData), palettes);
       

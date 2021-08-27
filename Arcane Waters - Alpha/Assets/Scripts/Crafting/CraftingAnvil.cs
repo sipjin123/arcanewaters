@@ -62,7 +62,7 @@ public class CraftingAnvil : MonoBehaviour
       }
 
       // Only show our outline when the mouse is over us
-      if (_outline) {
+      if (_outline && _clickableBox && MouseManager.self) {
          _outline.setVisibility(MouseManager.self.isHoveringOver(_clickableBox));
       }
    }
