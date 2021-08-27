@@ -526,6 +526,7 @@ public class SeaEntity : NetEntity
       ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(abilityData.projectileId);
       int damage = (int) (projectileData.projectileDamage * Attack.getDamageModifier(Attack.Type.Shock_Ball));
 
+      List<Vector2> lightningPositions = new List<Vector2>();
       foreach (Collider2D collidedEntity in hits) {
          if (collidedEntity != null) {
             if (collidedEntity.GetComponent<SeaEntity>() != null) {
@@ -537,6 +538,8 @@ public class SeaEntity : NetEntity
                   // Registers the action electrocuted to the userID to the achievement database for recording
                   AchievementManager.registerUserAchievement(seaEntity, ActionType.Electrocuted);
 
+                  lightningPositions.Add(seaEntity.spritesContainer.transform.position);
+
                   collidedEntities.Add(seaEntity, collidedEntity.transform);
                   targetIDList.Add(seaEntity.netId);
                }
@@ -544,7 +547,7 @@ public class SeaEntity : NetEntity
          }
       }
 
-      Rpc_ChainLightning(targetIDList.ToArray(), primaryTargetNetID, sourcePos);
+      Rpc_ChainLightning(lightningPositions.ToArray(), primaryTargetNetID, sourcePos);
    }
 
    [Server]
@@ -554,20 +557,21 @@ public class SeaEntity : NetEntity
       List<uint> targetNetIdList = new List<uint>();
       int damageInt = (int) damage;
 
+      List<Vector2> lightningPositions = new List<Vector2>();
       foreach (Collider2D hit in hits) {
          if (hit != null && hit.GetComponent<SeaEntity>() != null) {
             SeaEntity hitEntity = hit.GetComponent<SeaEntity>();
             if (this.isEnemyOf(hitEntity) && !collidedEntities.ContainsKey(hitEntity) && !hitEntity.isDead() && hitEntity.instanceId == this.instanceId && hitEntity.netId != primaryTargetNetID) {
                int finalDamage = hitEntity.applyDamage(damageInt, attackerNetId);
                hitEntity.Rpc_ShowDamage(Attack.Type.None, hitEntity.transform.position, finalDamage);
-
+               lightningPositions.Add(hitEntity.spritesContainer.transform.position);
                collidedEntities.Add(hitEntity, hit.transform);
                targetNetIdList.Add(hitEntity.netId);
             }
          }
       }
 
-      Rpc_ChainLightning(targetNetIdList.ToArray(), primaryTargetNetID, sourcePos);
+      Rpc_ChainLightning(lightningPositions.ToArray(), primaryTargetNetID, sourcePos);
    }
 
    [ClientRpc]
@@ -589,29 +593,28 @@ public class SeaEntity : NetEntity
    }
 
    [ClientRpc]
-   private void Rpc_ChainLightning (uint[] targetNetIDList, uint primaryTargetNetID, Vector2 sourcePos) {
+   private void Rpc_ChainLightning (Vector2[] targetPosGround, uint primaryTargetNetID, Vector2 sourcePos) {
       SeaEntity parentEntity = SeaManager.self.getEntity(primaryTargetNetID);
 
       GameObject shockResidue = Instantiate(PrefabsManager.self.lightningResiduePrefab);
       shockResidue.transform.SetParent(parentEntity.spritesContainer.transform, false);
       EffectManager.self.create(Effect.Type.Shock_Collision, sourcePos);
 
-      foreach (uint attackerNetID in targetNetIDList) {
-         SeaEntity seaEntity = SeaManager.self.getEntity(attackerNetID);
+      foreach (Vector2 targetPos in targetPosGround) {
          LightningBoltScript lightning = Instantiate(PrefabsManager.self.lightningChainPrefab);
          lightning.transform.SetParent(shockResidue.transform, false);
 
          lightning.StartObject.transform.position = lightning.transform.position;
 
-         lightning.EndObject.transform.position = seaEntity.spritesContainer.transform.position;
-         lightning.EndObject.transform.SetParent(seaEntity.spritesContainer.transform);
+         lightning.EndObject.transform.position = targetPos;
+         lightning.EndObject.transform.SetParent(shockResidue.transform);
 
          lightning.GetComponent<LineRenderer>().enabled = true;
 
          GameObject subShockResidue = Instantiate(PrefabsManager.self.lightningResiduePrefab);
-         subShockResidue.transform.SetParent(seaEntity.spritesContainer.transform, false);
+         subShockResidue.transform.SetParent(shockResidue.transform, false);
 
-         EffectManager.self.create(Effect.Type.Shock_Collision, seaEntity.transform.position);
+         EffectManager.self.create(Effect.Type.Shock_Collision, targetPos);
       }
    }
 
