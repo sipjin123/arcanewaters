@@ -380,6 +380,8 @@ namespace MapCreationTool
                   }
                } else if (original.GetComponent<Spawn>() != null) {
                   pref.transform.localScale = new Vector3(0.16f, 0.16f, 1f);
+               } else if (original.GetComponent<SpiderWeb>() != null) {
+                  pref.GetComponent<SpiderWeb>().initializeBiome(project.biome);
                }
 
                foreach (IBiomable biomable in pref.GetComponentsInChildren<IBiomable>()) {

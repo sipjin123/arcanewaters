@@ -12,6 +12,9 @@ namespace MapCreationTool
 {
    public class Overlord : MonoBehaviour
    {
+      // The biome selected in the editor
+      public Biome.Type editorBiome = Biome.Type.Forest;
+
       public const int TILE_PIXEL_WIDTH = 16;
 
       public static Overlord instance { get; private set; }
@@ -305,7 +308,7 @@ namespace MapCreationTool
       }
       private void onBiomeChanged (Biome.Type from, Biome.Type to) {
          BiomedPaletteData currentPalette = currentPaletteData;
-
+         editorBiome = to;
          palette.populatePalette(currentPalette[to], to);
          drawBoard.changeBiome(currentPalette[from], currentPalette[to]);
       }
