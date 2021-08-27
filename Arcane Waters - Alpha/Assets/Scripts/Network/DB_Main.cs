@@ -2714,7 +2714,8 @@ public class DB_Main : DB_MainStub
 
    public static new void updateMapDetails (Map map) {
       string cmdText = "UPDATE global.maps_v2 " +
-         "SET name = @name, sourceMapId = @sourceId, notes = @notes, specialType = @specialType, displayName = @displayName, weatherEffectType = @weatherEffect " +
+         "SET name = @name, sourceMapId = @sourceId, notes = @notes, specialType = @specialType, displayName = @displayName, biome=@biome, " +
+         "weatherEffectType = @weatherEffect, maxPlayerCount=@maxPlayerCount, pvpGameMode=@pvpGameMode, pvpArenaSize=@pvpArenaSize " +
          "WHERE id = @mapId;";
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
@@ -2733,6 +2734,7 @@ public class DB_Main : DB_MainStub
          cmd.Parameters.AddWithValue("@maxPlayerCount", map.maxPlayerCount);
          cmd.Parameters.AddWithValue("@pvpGameMode", map.pvpGameMode);
          cmd.Parameters.AddWithValue("@pvpArenaSize", map.pvpArenaSize);
+         cmd.Parameters.AddWithValue("@biome", map.biome);
          DebugQuery(cmd);
 
          // Execute the command
@@ -2752,7 +2754,7 @@ public class DB_Main : DB_MainStub
          try {
             // Update biome of map entry
             cmd.Parameters.AddWithValue("@mapId", mapVersion.mapId);
-            cmd.Parameters.AddWithValue("@biome", (int) mapVersion.map.biome);
+            cmd.Parameters.AddWithValue("@biome", (int) Overlord.instance.editorBiome);
             cmd.CommandText = "UPDATE global.maps_v2 SET biome = @biome WHERE id = @mapId;";
             DebugQuery(cmd);
             cmd.ExecuteNonQuery();
@@ -2832,7 +2834,7 @@ public class DB_Main : DB_MainStub
             // Update editor type and biome
             cmd.Parameters.AddWithValue("@mapId", mapVersion.mapId);
             cmd.Parameters.AddWithValue("@editorType", (int) mapVersion.map.editorType);
-            cmd.Parameters.AddWithValue("@biome", (int) mapVersion.map.biome);
+            cmd.Parameters.AddWithValue("@biome", (int) Overlord.instance.editorBiome);
             cmd.CommandText = "UPDATE global.maps_v2 SET editorType = @editorType, biome = @biome WHERE id = @mapId;";
             DebugQuery(cmd);
             cmd.ExecuteNonQuery();
