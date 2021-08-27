@@ -127,6 +127,7 @@ public class SimpleAnimation : ClientMonoBehaviour {
          reloadSprites(newTexture);
          return;
       }
+
       toggleRenderers(true);
 
       _lastLoadedTexture = newTexture;
@@ -199,7 +200,7 @@ public class SimpleAnimation : ClientMonoBehaviour {
 
    protected void reloadSprites (Texture2D newTexture) {
       if (newTexture == ImageManager.self.blankTexture) {
-         _sprites = new Sprite []{
+         _sprites = new Sprite[]{
             ImageManager.self.blankSprite
          };
          return;
@@ -241,6 +242,10 @@ public class SimpleAnimation : ClientMonoBehaviour {
       // Keep the index within our specified min/max
       if (_index < minIndex || _index > maxIndex) {
          _index = minIndex;
+
+         if (_index == minIndex && destroyAtEnd) {
+            Destroy(this.gameObject);
+         }
       }
 
       if (_sprites.Length == 1) {
@@ -320,13 +325,13 @@ public class SimpleAnimation : ClientMonoBehaviour {
    protected Texture2D getCurrentTexture () {
       if (_image != null && _image.sprite != null) {
          return _image.sprite.texture;
-      } else {
-         if (_renderer == null || _renderer.sprite == null) {
-            return ImageManager.self.blankTexture;
-         } else {
-            return _renderer.sprite.texture;
-         }
       }
+
+      if (_renderer != null && _renderer.sprite != null) {
+         return _renderer.sprite.texture;        
+      }
+
+      return ImageManager.self.blankTexture;
    }
 
    #region Private Variables

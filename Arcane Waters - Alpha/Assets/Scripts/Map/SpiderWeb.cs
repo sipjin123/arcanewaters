@@ -29,6 +29,18 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
    // The trigger that will detect if the player jumps
    public SpiderWebTrigger jumpTrigger;
 
+   // The type of biome this prefab is in
+   public Biome.Type biomeType;
+
+   // Reference to the 2d asset
+   public Texture2D webIdleReference, webBounceReference;
+
+   // Reference to the simple anim component
+   public SimpleAnimation simpleAnim;
+
+   // Bounce web frame indexes
+   public int bounceWebMin, bounceWebMax;
+
    #endregion
 
    private void Awake () {
@@ -51,6 +63,49 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
             _linkedWeb = web;
             break;
          }
+      }
+   }
+
+   public void initializeBiome (Biome.Type biome) {
+      simpleAnim = GetComponent<SimpleAnimation>();
+      biomeType = biome;
+      switch (biome) {
+         case Biome.Type.Forest:
+            simpleAnim.updateIndexMinMax(0, 1);
+
+            bounceWebMin = 0;
+            bounceWebMax = 5;
+            break;
+         case Biome.Type.Desert:
+            simpleAnim.updateIndexMinMax(2, 3);
+
+            bounceWebMin = 6;
+            bounceWebMax = 11;
+            break;
+         case Biome.Type.Pine:
+            simpleAnim.updateIndexMinMax(6, 7);
+
+            bounceWebMin = 18;
+            bounceWebMax = 23;
+            break;
+         case Biome.Type.Snow:
+            simpleAnim.updateIndexMinMax(4, 5);
+
+            bounceWebMin = 12;
+            bounceWebMax = 17;
+            break;
+         case Biome.Type.Lava:
+            simpleAnim.updateIndexMinMax(8, 9);
+
+            bounceWebMin = 24;
+            bounceWebMax = 29;
+            break;
+         case Biome.Type.Mushroom:
+            simpleAnim.updateIndexMinMax(10, 11);
+
+            bounceWebMin = 30;
+            bounceWebMax = 35;
+            break;
       }
    }
 
@@ -80,6 +135,7 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
 
       // Instantiate the bounce effect
       SimpleAnimation anim = Instantiate(webBouncePrefab, transform.position, Quaternion.identity).GetComponent<SimpleAnimation>();
+      anim.updateIndexMinMax(bounceWebMin, bounceWebMax);
 
       // Determine what direction the player should be facing in while they bounce / fall
       float bounceAngle = Util.angle(getDestination() - (Vector2) puppet.entity.transform.position);
