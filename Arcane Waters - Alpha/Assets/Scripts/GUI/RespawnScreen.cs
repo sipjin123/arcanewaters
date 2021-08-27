@@ -7,8 +7,7 @@ using System.Text;
 using UnityEngine.Events;
 using DG.Tweening;
 
-public class RespawnScreen : MonoBehaviour
-{
+public class RespawnScreen : MonoBehaviour {
    #region Public Variables
 
    // Singleton instance
@@ -28,6 +27,9 @@ public class RespawnScreen : MonoBehaviour
 
    // Reference to the respawn button
    public Button button;
+
+   // Reference to the content of the screen
+   public RectTransform content;
 
    #endregion
 
@@ -55,10 +57,6 @@ public class RespawnScreen : MonoBehaviour
    }
 
    public void onRespawnButtonPress () {
-      if (PanelManager.self.countdownScreen.isShowing()) {
-         return;
-      }
-
       if (Global.player != null) {
          PlayerShipEntity playerShip = Global.player.getPlayerShipEntity();
 
@@ -77,14 +75,6 @@ public class RespawnScreen : MonoBehaviour
       hide();
    }
 
-   private void onCountDownElapsed () {
-      if (button == null) {
-         return;
-      }
-
-      button.interactable = true;
-   }
-
    public void respawnPlayerShipInTown (PlayerShipEntity playerShip) {
       playerShip.requestRespawn();
 
@@ -99,14 +89,6 @@ public class RespawnScreen : MonoBehaviour
       }
    }
 
-   public void onRespawnTimeoutReceived (float timeout) {
-      PanelManager.self.countdownScreen.onCountdownEndEvent.RemoveAllListeners();
-      PanelManager.self.countdownScreen.onCountdownEndEvent.AddListener(onCountDownElapsed);
-      PanelManager.self.countdownScreen.seconds = timeout;
-      PanelManager.self.countdownScreen.toggleCancelButton(false);
-      PanelManager.self.countdownScreen.show();
-   }
-
    public void show () {
       if (!this.canvasGroup.IsShowing()) {
          // Hide tutorial panel so it doesn't block the respawn button
@@ -115,19 +97,22 @@ public class RespawnScreen : MonoBehaviour
          }
 
          updateButtonText();
+         content.gameObject.SetActive(true);
          this.canvasGroup.Show();
 
-         // Enable the button
-         if (button != null) {
-            button.interactable = true;
-         }
+         tryShowCountdown();
+      }
+   }
 
-         if (Global.player != null && !PanelManager.self.countdownScreen.isShowing() && VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
-            if (button != null) {
-               button.interactable = false;
-            }
+   private void tryShowCountdown () {
+      if (Global.player != null && !PanelManager.self.countdownScreen.isShowing() && VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
+         // If the countdown should be displayed, hide the Respawn Screen's content
+         content.gameObject.SetActive(false);
 
+         try {
             Global.player.rpc.Cmd_RequestPvpRespawnTimeout();
+         } catch {
+            content.gameObject.SetActive(true);
          }
       }
    }
@@ -172,6 +157,25 @@ public class RespawnScreen : MonoBehaviour
       } else {
          buttonText.text = BUTTON_TEXT_NORMAL;
       }
+   }
+
+   public void onRespawnTimeoutReceived (float timeout) {
+      PanelManager.self.countdownScreen.customText.text = "Respawning in:";
+      PanelManager.self.countdownScreen.onCountdownEndEvent.RemoveAllListeners();
+      PanelManager.self.countdownScreen.seconds = timeout;
+      PanelManager.self.countdownScreen.toggleCancelButton(false);
+      PanelManager.self.countdownScreen.show();
+
+      InvokeRepeating(nameof(checkCountdown), 0.0f, 1.0f);
+   }
+
+   private void checkCountdown () {
+      if (PanelManager.self.countdownScreen.isShowing()) {
+         return;
+      }
+
+      CancelInvoke(nameof(checkCountdown));
+      onRespawnButtonPress();
    }
 
    #region Private Variables

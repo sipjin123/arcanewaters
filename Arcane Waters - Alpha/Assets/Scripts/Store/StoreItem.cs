@@ -10,16 +10,10 @@ namespace Store
       #region Public Variables
 
       // Item Id
-      public ulong itemId;
-
-      // Item name
-      public string name;
-
-      // Item description
-      public string description;
+      public ulong id;
 
       // Item category
-      public Category category;
+      public Item.Category category;
 
       // Item quantity
       public int quantity;
@@ -27,39 +21,14 @@ namespace Store
       // Item price
       public int price;
 
-      // Item metadata
-      public string serializedMetadata;
-
       // Item currency mode
       public CurrencyMode currencyMode;
 
       // Item creation date
       public DateTime creationDate;
 
-      // Item categories
-      public enum Category
-      {
-         // None
-         None = 0,
-
-         // Gems
-         Gems = 1,
-
-         // Ship Skin
-         ShipSkin = 2,
-
-         // Haircut
-         Haircut = 3,
-
-         // Hair dye
-         HairDye = 4,
-
-         // Hats
-         Hats = 5,
-
-         // Pets
-         Pets = 6
-      }
+      // Reference to the item (id)
+      public int itemId;
 
       // Item currencies
       public enum CurrencyMode
@@ -77,31 +46,27 @@ namespace Store
 
       }
 
-      public StoreItem (ulong itemId, string name, string description, Category category, int quantity, int price, string metadata, DateTime creationDate, CurrencyMode currencyMode) {
-         this.itemId = itemId;
-         this.name = name;
-         this.description = description;
+      public StoreItem (ulong itemId, string name, string description, Item.Category category, int quantity, int price, string metadata, DateTime creationDate, CurrencyMode currencyMode, int item = 0) {
+         this.id = itemId;
          this.category = category;
          this.quantity = quantity;
          this.price = price;
-         this.serializedMetadata = metadata;
          this.creationDate = creationDate;
          this.currencyMode = currencyMode;
+         this.itemId = item;
       }
 
       #if IS_SERVER_BUILD
 
       public static StoreItem create (MySqlDataReader reader) {
          StoreItem item = new StoreItem();
-         item.itemId = DataUtil.getUInt64(reader, "siItemId");
-         item.name = DataUtil.getString(reader, "siItemName");
-         item.description = DataUtil.getString(reader, "siItemDescription");
-         item.category = (StoreItem.Category) DataUtil.getInt(reader, "siItemCategory");
+         item.id = DataUtil.getUInt64(reader, "siItemId");
+         item.category = (Item.Category) DataUtil.getInt(reader, "siItemCategory");
          item.quantity = DataUtil.getInt(reader, "siItemQuantity");
          item.price = DataUtil.getInt(reader, "siItemPrice");
-         item.serializedMetadata = DataUtil.getString(reader, "siItemMetadata");
          item.creationDate = DataUtil.getDateTime(reader, "siItemCreationDate");
          item.currencyMode = (StoreItem.CurrencyMode) DataUtil.getInt(reader, "siItemCurrencyMode");
+         item.itemId = DataUtil.getInt(reader, "siItem"); 
          return item;
       }
 

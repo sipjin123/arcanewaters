@@ -39,6 +39,7 @@ public class PvpShipyard : SeaStructure {
       botShip.shipType = Ship.Type.Type_1;
       botShip.guildId = BotShipEntity.PIRATES_GUILD_ID;
       botShip.pvpTeam = pvpTeam;
+      botShip.faction = faction;
       botShip.setPvpLaneTarget(laneCenterTarget);
       botShip.setPvpTargetStructures(targetStructures);
 
@@ -48,6 +49,11 @@ public class PvpShipyard : SeaStructure {
       NetworkServer.Spawn(botShip.gameObject);
 
       return botShip;
+   }
+
+   protected override Sprite getSprite () {
+      Sprite[] shipyardSprites = ImageManager.getSprites("Sprites/SeaStructures/pvp_shipyard");
+      return shipyardSprites[getSpriteIndex()];
    }
 
    private void checkReferences () {

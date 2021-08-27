@@ -171,10 +171,16 @@ public class LoadingScreen : FullScreenSeparatePanel
    }
 
    public void onLogOutButtonPressed () {
-      hide(Enum.GetValues(typeof(LoadingType)).Cast<LoadingType>().ToArray());
       errorSection.SetActive(false);
       _startTime = Time.time;
       Util.stopHostAndReturnToTitleScreen();
+
+      // Wait a few frames for the client to be stopped, then clear any remaining loading process
+      Invoke(nameof(clearLoadingProcesses), 0.5f);
+   }
+
+   private void clearLoadingProcesses () {
+      hide(Enum.GetValues(typeof(LoadingType)).Cast<LoadingType>().ToArray());
    }
 
    public void onWaitButtonPressed () {

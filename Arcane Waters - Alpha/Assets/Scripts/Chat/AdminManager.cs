@@ -119,6 +119,8 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("show_admin_panel", "Show the Admin Panel", showAdminPanel, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("reset_shop", "Refreshes all the shops", resetShops, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("simulate_steam_purchase_response", "Simulates the response received by the server", simulateSteamPurchaseAuthorizationResponse, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "orderId", "appId", "orderAuthorized" }));
+      cm.addCommand(new CommandData("add_xp", "Gives XP to the player", addXP, requiredPrefix: CommandType.Admin, parameterNames: new List<string> {"amount"}));
+      cm.addCommand(new CommandData("set_level", "Sets the Level of the player", setPlayerLevel, requiredPrefix: CommandType.Admin, parameterNames: new List<string> { "level" }));
 
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
@@ -133,6 +135,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("network_profile", "Saves last 60 seconds of network profiling data", networkProfile, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("temp_password", "Temporary access any account using temporary password", overridePassword, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "accountName", "tempPassword" }));
       cm.addCommand(new CommandData("db_test", "Runs a given number of queries per seconds and returns execution time statistics", requestDBTest, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "queriesPerSecond" }));
+      cm.addCommand(new CommandData("name_change", "Change the name of another player", nameChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "oldUsername", "newUsername" }));
 
       /*    NOT IMPLEMENTED
       _commands[Type.CreateTestUsers] = "create_test_users";
@@ -2823,12 +2826,140 @@ public class AdminManager : NetworkBehaviour
       });
    }
 
+   protected void addXP(string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+      int amount;
+
+      try {
+         amount = int.Parse(list[0]);
+      } catch (System.Exception e) {
+         D.warning("Unable to parse parameters from: " + parameters + ", exception: " + e);
+         return;
+      }
+
+      Cmd_AddXP(amount);
+   }
+
+   [Command]
+   protected void Cmd_AddXP(int xp) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.addGoldAndXP(_player.userId, 0, xp);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_OnAddXP(xp);
+         });
+      });
+   }
+
+   [TargetRpc]
+   protected void Target_OnAddXP (int xp) {
+      ChatManager.self.addChat($"{xp} XP added!", ChatInfo.Type.System);
+   }
+
+   protected void setPlayerLevel(string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+      int level;
+
+      try {
+         level = int.Parse(list[0]);
+      } catch (System.Exception e) {
+         D.warning("Unable to parse parameters from: " + parameters + ", exception: " + e);
+         return;
+      }
+
+      if (level < 1) {
+         D.warning($"The level must be 1 or greater. Value specified: {level}");
+         return;
+      }
+
+      Cmd_SetPlayerLevel(level);
+   }
+
+   [Command]
+   protected void Cmd_SetPlayerLevel(int level) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int currentXP = DB_Main.getXP(_player.userId);
+         int targetXP = LevelUtil.xpForLevel(level);
+         int deltaXP = targetXP - currentXP;
+         DB_Main.addGoldAndXP(_player.userId, 0, deltaXP);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_OnSetPlayerLevel(level);
+         });
+      });
+   }
+
+   [TargetRpc]
+   protected void Target_OnSetPlayerLevel(int level) {
+      ChatManager.self.addChat($"New player level: {level}", ChatInfo.Type.System);
+   }
+
    protected void showAdminPanel () {
       if (!_player.isAdmin()) {
          return;
       }
 
       AdminPanel.self.show();
+   }
+
+   public void nameChange (string parameters) {
+      string[] names = parameters.Split(' ');
+
+      // Parse the parameters
+      string oldName = names[0];
+      string newName = names[1];
+
+      Cmd_NameChange(oldName, newName);
+   }
+
+   [Command]
+   public void Cmd_NameChange (string oldName, string newName) {
+      // Check if new name is valid
+      bool nameTaken = false;
+      if (!NameUtil.isValid(newName)) {
+         D.debug("New name " + newName + " is not valid");
+         return;
+      }
+
+      // Make sure the name is available
+      int existingUserId = -1;
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         existingUserId = DB_Main.getUserId(newName);
+
+         if (existingUserId > 0) {
+            D.debug("The name " + newName + " is already taken!");
+            nameTaken = true;
+         } else {
+            DB_Main.changeUserName(oldName, newName);
+         }
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (nameTaken) {
+               string msg = "The name " + newName + " is already taken!";
+               _player.Target_ReceiveNormalChat(msg, ChatInfo.Type.System);
+            } else {
+               string msg = "Changed the player name from  " + oldName + " to " + newName;
+               _player.Target_ReceiveNormalChat(msg, ChatInfo.Type.System);
+            }
+         });
+      });
    }
 
    #region Private Variables

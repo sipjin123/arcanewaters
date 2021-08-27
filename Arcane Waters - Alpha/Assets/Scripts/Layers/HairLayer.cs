@@ -105,6 +105,14 @@ public class HairLayer : SpriteLayer {
       return list;
    }
 
+   public static string computeNumber (Type hairType) {
+      return hairType.ToString().Split('_')[2];
+   }
+
+   public static Gender.Type computeGender(Type hairType) {
+      return hairType.ToString().ToLower().Contains("female") ? Gender.Type.Female : Gender.Type.Male;
+   }
+
    public Type getType () {
       return _type;
    }

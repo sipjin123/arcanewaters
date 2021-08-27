@@ -39,7 +39,8 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
       AutoPlacement = 0,
       AboveUIElement = 1,
       LeftSideOfPanel = 2,
-      RightSideOfPanel = 3
+      RightSideOfPanel = 3,
+      BelowUIElement = 4
    }
 
    // Stores the desired tooltip placement
@@ -52,7 +53,7 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
    [HideInInspector]
    public string message;
 
-   // Maxium Width of the tooltip.  A value of zero allows the tooltip to be sized automatically or to be set in the tooltip web tool.
+   // Maximum Width of the tooltip.  A value of zero allows the tooltip to be sized automatically or to be set in the tooltip web tool.
    public float maxWidth;
 
    // Set to true if an offscreen tooltip should be shifted back onto screen instead of automatically being placed above the object.

@@ -68,7 +68,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_CreateAuction (Item item, int startingBid, int buyoutPrice, long expiryDateBinary, int auctionCost) {
+   public void Cmd_CreateAuction (Item item, int startingBid, bool isBuyoutAllowed, int buyoutPrice, long expiryDateBinary, int auctionCost) {
       DateTime expiryDate = DateTime.FromBinary(expiryDateBinary);
 
       if (_player == null) {
@@ -81,12 +81,12 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
-      if (buyoutPrice <= 0) {
+      if (isBuyoutAllowed && buyoutPrice <= 0) {
          sendError("The buyout price must be higher than 0.");
          return;
       }
 
-      if (buyoutPrice <= startingBid) {
+      if (isBuyoutAllowed && buyoutPrice <= startingBid) {
          sendError("The buyout price must be higher than the starting bid!");
          return;
       }
@@ -114,8 +114,7 @@ public class RPCManager : NetworkBehaviour
          }
 
          // Create the auction
-         int newId = DB_Main.createAuction(_player.userId, _player.nameText.text, mailId, expiryDate, startingBid,
-            buyoutPrice, item.category, EquipmentXMLManager.self.getItemName(item), item.count);
+         int newId = DB_Main.createAuction(_player.userId, _player.nameText.text, mailId, expiryDate, isBuyoutAllowed, startingBid, buyoutPrice, item.category, EquipmentXMLManager.self.getItemName(item), item.count);
 
          // Make sure that we charge the player only if the auction was set up correctly
          DB_Main.addGold(_player.userId, -auctionCost);
@@ -153,7 +152,9 @@ public class RPCManager : NetworkBehaviour
          }
 
          // Clamp the bid amount to the buyout price
-         bidAmount = Mathf.Clamp(bidAmount, 0, auction.buyoutPrice);
+         if (auction.isBuyoutAllowed) {
+            bidAmount = Mathf.Clamp(bidAmount, 0, auction.buyoutPrice);
+         }
 
          // Withdraw the gold from the user
          int gold = DB_Main.getGold(_player.userId);
@@ -172,7 +173,7 @@ public class RPCManager : NetworkBehaviour
          DB_Main.addBidderOnAuction(auctionId, _player.userId);
 
          string resultMessage = "";
-         if (bidAmount >= auction.buyoutPrice) {
+         if (auction.isBuyoutAllowed && bidAmount >= auction.buyoutPrice) {
             // Set this user as the highest bidder and close the auction. The item is delivered by the auction manager.
             DB_Main.updateAuction(auctionId, _player.userId, bidAmount, DateTime.UtcNow);
             resultMessage = "You have won the auction! The item will be delivered to you shortly by mail.";
@@ -863,7 +864,7 @@ public class RPCManager : NetworkBehaviour
 
       // Update hair
       if (_player is PlayerBodyEntity) {
-         _player.getPlayerBodyEntity().updateHair(_player.getPlayerBodyEntity().hairType, _player.getPlayerBodyEntity().hairPalettes);
+         _player.getPlayerBodyEntity().updateHair(_player.hairType, _player.hairPalettes);
       }
    }
 
@@ -1687,6 +1688,204 @@ public class RPCManager : NetworkBehaviour
       _player.cropManager.sellCrops(offerId, amountToSell, rarityToSellAt, shopId);
    }
 
+   [Server]
+   private void buyItem (ulong itemId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Look up the item box for the specified item id
+         StoreItem storeItem = DB_Main.getStoreItem(itemId);
+         string purchasedItemName = "";
+         int newItemId = 0;
+
+         int gems = DB_Main.getGems(_player.accountId);
+
+         // Make sure they can afford it
+         if (gems < storeItem.price) {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendError(ErrorMessage.Type.NotEnoughGems, _player, "You don't have " + storeItem.price + " gems!");
+            });
+
+            return;
+         }
+
+         if (storeItem.category == Item.Category.Haircut) {
+            HaircutData haircutData = HaircutXMLManager.self.getHaircutData(storeItem.itemId);
+
+            if (haircutData == null) {
+               D.error("The purchased haircut is not valid.");
+               return;
+            }
+
+            // Create an inventory entry for the haircut
+            newItemId = DB_Main.insertNewHaircut(_player.userId, haircutData.itemID, haircutData.type);
+
+            // If the purchase was not successful
+            if (newItemId == 0) {
+               D.error($"Store Purchase failed for user user '{_player.userId}' trying to purchase the Store Item '{storeItem.id}'.");
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  ServerMessageManager.sendError(ErrorMessage.Type.NotEnoughGems, _player, "You don't have " + storeItem.price + " gems!");
+               });
+
+               return;
+            }
+
+            // Fetch the newly created item for display
+            purchasedItemName = haircutData.itemName;
+
+            // Assign the haircut to the player
+            DB_Main.setHairType(_player.userId, haircutData.type);
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               _player.hairType = haircutData.type;
+
+               // Update the hair on all clients
+               Rpc_UpdateHair(_player.hairType, _player.hairPalettes);
+            });
+         }
+
+         // Remove the gems
+         DB_Main.addGems(_player.accountId, -storeItem.price);
+
+         // Back to Unity
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            string feedback = "Thank you for your purchase!";
+
+            if (!string.IsNullOrWhiteSpace(purchasedItemName)) {
+               feedback = "You have purchased " + purchasedItemName + "!";
+            }
+
+            if (storeItem.category == Item.Category.Hairdye || storeItem.category == Item.Category.Haircut || storeItem.category == Item.Category.ShipSkin) {
+               feedback += " You can find it in your inventory.";
+            }
+
+            // Let the player know that we gave them their item
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.StoreItemBought, _player, feedback);
+         });
+      });
+   }
+
+   [Server]
+   private void buySteamItem (ulong itemId, uint appId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Look up the item box for the specified item id
+         StoreItem storeItem = DB_Main.getStoreItem(itemId);
+
+         try {
+            D.debug($"Steam Purchase Request Received from User {_player.userId}");
+
+            if (_player == null) {
+               D.debug($"The reference to the player is null.");
+               return;
+            }
+
+            D.debug($"The appID is {appId}");
+
+            if (appId == 0) {
+               D.debug($"The appId is not valid.");
+               return;
+            }
+
+            bool isSteamIdValid = ulong.TryParse(_player.steamId, out ulong steamId);
+
+            if (isSteamIdValid) {
+               D.debug($"Parsed steamId for user '{_player.userId}' is {steamId}");
+            }
+
+            if (!isSteamIdValid) {
+               #if UNITY_EDITOR
+               // Try to use the debug Steam Id instead
+               steamId = SteamPurchaseManagerServer.self.debugSteamId;
+               D.debug($"Purchase Warning: Couldn't get the steamId for user '{_player.userId}'. Using the debug Steam ID...");
+               #endif
+            }
+
+            if (steamId == 0) {
+               D.debug($"Steam Purchase Error: Steam ID '{steamId}' is not valid. Can't process the purchase for user '{_player.userId}'.");
+               return;
+            }
+
+            Task<GetUserInfoResult> t = SteamPurchaseManagerServer.self.getUserInfo(steamId);
+            t.Wait();
+
+            D.debug("Steam Purchase. GetUserInfo: " + JsonConvert.SerializeObject(t.Result));
+
+            // Check if the user can make this purchase
+            GetUserInfoParameters.UserStatus status = t.Result.parameters.getStatus();
+            if (status == GetUserInfoParameters.UserStatus.LockedFromPurchasing) {
+               D.debug($"Steam Purchase Error: User '{_player.userId}' is not allowed to make Steam purchases. Can't process the purchase.");
+               return;
+            }
+
+            D.debug("Steam Purchase. Creating new order...");
+
+            // Create the Steam Order
+            ulong newOrderId = DB_Main.createSteamOrder();
+
+            if (newOrderId <= 0) {
+               D.debug("Steam Purchase. Creating new order: Failed.");
+               return;
+            }
+
+            D.debug("Steam Purchase. Creating new order: OK");
+
+            D.debug("Steam Purchase. Creating Purchase Information...");
+
+            // Try to obtain the description of the item
+            string itemDescription = "";
+            if (storeItem.category == Item.Category.Haircut) {
+               HaircutData haircutData = HaircutXMLManager.self.getHaircutData(storeItem.itemId);
+               itemDescription = haircutData.itemDescription;
+            }
+            else if (storeItem.category == Item.Category.Gems) {
+               GemsData gemsData = GemsXMLManager.self.getGemsData(storeItem.itemId);
+               itemDescription = gemsData.itemDescription;
+            }
+
+            // Create a Steam Purchase Item from the selected item
+            SteamPurchaseItem item = new SteamPurchaseItem() {
+               quantity = 1,
+               category = storeItem.category.ToString(),
+               description = itemDescription,
+               itemId = storeItem.id.ToString(),
+               totalCost = storeItem.price
+            };
+
+            // Bundle the items into a Purchase Info
+            SteamPurchaseInfo purchase = new SteamPurchaseInfo(newOrderId, steamId, appId, "en", "usd", new List<SteamPurchaseItem> { item });
+
+            D.debug("Steam Purchase. Creating Purchase Information: OK");
+
+            // Update the order
+            D.debug("Steam Purchase. Updating Steam Order...");
+            DB_Main.updateSteamOrder(newOrderId, _player.userId, "pending", JsonConvert.SerializeObject(purchase));
+            D.debug("Steam Purchase. Updating Steam Order: OK");
+
+            // Open order
+            D.debug("Steam Purchase. Toggling Steam Order...");
+            DB_Main.toggleSteamOrder(newOrderId, false);
+            D.debug("Steam Purchase. Toggling Steam Order: OK");
+
+            // Start the purchase workflow
+            D.debug("Steam Purchase. Transferring Control to Steam...");
+            Task<InitTxnResult> t2 = SteamPurchaseManagerServer.self.initTxn(purchase);
+            t2.Wait();
+            D.debug("Steam Purchase. InitTxn: " + JsonConvert.SerializeObject(t2.Result));
+
+            if (!t2.Result.isSuccess()) {
+               D.debug("Steam Purchase. Transferring Control to Steam: Failed");
+               D.debug("Steam Purchase Error: Couldn't start the purchase transaction. Reverting...");
+               DB_Main.deleteSteamOrder(newOrderId);
+               return;
+            }
+
+            D.debug("Steam Purchase. Transfer Control to Steam: OK");
+         } catch (Exception ex) {
+            D.error(ex.Message);
+            D.error(ex.StackTrace);
+         }
+      });
+   }
+
    [Command]
    public void Cmd_BuyStoreItem (ulong itemId, uint appId) {
       if (_player == null) {
@@ -1695,158 +1894,15 @@ public class RPCManager : NetworkBehaviour
 
       // Off to the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Look up the item box for the specified item id
          StoreItem storeItem = DB_Main.getStoreItem(itemId);
 
          // Check if the item should be paid with gems or with real money (e.g. through Steam)
          if (storeItem.currencyMode == StoreItem.CurrencyMode.Game) {
-            bool success = false;
-            int gems = DB_Main.getGems(_player.accountId);
+            buyItem(itemId);
+         }
 
-            // Make sure they can afford it
-            if (gems >= storeItem.price) {
-               // Remove the gems
-               DB_Main.addGems(_player.accountId, -storeItem.price);
-               success = true;
-
-               // Insert the different item types here
-               switch (storeItem.category) {
-                  case StoreItem.Category.HairDye:
-                     StoreHairDyeBoxMetadata hairDyeMetadata = JsonConvert.DeserializeObject<StoreHairDyeBoxMetadata>(storeItem.serializedMetadata);
-                     DB_Main.insertNewUsableItem(_player.userId, UsableItem.Type.HairDye, hairDyeMetadata.paletteName);
-                     break;
-                  case StoreItem.Category.ShipSkin:
-                     StoreShipBoxMetadata shipMetadata = JsonConvert.DeserializeObject<StoreShipBoxMetadata>(storeItem.serializedMetadata);
-                     DB_Main.insertNewUsableItem(_player.userId, UsableItem.Type.ShipSkin, shipMetadata.skinType);
-                     break;
-                  case StoreItem.Category.Haircut:
-                     StoreHaircutBoxMetadata haircutMetadata = JsonConvert.DeserializeObject<StoreHaircutBoxMetadata>(storeItem.serializedMetadata);
-                     DB_Main.insertNewUsableItem(_player.userId, UsableItem.Type.Haircut, haircutMetadata.hairType);
-                     break;
-                  default:
-                     break;
-               }
-            }
-
-            // Back to Unity
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               if (success) {
-                  string feedback = "You have purchased " + storeItem.name + "!";
-                  if (storeItem.category == StoreItem.Category.HairDye ||
-                  storeItem.category == StoreItem.Category.Haircut ||
-                  storeItem.category == StoreItem.Category.ShipSkin) {
-                     feedback += "  It has been placed in your backpack as a usable item.";
-                  }
-
-                  // Let the player know that we gave them their item
-                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.StoreItemBought, _player, feedback);
-               } else {
-                  ServerMessageManager.sendError(ErrorMessage.Type.NotEnoughGems, _player, "You don't have " + storeItem.price + " gems!");
-               }
-            });
-         } else {
-            try {
-               D.debug($"Steam Purchase Request Received from User {_player.userId}");
-
-               if (_player == null) {
-                  D.debug($"The reference to the player is null.");
-                  return;
-               }
-
-               D.debug($"The appID is {appId}");
-
-               if (appId == 0) {
-                  D.debug($"The appId is not valid.");
-                  return;
-               }
-
-               bool isSteamIdValid = ulong.TryParse(_player.steamId, out ulong steamId);
-
-               if (isSteamIdValid) {
-                  D.debug($"Parsed steamId for user '{_player.userId}' is {steamId}");
-               }
-
-               if (!isSteamIdValid) {
-                  #if UNITY_EDITOR
-                  // Try to use the debug Steam Id instead
-                  steamId = SteamPurchaseManagerServer.self.debugSteamId;
-                  D.debug($"Purchase Warning: Couldn't get the steamId for user '{_player.userId}'. Using the debug Steam ID...");
-                  #endif
-               }
-
-               if (steamId == 0) {
-                  D.debug($"Steam Purchase Error: Steam ID '{steamId}' is not valid. Can't process the purchase for user '{_player.userId}'.");
-                  return;
-               }
-
-               Task<GetUserInfoResult> t = SteamPurchaseManagerServer.self.getUserInfo(steamId);
-               t.Wait();
-
-               D.debug("Steam Purchase. GetUserInfo: " + JsonConvert.SerializeObject(t.Result));
-
-               // Check if the user can make this purchase
-               GetUserInfoParameters.UserStatus status = t.Result.parameters.getStatus();
-               if (status == GetUserInfoParameters.UserStatus.LockedFromPurchasing) {
-                  D.debug($"Steam Purchase Error: User '{_player.userId}' is not allowed to make Steam purchases. Can't process the purchase.");
-                  return;
-               }
-
-               D.debug("Steam Purchase. Creating new order...");
-
-               // Create the Steam Order
-               ulong newOrderId = DB_Main.createSteamOrder();
-
-               if (newOrderId <= 0) {
-                  D.debug("Steam Purchase. Creating new order: Failed.");
-                  return;
-               }
-
-               D.debug("Steam Purchase. Creating new order: OK");
-
-               D.debug("Steam Purchase. Creating Purchase Information...");
-
-               // Create a Steam Purchase Item from the selected item
-               SteamPurchaseItem item = new SteamPurchaseItem() {
-                  quantity = 1,
-                  category = storeItem.category.ToString(),
-                  description = storeItem.description,
-                  itemId = storeItem.itemId.ToString(),
-                  totalCost = storeItem.price
-               };
-
-               // Bundle the items into a Purchase Info
-               SteamPurchaseInfo purchase = new SteamPurchaseInfo(newOrderId, steamId, appId, "en", "usd", new List<SteamPurchaseItem> { item });
-
-               D.debug("Steam Purchase. Creating Purchase Information: OK");
-
-               // Update the order
-               D.debug("Steam Purchase. Updating Steam Order...");
-               DB_Main.updateSteamOrder(newOrderId, _player.userId, "pending", JsonConvert.SerializeObject(purchase));
-               D.debug("Steam Purchase. Updating Steam Order: OK");
-
-               // Open order
-               D.debug("Steam Purchase. Toggling Steam Order...");
-               DB_Main.toggleSteamOrder(newOrderId, false);
-               D.debug("Steam Purchase. Toggling Steam Order: OK");
-
-               // Start the purchase workflow
-               D.debug("Steam Purchase. Transferring Control to Steam...");
-               Task<InitTxnResult> t2 = SteamPurchaseManagerServer.self.initTxn(purchase);
-               t2.Wait();
-               D.debug("Steam Purchase. InitTxn: " + JsonConvert.SerializeObject(t2.Result));
-
-               if (!t2.Result.isSuccess()) {
-                  D.debug("Steam Purchase. Transferring Control to Steam: Failed");
-                  D.debug("Steam Purchase Error: Couldn't start the purchase transaction. Reverting...");
-                  DB_Main.deleteSteamOrder(newOrderId);
-                  return;
-               }
-
-               D.debug("Steam Purchase. Transfer Control to Steam: OK");
-            } catch (Exception ex) {
-               D.error(ex.Message);
-               D.error(ex.StackTrace);
-            }
+         if (storeItem.currencyMode == StoreItem.CurrencyMode.Real) {
+            buySteamItem(itemId, appId);
          }
       });
    }
@@ -1911,7 +1967,7 @@ public class RPCManager : NetworkBehaviour
                foreach (SteamPurchaseItem item in purchase.items) {
                   StoreItem storeItem = DB_Main.getStoreItem(ulong.Parse(item.itemId));
 
-                  if (storeItem.category == StoreItem.Category.Gems) {
+                  if (storeItem.category == Item.Category.Gems) {
                      // Assign the gems
                      int accountId = DB_Main.getAccountId(_player.userId);
                      DB_Main.addGems(accountId, storeItem.quantity);
@@ -1949,122 +2005,62 @@ public class RPCManager : NetworkBehaviour
       }
    }
 
+   [Server]
+   private void useHaircut (Item item) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         HaircutData haircutData = HaircutXMLManager.self.getHaircutData(item.itemTypeId);
+         HairLayer.Type newHairType = haircutData.type;
+
+         // Make sure the gender is right
+         if (haircutData.getGender() != _player.gender) {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "This haircut is for a different gender.");
+            });
+
+            return;
+         }
+
+         // Set the new hair in the database
+         DB_Main.setHairType(_player.userId, newHairType);
+
+         // Back to Unity
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            _player.hairType = newHairType;
+
+            // Update the hair but keep the color
+            Rpc_UpdateHair(newHairType, _player.hairPalettes);
+
+            // Let the client know the item was used
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.UsedHaircut, _player, item.id.ToString());
+         });
+      });
+   }
+
+   [Server]
+   private void useShipSkin (Item item) {
+      return;
+   }
+
+   [Server]
+   private void useHairdye (Item item) {
+      return;
+   }
+
    [Command]
    public void Cmd_UseItem (int itemId) {
-      if (_player == null) {
-         return;
-      }
-
-      // They may be in an island scene, or at sea
-      BodyEntity body = _player.GetComponent<BodyEntity>();
-      PlayerShipEntity ship = _player.GetComponent<PlayerShipEntity>();
-
-      // Off to the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          Item item = DB_Main.getItem(_player.userId, itemId);
 
-         if (item != null && item is UsableItem) {
-            UsableItem usable = (UsableItem) item;
+         if (item == null) {
+            return;
+         }
 
-            if (usable.itemType == UsableItem.Type.HairDye) {
-               string newPalette = usable.paletteNames;
-
-               // The player shouldn't be on a ship
-               if (body == null) {
-                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "You need to be on land to use this item.");
-                  });
-                  return;
-               }
-
-               // Set the new hair color in the database
-               DB_Main.setHairColor(body.userId, newPalette);
-
-               // Delete the item now that we've used it
-               DB_Main.deleteItem(body.userId, itemId);
-
-               // Back to Unity
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  body.hairPalettes = newPalette;
-
-                  // Update the body sheets on all clients
-                  body.rpc.Rpc_UpdateHair(body.hairType, body.hairPalettes);
-
-                  // Let the client know the item was used
-                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.UsedHairDye, _player, itemId + "");
-               });
-            } else if (usable.itemType == UsableItem.Type.ShipSkin) {
-               Ship.SkinType newSkinType = usable.getSkinType();
-
-               // The player has to be on a ship
-               if (ship == null) {
-                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "You must be on a ship to use this item.");
-                  });
-                  return;
-               }
-
-               // It must be the right type of ship
-               if (!ship.canUseSkin(newSkinType)) {
-                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "That ship skin can't be applied to the type of ship you're currently on.");
-                  });
-                  return;
-               }
-
-               // Set the new skin in the database
-               DB_Main.setShipSkin(ship.shipId, newSkinType);
-
-               // Delete the item now that we've used it
-               DB_Main.deleteItem(_player.userId, itemId);
-
-               // Back to Unity
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  ship.skinType = newSkinType;
-
-                  // Update the ship on all clients
-                  ship.rpc.Rpc_UpdateShipSkin(newSkinType);
-
-                  // Let the client know the item was used
-                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.UsedShipSkin, _player, itemId + "");
-               });
-            } else if (usable.itemType == UsableItem.Type.Haircut) {
-               HairLayer.Type newHairType = usable.getHairType();
-
-               // The player shouldn't be on a ship
-               if (body == null) {
-                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "You need to be on land to use this item.");
-                  });
-                  return;
-               }
-
-               // Make sure the gender is right
-               bool isFemaleHaircut = newHairType.ToString().ToLower().Contains("female");
-               if ((isFemaleHaircut && _player.isMale()) || (!isFemaleHaircut && !_player.isMale())) {
-                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "This haircut is for a different gender.");
-                  });
-                  return;
-               }
-
-               // Set the new hair in the database
-               DB_Main.setHairType(_player.userId, newHairType);
-
-               // Delete the item now that we've used it
-               DB_Main.deleteItem(_player.userId, itemId);
-
-               // Back to Unity
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  body.hairType = newHairType;
-
-                  // Update the ship on all clients
-                  body.rpc.Rpc_UpdateHair(newHairType, body.hairPalettes);
-
-                  // Let the client know the item was used
-                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.UsedHaircut, _player, itemId + "");
-               });
-            }
+         if (item.category == Item.Category.Hairdye) {
+            useHairdye(item);
+         } else if (item.category == Item.Category.ShipSkin) {
+            useShipSkin(item);
+         } else if (item.category == Item.Category.Haircut) {
+            useHaircut(item);
          }
       });
    }
@@ -2078,11 +2074,11 @@ public class RPCManager : NetworkBehaviour
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         UserInfo userInfo = DB_Main.getUserInfoById(_player.userId);
+         int gems = DB_Main.getGems(_player.accountId);
 
          // Back to Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            _player.rpc.Target_UpdateGems(_player.connectionToClient, userInfo.gems);
+            _player.rpc.Target_UpdateGems(_player.connectionToClient, gems);
          });
       });
    }
@@ -2742,7 +2738,7 @@ public class RPCManager : NetworkBehaviour
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (success) {
                // Let the player know that a friendship invitation has been sent
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, feedbackMessage);
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.FriendshipInvitationSent, _player, feedbackMessage);
 
                // Let the potential friend know that he has got invitation
                NetEntity friend = EntityManager.self.getEntity(friendUserId);
@@ -4833,7 +4829,7 @@ public class RPCManager : NetworkBehaviour
       panel.setTitle("STATS");
 
       if (instance.isPvP) {
-         panel.setTitle("PVP");
+         panel.setTitle("SCOREBOARD");
       }
 
       panel.populatePvpPanelData(pvpStatData);

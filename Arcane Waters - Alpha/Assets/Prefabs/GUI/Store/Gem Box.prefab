@@ -146,6 +146,8 @@ GameObject:
   - component: {fileID: 3357081646286800559}
   - component: {fileID: 3357081646286800558}
   - component: {fileID: 4016485856784013012}
+  - component: {fileID: 278520372197668654}
+  - component: {fileID: 4701183806088601655}
   m_Layer: 5
   m_Name: Gem Box
   m_TagString: Untagged
@@ -236,9 +238,48 @@ MonoBehaviour:
   itemName: Little Gems Pack
   itemCost: 10
   itemDescription: Some Gems for ye!
+  itemCategory: 0
+  itemQuantity: 0
   nameText: {fileID: 2276450660651273146}
   costText: {fileID: 4067204445541917367}
   imageIcon: {fileID: 3357081648208747312}
+--- !u!222 &278520372197668654
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3357081646286800562}
+  m_CullTransparentMesh: 0
+--- !u!114 &4701183806088601655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3357081646286800562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.011764706}
+  m_RaycastTarget: 1
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &3357081646736320152
 GameObject:
   m_ObjectHideFlags: 0

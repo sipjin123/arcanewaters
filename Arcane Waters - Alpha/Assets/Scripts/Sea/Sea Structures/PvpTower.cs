@@ -49,6 +49,9 @@ public class PvpTower : SeaStructure
    // References to the sprites used for targeting
    public Sprite aimingReticle, lockedReticle;
 
+   // Defines what tower style each pvp faction will have
+   public static readonly int[] towerStylesByFaction = { 0, 1, 0, 1, 0, 1, 0, 1 };
+
    #endregion
 
    protected override void Awake () {
@@ -453,6 +456,13 @@ public class PvpTower : SeaStructure
          yield return new WaitForSeconds(1.0f);
          attackRangeRenderer.material.SetVector("_Position", transform.position);
       }
+   }
+
+   protected override Sprite getSprite () {
+      int towerStyle = towerStylesByFaction[(int) faction];
+      string spritePath = (towerStyle == 0) ? "Sprites/SeaStructures/pvp_tower_style_1" : "Sprites/SeaStructures/pvp_tower_style_2";
+      Sprite[] towerSprites = ImageManager.getSprites(spritePath);
+      return towerSprites[getSpriteIndex()];
    }
 
    private void OnDrawGizmosSelected () {

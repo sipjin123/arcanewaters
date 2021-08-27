@@ -163,12 +163,19 @@ public class BottomBar : MonoBehaviour {
    }
 
    public void toggleStorePanel () {
+      if (Global.player == null) {
+         return;
+      }
+
+      // Makes the Store accessible only to admin players
+      if (!Global.player.isAdmin()) {
+         return;
+      }
+
       StoreScreen panel = (StoreScreen) PanelManager.self.get(Panel.Type.Store);
 
       if (!panel.isShowing()) {
-         if (Global.player != null) {
-            Global.player.rpc.Cmd_RequestStoreFromServer();
-         }
+         Global.player.rpc.Cmd_RequestStoreFromServer();
       } else {
          PanelManager.self.togglePanel(Panel.Type.Store);
       }
@@ -209,7 +216,7 @@ public class BottomBar : MonoBehaviour {
          if (Global.player != null) {
             SoundEffectManager.self.playGuiMenuOpenSfx();
 
-            panel.refreshPanel();
+            panel.refreshPanel(true);
          }
       } else {
          PanelManager.self.togglePanel(Panel.Type.FriendList);

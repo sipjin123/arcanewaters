@@ -335,6 +335,10 @@ public class PanelManager : GenericGameManager {
          CharacterCreationPanel.self.cancelCreating();
       }
 
+      if (PvpShopPanel.self != null) {
+         PvpShopPanel.self.hideEntirePanel();
+      }
+
       foreach (Panel panel in FindObjectsOfType<Panel>()) {
          if (panel.isShowing()) {
             panel.hide();

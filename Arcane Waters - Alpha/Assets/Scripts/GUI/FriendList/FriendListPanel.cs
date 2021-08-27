@@ -74,7 +74,11 @@ public class FriendListPanel : Panel
       self = this;
    }
 
-   public void refreshPanel () {
+   public void refreshPanel (bool clearInputFields = false) {
+      if (clearInputFields) {
+         inviteInputField.text = "";
+      }
+
       Global.player.rpc.Cmd_RequestFriendshipInfoFromServer(_currentPage, _rowsPerPage, _friendshipStatusFilter);
    }
 

@@ -22,7 +22,7 @@ public class StoreItemBox : MonoBehaviour, IPointerEnterHandler, IPointerClickHa
    public string itemDescription;
 
    // The category of the item
-   public Category itemCategory;
+   public Item.Category itemCategory;
 
    // The quantity of the item
    public int itemQuantity;
@@ -40,7 +40,7 @@ public class StoreItemBox : MonoBehaviour, IPointerEnterHandler, IPointerClickHa
 
    public virtual void Start () {
       this.nameText.text = itemName;
-      this.costText.text = itemCost + "";
+      this.costText.text = getDisplayCost();
    }
 
    public virtual void OnPointerEnter (PointerEventData eventData) {
@@ -53,6 +53,10 @@ public class StoreItemBox : MonoBehaviour, IPointerEnterHandler, IPointerClickHa
 
    public virtual void OnPointerDown (PointerEventData eventData) {
 
+   }
+
+   public virtual string getDisplayCost () {
+      return itemCost.ToString();
    }
 
    #region Private Variables

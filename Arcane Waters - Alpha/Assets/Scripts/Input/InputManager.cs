@@ -47,7 +47,6 @@ public class InputManager : GenericGameManager {
    protected override void Awake () {
       base.Awake();
       self = this;
-
       loadDefaultKeybindings();
 
       // Load all saved user keybindings
@@ -95,7 +94,11 @@ public class InputManager : GenericGameManager {
    }
 
    private void Update () {
-      if (!Util.isCloudBuild() && isFocused) {
+      if (!isFocused) {
+         return;
+      }
+
+      if (!Util.isCloudBuild()) {
          InputSystem.Update();
       }
 
@@ -153,7 +156,7 @@ public class InputManager : GenericGameManager {
    }
 
    private void mouseAction (Vector2 mouseVal) {
-      if (Global.player == null) {
+      if (Global.player == null || !isFocused) {
          return;
       }
 
@@ -205,6 +208,10 @@ public class InputManager : GenericGameManager {
    }
 
    public static bool isPressingDirection (Direction direction) {
+      if (!self._isInputEnabled) {
+         return false;
+      }
+
       switch (direction) {
          case Direction.North:
             return getKeyAction(KeyAction.MoveUp) || self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.North);
@@ -232,7 +239,7 @@ public class InputManager : GenericGameManager {
    }
 
    public static bool getKeyAction (KeyAction action) {
-      if (self._keybindings.TryGetValue(action, out BoundKeyAction boundAction)) {
+      if (self._keybindings.TryGetValue(action, out BoundKeyAction boundAction) && self._isInputEnabled) {
          bool primary = boundAction.primary != Key.None && KeyUtils.GetKey(boundAction.primary) && (!isKeyDisabled(boundAction.primary));
          bool secondary = boundAction.secondary != Key.None && KeyUtils.GetKey(boundAction.secondary) && !isKeyDisabled(boundAction.secondary);
          return primary || secondary;
@@ -242,7 +249,7 @@ public class InputManager : GenericGameManager {
    }
 
    public static bool getKeyActionDown (KeyAction action) {
-      if (self._keybindings.TryGetValue(action, out BoundKeyAction boundAction)) {
+      if (self._keybindings.TryGetValue(action, out BoundKeyAction boundAction) && self._isInputEnabled) {
          bool primary = boundAction.primary != Key.None && KeyUtils.GetKeyDown(boundAction.primary) && !isKeyDisabled(boundAction.primary);
          bool secondary = boundAction.secondary != Key.None && KeyUtils.GetKeyDown(boundAction.secondary) && !isKeyDisabled(boundAction.secondary);
          return primary || secondary;
@@ -252,7 +259,7 @@ public class InputManager : GenericGameManager {
    }
 
    public static bool getKeyActionUp (KeyAction action) {
-      if (self._keybindings.TryGetValue(action, out BoundKeyAction boundAction)) {
+      if (self._keybindings.TryGetValue(action, out BoundKeyAction boundAction) && self._isInputEnabled) {
          bool primary = boundAction.primary != Key.None && KeyUtils.GetKeyUp(boundAction.primary) && !isKeyDisabled(boundAction.primary);
          bool secondary = boundAction.secondary != Key.None && KeyUtils.GetKeyUp(boundAction.secondary) && !isKeyDisabled(boundAction.secondary);
          return primary || secondary;
@@ -399,7 +406,8 @@ public class InputManager : GenericGameManager {
          return false;
       }
 
-      return true;
+      // Don't respond to action keys if input is globally disabled
+      return self._isInputEnabled;
    }
 
    public static void setBindingKey (KeyAction action, Key key, bool isPrimary) {
@@ -467,6 +475,22 @@ public class InputManager : GenericGameManager {
       }
    }
 
+   public static void toggleInput(bool enable) {
+      if (self == null) {
+         return;
+      }
+
+      self._isInputEnabled = enable;
+   }
+
+   public static bool isInputEnabled () {
+      if (self == null) {
+         return true;
+      }
+
+      return self._isInputEnabled;
+   }
+
    #region Private Variables
 
    // List of keybindings, indexed by their action
@@ -480,6 +504,9 @@ public class InputManager : GenericGameManager {
 
    // The movement direction that is being simulated
    private static Direction _moveDirectionSimulated = Direction.East;
+
+   // Is input enabled?
+   private bool _isInputEnabled = true;
 
    #endregion
 }

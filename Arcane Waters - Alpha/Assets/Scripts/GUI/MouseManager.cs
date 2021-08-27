@@ -130,6 +130,14 @@ public class MouseManager : ClientMonoBehaviour
       return _boxBeingHovered == box;
    }
 
+   public void setHandCursor (bool pressed = false, CursorMode cursorMode = CursorMode.Auto) {
+      Cursor.SetCursor(pressed ? pressedHandTexture : defaultHandTexture, handHotSpot, cursorMode);
+   }
+
+   public void setArrowCursor (bool pressed = false, CursorMode cursorMode = CursorMode.Auto) {
+      Cursor.SetCursor(pressed ? pressedCursorTexture : defaultCursorTexture, handHotSpot, cursorMode);
+   }
+
    #region Private Variables
 
    // The clickable box that we're currently hovering over

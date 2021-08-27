@@ -5,8 +5,8 @@ public class StoreGemBox : StoreItemBox
 {
    #region Public Variables
 
-   // The metadata of the StoreGemBox
-   public StoreGemBoxMetadata metadata;
+   // Reference to the gems data
+   public GemsData gemsBundle;
 
    #endregion
 
@@ -19,6 +19,11 @@ public class StoreGemBox : StoreItemBox
       if (this.imageIcon.sprite.bounds.size.y > .50f) {
          this.imageIcon.transform.parent.GetComponent<HorizontalLayoutGroup>().childAlignment = TextAnchor.LowerCenter;
       }
+   }
+
+   public override string getDisplayCost () {
+      float itemCostFloat = (float) itemCost / 100;
+      return itemCostFloat.ToString("0") + " USD";
    }
 
    #region Private Variables

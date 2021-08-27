@@ -472,7 +472,7 @@ public class MailPanel : Panel
       _currentMode = mode;
    }
 
-   private void clearWriteMailSection () {
+   public void clearWriteMailSection () {
       // Clear existing values for the write mail section
       recipientInput.text = "";
       subjectInput.text = "";

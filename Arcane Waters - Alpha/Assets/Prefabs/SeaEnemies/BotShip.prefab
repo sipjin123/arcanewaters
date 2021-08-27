@@ -289,6 +289,7 @@ MonoBehaviour:
   isUnderExternalControl: 0
   lastNPCTalkTime: -30
   pvpTeam: 0
+  faction: 0
   guildId: 0
   guildPermissions: 0
   guildRankPriority: 0
@@ -302,23 +303,11 @@ MonoBehaviour:
   isAboutToWarpOnClient: 0
   interactingAnimation: 0
   isSpeedingUp: 0
+  passedOnTemporaryControl: 0
+  ignoredRenderers:
+  - {fileID: 958050535380161597}
   _ignoredAnimators: []
   _animators: []
-  debugCanvas: {fileID: 0}
-  lastFuncToCallPathfind: 
-  pathFindingMessage: 
-  vicinityFindMessage: 
-  pathFindTimer: 0
-  totalAttackers: 0
-  totalPaths: 0
-  currPathIndex: 0
-  lastPathValue: 
-  hasReachedPvpTarget: 0
-  arriveDst: 
-  hasStructTarget: 
-  dynamicMsg: 
-  prevDynamicMsg: 
-  structLoc: {x: 0, y: 0}
   debugImageHolder: {fileID: 5496365473809493967}
   onScreenGUI: {fileID: 2836318127835288167}
   statTextDisplay: {fileID: 2484090239692066960}
@@ -341,6 +330,7 @@ MonoBehaviour:
   currentImpactMagnitude: 0
   combatCollider: {fileID: 0}
   totalDamageDealt: 0
+  sinkOnDeath: 1
   currentSecondsPatrolingTerritory: 0
   initialPosition: {x: 0, y: 0, z: 0}
   distanceFromInitialPosition: 0

@@ -229,9 +229,6 @@ public class ClientMessageManager : MonoBehaviour {
             // Refresh the panel
             panel.refreshPanel();
 
-            // Because the character appearance changed, let's just close the panel for now
-            PanelManager.self.unlinkPanel();
-
             return;
          case ConfirmMessage.Type.General:
             // Add the confirmation message in the chat panel
@@ -275,7 +272,7 @@ public class ClientMessageManager : MonoBehaviour {
 
             // Refresh the panel
             if (friendListPanel.isShowing()) {
-               friendListPanel.refreshPanel();
+               friendListPanel.refreshPanel(msg.confirmType == ConfirmMessage.Type.FriendshipInvitationSent);
             }
 
             // Add the confirmation message in the chat panel

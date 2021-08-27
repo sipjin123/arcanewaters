@@ -26,6 +26,9 @@ public class PvpArenaCell : MonoBehaviour
    // The state of the pvp game
    public Text gameState;
 
+   // The game mode and arena size
+   public Text gameModeAndarenaSizeText;
+
    // The minimap image
    public Image minimapImage;
 
@@ -63,6 +66,7 @@ public class PvpArenaCell : MonoBehaviour
       playerCount.text = pvpArena.playerCount.ToString() + "/" + pvpArena.pvpGameMaxPlayerCount.ToString();
       timeText.text = DateTime.UtcNow.Subtract(DateTime.FromBinary(pvpArena.creationDate)).ToString(@"mm\:ss");
       gameState.text = PvpGame.getGameStateLabel(pvpArena.pvpGameState);
+      gameModeAndarenaSizeText.text = PvpGame.getGameModeLabel(AreaManager.self.getAreaPvpGameMode(pvpArena.areaKey)) + " - " + AreaManager.self.getAreaPvpArenaSize(pvpArena.areaKey).ToString();
 
       // Try to find an existing minimap
       minimapImage.sprite = ImageManager.getSprite("Minimaps/" + pvpArena.areaKey, true);

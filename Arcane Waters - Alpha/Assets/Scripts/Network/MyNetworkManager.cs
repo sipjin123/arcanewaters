@@ -277,6 +277,9 @@ public class MyNetworkManager : NetworkManager
       NPCQuestManager.self.initializeServerDataCache();
       ItemDefinitionManager.self.loadFromDatabase();
       ProjectileStatManager.self.initializeDataCache();
+
+      HaircutXMLManager.self.initializeDataCache();
+      GemsXMLManager.self.initializeDataCache();
    }
 
    public override void OnStopServer () {

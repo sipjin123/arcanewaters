@@ -553,10 +553,12 @@ public class NPCPanel : Panel
          row.hoverEnterEvent.AddListener(() => {
             toolTipObj.gameObject.SetActive(true);
             toolTipObj.transform.position = row.toolTipSnapNode.position;
+            UIToolTipManager.openTooltips.Add(toolTipObj);
          });
          row.hoverExitEvent.RemoveAllListeners();
          row.hoverExitEvent.AddListener(() => {
             toolTipObj.gameObject.SetActive(false);
+            UIToolTipManager.openTooltips.Remove(toolTipObj);
          });
       }
    }

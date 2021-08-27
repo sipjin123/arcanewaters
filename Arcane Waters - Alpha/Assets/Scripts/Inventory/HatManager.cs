@@ -69,7 +69,7 @@ public class HatManager : EquipmentManager {
       }
    }
 
-   [ClientRpc]
+   [TargetRpc]
    public void Rpc_EquipHat (string rawHatData, string palettes) {
       HatStatData hatData = Util.xmlLoad<HatStatData>(rawHatData);
       cachedHatData = hatData;
@@ -86,6 +86,22 @@ public class HatManager : EquipmentManager {
          category = Item.Category.Hats,
          itemTypeId = hatType
       };
+
+      // Update the hair
+      _body.updateHair(_body.hairType, _body.hairPalettes);
+   }
+
+   [ClientRpc]
+   public void Rpc_BroadcastEquipHat (string rawHatData, string palettes) {
+         HatStatData hatData = Util.xmlLoad<HatStatData>(rawHatData);
+         cachedHatData = hatData;
+
+         // Update the sprites for the new hat type
+         int newType = hatData == null ? 0 : hatData.hatType;
+         updateSprites(newType, palettes);
+
+         // Update the hair
+         _body.updateHair(_body.hairType, _body.hairPalettes);
    }
 
    [Server]
@@ -96,16 +112,7 @@ public class HatManager : EquipmentManager {
          hatData = HatStatData.getDefaultData();
       }
 
-      if (hatData.hatType == 0) {
-         // No Hat to equip
-         equipmentDataId = 0;
-         equippedHatId = 0;
-         hatType = 0;
-         updateSprites(0, "");
-         return;
-      }
-
-      cachedHatData = hatData;
+      this.cachedHatData = hatData;
 
       // Assign the hat ID
       this.equippedHatId = hatId;
@@ -115,8 +122,11 @@ public class HatManager : EquipmentManager {
       this.hatType = hatData.hatType;
       this.palettes = hatData.palettes;
 
-      // Send the Info to all clients
+	  
       Rpc_EquipHat(HatStatData.serializeHatStatData(hatData), palettes);
+      
+      // Send the Info to all clients
+      Rpc_BroadcastEquipHat(HatStatData.serializeHatStatData(hatData), palettes);
    }
 
    #region Private Variables

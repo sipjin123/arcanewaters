@@ -17,15 +17,19 @@ public class HatLayer : SpriteLayer
    public void setType (Gender.Type gender, int newType, bool immediate = true) {
       _type = newType;
 
-      // Update our Animated Sprite
-      string path = (newType == 0) ? "Empty_Layer" : "Hats/" + "hat_" + (int) newType;
-      Texture2D result = ImageManager.getTexture(path);
+      // Update our animated Sprite
+      Texture2D hatTexture = getTexture(newType);
 
       if (immediate) {
-         GetComponent<SpriteSwap>().newTexture = result;
+         setTexture(hatTexture);
       } else {
-         StartCoroutine(CO_SwapTexture(result));
+         StartCoroutine(CO_SwapTexture(hatTexture));
       }
+   }
+
+   public static Texture2D getTexture (int newType) {
+      string path = (newType == 0) ? "Empty_Layer" : "Hats/" + "hat_" + (int) newType;
+      return ImageManager.getTexture(path);
    }
 
    public int getType () {

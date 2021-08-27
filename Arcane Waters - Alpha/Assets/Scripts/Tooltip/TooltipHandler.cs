@@ -30,6 +30,9 @@ public class TooltipHandler : MonoBehaviour
    // The Y value of the top edge of the tooltip owner
    public float tooltipOwnerTopEdge;
 
+   // The Y value of the bottom edge of the tooltip owner
+   public float tooltipOwnerBottomEdge;
+
    // The directory for the rarity sprites
    public static string RARITY_PATH = "Assets/Resources/Sprites/GUI/ItemTooltips/";
 
@@ -99,6 +102,10 @@ public class TooltipHandler : MonoBehaviour
       tooltipOwner.GetComponent<RectTransform>().GetWorldCorners(cornersTooltipOwner);
       tooltipOwnerTopEdge = cornersTooltipOwner[2].y;
 
+      // Find the bottom edge of the tooltip owner
+      tooltipOwner.GetComponent<RectTransform>().GetWorldCorners(cornersTooltipOwner);
+      tooltipOwnerBottomEdge = cornersTooltipOwner[0].y;
+
       // Find the width and height of the tooltip
       Vector3[] cornersTooltip = new Vector3[4];
       backgroundRect.gameObject.GetComponent<RectTransform>().GetWorldCorners(cornersTooltip);
@@ -126,6 +133,9 @@ public class TooltipHandler : MonoBehaviour
             break;
          case ToolTipComponent.TooltipPlacement.RightSideOfPanel:
             placeOnRightSideOfPanel(_rightEdge, _middleOfEdge, _tooltipDimensions);
+            break;
+         case ToolTipComponent.TooltipPlacement.BelowUIElement:
+            placeBelowUIELement(elementPosition);
             break;
       }
 
@@ -189,7 +199,7 @@ public class TooltipHandler : MonoBehaviour
    }
 
    public bool isTooltipOffScreen () {
-      return (toolTipPanel.transform.position.x + _tooltipDimensions.x/2 + _offSetX > Screen.width) || (toolTipPanel.transform.position.x - _tooltipDimensions.x - _offSetX < 0);
+      return (toolTipPanel.transform.position.x + _tooltipDimensions.x / 2 + _offSetX > Screen.width) || (toolTipPanel.transform.position.x - _tooltipDimensions.x - _offSetX < 0);
    }
 
    public void setTooltipToSizeAutomatically () {
@@ -243,17 +253,20 @@ public class TooltipHandler : MonoBehaviour
          placeAboveUIELement(elementPosition);
       }
       // If the tooltip is large, place it to the side of panel that is closest to the element
-      else 
+      else
       if (elementPosition.x < panelRoot.transform.position.x) {
          placeOnLeftSideOfPanel(_leftEdge, _middleOfEdge, _tooltipDimensions);
-      } 
-      else {
+      } else {
          placeOnRightSideOfPanel(_rightEdge, _middleOfEdge, _tooltipDimensions);
       }
    }
 
    public void placeAboveUIELement (Vector3 elementPosition) {
-      toolTipPanel.transform.position = new Vector3(elementPosition.x, tooltipOwnerTopEdge + _tooltipDimensions.y / 2 + _offSetY );
+      toolTipPanel.transform.position = new Vector3(elementPosition.x, tooltipOwnerTopEdge + _tooltipDimensions.y / 2 + _offSetY);
+   }
+
+   public void placeBelowUIELement (Vector3 elementPosition) {
+      toolTipPanel.transform.position = new Vector3(elementPosition.x, tooltipOwnerBottomEdge - _tooltipDimensions.y / 2 - _offSetY);
    }
 
    public void placeOnLeftSideOfPanel (float leftEdge, float middleOfEdge, Vector2 _tooltipDimensions) {

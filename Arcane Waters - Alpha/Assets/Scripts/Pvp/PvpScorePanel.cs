@@ -70,19 +70,8 @@ public class PvpScorePanel : MonoBehaviour {
          yield return null;
       }
 
-      // TODO: Find a better way to detect if the game is CTF or not, could maybe make a new map special type? Or add a new variable 'game type' to pvp maps
-      bool isCaptureTheFlag = false;
-      foreach (PvpCaptureTargetHolder targetHolder in FindObjectsOfType<PvpCaptureTargetHolder>()) {
-         if (targetHolder.instanceId == Global.player.instanceId) {
-            isCaptureTheFlag = true;
-            break;
-         }
-      }
-
-      // We currently only show the score panel for capture the flag games
-      if (isCaptureTheFlag) {
-         requestTeamFactions();
-      }
+      _currentGameMode = AreaManager.self.getAreaPvpGameMode(Global.player.areaKey);
+      requestTeamFactions();
    }
 
    private void requestTeamFactions () {
@@ -104,12 +93,25 @@ public class PvpScorePanel : MonoBehaviour {
       teamNameLabels[(int) teamType].text = factionType.ToString();
 
       if (isReadyToShow()) {
-         show();
-      }
+         setStatPanelFactions();
+
+         // We currently only show the score panel for CTF games
+         if (_currentGameMode == PvpGameMode.CaptureTheFlag) {
+            show();
+         }
+      }  
    }
 
    private bool isReadyToShow () {
       return (_teamFactions[(int) PvpTeamType.A] != Faction.Type.None && _teamFactions[(int) PvpTeamType.B] != Faction.Type.None);
+   }
+
+   public Faction.Type getFactionForTeam (PvpTeamType teamType) {
+      return _teamFactions[(int)teamType];
+   }
+
+   private void setStatPanelFactions () {
+      PvpStatPanel.self.setTeamFactions(_teamFactions[(int) PvpTeamType.A], _teamFactions[(int) PvpTeamType.B]);
    }
 
    #region Private Variables
@@ -128,6 +130,9 @@ public class PvpScorePanel : MonoBehaviour {
 
    // What faction each pvp team is associated with
    private List<Faction.Type> _teamFactions = new List<Faction.Type>();
+
+   // What pvp gamemode the user is currently playing
+   private PvpGameMode _currentGameMode = PvpGameMode.None;
 
    #endregion
 }

@@ -36,6 +36,7 @@ public class AuctionItemData {
    // The bidding data
    public int highestBidPrice;
    public int highestBidUser;
+   public bool isBuyoutAllowed;
    public int buyoutPrice;
 
    // The date at which the auction ends
@@ -62,6 +63,7 @@ public class AuctionItemData {
       this.sellerName = DataUtil.getString(dataReader, "sellerName");
       this.highestBidPrice = DataUtil.getInt(dataReader, "highestBidPrice");
       this.highestBidUser = DataUtil.getInt(dataReader, "highestBidUser");
+      this.isBuyoutAllowed = DataUtil.getBoolean(dataReader, "isBuyoutAllowed");
       this.buyoutPrice = DataUtil.getInt(dataReader, "buyoutPrice");
       this.expiryDate = DataUtil.getDateTime(dataReader, "expiryDate").ToBinary();
 

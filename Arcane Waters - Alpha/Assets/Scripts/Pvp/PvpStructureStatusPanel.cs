@@ -70,6 +70,12 @@ public class PvpStructureStatusPanel : MonoBehaviour {
       // Wait a small delay, to ensure all structures are created on the client
       yield return new WaitForSeconds(3.0f);
 
+      // We currently only show the structure status panel for Base Assault games
+      PvpGameMode gameMode = AreaManager.self.getAreaPvpGameMode(Global.player.areaKey);
+      if (gameMode != PvpGameMode.BaseAssault) {
+         yield break;
+      }
+
       if (detectStructures()) {
          show();
       }

@@ -106,8 +106,7 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static int createAuction (int sellerUserId, string sellerName, int mailId, DateTime expiryDate,
-      int highestBidPrice, int buyoutPrice, Item.Category itemCategory, string itemName, int itemCount) {
+   public static int createAuction (int sellerUserId, string sellerName, int mailId, DateTime expiryDate, bool isBuyoutAllowed, int highestBidPrice, int buyoutPrice, Item.Category itemCategory, string itemName, int itemCount) {
       return 0;
    }
 
@@ -279,6 +278,30 @@ public class DB_MainStub : MonoBehaviour
    public static void deleteItemDefinition (int id) {
 
    }
+
+   #region Haircuts XML
+
+   public static void updateHaircutXML (int xmlID, string rawData, int accIDOverride = 0) {
+      return;
+   }
+   
+   public static List<XMLPair> getHaircutsXML () {
+      return new List<XMLPair>();
+   }
+
+   #endregion
+
+   #region Gems XML
+
+   public static void updateGemsXML (int xmlID, string rawData, int accIDOverride = 0) {
+      return;
+   }
+
+   public static List<XMLPair> getGemsXML () {
+      return new List<XMLPair>();
+   }
+
+   #endregion
 
    public static List<ItemInstance> getItemInstances (object command, int ownerUserId, ItemDefinition.Category category) {
       return new List<ItemInstance>();
@@ -845,6 +868,10 @@ public class DB_MainStub : MonoBehaviour
       return "";
    }
 
+   public static void changeUserName (string oldName, string newName) {
+
+   }
+
    public static int createUser (int accountId, int usrAdminFlag, UserInfo userInfo, Area area) {
       return 0;
    }
@@ -993,6 +1020,10 @@ public class DB_MainStub : MonoBehaviour
 
    public static void addGems (int accountId, int amount) {
 
+   }
+
+   public static int getXP (int userId) {
+      return 0;
    }
 
    public static int insertNewUsableItem (int userId, UsableItem.Type itemType, string palettes) {
@@ -1465,6 +1496,22 @@ public class DB_MainStub : MonoBehaviour
 
    public static List<StoreItem> getAllStoreItems () {
       return new List<StoreItem>();
+   }
+
+   public static Haircut getHaircut (int hcId) {
+      return null;
+   }
+
+   public static List<Haircut> getAllHaircuts () {
+      return new List<Haircut>();
+   }
+
+   public static int insertNewHaircut (int userId, int haircutId, HairLayer.Type hairType) {
+      return 0;
+   }
+
+   public static Item fetchHaircut (int userId, HairLayer.Type hairType) {
+      return null;
    }
 
    /*

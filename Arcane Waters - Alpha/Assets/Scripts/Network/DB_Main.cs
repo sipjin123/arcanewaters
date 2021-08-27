@@ -2249,6 +2249,9 @@ public class DB_Main : DB_MainStub
                   int weatherEffectType = dataReader.GetInt32("weatherEffectType");
                   int biome = dataReader.GetInt32("biome");
                   int editorType = dataReader.GetInt32("editorType");
+                  int maxPlayerCount = dataReader.GetInt32("maxPlayerCount");
+                  int pvpGameMode = dataReader.GetInt32("pvpGameMode");
+                  int pvpArenaSize = dataReader.GetInt32("pvpArenaSize");
 
                   content += id + "[space]" +
                      name + "[space]" +
@@ -2257,7 +2260,10 @@ public class DB_Main : DB_MainStub
                      sourceMapId + "[space]" +
                      weatherEffectType + "[space]" +
                      biome + "[space]" +
-                     editorType + "[next]\n";
+                     editorType + "[space]" +
+                     maxPlayerCount + "[space]" +
+                     pvpGameMode + "[space]" +
+                     pvpArenaSize + "[next]\n";
                } catch {
                   D.debug("Skipping map data due to invalid entry");
                }
@@ -2272,7 +2278,7 @@ public class DB_Main : DB_MainStub
 
       cmd.CommandText =
             "SELECT id, name, displayName, createdAt, creatorUserId, publishedVersion, sourceMapId, notes, " +
-               "editorType, biome, specialType, accName, weatherEffectType " +
+               "editorType, biome, specialType, accName, weatherEffectType, maxPlayerCount, pvpGameMode, pvpArenaSize " +
             "FROM global.maps_v2 " +
                "LEFT JOIN global.accounts ON maps_v2.creatorUserId = accId " +
             "ORDER BY name;";
@@ -2297,7 +2303,10 @@ public class DB_Main : DB_MainStub
                editorType = (EditorType) dataReader.GetInt32("editorType"),
                biome = (Biome.Type) dataReader.GetInt32("biome"),
                specialType = (Area.SpecialType) dataReader.GetInt32("specialType"),
-               weatherEffectType = (WeatherEffectType) dataReader.GetInt32("weatherEffectType")
+               weatherEffectType = (WeatherEffectType) dataReader.GetInt32("weatherEffectType"),
+               maxPlayerCount = dataReader.GetInt32("maxPlayerCount"),
+               pvpGameMode = (PvpGameMode) dataReader.GetInt32("pvpGameMode"),
+               pvpArenaSize = (PvpArenaSize) dataReader.GetInt32("pvpArenaSize")
             });
          }
       }
@@ -2310,7 +2319,7 @@ public class DB_Main : DB_MainStub
 
       string cmdText =
             "SELECT id, name, displayName, createdAt, creatorUserId, publishedVersion, sourceMapId, notes, " +
-               "editorType, biome, specialType, accName, weatherEffectType " +
+               "editorType, biome, specialType, accName, weatherEffectType, maxPlayerCount, pvpGameMode, pvpArenaSize " +
             "FROM global.maps_v2 " +
                "LEFT JOIN global.accounts ON maps_v2.creatorUserId = accId " +
             "ORDER BY name;";
@@ -2338,7 +2347,10 @@ public class DB_Main : DB_MainStub
                      editorType = (EditorType) dataReader.GetInt32("editorType"),
                      biome = (Biome.Type) dataReader.GetInt32("biome"),
                      specialType = (Area.SpecialType) dataReader.GetInt32("specialType"),
-                     weatherEffectType = (WeatherEffectType) dataReader.GetInt32("weatherEffectType")
+                     weatherEffectType = (WeatherEffectType) dataReader.GetInt32("weatherEffectType"),
+                     maxPlayerCount = dataReader.GetInt32("maxPlayerCount"),
+                     pvpGameMode = (PvpGameMode) dataReader.GetInt32("pvpGameMode"),
+                     pvpArenaSize = (PvpArenaSize) dataReader.GetInt32("pvpArenaSize")
                   });
                }
             }
@@ -2668,8 +2680,8 @@ public class DB_Main : DB_MainStub
 
       cmd.CommandTimeout = 1200;
       // Create a new map entry with a random name ending
-      cmd.CommandText = "INSERT INTO global.maps_v2(name, createdAt, creatorUserId, publishedVersion, editorType, biome, displayName, notes, specialType, sourceMapId) " +
-         "SELECT CONCAT(LEFT(name, 24), ' ', FLOOR(RAND() * (99999 - 10001)) + 10000), @nowDate, @creatorID, @publishedVersion, editorType, biome, name, notes, specialType, @sourceMapID " +
+      cmd.CommandText = "INSERT INTO global.maps_v2(name, createdAt, creatorUserId, publishedVersion, editorType, biome, displayName, notes, specialType, sourceMapId, maxPlayerCount, pvpGameMode, pvpArenaSize) " +
+         "SELECT CONCAT(LEFT(name, 24), ' ', FLOOR(RAND() * (99999 - 10001)) + 10000), @nowDate, @creatorID, @publishedVersion, editorType, biome, name, notes, specialType, @sourceMapID, maxPlayerCount, pvpGameMode, pvpArenaSize " +
             "FROM global.maps_v2 WHERE id = @mapID;";
       cmd.Parameters.Clear();
       cmd.Parameters.AddWithValue("@mapID", mapId);
@@ -2718,6 +2730,9 @@ public class DB_Main : DB_MainStub
          cmd.Parameters.AddWithValue("@specialType", map.specialType);
          cmd.Parameters.AddWithValue("@displayName", map.displayName);
          cmd.Parameters.AddWithValue("@weatherEffect", map.weatherEffectType);
+         cmd.Parameters.AddWithValue("@maxPlayerCount", map.maxPlayerCount);
+         cmd.Parameters.AddWithValue("@pvpGameMode", map.pvpGameMode);
+         cmd.Parameters.AddWithValue("@pvpArenaSize", map.pvpArenaSize);
          DebugQuery(cmd);
 
          // Execute the command
@@ -4353,6 +4368,140 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
+   #region Haircuts XML
+
+   public static new void updateHaircutXML (int xmlID, string rawData, int accIDOverride = 0) {
+      string xml_id_key = "xml_id, ";
+      string xml_id_value = "@xml_id, ";
+
+      // If this is a newly created data, let sql table auto generate id
+      if (xmlID < 0) {
+         xml_id_key = "";
+         xml_id_value = "";
+      }
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO global.haircuts_v2 (" + xml_id_key + "xmlContent, creator_userID, lastUserUpdate) " +
+            "VALUES(" + xml_id_value + "@xmlContent, @creator_userID, NOW()) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@xml_id", xmlID);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@creator_userID", accIDOverride == 0 ? MasterToolAccountManager.self.currentAccountID : accIDOverride);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<XMLPair> getHaircutsXML () {
+      List<XMLPair> rawDataList = new List<XMLPair>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.haircuts_v2", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  XMLPair newPair = new XMLPair {
+                     isEnabled = dataReader.GetInt32("is_enabled") == 0 ? false : true,
+                     xmlId = dataReader.GetInt32("xml_id"),
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     xmlOwnerId = dataReader.GetInt32("creator_userID")
+                  };
+                  rawDataList.Add(newPair);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<XMLPair>(rawDataList);
+   }
+
+   #endregion
+   
+   #region Gems XML
+
+   public static new void updateGemsXML (int xmlID, string rawData, int accIDOverride = 0) {
+      string xml_id_key = "xml_id, ";
+      string xml_id_value = "@xml_id, ";
+
+      // If this is a newly created data, let sql table auto generate id
+      if (xmlID < 0) {
+         xml_id_key = "";
+         xml_id_value = "";
+      }
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO global.gems_bundles_v1 (" + xml_id_key + "xmlContent, creator_userID, lastUserUpdate) " +
+            "VALUES(" + xml_id_value + "@xmlContent, @creator_userID, NOW()) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@xml_id", xmlID);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@creator_userID", accIDOverride == 0 ? MasterToolAccountManager.self.currentAccountID : accIDOverride);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<XMLPair> getGemsXML () {
+      List<XMLPair> rawDataList = new List<XMLPair>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.gems_bundles_v1", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  XMLPair newPair = new XMLPair {
+                     isEnabled = dataReader.GetInt32("is_enabled") == 0 ? false : true,
+                     xmlId = dataReader.GetInt32("xml_id"),
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     xmlOwnerId = dataReader.GetInt32("creator_userID")
+                  };
+                  rawDataList.Add(newPair);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<XMLPair>(rawDataList);
+   }
+
+   #endregion
+
    #region ToolTip
 
    public static new string getTooltipXmlContent () {
@@ -5397,6 +5546,31 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new int getXP(int userId) {
+      int xp = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT usrXP FROM users WHERE usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  xp = dataReader.GetInt32("usrXP");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return xp;
+   }
+
    #endregion
 
    #region Chat System Features / Bug Reporting Features
@@ -6306,6 +6480,26 @@ public class DB_Main : DB_MainStub
       return stats;
    }
 
+   public static new void changeUserName (string oldName, string newName) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE users SET usrName = @newName WHERE usrName = @oldName", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrName", oldName);
+            cmd.Parameters.AddWithValue("@oldName", oldName);
+            cmd.Parameters.AddWithValue("@newName", newName);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
    public static new int createUser (int accountId, int usrAdminFlag, UserInfo userInfo, Area area) {
       int userId = 0;
       try {
@@ -7123,6 +7317,69 @@ public class DB_Main : DB_MainStub
       }
 
       return itemId;
+   }
+
+   public static new int insertNewHaircut (int userId, int haircutId, HairLayer.Type hairType) {
+      int itemId = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO items (usrId, itmCategory, itmType, itmPalettes, itmData) " +
+                 "VALUES(@usrId, @itmCategory, @itmType, @itmPalettes, @itmData) ", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmCategory", (int) Item.Category.Haircut);
+            cmd.Parameters.AddWithValue("@itmType", haircutId);
+            cmd.Parameters.AddWithValue("@itmPalettes", "");
+            cmd.Parameters.AddWithValue("@itmData", "hairType=" + ((int) hairType));
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+            itemId = (int) cmd.LastInsertedId;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return itemId;
+   }
+
+   public static new Item fetchHaircut (int userId, HairLayer.Type hairType) {
+      Item item = null;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId AND itmType=@itmType AND itmCategory=@itmCategory", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmCategory", (int) Item.Category.Haircut);
+            cmd.Parameters.AddWithValue("@itmType", (int) hairType);
+            DebugQuery(cmd);
+
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  Item.Category category = (Item.Category) dataReader.GetInt32("itmCategory");
+                  int itemId = dataReader.GetInt32("itmId");
+                  int itemTypeId = dataReader.GetInt32("itmType");
+                  string palettes = dataReader.GetString("itmPalettes");
+                  string data = dataReader.GetString("itmData");
+                  int count = dataReader.GetInt32("itmCount");
+                  int durability = dataReader.GetInt32("durability");
+
+                  // Create an Item instance of the proper class, and then add it to the list
+                  item = new Item(itemId, category, itemTypeId, count, palettes, data, durability);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return item;
    }
 
    public static new int deleteItem (int userId, int itemId) {
@@ -9561,15 +9818,14 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new int createAuction (int sellerUserId, string sellerName, int mailId, DateTime expiryDate,
-      int highestBidPrice, int buyoutPrice, Item.Category itemCategory, string itemName, int itemCount) {
+   public static new int createAuction (int sellerUserId, string sellerName, int mailId, DateTime expiryDate, bool isBuyoutAllowed, int highestBidPrice, int buyoutPrice, Item.Category itemCategory, string itemName, int itemCount) {
       int auctionId = 0;
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO auction_table_v1 (sellerId, sellerName, mailId, expiryDate, buyoutPrice, highestBidPrice, highestBidUser, itemCategory, itemName, itemCount) " +
-            "VALUES(@sellerId, @sellerName, @mailId, @expiryDate, @buyoutPrice, @highestBidPrice, @highestBidUser, @itemCategory, @itemName, @itemCount)", conn)) {
+            "INSERT INTO auction_table_v1 (sellerId, sellerName, mailId, expiryDate, isBuyoutAllowed, buyoutPrice, highestBidPrice, highestBidUser, itemCategory, itemName, itemCount) " +
+            "VALUES(@sellerId, @sellerName, @mailId, @expiryDate, @isBuyoutAllowed, @buyoutPrice, @highestBidPrice, @highestBidUser, @itemCategory, @itemName, @itemCount)", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -9577,6 +9833,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@sellerName", sellerName);
             cmd.Parameters.AddWithValue("@mailId", mailId);
             cmd.Parameters.AddWithValue("@expiryDate", expiryDate);
+            cmd.Parameters.AddWithValue("@isBuyoutAllowed", isBuyoutAllowed);
             cmd.Parameters.AddWithValue("@buyoutPrice", buyoutPrice);
             cmd.Parameters.AddWithValue("@highestBidPrice", highestBidPrice);
             cmd.Parameters.AddWithValue("@highestBidUser", -1);
@@ -10201,7 +10458,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection()) {
             // Open the connection.
             conn.Open();
-            using (MySqlCommand cmd = new MySqlCommand($"SELECT * FROM `store_items`",conn)) {
+            using (MySqlCommand cmd = new MySqlCommand($"SELECT * FROM `store_items`", conn)) {
                using (MySqlDataReader reader = cmd.ExecuteReader()) {
                   while (reader.Read()) {
                      storeItems.Add(StoreItem.create(reader));
@@ -10214,6 +10471,56 @@ public class DB_Main : DB_MainStub
       }
 
       return storeItems;
+   }
+
+   #endregion
+
+   #region Haircuts
+
+   public static new Haircut getHaircut (int hcId) {
+      Haircut haircut = null;
+
+      try {
+         using (MySqlConnection conn = getConnection()) {
+            // Open the connection.
+            conn.Open();
+            using (MySqlCommand cmd = new MySqlCommand($"SELECT * FROM `global`.`haircuts_v1` WHERE hcId = @hcId", conn)) {
+               cmd.Parameters.AddWithValue("@hcId", hcId);
+
+               using (MySqlDataReader reader = cmd.ExecuteReader()) {
+                  if (reader.Read()) {
+                     haircut = Haircut.create(reader);
+                  }
+               }
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return haircut;
+   }
+
+   public static new List<Haircut> getAllHaircuts () {
+      List<Haircut> haircuts = new List<Haircut>();
+
+      try {
+         using (MySqlConnection conn = getConnection()) {
+            // Open the connection.
+            conn.Open();
+            using (MySqlCommand cmd = new MySqlCommand($"SELECT * FROM `global`.`haircuts_v1`", conn)) {
+               using (MySqlDataReader reader = cmd.ExecuteReader()) {
+                  while (reader.Read()) {
+                     haircuts.Add(Haircut.create(reader));
+                  }
+               }
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return haircuts;
    }
 
    #endregion

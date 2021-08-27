@@ -77,20 +77,36 @@ public class StoreScreen : Panel
       }
    }
 
+   public void showPanel (UserObjects userObjects, int gold, int gems) {
+      _userObjects = userObjects;
+
+      // Show our gold and gem count
+      this.goldText.text = gold + "";
+      this.gemsText.text = gems + "";
+      this.nameText.text = userObjects.userInfo.username;
+
+      // Update the character preview
+      characterStack.updateLayers(userObjects);
+
+      // Request Store Items
+      Global.player.rpc.Cmd_RequestStoreItems();
+
+      toggleBlocker(true);
+
+      // Display the panel
+      if (!isShowing()) {
+         PanelManager.self.linkPanel(Type.Store);
+      }
+   }
+
    public void onReceiveStoreItems (List<StoreItem> storeItems) {
       // Start with nothing selected
       selectItem(null);
 
-      // Clear out the items from the Editor
-      itemsContainer.DestroyChildren();
+      destroyStoreBoxes();
 
       // Create Boxes
       createStoreBoxes(storeItems);
-
-      // Transfer the boxes in the items container
-      foreach (StoreItemBox box in getAllBoxes()) {
-         box.transform.SetParent(itemsContainer.transform);
-      }
 
       foreach (RecoloredSprite recoloredSprite in GetComponentsInChildren<RecoloredSprite>()) {
          StoreItemBox storeItemBox = recoloredSprite.GetComponentInParent<StoreItemBox>();
@@ -110,29 +126,7 @@ public class StoreScreen : Panel
       // Initialize tabs
       initializeTabs();
 
-      characterStack.synchronizeAnimationIndexes();
-      characterStack.setDirection(Direction.South);
-
       toggleBlocker(false);
-   }
-
-   public void showPanel (UserObjects userObjects, int gold, int gems) {
-      _userObjects = userObjects;
-
-      // Show our gold and gem count
-      this.goldText.text = gold + "";
-      this.gemsText.text = gems + "";
-      this.nameText.text = userObjects.userInfo.username;
-
-      // Display the panel
-      if (!isShowing()) {
-         PanelManager.self.linkPanel(Type.Store);
-      }
-
-      toggleBlocker(true);
-
-      // Request Store Items
-      Global.player.rpc.Cmd_RequestStoreItems();
    }
 
    private void toggleBlocker (bool show) {
@@ -154,6 +148,29 @@ public class StoreScreen : Panel
       PanelManager.self.confirmScreen.show("Are you sure you want to buy " + selectedItem.itemName + "?");
    }
 
+   protected void onConfirmPurchase () {
+      PanelManager.self.confirmScreen.hide();
+
+      // Can't buy a null item
+      if (selectedItem == null) {
+         D.debug("Store item selected was null. Canceling Purchase.");
+         return;
+      }
+
+      D.debug("Store purchase confirmed. Transferring control to server...");
+
+      // Send the request off to the server
+      uint appId = 0;
+
+      if (SteamManager.Initialized) {
+         appId = SteamUtils.GetAppID().m_AppId;
+      }
+
+      Global.player.rpc.Cmd_BuyStoreItem(selectedItem.itemId, appId);
+
+      D.debug("Store purchase: Control transferred.");
+   }
+
    public void selectItem (StoreItemBox itemBox) {
       // Did they unselect the current item?
       if (itemBox == this.selectedItem || itemBox == null) {
@@ -173,27 +190,11 @@ public class StoreScreen : Panel
             characterStack.updateHair(_userObjects.userInfo.hairType, Item.parseItmPalette(values.ToArray()));
          } else if (itemBox is StoreHaircutBox) {
             StoreHaircutBox hairBox = (StoreHaircutBox) itemBox;
-            characterStack.updateHair(hairBox.metadata.hairType, _userObjects.userInfo.hairPalettes);
+            characterStack.updateHair(hairBox.haircut.type, _userObjects.userInfo.hairPalettes);
          }
       }
 
       characterStack.synchronizeAnimationIndexes();
-   }
-
-   private List<string> updateHairDyeBox (StoreHairDyeBox hairBox) {
-      if (_paletteHairDye.ContainsKey(hairBox.GetHashCode())) {
-         _paletteHairDye[hairBox.GetHashCode()] = hairBox.metadata.paletteName;
-      } else {
-         _paletteHairDye.Add(hairBox.GetHashCode(), hairBox.metadata.paletteName);
-      }
-
-      List<string> values = new List<string>();
-
-      foreach (string value in _paletteHairDye.Values) {
-         values.Add(value);
-      }
-
-      return values;
    }
 
    public void changeDisplayedItems () {
@@ -212,8 +213,8 @@ public class StoreScreen : Panel
             StoreHaircutBox haircutBox = (StoreHaircutBox) itemBox;
             itemBox.gameObject.SetActive(_currentStoreTabType == StoreTab.StoreTabType.HairCuts);
 
-            // Hide hair cuts that are for the other gender
-            if (haircutBox.isFemale() == Global.player.isMale()) {
+            // Hide hairstyles that are for the other gender
+            if (haircutBox.haircut.getGender() != Global.player.gender) {
                itemBox.gameObject.SetActive(false);
             }
          } else if (itemBox is StoreGemBox) {
@@ -221,29 +222,6 @@ public class StoreScreen : Panel
             itemBox.gameObject.SetActive(_currentStoreTabType == StoreTab.StoreTabType.Gems);
          }
       }
-   }
-
-   protected void onConfirmPurchase () {
-      PanelManager.self.confirmScreen.hide();
-
-      // Can't buy a null item
-      if (selectedItem == null) {
-         D.debug("Store item selected was null. Canceling Purchase.");
-         return;
-      }
-
-      D.debug("Store purchase confirmed. Transfering control to server...");
-
-      // Send the request off to the server
-      uint appId = 0;
-
-      if (SteamManager.Initialized) {
-         appId = SteamUtils.GetAppID().m_AppId;
-      }
-
-      Global.player.rpc.Cmd_BuyStoreItem(selectedItem.itemId, appId);
-
-      D.debug("Store purchase: Control transferred.");
    }
 
    protected void checkGems () {
@@ -279,6 +257,24 @@ public class StoreScreen : Panel
       changeDisplayedItems();
    }
 
+   #region Boxes
+
+   private List<string> updateHairDyeBox (StoreHairDyeBox hairBox) {
+      if (_paletteHairDye.ContainsKey(hairBox.GetHashCode())) {
+         _paletteHairDye[hairBox.GetHashCode()] = hairBox.metadata.paletteName;
+      } else {
+         _paletteHairDye.Add(hairBox.GetHashCode(), hairBox.metadata.paletteName);
+      }
+
+      List<string> values = new List<string>();
+
+      foreach (string value in _paletteHairDye.Values) {
+         values.Add(value);
+      }
+
+      return values;
+   }
+
    public StoreItemBox getItemBox (ulong itemId) {
       foreach (StoreItemBox box in GetComponentsInChildren<StoreItemBox>()) {
          if (box.itemId == itemId) {
@@ -297,18 +293,30 @@ public class StoreScreen : Panel
 
    private void prepareStoreItemBox (StoreItem item, StoreItemBox box) {
       box.transform.SetParent(this.transform);
-      box.itemId = item.itemId;
-      box.itemName = item.name;
+      box.itemId = item.id;
       box.itemCost = item.price;
-      box.itemDescription = item.description;
       box.itemQuantity = item.quantity;
       box.itemCategory = item.category;
    }
 
-   protected StoreGemBox createGemBox (StoreItem item) {
+   protected StoreGemBox createGemBox (StoreItem storeItem) {
       StoreGemBox box = Instantiate(PrefabsManager.self.gemBoxPrefab);
-      prepareStoreItemBox(item, box);
-      box.metadata = JsonConvert.DeserializeObject<StoreGemBoxMetadata>(item.serializedMetadata);
+      prepareStoreItemBox(storeItem, box);
+      GemsData gemsData = GemsXMLManager.self.getGemsData(storeItem.itemId);
+      box.gemsBundle = gemsData;
+      box.itemName = box.gemsBundle.itemName;
+      box.itemDescription = box.gemsBundle.itemDescription;
+      box.initialize();
+      return box;
+   }
+
+   protected StoreHaircutBox createHaircutBox (StoreItem storeItem) {
+      StoreHaircutBox box = Instantiate(PrefabsManager.self.haircutBoxPrefab);
+      prepareStoreItemBox(storeItem, box);
+      HaircutData haircutData = HaircutXMLManager.self.getHaircutData(storeItem.itemId);
+      box.haircut = haircutData;
+      box.itemName = box.haircut.itemName;
+      box.itemDescription = box.haircut.itemDescription;
       box.initialize();
       return box;
    }
@@ -316,15 +324,6 @@ public class StoreScreen : Panel
    protected StoreShipBox createShipSkinBox (StoreItem item) {
       StoreShipBox box = Instantiate(PrefabsManager.self.shipBoxPrefab);
       prepareStoreItemBox(item, box);
-      box.metadata = JsonConvert.DeserializeObject<StoreShipBoxMetadata>(item.serializedMetadata);
-      box.initialize();
-      return box;
-   }
-
-   protected StoreHaircutBox createHaircutBox (StoreItem item) {
-      StoreHaircutBox box = Instantiate(PrefabsManager.self.haircutBoxPrefab);
-      prepareStoreItemBox(item, box);
-      box.metadata = JsonConvert.DeserializeObject<StoreHaircutBoxMetadata>(item.serializedMetadata);
       box.initialize();
       return box;
    }
@@ -332,7 +331,6 @@ public class StoreScreen : Panel
    protected StoreHairDyeBox createHairDyeBox (StoreItem item) {
       StoreHairDyeBox box = Instantiate(PrefabsManager.self.hairDyeBoxPrefab);
       prepareStoreItemBox(item, box);
-      box.metadata = JsonConvert.DeserializeObject<StoreHairDyeBoxMetadata>(item.serializedMetadata);
       box.initialize();
       return box;
    }
@@ -340,15 +338,21 @@ public class StoreScreen : Panel
    protected StoreHaircutBox createHatBox (StoreItem item) {
       StoreHaircutBox box = Instantiate(PrefabsManager.self.haircutBoxPrefab);
       prepareStoreItemBox(item, box);
-      box.metadata = JsonConvert.DeserializeObject<StoreHaircutBoxMetadata>(item.serializedMetadata);
       return box;
    }
 
    protected StoreHairDyeBox createPetBox (StoreItem item) {
       StoreHairDyeBox box = Instantiate(PrefabsManager.self.hairDyeBoxPrefab);
       prepareStoreItemBox(item, box);
-      box.metadata = JsonConvert.DeserializeObject<StoreHairDyeBoxMetadata>(item.serializedMetadata);
       return box;
+   }
+
+   private void destroyStoreBoxes () {
+      if (itemsContainer == null) {
+         return;
+      }
+
+      itemsContainer.DestroyChildren();
    }
 
    protected void createStoreBoxes (List<StoreItem> items) {
@@ -357,38 +361,44 @@ public class StoreScreen : Panel
       }
 
       _storeItemBoxes.Clear();
-      
+
+      int counter = 0;
       foreach (StoreItem item in items) {
          StoreItemBox createdBox = null;
          
          switch (item.category) {
-            case StoreItem.Category.None:
+            case Item.Category.None:
                break;
-            case StoreItem.Category.Gems:
+            case Item.Category.Gems:
                createdBox = createGemBox(item);
                break;
-            case StoreItem.Category.ShipSkin:
+            case Item.Category.ShipSkin:
                createdBox = createShipSkinBox(item);
                break;
-            case StoreItem.Category.Haircut:
+            case Item.Category.Haircut:
                createdBox = createHaircutBox(item);
                break;
-            case StoreItem.Category.HairDye:
+            case Item.Category.Hairdye:
                createdBox = createHairDyeBox(item);
                break;
-            case StoreItem.Category.Hats:
+            case Item.Category.Hats:
                createdBox = createHatBox(item);
                break;
-            case StoreItem.Category.Pets:
+            case Item.Category.Pet:
                createdBox = createPetBox(item);
                break;
          }
 
          _storeItemBoxes.Add(createdBox);
+
+         // Try to add the box to the container here (Testing)
+         createdBox.transform.SetParent(itemsContainer.transform);
+
+         counter++;
       }
    }
 
-   public StoreItemBox[] getBoxesOfCategory (Category category) {
+   public StoreItemBox[] getBoxesOfCategory (Item.Category category) {
       return _storeItemBoxes.Where(_ => _.itemCategory == category).ToArray();
    }
 
@@ -399,6 +409,8 @@ public class StoreScreen : Panel
    public StoreItemBox[] getAllBoxes () {
       return _storeItemBoxes.ToArray();
    }
+
+   #endregion
 
    #region Private Variables
 

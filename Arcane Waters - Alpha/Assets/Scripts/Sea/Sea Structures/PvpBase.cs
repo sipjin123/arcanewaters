@@ -16,7 +16,8 @@ public class PvpBase : SeaStructure {
       base.onActivated();
 
       if (isServer) {
-         InvokeRepeating(nameof(healAllies), 1.0f, 1.0f);
+         // Disable healing of units on base proximity
+         //InvokeRepeating(nameof(healAllies), 1.0f, 1.0f);
       }
    }
 
@@ -65,13 +66,27 @@ public class PvpBase : SeaStructure {
       // Don't run base onDeath function, as we don't to start the coroutine in SeaStructure.onDeath
       onDeathAction?.Invoke(this);
       if (isServer) {
+         rewardXPToAllAttackers();
          Rpc_OnDeath();
       }
 
       _hasRunOnDeath = true;
    }
 
-   protected override void setupSprites () {
+   protected override Sprite getSprite () {
+      switch (_structureIntegrity) {
+         case StructureIntegrity.Healthy:
+            return ImageManager.getSprite("Sprites/SeaStructures/pvp_base");
+         case StructureIntegrity.Damaged:
+            return ImageManager.getSprite("Sprites/SeaStructures/pvp_base_damaged");
+         case StructureIntegrity.Destroyed:
+            return ImageManager.getSprite("Sprites/SeaStructures/pvp_base_destroyed");
+         default:
+            return ImageManager.getSprite("Sprites/SeaStructures/pvp_base");
+      }
+   }
+
+   public override void setupSprites () {
       Sprite newSprite = getSprite();
       if (newSprite != null) {
          if (isDead()) {
@@ -79,11 +94,23 @@ public class PvpBase : SeaStructure {
             mainRenderer.sprite = newSprite;
          } else {
             mainRendererAnimation.setNewTexture(newSprite.texture);
+            mainRendererAnimation.minIndex = getAnimationStartIndex();
+            mainRendererAnimation.maxIndex = getAnimationEndIndex();
          }
 
          string paletteDef = PvpManager.getStructurePaletteForTeam(pvpTeam);
          mainRenderer.GetComponent<RecoloredSprite>().recolor(paletteDef);
       }
+   }
+
+   private int getAnimationStartIndex () {
+      int factionIndex = (int) faction;
+      return factionIndex * 4;
+   }
+
+   private int getAnimationEndIndex () {
+      int factionIndex = (int) faction;
+      return factionIndex * 4 + 3;
    }
 
    #region Private Variables

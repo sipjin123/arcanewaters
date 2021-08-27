@@ -121,6 +121,30 @@ public class AreaManager : MonoBehaviour
       return WeatherEffectType.None;
    }
 
+   public int getAreaMaxPlayerCount (string areaKey) {
+      if (_areaKeyToMapInfo.TryGetValue(areaKey, out Map map)) {
+         return map.maxPlayerCount;
+      }
+
+      return 0;
+   }
+
+   public PvpGameMode getAreaPvpGameMode (string areaKey) {
+      if (_areaKeyToMapInfo.TryGetValue(areaKey, out Map map)) {
+         return map.pvpGameMode;
+      }
+
+      return PvpGameMode.None;
+   }
+
+   public PvpArenaSize getAreaPvpArenaSize (string areaKey) {
+      if (_areaKeyToMapInfo.TryGetValue(areaKey, out Map map)) {
+         return map.pvpArenaSize;
+      }
+
+      return PvpArenaSize.None;
+   }
+
    public bool isSeaArea (string areaKey) {
       if (hasArea(areaKey)) {
          return getArea(areaKey).isSea;
