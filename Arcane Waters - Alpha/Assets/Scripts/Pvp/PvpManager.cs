@@ -52,6 +52,7 @@ public class PvpManager : MonoBehaviour {
 
    private void checkPvpForAnnouncement () {
       if (!pvpMapsInitialized) {
+         D.adminLog("Announcement not initialized!", D.ADMIN_LOG_TYPE.PvpAnnouncement);
          return;
       }
 
@@ -79,6 +80,10 @@ public class PvpManager : MonoBehaviour {
             D.adminLog("There are no users in game: " + activePvpGame.instanceId, D.ADMIN_LOG_TYPE.PvpAnnouncement);
             continue;
          }
+
+         D.adminLog("Announcements are being checked! " +
+            "Total servers to check: " + ServerNetworkingManager.self.servers.Count +
+            " TotalGames: " + pvpAnnouncementDataList.Count, D.ADMIN_LOG_TYPE.PvpAnnouncement);
 
          // Cycle through all servers
          foreach (NetworkedServer currServer in ServerNetworkingManager.self.servers) {
@@ -132,15 +137,17 @@ public class PvpManager : MonoBehaviour {
       }
    }
 
-   private IEnumerator CO_SendMessageToPlayer (NetEntity localEntiy, ChatInfo newChatInfo, int targetUser) {
+   private IEnumerator CO_SendMessageToPlayer (NetEntity localEntity, ChatInfo newChatInfo, int targetUser) {
       yield return new WaitForSeconds(5);
 
-      if (localEntiy == null) {
+      if (localEntity == null) {
+         D.debug("This is NOT a local entity: {" + localEntity.userId + "} Sending globally");
          D.adminLog("Sending Global message to: " + targetUser, D.ADMIN_LOG_TYPE.PvpAnnouncement);
          ServerNetworkingManager.self?.sendDirectChatMessage(newChatInfo);
       } else {
+         D.debug("This is a local entity: {" + localEntity.userId + "} Sending directly");
          D.adminLog("Sending private message to: " + targetUser, D.ADMIN_LOG_TYPE.PvpAnnouncement);
-         localEntiy.Target_ReceivePvpChat(localEntiy.connectionToClient, newChatInfo.senderId, newChatInfo.text);
+         localEntity.Target_ReceivePvpChat(localEntity.connectionToClient, newChatInfo.senderId, newChatInfo.text);
       }
    }
 
@@ -152,6 +159,10 @@ public class PvpManager : MonoBehaviour {
 
       // Regularly check that there are enough pvp games and create more if needed
       InvokeRepeating(nameof(createPvpGamesIfNeeded), 5f, 10f);
+
+      pvpMapsInitialized = true;
+      D.debug("Pvp Announcement Checker has Started");
+      InvokeRepeating(nameof(checkPvpForAnnouncement), 1, ANNOUNCEMENT_CHECK_INTERVAL);
    }
 
    [Server]
@@ -207,9 +218,6 @@ public class PvpManager : MonoBehaviour {
             VoyageManager.self.requestVoyageInstanceCreation(areaKey, true, difficulty: 2, biome: areaData == null ? Biome.Type.Forest : areaData.biome);
          }
       }
-
-      pvpMapsInitialized = true;
-      InvokeRepeating(nameof(checkPvpForAnnouncement), 1, ANNOUNCEMENT_CHECK_INTERVAL);
    }
 
    [Server]
