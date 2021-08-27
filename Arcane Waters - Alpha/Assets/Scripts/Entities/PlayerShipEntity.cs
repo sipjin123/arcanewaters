@@ -920,7 +920,7 @@ public class PlayerShipEntity : ShipEntity
          PanelManager.self.hidePowerupPanel();
          PvpStructureStatusPanel.self.onPlayerLeftPvpGame();
          PvpScorePanel.self.onPlayerLeftPvpGame();
-         PvpGameEndPanel.self.onPlayerLeftPvpGame();
+         PvpStatPanel.self.onPlayerLeftPvpGame();
       }
 
       // Handle OnDestroy logic in a separate method so it can be correctly stripped

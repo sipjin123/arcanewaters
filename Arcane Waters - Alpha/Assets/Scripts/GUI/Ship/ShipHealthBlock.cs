@@ -15,10 +15,10 @@ public class ShipHealthBlock : MonoBehaviour
    // The image component
    public Image image;
 
-   // The colors for the different block tiers or statuses
+   // The colors for the different block tiers for allies
    public Color[] tierColors;
 
-   // The color for tier 1 of the enemy
+   // The colors for the different block tiers for enemies
    public Color[] enemyTierColors;
 
    #endregion

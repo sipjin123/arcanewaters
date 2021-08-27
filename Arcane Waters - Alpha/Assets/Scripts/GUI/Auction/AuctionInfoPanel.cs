@@ -52,6 +52,7 @@ public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
    public Toggle duration7dToggle;
    public InputField startingBidCreate;
    public InputField buyoutPriceCreate;
+   public Toggle buyoutPriceToggle;
 
    // The bid section fields
    public Text auctionSellerBid;
@@ -60,6 +61,7 @@ public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
    public Text buyoutPriceBid;
    public InputField newBidInput;
    public GameObject youAreHighestBidderGO;
+   public Button buyoutButton;
 
    #endregion
 
@@ -87,6 +89,7 @@ public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
       consultSection.SetActive(false);
       bidSection.SetActive(false);
       itemCellButton.interactable = true;
+      buyoutPriceToggle.isOn = true;
 
       // Clear the item info
       itemCellButton.gameObject.DestroyChildren();
@@ -112,6 +115,9 @@ public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
       duration7dToggle.SetIsOnWithoutNotify(false);
 
       show();
+
+      // Immediately open the item selection menu
+      onItemCellPressed();
    }
 
    public void showPanelForBidOnAuction (AuctionItemData auction) {
@@ -128,7 +134,13 @@ public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
       // Set the auction info
       auctionSellerBid.text = auction.sellerName;
       highestBidBid.text = string.Format("{0:n0}", auction.highestBidPrice);
-      buyoutPriceBid.text = string.Format("{0:n0}", auction.buyoutPrice);
+      if (auction.isBuyoutAllowed) {
+         buyoutPriceBid.text = string.Format("{0:n0}", auction.buyoutPrice);
+         buyoutButton.interactable = true;
+      } else {
+         buyoutPriceBid.text = "None";
+         buyoutButton.interactable = false;
+      }
 
       // Display an estimated time left - to avoid last minute bids
       auctionTimeLeftBid.text = auction.getEstimatedTimeLeftUntilExpiry();
@@ -175,7 +187,11 @@ public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
       // Set the auction info
       auctionSellerConsult.text = auction.sellerName;
       highestBidConsult.text = string.Format("{0:n0}", auction.highestBidPrice);
-      buyoutPriceConsult.text = string.Format("{0:n0}", auction.buyoutPrice);
+      if (auction.isBuyoutAllowed) {
+         buyoutPriceConsult.text = string.Format("{0:n0}", auction.buyoutPrice);
+      } else {
+         buyoutPriceConsult.text = "None";
+      }
 
       // Display an estimated time left
       auctionTimeLeftConsult.text = auction.getEstimatedTimeLeftUntilExpiry();
@@ -297,24 +313,27 @@ public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
          return;
       }
 
-      if (!int.TryParse(buyoutPriceCreate.text, out int buyout) || bid <= 0) {
-         PanelManager.self.noticeScreen.show("The buyout price must be higher than 0.");
-         return;
+      if (buyoutPriceToggle.isOn) {
+         if (!int.TryParse(buyoutPriceCreate.text, out int buyout) || buyout <= 0) {
+            PanelManager.self.noticeScreen.show("The buyout price must be higher than 0.");
+            return;
+         }
       }
 
       PanelManager.self.showConfirmationPanel("Confirm Auction",
          () => {
+            bool isBuyoutAllowed = buyoutPriceToggle.isOn;
             bid = int.Parse(startingBidCreate.text);
-            buyout = int.Parse(buyoutPriceCreate.text);
+            int buyout = isBuyoutAllowed ? int.Parse(buyoutPriceCreate.text) : 0;
             TimeSpan duration = getSelectedAuctionDuration();
-            Global.player.rpc.Cmd_CreateAuction(_selectedItem, bid, buyout, (DateTime.UtcNow + duration).ToBinary(), AuctionManager.AUCTION_COST);
+            Global.player.rpc.Cmd_CreateAuction(_selectedItem, bid, isBuyoutAllowed, buyout, (DateTime.UtcNow + duration).ToBinary(), AuctionManager.AUCTION_COST);
          }, null, true, AuctionManager.AUCTION_COST, "Are you sure you want to auction \"" + EquipmentXMLManager.self.getItemName(_selectedItem) + "\" ?");
    }
 
    public void onBidButtonPressed () {
       int bid = int.Parse(newBidInput.text);
 
-      if (bid > _auction.buyoutPrice) {
+      if (_auction.isBuyoutAllowed && bid > _auction.buyoutPrice) {
          PanelManager.self.noticeScreen.show("Your bid is higher than the buyout price. You will automatically buyout the item.");
          newBidInput.text = _auction.buyoutPrice.ToString();
          return;
@@ -339,6 +358,16 @@ public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
          () => {
             Global.player.rpc.Cmd_CancelAuction(_auction.auctionId);
          }, null, true, 0, "Are you sure you want to cancel your auction for \"" + _auction.itemName + "\" ? ");
+   }
+
+   public void onBuyoutToggleValueChanged () {
+      if (buyoutPriceToggle.isOn) {
+         buyoutPriceCreate.interactable = true;
+         buyoutPriceCreate.text = "";
+      } else {
+         buyoutPriceCreate.interactable = false;
+         buyoutPriceCreate.text = "";
+      }
    }
 
    public void show () {

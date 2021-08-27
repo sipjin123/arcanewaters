@@ -82,6 +82,14 @@ namespace NubisDataHandling {
                         D.editorLog("Failed to gather data for hat: " + itmType + " : " + hatData + " : " + itmId, Color.red);
                      }
                      break;
+                  case Item.Category.Haircut:
+                     HaircutData haircutData = HaircutXMLManager.self.getHaircutData(itmType);
+                     if (haircutData != null) {
+                        otherItem.setBasicInfo(haircutData.itemName, haircutData.itemDescription, haircutData.itemIconPath);
+                     } else {
+                        D.editorLog("Failed to gather data for hat: " + itmType + " : " + haircutData + " : " + itmId, Color.red);
+                     }
+                     break;
                   default:
                      otherItem.setBasicInfo(otherItem.getName(), otherItem.getDescription(), otherItem.getIconPath());
                      break;

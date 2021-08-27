@@ -17,6 +17,9 @@ namespace MapCreationTool.Serialization
       public Biome.Type biome;
       public Area.SpecialType specialType;
       public WeatherEffectType weatherEffectType;
+      public int maxPlayerCount;
+      public PvpGameMode pvpGameMode;
+      public PvpArenaSize pvpArenaSize;
 
       public string creatorName;
    }

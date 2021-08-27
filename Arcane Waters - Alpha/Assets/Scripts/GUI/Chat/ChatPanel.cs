@@ -125,6 +125,9 @@ public class ChatPanel : MonoBehaviour {
    // Font that is being used for local chat in the form of bubble
    public TMPro.TMP_FontAsset chatBubbleFont;
 
+   // Reference to the containing canvas container
+   public Canvas canvas;
+
    // Self
    public static ChatPanel self;
 
@@ -218,21 +221,30 @@ public class ChatPanel : MonoBehaviour {
          setMode(Mode.Normal);
       }
 
-      // Enable resizing mode when clicking the resize handle
       Vector2 mousePosition = MouseUtils.mousePosition;
-      if (KeyUtils.GetButtonDown(MouseButton.Left) && _mode != Mode.Minimized && RectTransformUtility.RectangleContainsScreenPoint(resizeHandleZone, mousePosition)) {
-         _isResizing = true;        
+      bool isMouseOverResizeHandle = RectTransformUtility.RectangleContainsScreenPoint(resizeHandleZone, mousePosition);
+
+      // Update cursor
+      if (MouseManager.self != null && isMouseOverResizeHandle) {
+         MouseManager.self.setHandCursor();
+      }
+
+      // Enable resizing mode when clicking the resize handle
+      if (KeyUtils.GetButtonDown(MouseButton.Left) && _mode != Mode.Minimized && isMouseOverResizeHandle) {
+         _isResizing = true;
+         _startMessageBackgroundRectSizeDelta = messageBackgroundRect.sizeDelta;
+         _startMousePosition = mousePosition;
       }
 
       // Maintain the resize mode while the mouse button is held
       if (KeyUtils.GetButton(MouseButton.Left)) {
          if (_isResizing) {
             setMode(Mode.Freeform);
-            float targetWidth = mousePosition.x - messageBackgroundRect.anchoredPosition.x;
-            targetWidth = Mathf.Clamp(targetWidth, MIN_WIDTH, MAX_WIDTH);
-            float targetHeight = mousePosition.y - messageBackgroundRect.anchoredPosition.y;
-            targetHeight = Mathf.Clamp(targetHeight, MIN_HEIGHT, MAX_HEIGHT);
-            messageBackgroundRect.sizeDelta = new Vector2(targetWidth, targetHeight);
+            Vector2 mouseDelta = mousePosition - _startMousePosition;
+            Vector2 scaledSizeDelta = mouseDelta / canvas.scaleFactor;
+            Vector2 targetRectSizeDelta = _startMessageBackgroundRectSizeDelta + scaledSizeDelta;
+            Vector2 clampedRectSizeDelta = new Vector2(Mathf.Clamp(targetRectSizeDelta.x, MIN_WIDTH, MAX_WIDTH), Mathf.Clamp(targetRectSizeDelta.y, MIN_HEIGHT, MAX_HEIGHT));
+            messageBackgroundRect.sizeDelta = clampedRectSizeDelta;
          }
       } else {
          _isResizing = false;
@@ -1024,6 +1036,12 @@ public class ChatPanel : MonoBehaviour {
 
    // Gets set to true when the user is resizing the panel
    protected bool _isResizing = false;
+
+   // Position of the mouse cursor at the start of the resizing process
+   private Vector2 _startMousePosition = Vector2.zero;
+
+   // Size of the chat messages panel at the beginning of the resizing process
+   private Vector2 _startMessageBackgroundRectSizeDelta = Vector2.zero;
 
    #endregion
 }

@@ -60,9 +60,12 @@ public class AuctionRow : MonoBehaviour
          itemCount.text = "";
       }
       itemName.text = auction.itemName;
-      bidAmounts.text = string.Format("{0:n0}", auction.highestBidPrice)
-         + "/" 
-         + string.Format("{0:n0}", auction.buyoutPrice);
+      bidAmounts.text = string.Format("{0:n0}", auction.highestBidPrice) + "/";
+      if (auction.isBuyoutAllowed) {
+         bidAmounts.text = bidAmounts.text + string.Format("{0:n0}", auction.buyoutPrice);
+      } else {
+         bidAmounts.text = bidAmounts.text + "-";
+      }
 
       // Display an estimated time left - to avoid last minute bids
       timeLeftText.text = auction.getEstimatedTimeLeftUntilExpiry();

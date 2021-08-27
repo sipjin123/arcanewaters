@@ -1228,6 +1228,11 @@ public class Util : MonoBehaviour
       // Stop any client or server that may have been running
       MyNetworkManager.self.StopHost();
 
+      // Close any visible panel
+      if (PanelManager.self != null) {
+         PanelManager.self.unlinkPanel();
+      }
+
       // Activate the Title Screen camera
       Util.activateVirtualCamera(TitleScreen.self.virtualCamera);
       ServerStatusPanel.self.refreshPanel();
@@ -1249,6 +1254,13 @@ public class Util : MonoBehaviour
 
       // Close the admin settings panel
       PanelManager.self.adminGameSettingsPanel.onUserLogOut();
+
+      // Clear any input text field
+      PanelManager.self.get<MailPanel>(Panel.Type.Mail).clearWriteMailSection();
+      PanelManager.self.get<MailPanel>(Panel.Type.Mail).clearSelectedMail();
+      if (ChatPanel.self != null) {
+         ChatPanel.self.clearChat();
+      }
 
       // Look up the background music for the Title Screen, if we have any
       SoundManager.setBackgroundMusic(SoundManager.Type.Intro_Music);

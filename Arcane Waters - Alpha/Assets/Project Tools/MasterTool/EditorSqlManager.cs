@@ -40,7 +40,9 @@ public class EditorSQLManager {
       Projectiles = 31,
       Tutorial = 32,
       Map_Keys = 33,
-      SFX = 34
+      SFX = 34,
+      Haircuts = 35,
+      Gems = 36
    }
 
    public static string getSqlTable (EditorToolType editorType) {
@@ -130,6 +132,10 @@ public class EditorSQLManager {
             return "tutorial_xml_v1";
          case EditorToolType.ItemDefinitions:
             return XmlVersionManagerServer.ITEM_DEFINITIONS_TABLE;
+         case EditorToolType.Haircuts:
+            return XmlVersionManagerServer.HAIRCUTS_TABLE;
+         case EditorToolType.Gems:
+            return XmlVersionManagerServer.GEMS_TABLE;
       }
       return "";
    }

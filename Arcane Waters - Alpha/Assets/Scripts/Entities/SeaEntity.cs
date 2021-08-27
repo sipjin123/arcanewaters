@@ -1009,7 +1009,6 @@ public class SeaEntity : NetEntity
 
       // Prevent sea monsters from damaging other sea monsters
       bool targetPlayersOnly = this is SeaMonsterEntity;
-
       D.adminLog("TimeNow:" + NetworkTime.time.ToString("f1") +
          " AttackDelay:" + attackDelay +
          " TimeToReachTarget:" + timeToReachTarget.ToString("f1") +
@@ -1678,7 +1677,7 @@ public class SeaEntity : NetEntity
          _seeker.CancelCurrentPathRequest();
       }
 
-      _seeker.StartPath(transform.position, targetPosition);
+      _seeker.StartPath((Vector2)transform.position, (Vector2)targetPosition);
       if (_disableSpawnDistanceTmp) {
          Invoke(nameof(enableSpawnDistance), 3.5f);
       }
@@ -1814,6 +1813,7 @@ public class SeaEntity : NetEntity
             if (currentSecondsBetweenMinorSearch >= secondsBetweenMinorSearch) {
                _currentSecondsBetweenPatrolRoutes = 0.0f;
                findAndSetPath_Asynchronous(targetPositionFunction(false));
+               state = WaypointState.FINDING_PATH;
             }
             break;
       }

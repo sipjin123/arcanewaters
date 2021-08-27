@@ -26,12 +26,31 @@ public class CannonBox : ClientMonoBehaviour {
    public Image cooldownHighlight;
    public Image cooldownNormal;
 
+   // Reference to the tooltip component
+   public ToolTipComponent tooltipComponent;
+
+   // Reference to the cannon type gameobject
+   public GameObject cannonType;
+
    #endregion
 
    private void Start () {
       // Look up components
       _button = GetComponent<Button>();
       _containerImage = GetComponent<Image>();
+      setTooltipMessage();
+   }
+
+   public void setTooltipMessage () {
+      string formattedName = null;
+
+      string[] cannonName = (cannonType.GetComponent<Image>().sprite.name).Split('_');
+
+      for (int i = 2; i < cannonName.Length; i++) {
+         formattedName = formattedName + (char.ToUpper(cannonName[i][0])) + cannonName[i].Substring(1) + ' ';
+      }
+      formattedName.TrimEnd(' ');
+      tooltipComponent.message = formattedName;
    }
 
    public void boxPressed () {

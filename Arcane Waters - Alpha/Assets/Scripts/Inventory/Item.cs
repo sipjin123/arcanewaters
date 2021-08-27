@@ -9,7 +9,7 @@ public class Item {
    #region Public Variables
 
    // The category of item this is
-   public enum Category { None = 0, Weapon = 1, Armor = 2, Hats = 3, Potion = 4, Usable = 5, CraftingIngredients = 6, Blueprint = 7, Currency = 8, Quest_Item = 9 }
+   public enum Category { None = 0, Weapon = 1, Armor = 2, Hats = 3, Potion = 4, Usable = 5, CraftingIngredients = 6, Blueprint = 7, Currency = 8, Quest_Item = 9, Haircut = 10, Gems = 11, ShipSkin = 12, Hairdye = 13, Pet = 14  }
 
    // The durability filter being used by the item
    public enum DurabilityFilter { None = 0, MaxDurability = 1, ReducedDurability = 2 }
@@ -123,6 +123,8 @@ public class Item {
             return new Blueprint(this.id, this.itemTypeId, paletteNames, data, count);
          case Category.Quest_Item:
             return new QuestItem(this.id, this.itemTypeId, paletteNames, data, count);
+         case Category.Haircut:
+            return new Haircut(this.id, this.itemTypeId, paletteNames, data, durability, count);
          default:
             D.debug("Unknown item category: " + category);
             return null;

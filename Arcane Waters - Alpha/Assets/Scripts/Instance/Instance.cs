@@ -623,7 +623,7 @@ public class Instance : NetworkBehaviour
       }
 
       if (pvpStructuresSpawned > 0) {
-         // area.rescanGraph();
+         area.rescanGraph();
       }
 
       // Spawn random enemies

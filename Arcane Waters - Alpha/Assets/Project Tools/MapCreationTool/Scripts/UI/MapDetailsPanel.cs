@@ -23,11 +23,19 @@ namespace MapCreationTool
       private Dropdown typeDropdown = null;
       [SerializeField]
       private Dropdown weatherEffectDropdown = null;
+      [SerializeField]
+      private InputField maxPlayerCountInput = null;
+      [SerializeField]
+      private Dropdown pvpGameModeDropdown = null;
+      [SerializeField]
+      private Dropdown pvpArenaSizeDropdown = null;
 
       private Map targetMap;
       private (int id, string displayText)[] sourceOptions;
       private List<(Area.SpecialType type, string displayText)> typeOptions;
       private List<(WeatherEffectType type, string displayText)> weatherOptions;
+      private List<(PvpGameMode type, string displayText)> pvpGameModeOptions;
+      private List<(PvpArenaSize type, string displayText)> pvpArenaSizeOptions;
 
       private void OnEnable () {
          // Set the type options and their values in the dropdown
@@ -45,6 +53,22 @@ namespace MapCreationTool
          }
 
          weatherEffectDropdown.options = weatherOptions.Select(to => new Dropdown.OptionData { text = to.displayText }).ToList();
+
+         // Set pvp game mode options and their values in the dropdown
+         pvpGameModeOptions = new List<(PvpGameMode type, string displayText)>();
+         foreach (PvpGameMode type in Enum.GetValues(typeof(PvpGameMode))) {
+            pvpGameModeOptions.Add((type, type.ToString()));
+         }
+
+         pvpGameModeDropdown.options = pvpGameModeOptions.Select(to => new Dropdown.OptionData { text = to.displayText }).ToList();
+
+         // Set pvp area size options and their values in the dropdown
+         pvpArenaSizeOptions = new List<(PvpArenaSize type, string displayText)>();
+         foreach (PvpArenaSize type in Enum.GetValues(typeof(PvpArenaSize))) {
+            pvpArenaSizeOptions.Add((type, type.ToString()));
+         }
+
+         pvpArenaSizeDropdown.options = pvpArenaSizeOptions.Select(to => new Dropdown.OptionData { text = to.displayText }).ToList();
       }
 
       public void open (Map map) {
@@ -61,6 +85,7 @@ namespace MapCreationTool
          nameInput.text = map.name;
          displayNameInput.text = map.displayName;
          notesInput.text = map.notes;
+         maxPlayerCountInput.text = map.maxPlayerCount.ToString();
          sourceMapDropdown.options = sourceOptions.Select(o => new Dropdown.OptionData { text = o.displayText }).ToList();
 
          sourceMapDropdown.value = 0;
@@ -83,12 +108,28 @@ namespace MapCreationTool
          }
          weatherEffectDropdown.SetValueWithoutNotify(weatherIndex);
 
+         int pvpGameModeIndex = pvpGameModeOptions.FindIndex(to => map.pvpGameMode == to.type);
+         if (pvpGameModeIndex == -1) {
+            pvpGameModeIndex = 0;
+         }
+         pvpGameModeDropdown.SetValueWithoutNotify(pvpGameModeIndex);
+
+         int pvpArenaSizeIndex = pvpArenaSizeOptions.FindIndex(to => map.pvpArenaSize == to.type);
+         if (pvpArenaSizeIndex == -1) {
+            pvpArenaSizeIndex = 0;
+         }
+         pvpArenaSizeDropdown.SetValueWithoutNotify(pvpArenaSizeIndex);
+
          topLabel.text = $"Editing details of map { targetMap.name }";
          show();
       }
 
       public void confirm () {
          try {
+            if (!int.TryParse(maxPlayerCountInput.text, out int maxPlayerCount)) {
+               throw new ArgumentException($"Could not parse the max player count: {maxPlayerCountInput.text}");
+            }
+
             Map newMap = new Map {
                id = targetMap.id,
                name = nameInput.text,
@@ -96,7 +137,10 @@ namespace MapCreationTool
                notes = notesInput.text,
                sourceMapId = sourceOptions[sourceMapDropdown.value].id,
                specialType = typeOptions[typeDropdown.value].type,
-               weatherEffectType = weatherOptions[weatherEffectDropdown.value].type
+               weatherEffectType = weatherOptions[weatherEffectDropdown.value].type,
+               maxPlayerCount = maxPlayerCount,
+               pvpGameMode = pvpGameModeOptions[pvpGameModeDropdown.value].type,
+               pvpArenaSize = pvpArenaSizeOptions[pvpArenaSizeDropdown.value].type,
             };
 
             if (string.IsNullOrWhiteSpace(newMap.name)) {
@@ -123,6 +167,22 @@ namespace MapCreationTool
                throw new ArgumentException("Only outside area maps can be town maps");
             }
 
+            if (newMap.specialType != Area.SpecialType.PvpArena && newMap.pvpGameMode != PvpGameMode.None) {
+               throw new ArgumentException("Only pvp arenas can have a game mode");
+            }
+
+            if (newMap.specialType != Area.SpecialType.PvpArena && newMap.pvpArenaSize != PvpArenaSize.None) {
+               throw new ArgumentException("Only pvp arenas can have an arena size");
+            }
+
+            if (newMap.specialType == Area.SpecialType.PvpArena && newMap.pvpGameMode == PvpGameMode.None) {
+               throw new ArgumentException("Please specify a game mode for the pvp arena");
+            }
+
+            if (newMap.specialType == Area.SpecialType.PvpArena && newMap.pvpArenaSize == PvpArenaSize.None) {
+               throw new ArgumentException("Please specify an arena size for the pvp arena");
+            }
+
             UnityThreading.Task task = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                string dbError = null;
                try {
@@ -141,6 +201,10 @@ namespace MapCreationTool
                         version.map.sourceMapId = newMap.sourceMapId;
                         version.map.notes = newMap.notes;
                         version.map.specialType = newMap.specialType;
+                        version.map.weatherEffectType = newMap.weatherEffectType;
+                        version.map.maxPlayerCount = newMap.maxPlayerCount;
+                        version.map.pvpGameMode = newMap.pvpGameMode;
+                        version.map.pvpArenaSize = newMap.pvpArenaSize;
                         DrawBoard.changeLoadedVersion(version);
                      }
                      Overlord.loadAllRemoteData();

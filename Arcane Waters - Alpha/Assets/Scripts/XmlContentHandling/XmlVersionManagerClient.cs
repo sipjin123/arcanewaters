@@ -197,6 +197,9 @@ public class XmlVersionManagerClient : GenericGameManager {
       checkStreamingAssetFile(XmlVersionManagerServer.TUTORIAL_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.MAP_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.SFX_FILE);
+
+      checkStreamingAssetFile(XmlVersionManagerServer.HAIRCUTS_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.GEMS_FILE);
    }
 
    private void checkStreamingAssetFile (string fileName, bool isLastEntry = false) {
@@ -290,6 +293,9 @@ public class XmlVersionManagerClient : GenericGameManager {
       extractXmlType(EditorToolType.Map_Keys);
       extractXmlType(EditorToolType.SFX);
 
+      extractXmlType(EditorToolType.Haircuts);
+      extractXmlType(EditorToolType.Gems);
+
       initializeLoadingXmlData.Invoke();
    }
 
@@ -378,6 +384,12 @@ public class XmlVersionManagerClient : GenericGameManager {
             break;
          case EditorToolType.SFX:
             path = TEXT_PATH + XmlVersionManagerServer.SFX_FILE + ".txt";
+            break;
+         case EditorToolType.Haircuts:
+            path = TEXT_PATH + XmlVersionManagerServer.HAIRCUTS_FILE + ".txt";
+            break;
+         case EditorToolType.Gems:
+            path = TEXT_PATH + XmlVersionManagerServer.GEMS_FILE + ".txt";
             break;
       }
 
@@ -859,6 +871,44 @@ public class XmlVersionManagerClient : GenericGameManager {
             SoundEffectManager.self.receiveListFromServer(sfxDataList.ToArray());
             break;
 
+         case EditorToolType.Haircuts:
+            List<HaircutData> haircutDataList = new List<HaircutData>();
+            
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+
+               // Extract the segregated data and assign to the xml manager
+               if (xmlSubGroup.Length == 2) {
+                  int dataId = int.Parse(xmlSubGroup[0]);
+                  HaircutData actualData = Util.xmlLoad<HaircutData>(xmlSubGroup[1]);
+                  actualData.itemID = dataId;
+                  haircutDataList.Add(actualData);
+                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+               }
+            }
+
+            HaircutXMLManager.self.receiveHaircutDataFromZipData(haircutDataList);
+            break;
+
+         case EditorToolType.Gems:
+            List<GemsData> gemsDataList = new List<GemsData>();
+
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+
+               // Extract the segregated data and assign to the xml manager
+               if (xmlSubGroup.Length == 2) {
+                  int dataId = int.Parse(xmlSubGroup[0]);
+                  GemsData actualData = Util.xmlLoad<GemsData>(xmlSubGroup[1]);
+                  actualData.itemID = dataId;
+                  gemsDataList.Add(actualData);
+                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+               }
+            }
+
+            GemsXMLManager.self.receiveDataFromZipData(gemsDataList);
+            break;
+
          case EditorToolType.Map_Keys:
             List<Map> mapKeyDataList = new List<Map>();
             foreach (string subGroup in xmlGroup) {
@@ -874,6 +924,9 @@ public class XmlVersionManagerClient : GenericGameManager {
                   int weatherEffectType = 0;
                   int biome = 0;
                   int editorType = 0;
+                  int maxPlayerCount = 0;
+                  int pvpGameMode = 0;
+                  int pvpArenaSize = 0;
 
                   try {
                      id = int.Parse(xmlSubGroup[0]);
@@ -893,6 +946,14 @@ public class XmlVersionManagerClient : GenericGameManager {
                      D.debug("Failed to get index 7 {editorType}");
                   }
 
+                  try {
+                     maxPlayerCount = int.Parse(xmlSubGroup[8]);
+                     pvpGameMode = int.Parse(xmlSubGroup[9]);
+                     pvpArenaSize = int.Parse(xmlSubGroup[10]);
+                  } catch { 
+                     D.debug("Failed to get index 8-10"); 
+                  }
+
                   Map newMapEntry = new Map {
                      id = id,
                      name = name,
@@ -902,6 +963,9 @@ public class XmlVersionManagerClient : GenericGameManager {
                      weatherEffectType = (WeatherEffectType) weatherEffectType,
                      biome = (Biome.Type) biome,
                      editorType = (MapCreationTool.EditorType) editorType,
+                     maxPlayerCount = maxPlayerCount,
+                     pvpGameMode = (PvpGameMode) pvpGameMode,
+                     pvpArenaSize = (PvpArenaSize) pvpArenaSize,
                   };
                   mapKeyDataList.Add(newMapEntry);
                   message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];

@@ -1964,6 +1964,7 @@ public class NetEntity : NetworkBehaviour
          if (VoyageManager.isPvpArenaArea(area.areaKey)) {
             PvpStructureStatusPanel.self.onPlayerJoinedPvpGame();
             PvpScorePanel.self.onPlayerJoinedPvpGame();
+            PvpStatPanel.self.onPlayerJoinedPvpGame();
          }
 
          // Signal the server

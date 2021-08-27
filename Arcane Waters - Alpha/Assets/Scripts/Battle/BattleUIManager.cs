@@ -82,6 +82,9 @@ public class BattleUIManager : MonoBehaviour {
    public Text descriptionCost;
    public Text descriptionText;
 
+   // Small pause after the land battle ends before user input is enabled
+   public float PAUSE_AFTER_BATTLE = 0.8f;
+
    [Space(4)]
    [Header("Debug")]
    // Can we do the key combination to enter debug simulated battle?
@@ -499,6 +502,9 @@ public class BattleUIManager : MonoBehaviour {
    }
 
    private IEnumerator CO_FadeInBattleUI () {
+      // Disable input
+      InputManager.toggleInput(false);
+
       abilitiesCG.alpha = 0.0f;
       abilitiesCG.gameObject.SetActive(true);
 
@@ -527,6 +533,10 @@ public class BattleUIManager : MonoBehaviour {
       abilitiesCG.DOFade(0.0f, fadeDuration);
       yield return new WaitForSeconds(fadeDuration);
       abilitiesCG.gameObject.SetActive(false);
+
+      // Enable input
+      yield return new WaitForSeconds(PAUSE_AFTER_BATTLE);
+      InputManager.toggleInput(true);
    }
 
    // Changes the icon that is at the right side of the player battle ring UI

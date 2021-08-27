@@ -56,6 +56,8 @@ public class XmlVersionManagerServer : GenericGameManager {
    public static string TUTORIAL_TABLE = "tutorial_xml_v1";
    public static string MAP_TABLE = "maps_v2";
    public static string SFX_TABLE = "soundeffects_v2";
+   public static string HAIRCUTS_TABLE = "haircuts_v2";
+   public static string GEMS_TABLE = "gems_bundles_v1";
 
    // TEXT FILE NAMES (Do not Modify)
    public static string CROPS_FILE = "crops";
@@ -85,6 +87,8 @@ public class XmlVersionManagerServer : GenericGameManager {
    public static string TUTORIAL_FILE = "tutorial_xml";
    public static string MAP_FILE = "map_xml";
    public static string SFX_FILE = "sfx_xml";
+   public static string HAIRCUTS_FILE = "haircuts";
+   public static string GEMS_FILE = "gems";
 
    // Progress indicators
    public int targetProgress;
@@ -150,6 +154,9 @@ public class XmlVersionManagerServer : GenericGameManager {
 
       confirmTextFile(MAP_FILE);
       confirmTextFile(SFX_FILE);
+
+      confirmTextFile(HAIRCUTS_FILE);
+      confirmTextFile(GEMS_FILE);
    }
 
    private void confirmTextFile (string fileName) {
@@ -197,6 +204,8 @@ public class XmlVersionManagerServer : GenericGameManager {
          compiledData += DB_Main.getLastUpdate(EditorToolType.ItemDefinitions);
          compiledData += DB_Main.getLastUpdate(EditorToolType.Projectiles);
          compiledData += DB_Main.getLastUpdate(EditorToolType.Tutorial);
+         compiledData += DB_Main.getLastUpdate(EditorToolType.Haircuts);
+         compiledData += DB_Main.getLastUpdate(EditorToolType.Gems);
 
          databaseVersion = DB_Main.getLatestXmlVersion();
 
@@ -311,6 +320,9 @@ public class XmlVersionManagerServer : GenericGameManager {
          List<SoundEffect> soundEffectsRawData = DB_Main.getSoundEffects();
          string soundEffectsData = SoundEffectManager.self.getSoundEffectsStringData(soundEffectsRawData);
 
+         string haircutsData = DB_Main.getXmlContent(HAIRCUTS_TABLE, EditorToolType.Haircuts);
+         string gemsData = DB_Main.getXmlContent(GEMS_TABLE, EditorToolType.Gems);
+
          // Write data to text files
          writeAndCache(xmlTextDirectory + "/" + LAND_MONSTER_FILE + ".txt", landMonsterData);
          writeAndCache(xmlTextDirectory + "/" + SEA_MONSTER_FILE + ".txt", seaMonsterData);
@@ -339,6 +351,9 @@ public class XmlVersionManagerServer : GenericGameManager {
          writeAndCache(xmlTextDirectory + "/" + TUTORIAL_FILE + ".txt", tutorialData);
          writeAndCache(xmlTextDirectory + "/" + MAP_FILE + ".txt", mapData);
          writeAndCache(xmlTextDirectory + "/" + SFX_FILE + ".txt", soundEffectsData);
+
+         writeAndCache(xmlTextDirectory + "/" + HAIRCUTS_FILE + ".txt", haircutsData);
+         writeAndCache(xmlTextDirectory + "/" + GEMS_FILE + ".txt", gemsData);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             string zipDirectory = serverZipDirectory + "/" + SERVER_ZIP_FILE;

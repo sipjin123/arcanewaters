@@ -8,7 +8,7 @@ using static PvpShopItem;
 using UnityEngine.EventSystems;
 using MapCreationTool;
 
-public class PvpShopPanel : ClientMonoBehaviour {
+public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
    #region Public Variables
 
    // Prefab spawning components
@@ -338,6 +338,13 @@ public class PvpShopPanel : ClientMonoBehaviour {
          case PvpShopItemType.Item:
             itemCategoryObjSelect.gameObject.SetActive(true);
             break;
+      }
+   }
+
+   public virtual void OnPointerClick (PointerEventData eventData) {
+      // If the black background outside is clicked, hide the panel
+      if (eventData.rawPointerPress == entirePanel.gameObject) {
+         hideEntirePanel();
       }
    }
 

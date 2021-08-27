@@ -389,6 +389,23 @@ public class ImageManager : ClientMonoBehaviour {
       return returnString;
    }
 
+   public static Sprite getHairSprite (bool front, Gender.Type gender, string number) {
+      Sprite sprite = null;
+      string backFront = front ? "Front" : "Back";
+      string type = gender + "_hair_" + backFront + "_" + number;
+      Sprite[] sprites = ImageManager.getSprites("Hair/" + gender.ToString() + "/" + backFront + "/" + type);
+
+      if (sprites.Length == 1) {
+         return null;
+      }
+
+      if (sprites.Length > 8) {
+         sprite = sprites[8];
+      }
+
+      return sprite;
+   }
+
    #region Private Variables
 
    // Cache of our data by Texture
