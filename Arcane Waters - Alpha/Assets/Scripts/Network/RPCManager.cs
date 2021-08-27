@@ -6585,11 +6585,13 @@ public class RPCManager : NetworkBehaviour
 
       // Ignore invalid or dead sources and targets
       if (sourceBattler == null || targetBattler == null || sourceBattler.isDead() || targetBattler.isDead()) {
+         _player.Target_ReceiveNormalChat("Invalid Target!", ChatInfo.Type.System);
          Target_ReceiveRefreshCasting(connectionToClient, false);
          return;
       }
+
       // Make sure the source battler can use that ability type
-      if (!abilityData.isReadyForUseBy(sourceBattler) && !cancelAction) {
+      if (!abilityData.isReadyForUseBy(sourceBattler, true) && !cancelAction) {
          Target_ReceiveRefreshCasting(connectionToClient, false);
          return;
       }
@@ -6607,6 +6609,7 @@ public class RPCManager : NetworkBehaviour
       List<Battler> targetBattlers = new List<Battler>() { targetBattler };
       if (cancelAction) {
          BattleManager.self.cancelBattleAction(battle, sourceBattler, targetBattlers, abilityInventoryIndex, abilityType);
+         Target_ReceiveRefreshCasting(connectionToClient, false);
       } else {
          if (!sourceBattler.battlerAbilitiesInitialized && sourceBattler.getBasicAbilities().Count < 1 && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
             Target_ReceiveRefreshCasting(connectionToClient, true);

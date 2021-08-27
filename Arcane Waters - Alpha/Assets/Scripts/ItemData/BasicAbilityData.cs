@@ -200,15 +200,17 @@ public class BasicAbilityData : BattleItemData
       return classRequirement == Weapon.Class.Rum;
    }
 
-   public bool isReadyForUseBy (Battler sourceBattler) {
+   public bool isReadyForUseBy (Battler sourceBattler, bool logData = false) {
       if (abilityType == AbilityType.Standard) {
 
          if (sourceBattler.AP < abilityCost) {
+            sourceBattler.player.Target_ReceiveNormalChat("Not enough AP! (" + sourceBattler.AP + " / " + abilityCost + ")", ChatInfo.Type.System);
             D.editorLog("User does not have enough AP!", Color.red);
             // TODO: Insert Logic Here (Could be spawn effect prefab indicating low AP)
          }
 
          if (NetworkTime.time < sourceBattler.cooldownEndTime) {
+            sourceBattler.player.Target_ReceiveNormalChat("Ability is not ready to be used! Wait for (" + (sourceBattler.cooldownEndTime - NetworkTime.time) + ") seconds", ChatInfo.Type.System);
             D.editorLog("User is still cooling down ability cast!", Color.red);
             // TODO: Insert Logic Here (Could be spawn effect prefab indicating ability is on cooldown)
          }

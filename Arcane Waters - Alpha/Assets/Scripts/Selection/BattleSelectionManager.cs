@@ -104,6 +104,7 @@ public class BattleSelectionManager : MonoBehaviour {
    public void clickBattler (Battler battler) {
       BattleUIManager.self.highlightLocalBattler(false);
 
+      // Deselection process
       if (selectedBattler == battler) {
          return;
       }
@@ -117,14 +118,24 @@ public class BattleSelectionManager : MonoBehaviour {
          selectedBattler.deselectThis();
       }
 
+      // Null handling setup here
       Battler currentBattler = BattleManager.self.getBattler(Global.player.userId);
       if (currentBattler == null) {
-         D.debug("Battler has not loaded yet");
+         D.debug("Local Battler has not loaded yet");
          return;
       }
+      if (battler == null) {
+         D.debug("Selected Battler is null! Skipping selection process");
+         selectedBattler = null;
+         return;
+      }
+      if (battler.health < 1) {
+         D.debug("Cant click on dead battler");
+         return;
+      }
+
       selectedBattler = battler;
       bool selectedSameTeam = currentBattler.teamType == selectedBattler.teamType;
-
       if (selectedSameTeam) {
          D.adminLog("Selected Ally", D.ADMIN_LOG_TYPE.Ability);
          enemySelection.SetActive(false);
@@ -157,6 +168,11 @@ public class BattleSelectionManager : MonoBehaviour {
    public Battler getRandomTarget () {
       // Choose a random, selectable enemy to autotarget at the start of the battle
       List<Battler> liveTargets = getLiveTargets();
+
+      if (liveTargets.Count < 1) {
+         D.debug("Cannot select random target, all of them are dead!");
+         return null;
+      }
       Battler selectedBattler = getLiveTargets().ElementAt<Battler>(Random.Range(0, liveTargets.Count));
       return selectedBattler;
    }
