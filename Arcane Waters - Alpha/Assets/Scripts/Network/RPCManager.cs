@@ -3558,10 +3558,17 @@ public class RPCManager : NetworkBehaviour
                   ShipData shipData = ShipDataManager.self.getShipData(shipSqlId);
                   if (shipData != null) {
                      PlayerShipEntity playerShip = (PlayerShipEntity) seaEntity;
-                     ShipInfo startingShip = Ship.generateNewShip(shipData.shipType, Rarity.Type.Common);
-                     startingShip.shipAbilities = ShipDataManager.self.getShipAbilities(shipSqlId);
-                     playerShip.changeShipInfo(startingShip);
-                     playerShip.Target_RefreshSprites(playerShip.connectionToClient, (int) shipData.shipType, (int) shipData.shipSize, (int) startingShip.skinType);
+                     ShipInfo purchasedShip = Ship.generateNewShip(shipData.shipType, Rarity.Type.Common);
+
+                     // Update abilities
+                     purchasedShip.shipAbilities = ShipDataManager.self.getShipAbilities(shipSqlId);
+
+                     // Update health to max value
+                     playerShip.currentHealth = shipData.baseHealthMax;
+
+                     // Sprite updates
+                     playerShip.changeShipInfo(purchasedShip);
+                     playerShip.Target_RefreshSprites(playerShip.connectionToClient, (int) shipData.shipType, (int) shipData.shipSize, (int) purchasedShip.skinType);
                   } else {
                      D.debug("Cant process shop purchase: {" + shipSqlId + "} does not exist");
                   }
@@ -5225,7 +5232,7 @@ public class RPCManager : NetworkBehaviour
    [ClientRpc]
    public void Rpc_PlayMineSfx (int oreId) {
       OreNode oreNode = OreManager.self.getOreNode(oreId);
-      if(oreNode == null) {
+      if (oreNode == null) {
          D.debug("Error! Missing Ore Node:{" + oreId + "}. Cannot play sfx");
          return;
       }
