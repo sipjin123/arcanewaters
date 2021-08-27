@@ -52,6 +52,7 @@ public class AdventureItemRow : MonoBehaviour {
    #endregion
 
    public void setRowForItem (Item item) {
+      string rawItemData = item.data;
       this.item = item;
 
       string path = ""; 
@@ -64,24 +65,48 @@ public class AdventureItemRow : MonoBehaviour {
       } else {
          switch (item.category) {
             case Item.Category.Weapon:
-               if (EquipmentXMLManager.self.getWeaponData(item.itemTypeId) == null) {
+               WeaponStatData newWeaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
+               if (newWeaponData == null) {
                   D.debug("Weapon with ID: {" + item.itemTypeId + "} does not exist!");
                   Destroy(gameObject);
                   return;
+               } else {
+                  Weapon newWeapon = WeaponStatData.translateDataToWeapon(newWeaponData);
+                  newWeapon.id = item.id;
+                  newWeapon.paletteNames = item.paletteNames;
+                  newWeapon.durability = item.durability;
+                  item = newWeapon;
+                  item.data = rawItemData;
                }
                break;
             case Item.Category.Armor:
-               if (EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId) == null) {
+               ArmorStatData newArmorData = EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId);
+               if (newArmorData == null) {
                   D.debug("Armor with ID: {" + item.itemTypeId + "} does not exist!");
                   Destroy(gameObject);
                   return;
+               } else {
+                  Armor newWeapon = ArmorStatData.translateDataToArmor(newArmorData);
+                  newWeapon.id = item.id;
+                  newWeapon.paletteNames = item.paletteNames;
+                  newWeapon.durability = item.durability;
+                  item = newWeapon;
+                  item.data = rawItemData;
                }
                break;
             case Item.Category.Hats:
-               if (EquipmentXMLManager.self.getHatData(item.itemTypeId) == null) {
+               HatStatData newHatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
+               if (newHatData == null) {
                   D.debug("Hat with ID: {" + item.itemTypeId + "} does not exist!");
                   Destroy(gameObject);
                   return;
+               } else {
+                  Hat newHat = HatStatData.translateDataToHat(newHatData);
+                  newHat.id = item.id;
+                  newHat.paletteNames = item.paletteNames;
+                  newHat.durability = item.durability;
+                  item = newHat;
+                  item.data = rawItemData;
                }
                break;
             case Item.Category.Blueprint:
@@ -169,28 +194,31 @@ public class AdventureItemRow : MonoBehaviour {
       string itemStrength = "";
       string itemName = "";
       if (item.category == Item.Category.Weapon) {
+         Weapon weapon = (Weapon) item;
          WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
          if (weaponData != null) {
-            itemStrength = "Damage = " + weaponData.weaponBaseDamage.ToString();
+            itemStrength = weapon.getTooltip();// "Damage = " + weaponData.weaponBaseDamage.ToString();
             itemName = weaponData.equipmentName;
          } else {
             D.debug("Missing weapon data with id: " + item.itemTypeId);
          }
       }
       if (item.category == Item.Category.Armor) {
+         Armor armor = (Armor) item;
          ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId);
          if (armorData != null) {
-            itemStrength = "Defense = " + armorData.armorBaseDefense.ToString();
+            itemStrength = armor.getTooltip();// "Defense = " + armorData.armorBaseDefense.ToString();
             itemName = armorData.equipmentName;
          } else {
             D.debug("Missing armor data with id: " + item.itemTypeId);
          }
       }
       if (item.category == Item.Category.Hats) {
+         Hat hat = (Hat) item;
          HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
          if (hatData != null) {
+            itemStrength = hat.getTooltip();// "Defense = " + hatData.hatBaseDefense.ToString();
             itemName = hatData.equipmentName;
-            itemStrength = "Defense = " + hatData.hatBaseDefense.ToString();
          } else {
             D.debug("Missing hat data with id: " + item.itemTypeId);
          }
@@ -203,8 +231,15 @@ public class AdventureItemRow : MonoBehaviour {
 
       // Set the tooltip Durability text
       string itemDurability = "Durability = " + item.durability.ToString();
+      string tooltipInfo = itemName + System.Environment.NewLine + itemDescription + System.Environment.NewLine + System.Environment.NewLine;
 
-      string tooltipText = itemName + System.Environment.NewLine + itemDescription + System.Environment.NewLine + System.Environment.NewLine + itemStrength + System.Environment.NewLine + itemDurability;
+      // Clear other info for equipment which is already populated using the method getTooltip()
+      if (Item.isUsingEquipmentXML(item.category)) {
+         itemDescription = "";
+         itemName = "";
+         tooltipInfo = "";
+      }
+      string tooltipText = tooltipInfo + itemStrength + System.Environment.NewLine + itemDurability;
       return tooltipText;
    }
 
