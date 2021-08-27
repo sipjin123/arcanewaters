@@ -100,8 +100,8 @@ public class SeaProjectile : NetworkBehaviour
       if (_abilityData != null) {
          ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(_abilityData.projectileId);
          if (projectileData != null) {
-            _rigidbody.velocity *= (_abilityData == null ? 1 : projectileData.animationSpeed);
-            _rigidbody.mass = projectileData.projectileMass;
+            //_rigidbody.velocity *= (_abilityData == null ? 1 : projectileData.animationSpeed);
+            //_rigidbody.mass = projectileData.projectileMass;
             transform.localScale = new Vector3(projectileData.projectileScale, projectileData.projectileScale, projectileData.projectileScale);
          }
       }

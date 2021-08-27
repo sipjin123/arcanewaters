@@ -53,22 +53,23 @@ public class GenericSeaProjectile : MonoBehaviour {
          if (spriteArray.Length == 1) {
             foreach (SpriteRenderer spriteRender in staticSprites) {
                spriteRender.sprite = spriteArray[0];
-               spriteRender.gameObject.SetActive(true);
+               spriteRender.enabled = true;
             }
          } else if (spriteArray.Length > 1) {
             foreach (SpriteRenderer spriteRender in animatedSprites) {
                spriteRender.sprite = spriteArray[0];
+               spriteRender.enabled = true;
                spriteRender.gameObject.SetActive(true);
             }
             foreach (SpriteRenderer spriteRender in staticSprites) {
-               spriteRender.gameObject.SetActive(false);
+               spriteRender.enabled = false;
             }
          } else {
             foreach (SpriteRenderer spriteRender in animatedSprites) {
-               spriteRender.gameObject.SetActive(false);
+               spriteRender.enabled = false;
             }
             foreach (SpriteRenderer spriteRender in staticSprites) {
-               spriteRender.gameObject.SetActive(false);
+               spriteRender.enabled = false;
             }
          }
       }
