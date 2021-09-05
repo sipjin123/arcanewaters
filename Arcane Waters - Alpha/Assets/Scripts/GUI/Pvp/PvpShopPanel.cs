@@ -162,7 +162,15 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       entirePanel.SetActive(false);
    }
 
+   private void clearInfoPanel () {
+      itemName.text = "";
+      itemDescription.text = "";
+      itemIconFrameInfo.sprite = ImageManager.self.blankSprite;
+      itemIconInfo.sprite = ImageManager.self.blankSprite;
+   }
+
    public void populateShop (List<PvpShopItem> pvpItemDataList) {
+      clearInfoPanel();
       loadingPanel.SetActive(false);
       shopTemplateHolder.gameObject.DestroyChildren();
       shipTemplateHolder.gameObject.DestroyChildren();
@@ -183,7 +191,7 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
             Instantiate(shipTemplatePrefab, shipTemplateHolder) : Instantiate(shopTemplatePrefab, shopTemplateHolder);
          shopTemplate.setupData(shopItemData);
          shopTemplate.selectTemplateEvent.AddListener(() => {
-            if (Global.player != null && Global.player is PlayerShipEntity) {
+            if (Global.player != null && Global.player is PlayerShipEntity && shopTemplate.buyButton.IsInteractable()) {
                PlayerShipEntity playerShip = (PlayerShipEntity) Global.player;
                playerShip.rpc.Cmd_BuyPvpItem(shopItemData.itemId, shopId, (int) shopItemData.shopItemType);
                loadingPanel.SetActive(true);

@@ -21,7 +21,7 @@ public class CraftingIngredients : RecipeItem
       Chitin = 17, Mandible = 18, Carapace = 19, Egg_Sac = 20, Bug_Juice = 21,
       Ectoplasm = 22, Brimstone = 23, Spectral_Ash = 24, Luminous_Powder = 25, Eldritch_Aura = 26,
       Bark = 27, Thorn = 28, Wood_Louse = 29, Polypore = 30, Sap = 31,
-      Spores = 32, Toadstool_Cap = 33, Fungal_Chunk = 34, Mycelium_Fiber = 35, Grey_Slime = 36
+      Spores = 32, Toadstool_Cap = 33, Fungal_Chunk = 34, Mycelium_Fiber = 35, Grey_Slime = 36, Rib_Bone = 37, Grave_Dirt = 38
    }
 
    // The type
