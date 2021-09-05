@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System.Linq;
 using DG.Tweening;
+using System;
 
 public class TreasureChest : NetworkBehaviour {
    #region Public Variables
@@ -285,11 +286,11 @@ public class TreasureChest : NetworkBehaviour {
       _outline.setVisibility(MouseManager.self.isHoveringOver(_clickableBox));
    }
 
-   public Item getContents () {
+   public Item getContents (int userId) {
       if (chestType == ChestSpawnType.Sea) {
-         return getSeaMonsterLootContents();
+         return getSeaMonsterLootContents(userId);
       } else if (chestType == ChestSpawnType.Land) {
-         return getLandMonsterLootContents();
+         return getLandMonsterLootContents(userId);
       }
 
       Instance instance = InstanceManager.self.getInstance(instanceId);
@@ -297,11 +298,32 @@ public class TreasureChest : NetworkBehaviour {
       List<TreasureDropsData> treasureDropsList = lootGroupId > 0 ? TreasureDropsDataManager.self.getTreasureDropsById(lootGroupId, rarity) : TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome, rarity).ToList();
 
       if (treasureDropsList.Count < 1) {
-         D.error("There are no treasure drops generated for Biome:{" + biome + "}");
+         D.error("There are no treasure drops generated for Biome:{" + biome + "} Checking alternative item");
+         if ((int) rarity > 1) {
+            // Iterate in descending order if rarity is greater than "common"
+            for (int i = (int) rarity; i > 0; i--) {
+               Item iteratedItem = getNextAvailableItem(i);
+               if (iteratedItem != null) {
+                  return iteratedItem;
+               }
+            }
+         } else {
+            // Iterate in ascending order if rarity is common, will get the next rarity type item onwards
+            int rarityMaxCount = Enum.GetValues(typeof(Rarity.Type)).Length;
+            for (int i = 1; i < rarityMaxCount; i++) {
+               Item iteratedItem = getNextAvailableItem(i);
+               if (iteratedItem != null) {
+                  return iteratedItem;
+               }
+            }
+         }
       } else {
          TreasureDropsData randomEntry = treasureDropsList.ChooseRandom();
-         if (randomEntry.item != null && Item.isValidItem(randomEntry.item)) {
-            return randomEntry.item;
+         if (randomEntry.item != null) {
+            randomEntry.item.count = assignItemCount(randomEntry);
+            if (Item.isValidItem(randomEntry.item)) {
+               return randomEntry.item;
+            }
          } else {
             D.error("Random Entry found is: NULL for biome {" + biome + "}");
          }
@@ -321,50 +343,111 @@ public class TreasureChest : NetworkBehaviour {
       return treasureDropsData.powerUp;
    }
 
-   public Item getSeaMonsterLootContents () {
+   public Item getSeaMonsterLootContents (int userId) {
       SeaMonsterEntity.Type monsterType = (SeaMonsterEntity.Type) enemyType;
       SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getMonster(monsterType);
       D.adminLog("Getting sea monster contents {" + seaMonsterData.lootGroupId + "}", D.ADMIN_LOG_TYPE.Treasure);
-      return getGenericMonsterContent(seaMonsterData.lootGroupId, seaMonsterData.monsterName, false);
+      return getGenericMonsterContent(seaMonsterData.lootGroupId, seaMonsterData.monsterName, false, userId);
    }
 
-   public Item getLandMonsterLootContents () {
+   public Item getLandMonsterLootContents (int userId) {
       Enemy.Type monsterType = (Enemy.Type) enemyType;
       BattlerData battlerData = MonsterManager.self.getBattlerData(monsterType);
       D.adminLog("Getting land monster contents {" + battlerData.lootGroupId + "}", D.ADMIN_LOG_TYPE.Treasure);
-      return getGenericMonsterContent(battlerData.lootGroupId, monsterType.ToString(), true);
+      return getGenericMonsterContent(battlerData.lootGroupId, monsterType.ToString(), true, userId);
    }
 
-   private Item getGenericMonsterContent (int lootGroupId, string monsterName, bool isLandMonster) {
+   private Item getGenericMonsterContent (int lootGroupId, string monsterName, bool isLandMonster, int userId) {
+      this.lootGroupId = lootGroupId;
+
       List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(lootGroupId, rarity);
       if (treasureDropsDataList.Count < 1) {
-         D.debug("Error here! Something went wrong with treasure drops (Blank List), Loot ID: {" + lootGroupId + "} Rarity is {" + rarity + "}");
+         D.debug("Insufficient Data Here! Something went wrong with treasure drops (Blank List), Loot ID: {" + lootGroupId + "} Rarity is {" + rarity + "} Finding alternative item");
       } else {
+         // TODO: Remove this after polishing item drops
          foreach (TreasureDropsData newData in treasureDropsDataList) {
-            if (newData.item != null && Item.isValidItem(newData.item)) {
-               D.adminLog("Treasure drops Content :: " +
-                  "Category: {" + newData.item.category + "} " +
-                  "TypeID: {" + newData.item.itemTypeId + "} " +
-                  "Data: {" + newData.item.data + "}", D.ADMIN_LOG_TYPE.Treasure);
+            if (newData.item != null) {
+               newData.item.count = assignItemCount(newData);
+               if (Item.isValidItem(newData.item)) {
+                  D.adminLog("Treasure drops Content :: " +
+                     "Category: {" + newData.item.category + "} " +
+                     "TypeID: {" + newData.item.itemTypeId + "} " +
+                     "Data: {" + newData.item.data + "}", D.ADMIN_LOG_TYPE.Treasure);
+               }
             }
          }
 
+         // If there is a valid item found in the loot group with the matching rarity, select random item of same rarity
          TreasureDropsData treasureData = treasureDropsDataList.ChooseRandom();
-         if (treasureData == null) {
+         if (treasureData != null && treasureData.item != null) {
+            treasureData.item.count = assignItemCount(treasureData);
+            if (Item.isValidItem(treasureData.item)) {
+               return treasureData.item;
+            }
+         } else {
             D.debug("Error here! Something went wrong with treasure drops (NULL Data)," +
                " Loot ID: {" + lootGroupId + "} Rarity is {" + rarity + "} for monster {" + monsterName + "}");
+         }
+      }
+
+      if (isLandMonster) {
+         if ((int) rarity > 1) {
+            // Iterate in descending order if rarity is greater than "common"
+            for (int i = (int) rarity; i > 0; i--) {
+               Item iteratedItem = getNextAvailableItem(i);
+               if (iteratedItem != null) {
+                  return iteratedItem;
+               }
+            }
          } else {
-            if (treasureData.item != null && Item.isValidItem(treasureData.item)) {
-               treasureData.item.count = Random.Range(treasureData.dropMinCount > 0 ? treasureData.dropMinCount : 1, treasureData.dropMaxCount);
-               return treasureData.item;
+            // Iterate in ascending order if rarity is common, will get the next rarity type item onwards
+            int rarityMaxCount = Enum.GetValues(typeof(Rarity.Type)).Length;
+            for (int i = 1; i < rarityMaxCount; i++) {
+               Item iteratedItem = getNextAvailableItem(i);
+               if (iteratedItem != null) {
+                  return iteratedItem;
+               }
+            }
+         }
+
+         // If no valid items are stored in the loot group, return defaul item "Wood"
+         return Item.defaultLootItem();
+      } else {
+         // If is a sea monster, blank items are allowed which will automatically randomize into a powerup loot 
+         return new Item();
+      }
+   }
+
+   private int assignItemCount (TreasureDropsData treasureData) {
+      return UnityEngine.Random.Range(treasureData.dropMinCount > 0 ? treasureData.dropMinCount : 1, treasureData.dropMaxCount);
+   }
+
+   private Item getNextAvailableItem (int rarityIndex) {
+      // Check all rarity types that are not None
+      if (rarityIndex > 0) {
+         // Iterate through the rarity items within the treasure drops data set, starting from common up to legendary
+         List<TreasureDropsData> substituteDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(lootGroupId, (Rarity.Type) rarityIndex);
+
+         // Check if the web tool content has the item that matches the rarity
+         if (substituteDropsDataList.Count > 0) {
+            // Choose a random item within the loot group data
+            TreasureDropsData randomSubstituteData = substituteDropsDataList.ChooseRandom();
+
+            // If the random item in this rarity set is valid, select this item
+            if (randomSubstituteData.item != null) {
+               randomSubstituteData.item.count = assignItemCount(randomSubstituteData);
+               if (Item.isValidItem(randomSubstituteData.item)) {
+                  D.debug("Has randomly selected next best item :: " +
+                     "Rarity: " + (Rarity.Type) rarityIndex + " " +
+                     "Category: " + randomSubstituteData.item.category + " " +
+                     "Type: " + randomSubstituteData.item.itemTypeId);
+                  return randomSubstituteData.item;
+               }
             }
          }
       }
-      if (isLandMonster) {
-         return Item.defaultLootItem();
-      } else {
-         return new Item();
-      }
+
+      return null;
    }
 
    public bool hasBeenOpened () {
