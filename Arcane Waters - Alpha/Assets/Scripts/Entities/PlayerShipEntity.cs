@@ -581,20 +581,22 @@ public class PlayerShipEntity : ShipEntity
                }
                break;
             case CannonAttackType.Cone:
-               Vector2 toMouse = Util.getMousePos() - transform.position;
-               Vector2 pos = transform.position;
+               if (abilityData.splitsAfterAttackCap) {
+                  splitAttackCap(abilityData);
+               } else {
+                  Vector2 toMouse = Util.getMousePos() - transform.position;
+                  Vector2 pos = transform.position;
 
-               float cannonballLifetime = getCannonballLifetime();
-               float rotAngle = (40.0f - (getCannonChargeAmount() * 25.0f)) / 2.0f;
+                  float cannonballLifetime = getCannonballLifetime();
+                  float rotAngle = (40.0f - (getCannonChargeAmount() * 25.0f)) / 2.0f;
 
-               // Fire cone of cannonballs
-               Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, rotAngle), false, true);
-               Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, Util.getMousePos(), false, false);
-               Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, -rotAngle), false, false);
-
-               _shouldUpdateTargeting = false;
-               _targetCone.targetingConfirmed(() => _shouldUpdateTargeting = true);
-
+                  // Fire cone of cannonballs
+                  Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, rotAngle), false, true);
+                  Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, Util.getMousePos(), false, false);
+                  Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, -rotAngle), false, false);
+                  _shouldUpdateTargeting = false;
+                  _targetCone.targetingConfirmed(() => _shouldUpdateTargeting = true);
+               }
                break;
             case CannonAttackType.Circle:
                if (_cannonBarrageCoroutine != null) {
@@ -634,7 +636,7 @@ public class PlayerShipEntity : ShipEntity
       Vector2 toMouse = Util.getMousePos() - transform.position;
       Vector2 pos = transform.position;
 
-      float rotAngle = (90.0f - (getCannonChargeAmount() * 25.0f)) / 2.0f;
+      float rotAngle = (45.0f - (getCannonChargeAmount() * 25.0f)) / 1.25f;
       abilityData.splitAttackCap = 8;
       float rotAngleDivider = rotAngle / abilityData.splitAttackCap;
 
@@ -647,6 +649,9 @@ public class PlayerShipEntity : ShipEntity
       for (int i = 1; i < (abilityData.splitAttackCap / 2) + 1; i++) {
          Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, -rotAngleDivider * i), false, false);
       }
+
+      _shouldUpdateTargeting = false;
+      _targetCone.targetingConfirmed(() => _shouldUpdateTargeting = true);
    }
 
    private void updateTargeting () {
@@ -685,7 +690,11 @@ public class PlayerShipEntity : ShipEntity
             break;
          case CannonAttackType.Cone:
             // Update target cone parameters
-            _targetCone.coneHalfAngle = (40.0f - (getCannonChargeAmount() * 25.0f)) / 2.0f;
+            if (ShipAbilityManager.self.getAbility(currentShipAbility).splitsAfterAttackCap) {
+               _targetCone.coneHalfAngle = (40.0f - (getCannonChargeAmount() * 25.0f)) / 1.25f;
+            } else {
+               _targetCone.coneHalfAngle = (40.0f - (getCannonChargeAmount() * 25.0f)) / 2.0f;
+            }
             _targetCone.coneOuterRadius = getCannonballDistance();
             _targetCone.transform.position = transform.position;
             _targetCone.updateCone(true);
@@ -1359,6 +1368,10 @@ public class PlayerShipEntity : ShipEntity
 
    public void clearMovementInput () {
       _movementInputDirection = Vector2.zero;
+   }
+
+   public Vector2 getMovementInputDirection () {
+      return _movementInputDirection;
    }
 
    [Command]
