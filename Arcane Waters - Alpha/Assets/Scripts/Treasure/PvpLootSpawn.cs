@@ -48,7 +48,11 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
    public float spawnFrequency = 60;
 
    // The rarity level
+   [SyncVar]
    public Rarity.Type rarity;
+
+   // The rarity frame sprite renderer
+   public SpriteRenderer rarityFrame;
 
    #endregion
 
@@ -80,6 +84,7 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
 
    public void initializeSpawner (float delay) {
       if (isServer) {
+         rarity = (Rarity.Type) UnityEngine.Random.Range(1, Enum.GetValues(typeof(Rarity.Type)).Length);
          generatePowerup(delay);
       }
    }
@@ -93,13 +98,13 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
          PlayerShipEntity playerEntity = collision.GetComponent<PlayerShipEntity>();
          if (playerEntity != null && playerEntity.instanceId == instanceId) {
             isShowingPowerup = false;
-            Rarity.Type randomRarity = Rarity.getRandom();
-            playerEntity.rpc.Target_ReceivePowerup(powerupType, randomRarity, collision.transform.position);
+            playerEntity.rpc.Target_ReceivePowerup(powerupType, rarity, collision.transform.position);
             PowerupManager.self.addPowerupServer(playerEntity.userId, new Powerup {
                powerupDuration = powerupDuration,
-               powerupRarity = randomRarity,
+               powerupRarity = rarity,
                powerupType = powerupType
             });
+
             updatePowerup(false, 0);
             Rpc_ToggleDisplay(false, 0);
             initializeSpawner(spawnFrequency);
@@ -113,8 +118,6 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
    }
 
    private void delayPowerupTrigger () {
-      rarity = (Rarity.Type) UnityEngine.Random.Range(1, Enum.GetValues(typeof(Rarity.Type)).Length);
-
       if (lootGroupId > 0) {
          List<TreasureDropsData> powerupDataList = TreasureDropsDataManager.self.getTreasureDropsById(lootGroupId, rarity).FindAll(_ => _.powerUp != Powerup.Type.None);
          if (powerupDataList.Count > 0) {
@@ -138,6 +141,10 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
    private void updatePowerup (bool isEnabled, int powerupVal) {
       isActive = isEnabled;
       powerupIndicator.SetActive(isEnabled);
+
+      // Setup rarity frames
+      Sprite[] borderSprites = Resources.LoadAll<Sprite>(Powerup.BORDER_SPRITES_LOCATION);
+      rarityFrame.sprite = borderSprites[(int) rarity - 1];
 
       foreach (SpriteRenderer spriteRender in spriteRendererList) {
          spriteRender.enabled = isEnabled;
