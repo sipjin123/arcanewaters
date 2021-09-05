@@ -1346,12 +1346,43 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
                // Smoothly jump into position
                sourceBattler.playAnim(Anim.Type.Jump_East);
+               Vector2 startingPosition = startPos;
                Vector2 targetPosition = targetBattler.getMeleeStandPosition(sourceBattler.weaponManager.weaponType != 0);
                float startTime = Time.time;
+               float halfTime = 0;
+               float jumpFrameFactor = .5f;
                while (Time.time - startTime < jumpDuration) {
                   float timePassed = Time.time - startTime;
-                  Vector2 newPos = Vector2.Lerp(startPos, targetPosition, (timePassed / jumpDuration));
-                  sourceBattler.transform.position = new Vector3(newPos.x, newPos.y, sourceBattler.transform.position.z);
+                  float lerpValue = timePassed / jumpDuration;
+
+                  // Add battler visual jump
+                  bool isJumpHeightValid = timePassed < (jumpDuration * jumpFrameFactor);
+                  float jumpOffsetValue = -.25f;
+
+                  // Alter the shadow offset while jumping
+                  float targetShadowHeight = isJumpHeightValid ? (_alteredBattlerData.shadowOffset.y + jumpOffsetValue) : _alteredBattlerData.shadowOffset.y;
+                  Vector2 shadowPositionTarget = new Vector2(0, targetShadowHeight);
+                  Vector2 spriteContainerPos = Vector2.Lerp(sourceBattler.shadowTransform.localPosition, shadowPositionTarget, lerpValue);
+                  sourceBattler.shadowTransform.localPosition = new Vector3(spriteContainerPos.x, spriteContainerPos.y, sourceBattler.transform.position.z);
+
+                  if (isJumpHeightValid) {
+                     // Calculate position from start position toward mid position
+                     Vector2 jumpPosition = new Vector2(targetPosition.x, targetPosition.y + .25f);
+                     Vector2 localJumpPos = Vector2.Lerp(startPos, jumpPosition, lerpValue);
+                     sourceBattler.transform.position = new Vector3(localJumpPos.x, localJumpPos.y, sourceBattler.transform.position.z);
+
+                     // Cache the last known local jump position
+                     startingPosition = sourceBattler.transform.position;
+                     halfTime = Time.time;
+                  } else {
+                     // Override calculations based on half travel distance
+                     timePassed = Time.time - halfTime;
+                     lerpValue = timePassed / (jumpDuration * jumpFrameFactor);
+
+                     // Calculate position from mid position toward final position
+                     Vector2 newPos = Vector2.Lerp(startingPosition, targetPosition, lerpValue);
+                     sourceBattler.transform.position = new Vector3(newPos.x, newPos.y, sourceBattler.transform.position.z);
+                  }
                   yield return 0;
                }
 
@@ -2772,6 +2803,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public void setBattlerCanCastAbility (bool canCast) {
       _canCastAbility = canCast;
+      isAttacking = false;
    }
 
    #region Private Variables
