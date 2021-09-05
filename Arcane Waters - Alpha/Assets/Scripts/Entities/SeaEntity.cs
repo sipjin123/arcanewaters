@@ -595,24 +595,39 @@ public class SeaEntity : NetEntity
    [ClientRpc]
    private void Rpc_ChainLightning (Vector2[] targetPosGround, uint primaryTargetNetID, Vector2 sourcePos) {
       SeaEntity parentEntity = SeaManager.self.getEntity(primaryTargetNetID);
+      if (parentEntity == null) {
+         D.debug("Sea manager does not contain Entity! " + primaryTargetNetID);
+         return;
+      }
 
+      if (parentEntity.spritesContainer == null) {
+         D.debug("Entity {" + primaryTargetNetID + "} has no sprite container");
+         return;
+      }
+
+      float zAxis = 2;
+      Transform parentTransform = parentEntity.spritesContainer.transform;
       GameObject shockResidue = Instantiate(PrefabsManager.self.lightningResiduePrefab);
-      shockResidue.transform.SetParent(parentEntity.spritesContainer.transform, false);
+      shockResidue.transform.SetParent(parentTransform);
+      shockResidue.transform.position = new Vector3(sourcePos.x, sourcePos.y, zAxis);
       EffectManager.self.create(Effect.Type.Shock_Collision, sourcePos);
 
       foreach (Vector2 targetPos in targetPosGround) {
+         // Setup lightning chain
          LightningBoltScript lightning = Instantiate(PrefabsManager.self.lightningChainPrefab);
          lightning.transform.SetParent(shockResidue.transform, false);
-
          lightning.StartObject.transform.position = lightning.transform.position;
-
          lightning.EndObject.transform.position = targetPos;
          lightning.EndObject.transform.SetParent(shockResidue.transform);
-
-         lightning.GetComponent<LineRenderer>().enabled = true;
+         if (lightning.GetComponent<LineRenderer>() != null) {
+            lightning.GetComponent<LineRenderer>().enabled = true;
+         } else {
+            D.debug("Lightning has no Line Renderer!!");
+         }
 
          GameObject subShockResidue = Instantiate(PrefabsManager.self.lightningResiduePrefab);
-         subShockResidue.transform.SetParent(shockResidue.transform, false);
+         subShockResidue.GetComponent<ZSnap>().enabled = false;
+         subShockResidue.transform.position = new Vector3(targetPos.x, targetPos.y, zAxis);
 
          EffectManager.self.create(Effect.Type.Shock_Collision, targetPos);
       }
