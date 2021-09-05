@@ -71,11 +71,6 @@ public class BodyEntity : NetEntity
 
          // Update colors
          hairLayer.recolor(newHairPalettes);
-
-         // Apply clip mask
-         if (hairLayer.isFront) {
-            hairLayer.setClipMaskForHat(_hatLayer.getType());
-         }
       }
    }
 
@@ -90,11 +85,6 @@ public class BodyEntity : NetEntity
 
          // Update colors
          hairLayer.recolor(hairPalettes);
-
-         // Apply clip mask
-         if (hairLayer.isFront) {
-            hairLayer.setClipMaskForHat(_hatLayer.getType());
-         }
       }
 
       // Update colors

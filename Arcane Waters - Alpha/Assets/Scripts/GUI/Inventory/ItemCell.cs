@@ -87,7 +87,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       onPointerEnter.RemoveAllListeners();
       onPointerExit.RemoveAllListeners();
       onDragStarted.RemoveAllListeners();
-      icon.sprite = null;      
+      icon.sprite = null;
       iconShadow.sprite = null;
       itemRarityType = Rarity.Type.None;
 
@@ -136,7 +136,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                itemSpriteId = weaponData.weaponType;
                itemTypeId = item.itemTypeId;
             }
-            break; 
+            break;
          case Item.Category.Armor:
             ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId);
             if (armorData == null) {
@@ -153,8 +153,13 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                newArmor.durability = item.durability;
                item = newArmor;
                item.data = rawItemData;
+               Sprite newSprite = ImageManager.getSprite(armorData.equipmentIconPath + (Global.player.gender == Gender.Type.Female ? "_female" : ""));
 
-               icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
+               if (newSprite == null || newSprite == ImageManager.self.blankSprite) {
+                  newSprite = ImageManager.getSprite(armorData.equipmentIconPath);
+               }
+
+               icon.sprite = newSprite;
                itemSpriteId = armorData.armorType;
                itemTypeId = item.itemTypeId;
             }
@@ -192,7 +197,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
          case Item.Category.CraftingIngredients:
             item = item.getCastItem();
             CraftingIngredients.Type ingredientType = (CraftingIngredients.Type) item.itemTypeId;
-            icon.sprite =  ImageManager.getSprite(CraftingIngredients.getBorderlessIconPath(ingredientType));
+            icon.sprite = ImageManager.getSprite(CraftingIngredients.getBorderlessIconPath(ingredientType));
             break;
          case Item.Category.Blueprint:
             blueprintIcon.SetActive(true);
@@ -231,6 +236,28 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             if (icon.sprite == ImageManager.self.blankSprite) {
                D.debug("Could not retrieve Blueprint: " + item.category + " : " + item.itemTypeId + " : " + item.data);
             }
+            break;
+         case Item.Category.Haircut:
+            HaircutData haircutData = HaircutXMLManager.self.getHaircutData(item.itemTypeId);
+
+            if (haircutData == null) {
+               D.debug("Failed to fetch Haircut Data for: " + item.itemTypeId);
+               Destroy(gameObject);
+               break;
+            }
+
+            icon.sprite = ImageManager.getSprites(item.getIconPath())[0];
+            break;
+         case Item.Category.ShipSkin:
+            ShipSkinData shipSkinData = ShipSkinXMLManager.self.getShipSkinData(item.itemTypeId);
+
+            if (shipSkinData == null) {
+               D.debug("Failed to fetch Ship Skin Data for: " + item.itemTypeId);
+               Destroy(gameObject);
+               break;
+            }
+
+            icon.sprite = ImageManager.getSprites(item.getIconPath())[2];
             break;
          default:
             D.editorLog("Failed to process Uncategorized item: " + item.itemTypeId, Color.red);
@@ -381,4 +408,3 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    #endregion
 
 }
- 

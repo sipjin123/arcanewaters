@@ -1241,7 +1241,7 @@ public class RPCManager : NetworkBehaviour
 
       if (area != null && area.version == latestVersion) {
          if (area.isInterior) {
-            SoundEffectManager.self.playFmodOneShot(SoundEffectManager.ENTER_DOOR, transform);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_OPEN, transform);
             //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ENTER_DOOR, transform);
             WeatherManager.self.setWeatherSimulation(WeatherEffectType.None);
          }
@@ -1707,26 +1707,24 @@ public class RPCManager : NetworkBehaviour
             HaircutData haircutData = HaircutXMLManager.self.getHaircutData(storeItem.itemId);
 
             if (haircutData == null) {
-               D.error("The purchased haircut is not valid.");
+               D.error($"Store Purchase failed for user '{_player.userId}' trying to purchase the Store Item '{storeItem.id}'. Couldn't find the haircut data.");
+               reportStorePurchaseFailed();
                return;
             }
 
             // Create an inventory entry for the haircut
-            newItemId = DB_Main.insertNewHaircut(_player.userId, haircutData.itemID, haircutData.type);
+            Haircut newHaircut = Haircut.createFromData(haircutData);
+            Item updatedItem = DB_Main.createItemOrUpdateItemCount(_player.userId, newHaircut);
 
             // If the purchase was not successful
-            if (newItemId == 0) {
-               D.error($"Store Purchase failed for user user '{_player.userId}' trying to purchase the Store Item '{storeItem.id}'.");
-
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  ServerMessageManager.sendError(ErrorMessage.Type.NotEnoughGems, _player, "You don't have " + storeItem.price + " gems!");
-               });
-
+            if (updatedItem == null) {
+               D.error($"Store Purchase failed for user '{_player.userId}' trying to purchase the Store Item '{storeItem.id}'.");
+               reportStorePurchaseFailed();
                return;
             }
 
             // Fetch the newly created item for display
-            purchasedItemName = haircutData.itemName;
+            purchasedItemName = storeItem.overrideItemName ? storeItem.displayName : haircutData.itemName;
 
             // Assign the haircut to the player
             DB_Main.setHairType(_player.userId, haircutData.type);
@@ -1739,6 +1737,30 @@ public class RPCManager : NetworkBehaviour
             });
          }
 
+         if (storeItem.category == Item.Category.ShipSkin) {
+            ShipSkinData shipSkinData = ShipSkinXMLManager.self.getShipSkinData(storeItem.itemId);
+
+            if (shipSkinData == null) {
+               D.error($"Store Purchase failed for user '{_player.userId}' trying to purchase the Store Item '{storeItem.id}'. Couldn't find the ship skin data.");
+               reportStorePurchaseFailed();
+               return;
+            }
+
+            // Create an inventory entry for the skin
+            ShipSkin shipSkin = ShipSkin.createFromData(shipSkinData);
+            Item updatedItem = DB_Main.createItemOrUpdateItemCount(_player.userId, shipSkin);
+
+            // If the purchase was not successful
+            if (updatedItem == null) {
+               D.error($"Store Purchase failed for user '{_player.userId}' trying to purchase the Store Item '{storeItem.id}'.");
+               reportStorePurchaseFailed();
+               return;
+            }
+
+            // Fetch the newly created item for display
+            purchasedItemName = storeItem.overrideItemName ? storeItem.displayName : shipSkinData.itemName;
+         }
+
          // Remove the gems
          DB_Main.addGems(_player.accountId, -storeItem.price);
 
@@ -1747,7 +1769,7 @@ public class RPCManager : NetworkBehaviour
             string feedback = "Thank you for your purchase!";
 
             if (!string.IsNullOrWhiteSpace(purchasedItemName)) {
-               feedback = "You have purchased " + purchasedItemName + "!";
+               feedback = $"You have successfully purchased '{purchasedItemName}'!";
             }
 
             if (storeItem.category == Item.Category.Hairdye || storeItem.category == Item.Category.Haircut || storeItem.category == Item.Category.ShipSkin) {
@@ -1760,6 +1782,13 @@ public class RPCManager : NetworkBehaviour
       });
    }
 
+   private void reportStorePurchaseFailed(string customMessage = null) {
+      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+         string feedback = string.IsNullOrWhiteSpace(customMessage) ? "Purchase failed" : customMessage;
+         ServerMessageManager.sendError(ErrorMessage.Type.StoreItemPurchaseFailed, _player, feedback);
+      });
+   }
+
    [Server]
    private void buySteamItem (ulong itemId, uint appId) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -1767,17 +1796,18 @@ public class RPCManager : NetworkBehaviour
          StoreItem storeItem = DB_Main.getStoreItem(itemId);
 
          try {
-            D.debug($"Steam Purchase Request Received from User {_player.userId}");
-
             if (_player == null) {
                D.debug($"The reference to the player is null.");
                return;
             }
 
+            D.debug($"Steam Purchase Request Received from User {_player.userId}");
+            
             D.debug($"The appID is {appId}");
 
             if (appId == 0) {
                D.debug($"The appId is not valid.");
+               reportStorePurchaseFailed();
                return;
             }
 
@@ -1797,6 +1827,7 @@ public class RPCManager : NetworkBehaviour
 
             if (steamId == 0) {
                D.debug($"Steam Purchase Error: Steam ID '{steamId}' is not valid. Can't process the purchase for user '{_player.userId}'.");
+               reportStorePurchaseFailed();
                return;
             }
 
@@ -1809,6 +1840,7 @@ public class RPCManager : NetworkBehaviour
             GetUserInfoParameters.UserStatus status = t.Result.parameters.getStatus();
             if (status == GetUserInfoParameters.UserStatus.LockedFromPurchasing) {
                D.debug($"Steam Purchase Error: User '{_player.userId}' is not allowed to make Steam purchases. Can't process the purchase.");
+               reportStorePurchaseFailed();
                return;
             }
 
@@ -1819,6 +1851,7 @@ public class RPCManager : NetworkBehaviour
 
             if (newOrderId <= 0) {
                D.debug("Steam Purchase. Creating new order: Failed.");
+               reportStorePurchaseFailed();
                return;
             }
 
@@ -1828,11 +1861,11 @@ public class RPCManager : NetworkBehaviour
 
             // Try to obtain the description of the item
             string itemDescription = "";
+
             if (storeItem.category == Item.Category.Haircut) {
                HaircutData haircutData = HaircutXMLManager.self.getHaircutData(storeItem.itemId);
                itemDescription = haircutData.itemDescription;
-            }
-            else if (storeItem.category == Item.Category.Gems) {
+            } else if (storeItem.category == Item.Category.Gems) {
                GemsData gemsData = GemsXMLManager.self.getGemsData(storeItem.itemId);
                itemDescription = gemsData.itemDescription;
             }
@@ -1871,6 +1904,7 @@ public class RPCManager : NetworkBehaviour
                D.debug("Steam Purchase. Transferring Control to Steam: Failed");
                D.debug("Steam Purchase Error: Couldn't start the purchase transaction. Reverting...");
                DB_Main.deleteSteamOrder(newOrderId);
+               reportStorePurchaseFailed();
                return;
             }
 
@@ -1878,6 +1912,7 @@ public class RPCManager : NetworkBehaviour
          } catch (Exception ex) {
             D.error(ex.Message);
             D.error(ex.StackTrace);
+            reportStorePurchaseFailed();
          }
       });
    }
@@ -1927,18 +1962,21 @@ public class RPCManager : NetworkBehaviour
 
             if (order == null) {
                D.error($"Steam Purchase Error: Couldn't find order '{orderId}'. Can't complete the Steam purchase.");
+               reportStorePurchaseFailed();
                return;
             }
 
             // Ensure the order belongs to the current user
             if (order.userId != _player.userId) {
                D.error($"Steam Purchase Error: The order '{orderId}' belongs to user '{order.userId}' and not to the current user '{_player.userId}'.");
+               reportStorePurchaseFailed();
                return;
             }
 
             // If the order is already closed, skip the process
             if (order.closed) {
                D.error($"Steam Purchase Error: The order '{orderId}' is already closed.");
+               reportStorePurchaseFailed();
                return;
             }
 
@@ -1961,10 +1999,7 @@ public class RPCManager : NetworkBehaviour
                   DB_Main.updateSteamOrder(orderId, _player.userId, "error", order.content);
 
                   // Report to the user - error
-                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     ServerMessageManager.sendError(ErrorMessage.Type.PurchaseError, _player, "Error encountered during the purchase.");
-                  });
-
+                  reportStorePurchaseFailed();
                   return;
                }
 
@@ -1992,26 +2027,22 @@ public class RPCManager : NetworkBehaviour
 
             // Report to the user
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               Target_OnCompleteSteamPurchase(_player.connectionToClient, orderId, purchaseAuthorized);
+               string feedback = purchaseAuthorized ? "Thank you for the purchase!" : "Purchase canceled.";
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.StoreItemBought, _player, feedback);
             });
          } catch (Exception ex) {
             D.error(ex.Message);
             D.error(ex.StackTrace);
-
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               ServerMessageManager.sendError(ErrorMessage.Type.PurchaseError, _player, "Error encountered during the purchase.");
-            });
+            reportStorePurchaseFailed();
          }
       });
    }
 
-   [TargetRpc]
-   public void Target_OnCompleteSteamPurchase (NetworkConnection connection, ulong orderId, bool purchaseAuthorized) {
-      if (purchaseAuthorized) {
-         PanelManager.self.noticeScreen.show("Thank you for the purchase!");
-      } else {
-         PanelManager.self.noticeScreen.show("Purchase canceled.");
-      }
+   private void reportUseItemFailure(string customMessage = null) {
+      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+         string feedback = string.IsNullOrWhiteSpace(customMessage) ? "Couldn't use the item." : customMessage;
+         ServerMessageManager.sendError(ErrorMessage.Type.UseItemFailed, _player, feedback);
+      });
    }
 
    [Server]
@@ -2022,15 +2053,21 @@ public class RPCManager : NetworkBehaviour
 
          // Make sure the gender is right
          if (haircutData.getGender() != _player.gender) {
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "This haircut is for a different gender.");
-            });
+            reportUseItemFailure("This haircut is for a different head shape.");
+            return;
+         }
 
+         // The player has this hairstyle
+         if (haircutData.type == _player.hairType) {
+            reportUseItemFailure("You already have this hairstyle!");
             return;
          }
 
          // Set the new hair in the database
          DB_Main.setHairType(_player.userId, newHairType);
+
+         // Delete the item
+         DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, 1);
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -2102,6 +2139,7 @@ public class RPCManager : NetworkBehaviour
          Item item = DB_Main.getItem(_player.userId, itemId);
 
          if (item == null) {
+            D.error($"Player {_player.userId} tried to use an item (id: {itemId}), but the item couldn't be found.");
             return;
          }
 
@@ -4390,7 +4428,7 @@ public class RPCManager : NetworkBehaviour
 
       // Refresh the panel
       panel.refreshRefinementList();
-      SoundEffectManager.self.playSoundEffect(SoundEffectManager.REFINE_COMPLETE, SoundEffectManager.self.transform);
+      SoundEffectManager.self.playFmod2dSfxWithId(SoundEffectManager.REFINE_COMPLETE);
    }
 
    [Command]
@@ -5096,13 +5134,14 @@ public class RPCManager : NetworkBehaviour
       }
 
       // If the area is a PvP area, a Voyage or a TreasureSite, add the player to the GameStats System
-      Target_ResetPvpSilverPanel(_player.connectionToClient, GameStatsManager.self.getSilverAmount(_player.userId));
       if (_player.tryGetVoyage(out Voyage v) || VoyageManager.isAnyLeagueArea(_player.areaKey) || VoyageManager.isPvpArenaArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)) {
          GameStatsManager.self.registerUser(_player.userId);
       } else {
          PvpAnnouncementHolder.self.clearAnnouncements();
          GameStatsManager.self.unregisterUser(_player.userId);
       }
+
+      Target_ResetPvpSilverPanel(_player.connectionToClient, GameStatsManager.self.getSilverAmount(_player.userId));
 
       // Verify the voyage consistency only if the user is in a voyage group or voyage area
       if (!VoyageManager.isAnyLeagueArea(_player.areaKey) && !VoyageManager.isPvpArenaArea(_player.areaKey) && !VoyageManager.isTreasureSiteArea(_player.areaKey)) {
@@ -5215,7 +5254,7 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveCraftedItem (NetworkConnection connection, Item item) {
-      SoundEffectManager.self.playFmod2D(SoundEffectManager.CRAFT_COMPLETE);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.CRAFT_SUCCESS);
       //SoundEffectManager.self.playSoundEffect(SoundEffectManager.CRAFT_COMPLETE, SoundEffectManager.self.transform);
       RewardManager.self.showItemInRewardPanel(item);
    }
@@ -5287,7 +5326,7 @@ public class RPCManager : NetworkBehaviour
          return;
       }
       // SFX
-      SoundEffectManager.self.playFmodWithPath(SoundEffectManager.MINING_ROCKS, oreNode.transform);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.MINING_ROCKS, oreNode.transform);
    }
 
    [Command]
@@ -6883,10 +6922,12 @@ public class RPCManager : NetworkBehaviour
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Armor armor = Armor.castItemToArmor(userObjects.armor);
+            
             if (armor.data.Length < 1 && armor.itemTypeId > 0 && armor.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
                armor.data = ArmorStatData.serializeArmorStatData(EquipmentXMLManager.self.getArmorDataBySqlId(armor.itemTypeId));
                userObjects.armor.data = armor.data;
             }
+
             if (body != null) {
                body.armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id, armor.paletteNames, armor.durability);
 
@@ -6895,6 +6936,14 @@ public class RPCManager : NetworkBehaviour
                   BattleManager.self.onPlayerEquipItem(body);
                }
             }
+
+            PlayerShipEntity ship = _player.GetComponent<PlayerShipEntity>();
+
+            if (ship != null) {
+               ArmorStatData data = EquipmentXMLManager.self.getArmorDataBySqlId(armor.itemTypeId);
+               ship.armorType = data != null ? data.armorType : 0;
+            }
+
             if (userObjects == null) {
                D.debug("Null user objects!");
             } else {
@@ -6906,9 +6955,6 @@ public class RPCManager : NetworkBehaviour
 
    [Server]
    public void requestSetHatId (int hatId) {
-      // They may be in an island scene, or at sea
-      PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
-
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.setHatId(_player.userId, hatId);
@@ -6917,10 +6963,14 @@ public class RPCManager : NetworkBehaviour
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Hat hat = Hat.castItemToHat(userObjects.hat);
+            
             if (hat.data.Length < 1 && hat.itemTypeId > 0 && hat.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
                hat.data = HatStatData.serializeHatStatData(EquipmentXMLManager.self.getHatData(hat.itemTypeId));
                userObjects.hat.data = hat.data;
             }
+
+            PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
+
             if (body != null) {
                body.hatsManager.updateHatSyncVars(hat.itemTypeId, hat.id);
 
@@ -6929,6 +6979,14 @@ public class RPCManager : NetworkBehaviour
                   BattleManager.self.onPlayerEquipItem(body);
                }
             }
+
+            PlayerShipEntity ship = _player.GetComponent<PlayerShipEntity>();
+
+            if (ship != null) {
+               HatStatData data = EquipmentXMLManager.self.getHatData(hat.itemTypeId);
+               ship.hatType = data != null ? data.hatType : 0;
+            }
+
             if (userObjects == null) {
                D.debug("Null user objects!");
             } else {
@@ -6957,10 +7015,14 @@ public class RPCManager : NetworkBehaviour
          // Back to Unity Thread to call RPC functions
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Weapon weapon = Weapon.castItemToWeapon(userObjects.weapon);
+            
             if (weapon.data.Length < 1 && weapon.itemTypeId > 0 && weapon.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
                weapon.data = WeaponStatData.serializeWeaponStatData(EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId));
                userObjects.weapon.data = weapon.data;
             }
+
+            PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
+            
             if (body != null) {
                body.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames, userObjects.weapon.durability);
                D.adminLog("Player {" + body.userId + "} is equipping item" +

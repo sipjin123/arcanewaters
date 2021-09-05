@@ -15,8 +15,8 @@ public class Ship : SeaEntity {
 
    // The Type of Skin
    public enum SkinType {
-      None = 0,
-   }
+      None = 0, Type_1_Painted = 101, Type_2_DarkBlue = 201, Type_3_Orange = 301, Type_4_Tropical = 401, 
+      Type_5_Striped = 501, Type_6_Frost = 601, Type_7_Dark = 701, Type_8_Royal = 801 }
 
    // Our ship ID
    public int shipId = -1;
@@ -122,10 +122,11 @@ public class Ship : SeaEntity {
 
    #endregion
 
-   public static string getSkinPath (Ship.Type shipType, Ship.SkinType skinType = SkinType.None, bool isPirate = false) {
+   public static string getSkinPath (Type shipType, SkinType skinType = SkinType.None, bool isPirate = false) {
       string skinName;
+
       if (!isPirate) {
-         skinName = (skinType == Ship.SkinType.None) ? shipType + "_1":  skinType + "";
+         skinName = (skinType == SkinType.None ?  shipType + "_1" :  skinType.ToString());
       } else {
          skinName = shipType + "_pirate";
       }

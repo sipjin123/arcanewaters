@@ -150,9 +150,6 @@ public class Battle : NetworkBehaviour {
                         case Status.Type.Burning:
 
                            break;
-                        case Status.Type.Frozen:
-                           battler.isDisabledByDebuff = false;
-                           break;
                         case Status.Type.Stunned:
                            battler.isDisabledByDebuff = false;
                            break;
@@ -172,9 +169,6 @@ public class Battle : NetworkBehaviour {
                         if (battler.health < 1) {
                            battler.isAlreadyDead = true;
                         }
-                        break;
-                     case Status.Type.Frozen:
-                        battler.isDisabledByDebuff = true;
                         break;
                      case Status.Type.Stunned:
                         battler.isDisabledByDebuff = true;

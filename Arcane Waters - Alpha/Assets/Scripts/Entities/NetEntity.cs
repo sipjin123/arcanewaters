@@ -883,7 +883,7 @@ public class NetEntity : NetworkBehaviour
          case Anim.Type.NC_Jump_North:
          case Anim.Type.NC_Jump_South:
             shadow.transform.localScale = _shadowInitialScale;
-            SoundEffectManager.self.playFmodOneShot(SoundEffectManager.JUMP_END_ID, this.transform);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.LAND, this.transform);
             //SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.JUMP_END_ID, Global.player.transform);
             //SoundEffectManager.self.playSoundEffect(SoundEffectManager.JUMP_END_ID, transform);
             break;
@@ -912,7 +912,7 @@ public class NetEntity : NetworkBehaviour
       }
 
       if (!skipStatusModification) {
-         if (StatusManager.self.hasStatus(this.netId, Status.Type.Frozen) || StatusManager.self.hasStatus(this.netId, Status.Type.Stunned)) {
+         if (StatusManager.self.hasStatus(this.netId, Status.Type.Stunned)) {
             modifier = 0f;
          } else if (StatusManager.self.hasStatus(this.netId, Status.Type.Slowed)) {
             modifier = Mathf.Clamp(1.0f - StatusManager.self.getStrongestStatus(this.netId, Status.Type.Slowed), 0.2f, 1.0f);
@@ -1456,16 +1456,8 @@ public class NetEntity : NetworkBehaviour
 
       // If they gained a level, show a special message
       if (levelsGained > 0) {
-         GameObject levelUpCanvas = Instantiate(PrefabsManager.self.levelGainPrefab);
-         levelUpCanvas.transform.position = this.transform.position;
-         string message = string.Format("+{0} {1} level{2}!", levelsGained, jobType, levelsGained > 1 ? "s" : "");
-         levelUpCanvas.GetComponentInChildren<TextMeshProUGUI>().text = message;
-
          // Show an effect
-         GameObject sortPoint = GetComponent<ZSnap>().sortPoint;
-         GameObject sparkles = EffectManager.show(Effect.Type.Item_Discovery_Particles, sortPoint.transform.position + new Vector3(0f, .24f));
-         sparkles.transform.SetParent(this.transform, true);
-         Destroy(sparkles, 5f);
+         showLevelUpEffect(jobType);
 
          // Play a sound
          SoundManager.create3dSound("tutorial_step", Global.player.transform.position);
@@ -1483,6 +1475,10 @@ public class NetEntity : NetworkBehaviour
       if (levelsGained > 0) {
          AchievementManager.registerUserAchievement(this, ActionType.LevelUp, levelsGained);
       }
+   }
+
+   protected virtual void showLevelUpEffect(Jobs.Type jobType) {
+      return;
    }
 
    public void requestControl (TemporaryController controller) {
@@ -1634,7 +1630,7 @@ public class NetEntity : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceiveUnreadMailNotification (NetworkConnection conn) {
       BottomBar.self.setUnreadMailNotificationStatus(true);
-      SoundEffectManager.self.playFmod2D(SoundEffectManager.MAIL_NOTIF);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.MAIL_NOTIFICATION);
       //SoundEffectManager.self.playSoundEffect(SoundEffectManager.MAIL_NOTIF, transform);
    }
 
@@ -1971,7 +1967,6 @@ public class NetEntity : NetworkBehaviour
          // Setup the pvp structure status panel
          if (VoyageManager.isPvpArenaArea(area.areaKey)) {
             PvpStructureStatusPanel.self.onPlayerJoinedPvpGame();
-            PvpScorePanel.self.onPlayerJoinedPvpGame();
             PvpStatPanel.self.onPlayerJoinedPvpGame();
          }
 
@@ -2117,6 +2112,10 @@ public class NetEntity : NetworkBehaviour
       return (float) (NetworkTime.time - lastAttackedTime());
    }
 
+   public SpriteOutline getOutline () {
+      return _outline;
+   }
+
    protected virtual void webBounceUpdate () { }
 
    protected virtual void onStartMoving () { }
@@ -2204,7 +2203,7 @@ public class NetEntity : NetworkBehaviour
       gainItemCanvas.GetComponentInChildren<Image>().SetNativeSize();
 
       // Play SFX
-      SoundEffectManager.self.playFmod2DWithPath(SoundEffectManager.COLLECT_SILVER);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.COLLECT_SILVER);
 
       // Update the Silver indicator
       PvpStatusPanel.self.addSilver(silverCount);

@@ -802,11 +802,23 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          foreach (HairLayer hairLayer in GetComponentsInChildren<HairLayer>()) {
             hairLayer.setType(hairType);
             hairLayer.recolor(hairPalettes);
-
-            if (hairLayer.isFront) {
-               hairLayer.setClipMaskForHat(hatManager.hatType);
-            }
          }
+      }
+   }
+
+   public void syncAnimations () {
+      if (GetComponentInChildren<BodyLayer>() == null) {
+         return;
+      }
+
+      int index = GetComponentInChildren<BodyLayer>().getSimpleAnimation().getIndex();
+
+      foreach (SpriteLayer layer in GetComponentsInChildren<SpriteLayer>()) {
+         if (layer == null || layer.getSimpleAnimation() == null) {
+            continue;
+         }
+
+         layer.getSimpleAnimation().setIndex(index);
       }
    }
 
@@ -836,7 +848,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          }
       }
 
-      selectedBattleBar.toggleDisplay(showBattleBar, showName: false);
+      if (selectedBattleBar != null) {
+         selectedBattleBar.toggleDisplay(showBattleBar, showName: false);
+      }
    }
 
    public void setBattlerAbilities (List<int> basicAbilityIds, BattlerType battlerType) {
@@ -968,7 +982,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       //}
 
       //SoundEffectManager.self.playSoundEffect(jumpSoundEffect.id, transform);
-      SoundEffectManager.self.playFmodWithPath(SoundEffectManager.MOVEMENT_WHOOSH, transform);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.MOVEMENT_WHOOSH, transform);
    }
 
    public void playAnim (Anim.Type animationType, float customSpeed = -1) {

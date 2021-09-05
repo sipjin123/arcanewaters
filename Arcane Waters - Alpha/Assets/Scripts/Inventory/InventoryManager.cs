@@ -36,7 +36,7 @@ public class InventoryManager : MonoBehaviour
       // Check which type of item we requested to equip/unequip
       if (castedItem.category == Item.Category.Weapon) {
          if (inventoryPanel.isShowing()) {
-            inventoryPanel.enableLoadBlocker();
+            inventoryPanel.showBlocker(large: true);
          }
 
          // Check if it's currently equipped or not
@@ -51,7 +51,7 @@ public class InventoryManager : MonoBehaviour
          }
       } else if (castedItem.category == Item.Category.Armor) {
          if (inventoryPanel.isShowing()) {
-            inventoryPanel.enableLoadBlocker();
+            inventoryPanel.showBlocker(large: true);
          }
 
          // Check if it's currently equipped or not
@@ -61,7 +61,7 @@ public class InventoryManager : MonoBehaviour
          Global.player.rpc.Cmd_RequestSetArmorId(itemIdToSend);
       } else if (castedItem.category == Item.Category.Hats) {
          if (inventoryPanel.isShowing()) {
-            inventoryPanel.enableLoadBlocker();
+            inventoryPanel.showBlocker(large: true);
          }
 
          // Check if it's currently equipped or not
@@ -90,6 +90,10 @@ public class InventoryManager : MonoBehaviour
    protected static void confirmUseItem (Item item) {
       PanelManager.self.confirmScreen.hide();
       Global.player.rpc.Cmd_UseItem(item.id);
+      
+      if (InventoryPanel.self.isShowing()) {
+         InventoryPanel.self.showBlocker(large: true);
+      }
    }
 
    public static void trashItem (Item castedItem) {
@@ -109,6 +113,10 @@ public class InventoryManager : MonoBehaviour
 
    protected static void confirmTrashItem (Item item) {
       Global.player.rpc.Cmd_DeleteItem(item.id);
+
+      if (InventoryPanel.self.isShowing()) {
+         InventoryPanel.self.showBlocker(large: true);
+      }
    }
 
    public static bool isEquipped (int itemId) {

@@ -936,7 +936,6 @@ public class BattleManager : MonoBehaviour {
                   bool canBeDisabled = true;
                   if (target.isBossType) {
                      switch (abilityDataReference.statusType) {
-                        case Status.Type.Frozen:
                         case Status.Type.Slowed:
                         case Status.Type.Stunned:
                            canBeDisabled = false;

@@ -7,6 +7,7 @@ using System.Linq;
 using System.IO;
 using static EquipmentToolManager;
 using UnityEngine.Events;
+using System;
 
 public class EquipmentXMLManager : MonoBehaviour {
    #region Public Variables
@@ -15,13 +16,13 @@ public class EquipmentXMLManager : MonoBehaviour {
    public static EquipmentXMLManager self;
 
    // References to all the weapon data
-   public List<WeaponStatData> weaponStatList { get { return _weaponStatList.Values.ToList(); } }
+   public List<WeaponStatData> weaponStatList { get { return _weaponStatRegistry.Values.ToList(); } }
 
    // References to all the armor data
-   public List<ArmorStatData> armorStatList { get { return _armorStatList.Values.ToList(); } }
+   public List<ArmorStatData> armorStatList { get { return _armorStatRegistry.Values.ToList(); } }
 
    // References to all the hat data
-   public List<HatStatData> hatStatList { get { return _hatStatList.Values.ToList(); } }
+   public List<HatStatData> hatStatList { get { return _hatStatRegistry.Values.ToList(); } }
 
    // Determines how many equipment set has been loaded
    public int equipmentLoadCounter = 0;
@@ -41,9 +42,9 @@ public class EquipmentXMLManager : MonoBehaviour {
    #endregion
 
    private void Awake () {
-      _weaponStatList = new Dictionary<int, WeaponStatData>();
-      _armorStatList = new Dictionary<int, ArmorStatData>();
-      _hatStatList = new Dictionary<int, HatStatData>();
+      _weaponStatRegistry = new Dictionary<int, WeaponStatData>();
+      _armorStatRegistry = new Dictionary<int, ArmorStatData>();
+      _hatStatRegistry = new Dictionary<int, HatStatData>();
       self = this;
    }
 
@@ -82,10 +83,10 @@ public class EquipmentXMLManager : MonoBehaviour {
 
    public void initializeDataCache () {
       equipmentLoadCounter = 0;
-      _weaponStatList = new Dictionary<int, WeaponStatData>();
-      _armorStatList = new Dictionary<int, ArmorStatData>();
-      _hatStatList = new Dictionary<int, HatStatData>();
-      _hatStatData = new List<HatStatData>();
+      _weaponStatRegistry = new Dictionary<int, WeaponStatData>();
+      _armorStatRegistry = new Dictionary<int, ArmorStatData>();
+      _hatStatRegistry = new Dictionary<int, HatStatData>();
+      _hatStatList = new List<HatStatData>();
 
       List<XMLPair> rawWeaponXml = DB_Main.getEquipmentXML(EquipmentType.Weapon);
       foreach (XMLPair xmlPair in rawWeaponXml) {
@@ -96,9 +97,9 @@ public class EquipmentXMLManager : MonoBehaviour {
                rawData.sqlId = xmlPair.xmlId;
 
                // Save the data in the memory cache
-               if (!_weaponStatList.ContainsKey(xmlPair.xmlId) && xmlPair.isEnabled) {
-                  _weaponStatList.Add(xmlPair.xmlId, rawData);
-                  _weaponStatData.Add(rawData);
+               if (!_weaponStatRegistry.ContainsKey(xmlPair.xmlId) && xmlPair.isEnabled) {
+                  _weaponStatRegistry.Add(xmlPair.xmlId, rawData);
+                  _weaponStatList.Add(rawData);
                }
             } catch {
                D.editorLog("Failed to translate data: " + xmlPair.rawXmlData, Color.red);
@@ -114,9 +115,9 @@ public class EquipmentXMLManager : MonoBehaviour {
             rawData.sqlId = xmlPair.xmlId;
 
             // Save the data in the memory cache
-            if (!_armorStatList.ContainsKey(xmlPair.xmlId) && xmlPair.isEnabled) {
-               _armorStatList.Add(xmlPair.xmlId, rawData);
-               _armorStatData.Add(rawData);
+            if (!_armorStatRegistry.ContainsKey(xmlPair.xmlId) && xmlPair.isEnabled) {
+               _armorStatRegistry.Add(xmlPair.xmlId, rawData);
+               _armorStatList.Add(rawData);
             }
          }
       }
@@ -130,9 +131,9 @@ public class EquipmentXMLManager : MonoBehaviour {
             rawData.sqlId = xmlPair.xmlId;
 
             // Save the data in the memory cache
-            if (!_hatStatList.ContainsKey(uniqueID) && xmlPair.isEnabled) {
-               _hatStatList.Add(uniqueID, rawData);
-               _hatStatData.Add(rawData);
+            if (!_hatStatRegistry.ContainsKey(uniqueID) && xmlPair.isEnabled) {
+               _hatStatRegistry.Add(uniqueID, rawData);
+               _hatStatList.Add(rawData);
             }
          }
       }
@@ -145,12 +146,12 @@ public class EquipmentXMLManager : MonoBehaviour {
          int uniqueID = rawData.sqlId;
 
          // Save the data in the memory cache
-         if (!_weaponStatList.ContainsKey(uniqueID)) {
-            _weaponStatList.Add(uniqueID, rawData);
-            _weaponStatData.Add(rawData);
+         if (!_weaponStatRegistry.ContainsKey(uniqueID)) {
+            _weaponStatRegistry.Add(uniqueID, rawData);
+            _weaponStatList.Add(rawData);
          }
       }
-      D.adminLog("EquipmentXML :: Received a total of {" + _weaponStatData.Count + "} weapon data from {" + statData.Count + "}", D.ADMIN_LOG_TYPE.Equipment);
+      D.adminLog("EquipmentXML :: Received a total of {" + _weaponStatList.Count + "} weapon data from {" + statData.Count + "}", D.ADMIN_LOG_TYPE.Equipment);
       finishedLoading();
    }
 
@@ -159,12 +160,12 @@ public class EquipmentXMLManager : MonoBehaviour {
          int uniqueID = rawData.sqlId;
 
          // Save the data in the memory cache
-         if (!_armorStatList.ContainsKey(uniqueID)) {
-            _armorStatList.Add(uniqueID, rawData);
-            _armorStatData.Add(rawData);
+         if (!_armorStatRegistry.ContainsKey(uniqueID)) {
+            _armorStatRegistry.Add(uniqueID, rawData);
+            _armorStatList.Add(rawData);
          }
       }
-      D.adminLog("EquipmentXML :: Received a total of {" + _armorStatData.Count + "} armor data from {" + statData.Count + "}", D.ADMIN_LOG_TYPE.Equipment);
+      D.adminLog("EquipmentXML :: Received a total of {" + _armorStatList.Count + "} armor data from {" + statData.Count + "}", D.ADMIN_LOG_TYPE.Equipment);
       finishedLoading();
    }
 
@@ -173,29 +174,29 @@ public class EquipmentXMLManager : MonoBehaviour {
          int uniqueID = rawData.sqlId;
 
          // Save the data in the memory cache
-         if (!_hatStatList.ContainsKey(uniqueID)) {
-            _hatStatList.Add(uniqueID, rawData);
-            _hatStatData.Add(rawData);
+         if (!_hatStatRegistry.ContainsKey(uniqueID)) {
+            _hatStatRegistry.Add(uniqueID, rawData);
+            _hatStatList.Add(rawData);
          }
       }
-      D.adminLog("EquipmentXML :: Received a total of {" + _hatStatData.Count + "} hat data from {" + statData.Count + "}", D.ADMIN_LOG_TYPE.Equipment);
+      D.adminLog("EquipmentXML :: Received a total of {" + _hatStatList.Count + "} hat data from {" + statData.Count + "}", D.ADMIN_LOG_TYPE.Equipment);
       finishedLoading();
    }
 
    public void resetAllData () {
-      _weaponStatList = new Dictionary<int, WeaponStatData>();
-      _armorStatList = new Dictionary<int, ArmorStatData>();
-      _hatStatList = new Dictionary<int, HatStatData>();
+      _weaponStatRegistry = new Dictionary<int, WeaponStatData>();
+      _armorStatRegistry = new Dictionary<int, ArmorStatData>();
+      _hatStatRegistry = new Dictionary<int, HatStatData>();
 
-      _weaponStatData.Clear();
-      _armorStatData.Clear();
-      _hatStatData.Clear();
+      _weaponStatList.Clear();
+      _armorStatList.Clear();
+      _hatStatList.Clear();
    }
 
    public List<WeaponStatData> requestWeaponList (List<int> xmlIDList) {
       List<WeaponStatData> returnWeaponStatList = new List<WeaponStatData>();
       foreach (int index in xmlIDList) {
-         WeaponStatData searchData = _weaponStatList.Values.ToList().Find(_ => _.sqlId == index);
+         WeaponStatData searchData = _weaponStatRegistry.Values.ToList().Find(_ => _.sqlId == index);
          if (searchData != null) {
             returnWeaponStatList.Add(searchData);
          }
@@ -207,7 +208,7 @@ public class EquipmentXMLManager : MonoBehaviour {
    public List<ArmorStatData> requestArmorList (List<int> xmlIDList) {
       List<ArmorStatData> returnArmorList = new List<ArmorStatData>();
       foreach (int index in xmlIDList) {
-         ArmorStatData searchData = _armorStatList.Values.ToList().Find(_ => _.sqlId == index);
+         ArmorStatData searchData = _armorStatRegistry.Values.ToList().Find(_ => _.sqlId == index);
          if (searchData != null) {
             returnArmorList.Add(searchData);
          }
@@ -219,7 +220,7 @@ public class EquipmentXMLManager : MonoBehaviour {
    public List<HatStatData> requestHatList (List<int> xmlIDList) {
       List<HatStatData> returnHatStatList = new List<HatStatData>();
       foreach (int index in xmlIDList) {
-         HatStatData searchData = _hatStatList.Values.ToList().Find(_ => _.sqlId == index);
+         HatStatData searchData = _hatStatRegistry.Values.ToList().Find(_ => _.sqlId == index);
          if (searchData != null) {
             returnHatStatList.Add(searchData);
          }
@@ -507,20 +508,20 @@ public class EquipmentXMLManager : MonoBehaviour {
 
    // Display list for editor reviewing
    [SerializeField]
-   private List<WeaponStatData> _weaponStatData = new List<WeaponStatData>();
+   private List<WeaponStatData> _weaponStatList = new List<WeaponStatData>();
    [SerializeField]
-   private List<ArmorStatData> _armorStatData = new List<ArmorStatData>();
+   private List<ArmorStatData> _armorStatList = new List<ArmorStatData>();
    [SerializeField]
-   private List<HatStatData> _hatStatData = new List<HatStatData>();
+   private List<HatStatData> _hatStatList = new List<HatStatData>();
 
    // Stores the list of all weapon data
-   private Dictionary<int, WeaponStatData> _weaponStatList = new Dictionary<int, WeaponStatData>();
+   private Dictionary<int, WeaponStatData> _weaponStatRegistry = new Dictionary<int, WeaponStatData>();
 
    // Stores the list of all armor data
-   private Dictionary<int, ArmorStatData> _armorStatList = new Dictionary<int, ArmorStatData>();
+   private Dictionary<int, ArmorStatData> _armorStatRegistry = new Dictionary<int, ArmorStatData>();
 
    // Stores the list of all hat data
-   private Dictionary<int, HatStatData> _hatStatList = new Dictionary<int, HatStatData>();
+   private Dictionary<int, HatStatData> _hatStatRegistry = new Dictionary<int, HatStatData>();
 
    #endregion
 }

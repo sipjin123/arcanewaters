@@ -145,8 +145,7 @@ public class PlayerShipEntity : ShipEntity
    public int currentShipAbility = 0;
 
    // The different flags the ship can display
-   public enum Flag
-   {
+   public enum Flag {
       None = 0,
       White = 1,
       Group = 2,
@@ -155,6 +154,9 @@ public class PlayerShipEntity : ShipEntity
 
    // The xp rewarded to attackers when being killed, in pvp
    public const int REWARDED_XP = 10;
+
+   // Reference to the level up effect
+   public LevelUpEffect levelUpEffect;
 
    #endregion
 
@@ -230,7 +232,7 @@ public class PlayerShipEntity : ShipEntity
          };
 
          // Creating the FMOD event Instance
-         _boostState = FMODUnity.RuntimeManager.CreateInstance(SoundEffectManager.self.getSoundEffect(SoundEffectManager.SHIP_LAUNCH_CHARGE).fmodId);
+         _boostState = FMODUnity.RuntimeManager.CreateInstance(SoundEffectManager.SHIP_LAUNCH_CHARGE);
          _boostState.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(this.transform));
       } else if (isServer) {
          _movementInputDirection = Vector2.zero;
@@ -704,7 +706,6 @@ public class PlayerShipEntity : ShipEntity
 
             Color coneColor = (enemyInCone) ? Color.yellow : Color.white;
             _targetCone.setConeColor(coneColor);
-
             break;
          case CannonAttackType.Circle:
             // Update target circle parameters
@@ -919,7 +920,6 @@ public class PlayerShipEntity : ShipEntity
       if (hasAuthority) {
          PanelManager.self.hidePowerupPanel();
          PvpStructureStatusPanel.self.onPlayerLeftPvpGame();
-         PvpScorePanel.self.onPlayerLeftPvpGame();
          PvpStatPanel.self.onPlayerLeftPvpGame();
       }
 
@@ -1019,9 +1019,14 @@ public class PlayerShipEntity : ShipEntity
       initialize(shipInfo);
 
       // Store the equipped items characteristics
-      weaponType = weapon.itemTypeId;
-      armorType = armor.itemTypeId;
-      hatType = hat.itemTypeId;
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
+      HatStatData hatData = EquipmentXMLManager.self.getHatData(hat.itemTypeId);
+      ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(armor.itemTypeId);
+      
+      weaponType = weaponData == null ? 0 : weaponData.weaponType;
+      armorType = armorData == null ? 0 : armorData.armorType;
+      hatType = hatData == null ? 0 : hatData.hatType;
+
       armorColors = armor.paletteNames;
    }
 
@@ -1031,6 +1036,10 @@ public class PlayerShipEntity : ShipEntity
 
    public override Weapon getWeaponCharacteristics () {
       return new Weapon(0, weaponType, weaponColors);
+   }
+
+   public override Hat getHatCharacteristics () {
+      return new Hat(0, hatType, hatColors);
    }
 
    protected void adjustMovementAudio () {
@@ -1234,8 +1243,8 @@ public class PlayerShipEntity : ShipEntity
       return true;
    }
 
-   private void setFlag (Flag flag) {
-      if (_currentFlag == flag) {
+   private void setFlag (Flag flag, bool force = false) {
+      if (_currentFlag == flag && !force) {
          return;
       }
 
@@ -1469,7 +1478,7 @@ public class PlayerShipEntity : ShipEntity
    private void Rpc_NoteBoost () {
       if (!isLocalPlayer) {
          // Play the ship boost release SFX
-         FMOD.Studio.EventInstance boostEvent = FMODUnity.RuntimeManager.CreateInstance(SoundEffectManager.self.getSoundEffect(SoundEffectManager.SHIP_LAUNCH_CHARGE).fmodId);
+         FMOD.Studio.EventInstance boostEvent = FMODUnity.RuntimeManager.CreateInstance(SoundEffectManager.SHIP_LAUNCH_CHARGE);
          boostEvent.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 2);
          boostEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(gameObject));
          boostEvent.start();

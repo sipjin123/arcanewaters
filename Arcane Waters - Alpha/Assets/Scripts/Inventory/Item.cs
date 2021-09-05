@@ -125,6 +125,8 @@ public class Item {
             return new QuestItem(this.id, this.itemTypeId, paletteNames, data, count);
          case Category.Haircut:
             return new Haircut(this.id, this.itemTypeId, paletteNames, data, durability, count);
+         case Category.ShipSkin:
+            return new ShipSkin(this.id, this.itemTypeId, paletteNames, data, durability, count);
          default:
             D.debug("Unknown item category: " + category);
             return null;
