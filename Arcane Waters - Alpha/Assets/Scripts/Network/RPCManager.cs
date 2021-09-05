@@ -656,7 +656,7 @@ public class RPCManager : NetworkBehaviour
       TreasureChest chest = TreasureManager.self.getChest(chestId);
 
       // Check what we're going to give the user
-      Item item = chest.getContents();
+      Item item = chest.getContents(_player.userId);
       bool spawnPowerup = item == null;
       if (item != null) {
          spawnPowerup = item.category == 0 || item.itemTypeId == 0;
@@ -5609,7 +5609,7 @@ public class RPCManager : NetworkBehaviour
       chest.userIds.Add(_player.userId);
 
       // Check what we're going to give the user
-      Item item = chest.getContents();
+      Item item = chest.getContents(_player.userId);
 
       // Make sure that the treasure chest looted armor has an assigned palette value
       if (item.category == Item.Category.Armor && string.IsNullOrEmpty(item.paletteNames)) {
@@ -6674,13 +6674,12 @@ public class RPCManager : NetworkBehaviour
 
       // Ignore invalid or dead sources and targets
       if (sourceBattler == null || targetBattler == null || sourceBattler.isDead() || targetBattler.isDead()) {
-         _player.Target_ReceiveNormalChat("Invalid Target!", ChatInfo.Type.System);
          Target_ReceiveRefreshCasting(connectionToClient, false);
          return;
       }
 
       // Make sure the source battler can use that ability type
-      if (!abilityData.isReadyForUseBy(sourceBattler, true) && !cancelAction) {
+      if (!abilityData.isReadyForUseBy(sourceBattler) && !cancelAction) {
          Target_ReceiveRefreshCasting(connectionToClient, false);
          return;
       }
@@ -7000,12 +6999,6 @@ public class RPCManager : NetworkBehaviour
    public void requestSetWeaponId (int weaponId) {
       D.adminLog("Requesting new weapon: " + weaponId, D.ADMIN_LOG_TYPE.Equipment);
 
-      // They may be in an island scene, or at sea
-      PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
-      if (body == null) {
-         return;
-      }
-
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Update the Weapon object here on the server based on what's in the database
@@ -7036,6 +7029,13 @@ public class RPCManager : NetworkBehaviour
                }
             } else {
                D.editorLog("Failed to cast to <PlayerBodyEntity>!", Color.magenta);
+            }
+
+            PlayerShipEntity ship = _player.GetComponent<PlayerShipEntity>();
+
+            if (ship != null) {
+               WeaponStatData data = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
+               ship.weaponType = data != null ? data.weaponType : 0;
             }
 
             if (_player != null) {
