@@ -45,7 +45,9 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
       // When a new powerup icon is added, sort the list by rarity
       PowerupIcon[] orderedIcons = _powerupIcons.OrderBy(x => (int) x.rarity).ToArray();
       for (int i = 0; i < orderedIcons.Length; i++) {
-         orderedIcons[i].transform.SetSiblingIndex(i);
+         if (orderedIcons[i].transform.childCount >= i) {
+            orderedIcons[i].transform.SetSiblingIndex(i);
+         }
       }
 
       newPowerup.transform.DOPunchScale(Vector3.one * 0.3f, 0.3f);

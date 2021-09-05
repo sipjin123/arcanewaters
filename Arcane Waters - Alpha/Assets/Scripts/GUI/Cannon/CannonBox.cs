@@ -91,6 +91,7 @@ public class CannonBox : ClientMonoBehaviour {
          if (!Util.isBatch()) {
             skillIcon.sprite = ImageManager.getSprite(shipAbilityData.skillIconPath);
          }
+         tooltipComponent.message = shipAbilityData.abilityName;
       }
    }
 
