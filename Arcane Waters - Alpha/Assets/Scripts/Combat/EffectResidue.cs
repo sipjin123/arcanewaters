@@ -10,7 +10,6 @@ public class EffectResidue : MonoBehaviour {
    #endregion
 
    private void Update () {
-      transform.localPosition = new Vector3(0, 0, transform.localPosition.z);
    }
 
    #region Private Variables

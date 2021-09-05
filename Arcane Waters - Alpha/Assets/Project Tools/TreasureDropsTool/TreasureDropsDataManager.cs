@@ -91,7 +91,7 @@ public class TreasureDropsDataManager : MonoBehaviour {
             D.adminLog("This treasure drops data " +
                "{" + groupId + " : " + groupDataLoots.lootGroupName + "} " +
                "does not contain the rarity {" + rarity + "}", D.ADMIN_LOG_TYPE.Treasure);
-            return LootGroupData.DEFAULT_LOOT_GROUP.treasureDropsCollection;
+            return new List<TreasureDropsData>();
          }
       } else {
          D.adminLog("No loot group with id {" + groupId + "} found", D.ADMIN_LOG_TYPE.Treasure);

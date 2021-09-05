@@ -55,6 +55,10 @@ public class EntityManager : MonoBehaviour
       return null;
    }
 
+   public List<NetEntity> getEntitiesWithVoyageId (int voyageId) {
+      return _entities.Values.Where(_ => _.voyageGroupId == voyageId).ToList();
+   }
+
    public NetEntity getEntityWithAccId (int accId) {
       foreach (NetEntity entity in _entities.Values) {
          if(entity.accountId == accId) {
