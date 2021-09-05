@@ -1632,6 +1632,7 @@ public class PlayerShipEntity : ShipEntity
       if (!Util.isGeneralInputAllowed()) {
          // Try to close any opened panel
          PanelManager.self.onEscapeKeyPressed();
+         Cmd_ClearMovementInput();
          return;
       }
 

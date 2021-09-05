@@ -508,6 +508,14 @@ public class NetEntity : NetworkBehaviour
 
       // Disable movement control for our player under certain conditions
       if (!isLocalPlayer || !Util.isGeneralInputAllowed() || isFalling() || isDead() || isAboutToWarpOnClient) {
+         if (isLocalPlayer && !Util.isGeneralInputAllowed() && this is PlayerShipEntity) {
+            PlayerShipEntity playerShip = (PlayerShipEntity) this;
+            // Clears the server side movement input if general input was blocked but move direction still has value
+            if (playerShip.getMovementInputDirection().magnitude > .1f) {
+               playerShip.Cmd_ClearMovementInput();
+            }
+         }
+
          return;
       }
 
