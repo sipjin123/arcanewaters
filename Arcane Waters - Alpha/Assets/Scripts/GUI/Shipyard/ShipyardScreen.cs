@@ -102,7 +102,7 @@ public class ShipyardScreen : Panel {
             row.skillPrefabHolder.DestroyChildren();
             foreach (int abilityId in shipInfo.shipAbilities.ShipAbilities) {
                ShipUISkillTemplate template = Instantiate(row.skillPrefab, row.skillPrefabHolder.transform).GetComponent<ShipUISkillTemplate>();
-               EventTrigger eventTrigger = template.skillName.GetComponent<EventTrigger>();
+               EventTrigger eventTrigger = template.GetComponent<EventTrigger>();
                Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerEnter, (e) => template.pointerEnter());
                Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerExit, (e) => template.pointerExit());
 

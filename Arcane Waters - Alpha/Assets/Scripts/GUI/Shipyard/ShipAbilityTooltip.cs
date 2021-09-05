@@ -12,7 +12,8 @@ public class ShipAbilityTooltip : MonoBehaviour {
    public Image abilityIcon;
    public Transform abilityTooltipPivot;
    public GameObject abilityToolTipHolder;
-   
+   public Text abilityDescription;
+
    #endregion
 
    public void triggerAbilityTooltip (Vector2 coordinates, ShipAbilityData abilityData) {
@@ -24,13 +25,29 @@ public class ShipAbilityTooltip : MonoBehaviour {
 
       if (projectileData != null) {
          abilityDamageText.text = projectileData.projectileDamage.ToString();
-         abilityProjectileMass.text = projectileData.projectileMass.ToString();
-         abilityStatusText.text = projectileData.statusType.ToString();
+         abilityStatusText.text = abilityData.statusType.ToString();
+         if (isProjectile(abilityData)) {
+            abilityProjectileMass.text = projectileData.projectileMass.ToString();
+         } else {
+            abilityProjectileMass.text = "-";
+         }
+         abilityDescription.text = abilityData.abilityDescription;
       } else {
          abilityDamageText.text = "Missing Data";
          abilityProjectileMass.text = "Missing Data";
          abilityStatusText.text = "Missing Data";
       }
+   }
+
+   private bool isProjectile (ShipAbilityData abilityData) {
+      switch (abilityData.selectedAttackType) {
+         case Attack.Type.Heal:
+         case Attack.Type.SpeedBoost:
+         case Attack.Type.DamageAmplify:
+         case Attack.Type.ArmorBoost:
+            return false;
+      }
+      return true;
    }
 
    #region Private Variables

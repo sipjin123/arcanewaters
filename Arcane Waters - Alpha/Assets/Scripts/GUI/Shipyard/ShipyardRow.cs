@@ -62,10 +62,6 @@ public class ShipyardRow : MonoBehaviour {
       attackRangeText.text = "" + shipInfo.attackRange;
       sailorsText.text = "" + shipInfo.sailors;
 
-      // If it's already sold, update the button
-      buyButton.interactable = !shipInfo.hasSold;
-      buyButton.GetComponentInChildren<Text>().text = shipInfo.hasSold ? "Sold!" : "Buy";
-
       // Associate a new function with the confirmation button
       buyButton.onClick.RemoveAllListeners();
       buyButton.onClick.AddListener(() => ShipyardScreen.self.buyButtonPressed(shipInfo.shipId));
