@@ -66,9 +66,13 @@ public class Item {
    }
 
    public static bool isValidItem (Item item) {
+      if (item == null) {
+         D.debug("Item is null!");
+         return false;
+      }
       bool isValid = (item.category != Item.Category.None && item.itemTypeId > 0 && item.count > 0);
       if (!isValid) {
-         D.debug("An invalid Item was being used! I:{" + item.id + "} C:{" + item.category + "} T:{" + item.itemTypeId + "}");
+         D.debug("An invalid Item was being used! I:{" + item.id + "} C:{" + item.category + "} T:{" + item.itemTypeId + "} Q:{" + item.count + "} R:{" + item.getRarity() + "}");
       }
       return isValid;
    }

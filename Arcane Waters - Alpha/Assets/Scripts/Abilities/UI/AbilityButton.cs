@@ -140,7 +140,7 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
                   BasicAbilityData fetchedAbilityData = AbilityManager.getAbility(BattleManager.self.getPlayerBattler().basicAbilityIDList[abilityIndex], AbilityType.Undefined);
                   BattleUIManager.self.onAbilityHover.Invoke(fetchedAbilityData);
                } catch {
-                  D.debug("Ability mismatch!: " + abilityIndex + " / " + BattleManager.self.getPlayerBattler().basicAbilityIDList.Count);
+                  D.adminLog("Ability mismatch!: " + abilityIndex + " / " + BattleManager.self.getPlayerBattler().basicAbilityIDList.Count, D.ADMIN_LOG_TYPE.Ability);
                }
             }
             break;

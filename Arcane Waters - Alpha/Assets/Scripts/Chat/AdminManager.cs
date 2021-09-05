@@ -1956,6 +1956,8 @@ public class AdminManager : NetworkBehaviour
                // Registers the gold gains to achievement data for recording
                AchievementManager.registerUserAchievement(_player, ActionType.EarnGold, gold);
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.AddGold, _player, message);
+
+               _player.Target_ReceiveNormalChat(message, ChatInfo.Type.System);
             });
 
          } else {

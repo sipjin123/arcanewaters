@@ -121,16 +121,13 @@ public class BattleSelectionManager : MonoBehaviour {
       // Null handling setup here
       Battler currentBattler = BattleManager.self.getBattler(Global.player.userId);
       if (currentBattler == null) {
-         D.debug("Local Battler has not loaded yet");
          return;
       }
       if (battler == null) {
-         D.debug("Selected Battler is null! Skipping selection process");
          selectedBattler = null;
          return;
       }
       if (battler.health < 1) {
-         D.debug("Cant click on dead battler");
          return;
       }
 
@@ -170,7 +167,6 @@ public class BattleSelectionManager : MonoBehaviour {
       List<Battler> liveTargets = getLiveTargets();
 
       if (liveTargets.Count < 1) {
-         D.debug("Cannot select random target, all of them are dead!");
          return null;
       }
       Battler selectedBattler = getLiveTargets().ElementAt<Battler>(Random.Range(0, liveTargets.Count));
