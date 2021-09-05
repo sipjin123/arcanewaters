@@ -48,28 +48,57 @@ public class EquipmentXMLManager : MonoBehaviour {
       self = this;
    }
 
-   public WeaponStatData getWeaponData (int equipmentID) {
-      if (_weaponStatList.ContainsKey(equipmentID)) {
-         return _weaponStatList[equipmentID];
+   public WeaponStatData getWeaponData (int weaponSqlId) {
+      if (_weaponStatRegistry.ContainsKey(weaponSqlId)) {
+         WeaponStatData weaponStatData = _weaponStatRegistry[weaponSqlId];
+         if (String.IsNullOrEmpty(weaponStatData.equipmentIconPath)) {
+            D.debug("Null Icon for Weapon!: {" + weaponStatData.equipmentName + "} {" + weaponStatData.equipmentIconPath + "} {" + weaponStatData.weaponType + "}");
+         }
+         return weaponStatData;
       }
+
       return null;
    }
 
-   public ArmorStatData getArmorDataBySqlId (int sqlId) {
-      if (_armorStatList.ContainsKey(sqlId)) {
-         return _armorStatList[sqlId];
+   public WeaponStatData getWeaponDataByItemType (int weaponType) {
+      WeaponStatData weaponDataFetched = _weaponStatRegistry.Values.ToList().Find(_ => _.weaponType == weaponType);
+      
+      if (weaponDataFetched != null) {
+         return weaponDataFetched;
       }
-      if (sqlId > 0) {
-         D.debug("Armor Does not exist: " + sqlId);
-      }
+
       return null;
    }
 
-   public HatStatData getHatData (int hatType) {
-      HatStatData hatDataFetched = _hatStatList.Values.ToList().Find(_ => _.sqlId == hatType);
-      if (hatDataFetched != null) {
-         return hatDataFetched;
+   public ArmorStatData getArmorDataBySqlId (int armorSqlId) {
+      if (_armorStatRegistry.ContainsKey(armorSqlId)) {
+         ArmorStatData armorStatData = _armorStatRegistry[armorSqlId];
+         if (String.IsNullOrEmpty(armorStatData.equipmentIconPath)) {
+            D.debug("Null Icon for Armor!: {" + armorStatData.equipmentName + "} {" + armorStatData.equipmentIconPath + "} {" + armorStatData.armorType + "}");
+         }
+         return armorStatData;
       }
+
+      return null;
+   }
+
+   public HatStatData getHatData (int hatSqlId) {
+      if (_hatStatRegistry.ContainsKey(hatSqlId)) {
+         return _hatStatRegistry[hatSqlId];
+      }
+
+      return null;
+   }
+
+   public HatStatData getHatDataByItemType (int hatType) {
+      if (_hatStatRegistry.ContainsKey(hatType)) {
+         HatStatData hatStatData = _hatStatRegistry[hatType];
+         if (String.IsNullOrEmpty(hatStatData.equipmentIconPath)) {
+            D.debug("Null Icon for Hat!: {" + hatStatData.equipmentName + "} {" + hatStatData.equipmentIconPath + "} {" + hatStatData.hatType + "}");
+         }
+         return hatStatData;
+      }
+
       return null;
    }
 
