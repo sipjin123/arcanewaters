@@ -291,6 +291,18 @@ public class DB_MainStub : MonoBehaviour
 
    #endregion
 
+   #region Ship Skins XML
+
+   public static void updateShipSkinXML (int xmlID, string rawData, int accIDOverride = 0) {
+      return;
+   }
+
+   public static List<XMLPair> getShipSkinsXML () {
+      return new List<XMLPair>();
+   }
+
+   #endregion
+
    #region Gems XML
 
    public static void updateGemsXML (int xmlID, string rawData, int accIDOverride = 0) {
@@ -1512,6 +1524,10 @@ public class DB_MainStub : MonoBehaviour
 
    public static Item fetchHaircut (int userId, HairLayer.Type hairType) {
       return null;
+   }
+
+   public static int insertNewShipSkin (int userId, int shipSkinId, Ship.Type shipType, Ship.SkinType skinType) {
+      return 0;
    }
 
    /*

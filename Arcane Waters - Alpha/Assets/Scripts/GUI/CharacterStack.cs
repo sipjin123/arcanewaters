@@ -216,9 +216,6 @@ public class CharacterStack : MonoBehaviour {
       hairBackLayer.recolor(palettes);
       hairFrontLayer.setType(hairType);
       hairFrontLayer.recolor(palettes);
-
-      // Apply clip mask
-      hairFrontLayer.setClipMaskForHat(hatLayer.getType());
    }
 
    public void rotateDirectionClockWise () {

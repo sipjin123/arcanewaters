@@ -75,7 +75,7 @@ public class AnimalPetting : MonoBehaviour {
       _isAnimalAnimationPlaying = true;
 
       // SFX
-      SoundEffectManager.self.playFmodWithPath(SoundEffectManager.AFFECTION_EMOTE, this.transform);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.AFFECTION_EMOTE, this.transform);
       SoundEffectManager.self.playAnimalCry(_npc.spritePath, this.transform);
 
       for (int i = 0; i < 2; i++) {
@@ -116,7 +116,7 @@ public class AnimalPetting : MonoBehaviour {
       _maxTransitionTime = timePerFrame;
 
       // SFX
-      SoundEffectManager.self.playFmodWithPath(SoundEffectManager.ANGER_EMOTE, this.transform);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.ANGER_EMOTE, this.transform);
       SoundEffectManager.self.playAnimalCry(_npc.spritePath, this.transform);
 
       for (int i = 0; i < 2; i++) {
@@ -163,7 +163,7 @@ public class AnimalPetting : MonoBehaviour {
       createAnimator("playConfused");
 
       // SFX
-      SoundEffectManager.self.playFmodWithPath(SoundEffectManager.QUESTION_EMOTE, this.transform);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.QUESTION_EMOTE, this.transform);
       SoundEffectManager.self.playAnimalCry(_npc.spritePath, this.transform);
 
       yield return new WaitForSeconds(1.0f);

@@ -145,7 +145,6 @@ public class Instance : NetworkBehaviour
 
    // The number of times the instance must be found empty before being removed (see checkIfInstanceIsEmpty for time between checks)
    public const int CHECKS_BEFORE_REMOVAL = 10;
-   public const int CHECKS_BEFORE_REMOVAL_PRIVATE_INSTANCES = 20;
 
    #endregion
 
@@ -315,20 +314,12 @@ public class Instance : NetworkBehaviour
          _consecutiveEmptyChecks++;
 
          // If the Instance has been empty for long enough, just remove it
-         if (_consecutiveEmptyChecks > getConsecutiveChecksBeforeRemoval()) {
+         if (_consecutiveEmptyChecks > CHECKS_BEFORE_REMOVAL) {
             InstanceManager.self.removeEmptyInstance(this);
          }
       } else {
          // There's someone in the instance, so reset the counter
          _consecutiveEmptyChecks = 0;
-      }
-   }
-
-   private int getConsecutiveChecksBeforeRemoval () {
-      if (AreaManager.self.isPrivateArea(areaKey)) {
-         return CHECKS_BEFORE_REMOVAL_PRIVATE_INSTANCES;
-      } else {
-         return CHECKS_BEFORE_REMOVAL;
       }
    }
 

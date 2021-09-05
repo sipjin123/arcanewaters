@@ -7,6 +7,9 @@ public class HaircutData : BaseItemData
    [System.Xml.Serialization.XmlElement(Namespace = "HairLayer.Type")]
    public HairLayer.Type type;
 
+   // Should the hair be clipped when facing the north direction?
+   public bool clipWhenFacingNorth = true;
+
    #endregion
 
    public string getNumber() {

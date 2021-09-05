@@ -10,6 +10,9 @@ public class ServerCannonBall : SeaProjectile
 {
    #region Public Variables
 
+   // A reference to the particle system that represents the trail for this cannonball
+   public ParticleSystem trailParticles;
+
    #endregion
 
    protected override void Awake () {
@@ -33,11 +36,21 @@ public class ServerCannonBall : SeaProjectile
          }
 
          Instantiate(PrefabsManager.self.poofPrefab, transform.position, Quaternion.identity);
+
+         initTrail();
       }
    }
 
    public void addEffectors (List<CannonballEffector> effectors) {
       _effectors.AddRange(effectors);
+   }
+
+   private void initTrail () {
+      Material trailMaterial = Resources.Load<Material>("Materials/CannonballTrail" + _statusType.ToString());
+      if (trailMaterial != null) {
+         ParticleSystemRenderer trailRenderer = trailParticles.GetComponent<ParticleSystemRenderer>();
+         trailRenderer.sharedMaterial = trailMaterial;
+      }
    }
 
    protected override void Update () {
@@ -229,10 +242,12 @@ public class ServerCannonBall : SeaProjectile
       float bounceActivationChance = 0.8f - effector.triggerCount * 0.1f;
 
       // Roll for chance to bounce
-      if (UnityEngine.Random.Range(0.0f, 1.0f) <= bounceActivationChance) {
+      if (UnityEngine.Random.Range(0.0f, 1.0f) <= bounceActivationChance) {         
+         float currentSpeed = _rigidbody.velocity.magnitude;
+         float maxRange = _lifetime * currentSpeed;
 
          // Find an enemy to bounce to, that isn't the one we hit
-         List<SeaEntity> nearbyEnemies = Util.getEnemiesInCircle(sourceEntity, transform.position, effector.effectRange);
+         List <SeaEntity> nearbyEnemies = Util.getEnemiesInCircle(sourceEntity, transform.position, maxRange);
          foreach (SeaEntity enemy in nearbyEnemies) {
             if (enemy.netId != hitEntity.netId) {
                // Setup cannonball variables for new target
@@ -241,8 +256,7 @@ public class ServerCannonBall : SeaProjectile
                _distance = toNewEnemy.magnitude;
                effector.triggerCount++;
                _hasCollided = false;
-
-               float currentSpeed = _rigidbody.velocity.magnitude;
+               
                projectileVelocity = toNewEnemy.normalized * currentSpeed;
                _rigidbody.velocity = projectileVelocity;
                Rpc_NotifyBounce(projectileVelocity, _distance);
@@ -274,9 +288,6 @@ public class ServerCannonBall : SeaProjectile
 
    // All effectors that will apply effects to this cannonball
    private List<CannonballEffector> _effectors = new List<CannonballEffector>();
-
-   // When set to true, this will prevent processDestruction from destroying the cannonball once
-   private bool _cancelDestruction = false;
 
    // FMOD Event instance
    FMOD.Studio.EventInstance _shipCannonEvent;

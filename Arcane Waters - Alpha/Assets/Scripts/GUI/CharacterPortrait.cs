@@ -66,7 +66,7 @@ public class CharacterPortrait : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
       if (useMouseEventAnimations && overlayImage != null) {
          toggle.onValueChanged.AddListener(onToggleValueChanged);
-      }            
+      }
    }
 
    private void onToggleValueChanged (bool isSelected) {

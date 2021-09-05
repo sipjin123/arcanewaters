@@ -1242,6 +1242,7 @@ public class Util : MonoBehaviour
       Global.lastUserAccountPassword = "";
       Global.currentlySelectedUserId = 0;
       Global.isFirstLogin = true;
+      TitleScreen.self.passwordInputField.text = "";
 
       // Clear the current area - if we reconnect to another server, the area position could be different
       MapManager.self.destroyLastMap();

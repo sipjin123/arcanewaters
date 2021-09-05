@@ -4504,6 +4504,73 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
+   #region Ship Skins XML
+
+   public static new void updateShipSkinXML (int xmlID, string rawData, int accIDOverride = 0) {
+      string xml_id_key = "xml_id, ";
+      string xml_id_value = "@xml_id, ";
+
+      // If this is a newly created data, let sql table auto generate id
+      if (xmlID < 0) {
+         xml_id_key = "";
+         xml_id_value = "";
+      }
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO global.ship_skins_v2 (" + xml_id_key + "xmlContent, creator_userID, lastUserUpdate) " +
+            "VALUES(" + xml_id_value + "@xmlContent, @creator_userID, NOW()) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@xml_id", xmlID);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@creator_userID", accIDOverride == 0 ? MasterToolAccountManager.self.currentAccountID : accIDOverride);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<XMLPair> getShipSkinsXML () {
+      List<XMLPair> rawDataList = new List<XMLPair>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.ship_skins_v2", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  XMLPair newPair = new XMLPair {
+                     isEnabled = dataReader.GetInt32("is_enabled") == 0 ? false : true,
+                     xmlId = dataReader.GetInt32("xml_id"),
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     xmlOwnerId = dataReader.GetInt32("creator_userID")
+                  };
+                  rawDataList.Add(newPair);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<XMLPair>(rawDataList);
+   }
+
+   #endregion
+
    #region ToolTip
 
    public static new string getTooltipXmlContent () {
@@ -7336,6 +7403,34 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@itmType", haircutId);
             cmd.Parameters.AddWithValue("@itmPalettes", "");
             cmd.Parameters.AddWithValue("@itmData", "hairType=" + ((int) hairType));
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+            itemId = (int) cmd.LastInsertedId;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return itemId;
+   }
+
+   public static new int insertNewShipSkin (int userId, int shipSkinId, Ship.Type shipType, Ship.SkinType skinType) {
+      int itemId = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO items (usrId, itmCategory, itmType, itmPalettes, itmData) " +
+                 "VALUES(@usrId, @itmCategory, @itmType, @itmPalettes, @itmData) ", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmCategory", (int) Item.Category.ShipSkin);
+            cmd.Parameters.AddWithValue("@itmType", shipSkinId);
+            cmd.Parameters.AddWithValue("@itmPalettes", "");
+            cmd.Parameters.AddWithValue("@itmData", $"shipType={(int)shipType}, skinType={(int)skinType}");
             DebugQuery(cmd);
 
             // Execute the command

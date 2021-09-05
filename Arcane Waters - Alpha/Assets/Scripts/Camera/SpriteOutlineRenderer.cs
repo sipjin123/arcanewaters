@@ -32,11 +32,7 @@ public class SpriteOutlineRenderer : MonoBehaviour
       }
 
       removeCommandBuffer();
-      if (_currentOutline) {
-         _currentOutline.setVisibility(false);
-      }
-      _currentOutline = null;
-      updateRenderBuffer();
+      _renderTexture.Release();
    }
 
    private void updateQuadSize () {

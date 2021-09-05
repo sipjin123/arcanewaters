@@ -150,7 +150,8 @@ public class RollingTextFade : ClientMonoBehaviour {
 
             // Play a sound
             if (Time.time - _soundTimeStamp > Random.Range(TYPING_SOUND_DELAY - TYPING_SOUND_RANGE_OFFSET, TYPING_SOUND_DELAY + TYPING_SOUND_RANGE_OFFSET)) {
-               SoundManager.play2DClip(SoundManager.Type.Character_Type_3);
+               SoundEffectManager.self.playFmodSfx(SoundEffectManager.DIALOGUE_TEXT);
+               //SoundManager.play2DClip(SoundManager.Type.Character_Type_3);
                _soundTimeStamp = Time.time;
             }
 

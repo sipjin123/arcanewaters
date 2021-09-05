@@ -789,15 +789,15 @@ public class RPCManager : NetworkBehaviour
       // Play some sounds
       switch (chest.chestType) {
          case ChestSpawnType.Sea:
-            SoundEffectManager.self.playFmodOneShot(SoundEffectManager.OPEN_SEA_BAG, Global.player.transform);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.COLLECT_LOOT_SEA, Global.player.transform);
             //SoundEffectManager.self.playSoundEffect(SoundEffectManager.OPEN_SEA_BAG, Global.player.transform);
             break;
          case ChestSpawnType.Land:
-            SoundEffectManager.self.playFmodOneShot(SoundEffectManager.OPEN_LAND_BAG, Global.player.transform);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.COLLECT_LOOT_LAND, Global.player.transform);
             //SoundEffectManager.self.playSoundEffect(SoundEffectManager.OPEN_LAND_BAG, Global.player.transform);
             break;
          case ChestSpawnType.Site:
-            SoundEffectManager.self.playFmodOneShot(SoundEffectManager.OPEN_CHEST, Global.player.transform);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.OPEN_CHEST, Global.player.transform);
             //SoundEffectManager.self.playSoundEffect(SoundEffectManager.OPEN_CHEST, Global.player.transform);
             break;
       }
@@ -1694,16 +1694,12 @@ public class RPCManager : NetworkBehaviour
          // Look up the item box for the specified item id
          StoreItem storeItem = DB_Main.getStoreItem(itemId);
          string purchasedItemName = "";
-         int newItemId = 0;
 
          int gems = DB_Main.getGems(_player.accountId);
 
          // Make sure they can afford it
          if (gems < storeItem.price) {
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               ServerMessageManager.sendError(ErrorMessage.Type.NotEnoughGems, _player, "You don't have " + storeItem.price + " gems!");
-            });
-
+            reportStorePurchaseFailed("You don't have " + storeItem.price + " gems!");
             return;
          }
 
@@ -1896,6 +1892,19 @@ public class RPCManager : NetworkBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          StoreItem storeItem = DB_Main.getStoreItem(itemId);
 
+         // Check the store item
+         if (storeItem == null) {
+            D.error($"User {_player.userId} tried to purchase a missing store item (ID: '{itemId}').");
+            reportStorePurchaseFailed();
+            return;
+         }
+
+         if (!storeItem.isEnabled) {
+            D.error($"User {_player.userId} tried to purchase a disabled store item (ID: '{itemId}').");
+            reportStorePurchaseFailed();
+            return;
+         }
+
          // Check if the item should be paid with gems or with real money (e.g. through Steam)
          if (storeItem.currencyMode == StoreItem.CurrencyMode.Game) {
             buyItem(itemId);
@@ -2038,7 +2047,48 @@ public class RPCManager : NetworkBehaviour
 
    [Server]
    private void useShipSkin (Item item) {
-      return;
+      PlayerShipEntity playerShip = _player.getPlayerShipEntity();
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         if (playerShip == null) {
+            reportUseItemFailure("A ship skin can only be applied at sea!");
+            return;
+         }
+
+         ShipSkinData shipSkinData = ShipSkinXMLManager.self.getShipSkinData(item.itemTypeId);
+         ShipInfo currentShipInfo = DB_Main.getShipInfo(playerShip.shipId);
+
+         if (shipSkinData.skinType == Ship.SkinType.None && currentShipInfo.skinType == Ship.SkinType.None) {
+            reportUseItemFailure("Your ship doesn't have a skin applied!");
+            return;
+         }
+
+         if (shipSkinData.skinType != Ship.SkinType.None && currentShipInfo.shipType != shipSkinData.shipType) {
+            reportUseItemFailure("You can't use this skin on your current ship!");
+            return;
+         }
+
+         if (shipSkinData.skinType != Ship.SkinType.None && currentShipInfo.skinType != Ship.SkinType.None && shipSkinData.skinType == currentShipInfo.skinType) {
+            reportUseItemFailure("Your ship already has this skin!");
+            return;
+         }
+
+         DB_Main.setShipSkin(playerShip.shipId, shipSkinData.skinType);
+
+         // update the ship skin
+         playerShip.skinType = shipSkinData.skinType;
+
+         // Delete the item
+         DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, 1);
+
+         // Back to Unity
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            playerShip.Target_UpdateSkin();
+
+            // Let the client know the item was used
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.UsedShipSkin, _player, item.id.ToString());
+         });
+      });
    }
 
    [Server]
@@ -7811,6 +7861,16 @@ public class RPCManager : NetworkBehaviour
       PvpAnnouncementHolder.self.addAnnouncement(announcementText);
    }
 
+   [Server]
+   public void ResetPvpSilverPanel () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      Target_ResetPvpSilverPanel(_player.connectionToClient, GameStatsManager.self.getSilverAmount(_player.userId));
+   }
+
    [Command]
    public void Cmd_RequestResetPvpSilverPanel () {
       if (_player == null) {
@@ -7946,12 +8006,12 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_UpdatePvpScore (NetworkConnection conn, int newScoreValue, PvpTeamType teamType) {
-      PvpScorePanel.self.updateScoreForTeam(newScoreValue, teamType);
+      PvpStatPanel.self.updateScoreForTeam(newScoreValue, teamType);
    }
 
    [TargetRpc]
-   public void Target_ShowPvpPostGameScreen (NetworkConnection conn, bool wonGame) {
-      PvpGameEndPanel.self.show(wonGame);
+   public void Target_ShowPvpPostGameScreen (NetworkConnection conn, bool wonGame, PvpTeamType winningTeam) {
+      PvpStatPanel.self.updateDisplayMode(Global.player.areaKey, true, wonGame, winningTeam);
       BottomBar.self.enablePvpStatPanel();
    }
 
@@ -8016,7 +8076,7 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_SendPvpGameFaction (NetworkConnection connection, PvpTeamType teamType, Faction.Type factionType) {
-      PvpScorePanel.self.assignFactionToTeam(teamType, factionType);
+      PvpStatPanel.self.assignFactionToTeam(teamType, factionType);
    }
 
    #region Private Variables

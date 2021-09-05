@@ -67,10 +67,14 @@ public class HatManager : EquipmentManager {
       if (_body != null) {
          _body.restartAnimations();
       }
+
+      if (_battler != null) {
+         _battler.syncAnimations();
+      }
    }
 
    [TargetRpc]
-   public void Rpc_EquipHat (string rawHatData, string palettes) {
+   public void Rpc_EquipHat (NetworkConnection connection, string rawHatData, string palettes) {
       HatStatData hatData = Util.xmlLoad<HatStatData>(rawHatData);
       cachedHatData = hatData;
 
@@ -86,9 +90,6 @@ public class HatManager : EquipmentManager {
          category = Item.Category.Hats,
          itemTypeId = hatType
       };
-
-      // Update the hair
-      _body.updateHair(_body.hairType, _body.hairPalettes);
    }
 
    [ClientRpc]
@@ -100,9 +101,6 @@ public class HatManager : EquipmentManager {
          // Update the sprites for the new hat type
          int newType = hatData == null ? 0 : hatData.hatType;
          updateSprites(newType, palettes);
-
-         // Update the hair
-         _body.updateHair(_body.hairType, _body.hairPalettes);
       }
    }
 
@@ -124,12 +122,23 @@ public class HatManager : EquipmentManager {
       this.hatType = hatData.hatType;
       this.palettes = hatData.palettes;
 
-      if (hatData.hatType < 1) {
+      NetworkConnection connection = null;
+
+      if (_body != null) {
+         connection = _body.connectionToClient;
+      }
+
+      if (_battler != null && _battler.player != null) {
+         connection = _battler.player.connectionToClient;
+      }
+
+      if (connection == null) {
+         D.debug("Connection to client was null!");
          return;
       }
-	  
-      Rpc_EquipHat(HatStatData.serializeHatStatData(hatData), palettes);
-      
+
+      Rpc_EquipHat(connection, HatStatData.serializeHatStatData(hatData), palettes);
+
       // Send the Info to all clients
       Rpc_BroadcastEquipHat(HatStatData.serializeHatStatData(hatData), palettes);
    }

@@ -129,6 +129,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // Reference to the Player's Level Tag
    public PlayerLevelTag levelTag;
 
+   // Reference to the Level Up Effect
+   public LevelUpEffect levelUpEffect;
+
    #endregion
 
    protected override void Awake () {
@@ -943,6 +946,14 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             break;
          default:
             break;
+      }
+   }
+
+   protected override void showLevelUpEffect (Jobs.Type jobType) {
+      base.showLevelUpEffect(jobType);
+
+      if (levelUpEffect != null) {
+         levelUpEffect.play(jobType);
       }
    }
 

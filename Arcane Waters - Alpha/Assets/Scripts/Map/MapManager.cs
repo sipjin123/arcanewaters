@@ -287,7 +287,7 @@ public class MapManager : MonoBehaviour
       }
 
       if (area.isInterior) {
-         SoundEffectManager.self.playFmodOneShot(SoundEffectManager.ENTER_DOOR, transform);
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_OPEN, transform);
          //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ENTER_DOOR, transform);
       }
    }

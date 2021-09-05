@@ -2777,12 +2777,31 @@ public class AdminManager : NetworkBehaviour
       // Transform into a byte array to avoid the 'buffer is too small' error
       byte[] data = Encoding.ASCII.GetBytes(D.getLogString());
 
-      Target_ReceiveServerLogString(connectionToClient, data);
+      // Remove the beginning of the log if it is too large
+      int maxServerLogSize = D.MAX_SERVER_LOG_CHUNK_SIZE * D.MAX_SERVER_LOG_CHUNK_COUNT;
+      if (data.Length > maxServerLogSize) {
+         data = data.RangeSubset(data.Length - maxServerLogSize, maxServerLogSize);
+      }
+
+      Target_ClearServerLogBytes(connectionToClient);
+
+      // Split the log into chunks smaller than the Mirror size limit per message
+      int lastIndex = 0;
+      while (lastIndex < data.Length) {
+         byte[] chunk = data.RangeSubset(lastIndex, Mathf.Min(D.MAX_SERVER_LOG_CHUNK_SIZE, data.Length - lastIndex));
+         Target_ReceivePartialServerLogBytes(connectionToClient, chunk);
+         lastIndex += D.MAX_SERVER_LOG_CHUNK_SIZE;
+      }
    }
 
    [TargetRpc]
-   public void Target_ReceiveServerLogString (NetworkConnection connection, byte[] serverLogData) {
-      D.serverLogString = Encoding.ASCII.GetString(serverLogData);
+   public void Target_ClearServerLogBytes (NetworkConnection connection) {
+      D.serverLogBytes.Clear();
+   }
+
+   [TargetRpc]
+   public void Target_ReceivePartialServerLogBytes (NetworkConnection connection, byte[] serverLogData) {
+      D.serverLogBytes.AddRange(serverLogData);
    }
 
    protected void resetShops () {
@@ -2932,34 +2951,57 @@ public class AdminManager : NetworkBehaviour
    public void Cmd_NameChange (string oldName, string newName) {
       // Check if new name is valid
       bool nameTaken = false;
+      bool userExists = false;
+
       if (!NameUtil.isValid(newName)) {
          D.debug("New name " + newName + " is not valid");
          return;
       }
 
       // Make sure the name is available
-      int existingUserId = -1;
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         existingUserId = DB_Main.getUserId(newName);
+      int newNameUserId = -1;
+      int oldNameUserId = -1;
 
-         if (existingUserId > 0) {
-            D.debug("The name " + newName + " is already taken!");
-            nameTaken = true;
-         } else {
-            DB_Main.changeUserName(oldName, newName);
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         newNameUserId = DB_Main.getUserId(newName);
+         oldNameUserId = DB_Main.getUserId(oldName);
+         userExists = oldNameUserId > 0;
+
+         if (userExists) {
+            if (newNameUserId > 0) {
+               nameTaken = true;
+            } else {
+               DB_Main.changeUserName(oldName, newName);
+            }
          }
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (nameTaken) {
-               string msg = "The name " + newName + " is already taken!";
+            if (!userExists) {
+               string msg = "The user " + oldName + " does not exist!";
                _player.Target_ReceiveNormalChat(msg, ChatInfo.Type.System);
+               D.debug(msg);
             } else {
-               string msg = "Changed the player name from  " + oldName + " to " + newName;
-               _player.Target_ReceiveNormalChat(msg, ChatInfo.Type.System);
+               if (nameTaken) {
+                  string msg = "The name " + newName + " is already taken!";
+                  _player.Target_ReceiveNormalChat(msg, ChatInfo.Type.System);
+                  D.debug(msg);
+               } else {
+                  string msg = "Changed the player name from  " + oldName + " to " + newName;
+                  _player.Target_ReceiveNormalChat(msg, ChatInfo.Type.System);
+                  Rpc_ReceiveNewName(oldNameUserId, newName);
+               }
             }
          });
       });
+   }
+
+   [ClientRpc]
+   public void Rpc_ReceiveNewName (int userId, string newName) {
+      NetEntity entity = EntityManager.self.getEntity(userId);
+      entity.entityName = newName;
+      entity.nameText.text = newName;
+      entity.nameTextOutline.text = newName;
    }
 
    #region Private Variables

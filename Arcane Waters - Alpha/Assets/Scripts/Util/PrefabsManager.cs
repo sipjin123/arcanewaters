@@ -148,7 +148,7 @@ public class PrefabsManager : MonoBehaviour {
    public StoreHaircutBox haircutBoxPrefab;
 
    // The prefab we use for creating ship skins
-   public StoreShipBox shipBoxPrefab;
+   public StoreShipSkinBox shipBoxPrefab;
 
    // The prefab we use for creating gem boxes
    public StoreGemBox gemBoxPrefab;

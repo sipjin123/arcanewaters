@@ -131,7 +131,7 @@ public class BasicAbilityData : BattleItemData
       if (soundEffect != null) {
          // Play the fmod sfx if the fmod id is valid
          if (soundEffect.fmodId.Length > 1) {
-            SoundEffectManager.self.playFmodWithPath(soundEffect.fmodId, targetTransform);
+            SoundEffectManager.self.playFmodSfx(soundEffect.fmodId, targetTransform);
          } else {
             if (SoundEffectManager.self.isValidSoundEffect(castSoundEffectId)) {
                // Play intended sfx using legacy approach, referencing sfx in resource folder
@@ -161,14 +161,14 @@ public class BasicAbilityData : BattleItemData
       if (soundEffect != null) {
          // Play the fmod sfx if the fmod id is valid
          if (soundEffect.fmodId.Length > 1) {
-            SoundEffectManager.self.playFmodWithPath(soundEffect.fmodId, targetTransform);
+            SoundEffectManager.self.playFmodSfx(soundEffect.fmodId, targetTransform);
          } else {
             if (SoundEffectManager.self.isValidSoundEffect(hitSoundEffectId)) {
                // Play intended sfx using legacy approach, referencing sfx in resource folder
                SoundEffectManager.self.playSoundEffect(hitSoundEffectId, targetTransform);
             } else {
                // Play a default clip
-               SoundEffectManager.self.playFmodWithPath(SoundEffectManager.GENERIC_HIT_LAND, targetTransform);
+               SoundEffectManager.self.playFmodSfx(SoundEffectManager.GENERIC_HIT_LAND, targetTransform);
                //AudioClip hitClip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultHitAudio).audioClip;
                //SoundManager.playClipAtPoint(hitClip, targetTransform.position);
             }
@@ -183,7 +183,7 @@ public class BasicAbilityData : BattleItemData
             // Play a default clip
             //AudioClip hitClip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultHitAudio).audioClip;
             //SoundManager.playClipAtPoint(hitClip, targetTransform.position);
-            SoundEffectManager.self.playFmodWithPath(SoundEffectManager.GENERIC_HIT_LAND, targetTransform);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.GENERIC_HIT_LAND, targetTransform);
          }
       }
    }
@@ -200,17 +200,15 @@ public class BasicAbilityData : BattleItemData
       return classRequirement == Weapon.Class.Rum;
    }
 
-   public bool isReadyForUseBy (Battler sourceBattler, bool logData = false) {
+   public bool isReadyForUseBy (Battler sourceBattler) {
       if (abilityType == AbilityType.Standard) {
 
          if (sourceBattler.AP < abilityCost) {
-            sourceBattler.player.Target_ReceiveNormalChat("Not enough AP! (" + sourceBattler.AP + " / " + abilityCost + ")", ChatInfo.Type.System);
             D.editorLog("User does not have enough AP!", Color.red);
             // TODO: Insert Logic Here (Could be spawn effect prefab indicating low AP)
          }
 
          if (NetworkTime.time < sourceBattler.cooldownEndTime) {
-            sourceBattler.player.Target_ReceiveNormalChat("Ability is not ready to be used! Wait for (" + (sourceBattler.cooldownEndTime - NetworkTime.time) + ") seconds", ChatInfo.Type.System);
             D.editorLog("User is still cooling down ability cast!", Color.red);
             // TODO: Insert Logic Here (Could be spawn effect prefab indicating ability is on cooldown)
          }

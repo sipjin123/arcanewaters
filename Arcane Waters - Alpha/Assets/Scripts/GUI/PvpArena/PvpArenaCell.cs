@@ -69,10 +69,10 @@ public class PvpArenaCell : MonoBehaviour
       gameModeAndarenaSizeText.text = PvpGame.getGameModeLabel(AreaManager.self.getAreaPvpGameMode(pvpArena.areaKey)) + " - " + AreaManager.self.getAreaPvpArenaSize(pvpArena.areaKey).ToString();
 
       // Try to find an existing minimap
-      minimapImage.sprite = ImageManager.getSprite("Minimaps/" + pvpArena.areaKey, true);
+      minimapImage.sprite = ImageManager.getSprite("GUI/Pvp Arena/" + pvpArena.areaKey, true);
       if (minimapImage.sprite == null || minimapImage.sprite == ImageManager.self.blankSprite) {
          // If no minimap exist, search for a placeholder one
-         minimapImage.sprite = ImageManager.getSprite("GUI/Pvp Arena/" + pvpArena.areaKey, true);
+         minimapImage.sprite = ImageManager.getSprite("Minimaps/" + pvpArena.areaKey, true);
          if (minimapImage.sprite == null || minimapImage.sprite == ImageManager.self.blankSprite) {
             minimapImage.sprite = defaultMinimap;
          }

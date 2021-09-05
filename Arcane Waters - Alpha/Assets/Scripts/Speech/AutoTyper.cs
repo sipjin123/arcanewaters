@@ -175,7 +175,10 @@ public class AutoTyper : MonoBehaviour {
 
          // Update the text
          textElement.text = msg;
-         SoundManager.play2DClip(SoundManager.Type.Blip_2);
+
+         // SFX
+         //SoundManager.play2DClip(SoundManager.Type.Blip_2);
+         //SoundEffectManager.self.playFmodSfx(SoundEffectManager.CLICK_TAB);
 
          // Keep moving forward
          textElement.StartCoroutine(MoveColorClearForward(textElement));

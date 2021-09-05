@@ -13,7 +13,6 @@ public class ShipBarsBot : ShipBars
    // The guild icons for the bot ship guilds
    public Sprite privateersIcon;
    public Sprite piratesIcon;
-   public Sprite naturalistsIcon;
 
    #endregion
 
@@ -27,8 +26,9 @@ public class ShipBarsBot : ShipBars
       initializeHealthBar();
 
       // If we're in a pvp game, set our guild icon based on what team we're on
-      if (_entity.pvpTeam != PvpTeamType.None) {
-         guildIcon.sprite = (_entity.pvpTeam == PvpTeamType.A) ? naturalistsIcon : privateersIcon;
+      if (_entity.faction != Faction.Type.None) {
+         Sprite factionIcon = ImageManager.getSprite("Sprites/Icons/ShipFactions/faction_ship_" + _entity.faction.ToString().ToLower());
+         guildIcon.sprite = factionIcon;
       
       // Otherwise, set our guild icon based on our guild ID
       } else {

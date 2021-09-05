@@ -158,6 +158,11 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       if (this.enemyType != Type.None && !Util.isBatch()) {
          string enemySpriteName = System.Enum.GetName(typeof(Enemy.Type), (int) this.enemyType).ToLower();
          bodyAnim.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture("Enemies/LandMonsters/" + enemySpriteName);
+
+         BattlerData battlerData = MonsterManager.self.getBattlerData(this.enemyType);
+
+         shadowObject.transform.localScale = new Vector2(battlerData.shadowScale, battlerData.shadowScale);
+         shadowObject.transform.localPosition = new Vector3(battlerData.shadowOffset.x, battlerData.shadowOffset.y, shadowObject.transform.localPosition.z);
       }
       bodyAnim.group = animGroupType;
       

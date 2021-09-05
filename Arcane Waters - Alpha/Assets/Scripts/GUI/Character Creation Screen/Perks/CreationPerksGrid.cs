@@ -68,7 +68,7 @@ public class CreationPerksGrid : MonoBehaviour {
          icon.setAssignedPoints(_assignedPerkPoints[perkId]);
 
          //SoundManager.play2DClip(SoundManager.Type.Perk_Point_Assigned);
-         SoundEffectManager.self.playFmod2D(SoundEffectManager.ASSIGN_PERK_POINT);
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.ASSIGN_PERK_POINT);
       } else {
          SoundEffectManager.self.playGuiButtonConfirmSfx();
          //SoundEffectManager.self.playFmod2DWithPath(SoundEffectManager.BUTTON_CONFIRM_PATH);
@@ -85,7 +85,7 @@ public class CreationPerksGrid : MonoBehaviour {
          _availablePointsText.text = _availablePoints.ToString();
          icon.setAssignedPoints(_assignedPerkPoints[perkId]);
 
-         SoundEffectManager.self.playFmod2D(SoundEffectManager.UNASSIGN_PERK_POINT);
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.UNASSIGN_PERK_POINT);
          //SoundManager.play2DClip(SoundManager.Type.Perk_Point_Unassigned);
       } else {
          SoundEffectManager.self.playGuiButtonConfirmSfx();

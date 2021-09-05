@@ -20,9 +20,8 @@ public class FootprintManager : ClientMonoBehaviour
       _player = GetComponent<BodyEntity>();
 
       // Fmod init event
-      SoundEffect soundEffect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.FOOTSTEP);
-      if (soundEffect != null) {
-         _footstepEvent = FMODUnity.RuntimeManager.CreateInstance(soundEffect.fmodId);
+      _footstepEvent = FMODUnity.RuntimeManager.CreateInstance(SoundEffectManager.FOOTSTEP);
+      if (_footstepEvent.isValid()) {
          _footstepEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(_player.transform));
       }
    }

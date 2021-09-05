@@ -830,14 +830,14 @@ public class NetEntity : NetworkBehaviour
          case Anim.Type.Pet_East:
          case Anim.Type.Pet_North:
          case Anim.Type.Pet_South:
-            SoundEffectManager.self.playFmodWithPath(SoundEffectManager.CRITTER_PET, this.transform);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.CRITTER_PET, this.transform);
             StartCoroutine(CO_DelayExitAnim(animType, 1.4f));
             interactingAnimation = true;
             break;
          case Anim.Type.NC_Jump_East:
          case Anim.Type.NC_Jump_North:
          case Anim.Type.NC_Jump_South:
-            SoundEffectManager.self.playFmodOneShot(SoundEffectManager.JUMP_START_ID, this.transform);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.JUMP, this.transform);
             if (!freezeAnim) {
                StartCoroutine(CO_DelayExitAnim(animType, 0.5f));
             }
@@ -1173,8 +1173,8 @@ public class NetEntity : NetworkBehaviour
       return hasAttackers() && _attackers.ContainsKey(otherEntity.netId);
    }
 
-   public bool isEnemyOf (NetEntity otherEntity) {
-      if (otherEntity == null || otherEntity.isDead()) {
+   public bool isEnemyOf (NetEntity otherEntity, bool deadEntitiesAreFriendly = true) {
+      if (otherEntity == null || (otherEntity.isDead() && deadEntitiesAreFriendly)) {
          return false;
       }
 

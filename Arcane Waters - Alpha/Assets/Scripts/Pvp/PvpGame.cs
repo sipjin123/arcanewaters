@@ -130,6 +130,14 @@ public class PvpGame : MonoBehaviour {
       StartCoroutine(CO_InitializePlayerShip(userId));
       PowerupManager.self.clearPowerupsForUser(userId);
 
+      // Reset Silver Status
+      GameStatsManager.self.unregisterUser(userId);
+      NetEntity player = EntityManager.self.getEntity(userId);
+
+      if (player != null) {
+         player.rpc.ResetPvpSilverPanel();
+      }
+
       if (_gameState == State.PreGame) {
          addPlayerToPreGame(userId, userName);
       } else if (_gameState == State.InGame) {
@@ -233,6 +241,7 @@ public class PvpGame : MonoBehaviour {
          }
 
          GameStatsManager.self.unregisterUser(player.userId);
+         player.rpc.ResetPvpSilverPanel();
 
          PlayerShipEntity playerShip = player.getPlayerShipEntity();
 
@@ -357,6 +366,7 @@ public class PvpGame : MonoBehaviour {
 
          // Clear existing stat data for this player
          GameStatsManager.self.unregisterUser(player.userId);
+         player.rpc.ResetPvpSilverPanel();
 
          // Generate stat data for this player
          GameStatsManager.self.registerUser(player.userId, player.entityName, bestTeam);
@@ -540,6 +550,8 @@ public class PvpGame : MonoBehaviour {
       }
 
       GameStatsManager.self.unregisterUser(player.userId);
+      player.rpc.ResetPvpSilverPanel();
+
       // Remove the player from _usersInGame
       _usersInGame.Remove(player.userId);
    }

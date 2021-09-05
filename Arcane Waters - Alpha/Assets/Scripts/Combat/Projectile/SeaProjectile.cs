@@ -251,6 +251,11 @@ public class SeaProjectile : NetworkBehaviour
    }
 
    protected virtual void processDestruction () {
+      if (_cancelDestruction) {
+         _cancelDestruction = false;
+         return;
+      }
+
       // If we have a trail renderer, detach it, so it can continue to show while this object is destroyed
       TrailRenderer trail = GetComponentInChildren<TrailRenderer>();
       if (trail != null) {
@@ -336,7 +341,7 @@ public class SeaProjectile : NetworkBehaviour
    private float _lobHeight = 0.0f;
 
    // The status effect that this projectile will apply to a sea entity it hits
-   private Status.Type _statusType = Status.Type.None;
+   protected Status.Type _statusType = Status.Type.None;
 
    // How long the status effect applied by this projectile will last for
    private float _statusDuration = 0.0f;
@@ -355,6 +360,9 @@ public class SeaProjectile : NetworkBehaviour
 
    // Whether this projectile will automatically show damage numbers for damage it inflicts, set to false if you want to override this functionality
    protected bool _showDamageNumber = true;
+
+   // When set to true, this will prevent processDestruction from destroying the projectile once
+   protected bool _cancelDestruction = false;
 
    #endregion
 }

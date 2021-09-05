@@ -19,7 +19,10 @@ public class InventoryPanel : Panel {
    public ItemCell itemCellPrefab;
 
    // Load Blocker when data is fetching
-   public GameObject loadBlocker;
+   public GameObject loadBlockerSmall;
+
+   // Load Blocker when actions are executed
+   public GameObject loadBlockerLarge;
 
    // The page number text
    public Text pageNumberText;
@@ -69,7 +72,7 @@ public class InventoryPanel : Panel {
    }
 
    public void refreshPanel () {
-      loadBlocker.SetActive(true);
+      showBlocker();
       NubisDataFetcher.self.getUserInventory(itemTabs.categoryFilters, _currentPage, ITEMS_PER_PAGE, 0, Panel.Type.Inventory);
    }
 
@@ -95,7 +98,7 @@ public class InventoryPanel : Panel {
 
    public void receiveItemForDisplay (List<Item> itemArray, UserObjects userObjects, GuildInfo guildInfo, List<Item.Category> categoryFilter,
       int pageIndex, int totalItems, bool overrideEquipmentCache) {
-      loadBlocker.SetActive(false);
+      hideBlocker();
       Global.lastUserGold = userObjects.userInfo.gold;
       Global.lastUserGems = userObjects.userInfo.gems;
 
@@ -312,10 +315,6 @@ public class InventoryPanel : Panel {
       PerksPanel.self.show();
    }
 
-   public void enableLoadBlocker () {
-      loadBlocker.SetActive(true);
-   }
-
    public void nextPage () {
       if (_currentPage < _maxPage - 1) {
          _currentPage++;
@@ -349,6 +348,26 @@ public class InventoryPanel : Panel {
 
       // Make sure to also hide perks panel in case of hiding inventory
       PerksPanel.self.hide();
+   }
+
+   public void showBlocker (bool large = false, bool forced = false) {
+      // If forced is false, the blockers won't appear if either is visible
+      if (loadBlockerLarge.activeSelf || loadBlockerSmall.activeSelf) {
+         if (!forced) {
+            return;
+         }  
+      }
+
+      if (large) {
+         loadBlockerLarge.SetActive(true);
+      } else {
+         loadBlockerSmall.SetActive(true);
+      }
+   }
+
+   public void hideBlocker () {
+      loadBlockerLarge.SetActive(false);
+      loadBlockerSmall.SetActive(false);
    }
 
    #region Private Variables

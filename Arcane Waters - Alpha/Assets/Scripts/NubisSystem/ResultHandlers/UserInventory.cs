@@ -87,7 +87,15 @@ namespace NubisDataHandling {
                      if (haircutData != null) {
                         otherItem.setBasicInfo(haircutData.itemName, haircutData.itemDescription, haircutData.itemIconPath);
                      } else {
-                        D.editorLog("Failed to gather data for hat: " + itmType + " : " + haircutData + " : " + itmId, Color.red);
+                        D.editorLog("Failed to gather data for haircut: " + itmType + " : " + haircutData + " : " + itmId, Color.red);
+                     }
+                     break;
+                  case Item.Category.ShipSkin:
+                     ShipSkinData shipSkinData = ShipSkinXMLManager.self.getShipSkinData(itmType);
+                     if (shipSkinData != null) {
+                        otherItem.setBasicInfo(shipSkinData.itemName, shipSkinData.itemDescription, shipSkinData.itemIconPath);
+                     } else {
+                        D.editorLog("Failed to gather data for ship skin: " + itmType + " : " + shipSkinData + " : " + itmId, Color.red);
                      }
                      break;
                   default:

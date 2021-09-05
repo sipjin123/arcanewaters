@@ -165,7 +165,7 @@ public class PowerupManager : MonoBehaviour {
 
       // After a delay, have the popup icon move upwards
       // Play sfx
-      SoundEffectManager.self.playFmodOneShot(SoundEffectManager.PICKUP_POWERUP, transform);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.PICKUP_POWERUP, transform);
 
       popupIcon.transform.DOBlendableLocalMoveBy(Vector3.up * 0.3f, 0.4f).SetEase(Ease.OutSine);
       yield return new WaitForSeconds(1.4f);

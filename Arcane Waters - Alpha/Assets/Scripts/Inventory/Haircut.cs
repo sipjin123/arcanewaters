@@ -24,6 +24,12 @@ public class Haircut : Item {
       this.durability = durability;
    }
 
+   public static Haircut createFromData(HaircutData data) {
+      Haircut haircut = new Haircut(-1, data.itemID, "", "", 100);
+      haircut.setBasicInfo(data.itemName, data.itemDescription, data.itemIconPath);
+      return haircut;
+   }
+
    #if IS_SERVER_BUILD
 
    public static Haircut create (MySqlDataReader reader) {
@@ -45,7 +51,7 @@ public class Haircut : Item {
    }
 
    public override bool canBeTrashed () {
-      return false;
+      return true;
    }
 
    public override bool canBeEquipped () {
@@ -53,11 +59,11 @@ public class Haircut : Item {
    }
 
    public override bool canBeStacked () {
-      return false;
+      return true;
    }
 
    public override string getIconPath () {
-      return "Sprites/GUI/Character Creation/Tab Icons/hair_icon";
+      return "Icons/Inventory/usables_icons";
    }
 
    public override string getName () {

@@ -32,17 +32,23 @@ public class PvpStatPanel : Panel {
    // A reference to the game object that enables display of the game end elements of the panel
    public GameObject gameEndBoard;
 
+   // A reference to the game object that displays the team scores for the current game, only used in some game modes
+   public GameObject scoreContainer;
+
    // References to the banners that display victory or defeat
    public GameObject victoryBanner, defeatBanner;
 
    // References to the icons that indicate what quality reward a team was awarded
-   public Image teamARewardIcon, teamBRewardIcon;
+   public List<Image> teamRewardIcons;
 
    // References to the text that indicates what quantity reward a team was awarded
-   public TextMeshProUGUI teamARewardText, teamBRewardText;
+   public List<TextMeshProUGUI> teamRewardTexts;
 
    // References to the text that indicates what faction a team represents
-   public TextMeshProUGUI teamAName, teamBName;
+   public List<TextMeshProUGUI> teamNames;
+
+   // The labels for each pvp team's score, indexed by PvpTeamType
+   public List<TextMeshProUGUI> teamScoreLabels;
 
    // References to the layout groups containing the portraits for each team
    public GridLayoutGroup teamAPortraits, teamBPortraits;
@@ -52,6 +58,11 @@ public class PvpStatPanel : Panel {
    public override void Awake () {
       base.Awake();
       self = this;
+
+      // Populate the factions list with 'None'
+      for (int i = 0; i < 3; i++) {
+         _teamFactions.Add(Faction.Type.None);
+      }
    }
 
    public override void Start () {
@@ -128,30 +139,60 @@ public class PvpStatPanel : Panel {
       statRow.setCellBackgroundSprites(cellBackgroundSprite);
    }
 
-   public void setGameEndVisibility (bool isVisible, bool isVictory, PvpTeamType winningTeam) {
-      gameEndBoard.SetActive(isVisible);
-
-      if (isVisible) {
-         GameObject boardToEnable = (isVictory) ? victoryBanner : defeatBanner;
-         GameObject boardToDisable = (isVictory) ? defeatBanner : victoryBanner;
-
-         boardToEnable.SetActive(true);
-         boardToDisable.SetActive(false);
-
-         Image winningTeamRewardIcon = (winningTeam == PvpTeamType.A) ? teamARewardIcon : teamBRewardIcon;
-         Image losingTeamRewardIcon = (winningTeam == PvpTeamType.A) ? teamBRewardIcon : teamARewardIcon;
-
-         winningTeamRewardIcon.sprite = _rewardIcons[0];
-         losingTeamRewardIcon.sprite = _rewardIcons[1];
-
-         TextMeshProUGUI winningTeamRewardText = (winningTeam == PvpTeamType.A) ? teamARewardText : teamBRewardText;
-         TextMeshProUGUI losingTeamRewardText = (winningTeam == PvpTeamType.A) ? teamBRewardText : teamARewardText;
-
-         winningTeamRewardText.text = PvpGame.WINNER_GOLD.ToString();
-         losingTeamRewardText.text = PvpGame.LOSER_GOLD.ToString();
+   public void updateDisplayMode (string areaKey, bool isGameEnded, bool isVictory, PvpTeamType winningTeam) {
+      PvpGameMode gameMode = AreaManager.self.getAreaPvpGameMode(areaKey);
+      
+      if (_requestTeamFactions != null) {
+         StopCoroutine(_requestTeamFactions);
       }
 
-      _isGameEnd = isVisible;
+      if (gameObject.activeInHierarchy) {
+         _requestTeamFactions = StartCoroutine(CO_RequestTeamFactions());
+      }
+
+      // Only enable the score container for CTF games currently
+      if (gameMode == PvpGameMode.CaptureTheFlag) {
+         scoreContainer.SetActive(true);
+      } else {
+         scoreContainer.SetActive(false);
+      }
+      
+      gameEndBoard.SetActive(isGameEnded);
+
+      List<PvpTeamType> allTeams = new List<PvpTeamType>() { PvpTeamType.A, PvpTeamType.B };
+      List<PvpTeamType> losingTeams = allTeams.Clone();
+      losingTeams.Remove(winningTeam);
+      List<PvpTeamType> winningTeams = new List<PvpTeamType>() { winningTeam };
+
+      if (isGameEnded) {
+         // Update team reward texts and icons
+         foreach (PvpTeamType team in allTeams) {
+            bool isWinningTeam = winningTeams.Contains(team);
+
+            teamRewardTexts[(int) team].text = (isWinningTeam) ? PvpGame.WINNER_GOLD.ToString() : PvpGame.LOSER_GOLD.ToString();
+            teamRewardIcons[(int) team].sprite = (isWinningTeam) ? _rewardIcons[0] : _rewardIcons[1];
+         }
+
+         // Enable the victory / defeat banner
+         GameObject bannerToEnable = (isVictory) ? victoryBanner : defeatBanner;
+         GameObject bannerToDisable = (isVictory) ? defeatBanner : victoryBanner;
+
+         bannerToEnable.SetActive(true);
+         bannerToDisable.SetActive(false);
+      }
+   }
+
+   private IEnumerator CO_RequestTeamFactions () {
+      while (Global.player.faction == Faction.Type.None) {
+         yield return null;
+      }
+
+      Global.player.rpc.Cmd_RequestPvpGameFactions(Global.player.instanceId);
+   }
+
+   public void assignFactionToTeam (PvpTeamType teamType, Faction.Type factionType) {
+      _teamFactions[(int) teamType] = factionType;
+      teamNames[(int) teamType].text = factionType.ToString();
    }
 
    private void setupEndGamePortraits (GameStatsData data) {
@@ -236,11 +277,6 @@ public class PvpStatPanel : Panel {
       return spacing;
    }
 
-   public void setTeamFactions (Faction.Type teamAFaction, Faction.Type teamBFaction) {
-      teamAName.text = teamAFaction.ToString();
-      teamBName.text = teamBFaction.ToString();
-   }
-
    public void onGoHomePressed () {
       if (Global.player) {
          PlayerShipEntity playerShip = Global.player.getPlayerShipEntity();
@@ -251,23 +287,30 @@ public class PvpStatPanel : Panel {
    }
 
    public void onPlayerJoinedPvpGame () {
-      setGameEndVisibility(false, false, PvpTeamType.None);
+      updateDisplayMode(Global.player.areaKey, false, false, PvpTeamType.None);
    }
 
    public void onPlayerLeftPvpGame () {
       hide();
    }
 
-   #region Private Variables
+   public void updateScoreForTeam (int newScoreValue, PvpTeamType teamType) {
+      teamScoreLabels[(int) teamType].text = newScoreValue.ToString();
+   }
 
-   // Whether this panel is showing the game end elements
-   private bool _isGameEnd = false;
+   #region Private Variables
 
    // Cached sprites for cell backgrounds for each team
    private List<Sprite> _teamCellBackgrounds = new List<Sprite>();
 
    // Cached sprites for the reward icons to be displayed for the winning and losing teams
    private List<Sprite> _rewardIcons = new List<Sprite>();
+
+   // The stored faction types, indexed by pvp team type
+   private List<Faction.Type> _teamFactions = new List<Faction.Type>();
+
+   // A reference to the currently running coroutine for requesting team factions
+   private Coroutine _requestTeamFactions = null;
 
    // The path to the sprites used for the cell backgrounds for each team
    private const string TEAM_CELL_BACKGROUND_SPRITE_PATH = "Sprites/GUI/Scoreboard/pvp_scoreboard_cell";

@@ -166,19 +166,20 @@ public class InventoryManager : MonoBehaviour
          objects.hat.paletteNames = bodyEntity.hatsManager.palettes;
       } else if(player is PlayerShipEntity) {
          PlayerShipEntity shipEntity = player.getPlayerShipEntity();
-         WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(shipEntity.weaponType);
+
+         WeaponStatData weaponData = EquipmentXMLManager.self.weaponStatList.Find(_=>_.weaponType == shipEntity.weaponType);
          objects.weapon = weaponData != null ? WeaponStatData.translateDataToWeapon(weaponData) : new Weapon();
          objects.weapon.itemTypeId = shipEntity.weaponType;
          objects.weapon.id = shipEntity.weaponType;
          objects.weapon.paletteNames = shipEntity.weaponColors;
 
-         ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(shipEntity.armorType);
+         ArmorStatData armorData = EquipmentXMLManager.self.armorStatList.Find(_ => _.armorType == shipEntity.armorType);
          objects.armor = armorData != null ? ArmorStatData.translateDataToArmor(armorData) : new Armor();
          objects.armor.itemTypeId = shipEntity.armorType;
          objects.armor.id = shipEntity.armorType;
          objects.armor.paletteNames = shipEntity.armorColors;
 
-         HatStatData hatData = EquipmentXMLManager.self.getHatData(shipEntity.hatType);
+         HatStatData hatData = EquipmentXMLManager.self.hatStatList.Find(_ => _.hatType == shipEntity.hatType);
          objects.hat = hatData != null ? HatStatData.translateDataToHat(hatData) : new Hat();
          objects.hat.itemTypeId = shipEntity.hatType;
          objects.hat.id = shipEntity.hatType;

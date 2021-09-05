@@ -67,6 +67,14 @@ public class ShipBarsPlayer : ShipBars
       showCharacterPortrait();
    }
 
+   private void OnEnable () {
+      InvokeRepeating(nameof(updateLocalPlayerPortrait), 0, 3.0f);
+   }
+
+   private void OnDisable () {
+      CancelInvoke(nameof(updateLocalPlayerPortrait));
+   }
+
    private IEnumerator CO_InitializeUserInfo () {
       // Wait until the entity has been initialized
       while (Util.isEmpty(_entity.entityName)) {
@@ -111,6 +119,14 @@ public class ShipBarsPlayer : ShipBars
          portraitCanvasGroup.alpha = 1;
          portrait.updateBackground(_entity);
       }
+   }
+
+   private void updateLocalPlayerPortrait () {
+      if (_entity == null) {
+         return;
+      }
+
+      portrait.updateLayers(_entity);
    }
 
    #region Private Variables

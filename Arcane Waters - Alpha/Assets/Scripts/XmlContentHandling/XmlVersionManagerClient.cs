@@ -200,6 +200,7 @@ public class XmlVersionManagerClient : GenericGameManager {
 
       checkStreamingAssetFile(XmlVersionManagerServer.HAIRCUTS_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.GEMS_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.SHIP_SKINS_FILE);
    }
 
    private void checkStreamingAssetFile (string fileName, bool isLastEntry = false) {
@@ -295,6 +296,7 @@ public class XmlVersionManagerClient : GenericGameManager {
 
       extractXmlType(EditorToolType.Haircuts);
       extractXmlType(EditorToolType.Gems);
+      extractXmlType(EditorToolType.ShipSkins);
 
       initializeLoadingXmlData.Invoke();
    }
@@ -390,6 +392,9 @@ public class XmlVersionManagerClient : GenericGameManager {
             break;
          case EditorToolType.Gems:
             path = TEXT_PATH + XmlVersionManagerServer.GEMS_FILE + ".txt";
+            break;
+         case EditorToolType.ShipSkins:
+            path = TEXT_PATH + XmlVersionManagerServer.SHIP_SKINS_FILE + ".txt";
             break;
       }
 
@@ -907,6 +912,25 @@ public class XmlVersionManagerClient : GenericGameManager {
             }
 
             GemsXMLManager.self.receiveDataFromZipData(gemsDataList);
+            break;
+
+         case EditorToolType.ShipSkins:
+            List<ShipSkinData> shipSkinDataList = new List<ShipSkinData>();
+
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+
+               // Extract the segregated data and assign to the xml manager
+               if (xmlSubGroup.Length == 2) {
+                  int dataId = int.Parse(xmlSubGroup[0]);
+                  ShipSkinData actualData = Util.xmlLoad<ShipSkinData>(xmlSubGroup[1]);
+                  actualData.itemID = dataId;
+                  shipSkinDataList.Add(actualData);
+                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+               }
+            }
+
+            ShipSkinXMLManager.self.receiveShipSkinDataFromZipData(shipSkinDataList);
             break;
 
          case EditorToolType.Map_Keys:

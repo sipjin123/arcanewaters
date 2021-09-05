@@ -116,7 +116,7 @@ public class ShipEntity : SeaEntity
 
    public override void playAttackSound () {
       // Play a sound effect
-      SoundEffectManager.self.playFmodWithPath(SoundEffectManager.SHIP_CANNON, this.transform);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.SHIP_CANNON, this.transform);
       //SoundEffectManager.self.playFmodOneShot(SoundEffectManager.SHIP_CANNON, this.transform);
       //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Cannon_1, this.transform.position);
    }

@@ -416,9 +416,9 @@ public class SeaEntity : NetEntity
             _playedDestroySound = true;
 
             if (this.isBot()) {
-               SoundEffectManager.self.playFmodWithPath(SoundEffectManager.ENEMY_SHIP_DESTROYED, this.transform);
+               SoundEffectManager.self.playFmodSfx(SoundEffectManager.ENEMY_SHIP_DESTROYED, this.transform);
             } else {
-               SoundEffectManager.self.playFmodWithPath(SoundEffectManager.PLAYER_SHIP_DESTROYED, this.transform);
+               SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLAYER_SHIP_DESTROYED, this.transform);
             }
 
             // Hide all the sprites
@@ -1154,7 +1154,7 @@ public class SeaEntity : NetEntity
                         }
                      }
 
-                     StatusManager.self.create(Status.Type.Frozen, 1.0f, 2f, targetEntity.netId);
+                     StatusManager.self.create(Status.Type.Stunned, 1.0f, 2f, targetEntity.netId);
                   } else if (attackType == Attack.Type.Venom) {
                      StatusManager.self.create(Status.Type.Slowed, 0.3f, 1f, targetEntity.netId);
                   }

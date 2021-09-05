@@ -9,7 +9,6 @@ public class BattlerEffectHolder : MonoBehaviour {
 
    // Effect game object holders
    public GameObject burningEffectObj,
-      frozenEffectObj,
       stunEffectObj,
       slowEffectObj;
 
@@ -17,16 +16,12 @@ public class BattlerEffectHolder : MonoBehaviour {
 
    public void updateEffect (Status.Type statusType, bool isEnabled) {
       burningEffectObj.SetActive(false);
-      frozenEffectObj.SetActive(false);
       stunEffectObj.SetActive(false);
       slowEffectObj.SetActive(false);
 
       switch (statusType) {
          case Status.Type.Burning:
             burningEffectObj.SetActive(isEnabled);
-            break;
-         case Status.Type.Frozen:
-            frozenEffectObj.SetActive(isEnabled);
             break;
          case Status.Type.Slowed:
             slowEffectObj.SetActive(isEnabled);

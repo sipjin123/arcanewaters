@@ -56,8 +56,14 @@ public class D : MonoBehaviour {
    public static bool WRITE_DEBUG_TO_LOG_FILE = true;
    public static bool SHOW_DEBUG_IN_CHAT = false;
 
-   // Stores the contents of the last retrieved server log in a string
-   public static string serverLogString = "";
+   // The maximum size of the server log chunks when sending it to clients
+   public static int MAX_SERVER_LOG_CHUNK_SIZE = 512 * 1000;
+
+   // The maximum number of server log chunks that will be sent to clients
+   public static int MAX_SERVER_LOG_CHUNK_COUNT = 20;
+
+   // Stores the contents of the last retrieved server log
+   public static List<byte> serverLogBytes = new List<byte>();
 
    // Directory of the private logs
    public static string instanceProcessLogDirectory = "";
@@ -206,8 +212,8 @@ public class D : MonoBehaviour {
             StreamWriter sr = File.CreateText(_serverLogFilePath);
             sr.Close();
          }
-         
-         File.WriteAllText(_serverLogFilePath, serverLogString);
+
+         File.WriteAllText(_serverLogFilePath, Encoding.ASCII.GetString(serverLogBytes.ToArray()));
 
          try {
             System.Diagnostics.Process.Start(_serverLogFilePath);
@@ -219,7 +225,7 @@ public class D : MonoBehaviour {
 
    internal static void copyServerLogToClipboard () {
       if (Global.isLoggedInAsAdmin()) {
-         GUIUtility.systemCopyBuffer = serverLogString;
+         GUIUtility.systemCopyBuffer = Encoding.ASCII.GetString(serverLogBytes.ToArray());
       }
    }
 

@@ -112,7 +112,7 @@ public class ShipBars : MonoBehaviour {
    }
 
    protected void handleHealthBar () {
-      bool isAnEnemy = _entity.isEnemyOf(Global.player);
+      bool isAnEnemy = _entity.isEnemyOf(Global.player, false);
 
       if (_entity.currentHealth == _lastHealth) {
          return;
@@ -133,7 +133,7 @@ public class ShipBars : MonoBehaviour {
    }
 
    public void initializeHealthBar () {
-      bool isAnEnemy = _entity.isEnemyOf(Global.player);
+      bool isAnEnemy = _entity.isEnemyOf(Global.player, false);
 
       healthBlockContainer.DestroyChildren();
       _healthBlocks.Clear();

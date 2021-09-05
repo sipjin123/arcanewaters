@@ -62,6 +62,7 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
          weapon = WeaponStatData.translateDataToWeapon(weaponData);
          weapon.id = cellInfo.weapon.id;
          weapon.paletteNames = cellInfo.weapon.paletteNames;
+         weapon.itemTypeId = weaponData.weaponType;
       }
 
       Armor armor = ArmorStatData.translateDataToArmor(ArmorStatData.getDefaultData());
@@ -70,6 +71,7 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
          armor = ArmorStatData.translateDataToArmor(armorData);
          armor.id = cellInfo.armor.id;
          armor.paletteNames = cellInfo.armor.paletteNames;
+         armor.itemTypeId = armorData.armorType;
       }
 
       Hat hat = HatStatData.translateDataToHat(HatStatData.getDefaultData());
@@ -78,6 +80,7 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
          hat = HatStatData.translateDataToHat(hatData);
          hat.id = cellInfo.hat.id;
          hat.paletteNames = cellInfo.hat.paletteNames;
+         hat.itemTypeId = hatData.hatType;
       }
 
       characterPortrait.updateLayers(cellInfo.gender, cellInfo.bodyType, cellInfo.eyesType, cellInfo.hairType, cellInfo.eyesPalettes, cellInfo.hairPalettes, armor, weapon, hat);
@@ -125,18 +128,13 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
    private void updatePortrait () {
       // Try to find the entity of the displayed user
       NetEntity entity = EntityManager.self.getEntity(_userId);
+      
       if (entity == null) {
          characterPortrait.updateBackground(null);
          return;
       }
 
-      // Update the whole portrait
-      if (entity is PlayerBodyEntity) {
-         characterPortrait.updateLayers(entity);
-      } else {
-         characterPortrait.updateBackground(entity);
-      }
-
+      characterPortrait.updateLayers(entity);
       updateTooltip(entity.entityName, entity.XP, entity.areaKey);
    }
 

@@ -85,7 +85,7 @@ public class BottomBar : MonoBehaviour {
       if (!panel.isShowing()) {
          if (Global.player != null) {
             // Open map sfx
-            SoundEffectManager.self.playFmod2D(SoundEffectManager.MAP_OPEN);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.MAP_OPEN);
 
             panel.displayMap();
          }
@@ -117,7 +117,7 @@ public class BottomBar : MonoBehaviour {
 
       // Get the panel
       PvpStatPanel panel = (PvpStatPanel) PanelManager.self.get(Panel.Type.PvpScoreBoard);
-      SoundEffectManager.self.playFmod2D(SoundEffectManager.CLICK_TAB);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.CLICK_TAB);
       if (!panel.isShowing()) {
          Global.player.rpc.Cmd_RequestPvpStatPanel();
       } 

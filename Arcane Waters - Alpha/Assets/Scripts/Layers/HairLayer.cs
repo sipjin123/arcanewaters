@@ -13,7 +13,8 @@ public class HairLayer : SpriteLayer {
    public bool isFront = true;
 
    // The Type
-   public enum Type {
+   public enum Type
+   {
       Male_Hair_1 = 101, Male_Hair_2 = 102, Male_Hair_3 = 103, Male_Hair_4 = 104, Male_Hair_5 = 105,
       Male_Hair_6 = 106, Male_Hair_7 = 107, Male_Hair_8 = 108, Male_Hair_9 = 109,
 
@@ -22,7 +23,81 @@ public class HairLayer : SpriteLayer {
 
    }
 
+   // Reference to the hatLayer
+   public HatLayer hatLayer;
+
    #endregion
+
+   private void Update () {
+      setClipmask();
+      updateClipmask();
+   }
+
+   private void setClipmask () {
+      if (hatLayer == null || _currentHatType == hatLayer.getType()) {
+         return;
+      }
+
+      _shouldClipHair = false;
+
+      if (!isFront || getMaterial() == null) {
+         return;
+      }
+
+      _currentHatType = hatLayer.getType();
+
+      if (_currentHatType == 0) {
+         return;
+      }
+
+      Texture2D clipMask = findClipmaskTexture();
+
+      if (clipMask == null || clipMask == ImageManager.self.blankTexture) {
+         return;
+      }
+
+      _shouldClipHair = true;
+      setClipmaskTexture(clipMask);
+   }
+
+   private void updateClipmask () {
+      if (!_shouldClipHair) {
+         setClipmaskVisibility(false);
+         return;
+      }
+
+      if (getPlayer() != null && getPlayer().facing == Direction.North) {
+         setClipmaskVisibility(_shouldClipHairWhenFacingNorth);
+         return;
+      }
+
+      setClipmaskVisibility(true);
+   }
+
+   private Texture2D findClipmaskTexture () {
+      return ImageManager.getTexture($"Hats/hat_{_currentHatType}_clipmask");
+   }
+
+   private void setClipmaskTexture(Texture2D texture = null) {
+      Material mat = getMaterial();
+
+      if (mat == null) {
+         return;
+      }
+
+      mat.SetTexture("_ClipTex", texture);
+   }
+
+   private void setClipmaskVisibility (bool show = true) {
+      Material mat = getMaterial();
+
+      if (mat == null) {
+         return;
+      }
+
+      mat.SetFloat("_ShowHatClipping", show ? 1.0f : 0.0f);
+      _isHairClipped = show;
+   }
 
    public static string getSheetName (Type newType, bool isFront) {
       // Insert "Front" or "Back" into the string name
@@ -38,45 +113,12 @@ public class HairLayer : SpriteLayer {
       // Update our Animated Sprite
       setTexture(getTexture(newType, isFront));
 
-      _stencilCompPropertyId = Shader.PropertyToID("_StencilComp");
+      HaircutData haircutData = HaircutXMLManager.self.haircutStatList.Find(_ => _.type == _type);
 
-      Material mat = getMaterial();
-      mat.SetInt("_StencilOp", (int) StencilOp.Zero);
-      mat.SetInt("_StencilFail", (int) StencilOp.Zero);
-      mat.SetInt("_StencilComp", (int) CompareFunction.NotEqual);
-      mat.SetInt("_Stencil", HAT_STENCIL_ID);
-   }
-
-   public void setClipMaskForHat (int hatType) {
-      Material _material = getMaterial();
-
-      if (_material == null) {
-         return;
-      }
-
-      if (hatType == 0) {
-         _material.DisableKeyword("SHOW_HAT_CLIPPING");
-         return;
-      }
-
-      string path = "Hats/" + "hat_" + (int) hatType + "_clipmask";
-      Texture2D clipMask = ImageManager.getTexture(path);
-
-      if (clipMask == null) {
-         _material.DisableKeyword("SHOW_HAT_CLIPPING");
-         return;
-      }
-
-      _material.SetTexture("_ClipTex", clipMask);
-      _material.EnableKeyword("SHOW_HAT_CLIPPING");
-   }
-
-   private void Update () {
-      // The hair back layer is only clipped by the hat if we're not facing south
-      if (!isFront) {
-         if (getPlayer() != null) {
-            getMaterial().SetInt(_stencilCompPropertyId, getPlayer().facing == Direction.South ? (int) CompareFunction.Disabled : (int) CompareFunction.NotEqual);
-         }
+      if (haircutData != null) {
+         _shouldClipHairWhenFacingNorth = haircutData.clipWhenFacingNorth;
+      } else {
+         _shouldClipHairWhenFacingNorth = false;
       }
    }
 
@@ -109,12 +151,16 @@ public class HairLayer : SpriteLayer {
       return hairType.ToString().Split('_')[2];
    }
 
-   public static Gender.Type computeGender(Type hairType) {
+   public static Gender.Type computeGender (Type hairType) {
       return hairType.ToString().ToLower().Contains("female") ? Gender.Type.Female : Gender.Type.Male;
    }
 
    public Type getType () {
       return _type;
+   }
+
+   public bool isHairClipped () {
+      return _isHairClipped;
    }
 
    #region Private Variables
@@ -124,6 +170,18 @@ public class HairLayer : SpriteLayer {
 
    // The property ID of the stencil compare function for hats
    protected int _stencilCompPropertyId;
+
+   // Current hat type
+   private int _currentHatType = 0;
+
+   // Should clip hair?
+   private bool _shouldClipHair = false;
+
+   // Should clip when facing north?
+   private bool _shouldClipHairWhenFacingNorth = true;
+
+   // Current hair clip state
+   private bool _isHairClipped = false;
 
    #endregion
 }

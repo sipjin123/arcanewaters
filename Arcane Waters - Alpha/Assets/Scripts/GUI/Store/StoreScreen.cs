@@ -108,6 +108,26 @@ public class StoreScreen : Panel
       // Create Boxes
       createStoreBoxes(storeItems);
 
+      recolorHaircutBoxes();
+
+      // Routinely check if we purchased gems
+      CancelInvoke(nameof(checkGems));
+      InvokeRepeating(nameof(checkGems), 5f, 5f);
+
+      // Initialize tabs
+      initializeTabs();
+
+      // If no tab is selected, display the gems tab
+      if (_currentStoreTabType == StoreTab.StoreTabType.None) {
+         _currentStoreTabType = StoreTab.StoreTabType.Gems;
+      }
+
+      filterItems();
+
+      toggleBlocker(false);
+   }
+
+   private void recolorHaircutBoxes () {
       foreach (RecoloredSprite recoloredSprite in GetComponentsInChildren<RecoloredSprite>()) {
          StoreItemBox storeItemBox = recoloredSprite.GetComponentInParent<StoreItemBox>();
          if (storeItemBox is StoreHairDyeBox) {
@@ -116,23 +136,14 @@ public class StoreScreen : Panel
             recoloredSprite.recolor(Item.parseItmPalette(values.ToArray()));
          }
       }
-
-      // Update our tabs
-      changeDisplayedItems();
-
-      // Routinely check if we purchased gems
-      InvokeRepeating("checkGems", 5f, 5f);
-
-      // Initialize tabs
-      initializeTabs();
-
-      toggleBlocker(false);
    }
 
-   private void toggleBlocker (bool show) {
-      if (loadBlocker != null) {
-         loadBlocker.gameObject.SetActive(show);
+   public void toggleBlocker (bool show) {
+      if (loadBlocker == null) {
+         return;
       }
+
+         loadBlocker.SetActive(show);
    }
 
    public void updateGemsAmount (int amount) {
@@ -166,6 +177,8 @@ public class StoreScreen : Panel
          appId = SteamUtils.GetAppID().m_AppId;
       }
 
+      toggleBlocker(show: true);
+
       Global.player.rpc.Cmd_BuyStoreItem(selectedItem.itemId, appId);
 
       D.debug("Store purchase: Control transferred.");
@@ -197,7 +210,7 @@ public class StoreScreen : Panel
       characterStack.synchronizeAnimationIndexes();
    }
 
-   public void changeDisplayedItems () {
+   public void filterItems () {
       // Reset our selection
       if (selectedItem != null) {
          selectItem(selectedItem);
@@ -207,7 +220,7 @@ public class StoreScreen : Panel
       foreach (StoreItemBox itemBox in itemsContainer.GetComponentsInChildren<StoreItemBox>(true)) {
          if (itemBox is StoreHairDyeBox) {
             itemBox.gameObject.SetActive(_currentStoreTabType == StoreTab.StoreTabType.HairStyles);
-         } else if (itemBox is StoreShipBox) {
+         } else if (itemBox is StoreShipSkinBox) {
             itemBox.gameObject.SetActive(_currentStoreTabType == StoreTab.StoreTabType.ShipSkins);
          } else if (itemBox is StoreHaircutBox) {
             StoreHaircutBox haircutBox = (StoreHaircutBox) itemBox;
@@ -224,13 +237,6 @@ public class StoreScreen : Panel
       }
    }
 
-   protected void checkGems () {
-      // If the store is showing and we have a player, get an updated Gems count
-      if (this.isShowing() && Global.player != null) {
-         Global.player.rpc.Cmd_UpdateGems();
-      }
-   }
-
    private void initializeTabs () {
       if (tabs == null) {
          return;
@@ -238,9 +244,6 @@ public class StoreScreen : Panel
 
       tabs.onTabPressed.RemoveAllListeners();
       tabs.onTabPressed.AddListener(performTabSwitch);
-
-      // Switch to the first tab
-      tabs.performTabPressed(0);
    }
 
    public void performTabSwitch (int tabIndex) {
@@ -254,7 +257,14 @@ public class StoreScreen : Panel
 
       D.debug($"New Store Tab Type is: { _currentStoreTabType }");
 
-      changeDisplayedItems();
+      filterItems();
+   }
+
+   protected void checkGems () {
+      // If the store is showing and we have a player, get an updated Gems count
+      if (this.isShowing() && Global.player != null) {
+         Global.player.rpc.Cmd_UpdateGems();
+      }
    }
 
    #region Boxes
@@ -298,6 +308,20 @@ public class StoreScreen : Panel
       box.itemQuantity = item.quantity;
       box.itemCategory = item.category;
    }
+   
+   private void tryOverrideNameAndDescription(StoreItem storeItem, StoreItemBox box) {
+      if (storeItem == null || box == null) {
+         return;
+      }
+
+      if (storeItem.overrideItemName) {
+         box.itemName = storeItem.displayName;
+      }
+
+      if (storeItem.overrideItemDescription) {
+         box.itemDescription = storeItem.displayDescription;
+      }
+   }
 
    protected StoreGemBox createGemBox (StoreItem storeItem) {
       StoreGemBox box = Instantiate(PrefabsManager.self.gemBoxPrefab);
@@ -306,6 +330,7 @@ public class StoreScreen : Panel
       box.gemsBundle = gemsData;
       box.itemName = box.gemsBundle.itemName;
       box.itemDescription = box.gemsBundle.itemDescription;
+      tryOverrideNameAndDescription(storeItem, box);
       box.initialize();
       return box;
    }
@@ -317,33 +342,42 @@ public class StoreScreen : Panel
       box.haircut = haircutData;
       box.itemName = box.haircut.itemName;
       box.itemDescription = box.haircut.itemDescription;
+      tryOverrideNameAndDescription(storeItem, box);
       box.initialize();
       return box;
    }
 
-   protected StoreShipBox createShipSkinBox (StoreItem item) {
-      StoreShipBox box = Instantiate(PrefabsManager.self.shipBoxPrefab);
-      prepareStoreItemBox(item, box);
+   protected StoreShipSkinBox createShipSkinBox (StoreItem storeItem) {
+      StoreShipSkinBox box = Instantiate(PrefabsManager.self.shipBoxPrefab);
+      prepareStoreItemBox(storeItem, box);
+      ShipSkinData shipSkinData = ShipSkinXMLManager.self.getShipSkinData(storeItem.itemId);
+      box.shipSkin = shipSkinData;
+      box.itemName = box.shipSkin.itemName;
+      box.itemDescription = box.shipSkin.itemDescription;
+      tryOverrideNameAndDescription(storeItem, box);
       box.initialize();
       return box;
    }
 
-   protected StoreHairDyeBox createHairDyeBox (StoreItem item) {
+   protected StoreHairDyeBox createHairDyeBox (StoreItem storeItem) {
       StoreHairDyeBox box = Instantiate(PrefabsManager.self.hairDyeBoxPrefab);
-      prepareStoreItemBox(item, box);
+      prepareStoreItemBox(storeItem, box);
+      tryOverrideNameAndDescription(storeItem, box);
       box.initialize();
       return box;
    }
 
-   protected StoreHaircutBox createHatBox (StoreItem item) {
+   protected StoreHaircutBox createHatBox (StoreItem storeItem) {
       StoreHaircutBox box = Instantiate(PrefabsManager.self.haircutBoxPrefab);
-      prepareStoreItemBox(item, box);
+      prepareStoreItemBox(storeItem, box);
+      tryOverrideNameAndDescription(storeItem, box);
       return box;
    }
 
-   protected StoreHairDyeBox createPetBox (StoreItem item) {
+   protected StoreHairDyeBox createPetBox (StoreItem storeItem) {
       StoreHairDyeBox box = Instantiate(PrefabsManager.self.hairDyeBoxPrefab);
-      prepareStoreItemBox(item, box);
+      prepareStoreItemBox(storeItem, box);
+      tryOverrideNameAndDescription(storeItem, box);
       return box;
    }
 
@@ -362,8 +396,11 @@ public class StoreScreen : Panel
 
       _storeItemBoxes.Clear();
 
-      int counter = 0;
       foreach (StoreItem item in items) {
+         if (item == null || !item.isEnabled) {
+            continue;
+         }
+
          StoreItemBox createdBox = null;
          
          switch (item.category) {
@@ -393,8 +430,6 @@ public class StoreScreen : Panel
 
          // Try to add the box to the container here (Testing)
          createdBox.transform.SetParent(itemsContainer.transform);
-
-         counter++;
       }
    }
 

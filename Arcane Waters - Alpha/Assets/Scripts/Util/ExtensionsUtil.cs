@@ -321,6 +321,12 @@ public static class ExtensionsUtil {
       }
    }
 
+   public static T[] RangeSubset<T> (this T[] array, int startIndex, int length) {
+      T[] subset = new T[length];
+      Array.Copy(array, startIndex, subset, 0, length);
+      return subset;
+   }
+
    #region Private Variables
 
    // An instance of Random for generating random numbers

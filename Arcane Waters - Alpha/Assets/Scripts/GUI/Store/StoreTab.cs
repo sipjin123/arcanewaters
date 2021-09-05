@@ -33,7 +33,7 @@ public class StoreTab : ClickableTab {
       base.OnPointerDown(eventData);
 
       // Make the store update which items are displayed
-      StoreScreen.self.changeDisplayedItems();
+      StoreScreen.self.filterItems();
    }
 
    #region Private Variables

@@ -46,6 +46,9 @@ public class ItemTabs : MonoBehaviour
       workSet.Remove(Item.Category.Armor);
       workSet.Remove(Item.Category.CraftingIngredients);
 
+      // Hats are displayed in the Armor tab
+      workSet.Remove(Item.Category.Hats);
+
       // Save the categories in a list
       _othersTabCategories = new List<Item.Category>();
       foreach (Item.Category c in workSet) {
@@ -87,6 +90,7 @@ public class ItemTabs : MonoBehaviour
    public void onArmorTabButtonPress () {
       categoryFilters.Clear();
       categoryFilters.Add(Item.Category.Armor);
+      categoryFilters.Add(Item.Category.Hats);
       updateCategoryTabs(Item.Category.Armor);
       _onTabButtonPressedAction.Invoke();
    }

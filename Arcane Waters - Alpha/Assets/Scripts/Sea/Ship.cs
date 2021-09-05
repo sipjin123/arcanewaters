@@ -197,4 +197,50 @@ public class Ship : SeaEntity {
 
       return ship;
    }
+
+   public static Ship.Type computeShipTypeFromSkinType (Ship.SkinType skinType) {
+      string skinTypeString = skinType.ToString();
+      string[] tokens = skinTypeString.Split('_');
+
+      if (tokens == null || tokens.Length <= 2) {
+         return Type.None;
+      }
+
+      string shipTypeString = $"{tokens[0]}_{tokens[1]}";
+      bool result = System.Enum.TryParse(shipTypeString, out Ship.Type type);
+
+      if (!result) {
+         return Type.None;
+      }
+
+      return type;
+   }
+
+   public static string computeSkinTypeDisplayString (SkinType skinType) {
+      string skinTypeString = skinType.ToString();
+      string[] tokens = skinTypeString.Split('_');
+
+      if (tokens == null || tokens.Length <= 2) {
+         return skinType.ToString();
+      }
+
+      return tokens[2];
+   }
+
+   public static Sprite computeDisplaySpriteForShip (Type shipType, SkinType skinType, bool isPirate = false, int spriteIndex = 4) {
+      // For the null skin type, the icon of the Type_1 ship type is used
+      Type chosenShipType = skinType == SkinType.None ? Type.Type_1 : shipType;
+
+      // Coerce spriteIndex
+      spriteIndex = Mathf.Max(0, spriteIndex);
+
+      string path = getSkinPath(chosenShipType, skinType, isPirate);
+      Sprite[] sprites = ImageManager.getSprites(path);
+
+      if (sprites == null || sprites.Length < (spriteIndex + 1)) {
+         return ImageManager.self.blankSprite;
+      } else {
+         return sprites[spriteIndex];
+      }
+   }
 }

@@ -8,23 +8,6 @@ public class AmbienceManager : ClientMonoBehaviour
    // Self
    public static AmbienceManager self;
 
-   // Is the FMOD event ready?
-   bool isEventReady = false;
-
-   public enum AmbienceType
-   {
-      Forest = 0,
-      Desert = 1,
-      Snow = 2,
-      Lava = 3,
-      Pine = 4,
-      Shroom = 5,
-      TreasureSite = 6,
-      Farm = 7,
-      Interior = 8,
-      SeaMap = 9
-   }
-
    #endregion
 
    protected override void Awake () {
@@ -71,57 +54,7 @@ public class AmbienceManager : ClientMonoBehaviour
       bool isSea = AreaManager.self.isSeaArea(newAreaKey);
       bool isInterior = AreaManager.self.isInteriorArea(newAreaKey);
 
-      // Using one event, we can change the ambience using a parameter
-      //if (isSea || biomeType == Biome.Type.Forest || biomeType == Biome.Type.Desert || biomeType == Biome.Type.Snow) {
-      if (!isEventReady) {
-         SoundEffect effect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.AMBIENCE_BED_MASTER);
-
-         if (effect != null) {
-            _ambienceEvent = FMODUnity.RuntimeManager.CreateInstance(effect.fmodId);
-            isEventReady = true;
-         }
-      }
-
-      if (isEventReady) {
-         if (isSea) {
-            _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_SWITCH_PARAM, (int) AmbienceType.SeaMap);
-         } else if (isInterior) {
-            _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_SWITCH_PARAM, (int) AmbienceType.Interior);
-         } else {
-            switch (biomeType) {
-               case Biome.Type.Forest:
-                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_SWITCH_PARAM, (int) AmbienceType.Forest);
-                  break;
-               case Biome.Type.Desert:
-                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_SWITCH_PARAM, (int) AmbienceType.Desert);
-                  break;
-               case Biome.Type.Snow:
-                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_SWITCH_PARAM, (int) AmbienceType.Snow);
-                  break;
-               case Biome.Type.Lava:
-                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_SWITCH_PARAM, (int) AmbienceType.Lava);
-                  break;
-               case Biome.Type.Pine:
-                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_SWITCH_PARAM, (int) AmbienceType.Pine);
-                  break;
-               case Biome.Type.Mushroom:
-                  _ambienceEvent.setParameterByName(SoundEffectManager.AMBIENCE_SWITCH_PARAM, (int) AmbienceType.Shroom);
-                  break;
-            }
-         }
-
-         _ambienceEvent.start();
-      }
-      //} else {
-      //   if (isEventReady) {
-      //      ambienceEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-      //   }
-
-      //   // Add the new sounds
-      //   foreach (SoundManager.Type typeToPlay in ambienceTypes) {
-      //      playAmbience(typeToPlay);
-      //   }
-      //}
+      SoundEffectManager.self.playAmbienceMusic(isSea, isInterior, biomeType);
    }
 
    public void setAmbienceWeatherEffect (WeatherEffectType weatherEffect) {

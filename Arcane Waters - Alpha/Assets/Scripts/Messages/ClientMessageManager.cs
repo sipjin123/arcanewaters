@@ -131,6 +131,25 @@ public class ClientMessageManager : MonoBehaviour {
          case ErrorMessage.Type.PurchaseError:
             PanelManager.self.noticeScreen.show(msg.customMessage);
             return;
+         case ErrorMessage.Type.Generic:
+            PanelManager.self.noticeScreen.show(msg.customMessage);
+            return;
+         case ErrorMessage.Type.UseItemFailed:
+            PanelManager.self.noticeScreen.show(msg.customMessage);
+
+            if (InventoryPanel.self.isShowing()) {
+               InventoryPanel.self.refreshPanel();
+            }
+
+            return;
+         case ErrorMessage.Type.StoreItemPurchaseFailed:
+            PanelManager.self.noticeScreen.show(msg.customMessage);
+
+            if (StoreScreen.self.isShowing()) {
+               StoreScreen.self.toggleBlocker(false);
+            }
+
+            return;
          /*case ErrorMessage.Type.NoGoldForCargo:
          case ErrorMessage.Type.OutOfCargoSpace:
          case ErrorMessage.Type.PortOutOfCargo:
@@ -220,6 +239,9 @@ public class ClientMessageManager : MonoBehaviour {
                chatMessage = "You have cut your hair!";
             }
 
+            // Show the confirmation message in the notice screen
+            PanelManager.self.noticeScreen.show(chatMessage);
+
             // Add the confirmation message in the chat panel
             ChatManager.self.addChat(chatMessage, msg.timestamp, ChatInfo.Type.System);
 
@@ -235,11 +257,16 @@ public class ClientMessageManager : MonoBehaviour {
             ChatManager.self.addChat(msg.customMessage, msg.timestamp, ChatInfo.Type.System);
             return;
          case ConfirmMessage.Type.StoreItemBought:
-            // Play the SFX for purchasing an item
-            SoundEffectManager.self.playFmod2D(SoundEffectManager.PURCHASE_ITEM);
-
             // Show the confirmation message in the notice screen
             PanelManager.self.noticeScreen.show(msg.customMessage);
+
+            if (StoreScreen.self.isShowing()) {
+               StoreScreen.self.toggleBlocker(false);
+            }
+
+            // Play the SFX for purchasing an item
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.PURCHASE_ITEM);
+
             return;
          case ConfirmMessage.Type.ShipBought:
             // Hide the ship panel

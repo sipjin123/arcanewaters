@@ -30,6 +30,9 @@ namespace Store
       // Reference to the item (id)
       public int itemId;
 
+      // Is the Store item enabled?
+      public bool isEnabled;
+
       // Item currencies
       public enum CurrencyMode
       {
@@ -40,13 +43,25 @@ namespace Store
          Real = 1
       }
 
+      // Override Item Name?
+      public bool overrideItemName;
+
+      // Override Item Description?
+      public bool overrideItemDescription;
+
+      // Name for the item, when overrideItemName is enabled
+      public string displayName;
+
+      // Description for the item, when overrideItemDescription is enabled
+      public string displayDescription;
+
       #endregion
 
       public StoreItem () {
 
       }
 
-      public StoreItem (ulong itemId, string name, string description, Item.Category category, int quantity, int price, string metadata, DateTime creationDate, CurrencyMode currencyMode, int item = 0) {
+      public StoreItem (ulong itemId, string name, string description, Item.Category category, int quantity, int price, string metadata, DateTime creationDate, CurrencyMode currencyMode, int item = 0, bool isEnabled = true, bool overrideItemName = false, bool overrideItemDescription = false) {
          this.id = itemId;
          this.category = category;
          this.quantity = quantity;
@@ -54,6 +69,12 @@ namespace Store
          this.creationDate = creationDate;
          this.currencyMode = currencyMode;
          this.itemId = item;
+         this.isEnabled = isEnabled;
+         this.overrideItemName = overrideItemName;
+         this.overrideItemDescription = overrideItemDescription;
+
+         this.displayName = name;
+         this.displayDescription = description;
       }
 
       #if IS_SERVER_BUILD
@@ -67,6 +88,11 @@ namespace Store
          item.creationDate = DataUtil.getDateTime(reader, "siItemCreationDate");
          item.currencyMode = (StoreItem.CurrencyMode) DataUtil.getInt(reader, "siItemCurrencyMode");
          item.itemId = DataUtil.getInt(reader, "siItem"); 
+         item.isEnabled = DataUtil.getBoolean(reader, "siIsEnabled"); 
+         item.overrideItemName = DataUtil.getBoolean(reader, "siItemNameOverride"); 
+         item.overrideItemDescription = DataUtil.getBoolean(reader, "siItemDescriptionOverride");
+         item.displayName = DataUtil.getString(reader, "siItemName");
+         item.displayDescription = DataUtil.getString(reader, "siItemDescription");
          return item;
       }
 

@@ -514,7 +514,7 @@ public class SoundManager : GenericGameManager {
       // Keep track of the music currently being played
       _currentMusicType = type;
 
-      SoundEffectManager.self.playBgMusic(type);
+      SoundEffectManager.self.playBackgroundMusic(type);
 
       //// Smoothly transition to the new music using a coroutine
       //self.StartCoroutine(self.transitionBackgroundMusic(type));

@@ -280,6 +280,7 @@ public class MyNetworkManager : NetworkManager
 
       HaircutXMLManager.self.initializeDataCache();
       GemsXMLManager.self.initializeDataCache();
+      ShipSkinXMLManager.self.initializeDataCache();
    }
 
    public override void OnStopServer () {

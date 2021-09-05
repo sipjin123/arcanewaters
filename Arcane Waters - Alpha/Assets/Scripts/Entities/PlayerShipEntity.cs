@@ -1676,6 +1676,22 @@ public class PlayerShipEntity : ShipEntity
       return REWARDED_XP;
    }
 
+   [ClientRpc]
+   public void Target_UpdateSkin () {
+      updateSkin(skinType);
+
+      // Refresh flag
+      setFlag(_currentFlag, force: true);
+   }
+
+   protected override void showLevelUpEffect (Jobs.Type jobType) {
+      base.showLevelUpEffect(jobType);
+
+      if (levelUpEffect != null) {
+         levelUpEffect.play(jobType);
+      }
+   }
+
    #region Private Variables
 
    // Our ship movement sound

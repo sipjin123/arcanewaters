@@ -22,92 +22,110 @@ public class SoundEffectManager : GenericGameManager
    // The AudioSource used to play 3D SoundEffects
    public AudioSource source3D;
 
-   // Sound effects ids, from the Sound Effects web tool
-   public const int JUMP_START_ID = 3;
-   public const int JUMP_END_ID = 6;
+   // Sound effects
+   #region Sound Effects
    public const int HARVESTING_PITCHFORK_HIT = 43;
    public const int HARVESTING_FLYING = 44;
-   public const int WATERING_PLANTS = 51;
-   public const int ORE_MINE = 52;
+
    public const int ORE_DROP = 53;
-   public const int SHIPBOOST_ID = 54;
    public const int ORE_PICKUP = 55;
-   public const int PICKUP_EDIT_OBJ = 56;
-   public const int DROP_EDIT_OBJ = 57;
-   public const int NEXTPREFAB_SELECTION = 58;
-   public const int PICKUP_POWERUP = 59;
+   public const int NEXT_PREFAB_SELECTION = 58;
+
    public const int SHORTCUT_SELECTION = 60;
    public const int ABILITY_SELECTION = 61;
    public const int STANCE_SELECTION = 62;
-   public const int INVENTORY_HOVER = 63;
    public const int INVENTORY_DRAG_START = 64;
    public const int INVENTORY_DROP = 65;
    public const int NPC_PANEL_POPUP = 66;
-   public const int ENTER_DOOR = 67;
-   public const int CRAFT_COMPLETE = 68;
    public const int REFINE_COMPLETE = 69;
-   public const int MAIL_NOTIF = 70;
-   public const int OPEN_SEA_BAG = 71;
-   public const int OPEN_LAND_BAG = 72;
-   public const int OPEN_CHEST = 73;
-   public const int OCEAN_PAD = 74;
-   public const int BATTLE_INTRO = 81;
-   public const int BATTLE_OUTRO = 82;
-   //public const int SHIP_CANNON = 85;
-   public const int FISH_JUMP = 86;
-   public const int FOOTSTEP = 88;
-   public const int THROW_SEEDS = 89;
-   public const int CALMING_WATERFALL = 90;
-   //public const int ROCK_MINE = 91;
-   public const int SHIP_LAUNCH_CHARGE = 92;
-   public const int PICKUP_CROP = 93;
-   //public const int ENEMY_SHIP_IMPACT = 94;
-   public const int PLAYER_SHIP_IMPACT = 95;
-   public const int LIGHTNING_FLASH = 96;
-   public const int AMBIENCE_BED_MASTER = 97;
-   public const int BLOCK_ATTACK = 98;
-   public const int MAP_OPEN = 99;
-   public const int LOCALE_UNLOCK = 100;
-   public const int CLICK_TAB = 101;
-   //public const int MENU_OPEN = 102;
-   public const int BUTTON_CONFIRM = 103;
-   //public const int ENEMY_SHIP_DESTROYED = 108;
-   //public const int CANNONBALL_IMPACT = 109;
-   public const int PURCHASE_ITEM = 110;
-   public const int ASSIGN_PERK_POINT = 111;
-   public const int UNASSIGN_PERK_POINT = 112;
-   public const int TIP_FOLDOUT = 113;
+   #endregion
 
    // FMOD event paths
-   public const string MENU_OPEN = "event:/SFX/Game/UI/Menu_Open";
-   public const string BUTTON_CONFIRM_PATH = "event:/SFX/Game/UI/Button_Confirm";
-   public const string HOVER_CURSOR_GENERIC = "event:/SFX/Game/UI/Hover_Cursor_Generic";
-   public const string HOVER_CURSOR_ITEMS = "event:/SFX/Game/UI/Hover_Cursor_Items";
-   public const string PLAYER_SHIP_DESTROYED = "event:/SFX/Game/Sea_Battle/Player_Ship_Destroyed";
-   public const string GENERIC_HIT_LAND = "event:/SFX/Game/Land_Battle/Generic_Hit_Land";
-   public const string COLLECT_SILVER = "event:/SFX/Game/Collect_Silver";
+   #region FMOD EVENT PATHS
+
+   #region PARAMS
    public const string AUDIO_SWITCH_PARAM = "Audio_Switch";
    public const string SHIP_CHARGE_RELEASE_PARAM = "Ship_Charge_Release";
    public const string AMBIENCE_SWITCH_PARAM = "Ambience_Switch";
    public const string APPLY_CRIT_PARAM = "Apply_Crit";
    public const string WEATHER_PARAM = "Weather_Effects";
    public const string APPLY_PUP_PARAM = "Apply_Powerup";
-   public const string BG_MUSIC = "event:/Music/BGM_Master";
+   #endregion
+
+   #region UI
+   public const string MENU_OPEN = "event:/SFX/Game/UI/Menu_Open";
+   public const string BUTTON_CONFIRM = "event:/SFX/Game/UI/Button_Confirm";
+   public const string HOVER_CURSOR_GENERIC = "event:/SFX/Game/UI/Hover_Cursor_Generic";
+   public const string HOVER_CURSOR_ITEMS = "event:/SFX/Game/UI/Hover_Cursor_Items";
+   public const string MAP_OPEN = "event:/SFX/Game/UI/Map_Open";
+   public const string PURCHASE_ITEM = "event:/SFX/Game/UI/Purchase_Item";
+   public const string CLICK_TAB = "event:/SFX/Game/UI/Click_Tab";
+   public const string ASSIGN_PERK_POINT = "event:/SFX/Game/UI/Assign_Perk_Point";
+   public const string UNASSIGN_PERK_POINT = "event:/SFX/Game/UI/Unassign_Perk_Point";
+   public const string TIP_FOLDOUT = "event:/SFX/Game/UI/Tip_Foldout";
+   public const string MAIL_NOTIFICATION = "event:/SFX/Game/UI/Mail_Notification";
+   public const string LOCALE_UNLOCK = "event:/SFX/Game/UI/Locale_Unlock";
+   #endregion
+
+   #region LAND BATTLE
+   public const string GENERIC_HIT_LAND = "event:/SFX/Game/Land_Battle/Generic_Hit_Land";
+   public const string MOVEMENT_WHOOSH = "event:/SFX/Game/Land_Battle/Movement_Whoosh";
+   public const string NPC_STRIKE = "event:/SFX/Game/Land_Battle/NPC_Strike";
+   public const string BLOCK_ATTACK = "event:/SFX/Game/Land_Battle/Block_Attack";
+   #endregion
+
+   #region SEA BATTLE
+   public const string PLAYER_SHIP_DESTROYED = "event:/SFX/Game/Sea_Battle/Player_Ship_Destroyed";
+   public const string ENEMY_SHIP_IMPACT = "event:/SFX/Game/Sea_Battle/Enemy_Ship_Impact";
+   public const string ENEMY_SHIP_DESTROYED = "event:/SFX/Game/Sea_Battle/Enemy_Ship_Destroyed";
+   public const string HORROR_DEATH = "event:/SFX/Game/Sea_Battle/Horror/Death";
+   #endregion
+
+   #region GAME
+   public const string BGM_MASTER = "event:/Music/BGM_Master";
+   public const string COLLECT_SILVER = "event:/SFX/Game/Collect_Silver";
+   public const string DIALOGUE_TEXT = "event:/SFX/Game/UI/NPC_Dialogue_Text";
+   public const string TRANSITION_IN = "event:/SFX/Game/Screen_Transition_In";
+   public const string TRANSITION_OUT = "event:/SFX/Game/Screen_Transition_Out";
+   public const string PLACE_EDITABLE_OBJECT = "event:/SFX/Game/Place_Editable_Object";
+   public const string PICKUP_EDITABLE_OBJECT = "event:/SFX/Game/Pickup_Editable_Object";
+   public const string CRAFT_SUCCESS = "event:/SFX/Game/UI/Craft_Success";
+   #endregion
+
+   #region AMBIENCE
+   public const string AMBIENCE_BED_MASTER = "event:/SFX/Ambience/Beds/Ambience_Bed_Master";
+   public const string FISH_SURFACING = "event:/SFX/Ambience/Emitters/Fish_Surfacing";
+   public const string LIGHTNING_FLASH = "event:/SFX/Ambience/Beds/Lightning_Flash";
+   public const string CALMING_WATERFALL = "event:/SFX/Ambience/Emitters/Calming_Waterfall";
+   #endregion
+
+   #region PLAYER INTERACTIONS
+   public const string JUMP = "event:/SFX/Player/Interactions/Diegetic/Jump";
+   public const string LAND = "event:/SFX/Player/Interactions/Diegetic/Land";
    public const string CRITTER_PET = "event:/SFX/Player/Interactions/Diegetic/Critter_Pet";
+   public const string SHIP_CANNON = "event:/SFX/Player/Interactions/Diegetic/Ship_Cannon_Fire";
+   public const string CANNONBALL_IMPACT = "event:/SFX/Player/Interactions/Diegetic/Cannonball_Impact";
+   public const string MINING_ROCKS = "event:/SFX/Player/Interactions/Diegetic/Mine_Rocks";
+   public const string SHIP_LAUNCH_CHARGE = "event:/SFX/Player/Interactions/Non_Diegetic/Ship_Launch_Charge";
+   public const string THROW_SEEDS = "event:/SFX/Player/Interactions/Diegetic/Throw_Seeds";
+   public const string WATERING_PLANTS = "event:/SFX/Player/Interactions/Diegetic/Watering_Plants";
+   public const string FOOTSTEP = "event:/SFX/Player/Interactions/Diegetic/Footstep";
+   public const string PICKUP_CROP = "event:/SFX/Player/Interactions/Non_Diegetic/Pickup_Crop";
+   public const string DOOR_OPEN = "event:/SFX/Player/Interactions/Diegetic/Door_Open";
+   public const string PICKUP_POWERUP = "event:/SFX/Player/Interactions/Non_Diegetic/Pickup_Powerup_Generic";
+   public const string COLLECT_LOOT_SEA = "event:/SFX/Player/Interactions/Diegetic/Collect_Loot_Sea";
+   public const string COLLECT_LOOT_LAND = "event:/SFX/Player/Interactions/Diegetic/Collect_Loot_Land";
+   public const string OPEN_CHEST = "event:/SFX/Player/Interactions/Diegetic/Open_Treasure_Site_Chest";
+   #endregion
+
+   #region NPC
    public const string CRITTER_INFLECTION = "event:/SFX/NPC/Critter/Inflections";
    public const string ANGER_EMOTE = "event:/SFX/NPC/Critter/Anger_Emote";
    public const string QUESTION_EMOTE = "event:/SFX/NPC/Critter/Question_Emote";
    public const string AFFECTION_EMOTE = "event:/SFX/NPC/Critter/Affection_Emote";
-   public const string SHIP_CANNON = "event:/SFX/Player/Interactions/Diegetic/Ship_Cannon_Fire";
-   public const string ENEMY_SHIP_IMPACT = "event:/SFX/Game/Sea_Battle/Enemy_Ship_Impact";
-   public const string MOVEMENT_WHOOSH = "event:/SFX/Game/Land_Battle/Movement_Whoosh";
-   public const string CANNONBALL_IMPACT = "event:/SFX/Player/Interactions/Diegetic/Cannonball_Impact";
-   public const string MINING_ROCKS = "event:/SFX/Player/Interactions/Diegetic/Mine_Rocks";
-   public const string NPC_STRIKE = "event:/SFX/Game/Land_Battle/NPC_Strike";
-   public const string ENEMY_SHIP_DESTROYED = "event:/SFX/Game/Sea_Battle/Enemy_Ship_Destroyed";
+   #endregion
 
-   // Horror Boss
-   public const string HORROR_DEATH = "event:/SFX/Game/Sea_Battle/Horror/Death";
+   #endregion
 
    public enum CannonballImpactType
    {
@@ -192,12 +210,37 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   public void playFmodWithPath (string path, Transform target) {
+   //public void playFmodWithPath (string path, Transform target) {
+   //   if (Util.isBatch()) {
+   //      return;
+   //   }
+
+   //   RuntimeManager.PlayOneShot(path, target.position);
+   //}
+
+   public void playFmodSfx (string path, Transform target = null, Vector3 targetPos = default) {
       if (Util.isBatch()) {
          return;
       }
 
-      RuntimeManager.PlayOneShot(path, target.position);
+      EventInstance eventInstance = RuntimeManager.CreateInstance(path);
+      if (eventInstance.isValid()) {
+         if (target != null) {
+            eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(target));
+         } else if (targetPos != default) {
+            eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(targetPos));
+         }
+         eventInstance.start();
+         eventInstance.release();
+      }
+   }
+
+   public void playFmod2dSfxWithId (int id) {
+      if (Util.isBatch()) {
+         return;
+      }
+
+      playFmodOneShot(id, CameraManager.getCurrentCamera().transform);
    }
 
    public void playFmodOneShot (int id, Transform target) {
@@ -221,9 +264,53 @@ public class SoundEffectManager : GenericGameManager
       impactEvent.start();
       impactEvent.release();
    }
-   public void playBgMusic (SoundManager.Type musicType) {
-      if (!_bgMusicEvent.isValid()) {
-         _bgMusicEvent = RuntimeManager.CreateInstance(BG_MUSIC);
+
+   public void playAmbienceMusic (bool isSea, bool isInterior, Biome.Type biomeType) {
+      if (!_ambienceMusicEvent.isValid()) {
+         _ambienceMusicEvent = RuntimeManager.CreateInstance(AMBIENCE_BED_MASTER);
+      }
+
+      int param = (int) AmbienceType.None;
+
+      if (isSea) {
+         param = (int) AmbienceType.SeaMap;
+      } else if (isInterior) {
+         param = (int) AmbienceType.Interior;
+      } else {
+         switch (biomeType) {
+            case Biome.Type.Forest:
+               param = (int) AmbienceType.Forest;
+               break;
+            case Biome.Type.Desert:
+               param = (int) AmbienceType.Desert;
+               break;
+            case Biome.Type.Snow:
+               param = (int) AmbienceType.Snow;
+               break;
+            case Biome.Type.Lava:
+               param = (int) AmbienceType.Lava;
+               break;
+            case Biome.Type.Pine:
+               param = (int) AmbienceType.Pine;
+               break;
+            case Biome.Type.Mushroom:
+               param = (int) AmbienceType.Shroom;
+               break;
+         }
+      }
+
+      _ambienceMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, param);
+
+      PLAYBACK_STATE amState;
+      _ambienceMusicEvent.getPlaybackState(out amState);
+      if (amState == PLAYBACK_STATE.STOPPED) {
+         _ambienceMusicEvent.start();
+      }
+   }
+
+   public void playBackgroundMusic (SoundManager.Type musicType) {
+      if (!_backgroundMusicEvent.isValid()) {
+         _backgroundMusicEvent = RuntimeManager.CreateInstance(BGM_MASTER);
       }
 
       int param = -1;
@@ -269,17 +356,17 @@ public class SoundEffectManager : GenericGameManager
             break;
       }
 
-      _bgMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, param);
+      _backgroundMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, param);
 
       PLAYBACK_STATE bgState;
-      _bgMusicEvent.getPlaybackState(out bgState);
+      _backgroundMusicEvent.getPlaybackState(out bgState);
       if (bgState == PLAYBACK_STATE.STOPPED) {
-         _bgMusicEvent.start();
+         _backgroundMusicEvent.start();
       }
 
       // If the type of music is "None"
       if (param == -1) {
-         _bgMusicEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+         _backgroundMusicEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
       }
 
    }
@@ -334,24 +421,24 @@ public class SoundEffectManager : GenericGameManager
    public void playSeaBossDeathSfx (SeaMonsterEntity.Type monsterType, Transform target) {
       switch (monsterType) {
          case SeaMonsterEntity.Type.Horror:
-            playFmodWithPath(HORROR_DEATH, target);
+            playFmodSfx(HORROR_DEATH, target);
             break;
       }
    }
-   public void playFmod2D (int id) {
-      if (Util.isBatch()) {
-         return;
-      }
+   //public void playFmod2D (int id) {
+   //   if (Util.isBatch()) {
+   //      return;
+   //   }
 
-      playFmodOneShot(id, CameraManager.getCurrentCamera().transform);
-   }
+   //   playFmodOneShot(id, CameraManager.getCurrentCamera().transform);
+   //}
 
    public void playGuiButtonConfirmSfx () {
-      playFmod2DWithPath(BUTTON_CONFIRM_PATH);
+      playFmodSfx(BUTTON_CONFIRM);
    }
 
    public void playGuiMenuOpenSfx () {
-      playFmod2DWithPath(MENU_OPEN);
+      playFmodSfx(MENU_OPEN);
    }
 
    public void playFmodGuiHover (string path) {
@@ -362,7 +449,7 @@ public class SoundEffectManager : GenericGameManager
       // Make note of the time
       _lastPlayTime[path] = Time.time;
 
-      self.playFmod2DWithPath(path);
+      playFmodSfx(path);
    }
 
    public void playLegacyInteractionOneShot (int equipmentDataId, Transform target) {
@@ -375,10 +462,10 @@ public class SoundEffectManager : GenericGameManager
    public void playInteractionOneShot (Weapon.ActionType weaponAction, Transform target) {
       switch (weaponAction) {
          case Weapon.ActionType.PlantCrop:
-            self.playFmodOneShot(THROW_SEEDS, target);
+            playFmodSfx(THROW_SEEDS, target);
             break;
          case Weapon.ActionType.WaterCrop:
-            self.playFmodOneShot(WATERING_PLANTS, target);
+            playFmodSfx(WATERING_PLANTS, target);
             break;
       }
    }
@@ -405,12 +492,6 @@ public class SoundEffectManager : GenericGameManager
       eventInstance.release();
    }
 
-   public void playFmod2DWithPath (string path) {
-      if (path.Length > 0) {
-         RuntimeManager.PlayOneShot(path, CameraManager.getCurrentCamera().transform.position);
-      }
-   }
-
    private void playSoundEffect3D (SoundEffect effect, Transform target) {
       // Setup audio player
       AudioSource audioSource = Instantiate(PrefabsManager.self.sound3dPrefab, target.position, Quaternion.identity);
@@ -423,6 +504,17 @@ public class SoundEffectManager : GenericGameManager
       Destroy(audioSource.gameObject, audioSource.clip.length);
    }
 
+   public void playNotificationPanelSfx () {
+      StartCoroutine(CO_PlayNotificationPanelSfx());
+   }
+
+   private IEnumerator CO_PlayNotificationPanelSfx () {
+      yield return new WaitForSeconds(1.0f);
+      if (CameraManager.defaultCamera.getPixelFadeEffect().isFadingIn) {
+         playFmodSfx(TIP_FOLDOUT);
+      }
+   }
+
    public void playFmodWithDelay (int id, float delay, Transform target = null, bool is3D = false) {
       StartCoroutine(CO_PlayFmodAfterDelay(id, delay, target, is3D));
    }
@@ -433,7 +525,7 @@ public class SoundEffectManager : GenericGameManager
       if (is3D && target != null) {
          self.playFmodOneShot(id, target);
       } else {
-         self.playFmod2D(id);
+         self.playFmod2dSfxWithId(id);
       }
    }
 
@@ -488,7 +580,25 @@ public class SoundEffectManager : GenericGameManager
    private static Dictionary<string, float> _lastPlayTime = new Dictionary<string, float>();
 
    // Event for main background music
-   private EventInstance _bgMusicEvent;
+   private EventInstance _backgroundMusicEvent;
+
+   // Event for main ambience music
+   private EventInstance _ambienceMusicEvent;
+
+   private enum AmbienceType
+   {
+      None = -1,
+      Forest = 0,
+      Desert = 1,
+      Snow = 2,
+      Lava = 3,
+      Pine = 4,
+      Shroom = 5,
+      TreasureSite = 6,
+      Farm = 7,
+      Interior = 8,
+      SeaMap = 9
+   }
 
    #endregion
 }

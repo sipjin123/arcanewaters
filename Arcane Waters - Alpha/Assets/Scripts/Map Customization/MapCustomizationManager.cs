@@ -66,6 +66,9 @@ namespace MapCustomization
       // Flag to keep track of when the dragging of a prefab is starting
       public static bool isBeginningOfDrag = true;
 
+      // Check if we are waiting for server to record the prefab changes
+      public static bool waitingForServer = false;
+
       #endregion
 
       private void OnEnable () {
@@ -236,7 +239,7 @@ namespace MapCustomization
          updatePrefabOutlines(worldPosition);
 
          // If we hover over a prefab and we don't currently have a prefab in hand, turn on selection arrows and allow middle mouse to change variations
-         if (CustomizationUI.getSelectedPrefabData() == null) {
+         if ((CustomizationUI.getSelectedPrefabData() == null) && !waitingForServer) {
             hoveredPrefab = getPrefabAtPosition(worldPosition);
          }
          if (hoveredPrefab != null) {
@@ -252,6 +255,7 @@ namespace MapCustomization
                      selectPrefabVariation(_selectedPrefab, scrollWheelUp);
                   }
                }
+               waitingForServer = true;
             }
          } else {
             if (hoveredPrefab == null) {
@@ -291,13 +295,54 @@ namespace MapCustomization
                            }
                         }
                         prefab.customizedState.deleted = true;
-                        prefab.submitUnappliedChanges();    
+                        prefab.submitUnappliedChanges();
 
                         replacePrefab(prefab, prefabSerializedID);
                      }
                   }
                }
             }
+         }
+      }
+
+      private static void replacePrefab (CustomizablePrefab oldPrefab, int newPrefabSerializedId) {
+         Vector3 savedPosition = oldPrefab.transform.position;
+         GameObject parentOfPrefab = oldPrefab.transform.parent.gameObject;
+
+         // Remove the old prefab
+         if (oldPrefab != null) {
+            oldPrefab.spawnedAPrefabVariation = true;
+            oldPrefab.unappliedChanges.deleted = true;
+            oldPrefab.customizedState.created = false;
+            oldPrefab.mapEditorState.created = false;
+
+            oldPrefab.revertUnappliedChanges();
+         }
+
+         // Create the new variation of the prefab
+         _newPrefab = null;
+         _newPrefab = MapManager.self.createPrefab(currentArea, currentBiome, newPrefabState(savedPosition, newPrefabSerializedId), false);
+         _newPrefab.variationSpawnedFromPrefab = true;
+         _newPrefab.submitUnappliedChanges();
+
+         // Parent the new prefab
+         _newPrefab.transform.SetParent(parentOfPrefab.transform);
+         _newPrefab.GetComponent<ZSnap>()?.snapZ();
+
+         _newPrefab.unappliedChanges.created = true;
+         _newPrefab.unappliedChanges.localPosition = currentArea.prefabParent.transform.InverseTransformPoint(new Vector2(savedPosition.x, savedPosition.y));
+         _newPrefab.setGameInteractionsActive(false);
+         _newPrefab.setOutline(false, false, false, false);
+
+         _customizablePrefabs.Add(_newPrefab.customizedState.id, _newPrefab);
+         Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges, _newPrefab.spawnedAPrefabVariation, _newPrefab.variationSpawnedFromPrefab);
+         _newPrefab.variationSpawnedFromPrefab = false;
+
+         soundHasBeenPlayed = false;
+
+         if (!soundHasBeenPlayed) {
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLACE_EDITABLE_OBJECT, targetPos: savedPosition);
+            soundHasBeenPlayed = true;
          }
       }
 
@@ -352,7 +397,7 @@ namespace MapCustomization
             selectPrefab(hoveredPrefab);
             _draggedPrefab = hoveredPrefab;
             updatePrefabOutlines(worldPosition);
-            SoundEffectManager.self.playFmod2D(SoundEffectManager.PICKUP_EDIT_OBJ);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.PICKUP_EDITABLE_OBJECT, targetPos: worldPosition);
             //SoundEffectManager.self.playSoundEffect(SoundEffectManager.PICKUP_EDIT_OBJ, SoundEffectManager.self.transform);
          } else {
             _selectedPrefab = null;
@@ -364,7 +409,7 @@ namespace MapCustomization
 
                if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _newPrefab.unappliedChanges, false, out string errorMessage)) {
                   Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges, _newPrefab.spawnedAPrefabVariation, _newPrefab.variationSpawnedFromPrefab);
-                  SoundEffectManager.self.playFmod2D(SoundEffectManager.DROP_EDIT_OBJ);
+                  SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLACE_EDITABLE_OBJECT, targetPos: worldPosition);
                   selectPrefab(_newPrefab);
 
                   // Decrease remaining prop item that corresponds to this prefab
@@ -418,47 +463,6 @@ namespace MapCustomization
          updatePrefabOutlines(worldPosition);
       }
 
-      private static void replacePrefab (CustomizablePrefab oldPrefab, int newPrefabSerializedId) {
-         Vector3 savedPosition = oldPrefab.transform.position;
-         GameObject parentOfPrefab = oldPrefab.transform.parent.gameObject;
-
-         // Remove the old prefab
-         if (oldPrefab != null) {
-            oldPrefab.spawnedAPrefabVariation = true;
-            oldPrefab.unappliedChanges.deleted = true;
-            oldPrefab.customizedState.created = false;
-            oldPrefab.mapEditorState.created = false;
-            
-            oldPrefab.revertUnappliedChanges();
-         }
-
-         // Create the new variation of the prefab
-         _newPrefab = null;
-         _newPrefab = MapManager.self.createPrefab(currentArea, currentBiome, newPrefabState(savedPosition, newPrefabSerializedId), false);
-         _newPrefab.variationSpawnedFromPrefab = true;
-         _newPrefab.submitUnappliedChanges();
-
-         // Parent the new prefab
-         _newPrefab.transform.SetParent(parentOfPrefab.transform);
-         _newPrefab.GetComponent<ZSnap>()?.snapZ();
-
-         _newPrefab.unappliedChanges.created = true;
-         _newPrefab.unappliedChanges.localPosition = currentArea.prefabParent.transform.InverseTransformPoint(new Vector2(savedPosition.x, savedPosition.y));
-         _newPrefab.setGameInteractionsActive(false);
-         _newPrefab.setOutline(false, false, false, false);
-
-         _customizablePrefabs.Add(_newPrefab.customizedState.id, _newPrefab);
-         Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges, _newPrefab.spawnedAPrefabVariation, _newPrefab.variationSpawnedFromPrefab);
-         _newPrefab.variationSpawnedFromPrefab = false;
-
-         soundHasBeenPlayed = false;
-
-         if (!soundHasBeenPlayed) {
-            SoundEffectManager.self.playFmod2D(SoundEffectManager.DROP_EDIT_OBJ);
-            soundHasBeenPlayed = true;
-         }
-      }
-
       private static void updateToBePlacedPrefab (Vector3 worldPosition, int serializationId) {
          // If the prefab has changed, destroy the current prefab before creating a new one
          if ((_newPrefab != null) && (_newPrefab.unappliedChanges.serializationId != serializationId)) {
@@ -484,7 +488,7 @@ namespace MapCustomization
          _newPrefab.setOutline(false, false, false, false);
 
          if (!soundHasBeenPlayed) {
-            SoundEffectManager.self.playFmod2D(SoundEffectManager.DROP_EDIT_OBJ);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLACE_EDITABLE_OBJECT, targetPos: worldPosition);
             soundHasBeenPlayed = true;
          }
       }
@@ -693,6 +697,7 @@ namespace MapCustomization
             } else {
                _serverApprovedState.Add(changes.id, changes);
             }
+            waitingForServer = false;
             return;
          }
 
@@ -740,6 +745,7 @@ namespace MapCustomization
             CustomizablePrefab previouslyDeletedPrefab = MapManager.self.createPrefab(currentArea, currentBiome, approvedState, true);
             _customizablePrefabs.Add(previouslyDeletedPrefab.customizedState.id, previouslyDeletedPrefab);
          }
+         waitingForServer = false;
       }
 
       private static void updatePlaceablePrefabData () {

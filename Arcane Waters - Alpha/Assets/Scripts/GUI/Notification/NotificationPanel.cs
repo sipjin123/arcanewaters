@@ -75,9 +75,7 @@ public class NotificationPanel : MonoBehaviour
    }
 
    public void playSfx () {
-      if (!CameraManager.defaultCamera.getPixelFadeEffect().isFadingOut) {
-         SoundEffectManager.self.playFmod2D(SoundEffectManager.TIP_FOLDOUT);
-      }
+      SoundEffectManager.self.playNotificationPanelSfx();
    }
 
    private void show () {
