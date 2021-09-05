@@ -745,11 +745,25 @@ public class RPCManager : NetworkBehaviour
    public void Target_ReceiveEndBattle (NetworkConnection connection, string battleId) {
       // Remove after confirming fix for battle end
       D.debug("Player has Ended Battle with: " + battleId);
-
+      StartCoroutine(CO_RecalibrateSpriteBody());
       BattleUIManager.self.abilitiesCG.Hide();
 
       // Trigger the tutorial
       TutorialManager3.self.tryCompletingStep(TutorialTrigger.EndBattle);
+   }
+
+   private IEnumerator CO_RecalibrateSpriteBody () {
+      // This coroutine recalibrates the sprite renderer of the player body so outlines will render properly after combat
+      List<NetEntity> entityGroup = EntityManager.self.getEntitiesWithVoyageId(_player.voyageGroupId);
+      if (entityGroup.Count > 0) {
+         foreach (NetEntity entity in entityGroup) {
+            if (entity is PlayerBodyEntity) {
+               entity.getBodyRenderer().enabled = false;
+               yield return new WaitForEndOfFrame();
+               entity.getBodyRenderer().enabled = true;
+            }
+         }
+      }
    }
 
    [TargetRpc]
