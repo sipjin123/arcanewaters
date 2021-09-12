@@ -299,23 +299,9 @@ public class TreasureChest : NetworkBehaviour {
 
       if (treasureDropsList.Count < 1) {
          D.error("There are no treasure drops generated for Biome:{" + biome + "} Checking alternative item");
-         if ((int) rarity > 1) {
-            // Iterate in descending order if rarity is greater than "common"
-            for (int i = (int) rarity; i > 0; i--) {
-               Item iteratedItem = getNextAvailableItem(i);
-               if (iteratedItem != null) {
-                  return iteratedItem;
-               }
-            }
-         } else {
-            // Iterate in ascending order if rarity is common, will get the next rarity type item onwards
-            int rarityMaxCount = Enum.GetValues(typeof(Rarity.Type)).Length;
-            for (int i = 1; i < rarityMaxCount; i++) {
-               Item iteratedItem = getNextAvailableItem(i);
-               if (iteratedItem != null) {
-                  return iteratedItem;
-               }
-            }
+         Item nextAvailableItem = getNextAvailableItemByRarity(rarity);
+         if (nextAvailableItem != null) {
+            return nextAvailableItem;
          }
       } else {
          TreasureDropsData randomEntry = treasureDropsList.ChooseRandom();
@@ -330,6 +316,29 @@ public class TreasureChest : NetworkBehaviour {
       }
 
       return Item.defaultLootItem();
+   }
+
+   public Item getNextAvailableItemByRarity (Rarity.Type rarity) {
+      if (rarity != Rarity.Type.Common && rarity != Rarity.Type.None) {
+         // Iterate in descending order if rarity is greater than "common"
+         for (int i = (int) rarity; i > 0; i--) {
+            Item iteratedItem = getNextAvailableItem(i);
+            if (iteratedItem != null) {
+               return iteratedItem;
+            }
+         }
+      } else {
+         // Iterate in ascending order if rarity is common, will get the next rarity type item onwards
+         int rarityMaxCount = Enum.GetValues(typeof(Rarity.Type)).Length;
+         for (int i = 1; i < rarityMaxCount; i++) {
+            Item iteratedItem = getNextAvailableItem(i);
+            if (iteratedItem != null) {
+               return iteratedItem;
+            }
+         }
+      }
+
+      return null;
    }
 
    public Powerup.Type getPowerUp () {
@@ -391,25 +400,11 @@ public class TreasureChest : NetworkBehaviour {
       }
 
       if (isLandMonster) {
-         if ((int) rarity > 1) {
-            // Iterate in descending order if rarity is greater than "common"
-            for (int i = (int) rarity; i > 0; i--) {
-               Item iteratedItem = getNextAvailableItem(i);
-               if (iteratedItem != null) {
-                  return iteratedItem;
-               }
-            }
-         } else {
-            // Iterate in ascending order if rarity is common, will get the next rarity type item onwards
-            int rarityMaxCount = Enum.GetValues(typeof(Rarity.Type)).Length;
-            for (int i = 1; i < rarityMaxCount; i++) {
-               Item iteratedItem = getNextAvailableItem(i);
-               if (iteratedItem != null) {
-                  return iteratedItem;
-               }
-            }
+         Item nextAvailableItem = getNextAvailableItemByRarity(rarity);
+         if (nextAvailableItem != null) {
+            return nextAvailableItem;
          }
-
+         
          // If no valid items are stored in the loot group, return defaul item "Wood"
          return Item.defaultLootItem();
       } else {
@@ -491,6 +486,7 @@ public class TreasureChest : NetworkBehaviour {
          }
       } else {
          CraftableItemRequirements craftableData = CraftingManager.self.getCraftableData(item.itemTypeId);
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.Loot_Blueprint);
          if (craftableData == null) {
             D.debug("Failed to load Crafting Data of: " + item.itemTypeId);
             yield return null;
