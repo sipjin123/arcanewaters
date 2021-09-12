@@ -436,5 +436,6 @@ public enum TutorialTrigger
    SpawnInLobby = 45,
    SwitchToDefensiveStance = 46,
    KillBoss = 47,
-   OpenMap = 48
+   OpenMap = 48,
+   Loot_Blueprint = 49
 };
