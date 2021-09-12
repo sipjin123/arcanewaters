@@ -49,6 +49,9 @@ public class GameStats {
    // The rank of the player during the pvp session
    public int rank;
 
+   // The total flags captured by this user
+   public int flagCount;
+
    public GameStats () {
 
    }

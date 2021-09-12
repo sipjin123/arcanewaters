@@ -129,6 +129,7 @@ public class PvpStatPanel : Panel {
       statRow.shipKills.text = rowStats.playerShipKills.ToString();
       statRow.silver.text = rowStats.silver.ToString();
       statRow.userName.text = rowStats.playerName.ToString();
+      statRow.flagCount.text = rowStats.flagCount.ToString();
 
       NetEntity playerEntity = EntityManager.self.getEntity(rowStats.userId);
       if (playerEntity) {

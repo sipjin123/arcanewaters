@@ -9,7 +9,7 @@ public class PvpStatRow : MonoBehaviour {
    #region Public Variables
 
    // The text fields representing each stat
-   public TextMeshProUGUI kills, deaths, shipKills, monsterKills, assists, userName, buildingsDestroyed, silver;
+   public TextMeshProUGUI kills, deaths, shipKills, monsterKills, assists, userName, buildingsDestroyed, silver, flagCount;
 
    // A reference to the portrait used to display the character
    public CharacterPortrait portrait;

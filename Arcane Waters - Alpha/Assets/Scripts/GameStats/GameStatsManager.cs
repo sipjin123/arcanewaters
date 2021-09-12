@@ -89,6 +89,19 @@ public class GameStatsManager : MonoBehaviour
       D.adminLog("Added ship kills for: " + userId + " Total of: " + playerStat.playerShipKills, D.ADMIN_LOG_TYPE.Pvp);
    }
 
+   public void addFlagCaptureCount (int userId) {
+      GameStats playerStat = gameStatsData.stats.Find(_ => _.userId == userId);
+      if (playerStat == null) {
+         return;
+      }
+
+      // TODO: Implement visual indication here that will notify player of this specific stat gain
+
+      // Stat Increase
+      playerStat.flagCount++;
+      D.adminLog("Added flag capture count for: " + userId + " Total of: " + playerStat.playerShipKills, D.ADMIN_LOG_TYPE.Pvp);
+   }
+
    public void addMonsterKillCount (int userId) {
       GameStats playerStat = gameStatsData.stats.Find(_ => _.userId == userId);
       if (playerStat == null) {
