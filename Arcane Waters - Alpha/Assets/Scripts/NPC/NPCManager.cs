@@ -74,7 +74,9 @@ public class NPCManager : MonoBehaviour {
 
       // Add data to area collection
       if (_npcIDPerArea.ContainsKey(areaKey)) {
-         _npcIDPerArea[areaKey].Add(npc.npcId);
+         if (!_npcIDPerArea[areaKey].Contains(npc.npcId)) {
+            _npcIDPerArea[areaKey].Add(npc.npcId);
+         }
       } else {
          _npcIDPerArea[areaKey] = new List<int>();
          _npcIDPerArea[areaKey].Add(npc.npcId);

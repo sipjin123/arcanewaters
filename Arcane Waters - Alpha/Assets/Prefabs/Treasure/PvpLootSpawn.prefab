@@ -319,15 +319,18 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   lootGroupId: 0
+  powerupDuration: 0
   isActive: 0
   instanceId: 0
   areaKey: 
+  isShowingPowerup: 0
   powerupIndicator: {fileID: 812701593540020938}
   powerupSprite: {fileID: 1248787629941644557}
   powerupType: 0
   spriteRendererList: []
   spawnFrequency: 60
   rarity: 0
+  rarityFrame: {fileID: 5567929063331728945}
 --- !u!114 &4298218442774226192
 MonoBehaviour:
   m_ObjectHideFlags: 0

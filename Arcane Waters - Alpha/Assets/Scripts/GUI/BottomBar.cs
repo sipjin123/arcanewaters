@@ -70,8 +70,7 @@ public class BottomBar : MonoBehaviour {
       if (!panel.isShowing()) {
          if (Global.player != null) {
             SoundEffectManager.self.playGuiMenuOpenSfx();
-
-            panel.refreshPanel();
+            panel.onTabButtonPress();
          }
       } else {
          PanelManager.self.togglePanel(Panel.Type.Inventory);
