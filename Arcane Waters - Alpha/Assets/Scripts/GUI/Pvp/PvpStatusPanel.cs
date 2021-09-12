@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using TMPro;
+using UnityEngine.Events;
 
 public class PvpStatusPanel : ClientMonoBehaviour
 {
@@ -38,6 +39,9 @@ public class PvpStatusPanel : ClientMonoBehaviour
 
    // Self
    public static PvpStatusPanel self;
+
+   // Event that invokes when currency is increased
+   public AddSilverEvent silverAddedEvent = new AddSilverEvent();
 
    #endregion
 
@@ -79,6 +83,7 @@ public class PvpStatusPanel : ClientMonoBehaviour
             int silverAfterChange = _silverBeforeChange + _currentSilverDelta;
             silverCountText.text = silverAfterChange.ToString();
             _silverBeforeChange = silverAfterChange;
+            silverAddedEvent.Invoke(silverAfterChange);
             _currentSilverDelta = 0;
          }
       }
@@ -211,6 +216,10 @@ public class PvpStatusPanel : ClientMonoBehaviour
       indicator.txtAttacked.color = targetColor;
    }
 
+   public int getCurrentSilver () {
+      return _silverBeforeChange;
+   }
+
    #region Private Variables
 
    // The moment in time, where the delta panel was shown
@@ -223,4 +232,7 @@ public class PvpStatusPanel : ClientMonoBehaviour
    private int _currentSilverDelta;
 
    #endregion
+}
+
+public class AddSilverEvent : UnityEvent<int> {
 }

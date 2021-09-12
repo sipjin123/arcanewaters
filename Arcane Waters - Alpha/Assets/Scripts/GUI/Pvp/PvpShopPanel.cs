@@ -75,6 +75,7 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
 
    // List of pvp ship icons and their sprite reference which is unique to this panel
    public List<PvpShipIconPair> pvpShipIconList = new List<PvpShipIconPair>();
+   public List<PvpShipIconPair> pvpShipIconDisabledList = new List<PvpShipIconPair>();
 
    // The ship stats
    public Text shipAttackText, shipSpeedText, shipRangeText, shipDefenseText, shipCargoText, shipSupplyText, shipSailorsText;
@@ -131,6 +132,36 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       shipSupplyText.text = "";
       shipSailorsText.text = "";
       shipDefenseText.text = "";
+   }
+
+   private void Start () {
+      // Update shop panel templates to remove gray out if silver is sufficient
+      PvpStatusPanel.self.silverAddedEvent.AddListener(_ => updatedShopTemplates(_));
+   }
+
+   private void updatedShopTemplates (int silverValue) {
+      bool isShipDisplaying = shipTemplateHolder.childCount > 0;
+      Transform parentHolder = isShipDisplaying ? shipTemplateHolder : shopTemplateHolder;
+      foreach (Transform child in parentHolder) {
+         PvpShopTemplate shopTemplate = child.GetComponent<PvpShopTemplate>();
+         bool canAffordItem = silverValue >= shopTemplate.itemCost;
+         if (canAffordItem) {
+            shopTemplate.enableBlocker(false);
+            shopTemplate.buyButton.interactable = true;
+         } else {
+            shopTemplate.enableBlocker(true);
+            shopTemplate.buyButton.interactable = false;
+         }
+
+         if (isShipDisplaying) {
+            shopTemplate.itemData.isDisabled = !canAffordItem;
+            PvpItemInfo itemInfo = getPvpItemInfo(shopTemplate.itemData);
+            if (itemInfo != null) {
+               shopTemplate.itemIcon.sprite = itemInfo.sprite;
+            }
+         }
+      }
+      userSilverText.text = silverValue.ToString();
    }
 
    private void setupHovering (EventTrigger eventTrigger, PvpShopItemType pvpShopItem) {
@@ -240,9 +271,16 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
                   newItemInfo.sprite = ImageManager.getSprite(shipData.spritePath);
                   newItemInfo.name = shipData.shipName;
                   newItemInfo.description = shipData.shipName;
-                  PvpShipIconPair shipSpritePair = pvpShipIconList.Find(_ => _.shipType == shipData.shipType);
-                  if (shipSpritePair != null) {
-                     newItemInfo.sprite = shipSpritePair.shipSprite;
+                  if (itemData.isDisabled) {
+                     PvpShipIconPair shipSpritePair = pvpShipIconDisabledList.Find(_ => _.shipType == shipData.shipType);
+                     if (shipSpritePair != null) {
+                        newItemInfo.sprite = shipSpritePair.shipSprite;
+                     }
+                  } else {
+                     PvpShipIconPair shipSpritePair = pvpShipIconList.Find(_ => _.shipType == shipData.shipType);
+                     if (shipSpritePair != null) {
+                        newItemInfo.sprite = shipSpritePair.shipSprite;
+                     }
                   }
                }
                break;
