@@ -49,12 +49,16 @@ public class PvpShopTemplate : MonoBehaviour {
    // The selected object indicator
    public GameObject selectedObj;
 
+   // The cost of this item
+   public int itemCost;
+
    #endregion
 
    public void setupData (PvpShopItem data) {
       itemData = data;
       itemId = itemData.itemId;
       currencyText.text = itemData.itemCost.ToString();
+      itemCost = itemData.itemCost;
       shopItemType = itemData.shopItemType;
       rarityType = data.rarityType;
 
@@ -71,6 +75,10 @@ public class PvpShopTemplate : MonoBehaviour {
       if (toolTip) {
          toolTip.message = itemInfo.description;
       }
+   }
+
+   public void enableBlocker (bool isEnabled) {
+      disabledIcon.SetActive(isEnabled);
    }
 
    public void onHoverEnter () {

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using TMPro;
+using UnityEngine.EventSystems;
 
 public class PvpStatPanel : Panel {
    #region Public Variables
