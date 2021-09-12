@@ -329,6 +329,15 @@ public class Instance : NetworkBehaviour
 
    private void countAliveEnemies () {
       if (!NetworkServer.active || !isNetworkPrefabInstantiationFinished) {
+         if (isNetworkPrefabInstantiationFinished && isVoyage) {
+            // Enable shops when all enemies have been eliminated
+            if (aliveNPCEnemiesCount < 1) {
+               Area area = AreaManager.self.getArea(this.areaKey);
+               if (area != null) {
+                  area.enableSeaShops();
+               }
+            }
+         }
          return;
       }
 

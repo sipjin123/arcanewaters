@@ -387,6 +387,31 @@ MonoBehaviour:
   horizontalCategoryReference: {fileID: 3137255609401037783}
   pvpShipIconList:
   - shipType: 100
+    shipSprite: {fileID: 5567657215743735386, guid: 7b6ec5be4aaf27847b0701a95054d3ea,
+      type: 3}
+  - shipType: 101
+    shipSprite: {fileID: 8035231406154778210, guid: 073c7da7f6a509e4783df0f33e11ca04,
+      type: 3}
+  - shipType: 102
+    shipSprite: {fileID: -860954946611534340, guid: ae3a9cbc775ae724c923c27a72029694,
+      type: 3}
+  - shipType: 103
+    shipSprite: {fileID: -9130986184891978556, guid: 440b10a5db4dc764890ea7f60b7f0e0c,
+      type: 3}
+  - shipType: 104
+    shipSprite: {fileID: 6483909148049137985, guid: 02dc810930da9d849aae210e0e98b971,
+      type: 3}
+  - shipType: 105
+    shipSprite: {fileID: -7091458901096949831, guid: 2ac11799418a4434b8e75d5b893810e8,
+      type: 3}
+  - shipType: 106
+    shipSprite: {fileID: 4782710361766115053, guid: 7b776c2258777dd4f84ef19bf2bf2103,
+      type: 3}
+  - shipType: 107
+    shipSprite: {fileID: -6564322922046462837, guid: aa0885fe30f75224ba51843451306359,
+      type: 3}
+  pvpShipIconDisabledList:
+  - shipType: 100
     shipSprite: {fileID: 21300000, guid: 9db3df94a539633489e03b5c2e016544, type: 3}
   - shipType: 101
     shipSprite: {fileID: 21300000, guid: 229aa1f48c2928942b63b83d740379f1, type: 3}

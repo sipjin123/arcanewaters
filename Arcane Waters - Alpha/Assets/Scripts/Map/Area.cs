@@ -528,6 +528,13 @@ public class Area : MonoBehaviour
       _graph.Scan();
    }
 
+   public void enableSeaShops () {
+      PvpShopEntity[] pvpShopEntities = prefabParent.GetComponentsInChildren<PvpShopEntity>(true);
+      foreach (PvpShopEntity shopEntity in pvpShopEntities) {
+         shopEntity.gameObject.SetActive(true);
+      }
+   }
+
    public void rescanGraph () {
       if (_graph != null) {
          _graph.Scan();

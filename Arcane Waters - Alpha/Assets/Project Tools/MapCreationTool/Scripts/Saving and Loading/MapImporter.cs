@@ -377,6 +377,11 @@ namespace MapCreationTool
                   pref.transform.localScale = new Vector3(0.16f, 0.16f, 1f);
                } else if (original.GetComponent<SpiderWeb>() != null) {
                   pref.GetComponent<SpiderWeb>().initializeBiome(project.biome);
+               } else if (original.GetComponent<PvpShopEntity>()) {
+                  if (area.isSea && VoyageManager.isAnyLeagueArea(area.areaKey)) {
+                     PvpShopEntity shopEntity = pref.GetComponent<PvpShopEntity>();
+                     shopEntity.gameObject.SetActive(false);
+                  }
                }
 
                foreach (IBiomable biomable in pref.GetComponentsInChildren<IBiomable>()) {
