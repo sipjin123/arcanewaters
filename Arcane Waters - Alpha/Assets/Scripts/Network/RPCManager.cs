@@ -5860,7 +5860,18 @@ public class RPCManager : NetworkBehaviour
 
       // Add it to their inventory
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         item = DB_Main.createItemOrUpdateItemCount(_player.userId, item);
+         // Override item values if looted item is a blueprint, blueprints should reference their actual equipment sql id
+         if (item.category == Item.Category.Blueprint) {
+            CraftableItemRequirements craftingData = CraftingManager.self.getCraftableData(item.itemTypeId);
+            if (craftingData != null) {
+               Item itemCopy = item;
+               itemCopy.itemTypeId = craftingData.resultItem.itemTypeId;
+               itemCopy = DB_Main.createItemOrUpdateItemCount(_player.userId, itemCopy);
+            }
+         } else {
+            item = DB_Main.createItemOrUpdateItemCount(_player.userId, item);
+         }
+
          if (item.category == Item.Category.None) {
             D.debug("Error Here! Category Cant be none for Chest Rewards");
          }
