@@ -1708,6 +1708,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   isFront: 1
+  hatLayer: {fileID: 2715385541817702017}
 --- !u!114 &9218246012895561430
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3713,6 +3714,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   isFront: 0
+  hatLayer: {fileID: 0}
 --- !u!114 &9218246014661007788
 MonoBehaviour:
   m_ObjectHideFlags: 0

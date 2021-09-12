@@ -9034,6 +9034,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   isFront: 0
+  hatLayer: {fileID: 0}
 --- !u!95 &95425553039557732
 Animator:
   serializedVersion: 3
@@ -9754,7 +9755,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 66200c48c90116e43b823ec11d383386, type: 2}
+  - {fileID: 2100000, guid: 4cdf4a1c8c9b19a4284b58e2cee63bbe, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -9802,6 +9803,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   isFront: 1
+  hatLayer: {fileID: 5437781074109090849}
 --- !u!95 &95231768486523150
 Animator:
   serializedVersion: 3

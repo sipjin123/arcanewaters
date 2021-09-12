@@ -71,7 +71,7 @@ public class MailManager : GenericGameManager {
    private DateTime _unreadMailsLastCheckTime = DateTime.UtcNow;
 
    // The cost for sending a mail
-   private static int MAIL_SENDING_COST = 100;
+   private static int MAIL_SENDING_COST = 10;
 
    #endregion
 }

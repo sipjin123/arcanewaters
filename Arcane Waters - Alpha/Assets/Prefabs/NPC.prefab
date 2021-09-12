@@ -132,6 +132,7 @@ Transform:
   - {fileID: 4665605112919977576}
   - {fileID: 6256489830027022391}
   - {fileID: 119449345769090026}
+  - {fileID: 4380474092015395692}
   - {fileID: 3622394613847394228}
   - {fileID: 6010059221248126570}
   - {fileID: 5589316074066030016}
@@ -292,18 +293,18 @@ MonoBehaviour:
   instanceId: 0
   areaKey: 
   isInvisible: 0
-  gender: 1
-  bodyType: 0
-  eyesType: 0
-  hairType: 0
-  eyesPalettes: 
-  hairPalettes: 
   entityName: 
   currentHealth: 1000
   maxHealth: 1000
   XP: 0
   desiredAngle: 0
   isStealthMuted: 0
+  gender: 1
+  bodyType: 0
+  eyesType: 0
+  hairType: 0
+  eyesPalettes: 
+  hairPalettes: 
   netIdent: {fileID: 0}
   rpc: {fileID: 0}
   cropManager: {fileID: 0}
@@ -313,15 +314,15 @@ MonoBehaviour:
   nameText: {fileID: 6035651514146022868}
   nameTextOutline: {fileID: 0}
   sortPoint: {fileID: 1500841596590262}
+  shadow: {fileID: 212606258195260266}
+  statusEffectContainer: {fileID: 0}
+  entityNameGO: {fileID: 0}
   facing: 5
   isSinglePlayer: 0
   hasDiagonals: 0
   fallDirection: 0
   adminFlag: 0
   shipSpeedupFlag: 0
-  guildId: 0
-  guildPermissions: 0
-  guildRankPriority: 0
   battleId: 0
   voyageGroupId: -1
   isGhost: 0
@@ -329,6 +330,13 @@ MonoBehaviour:
   isNextBiomeUnlocked: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
+  isUnderExternalControl: 0
+  lastNPCTalkTime: -30
+  pvpTeam: 0
+  faction: 0
+  guildId: 0
+  guildPermissions: 0
+  guildRankPriority: 0
   guildIconBorder: 
   guildIconBackground: 
   guildIconSigil: 
@@ -339,17 +347,14 @@ MonoBehaviour:
   isAboutToWarpOnClient: 0
   interactingAnimation: 0
   isSpeedingUp: 0
-  shadow: {fileID: 212606258195260266}
-  statusEffectContainer: {fileID: 0}
-  entityNameGO: {fileID: 0}
-  isUnderExternalControl: 0
-  lastNPCTalkTime: -30
+  passedOnTemporaryControl: 0
+  ignoredRenderers: []
   _ignoredAnimators: []
   _animators: []
   spritePath: 
   iconPath: 
   npcType: 0
-  shopName: None
+  shopId: 0
   shopPanelType: 0
   npcId: 0
   isDebug: 0
@@ -369,6 +374,7 @@ MonoBehaviour:
       m_Calls: []
   questNotice: {fileID: 3711842765619014394}
   insufficientQuestNotice: {fileID: 6581455124987240629}
+  stationaryCollider: {fileID: 8506015499071076917}
 --- !u!114 &114041420384177890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -841,6 +847,53 @@ MonoBehaviour:
   group: 0
   freezeAlpha: 0
   _index: 0
+--- !u!1 &1366796554221030471
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4380474092015395692}
+  - component: {fileID: 8506015499071076917}
+  m_Layer: 15
+  m_Name: Stationary Collider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4380474092015395692
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1366796554221030471}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4420619915159614}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &8506015499071076917
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1366796554221030471}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.06
 --- !u!1 &2788794307519961243
 GameObject:
   m_ObjectHideFlags: 0
@@ -1245,7 +1298,7 @@ Transform:
   m_Children:
   - {fileID: 5423411844363852714}
   m_Father: {fileID: 4420619915159614}
-  m_RootOrder: 13
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5248185003557241742
 GameObject:
@@ -1276,7 +1329,7 @@ Transform:
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 4420619915159614}
-  m_RootOrder: 11
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &241620719326419093
 SpriteRenderer:
@@ -1493,7 +1546,7 @@ Transform:
   m_Children:
   - {fileID: 3774239116228248482}
   m_Father: {fileID: 4420619915159614}
-  m_RootOrder: 14
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6705147274006438642
 GameObject:
@@ -1524,7 +1577,7 @@ Transform:
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 4420619915159614}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2596002732114389420
 SpriteRenderer:
@@ -1970,7 +2023,7 @@ Transform:
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 4420619915159614}
-  m_RootOrder: 12
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &393631073953924981
 SpriteRenderer:

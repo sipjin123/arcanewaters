@@ -192,10 +192,9 @@ namespace MapCustomization
                Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _selectedPrefab.unappliedChanges, _selectedPrefab.spawnedAPrefabVariation, _selectedPrefab.variationSpawnedFromPrefab);
 
                // Increase remaining prop item that corresponds to this prefab if it was not placed in editor
-               if (!_selectedPrefab.mapEditorState.created) {
+               if (!_selectedPrefab.mapEditorState.created && !_selectedPrefab.variationSpawnedFromPrefab) {
                   incrementPropCount(_selectedPrefab.propDefinitionId);
                }
-
                _selectedPrefab.submitUnappliedChanges();
             } else {
                _selectedPrefab.revertUnappliedChanges();
@@ -294,9 +293,6 @@ namespace MapCustomization
                               prefabSerializedID = prefabDataArray[i - 1].serializationId;
                            }
                         }
-                        prefab.customizedState.deleted = true;
-                        prefab.submitUnappliedChanges();
-
                         replacePrefab(prefab, prefabSerializedID);
                      }
                   }
@@ -306,45 +302,59 @@ namespace MapCustomization
       }
 
       private static void replacePrefab (CustomizablePrefab oldPrefab, int newPrefabSerializedId) {
-         Vector3 savedPosition = oldPrefab.transform.position;
-         GameObject parentOfPrefab = oldPrefab.transform.parent.gameObject;
+         if (!waitingForServer && oldPrefab != null) {
+            Vector3 savedPosition = oldPrefab.transform.position;
+            GameObject parentOfPrefab = oldPrefab.transform.parent.gameObject;
 
-         // Remove the old prefab
-         if (oldPrefab != null) {
+            // Give the illusion that the switch is happening istantly, however the server still has to record the transaction
+            _newPrefab = null;
+            _newPrefab = MapManager.self.createPrefab(currentArea, currentBiome, newPrefabState(savedPosition, newPrefabSerializedId), false);
+            oldPrefab.GetComponent<SpriteRenderer>().enabled = false;
+            SpriteRenderer [] spriteRenderers = oldPrefab.GetComponentsInChildren<SpriteRenderer>();
+            foreach (SpriteRenderer spriteRenderer in spriteRenderers) {
+               spriteRenderer.enabled = false;
+            }
+            _newPrefab.variationSpawnedFromPrefab = true;
+
+            //Remove the old prefab
             oldPrefab.spawnedAPrefabVariation = true;
             oldPrefab.unappliedChanges.deleted = true;
-            oldPrefab.customizedState.created = false;
-            oldPrefab.mapEditorState.created = false;
+            oldPrefab.unappliedChanges.created = false;
+            oldPrefab.unappliedChanges.clearLocalPosition();
 
-            oldPrefab.revertUnappliedChanges();
-         }
+            if (validatePrefabChanges(currentArea, currentBiome, remainingProps, oldPrefab.unappliedChanges, false, out string errorMessage)) {
+               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, oldPrefab.unappliedChanges, oldPrefab.spawnedAPrefabVariation, oldPrefab.variationSpawnedFromPrefab);
+            }
+            _newPrefab.submitUnappliedChanges();
 
-         // Create the new variation of the prefab
-         _newPrefab = null;
-         _newPrefab = MapManager.self.createPrefab(currentArea, currentBiome, newPrefabState(savedPosition, newPrefabSerializedId), false);
-         _newPrefab.variationSpawnedFromPrefab = true;
-         _newPrefab.submitUnappliedChanges();
+            // Parent the new prefab
+            _newPrefab.transform.SetParent(parentOfPrefab.transform);
+            _newPrefab.GetComponent<ZSnap>()?.snapZ();
 
-         // Parent the new prefab
-         _newPrefab.transform.SetParent(parentOfPrefab.transform);
-         _newPrefab.GetComponent<ZSnap>()?.snapZ();
+            // Set the new prefab's state
+            _newPrefab.unappliedChanges.created = true;
+            _newPrefab.unappliedChanges.deleted = false;
+            _newPrefab.unappliedChanges.localPosition = currentArea.prefabParent.transform.InverseTransformPoint(new Vector2(savedPosition.x, savedPosition.y));
+            _newPrefab.setGameInteractionsActive(false);
+            //_newPrefab.setOutline(false, false, false, false);
+            updateToBePlacedPrefab(_newPrefab.transform.position, _newPrefab.unappliedChanges.serializationId);
 
-         _newPrefab.unappliedChanges.created = true;
-         _newPrefab.unappliedChanges.localPosition = currentArea.prefabParent.transform.InverseTransformPoint(new Vector2(savedPosition.x, savedPosition.y));
-         _newPrefab.setGameInteractionsActive(false);
-         _newPrefab.setOutline(false, false, false, false);
+            // Add the prefab to the list of placed prefabs
+            _customizablePrefabs.Add(_newPrefab.customizedState.id, _newPrefab);
 
-         _customizablePrefabs.Add(_newPrefab.customizedState.id, _newPrefab);
-         Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges, _newPrefab.spawnedAPrefabVariation, _newPrefab.variationSpawnedFromPrefab);
-         _newPrefab.variationSpawnedFromPrefab = false;
+            // Send the prefab info to the server and database
+            Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.customizedState, _newPrefab.spawnedAPrefabVariation, _newPrefab.variationSpawnedFromPrefab);
+            _newPrefab.variationSpawnedFromPrefab = false;
 
-         soundHasBeenPlayed = false;
+            soundHasBeenPlayed = false;
 
-         if (!soundHasBeenPlayed) {
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLACE_EDITABLE_OBJECT, targetPos: savedPosition);
-            soundHasBeenPlayed = true;
+            if (!soundHasBeenPlayed) {
+               SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLACE_EDITABLE_OBJECT, targetPos: savedPosition);
+               soundHasBeenPlayed = true;
+            }
          }
       }
+      
 
       /// <summary>
       /// Called when pointer position changes and pointer is dragging

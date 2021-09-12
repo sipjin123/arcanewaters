@@ -67,11 +67,12 @@ MonoBehaviour:
   shipAbilitydata:
     abilityId: 0
     abilityName: 
+    seaEntityAbilityType: 0
     selectedAttackType: 0
     abilityDescription: 
     shipTypeVariety: 0
     levelRequirement: 0
-    damage: 0
+    damageModifier: 0
     abilitySpriteFXPerFrame: 0.06
     coolDown: 0
     projectileSpeed: 0
@@ -80,10 +81,8 @@ MonoBehaviour:
     castSpritePath: 
     collisionSpritePath: 
     castSFXPath: 
-    collisionSFXPath: 
     shipCastType: 0
     shipCastCollisionType: 0
-    shipAbilityEffect: 0
     impactMagnitude: 0
     hasArch: 0
     syncHeightToArch: 1
@@ -93,12 +92,14 @@ MonoBehaviour:
     splitAttackCap: -1
     statusType: 0
     statusDuration: 1
+    projectileId: 0
   archHeight: 0.2
   trailRenderer: {fileID: 5353029386758255849}
   particleSystemTrail: {fileID: 7216972407536369208}
   staticSprites:
   - {fileID: 3222192111568099543}
   - {fileID: 5210753793174941015}
+  - {fileID: 212117531415775334}
   animatedSprites:
   - {fileID: 3658820893937478596}
   - {fileID: 828894563687167651}

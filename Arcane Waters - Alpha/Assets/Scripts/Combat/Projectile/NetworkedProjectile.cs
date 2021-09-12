@@ -165,7 +165,7 @@ public class NetworkedProjectile : MonoBehaviour {
                Instantiate(PrefabsManager.self.requestCannonSplashPrefab(_impactMagnitude), this.transform.position + new Vector3(0f, -.1f), Quaternion.identity);
 
                // FMOD sfx for water
-               SoundEffectManager.self.playCannonballImpact(SoundEffectManager.CannonballImpactType.Water, this.transform.position);
+               SoundEffectManager.self.playCannonballImpact(CannonballSfxType.Water_Impact, this.transform.position);
 
                //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position);
             }

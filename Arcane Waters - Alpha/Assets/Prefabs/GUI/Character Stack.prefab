@@ -347,7 +347,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 66200c48c90116e43b823ec11d383386, type: 2}
+  m_Material: {fileID: 2100000, guid: 4cdf4a1c8c9b19a4284b58e2cee63bbe, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
@@ -380,6 +380,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   isFront: 1
+  hatLayer: {fileID: 5213823468967323555}
 --- !u!114 &6738961894610501925
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -859,6 +860,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   isFront: 0
+  hatLayer: {fileID: 0}
 --- !u!114 &7585942573223381374
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -24,9 +24,8 @@ public class StoreHaircutBox : StoreItemBox {
       // Set palette
       string hairColor = PaletteDef.Hair.Yellow;
 
-      if (Global.player is BodyEntity) {
-         BodyEntity body = (BodyEntity) Global.player;
-         hairColor = body.hairPalettes;
+      if (Global.player != null) {
+         hairColor = Global.player.hairPalettes;
       }
 
       // Front Hair

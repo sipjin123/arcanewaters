@@ -417,6 +417,8 @@ GameObject:
   - component: {fileID: 9014672459551279820}
   - component: {fileID: 5230297093630997560}
   - component: {fileID: 7710277635469007940}
+  - component: {fileID: 8299924369306396057}
+  - component: {fileID: 3219130852191996430}
   m_Layer: 5
   m_Name: Canon Box
   m_TagString: Untagged
@@ -597,13 +599,44 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackType: 1
-  cannonAttackOption: 0
   skillIcon: {fileID: 8762895500142596015}
   abilityId: 0
   boxIndex: 0
   highlightSkill: {fileID: 992766459387232364}
   cooldownHighlight: {fileID: 8214455099319280509}
   cooldownNormal: {fileID: 9070071903035224133}
+  tooltipComponent: {fileID: 3219130852191996430}
+  cannonType: {fileID: 8482779807862784539}
+--- !u!114 &8299924369306396057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7683086831505616779}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+--- !u!114 &3219130852191996430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7683086831505616779}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipPlacement: 4
+  tooltipType: 6
+  message: 
+  maxWidth: 250
+  nudgeAwayFromBorder: 0
 --- !u!1 &8482779807862784539
 GameObject:
   m_ObjectHideFlags: 0

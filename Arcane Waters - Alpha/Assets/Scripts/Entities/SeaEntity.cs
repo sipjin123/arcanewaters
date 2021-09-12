@@ -650,15 +650,15 @@ public class SeaEntity : NetEntity
       GenericSeaProjectile seaEntityProjectile = Instantiate(PrefabsManager.self.seaEntityProjectile, startPos, Quaternion.identity);
       seaEntityProjectile.init(startTime, endTime, startPos, endPos, this, abilityData.abilityId);
 
-      AudioClipManager.AudioClipData audioClipData = AudioClipManager.self.getAudioClipData(abilityData.castSFXPath);
-      if (audioClipData.audioPath.Length > 1) {
-         AudioClip clip = audioClipData.audioClip;
-         if (clip != null) {
-            //SoundManager.playClipAtPoint(clip, Camera.main.transform.position);
-         }
-      } else {
-         //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Attack_Fire, this.transform.position);
-      }
+      //AudioClipManager.AudioClipData audioClipData = AudioClipManager.self.getAudioClipData(abilityData.castSFXPath);
+      //if (audioClipData.audioPath.Length > 1) {
+      //   AudioClip clip = audioClipData.audioClip;
+      //   if (clip != null) {
+      //      //SoundManager.playClipAtPoint(clip, Camera.main.transform.position);
+      //   }
+      //} else {
+      //   //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Attack_Fire, this.transform.position);
+      //}
 
       if (abilityData.selectedAttackType == Attack.Type.Shock_Ball) {
          seaEntityProjectile.setDirection((Direction) facing);
@@ -765,7 +765,7 @@ public class SeaEntity : NetEntity
          Instantiate(PrefabsManager.self.requestCannonSplashPrefab(impactMagnitude), pos + new Vector3(0f, -.1f), Quaternion.identity);
 
          // FMOD sfx for water
-         SoundEffectManager.self.playCannonballImpact(SoundEffectManager.CannonballImpactType.Water, pos);
+         SoundEffectManager.self.playCannonballImpact(CannonballSfxType.Water_Impact, pos);
          //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, pos);
       }
    }
@@ -1002,8 +1002,8 @@ public class SeaEntity : NetEntity
 
       _lastAttackTime = NetworkTime.time;
       attackCounter++;
-      Rpc_RegisterAttackTime(attackDelay);
 
+      Rpc_RegisterAttackTime(attackDelay);
       Rpc_NoteAttack();
    }
 
@@ -1695,7 +1695,7 @@ public class SeaEntity : NetEntity
          _seeker.CancelCurrentPathRequest();
       }
 
-      _seeker.StartPath((Vector2)transform.position, (Vector2)targetPosition);
+      _seeker.StartPath((Vector2) transform.position, (Vector2) targetPosition);
       if (_disableSpawnDistanceTmp) {
          Invoke(nameof(enableSpawnDistance), 3.5f);
       }

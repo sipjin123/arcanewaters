@@ -47,6 +47,9 @@ public class OptionsPanel : Panel
    // The guild icon toggle
    public Toggle displayGuildIconsToggle;
 
+   // Flashing lights toggle
+   public Toggle disableFlashingLightsToggle;
+
    // Player Name Display
    public Toggle displayPlayersNameToggle;
 
@@ -70,6 +73,9 @@ public class OptionsPanel : Panel
 
    // Bool to track if all players should continuously display their name
    public static bool onlyShowPlayerNamesOnMouseover = false;
+
+   // Bool to track if flashing lights should be disabled
+   public static bool disableFlashingLights = false;
 
    // Self
    public static OptionsPanel self;
@@ -168,6 +174,11 @@ public class OptionsPanel : Panel
          showAllGuildIcons(value);
       });
 
+      // Set the flashing lights toggle event
+      disableFlashingLightsToggle.onValueChanged.AddListener(value => {
+         disableFlashingLights = value;
+      });
+
       // Set the player name toggle event
       displayPlayersNameToggle.onValueChanged.AddListener(value => {
          onlyShowPlayerNamesOnMouseover = !value;
@@ -176,10 +187,9 @@ public class OptionsPanel : Panel
 
       // Set the player name toggle event
       mouseLockToggle.isOn = PlayerPrefs.GetInt(OptionsManager.PREF_LOCK_CURSOR) == 1 ? true : false;
-      changeMouseLockState(mouseLockToggle.isOn);
+      ScreenSettingsManager.self.refreshMouseLockState();
       mouseLockToggle.onValueChanged.AddListener(value => {
          PlayerPrefs.SetInt(OptionsManager.PREF_LOCK_CURSOR, value ? 1 : 0);
-         changeMouseLockState(value);
       });
 
       // Initialize the help tips toggle
@@ -249,9 +259,6 @@ public class OptionsPanel : Panel
       }
    }
 
-   public void changeMouseLockState (bool mouseLock) {
-      Cursor.lockState = mouseLock ? CursorLockMode.Confined : CursorLockMode.None;
-   }
 
    public void setHelpTipsDisplay () {
       NotificationManager.self.toggleNotifications(displayHelpTipsToggle.isOn);
@@ -425,6 +432,13 @@ public class OptionsPanel : Panel
       refreshDisplaySettingsControls();
 
       requestPlayersCount();
+
+      ScreenSettingsManager.self.refreshMouseLockState();
+   }
+
+   public override void hide () {
+      base.hide();
+      ScreenSettingsManager.self.refreshMouseLockState();
    }
 
    private void requestPlayersCount () {

@@ -44,9 +44,6 @@ public class StoreScreen : Panel
    // Our Character Stack
    public CharacterStack characterStack;
 
-   // The set of tabs of this Store screen
-   public StoreTab.StoreTabType[] tabTypes;
-
    // Reference to the tabs holder
    public AdminPanelTabs tabs;
 
@@ -68,16 +65,12 @@ public class StoreScreen : Panel
       base.Update();
 
       // Enable or disable stuff based on whether there's a selection
-      itemSelectionOutline.enabled = (selectedItem != null);
       buyButton.enabled = (selectedItem != null);
-
-      // Keep the selection outline on top of the selected item box
-      if (selectedItem != null) {
-         itemSelectionOutline.transform.position = selectedItem.nameText.transform.position + new Vector3(0f, 64f);
-      }
    }
 
    public void showPanel (UserObjects userObjects, int gold, int gems) {
+      toggleBlocker(true);
+
       _userObjects = userObjects;
 
       // Show our gold and gem count
@@ -88,10 +81,13 @@ public class StoreScreen : Panel
       // Update the character preview
       characterStack.updateLayers(userObjects);
 
+      // Start with nothing selected
+      selectItem(null);
+
+      destroyStoreBoxes();
+
       // Request Store Items
       Global.player.rpc.Cmd_RequestStoreItems();
-
-      toggleBlocker(true);
 
       // Display the panel
       if (!isShowing()) {
@@ -100,15 +96,8 @@ public class StoreScreen : Panel
    }
 
    public void onReceiveStoreItems (List<StoreItem> storeItems) {
-      // Start with nothing selected
-      selectItem(null);
-
-      destroyStoreBoxes();
-
       // Create Boxes
       createStoreBoxes(storeItems);
-
-      recolorHaircutBoxes();
 
       // Routinely check if we purchased gems
       CancelInvoke(nameof(checkGems));
@@ -122,20 +111,9 @@ public class StoreScreen : Panel
          _currentStoreTabType = StoreTab.StoreTabType.Gems;
       }
 
-      filterItems();
+      presentItems();
 
       toggleBlocker(false);
-   }
-
-   private void recolorHaircutBoxes () {
-      foreach (RecoloredSprite recoloredSprite in GetComponentsInChildren<RecoloredSprite>()) {
-         StoreItemBox storeItemBox = recoloredSprite.GetComponentInParent<StoreItemBox>();
-         if (storeItemBox is StoreHairDyeBox) {
-            StoreHairDyeBox hairBox = (StoreHairDyeBox) storeItemBox;
-            List<string> values = updateHairDyeBox(hairBox);
-            recoloredSprite.recolor(Item.parseItmPalette(values.ToArray()));
-         }
-      }
    }
 
    public void toggleBlocker (bool show) {
@@ -185,6 +163,8 @@ public class StoreScreen : Panel
    }
 
    public void selectItem (StoreItemBox itemBox) {
+      deselectItems();
+
       // Did they unselect the current item?
       if (itemBox == this.selectedItem || itemBox == null) {
          this.selectedItem = null;
@@ -198,19 +178,28 @@ public class StoreScreen : Panel
 
          if (itemBox is StoreHairDyeBox) {
             StoreHairDyeBox hairBox = (StoreHairDyeBox) itemBox;
-            List<string> values = updateHairDyeBox(hairBox);
-
-            characterStack.updateHair(_userObjects.userInfo.hairType, Item.parseItmPalette(values.ToArray()));
+            characterStack.updateHair(_userObjects.userInfo.hairType, hairBox.palette.paletteName);
          } else if (itemBox is StoreHaircutBox) {
             StoreHaircutBox hairBox = (StoreHaircutBox) itemBox;
             characterStack.updateHair(hairBox.haircut.type, _userObjects.userInfo.hairPalettes);
          }
+
+         itemBox.select();
       }
 
       characterStack.synchronizeAnimationIndexes();
    }
 
-   public void filterItems () {
+   public void deselectItems () {
+      foreach (StoreItemBox itemBox in itemsContainer.GetComponentsInChildren<StoreItemBox>(true)) {
+         itemBox.toggleHover(false);
+         itemBox.toggleSelection(false);
+      }
+   }
+
+   public void presentItems () {
+      deselectItems();
+
       // Reset our selection
       if (selectedItem != null) {
          selectItem(selectedItem);
@@ -219,21 +208,38 @@ public class StoreScreen : Panel
       // Go through all of our items and toggle which ones are showing
       foreach (StoreItemBox itemBox in itemsContainer.GetComponentsInChildren<StoreItemBox>(true)) {
          if (itemBox is StoreHairDyeBox) {
-            itemBox.gameObject.SetActive(_currentStoreTabType == StoreTab.StoreTabType.HairStyles);
+            itemBox.gameObject.SetActive(_currentStoreTabType == StoreTab.StoreTabType.HairDyes);
          } else if (itemBox is StoreShipSkinBox) {
             itemBox.gameObject.SetActive(_currentStoreTabType == StoreTab.StoreTabType.ShipSkins);
          } else if (itemBox is StoreHaircutBox) {
             StoreHaircutBox haircutBox = (StoreHaircutBox) itemBox;
-            itemBox.gameObject.SetActive(_currentStoreTabType == StoreTab.StoreTabType.HairCuts);
-
-            // Hide hairstyles that are for the other gender
-            if (haircutBox.haircut.getGender() != Global.player.gender) {
-               itemBox.gameObject.SetActive(false);
-            }
+            itemBox.gameObject.SetActive(_currentStoreTabType == StoreTab.StoreTabType.Haircuts && haircutBox.haircut.getGender() == Global.player.gender);
          } else if (itemBox is StoreGemBox) {
-            StoreGemBox gemBox = (StoreGemBox) itemBox;
             itemBox.gameObject.SetActive(_currentStoreTabType == StoreTab.StoreTabType.Gems);
+         } else if (itemBox is StoreConsumableBox) {
+            itemBox.gameObject.SetActive(_currentStoreTabType == StoreTab.StoreTabType.Consumables);
          }
+      }
+
+      // Update layout based on the selected tab
+      updateBoxContainerLayout(_currentStoreTabType);
+   }
+
+   private void updateBoxContainerLayout(StoreTab.StoreTabType tabType) {
+      GridLayoutGroup gridLayout = itemsContainer.GetComponent<GridLayoutGroup>();
+
+      if (gridLayout == null) {
+         return;
+      }
+
+      if (tabType == StoreTab.StoreTabType.ShipSkins) {
+         gridLayout.cellSize = new Vector2(148, 200);
+         gridLayout.spacing = new Vector2(16, 16);
+         gridLayout.constraintCount = 3;
+      } else {
+         gridLayout.cellSize = new Vector2(100, 150);
+         gridLayout.spacing = new Vector2(24, 16);
+         gridLayout.constraintCount = 4;
       }
    }
 
@@ -247,17 +253,11 @@ public class StoreScreen : Panel
    }
 
    public void performTabSwitch (int tabIndex) {
-
-      if (tabIndex < 0 || tabs == null || tabTypes.Length < tabIndex) {
-         return;
-      }
-
-      // Remember the selected tab
-      _currentStoreTabType = tabTypes[tabIndex];
+      _currentStoreTabType = (StoreTab.StoreTabType) (tabIndex + 1);
 
       D.debug($"New Store Tab Type is: { _currentStoreTabType }");
 
-      filterItems();
+      presentItems();
    }
 
    protected void checkGems () {
@@ -268,38 +268,6 @@ public class StoreScreen : Panel
    }
 
    #region Boxes
-
-   private List<string> updateHairDyeBox (StoreHairDyeBox hairBox) {
-      if (_paletteHairDye.ContainsKey(hairBox.GetHashCode())) {
-         _paletteHairDye[hairBox.GetHashCode()] = hairBox.metadata.paletteName;
-      } else {
-         _paletteHairDye.Add(hairBox.GetHashCode(), hairBox.metadata.paletteName);
-      }
-
-      List<string> values = new List<string>();
-
-      foreach (string value in _paletteHairDye.Values) {
-         values.Add(value);
-      }
-
-      return values;
-   }
-
-   public StoreItemBox getItemBox (ulong itemId) {
-      foreach (StoreItemBox box in GetComponentsInChildren<StoreItemBox>()) {
-         if (box.itemId == itemId) {
-            return box;
-         }
-      }
-
-      foreach (StoreItemBox box in StoreScreen.self.GetComponentsInChildren<StoreItemBox>()) {
-         if (box.itemId == itemId) {
-            return box;
-         }
-      }
-
-      return null;
-   }
 
    private void prepareStoreItemBox (StoreItem item, StoreItemBox box) {
       box.transform.SetParent(this.transform);
@@ -362,6 +330,10 @@ public class StoreScreen : Panel
    protected StoreHairDyeBox createHairDyeBox (StoreItem storeItem) {
       StoreHairDyeBox box = Instantiate(PrefabsManager.self.hairDyeBoxPrefab);
       prepareStoreItemBox(storeItem, box);
+      HairDyeData hairdyeData = HairDyeXMLManager.self.getHairdyeData(storeItem.itemId);
+      box.hairdye = hairdyeData;
+      box.itemName = box.hairdye.itemName;
+      box.itemDescription = box.hairdye.itemDescription;
       tryOverrideNameAndDescription(storeItem, box);
       box.initialize();
       return box;
@@ -378,6 +350,18 @@ public class StoreScreen : Panel
       StoreHairDyeBox box = Instantiate(PrefabsManager.self.hairDyeBoxPrefab);
       prepareStoreItemBox(storeItem, box);
       tryOverrideNameAndDescription(storeItem, box);
+      return box;
+   }
+
+   protected StoreConsumableBox createConsumableBox (StoreItem storeItem) {
+      StoreConsumableBox box = Instantiate(PrefabsManager.self.consumableBoxPrefab);
+      prepareStoreItemBox(storeItem, box);
+      ConsumableData consumableData = ConsumableXMLManager.self.getConsumableData(storeItem.itemId);
+      box.consumable = consumableData;
+      box.itemName = box.consumable.itemName;
+      box.itemDescription = box.consumable.itemDescription;
+      tryOverrideNameAndDescription(storeItem, box);
+      box.initialize();
       return box;
    }
 
@@ -423,6 +407,9 @@ public class StoreScreen : Panel
                break;
             case Item.Category.Pet:
                createdBox = createPetBox(item);
+               break;
+            case Item.Category.Consumable:
+               createdBox = createConsumableBox(item);
                break;
          }
 

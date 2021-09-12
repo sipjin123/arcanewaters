@@ -90,12 +90,33 @@ namespace NubisDataHandling {
                         D.editorLog("Failed to gather data for haircut: " + itmType + " : " + haircutData + " : " + itmId, Color.red);
                      }
                      break;
+                  case Item.Category.Hairdye:
+                     HairDyeData hairDyeData = HairDyeXMLManager.self.getHairdyeData(itmType);
+                     if (hairDyeData != null) {
+                        otherItem.setBasicInfo(hairDyeData.itemName, hairDyeData.itemDescription, hairDyeData.itemIconPath);
+                     } else {
+                        D.editorLog("Failed to gather data for hair dye: " + itmType + " : " + hairDyeData + " : " + itmId, Color.red);
+                     }
+                     break;
                   case Item.Category.ShipSkin:
                      ShipSkinData shipSkinData = ShipSkinXMLManager.self.getShipSkinData(itmType);
                      if (shipSkinData != null) {
                         otherItem.setBasicInfo(shipSkinData.itemName, shipSkinData.itemDescription, shipSkinData.itemIconPath);
+                        ShipSkin shipSkin = (ShipSkin) otherItem;
+                        shipSkin.shipType = shipSkinData.shipType;
+                        shipSkin.skinType = shipSkinData.skinType;
                      } else {
                         D.editorLog("Failed to gather data for ship skin: " + itmType + " : " + shipSkinData + " : " + itmId, Color.red);
+                     }
+                     break;
+                  case Item.Category.Consumable:
+                     ConsumableData consumableData = ConsumableXMLManager.self.getConsumableData(itmType);
+                     if (consumableData != null) {
+                        otherItem.setBasicInfo(consumableData.itemName, consumableData.itemDescription, consumableData.itemIconPath);
+                        Consumable consumable = (Consumable) otherItem;
+                        consumable.consumableType = consumableData.consumableType;
+                     } else {
+                        D.editorLog("Failed to gather data for consumable: " + itmType + " : " + consumableData + " : " + itmId, Color.red);
                      }
                      break;
                   default:

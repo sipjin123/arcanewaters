@@ -166,7 +166,8 @@ MonoBehaviour:
   archHeight: 0.1
   moveSpeed: 1.55
   projectileSpriteObj: {fileID: 1112950965488062}
-  projectileSprites: []
+  projectileSprites:
+  - {fileID: 212336764478243162}
   body: {fileID: 50551729850668140}
   circleCollider: {fileID: 58897821517896252}
   attackType: 0
@@ -178,7 +179,7 @@ MonoBehaviour:
     abilityDescription: 
     shipTypeVariety: 0
     levelRequirement: 0
-    damage: 0
+    damageModifier: 0
     abilitySpriteFXPerFrame: 0.06
     coolDown: 0
     projectileSpeed: 0
@@ -187,10 +188,8 @@ MonoBehaviour:
     castSpritePath: 
     collisionSpritePath: 
     castSFXPath: 
-    collisionSFXPath: 
     shipCastType: 0
     shipCastCollisionType: 0
-    shipAbilityEffect: 0
     impactMagnitude: 0
     hasArch: 0
     syncHeightToArch: 1
@@ -200,6 +199,7 @@ MonoBehaviour:
     splitAttackCap: -1
     statusType: 0
     statusDuration: 1
+    projectileId: 0
   projectileEndType: 0
   startPos: {x: 0, y: 0}
   endPos: {x: 0, y: 0}

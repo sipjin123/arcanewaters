@@ -55,7 +55,8 @@ namespace MapCustomization
          _spriteOutline.setNewColor(getOutlineColor(ready, hovered, selected, valid));
 
          if (hovered || selected) {
-            _spriteOutline.setVisibility(true);
+            // Visibility is set to false to permenantly disable outlines in the customization mode
+            _spriteOutline.setVisibility(false);
             if (GetComponentInChildren<SelectionSpriteBuildMode>() != null) {
                MapCustomizationManager.showSelectionArrows();
             }

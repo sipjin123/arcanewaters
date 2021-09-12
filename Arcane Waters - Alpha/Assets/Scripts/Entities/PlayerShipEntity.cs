@@ -32,10 +32,6 @@ public class PlayerShipEntity : ShipEntity
    [SyncVar]
    public string weaponColors;
 
-   // The status effect that the player's cannonballs will apply to targets hit
-   [SyncVar]
-   public Status.Type cannonEffectType = Status.Type.None;
-
    // The equipped armor characteristics
    [SyncVar]
    public int armorType = 0;
@@ -345,17 +341,17 @@ public class PlayerShipEntity : ShipEntity
             }
          }
 
-         if (!_isChargingCannon) {
+         if (!isPerformingAttack()) {
             if (KeyUtils.GetKeyDown(Key.Digit1)) {
-               selectAbilityAbility(0);
+               selectAbility(0);
             } else if (KeyUtils.GetKeyDown(Key.Digit2)) {
-               selectAbilityAbility(1);
+               selectAbility(1);
             } else if (KeyUtils.GetKeyDown(Key.Digit3)) {
-               selectAbilityAbility(2);
+               selectAbility(2);
             } else if (KeyUtils.GetKeyDown(Key.Digit4)) {
-               selectAbilityAbility(3);
+               selectAbility(3);
             } else if (KeyUtils.GetKeyDown(Key.Digit5)) {
-               selectAbilityAbility(4);
+               selectAbility(4);
             }
          }
       }

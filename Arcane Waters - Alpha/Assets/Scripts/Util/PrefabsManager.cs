@@ -153,6 +153,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating gem boxes
    public StoreGemBox gemBoxPrefab;
 
+   // The prefab we use for consumables
+   public StoreConsumableBox consumableBoxPrefab;
+
    // A prefab we can use for showing minor generic messages, ex. that an object is too far away
    public FloatingCanvas floatingCanvasPrefab;
 

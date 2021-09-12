@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 #if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
@@ -25,6 +26,10 @@ public class Haircut : Item {
    }
 
    public static Haircut createFromData(HaircutData data) {
+      if (data == null) {
+         return null;
+      }
+
       Haircut haircut = new Haircut(-1, data.itemID, "", "", 100);
       haircut.setBasicInfo(data.itemName, data.itemDescription, data.itemIconPath);
       return haircut;
@@ -72,6 +77,14 @@ public class Haircut : Item {
 
    public override string getDescription () {
       return this.itemDescription;
+   }
+
+   public override string getTooltip () {
+      Color color = Rarity.getColor(Rarity.Type.None);
+      string colorHex = ColorUtility.ToHtmlStringRGBA(color);
+
+      return string.Format("<color={0}>{1}</color>\n\n{2}\n\n",
+         "#" + colorHex, getName(), getDescription());
    }
 
    #region Private Variables

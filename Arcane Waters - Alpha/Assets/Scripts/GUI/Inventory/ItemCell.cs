@@ -248,6 +248,19 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
             icon.sprite = ImageManager.getSprites(item.getIconPath())[0];
             break;
+
+         case Item.Category.Hairdye:
+            HairDyeData hairDyeData = HairDyeXMLManager.self.getHairdyeData(item.itemTypeId);
+
+            if (hairDyeData == null) {
+               D.debug("Failed to fetch Hair Dye Data for: " + item.itemTypeId);
+               Destroy(gameObject);
+               break;
+            }
+
+            icon.sprite = ImageManager.getSprites(item.getIconPath())[1];
+            break;
+
          case Item.Category.ShipSkin:
             ShipSkinData shipSkinData = ShipSkinXMLManager.self.getShipSkinData(item.itemTypeId);
 
@@ -258,6 +271,18 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             }
 
             icon.sprite = ImageManager.getSprites(item.getIconPath())[2];
+            break;
+
+         case Item.Category.Consumable:
+            ConsumableData consumableData = ConsumableXMLManager.self.getConsumableData(item.itemTypeId);
+
+            if (consumableData == null) {
+               D.debug("Failed to fetch Consumable Data for: " + item.itemTypeId);
+               Destroy(gameObject);
+               break;
+            }
+
+            icon.sprite = ImageManager.getSprites(item.getIconPath())[1]; //TODO: Use a more item specific sprite of this item.
             break;
          default:
             D.editorLog("Failed to process Uncategorized item: " + item.itemTypeId, Color.red);

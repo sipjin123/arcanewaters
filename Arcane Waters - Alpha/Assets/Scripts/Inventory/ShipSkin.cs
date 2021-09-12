@@ -1,10 +1,6 @@
 ﻿using System;
 using UnityEngine;
 
-#if IS_SERVER_BUILD
-using MySql.Data.MySqlClient;
-#endif
-
 [Serializable]
 public class ShipSkin : Item {
    #region Public Variables
@@ -35,6 +31,10 @@ public class ShipSkin : Item {
    }
 
    public static ShipSkin createFromData(ShipSkinData data) {
+      if (data == null) {
+         return null;
+      }
+
       ShipSkin shipSkin = new ShipSkin(-1, data.itemID, "", "", 100, 1, data.skinType, data.shipType);
       shipSkin.setBasicInfo(data.itemName, data.itemDescription, data.itemIconPath);
       return shipSkin;
@@ -65,7 +65,19 @@ public class ShipSkin : Item {
    }
 
    public override string getDescription () {
-      return this.itemDescription;
+      ShipData data = ShipDataManager.self.shipDataList.Find(_ => _.shipType == this.shipType);
+
+      if (data == null) {
+         return this.itemDescription;
+      }
+
+      string newDesc = $"Skin for the '{data.shipName}'.";
+
+      if (string.IsNullOrWhiteSpace(this.itemDescription)) {
+         return newDesc;
+      } else {
+         return this.itemDescription + " " + newDesc;
+      }
    }
 
    public override string getTooltip () {

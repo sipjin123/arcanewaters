@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 using DG.Tweening;
+using System.Linq;
 
 public class ServerCannonBall : SeaProjectile
 {
@@ -142,7 +143,7 @@ public class ServerCannonBall : SeaProjectile
          }
       } else if (!hitEnemy) {
          // FMOD sfx for water
-         SoundEffectManager.self.playCannonballImpact(SoundEffectManager.CannonballImpactType.Water, this.transform.position);
+         SoundEffectManager.self.playCannonballImpact(CannonballSfxType.Water_Impact, this.transform.position);
 
          //if (playDefaultSFX) {
          //   SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position, true);
@@ -181,14 +182,14 @@ public class ServerCannonBall : SeaProjectile
                handleBounceEffect(effector, hitEntity);
                break;
          }
-
-         // Play SFX for effector
-         hitEntity.Rpc_PlayHitSfx(hitEntity is ShipEntity, isCrit, effector.effectorType, transform.position);
       }
 
       // If the cannonball doesn't have effectors applied
       if (_effectors.Count == 0) {
          hitEntity.Rpc_PlayHitSfx(hitEntity is ShipEntity, isCrit, CannonballEffector.Type.None, transform.position);
+      } else if (_effectors.Any(e => e.effectorType == CannonballEffector.Type.Explosion)) {
+         // Play SFX for explosion effector
+         hitEntity.Rpc_PlayHitSfx(hitEntity is ShipEntity, isCrit, CannonballEffector.Type.Explosion, transform.position);
       }
    }
 
@@ -242,12 +243,12 @@ public class ServerCannonBall : SeaProjectile
       float bounceActivationChance = 0.8f - effector.triggerCount * 0.1f;
 
       // Roll for chance to bounce
-      if (UnityEngine.Random.Range(0.0f, 1.0f) <= bounceActivationChance) {         
+      if (UnityEngine.Random.Range(0.0f, 1.0f) <= bounceActivationChance) {
          float currentSpeed = _rigidbody.velocity.magnitude;
          float maxRange = _lifetime * currentSpeed;
 
          // Find an enemy to bounce to, that isn't the one we hit
-         List <SeaEntity> nearbyEnemies = Util.getEnemiesInCircle(sourceEntity, transform.position, maxRange);
+         List<SeaEntity> nearbyEnemies = Util.getEnemiesInCircle(sourceEntity, transform.position, maxRange);
          foreach (SeaEntity enemy in nearbyEnemies) {
             if (enemy.netId != hitEntity.netId) {
                // Setup cannonball variables for new target
@@ -256,7 +257,7 @@ public class ServerCannonBall : SeaProjectile
                _distance = toNewEnemy.magnitude;
                effector.triggerCount++;
                _hasCollided = false;
-               
+
                projectileVelocity = toNewEnemy.normalized * currentSpeed;
                _rigidbody.velocity = projectileVelocity;
                Rpc_NotifyBounce(projectileVelocity, _distance);

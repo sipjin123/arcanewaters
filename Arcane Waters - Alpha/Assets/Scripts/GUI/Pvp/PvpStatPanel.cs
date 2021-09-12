@@ -29,11 +29,11 @@ public class PvpStatPanel : Panel {
    // A reference to the title text
    public TextMeshProUGUI title;
 
-   // A reference to the game object that enables display of the game end elements of the panel
-   public GameObject gameEndBoard;
+   // A list of gameobjects that are only enabled on game end
+   public List<GameObject> gameEndObjects;
 
-   // A reference to the game object that displays the team scores for the current game, only used in some game modes
-   public GameObject scoreContainer;
+   // A list of gameobjects that display the team scores for the current game, only used in some game modes, indexed by team type
+   public List<GameObject> teamScoreContainers;
 
    // References to the banners that display victory or defeat
    public GameObject victoryBanner, defeatBanner;
@@ -146,18 +146,18 @@ public class PvpStatPanel : Panel {
          StopCoroutine(_requestTeamFactions);
       }
 
-      if (gameObject.activeInHierarchy) {
-         _requestTeamFactions = StartCoroutine(CO_RequestTeamFactions());
-      }
+      _requestTeamFactions = PvpManager.self.StartCoroutine(CO_RequestTeamFactions());
 
       // Only enable the score container for CTF games currently
-      if (gameMode == PvpGameMode.CaptureTheFlag) {
-         scoreContainer.SetActive(true);
-      } else {
-         scoreContainer.SetActive(false);
+      foreach (GameObject scoreContainer in teamScoreContainers) {
+         if (scoreContainer != null) {
+            scoreContainer.SetActive(gameMode == PvpGameMode.CaptureTheFlag);
+         }
       }
       
-      gameEndBoard.SetActive(isGameEnded);
+      foreach (GameObject gameEndObject in gameEndObjects) {
+         gameEndObject.SetActive(isGameEnded);
+      }
 
       List<PvpTeamType> allTeams = new List<PvpTeamType>() { PvpTeamType.A, PvpTeamType.B };
       List<PvpTeamType> losingTeams = allTeams.Clone();
@@ -291,11 +291,14 @@ public class PvpStatPanel : Panel {
    }
 
    public void onPlayerLeftPvpGame () {
-      hide();
+      close();
    }
 
    public void updateScoreForTeam (int newScoreValue, PvpTeamType teamType) {
       teamScoreLabels[(int) teamType].text = newScoreValue.ToString();
+   }
+
+   public override void OnPointerClick (PointerEventData eventData) {
    }
 
    #region Private Variables

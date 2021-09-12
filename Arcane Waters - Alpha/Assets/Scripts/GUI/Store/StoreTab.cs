@@ -18,13 +18,16 @@ public class StoreTab : ClickableTab {
       Gems = 1,
 
       // Hair Styles
-      HairStyles = 2,
+      Haircuts = 2,
 
-      // Hair Cuts
-      HairCuts = 3,
+      // Hair Dyes
+      HairDyes = 3,
 
       // Ship Skins
-      ShipSkins = 4
+      ShipSkins = 4,
+
+      // Consumables
+      Consumables = 5
    }
 
    #endregion
@@ -33,7 +36,7 @@ public class StoreTab : ClickableTab {
       base.OnPointerDown(eventData);
 
       // Make the store update which items are displayed
-      StoreScreen.self.filterItems();
+      StoreScreen.self.presentItems();
    }
 
    #region Private Variables

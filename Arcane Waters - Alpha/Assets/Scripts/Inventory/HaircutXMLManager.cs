@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using Mirror;
 using System.Linq;
 using System.IO;
-using static EquipmentToolManager;
 using UnityEngine.Events;
 
 public class HaircutXMLManager : MonoBehaviour {

@@ -42,7 +42,10 @@ public class EditorSQLManager {
       Map_Keys = 33,
       SFX = 34,
       Haircuts = 35,
-      Gems = 36
+      Gems = 36,
+      ShipSkins = 37,
+      Consumables = 38,
+      Hairdyes = 39
    }
 
    public static string getSqlTable (EditorToolType editorType) {
@@ -136,6 +139,12 @@ public class EditorSQLManager {
             return XmlVersionManagerServer.HAIRCUTS_TABLE;
          case EditorToolType.Gems:
             return XmlVersionManagerServer.GEMS_TABLE;
+         case EditorToolType.ShipSkins:
+            return XmlVersionManagerServer.SHIP_SKINS_TABLE;
+         case EditorToolType.Consumables:
+            return XmlVersionManagerServer.CONSUMABLES_TABLE;
+         case EditorToolType.Hairdyes:
+            return XmlVersionManagerServer.HAIR_DYES_TABLE;
       }
       return "";
    }

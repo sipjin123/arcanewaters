@@ -31,11 +31,11 @@ namespace MapCreationTool
          // Update z axis sorting 
          Vector3Int[] positions = layer.tiles.Select(t => new Vector3Int(t.x, t.y, 0)).ToArray();
          if (layer.name.Contains(Area.BUILDING_LAYER)) {
-            for (int i = 0; i < positions.Length;i++) {
+            for (int i = 0; i < positions.Length; i++) {
                Vector3Int pos = positions[i];
                positions[i] = new Vector3Int(pos.x, pos.y, ZSnap.getZ(pos));
             }
-         } 
+         }
 
          TileBase[] tiles = layer.tiles
             .Select(t => AssetSerializationMaps.tryGetTile(new Vector2Int(t.i, t.j), biome))
@@ -134,26 +134,21 @@ namespace MapCreationTool
 
                   // Attaching a FMOD event emitter
                   if (SoundEffectManager.self != null) {
-                     SoundEffect effect = SoundEffectManager.self.getSoundEffect(SoundEffectManager.CALMING_WATERFALL);
+                     BoxCollider2D waterfallCollider = waterfall.GetComponent<BoxCollider2D>();
+                     Bounds bounds = waterfallCollider.bounds;
 
-                     if(effect != null) {
-                        BoxCollider2D waterfallCollider = waterfall.GetComponent<BoxCollider2D>();
-                        Bounds bounds = waterfallCollider.bounds;
+                     // FMOD 3D emitter position
+                     GameObject emitterGo = new GameObject();
+                     emitterGo.name = "Waterfall Emitter";
+                     emitterGo.transform.SetParent(waterfall.transform);
 
-                        // FMOD 3D emitter position
-                        GameObject emitterGo = new GameObject();
-                        emitterGo.name = "Waterfall Emitter";
-                        emitterGo.transform.SetParent(waterfall.transform);
+                     Vector2 emitterPos = new Vector2(bounds.center.x, bounds.center.y);
+                     emitterGo.transform.position = emitterPos;
 
-                        Vector2 emitterPos = new Vector2(bounds.center.x, bounds.center.y);
-                        emitterGo.transform.position = emitterPos;
-
-                        StudioEventEmitter emitterScript = emitterGo.AddComponent<StudioEventEmitter>();
-                        emitterScript.PlayEvent = EmitterGameEvent.ObjectStart;
-                        emitterScript.StopEvent = EmitterGameEvent.ObjectDestroy;
-                        emitterScript.Event = effect.fmodId;
-                        emitterScript.EventInstance.setVolume(effect.minVolume);
-                     }
+                     StudioEventEmitter emitterScript = emitterGo.AddComponent<StudioEventEmitter>();
+                     emitterScript.PlayEvent = EmitterGameEvent.ObjectStart;
+                     emitterScript.StopEvent = EmitterGameEvent.ObjectDestroy;
+                     emitterScript.Event = SoundEffectManager.CALMING_WATERFALL;
                   }
 
                   break;

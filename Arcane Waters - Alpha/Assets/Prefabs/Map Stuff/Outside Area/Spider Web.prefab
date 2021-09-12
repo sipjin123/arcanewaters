@@ -296,6 +296,12 @@ MonoBehaviour:
   destinationX: 0
   destinationY: 0
   jumpTrigger: {fileID: 7353706475582836528}
+  biomeType: 1
+  webIdleReference: {fileID: 2800000, guid: 27e82939c31244b40bcf861be17e6a94, type: 3}
+  webBounceReference: {fileID: 2800000, guid: 4b8d72b6dcf674b45b55637bedb54705, type: 3}
+  simpleAnim: {fileID: 96975470860014819}
+  bounceWebMin: 0
+  bounceWebMax: 5
 --- !u!212 &6757973685074875895
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -365,7 +371,7 @@ MonoBehaviour:
   stayAtLastFrame: 0
   loopDelay: 0
   isPaused: 0
-  minIndex: 0
+  minIndex: 1
   maxIndex: 1000
   currentAnimation: 0
   group: 0

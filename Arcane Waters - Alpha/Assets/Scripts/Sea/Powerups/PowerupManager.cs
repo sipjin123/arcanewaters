@@ -165,7 +165,7 @@ public class PowerupManager : MonoBehaviour {
 
       // After a delay, have the popup icon move upwards
       // Play sfx
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.PICKUP_POWERUP, transform);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.PICKUP_POWERUP, targetPos: spawnSource);
 
       popupIcon.transform.DOBlendableLocalMoveBy(Vector3.up * 0.3f, 0.4f).SetEase(Ease.OutSine);
       yield return new WaitForSeconds(1.4f);
@@ -175,7 +175,7 @@ public class PowerupManager : MonoBehaviour {
 
       // Show a confirmation in chat
       string powerupName = PowerupManager.self.getPowerupData(powerupType).powerupName;
-      string msg = string.Format("You received powerup! <color=red>{0}</color>!", powerupName);
+      string msg = string.Format("You received the <color=red>{0}</color> powerup!", powerupName);
       ChatManager.self.addChat(msg, ChatInfo.Type.System);
       addPowerupClient(new Powerup {
          powerupRarity = powerupRarity,

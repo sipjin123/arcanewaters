@@ -49,20 +49,21 @@ public class FarmingTrigger : MonoBehaviour {
       yield return new WaitForSeconds(.1f);
 
       // Play weapon SFX upon triggering animation
-      //WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(bodyEntity.weaponManager.equipmentDataId);
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(bodyEntity.weaponManager.equipmentDataId);
       //if (weaponData != null && weaponData.actionSfxDirectory.Length > 1) {
       //   SoundManager.create3dSoundWithPath(weaponData.actionSfxDirectory, transform.position);
       //}
       // Legacy support for previous implementation
       //SoundEffectManager.self.playLegacyInteractionOneShot(bodyEntity.weaponManager.equipmentDataId, transform);
 
-      Weapon.ActionType currentActionType = bodyEntity.weaponManager.actionType;
+      Weapon.ActionType currentActionType = weaponData.actionType;
+
       Collider2D currentCollider = coneCollider;
 
       updateTriggerDirection();
 
       // Playing FMOD SFX for farming interactions
-      SoundEffectManager.self.playInteractionOneShot(currentActionType, transform);
+      SoundEffectManager.self.playInteractionSfx(currentActionType, weaponData.weaponClass, weaponData.sfxType, transform);
 
       playFarmingParticles(currentActionType);
 
@@ -73,7 +74,7 @@ public class FarmingTrigger : MonoBehaviour {
       currentCollider.gameObject.SetActive(true);
 
       // Interact with crops overlapping the cone collider
-      bool anyCropHarvested = false;
+      //bool anyCropHarvested = false;
       RaycastHit2D[] rayHits = new RaycastHit2D[10];
       int hitNum = currentCollider.Cast(new Vector2(0, 0), rayHits);
       foreach (RaycastHit2D hit in rayHits) {
@@ -84,18 +85,18 @@ public class FarmingTrigger : MonoBehaviour {
             // Create dirt particle when colliding with crop spots with crops using a pitchfork
             if (currentActionType == Weapon.ActionType.HarvestCrop && cropSpot.crop != null) {
                if (cropSpot.crop.isMaxLevel() && !cropSpot.crop.hasBeenHarvested()) {
-                  anyCropHarvested = true;
+                  //anyCropHarvested = true;
 
                   cropSpot.harvestCrop();
                }
             }
          }
 
-         if (currentActionType == Weapon.ActionType.HarvestCrop) {
-            if (!anyCropHarvested) {
-               SoundManager.play2DClip(SoundManager.Type.Harvesting_Pitchfork_Miss);
-            }
-         }
+         //if (currentActionType == Weapon.ActionType.HarvestCrop) {
+         //   if (!anyCropHarvested) {
+         //      SoundManager.play2DClip(SoundManager.Type.Harvesting_Pitchfork_Miss);
+         //   }
+         //}
       }
 
       _isFarming = false;

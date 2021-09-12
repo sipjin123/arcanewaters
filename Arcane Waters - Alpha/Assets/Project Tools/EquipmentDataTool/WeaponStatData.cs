@@ -24,6 +24,9 @@ public class WeaponStatData : EquipmentStatData
    [XmlElement(Namespace = "ActionSFX")]
    public string actionSfxDirectory = "";
 
+   // SFX category for FMOD implementation
+   public WeaponSfxType sfxType;
+
    // The damage of the weapon
    public int weaponBaseDamage = 0;
 

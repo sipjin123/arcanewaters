@@ -137,8 +137,12 @@ public class ClientMessageManager : MonoBehaviour {
          case ErrorMessage.Type.UseItemFailed:
             PanelManager.self.noticeScreen.show(msg.customMessage);
 
-            if (InventoryPanel.self.isShowing()) {
+            if (InventoryPanel.self != null && InventoryPanel.self.isShowing()) {
                InventoryPanel.self.refreshPanel();
+            }
+
+            if (StoreScreen.self != null && StoreScreen.self.isShowing()) {
+               StoreScreen.self.toggleBlocker(false);
             }
 
             return;
@@ -228,15 +232,20 @@ public class ClientMessageManager : MonoBehaviour {
             Global.player.rpc.Cmd_RequestGuildInfoFromServer();
 
             return;
+         case ConfirmMessage.Type.UsedConsumable:
          case ConfirmMessage.Type.UsedHairDye:
          case ConfirmMessage.Type.UsedShipSkin:
          case ConfirmMessage.Type.UsedHaircut:
-            string chatMessage = "You have dyed your hair!";
+            string chatMessage = msg.customMessage;
 
             if (msg.confirmType == ConfirmMessage.Type.UsedShipSkin) {
                chatMessage = "You have repainted your ship!";
             } else if (msg.confirmType == ConfirmMessage.Type.UsedHaircut) {
                chatMessage = "You have cut your hair!";
+            } else if (msg.confirmType == ConfirmMessage.Type.UsedHairDye) {
+               chatMessage = "You have dyed your hair!";
+            } else if (msg.confirmType == ConfirmMessage.Type.UsedConsumable) {
+               Global.player.rpc.Cmd_FetchPerkPointsForUser();
             }
 
             // Show the confirmation message in the notice screen
@@ -245,11 +254,14 @@ public class ClientMessageManager : MonoBehaviour {
             // Add the confirmation message in the chat panel
             ChatManager.self.addChat(chatMessage, msg.timestamp, ChatInfo.Type.System);
 
-            // Get a reference to the Inventory Panel
-            InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
-
             // Refresh the panel
-            panel.refreshPanel();
+            if (InventoryPanel.self != null && InventoryPanel.self.isShowing()) {
+               InventoryPanel.self.refreshPanel();
+            }
+
+            if (StoreScreen.self != null && StoreScreen.self.isShowing()) {
+               StoreScreen.self.toggleBlocker(false);
+            }
 
             return;
          case ConfirmMessage.Type.General:

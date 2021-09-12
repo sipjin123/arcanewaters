@@ -50,6 +50,7 @@ public class SoundEffectManager : GenericGameManager
    public const string APPLY_CRIT_PARAM = "Apply_Crit";
    public const string WEATHER_PARAM = "Weather_Effects";
    public const string APPLY_PUP_PARAM = "Apply_Powerup";
+   public const string APPLY_MAGIC = "Apply_Magic";
    #endregion
 
    #region UI
@@ -79,6 +80,7 @@ public class SoundEffectManager : GenericGameManager
    public const string ENEMY_SHIP_IMPACT = "event:/SFX/Game/Sea_Battle/Enemy_Ship_Impact";
    public const string ENEMY_SHIP_DESTROYED = "event:/SFX/Game/Sea_Battle/Enemy_Ship_Destroyed";
    public const string HORROR_DEATH = "event:/SFX/Game/Sea_Battle/Horror/Death";
+   public const string HORROR_POISON_BOMB = "event:/SFX/Game/Sea_Battle/Horror/Poison_Bomb";
    #endregion
 
    #region GAME
@@ -116,6 +118,7 @@ public class SoundEffectManager : GenericGameManager
    public const string COLLECT_LOOT_SEA = "event:/SFX/Player/Interactions/Diegetic/Collect_Loot_Sea";
    public const string COLLECT_LOOT_LAND = "event:/SFX/Player/Interactions/Diegetic/Collect_Loot_Land";
    public const string OPEN_CHEST = "event:/SFX/Player/Interactions/Diegetic/Open_Treasure_Site_Chest";
+   public const string WEAPON_SWING = "event:/SFX/Player/Interactions/Diegetic/Weapons/Swings";
    #endregion
 
    #region NPC
@@ -126,11 +129,6 @@ public class SoundEffectManager : GenericGameManager
    #endregion
 
    #endregion
-
-   public enum CannonballImpactType
-   {
-      Water = 0
-   }
 
    #endregion
 
@@ -257,9 +255,9 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   public void playCannonballImpact (CannonballImpactType impactType, Vector3 position) {
+   public void playCannonballImpact (CannonballSfxType impactType, Vector3 position) {
       EventInstance impactEvent = RuntimeManager.CreateInstance(CANNONBALL_IMPACT);
-      impactEvent.setParameterByName(AUDIO_SWITCH_PARAM, (int) impactType);
+      impactEvent.setParameterByName(AUDIO_SWITCH_PARAM, ((int) impactType) - 1);
       impactEvent.set3DAttributes(RuntimeUtils.To3DAttributes(position));
       impactEvent.start();
       impactEvent.release();
@@ -459,7 +457,7 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   public void playInteractionOneShot (Weapon.ActionType weaponAction, Transform target) {
+   public void playInteractionSfx (Weapon.ActionType weaponAction, Weapon.Class weaponClass, WeaponSfxType sfxType, Transform target) {
       switch (weaponAction) {
          case Weapon.ActionType.PlantCrop:
             playFmodSfx(THROW_SEEDS, target);
@@ -467,6 +465,20 @@ public class SoundEffectManager : GenericGameManager
          case Weapon.ActionType.WaterCrop:
             playFmodSfx(WATERING_PLANTS, target);
             break;
+         default:
+            playWeaponSfx(sfxType, weaponClass, target);
+            break;
+      }
+   }
+
+   public void playWeaponSfx (WeaponSfxType sfxType, Weapon.Class weaponClass, Transform target) {
+      if (sfxType != WeaponSfxType.None) {
+         EventInstance eventInstance = RuntimeManager.CreateInstance(WEAPON_SWING);
+         eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, ((int) sfxType) - 1);
+         eventInstance.setParameterByName(APPLY_MAGIC, weaponClass == Weapon.Class.Magic ? 1 : 0);
+         eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(target));
+         eventInstance.start();
+         eventInstance.release();
       }
    }
 
@@ -492,6 +504,26 @@ public class SoundEffectManager : GenericGameManager
       eventInstance.release();
    }
 
+   //public void playSeaAbilitySfx (float delay, Attack.Type attackType, ProjectileSfxType sfxType, Transform target = null, Vector3 position = default) {
+   //   switch (sfxType) {
+   //      case ProjectileSfxType.Horror_Poison:
+   //         playHorrorPoisonSfx(delay, target, position, attackType == Attack.Type.Poison_Circle);
+   //         break;
+   //   }
+   //}
+
+   // Horror Boss
+   public void playHorrorPoisonSfx (float delay, Transform target = null, Vector3 pos = default, bool isCluster = false) {
+      StartCoroutine(CO_PlayHorrorPoisonSfx(delay, pos, isCluster));
+   }
+
+   private IEnumerator CO_PlayHorrorPoisonSfx (float delay, Vector3 position, bool isCluster) {
+      yield return new WaitForSeconds(delay);
+      EventInstance eventInstance = RuntimeManager.CreateInstance(HORROR_POISON_BOMB);
+      eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, isCluster ? 1 : 0);
+      eventInstance.set3DAttributes(RuntimeUtils.To3DAttributes(position));
+   }
+
    private void playSoundEffect3D (SoundEffect effect, Transform target) {
       // Setup audio player
       AudioSource audioSource = Instantiate(PrefabsManager.self.sound3dPrefab, target.position, Quaternion.identity);
@@ -505,29 +537,33 @@ public class SoundEffectManager : GenericGameManager
    }
 
    public void playNotificationPanelSfx () {
-      StartCoroutine(CO_PlayNotificationPanelSfx());
-   }
-
-   private IEnumerator CO_PlayNotificationPanelSfx () {
-      yield return new WaitForSeconds(1.0f);
       if (CameraManager.defaultCamera.getPixelFadeEffect().isFadingIn) {
          playFmodSfx(TIP_FOLDOUT);
       }
    }
 
-   public void playFmodWithDelay (int id, float delay, Transform target = null, bool is3D = false) {
-      StartCoroutine(CO_PlayFmodAfterDelay(id, delay, target, is3D));
+   //public void playFmodWithDelay (int id, float delay, Transform target = null, bool is3D = false) {
+   //   StartCoroutine(CO_PlayFmodAfterDelay(id, delay, target, is3D));
+   //}
+
+   public void playFmodSfxAfterDelay (string path, float delay, Transform target = null, Vector3 pos = default) {
+      StartCoroutine(CO_PlayFmodSfxAfterDelay(path, delay, target, pos));
    }
 
-   private IEnumerator CO_PlayFmodAfterDelay (int id, float delay, Transform target = null, bool is3D = false) {
+   private IEnumerator CO_PlayFmodSfxAfterDelay (string path, float delay, Transform target, Vector3 pos) {
       yield return new WaitForSeconds(delay);
-
-      if (is3D && target != null) {
-         self.playFmodOneShot(id, target);
-      } else {
-         self.playFmod2dSfxWithId(id);
-      }
+      playFmodSfx(path, target, pos);
    }
+
+   //private IEnumerator CO_PlayFmodAfterDelay (int id, float delay, Transform target = null, bool is3D = false) {
+   //   yield return new WaitForSeconds(delay);
+
+   //   if (is3D && target != null) {
+   //      self.playFmodOneShot(id, target);
+   //   } else {
+   //      self.playFmod2dSfxWithId(id);
+   //   }
+   //}
 
    public IEnumerator CO_DestroyAfterEnd (StudioEventEmitter emitter) {
       while (emitter != null && emitter.IsPlaying()) {
@@ -601,4 +637,29 @@ public class SoundEffectManager : GenericGameManager
    }
 
    #endregion
+}
+
+// SFX related enums
+public enum WeaponSfxType
+{
+   None = 0,
+   Blunt_Metallic = 1,
+   Metallic_Thin = 2,
+   Metallic_Heavy = 3,
+   Wooden_Thin = 4,
+   Wooden_Thick_Heavy = 5,
+   Flammables_Swigs_Swishes = 6,
+   Clunky_Mechanical = 7
+}
+
+public enum SeaAbilitySfxType
+{
+   None = 0,
+   Horror_Poison = 1
+}
+
+public enum CannonballSfxType
+{
+   None = 0,
+   Water_Impact = 1
 }

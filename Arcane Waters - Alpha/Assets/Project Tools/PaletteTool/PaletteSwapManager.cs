@@ -52,7 +52,15 @@ public class PaletteSwapManager : GenericGameManager {
       }
    }
 
-   public PaletteToolData getPaletteById (int id) {
+   public PaletteToolData getPalette (int id) {
+      if (_paletteDataRegistry == null || !_paletteDataRegistry.ContainsKey(id)) {
+         return null;
+      }
+
+      return _paletteDataRegistry[id];
+   }
+
+   public PaletteToolData getPaletteByTagId (int id) {
       PaletteToolData paletteData = _paletteDataList.Find(_ => _.tagId == id);
       return paletteData;
    }
@@ -66,10 +74,13 @@ public class PaletteSwapManager : GenericGameManager {
       return _paletteDataList.ToArray();
    }
 
-   public void storePaletteData (PaletteToolData[] paletteData) {
+   public void storePaletteData (Dictionary<int, PaletteToolData> paletteData) {
       _paletteDataList.Clear();
-      foreach (PaletteToolData data in paletteData) {
-         _paletteDataList.Add(data);
+      _paletteDataRegistry.Clear();
+
+      foreach (var pair in paletteData) {
+         _paletteDataRegistry.Add(pair.Key, pair.Value);
+         _paletteDataList.Add(pair.Value);
       }
       paletteCompleteEvent.Invoke();
       hasInitialized = true;
@@ -77,6 +88,7 @@ public class PaletteSwapManager : GenericGameManager {
 
    public void fetchPaletteData () {
       _paletteDataList = new List<PaletteToolData>();
+      _paletteDataRegistry = new Dictionary<int, PaletteToolData>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> rawXMLData = DB_Main.getPaletteXML(true);
@@ -88,6 +100,7 @@ public class PaletteSwapManager : GenericGameManager {
 
                // Save the palette data in the memory cache
                _paletteDataList.Add(paletteData);
+               _paletteDataRegistry.Add(xmlPair.xmlId, paletteData);
             }
          });
       });
@@ -275,11 +288,40 @@ public class PaletteSwapManager : GenericGameManager {
       return _paletteDataList;
    }
 
+   public static string getPaletteDisplayName (PaletteToolData paletteToolData) {
+      if (paletteToolData == null || string.IsNullOrWhiteSpace(paletteToolData.paletteName)) {
+         return "";
+      }
+
+      string[] tokens = paletteToolData.paletteName.Split('_');
+
+      if (tokens == null || tokens.Length < 2) {
+         return "";
+      }
+
+      string displayName = "";
+      int counter = 0;
+
+      foreach (string token in tokens) {
+         if (counter > 0) {
+            displayName += Util.UppercaseFirst(token) + " ";
+         }
+         
+         counter++;
+      }
+
+      return displayName.Trim();
+   }
+
    #region Private Variables
 
    // Cached data from database about created palettes
    [SerializeField]
    private protected List<PaletteToolData> _paletteDataList = new List<PaletteToolData>();
+
+   // Stores the palette information
+   [SerializeField]
+   private protected Dictionary<int, PaletteToolData> _paletteDataRegistry = new Dictionary<int, PaletteToolData>();
 
    // Information about the last palette we created
    private static string[] _lastPaletteNames;

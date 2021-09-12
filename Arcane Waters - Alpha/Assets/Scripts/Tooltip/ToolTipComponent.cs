@@ -59,6 +59,9 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
    // Set to true if an offscreen tooltip should be shifted back onto screen instead of automatically being placed above the object.
    public bool nudgeAwayFromBorder = false;
 
+   // Identifies if the key is derived from a child object
+   public bool isKeyDerivedFromChildObject = false;
+
    #endregion
 
    public bool isActive () {
@@ -146,12 +149,29 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
       // Variable to hold the sprite name of this item, which is then added to end of the dictionary key.
       string dictKeySuffix = null;
+      string rootKey = null;
 
       // Create the key needed to find the tooltip in the dictionary
-      if ((this.GetComponent<Image>() != null) && (this.GetComponent<Image>().sprite != null)) {
-         dictKeySuffix = this.GetComponent<Image>().sprite.name;
+      // The key will usually be the name of the object that has the TooltipComponent attached, however,
+      // sometimes the key may be on a child object (i.e. icon) of the current object (i.e. row of stats)
+      // and we want the current object to trigger the tooltip.
+      if (isKeyDerivedFromChildObject == true) {
+         GameObject childKey = this.GetComponentInChildren<Image>().gameObject;
+         if (childKey != null) {
+            rootKey = childKey.name;
+            if (childKey.GetComponent<Image>() != null) {
+               if (childKey.GetComponent<Image>().sprite != null) {
+                  dictKeySuffix = childKey.GetComponent<Image>().sprite.name;
+               }
+            }
+         }
+      } else {
+         if ((this.GetComponent<Image>() != null) && (this.GetComponent<Image>().sprite != null)) {
+            dictKeySuffix = this.GetComponent<Image>().sprite.name;
+         }
+         rootKey = this.name;
       }
-      string dictKey = this.name + dictKeySuffix;
+      string dictKey = rootKey + dictKeySuffix;
 
       // Check if the key is in the dictionary
       if (UIToolTipManager.self.toolTipDict.ContainsKey(dictKey)) {

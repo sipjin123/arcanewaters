@@ -290,10 +290,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
+  tooltipPlacement: 3
   tooltipType: 6
   message: 
-  maxWidth: 0
+  maxWidth: 180
   nudgeAwayFromBorder: 0
 --- !u!1 &5780537511318949960
 GameObject:

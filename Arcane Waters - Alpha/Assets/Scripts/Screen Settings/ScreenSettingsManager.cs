@@ -78,6 +78,7 @@ public class ScreenSettingsManager : GenericGameManager {
 
    private void Start () {
       BattleUIManager.self.setBattleCameraHeight();
+      refreshMouseLockState();
    }
 
    public static void setFullscreenMode (FullScreenMode screenMode) {
@@ -108,6 +109,11 @@ public class ScreenSettingsManager : GenericGameManager {
          Cursor.lockState = CursorLockMode.None;
       }
 #endif
+   }
+
+   public void refreshMouseLockState () {
+      bool shouldLockMouse = PlayerPrefs.GetInt(OptionsManager.PREF_LOCK_CURSOR) == 1 && !PanelManager.self.get<OptionsPanel>(Panel.Type.Options).isShowing();
+      Cursor.lockState = shouldLockMouse ? CursorLockMode.Confined : CursorLockMode.None;
    }
 
    public static void setResolution (int width, int height, int refreshRate) {

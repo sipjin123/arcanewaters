@@ -89,7 +89,7 @@ public class InventoryManager : MonoBehaviour
 
    protected static void confirmUseItem (Item item) {
       PanelManager.self.confirmScreen.hide();
-      Global.player.rpc.Cmd_UseItem(item.id);
+      Global.player.rpc.Cmd_RequestUseItem(item.id, confirmed: true);
       
       if (InventoryPanel.self.isShowing()) {
          InventoryPanel.self.showBlocker(large: true);

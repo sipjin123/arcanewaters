@@ -266,16 +266,22 @@ public class ImageManager : ClientMonoBehaviour {
       }
 
       path = getResourcePath(path);
-      UnityEngine.Object[] data = Resources.LoadAll(path);
-      List<Sprite> sprites = new List<Sprite>();
 
-      foreach (UnityEngine.Object obj in data) {
-         if (obj is Sprite) {
-            sprites.Add((Sprite) obj);
+      if (!_spritesByPath.ContainsKey(path)) {
+         UnityEngine.Object[] data = Resources.LoadAll(path);
+         List<Sprite> sprites = new List<Sprite>();
+
+         foreach (UnityEngine.Object obj in data) {
+            if (obj is Sprite) {
+               sprites.Add((Sprite) obj);
+            }
          }
+         sprites.OrderBy(_ => extractInteger(_.name)).ToList();
+
+         _spritesByPath.Add(path, sprites.ToArray());
       }
-      sprites.OrderBy(_ => extractInteger(_.name)).ToList();
-      return sprites.ToArray();
+
+      return _spritesByPath[path];
    }
 
    protected string getResourcePath (string path) {
@@ -413,6 +419,9 @@ public class ImageManager : ClientMonoBehaviour {
 
    // Cache of our data by path
    protected static Dictionary<string, List<ImageData>> _dataByPath = new Dictionary<string, List<ImageData>>();
+
+   // Cache of our sprites by path
+   protected static Dictionary<string, Sprite[]> _spritesByPath = new Dictionary<string, Sprite[]>();
 
    #endregion
 }

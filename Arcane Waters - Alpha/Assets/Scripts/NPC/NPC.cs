@@ -95,6 +95,9 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    // The game object that indicates that this npc has a quest for the player but does not have enough requirements
    public GameObject insufficientQuestNotice;
 
+   // A collider active on stationary npc preventing players to stand on top of them
+   public Collider2D stationaryCollider;
+
    #endregion
 
    protected override void Awake () {
@@ -201,6 +204,16 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       // Add name to game object for editor preview
       NPCData fetchedData = NPCManager.self.getNPCData(npcId);
       gameObject.name = fetchedData == null ? gameObject.name : fetchedData.name;
+
+      // Prevent players to stand on top of stationary npcs
+      if (stationaryCollider != null) { 
+         if (isStationary) {
+            stationaryCollider.enabled = true;
+            getRigidbody().constraints = RigidbodyConstraints2D.FreezeAll;
+         } else {
+            stationaryCollider.enabled = false;
+         }
+      }
 
       // Keep track of the NPC in the Manager
       NPCManager.self.storeNPC(this);

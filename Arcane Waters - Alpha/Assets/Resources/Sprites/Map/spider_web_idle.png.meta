@@ -8,6 +8,42 @@ TextureImporter:
   - first:
       213: 21300002
     second: spider_web_idle_1
+  - first:
+      213: 6156526702994772134
+    second: spider_web_idle_0
+  - first:
+      213: 4209754299580541314
+    second: spider_web_idle_1
+  - first:
+      213: -2897601131731718865
+    second: spider_web_idle_2
+  - first:
+      213: 4581759137826695046
+    second: spider_web_idle_3
+  - first:
+      213: 2249520170242467350
+    second: spider_web_idle_4
+  - first:
+      213: -814682224263506429
+    second: spider_web_idle_5
+  - first:
+      213: 8127607084931951464
+    second: spider_web_idle_6
+  - first:
+      213: -7372825147009283686
+    second: spider_web_idle_7
+  - first:
+      213: 1946035835269155154
+    second: spider_web_idle_8
+  - first:
+      213: 2604578971214077009
+    second: spider_web_idle_9
+  - first:
+      213: -1513181846096272086
+    second: spider_web_idle_10
+  - first:
+      213: -8277850870806960554
+    second: spider_web_idle_11
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -121,6 +157,216 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
+        y: 140
+        width: 32
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a0d53eea60607550800000000000000
+      internalID: 6156526702994772134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spider_web_idle_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 140
+        width: 32
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 289eb223b3d0c6a30800000000000000
+      internalID: 4209754299580541314
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spider_web_idle_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 112
+        width: 32
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f2d6c527f17a9c7d0800000000000000
+      internalID: -2897601131731718865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spider_web_idle_3
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 112
+        width: 32
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6876f8029ada59f30800000000000000
+      internalID: 4581759137826695046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spider_web_idle_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 32
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 616e0662da6e73f10800000000000000
+      internalID: 2249520170242467350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spider_web_idle_5
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 84
+        width: 32
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 306d2f955daa1b4f0800000000000000
+      internalID: -814682224263506429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spider_web_idle_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 56
+        width: 32
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86b2153f49f0bc070800000000000000
+      internalID: 8127607084931951464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spider_web_idle_7
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 56
+        width: 32
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a99c17977967ea990800000000000000
+      internalID: -7372825147009283686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spider_web_idle_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 28
+        width: 32
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25906691845b10b10800000000000000
+      internalID: 1946035835269155154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spider_web_idle_9
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 28
+        width: 32
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15cdaa056c2552420800000000000000
+      internalID: 2604578971214077009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spider_web_idle_10
+      rect:
+        serializedVersion: 2
+        x: 0
         y: 0
         width: 32
         height: 28
@@ -131,14 +377,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8269c1464afbae64c9fd562321c1c8b0
-      internalID: 21300000
+      spriteID: a25acdec029100be0800000000000000
+      internalID: -1513181846096272086
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spider_web_idle_1
+      name: spider_web_idle_11
       rect:
         serializedVersion: 2
         x: 32
@@ -152,8 +398,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a45da6599e556584a909c06e7a6e4b5d
-      internalID: 21300002
+      spriteID: 656a4edad7a2f1d80800000000000000
+      internalID: -8277850870806960554
       vertices: []
       indices: 
       edges: []

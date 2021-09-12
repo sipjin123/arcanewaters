@@ -114,9 +114,11 @@ public class CropSpot : MonoBehaviour {
          if (triggeredAction) {
             // Play weapon SFX upon triggering animation
             WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(player.weaponManager.equipmentDataId);
-            if (weaponData != null && weaponData.actionSfxDirectory.Length > 1) {
-               SoundManager.create3dSoundWithPath(weaponData.actionSfxDirectory, transform.position);
-            }
+            SoundEffectManager.self.playInteractionSfx(weaponData.actionType, weaponData.weaponClass, weaponData.sfxType, transform);
+            //WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(player.weaponManager.equipmentDataId);
+            //if (weaponData != null && weaponData.actionSfxDirectory.Length > 1) {
+            //   SoundManager.create3dSoundWithPath(weaponData.actionSfxDirectory, transform.position);
+            //}
          }
       }
    }
@@ -137,8 +139,8 @@ public class CropSpot : MonoBehaviour {
       cropProjectile.setSprite(crop.cropType);
       cropProjectile.init(transform.position, dir, this);
 
-      SoundEffectManager.self.playSoundEffect(SoundEffectManager.HARVESTING_FLYING, transform);
-      SoundEffectManager.self.playSoundEffect(SoundEffectManager.HARVESTING_PITCHFORK_HIT, transform);
+      //SoundEffectManager.self.playSoundEffect(SoundEffectManager.HARVESTING_FLYING, transform);
+      //SoundEffectManager.self.playSoundEffect(SoundEffectManager.HARVESTING_PITCHFORK_HIT, transform);
    }
 
    #region Private Variables

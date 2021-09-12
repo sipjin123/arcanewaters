@@ -279,8 +279,10 @@ public class MyNetworkManager : NetworkManager
       ProjectileStatManager.self.initializeDataCache();
 
       HaircutXMLManager.self.initializeDataCache();
+      HairDyeXMLManager.self.initializeDataCache();
       GemsXMLManager.self.initializeDataCache();
       ShipSkinXMLManager.self.initializeDataCache();
+      ConsumableXMLManager.self.initializeDataCache();
    }
 
    public override void OnStopServer () {

@@ -3340,7 +3340,101 @@ public class DB_Main : DB_MainStub
    }
    #endregion
 
+   #region Perks XML
+
+   public static new void updatePerksXML (string rawData, int perkId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO global.perks_config_xml (xml_id, xmlContent, creator_userID, lastUserUpdate) " +
+            "VALUES(@xml_id, @xmlContent, @creator_userID, lastUserUpdate = NOW()) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@xml_id", perkId);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<PerkData> getPerksXML () {
+      List<PerkData> perkDataList = new List<PerkData>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM global.perks_config_xml", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  perkDataList.Add(new PerkData(dataReader));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<PerkData>(perkDataList);
+   }
+
+   public static new void deletePerkXML (int xmlId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.perks_config_xml WHERE xml_id=@xml_id", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@xml_id", xmlId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
    #region Perks
+
+   public static new bool resetPerkPointsAll (int usrId, int perkPoints = 0) {
+      int rowsAffeced = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM perks WHERE usrId=@usrId AND perkId > 0; UPDATE perks SET perkPoints=@perkPoints WHERE usrId=@usrId AND perkId=0;", conn)) {
+
+            conn.Open();
+
+            cmd.Parameters.AddWithValue("@usrId", usrId);
+            cmd.Parameters.AddWithValue("@perkPoints", perkPoints);
+
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            rowsAffeced = cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return rowsAffeced > 0;
+   }
 
    public static new List<Perk> getPerkPointsForUser (int usrId) {
       List<Perk> points = new List<Perk>();
@@ -3426,7 +3520,9 @@ public class DB_Main : DB_MainStub
       return points;
    }
 
-   public static new void addPerkPointsForUser (int usrId, int perkId, int perkPoints) {
+   public static new bool addPerkPointsForUser (int usrId, int perkId, int perkPoints) {
+      int rowsAffected = 0;
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -3443,11 +3539,13 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             DebugQuery(cmd);
 
-            cmd.ExecuteNonQuery();
+           rowsAffected = cmd.ExecuteNonQuery();
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
+
+      return rowsAffected > 0;
    }
 
    public static new void addPerkPointsForUser (int usrId, List<Perk> perks) {
@@ -3477,72 +3575,6 @@ public class DB_Main : DB_MainStub
          cmd.Prepare();
          DebugQuery(cmd);
          cmd.ExecuteNonQuery();
-      }
-   }
-
-   public static new void updatePerksXML (string rawData, int perkId) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            // Declaration of table elements
-            "INSERT INTO global.perks_config_xml (xml_id, xmlContent, creator_userID, lastUserUpdate) " +
-            "VALUES(@xml_id, @xmlContent, @creator_userID, lastUserUpdate = NOW()) " +
-            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-
-            cmd.Parameters.AddWithValue("@xml_id", perkId);
-            cmd.Parameters.AddWithValue("@xmlContent", rawData);
-            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
-            DebugQuery(cmd);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
-   public static new List<PerkData> getPerksXML () {
-      List<PerkData> perkDataList = new List<PerkData>();
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM global.perks_config_xml", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-            DebugQuery(cmd);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  perkDataList.Add(new PerkData(dataReader));
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-      return new List<PerkData>(perkDataList);
-   }
-
-   public static new void deletePerkXML (int xmlId) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.perks_config_xml WHERE xml_id=@xml_id", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@xml_id", xmlId);
-            DebugQuery(cmd);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
       }
    }
 
@@ -4436,7 +4468,74 @@ public class DB_Main : DB_MainStub
    }
 
    #endregion
-   
+
+   #region Hairdyes XML
+
+   public static new void updateHairdyeXML (int xmlID, string rawData, int accIDOverride = 0) {
+      string xml_id_key = "xml_id, ";
+      string xml_id_value = "@xml_id, ";
+
+      // If this is a newly created data, let sql table auto generate id
+      if (xmlID < 0) {
+         xml_id_key = "";
+         xml_id_value = "";
+      }
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO global.hair_dyes_v1 (" + xml_id_key + "xmlContent, creator_userID, lastUserUpdate) " +
+            "VALUES(" + xml_id_value + "@xmlContent, @creator_userID, NOW()) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@xml_id", xmlID);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@creator_userID", accIDOverride == 0 ? MasterToolAccountManager.self.currentAccountID : accIDOverride);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<XMLPair> getHairdyesXML () {
+      List<XMLPair> rawDataList = new List<XMLPair>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.hair_dyes_v1", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  XMLPair newPair = new XMLPair {
+                     isEnabled = dataReader.GetInt32("is_enabled") == 0 ? false : true,
+                     xmlId = dataReader.GetInt32("xml_id"),
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     xmlOwnerId = dataReader.GetInt32("creator_userID")
+                  };
+                  rawDataList.Add(newPair);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<XMLPair>(rawDataList);
+   }
+
+   #endregion
+
    #region Gems XML
 
    public static new void updateGemsXML (int xmlID, string rawData, int accIDOverride = 0) {
@@ -4545,6 +4644,73 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.ship_skins_v2", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  XMLPair newPair = new XMLPair {
+                     isEnabled = dataReader.GetInt32("is_enabled") == 0 ? false : true,
+                     xmlId = dataReader.GetInt32("xml_id"),
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     xmlOwnerId = dataReader.GetInt32("creator_userID")
+                  };
+                  rawDataList.Add(newPair);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<XMLPair>(rawDataList);
+   }
+
+   #endregion
+
+   #region Consumables XML
+
+   public static new void updateConsumableXML (int xmlID, string rawData, int accIDOverride = 0) {
+      string xml_id_key = "xml_id, ";
+      string xml_id_value = "@xml_id, ";
+
+      // If this is a newly created data, let sql table auto generate id
+      if (xmlID < 0) {
+         xml_id_key = "";
+         xml_id_value = "";
+      }
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO global.consumables_v1 (" + xml_id_key + "xmlContent, creator_userID, lastUserUpdate) " +
+            "VALUES(" + xml_id_value + "@xmlContent, @creator_userID, NOW()) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@xml_id", xmlID);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@creator_userID", accIDOverride == 0 ? MasterToolAccountManager.self.currentAccountID : accIDOverride);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<XMLPair> getConsumableXML (){
+      List<XMLPair> rawDataList = new List<XMLPair>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.consumables_v1", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -5478,6 +5644,23 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@shipId", shipId);
             cmd.Parameters.AddWithValue("@shipHealth", shipHealth);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void restoreShipMaxHealth (int shipId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE ships SET health=maxHealth WHERE shpId=@shipId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@shipId", shipId);
             DebugQuery(cmd);
 
             // Execute the command

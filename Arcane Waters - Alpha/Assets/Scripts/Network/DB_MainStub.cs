@@ -291,6 +291,18 @@ public class DB_MainStub : MonoBehaviour
 
    #endregion
 
+   #region Hairdyes XML
+
+   public static void updateHairdyeXML (int xmlID, string rawData, int accIDOverride = 0) {
+      return;
+   }
+
+   public static List<XMLPair> getHairdyesXML () {
+      return new List<XMLPair>();
+   }
+
+   #endregion
+
    #region Ship Skins XML
 
    public static void updateShipSkinXML (int xmlID, string rawData, int accIDOverride = 0) {
@@ -315,6 +327,17 @@ public class DB_MainStub : MonoBehaviour
 
    #endregion
 
+   #region Consummables XML
+
+   public static void updateConsumableXML (int xmlID, string rawData, int accIDOverride = 0) {
+      return;
+   }
+
+   public static List<XMLPair> getConsumableXML () {
+      return new List<XMLPair>();
+   }
+
+   #endregion
    public static List<ItemInstance> getItemInstances (object command, int ownerUserId, ItemDefinition.Category category) {
       return new List<ItemInstance>();
    }
@@ -350,6 +373,26 @@ public class DB_MainStub : MonoBehaviour
       return new List<XMLPair>();
    }
 
+   #region Perks XML
+
+   public static void updatePerksXML (string xmlContent, int perkId) {
+   }
+
+   public static List<PerkData> getPerksXML () {
+      return new List<PerkData>();
+   }
+
+   public static void deletePerkXML (int xmlId) {
+   }
+
+   #endregion
+
+   #region Perks
+
+   public static bool resetPerkPointsAll (int usrId, int perkPoints) {
+      return false;
+   }
+
    public static List<Perk> getPerkPointsForUser (int usrId) {
       return new List<Perk>();
    }
@@ -365,21 +408,14 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
-   public static void addPerkPointsForUser (int usrId, int perkId, int perkPoints) {
+   public static bool addPerkPointsForUser (int usrId, int perkId, int perkPoints) {
+      return false;
    }
 
    public static void addPerkPointsForUser (int usrId, List<Perk> perks) {
    }
 
-   public static void updatePerksXML (string xmlContent, int perkId) {
-   }
-
-   public static List<PerkData> getPerksXML () {
-      return new List<PerkData>();
-   }
-
-   public static void deletePerkXML (int xmlId) {
-   }
+   #endregion
 
    public static void upsertBook (string content, string title, int bookId) {
    }
@@ -790,6 +826,9 @@ public class DB_MainStub : MonoBehaviour
 
    public static void storeShipHealth (int shipId, int shipHealth) {
 
+   }
+
+   public static void restoreShipMaxHealth (int shipId) {
    }
 
    public static List<SiloInfo> getSiloInfo (int userId) {
