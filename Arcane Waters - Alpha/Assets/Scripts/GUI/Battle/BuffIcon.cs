@@ -10,7 +10,7 @@ public class BuffIcon : MonoBehaviour {
    public Image buffIcon;
 
    // The buff sprite list
-   public List<BuffSpritePair> buffSpritePair = new List<BuffSpritePair>();
+   public List<StatusSpritePair> buffSpritePair = new List<StatusSpritePair>();
 
    // The current status type
    public Status.Type statusType;
@@ -26,7 +26,7 @@ public class BuffIcon : MonoBehaviour {
 }
 
 [Serializable]
-public class BuffSpritePair {
+public class StatusSpritePair {
    // Type of status
    public Status.Type statusType;
  
