@@ -258,8 +258,10 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_PlayerInteract (NetworkConnection connection) {
       PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
-      playerBody.farmingTrigger.interactFarming();
-      playerBody.miningTrigger.interactOres();
+      if (!_player.isInBattle()) {
+         playerBody.farmingTrigger.interactFarming();
+         playerBody.miningTrigger.interactOres();
+      }
    }
 
    [ClientRpc]
@@ -6109,17 +6111,17 @@ public class RPCManager : NetworkBehaviour
       });
 
       PvpInviteScreen.self.refuseButton.onClick.AddListener(() => {
-         Cmd_RefusePvpInvite(inviterUserId);
+         Cmd_RefusePvpInvite(inviterUserId, _player.entityName);
          PvpInviteScreen.self.hide();
          PvpInviteScreen.self.refuseButton.onClick.RemoveAllListeners();
       });
    }
 
    [Command]
-   public void Cmd_RefusePvpInvite (int inviterUserId) {
+   public void Cmd_RefusePvpInvite (int inviterUserId, string playerName) {
       BodyEntity inviterUser = BodyManager.self.getBody(inviterUserId);
       if (inviterUser != null) {
-         inviterUser.Target_ReceiveNormalChat("{" + inviterUser.entityName + "} refused your invite.", ChatInfo.Type.System);
+         inviterUser.Target_ReceiveNormalChat("{" + playerName + "} refused your invite.", ChatInfo.Type.System);
       }
    }
 

@@ -71,8 +71,7 @@ public class CannonBox : ClientMonoBehaviour {
    }
 
    public void setAbilityIcon (int id) {
-      bool allowDynamicAbilities = true;
-      if (allowDynamicAbilities && _containerImage && skillIcon) {
+      if (_containerImage && skillIcon) {
          if (id < 1) {
             skillIcon.gameObject.SetActive(false);
             _containerImage.gameObject.SetActive(false);
