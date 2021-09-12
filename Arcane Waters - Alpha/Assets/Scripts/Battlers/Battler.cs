@@ -1359,7 +1359,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                   bool isJumpHeightValid = timePassed < (jumpDuration * jumpFrameFactor);
                   float jumpOffsetValue = -.25f;
 
-                  // Alter the shadow offset while jumping
+                  // Alter the shadow offset while jumping, this is due to shadow being parented to the body, needs offset otherwise the jump will not be noticeable
                   float targetShadowHeight = isJumpHeightValid ? (_alteredBattlerData.shadowOffset.y + jumpOffsetValue) : _alteredBattlerData.shadowOffset.y;
                   Vector2 shadowPositionTarget = new Vector2(0, targetShadowHeight);
                   Vector2 spriteContainerPos = Vector2.Lerp(sourceBattler.shadowTransform.localPosition, shadowPositionTarget, lerpValue);
@@ -1499,11 +1499,41 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                // Now jump back to where we started from
                sourceBattler.playAnim(Anim.Type.Jump_East);
                float startTime = Time.time;
-
+               float halfTime = 0;
+               float jumpFrameFactor = .5f;
+               Vector2 startingPosition = startPos;
                while (Time.time - startTime < jumpDuration) {
                   float timePassed = Time.time - startTime;
-                  Vector2 newPos = Vector2.Lerp(targetBattler.getMeleeStandPosition(), startPos, (timePassed / jumpDuration));
-                  sourceBattler.transform.position = new Vector3(newPos.x, newPos.y, sourceBattler.transform.position.z);
+                  float lerpValue = timePassed / jumpDuration;
+
+                  bool isJumpHeightValid = timePassed < (jumpDuration * jumpFrameFactor);
+                  float jumpOffsetValue = -.25f;
+
+                  // Alter the shadow offset while jumping, this is due to shadow being parented to the body, needs offset otherwise the jump will not be noticeable
+                  float targetShadowHeight = isJumpHeightValid ? (_alteredBattlerData.shadowOffset.y + jumpOffsetValue) : _alteredBattlerData.shadowOffset.y;
+                  Vector2 shadowPositionTarget = new Vector2(0, targetShadowHeight);
+                  Vector2 spriteContainerPos = Vector2.Lerp(sourceBattler.shadowTransform.localPosition, shadowPositionTarget, lerpValue);
+                  sourceBattler.shadowTransform.localPosition = new Vector3(spriteContainerPos.x, spriteContainerPos.y, sourceBattler.transform.position.z);
+
+                  if (isJumpHeightValid) {
+                     // Calculate position from start position toward mid position
+                     Vector2 jumpPosition = new Vector2(startPos.x, startPos.y + .25f);
+                     Vector2 localJumpPos = Vector2.Lerp(targetBattler.getMeleeStandPosition(), jumpPosition, lerpValue);
+                     sourceBattler.transform.position = new Vector3(localJumpPos.x, localJumpPos.y, sourceBattler.transform.position.z);
+
+                     // Cache the last known local jump position
+                     startingPosition = sourceBattler.transform.position;
+                     halfTime = Time.time;
+                  } else {
+                     // Override calculations based on half travel distance
+                     timePassed = Time.time - halfTime;
+                     lerpValue = timePassed / (jumpDuration * jumpFrameFactor);
+
+                     // Calculate position from mid position toward final position
+                     Vector2 newPos = Vector2.Lerp(startingPosition, startPos, lerpValue);
+                     sourceBattler.transform.position = new Vector3(newPos.x, newPos.y, sourceBattler.transform.position.z);
+                  }
+
                   yield return 0;
                }
 
