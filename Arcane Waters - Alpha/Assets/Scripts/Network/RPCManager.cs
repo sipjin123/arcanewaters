@@ -276,7 +276,8 @@ public class RPCManager : NetworkBehaviour
             // Legacy support for previous implementation
             //SoundEffectManager.self.playLegacyInteractionOneShot(playerBody.weaponManager.equipmentDataId, playerBody.transform);
             // Playing FMOD SFX for interaction
-            SoundEffectManager.self.playInteractionOneShot(playerBody.weaponManager.actionType, playerBody.transform);
+            WeaponStatData weaponData = playerBody.weaponManager.cachedWeaponData;
+            SoundEffectManager.self.playInteractionSfx(weaponData.actionType, weaponData.weaponClass, weaponData.sfxType, playerBody.transform);
 
             playerBody.playInteractParticles();
          }
@@ -1702,12 +1703,48 @@ public class RPCManager : NetworkBehaviour
       _player.cropManager.sellCrops(offerId, amountToSell, rarityToSellAt, shopId);
    }
 
+   #region Store
+
+   [Command]
+   public void Cmd_BuyStoreItem (ulong itemId, uint appId) {
+      if (_player == null) {
+         return;
+      }
+
+      // Off to the database
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         StoreItem storeItem = DB_Main.getStoreItem(itemId);
+
+         // Check the store item
+         if (storeItem == null) {
+            D.error($"User {_player.userId} tried to purchase a missing store item (ID: '{itemId}').");
+            reportStorePurchaseFailed();
+            return;
+         }
+
+         if (!storeItem.isEnabled) {
+            D.error($"User {_player.userId} tried to purchase a disabled store item (ID: '{itemId}').");
+            reportStorePurchaseFailed();
+            return;
+         }
+
+         // Check if the item should be paid with gems or with real money (e.g. through Steam)
+         if (storeItem.currencyMode == StoreItem.CurrencyMode.Game) {
+            buyItem(itemId);
+         }
+
+         if (storeItem.currencyMode == StoreItem.CurrencyMode.Real) {
+            buySteamItem(itemId, appId);
+         }
+      });
+   }
+
    [Server]
    private void buyItem (ulong itemId) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Look up the item box for the specified item id
          StoreItem storeItem = DB_Main.getStoreItem(itemId);
-         string purchasedItemName = "";
+         Item storeReferencedItem = null;
 
          int gems = DB_Main.getGems(_player.accountId);
 
@@ -1726,29 +1763,19 @@ public class RPCManager : NetworkBehaviour
                return;
             }
 
-            // Create an inventory entry for the haircut
-            Haircut newHaircut = Haircut.createFromData(haircutData);
-            Item updatedItem = DB_Main.createItemOrUpdateItemCount(_player.userId, newHaircut);
+            storeReferencedItem = Haircut.createFromData(haircutData);
+         }
 
-            // If the purchase was not successful
-            if (updatedItem == null) {
-               D.error($"Store Purchase failed for user '{_player.userId}' trying to purchase the Store Item '{storeItem.id}'.");
+         if (storeItem.category == Item.Category.Hairdye) {
+            HairDyeData hairDyeData = HairDyeXMLManager.self.getHairdyeData(storeItem.itemId);
+
+            if (hairDyeData == null) {
+               D.error($"Store Purchase failed for user '{_player.userId}' trying to purchase the Store Item '{storeItem.id}'. Couldn't find the hair dye data.");
                reportStorePurchaseFailed();
                return;
             }
 
-            // Fetch the newly created item for display
-            purchasedItemName = storeItem.overrideItemName ? storeItem.displayName : haircutData.itemName;
-
-            // Assign the haircut to the player
-            DB_Main.setHairType(_player.userId, haircutData.type);
-
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               _player.hairType = haircutData.type;
-
-               // Update the hair on all clients
-               Rpc_UpdateHair(_player.hairType, _player.hairPalettes);
-            });
+            storeReferencedItem = HairDye.createFromData(hairDyeData);
          }
 
          if (storeItem.category == Item.Category.ShipSkin) {
@@ -1760,46 +1787,48 @@ public class RPCManager : NetworkBehaviour
                return;
             }
 
-            // Create an inventory entry for the skin
-            ShipSkin shipSkin = ShipSkin.createFromData(shipSkinData);
-            Item updatedItem = DB_Main.createItemOrUpdateItemCount(_player.userId, shipSkin);
+            storeReferencedItem = ShipSkin.createFromData(shipSkinData);
+         }
 
-            // If the purchase was not successful
-            if (updatedItem == null) {
-               D.error($"Store Purchase failed for user '{_player.userId}' trying to purchase the Store Item '{storeItem.id}'.");
+         if (storeItem.category == Item.Category.Consumable) {
+            ConsumableData consumableData = ConsumableXMLManager.self.getConsumableData(storeItem.itemId);
+
+            if (consumableData == null) {
+               D.error($"Store Purchase failed for user '{_player.userId}' trying to purchase the Store Item '{storeItem.id}'. Couldn't find the consumable data.");
                reportStorePurchaseFailed();
                return;
             }
 
-            // Fetch the newly created item for display
-            purchasedItemName = storeItem.overrideItemName ? storeItem.displayName : shipSkinData.itemName;
+            storeReferencedItem = Consumable.createFromData(consumableData);
          }
+
+         if (storeReferencedItem == null) {
+            D.error($"Store Purchase failed for user '{_player.userId}' trying to purchase the Store Item '{storeItem.id}'.");
+            reportStorePurchaseFailed();
+            return;
+         }
+
+         Item updatedItem = DB_Main.createItemOrUpdateItemCount(_player.userId, storeReferencedItem);
+
+         // If the purchase was not successful
+         if (updatedItem == null) {
+            D.error($"Store Purchase failed for user '{_player.userId}' trying to purchase the Store Item '{storeItem.id}'.");
+            reportStorePurchaseFailed();
+            return;
+         }
+
+         // Fetch the newly created item for display
+         string purchasedItemName = storeItem.overrideItemName ? storeItem.displayName : storeReferencedItem.itemName;
+         int purchasedItemId = updatedItem.id;
 
          // Remove the gems
          DB_Main.addGems(_player.accountId, -storeItem.price);
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            string feedback = "Thank you for your purchase!";
-
-            if (!string.IsNullOrWhiteSpace(purchasedItemName)) {
-               feedback = $"You have successfully purchased '{purchasedItemName}'!";
-            }
-
-            if (storeItem.category == Item.Category.Hairdye || storeItem.category == Item.Category.Haircut || storeItem.category == Item.Category.ShipSkin) {
-               feedback += " You can find it in your inventory.";
-            }
-
             // Let the player know that we gave them their item
-            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.StoreItemBought, _player, feedback);
+            Target_OnStorePurchaseCompleted(_player.connectionToClient, storeItem.category, purchasedItemName, purchasedItemId);
          });
-      });
-   }
-
-   private void reportStorePurchaseFailed(string customMessage = null) {
-      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-         string feedback = string.IsNullOrWhiteSpace(customMessage) ? "Purchase failed" : customMessage;
-         ServerMessageManager.sendError(ErrorMessage.Type.StoreItemPurchaseFailed, _player, feedback);
       });
    }
 
@@ -1816,7 +1845,7 @@ public class RPCManager : NetworkBehaviour
             }
 
             D.debug($"Steam Purchase Request Received from User {_player.userId}");
-            
+
             D.debug($"The appID is {appId}");
 
             if (appId == 0) {
@@ -1932,40 +1961,6 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_BuyStoreItem (ulong itemId, uint appId) {
-      if (_player == null) {
-         return;
-      }
-
-      // Off to the database
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         StoreItem storeItem = DB_Main.getStoreItem(itemId);
-
-         // Check the store item
-         if (storeItem == null) {
-            D.error($"User {_player.userId} tried to purchase a missing store item (ID: '{itemId}').");
-            reportStorePurchaseFailed();
-            return;
-         }
-
-         if (!storeItem.isEnabled) {
-            D.error($"User {_player.userId} tried to purchase a disabled store item (ID: '{itemId}').");
-            reportStorePurchaseFailed();
-            return;
-         }
-
-         // Check if the item should be paid with gems or with real money (e.g. through Steam)
-         if (storeItem.currencyMode == StoreItem.CurrencyMode.Game) {
-            buyItem(itemId);
-         }
-
-         if (storeItem.currencyMode == StoreItem.CurrencyMode.Real) {
-            buySteamItem(itemId, appId);
-         }
-      });
-   }
-
-   [Command]
    public void Cmd_CompleteSteamPurchase (ulong orderId, uint appId, bool purchaseAuthorized) {
       D.debug($"Steam Purchase: Received Authorization Response! orderId:'{orderId}' authorized:'{purchaseAuthorized}'");
 
@@ -1997,65 +1992,182 @@ public class RPCManager : NetworkBehaviour
             if (!purchaseAuthorized) {
                // Update the order - canceled
                DB_Main.updateSteamOrder(orderId, _player.userId, "canceled", order.content);
-            } else {
-               // Update the order - finalizing
-               DB_Main.updateSteamOrder(orderId, _player.userId, "finalizing", order.content);
 
-               // Finalize the transaction
-               var task = SteamPurchaseManagerServer.self.finalizeTxn(orderId, appId);
-               task.Wait();
-               var result = task.Result;
+               // Close the order
+               DB_Main.toggleSteamOrder(orderId, true);
 
-               if (!result.isSuccess()) {
-                  D.error("Steam Purchase Finalization failed. response: " + JsonConvert.SerializeObject(result.result));
-
-                  // Update the order - error
-                  DB_Main.updateSteamOrder(orderId, _player.userId, "error", order.content);
-
-                  // Report to the user - error
-                  reportStorePurchaseFailed();
-                  return;
-               }
-
-               // Update the order - applying
-               DB_Main.updateSteamOrder(orderId, _player.userId, "applying", order.content);
-
-               // Assign the purchased item
-               SteamPurchaseInfo purchase = JsonConvert.DeserializeObject<SteamPurchaseInfo>(order.content);
-               foreach (SteamPurchaseItem item in purchase.items) {
-                  StoreItem storeItem = DB_Main.getStoreItem(ulong.Parse(item.itemId));
-
-                  if (storeItem.category == Item.Category.Gems) {
-                     // Assign the gems
-                     int accountId = DB_Main.getAccountId(_player.userId);
-                     DB_Main.addGems(accountId, storeItem.quantity);
-                  }
-               }
-
-               // Update the order - success
-               DB_Main.updateSteamOrder(orderId, _player.userId, "success", order.content);
+               reportStorePurchaseFailed("Purchase Canceled.");
+               return;
             }
+
+            // Update the order - finalizing
+            DB_Main.updateSteamOrder(orderId, _player.userId, "finalizing", order.content);
+
+            // Finalize the transaction
+            var task = SteamPurchaseManagerServer.self.finalizeTxn(orderId, appId);
+            task.Wait();
+            var result = task.Result;
+
+            if (!result.isSuccess()) {
+               D.error("Steam Purchase Finalization failed. response: " + JsonConvert.SerializeObject(result.result));
+
+               // Update the order - error
+               DB_Main.updateSteamOrder(orderId, _player.userId, "error", order.content);
+
+               // Report to the user - error
+               reportStorePurchaseFailed();
+               return;
+            }
+
+            // Update the order - applying
+            DB_Main.updateSteamOrder(orderId, _player.userId, "applying", order.content);
+
+            // Assign the purchased item
+            SteamPurchaseInfo purchase = JsonConvert.DeserializeObject<SteamPurchaseInfo>(order.content);
+            foreach (SteamPurchaseItem item in purchase.items) {
+               StoreItem storeItem = DB_Main.getStoreItem(ulong.Parse(item.itemId));
+
+               if (storeItem.category == Item.Category.Gems) {
+                  // Assign the gems
+                  int accountId = DB_Main.getAccountId(_player.userId);
+                  DB_Main.addGems(accountId, storeItem.quantity);
+               }
+            }
+
+            // Update the order - success
+            DB_Main.updateSteamOrder(orderId, _player.userId, "success", order.content);
 
             // Close the order
             DB_Main.toggleSteamOrder(orderId, true);
 
             // Report to the user
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               string feedback = purchaseAuthorized ? "Thank you for the purchase!" : "Purchase canceled.";
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.StoreItemBought, _player, feedback);
+               Target_OnStorePurchaseCompleted(_player.connectionToClient, Item.Category.Gems, "Gems", 0);
             });
          } catch (Exception ex) {
-            D.error(ex.Message);
-            D.error(ex.StackTrace);
+            D.error($"[{ex.GetHashCode()}] error while processing order {orderId} by player {_player.userId}");
+            D.error($"[{ex.GetHashCode()}]" + ex.Message);
+            D.error($"[{ex.GetHashCode()}]" + ex.StackTrace);
             reportStorePurchaseFailed();
          }
       });
    }
 
-   private void reportUseItemFailure(string customMessage = null) {
+   [TargetRpc]
+   public void Target_OnStorePurchaseCompleted (NetworkConnection connection, Item.Category itemCategory, string itemName, int itemId) {
+      string feedback = "Thank you for your purchase!";
+
+      // Play the SFX for purchasing an item
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.PURCHASE_ITEM);
+
+      if (Item.isUsable(itemCategory)) {
+         string itemCategoryDisplayName = "item";
+
+         if (itemCategory == Item.Category.ShipSkin) {
+            itemCategoryDisplayName = "ship skin";
+         } else if (itemCategory == Item.Category.Haircut) {
+            itemCategoryDisplayName = "haircut";
+         } else if (itemCategory == Item.Category.Hairdye) {
+            itemCategoryDisplayName = "hair dye";
+         }
+
+         if (!string.IsNullOrWhiteSpace(itemName)) {
+            feedback = $"You have purchased the {itemCategoryDisplayName} '{itemName}'!";
+         } else {
+            feedback = $"You have purchased a new {itemCategoryDisplayName}!";
+         }
+
+         feedback += " You can find it in your inventory.\n\nDo you want to use it now?";
+
+         // Show the confirmation message in the notice screen
+         PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
+         PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => {
+            PanelManager.self.confirmScreen.hide();
+            _player.rpc.Cmd_RequestUseItem(itemId, confirmed: false);
+         });
+
+         PanelManager.self.confirmScreen.cancelButton.onClick.RemoveAllListeners();
+         PanelManager.self.confirmScreen.cancelButton.onClick.AddListener(() => {
+            if (StoreScreen.self.isShowing()) {
+               StoreScreen.self.toggleBlocker(false);
+            }
+         });
+
+         PanelManager.self.confirmScreen.showYesNo(feedback);
+      } else {
+         PanelManager.self.noticeScreen.confirmButton.onClick.RemoveAllListeners();
+         PanelManager.self.noticeScreen.confirmButton.onClick.AddListener(() => {
+            if (StoreScreen.self.isShowing()) {
+               StoreScreen.self.toggleBlocker(false);
+            }
+         });
+         PanelManager.self.noticeScreen.show(feedback);
+      }
+   }
+
+   private void reportStorePurchaseFailed (string customMessage = null) {
       UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-         string feedback = string.IsNullOrWhiteSpace(customMessage) ? "Couldn't use the item." : customMessage;
-         ServerMessageManager.sendError(ErrorMessage.Type.UseItemFailed, _player, feedback);
+         string feedback = string.IsNullOrWhiteSpace(customMessage) ? "Purchase failed" : customMessage;
+         ServerMessageManager.sendError(ErrorMessage.Type.StoreItemPurchaseFailed, _player, feedback);
+      });
+   }
+
+   #endregion
+
+   #region Usables
+
+   [Command]
+   public void Cmd_RequestUseItem (int itemId, bool confirmed) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         Item item = DB_Main.getItem(_player.userId, itemId);
+
+         if (item == null) {
+            D.error($"Player {_player.userId} tried to use an item (id: {itemId}), but the item couldn't be found.");
+            return;
+         }
+
+         if (!confirmed) {
+            // Some consumables need confirmation from the player
+            if (item.category == Item.Category.Consumable) {
+               ConsumableData consumableData = ConsumableXMLManager.self.getConsumableData(item.itemTypeId);
+
+               if (consumableData == null) {
+                  reportUseItemFailure("");
+               }
+
+               if (consumableData.consumableType == Consumable.Type.PerkResetter) {
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     Target_showUseItemConfirmationPrompt(_player.connectionToClient, "Do you really want to reset your perk points?", "Perks Points Unchanged.", itemId);
+                  });
+
+                  return;
+               }
+            }
+         }
+
+         useItem(itemId);
+      });
+   }
+
+   [Server]
+   private void useItem (int itemId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         Item item = DB_Main.getItem(_player.userId, itemId);
+
+         if (item == null) {
+            D.error($"Player {_player.userId} tried to use an item (id: {itemId}), but the item couldn't be found.");
+            return;
+         }
+
+         if (item.category == Item.Category.Hairdye) {
+            useHairdye(item);
+         } else if (item.category == Item.Category.ShipSkin) {
+            useShipSkin(item);
+         } else if (item.category == Item.Category.Haircut) {
+            useHaircut(item);
+         }  else if (item.category == Item.Category.Consumable) {
+            useConsumable(item);
+         }
       });
    }
 
@@ -2092,6 +2204,52 @@ public class RPCManager : NetworkBehaviour
 
             // Let the client know the item was used
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.UsedHaircut, _player, item.id.ToString());
+         });
+      });
+   }
+
+   [Server]
+   private void useHairdye (Item item) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         HairDyeData hairDyeData = HairDyeXMLManager.self.getHairdyeData(item.itemTypeId);
+
+         if (hairDyeData == null) {
+            D.error($"Player {_player.userId} tried to apply the hair dye {item.itemTypeId} but failed. Couldn't find the hair dye data.");
+            reportUseItemFailure("Unknown Dye");
+            return;
+         }
+
+         PaletteToolData paletteToolData = PaletteSwapManager.self.getPalette(hairDyeData.paletteId);
+
+         // Check if the palette was found
+         if (paletteToolData == null) {
+            D.error($"Player {_player.userId} tried to apply the hair dye {hairDyeData.paletteId} (palette: {paletteToolData.paletteName}) but failed. Couldn't find the palette.");
+            reportUseItemFailure("Unknown Dye");
+            return;
+         }
+
+         // Check if the palette can be applied to the hair
+         if (paletteToolData.paletteType != (int)PaletteToolManager.PaletteImageType.Hair) {
+            D.error($"Player {_player.userId} tried to apply the hair dye {hairDyeData.paletteId} (palette: {paletteToolData.paletteName}). This palette is not for a hair dye.");
+            reportUseItemFailure("Unknown Dye");
+            return;
+         }
+
+         // Set the new hair color in the database
+         DB_Main.setHairColor(_player.userId, paletteToolData.paletteName);
+
+         // Delete the item
+         DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, 1);
+
+         // Back to Unity
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            _player.hairPalettes = paletteToolData.paletteName;
+
+            // Update the hair color but keep the style
+            Rpc_UpdateHair(_player.hairType, _player.hairPalettes);
+
+            // Let the client know the item was used
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.UsedHairDye, _player, item.id.ToString());
          });
       });
    }
@@ -2143,29 +2301,86 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   private void useHairdye (Item item) {
-      return;
+   private void useConsumable (Item item) {
+      if (item.category == Item.Category.Consumable) {
+         ConsumableData consumableData = ConsumableXMLManager.self.getConsumableData(item.itemTypeId);
+
+         if (consumableData == null) {
+            reportUseItemFailure("");
+         }
+
+         if (consumableData.consumableType == Consumable.Type.PerkResetter) {
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               List<Perk> perks = DB_Main.getPerkPointsForUser(_player.userId);
+               int unassignedPoints = 0;
+               int assignedPoints = 0;
+
+               foreach (Perk perk in perks) {
+                  if (perk.perkId == 0) {
+                     unassignedPoints += perk.points;
+                  } else {
+                     assignedPoints += perk.points;
+                  }
+               }
+
+               D.debug($"Player {_player.userId} requested to reset all the perk points (assigned points: {assignedPoints}, unassigned points: {unassignedPoints})");
+               bool success = DB_Main.resetPerkPointsAll(_player.userId, assignedPoints + unassignedPoints);
+
+               if (!success) {
+                  D.error($"Player {_player.userId} requested to reset all the perk points: FAIL");
+                  reportUseItemFailure("Couldn't reset your perk points.");
+                  return;
+               }
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  D.debug($"Player {_player.userId} requested to reset all the perk points: OK");
+                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.UsedConsumable, _player, "You have reset your Perk Points!");
+               });
+            });
+         }
+      }
    }
 
-   [Command]
-   public void Cmd_UseItem (int itemId) {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         Item item = DB_Main.getItem(_player.userId, itemId);
-
-         if (item == null) {
-            D.error($"Player {_player.userId} tried to use an item (id: {itemId}), but the item couldn't be found.");
-            return;
-         }
-
-         if (item.category == Item.Category.Hairdye) {
-            useHairdye(item);
-         } else if (item.category == Item.Category.ShipSkin) {
-            useShipSkin(item);
-         } else if (item.category == Item.Category.Haircut) {
-            useHaircut(item);
-         }
+   [Server]
+   private void reportUseItemFailure (string customMessage) {
+      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+         string feedback = string.IsNullOrWhiteSpace(customMessage) ? "Couldn't use the item." : customMessage;
+         ServerMessageManager.sendError(ErrorMessage.Type.UseItemFailed, _player, feedback);
       });
    }
+
+   [TargetRpc]
+   public void Target_showUseItemConfirmationPrompt (NetworkConnection connection, string customMessage, string cancelMessage, int itemId) {
+      if (PanelManager.self == null) {
+         return;
+      }
+
+      PanelManager.self.confirmScreen.cancelButton.onClick.RemoveAllListeners();
+      PanelManager.self.confirmScreen.cancelButton.onClick.AddListener(() => {
+         PanelManager.self.confirmScreen.hide();
+         PanelManager.self.noticeScreen.show(cancelMessage);
+
+         if (InventoryPanel.self != null && InventoryPanel.self.isShowing()) {
+            InventoryPanel.self.refreshPanel();
+         }
+
+         if (StoreScreen.self != null && StoreScreen.self.isShowing()) {
+            StoreScreen.self.toggleBlocker(false);
+         }
+      });
+
+      PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
+      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => {
+         PanelManager.self.confirmScreen.hide();
+
+         // The player confirmed, so now it is safe to use the item
+         _player.rpc.Cmd_RequestUseItem(itemId, confirmed: true);
+      });
+
+      PanelManager.self.confirmScreen.showYesNo(customMessage);
+   }
+
+   #endregion
 
    [Command]
    public void Cmd_UpdateGems () {
@@ -3812,7 +4027,7 @@ public class RPCManager : NetworkBehaviour
             }
 
             // Let the client know that it was successful
-            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.StoreItemBought, _player, "You have purchased a " + itemName + "!");
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.StoreItemBought, _player, $"'{itemName}' purchased!");
 
             // Make sure their gold display gets updated
             getItemsForArea(shopId);
@@ -4928,6 +5143,7 @@ public class RPCManager : NetworkBehaviour
       PanelManager.self.linkIfNotShowing(Panel.Type.PvpScoreBoard);
 
       SoundEffectManager.self.playGuiMenuOpenSfx();
+
       List<GameStats> pvpStatList = stats.ToList();
       GameStatsData pvpStatData = new GameStatsData {
          stats = pvpStatList,
@@ -6935,7 +7151,7 @@ public class RPCManager : NetworkBehaviour
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Armor armor = Armor.castItemToArmor(userObjects.armor);
-            
+
             if (armor.data.Length < 1 && armor.itemTypeId > 0 && armor.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
                armor.data = ArmorStatData.serializeArmorStatData(EquipmentXMLManager.self.getArmorDataBySqlId(armor.itemTypeId));
                userObjects.armor.data = armor.data;
@@ -6976,7 +7192,7 @@ public class RPCManager : NetworkBehaviour
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Hat hat = Hat.castItemToHat(userObjects.hat);
-            
+
             if (hat.data.Length < 1 && hat.itemTypeId > 0 && hat.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
                hat.data = HatStatData.serializeHatStatData(EquipmentXMLManager.self.getHatData(hat.itemTypeId));
                userObjects.hat.data = hat.data;
@@ -7022,14 +7238,14 @@ public class RPCManager : NetworkBehaviour
          // Back to Unity Thread to call RPC functions
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Weapon weapon = Weapon.castItemToWeapon(userObjects.weapon);
-            
+
             if (weapon.data.Length < 1 && weapon.itemTypeId > 0 && weapon.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
                weapon.data = WeaponStatData.serializeWeaponStatData(EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId));
                userObjects.weapon.data = weapon.data;
             }
 
             PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
-            
+
             if (body != null) {
                body.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames, userObjects.weapon.durability);
                D.adminLog("Player {" + body.userId + "} is equipping item" +
