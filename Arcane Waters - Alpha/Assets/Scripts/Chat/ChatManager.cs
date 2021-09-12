@@ -551,7 +551,9 @@ public class ChatManager : GenericGameManager
    }
 
    private void noteWhisperReceived (string sender) {
-      _lastWhisperSender = sender;
+      if (Global.player == null || (Global.player != null && sender != Global.player.entityName)) {
+         _lastWhisperSender = sender;
+      }
    }
 
    private void tryReply (string message) {

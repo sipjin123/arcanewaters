@@ -531,7 +531,7 @@ public class ChatPanel : MonoBehaviour {
       } else {
          string messageSource = chatInfo.sender;
          if (chatInfo.messageType == ChatInfo.Type.Whisper) {
-            messageSource = isLocalPlayer ? ("You whispered to " + chatInfo.recipient) : (chatInfo.sender + " whispers");
+            messageSource = isLocalPlayer ? ("To " + chatInfo.recipient) : (chatInfo.sender + " whispers");
          }
 
          // If the message is from an Admin, set color of message to Admin color
