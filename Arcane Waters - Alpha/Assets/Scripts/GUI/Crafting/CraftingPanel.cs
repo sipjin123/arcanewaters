@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Linq;
 using NubisDataHandling;
+using UnityEngine.Events;
 
 public class CraftingPanel : Panel
 {
@@ -106,6 +107,9 @@ public class CraftingPanel : Panel
    // Parent holding the ingredient list needed for the refinement
    public Transform refinementIngredientsHolder;
 
+   // An event triggered when receiving refinement data
+   public UnityEvent receiveRefinementData = new UnityEvent();
+
    #endregion
 
    public override void Awake () {
@@ -139,8 +143,14 @@ public class CraftingPanel : Panel
    }
 
    public void refreshRefinementList () {
-      latestRefineableItem.hideSelectedBox();
+      loadBlockerRefinementList.SetActive(true);
+      loadBlockerRefinementIngredients.SetActive(true);
+
+      if (latestRefineableItem != null) {
+         latestRefineableItem.hideSelectedBox();
+      }
       refineAbleItemSelection.gameObject.DestroyChildren();
+      refinementIngredientsHolder.gameObject.DestroyChildren();
 
       NubisDataFetcher.self.getUserInventory(new List<Item.Category> {
          Item.Category.Weapon, Item.Category.Armor, Item.Category.Hats
@@ -357,6 +367,8 @@ public class CraftingPanel : Panel
          "Durability: " + latestRefineableItem.itemCache.durability, D.ADMIN_LOG_TYPE.Refine);
 
       Global.player.rpc.Cmd_RefineItem(latestRefineableItem.itemCache.id);
+      loadBlockerRefinementList.SetActive(true);
+      loadBlockerRefinementIngredients.SetActive(true);
    }
 
    public void updateCraftButton () {
@@ -460,9 +472,10 @@ public class CraftingPanel : Panel
          itemCell.leftClickEvent.RemoveAllListeners();
          itemCell.leftClickEvent.AddListener(() => onRefineableItemClicked(item, itemCell));
       }
+      receiveRefinementData.Invoke();
    }
 
-   private void onRefineableItemClicked (Item item, ItemCell itemCell) {
+   public void onRefineableItemClicked (Item item, ItemCell itemCell) {
       loadBlockerRefinementIngredients.SetActive(true);
 
       // Remove highlight of the recent item selected

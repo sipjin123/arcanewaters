@@ -4645,17 +4645,29 @@ public class RPCManager : NetworkBehaviour
          }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_RefreshRefinementPanel(_player.connectionToClient);
+            Target_RefreshRefinementPanel(_player.connectionToClient, itemToRefine.id);
          });
       });
    }
 
    [TargetRpc]
-   public void Target_RefreshRefinementPanel (NetworkConnection connection) {
+   public void Target_RefreshRefinementPanel (NetworkConnection connection, int itemId) {
       // Get the crafting panel
       CraftingPanel panel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
 
       // Refresh the panel
+      panel.receiveRefinementData.RemoveAllListeners();
+      panel.receiveRefinementData.AddListener(() => {
+         if (panel.refineableItemsHolder.childCount > 0) {
+            ItemCell[] itemCells = panel.refineableItemsHolder.GetComponentsInChildren<ItemCell>();
+            if (itemCells.Length > 0) {
+               ItemCell itemSelected = itemCells.ToList().Find(_ => _.itemCache.id == itemId);
+               if (itemSelected != null && itemSelected.itemCache != null) {
+                  panel.onRefineableItemClicked(itemSelected.itemCache, itemSelected);
+               }
+            }
+         }
+      });
       panel.refreshRefinementList();
       SoundEffectManager.self.playFmod2dSfxWithId(SoundEffectManager.REFINE_COMPLETE);
    }
