@@ -184,6 +184,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          };
 
          PanelManager.self.hidePowerupPanel();
+         Cmd_CheckAmbientSfx();
       }
 
       // Check if an npc is above the player
@@ -412,6 +413,44 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    [Command]
    private void Cmd_SetSpeedingUp (bool isSpeedingUp) {
       Rpc_SetSpeedingUp(isSpeedingUp);
+   }
+
+   [Command]
+   private void Cmd_CheckAmbientSfx () {
+      StartCoroutine(CO_ProcessAmbientSfx());
+   }
+
+   private IEnumerator CO_ProcessAmbientSfx () {
+      while (AreaManager.self.getArea(areaKey) == null) {
+         yield return 0;
+      }
+      yield return new WaitForSeconds(1);
+
+      string newFmodKey = "";
+      if (AreaManager.self.getArea(areaKey).isInterior) {
+         foreach (NPCData npcData in NPCManager.self.getNPCDataInArea(areaKey)) {
+            NPC npcRef = NPCManager.self.getNPC(npcData.npcId);
+            if (npcData != null) {
+               switch (npcRef.shopPanelType) {
+                  case Panel.Type.Shipyard:
+                     newFmodKey = "Shipyard Shop Fmod Path";
+                     break;
+                  case Panel.Type.Adventure:
+                     newFmodKey = "Weapon Shop Fmod Path";
+                     break;
+                  case Panel.Type.Merchant:
+                     newFmodKey = "Merchant Fmod Path";
+                     break;
+               }
+            }
+         }
+      }
+      Target_ReceiveAmbientSfx(newFmodKey);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveAmbientSfx (string fmodIdString) {
+      // TODO: Play Fmod Ambience here for interior areas
    }
 
    [ClientRpc]
@@ -678,6 +717,10 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private void tryInteractAnimation (bool faceMouseDirection = true) {
+      if (isInBattle()) {
+         D.debug("Cannot Interact During Battle!");
+         return;
+      }
       Direction newDirection = forceLookAt(Camera.main.ScreenToWorldPoint(MouseUtils.mousePosition));
 
       if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast

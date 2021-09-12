@@ -372,6 +372,9 @@ public class PlayerShipEntity : ShipEntity
 
       // Check if input is allowed
       if (!Util.isGeneralInputAllowed() || isDisabled || !isLocalPlayer) {
+         if (_chargingWithMouse && isLocalPlayer) {
+            cannonAttackReleased();
+         }
          return;
       }
 
