@@ -20,6 +20,9 @@ public class FlagShipAbilityRow : MonoBehaviour {
    // The ship ability data reference
    public ShipAbilityData shipAbilityData;
 
+   // The ability name holder
+   public GameObject abilityNameHolder;
+
    #endregion
 
    public void pointerEnter () {

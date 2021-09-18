@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 using MapCreationTool;
+using System.Linq;
 
 public class FlagshipRow : MonoBehaviour {
    #region Public Variables
@@ -72,11 +73,21 @@ public class FlagshipRow : MonoBehaviour {
 
    private void setAbilities (ShipAbilityInfo info) {
       int counter = 0;
+      List<int> shipAbilities = info.ShipAbilities.ToList();
+
+      // Override abilities that does not have the necessary abilities
+      if (info.ShipAbilities.Length < CannonPanel.MAX_ABILITY_COUNT) {
+         shipAbilities.Clear();
+         foreach (int ability in ShipAbilityInfo.STARTING_ABILITIES) {
+            shipAbilities.Add(ability);
+         }
+      }
+
       for (int i = 0; i < abilityTemplates.Length; i++) {
          abilityTemplates[i].gameObject.SetActive(false);
       }
 
-      foreach (int abilityId in info.ShipAbilities) {
+      foreach (int abilityId in shipAbilities) {
          ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(abilityId);
          FlagShipAbilityRow flagShipRow = abilityTemplates[counter];
          flagShipRow.gameObject.SetActive(true);
@@ -87,13 +98,11 @@ public class FlagshipRow : MonoBehaviour {
          flagShipRow.shipAbilityData = abilityData;
 
          // TODO: Setup tooltip for new flagship layout
-         /*
-         flagShipRow.GetComponent<ToolTipComponent>().message = abilityData.abilityName + "\n" + abilityData.abilityDescription;
+         flagShipRow.abilityNameHolder.GetComponent<ToolTipComponent>().message = abilityData.abilityName + "\n" + abilityData.abilityDescription;
 
-         EventTrigger eventTrigger = flagShipRow.GetComponent<EventTrigger>();
+         EventTrigger eventTrigger = flagShipRow.abilityNameHolder.GetComponent<EventTrigger>();
          Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerEnter, (e) => flagShipRow.pointerEnter());
          Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerExit, (e) => flagShipRow.pointerExit());
-         */
          counter++;
       }
    }
