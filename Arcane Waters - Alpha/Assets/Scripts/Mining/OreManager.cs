@@ -35,7 +35,6 @@ public class OreManager : MonoBehaviour
 
    public OreNode createOreNode (Instance instance, Vector3 localPosition, OreNode.Type oreType) {
       if (oreType == OreNode.Type.None) {
-         D.debug("Ore type was set to None in area {" + instance.areaKey + "}, setting to default type: Iron");
          oreType = OreNode.Type.Iron;
       }
       

@@ -1264,6 +1264,14 @@ public class AdminManager : NetworkBehaviour
             newLogType = D.ADMIN_LOG_TYPE.Warp;
             Global.updateAdminLog(newLogType, isEnabled);
             break;
+         case "instance":
+            newLogType = D.ADMIN_LOG_TYPE.InstanceProcess;
+            Global.updateAdminLog(newLogType, isEnabled);
+            break;
+         case "visit":
+            newLogType = D.ADMIN_LOG_TYPE.Visit;
+            Global.updateAdminLog(newLogType, isEnabled);
+            break;
          case "network":
             newLogType = D.ADMIN_LOG_TYPE.NetworkMessages;
             Global.updateAdminLog(newLogType, isEnabled);

@@ -106,7 +106,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          if (lastAttacker) {
             spawnChest(lastAttacker.userId);
          } else {
-            D.warning("Bot ship couldn't drop a chest, due to not being able to locate last attacker");
+            D.error("Bot ship couldn't drop a chest, due to not being able to locate last attacker");
          }
 
          hideTargetingEffects();

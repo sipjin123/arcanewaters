@@ -567,7 +567,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          if (lastAttacker) {
             spawnChest(lastAttacker.userId);
          } else {
-            D.warning("Sea monster couldn't drop a chest, due to not being able to locate last attacker");
+            D.error("Sea monster couldn't drop a chest, due to not being able to locate last attacker");
          }
       }
 
