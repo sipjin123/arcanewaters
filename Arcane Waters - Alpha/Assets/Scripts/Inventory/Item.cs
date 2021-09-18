@@ -3,13 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System;
+using System.Linq;
 
 [Serializable]
 public class Item {
    #region Public Variables
 
    // The category of item this is
-   public enum Category { None = 0, Weapon = 1, Armor = 2, Hats = 3, Potion = 4, Usable = 5, CraftingIngredients = 6, Blueprint = 7, Currency = 8, Quest_Item = 9, Haircut = 10, Gems = 11, ShipSkin = 12, Hairdye = 13, Pet = 14, Consumable = 15 }
+   public enum Category { None = 0, Weapon = 1, Armor = 2, Hats = 3, Potion = 4, Usable = 5, CraftingIngredients = 6, Blueprint = 7, Currency = 8, Quest_Item = 9, Haircut = 10, Gems = 11, ShipSkin = 12, Dye = 13, Pet = 14, Consumable = 15 }
 
    // The durability filter being used by the item
    public enum DurabilityFilter { None = 0, MaxDurability = 1, ReducedDurability = 2 }
@@ -133,8 +134,8 @@ public class Item {
             return new ShipSkin(this.id, this.itemTypeId, paletteNames, data, durability, count);
          case Category.Consumable:
             return new Consumable(this.id, this.itemTypeId, paletteNames, data, durability, count);
-         case Category.Hairdye:
-            return new HairDye(this.id, this.itemTypeId, paletteNames, data, durability);
+         case Category.Dye:
+            return new Dye(this.id, this.itemTypeId, paletteNames, data, durability, count);
          default:
             D.debug("Unknown item category: " + category);
             return null;
@@ -221,7 +222,7 @@ public class Item {
          // Get the left and right side of the equal
          string key = kvp.Split('=')[0];
          string value = kvp.Split('=')[1];
-         
+
          if ("price".Equals(key)) {
             return System.Convert.ToInt32(value);
          }
@@ -348,11 +349,30 @@ public class Item {
       return palettes;
    }
 
-   public static bool isUsable(Category category) {
+   public static string[] overridePalette (string source, string destination) {
+      // Merge palette with player's palette
+      string[] sourcePaletteArray = Item.parseItmPalette(source);
+      string[] destinationPaletteArray = Item.parseItmPalette(destination);
+
+      List<string> finalPalettes = new List<string>();
+
+      List<string> sourcePrimaryList = sourcePaletteArray.Where(_ => _.ToLower().Contains("primary")).ToList();
+      List<string> sourceSecondaryList = sourcePaletteArray.Where(_ => _.ToLower().Contains("secondary")).ToList();
+
+      List<string> destinationPrimaryList = destinationPaletteArray.Where(_ => _.ToLower().Contains("primary")).ToList();
+      List<string> destinationSecondaryList = destinationPaletteArray.Where(_ => _.ToLower().Contains("secondary")).ToList();
+
+      finalPalettes.AddRange(sourcePrimaryList.Any() ? sourcePrimaryList : destinationPrimaryList);
+      finalPalettes.AddRange(sourceSecondaryList.Any() ? sourceSecondaryList : destinationSecondaryList);
+
+      return finalPalettes.ToArray();
+   }
+
+   public static bool isUsable (Category category) {
       return category == Category.Usable ||
          category == Category.ShipSkin ||
          category == Category.Haircut ||
-         category == Category.Hairdye ||
+         category == Category.Dye ||
          category == Category.Consumable;
    }
 

@@ -232,14 +232,14 @@ public class AdminPanel : Panel
       tabs.performTabPressed(0);
    }
 
-   private void onTabPressed(int tabIndex) {
+   private void onTabPressed (int tabIndex) {
       if (tabSwitcher == null) {
          return;
       }
 
       tabSwitcher.performSwitch(tabIndex);
    }
-   
+
    public void onKickAllNonAdminUsersButtonPressed () {
       // Deactivate "Confirm" Button until admin types in the word "Confirm" into the inputfield
       PanelManager.self.confirmScreen.enableConfirmInputField("CONFIRM");

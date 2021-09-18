@@ -395,21 +395,40 @@ public class ImageManager : ClientMonoBehaviour {
       return returnString;
    }
 
-   public static Sprite getHairSprite (bool front, Gender.Type gender, string number) {
-      Sprite sprite = null;
+   public static Sprite getHairSprite (bool front, Gender.Type gender, string number, int frame) {
       string backFront = front ? "Front" : "Back";
       string type = gender + "_hair_" + backFront + "_" + number;
-      Sprite[] sprites = ImageManager.getSprites("Hair/" + gender.ToString() + "/" + backFront + "/" + type);
-
-      if (sprites.Length == 1) {
+      Sprite[] sprites = getSprites("Hair/" + gender.ToString() + "/" + backFront + "/" + type);
+      
+      if (sprites == null || sprites.Length <= frame) {
          return null;
       }
 
-      if (sprites.Length > 8) {
-         sprite = sprites[8];
+      return sprites[frame];
+   }
+
+   public static Sprite getArmorSprite (Gender.Type gender, int armorType, int frame) {
+      string path = "Armor/" + gender + "/" + gender + "_armor_" + (int) armorType;
+      Texture2D texture = armorType == 0 ? self.blankTexture : getTexture(path);
+      Sprite[] sprites = getSprites(texture);
+
+      if (sprites == null || sprites.Length <= frame) {
+         return null;
       }
 
-      return sprite;
+      return sprites[frame];
+   }
+
+   public static Sprite getBodySprite (Gender.Type gender, BodyLayer.Type bodyType, int frame) {
+      string path = "Bodies/" + gender + "/" + bodyType;
+      Texture2D texture = getTexture(path);
+      Sprite[] sprites = getSprites(texture);
+
+      if (sprites == null || sprites.Length <= frame) {
+         return null;
+      }
+
+      return sprites[frame];
    }
 
    #region Private Variables

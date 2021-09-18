@@ -37,6 +37,22 @@ public class PaletteToolData
       this.paletteType = paletteType;
    }
 
+   public bool isPrimary () {
+      if (string.IsNullOrWhiteSpace(subcategory)) {
+         return false;
+      }
+
+      return subcategory.ToLower().Contains("primary");
+   }
+
+   public bool isSecondary () {
+      if (string.IsNullOrWhiteSpace(subcategory)) {
+         return false;
+      }
+
+      return subcategory.ToLower().Contains("secondary");
+   }
+
    #region Private Variables
 
    #endregion

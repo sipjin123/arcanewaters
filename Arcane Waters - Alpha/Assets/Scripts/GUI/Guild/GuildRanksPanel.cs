@@ -106,10 +106,7 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
 
       guildRankRows.ForEach(y => y.updatePriorityButtons());
 
-      if (activeRanks + 1 == MAXIMUM_NUMBER_OF_RANKS) {
-         addRankButton.interactable = false;
-      }
-
+      addRankButton.interactable = canAddNewRanks();
       hideAllDeleteButtons();
    }
 
@@ -210,6 +207,16 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
       foreach (GuildRankRow row in guildRankRows) {
          row.deleteRankButton.interactable = row.demoteToggle.interactable || row.editRanksToggle.interactable || row.inviteToggle.interactable || row.kickToggle.interactable || row.officerChatToggle.interactable || row.promoteToggle.interactable;
       }
+
+      addRankButton.interactable = canAddNewRanks();
+   }
+
+   private bool canAddNewRanks () {
+      if (guildRankRows == null) {
+         return false;
+      }
+
+      return guildRankRows.FindAll(x => x.isActive).Count < MAXIMUM_NUMBER_OF_RANKS;
    }
 
    public void hide () {

@@ -249,11 +249,11 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             icon.sprite = ImageManager.getSprites(item.getIconPath())[0];
             break;
 
-         case Item.Category.Hairdye:
-            HairDyeData hairDyeData = HairDyeXMLManager.self.getHairdyeData(item.itemTypeId);
+         case Item.Category.Dye:
+            DyeData dyeData = DyeXMLManager.self.getDyeData(item.itemTypeId);
 
-            if (hairDyeData == null) {
-               D.debug("Failed to fetch Hair Dye Data for: " + item.itemTypeId);
+            if (dyeData == null) {
+               D.debug("Failed to fetch Dye Data for: " + item.itemTypeId);
                Destroy(gameObject);
                break;
             }

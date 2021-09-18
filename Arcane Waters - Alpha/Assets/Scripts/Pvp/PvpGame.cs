@@ -168,13 +168,14 @@ public class PvpGame : MonoBehaviour {
          StartCoroutine(CO_StartGame());
       } else {
          int playersNeededToStart = (_numTeams * MIN_PLAYERS_PER_TEAM_TO_START) - getNumPlayers();
-         if (_gameIsStarting) {
-            sendGameMessage(userName + " has joined the game.");
-         } else {
-            // Don't send this message to the player joining the game, as it will display before they warp
-            List<int> playersToReceiveMessage = new List<int>(_usersInGame);
-            playersToReceiveMessage.Remove(userId);
-            sendGameMessage(userName + " has joined the game. Waiting for " + playersNeededToStart + " more players to begin!", playersToReceiveMessage);
+         updateGameStatusMessage("Waiting for " + playersNeededToStart + " more players to begin.");
+      }
+
+      // Notify players to update their pvp instructions panel team list with the new player
+      foreach (int userIdNum in _usersInGame) {
+         NetEntity playerEntity = EntityManager.self.getEntity(userIdNum);
+         if (playerEntity) {
+            playerEntity.rpc.Target_UpdatePvpInstructionsPanelPlayers(playerEntity.connectionToClient, _usersInGame);
          }
       }
    }
@@ -208,16 +209,16 @@ public class PvpGame : MonoBehaviour {
       // For players who are currently in the game, create voyage groups for their teams, and add them to the groups
       _gameIsStarting = true;
 
-      sendGameMessage("The game will begin in " + GAME_START_DELAY + " seconds!");
+      updateGameStatusMessage("The game will begin in " + GAME_START_DELAY + " seconds!");
       yield return new WaitForSeconds(GAME_START_DELAY - 3.0f);
 
-      sendGameMessage("The game will begin in 3 seconds!");
+      updateGameStatusMessage("The game will begin in 3 seconds!");
       yield return new WaitForSeconds(1.0f);
-      sendGameMessage("The game will begin in 2 seconds!");
+      updateGameStatusMessage("The game will begin in 2 seconds!");
       yield return new WaitForSeconds(1.0f);
-      sendGameMessage("The game will begin in 1 seconds!");
+      updateGameStatusMessage("The game will begin in 1 seconds!");
       yield return new WaitForSeconds(1.0f);
-      sendGameMessage("The game has begun!");
+      updateGameStatusMessage("The game has begun!");
 
       // Determine what game mode this pvp game will be
       gameMode = AreaManager.self.getAreaPvpGameMode(areaKey);
@@ -282,6 +283,9 @@ public class PvpGame : MonoBehaviour {
                D.debug("Adding player: " + player.entityName + " to team: " + team.teamType.ToString());
             }
          }
+
+         // Hide pvp instructions panel
+         player.rpc.Target_SetPvpInstructionsPanelVisibility(player.connectionToClient, false);
 
          // Move the player to their spawn position, with a small offset so players aren't stacked on eachother.
          Vector2 spawnPosition = getSpawnPositionForTeam(team.teamType);
@@ -554,6 +558,8 @@ public class PvpGame : MonoBehaviour {
 
       // Remove the player from _usersInGame
       _usersInGame.Remove(player.userId);
+
+      broadcastInstructionsPanelPlayerList();
    }
 
    public void sendGameMessage (string message, List<int> receivingPlayers = null) {
@@ -630,9 +636,22 @@ public class PvpGame : MonoBehaviour {
       StartCoroutine(CO_PostGame());
    }
 
+   private void broadcastInstructionsPanelPlayerList () {
+      foreach (int playerUserId in _usersInGame) {
+         NetEntity playerEntity = EntityManager.self.getEntity(playerUserId);
+         if (playerEntity) {
+            playerEntity.rpc.Target_UpdatePvpInstructionsPanelPlayers(playerEntity.connectionToClient, _usersInGame);
+         }
+      }
+   }
+
    public void onPlayerLoadedGameArea (int userId) {
-      if (_gameState == State.PreGame) {
-         sendGameMessageToPlayers("Waiting for " + " more players to begin.", new List<int>() { userId });
+      NetEntity player = EntityManager.self.getEntity(userId);
+
+      if (_gameState == State.PreGame && player) {
+         player.rpc.Target_InitPvpInstructionsPanel(player.connectionToClient, instanceId, _teamFactions.Values.ToList());
+
+         broadcastInstructionsPanelPlayerList();
       }
 
       if (_latePlayers.Contains(userId)) {
@@ -640,7 +659,6 @@ public class PvpGame : MonoBehaviour {
       }
 
       // Ensure players are respawned if they were previously dead
-      NetEntity player = EntityManager.self.getEntity(userId);
       if (player) {
          PlayerShipEntity playerShip = player.getPlayerShipEntity();
          if (playerShip) {
@@ -1056,6 +1074,15 @@ public class PvpGame : MonoBehaviour {
             if (teamType != PvpTeamType.None) {
                player.rpc.Target_UpdatePvpScore(player.connectionToClient, _teamScores[i], teamType);
             }
+         }
+      }
+   }
+
+   private void updateGameStatusMessage (string newMessage) {
+      foreach (int userId in _usersInGame) {
+         NetEntity playerEntity = EntityManager.self.getEntity(userId);
+         if (playerEntity) {
+            playerEntity.rpc.Target_UpdatePvpInstructionsPanelGameStatusMessage(playerEntity.connectionToClient, newMessage);
          }
       }
    }

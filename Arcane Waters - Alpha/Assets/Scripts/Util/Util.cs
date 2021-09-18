@@ -1007,7 +1007,8 @@ public class Util : MonoBehaviour
          ChatPanel.self.nameInputField.isFocused ||
          ((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail() ||
          Global.player == null ||
-         !AreaManager.self.hasArea(Global.player.areaKey));
+         !AreaManager.self.hasArea(Global.player.areaKey) || 
+         PvpInstructionsPanel.isShowing);
    }
 
    // Loads an XML text asset and deserializes it into an object

@@ -144,6 +144,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating hair dyes
    public StoreHairDyeBox hairDyeBoxPrefab;
 
+   // The prefab we use for creating armor dyes
+   public StoreArmorDyeBox armorDyeBoxPrefab;
+
    // The prefab we use for creating haircuts
    public StoreHaircutBox haircutBoxPrefab;
 

@@ -291,13 +291,17 @@ public class DB_MainStub : MonoBehaviour
 
    #endregion
 
-   #region Hairdyes XML
+   #region Dyes XML
 
-   public static void updateHairdyeXML (int xmlID, string rawData, int accIDOverride = 0) {
+   public static void updateDyeXML (int xmlID, string rawData, int accIDOverride = 0) {
       return;
    }
 
-   public static List<XMLPair> getHairdyesXML () {
+   public static bool toggleDyeXML (int xmlID, bool isEnabled, int accIDOverride = 0) { 
+      return false;
+   }
+
+   public static List<XMLPair> getDyesXML () {
       return new List<XMLPair>();
    }
 
@@ -909,6 +913,10 @@ public class DB_MainStub : MonoBehaviour
 
    public static Weapon getWeapon (int userId) {
       return null;
+   }
+
+   public static bool setArmorPalette (int userId, int armorId, string armorPalettes) {
+      return false;
    }
 
    public static UserObjects getUserObjects (int userId) {
@@ -1533,8 +1541,12 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
-   public static int createStoreItem () {
+   public static ulong createStoreItem () {
       return 0;
+   }
+
+   public static bool updateStoreItem (ulong itemId, Item.Category category, int soldItemId, bool isEnabled, int price, string storeItemName, string storeItemDescription) {
+      return false;
    }
 
    public static bool deleteStoreItem (ulong itemId) {

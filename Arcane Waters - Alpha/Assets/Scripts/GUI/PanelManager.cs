@@ -149,7 +149,7 @@ public class PanelManager : GenericGameManager {
          itemSelectionScreen.hide();
       } else if (get<AuctionPanel>(Panel.Type.Auction).auctionInfoPanel.isShowing()) {
          AuctionPanel.self.auctionInfoPanel.hide();
-      } else if (hasPanelInLinkedList()) {
+      } else if (hasPanelInLinkedList() && !get<PvpStatPanel>(Panel.Type.PvpScoreBoard).isShowing()) {
          unlinkPanel();
       } else if (!((OptionsPanel) get(Panel.Type.Options)).isShowing()) {
          // Play SFX

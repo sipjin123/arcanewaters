@@ -45,7 +45,7 @@ public class EditorSQLManager {
       Gems = 36,
       ShipSkins = 37,
       Consumables = 38,
-      Hairdyes = 39
+      Dyes = 39
    }
 
    public static string getSqlTable (EditorToolType editorType) {
@@ -143,8 +143,8 @@ public class EditorSQLManager {
             return XmlVersionManagerServer.SHIP_SKINS_TABLE;
          case EditorToolType.Consumables:
             return XmlVersionManagerServer.CONSUMABLES_TABLE;
-         case EditorToolType.Hairdyes:
-            return XmlVersionManagerServer.HAIR_DYES_TABLE;
+         case EditorToolType.Dyes:
+            return XmlVersionManagerServer.DYES_TABLE;
       }
       return "";
    }

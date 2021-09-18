@@ -255,13 +255,11 @@ public class TutorialPanel3 : MonoBehaviour
    }
 
    public void openPanel () {
-      if (_mode == Mode.Closed) {
-         SoundManager.play2DClip(SoundManager.Type.Tutorial_Pop_Up);
-         _mode = Mode.NPCSpeech;
-         refreshPanelConfig();
-         TutorialManager3.self.updateArrow();
-         AutoTyper.SlowlyRevealText(npcSpeechText, _npcSpeech);
-      }
+      SoundManager.play2DClip(SoundManager.Type.Tutorial_Pop_Up);
+      _mode = Mode.NPCSpeech;
+      refreshPanelConfig();
+      TutorialManager3.self.updateArrow();
+      AutoTyper.SlowlyRevealText(npcSpeechText, _npcSpeech);
    }
 
    public Mode getMode () {

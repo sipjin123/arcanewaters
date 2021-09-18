@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Events;
+using DG.Tweening;
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class LevelUpEffect : MonoBehaviour {
@@ -15,11 +16,20 @@ public class LevelUpEffect : MonoBehaviour {
    // Event called when the effect ends
    public UnityEvent onEffectEnded;
 
-   // Speed (seconds per frame)
-   public float timePerFrame = 0.25f;
+   // Animation speed
+   public float secondsPerFrame = 0.25f;
 
    // The first frame of the animation
    public int startIndex = 0;
+
+   // The time that the the effect will wait before disappearing
+   public float holdTime = 5.0f;
+
+   // Should the effect disappear with a fade or instantly?
+   public bool shouldFadeOut = false;
+
+   // The duration of the fade
+   public float fadeDuration = 3.0f;
 
    #endregion
 
@@ -41,7 +51,7 @@ public class LevelUpEffect : MonoBehaviour {
       return _isVisible;
    }
 
-   public void play(Jobs.Type jobType) {
+   public void play (Jobs.Type jobType) {
       Sprite[] foundSprites = getSpritesForJobType(jobType);
 
       if (foundSprites == null) {
@@ -64,19 +74,41 @@ public class LevelUpEffect : MonoBehaviour {
       }
 
       toggleGameObjects(show: false);
-      InvokeRepeating(nameof(changeSprite), 0f, timePerFrame);
+
+      // Reset opacity
+      Color oldColor = _renderer.color;
+      _renderer.color = new Color(oldColor.r, oldColor.g, oldColor.b, 1.0f);
+
+      InvokeRepeating(nameof(changeSprite), 0f, secondsPerFrame);
    }
 
    public void stop () {
       CancelInvoke(nameof(changeSprite));
-      
+      hold();
+   }
+
+   private void hold () {
+      Invoke(nameof(onHoldEnded), holdTime);
+   }
+
+   private void onHoldEnded () {
+      if (!shouldFadeOut) {
+         hide();
+         return;
+      }
+
+      _renderer.DOFade(0.0f, fadeDuration).OnComplete(hide);
+   }
+
+   private void hide () {
       // Disable the effect
       this.gameObject.SetActive(false);
 
       // Display the objects that were hidden
       toggleGameObjects(show: true);
-
+      
       _isVisible = false;
+      _renderer.DOKill();
 
       // Report listeners
       if (onEffectEnded != null) {
@@ -96,7 +128,7 @@ public class LevelUpEffect : MonoBehaviour {
       _index++;
    }
 
-   private Sprite[] getSpritesForJobType(Jobs.Type jobType) {
+   private Sprite[] getSpritesForJobType (Jobs.Type jobType) {
       // Load our sprites
       string path = "Effects/LevelUp/level_up_effect_" + jobType.ToString().ToLower();
       Sprite[] sprites = ImageManager.getSprites(path);

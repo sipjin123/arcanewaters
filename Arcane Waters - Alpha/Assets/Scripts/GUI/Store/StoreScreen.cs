@@ -9,6 +9,7 @@ using Store;
 using static Store.StoreItem;
 using Newtonsoft.Json;
 using Steamworks;
+using static PaletteToolManager;
 
 public class StoreScreen : Panel
 {
@@ -71,15 +72,13 @@ public class StoreScreen : Panel
    public void showPanel (UserObjects userObjects, int gold, int gems) {
       toggleBlocker(true);
 
-      _userObjects = userObjects;
-
       // Show our gold and gem count
       this.goldText.text = gold + "";
       this.gemsText.text = gems + "";
       this.nameText.text = userObjects.userInfo.username;
 
       // Update the character preview
-      characterStack.updateLayers(userObjects);
+      characterStack.updateLayers(Global.userObjects);
 
       // Start with nothing selected
       selectItem(null);
@@ -121,7 +120,7 @@ public class StoreScreen : Panel
          return;
       }
 
-         loadBlocker.SetActive(show);
+      loadBlocker.SetActive(show);
    }
 
    public void updateGemsAmount (int amount) {
@@ -170,7 +169,7 @@ public class StoreScreen : Panel
          this.selectedItem = null;
          itemTitleText.text = "";
          descriptionText.text = "";
-         characterStack.updateLayers(_userObjects);
+         characterStack.updateLayers(Global.userObjects);
       } else {
          this.selectedItem = itemBox;
          itemTitleText.text = itemBox.itemName;
@@ -178,10 +177,21 @@ public class StoreScreen : Panel
 
          if (itemBox is StoreHairDyeBox) {
             StoreHairDyeBox hairBox = (StoreHairDyeBox) itemBox;
-            characterStack.updateHair(_userObjects.userInfo.hairType, hairBox.palette.paletteName);
+            characterStack.updateHair(Global.userObjects.userInfo.hairType, hairBox.palette.paletteName);
          } else if (itemBox is StoreHaircutBox) {
             StoreHaircutBox hairBox = (StoreHaircutBox) itemBox;
-            characterStack.updateHair(hairBox.haircut.type, _userObjects.userInfo.hairPalettes);
+            characterStack.updateHair(hairBox.haircut.type, Global.userObjects.userInfo.hairPalettes);
+         } else if (itemBox is StoreArmorDyeBox) {
+            StoreArmorDyeBox armorBox = (StoreArmorDyeBox) itemBox;
+            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(Global.userObjects.armor.itemTypeId);
+
+            if (armorData == null) {
+               armorData = EquipmentXMLManager.self.armorStatList.First();
+            }
+
+            if (armorData != null) {
+               characterStack.updateArmor(Global.player.gender, armorData.armorType, armorBox.palette.paletteName);
+            }
          }
 
          itemBox.select();
@@ -207,17 +217,11 @@ public class StoreScreen : Panel
 
       // Go through all of our items and toggle which ones are showing
       foreach (StoreItemBox itemBox in itemsContainer.GetComponentsInChildren<StoreItemBox>(true)) {
-         if (itemBox is StoreHairDyeBox) {
-            itemBox.gameObject.SetActive(_currentStoreTabType == StoreTab.StoreTabType.HairDyes);
-         } else if (itemBox is StoreShipSkinBox) {
-            itemBox.gameObject.SetActive(_currentStoreTabType == StoreTab.StoreTabType.ShipSkins);
-         } else if (itemBox is StoreHaircutBox) {
-            StoreHaircutBox haircutBox = (StoreHaircutBox) itemBox;
-            itemBox.gameObject.SetActive(_currentStoreTabType == StoreTab.StoreTabType.Haircuts && haircutBox.haircut.getGender() == Global.player.gender);
-         } else if (itemBox is StoreGemBox) {
-            itemBox.gameObject.SetActive(_currentStoreTabType == StoreTab.StoreTabType.Gems);
-         } else if (itemBox is StoreConsumableBox) {
-            itemBox.gameObject.SetActive(_currentStoreTabType == StoreTab.StoreTabType.Consumables);
+         bool show = itemBox.storeTabCategory == _currentStoreTabType;
+         itemBox.gameObject.SetActive(show);
+
+         if (_currentStoreTabType == StoreTab.StoreTabType.Haircuts && itemBox is StoreHaircutBox haircutItemBox) {
+            haircutItemBox.gameObject.SetActive(haircutItemBox.haircut.getGender() == Global.player.gender);
          }
       }
 
@@ -225,7 +229,7 @@ public class StoreScreen : Panel
       updateBoxContainerLayout(_currentStoreTabType);
    }
 
-   private void updateBoxContainerLayout(StoreTab.StoreTabType tabType) {
+   private void updateBoxContainerLayout (StoreTab.StoreTabType tabType) {
       GridLayoutGroup gridLayout = itemsContainer.GetComponent<GridLayoutGroup>();
 
       if (gridLayout == null) {
@@ -254,9 +258,7 @@ public class StoreScreen : Panel
 
    public void performTabSwitch (int tabIndex) {
       _currentStoreTabType = (StoreTab.StoreTabType) (tabIndex + 1);
-
       D.debug($"New Store Tab Type is: { _currentStoreTabType }");
-
       presentItems();
    }
 
@@ -276,8 +278,8 @@ public class StoreScreen : Panel
       box.itemQuantity = item.quantity;
       box.itemCategory = item.category;
    }
-   
-   private void tryOverrideNameAndDescription(StoreItem storeItem, StoreItemBox box) {
+
+   private void tryOverrideNameAndDescription (StoreItem storeItem, StoreItemBox box) {
       if (storeItem == null || box == null) {
          return;
       }
@@ -292,9 +294,14 @@ public class StoreScreen : Panel
    }
 
    protected StoreGemBox createGemBox (StoreItem storeItem) {
+      GemsData gemsData = GemsXMLManager.self.getGemsData(storeItem.itemId);
+      
+      if (gemsData == null) {
+         return null;
+      }
+      
       StoreGemBox box = Instantiate(PrefabsManager.self.gemBoxPrefab);
       prepareStoreItemBox(storeItem, box);
-      GemsData gemsData = GemsXMLManager.self.getGemsData(storeItem.itemId);
       box.gemsBundle = gemsData;
       box.itemName = box.gemsBundle.itemName;
       box.itemDescription = box.gemsBundle.itemDescription;
@@ -304,9 +311,14 @@ public class StoreScreen : Panel
    }
 
    protected StoreHaircutBox createHaircutBox (StoreItem storeItem) {
+      HaircutData haircutData = HaircutXMLManager.self.getHaircutData(storeItem.itemId);
+
+      if (haircutData == null) {
+         return null;
+      }
+
       StoreHaircutBox box = Instantiate(PrefabsManager.self.haircutBoxPrefab);
       prepareStoreItemBox(storeItem, box);
-      HaircutData haircutData = HaircutXMLManager.self.getHaircutData(storeItem.itemId);
       box.haircut = haircutData;
       box.itemName = box.haircut.itemName;
       box.itemDescription = box.haircut.itemDescription;
@@ -316,9 +328,14 @@ public class StoreScreen : Panel
    }
 
    protected StoreShipSkinBox createShipSkinBox (StoreItem storeItem) {
+      ShipSkinData shipSkinData = ShipSkinXMLManager.self.getShipSkinData(storeItem.itemId);
+
+      if (shipSkinData == null) {
+         return null;
+      }
+
       StoreShipSkinBox box = Instantiate(PrefabsManager.self.shipBoxPrefab);
       prepareStoreItemBox(storeItem, box);
-      ShipSkinData shipSkinData = ShipSkinXMLManager.self.getShipSkinData(storeItem.itemId);
       box.shipSkin = shipSkinData;
       box.itemName = box.shipSkin.itemName;
       box.itemDescription = box.shipSkin.itemDescription;
@@ -327,13 +344,61 @@ public class StoreScreen : Panel
       return box;
    }
 
+   protected StoreItemBox createDyeBox (StoreItem storeItem) {
+      DyeData dyeData = DyeXMLManager.self.getDyeData(storeItem.itemId);
+
+      if (dyeData == null) {
+         return null;
+      }
+
+      PaletteToolData palette = PaletteSwapManager.self.getPalette(dyeData.paletteId);
+
+      if (palette == null) {
+         return null;
+      }
+
+      if (palette.paletteType == (int) PaletteImageType.Hair) {
+         if (palette.isPrimary()) {
+            return createHairDyeBox(storeItem);
+         }
+      }
+
+      if (palette.paletteType == (int) PaletteImageType.Armor) {
+         return createArmorDyeBox(storeItem);
+      }
+
+      return null;
+   }
+
    protected StoreHairDyeBox createHairDyeBox (StoreItem storeItem) {
+      DyeData dyeData = DyeXMLManager.self.getDyeData(storeItem.itemId);
+      
+      if (dyeData == null) {
+         return null;
+      }
+
       StoreHairDyeBox box = Instantiate(PrefabsManager.self.hairDyeBoxPrefab);
       prepareStoreItemBox(storeItem, box);
-      HairDyeData hairdyeData = HairDyeXMLManager.self.getHairdyeData(storeItem.itemId);
-      box.hairdye = hairdyeData;
+      box.hairdye = dyeData;
       box.itemName = box.hairdye.itemName;
       box.itemDescription = box.hairdye.itemDescription;
+      tryOverrideNameAndDescription(storeItem, box);
+      box.initialize();
+      return box;
+   }
+
+   protected StoreArmorDyeBox createArmorDyeBox (StoreItem storeItem) {
+      DyeData dyeData = DyeXMLManager.self.getDyeData(storeItem.itemId);
+
+      if (dyeData == null) {
+         return null;
+      }
+
+      StoreArmorDyeBox box = Instantiate(PrefabsManager.self.armorDyeBoxPrefab);
+      prepareStoreItemBox(storeItem, box);
+      box.armorDye = dyeData;
+      box.itemName = box.armorDye.itemName;
+      box.itemDescription = box.armorDye.itemDescription;
       tryOverrideNameAndDescription(storeItem, box);
       box.initialize();
       return box;
@@ -354,9 +419,14 @@ public class StoreScreen : Panel
    }
 
    protected StoreConsumableBox createConsumableBox (StoreItem storeItem) {
+      ConsumableData consumableData = ConsumableXMLManager.self.getConsumableData(storeItem.itemId);
+      
+      if (consumableData == null) {
+         return null;
+      }
+      
       StoreConsumableBox box = Instantiate(PrefabsManager.self.consumableBoxPrefab);
       prepareStoreItemBox(storeItem, box);
-      ConsumableData consumableData = ConsumableXMLManager.self.getConsumableData(storeItem.itemId);
       box.consumable = consumableData;
       box.itemName = box.consumable.itemName;
       box.itemDescription = box.consumable.itemDescription;
@@ -386,7 +456,7 @@ public class StoreScreen : Panel
          }
 
          StoreItemBox createdBox = null;
-         
+
          switch (item.category) {
             case Item.Category.None:
                break;
@@ -399,8 +469,8 @@ public class StoreScreen : Panel
             case Item.Category.Haircut:
                createdBox = createHaircutBox(item);
                break;
-            case Item.Category.Hairdye:
-               createdBox = createHairDyeBox(item);
+            case Item.Category.Dye:
+               createdBox = createDyeBox(item);
                break;
             case Item.Category.Hats:
                createdBox = createHatBox(item);
@@ -411,6 +481,10 @@ public class StoreScreen : Panel
             case Item.Category.Consumable:
                createdBox = createConsumableBox(item);
                break;
+         }
+
+         if (createdBox == null) {
+            continue;
          }
 
          _storeItemBoxes.Add(createdBox);
@@ -435,9 +509,6 @@ public class StoreScreen : Panel
    #endregion
 
    #region Private Variables
-
-   // The last user objects that we received
-   protected UserObjects _userObjects;
 
    // Store values of all boxes used for choosing hair palette; Key is box hashes
    private Dictionary<int, string> _paletteHairDye = new Dictionary<int, string>();

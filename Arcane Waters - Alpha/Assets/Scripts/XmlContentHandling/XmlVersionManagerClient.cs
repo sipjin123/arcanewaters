@@ -199,7 +199,7 @@ public class XmlVersionManagerClient : GenericGameManager {
       checkStreamingAssetFile(XmlVersionManagerServer.SFX_FILE);
 
       checkStreamingAssetFile(XmlVersionManagerServer.HAIRCUTS_FILE);
-      checkStreamingAssetFile(XmlVersionManagerServer.HAIR_DYES_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.DYES_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.GEMS_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.SHIP_SKINS_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.CONSUMABLES_FILE);
@@ -297,7 +297,7 @@ public class XmlVersionManagerClient : GenericGameManager {
       extractXmlType(EditorToolType.SFX);
 
       extractXmlType(EditorToolType.Haircuts);
-      extractXmlType(EditorToolType.Hairdyes);
+      extractXmlType(EditorToolType.Dyes);
       extractXmlType(EditorToolType.Gems);
       extractXmlType(EditorToolType.ShipSkins);
       extractXmlType(EditorToolType.Consumables);
@@ -394,8 +394,8 @@ public class XmlVersionManagerClient : GenericGameManager {
          case EditorToolType.Haircuts:
             path = TEXT_PATH + XmlVersionManagerServer.HAIRCUTS_FILE + ".txt";
             break;
-         case EditorToolType.Hairdyes:
-            path = TEXT_PATH + XmlVersionManagerServer.HAIR_DYES_FILE + ".txt";
+         case EditorToolType.Dyes:
+            path = TEXT_PATH + XmlVersionManagerServer.DYES_FILE + ".txt";
             break;
          case EditorToolType.Gems:
             path = TEXT_PATH + XmlVersionManagerServer.GEMS_FILE + ".txt";
@@ -905,8 +905,8 @@ public class XmlVersionManagerClient : GenericGameManager {
             HaircutXMLManager.self.receiveHaircutDataFromZipData(haircutDataList);
             break;
 
-         case EditorToolType.Hairdyes:
-            List<HairDyeData> hairDyeDataList = new List<HairDyeData>();
+         case EditorToolType.Dyes:
+            List<DyeData> dyesDataList = new List<DyeData>();
 
             foreach (string subGroup in xmlGroup) {
                string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
@@ -914,14 +914,14 @@ public class XmlVersionManagerClient : GenericGameManager {
                // Extract the segregated data and assign to the xml manager
                if (xmlSubGroup.Length == 2) {
                   int dataId = int.Parse(xmlSubGroup[0]);
-                  HairDyeData actualData = Util.xmlLoad<HairDyeData>(xmlSubGroup[1]);
+                  DyeData actualData = Util.xmlLoad<DyeData>(xmlSubGroup[1]);
                   actualData.itemID = dataId;
-                  hairDyeDataList.Add(actualData);
+                  dyesDataList.Add(actualData);
                   message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
                }
             }
 
-            HairDyeXMLManager.self.receiveDataFromZipData(hairDyeDataList);
+            DyeXMLManager.self.receiveDataFromZipData(dyesDataList);
             break;
 
          case EditorToolType.Gems:

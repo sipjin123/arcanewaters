@@ -4469,9 +4469,9 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   #region Hairdyes XML
+   #region Dyes XML
 
-   public static new void updateHairdyeXML (int xmlID, string rawData, int accIDOverride = 0) {
+   public static new void updateDyeXML (int xmlID, string rawData, int accIDOverride = 0) {
       string xml_id_key = "xml_id, ";
       string xml_id_value = "@xml_id, ";
 
@@ -4485,7 +4485,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO global.hair_dyes_v1 (" + xml_id_key + "xmlContent, creator_userID, lastUserUpdate) " +
+            "INSERT INTO global.dyes_v1 (" + xml_id_key + "xmlContent, creator_userID, lastUserUpdate) " +
             "VALUES(" + xml_id_value + "@xmlContent, @creator_userID, NOW()) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
 
@@ -4505,11 +4505,37 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new List<XMLPair> getHairdyesXML () {
+   public static new bool toggleDyeXML (int xmlID, bool isEnabled, int accIDOverride = 0) {
+      bool result = false;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE global.dyes_v1 SET is_enabled=@is_enabled, creator_userID=@creator_userID, lastUserUpdate=NOW() WHERE xml_id=@xml_id", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@xml_id", xmlID);
+            cmd.Parameters.AddWithValue("@is_enabled", isEnabled);
+            cmd.Parameters.AddWithValue("@creator_userID", accIDOverride == 0 ? MasterToolAccountManager.self.currentAccountID : accIDOverride);
+            DebugQuery(cmd);
+
+            // Execute the command
+            int affectedRows = cmd.ExecuteNonQuery();
+            result = affectedRows > 0;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return result;
+   }
+
+   public static new List<XMLPair> getDyesXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.hair_dyes_v1", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.dyes_v1", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -5528,6 +5554,36 @@ public class DB_Main : DB_MainStub
       }
 
       return weapon;
+   }
+
+   public static new bool setArmorPalette(int userId, int armorId, string armorPalettes) {
+      bool success = false;
+      
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE items SET itmPalettes=@itmPalettes WHERE usrId=@usrId AND itmId=@itmId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@itmPalettes", armorPalettes);
+            cmd.Parameters.AddWithValue("@itmId", armorId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            int rowsAffected = cmd.ExecuteNonQuery();
+
+            if (rowsAffected != 1) {
+               D.warning("An UPDATE didn't affect just 1 row, for usrId " + userId);
+            } else {
+               success = true;
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return success;
    }
 
    #endregion
@@ -10690,6 +10746,34 @@ public class DB_Main : DB_MainStub
          D.error(ex.Message);
       }
       return 0;
+   }
+
+   public static new bool updateStoreItem(ulong itemId, Item.Category category, int soldItemId, bool isEnabled, int price, string storeItemName, string storeItemDescription) {
+      bool result = false;
+
+      try {
+         using (MySqlConnection conn = getConnection()) {
+            // Open the connection.
+            conn.Open();
+
+            using (MySqlCommand cmd = new MySqlCommand($"UPDATE `store_items` SET siItemCategory=@siItemCategory, siItem=@siItem, siIsEnabled=@siIsEnabled, siItemPrice=@siItemPrice, siItemName=@siItemName, siItemDescription=@siItemDescription WHERE `siItemId`=@itemId", conn)) {
+               cmd.Parameters.AddWithValue("@itemId", itemId);
+               cmd.Parameters.AddWithValue("@siItemPrice", price);
+               cmd.Parameters.AddWithValue("@siIsEnabled", isEnabled);
+               cmd.Parameters.AddWithValue("@siItem", soldItemId);
+               cmd.Parameters.AddWithValue("@siItemCategory", category);
+               cmd.Parameters.AddWithValue("@siItemName", storeItemName);
+               cmd.Parameters.AddWithValue("@siItemDescription", storeItemDescription);
+
+               int rowsAffected = cmd.ExecuteNonQuery();
+               result = rowsAffected > 0;
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return result;
    }
 
    public static new bool deleteStoreItem (ulong itemId) {

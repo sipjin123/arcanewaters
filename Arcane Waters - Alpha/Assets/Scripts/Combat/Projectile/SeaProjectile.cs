@@ -205,6 +205,11 @@ public class SeaProjectile : NetworkBehaviour
          return;
       }
 
+      // Disallow hitting the entity we hit last (used for bouncing cannonballs)
+      if (hitEntity.netId == _lastHitEntityNetId) {
+         return;
+      }
+
       _hasCollided = true;
 
       // The server will handle applying damage
@@ -243,6 +248,8 @@ public class SeaProjectile : NetworkBehaviour
          if (_statusType != Status.Type.None) {
             hitEntity.applyStatus(_statusType, 1.0f, _statusDuration, sourceEntity.netId);
          }
+
+         _lastHitEntityNetId = hitEntity.netId;
 
          onHitEnemy(hitEntity, sourceEntity, totalFinalDamage);
 
@@ -363,6 +370,9 @@ public class SeaProjectile : NetworkBehaviour
 
    // When set to true, this will prevent processDestruction from destroying the projectile once
    protected bool _cancelDestruction = false;
+
+   // The net ID of the last entity this projectile hit
+   private uint _lastHitEntityNetId = 0;
 
    #endregion
 }

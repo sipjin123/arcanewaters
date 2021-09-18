@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.UI;
-using Mirror;
 
 public class StoreHairDyeBox : StoreItemBox
 {
@@ -13,7 +10,7 @@ public class StoreHairDyeBox : StoreItemBox
    public Image hairFront;
 
    // The hair dye information
-   public HairDyeData hairdye;
+   public DyeData hairdye;
 
    // Palette information
    public PaletteToolData palette;
@@ -21,6 +18,8 @@ public class StoreHairDyeBox : StoreItemBox
    #endregion
 
    public void initialize () {
+      this.storeTabCategory = StoreTab.StoreTabType.HairDyes;
+
       if (this.imageIcon == null || Util.isBatch() || hairdye == null) {
          return;
       }
@@ -54,7 +53,7 @@ public class StoreHairDyeBox : StoreItemBox
    }
 
    private bool assignHairSpriteToImage (Image image, bool front, Gender.Type gender, string number, string hairColorPalette) {
-      Sprite sprite = ImageManager.getHairSprite(front, gender, number);
+      Sprite sprite = ImageManager.getHairSprite(front, gender, number, frame: 8);
 
       if (sprite == null) {
          return false;

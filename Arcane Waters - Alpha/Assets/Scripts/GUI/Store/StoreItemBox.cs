@@ -42,6 +42,9 @@ public class StoreItemBox : MonoBehaviour, IPointerEnterHandler, IPointerClickHa
    // Reference to the border visible when the box is selected
    public Image selectionBorder;
 
+   // The category of the item in the Store UI
+   public StoreTab.StoreTabType storeTabCategory;
+
    #endregion
 
    public virtual void Start () {
@@ -95,7 +98,6 @@ public class StoreItemBox : MonoBehaviour, IPointerEnterHandler, IPointerClickHa
 
    public virtual void OnPointerClick (PointerEventData eventData) {
       StoreScreen.self.selectItem(this);
-      select();
    }
 
    public virtual void OnPointerDown (PointerEventData eventData) {

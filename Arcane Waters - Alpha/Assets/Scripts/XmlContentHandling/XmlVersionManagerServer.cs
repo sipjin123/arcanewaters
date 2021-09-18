@@ -60,7 +60,7 @@ public class XmlVersionManagerServer : GenericGameManager {
    public static string GEMS_TABLE = "gems_bundles_v1";
    public static string SHIP_SKINS_TABLE = "ship_skins_v2";
    public static string CONSUMABLES_TABLE = "consumables_v1";
-   public static string HAIR_DYES_TABLE = "hair_dyes_v1";
+   public static string DYES_TABLE = "dyes_v1";
 
    // TEXT FILE NAMES (Do not Modify)
    public static string CROPS_FILE = "crops";
@@ -94,7 +94,7 @@ public class XmlVersionManagerServer : GenericGameManager {
    public static string GEMS_FILE = "gems";
    public static string SHIP_SKINS_FILE = "ship_skins";
    public static string CONSUMABLES_FILE = "consumables";
-   public static string HAIR_DYES_FILE = "hair_dyes";
+   public static string DYES_FILE = "dyes";
 
    // Progress indicators
    public int targetProgress;
@@ -162,7 +162,7 @@ public class XmlVersionManagerServer : GenericGameManager {
       confirmTextFile(SFX_FILE);
 
       confirmTextFile(HAIRCUTS_FILE);
-      confirmTextFile(HAIR_DYES_FILE);
+      confirmTextFile(DYES_FILE);
       confirmTextFile(GEMS_FILE);
       confirmTextFile(SHIP_SKINS_FILE);
       confirmTextFile(CONSUMABLES_FILE);
@@ -214,7 +214,7 @@ public class XmlVersionManagerServer : GenericGameManager {
          compiledData += DB_Main.getLastUpdate(EditorToolType.Projectiles);
          compiledData += DB_Main.getLastUpdate(EditorToolType.Tutorial);
          compiledData += DB_Main.getLastUpdate(EditorToolType.Haircuts);
-         compiledData += DB_Main.getLastUpdate(EditorToolType.Hairdyes);
+         compiledData += DB_Main.getLastUpdate(EditorToolType.Dyes);
          compiledData += DB_Main.getLastUpdate(EditorToolType.Gems);
          compiledData += DB_Main.getLastUpdate(EditorToolType.ShipSkins);
          compiledData += DB_Main.getLastUpdate(EditorToolType.Consumables);
@@ -333,7 +333,7 @@ public class XmlVersionManagerServer : GenericGameManager {
          string soundEffectsData = SoundEffectManager.self.getSoundEffectsStringData(soundEffectsRawData);
 
          string haircutsData = DB_Main.getXmlContent(HAIRCUTS_TABLE, EditorToolType.Haircuts);
-         string hairdyesData = DB_Main.getXmlContent(HAIR_DYES_TABLE, EditorToolType.Hairdyes);
+         string dyesData = DB_Main.getXmlContent(DYES_TABLE, EditorToolType.Dyes);
          string gemsData = DB_Main.getXmlContent(GEMS_TABLE, EditorToolType.Gems);
          string shipSkinsData = DB_Main.getXmlContent(SHIP_SKINS_TABLE, EditorToolType.ShipSkins);
          string consumablesData = DB_Main.getXmlContent(CONSUMABLES_TABLE, EditorToolType.Consumables);
@@ -368,7 +368,7 @@ public class XmlVersionManagerServer : GenericGameManager {
          writeAndCache(xmlTextDirectory + "/" + SFX_FILE + ".txt", soundEffectsData);
 
          writeAndCache(xmlTextDirectory + "/" + HAIRCUTS_FILE + ".txt", haircutsData);
-         writeAndCache(xmlTextDirectory + "/" + HAIR_DYES_FILE + ".txt", hairdyesData);
+         writeAndCache(xmlTextDirectory + "/" + DYES_FILE + ".txt", dyesData);
          writeAndCache(xmlTextDirectory + "/" + GEMS_FILE + ".txt", gemsData);
          writeAndCache(xmlTextDirectory + "/" + SHIP_SKINS_FILE + ".txt", shipSkinsData);
          writeAndCache(xmlTextDirectory + "/" + CONSUMABLES_FILE + ".txt", consumablesData);

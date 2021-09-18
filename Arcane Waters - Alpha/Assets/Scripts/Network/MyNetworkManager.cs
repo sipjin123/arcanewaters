@@ -207,6 +207,9 @@ public class MyNetworkManager : NetworkManager
       AreaManager.self.storeAreaInfo();
       SpawnManager.self.storeSpawnPositions();
 
+      // Initialize Store Items
+      StoreDBManager.self.initialize();
+
       // Initialize all xml managers to fetch from database
       initializeXmlData();
 
@@ -279,7 +282,7 @@ public class MyNetworkManager : NetworkManager
       ProjectileStatManager.self.initializeDataCache();
 
       HaircutXMLManager.self.initializeDataCache();
-      HairDyeXMLManager.self.initializeDataCache();
+      DyeXMLManager.self.initializeDataCache();
       GemsXMLManager.self.initializeDataCache();
       ShipSkinXMLManager.self.initializeDataCache();
       ConsumableXMLManager.self.initializeDataCache();

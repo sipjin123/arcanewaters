@@ -449,6 +449,17 @@ public class PvpManager : MonoBehaviour {
       }
    }
 
+   public static string getGameModeDisplayName (PvpGameMode gameMode) {
+      switch (gameMode) {
+         case PvpGameMode.BaseAssault:
+            return "Base Assault";
+         case PvpGameMode.CaptureTheFlag:
+            return "Capture the Treasure";
+         default:
+            return "None";
+      }
+   }
+
    #region Private Variables
 
    // After how long the game creation will time out

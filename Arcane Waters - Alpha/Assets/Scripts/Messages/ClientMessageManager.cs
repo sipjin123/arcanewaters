@@ -235,6 +235,7 @@ public class ClientMessageManager : MonoBehaviour {
          case ConfirmMessage.Type.UsedConsumable:
          case ConfirmMessage.Type.UsedHairDye:
          case ConfirmMessage.Type.UsedShipSkin:
+         case ConfirmMessage.Type.UsedArmorDye:
          case ConfirmMessage.Type.UsedHaircut:
             string chatMessage = msg.customMessage;
 
@@ -244,6 +245,8 @@ public class ClientMessageManager : MonoBehaviour {
                chatMessage = "You have cut your hair!";
             } else if (msg.confirmType == ConfirmMessage.Type.UsedHairDye) {
                chatMessage = "You have dyed your hair!";
+            } else if (msg.confirmType == ConfirmMessage.Type.UsedArmorDye) {
+               chatMessage = "You have dyed your armor!";
             } else if (msg.confirmType == ConfirmMessage.Type.UsedConsumable) {
                Global.player.rpc.Cmd_FetchPerkPointsForUser();
             }
@@ -517,9 +520,9 @@ public class ClientMessageManager : MonoBehaviour {
    }
 
    public static void On_Store (NetworkConnection conn, StoreMessage msg) {
-      // Show the Store panel after updating the gems on hand
-      StoreScreen store = (StoreScreen) PanelManager.self.get(Panel.Type.Store);
-      store.showPanel(msg.userObjects, msg.goldOnHand, msg.gemsOnHand);
+      Global.userObjects = msg.userObjects;
+      StoreScreen store = (StoreScreen)PanelManager.self.get(Panel.Type.Store);
+      store.showPanel(Global.userObjects, msg.goldOnHand, msg.gemsOnHand);
    }
 
    public static void On_ClientDisconnected () {

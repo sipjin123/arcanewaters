@@ -17,6 +17,8 @@ public class StoreHaircutBox : StoreItemBox {
    #endregion
 
    public void initialize () {
+      this.storeTabCategory = StoreTab.StoreTabType.Haircuts;
+
       if (this.imageIcon == null || Util.isBatch() || haircut == null) {
          return;
       }
@@ -47,7 +49,7 @@ public class StoreHaircutBox : StoreItemBox {
    }
 
    private bool assignHairSpriteToImage (Image image, bool front, Gender.Type gender, string number, string hairColor) {
-      Sprite sprite = ImageManager.getHairSprite(front, gender, number);
+      Sprite sprite = ImageManager.getHairSprite(front, gender, number, frame: 8);
 
       if (sprite == null) {
          return false;

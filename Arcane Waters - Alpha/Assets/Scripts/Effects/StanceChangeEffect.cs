@@ -29,7 +29,7 @@ public class StanceChangeEffect : MonoBehaviour {
       DOTween.Kill(effectRenderer.transform);
    }
 
-   public void show (Battler.Stance stance, bool isLocalBattler) {
+   public void show (Battler.Stance stance, bool isLocalBattler, Transform battlerTransform) {
       resetValues();
 
       // Assign the appropriate sprite
@@ -46,6 +46,9 @@ public class StanceChangeEffect : MonoBehaviour {
       }
 
       float effectHeight = (isLocalBattler) ? 0.55f : 0.45f;
+
+      // Play SFX
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.STANCE_CHANGE, battlerTransform);
 
       effectRenderer.gameObject.SetActive(true);
       effectRenderer.DOFade(1.0f, 0.25f);

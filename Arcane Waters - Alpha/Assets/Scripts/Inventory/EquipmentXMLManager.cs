@@ -84,22 +84,20 @@ public class EquipmentXMLManager : MonoBehaviour {
 
    public HatStatData getHatData (int hatSqlId) {
       if (_hatStatRegistry.ContainsKey(hatSqlId)) {
-         return _hatStatRegistry[hatSqlId];
+         HatStatData hatStatData = _hatStatRegistry[hatSqlId];
+
+         if (String.IsNullOrEmpty(hatStatData.equipmentIconPath)) {
+            D.debug("Null Icon for Hat!: {" + hatStatData.equipmentName + "} {" + hatStatData.equipmentIconPath + "} {" + hatStatData.hatType + "}");
+         }
+
+         return hatStatData;
       }
 
       return null;
    }
 
    public HatStatData getHatDataByItemType (int hatType) {
-      if (_hatStatRegistry.ContainsKey(hatType)) {
-         HatStatData hatStatData = _hatStatRegistry[hatType];
-         if (String.IsNullOrEmpty(hatStatData.equipmentIconPath)) {
-            D.debug("Null Icon for Hat!: {" + hatStatData.equipmentName + "} {" + hatStatData.equipmentIconPath + "} {" + hatStatData.hatType + "}");
-         }
-         return hatStatData;
-      }
-
-      return null;
+      return _hatStatRegistry.Values.FirstOrDefault(_ => _.hatType == hatType);
    }
 
    private void finishedLoading () {

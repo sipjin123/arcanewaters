@@ -361,11 +361,15 @@ public class MapManager : MonoBehaviour
    }
 
    public void addCustomizations (Area area, Biome.Type biome, PrefabState changes) {
-
       foreach (CustomizablePrefab pref in area.gameObject.GetComponentsInChildren<CustomizablePrefab>()) {
          if (pref.unappliedChanges.id == changes.id) {
             pref.unappliedChanges = changes;
             pref.submitUnappliedChanges();
+
+            if (!Mirror.NetworkServer.active && pref.customizedState.serializationId != changes.serializationId) {
+               // The prefab variant has changed - the old prefab must be destroyed and a new one created
+               MapCustomizationManager.replacePrefab(pref, changes.serializationId);
+            }
             break;
          }
       }

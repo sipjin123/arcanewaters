@@ -8,6 +8,8 @@
    #endregion
 
    public void initialize () {
+      this.storeTabCategory = StoreTab.StoreTabType.Consumables;
+
       if (this.imageIcon == null) {
          return;
       }

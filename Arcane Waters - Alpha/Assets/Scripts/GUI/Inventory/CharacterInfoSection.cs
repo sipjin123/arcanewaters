@@ -56,7 +56,7 @@ public class CharacterInfoSection : MonoBehaviour
 
       characterNameText.text = userObjects.userInfo.username;
 
-      characterStack.updateLayers(userObjects, false);
+      characterStack.updateLayers(userObjects);
 
       updateLevelInfo(userObjects);
       updateHPInfo(userObjects.userInfo.userId, userObjects.userInfo.XP);

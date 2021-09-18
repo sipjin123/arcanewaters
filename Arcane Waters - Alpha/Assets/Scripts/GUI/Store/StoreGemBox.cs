@@ -11,6 +11,8 @@ public class StoreGemBox : StoreItemBox
    #endregion
 
    public void initialize () {
+      this.storeTabCategory = StoreTab.StoreTabType.Gems;
+
       if (Util.isBatch()) {
          return;
       }

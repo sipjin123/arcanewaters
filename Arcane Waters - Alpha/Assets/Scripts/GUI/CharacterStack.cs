@@ -64,7 +64,7 @@ public class CharacterStack : MonoBehaviour {
       if (armorData == null) {
          D.debug("Armor data is null!");
       } else {
-         updateArmor(info.gender, armorData.armorType, armorData.palettes, updatePalettes);
+         updateArmor(info.gender, armorData.armorType, userObjects.armor.paletteNames, updatePalettes);
       }
 
       WeaponStatData weaponData = WeaponStatData.getDefaultData();
@@ -198,6 +198,7 @@ public class CharacterStack : MonoBehaviour {
 
    public void updateArmor (Gender.Type gender, int armorType, string palettes, bool updatePalettes = true) {
       armorLayer.setType(gender, armorType);
+
       if (updatePalettes) {
          armorLayer.recolor(palettes);
       }
@@ -206,8 +207,8 @@ public class CharacterStack : MonoBehaviour {
       // This syncs the users color scheme to the GUI material of the character stack(Inventory Char Preview)
       if (Global.player is PlayerBodyEntity) {
          PlayerBodyEntity playerEntity = Global.player as PlayerBodyEntity;
-
-         armorLayer.recolor(playerEntity.armorManager.palettes);
+         string mergedPalette = Item.parseItmPalette(Item.overridePalette(palettes, playerEntity.armorManager.palettes));
+         armorLayer.recolor(mergedPalette);
       }
    }
 

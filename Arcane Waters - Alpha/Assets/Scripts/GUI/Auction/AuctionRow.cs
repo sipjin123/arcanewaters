@@ -19,6 +19,9 @@ public class AuctionRow : MonoBehaviour
    // The item name
    public Text itemName;
 
+   // The name of the seller
+   public Text itemSellerName;
+
    // The rarity stars
    public Image star1Image;
    public Image star2Image;
@@ -60,6 +63,7 @@ public class AuctionRow : MonoBehaviour
          itemCount.text = "";
       }
       itemName.text = auction.itemName;
+      itemSellerName.text = $"by {auction.sellerName}";
       bidAmounts.text = string.Format("{0:n0}", auction.highestBidPrice) + "/";
       if (auction.isBuyoutAllowed) {
          bidAmounts.text = bidAmounts.text + string.Format("{0:n0}", auction.buyoutPrice);

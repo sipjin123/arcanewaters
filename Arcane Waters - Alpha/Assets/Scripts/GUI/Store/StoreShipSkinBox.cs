@@ -13,6 +13,8 @@ public class StoreShipSkinBox : StoreItemBox {
    #endregion
 
    public void initialize () {
+      this.storeTabCategory = StoreTab.StoreTabType.ShipSkins;
+
       if (Util.isBatch()) {
          return;
       }

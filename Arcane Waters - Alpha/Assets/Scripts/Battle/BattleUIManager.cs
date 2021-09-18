@@ -573,7 +573,8 @@ public class BattleUIManager : MonoBehaviour {
             break;
       }
 
-      SoundEffectManager.self.playSoundEffect(SoundEffectManager.STANCE_SELECTION, transform);
+      //SoundEffectManager.self.playSoundEffect(SoundEffectManager.STANCE_SELECTION, transform);
+
       onStanceChanged((Battler.Stance) newStance);
 
       // Whenever we have finished setting the new stance, we hide the frames

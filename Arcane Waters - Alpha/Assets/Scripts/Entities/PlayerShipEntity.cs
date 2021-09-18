@@ -24,7 +24,7 @@ public class PlayerShipEntity : ShipEntity
    public Vector2 nextShotTarget = new Vector2(0, 0);
 
    // Ability Reference
-   public List<int> shipAbilities = new List<int>();
+   public SyncList<int> shipAbilities = new SyncList<int>();
 
    // The equipped weapon characteristics
    [SyncVar]
@@ -137,8 +137,8 @@ public class PlayerShipEntity : ShipEntity
    [SyncVar]
    public bool holdingPvpCaptureTarget = false;
 
-   // The current ship ability
-   public int currentShipAbility = 0;
+   // The index of the selected ship ability
+   public int selectedShipAbilityIndex = 0;
 
    // The different flags the ship can display
    public enum Flag {
@@ -186,9 +186,6 @@ public class PlayerShipEntity : ShipEntity
 
          // Get a reference to our audio listener
          _audioListener = GetComponent<AudioListener>();
-
-         // Notify UI panel to display the current skills this ship has
-         Cmd_RequestAbilityList();
 
          _targetSelector = GetComponentInChildren<PlayerTargetSelector>();
          boostTimingSprites.gameObject.SetActive(true);
@@ -264,7 +261,6 @@ public class PlayerShipEntity : ShipEntity
 
    public void changeShipInfo (ShipInfo info) {
       initialize(info);
-      Target_ReceiveAbilityList(connectionToClient, shipAbilities.ToArray());
    }
 
    protected override void initialize (ShipInfo shipInfo) {
@@ -309,10 +305,8 @@ public class PlayerShipEntity : ShipEntity
       boostCircleFillSpriteSwap.newTexture = _boostCircleFill;
    }
 
-   private void selectAbilityAbility (int abilitySlotIndex) {
-      int newAbilityId = CannonPanel.self.cannonBoxList[abilitySlotIndex].abilityId;
-      CannonPanel.self.useCannonType(newAbilityId, abilitySlotIndex);
-      Cmd_ChangeAttackOption(newAbilityId);
+   private void selectAbility (int abilitySlotIndex) {
+      Cmd_ChangeAttackOption(abilitySlotIndex);
    }
 
    protected override void Update () {
@@ -328,6 +322,7 @@ public class PlayerShipEntity : ShipEntity
 
       updateSpeedUpDisplay();
       updateCoinTrail();
+      updateAbilityCooldowns();
 
       // Recolor the ship flag if needed
       if (isClient) {
@@ -401,18 +396,6 @@ public class PlayerShipEntity : ShipEntity
          if ((InputManager.isFireCannonMouseUp() && _chargingWithMouse) || (InputManager.getKeyActionUp(KeyAction.FireMainCannon) && !_chargingWithMouse)) {
             cannonAttackReleased();
          }
-
-         if (KeyUtils.GetKey(Key.X)) {
-            if (KeyUtils.GetKeyDown(Key.F10)) {
-               cannonAttackType = (CannonAttackType) (((int) cannonAttackType + 1) % 3);
-               ChatPanel.self.addChatInfo(new ChatInfo(0, "Changed ship attack type to: " + cannonAttackType.ToString(), System.DateTime.Now, ChatInfo.Type.System));
-            }
-
-            if (KeyUtils.GetKeyDown(Key.F11)) {
-               Status.Type newStatusType = (Status.Type) (((int) cannonEffectType + 1) % System.Enum.GetValues(typeof(Status.Type)).Length);
-               Cmd_ChangeCannonEffectType();
-            }
-         }
       }
 
       boostUpdate();
@@ -432,9 +415,6 @@ public class PlayerShipEntity : ShipEntity
          if (_isChargingCannon) {
             updateTargeting();
          }
-
-         // Update charging state
-         CannonPanel.self.setIsChargingCannon(_isChargingCannon);
       }
    }
 
@@ -514,8 +494,51 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
+   private void switchCannonTargetingMode (CannonAttackType newAttackType) {
+      CannonAttackType oldAttackType = cannonAttackType;
+
+      // Don't do anything if our attack type hasn't changed
+      if (oldAttackType == newAttackType) {
+         return;
+      }
+
+      // Disable game objects from the old targeting type
+      switch (oldAttackType) {
+         case CannonAttackType.Cone:
+            _targetCone.gameObject.SetActive(false);
+            break;
+         case CannonAttackType.Circle:
+            _targetCircle.gameObject.SetActive(false);
+            break;
+         default:
+            _cannonTargeter.gameObject.SetActive(false);
+            break;
+      }
+
+      cannonAttackType = newAttackType;
+
+      // Enable game objects for the new targeting type
+      switch (newAttackType) {
+         case CannonAttackType.Cone:
+            _targetCone.gameObject.SetActive(true);
+            updateTargeting();
+            _targetCone.updateCone(true);
+            break;
+         case CannonAttackType.Circle:
+            _targetCircle.gameObject.SetActive(true);
+            updateTargeting();
+            _targetCircle.updateCircle(true);
+            break;
+         default:
+            _cannonTargeter.gameObject.SetActive(true);
+            updateTargeting();
+            _cannonTargeter.updateTargeter();
+            break;
+      }
+   }
+
    private void cannonAttackPressed () {
-      if (!hasReloaded() || isPerformingAttack() || CannonPanel.self.isOnCooldown()) {
+      if (!hasReloaded() || isPerformingAttack()) {
          return;
       }
 
@@ -547,7 +570,7 @@ public class PlayerShipEntity : ShipEntity
       }
 
       bool useCannonAttack = true;
-      ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(currentShipAbility);
+      ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(getSelectedShipAbilityId());
       if (abilityData != null) {
          switch (abilityData.selectedAttackType) {
             case Attack.Type.SpeedBoost:
@@ -622,13 +645,7 @@ public class PlayerShipEntity : ShipEntity
       }
       _isChargingCannon = false;
 
-      // Release as default attack
-      CannonPanel.self.cannonReleased();
-
-      // Reset ability to default ability
-      int defaultAbilityId = CannonPanel.self.cannonBoxList[0].abilityId;
-      Cmd_ChangeAttackOption(defaultAbilityId);
-      CannonPanel.self.useCannonType(defaultAbilityId, 0);
+      Cmd_AbilityUsed(selectedShipAbilityIndex);
    }
 
    private void splitAttackCap (ShipAbilityData abilityData) {
@@ -689,7 +706,7 @@ public class PlayerShipEntity : ShipEntity
             break;
          case CannonAttackType.Cone:
             // Update target cone parameters
-            if (ShipAbilityManager.self.getAbility(currentShipAbility).splitsAfterAttackCap) {
+            if (ShipAbilityManager.self.getAbility(getSelectedShipAbilityId()).splitsAfterAttackCap) {
                _targetCone.coneHalfAngle = (40.0f - (getCannonChargeAmount() * 25.0f)) / 1.25f;
             } else {
                _targetCone.coneHalfAngle = (40.0f - (getCannonChargeAmount() * 25.0f)) / 2.0f;
@@ -740,6 +757,9 @@ public class PlayerShipEntity : ShipEntity
    private IEnumerator CO_CannonBarrage (Vector3 targetPosition, float radius) {
       float lifetime = 0.0f;
 
+      // Store ability id, to ensure it doesn't change during the barrage
+      int abilityId = getSelectedShipAbilityId();
+
       for (int i = 0; i < 10; i++) {
          Vector3 endPos = targetPosition + Random.insideUnitSphere * radius;
 
@@ -749,7 +769,7 @@ public class PlayerShipEntity : ShipEntity
          float dist = toEndPos.magnitude;
          lifetime = Mathf.Lerp(2.0f, 3.0f, dist / 5.0f);
 
-         Cmd_FireSpecialCannonAtTarget(null, endPos, lifetime, false, true);
+         Cmd_FireSpecialCannonAtTarget(null, endPos, lifetime, false, true, abilityId);
          yield return new WaitForSeconds(0.2f);
       }
 
@@ -764,19 +784,50 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Command]
-   public void Cmd_ChangeAttackOption (int abilityId) {
-      currentShipAbility = abilityId;
-      Target_ReceiveAttackOption(abilityId);
+   public void Cmd_ChangeAttackOption (int abilityIndex) {
+      changeAttackOption(abilityIndex);
+   }
+
+   private void changeAttackOption (int abilityIndex) {
+      // If the ability is on cooldown, don't change attack options
+      if (_currentAbilityCooldowns[abilityIndex] > 0.0f) {
+         // TODO: Notify the player that the ability is on cooldown?
+         return;
+      }
+      
+      if (shipAbilities.Count > abilityIndex) {
+         selectedShipAbilityIndex = abilityIndex;
+
+         ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(shipAbilities[abilityIndex]);
+         
+         if (isServerOnly) {
+            cannonAttackType = getCannonAttackTypeFromAttackType(shipAbilityData.selectedAttackType);
+         }
+         
+         Target_ReceiveAttackOption(abilityIndex);
+      } else {
+         D.debug("Couldn't change attack option, ability index was out of range. Num abilities: " + shipAbilities.Count);
+      }
    }
 
    [TargetRpc]
-   public void Target_ReceiveAttackOption (int abilityId) {
-      currentShipAbility = abilityId;
+   public void Target_ReceiveAttackOption (int abilityIndex) {
+      selectedShipAbilityIndex = abilityIndex;
+      ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(shipAbilities[abilityIndex]);
+      CannonPanel.self.cannonBoxList[abilityIndex].setCannons();
+      CannonAttackType newAttackType = getCannonAttackTypeFromAttackType(shipAbilityData.selectedAttackType);
+
+      // Enable / disable targeting elements if attack type has changed during charging
+      if (_isChargingCannon) {
+         switchCannonTargetingMode(newAttackType);
+      } else {
+         cannonAttackType = newAttackType;
+      }
    }
 
    [Command]
    protected void Cmd_FireMainCannonAtTarget (GameObject target, float chargeAmount, Vector3 spawnPosition, Vector2 requestedTargetPoint, bool checkReload, bool playSound) {
-      if (isDead() || (checkReload && !hasReloaded())) {
+      if (isDead() || (checkReload && !hasReloaded()) || isAbilityOnCooldown(selectedShipAbilityIndex)) {
          return;
       }
 
@@ -795,8 +846,8 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Command]
-   protected void Cmd_FireSpecialCannonAtTarget (GameObject target, Vector2 requestedTargetPoint, float lifetime, bool checkReload, bool playSound) {
-      if (isDead() || (checkReload && !hasReloaded())) {
+   protected void Cmd_FireSpecialCannonAtTarget (GameObject target, Vector2 requestedTargetPoint, float lifetime, bool checkReload, bool playSound, int abilityId) {
+      if (isDead() || (checkReload && !hasReloaded()) || isAbilityOnCooldown(selectedShipAbilityIndex)) {
          return;
       }
 
@@ -810,7 +861,7 @@ public class PlayerShipEntity : ShipEntity
       // Firing the cannon is considered a PvP action
       hasEnteredPvP = true;
 
-      fireSpecialCannonBallAtTarget(startPosition, targetPosition, lifetime, playSound);
+      fireSpecialCannonBallAtTarget(startPosition, targetPosition, lifetime, playSound, abilityId);
    }
 
    [Server]
@@ -842,42 +893,9 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
-   [Command]
-   private void Cmd_RequestAbilityList () {
-      Target_ReceiveAbilityList(connectionToClient, shipAbilities.ToArray());
-   }
-
-   [TargetRpc]
-   public void Target_ReceiveAbilityList (NetworkConnection connection, int[] abilityIds) {
-      shipAbilities = new List<int>(abilityIds);
-
-      for (int i = 0; i < CannonPanel.MAX_ABILITY_COUNT; i++) {
-         CannonPanel.self.setAbilityIcon(i, -1);
-      }
-
-      int index = 0;
-      foreach (int shipAbilityId in shipAbilities) {
-         CannonPanel.self.cannonBoxList[index].abilityId = shipAbilityId;
-         CannonPanel.self.setAbilityIcon(index, shipAbilityId);
-         index++;
-      }
-      CannonPanel.self.overwriteShipCooldowns();
-   }
-
    [TargetRpc]
    public void Target_RefreshSprites (NetworkConnection connection, int shipType, int shipSize, int shipSkinType) {
       overrideSprite((Ship.Type)shipType, (ShipSize) shipSize, (Ship.SkinType) shipSkinType);
-   }
-
-   [Command]
-   private void Cmd_ChangeCannonEffectType () {
-      cannonEffectType = (Status.Type) (((int) cannonEffectType + 1) % System.Enum.GetValues(typeof(Status.Type)).Length);
-      Target_NotifyCannonEffectChange(connectionToClient, (int) cannonEffectType);
-   }
-
-   [Command]
-   public void Cmd_RequestCannonEffectType (int type) {
-      cannonEffectType = (Status.Type) (type);
    }
 
    [TargetRpc]
@@ -929,6 +947,7 @@ public class PlayerShipEntity : ShipEntity
          PanelManager.self.hidePowerupPanel();
          PvpStructureStatusPanel.self.onPlayerLeftPvpGame();
          PvpStatPanel.self.onPlayerLeftPvpGame();
+         PvpInstructionsPanel.self.hide();
       }
 
       // Handle OnDestroy logic in a separate method so it can be correctly stripped
@@ -964,10 +983,12 @@ public class PlayerShipEntity : ShipEntity
       ServerCannonBall netBall = Instantiate(PrefabsManager.self.serverCannonBallPrefab, spawnPosition, Quaternion.identity);
 
       int abilityId = -1;
+      Status.Type abilityStatus = Status.Type.None;
       if (shipAbilities.Count > 0) {
-         ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(currentShipAbility);
+         ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(getSelectedShipAbilityId());
          if (shipAbilityData != null) {
             abilityId = shipAbilityData.abilityId;
+            abilityStatus = (Status.Type) shipAbilityData.statusType;
          }
       }
 
@@ -980,7 +1001,7 @@ public class PlayerShipEntity : ShipEntity
       float lifetime = getCannonballLifetime(chargeAmount) / critModifier;
 
       // Setup cannonball
-      netBall.initAbilityProjectile(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, statusType: cannonEffectType, lifetime: lifetime, isCrit: isCritical);
+      netBall.initAbilityProjectile(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, statusType: abilityStatus, lifetime: lifetime, isCrit: isCritical);
       netBall.setPlayFiringSound(playSound);
 
       // Add effectors to cannonball
@@ -990,16 +1011,14 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Server]
-   public void fireSpecialCannonBallAtTarget (Vector2 startPosition, Vector2 endPosition, float lifetime, bool playSound) {
+   public void fireSpecialCannonBallAtTarget (Vector2 startPosition, Vector2 endPosition, float lifetime, bool playSound, int abilityId) {
       // Create the cannon ball object from the prefab
       ServerCannonBall netBall = Instantiate(PrefabsManager.self.serverCannonBallPrefab, transform.position, Quaternion.identity);
 
-      int abilityId = -1;
-      if (shipAbilities.Count > 0) {
-         ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(shipAbilities[0]);
-         if (shipAbilityData != null) {
-            abilityId = shipAbilityData.abilityId;
-         }
+      ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(abilityId);
+      Status.Type abilityStatus = Status.Type.None;
+      if (shipAbilityData != null) {
+         abilityStatus = (Status.Type) shipAbilityData.statusType;
       }
 
       // Calculate cannonball variables
@@ -1010,7 +1029,7 @@ public class PlayerShipEntity : ShipEntity
       Vector2 velocity = speed * toEndPos.normalized;
 
       // Setup cannonball
-      netBall.initAbilityProjectile(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, statusType: cannonEffectType, lifetime: lifetime);
+      netBall.initAbilityProjectile(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, statusType: abilityStatus, lifetime: lifetime);
       netBall.setPlayFiringSound(playSound);
 
       netBall.addEffectors(PowerupManager.self.getEffectors(userId));
@@ -1391,7 +1410,7 @@ public class PlayerShipEntity : ShipEntity
 
    [Server]
    public void restoreMaxShipHealth () {
-      Util.tryToRunInServerBackground(() => DB_Main.storeShipHealth(this.shipId, this.maxHealth));
+      Util.tryToRunInServerBackground(() => DB_Main.restoreShipMaxHealth(this.shipId));
    }
 
    [Command]
@@ -1714,6 +1733,73 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
+   public void updateAbilityCooldownDurations () {
+      _abilityCooldownDurations = new Dictionary<int, float>();
+
+      for (int i = 0; i < shipAbilities.Count; i++) {
+         ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(shipAbilities[i]);
+         if (shipAbilityData != null) {
+            if (!_abilityCooldownDurations.ContainsKey(shipAbilityData.abilityId)) {
+               _abilityCooldownDurations.Add(shipAbilityData.abilityId, shipAbilityData.coolDown);
+            }
+         }
+      }
+   }
+   [Command]
+   public void Cmd_AbilityUsed (int abilityIndex) {
+      // Don't update UI if the ability we're trying to use is on cooldown
+      if (isAbilityOnCooldown(selectedShipAbilityIndex)) {
+         return;
+      }
+
+      Target_AbilityUsed(connectionToClient, abilityIndex);
+
+      // Set cooldown for ability
+      if (_abilityCooldownDurations.ContainsKey(getSelectedShipAbilityId())) {
+         _currentAbilityCooldowns[selectedShipAbilityIndex] += _abilityCooldownDurations[getSelectedShipAbilityId()];
+      }
+
+      changeAttackOption(0);
+   }
+
+   [TargetRpc]
+   public void Target_AbilityUsed (NetworkConnection connectionToClient, int abilityIndex) {
+      CannonPanel.self.abilityUsed(abilityIndex);
+   }
+
+   protected void updateAbilityCooldowns () {
+      if (!isServer) {
+         return;
+      }
+
+      for (int i = 0; i < _currentAbilityCooldowns.Count; i++) {
+         if (_currentAbilityCooldowns[i] == 0.0f) {
+            continue;
+         }
+
+         _currentAbilityCooldowns[i] -= Time.deltaTime;
+
+         if (_currentAbilityCooldowns[i] <= 0.0f) {
+            _currentAbilityCooldowns[i] = 0.0f;
+         }
+      }
+   }
+
+   public bool isAbilityOnCooldown (int abilityIndex) {
+      return _currentAbilityCooldowns[abilityIndex] > Mathf.Epsilon;
+   }
+
+   private static CannonAttackType getCannonAttackTypeFromAttackType (Attack.Type attackType) {
+      switch (attackType) {
+         case Attack.Type.Cone_NoEffect:
+            return CannonAttackType.Cone;
+         case Attack.Type.Circle_NoEffect:
+            return CannonAttackType.Circle;
+         default:
+            return CannonAttackType.Normal;
+      }
+   }
+
    #region Private Variables
 
    // Our ship movement sound
@@ -1799,6 +1885,12 @@ public class PlayerShipEntity : ShipEntity
 
    // A reference to the coroutine responsible for firing the cannon barrage ability
    private Coroutine _cannonBarrageCoroutine = null;
+
+   // The current cooldown for each of the player's abilities
+   private List<float> _currentAbilityCooldowns = new List<float>() { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+
+   // How long a cooldown each ability will have after casting it
+   private Dictionary<int, float> _abilityCooldownDurations = new Dictionary<int, float>();
 
    #endregion
 }

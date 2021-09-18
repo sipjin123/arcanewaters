@@ -10,6 +10,9 @@ public class ShipyardRow : MonoBehaviour {
    // The icon
    public Image iconImage;
 
+   // The ripples image
+   public Image ripplesImage;
+
    // The text
    public Text itemName;
 
@@ -40,13 +43,18 @@ public class ShipyardRow : MonoBehaviour {
    public void setRowForItem (ShipInfo shipInfo) {
       this.shipInfo = shipInfo;
       
-      Sprite[] sprites = ImageManager.getSprites(Ship.getSkinPath(shipInfo.shipType, shipInfo.skinType));
-      if (sprites.Length > 0) {
-         if (sprites.Length >= 9) { 
-            iconImage.sprite = sprites[9];
+      Sprite[] shipSprites = ImageManager.getSprites(Ship.getSkinPath(shipInfo.shipType, shipInfo.skinType));
+      if (shipSprites.Length > 0) {
+         if (shipSprites.Length >= 9) { 
+            iconImage.sprite = shipSprites[9];
          } else {
-            iconImage.sprite = sprites[0];
+            iconImage.sprite = shipSprites[0];
          }
+      }
+
+      Sprite[] rippleSprites = ImageManager.getSprites(Ship.getRipplesPath(shipInfo.shipType));
+      if (rippleSprites.Length >= 10) {
+         ripplesImage.sprite = rippleSprites[10];
       }
 
       itemName.text = shipInfo.shipName;

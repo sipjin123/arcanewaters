@@ -1,5 +1,5 @@
 ﻿[System.Serializable]
-public class HairDyeData : BaseItemData
+public class DyeData : BaseItemData
 {
    #region Public Variables
 

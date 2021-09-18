@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6519260083540704764}
   - component: {fileID: 6657552804503872966}
   - component: {fileID: 1412648270358989180}
+  - component: {fileID: 3496903894464096683}
   m_Layer: 5
   m_Name: AdminPanelMetric
   m_TagString: Untagged
@@ -117,6 +118,19 @@ MonoBehaviour:
   metricNameLabel: {fileID: 7291675454122479042}
   metricValueLabel: {fileID: 9220790973083017399}
   canvasGroup: {fileID: 5217537859017718423}
+--- !u!114 &3496903894464096683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1067986188175609109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af14974d21d7ce846b90671f7efb1d21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedScale: {x: 1, y: 1, z: 1}
 --- !u!1 &2905031909048649673
 GameObject:
   m_ObjectHideFlags: 0

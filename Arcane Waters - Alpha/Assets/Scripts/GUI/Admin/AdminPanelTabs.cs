@@ -1,9 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
-using System.Linq;
+﻿using System.Linq;
+using UnityEngine;
 using UnityEngine.Events;
 
 public class AdminPanelTabs : MonoBehaviour
@@ -49,7 +45,7 @@ public class AdminPanelTabs : MonoBehaviour
       if (tabIndex < 0 || tabIndex >= tabsAbove.Length) {
          return null;
       }
-      
+
       return tabsAbove[tabIndex];
    }
 
@@ -57,11 +53,11 @@ public class AdminPanelTabs : MonoBehaviour
       if (tabIndex < 0 || tabIndex >= tabsUnder.Length) {
          return null;
       }
-      
+
       return tabsUnder[tabIndex];
    }
 
-   public void toggleTab(int tabIndex, bool activated) {
+   public void toggleTab (int tabIndex, bool activated) {
       GameObject tabUnder = getTabUnder(tabIndex);
 
       if (tabUnder != null) {
@@ -75,19 +71,19 @@ public class AdminPanelTabs : MonoBehaviour
       }
    }
 
-   public void toggleTabs(bool activated) {
+   public void toggleTabs (bool activated) {
       for (int i = 0; i < tabsUnder.Length; i++) {
          toggleTab(i, activated);
       }
    }
 
-   public void performTabPressed(int tabIndex) {
+   public void performTabPressed (int tabIndex) {
       if (onTabPressed != null) {
          onTabPressed.Invoke(tabIndex);
       }
 
       toggleTabs(false);
-      toggleTab(tabIndex,true);
+      toggleTab(tabIndex, true);
    }
 
    #region Private Variables

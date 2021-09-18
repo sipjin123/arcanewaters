@@ -2,18 +2,18 @@
 using UnityEngine;
 
 [Serializable]
-public class HairDye : Item
+public class Dye : Item
 {
    #region Public Variables
 
    #endregion
 
-   public HairDye () {
+   public Dye () {
 
    }
 
-   public HairDye (int id, int itemTypeId, string paletteNames, string data, int durability, int count = 1) {
-      this.category = Category.Hairdye;
+   public Dye (int id, int itemTypeId, string paletteNames, string data, int durability, int count = 1) {
+      this.category = Category.Dye;
       this.id = id;
       this.count = count;
       this.itemTypeId = itemTypeId;
@@ -22,12 +22,12 @@ public class HairDye : Item
       this.durability = durability;
    }
 
-   public static HairDye createFromData (HairDyeData data) {
+   public static Dye createFromData (DyeData data) {
       if (data == null) {
          return null;
       }
 
-      HairDye hairDye = new HairDye(-1, data.itemID, "", "", 100);
+      Dye hairDye = new Dye(-1, data.itemID, "", "", 100);
       hairDye.setBasicInfo(data.itemName, data.itemDescription, data.itemIconPath);
       return hairDye;
    }

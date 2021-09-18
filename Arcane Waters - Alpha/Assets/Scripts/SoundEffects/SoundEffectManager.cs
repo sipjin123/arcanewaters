@@ -33,7 +33,7 @@ public class SoundEffectManager : GenericGameManager
 
    public const int SHORTCUT_SELECTION = 60;
    public const int ABILITY_SELECTION = 61;
-   public const int STANCE_SELECTION = 62;
+   //public const int STANCE_SELECTION = 62;
    public const int INVENTORY_DRAG_START = 64;
    public const int INVENTORY_DROP = 65;
    public const int NPC_PANEL_POPUP = 66;
@@ -73,6 +73,7 @@ public class SoundEffectManager : GenericGameManager
    public const string MOVEMENT_WHOOSH = "event:/SFX/Game/Land_Battle/Movement_Whoosh";
    public const string NPC_STRIKE = "event:/SFX/Game/Land_Battle/NPC_Strike";
    public const string BLOCK_ATTACK = "event:/SFX/Game/Land_Battle/Block_Attack";
+   public const string STANCE_CHANGE = "event:/SFX/Game/Land_Battle/Stance_Change_Generic";
    #endregion
 
    #region SEA BATTLE

@@ -52,7 +52,7 @@ namespace MapCustomization
             localPosition = state.isLocalPositionSet() ? state.localPosition : localPosition,
             created = state.created || created,
             deleted = deleted,
-            serializationId = Math.Max(state.serializationId, serializationId)
+            serializationId = state.serializationId
          };
 
          if (state.deleted) {

@@ -292,7 +292,7 @@ public class AbilityManager : MonoBehaviour
          }
       }
 
-      sourceBattler.stanceChangeEffect.show(action.newStance, sourceBattler.isLocalBattler());
+      sourceBattler.stanceChangeEffect.show(action.newStance, sourceBattler.isLocalBattler(), sourceBattler.transform);
    }
 
    public static BasicAbilityData getAbility (int abilityGlobalID, AbilityType abilityType) {
