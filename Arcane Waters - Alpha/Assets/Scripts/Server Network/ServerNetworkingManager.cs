@@ -218,6 +218,16 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_SendPvpAnnouncement, chatInfo.senderId, chatInfo.text,chatInfo.sender, chatInfo.recipient);
    }
 
+   public void sendVisitRequest (int visitor, int toVisit, bool registerRequest) {
+      if (server.isMasterServer()) {
+         D.adminLog("SELF: Sending Visit Request: {" + visitor + "} is visiting {" + toVisit + "}:: " + registerRequest, D.ADMIN_LOG_TYPE.Visit);
+         server.registerVisitRequest(visitor, toVisit, registerRequest);
+      } else {
+         D.adminLog("BROADCAST: Sending Visit Request: {" + visitor + "} is visiting {" + toVisit + "}:: " + registerRequest, D.ADMIN_LOG_TYPE.Visit);
+         server.InvokeServerRpc(server.MasterServer_ProcessVisitRequest, visitor, toVisit, registerRequest);
+      }
+   }
+
    public void sendGlobalChatMessage (ChatInfo chatInfo) {
       server.InvokeServerRpc(server.MasterServer_SendGlobalMessage, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.isSenderMuted, chatInfo.isSenderAdmin);
    }

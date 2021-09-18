@@ -48,6 +48,9 @@ public class NetworkedServer : NetworkedBehaviour
    // The number of instances in each area that this server hosts
    public NetworkedDictionary<string, int> areaToInstanceCount = new NetworkedDictionary<string, int>(Global.defaultNetworkedVarSettings);
 
+   // The visit request data
+   public NetworkedDictionary<int, int> visitRequests = new NetworkedDictionary<int, int>();
+
    // The number of players in each area (estimated by the master server)
    public Dictionary<string, int> playerCountPerArea = new Dictionary<string, int>();
 
@@ -85,6 +88,24 @@ public class NetworkedServer : NetworkedBehaviour
             if (connData.netEntity != null) {
                connectedUserIds.Add(connData.netEntity.userId);
             }
+         }
+      }
+   }
+
+   public void registerVisitRequest (int visitor, int toVisit, bool registerRequest) {
+      if (registerRequest) {
+         if (visitRequests.ContainsKey(visitor)) {
+            D.debug("Cannot register this visitor {" + visitor + "}, this user is currently visiting {" + visitRequests[visitor] + "}");
+         } else {
+            D.debug("Add {" + visitor + "} to visit registry, visiting: {" + toVisit + "}");
+            visitRequests.Add(visitor, toVisit);
+         }
+      } else {
+         if (visitRequests.ContainsKey(visitor)) {
+            D.debug("Remove {" + visitor + "} from visit registry");
+            visitRequests.Remove(visitor);
+         } else {
+            D.debug("Cant remove {" + visitor + "} does not exist");
          }
       }
    }
@@ -233,6 +254,12 @@ public class NetworkedServer : NetworkedBehaviour
             netEntity.Target_ReceivePvpChat(netEntity.connectionToClient, instanceId, message);
          }
       }
+   }
+
+   [ServerRPC]
+   public void MasterServer_ProcessVisitRequest (int visitor, int toVisit, bool registerRequest) {
+      NetworkedServer netServer = ServerNetworkingManager.self.getServer(Global.MASTER_SERVER_PORT);
+      netServer.registerVisitRequest(visitor, toVisit, registerRequest);
    }
 
    [ServerRPC]
