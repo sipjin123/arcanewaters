@@ -15,10 +15,28 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
    // The object that enables when highlighted
    public GameObject highlightGameObject;
 
+   // The object that shows the radius of the collision
+   public GameObject radiusGameObject;
    // The team type
    public PvpTeamType pvpTeamType;
 
+   // The building of the shop
+   public GameObject buildingObject;
+
+   // Reference to the colliders
+   public BoxCollider2D solidColliderRef;
+   public CircleCollider2D triggerColliderRef;
+
+   // If this object is active
+   public bool isActive;
+
    #endregion
+
+   public void enableShop (bool isEnabled) {
+      radiusGameObject.SetActive(isEnabled);
+      isActive = isEnabled;
+      triggerColliderRef.enabled = isEnabled;
+   }
 
    public void receiveData (DataField[] dataFields) {
       foreach (DataField dataField in dataFields) {
@@ -37,10 +55,21 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
 
             }
          }
+         
+         if (dataField.k.CompareTo(DataField.HAS_SHOP_BUILDING) == 0) {
+            string rawData = dataField.v.Split(':')[0];
+            bool hasBuildingDisplay = rawData.ToLower() == "true" ? true : false;
+            buildingObject.SetActive(hasBuildingDisplay);
+            solidColliderRef.gameObject.SetActive(hasBuildingDisplay);
+         }
       }
    }
 
    private void OnTriggerEnter2D (Collider2D collision) {
+      if (!isActive) {
+         return;
+      }
+      
       PlayerShipEntity playerEntity = collision.GetComponent<PlayerShipEntity>();
       if (Global.player != null && playerEntity != null) {
          if (Global.player.userId == playerEntity.userId && playerEntity.pvpTeam == pvpTeamType) {
@@ -51,6 +80,10 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
    }
 
    private void OnTriggerExit2D (Collider2D collision) {
+      if (!isActive) {
+         return;
+      }
+
       PlayerShipEntity playerEntity = collision.GetComponent<PlayerShipEntity>();
       if (Global.player != null && playerEntity != null) {
          if (Global.player.userId == playerEntity.userId && playerEntity.pvpTeam == pvpTeamType) {

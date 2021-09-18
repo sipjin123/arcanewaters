@@ -13,6 +13,9 @@ namespace MapCreationTool{
 
       // The range display of the shop collision
       public GameObject rangeDisplay;
+      
+      // The building of the shop
+      public GameObject buildingObject;
 
       #endregion
 
@@ -32,6 +35,9 @@ namespace MapCreationTool{
                }
             } catch {
             }
+         } else if (field.k.CompareTo(DataField.HAS_SHOP_BUILDING) == 0) {
+            string isStationaryData = field.v.Split(':')[0];
+            buildingObject.SetActive(isStationaryData.ToLower() == "true" ? true : false);
          }
       }
 

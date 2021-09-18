@@ -380,7 +380,7 @@ namespace MapCreationTool
                } else if (original.GetComponent<PvpShopEntity>()) {
                   if (area.isSea && VoyageManager.isAnyLeagueArea(area.areaKey)) {
                      PvpShopEntity shopEntity = pref.GetComponent<PvpShopEntity>();
-                     shopEntity.gameObject.SetActive(false);
+                     shopEntity.enableShop(false);
                   }
                }
 

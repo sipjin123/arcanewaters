@@ -379,7 +379,8 @@ namespace MapCreationTool.Serialization
       public const string POWERUP_DURATION = "powerup duration";
 
       public const string SHOP_ID = "shop id";
-      
+      public const string HAS_SHOP_BUILDING = "has shop building";
+
       public string k; // Key
       public string v; // Value
 

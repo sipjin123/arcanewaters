@@ -24,6 +24,10 @@ public class Instance : NetworkBehaviour
    [SyncVar]
    public int mapSeed;
 
+   // If shops should show by now, if any
+   [SyncVar]
+   public bool showShops;
+
    // The list of Entities in this instance (server only)
    public List<NetworkBehaviour> entities = new List<NetworkBehaviour>();
 
@@ -327,18 +331,24 @@ public class Instance : NetworkBehaviour
       BotShipGenerator.generateBotShips(this);
    }
 
+   private void enableVoyageShops () {
+      if (showShops) {
+         // Enable shops when all enemies have been eliminated
+         Area area = AreaManager.self.getArea(this.areaKey);
+         if (area != null) {
+            area.enableSeaShops();
+         }
+      }
+   }
+
    private void countAliveEnemies () {
       if (!NetworkServer.active || !isNetworkPrefabInstantiationFinished) {
-         if (isNetworkPrefabInstantiationFinished && isVoyage) {
-            // Enable shops when all enemies have been eliminated
-            if (aliveNPCEnemiesCount < 1) {
-               Area area = AreaManager.self.getArea(this.areaKey);
-               if (area != null) {
-                  area.enableSeaShops();
-               }
-            }
-         }
+         enableVoyageShops();
          return;
+      }
+
+      if (!Util.isCloudBuild()) {
+         enableVoyageShops();
       }
 
       aliveNPCEnemiesCount = 0;
@@ -346,6 +356,8 @@ public class Instance : NetworkBehaviour
          NetEntity entity = networkBehaviour as NetEntity;
          if (entity != null && (entity.isBotShip() || entity.isSeaMonster() || entity.isLandEnemy()) && !entity.isDead()) {
             aliveNPCEnemiesCount++;
+            showShops = false;
+            hasSpawnedEnemies = true;
          }
       }
 
@@ -356,6 +368,12 @@ public class Instance : NetworkBehaviour
             areAllTreasureSitesClearedOfEnemies = false;
             break;
          }
+      }
+
+      // Enable shops after enemies have been cleared out
+      if (hasSpawnedEnemies && aliveNPCEnemiesCount < 1) {
+         showShops = true;
+         hasSpawnedEnemies = false;
       }
    }
 
@@ -896,6 +914,9 @@ public class Instance : NetworkBehaviour
 
    // The number of consecutive times we've checked this instance and found it empty
    protected int _consecutiveEmptyChecks = 0;
+
+   // If enemies have started spawning
+   private bool hasSpawnedEnemies;
 
    #endregion
 }
