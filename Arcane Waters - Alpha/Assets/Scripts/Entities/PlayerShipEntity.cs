@@ -270,13 +270,27 @@ public class PlayerShipEntity : ShipEntity
          CannonPanel.self.setAbilityIcon(i, -1);
       }
 
-      shipAbilities = new List<int>();
-      int index = 0;
-      foreach (int newShipAbility in shipInfo.shipAbilities.ShipAbilities) {
-         shipAbilities.Add(newShipAbility);
-         CannonPanel.self.setAbilityIcon(index, newShipAbility);
-         CannonPanel.self.cannonBoxList[index].abilityId = newShipAbility;
-         index++;
+      if (isServer) {
+         shipAbilities.Clear();
+         int index = 0;
+         foreach (int newShipAbility in shipInfo.shipAbilities.ShipAbilities) {
+            shipAbilities.Add(newShipAbility);
+            index++;
+         }
+
+         // If for some reason this user has insufficient abilities, assign the default abilities until ability count reaches 5
+         if (index < 5) {
+            shipAbilities.Clear();
+            D.debug("This user {" + shipInfo.userId + "} has invalid abilities! Assigning default abilities");
+            for (int i = 0; i < ShipAbilityInfo.STARTING_ABILITIES.Count; i++) {
+               shipAbilities.Add(ShipAbilityInfo.STARTING_ABILITIES[i]);
+            }
+         }
+
+         updateAbilityCooldownDurations();
+
+         // Notify client to update abilities in cannon panel
+         Target_UpdateCannonPanel(connectionToClient, shipAbilities.ToArray());
       }
       CannonPanel.self.overwriteShipCooldowns();
 

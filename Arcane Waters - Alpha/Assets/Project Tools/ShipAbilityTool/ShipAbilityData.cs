@@ -99,6 +99,12 @@ public class ShipAbilityData
    // The projectile id associated with this ability
    public int projectileId;
 
+   // If the buff effect has a radius of effectivity
+   public float buffRadius = 0;
+
+   // If the buff is radius dependent
+   public bool isBuffRadiusDependent = false;
+
    public static Attack.ImpactMagnitude getImpactType (float normalizedValue) {
       if (normalizedValue < .33f) {
          return Attack.ImpactMagnitude.Strong;
