@@ -217,45 +217,84 @@ public class ShipEntity : SeaEntity
          return;
       }
 
+      if (isPlayerShip()) {
+         PlayerShipEntity playerShip = this as PlayerShipEntity;
+
+         // Return if player ship ability is on cooldown
+         if (playerShip.isAbilityOnCooldown(playerShip.selectedShipAbilityIndex)) {
+            return;
+         }
+      }
+
       // Note the time at which we last successfully attacked
       _lastAttackTime = NetworkTime.time;
 
       ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(shipAbilityId);
+      bool hasUsedBuff = false;
 
-      // Attributes set up by server only
+      // Self cast buff abilities
       switch (shipAbilityData.selectedAttackType) {
          case Attack.Type.Heal:
+            hasUsedBuff = true;
             int healValue = (int) (shipAbilityData.damageModifier * 100);
             currentHealth += healValue;
             Rpc_CastSkill(shipAbilityId, shipAbilityData, transform.position, healValue);
             break;
          case Attack.Type.SpeedBoost:
-            StartCoroutine(CO_TriggerTemporaryBuff(shipAbilityData, shipAbilityData.statusDuration));
+            hasUsedBuff = true;
+            StartCoroutine(CO_TriggerTemporaryBuff(this, shipAbilityData, shipAbilityData.statusDuration));
             break;
+      }
+
+      // Ally cast abilities
+      if (hasUsedBuff && shipAbilityData.buffRadius >= 0) {
+            List<NetEntity> allyEntities = EntityManager.self.getEntitiesWithVoyageId(voyageGroupId);
+            if (allyEntities.Count > 0) {
+            foreach (NetEntity allyEntity in allyEntities) {
+               float distanceBetweenAlly = Vector2.Distance(transform.position, allyEntity.transform.position);
+               if (allyEntity is PlayerShipEntity && userId != allyEntity.userId) {
+                  if (distanceBetweenAlly < shipAbilityData.buffRadius) {
+                     PlayerShipEntity allyShip = (PlayerShipEntity) allyEntity;
+                     switch (shipAbilityData.selectedAttackType) {
+                        case Attack.Type.Heal:
+                           int healValue = (int) (shipAbilityData.damageModifier * 100);
+                           allyShip.currentHealth += healValue;
+                           allyShip.Rpc_CastSkill(shipAbilityId, shipAbilityData, allyShip.transform.position, healValue);
+                           break;
+                        case Attack.Type.SpeedBoost:
+                           StartCoroutine(CO_TriggerTemporaryBuff(allyShip, shipAbilityData, shipAbilityData.statusDuration));
+                           break;
+                     }
+                  } else {
+                     // TODO: If ally is out of bounds, add logic here if needed
+                  }
+               }
+            }
+         }
       }
 
       // Casting a skill is considered a PvP action
       hasEnteredPvP = true;
    }
 
-   private IEnumerator CO_TriggerTemporaryBuff (ShipAbilityData shipAbilityData, float statusDuration) {
+   private IEnumerator CO_TriggerTemporaryBuff (ShipEntity targetEntity, ShipAbilityData shipAbilityData, float statusDuration) {
       int value = (int) (shipAbilityData.damageModifier * 100);
 
-      modifyStats(shipAbilityData, value);
+      modifyStats(targetEntity, shipAbilityData, value);
       yield return new WaitForSeconds(statusDuration);
-      modifyStats(shipAbilityData, -value);
+      modifyStats(targetEntity, shipAbilityData, -value);
    }
 
-   private void modifyStats (ShipAbilityData shipAbilityData, int value) {
+   private void modifyStats (ShipEntity targetEntity, ShipAbilityData shipAbilityData, int value) {
       switch (shipAbilityData.selectedAttackType) {
          case Attack.Type.SpeedBoost:
-            speed += value;
+            targetEntity.speed += value;
             break;
          case Attack.Type.DamageAmplify:
-            damage += value;
+            targetEntity.damage += value;
             break;
       }
-      Rpc_CastSkill(shipAbilityData.abilityId, shipAbilityData, transform.position, value);
+      targetEntity.Rpc_CastSkill(shipAbilityData.abilityId, shipAbilityData, targetEntity.transform.position, value);
    }
 
    [ClientRpc]
