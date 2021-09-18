@@ -87,7 +87,9 @@ namespace MapCustomization
          } else {
             _disabledInteractions = GetComponentsInChildren<Collider2D>().Where(c => !c.isTrigger).Select(c => c as Behaviour).ToList();
             foreach (Behaviour interaction in _disabledInteractions) {
-               interaction.enabled = false;
+               if (!_ignoredColliders.Contains(interaction)) {
+                  interaction.enabled = false;
+               }
             }
          }
       }
@@ -174,6 +176,10 @@ namespace MapCustomization
 
       // Game interactions that are currently disabled in map customization process
       private List<Behaviour> _disabledInteractions = new List<Behaviour>();
+
+      // List of ignored colliders that will not be affected by the script 
+      [SerializeField]
+      private List<Collider2D> _ignoredColliders = new List<Collider2D>();
 
       // Outline that is used for visual indication during customization process
       private SpriteOutline _spriteOutline;
