@@ -54,6 +54,12 @@ public class PvpStatPanel : Panel {
    // References to the layout groups containing the portraits for each team
    public GridLayoutGroup teamAPortraits, teamBPortraits;
 
+   // The prefab used for visually separating teams
+   public GameObject separatorPrefab;
+
+   // The nameplate color of each tem in the pvp score panel
+   public Color aTeamColor, bTeamColor, cTeamColor, dTeamColor;
+
    #endregion
 
    public override void Awake () {
@@ -112,7 +118,7 @@ public class PvpStatPanel : Panel {
       foreach (GameStats playerStat in teamAStats) {
          addStatRow(playerStat);
       }
-      
+      Instantiate(separatorPrefab, pvpStatRowHolder);
       foreach (GameStats playerStat in teamBStats) {
          addStatRow(playerStat);
       }
@@ -131,6 +137,30 @@ public class PvpStatPanel : Panel {
       statRow.silver.text = rowStats.silver.ToString();
       statRow.userName.text = rowStats.playerName.ToString();
       statRow.flagCount.text = rowStats.flagCount.ToString();
+
+      statRow.pvpTeamType = (PvpTeamType) rowStats.playerTeam;
+      switch (statRow.pvpTeamType) {
+         case PvpTeamType.A:
+            foreach (Image colorBox in statRow.colorBoxes) {
+               colorBox.color = aTeamColor;
+            }
+            break;
+         case PvpTeamType.B:
+            foreach (Image colorBox in statRow.colorBoxes) {
+               colorBox.color = bTeamColor;
+            }
+            break;
+         case PvpTeamType.C:
+            foreach (Image colorBox in statRow.colorBoxes) {
+               colorBox.color = cTeamColor;
+            }
+            break;
+         case PvpTeamType.D:
+            foreach (Image colorBox in statRow.colorBoxes) {
+               colorBox.color = dTeamColor;
+            }
+            break;
+      }
 
       NetEntity playerEntity = EntityManager.self.getEntity(rowStats.userId);
       if (playerEntity) {

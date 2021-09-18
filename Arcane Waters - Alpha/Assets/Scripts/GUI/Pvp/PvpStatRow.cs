@@ -17,6 +17,9 @@ public class PvpStatRow : MonoBehaviour {
    // References to all images used to display the background images for the cells
    public List<Image> cellBackgroundImages;
 
+   // The color boxes that changes based on team color
+   public Image[] colorBoxes;
+
    // Determines the team type
    public PvpTeamType pvpTeamType;
 

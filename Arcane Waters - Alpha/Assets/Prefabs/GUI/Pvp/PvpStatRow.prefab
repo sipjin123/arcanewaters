@@ -322,6 +322,8 @@ MonoBehaviour:
   - {fileID: 8570526180719528958}
   - {fileID: 3926733903043788753}
   - {fileID: 8571968089976235128}
+  colorBoxes:
+  - {fileID: 3400966673647195079}
   pvpTeamType: 0
 --- !u!114 &6521502686322119296
 MonoBehaviour:
