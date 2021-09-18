@@ -29,18 +29,29 @@ public class FriendListRow : MonoBehaviour
    // The guild icon of the friend
    public GuildIcon friendGuildIcon;
 
+   // If this user is online
+   public bool isOnline;
+
+   // The button that is displayed if friend can be visited
+   public GameObject visitButtonObj, disabledVisitButtonObj;
+
    #endregion
 
    public void setRowForFriendshipInfo (FriendshipInfo entry) {
       _friendUserId = entry.friendUserId;
       friendName.text = entry.friendName;
       friendAreaName.text = Area.getName(entry.friendAreaKey);
+      isOnline = entry.isOnline;
       if (entry.isOnline) {
          onlineIcon.SetActive(true);
          offlineIcon.SetActive(false);
+         visitButtonObj.SetActive(true);
+         disabledVisitButtonObj.SetActive(false);
       } else {
          onlineIcon.SetActive(false);
          offlineIcon.SetActive(true);
+         visitButtonObj.SetActive(false);
+         disabledVisitButtonObj.SetActive(true);
       }
       level.text = LevelUtil.levelForXp(entry.friendXP).ToString();
       if (entry.friendGuildId > 0) {
@@ -50,6 +61,13 @@ public class FriendListRow : MonoBehaviour
          rootGuildIcon.SetActive(true);
       } else {
          rootGuildIcon.SetActive(false);
+      }
+   }
+
+   public void visitUser () {
+      if (isOnline) {
+         FriendListPanel.self.close();
+         Global.player.Cmd_RequestVisit(_friendUserId);
       }
    }
 

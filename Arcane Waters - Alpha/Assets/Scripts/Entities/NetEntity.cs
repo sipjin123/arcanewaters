@@ -1975,6 +1975,12 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
+   [Command]
+   public void Cmd_RequestVisit (int targetUserId) {
+      ServerNetworkingManager.self?.sendVisitRequest(userId, targetUserId, true);
+      spawnInNewMap(Area.STARTING_TOWN);
+   }
+
    public Vector3 getProjectedPosition (float afterSeconds) {
       return _body.position + _body.velocity * afterSeconds;
    }
