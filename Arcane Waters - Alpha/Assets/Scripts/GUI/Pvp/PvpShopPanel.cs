@@ -200,7 +200,7 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       itemIconInfo.sprite = ImageManager.self.blankSprite;
    }
 
-   public void populateShop (List<PvpShopItem> pvpItemDataList) {
+   public void populateShop (List<PvpShopItem> pvpItemDataList, List<int> shopItemTypes) {
       clearInfoPanel();
       loadingPanel.SetActive(false);
       shopTemplateHolder.gameObject.DestroyChildren();
@@ -217,6 +217,12 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
          shipStatTab.SetActive(false);
       }
 
+      // Disable categories that dont exist in this shop
+      shipCategoryObj.parent.gameObject.SetActive(shopItemTypes.Exists(_ => _ == (int) PvpShopItemType.Ship));
+      powerupCategoryObj.parent.gameObject.SetActive(shopItemTypes.Exists(_ => _ == (int) PvpShopItemType.Powerup));
+      abilityCategoryObj.parent.gameObject.SetActive(shopItemTypes.Exists(_ => _ == (int) PvpShopItemType.Ability));
+      itemCategoryObj.parent.gameObject.SetActive(shopItemTypes.Exists(_ => _ == (int) PvpShopItemType.Item));
+
       foreach (PvpShopItem shopItemData in pvpItemDataList) {
          PvpShopTemplate shopTemplate = selectedCategory == PvpShopItemType.Ship ? 
             Instantiate(shipTemplatePrefab, shipTemplateHolder) : Instantiate(shopTemplatePrefab, shopTemplateHolder);
@@ -231,12 +237,18 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
          });
 
          if (userSilver < shopItemData.itemCost) {
-            shopTemplate.buyButton.interactable = false;
-            shopTemplate.disabledIcon.SetActive(true);
+            shopItemData.isDisabled = true;
          }
          if (shopItemData.isDisabled) {
             shopTemplate.buyButton.interactable = false;
             shopTemplate.disabledIcon.SetActive(true);
+         }
+
+         if (selectedCategory == PvpShopItemType.Ship) {
+            PvpItemInfo itemInfo = getPvpItemInfo(shopItemData);
+            if (itemInfo != null) {
+               shopTemplate.itemIcon.sprite = itemInfo.sprite;
+            }
          }
       }
    }

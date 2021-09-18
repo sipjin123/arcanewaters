@@ -3821,15 +3821,23 @@ public class RPCManager : NetworkBehaviour
             }
          }
 
+         // Filter shop item categories that does not exist in this shop
+         List<int> shopItemTypeList = new List<int>();
+         foreach (int typeId in Enum.GetValues(typeof(PvpShopItem.PvpShopItemType))) {
+            if (shopData.shopItems.Exists(_ => (int)_.shopItemType == typeId)) {
+               shopItemTypeList.Add(typeId);
+            }
+         }
+
          int userSilver = GameStatsManager.self.getSilverAmount(_player.userId);
-         Target_ProcessShopData(_player.connectionToClient, shopData.shopId, userSilver, shopData.shopName, shopData.shopDescription, Util.serialize(shopItemList));
+         Target_ProcessShopData(_player.connectionToClient, shopData.shopId, userSilver, shopData.shopName, shopData.shopDescription, Util.serialize(shopItemList), shopItemTypeList.ToArray());
       } else {
          D.debug("Warning, user {" + _player.userId + "} does not exist in the game stat manager");
       }
    }
 
    [TargetRpc]
-   public void Target_ProcessShopData (NetworkConnection conn, int shopId, int userSilver, string shopName, string shopInfo, string[] serializedShopItems) {
+   public void Target_ProcessShopData (NetworkConnection conn, int shopId, int userSilver, string shopName, string shopInfo, string[] serializedShopItems, int[] shopItemTypes) {
       List<PvpShopItem> pvpShopList = Util.unserialize<PvpShopItem>(serializedShopItems);
 
       PvpShopPanel panel = PvpShopPanel.self;
@@ -3839,7 +3847,7 @@ public class RPCManager : NetworkBehaviour
       panel.userSilver = userSilver;
       panel.shopId = shopId;
       panel.userSilverText.text = userSilver.ToString();
-      panel.populateShop(pvpShopList);
+      panel.populateShop(pvpShopList, shopItemTypes.ToList());
    }
 
    [Command]
@@ -3925,7 +3933,6 @@ public class RPCManager : NetworkBehaviour
       }
 
       PvpShopPanel panel = PvpShopPanel.self;
-      panel.hideEntirePanel();
       panel.enableShopButton(true);
       panel.userSilver = remainingSilver;
       panel.userSilverText.text = remainingSilver.ToString();

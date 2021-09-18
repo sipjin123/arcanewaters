@@ -39,7 +39,9 @@ public class PvpShopItem {
       Ship = 2,
       Ability = 3,
       Stats = 4,
-      Item = 5
+      Item = 5,
+      CraftingIngredient = 6,
+      LandPowerup = 7
    }
 
    public static PvpShopItem defaultConsumableItem () {
