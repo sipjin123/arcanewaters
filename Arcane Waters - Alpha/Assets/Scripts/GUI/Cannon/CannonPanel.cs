@@ -64,7 +64,11 @@ public class CannonPanel : ClientMonoBehaviour {
    }
 
    public void setAbilityIcon (int index, int abilityId) {
-      cannonBoxList[index].setAbilityIcon(abilityId);
+      if (index < cannonBoxList.Count) {
+         cannonBoxList[index].setAbilityIcon(abilityId);
+      } else {
+         D.debug("Index was {" + index + "} but cannon count is {" + cannonBoxList.Count + "}");
+      }
    }
 
    public void resetAllHighlights () {

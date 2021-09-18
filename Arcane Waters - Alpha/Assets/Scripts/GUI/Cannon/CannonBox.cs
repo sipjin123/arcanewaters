@@ -54,10 +54,9 @@ public class CannonBox : ClientMonoBehaviour {
    }
 
    public void boxPressed () {
-      CannonPanel.self.useCannonType(abilityId, boxIndex);
       if (Global.player != null && Global.player is PlayerShipEntity) {
          PlayerShipEntity playerShip = (PlayerShipEntity) Global.player;
-         playerShip.Cmd_ChangeAttackOption(abilityId);
+         playerShip.Cmd_ChangeAttackOption(boxIndex);
       }
    }
 
