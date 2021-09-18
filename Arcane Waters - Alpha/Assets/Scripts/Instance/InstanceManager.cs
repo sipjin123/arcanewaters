@@ -21,8 +21,17 @@ public class InstanceManager : MonoBehaviour {
       self = this;
    }
 
-   public Instance addPlayerToInstance (NetEntity player, string areaKey, int voyageId) {
+   public Instance addPlayerToInstance (NetEntity player, string areaKey, int voyageId, int userToVisit = -1) {
       Instance instance = null;
+
+      if (userToVisit > 0) {
+         instance = getVisitablePrivateOpenInstance(userToVisit);
+         if (instance != null) {
+            D.adminLog("Player {" + player.userId + "} is entering a private. Area: {" + areaKey + "} ID: {" + instance.id + "} InstanceOwner:{" + instance.privateAreaUserId + "}", D.ADMIN_LOG_TYPE.Visit);
+         } else {
+            D.adminLog("Cant find instance for visiting user {" + userToVisit + "}", D.ADMIN_LOG_TYPE.Visit);
+         }
+      }
 
       // If the player is warping to a voyage instance, search for it
       if (voyageId != -1) {
@@ -38,8 +47,10 @@ public class InstanceManager : MonoBehaviour {
                   if (treasureSite.playerListInSite.Contains(player.userId)) {
                      // Check if the treasure site instance has already been created
                      if (treasureSite.destinationInstanceId > 0) {
+                        D.adminLog("Created New Instance for Treasure Site", D.ADMIN_LOG_TYPE.InstanceProcess);
                         instance = getInstance(treasureSite.destinationInstanceId);
                      } else {
+                        D.adminLog("Created New Instance for Non-Treasure Site", D.ADMIN_LOG_TYPE.InstanceProcess);
                         // If the treasure site instance doesn't exist yet, create it
                         instance = createNewInstance(areaKey, false, voyageId);
                         treasureSite.destinationInstanceId = instance.id;
@@ -56,6 +67,7 @@ public class InstanceManager : MonoBehaviour {
                // If all else fails, create a new instance (useful for /admin warp commands)
                if (instance == null) {
                   instance = createNewInstance(areaKey, false, voyageId);
+                  D.adminLog("Created New Instance for Voyage", D.ADMIN_LOG_TYPE.InstanceProcess);
                }
             }
          }
@@ -66,20 +78,44 @@ public class InstanceManager : MonoBehaviour {
          instance = getPlayerPrivateOpenInstance(areaKey, player.userId);
          if (instance == null) {
             instance = createNewInstance(areaKey, player.isSinglePlayer);
+            D.adminLog("Created New Instance for Private Area", D.ADMIN_LOG_TYPE.InstanceProcess);
 
             // Register the user id as the privateAreaUserId
             instance.privateAreaUserId = player.userId;
+         } else {
+            D.adminLog("Fetched private open instance", D.ADMIN_LOG_TYPE.InstanceProcess);
          }
       }
 
       if (instance == null) {
          // Look for an open instance
          instance = getOpenInstance(areaKey, player.isSinglePlayer);
+         if (instance != null) {
+            D.adminLog("Get Open Instance", D.ADMIN_LOG_TYPE.InstanceProcess);
+         }
       }
 
       // If there isn't one, we'll have to make it
       if (instance == null) {
-         instance = createNewInstance(areaKey, player.isSinglePlayer);
+         AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager newCustomMapManager);
+         if (newCustomMapManager != null && CustomMapManager.getUserId(areaKey) != player.userId) {
+            D.adminLog("This is a private area!: " + areaKey + " for user: " + CustomMapManager.getUserId(areaKey), D.ADMIN_LOG_TYPE.InstanceProcess);
+            instance = getOpenInstance(Area.STARTING_TOWN, player.isSinglePlayer);
+            if (instance == null) {
+               D.adminLog("Generating Town for user: " + CustomMapManager.getUserId(areaKey), D.ADMIN_LOG_TYPE.InstanceProcess);
+               instance = createNewInstance(Area.STARTING_TOWN, player.isSinglePlayer);
+            } else {
+               D.adminLog("Fetching Town for user: " + CustomMapManager.getUserId(areaKey), D.ADMIN_LOG_TYPE.InstanceProcess);
+            }
+            areaKey = Area.STARTING_TOWN;
+         } else {
+            instance = createNewInstance(areaKey, player.isSinglePlayer);
+            D.adminLog("This is NOT a private area!: " + areaKey, D.ADMIN_LOG_TYPE.InstanceProcess);
+         }
+
+         if (instance != null) {
+            D.adminLog("Created New Instance for Default: " + areaKey, D.ADMIN_LOG_TYPE.InstanceProcess);
+         }
       }
 
       // Set the player's instance ID
@@ -94,8 +130,12 @@ public class InstanceManager : MonoBehaviour {
          if (farmManager != null) {
             int userId = CustomMapManager.isUserSpecificAreaKey(areaKey) ? CustomMapManager.getUserId(areaKey) : player.userId;
             if (userId == player.userId) {
+               D.adminLog("User {" + userId + "} is entering farm", D.ADMIN_LOG_TYPE.Visit);
+               instance.privateAreaUserId = userId;
                player.cropManager.loadCrops();
-            } 
+            } else {
+               D.adminLog("User {" + userId + "} compared to {" + player.userId + "}", D.ADMIN_LOG_TYPE.Visit);
+            }
          }
       } else {
          // TODO: Update this block of code after setting up farm maps
@@ -103,6 +143,12 @@ public class InstanceManager : MonoBehaviour {
             player.cropManager.loadCrops();
          }
       }
+
+      D.adminLog("Player is now being added to an instance. " +
+         "ID:{" + instance.id + "} " +
+         "Area:{" + instance.areaKey + "} " +
+         "Count:{" + instance.getPlayerCount() + "} " +
+         "Owner:{" + instance.privateAreaUserId, D.ADMIN_LOG_TYPE.Visit);
       return instance;
    }
 
@@ -233,6 +279,16 @@ public class InstanceManager : MonoBehaviour {
    public Instance getPlayerPrivateOpenInstance (string areaKey, int userId) {
       foreach (Instance instance in _instances.Values) {
          if (instance.areaKey == areaKey && instance.getPlayerCount() < instance.getMaxPlayers() && instance.privateAreaUserId == userId) {
+            return instance;
+         }
+      }
+
+      return null;
+   }
+
+   public Instance getVisitablePrivateOpenInstance (int userId) {
+      foreach (Instance instance in _instances.Values) {
+         if (instance.getPlayerUserIds().Exists(_=> _ == userId)) {
             return instance;
          }
       }
