@@ -20,42 +20,50 @@ public class PvpAnnouncementHolder : MonoBehaviour
       self = this;
    }
 
-   public void addKillAnnouncement (NetEntity attacker, NetEntity target, bool blink = false, PvpTeamType pvpTeam = PvpTeamType.None) {
+   private PvpAnnouncement createAnnouncement(Transform parent, bool blink) {
       clearAnnouncements();
 
       if (pvpAnnouncementPrefab == null) {
-         return;
+         return null;
       }
 
       GameObject newAnnouncementInstance = Instantiate(pvpAnnouncementPrefab);
       PvpAnnouncement newAnnouncement = newAnnouncementInstance.GetComponent<PvpAnnouncement>();
 
       if (newAnnouncement == null) {
-         return;
+         return null;
       }
 
-      newAnnouncement.transform.SetParent(this.transform);
-      newAnnouncement.blinkingColor = PvpGame.getColorForTeam(pvpTeam);
+      newAnnouncement.transform.SetParent(parent.transform);
       newAnnouncement.isBlinking = blink;
-      newAnnouncement.announceKill(attacker,target);
+
+      return newAnnouncement;
+   }
+
+   public void addTowerDestructionAnnouncement(NetEntity attacker, PvpTower target, bool blink = false, PvpTeamType pvpTeam = PvpTeamType.None) {
+      PvpAnnouncement newAnnouncement = createAnnouncement(this.transform, blink);
+
+      if (newAnnouncement != null) {
+         newAnnouncement.blinkingColor = PvpGame.getColorForTeam(pvpTeam);
+         newAnnouncement.announceTowerDestruction(attacker, target);
+      }
+   }
+
+   public void addKillAnnouncement (NetEntity attacker, NetEntity target, bool blink = false, PvpTeamType pvpTeam = PvpTeamType.None) {
+      PvpAnnouncement newAnnouncement = createAnnouncement(this.transform, blink);
+
+      if (newAnnouncement != null) {
+         newAnnouncement.blinkingColor = PvpGame.getColorForTeam(pvpTeam);
+         newAnnouncement.announceKill(attacker, target);
+      }
    }
 
    public void addAnnouncement (string announcementText, bool blink = false) {
-      clearAnnouncements();
+      PvpAnnouncement newAnnouncement = createAnnouncement(this.transform, blink);
 
-      if (pvpAnnouncementPrefab == null) {
-         return;
+      if (newAnnouncement != null) {
+         newAnnouncement.announce(announcementText);
       }
-
-      GameObject newAnnouncementInstance = Instantiate(pvpAnnouncementPrefab);
-      PvpAnnouncement newAnnouncement = newAnnouncementInstance.GetComponent<PvpAnnouncement>();
-
-      if (newAnnouncement == null) {
-         return;
-      }
-
-      newAnnouncement.transform.SetParent(this.transform);
-      newAnnouncement.announce(announcementText);
    }
 
    public void clearAnnouncements () {

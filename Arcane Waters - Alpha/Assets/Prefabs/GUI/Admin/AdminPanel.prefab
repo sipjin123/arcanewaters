@@ -1951,6 +1951,7 @@ MonoBehaviour:
   message: Sync the game framerate with your monitor refresh rate.
   maxWidth: 200
   nudgeAwayFromBorder: 0
+  isKeyDerivedFromChildObject: 0
 --- !u!114 &1600480512184289213
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2566,6 +2567,7 @@ MonoBehaviour:
   message: Sync the game framerate with your monitor refresh rate.
   maxWidth: 200
   nudgeAwayFromBorder: 0
+  isKeyDerivedFromChildObject: 0
 --- !u!114 &365935677673730036
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3868,6 +3870,7 @@ MonoBehaviour:
   message: Sync the game framerate with your monitor refresh rate.
   maxWidth: 200
   nudgeAwayFromBorder: 0
+  isKeyDerivedFromChildObject: 0
 --- !u!114 &2834997033698230724
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6032,7 +6035,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3191418876003361797}
+      - m_Target: {fileID: 8974061753609430558}
         m_MethodName: performTabPressed
         m_Mode: 3
         m_Arguments:
@@ -6469,7 +6472,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &3191418876003361797
+--- !u!114 &8974061753609430558
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6478,7 +6481,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6263664274997499245}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d508f44d6352cde44bf6ecff62fca659, type: 3}
+  m_Script: {fileID: 11500000, guid: 3f806a5a4d35db248abe180f86142d7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tabsUnder:
@@ -7284,7 +7287,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3191418876003361797}
+      - m_Target: {fileID: 8974061753609430558}
         m_MethodName: performTabPressed
         m_Mode: 3
         m_Arguments:
@@ -8023,6 +8026,7 @@ MonoBehaviour:
   message: Change music volume.
   maxWidth: 200
   nudgeAwayFromBorder: 0
+  isKeyDerivedFromChildObject: 0
 --- !u!114 &6182773277091033503
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8248,7 +8252,7 @@ MonoBehaviour:
   btnRefresh: {fileID: 7181367481138867803}
   txtKickAllUsersMessage: {fileID: 756848875304195252}
   loadBlocker: {fileID: 4685883028942326834}
-  tabs: {fileID: 3191418876003361797}
+  tabs: {fileID: 8974061753609430558}
   tabSwitcher: {fileID: 3687852262508323850}
   playersCountMetricsHolder: {fileID: 4161702022162482503}
 --- !u!1 &7231955982459481408
@@ -10476,7 +10480,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 3191418876003361797}
+      objectReference: {fileID: 8974061753609430558}
     - target: {fileID: 4287090736326487342, guid: f76160909172e1745a0368854d0866a2,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName

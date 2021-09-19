@@ -90,12 +90,12 @@ namespace NubisDataHandling {
                         D.editorLog("Failed to gather data for haircut: " + itmType + " : " + haircutData + " : " + itmId, Color.red);
                      }
                      break;
-                  case Item.Category.Hairdye:
-                     HairDyeData hairDyeData = HairDyeXMLManager.self.getHairdyeData(itmType);
-                     if (hairDyeData != null) {
-                        otherItem.setBasicInfo(hairDyeData.itemName, hairDyeData.itemDescription, hairDyeData.itemIconPath);
+                  case Item.Category.Dye:
+                     DyeData dyeData = DyeXMLManager.self.getDyeData(itmType);
+                     if (dyeData != null) {
+                        otherItem.setBasicInfo(dyeData.itemName, dyeData.itemDescription, dyeData.itemIconPath);
                      } else {
-                        D.editorLog("Failed to gather data for hair dye: " + itmType + " : " + hairDyeData + " : " + itmId, Color.red);
+                        D.editorLog("Failed to gather data for dye: " + itmType + " : " + dyeData + " : " + itmId, Color.red);
                      }
                      break;
                   case Item.Category.ShipSkin:

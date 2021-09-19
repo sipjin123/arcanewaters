@@ -292,7 +292,6 @@ public class PlayerShipEntity : ShipEntity
          // Notify client to update abilities in cannon panel
          Target_UpdateCannonPanel(connectionToClient, shipAbilities.ToArray());
       }
-      CannonPanel.self.overwriteShipCooldowns();
 
       if (shipAbilities.Count > 0) {
          primaryAbilityId = shipAbilities[0];
@@ -1759,6 +1758,39 @@ public class PlayerShipEntity : ShipEntity
          }
       }
    }
+
+   protected int getSelectedShipAbilityId () {
+      return shipAbilities[selectedShipAbilityIndex];
+   }
+
+   [TargetRpc]
+   protected void Target_UpdateCannonPanel (NetworkConnection connectionToClient, int[] abilityIdArray) {
+      for (int i = 0; i < CannonPanel.MAX_ABILITY_COUNT; i++) {
+         CannonPanel.self.setAbilityIcon(i, -1);
+         CannonPanel.self.cannonBoxList[i].abilityId = -1;
+      }
+      StartCoroutine(CO_UpdateCannonPanel(abilityIdArray));
+   }
+
+   private IEnumerator CO_UpdateCannonPanel (int[] abilityIdArray) {
+      // Wait for synclist to be updated
+      while (shipAbilities.Count <= 0) {
+         yield return null;
+      }
+
+      for (int abilityIndex = 0; abilityIndex < shipAbilities.Count; abilityIndex++) {
+         int newShipAbilityId = abilityIdArray[abilityIndex];
+         CannonPanel.self.setAbilityIcon(abilityIndex, newShipAbilityId);
+         if (abilityIndex < CannonPanel.self.cannonBoxList.Count && abilityIndex >= 0) {
+            CannonPanel.self.cannonBoxList[abilityIndex].abilityId = newShipAbilityId;
+         } else {
+            D.debug("Was trying to process invalid index {" + abilityIndex + "}");
+         }
+      }
+
+      CannonPanel.self.updateCooldownDurations();
+   }
+
    [Command]
    public void Cmd_AbilityUsed (int abilityIndex) {
       // Don't update UI if the ability we're trying to use is on cooldown

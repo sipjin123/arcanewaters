@@ -591,7 +591,13 @@ public class PvpGame : MonoBehaviour {
          PvpTeamType winningTeam = (structure.pvpTeam == PvpTeamType.A) ? PvpTeamType.B : PvpTeamType.A;
          onGameEnd(winningTeam);
       } else {
-         sendGameMessage("The " + structure.faction.ToString() + "' " + structure.GetType().ToString() + " has been destroyed.");
+         NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(structure.lastAttackerId());
+
+         if (lastAttacker.isPlayerShip() && structure is PvpTower tower) {
+            lastAttacker.getPlayerShipEntity().rpc.broadcastPvpTowerDestruction(lastAttacker, tower);
+         } else {
+            sendGameMessage("The " + structure.faction.ToString() + "' " + structure.GetType().ToString() + " has been destroyed.");
+         }
       }
    }
 

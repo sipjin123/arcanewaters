@@ -470,6 +470,9 @@ public class PvpTower : SeaStructure
       Gizmos.DrawWireSphere(transform.position, ATTACK_RANGE);
    }
 
+   public override bool isPvpTower () {
+      return true;
+   }
 
    #region Private Variables
 

@@ -1000,6 +1000,8 @@ public class SeaEntity : NetEntity
             break;
       }
 
+      Debug.Log(shipAbility.selectedAttackType);
+
       _lastAttackTime = NetworkTime.time;
       attackCounter++;
 

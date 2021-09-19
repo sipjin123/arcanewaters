@@ -121,6 +121,8 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("simulate_steam_purchase_response", "Simulates the response received by the server", simulateSteamPurchaseAuthorizationResponse, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "orderId", "appId", "orderAuthorized" }));
       cm.addCommand(new CommandData("add_xp", "Gives XP to the player", addXP, requiredPrefix: CommandType.Admin, parameterNames: new List<string> {"amount"}));
       cm.addCommand(new CommandData("set_level", "Sets the Level of the player", setPlayerLevel, requiredPrefix: CommandType.Admin, parameterNames: new List<string> { "level" }));
+      cm.addCommand(new CommandData("get_armor_with_palettes", "Gives you an armor with specified palettes. Requires a comma after the armor name.", getArmorWithPalettes, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "armorName", "paletteNameN" }));
+      cm.addCommand(new CommandData("add_gems", "Gives an amount of gems to a user", requestAddGems, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "gemsAmount" }));
 
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
@@ -1865,6 +1867,64 @@ public class AdminManager : NetworkBehaviour
       Cmd_CreateItemWithPalettes(category, itemTypeId, count, Item.parseItmPalette(paletteNames.ToArray()));
    }
 
+   protected void getArmorWithPalettes (string parameters) {
+      string[] sections = parameters.Split(',');
+      string itemName = "";
+      const int count = 1;
+
+      if (sections.Length < 2) {
+         ChatManager.self.addChat("Please specify parameters - armor_name, palette_names - and have a comma after armor_name.", ChatInfo.Type.Log);
+         return;
+      }
+      itemName = sections[0];
+
+      // Set the category
+      Item.Category category = Item.Category.Armor;
+
+      // Search for the item name in lower case
+      itemName = itemName.ToLower();
+
+      // Get the item type
+      int itemTypeId = -1;
+
+      foreach (ArmorStatData armorStat in EquipmentXMLManager.self.armorStatList) {
+         if (armorStat.equipmentName.ToLower() == itemName) {
+            itemTypeId = armorStat.sqlId;
+         }
+      }
+
+      string[] paletteSections = sections[1].Split(' ');
+
+      List<string> paletteNames = new List<string>();
+      for (int i = 1; i < paletteSections.Length; i++) {
+         paletteNames.Add(paletteSections[i]);
+      }
+
+      if (itemTypeId == -1) {
+         ChatManager.self.addChat("Could not find the armor " + itemName, ChatInfo.Type.Error);
+         return;
+      }
+
+      // Send the request to the server
+      Cmd_CreateItemWithPalettes(category, itemTypeId, count, Item.parseItmPalette(paletteNames.ToArray()));
+   }
+
+   protected void requestAddGems (string parameters) {
+      string[] list = parameters.Split(' ');
+      int gems = 0;
+      string username = "";
+
+      try {
+         username = list[0];
+         gems = System.Convert.ToInt32(list[1]);
+      } catch (System.Exception e) {
+         D.warning("Unable to parse gems int from: " + parameters + ", exception: " + e);
+         return;
+      }
+
+      Cmd_AddGems(gems, username);
+   }
+
    [Command]
    protected void Cmd_AddGunAbilities () {
       List<AbilitySQLData> newAbilityList = getAbilityDataSQL(new List<int> { 27, 78, 79, 80, 81 });
@@ -2602,6 +2662,38 @@ public class AdminManager : NetworkBehaviour
             string message = string.Format("Added {0} {1} to the inventory.", createdItemCount, EquipmentXMLManager.self.getItemName(databaseItem));
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ItemsAddedToInventory, _player, message);
          });
+      });
+   }
+
+   [Command]
+   protected void Cmd_AddGems (int gems, string username) {
+      // Make sure this is an admin
+      if (!_player.isAdmin()) {
+         D.warning("Received admin command from non-admin!");
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int userId = DB_Main.getUserId(username);
+         int accId = DB_Main.getAccountId(userId);
+
+         if (userId > 0 && accId > 0) {
+            DB_Main.addGems(accId, gems);
+
+            // Back to the Unity thread
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               // Send confirmation back to the player who issued the command
+               string message = string.Format("{0} received {1} gems!", username, gems);
+               _player.Target_ReceiveNormalChat(message, ChatInfo.Type.System);
+            });
+
+         } else {
+            // Send the failure message back to the client
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               string message = string.Format("Could not find user {0}.", username);
+               ServerMessageManager.sendError(ErrorMessage.Type.UsernameNotFound, _player, message);
+            });
+         }
       });
    }
 

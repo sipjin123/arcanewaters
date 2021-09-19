@@ -21,6 +21,9 @@ public class StoreArmorDyeBox : StoreItemBox
    // The clothing dye information
    public DyeData armorDye;
 
+   // Palette of the current armor
+   public Item playerArmor;
+
    // Palette information
    public PaletteToolData palette;
 
@@ -43,7 +46,7 @@ public class StoreArmorDyeBox : StoreItemBox
       setupBody(Global.player.gender);
 
       // Armor
-      ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(Global.userObjects.armor.itemTypeId);
+      ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(playerArmor.itemTypeId);
 
       if (armorData == null) {
          armorData = EquipmentXMLManager.self.armorStatList.First();
@@ -94,7 +97,7 @@ public class StoreArmorDyeBox : StoreItemBox
       armorImage.sprite = armorSprite;
       armorImage.material = new Material(this.armorImage.material);
 
-      string mergedPalette = Item.parseItmPalette(Item.overridePalette(armorPalette, Global.userObjects.armor.paletteNames));
+      string mergedPalette = Item.parseItmPalette(Item.overridePalette(armorPalette, playerArmor.paletteNames));
 
       // Recolor armor
       recolorArmor(mergedPalette);

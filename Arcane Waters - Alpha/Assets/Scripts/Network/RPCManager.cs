@@ -291,13 +291,14 @@ public class RPCManager : NetworkBehaviour
       if (_player is BodyEntity) {
          BodyEntity body = (BodyEntity) _player;
          body.updateHair(newHairType, newHairPalettes);
+      }
+   }
 
-         // If the Inventory panel is showing, update it
-         InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
-         if (inventoryPanel.isShowing() && _player.userId == Global.player.userId) {
-            // inventoryPanel.previewPanel.charStack.setHair(newHairType);
-            // inventoryPanel.previewPanel.charStack.setHairColor(Global.player.gender, newHairColor1, newHairColor2);
-         }
+   [ClientRpc]
+   protected void Rpc_UpdateArmor (int armorType, string newArmorPalette) {
+      if (_player is BodyEntity) {
+         BodyEntity body = (BodyEntity) _player;
+         body.armorManager.updateSprites(armorType, newArmorPalette);
       }
    }
 
@@ -879,10 +880,6 @@ public class RPCManager : NetworkBehaviour
       // Trigger the tutorial
       TutorialManager3.self.tryCompletingStepByWeaponEquipped();
 
-      // Update hair
-      if (_player is PlayerBodyEntity) {
-         _player.getPlayerBodyEntity().updateHair(_player.hairType, _player.hairPalettes);
-      }
    }
 
    [TargetRpc]
@@ -1490,20 +1487,91 @@ public class RPCManager : NetworkBehaviour
       });
    }
 
+   private bool isStoreItemEnabled (StoreItem storeItem) {
+      // A store item should be displayed if the store item itself is enabled and if the referred item is enabled
+      bool storeItemIsEnabled = storeItem.isEnabled;
+      bool referredItemIsEnabled = false;
+
+      switch (storeItem.category) {
+         case Item.Category.None:
+            referredItemIsEnabled = false;
+            break;
+         case Item.Category.Weapon:
+            referredItemIsEnabled = true;
+            break;
+         case Item.Category.Armor:
+            referredItemIsEnabled = true;
+            break;
+         case Item.Category.Hats:
+            referredItemIsEnabled = true;
+            break;
+         case Item.Category.Potion:
+            referredItemIsEnabled = true;
+            break;
+         case Item.Category.Usable:
+            referredItemIsEnabled = true;
+            break;
+         case Item.Category.CraftingIngredients:
+            referredItemIsEnabled = true;
+            break;
+         case Item.Category.Blueprint:
+            referredItemIsEnabled = true;
+            break;
+         case Item.Category.Currency:
+            referredItemIsEnabled = true;
+            break;
+         case Item.Category.Quest_Item:
+            referredItemIsEnabled = true;
+            break;
+         case Item.Category.Haircut:
+            referredItemIsEnabled = (HaircutXMLManager.self.getHaircutData(storeItem.itemId) != null);
+            break;
+         case Item.Category.Gems:
+            referredItemIsEnabled = (GemsXMLManager.self.getGemsData(storeItem.itemId) != null);
+            break;
+         case Item.Category.ShipSkin:
+            referredItemIsEnabled = (ShipSkinXMLManager.self.getShipSkinData(storeItem.itemId) != null);
+            break;
+         case Item.Category.Dye:
+            referredItemIsEnabled = (DyeXMLManager.self.getDyeData(storeItem.itemId) != null);
+            break;
+         case Item.Category.Pet:
+            referredItemIsEnabled = true;
+            break;
+         case Item.Category.Consumable:
+            referredItemIsEnabled = (ConsumableXMLManager.self.getConsumableData(storeItem.itemId) != null);
+            break;
+         default:
+            break;
+      }
+
+      return storeItemIsEnabled && referredItemIsEnabled;
+   }
+
    [Command]
-   public void Cmd_RequestStoreItems () {
+   public void Cmd_RequestStoreResources (bool requestStoreItems, bool requestUserObjects) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<StoreItem> storeItems = DB_Main.getAllStoreItems();
+         List<StoreItem> storeItems = null;
+         UserObjects userObjects = null;
+
+         if (requestStoreItems) {
+            List<StoreItem> allStoreItems = DB_Main.getAllStoreItems();
+            storeItems = allStoreItems.Where(isStoreItemEnabled).ToList();
+         }
+
+         if (requestUserObjects) {
+            userObjects = DB_Main.getUserObjects(_player.userId);
+         }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveStoreItems(storeItems);
+            Target_ReceiveStoreResources(storeItems, userObjects);
          });
       });
    }
 
    [TargetRpc]
-   public void Target_ReceiveStoreItems (List<StoreItem> items) {
-      StoreScreen.self.onReceiveStoreItems(items);
+   public void Target_ReceiveStoreResources (List<StoreItem> items, UserObjects userObjects) {
+      StoreScreen.self.onReceiveStoreResources(items, userObjects);
    }
 
    [Command]
@@ -1768,16 +1836,16 @@ public class RPCManager : NetworkBehaviour
             storeReferencedItem = Haircut.createFromData(haircutData);
          }
 
-         if (storeItem.category == Item.Category.Hairdye) {
-            HairDyeData hairDyeData = HairDyeXMLManager.self.getHairdyeData(storeItem.itemId);
+         if (storeItem.category == Item.Category.Dye) {
+            DyeData dyeData = DyeXMLManager.self.getDyeData(storeItem.itemId);
 
-            if (hairDyeData == null) {
+            if (dyeData == null) {
                D.error($"Store Purchase failed for user '{_player.userId}' trying to purchase the Store Item '{storeItem.id}'. Couldn't find the hair dye data.");
                reportStorePurchaseFailed();
                return;
             }
 
-            storeReferencedItem = HairDye.createFromData(hairDyeData);
+            storeReferencedItem = Dye.createFromData(dyeData);
          }
 
          if (storeItem.category == Item.Category.ShipSkin) {
@@ -2069,8 +2137,8 @@ public class RPCManager : NetworkBehaviour
             itemCategoryDisplayName = "ship skin";
          } else if (itemCategory == Item.Category.Haircut) {
             itemCategoryDisplayName = "haircut";
-         } else if (itemCategory == Item.Category.Hairdye) {
-            itemCategoryDisplayName = "hair dye";
+         } else if (itemCategory == Item.Category.Dye) {
+            itemCategoryDisplayName = "dye";
          }
 
          if (!string.IsNullOrWhiteSpace(itemName)) {
@@ -2091,7 +2159,7 @@ public class RPCManager : NetworkBehaviour
          PanelManager.self.confirmScreen.cancelButton.onClick.RemoveAllListeners();
          PanelManager.self.confirmScreen.cancelButton.onClick.AddListener(() => {
             if (StoreScreen.self.isShowing()) {
-               StoreScreen.self.toggleBlocker(false);
+               StoreScreen.self.refreshPanel();
             }
          });
 
@@ -2100,7 +2168,7 @@ public class RPCManager : NetworkBehaviour
          PanelManager.self.noticeScreen.confirmButton.onClick.RemoveAllListeners();
          PanelManager.self.noticeScreen.confirmButton.onClick.AddListener(() => {
             if (StoreScreen.self.isShowing()) {
-               StoreScreen.self.toggleBlocker(false);
+               StoreScreen.self.refreshPanel();
             }
          });
          PanelManager.self.noticeScreen.show(feedback);
@@ -2161,13 +2229,13 @@ public class RPCManager : NetworkBehaviour
             return;
          }
 
-         if (item.category == Item.Category.Hairdye) {
-            useHairdye(item);
+         if (item.category == Item.Category.Dye) {
+            useDye(item);
          } else if (item.category == Item.Category.ShipSkin) {
             useShipSkin(item);
          } else if (item.category == Item.Category.Haircut) {
             useHaircut(item);
-         }  else if (item.category == Item.Category.Consumable) {
+         } else if (item.category == Item.Category.Consumable) {
             useConsumable(item);
          }
       });
@@ -2211,48 +2279,96 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   private void useHairdye (Item item) {
+   private void useDye (Item item) {
+      DyeData dyeData = DyeXMLManager.self.getDyeData(item.itemTypeId);
+
+      if (dyeData == null) {
+         D.error($"Player {_player.userId} tried to use the dye {item.itemTypeId} but failed. Couldn't find the dye data.");
+         reportUseItemFailure("Unknown Dye");
+         return;
+      }
+
+      PaletteToolData paletteToolData = PaletteSwapManager.self.getPalette(dyeData.paletteId);
+
+      // Check if the palette was found
+      if (paletteToolData == null) {
+         D.error($"Player {_player.userId} tried to apply the dye {dyeData.paletteId} (palette: {paletteToolData.paletteName}) but failed. Couldn't find the palette.");
+         reportUseItemFailure("Unknown Dye");
+         return;
+      }
+
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         HairDyeData hairDyeData = HairDyeXMLManager.self.getHairdyeData(item.itemTypeId);
+         // Apply dye based on its type
+         if (paletteToolData.paletteType == (int) PaletteToolManager.PaletteImageType.Hair) {
+            if (paletteToolData.isPrimary()) {
+               // Set the new hair color in the database
+               DB_Main.setHairColor(_player.userId, paletteToolData.paletteName);
 
-         if (hairDyeData == null) {
-            D.error($"Player {_player.userId} tried to apply the hair dye {item.itemTypeId} but failed. Couldn't find the hair dye data.");
-            reportUseItemFailure("Unknown Dye");
+               // Delete the item
+               DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, 1);
+
+               // Fetch the updated user objects
+               UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+
+               // Back to Unity
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  _player.hairPalettes = paletteToolData.paletteName;
+
+                  // Refresh local store
+                  Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+
+                  // Update the hair color but keep the style
+                  Rpc_UpdateHair(_player.hairType, _player.hairPalettes);
+
+                  // Let the client know the item was used
+                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.UsedHairDye, _player, item.id.ToString());
+               });
+
+               return;
+            }
+         }
+
+         if (paletteToolData.paletteType == (int) PaletteToolManager.PaletteImageType.Armor) {
+            // Compute new palette
+            string dyePalette = paletteToolData.paletteName;
+            UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+            string currentArmorPalette = userObjects.armor.paletteNames;
+            string mergedPalette = Item.parseItmPalette(Item.overridePalette(dyePalette, currentArmorPalette));
+
+            // Set the new armor color
+            bool updated = DB_Main.setArmorPalette(_player.userId, userObjects.armor.id, mergedPalette);
+
+            if (!updated) {
+               reportUseItemFailure("");
+               return;
+            }
+
+            // Delete the dye
+            DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, 1);
+
+            // Fetch the updated user objects
+            userObjects = DB_Main.getUserObjects(_player.userId);
+
+            // Back to Unity
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               // Refresh local store
+               Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+
+               // Report other clients
+               ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(userObjects.armor.itemTypeId);
+               Rpc_UpdateArmor(armorData.armorType, mergedPalette);
+
+               // Let the client know the item was used
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.UsedArmorDye, _player, item.id.ToString());
+            });
+
             return;
          }
 
-         PaletteToolData paletteToolData = PaletteSwapManager.self.getPalette(hairDyeData.paletteId);
-
-         // Check if the palette was found
-         if (paletteToolData == null) {
-            D.error($"Player {_player.userId} tried to apply the hair dye {hairDyeData.paletteId} (palette: {paletteToolData.paletteName}) but failed. Couldn't find the palette.");
-            reportUseItemFailure("Unknown Dye");
-            return;
-         }
-
-         // Check if the palette can be applied to the hair
-         if (paletteToolData.paletteType != (int)PaletteToolManager.PaletteImageType.Hair) {
-            D.error($"Player {_player.userId} tried to apply the hair dye {hairDyeData.paletteId} (palette: {paletteToolData.paletteName}). This palette is not for a hair dye.");
-            reportUseItemFailure("Unknown Dye");
-            return;
-         }
-
-         // Set the new hair color in the database
-         DB_Main.setHairColor(_player.userId, paletteToolData.paletteName);
-
-         // Delete the item
-         DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, 1);
-
-         // Back to Unity
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            _player.hairPalettes = paletteToolData.paletteName;
-
-            // Update the hair color but keep the style
-            Rpc_UpdateHair(_player.hairType, _player.hairPalettes);
-
-            // Let the client know the item was used
-            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.UsedHairDye, _player, item.id.ToString());
-         });
+         // Unknown or unsupported dye type
+         D.error($"Player {_player.userId} tried to apply the dye {dyeData.paletteId} (palette: {paletteToolData.paletteName}). This dye type is currently unsupported.");
+         reportUseItemFailure("Unsupported Dye");
+         return;
       });
    }
 
@@ -2367,7 +2483,7 @@ public class RPCManager : NetworkBehaviour
          }
 
          if (StoreScreen.self != null && StoreScreen.self.isShowing()) {
-            StoreScreen.self.toggleBlocker(false);
+            StoreScreen.self.refreshPanel();
          }
       });
 
@@ -7534,7 +7650,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public async void Cmd_AddPrefabCustomization (int areaOwnerId, string areaKey, PrefabState changes, bool spawnVariation, bool spawnedFromAVariation) {
+   public async void Cmd_AddPrefabCustomization (int areaOwnerId, string areaKey, PrefabState changes) {
       Area area = AreaManager.self.getArea(areaKey);
       Instance instance = _player.getInstance();
 
@@ -7562,13 +7678,13 @@ public class RPCManager : NetworkBehaviour
       await DB_Main.execAsync((cmd) => DB_Main.setMapCustomizationChanges(cmd, baseMapId, areaOwnerId, currentState));
 
       // If creating a new prefab, remove an item from the inventory
-      if (changes.created && !spawnedFromAVariation) {
+      if (changes.created) {
          int itemId = remainingProps.FirstOrDefault(i => i.itemDefinitionId == prefab.propDefinitionId)?.id ?? -1;
          await DB_Main.execAsync((cmd) => DB_Main.decreaseOrDeleteItemInstance(cmd, itemId, 1));
       }
 
       // If deleting a prefab and it's not placed in map editor, return to inventory
-      if (changes.deleted && createdByUser && !spawnVariation) {
+      if (changes.deleted && createdByUser) {
          await DB_Main.execAsync((cmd) => DB_Main.createOrAppendItemInstance(cmd,
                   new ItemInstance { count = 1, itemDefinitionId = prefab.propDefinitionId, ownerUserId = _player.userId, id = -1 }));
       }
@@ -8158,8 +8274,7 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
-      int attackerSilverRank = 1;
-      attackerSilverRank = GameStatsManager.self.getSilverRank(attackerEntity.userId);
+      int attackerSilverRank = GameStatsManager.self.getSilverRank(attackerEntity.userId);
 
       List<PlayerShipEntity> entities = instance.getPlayerShipEntities();
       foreach (NetEntity entity in entities) {
@@ -8183,6 +8298,34 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceiveBroadcastPvpAnnouncement (string announcementText) {
       PvpAnnouncementHolder.self.addAnnouncement(announcementText);
+   }
+
+   [Server]
+   public void broadcastPvpTowerDestruction (NetEntity attackerEntity, PvpTower targetEntity) {
+      if (attackerEntity == null) {
+         return;
+      }
+
+      Instance instance = attackerEntity.getInstance();
+      if (instance == null || !instance.isPvP) {
+         return;
+      }
+
+      int attackerSilverRank = GameStatsManager.self.getSilverRank(attackerEntity.userId);
+
+      List<PlayerShipEntity> entities = instance.getPlayerShipEntities();
+      foreach (NetEntity entity in entities) {
+         Target_ReceiveBroadcastPvpTowerDestruction(entity.connectionToClient, attackerEntity.netId, targetEntity.netId, attackerSilverRank);
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveBroadcastPvpTowerDestruction (NetworkConnection connection, uint attackerEntityNetId, uint targetEntityNetId, int attackerSilverRank) {
+      NetEntity attackerEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attackerEntityNetId);
+      NetEntity targetEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(targetEntityNetId);
+
+      PvpTower targetTower = (PvpTower) targetEntity;
+      PvpAnnouncementHolder.self.addTowerDestructionAnnouncement(attackerEntity, targetTower, attackerSilverRank > 2, attackerEntity.pvpTeam);
    }
 
    [Server]
@@ -8401,6 +8544,30 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_SendPvpGameFaction (NetworkConnection connection, PvpTeamType teamType, Faction.Type factionType) {
       PvpStatPanel.self.assignFactionToTeam(teamType, factionType);
+   }
+
+   [TargetRpc]
+   public void Target_SetPvpInstructionsPanelVisibility (NetworkConnection connection, bool isVisible) {
+      if (isVisible) {
+         PvpInstructionsPanel.self.show();
+      } else {
+         PvpInstructionsPanel.self.hide();
+      }
+   }
+
+   [TargetRpc]
+   public void Target_UpdatePvpInstructionsPanelPlayers (NetworkConnection connection, List<int> playerUserIds) {
+      PvpInstructionsPanel.self.updatePlayers(playerUserIds);
+   }
+
+   [TargetRpc]
+   public void Target_UpdatePvpInstructionsPanelGameStatusMessage (NetworkConnection connection, string newMessage) {
+      PvpInstructionsPanel.self.updateGameStatusMessage(newMessage);
+   }
+
+   [TargetRpc]
+   public void Target_InitPvpInstructionsPanel (NetworkConnection connection, int instanceId, List<Faction.Type> teamFactions) {
+      PvpInstructionsPanel.self.init(teamFactions, instanceId);
    }
 
    #region Private Variables

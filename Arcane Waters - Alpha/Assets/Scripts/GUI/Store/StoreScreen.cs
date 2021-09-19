@@ -66,7 +66,7 @@ public class StoreScreen : Panel
       base.Update();
 
       // Enable or disable stuff based on whether there's a selection
-      buyButton.enabled = (selectedItem != null);
+      buyButton.interactable = (selectedItem != null);
    }
 
    public void showPanel (UserObjects userObjects, int gold, int gems) {
@@ -76,17 +76,14 @@ public class StoreScreen : Panel
       this.goldText.text = gold + "";
       this.gemsText.text = gems + "";
       this.nameText.text = userObjects.userInfo.username;
-
-      // Update the character preview
-      characterStack.updateLayers(Global.userObjects);
-
-      // Start with nothing selected
-      selectItem(null);
-
+      this._userObjectsCache = userObjects;
+      
       destroyStoreBoxes();
+      deselectAllItems();
+      updateCharacterPreview();
 
       // Request Store Items
-      Global.player.rpc.Cmd_RequestStoreItems();
+      Global.player.rpc.Cmd_RequestStoreResources(requestStoreItems: true, requestUserObjects: true);
 
       // Display the panel
       if (!isShowing()) {
@@ -94,28 +91,54 @@ public class StoreScreen : Panel
       }
    }
 
-   public void onReceiveStoreItems (List<StoreItem> storeItems) {
-      // Create Boxes
-      createStoreBoxes(storeItems);
+   public void refreshPanel () {
+      // Request Store Items
+      Global.player.rpc.Cmd_RequestStoreResources(requestStoreItems: false, requestUserObjects: true);
+   }
 
-      // Routinely check if we purchased gems
-      CancelInvoke(nameof(checkGems));
-      InvokeRepeating(nameof(checkGems), 5f, 5f);
+   public void onReceiveStoreResources (List<StoreItem> storeItems, UserObjects userObjects) {
+      deselectAllItems();
 
-      // Initialize tabs
-      initializeTabs();
-
-      // If no tab is selected, display the gems tab
-      if (_currentStoreTabType == StoreTab.StoreTabType.None) {
-         _currentStoreTabType = StoreTab.StoreTabType.Gems;
+      if (userObjects == null) {
+         userObjects = this._userObjectsCache;
       }
 
-      presentItems();
+      if (userObjects != null) {
+         this._userObjectsCache = userObjects;
+         this.nameText.text = userObjects.userInfo.username;
+         updateCharacterPreview();
+      }
+
+      if (storeItems == null || storeItems.Count == 0) {
+         storeItems = _storeItemsCache;
+      }
+
+      if (storeItems != null && storeItems.Count > 0) {
+         this._storeItemsCache = storeItems;
+         destroyStoreBoxes();
+
+         // Create Boxes
+         createStoreBoxes(storeItems);
+
+         // Routinely check if we purchased gems
+         CancelInvoke(nameof(checkGems));
+         InvokeRepeating(nameof(checkGems), 5f, 5f);
+
+         // Initialize tabs
+         initializeTabs();
+
+         // If no tab is selected, display the gems tab
+         if (_currentStoreTabType == StoreTab.StoreTabType.None) {
+            _currentStoreTabType = StoreTab.StoreTabType.Gems;
+         }
+
+         filterItems();
+      }
 
       toggleBlocker(false);
    }
 
-   public void toggleBlocker (bool show) {
+   private void toggleBlocker (bool show) {
       if (loadBlocker == null) {
          return;
       }
@@ -161,15 +184,15 @@ public class StoreScreen : Panel
       D.debug("Store purchase: Control transferred.");
    }
 
-   public void selectItem (StoreItemBox itemBox) {
-      deselectItems();
+   private void updateCharacterPreview () {
+      StoreItemBox itemBox = this.selectedItem;
 
       // Did they unselect the current item?
-      if (itemBox == this.selectedItem || itemBox == null) {
+      if (itemBox == null) {
          this.selectedItem = null;
-         itemTitleText.text = "";
-         descriptionText.text = "";
-         characterStack.updateLayers(Global.userObjects);
+         this.itemTitleText.text = "";
+         this.descriptionText.text = "";
+         this.characterStack.updateLayers(_userObjectsCache);
       } else {
          this.selectedItem = itemBox;
          itemTitleText.text = itemBox.itemName;
@@ -177,13 +200,13 @@ public class StoreScreen : Panel
 
          if (itemBox is StoreHairDyeBox) {
             StoreHairDyeBox hairBox = (StoreHairDyeBox) itemBox;
-            characterStack.updateHair(Global.userObjects.userInfo.hairType, hairBox.palette.paletteName);
+            characterStack.updateHair(_userObjectsCache.userInfo.hairType, hairBox.palette.paletteName);
          } else if (itemBox is StoreHaircutBox) {
             StoreHaircutBox hairBox = (StoreHaircutBox) itemBox;
-            characterStack.updateHair(hairBox.haircut.type, Global.userObjects.userInfo.hairPalettes);
+            characterStack.updateHair(hairBox.haircut.type, _userObjectsCache.userInfo.hairPalettes);
          } else if (itemBox is StoreArmorDyeBox) {
             StoreArmorDyeBox armorBox = (StoreArmorDyeBox) itemBox;
-            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(Global.userObjects.armor.itemTypeId);
+            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(_userObjectsCache.armor.itemTypeId);
 
             if (armorData == null) {
                armorData = EquipmentXMLManager.self.armorStatList.First();
@@ -192,29 +215,36 @@ public class StoreScreen : Panel
             if (armorData != null) {
                characterStack.updateArmor(Global.player.gender, armorData.armorType, armorBox.palette.paletteName);
             }
-         }
 
-         itemBox.select();
+            itemBox.select();
+         }
       }
 
       characterStack.synchronizeAnimationIndexes();
    }
 
-   public void deselectItems () {
+   public void onStoreItemBoxClicked(StoreItemBox itemBox) {
+      bool wasSelected = itemBox.isSelected();
+      deselectAllItems();
+
+      if (!wasSelected) {
+         this.selectedItem = itemBox;
+         this.selectedItem.select();
+      }
+
+      updateCharacterPreview();
+   }
+
+   private void deselectAllItems () {
+      this.selectedItem = null;
+
       foreach (StoreItemBox itemBox in itemsContainer.GetComponentsInChildren<StoreItemBox>(true)) {
          itemBox.toggleHover(false);
          itemBox.toggleSelection(false);
       }
    }
 
-   public void presentItems () {
-      deselectItems();
-
-      // Reset our selection
-      if (selectedItem != null) {
-         selectItem(selectedItem);
-      }
-
+   public void filterItems () {
       // Go through all of our items and toggle which ones are showing
       foreach (StoreItemBox itemBox in itemsContainer.GetComponentsInChildren<StoreItemBox>(true)) {
          bool show = itemBox.storeTabCategory == _currentStoreTabType;
@@ -259,7 +289,7 @@ public class StoreScreen : Panel
    public void performTabSwitch (int tabIndex) {
       _currentStoreTabType = (StoreTab.StoreTabType) (tabIndex + 1);
       D.debug($"New Store Tab Type is: { _currentStoreTabType }");
-      presentItems();
+      filterItems();
    }
 
    protected void checkGems () {
@@ -295,11 +325,11 @@ public class StoreScreen : Panel
 
    protected StoreGemBox createGemBox (StoreItem storeItem) {
       GemsData gemsData = GemsXMLManager.self.getGemsData(storeItem.itemId);
-      
+
       if (gemsData == null) {
          return null;
       }
-      
+
       StoreGemBox box = Instantiate(PrefabsManager.self.gemBoxPrefab);
       prepareStoreItemBox(storeItem, box);
       box.gemsBundle = gemsData;
@@ -372,7 +402,7 @@ public class StoreScreen : Panel
 
    protected StoreHairDyeBox createHairDyeBox (StoreItem storeItem) {
       DyeData dyeData = DyeXMLManager.self.getDyeData(storeItem.itemId);
-      
+
       if (dyeData == null) {
          return null;
       }
@@ -399,6 +429,7 @@ public class StoreScreen : Panel
       box.armorDye = dyeData;
       box.itemName = box.armorDye.itemName;
       box.itemDescription = box.armorDye.itemDescription;
+      box.playerArmor = this._userObjectsCache.armor;
       tryOverrideNameAndDescription(storeItem, box);
       box.initialize();
       return box;
@@ -420,11 +451,11 @@ public class StoreScreen : Panel
 
    protected StoreConsumableBox createConsumableBox (StoreItem storeItem) {
       ConsumableData consumableData = ConsumableXMLManager.self.getConsumableData(storeItem.itemId);
-      
+
       if (consumableData == null) {
          return null;
       }
-      
+
       StoreConsumableBox box = Instantiate(PrefabsManager.self.consumableBoxPrefab);
       prepareStoreItemBox(storeItem, box);
       box.consumable = consumableData;
@@ -518,6 +549,12 @@ public class StoreScreen : Panel
 
    // Store Items
    private List<StoreItemBox> _storeItemBoxes = new List<StoreItemBox>();
+
+   // User Objects Cache
+   private UserObjects _userObjectsCache;
+
+   // Store Items Cache
+   private List<StoreItem> _storeItemsCache;
 
    #endregion
 }

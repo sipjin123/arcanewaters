@@ -97,7 +97,7 @@ public class StoreItemBox : MonoBehaviour, IPointerEnterHandler, IPointerClickHa
    }
 
    public virtual void OnPointerClick (PointerEventData eventData) {
-      StoreScreen.self.selectItem(this);
+      StoreScreen.self.onStoreItemBoxClicked(this);
    }
 
    public virtual void OnPointerDown (PointerEventData eventData) {

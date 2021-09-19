@@ -2142,6 +2142,8 @@ public class NetEntity : NetworkBehaviour
 
    public virtual bool isLandEnemy () { return false; }
 
+   public virtual bool isPvpTower() { return false; }
+
    protected virtual void onMaxHealthChanged (int oldValue, int newValue) { }
 
    protected virtual void autoMove () { }

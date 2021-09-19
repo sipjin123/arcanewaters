@@ -142,7 +142,7 @@ public class ClientMessageManager : MonoBehaviour {
             }
 
             if (StoreScreen.self != null && StoreScreen.self.isShowing()) {
-               StoreScreen.self.toggleBlocker(false);
+               StoreScreen.self.refreshPanel();
             }
 
             return;
@@ -150,7 +150,7 @@ public class ClientMessageManager : MonoBehaviour {
             PanelManager.self.noticeScreen.show(msg.customMessage);
 
             if (StoreScreen.self.isShowing()) {
-               StoreScreen.self.toggleBlocker(false);
+               StoreScreen.self.refreshPanel();
             }
 
             return;
@@ -263,7 +263,7 @@ public class ClientMessageManager : MonoBehaviour {
             }
 
             if (StoreScreen.self != null && StoreScreen.self.isShowing()) {
-               StoreScreen.self.toggleBlocker(false);
+               StoreScreen.self.refreshPanel();
             }
 
             return;
@@ -276,7 +276,7 @@ public class ClientMessageManager : MonoBehaviour {
             PanelManager.self.noticeScreen.show(msg.customMessage);
 
             if (StoreScreen.self.isShowing()) {
-               StoreScreen.self.toggleBlocker(false);
+               StoreScreen.self.refreshPanel();
             }
 
             // Play the SFX for purchasing an item
@@ -520,9 +520,8 @@ public class ClientMessageManager : MonoBehaviour {
    }
 
    public static void On_Store (NetworkConnection conn, StoreMessage msg) {
-      Global.userObjects = msg.userObjects;
       StoreScreen store = (StoreScreen)PanelManager.self.get(Panel.Type.Store);
-      store.showPanel(Global.userObjects, msg.goldOnHand, msg.gemsOnHand);
+      store.showPanel(msg.userObjects, msg.goldOnHand, msg.gemsOnHand);
    }
 
    public static void On_ClientDisconnected () {

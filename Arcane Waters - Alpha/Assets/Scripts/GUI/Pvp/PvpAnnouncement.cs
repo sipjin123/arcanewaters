@@ -33,6 +33,9 @@ public class PvpAnnouncement : ClientMonoBehaviour
    // List of announce patterns
    public string[] announcePatterns;
 
+   // List of announce patterns for structures
+   public string[] structureAnnouncePatterns;
+
    #endregion
 
    public void Start () {
@@ -45,13 +48,30 @@ public class PvpAnnouncement : ClientMonoBehaviour
       updateBlink();
    }
 
+   public void announceTowerDestruction (NetEntity attacker, PvpTower target) {
+      string targetIdentifier = $"a {target.faction} Tower";
+      string pattern = "{0} destroyed {1}!";
+
+      if (structureAnnouncePatterns != null && structureAnnouncePatterns.Length > 0) {
+         Random.InitState(Mathf.FloorToInt(Time.realtimeSinceStartup));
+         int randomPatternIndex = Random.Range(0, structureAnnouncePatterns.Length);
+         pattern = structureAnnouncePatterns[randomPatternIndex];
+      }
+
+      pattern = pattern.Replace("{0}", attacker.entityName);
+      pattern = pattern.Replace("{1}", targetIdentifier);
+      setText(pattern);
+   }
+
    public void announceKill (NetEntity attacker, NetEntity target) {
       string pattern = "{0} destroyed {1}!";
+
       if (announcePatterns != null && announcePatterns.Length > 0) {
          Random.InitState(Mathf.FloorToInt(Time.realtimeSinceStartup));
          int randomPatternIndex = Random.Range(0, announcePatterns.Length);
          pattern = announcePatterns[randomPatternIndex];
       }
+
       pattern = pattern.Replace("{0}", attacker.entityName);
       pattern = pattern.Replace("{1}", target.entityName);
       setText(pattern);
