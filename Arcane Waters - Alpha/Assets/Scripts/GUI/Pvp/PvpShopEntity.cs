@@ -17,6 +17,7 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
 
    // The object that shows the radius of the collision
    public GameObject radiusGameObject;
+
    // The team type
    public PvpTeamType pvpTeamType;
 

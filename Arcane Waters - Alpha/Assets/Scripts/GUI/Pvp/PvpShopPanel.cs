@@ -200,7 +200,7 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       itemIconInfo.sprite = ImageManager.self.blankSprite;
    }
 
-   public void populateShop (List<PvpShopItem> pvpItemDataList, List<int> shopItemTypes) {
+   public void populateShop (List<PvpShopItem> pvpItemDataList, List<PvpShopItemType> shopItemTypes) {
       clearInfoPanel();
       loadingPanel.SetActive(false);
       shopTemplateHolder.gameObject.DestroyChildren();
@@ -218,10 +218,10 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       }
 
       // Disable categories that dont exist in this shop
-      shipCategoryObj.parent.gameObject.SetActive(shopItemTypes.Exists(_ => _ == (int) PvpShopItemType.Ship));
-      powerupCategoryObj.parent.gameObject.SetActive(shopItemTypes.Exists(_ => _ == (int) PvpShopItemType.Powerup));
-      abilityCategoryObj.parent.gameObject.SetActive(shopItemTypes.Exists(_ => _ == (int) PvpShopItemType.Ability));
-      itemCategoryObj.parent.gameObject.SetActive(shopItemTypes.Exists(_ => _ == (int) PvpShopItemType.Item));
+      shipCategoryObj.parent.gameObject.SetActive(shopItemTypes.Exists(_ => _ == PvpShopItemType.Ship));
+      powerupCategoryObj.parent.gameObject.SetActive(shopItemTypes.Exists(_ => _ == PvpShopItemType.Powerup));
+      abilityCategoryObj.parent.gameObject.SetActive(shopItemTypes.Exists(_ => _ == PvpShopItemType.Ability));
+      itemCategoryObj.parent.gameObject.SetActive(shopItemTypes.Exists(_ => _ == PvpShopItemType.Item));
 
       foreach (PvpShopItem shopItemData in pvpItemDataList) {
          PvpShopTemplate shopTemplate = selectedCategory == PvpShopItemType.Ship ? 

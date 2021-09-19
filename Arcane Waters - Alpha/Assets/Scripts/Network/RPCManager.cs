@@ -3938,9 +3938,9 @@ public class RPCManager : NetworkBehaviour
          }
 
          // Filter shop item categories that does not exist in this shop
-         List<int> shopItemTypeList = new List<int>();
-         foreach (int typeId in Enum.GetValues(typeof(PvpShopItem.PvpShopItemType))) {
-            if (shopData.shopItems.Exists(_ => (int)_.shopItemType == typeId)) {
+         List< PvpShopItem.PvpShopItemType> shopItemTypeList = new List<PvpShopItem.PvpShopItemType>();
+         foreach (PvpShopItem.PvpShopItemType typeId in Enum.GetValues(typeof(PvpShopItem.PvpShopItemType))) {
+            if (shopData.shopItems.Exists(_ => _.shopItemType == typeId)) {
                shopItemTypeList.Add(typeId);
             }
          }
@@ -3953,7 +3953,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ProcessShopData (NetworkConnection conn, int shopId, int userSilver, string shopName, string shopInfo, string[] serializedShopItems, int[] shopItemTypes) {
+   public void Target_ProcessShopData (NetworkConnection conn, int shopId, int userSilver, string shopName, string shopInfo, string[] serializedShopItems, PvpShopItem.PvpShopItemType[] shopItemTypes) {
       List<PvpShopItem> pvpShopList = Util.unserialize<PvpShopItem>(serializedShopItems);
 
       PvpShopPanel panel = PvpShopPanel.self;
