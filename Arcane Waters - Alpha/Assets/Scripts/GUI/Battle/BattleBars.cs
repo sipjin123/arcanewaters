@@ -177,8 +177,8 @@ public class BattleBars : MonoBehaviour {
          BuffIcon currentIcon = Instantiate(buffIconPrefab, buffIconParent);
          currentIcon.statusType = statType;
 
-         if (currentIcon.buffSpritePair.Find(_ => _.statusType == statType) != null) {
-            currentIcon.buffIcon.sprite = currentIcon.buffSpritePair.Find(_ => _.statusType == statType).statusSprite;
+         if (currentIcon.statusSpritePair.Find(_ => _.statusType == statType) != null) {
+            currentIcon.buffIcon.sprite = currentIcon.statusSpritePair.Find(_ => _.statusType == statType).statusSprite;
             currentDebuffIcons.Add(currentIcon);
             currentIcon.simpleAnim.enabled = true;
          } else {

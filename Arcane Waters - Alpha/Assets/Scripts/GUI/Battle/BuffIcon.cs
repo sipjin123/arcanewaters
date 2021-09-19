@@ -9,8 +9,8 @@ public class BuffIcon : MonoBehaviour {
    // Icon of the buff 
    public Image buffIcon;
 
-   // The buff sprite list
-   public List<StatusSpritePair> buffSpritePair = new List<StatusSpritePair>();
+   // The status sprite list
+   public List<StatusSpritePair> statusSpritePair = new List<StatusSpritePair>();
 
    // The current status type
    public Status.Type statusType;
