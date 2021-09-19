@@ -1,16 +1,11 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
+// TODO: This script is attached to the residue of ship abilities such as static effects caused by lightning ability
+// Do other complex logic here for future use
 
 public class EffectResidue : MonoBehaviour {
    #region Public Variables
 
    #endregion
-
-   private void Update () {
-   }
 
    #region Private Variables
 

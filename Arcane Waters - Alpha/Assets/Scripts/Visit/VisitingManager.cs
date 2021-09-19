@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
+// TODO: Do complex visit logic here such as guild visits etc
 
 public class VisitingManager : MonoBehaviour {
    #region Public Variables
@@ -17,9 +14,6 @@ public class VisitingManager : MonoBehaviour {
    }
 
    #region Private Variables
-
-   // The visit request data
-   private Dictionary<int, int> visitRequests = new Dictionary<int, int>();
 
    #endregion
 }
