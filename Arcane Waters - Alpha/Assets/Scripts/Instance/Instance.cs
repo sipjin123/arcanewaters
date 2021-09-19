@@ -347,17 +347,13 @@ public class Instance : NetworkBehaviour
          return;
       }
 
-      if (!Util.isCloudBuild()) {
-         enableVoyageShops();
-      }
-
       aliveNPCEnemiesCount = 0;
       foreach (NetworkBehaviour networkBehaviour in getEntities()) {
          NetEntity entity = networkBehaviour as NetEntity;
          if (entity != null && (entity.isBotShip() || entity.isSeaMonster() || entity.isLandEnemy()) && !entity.isDead()) {
             aliveNPCEnemiesCount++;
             showShops = false;
-            hasSpawnedEnemies = true;
+            _hasSpawnedEnemies = true;
          }
       }
 
@@ -371,9 +367,9 @@ public class Instance : NetworkBehaviour
       }
 
       // Enable shops after enemies have been cleared out
-      if (hasSpawnedEnemies && aliveNPCEnemiesCount < 1) {
+      if (_hasSpawnedEnemies && aliveNPCEnemiesCount < 1) {
          showShops = true;
-         hasSpawnedEnemies = false;
+         _hasSpawnedEnemies = false;
       }
    }
 
@@ -916,7 +912,7 @@ public class Instance : NetworkBehaviour
    protected int _consecutiveEmptyChecks = 0;
 
    // If enemies have started spawning
-   private bool hasSpawnedEnemies;
+   private bool _hasSpawnedEnemies;
 
    #endregion
 }

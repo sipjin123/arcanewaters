@@ -97,9 +97,8 @@ public class FlagshipRow : MonoBehaviour {
          flagShipRow.abilityInfo = abilityData.abilityDescription;
          flagShipRow.shipAbilityData = abilityData;
 
-         // TODO: Setup tooltip for new flagship layout
+         // Process the tooltip hover for abilities
          flagShipRow.abilityNameHolder.GetComponent<ToolTipComponent>().message = abilityData.abilityName + "\n" + abilityData.abilityDescription;
-
          EventTrigger eventTrigger = flagShipRow.abilityNameHolder.GetComponent<EventTrigger>();
          Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerEnter, (e) => flagShipRow.pointerEnter());
          Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerExit, (e) => flagShipRow.pointerExit());
