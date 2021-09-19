@@ -246,10 +246,10 @@ public class ShipEntity : SeaEntity
             break;
       }
 
-      // Ally cast abilities
-      if (hasUsedBuff && shipAbilityData.buffRadius >= 0) {
-            List<NetEntity> allyEntities = EntityManager.self.getEntitiesWithVoyageId(voyageGroupId);
-            if (allyEntities.Count > 0) {
+      // Cast abilities to allies if buff radius declared in web tool is greater than 0
+      if (hasUsedBuff && shipAbilityData.buffRadius > 0) {
+         List<NetEntity> allyEntities = EntityManager.self.getEntitiesWithVoyageId(voyageGroupId);
+         if (allyEntities.Count > 0) {
             foreach (NetEntity allyEntity in allyEntities) {
                float distanceBetweenAlly = Vector2.Distance(transform.position, allyEntity.transform.position);
                if (allyEntity is PlayerShipEntity && userId != allyEntity.userId) {

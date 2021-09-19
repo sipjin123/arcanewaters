@@ -279,7 +279,7 @@ public class PlayerShipEntity : ShipEntity
          }
 
          // If for some reason this user has insufficient abilities, assign the default abilities until ability count reaches 5
-         if (index < 5) {
+         if (index < CannonPanel.MAX_ABILITY_COUNT) {
             shipAbilities.Clear();
             D.debug("This user {" + shipInfo.userId + "} has invalid abilities! Assigning default abilities");
             for (int i = 0; i < ShipAbilityInfo.STARTING_ABILITIES.Count; i++) {
