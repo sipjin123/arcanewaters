@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using TMPro;
+using UnityEngine.Events;
 
 public class ConfirmScreen : FullScreenSeparatePanel
 {
@@ -26,6 +27,9 @@ public class ConfirmScreen : FullScreenSeparatePanel
    public GameObject descriptionRow;
    public GameObject costRow;
    public GameObject goInputField;
+
+   // The event triggered when hidden
+   public UnityEvent hideEvent = new UnityEvent();
 
    #endregion
 
@@ -88,6 +92,8 @@ public class ConfirmScreen : FullScreenSeparatePanel
    }
 
    public void hide () {
+      hideEvent.Invoke();
+
       this.canvasGroup.alpha = 0f;
       this.canvasGroup.blocksRaycasts = false;
       this.canvasGroup.interactable = false;

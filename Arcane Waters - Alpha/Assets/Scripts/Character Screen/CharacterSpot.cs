@@ -97,6 +97,11 @@ public class CharacterSpot : ClientMonoBehaviour {
       // Turn off buttons until we receive a response from the server
       CharacterScreen.self.canvasGroup.interactable = false;
 
+      PanelManager.self.confirmScreen.hideEvent.RemoveAllListeners();
+      PanelManager.self.confirmScreen.hideEvent.AddListener(() => {
+         CharacterScreen.self.canvasGroup.interactable = true;
+      });
+
       // Deactive "Confirm" Button until player types in the word "Delete" into the inputfield
       PanelManager.self.confirmScreen.enableConfirmInputField("DELETE");
 
