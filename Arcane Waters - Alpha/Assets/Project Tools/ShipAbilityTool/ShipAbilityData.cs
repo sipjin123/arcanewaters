@@ -102,7 +102,8 @@ public class ShipAbilityData
    // If the buff effect has a radius of effectivity
    public float buffRadius = 0;
 
-   // If the buff is radius dependent
+   // If the ability will only take effect within buff radius
+   // Some abilities will take effect when (casted only) within radius while some will only take effect while (staying) in radius
    public bool isBuffRadiusDependent = false;
 
    public static Attack.ImpactMagnitude getImpactType (float normalizedValue) {
