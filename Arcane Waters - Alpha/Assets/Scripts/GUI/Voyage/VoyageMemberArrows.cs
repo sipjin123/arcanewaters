@@ -19,7 +19,13 @@ public class VoyageMemberArrows : ArrowIndicator {
       }
    }
 
+   public void addTargetName (string targetName) {
+      foreach (TextMeshPro textIndicator in textIndicators) {
+         textIndicator.text += "\n" +targetName;
+      }
+   }
+
    #region Private Variables
-      
+
    #endregion
 }

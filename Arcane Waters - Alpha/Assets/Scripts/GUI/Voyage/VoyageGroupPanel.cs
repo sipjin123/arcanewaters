@@ -42,6 +42,9 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    // The maximum number of cells the panel can display, above which only the local player cell will be shown
    public static int MAX_MEMBER_CELLS = 6;
 
+   // Distance between voyage member arrow before colliding
+   public const float ARROW_COLLISION_DISTANCE = .1f;
+
    #endregion
 
    protected override void Awake () {
@@ -77,19 +80,39 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       }
 
       int i = 0;
+      Dictionary<string, VoyageMemberArrows> coordinateValue = new Dictionary<string, VoyageMemberArrows>();
       foreach (VoyageGroupMemberCell memberCell in _memberCells) {
-         var entity = EntityManager.self.getEntity(memberCell.getUserId());
+         NetEntity entity = EntityManager.self.getEntity(memberCell.getUserId());
          if (entity != null) {
             if (entity is PlayerShipEntity) {
                memberCell.updateCellDamage(((PlayerShipEntity) entity).totalDamageDealt);
             }
 
+            VoyageMemberArrows voyageMemArrow = directionalArrowList[i];
             if (i < directionalArrowList.Count) {
-               directionalArrowList[i].setTarget(entity.gameObject);
-               directionalArrowList[i].setTargetName(entity.entityName);
-               if (Global.player != null) {
-                  if (Vector3.Distance(Global.player.transform.position, entity.transform.position) > CLAMP_HIDE_DISTANCE) {
-                     directionalArrowList[i].gameObject.SetActive(true);
+               voyageMemArrow.setTarget(entity.gameObject);
+               voyageMemArrow.setTargetName(entity.entityName);
+               bool isOutsideScreen = Global.player == null ? false : Vector3.Distance(Global.player.transform.position, entity.transform.position) > CLAMP_HIDE_DISTANCE;
+
+               if (voyageMemArrow.isHorizontal) {
+                  string cleanupVal = voyageMemArrow.transform.localPosition.y.ToString("f1");
+                  string topOffset = (float.Parse(cleanupVal) - ARROW_COLLISION_DISTANCE).ToString("f2");
+                  string bottomOffset = (float.Parse(cleanupVal) + ARROW_COLLISION_DISTANCE).ToString("f2");
+
+                  // If there is already an arrow existing within these coordinates, add this new users name to that arrow
+                  if (coordinateValue.ContainsKey(cleanupVal) || coordinateValue.ContainsKey(topOffset) || coordinateValue.ContainsKey(bottomOffset)) {
+                     voyageMemArrow.isActive = false;
+                     voyageMemArrow.gameObject.SetActive(false);
+                     coordinateValue[cleanupVal].addTargetName(entity.entityName);
+                  } else {
+                     voyageMemArrow.isActive = true;
+                     voyageMemArrow.gameObject.SetActive(true);
+                     coordinateValue.Add(cleanupVal, voyageMemArrow);
+                  }
+               } else {
+                  if (isOutsideScreen) {
+                     voyageMemArrow.gameObject.SetActive(true);
+                     voyageMemArrow.isActive = true;
                   }
                }
             }

@@ -25,6 +25,12 @@ public class ArrowIndicator : MonoBehaviour {
    // The screen point in world view
    public Vector3 screenPoint;
 
+   // If the arrow is horrizontal
+   public bool isHorizontal;
+
+   // If this arrow is active
+   public bool isActive = true;
+
    #endregion
 
    protected virtual void Start () {
@@ -34,7 +40,7 @@ public class ArrowIndicator : MonoBehaviour {
    protected virtual void Update () {
       hideArrows();
 
-      if (Global.player == null || _target == null || _mainCamera == null) {
+      if (Global.player == null || _target == null || _mainCamera == null || !isActive) {
          return;
       }
 
@@ -72,12 +78,16 @@ public class ArrowIndicator : MonoBehaviour {
          // Show the correct arrow sprite
          if (_target.transform.position.x > _mainCamera.transform.position.x + screenSize.x / 2) {
             eastArrow.SetActive(true);
+            isHorizontal = true;
          } else if (_target.transform.position.x < _mainCamera.transform.position.x - screenSize.x / 2) {
             westArrow.SetActive(true);
+            isHorizontal = true;
          } else if (_target.transform.position.y > _mainCamera.transform.position.y + screenSize.y / 2) {
             northArrow.SetActive(true);
+            isHorizontal = false;
          } else {
             southArrow.SetActive(true);
+            isHorizontal = false;
          }
       }
    }
