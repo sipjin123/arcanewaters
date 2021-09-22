@@ -494,6 +494,73 @@ public class NetworkedServer : NetworkedBehaviour
       return VoyageManager.self.getNewVoyageId();
    }
 
+   #region Visit System
+
+   [ServerRPC]
+   public void MasterServer_FindUserLocationToVisit (int adminUserId, int userId) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
+
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_FindUserLocationToVisit, adminUserId, userId);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_FindUserLocationToVisit (int adminUserId, int userId) {
+      NetEntity player = EntityManager.self.getEntity(userId);
+
+      if (!CustomMapManager.isUserSpecificAreaKey(player.areaKey)) {
+         InvokeServerRpc(MasterServer_DenyUserVisit, adminUserId);
+      } else {
+         if (player != null) {
+            UserLocationBundle location = new UserLocationBundle();
+            location.userId = player.userId;
+            location.serverPort = ServerNetworkingManager.self.server.networkedPort.Value;
+            location.areaKey = player.areaKey;
+            location.instanceId = player.instanceId;
+            location.localPositionX = player.transform.localPosition.x;
+            location.localPositionY = player.transform.localPosition.y;
+            location.voyageGroupId = player.voyageGroupId; 
+            InvokeServerRpc(MasterServer_ReturnUserLocationToVisit, adminUserId, location);
+         }
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_ReturnUserLocationToVisit (int adminUserId, UserLocationBundle location) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(adminUserId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_ReturnUserLocationToVisit, adminUserId, location);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_ReturnUserLocationToVisit (int adminUserId, UserLocationBundle location) {
+      NetEntity adminEntity = EntityManager.self.getEntity(adminUserId);
+      if (adminEntity != null) {
+         adminEntity.visitUserToLocation(adminUserId, location);
+      } else {
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_DenyUserVisit (int adminUserId) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(adminUserId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_ReturnUserDenyVisit, adminUserId);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_ReturnUserDenyVisit (int adminUserId) {
+      NetEntity adminEntity = EntityManager.self.getEntity(adminUserId);
+      if (adminEntity != null) {
+         adminEntity.denyUserVisit(adminUserId);
+      }
+   }
+
+   #endregion
+
    [ServerRPC]
    public void MasterServer_FindUserLocationForAdminGoTo (int adminUserId, int userId) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
