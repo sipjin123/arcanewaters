@@ -330,44 +330,7 @@ public class MyNetworkManager : NetworkManager
          ShipInfo shipInfo = userObjects.shipInfo;
          GuildInfo guildInfo = userObjects.guildInfo;
          GuildRankInfo guildRankInfo = userObjects.guildRankInfo;
-
          string previousAreaKey = userInfo.areaKey;
-         bool isUserVisiting = false;
-         NetworkedServer netServer = ServerNetworkingManager.self.getServer(Global.MASTER_SERVER_PORT);
-         int currUserId = userObjects.userInfo.userId;
-         if (netServer) {
-            if (netServer.visitRequests.ContainsKey(currUserId)) {
-               int toVisit = netServer.visitRequests[currUserId];
-               NetEntity entityToVisit = EntityManager.self.getEntity(toVisit);
-
-               // Fetch the instance to visit
-               if (entityToVisit != null) {
-                  Instance visitInstance = InstanceManager.self.getInstance(entityToVisit.instanceId);
-                  if (visitInstance != null) {
-                     isUserVisiting = true;
-                     string playerAreaToVisit = visitInstance.areaKey;
-                     previousAreaKey = playerAreaToVisit;
-                     D.adminLog("Instance has been fetched properly {" + visitInstance.id + ":" + previousAreaKey + "}", D.ADMIN_LOG_TYPE.Visit);
-                  } else {
-                     D.adminLog("Instance is missing! Cannot Process Visit", D.ADMIN_LOG_TYPE.Visit);
-                  }
-                  D.adminLog("User {" + currUserId + "} is Visiting {" + toVisit + "}", D.ADMIN_LOG_TYPE.Visit);
-               } else {
-                  D.adminLog("User {" + toVisit + "} is missing an entity!", D.ADMIN_LOG_TYPE.Visit);
-               }
-            } else {
-               AreaManager.self.tryGetCustomMapManager(userInfo.areaKey, out CustomMapManager newCustomMapManager);
-               // Override the area spawn if the user does not own the previous private area
-               if (newCustomMapManager != null && CustomMapManager.getUserId(userInfo.areaKey) != userObjects.userInfo.userId) {
-                  D.adminLog("Player {" + currUserId + "} was Visitng an area: {" + previousAreaKey + "}", D.ADMIN_LOG_TYPE.Visit);
-                  previousAreaKey = Area.STARTING_TOWN;
-               } else {
-                  D.adminLog("User {" + currUserId + "} is not Visiting anyone", D.ADMIN_LOG_TYPE.Visit);
-               }
-            }
-         } else {
-            D.adminLog("Master server is missing! Cannot Process Visit", D.ADMIN_LOG_TYPE.Visit);
-         }
 
          // Get information about owned map
          string baseMapAreaKey = previousAreaKey;
@@ -473,20 +436,7 @@ public class MyNetworkManager : NetworkManager
             player.voyageGroupId = voyageGroupInfo != null ? voyageGroupInfo.groupId : -1;
             player.isGhost = voyageGroupInfo != null ? voyageGroupInfo.isGhost : false;
 
-            int playerVisitedInstanceId = -1;
-            if (isUserVisiting) {
-               int toVisit = netServer.visitRequests[currUserId];
-               Instance playerVisitedInstance = InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId, toVisit);
-               playerVisitedInstanceId = playerVisitedInstance.id;
-               D.adminLog("Player is now processing a Visit to {" + currUserId + "} TargetInstance: {" + playerVisitedInstanceId + "}", D.ADMIN_LOG_TYPE.Visit);
-
-               // Broadcast visit discard request to master server
-               ServerNetworkingManager.self?.sendVisitRequest(currUserId, toVisit, false);
-            } else {
-               D.adminLog("Player {" + player.userId + "} is now processing regular login}", D.ADMIN_LOG_TYPE.Visit);
-               InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId, -1);
-            }
-
+            InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);
 
             player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, userObjects.hat, shipInfo, guildInfo, guildRankInfo);
@@ -499,7 +449,7 @@ public class MyNetworkManager : NetworkManager
             _players[conn.connectionId].netEntity = player;
 
             // Update the observers associated with the instance and the associated players
-            Instance instance = (isUserVisiting && playerVisitedInstanceId > 0) ? InstanceManager.self.getInstance(playerVisitedInstanceId) : InstanceManager.self.getInstance(player.instanceId);
+            Instance instance = InstanceManager.self.getInstance(player.instanceId);
             InstanceManager.self.rebuildInstanceObservers(player, instance);
 
             // If player was in battle, reconnect player to existing battle

@@ -49,7 +49,7 @@ public class NetworkedServer : NetworkedBehaviour
    public NetworkedDictionary<string, int> areaToInstanceCount = new NetworkedDictionary<string, int>(Global.defaultNetworkedVarSettings);
 
    // The visit request data
-   public NetworkedDictionary<int, int> visitRequests = new NetworkedDictionary<int, int>();
+   public NetworkedDictionary<int, int> visitRequestsDict = new NetworkedDictionary<int, int>();
 
    // The number of players in each area (estimated by the master server)
    public Dictionary<string, int> playerCountPerArea = new Dictionary<string, int>();
@@ -93,21 +93,7 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    public void registerVisitRequest (int visitor, int toVisit, bool registerRequest) {
-      if (registerRequest) {
-         if (visitRequests.ContainsKey(visitor)) {
-            D.debug("Cannot register this visitor {" + visitor + "}, this user is currently visiting {" + visitRequests[visitor] + "}");
-         } else {
-            D.debug("Add {" + visitor + "} to visit registry, visiting: {" + toVisit + "}");
-            visitRequests.Add(visitor, toVisit);
-         }
-      } else {
-         if (visitRequests.ContainsKey(visitor)) {
-            D.debug("Remove {" + visitor + "} from visit registry");
-            visitRequests.Remove(visitor);
-         } else {
-            D.debug("Cant remove {" + visitor + "} does not exist");
-         }
-      }
+
    }
 
    private void updateAssignedUsers () {

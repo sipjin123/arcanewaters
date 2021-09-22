@@ -21,17 +21,8 @@ public class InstanceManager : MonoBehaviour {
       self = this;
    }
 
-   public Instance addPlayerToInstance (NetEntity player, string areaKey, int voyageId, int userToVisit = -1) {
+   public Instance addPlayerToInstance (NetEntity player, string areaKey, int voyageId) {
       Instance instance = null;
-
-      if (userToVisit > 0) {
-         instance = getVisitablePrivateOpenInstance(userToVisit);
-         if (instance != null) {
-            D.adminLog("Player {" + player.userId + "} is entering a private. Area: {" + areaKey + "} ID: {" + instance.id + "} InstanceOwner:{" + instance.privateAreaUserId + "}", D.ADMIN_LOG_TYPE.Visit);
-         } else {
-            D.adminLog("Cant find instance for visiting user {" + userToVisit + "}", D.ADMIN_LOG_TYPE.Visit);
-         }
-      }
 
       // If the player is warping to a voyage instance, search for it
       if (voyageId != -1) {
@@ -97,25 +88,7 @@ public class InstanceManager : MonoBehaviour {
 
       // If there isn't one, we'll have to make it
       if (instance == null) {
-         AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager newCustomMapManager);
-         if (newCustomMapManager != null && CustomMapManager.getUserId(areaKey) != player.userId) {
-            D.adminLog("This is a private area!: " + areaKey + " for user: " + CustomMapManager.getUserId(areaKey), D.ADMIN_LOG_TYPE.InstanceProcess);
-            instance = getOpenInstance(Area.STARTING_TOWN, player.isSinglePlayer);
-            if (instance == null) {
-               D.adminLog("Generating Town for user: " + CustomMapManager.getUserId(areaKey), D.ADMIN_LOG_TYPE.InstanceProcess);
-               instance = createNewInstance(Area.STARTING_TOWN, player.isSinglePlayer);
-            } else {
-               D.adminLog("Fetching Town for user: " + CustomMapManager.getUserId(areaKey), D.ADMIN_LOG_TYPE.InstanceProcess);
-            }
-            areaKey = Area.STARTING_TOWN;
-         } else {
-            instance = createNewInstance(areaKey, player.isSinglePlayer);
-            D.adminLog("This is NOT a private area!: " + areaKey, D.ADMIN_LOG_TYPE.InstanceProcess);
-         }
-
-         if (instance != null) {
-            D.adminLog("Created New Instance for Default: " + areaKey, D.ADMIN_LOG_TYPE.InstanceProcess);
-         }
+         instance = createNewInstance(areaKey, player.isSinglePlayer);
       }
 
       // Set the player's instance ID
@@ -130,11 +103,7 @@ public class InstanceManager : MonoBehaviour {
          if (farmManager != null) {
             int userId = CustomMapManager.isUserSpecificAreaKey(areaKey) ? CustomMapManager.getUserId(areaKey) : player.userId;
             if (userId == player.userId) {
-               D.adminLog("User {" + userId + "} is entering farm", D.ADMIN_LOG_TYPE.Visit);
-               instance.privateAreaUserId = userId;
                player.cropManager.loadCrops();
-            } else {
-               D.adminLog("User {" + userId + "} compared to {" + player.userId + "}", D.ADMIN_LOG_TYPE.Visit);
             }
          }
       } else {
@@ -144,11 +113,6 @@ public class InstanceManager : MonoBehaviour {
          }
       }
 
-      D.adminLog("Player is now being added to an instance. " +
-         "ID:{" + instance.id + "} " +
-         "Area:{" + instance.areaKey + "} " +
-         "Count:{" + instance.getPlayerCount() + "} " +
-         "Owner:{" + instance.privateAreaUserId, D.ADMIN_LOG_TYPE.Visit);
       return instance;
    }
 
