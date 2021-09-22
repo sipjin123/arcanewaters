@@ -1976,9 +1976,38 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_RequestVisit (int targetUserId) {
-      ServerNetworkingManager.self?.sendVisitRequest(userId, targetUserId, true);
-      spawnInNewMap(Area.STARTING_TOWN);
+   public void Cmd_PlayerVisit (string targetPlayerName) {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Try to retrieve the target info
+         UserInfo targetUserInfo = DB_Main.getUserInfo(targetPlayerName);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (targetUserInfo == null) {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, this, "The player " + targetPlayerName + " doesn't exists!");
+               return;
+            }
+
+            if (!ServerNetworkingManager.self.isUserOnline(targetUserInfo.userId)) {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, this, "The player " + targetPlayerName + " is offline!");
+               return;
+            }
+
+            if (targetUserInfo.userId == this.userId) {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, this, "You cannot warp to yourself!");
+               return;
+            }
+
+            // Redirect to the master server to find the location of the target user
+            ServerNetworkingManager.self.findUserLocationToVisit(this.userId, targetUserInfo.userId);
+         });
+      });
+   }
+
+   [Server]
+   public void denyUserVisit (int userId) {
+      Target_ReceiveNormalChat("You are not allowed to visit this user! ", ChatInfo.Type.System);
    }
 
    public Vector3 getProjectedPosition (float afterSeconds) {

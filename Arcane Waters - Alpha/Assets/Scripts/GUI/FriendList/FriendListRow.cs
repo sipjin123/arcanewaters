@@ -67,7 +67,7 @@ public class FriendListRow : MonoBehaviour
    public void visitUser () {
       if (isOnline) {
          FriendListPanel.self.close();
-         Global.player.Cmd_RequestVisit(_friendUserId);
+         Global.player.Cmd_PlayerVisit(friendName.text);
       }
    }
 
