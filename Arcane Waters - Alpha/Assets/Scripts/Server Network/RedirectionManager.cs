@@ -27,7 +27,7 @@ public class RedirectionManager : GenericGameManager
    }
 
    [Server]
-   public int redirectUserToBestServer (int userId, string userName, int voyageId, bool isSinglePlayer, string destinationAreaKey, int currentServerPort, string currentAddress, string currentAreaKey) {
+   public int redirectUserToBestServer (int userId, string userName, int voyageId, bool isSinglePlayer, string destinationAreaKey, int currentServerPort, string currentAddress, string currentAreaKey, int targetInstanceId = -1, int targetServerPort = -1) {
       // Only the master server has reliable info to perform this operation
       if (!ServerNetworkingManager.self.server.isMasterServer()) {
          D.error($"Server {ServerNetworkingManager.self.server.networkedPort.Value} is trying to determine the best server to redirect a user. Only the master server can perform this operation.");
@@ -35,6 +35,12 @@ public class RedirectionManager : GenericGameManager
       }
 
       NetworkedServer currentServer = ServerNetworkingManager.self.getServer(currentServerPort);
+      
+      // If a port was specified during redirection, get that server
+      if (targetServerPort > 0) {
+         currentServer = ServerNetworkingManager.self.getServer(targetServerPort);
+      }
+
       if (currentServer == null) {
          D.error($"Could not find the server {currentServerPort}");
          return Global.MASTER_SERVER_PORT;
@@ -53,6 +59,7 @@ public class RedirectionManager : GenericGameManager
       assignedUserInfo.lastOnlineTime = DateTime.UtcNow.ToBinary();
       assignedUserInfo.areaKey = destinationAreaKey;
       assignedUserInfo.isSinglePlayer = isSinglePlayer;
+      assignedUserInfo.instanceId = targetInstanceId;
       bestServer.assignedUserIds[userId] = assignedUserInfo;
 
       // Players in single player mode don't have an impact on the open areas
