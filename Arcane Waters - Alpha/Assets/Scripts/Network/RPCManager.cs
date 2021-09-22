@@ -5221,7 +5221,7 @@ public class RPCManager : NetworkBehaviour
                });
             }
          } else {
-            Target_OnWarpFailed("League voyage and Lobby Area not Synced");
+            Target_OnWarpFailed("Displaying current voyage panel instead of warping immediately");
 
             // Display a panel with the current voyage map details
             Target_ReceiveCurrentVoyageInstance(_player.connectionToClient, voyage);
@@ -5325,8 +5325,31 @@ public class RPCManager : NetworkBehaviour
          }
       }
 
-      // Add the user to the group
-      VoyageGroupManager.self.addUserToGroup(destinationGroup, _player.userId, _player.entityName);
+      // Check if the group is linked to a league that has already started
+      if (destinationGroup.voyageId > 0 && VoyageManager.self.tryGetVoyage(destinationGroup.voyageId, out Voyage destinationVoyage) && destinationVoyage.isLeague && destinationVoyage.leagueIndex > 0) {
+         int aliveNPCEnemyCount = destinationVoyage.aliveNPCEnemyCount;
+         int playerCount = destinationVoyage.playerCount;
+
+         // Find the treasure site (if any) and add the npc enemies and players it contains
+         if (VoyageManager.self.tryGetVoyage(destinationGroup.voyageId, out Voyage treasureSite, true)) {
+            aliveNPCEnemyCount += treasureSite.aliveNPCEnemyCount;
+            playerCount += treasureSite.playerCount;
+         }
+         
+         if (aliveNPCEnemyCount == 0) {
+            // When the current instance has been cleared of enemies, more members can join
+            VoyageGroupManager.self.addUserToGroup(destinationGroup, _player.userId, _player.entityName);
+         } else if (aliveNPCEnemyCount != 0 && playerCount <= 0) {
+            // When the current instance has enemies left, but no players, we can recreate it and allow more members to join
+            VoyageManager.self.recreateLeagueInstanceAndAddUserToGroup(destinationGroup.groupId, _player.userId, _player.entityName);
+         } else {
+            sendError("Cannot join the group while group members are close to danger!");
+            return;
+         }
+      } else {
+         // Add the user to the group
+         VoyageGroupManager.self.addUserToGroup(destinationGroup, _player.userId, _player.entityName);
+      }
    }
 
    [Command]

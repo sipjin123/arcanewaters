@@ -451,7 +451,6 @@ public class CropManager : NetworkBehaviour {
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Store the result
-            _crops = cropList;
 
             // Checks achievements to determine if the plant will grow quickly for tutorial purposes
             bool quickGrow = false;
@@ -467,6 +466,7 @@ public class CropManager : NetworkBehaviour {
 
             // Modifies the water interval for crops
             cropList = getUpdatedCropArrayInfo(quickGrow, cropList);
+            _crops = cropList;
 
             // Send it to the player
             this.Target_ReceiveCropArray(_player.connectionToClient, cropList.ToArray(), quickGrow);

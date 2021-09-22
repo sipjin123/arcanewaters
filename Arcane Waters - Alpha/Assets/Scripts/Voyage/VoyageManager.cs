@@ -425,11 +425,141 @@ public class VoyageManager : GenericGameManager {
 
    [Server]
    public void createLeagueInstanceAndWarpPlayer (NetEntity player, int leagueIndex, Biome.Type biome, int randomSeed = -1, string areaKey = "") {
-      StartCoroutine(CO_CreateLeagueInstanceAndWarpPlayer(player, leagueIndex, biome, randomSeed, areaKey));
+      // Determine the league difficulty and hosting server
+      int difficulty = 1;
+      int serverPort = ServerNetworkingManager.self.server.networkedPort.Value;
+      if (player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
+         // Keep all instances of the same league in the same server
+         if (voyageGroup.voyageId > 0 && ServerNetworkingManager.self.tryGetServerHostingVoyage(voyageGroup.voyageId, out NetworkedServer hostingServer)) {
+            serverPort = hostingServer.networkedPort.Value;
+         }
+
+         difficulty = voyageGroup.members.Count;
+      } else {
+         NetworkedServer bestServer = ServerNetworkingManager.self.getRandomServerWithLeastAssignedPlayers();
+         if (bestServer != null) {
+            serverPort = bestServer.networkedPort.Value;
+         }
+      }
+
+      StartCoroutine(CO_CreateLeagueInstance(leagueIndex, biome, difficulty, serverPort, () => player.rpc.Target_OnWarpFailed("No league maps available"), (voyageId) => warpPlayerToLeagueInstance(player, voyageId), randomSeed, areaKey));
    }
 
    [Server]
-   private IEnumerator CO_CreateLeagueInstanceAndWarpPlayer (NetEntity player, int leagueIndex, Biome.Type biome, int randomSeed = -1, string areaKey = "") {      
+   private void warpPlayerToLeagueInstance (NetEntity player, Voyage voyage) {
+      if (player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
+         // Link the group to the voyage instance
+         voyageGroup.voyageId = voyage.voyageId;
+         VoyageGroupManager.self.updateGroup(voyageGroup);
+
+         // At the creation of the league lobby, clear powerups of all users
+         if (voyage.leagueIndex == 0) {
+            foreach (int memberUserId in voyageGroup.members) {
+               NetEntity memberEntity = EntityManager.self.getEntity(memberUserId);
+               if (memberEntity != null) {
+                  PowerupManager.self.clearPowerupsForUser(memberUserId);
+               }
+            }
+         }
+
+         if (voyage.leagueIndex == 1) {
+            // At the creation of the league, warp all the group members to the instance together
+            foreach (int memberUserId in voyageGroup.members) {
+               NetEntity memberEntity = EntityManager.self.getEntity(memberUserId);
+               if (memberEntity != null) {
+                  memberEntity.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
+               } 
+            }
+         } else {
+            player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
+         }
+      } else {
+         // Create a new group for the player and warp him
+         VoyageGroupManager.self.createGroup(player.userId, voyage.voyageId, true);
+         PowerupManager.self.clearPowerupsForUser(player.userId);
+         player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
+      }
+   }
+
+   [Server]
+   public void recreateLeagueInstanceAndAddUserToGroup (int groupId, int userId, string userName) {
+      if (!VoyageGroupManager.self.tryGetGroupById(groupId, out VoyageGroupInfo voyageGroup)) {
+         D.error("Error when recreating a league instance: could not find the group");
+         return;
+      }
+
+      // Redirect the action to the server hosting the instance
+      if (ServerNetworkingManager.self.tryGetServerHostingVoyage(voyageGroup.voyageId, out NetworkedServer hostingServer)) {
+         if (hostingServer != ServerNetworkingManager.self.server) {
+            ServerNetworkingManager.self.recreateLeagueInstanceAndAddUserToGroup(voyageGroup.voyageId, groupId, userId, userName);
+            return;
+         }
+      } else {
+         D.error("Error when recreating a league instance: could not find the server hosting the voyage");
+         return;
+      }
+
+      if (!tryGetVoyage(voyageGroup.voyageId, out Voyage oldVoyage)) {
+         D.error("Error when recreating a league instance: could not find the voyage to recreate");
+         return;
+      }
+
+      if (!oldVoyage.isLeague) {
+         D.error("Error when recreating a league instance: the instance is not a league");
+         return;
+      }
+
+      Instance oldInstance = InstanceManager.self.getInstance(oldVoyage.instanceId);
+      if (oldInstance == null) {
+         D.error("Error when recreating a league instance: could not find the instance to recreate");
+         return;
+      }
+
+      // Count the number of players in the treasure sites, if any
+      int playerInTreasureSiteCount = 0;
+      foreach (TreasureSite site in oldInstance.treasureSites) {
+         Instance treasureSiteInstance = InstanceManager.self.getInstance(site.destinationInstanceId);
+         if (treasureSiteInstance != null) {
+            playerInTreasureSiteCount += treasureSiteInstance.getPlayerCount();
+         }
+      }
+
+      // Check that the instance and treasure sites have no players in it
+      if (oldInstance.getPlayerCount() > 0 || playerInTreasureSiteCount > 0) {
+         ServerNetworkingManager.self.sendConfirmationMessage(ConfirmMessage.Type.General, userId, "Cannot join the group while group members are close to danger!");
+         return;
+      }
+      
+      // Create the new league instance
+      StartCoroutine(CO_CreateLeagueInstance(oldVoyage.leagueIndex, oldVoyage.biome, voyageGroup.members.Count + 1, ServerNetworkingManager.self.server.networkedPort.Value, null, (newVoyage) => onRecreateLeagueInstanceSuccess(newVoyage, oldInstance, groupId, userId, userName), oldVoyage.leagueRandomSeed, oldVoyage.areaKey));
+   }
+
+   [Server]
+   private void onRecreateLeagueInstanceSuccess (Voyage newVoyage, Instance oldInstance, int groupId, int userId, string userName) {
+      if (VoyageGroupManager.self.tryGetGroupById(groupId, out VoyageGroupInfo voyageGroup)) {
+         // Relink the group to the new instance
+         voyageGroup.voyageId = newVoyage.voyageId;
+
+         // Add the new member to the group
+         VoyageGroupManager.self.addUserToGroup(voyageGroup, userId, userName);
+      }
+
+      // Remove treasure sites (if any)
+      foreach (TreasureSite site in oldInstance.treasureSites) {
+         Instance treasureSiteInstance = InstanceManager.self.getInstance(site.destinationInstanceId);
+         if (treasureSiteInstance != null) {
+            InstanceManager.self.removeEmptyInstance(treasureSiteInstance);
+         }
+      }
+
+      // Remove the old instance
+      if (oldInstance != null) {
+         InstanceManager.self.removeEmptyInstance(oldInstance);
+      }
+   }
+   
+   [Server]
+   private IEnumerator CO_CreateLeagueInstance (int leagueIndex, Biome.Type biome, int difficulty, int serverPort, Action onFailureAction, Action<Voyage> onSuccessAction, int randomSeed = -1, string areaKey = "") {      
       // Get a new voyage id from the master server
       RpcResponse<int> response = ServerNetworkingManager.self.getNewVoyageId();
       while (!response.IsDone) {
@@ -464,7 +594,7 @@ public class VoyageManager : GenericGameManager {
 
             if (mapList.Count == 0) {
                D.error("No league maps available!");
-               player.rpc.Target_OnWarpFailed("No league maps available");
+               onFailureAction?.Invoke();
                yield break;
             }
 
@@ -478,60 +608,23 @@ public class VoyageManager : GenericGameManager {
          }
       }
 
-      int difficulty;
-      if (!player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
-         // Create a new group for the player
-         VoyageGroupManager.self.createGroup(player.userId, voyageId, true);
-
-         difficulty = 1;
-      } else {
-         // Link the group to the voyage instance
-         voyageGroup.voyageId = voyageId;
-         VoyageGroupManager.self.updateGroup(voyageGroup);
-
-         difficulty = voyageGroup.members.Count;
-      }
-
       // Launch the creation of the new voyage instance
       if (leagueIndex == 0) {
          // The first instance is created in the best available server
          requestVoyageInstanceCreation(voyageId, areaKey, false, true, leagueIndex, randomSeed, biome, difficulty);
       } else {
          // Keep all instances of the same league in the same server
-         int serverPort = ServerNetworkingManager.self.server.networkedPort.Value;
          ServerNetworkingManager.self.createVoyageInstanceInServer(serverPort, voyageId, areaKey, false, true, leagueIndex, randomSeed, biome, difficulty);
       }
 
       // Wait until the voyage instance has been created
-      while (!tryGetVoyage(voyageId, out Voyage voyage)) {
+      Voyage voyage = null;
+      while (!tryGetVoyage(voyageId, out voyage)) {
          yield return null;
       }
 
-      // At the creation of the league lobby, clear powerups of all users
-      if (leagueIndex == 0) {
-         if (voyageGroup != null) {
-            foreach (int memberUserId in voyageGroup.members) {
-               NetEntity memberEntity = EntityManager.self.getEntity(memberUserId);
-               if (memberEntity != null) {
-                  PowerupManager.self.clearPowerupsForUser(memberUserId);
-               }
-            }
-         } else {
-            PowerupManager.self.clearPowerupsForUser(player.userId);
-         }
-      }
-
-      if (leagueIndex == 1 && voyageGroup != null) {
-         // At the creation of the league, warp all the group members to the instance together
-         foreach (int memberUserId in voyageGroup.members) {
-            NetEntity memberEntity = EntityManager.self.getEntity(memberUserId);
-            if (memberEntity != null) {
-               memberEntity.spawnInNewMap(voyageId, areaKey, Direction.South);
-            }
-         }
-      } else {
-         player.spawnInNewMap(voyageId, areaKey, Direction.South);
-      }
+      // Execute the custom action
+      onSuccessAction?.Invoke(voyage);
    }
 
    public void closeVoyageCompleteNotificationWhenLeavingArea () {

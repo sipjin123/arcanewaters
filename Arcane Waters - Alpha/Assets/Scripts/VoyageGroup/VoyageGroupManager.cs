@@ -379,13 +379,36 @@ public class VoyageGroupManager : MonoBehaviour
          // If the group has joined a voyage, we enforce the limit set by its parameters
          if (VoyageManager.self.tryGetVoyage(voyageGroup.voyageId, out Voyage voyage)) {
             if (voyage.isLeague) {
-               // Once a league is started (after the lobby), the group cannot accept more players
-               if (voyage.leagueIndex > 0 || voyageGroup.members.Count >= Voyage.getMaxGroupSize(Voyage.getMaxDifficulty())) {
-                  errorMessage = "You cannot invite more members after starting a league!";
+               if (voyageGroup.members.Count >= Voyage.getMaxGroupSize(Voyage.getMaxDifficulty())) {
                   return true;
-               } else {
-                  return false;
                }
+
+               // Check if the league has started
+               if (voyage.leagueIndex > 0) {
+                  int aliveNPCEnemyCount = voyage.aliveNPCEnemyCount;
+                  int playerCount = voyage.playerCount;
+
+                  // Find the treasure site (if any) and add the npc enemies and players it contains
+                  if (VoyageManager.self.tryGetVoyage(voyage.voyageId, out Voyage treasureSite, true)) {
+                     aliveNPCEnemyCount += treasureSite.aliveNPCEnemyCount;
+                     playerCount += treasureSite.playerCount;
+                  }
+
+                  // More members can be invited if the league instance is cleared of enemies
+                  if (aliveNPCEnemyCount == 0) {
+                     return false;
+                  }
+
+                  // More members can be invited if the group members are not in the instance
+                  if (playerCount <= 0) {
+                     return false;
+                  }                
+
+                  errorMessage = "You cannot invite more players while group members are close to danger!";
+                  return true;
+               }
+
+               return false;
             } else if (!voyage.isPvP && voyageGroup.members.Count >= Voyage.getMaxGroupSize(voyage.difficulty)) {
                return true;
             } else if (voyage.isPvP && voyageGroup.members.Count >= Voyage.MAX_PLAYERS_PER_GROUP_PVP) {
@@ -425,6 +448,23 @@ public class VoyageGroupManager : MonoBehaviour
       
       return false;
    }
+
+   [Server]
+   public bool tryGetGroupByVoyageId (int voyageId, out VoyageGroupInfo voyageGroup) {
+      voyageGroup = default;
+
+      foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
+         foreach (VoyageGroupInfo vGroup in server.voyageGroups.Values) {
+            if (vGroup.voyageId == voyageId) {
+               voyageGroup = vGroup;
+               return true;
+            }
+         }
+      }
+      
+      return false;
+   }
+
 
    [Server]
    public bool isGroupInvitationSpam (int inviterUserId, string inviteeName) {

@@ -87,8 +87,7 @@ public class RedirectionManager : GenericGameManager
       // If the player is in a voyage group and warping to a voyage area or treasure site, get the unique server hosting it
       if (voyageId > 0 &&
          (VoyageManager.isAnyLeagueArea(destinationAreaKey) || VoyageManager.isPvpArenaArea(destinationAreaKey) || VoyageManager.isTreasureSiteArea(destinationAreaKey))) {
-         NetworkedServer server = ServerNetworkingManager.self.getServerHostingVoyage(voyageId);
-         if (server == null) {
+         if (!ServerNetworkingManager.self.tryGetServerHostingVoyage(voyageId, out NetworkedServer server)) {
             D.error("Couldn't find the server hosting the voyage " + voyageId);
          }
          return server;

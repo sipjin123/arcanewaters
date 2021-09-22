@@ -24438,8 +24438,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5458950797341189763}
-  - component: {fileID: 2544488381621621543}
   - component: {fileID: 8553150314754777727}
+  - component: {fileID: 2544488381621621543}
   m_Layer: 9
   m_Name: LevelUpEffect
   m_TagString: Untagged
@@ -24461,6 +24461,29 @@ Transform:
   m_Father: {fileID: 4953967745697658}
   m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8553150314754777727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8683828607774954370}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6fba87956c8fc142a907b094230802e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectsToHide:
+  - {fileID: 2020491563635176270}
+  - {fileID: 1960735221605558}
+  onEffectEnded:
+    m_PersistentCalls:
+      m_Calls: []
+  secondsPerFrame: 0.1
+  startIndex: 5
+  holdTime: 5
+  shouldFadeOut: 0
+  fadeDuration: 1.5
 --- !u!212 &2544488381621621543
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -24479,7 +24502,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7abece27937da484aa097922a5a59713, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -24512,26 +24535,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &8553150314754777727
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8683828607774954370}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6fba87956c8fc142a907b094230802e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectsToHide:
-  - {fileID: 2020491563635176270}
-  - {fileID: 1960735221605558}
-  onEffectEnded:
-    m_PersistentCalls:
-      m_Calls: []
-  timePerFrame: 0.14
-  startIndex: 5
 --- !u!1 &8895359651129226206
 GameObject:
   m_ObjectHideFlags: 0

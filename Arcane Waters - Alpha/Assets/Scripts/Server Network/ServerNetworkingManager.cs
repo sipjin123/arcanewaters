@@ -152,15 +152,18 @@ public class ServerNetworkingManager : MonoBehaviour
       return bestServers;
    }
 
-   public NetworkedServer getServerHostingVoyage (int voyageId) {
+   public bool tryGetServerHostingVoyage (int voyageId, out NetworkedServer hostingServer) {
+      hostingServer = null;
+
       // Search the voyage in all the servers we know about
       foreach (NetworkedServer server in servers) {
          if (server.voyages.TryGetValue(voyageId, out Voyage voyage)) {
-            return server;
+            hostingServer = server;
+            return true;
          }
       }
 
-      return null;
+      return false;
    }
 
    public bool isUserOnline (int userId) {
@@ -334,6 +337,10 @@ public class ServerNetworkingManager : MonoBehaviour
 
    public void liftPenaltyInPlayerEntityByAccount (int accId, PenaltyType penaltyType) {
       server.InvokeServerRpc(server.MasterServer_LiftPenaltyInPlayerEntityByAccount, accId, penaltyType);
+   }
+
+   public void recreateLeagueInstanceAndAddUserToGroup (int voyageId, int groupId, int userId, string userName) {
+      server.InvokeServerRpc(server.MasterServer_RecreateLeagueInstanceAndAddUserToGroup, voyageId, groupId, userId, userName);
    }
 
    #region Private Variables

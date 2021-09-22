@@ -259,6 +259,7 @@ public class NetworkedServer : NetworkedBehaviour
    [ServerRPC]
    public void MasterServer_ProcessVisitRequest (int visitor, int toVisit, bool registerRequest) {
       NetworkedServer netServer = ServerNetworkingManager.self.getServer(Global.MASTER_SERVER_PORT);
+      D.adminLog("Master server has received a request: " + visitor, D.ADMIN_LOG_TYPE.Visit);
       netServer.registerVisitRequest(visitor, toVisit, registerRequest);
    }
 
@@ -549,8 +550,7 @@ public class NetworkedServer : NetworkedBehaviour
 
    [ServerRPC]
    public void MasterServer_GetUsersInInstanceForAdminVoyagePanel (int voyageId, int instanceId, int callerUserId) {
-      NetworkedServer targetServer = ServerNetworkingManager.self.getServerHostingVoyage(voyageId);
-      if (targetServer != null) {
+      if (ServerNetworkingManager.self.tryGetServerHostingVoyage(voyageId, out NetworkedServer targetServer)) {
          targetServer.InvokeClientRpcOnOwner(Server_GetUsersInInstanceForAdminVoyagePanel, voyageId, instanceId, callerUserId);
       }
    }
@@ -587,8 +587,7 @@ public class NetworkedServer : NetworkedBehaviour
 
    [ServerRPC]
    public void MasterServer_RegisterUserInTreasureSite (int userId, int voyageId, int instanceId) {
-      NetworkedServer voyageServer = ServerNetworkingManager.self.getServerHostingVoyage(voyageId);
-      if (voyageServer != null) {
+      if (ServerNetworkingManager.self.tryGetServerHostingVoyage(voyageId, out NetworkedServer voyageServer)) {
          voyageServer.InvokeClientRpcOnOwner(Server_RegisterUserInTreasureSite, userId, voyageId, instanceId);
       }
    }
@@ -600,8 +599,7 @@ public class NetworkedServer : NetworkedBehaviour
 
    [ServerRPC]
    public void MasterServer_JoinPvpGame (int voyageId, int userId, string userName, PvpTeamType team) {
-      NetworkedServer targetServer = ServerNetworkingManager.self.getServerHostingVoyage(voyageId);
-      if (targetServer != null) {
+      if (ServerNetworkingManager.self.tryGetServerHostingVoyage(voyageId, out NetworkedServer targetServer)) {
          targetServer.InvokeClientRpcOnOwner(Server_JoinPvpGame, voyageId, userId, userName, team);
       }
    }
@@ -760,6 +758,18 @@ public class NetworkedServer : NetworkedBehaviour
       if (targetEntity != null) {
          targetEntity.admin.liftPenaltyInPlayerEntity(targetEntity, penaltyType);
       }
+   }
+
+   [ServerRPC]
+   public void MasterServer_RecreateLeagueInstanceAndAddUserToGroup (int voyageId, int groupId, int userId, string userName) {
+      if (ServerNetworkingManager.self.tryGetServerHostingVoyage(voyageId, out NetworkedServer targetServer)) {
+         targetServer.InvokeClientRpcOnOwner(Server_RecreateLeagueInstanceAndAddUserToGroup, groupId, userId, userName);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_RecreateLeagueInstanceAndAddUserToGroup (int groupId, int userId, string userName) {
+      VoyageManager.self.recreateLeagueInstanceAndAddUserToGroup(groupId, userId, userName);
    }
 
    #region Private Variables
