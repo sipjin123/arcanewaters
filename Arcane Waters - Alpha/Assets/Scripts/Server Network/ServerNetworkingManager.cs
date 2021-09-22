@@ -311,8 +311,8 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_Log, this.server.networkedPort.Value, message);
    }
 
-   public RpcResponse<int> redirectUserToBestServer (int userId, string userName, int voyageId, bool isSinglePlayer, string destinationAreaKey, string currentAddress, string currentAreaKey) {
-      return server.InvokeServerRpc(server.MasterServer_RedirectUserToBestServer, userId, userName, voyageId, isSinglePlayer, destinationAreaKey, server.networkedPort.Value, currentAddress, currentAreaKey);
+   public RpcResponse<int> redirectUserToBestServer (int userId, string userName, int voyageId, bool isSinglePlayer, string destinationAreaKey, string currentAddress, string currentAreaKey, int targetInstanceId, int targetServerPort) {
+      return server.InvokeServerRpc(server.MasterServer_RedirectUserToBestServer, userId, userName, voyageId, isSinglePlayer, destinationAreaKey, server.networkedPort.Value, currentAddress, currentAreaKey, targetInstanceId, targetServerPort);
    }
 
    public void onUserConnectsToServer (int userId) {

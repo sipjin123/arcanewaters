@@ -1902,7 +1902,7 @@ public class NetEntity : NetworkBehaviour
             InstanceManager.self.removeEntityFromInstance(this);
 
             // Redirect the player to the best server
-            MyNetworkManager.self.StartCoroutine(MyNetworkManager.self.CO_RedirectUser(this.connectionToClient, accountId, userId, entityName, voyageId, isSinglePlayer, newArea, areaKey, entityObject));
+            MyNetworkManager.self.StartCoroutine(MyNetworkManager.self.CO_RedirectUser(this.connectionToClient, accountId, userId, entityName, voyageId, isSinglePlayer, newArea, areaKey, entityObject, instanceId, serverPort));
          });
       });
    }
