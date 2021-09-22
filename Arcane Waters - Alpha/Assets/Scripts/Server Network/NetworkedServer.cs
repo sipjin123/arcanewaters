@@ -48,9 +48,6 @@ public class NetworkedServer : NetworkedBehaviour
    // The number of instances in each area that this server hosts
    public NetworkedDictionary<string, int> areaToInstanceCount = new NetworkedDictionary<string, int>(Global.defaultNetworkedVarSettings);
 
-   // The visit request data
-   public NetworkedDictionary<int, int> visitRequestsDict = new NetworkedDictionary<int, int>();
-
    // The number of players in each area (estimated by the master server)
    public Dictionary<string, int> playerCountPerArea = new Dictionary<string, int>();
 
@@ -90,10 +87,6 @@ public class NetworkedServer : NetworkedBehaviour
             }
          }
       }
-   }
-
-   public void registerVisitRequest (int visitor, int toVisit, bool registerRequest) {
-
    }
 
    private void updateAssignedUsers () {
