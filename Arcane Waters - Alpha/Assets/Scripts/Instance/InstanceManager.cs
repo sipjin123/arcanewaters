@@ -21,8 +21,13 @@ public class InstanceManager : MonoBehaviour {
       self = this;
    }
 
-   public Instance addPlayerToInstance (NetEntity player, string areaKey, int voyageId) {
+   public Instance addPlayerToInstance (NetEntity player, string areaKey, int voyageId, int instanceToVisit = -1) {
       Instance instance = null;
+
+      // Fetch the instance declared by server if there is any
+      if (instanceToVisit > 0 && getInstance(instanceToVisit) != null) {
+         instance = getInstance(instanceToVisit);
+      }
 
       // If the player is warping to a voyage instance, search for it
       if (voyageId != -1) {
