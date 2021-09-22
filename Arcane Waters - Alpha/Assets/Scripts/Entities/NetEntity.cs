@@ -1830,11 +1830,26 @@ public class NetEntity : NetworkBehaviour
          }
       }
 
-      spawnInNewMap(newArea, targetLocalPos, newFacingDirection);
+      spawnInNewMap(newArea, targetLocalPos, newFacingDirection, -1, -1);
    }
 
    [Server]
-   public void spawnInNewMap (string newArea, Vector2 newLocalPosition, Direction newFacingDirection) {
+   public void visitUserToLocation (int requesterUserId, UserLocationBundle targetLocation) {
+      // If our player is in the same instance than the target, simply teleport
+      if (ServerNetworkingManager.self.server.networkedPort.Value == targetLocation.serverPort && areaKey == targetLocation.areaKey && instanceId == targetLocation.instanceId) {
+         moveToPosition(targetLocation.getLocalPosition());
+         return;
+      }
+
+      if (CustomMapManager.isUserSpecificAreaKey(targetLocation.areaKey) && targetLocation.instanceId > 0 && targetLocation.serverPort > 0) {
+         spawnInNewMap(targetLocation.areaKey, targetLocation.getLocalPosition(), Direction.South, targetLocation.instanceId, targetLocation.serverPort);
+      } else {
+         spawnInNewMap(targetLocation.areaKey, targetLocation.getLocalPosition(), Direction.South, -1, -1);
+      }
+   }
+
+   [Server]
+   public void spawnInNewMap (string newArea, Vector2 newLocalPosition, Direction newFacingDirection, int instanceId, int serverPort) {
       // Only admins can warp to voyage areas without indicating the voyageId
       if (isAdmin() && (VoyageManager.isAnyLeagueArea(newArea) || VoyageManager.isTreasureSiteArea(newArea))) {
          VoyageManager.self.forceAdminWarpToVoyageAreas(this, newArea);
@@ -1842,7 +1857,7 @@ public class NetEntity : NetworkBehaviour
       }
 
       // Now that we know the target server, redirect them there
-      findBestServerAndWarp(newArea, newLocalPosition, -1, newFacingDirection);
+      findBestServerAndWarp(newArea, newLocalPosition, -1, newFacingDirection, instanceId, serverPort);
    }
 
    [Server]
@@ -1857,11 +1872,11 @@ public class NetEntity : NetworkBehaviour
             ? SpawnManager.self.getDefaultLocalPosition(newArea)
             : SpawnManager.self.getLocalPosition(newArea, spawn);
 
-      findBestServerAndWarp(newArea, spawnLocalPosition, voyageId, newFacingDirection);
+      findBestServerAndWarp(newArea, spawnLocalPosition, voyageId, newFacingDirection, -1, -1);
    }
 
    [Server]
-   public void findBestServerAndWarp (string newArea, Vector2 newLocalPosition, int voyageId, Direction newFacingDirection) {
+   public void findBestServerAndWarp (string newArea, Vector2 newLocalPosition, int voyageId, Direction newFacingDirection, int instanceId, int serverPort) {
       if (this.isAboutToWarpOnServer) {
          D.log($"The player {netId} is already being warped.");
          return;
