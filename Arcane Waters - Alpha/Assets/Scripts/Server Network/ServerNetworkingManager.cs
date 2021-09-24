@@ -205,8 +205,8 @@ public class ServerNetworkingManager : MonoBehaviour
       return server.InvokeServerRpc(server.MasterServer_GetNewVoyageId);
    }
 
-   public void findUserLocationToVisit (int adminUserId, int userId) {
-      server.InvokeServerRpc(server.MasterServer_FindUserLocationToVisit, adminUserId, userId);
+   public void findUserLocationToVisit (int visitorUserId, int visitedUserId) {
+      server.InvokeServerRpc(server.MasterServer_FindUserLocationToVisit, visitorUserId, visitedUserId);
    }
 
    public void findUserLocationForAdminGoTo (int adminUserId, int userId) {
