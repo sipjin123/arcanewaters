@@ -2000,7 +2000,7 @@ public class NetEntity : NetworkBehaviour
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (targetUserInfo == null) {
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, this, "The player " + targetPlayerName + " doesn't exists!");
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, this, "The player " + targetPlayerName + " doesn't exist!");
                return;
             }
 

@@ -610,6 +610,15 @@ public class BattleManager : MonoBehaviour {
             float sourceDamageElement = source.getDamage(element);
             float damage = sourceDamageElement + attackAbilityData.baseDamage * attackAbilityData.getModifier;
 
+            // Add powerup damage
+            if (source.userId > 0) {
+               if (LandPowerupManager.self.hasPowerup(source.userId, LandPowerupType.DamageBoost)) {
+                  int boostedDamage = (int) (damage * LandPowerupManager.self.getPowerupValue(source.userId, LandPowerupType.DamageBoost) / 100);
+                  D.debug("Add {" + boostedDamage + "} damage to {" + damage + "}: Total: {" + (damage + boostedDamage) + "}");
+                  damage += boostedDamage;
+               }
+            }
+
             // If this is a boss monster, add damage (based from admin game settings) depending on number of team members
             if (source.isBossType) {
                float damagePercentageValueRaw = damage * (AdminGameSettingsManager.self.settings.bossDamagePerMember / 100);
