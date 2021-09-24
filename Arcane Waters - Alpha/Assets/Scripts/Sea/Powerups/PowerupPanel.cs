@@ -14,7 +14,7 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
    public static PowerupPanel self;
 
    // A reference to the powerup icon prefab
-   public GameObject powerupIconPrefab;
+   public GameObject powerupIconPrefab, landPowerupIconPrefab;
 
    // A list of colors associated with each rarity type
    public List<Color> rarityColors;
@@ -35,6 +35,56 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
       _layoutGroup = GetComponent<GridLayoutGroup>();
       _rectTransform = GetComponent<RectTransform>();
    }
+
+   #region Land Powerup
+
+   public void addLandPowerup (LandPowerupData powerupData) {
+      if (!gameObject.activeInHierarchy) {
+         gameObject.SetActive(true);
+      }
+
+      LandPowerupIcon newPowerup = Instantiate(landPowerupIconPrefab, transform).GetComponent<LandPowerupIcon>();
+      newPowerup.init(powerupData.landPowerupType, Rarity.Type.Common);
+      _landPowerupIcons.Add(newPowerup);
+
+      // When a new powerup icon is added, sort the list by rarity
+      LandPowerupIcon[] orderedIcons = _landPowerupIcons.OrderBy(x => (int) x.rarity).ToArray();
+      for (int i = 0; i < orderedIcons.Length; i++) {
+         if (orderedIcons[i].transform.childCount >= i) {
+            orderedIcons[i].transform.SetSiblingIndex(i);
+         }
+      }
+
+      newPowerup.transform.DOPunchScale(Vector3.one * 0.3f, 0.3f);
+
+      // Show the powerup container
+      powerupPanelContainer.gameObject.SetActive(true);
+   }
+
+   public void removePowerup (LandPowerupData powerupData) {
+      LandPowerupIcon powerupIcon = _landPowerupIcons.Find(_ => _.type == powerupData.landPowerupType && _.rarity == Rarity.Type.Common);
+
+      if (_landPowerupIcons.Count < 1 || transform.childCount < 1) {
+         return;
+      }
+
+      _landPowerupIcons.RemoveAt(0);
+      Destroy(transform.GetChild(0).gameObject);
+
+      // When a new powerup icon is removed, sort the list by rarity
+      LandPowerupIcon[] orderedIcons = _landPowerupIcons.OrderBy(x => (int) x.rarity).ToArray();
+      for (int i = 0; i < orderedIcons.Length; i++) {
+         orderedIcons[i].transform.SetSiblingIndex(i);
+      }
+
+      if (transform.childCount < 1) {
+         powerupPanelContainer.gameObject.SetActive(false);
+      }
+   }
+
+   #endregion
+
+   #region Sea Powerup
 
    public void addPowerup (Powerup.Type type, Rarity.Type rarity) {
       PowerupIcon newPowerup = Instantiate(powerupIconPrefab, transform).GetComponent<PowerupIcon>();
@@ -95,6 +145,8 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
       }
    }
 
+   #endregion
+
    private void Update () {
       float targetSpacing = (_isExpanded) ? EXPANDED_SPACING : COLLAPSED_SPACING;
       _layoutGroup.spacing = new Vector2(Mathf.Lerp(_layoutGroup.spacing.x, targetSpacing, Time.deltaTime * EXPAND_SPEED), _layoutGroup.spacing.y);
@@ -131,6 +183,9 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
    // A list of references to our current powerups
    private List<PowerupIcon> _powerupIcons = new List<PowerupIcon>();
+
+   // A list of references to our current powerups
+   private List<LandPowerupIcon> _landPowerupIcons = new List<LandPowerupIcon>();
 
    // A reference to the rect transform of this panel
    private RectTransform _rectTransform;
