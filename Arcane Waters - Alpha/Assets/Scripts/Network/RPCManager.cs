@@ -8293,6 +8293,39 @@ public class RPCManager : NetworkBehaviour
       PowerupManager.self.removePowerupClient(newPowerup);
    }
 
+   [TargetRpc]
+   public void Target_AddLandPowerup (NetworkConnection connection, LandPowerupData newPowerup) {
+      PowerupPanel.self.addLandPowerup(new LandPowerupData {
+         counter = newPowerup.counter,
+         expiryType = newPowerup.expiryType,
+         landPowerupType = newPowerup.landPowerupType,
+         userId = newPowerup.userId,
+         value = newPowerup.value
+      });
+   }
+
+   [TargetRpc]
+   public void Target_RemoveLandPowerup (NetworkConnection connection, LandPowerupData newPowerup) {
+      PowerupPanel.self.removePowerup(new LandPowerupData {
+         counter = newPowerup.counter,
+         expiryType = newPowerup.expiryType,
+         landPowerupType = newPowerup.landPowerupType,
+         userId = newPowerup.userId,
+         value = newPowerup.value
+      }); 
+   }
+
+   [Command]
+   public void Cmd_RequestPowerupUpdate (LandPowerupType powerupType, LandPowerupExpiryType expiryType, int count) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // TODO: Add logic here that decrements powerup validity such as expiring powerup per boss kill
+      // LandPowerupManager.self.updateNewPowerupData(_player.userId, powerupType, expiryType, )
+   }
+
    [Command]
    public void Cmd_SetAdminGameSettings (AdminGameSettings settings) {
       if (_player == null) {
