@@ -9,9 +9,6 @@ public class ConfirmMessage : NetworkMessage
 {
    #region Public Variables
 
-   // The network instance id associated with this message
-   public uint netId;
-
    // The Type of confirmation
    public enum Type {
       SeaWarp = 1, BoughtCargo = 2, BugReport = 3, AddGold = 4, General = 5,
@@ -21,7 +18,7 @@ public class ConfirmMessage : NetworkMessage
       FriendshipDeleted = 17, MailSent = 18, MailDeleted = 19, ItemsAddedToInventory = 20,
       ModifiedOwnAuction = 21, BidOnAuction = 22, EditGuildRanks = 23, GuildActionLocal = 24,
       GuildActionGlobal = 25, GuildActionUpdate = 26, CorrectClientVersion = 27, SoldAuctionItem = 28,
-      ReturnAuctionItem = 29, UsedConsumable = 30, UsedArmorDye = 31
+      ReturnAuctionItem = 29, UsedConsumable = 30, UsedArmorDye = 31, UsedHatDye = 32, UsedWeaponDye = 33
    }
 
    // The Type of confirmation
@@ -37,12 +34,7 @@ public class ConfirmMessage : NetworkMessage
 
    public ConfirmMessage () { }
 
-   public ConfirmMessage (uint netId) {
-      this.netId = netId;
-   }
-
-   public ConfirmMessage (uint netId, Type confirmType, long timestamp, string customMessage = "") {
-      this.netId = netId;
+   public ConfirmMessage (Type confirmType, long timestamp, string customMessage = "") {
       this.confirmType = confirmType;
       this.timestamp = timestamp;
       this.customMessage = customMessage;

@@ -9,9 +9,6 @@ public class ErrorMessage : NetworkMessage
 {
    #region Public Variables
 
-   // The network instance id associated with this message
-   public uint netId;
-
    // The Type of error
    public enum Type {
       None = 0,
@@ -33,12 +30,7 @@ public class ErrorMessage : NetworkMessage
 
    public ErrorMessage () { }
 
-   public ErrorMessage (uint netId) {
-      this.netId = netId;
-   }
-
-   public ErrorMessage (uint netId, Type errorType, string customMessage = "") {
-      this.netId = netId;
+   public ErrorMessage (Type errorType, string customMessage = "") {
       this.errorType = errorType;
       this.customMessage = customMessage;
    }

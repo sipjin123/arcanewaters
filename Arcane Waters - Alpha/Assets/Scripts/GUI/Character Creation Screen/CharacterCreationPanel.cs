@@ -210,8 +210,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
          int deploymentId = Util.getDeploymentId();
 
          // Send the creation request to the server
-         NetworkClient.Send(new CreateUserMessage(Global.netId,
-            _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalettes(), chosenPerks, SystemInfo.deviceName, Global.isFirstLogin, Global.lastSteamId, deploymentId));
+         NetworkClient.Send(new CreateUserMessage(_char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalettes(), chosenPerks, SystemInfo.deviceName, Global.isFirstLogin, Global.lastSteamId, deploymentId));
       });
    }
 

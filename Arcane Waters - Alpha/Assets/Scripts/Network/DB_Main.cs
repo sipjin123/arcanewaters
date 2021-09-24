@@ -3539,7 +3539,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             DebugQuery(cmd);
 
-           rowsAffected = cmd.ExecuteNonQuery();
+            rowsAffected = cmd.ExecuteNonQuery();
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
@@ -4732,7 +4732,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new List<XMLPair> getConsumableXML (){
+   public static new List<XMLPair> getConsumableXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
          using (MySqlConnection conn = getConnection())
@@ -5432,6 +5432,36 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new bool setWeaponPalette (int userId, int weaponId, string weaponPalettes) {
+      bool success = false;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE items SET itmPalettes=@itmPalettes WHERE usrId=@usrId AND itmId=@itmId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@itmPalettes", weaponPalettes);
+            cmd.Parameters.AddWithValue("@itmId", weaponId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            int rowsAffected = cmd.ExecuteNonQuery();
+
+            if (rowsAffected != 1) {
+               D.warning("An UPDATE didn't affect just 1 row, for usrId " + userId);
+            } else {
+               success = true;
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return success;
+   }
+
    public static new void setHatId (int userId, int newHatId) {
       if (newHatId != 0 && !hasItem(userId, newHatId, (int) Item.Category.Hats)) {
          D.warning(string.Format("User {0} does not have hat {1} to equip.", userId, newHatId));
@@ -5459,6 +5489,36 @@ public class DB_Main : DB_MainStub
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
+   }
+
+   public static new bool setHatPalette (int userId, int hatId, string hatPalettes) {
+      bool success = false;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE items SET itmPalettes=@itmPalettes WHERE usrId=@usrId AND itmId=@itmId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@itmPalettes", hatPalettes);
+            cmd.Parameters.AddWithValue("@itmId", hatId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            int rowsAffected = cmd.ExecuteNonQuery();
+
+            if (rowsAffected != 1) {
+               D.warning("An UPDATE didn't affect just 1 row, for usrId " + userId);
+            } else {
+               success = true;
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return success;
    }
 
    public static new void setArmorId (int userId, int newArmorId) {
@@ -5556,9 +5616,9 @@ public class DB_Main : DB_MainStub
       return weapon;
    }
 
-   public static new bool setArmorPalette(int userId, int armorId, string armorPalettes) {
+   public static new bool setArmorPalette (int userId, int armorId, string armorPalettes) {
       bool success = false;
-      
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -5854,7 +5914,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new int getXP(int userId) {
+   public static new int getXP (int userId) {
       int xp = 0;
 
       try {
@@ -6191,6 +6251,28 @@ public class DB_Main : DB_MainStub
       return accountName;
    }
 
+   public static new bool forceSinglePlayerForAccount (int accId, bool forceSinglePlayer) {
+      bool success = false;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE global.accounts SET forceSinglePlayer = @forceSinglePlayer WHERE accId = @accId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@accId", accId);
+            cmd.Parameters.AddWithValue("@forceSinglePlayer", forceSinglePlayer ? 1 : 0);
+
+            DebugQuery(cmd);
+            success = cmd.ExecuteNonQuery() == 1;
+         }
+      } catch (Exception ex) {
+         D.error("MySQL Error: " + ex.ToString());
+      }
+
+      return success;
+   }
+
    public static new void completePendingAction (int pendingActionId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -6522,11 +6604,15 @@ public class DB_Main : DB_MainStub
                   // If we found a valid account ID, we can go ahead and read in the other various objects
                   if (userObjects.accountId != 0) {
                      userObjects.accountEmail = DataUtil.getString(dataReader, "accEmail");
-                     userObjects.isSinglePlayer = DataUtil.getInt(dataReader, "isSinglePlayer") == 1 ? true : false;
                      userObjects.accountCreationTime = dataReader.GetDateTime("accCreationTime").ToBinary();
                      userObjects.userInfo = new UserInfo(dataReader);
                      userObjects.shipInfo = new ShipInfo(dataReader);
                      userObjects.guildInfo = new GuildInfo(dataReader);
+
+                     // This user would be in single player mode if the player has toggled on the option or has been forced to it
+                     bool isSinglePlayer = DataUtil.getInt(dataReader, "isSinglePlayer") == 1;
+                     bool forceSinglePlayer = DataUtil.getInt(dataReader, "forceSinglePlayer") == 1;
+                     userObjects.isSinglePlayer = isSinglePlayer || forceSinglePlayer;
 
                      // If the user has a guildId
                      if (userObjects.guildInfo.guildId != 0) {
@@ -6658,6 +6744,57 @@ public class DB_Main : DB_MainStub
       }
 
       return userInfo;
+   }
+
+   public static new UserAccountInfo getUserAccountInfo (string username) {
+      UserAccountInfo userAccountInfo = null;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users " +
+            "JOIN global.accounts USING (accId) " +
+            "WHERE usrName = @usrName", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrName", username);
+            DebugQuery(cmd);
+
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  userAccountInfo = new UserAccountInfo(dataReader);
+               }
+            }
+
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return userAccountInfo;
+   }
+
+   public static new List<PenaltyQueueItem> getPenaltiesQueue () {
+      List<PenaltyQueueItem> queue = new List<PenaltyQueueItem>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  PenaltyQueueItem item = new PenaltyQueueItem(dataReader);
+                  queue.Add(item);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return queue;
    }
 
    public static new UserInfo getUserInfo (string userName) {
@@ -7669,7 +7806,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@itmCategory", (int) Item.Category.ShipSkin);
             cmd.Parameters.AddWithValue("@itmType", shipSkinId);
             cmd.Parameters.AddWithValue("@itmPalettes", "");
-            cmd.Parameters.AddWithValue("@itmData", $"shipType={(int)shipType}, skinType={(int)skinType}");
+            cmd.Parameters.AddWithValue("@itmData", $"shipType={(int) shipType}, skinType={(int) skinType}");
             DebugQuery(cmd);
 
             // Execute the command
@@ -10277,9 +10414,9 @@ public class DB_Main : DB_MainStub
       // Add the category filter
       if (categoryFilter.Length > 0 && categoryFilter[0] != Item.Category.None) {
          clause.Append(" AND (itemCategory = ");
-         clause.Append((int)categoryFilter[0]);
+         clause.Append((int) categoryFilter[0]);
          for (int i = 1; i < categoryFilter.Length; i++) {
-            clause.Append(" OR itemCategory = " + (int)categoryFilter[i]);
+            clause.Append(" OR itemCategory = " + (int) categoryFilter[i]);
          }
          clause.Append(") ");
       }
@@ -10748,7 +10885,7 @@ public class DB_Main : DB_MainStub
       return 0;
    }
 
-   public static new bool updateStoreItem(ulong itemId, Item.Category category, int soldItemId, bool isEnabled, int price, string storeItemName, string storeItemDescription) {
+   public static new bool updateStoreItem (ulong itemId, Item.Category category, int soldItemId, bool isEnabled, int price, string storeItemName, string storeItemDescription) {
       bool result = false;
 
       try {

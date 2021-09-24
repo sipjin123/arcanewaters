@@ -158,6 +158,13 @@ public class ServerCannonBall : SeaProjectile
 
       // Execute the effects of any effectors attached to this cannonball
       foreach (CannonballEffector effector in _effectors) {
+         
+         // If the player isn't allowed to trigger this powerup yet, continue
+         Powerup.Type powerupType = PowerupManager.getPowerupTypeFromEffectorType(effector.effectorType);
+         if (!PowerupManager.self.canPlayerUsePowerup(sourceEntity.userId, powerupType)) {
+            continue;
+         }
+
          switch (effector.effectorType) {
             case CannonballEffector.Type.Fire:
                hitEntity.applyStatus(Status.Type.Burning, effector.effectStrength, effector.effectDuration, sourceEntity.netId);
@@ -182,6 +189,8 @@ public class ServerCannonBall : SeaProjectile
                handleBounceEffect(effector, hitEntity);
                break;
          }
+
+         PowerupManager.self.notePlayerUsedPowerup(sourceEntity.userId, powerupType);
       }
 
       // If the cannonball doesn't have effectors applied

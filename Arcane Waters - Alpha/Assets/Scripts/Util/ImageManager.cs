@@ -431,6 +431,40 @@ public class ImageManager : ClientMonoBehaviour {
       return sprites[frame];
    }
 
+   public static Sprite getHatSprite (int hatType, int frame) {
+      string path = "Hats/" + "hat_" + hatType;
+      Texture2D texture = getTexture(path);
+      Sprite[] sprites = getSprites(texture);
+
+      if (sprites == null || sprites.Length <= frame) {
+         return null;
+      }
+
+      return sprites[frame];
+   }
+
+   public static Sprite getWeaponSprite (bool front, int weaponType, int frame) {
+      string suffix = (front ? "_Front" : "_Back");
+
+      string path = (weaponType == 0) ? "Empty_Layer" : "Weapons/Female/weapon_" + weaponType + suffix;
+      Texture2D texture = weaponType == 0 ? self.blankTexture : getTexture(path);
+      Sprite[] sprites = getSprites(texture);
+
+      if ((sprites != null && sprites.Length > frame) || texture != self.blankTexture) {
+         return sprites[frame];
+      }
+
+      path = (weaponType == 0) ? "Empty_Layer" : "Weapons/Male/weapon_" + weaponType + suffix;
+      texture = weaponType == 0 ? self.blankTexture : getTexture(path);
+      sprites = getSprites(texture);
+
+      if ((sprites != null && sprites.Length > frame) || texture != self.blankTexture) {
+         return sprites[frame];
+      }
+
+      return null;
+   }
+
    #region Private Variables
 
    // Cache of our data by Texture

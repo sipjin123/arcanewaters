@@ -55,7 +55,7 @@ public class RestartManager : GenericGameManager
       // Forcibly kick players
       foreach (NetEntity player in EntityManager.self.getAllEntities()) {
          if (player != null) {
-            player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Kicked, $"You were disconnected.\n\n Reason: Server is currently shutting down"));
+            player.connectionToClient.Send(new ErrorMessage(ErrorMessage.Type.Kicked, $"You were disconnected.\n\n Reason: Server is currently shutting down"));
          }
       }
       
@@ -134,7 +134,7 @@ public class RestartManager : GenericGameManager
             _isServerRestartScheduled = false;
             foreach (NetEntity player in EntityManager.self.getAllEntities()) {
                if (player != null) {
-                  player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Kicked, $"You were disconnected.\n\n Reason: Server is currently rebooting"));
+                  player.connectionToClient.Send(new ErrorMessage(ErrorMessage.Type.Kicked, $"You were disconnected.\n\n Reason: Server is currently rebooting"));
                }
             }
 

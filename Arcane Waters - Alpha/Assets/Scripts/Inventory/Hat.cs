@@ -16,6 +16,7 @@ public class Hat : EquippableItem
    #endregion
 
    public Hat () {
+      this.category = Item.Category.Hats;
       this.itemTypeId = 0;
    }
 

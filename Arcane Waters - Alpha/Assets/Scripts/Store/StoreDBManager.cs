@@ -113,7 +113,7 @@ public class StoreDBManager : GenericGameManager
             PaletteToolData palette = pair.Value;
             int paletteId = pair.Key;
 
-            if (palette.paletteType == (int) PaletteImageType.Armor || palette.paletteType == (int) PaletteImageType.Hair) {
+            if (palette.paletteType == (int) PaletteImageType.Armor || palette.paletteType == (int) PaletteImageType.Hair || palette.paletteType == (int) PaletteImageType.Weapon) {
                if (palette.tagId == gemStoreTag) {
                   // Check if the palette has a matching dye
                   bool hasMatchingDye = dyes.Any(_ => _.Value.paletteId == paletteId);
@@ -136,7 +136,7 @@ public class StoreDBManager : GenericGameManager
    }
 
    /// <summary>
-   /// Creates a Dye record in the database for each valid palette
+   /// Creates a store item record in the database for each valid dye
    /// </summary>
    /// <returns></returns>
    private bool linkDyes () {
@@ -201,11 +201,19 @@ public class StoreDBManager : GenericGameManager
       string name = palette.paletteName.ToLower();
 
       if (palette.paletteType == (int) PaletteImageType.Armor) {
-         name = name.Replace("armor", "").Replace("accent", "");
+         name = name.Replace("armor", "");
+
+         if (palette.paletteName.ToLower().StartsWith("hat")) {
+            name = name.Replace("hat", "");
+         }
       }
 
       if (palette.paletteType == (int) PaletteImageType.Hair) {
-         name = name.Replace("hair", "").Replace("accent", "");
+         name = name.Replace("hair", "");
+      }
+
+      if (palette.paletteType == (int) PaletteImageType.Weapon) {
+         name = name.Replace("weapon", "");
       }
 
       if (palette.isPrimary()) {
@@ -216,7 +224,12 @@ public class StoreDBManager : GenericGameManager
          name = name.Replace("secondary", "");
       }
 
+      if (palette.isAccent()) {
+         name = name.Replace("accent", "");
+      }
+
       name = name.Replace("_", " ").Trim();
+      name = trimInside(name);
       return Util.UppercaseFirst(name);
    }
 
@@ -229,21 +242,45 @@ public class StoreDBManager : GenericGameManager
 
       if (palette.paletteType == (int) PaletteImageType.Armor) {
          desc = "Armor Dye.";
+
+         if (palette.paletteName.ToLower().StartsWith("hat")) {
+            desc = "Hat Dye.";
+         }
       }
 
       if (palette.paletteType == (int) PaletteImageType.Hair) {
          desc = "Hair Dye.";
       }
 
+      if (palette.paletteType == (int) PaletteImageType.Weapon) {
+         desc = "Weapon Dye.";
+      }
+
       if (palette.isPrimary()) {
       }
 
       if (palette.isSecondary()) {
-         desc += "(secondary)";
+         desc += " (secondary)";
+      }
+
+      if (palette.isAccent()) {
+         desc += " (accent)";
       }
 
       desc = desc.Replace("_", " ").Trim();
+      desc = trimInside(desc);
       return Util.UppercaseFirst(desc);
+   }
+
+   private string trimInside(string source) {
+      string[] parts = source.Split(new[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
+      string result = "";
+
+      foreach (string part in parts) {
+         result += part.Trim() + " ";
+      }
+
+      return result.Trim();
    }
 
    #region Private Variables

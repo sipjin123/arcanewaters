@@ -50,19 +50,37 @@ public class BodyEntity : NetEntity
       base.setDataFromUserInfo(userInfo, armor, weapon, hat, shipInfo, guildInfo, guildRankInfo);
       this.armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id, armor.paletteNames, armor.durability);
       this.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames, weapon.durability);
-      this.hatsManager.updateHatSyncVars(hat.itemTypeId, hat.id);
+      this.hatsManager.updateHatSyncVars(hat.itemTypeId, hat.id, hat.paletteNames);
    }
 
    public override Armor getArmorCharacteristics () {
-      return new Armor(0, armorManager.armorType, armorManager.palettes);
+      ArmorStatData armorData = EquipmentXMLManager.self.armorStatList.Find(_ => _.armorType == armorManager.armorType);
+
+      if (armorData == null) {
+         return new Armor();
+      }
+
+      return new Armor(0, armorData.sqlId, armorManager.palettes);
    }
 
    public override Weapon getWeaponCharacteristics () {
-      return new Weapon(0, weaponManager.weaponType, weaponManager.palettes);
+      WeaponStatData weaponData = EquipmentXMLManager.self.weaponStatList.Find(_ => _.weaponType == weaponManager.weaponType);
+
+      if (weaponData == null) {
+         return new Weapon();
+      }
+
+      return new Weapon(0, weaponData.sqlId, weaponManager.palettes);
    }
 
    public override Hat getHatCharacteristics () {
-      return new Hat(0, hatsManager.hatType, hatsManager.palettes);
+      HatStatData hatData = EquipmentXMLManager.self.hatStatList.Find(_ => _.hatType == hatsManager.hatType);
+
+      if (hatData == null) {
+         return new Hat();
+      }
+
+      return new Hat(0, hatData.sqlId, hatsManager.palettes);
    }
 
    public void updateHair (HairLayer.Type newHairType, string newHairPalettes) {

@@ -74,7 +74,7 @@ public class HatManager : EquipmentManager {
    }
 
    [TargetRpc]
-   public void Rpc_EquipHat (NetworkConnection connection, string rawHatData, string palettes) {
+   public void Target_EquipHat (NetworkConnection connection, string rawHatData, string palettes) {
       HatStatData hatData = Util.xmlLoad<HatStatData>(rawHatData);
       cachedHatData = hatData;
 
@@ -105,7 +105,7 @@ public class HatManager : EquipmentManager {
    }
 
    [Server]
-   public void updateHatSyncVars (int hatDataId, int hatId) {
+   public void updateHatSyncVars (int hatDataId, int hatId, string hatPalettes) {
       HatStatData hatData = EquipmentXMLManager.self.getHatData(hatDataId);
 
       if (hatData == null) {
@@ -120,7 +120,7 @@ public class HatManager : EquipmentManager {
       // Set the Sync Vars so they get sent to the clients
       this.equipmentDataId = hatData.sqlId;
       this.hatType = hatData.hatType;
-      this.palettes = hatData.palettes;
+      this.palettes = hatPalettes == null ? hatData.palettes : hatPalettes;
 
       NetworkConnection connection = null;
 
@@ -137,7 +137,7 @@ public class HatManager : EquipmentManager {
          return;
       }
 
-      Rpc_EquipHat(connection, HatStatData.serializeHatStatData(hatData), palettes);
+      Target_EquipHat(connection, HatStatData.serializeHatStatData(hatData), palettes);
 
       // Send the Info to all clients
       Rpc_BroadcastEquipHat(HatStatData.serializeHatStatData(hatData), palettes);

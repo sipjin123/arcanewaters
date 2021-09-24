@@ -739,6 +739,10 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static bool forceSinglePlayerForAccount (int accId, bool forceSinglePlayer) {
+      return false;
+   }
+
    public static PenaltyInfo getPenaltyInfoForAccount (int accId, PenaltyType penaltyType) {
       return new PenaltyInfo();
    }
@@ -891,6 +895,14 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static UserAccountInfo getUserAccountInfo (string username) {
+      return null;
+   }
+
+   public static List<PenaltyQueueItem> getPenaltiesQueue () {
+      return new List<PenaltyQueueItem>();
+   }
+
    public static List<UserInfo> getUserInfoList (int[] userIdArray) {
       return null;
    }
@@ -919,6 +931,14 @@ public class DB_MainStub : MonoBehaviour
       return false;
    }
 
+   public static bool setHatPalette (int userId, int hatId, string hatPalettes) {
+      return false;
+   }
+
+   public static bool setWeaponPalette(int userId, int weaponId, string weaponPalettes) {
+      return false;
+   }
+   
    public static UserObjects getUserObjects (int userId) {
       return null;
    }

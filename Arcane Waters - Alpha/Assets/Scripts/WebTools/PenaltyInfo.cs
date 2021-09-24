@@ -79,7 +79,7 @@ public class PenaltyInfo
    }
 
    public bool hasPenaltyExpired () {
-      if (DateTime.FromBinary(penaltyEnd)== DateTime.MinValue) {
+      if (DateTime.FromBinary(penaltyEnd) == DateTime.MinValue) {
          return false;
       } else {
          return DateTime.Compare(DateTime.UtcNow, DateTime.FromBinary(penaltyEnd)) > 0;
@@ -139,5 +139,12 @@ public enum PenaltyType
    Mute = 1,
    StealthMute = 2,
    Ban = 3,
-   Kick = 4
+   PermanentBan = 4,
+   Kick = 5,
+   ForceSinglePlayer = 6
+   //None = 0,
+   //Mute = 1,
+   //StealthMute = 2,
+   //Ban = 3,
+   //Kick = 4
 }

@@ -31,13 +31,21 @@ public class MM_PlayerIcon : ClientMonoBehaviour {
       // Keep the icon in the right position
       Area currentArea = AreaManager.self.getArea(Global.player.areaKey);
 
+
       // Physical map size is in range [-5, 5], we need to transform it to minimap space which is [-64, 64]
       const float worldToMapSpaceTransform = 64f / 5f;
       if (currentArea != null) {
-         float minimapSpriteWidth = (Minimap.self.realAreaSize != Vector2Int.zero) ? Minimap.self.realAreaSize.x : Minimap.self.backgroundImage.sprite.textureRect.width;
+         float minimapSpriteWidth = Minimap.self.backgroundImage.sprite.textureRect.width;
+         float mapActiveAreaWidth = (Minimap.self.realAreaSize != Vector2Int.zero) ? Minimap.self.realAreaSize.x : minimapSpriteWidth;
+
+         // Some pvp arenas have a playable area that is smaller than the total area size, so we have to calculate it with the 'arena size'
+         if (VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
+            PvpArenaSize arenaSize = AreaManager.self.getAreaPvpArenaSize(Global.player.areaKey);
+            mapActiveAreaWidth = AreaManager.getWidthForPvpArenaSize(arenaSize);
+         }
 
          // Scale transformation based on current map size
-         float relativePositionScale = (minimapSpriteWidth / 64f);
+         float relativePositionScale = (mapActiveAreaWidth / 64.0f);
          Vector3 relativePosition = Global.player.transform.localPosition * worldToMapSpaceTransform / relativePositionScale;
 
          // For 64x64 map, there is no minimap translation

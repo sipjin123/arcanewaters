@@ -9,9 +9,6 @@ public class CharacterListMessage : NetworkMessage
 {
    #region Public Variables
 
-   // The network instance id associated with this message
-   public uint netId;
-
    // The character info
    public UserInfo[] userArray;
    public Item[] armorArray;
@@ -31,12 +28,7 @@ public class CharacterListMessage : NetworkMessage
 
    public CharacterListMessage () { }
 
-   public CharacterListMessage (uint netId) {
-      this.netId = netId;
-   }
-
-   public CharacterListMessage (uint netId, UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, Item[] hatArray, string[] armorPalettes, int[] equipmentIds, int[] spriteIds) {
-      this.netId = netId;
+   public CharacterListMessage (UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, Item[] hatArray, string[] armorPalettes, int[] equipmentIds, int[] spriteIds) {
       this.userArray = userArray;
       this.armorArray = armorArray;
       this.weaponArray = weaponArray;

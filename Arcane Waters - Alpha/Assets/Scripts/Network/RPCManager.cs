@@ -303,6 +303,22 @@ public class RPCManager : NetworkBehaviour
    }
 
    [ClientRpc]
+   protected void Rpc_UpdateHat (int hatType, string newHatPalette) {
+      if (_player is BodyEntity) {
+         BodyEntity body = (BodyEntity) _player;
+         body.hatsManager.updateSprites(hatType, newHatPalette);
+      }
+   }
+
+   [ClientRpc]
+   protected void Rpc_UpdateWeapon (int weaponType, string newWeaponPalette) {
+      if (_player is BodyEntity) {
+         BodyEntity body = (BodyEntity) _player;
+         body.weaponManager.updateSprites(weaponType, newWeaponPalette);
+      }
+   }
+
+   [ClientRpc]
    protected void Rpc_UpdateShipSkin (Ship.SkinType newSkinType) {
       if (_player is ShipEntity) {
          ShipEntity ship = (ShipEntity) _player;
@@ -868,18 +884,17 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_OnEquipItem (NetworkConnection connection, Item equippedWeapon, Item equippedArmor, Item equippedHat) {
+      // Update the equipped items cache
+      Global.setUserEquipment(equippedWeapon, equippedArmor, equippedHat);
+
       // Refresh the inventory panel
       InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
       if (panel.isShowing()) {
          panel.refreshPanel();
       }
 
-      // Update the equipped items cache
-      Global.setUserEquipment(equippedWeapon, equippedArmor, equippedHat);
-
       // Trigger the tutorial
       TutorialManager3.self.tryCompletingStepByWeaponEquipped();
-
    }
 
    [TargetRpc]
@@ -1549,19 +1564,16 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_RequestStoreResources (bool requestStoreItems, bool requestUserObjects) {
+   public void Cmd_RequestStoreResources (bool requestStoreItems) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<StoreItem> storeItems = null;
-         UserObjects userObjects = null;
 
          if (requestStoreItems) {
             List<StoreItem> allStoreItems = DB_Main.getAllStoreItems();
             storeItems = allStoreItems.Where(isStoreItemEnabled).ToList();
          }
-
-         if (requestUserObjects) {
-            userObjects = DB_Main.getUserObjects(_player.userId);
-         }
+         
+         UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Target_ReceiveStoreResources(storeItems, userObjects);
@@ -1571,7 +1583,8 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveStoreResources (List<StoreItem> items, UserObjects userObjects) {
-      StoreScreen.self.onReceiveStoreResources(items, userObjects);
+      Global.userObjects = userObjects;
+      StoreScreen.self.onReceiveStoreResources(items);
    }
 
    [Command]
@@ -2203,6 +2216,7 @@ public class RPCManager : NetworkBehaviour
 
                if (consumableData == null) {
                   reportUseItemFailure("");
+                  return;
                }
 
                if (consumableData.consumableType == Consumable.Type.PerkResetter) {
@@ -2298,7 +2312,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Apply dye based on its type
+         // Hair Dye
          if (paletteToolData.paletteType == (int) PaletteToolManager.PaletteImageType.Hair) {
             if (paletteToolData.isPrimary()) {
                // Set the new hair color in the database
@@ -2328,7 +2342,10 @@ public class RPCManager : NetworkBehaviour
             }
          }
 
-         if (paletteToolData.paletteType == (int) PaletteToolManager.PaletteImageType.Armor) {
+         bool isHatDye = paletteToolData.paletteName.ToLower().StartsWith("hat"); // TODO: Refactor this line as soon as the Web Palette Tool supports hats
+
+         // At the moment hat palettes are "flagged" as armors. Therefore, we check the palette name to tell armor dyes and hat dyes apart
+         if (paletteToolData.paletteType == (int) PaletteToolManager.PaletteImageType.Armor && !isHatDye) {
             // Compute new palette
             string dyePalette = paletteToolData.paletteName;
             UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
@@ -2360,6 +2377,80 @@ public class RPCManager : NetworkBehaviour
 
                // Let the client know the item was used
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.UsedArmorDye, _player, item.id.ToString());
+            });
+
+            return;
+         }
+
+         // Hat Dye
+         if (paletteToolData.paletteType == (int) PaletteToolManager.PaletteImageType.Hat || isHatDye) {
+            UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+            
+            // A hat dye can only be applied if the player has a hat
+            if (userObjects.hat == null || userObjects.hat.itemTypeId == 0) {
+               reportUseItemFailure("You are not wearing a hat!");
+               return;
+            }
+
+            // Compute new palette
+            string dyePalette = paletteToolData.paletteName;
+            string currentHatPalette = userObjects.hat.paletteNames;
+            string mergedPalette = Item.parseItmPalette(Item.overridePalette(dyePalette, currentHatPalette));
+
+            // Set the new hat color
+            bool updated = DB_Main.setHatPalette(_player.userId, userObjects.hat.id, mergedPalette);
+            
+            if (!updated) {
+               reportUseItemFailure("");
+               return;
+            }
+
+            // Delete the dye
+            DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, 1);
+
+            requestSetHatIdSync(userObjects.hat.id);
+
+            // Back to Unity
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               // Let the client know the item was used
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.UsedHatDye, _player, item.id.ToString());
+            });
+
+            return;
+         }
+
+         // Weapon Dye
+         if (paletteToolData.paletteType == (int) PaletteToolManager.PaletteImageType.Weapon) {
+            UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+            Item weapon = userObjects.weapon;
+
+            if (weapon == null || weapon.itemTypeId == 0) {
+               reportUseItemFailure("You are not wearing wielding any weapon!");
+               return;
+            }
+
+            // Compute new palette
+            string dyePalette = paletteToolData.paletteName;
+            string currentWeaponPalette = weapon.paletteNames;
+            string mergedPalette = Item.parseItmPalette(Item.overridePalette(dyePalette, currentWeaponPalette));
+
+            // Set the new weapon color
+            bool updated = DB_Main.setWeaponPalette(_player.userId, weapon.id, mergedPalette);
+
+            if (!updated) {
+               reportUseItemFailure("");
+               return;
+            }
+
+            // Delete the dye
+            DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, 1);
+
+            requestSetWeaponIdSync(weapon.id);
+
+            // Back to Unity
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               // Let the client know the item was used
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.UsedWeaponDye, _player, item.id.ToString());
             });
 
             return;
@@ -7342,6 +7433,7 @@ public class RPCManager : NetworkBehaviour
             if (ship != null) {
                ArmorStatData data = EquipmentXMLManager.self.getArmorDataBySqlId(armor.itemTypeId);
                ship.armorType = data != null ? data.armorType : 0;
+               ship.armorColors = armor.paletteNames;
             }
 
             if (userObjects == null) {
@@ -7354,45 +7446,103 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
+   private void requestSetHatIdSync(int hatId) {
+      DB_Main.setHatId(_player.userId, hatId);
+      UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+      Item hat = userObjects.hat;
+
+      // Back to Unity
+      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+
+         if (hat.data.Length < 1 && hat.itemTypeId > 0 && hat.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
+            hat.data = HatStatData.serializeHatStatData(EquipmentXMLManager.self.getHatData(hat.itemTypeId));
+            userObjects.hat.data = hat.data;
+         }
+
+         PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
+
+         if (body != null) {
+            body.hatsManager.updateHatSyncVars(hat.itemTypeId, hat.id, hat.paletteNames);
+
+            // Update the battler entity if the user is in battle
+            if (body.isInBattle()) {
+               BattleManager.self.onPlayerEquipItem(body);
+            }
+         }
+
+         PlayerShipEntity ship = _player.GetComponent<PlayerShipEntity>();
+
+         if (ship != null) {
+            HatStatData data = EquipmentXMLManager.self.getHatData(hat.itemTypeId);
+            ship.hatType = data != null ? data.hatType : 0;
+            ship.hatColors = hat.paletteNames;
+         }
+
+         if (userObjects == null) {
+            D.debug("Null user objects!");
+         } else {
+            Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+         }
+      });
+   }
+
+   [Server]
    public void requestSetHatId (int hatId) {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.setHatId(_player.userId, hatId);
-         UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+         requestSetHatIdSync(hatId);
+      });
+   }
 
-         // Back to Unity
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Hat hat = Hat.castItemToHat(userObjects.hat);
+   [Server]
+   private void requestSetWeaponIdSync(int weaponId) {
+      // Update the Weapon object here on the server based on what's in the database
+      DB_Main.setWeaponId(_player.userId, weaponId);
+      UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
 
-            if (hat.data.Length < 1 && hat.itemTypeId > 0 && hat.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
-               hat.data = HatStatData.serializeHatStatData(EquipmentXMLManager.self.getHatData(hat.itemTypeId));
-               userObjects.hat.data = hat.data;
+      // Back to Unity Thread to call RPC functions
+      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+         Weapon weapon = Weapon.castItemToWeapon(userObjects.weapon);
+
+         if (weapon.data.Length < 1 && weapon.itemTypeId > 0 && weapon.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
+            weapon.data = WeaponStatData.serializeWeaponStatData(EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId));
+            userObjects.weapon.data = weapon.data;
+         }
+
+         PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
+
+         if (body != null) {
+            body.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames, userObjects.weapon.durability);
+            D.adminLog("Player {" + body.userId + "} is equipping item" +
+               "} ID: {" + weapon.id +
+               "} TypeId: {" + weapon.itemTypeId +
+               "} Name: {" + weapon.getName() + "}", D.ADMIN_LOG_TYPE.Equipment);
+
+            // Update the battler entity if the user is in battle
+            if (body.isInBattle()) {
+               BattleManager.self.onPlayerEquipItem(body);
             }
+         } else {
+            D.editorLog("Failed to cast to <PlayerBodyEntity>!", Color.magenta);
+         }
 
-            PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
+         PlayerShipEntity ship = _player.GetComponent<PlayerShipEntity>();
 
-            if (body != null) {
-               body.hatsManager.updateHatSyncVars(hat.itemTypeId, hat.id);
+         if (ship != null) {
+            WeaponStatData data = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
+            ship.weaponType = data != null ? data.weaponType : 0;
+            ship.weaponColors = weapon.paletteNames;
+         }
 
-               // Update the battler entity if the user is in battle
-               if (body.isInBattle()) {
-                  BattleManager.self.onPlayerEquipItem(body);
-               }
-            }
-
-            PlayerShipEntity ship = _player.GetComponent<PlayerShipEntity>();
-
-            if (ship != null) {
-               HatStatData data = EquipmentXMLManager.self.getHatData(hat.itemTypeId);
-               ship.hatType = data != null ? data.hatType : 0;
-            }
-
+         if (_player != null) {
             if (userObjects == null) {
                D.debug("Null user objects!");
             } else {
                Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
             }
-         });
+         } else {
+            D.debug("Cant change equipment while player is destroyed");
+         }
       });
    }
 
@@ -7402,53 +7552,7 @@ public class RPCManager : NetworkBehaviour
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Update the Weapon object here on the server based on what's in the database
-         DB_Main.setWeaponId(_player.userId, weaponId);
-         UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
-
-         // Back to Unity Thread to call RPC functions
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Weapon weapon = Weapon.castItemToWeapon(userObjects.weapon);
-
-            if (weapon.data.Length < 1 && weapon.itemTypeId > 0 && weapon.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
-               weapon.data = WeaponStatData.serializeWeaponStatData(EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId));
-               userObjects.weapon.data = weapon.data;
-            }
-
-            PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
-
-            if (body != null) {
-               body.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames, userObjects.weapon.durability);
-               D.adminLog("Player {" + body.userId + "} is equipping item" +
-                  "} ID: {" + weapon.id +
-                  "} TypeId: {" + weapon.itemTypeId +
-                  "} Name: {" + weapon.getName() + "}", D.ADMIN_LOG_TYPE.Equipment);
-
-               // Update the battler entity if the user is in battle
-               if (body.isInBattle()) {
-                  BattleManager.self.onPlayerEquipItem(body);
-               }
-            } else {
-               D.editorLog("Failed to cast to <PlayerBodyEntity>!", Color.magenta);
-            }
-
-            PlayerShipEntity ship = _player.GetComponent<PlayerShipEntity>();
-
-            if (ship != null) {
-               WeaponStatData data = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
-               ship.weaponType = data != null ? data.weaponType : 0;
-            }
-
-            if (_player != null) {
-               if (userObjects == null) {
-                  D.debug("Null user objects!");
-               } else {
-                  Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
-               }
-            } else {
-               D.debug("Cant change equipment while player is destroyed");
-            }
-         });
+         requestSetWeaponIdSync(weaponId);
       });
    }
 

@@ -264,6 +264,8 @@ public class Minimap : ClientMonoBehaviour {
          }
       } else {
          // Static minimap was found - setup data (minimap size for static images might be different than real area size)
+         realAreaSize = Vector2Int.zero;
+
          foreach (var tilemap in area.GetComponentsInChildren<Tilemap>(true)) {
             if (tilemap.size.x > realAreaSize.x) {
                realAreaSize.x = tilemap.size.x;

@@ -15,6 +15,7 @@ public class Armor : EquippableItem {
    #endregion
 
    public Armor () {
+      this.category = Item.Category.Armor;
       this.itemTypeId = 0;
    }
 

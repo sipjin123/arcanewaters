@@ -6,9 +6,6 @@ using Mirror;
 
 public class CheckVersionMessage : NetworkMessage
 {
-   // The network instance id associated with this message
-   public uint netId;
-
    // The client platform
    public RuntimePlatform clientPlatform;
 
@@ -17,12 +14,7 @@ public class CheckVersionMessage : NetworkMessage
 
    public CheckVersionMessage () { }
 
-   public CheckVersionMessage (uint netId) {
-      this.netId = netId;
-   }
-
-   public CheckVersionMessage (uint netId, int clientGameVersion, RuntimePlatform clientPlatform) {
-      this.netId = netId;
+   public CheckVersionMessage (int clientGameVersion, RuntimePlatform clientPlatform) {
       this.clientGameVersion = clientGameVersion;
       this.clientPlatform = clientPlatform;
    }

@@ -432,7 +432,7 @@ public class CropManager : NetworkBehaviour {
                // Registers the gold gains to the achievement database for recording
                AchievementManager.registerUserAchievement(_player, ActionType.EarnGold, earnedGold);
             } else {
-               ErrorMessage errorMessage = new ErrorMessage(_player.netId, ErrorMessage.Type.NoCropsOfThatType);
+               ErrorMessage errorMessage = new ErrorMessage(ErrorMessage.Type.NoCropsOfThatType);
                NetworkServer.SendToClientOfPlayer(_player.netIdentity, errorMessage);
             }
          });
@@ -450,7 +450,6 @@ public class CropManager : NetworkBehaviour {
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Store the result
 
             // Checks achievements to determine if the plant will grow quickly for tutorial purposes
             bool quickGrow = false;

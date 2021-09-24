@@ -9,9 +9,6 @@ public class DeleteUserMessage : NetworkMessage
 {
    #region Public Variables
 
-   // The network instance id associated with this message
-   public uint netId;
-
    // The user id
    public int userId;
 
@@ -19,12 +16,7 @@ public class DeleteUserMessage : NetworkMessage
 
    public DeleteUserMessage () { }
 
-   public DeleteUserMessage (uint netId) {
-      this.netId = netId;
-   }
-
-   public DeleteUserMessage (uint netId, int userId) {
-      this.netId = netId;
+   public DeleteUserMessage (int userId) {
       this.userId = userId;
    }
 }

@@ -33,6 +33,7 @@ public class Weapon : EquippableItem {
    #endregion
 
    public Weapon () {
+      this.category = Item.Category.Weapon;
       this.itemTypeId = 0;
    }
 

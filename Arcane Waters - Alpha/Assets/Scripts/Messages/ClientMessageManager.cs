@@ -236,6 +236,8 @@ public class ClientMessageManager : MonoBehaviour {
          case ConfirmMessage.Type.UsedHairDye:
          case ConfirmMessage.Type.UsedShipSkin:
          case ConfirmMessage.Type.UsedArmorDye:
+         case ConfirmMessage.Type.UsedHatDye:
+         case ConfirmMessage.Type.UsedWeaponDye:
          case ConfirmMessage.Type.UsedHaircut:
             string chatMessage = msg.customMessage;
 
@@ -249,6 +251,10 @@ public class ClientMessageManager : MonoBehaviour {
                chatMessage = "You have dyed your armor!";
             } else if (msg.confirmType == ConfirmMessage.Type.UsedConsumable) {
                Global.player.rpc.Cmd_FetchPerkPointsForUser();
+            } else if (msg.confirmType == ConfirmMessage.Type.UsedHatDye) {
+               chatMessage = "You have dyed your hat!";
+            } else if (msg.confirmType == ConfirmMessage.Type.UsedWeaponDye) {
+               chatMessage = "You have dyed your weapon!";
             }
 
             // Show the confirmation message in the notice screen
@@ -521,7 +527,8 @@ public class ClientMessageManager : MonoBehaviour {
 
    public static void On_Store (NetworkConnection conn, StoreMessage msg) {
       StoreScreen store = (StoreScreen)PanelManager.self.get(Panel.Type.Store);
-      store.showPanel(msg.userObjects, msg.goldOnHand, msg.gemsOnHand);
+      Global.userObjects = msg.userObjects;
+      store.showPanel(msg.goldOnHand, msg.gemsOnHand);
    }
 
    public static void On_ClientDisconnected () {

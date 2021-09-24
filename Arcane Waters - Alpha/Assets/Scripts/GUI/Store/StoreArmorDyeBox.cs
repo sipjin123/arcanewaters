@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 public class StoreArmorDyeBox : StoreItemBox
 {
    #region Public Variables
@@ -57,24 +56,8 @@ public class StoreArmorDyeBox : StoreItemBox
       }
    }
 
-   private BodyLayer.Type getRandomBodyTypeOfGender(Gender.Type gender) {
-      List<BodyLayer.Type> genderTypes = new List<BodyLayer.Type>();
-      Array bodyTypes = Enum.GetValues(typeof(BodyLayer.Type));
-      
-      foreach (var item in bodyTypes) {
-         var bodyType = (BodyLayer.Type) item;
-
-         if ((gender == Gender.Type.Male && bodyType.ToString().ToLower().StartsWith("male")) || (gender == Gender.Type.Female && bodyType.ToString().ToLower().StartsWith("female"))) {
-            genderTypes.Add(bodyType);
-         }
-      }
-
-      int index = Mathf.FloorToInt(UnityEngine.Random.Range(0, genderTypes.Count - 1));
-      return genderTypes[index];
-   }
-
    private bool setupBody (Gender.Type gender) {
-      BodyLayer.Type randomBodyType = getRandomBodyTypeOfGender(gender);
+      BodyLayer.Type randomBodyType = BodyLayer.getRandomBodyTypeOfGender(gender);
       Sprite bodySprite = ImageManager.getBodySprite(gender, randomBodyType, frame: 8);
 
       if (bodySprite == null) {

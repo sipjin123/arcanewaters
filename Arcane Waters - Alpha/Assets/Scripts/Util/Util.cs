@@ -1368,7 +1368,7 @@ public class Util : MonoBehaviour
 
       foreach (Collider2D hit in hits) {
          SeaEntity hitEntity = hit.GetComponent<SeaEntity>();
-         if (hitEntity && checkingEntity.isEnemyOf(hitEntity) && hitEntity.instanceId == checkingEntity.instanceId) {
+         if (hitEntity && checkingEntity.isEnemyOf(hitEntity) && hitEntity.instanceId == checkingEntity.instanceId && !hitEntity.isPvpCaptureTargetHolder()) {
             enemies.Add(hitEntity);
          }
       }

@@ -65,6 +65,12 @@ public class PrefabsManager : MonoBehaviour {
    // The Prefab we use for treasureChest spawning
    public GameObject treasureChestPrefab;
 
+   // The prefab we use to spawn sea projectiles
+   public SeaProjectile seaProjectilePrefab;
+
+   // The prefab we use to spawn projectile targeting indicators
+   public ProjectileTargetingIndicator projectileTargetingIndicatorPrefab;
+
    [Header("Ship Explosion Effects")]
    // The prefab we use for the player ship sinking effect
    public GameObject playerShipExplosionEffect;
@@ -141,24 +147,6 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for adding click triggers to sea entities
    public ClickTrigger clickTriggerPrefab;
 
-   // The prefab we use for creating hair dyes
-   public StoreHairDyeBox hairDyeBoxPrefab;
-
-   // The prefab we use for creating armor dyes
-   public StoreArmorDyeBox armorDyeBoxPrefab;
-
-   // The prefab we use for creating haircuts
-   public StoreHaircutBox haircutBoxPrefab;
-
-   // The prefab we use for creating ship skins
-   public StoreShipSkinBox shipBoxPrefab;
-
-   // The prefab we use for creating gem boxes
-   public StoreGemBox gemBoxPrefab;
-
-   // The prefab we use for consumables
-   public StoreConsumableBox consumableBoxPrefab;
-
    // A prefab we can use for showing minor generic messages, ex. that an object is too far away
    public FloatingCanvas floatingCanvasPrefab;
 
@@ -221,8 +209,33 @@ public class PrefabsManager : MonoBehaviour {
    // A reference to the powerup pickup effect prefab
    public GameObject powerupPickupEffect;
 
+   // The prefab we use for creating hat dyes
+   public StoreHatDyeBox hatDyeBoxPrefab;
+
+   // The prefab we use for creating hair dyes
+   public StoreHairDyeBox hairDyeBoxPrefab;
+
+   // The prefab we use for creating armor dyes
+   public StoreArmorDyeBox armorDyeBoxPrefab;
+
+   // The prefab we use for creating weapon dyes
+   public StoreWeaponDyeBox weaponDyeBoxPrefab;
+
    // Self
    public static PrefabsManager self;
+
+   [Header("Gem Store prefabs")]
+   // The prefab we use for creating haircuts
+   public StoreHaircutBox haircutBoxPrefab;
+
+   // The prefab we use for creating ship skins
+   public StoreShipSkinBox shipBoxPrefab;
+
+   // The prefab we use for creating gem boxes
+   public StoreGemBox gemBoxPrefab;
+
+   // The prefab we use for consumables
+   public StoreConsumableBox consumableBoxPrefab;
 
    #endregion
 

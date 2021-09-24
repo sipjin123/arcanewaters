@@ -36,106 +36,46 @@ public class CharacterStack : MonoBehaviour {
 
    public void updateLayers (UserObjects userObjects, bool updatePalettes = true) {
       UserInfo info = userObjects.userInfo;
-
-      bodyLayer.setType(info.bodyType);
-      eyesLayer.setType(info.eyesType);
-      eyesLayer.recolor(info.eyesPalettes);
-
-      ArmorStatData armorData = ArmorStatData.getDefaultData();
-      if (userObjects.armor.data != "" && userObjects.armor.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
-         try {
-            armorData = Util.xmlLoad<ArmorStatData>(userObjects.armor.data);
-            if (updatePalettes) {
-               if (Global.player && Global.player.GetComponent<BodyEntity>() && Global.player.GetComponent<BodyEntity>().armorManager) {
-                  ArmorManager armorManager = Global.player.GetComponent<BodyEntity>().armorManager;
-                  armorData.palettes = armorManager.palettes;
-               }
-            }
-         } catch {
-            D.editorLog("Failed to translate xml data!", Color.red);
-            D.editorLog(userObjects.armor.data, Color.red);
-         }
-      } else {
-         if (userObjects.armor.itemTypeId > 0) {
-            armorData = EquipmentXMLManager.self.getArmorDataBySqlId(userObjects.armor.itemTypeId);
-         }
-      }
-
-      if (armorData == null) {
-         D.debug("Armor data is null!");
-      } else {
-         updateArmor(info.gender, armorData.armorType, userObjects.armor.paletteNames, updatePalettes);
-      }
-
-      WeaponStatData weaponData = WeaponStatData.getDefaultData();
-      if (userObjects.weapon.data != "" && userObjects.weapon.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
-         try {
-            weaponData = Util.xmlLoad<WeaponStatData>(userObjects.weapon.data);
-            if (updatePalettes) {
-               if (Global.player && Global.player.GetComponent<BodyEntity>() && Global.player.GetComponent<BodyEntity>().weaponManager) {
-                  WeaponManager weaponManager = Global.player.GetComponent<BodyEntity>().weaponManager;
-                  weaponData.palettes = weaponManager.palettes;
-               }
-            }
-         } catch {
-            D.editorLog("Failed to translate xml data!", Color.red);
-            D.editorLog(userObjects.weapon.data, Color.red);
-         }
-      } else {
-         if (userObjects.weapon.itemTypeId > 0) {
-            weaponData = EquipmentXMLManager.self.getWeaponData(userObjects.weapon.itemTypeId);
-         }
-      }
-
-      if (weaponData == null) {
-         D.debug("Weapon data is null!");
-      } else {
-         updateWeapon(info.gender, weaponData.weaponType, weaponData.palettes, updatePalettes);
-      }
-
-      HatStatData hatData = HatStatData.getDefaultData();
-      if (userObjects.hat.data != "" && userObjects.hat.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
-         try {
-            hatData = Util.xmlLoad<HatStatData>(userObjects.hat.data);
-            if (updatePalettes) {
-               if (Global.player && Global.player.GetComponent<BodyEntity>() && Global.player.GetComponent<BodyEntity>().hatsManager) {
-                  HatManager hatsManager = Global.player.GetComponent<BodyEntity>().hatsManager;
-                  hatData.palettes = hatsManager.palettes;
-               }
-            }
-         } catch {
-            D.editorLog("Failed to translate xml data!", Color.red);
-            D.editorLog(userObjects.hat.data, Color.red);
-         }
-      } else {
-         if (userObjects.hat.itemTypeId > 0) {
-            hatData = EquipmentXMLManager.self.getHatData(userObjects.hat.itemTypeId);
-         }
-      }
-      
-      if (hatData == null) {
-         D.debug("Hat data is null!");
-      } else {
-         updateHats(info.gender, hatData.hatType, hatData.palettes, updatePalettes);
-      }
-
-      // Update the hair here, to accomodate for the hat
-      updateHair(info.hairType, info.hairPalettes);
-
-      synchronizeAnimationIndexes();
+      updateLayers(info.gender, info.bodyType, info.eyesType, info.hairType, info.eyesPalettes, info.hairPalettes, userObjects.armor, userObjects.weapon, userObjects.hat);
    }
 
    public void updateLayers (BodyEntity entity) {
       updateLayers(entity.gender, entity.bodyType, entity.eyesType, entity.hairType, entity.eyesPalettes, entity.hairPalettes, entity.getArmorCharacteristics(), entity.getWeaponCharacteristics(), entity.getHatCharacteristics());
    }
 
-   public void updateLayers (Gender.Type gender, BodyLayer.Type bodyType, EyesLayer.Type eyesType, HairLayer.Type hairType, string eyesPalettes, string hairPalettes, Armor armor, Weapon weapon, Hat hat) {
+   public void updateLayers (Gender.Type gender, BodyLayer.Type bodyType, EyesLayer.Type eyesType, HairLayer.Type hairType, string eyesPalettes, string hairPalettes, Item armor, Item weapon, Item hat) {
       bodyLayer.setType(bodyType);
       eyesLayer.setType(eyesType);
       eyesLayer.recolor(eyesPalettes);
-      updateArmor(gender, armor.itemTypeId, armor.paletteNames);
-      updateWeapon(gender, weapon.itemTypeId, weapon.paletteNames);
-      updateHats(gender, hat.itemTypeId, hat.paletteNames);
+
+      // Armor
+      ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(armor.itemTypeId);
+
+      if (armorData == null) {
+         armorData = ArmorStatData.getDefaultData();
+      }
+
+      updateArmor(gender, armorData.armorType, armor.paletteNames);
+
+      // Weapon
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
+
+      if (weaponData == null) {
+         weaponData = WeaponStatData.getDefaultData();
+      }
+
+      updateWeapon(gender, weaponData.weaponType, weapon.paletteNames);
+
+      // Hat
+      HatStatData hatData = EquipmentXMLManager.self.getHatData(hat.itemTypeId);
+
+      if (hatData == null) {
+         hatData = HatStatData.getDefaultData();
+      }
+
+      updateHats(gender, hatData.hatType, hat.paletteNames);
+
+      // Hair
       updateHair(hairType, hairPalettes);
 
       synchronizeAnimationIndexes();
@@ -178,38 +118,33 @@ public class CharacterStack : MonoBehaviour {
    }
 
    public void updateWeapon (Gender.Type gender, int weaponType, string palettes, bool updatePalettes = true) {
+      if (weaponFrontLayer == null || weaponBackLayer == null) {
+         return;
+      }
+
       weaponBackLayer.setType(gender, weaponType);
       weaponFrontLayer.setType(gender, weaponType);
 
-      if (updatePalettes) {
-         weaponFrontLayer.recolor(palettes);
-         weaponBackLayer.recolor(palettes);
-      }
+      weaponFrontLayer.recolor(palettes);
+      weaponBackLayer.recolor(palettes);
    }
 
    public void updateHats (Gender.Type gender, int hatType, string palettes, bool updatePalettes = true) {
-      if (hatLayer != null) {
-         hatLayer.setType(gender, hatType);
-         if (updatePalettes) {
-            hatLayer.recolor(palettes);
-         }
+      if (hatLayer == null) {
+         return;
       }
+
+      hatLayer.setType(gender, hatType);
+      hatLayer.recolor(palettes);
    }
 
    public void updateArmor (Gender.Type gender, int armorType, string palettes, bool updatePalettes = true) {
+      if (armorLayer == null) {
+         return;
+      }
+
       armorLayer.setType(gender, armorType);
-
-      if (updatePalettes) {
-         armorLayer.recolor(palettes);
-      }
-
-      // Only process this when the user is in avatar mode and not in ship mode
-      // This syncs the users color scheme to the GUI material of the character stack(Inventory Char Preview)
-      if (Global.player is PlayerBodyEntity) {
-         PlayerBodyEntity playerEntity = Global.player as PlayerBodyEntity;
-         string mergedPalette = Item.parseItmPalette(Item.overridePalette(palettes, playerEntity.armorManager.palettes));
-         armorLayer.recolor(mergedPalette);
-      }
+      armorLayer.recolor(palettes);
    }
 
    public void updateHair (HairLayer.Type hairType, string palettes) {

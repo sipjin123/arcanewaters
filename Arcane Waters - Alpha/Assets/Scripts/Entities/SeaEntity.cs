@@ -1011,31 +1011,57 @@ public class SeaEntity : NetEntity
 
    [Server]
    private IEnumerator CO_FireAtSpotSingle (Vector2 spot, int abilityId, Attack.Type attackType, float attackDelay, float launchDelay, Vector2 spawnPosition = new Vector2()) {
-      float distance = Vector2.Distance(this.transform.position, spot);
-      float timeToReachTarget = Mathf.Clamp(distance, .5f, 1.5f) * 1.1f;
+      // Wait for the attack delay, if any
+      yield return new WaitForSeconds(attackDelay);
+
+      fireProjectileAtTarget(spawnPosition, spot, abilityId);
+   }
+
+   [Server]
+   protected void fireProjectileAtTarget (Vector2 startPosition, Vector2 endPosition, int abilityId) {
+      float distanceToTarget = Vector2.Distance(startPosition, endPosition);
+      float timeToReachTarget = Mathf.Clamp(distanceToTarget, 0.55f, 1.65f);
+
+      // Load ability data
+      ShipAbilityData abilityData = getSeaAbility(abilityId);
+      Attack.Type attackType = Attack.Type.None;
+      Attack.ImpactMagnitude attackMagnitude = Attack.ImpactMagnitude.None;
+      bool hasArch = true;
+
+      if (abilityData != null) {
+         attackType = abilityData.selectedAttackType;
+         attackMagnitude = abilityData.impactMagnitude;
+         hasArch = abilityData.hasArch;
+      }
+
+      // Load projectile data
+      ProjectileStatData projectileData = getProjectileDataFromAbility(abilityId);
+
+      SeaProjectile projectile = Instantiate(PrefabsManager.self.seaProjectilePrefab, startPosition, Quaternion.identity);
 
       // Modify projectile speed based on attack type
       timeToReachTarget /= Attack.getSpeedModifier(attackType);
 
-      // Speed modifiers for the projectile types
-      ProjectileStatData projectileData = getProjectileDataFromAbility(abilityId);
-      if (projectileData != null) {
-         // The higher the mass, the slower the projectile will reach its target
-         timeToReachTarget /= projectileData.projectileMass;
+      // Calculate projectile values
+      float speed = distanceToTarget / timeToReachTarget;
+      Vector2 toEndPos = endPosition - startPosition;
+      Vector2 projectileVelocity = speed * toEndPos.normalized;
+      float lobHeight = Mathf.Clamp(1.0f / speed, 0.3f, 1.0f);
+
+      if (!hasArch) {
+         lobHeight = 0.0f;
       }
 
-      // Wait for the attack delay if any
-      yield return new WaitForSeconds(attackDelay);
+      projectile.initAbilityProjectile(netId, instanceId, attackMagnitude, abilityId, projectileVelocity, lobHeight, lifetime: timeToReachTarget, attackType: attackType, disableColliderFor: 0.8f, minDropShadowScale: 0.5f);
+      NetworkServer.Spawn(projectile.gameObject);
 
-      // Prevent sea monsters from damaging other sea monsters
-      bool targetPlayersOnly = this is SeaMonsterEntity;
-      D.adminLog("TimeNow:" + NetworkTime.time.ToString("f1") +
-         " AttackDelay:" + attackDelay +
-         " TimeToReachTarget:" + timeToReachTarget.ToString("f1") +
-         " LaunchDelay: " + launchDelay, D.ADMIN_LOG_TYPE.Sea);
+      Rpc_SpawnProjectileIndicator(endPosition, timeToReachTarget);
+   }
 
-      spawnProjectileAndIndicatorsOnClients(spot, abilityId, spawnPosition, launchDelay + timeToReachTarget);
-      StartCoroutine(CO_CheckCircleForCollisions(this, launchDelay + timeToReachTarget, spot, attackType, targetPlayersOnly, 1f, currentImpactMagnitude, abilityId));
+   [ClientRpc]
+   protected void Rpc_SpawnProjectileIndicator (Vector2 spawnPosition, float lifetime) {
+      ProjectileTargetingIndicator targetingIndicator = Instantiate(PrefabsManager.self.projectileTargetingIndicatorPrefab, spawnPosition, Quaternion.identity);
+      targetingIndicator.init(lifetime);
    }
 
    [Server]

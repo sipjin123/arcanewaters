@@ -30,6 +30,9 @@ public class SeaProjectile : NetworkBehaviour
    // A curve defining how the alpha of this projectile will change over its lifetime, if fadeOverLifetime is set to true
    public AnimationCurve alphaOverLifetime;
 
+   // A reference to the shadow renderer for this projectile
+   public SpriteRenderer shadowRenderer;
+
    #endregion
 
    protected virtual void Awake () {
@@ -49,25 +52,29 @@ public class SeaProjectile : NetworkBehaviour
       _rigidbody.velocity = projectileVelocity;
       _startTime = NetworkTime.time;
       _rigidbody.drag = linearDrag;
+
+      if (shadowRenderer && _minDropShadowScale != 1.0f && _lobHeight > 0.0f) {
+         StartCoroutine(CO_SetShadowHeight(_minDropShadowScale));
+      }
    }
 
    public void initAbilityProjectile (uint creatorID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 velocity, float lobHeight,
       Status.Type statusType = Status.Type.None, float statusDuration = 3.0f, float lifetime = -1.0f, bool isCrit = false, float disableColliderFor = 0.0f,
-      float disableColliderAfter = 0.0f, Attack.Type attackType = Attack.Type.None) {
+      float disableColliderAfter = 0.0f, Attack.Type attackType = Attack.Type.None, float minDropShadowScale = 1.0f) {
 
-      init(creatorID, instanceID, impactType, abilityId, velocity, lobHeight, statusType, statusDuration, lifetime, isCrit, disableColliderFor, disableColliderAfter, attackType);
+      init(creatorID, instanceID, impactType, abilityId, velocity, lobHeight, statusType, statusDuration, lifetime, isCrit, disableColliderFor, disableColliderAfter, attackType, -1, minDropShadowScale);
    }
 
    public void initProjectile (uint creatorID, int instanceID, Attack.ImpactMagnitude impactType, int projectileId, Vector2 velocity, float lobHeight,
       Status.Type statusType = Status.Type.None, float statusDuration = 3.0f, float lifetime = -1.0f, bool isCrit = false, float disableColliderFor = 0.0f,
-      float disableColliderAfter = 0.0f, Attack.Type attackType = Attack.Type.None) {
+      float disableColliderAfter = 0.0f, Attack.Type attackType = Attack.Type.None, float minDropShadowScale = 1.0f) {
 
-      init(creatorID, instanceID, impactType, -1, velocity, lobHeight, statusType, statusDuration, lifetime, isCrit, disableColliderFor, disableColliderAfter, attackType, projectileId);
+      init(creatorID, instanceID, impactType, -1, velocity, lobHeight, statusType, statusDuration, lifetime, isCrit, disableColliderFor, disableColliderAfter, attackType, projectileId, minDropShadowScale);
    }
 
    protected void init (uint creatorID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 velocity, float lobHeight,
       Status.Type statusType = Status.Type.None, float statusDuration = 3.0f, float lifetime = -1.0f, bool isCrit = false, float disableColliderFor = 0.0f,
-      float disableColliderAfter = 0.0f, Attack.Type attackType = Attack.Type.None, int projectileId = -1) {
+      float disableColliderAfter = 0.0f, Attack.Type attackType = Attack.Type.None, int projectileId = -1, float minDropShadowScale = 1.0f) {
 
       _startTime = NetworkTime.time;
       _creatorNetId = creatorID;
@@ -80,6 +87,7 @@ public class SeaProjectile : NetworkBehaviour
       _distance = velocity.magnitude * _lifetime;
       _isCrit = isCrit;
       _attackType = attackType;
+      _minDropShadowScale = minDropShadowScale;
 
       // If an ability id was provided, get projectile data from that, otherwise use the provided projectile id
       if (abilityId > 0) {
@@ -125,6 +133,17 @@ public class SeaProjectile : NetworkBehaviour
       _circleCollider.enabled = value;
    }
 
+   private IEnumerator CO_SetShadowHeight (float minShadowScale) {
+      float shadowInitialScale = shadowRenderer.transform.localScale.x;
+
+      while (!_hasCollided) {
+         float currentHeight = _circleCollider.transform.localPosition.y;
+         float heightQuotient = currentHeight / _lobHeight;
+         float newShadowScale = Mathf.Lerp(minShadowScale, 1.0f, (1.0f - heightQuotient)) * shadowInitialScale;
+         shadowRenderer.transform.localScale = Vector3.one * newShadowScale;
+         yield return null;
+      }
+   }
    protected void updateVisuals () {
       ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(projectileTypeId);
       if (projectileData != null) {
@@ -263,6 +282,16 @@ public class SeaProjectile : NetworkBehaviour
          return;
       }
 
+      // If this is a tentacle / poison circle attack, spawn venom
+      SeaEntity sourceEntity = SeaManager.self.getEntity(_creatorNetId);
+      Area area = AreaManager.self.getArea(sourceEntity.areaKey);
+      if (area != null && (_attackType == Attack.Type.Tentacle || _attackType == Attack.Type.Poison_Circle)) {
+         VenomResidue venomResidue = Instantiate(PrefabsManager.self.bossVenomResiduePrefab, transform.position, Quaternion.identity);
+         venomResidue.creatorNetId = sourceEntity.netId;
+         venomResidue.instanceId = _instanceId;
+         sourceEntity.Rpc_SpawnBossVenomResidue(sourceEntity.netId, _instanceId, transform.position);
+      }
+
       // If we have a trail renderer, detach it, so it can continue to show while this object is destroyed
       TrailRenderer trail = GetComponentInChildren<TrailRenderer>();
       if (trail != null) {
@@ -280,6 +309,11 @@ public class SeaProjectile : NetworkBehaviour
       hitEntity.Rpc_NetworkProjectileDamage(sourceEntity.netId, _attackType, transform.position);
       if (_showDamageNumber) {
          hitEntity.Rpc_ShowDamageTaken(finalDamage, false);
+      }
+
+      // If this is a shock ball attack, spawn chain lightning
+      if (_attackType == Attack.Type.Shock_Ball) {
+         sourceEntity.chainLightning(sourceEntity.netId, hitEntity.transform.position, hitEntity.netId);
       }
    }
 
@@ -373,6 +407,9 @@ public class SeaProjectile : NetworkBehaviour
 
    // The net ID of the last entity this projectile hit
    private uint _lastHitEntityNetId = 0;
+
+   // The minimum size of the drop shadow for this projectile - when it's at the height of its arc
+   private float _minDropShadowScale = 1.0f;
 
    #endregion
 }

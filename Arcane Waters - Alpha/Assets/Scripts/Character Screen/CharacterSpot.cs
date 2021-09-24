@@ -194,7 +194,7 @@ public class CharacterSpot : ClientMonoBehaviour {
       Util.fadeCanvasGroup(PanelManager.self.confirmScreen.canvasGroup, false, FADE_TIME);
 
       // Send off the request
-      NetworkClient.Send(new DeleteUserMessage(Global.netId, userId));
+      NetworkClient.Send(new DeleteUserMessage(userId));
    }
 
    public void setButtonVisiblity (bool isVisible) {

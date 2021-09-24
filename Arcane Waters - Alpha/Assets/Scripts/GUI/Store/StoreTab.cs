@@ -26,11 +26,17 @@ public class StoreTab : ClickableTab {
       // Armor Dyes
       ArmorDyes = 4,
 
+      // Hat Dyes
+      HatDyes = 5,
+
+      // Weapon Dyes
+      WeaponDyes = 6,
+
       // Ship Skins
-      ShipSkins = 5,
+      ShipSkins = 7,
 
       // Consumables
-      Consumables = 6
+      Consumables = 8,
    }
 
    #endregion

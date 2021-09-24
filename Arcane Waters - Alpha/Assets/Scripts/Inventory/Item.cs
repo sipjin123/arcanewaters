@@ -349,6 +349,7 @@ public class Item {
       return palettes;
    }
 
+   // Replaces the palette values in destination with the palette values from source
    public static string[] overridePalette (string source, string destination) {
       // Merge palette with player's palette
       string[] sourcePaletteArray = Item.parseItmPalette(source);
@@ -358,12 +359,15 @@ public class Item {
 
       List<string> sourcePrimaryList = sourcePaletteArray.Where(_ => _.ToLower().Contains("primary")).ToList();
       List<string> sourceSecondaryList = sourcePaletteArray.Where(_ => _.ToLower().Contains("secondary")).ToList();
+      List<string> sourceAccentList = sourcePaletteArray.Where(_ => _.ToLower().Contains("accent")).ToList();
 
       List<string> destinationPrimaryList = destinationPaletteArray.Where(_ => _.ToLower().Contains("primary")).ToList();
       List<string> destinationSecondaryList = destinationPaletteArray.Where(_ => _.ToLower().Contains("secondary")).ToList();
+      List<string> destinationAccentList = destinationPaletteArray.Where(_ => _.ToLower().Contains("accent")).ToList();
 
       finalPalettes.AddRange(sourcePrimaryList.Any() ? sourcePrimaryList : destinationPrimaryList);
       finalPalettes.AddRange(sourceSecondaryList.Any() ? sourceSecondaryList : destinationSecondaryList);
+      finalPalettes.AddRange(sourceAccentList.Any() ? sourceAccentList : destinationAccentList);
 
       return finalPalettes.ToArray();
    }

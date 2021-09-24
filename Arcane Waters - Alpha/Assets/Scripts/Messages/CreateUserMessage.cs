@@ -9,9 +9,6 @@ public class CreateUserMessage : NetworkMessage
 {
    #region Public Variables
 
-   // The network instance id associated with this message
-   public uint netId;
-
    // The User Info
    public UserInfo userInfo;
 
@@ -41,12 +38,7 @@ public class CreateUserMessage : NetworkMessage
 
    public CreateUserMessage () { }
 
-   public CreateUserMessage (uint netId) {
-      this.netId = netId;
-   }
-
-   public CreateUserMessage (uint netId, UserInfo userInfo, int armorType, string armorPalettes, Perk[] perks, string machineIdentifier, bool isFirstLogin, string steamUserId, int deploymentId) {
-      this.netId = netId;
+   public CreateUserMessage (UserInfo userInfo, int armorType, string armorPalettes, Perk[] perks, string machineIdentifier, bool isFirstLogin, string steamUserId, int deploymentId) {
       this.userInfo = userInfo;
       this.armorType = armorType;
       this.armorPalettes = armorPalettes;

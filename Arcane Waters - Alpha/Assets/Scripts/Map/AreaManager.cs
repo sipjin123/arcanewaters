@@ -145,6 +145,17 @@ public class AreaManager : MonoBehaviour
       return PvpArenaSize.None;
    }
 
+   public static float getWidthForPvpArenaSize (PvpArenaSize size) {
+      switch (size) {
+         case PvpArenaSize.Medium:
+            return 128.0f;
+         case PvpArenaSize.Large:
+            return 256.0f;
+         default:
+            return 64.0f;
+      }
+   }
+
    public bool isSeaArea (string areaKey) {
       if (hasArea(areaKey)) {
          return getArea(areaKey).isSea;

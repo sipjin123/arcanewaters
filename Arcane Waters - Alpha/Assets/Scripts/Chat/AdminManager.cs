@@ -119,7 +119,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("show_admin_panel", "Show the Admin Panel", showAdminPanel, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("reset_shop", "Refreshes all the shops", resetShops, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("simulate_steam_purchase_response", "Simulates the response received by the server", simulateSteamPurchaseAuthorizationResponse, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "orderId", "appId", "orderAuthorized" }));
-      cm.addCommand(new CommandData("add_xp", "Gives XP to the player", addXP, requiredPrefix: CommandType.Admin, parameterNames: new List<string> {"amount"}));
+      cm.addCommand(new CommandData("add_xp", "Gives XP to the player", addXP, requiredPrefix: CommandType.Admin, parameterNames: new List<string> { "amount" }));
       cm.addCommand(new CommandData("set_level", "Sets the Level of the player", setPlayerLevel, requiredPrefix: CommandType.Admin, parameterNames: new List<string> { "level" }));
       cm.addCommand(new CommandData("get_armor_with_palettes", "Gives you an armor with specified palettes. Requires a comma after the armor name.", getArmorWithPalettes, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "armorName", "paletteNameN" }));
       cm.addCommand(new CommandData("add_gems", "Gives an amount of gems to a user", requestAddGems, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "gemsAmount" }));
@@ -138,6 +138,9 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("temp_password", "Temporary access any account using temporary password", overridePassword, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "accountName", "tempPassword" }));
       cm.addCommand(new CommandData("db_test", "Runs a given number of queries per seconds and returns execution time statistics", requestDBTest, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "queriesPerSecond" }));
       cm.addCommand(new CommandData("name_change", "Change the name of another player", nameChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "oldUsername", "newUsername" }));
+
+      // Support commands
+      cm.addCommand(new CommandData("force_single_player", "Forces Single Player mode for a specific account", forceSinglePlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username" }));
 
       /*    NOT IMPLEMENTED
       _commands[Type.CreateTestUsers] = "create_test_users";
@@ -266,8 +269,16 @@ public class AdminManager : NetworkBehaviour
       string[] inputs = parameters.Split(' ');
 
       if (inputs.Length > 1) {
-         Powerup.Type type = (Powerup.Type) int.Parse(inputs[0]);
-         Rarity.Type rarity = (Rarity.Type) int.Parse(inputs[1]);
+         int typeValue = int.Parse(inputs[0]);
+         int rarityValue = int.Parse(inputs[1]);
+
+         // Return if values are invalid
+         if (rarityValue > 5 || typeValue > 10 || rarityValue <= 0 || typeValue <= 0) {
+            return;
+         }
+
+         Powerup.Type type = (Powerup.Type) typeValue;
+         Rarity.Type rarity = (Rarity.Type) rarityValue;
 
          if (type == Powerup.Type.None || rarity == Rarity.Type.None) {
             return;
@@ -959,6 +970,57 @@ public class AdminManager : NetworkBehaviour
       Cmd_RequestTemporaryPlayerBan(parameters);
    }
 
+   private void forceSinglePlayer (string username) {
+      Cmd_ForceSinglePlayer(username);
+   }
+
+   [Command]
+   private void Cmd_ForceSinglePlayer (string username) {
+      if (!_player.isAdmin()) {
+         D.warning("Requested command by non-admin");
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         UserAccountInfo userAccountInfo = DB_Main.getUserAccountInfo(username);
+
+         if (userAccountInfo != null) {
+            if (userAccountInfo.accountId == _player.accountId) {
+               // You can't force single player to yourself
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  _player.Target_ReceiveNormalChat("You can't force Single Player Mode to yourself", ChatInfo.Type.Error);
+               });
+            } else {
+               // We toggle the forceSinglePlayer field in the database
+               bool success = DB_Main.forceSinglePlayerForAccount(userAccountInfo.accountId, !userAccountInfo.forceSinglePlayer);
+
+               if (success) {
+                  if (userAccountInfo.forceSinglePlayer) {
+                     UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                        _player.Target_ReceiveNormalChat(string.Format("{0} is no longer locked to Single Player mode.", userAccountInfo.username), ChatInfo.Type.System);
+                     });
+                  } else {
+                     UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                        _player.Target_ReceiveNormalChat(string.Format("{0} is now locked to Single Player mode.", userAccountInfo.username), ChatInfo.Type.System);
+                        ServerNetworkingManager.self.forceSinglePlayerModeForUser(userAccountInfo.userId);
+                     });
+                  }
+               } else {
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     _player.Target_ReceiveNormalChat("Something went wrong with this command...", ChatInfo.Type.Error);
+                  });
+               }
+            }
+         } else {
+            // Send the failure message back to the client
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               string message = string.Format("Could not find user {0}.", username);
+               _player.Target_ReceiveNormalChat(message, ChatInfo.Type.Error);
+            });
+         }
+      });
+   }
+
    [Command]
    private void Cmd_RequestPermanentPlayerBan (string parameters) {
       if (!_player.isAdmin()) {
@@ -1079,14 +1141,19 @@ public class AdminManager : NetworkBehaviour
             player.isStealthMuted = true;
             break;
          case PenaltyType.Ban:
-            player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Banned, ServerMessageManager.getPenaltyMessage(penaltyInfo)));
+            player.connectionToClient.Send(new ErrorMessage(ErrorMessage.Type.Banned, ServerMessageManager.getPenaltyMessage(penaltyInfo)));
             break;
          case PenaltyType.Kick:
-            player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Kicked, ServerMessageManager.getPenaltyMessage(penaltyInfo)));
+            player.connectionToClient.Send(new ErrorMessage(ErrorMessage.Type.Kicked, ServerMessageManager.getPenaltyMessage(penaltyInfo)));
             break;
          default:
             break;
       }
+   }
+
+   [Server]
+   public void forceSinglePlayer (NetEntity player) {
+      player.connectionToClient.Send(new ErrorMessage(ErrorMessage.Type.Kicked, "This account has been locked to Single Player mode"));
    }
 
    [Server]
@@ -1802,7 +1869,7 @@ public class AdminManager : NetworkBehaviour
          // Create all the hats
          foreach (HatStatData hatData in EquipmentXMLManager.self.hatStatList) {
             if (hatData.hatType != 0) {
-               if (createItemIfNotExistOrReplenishStack(Item.Category.Hats, hatData.hatType, 1)) {
+               if (createItemIfNotExistOrReplenishStack(Item.Category.Hats, hatData.sqlId, 1)) {
                   hatCount++;
                }
             }
@@ -2352,11 +2419,11 @@ public class AdminManager : NetworkBehaviour
          }
 
          // Warp to the specific instance
-         _player.findBestServerAndWarp(targetLocation.areaKey, targetLocation.getLocalPosition(), targetVoyage.voyageId, Direction.South);
+         _player.findBestServerAndWarp(targetLocation.areaKey, targetLocation.getLocalPosition(), targetVoyage.voyageId, Direction.South, -1, -1);
          return;
       }
 
-      _player.spawnInNewMap(targetLocation.areaKey, targetLocation.getLocalPosition(), Direction.South);
+      _player.spawnInNewMap(targetLocation.areaKey, targetLocation.getLocalPosition(), Direction.South, -1, -1);
    }
 
    [Command]
@@ -2803,7 +2870,7 @@ public class AdminManager : NetworkBehaviour
          // Create all the hats
          foreach (HatStatData hatData in EquipmentXMLManager.self.hatStatList) {
             if (hatData.hatType != 0) {
-               if (createItemIfNotExistOrReplenishStack(Item.Category.Hats, hatData.hatType, 1)) {
+               if (createItemIfNotExistOrReplenishStack(Item.Category.Hats, hatData.sqlId, 1)) {
                   hatCount++;
                }
             }

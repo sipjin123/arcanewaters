@@ -69,21 +69,20 @@ public class StoreScreen : Panel
       buyButton.interactable = (selectedItem != null);
    }
 
-   public void showPanel (UserObjects userObjects, int gold, int gems) {
+   public void showPanel (int gold, int gems) {
       toggleBlocker(true);
 
       // Show our gold and gem count
       this.goldText.text = gold + "";
       this.gemsText.text = gems + "";
-      this.nameText.text = userObjects.userInfo.username;
-      this._userObjectsCache = userObjects;
+      this.nameText.text = Global.userObjects.userInfo.username;
       
       destroyStoreBoxes();
       deselectAllItems();
-      updateCharacterPreview();
+      updateCharacterPreview(showPreview: false);
 
       // Request Store Items
-      Global.player.rpc.Cmd_RequestStoreResources(requestStoreItems: true, requestUserObjects: true);
+      Global.player.rpc.Cmd_RequestStoreResources(requestStoreItems: true);
 
       // Display the panel
       if (!isShowing()) {
@@ -93,20 +92,15 @@ public class StoreScreen : Panel
 
    public void refreshPanel () {
       // Request Store Items
-      Global.player.rpc.Cmd_RequestStoreResources(requestStoreItems: false, requestUserObjects: true);
+      Global.player.rpc.Cmd_RequestStoreResources(requestStoreItems: false);
    }
 
-   public void onReceiveStoreResources (List<StoreItem> storeItems, UserObjects userObjects) {
+   public void onReceiveStoreResources (List<StoreItem> storeItems) {
       deselectAllItems();
 
-      if (userObjects == null) {
-         userObjects = this._userObjectsCache;
-      }
-
-      if (userObjects != null) {
-         this._userObjectsCache = userObjects;
-         this.nameText.text = userObjects.userInfo.username;
-         updateCharacterPreview();
+      if (Global.userObjects != null) {
+         this.nameText.text = Global.userObjects.userInfo.username;
+         updateCharacterPreview(showPreview: true);
       }
 
       if (storeItems == null || storeItems.Count == 0) {
@@ -184,7 +178,8 @@ public class StoreScreen : Panel
       D.debug("Store purchase: Control transferred.");
    }
 
-   private void updateCharacterPreview () {
+   private void updateCharacterPreview (bool showPreview) {
+      this.characterStack.gameObject.SetActive(showPreview);
       StoreItemBox itemBox = this.selectedItem;
 
       // Did they unselect the current item?
@@ -192,7 +187,7 @@ public class StoreScreen : Panel
          this.selectedItem = null;
          this.itemTitleText.text = "";
          this.descriptionText.text = "";
-         this.characterStack.updateLayers(_userObjectsCache);
+         this.characterStack.updateLayers(Global.userObjects);
       } else {
          this.selectedItem = itemBox;
          itemTitleText.text = itemBox.itemName;
@@ -200,13 +195,13 @@ public class StoreScreen : Panel
 
          if (itemBox is StoreHairDyeBox) {
             StoreHairDyeBox hairBox = (StoreHairDyeBox) itemBox;
-            characterStack.updateHair(_userObjectsCache.userInfo.hairType, hairBox.palette.paletteName);
+            characterStack.updateHair(Global.userObjects.userInfo.hairType, hairBox.palette.paletteName);
          } else if (itemBox is StoreHaircutBox) {
             StoreHaircutBox hairBox = (StoreHaircutBox) itemBox;
-            characterStack.updateHair(hairBox.haircut.type, _userObjectsCache.userInfo.hairPalettes);
+            characterStack.updateHair(hairBox.haircut.type, Global.userObjects.userInfo.hairPalettes);
          } else if (itemBox is StoreArmorDyeBox) {
             StoreArmorDyeBox armorBox = (StoreArmorDyeBox) itemBox;
-            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(_userObjectsCache.armor.itemTypeId);
+            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(Global.userObjects.armor.itemTypeId);
 
             if (armorData == null) {
                armorData = EquipmentXMLManager.self.armorStatList.First();
@@ -232,7 +227,7 @@ public class StoreScreen : Panel
          this.selectedItem.select();
       }
 
-      updateCharacterPreview();
+      updateCharacterPreview(showPreview: true);
    }
 
    private void deselectAllItems () {
@@ -394,7 +389,22 @@ public class StoreScreen : Panel
       }
 
       if (palette.paletteType == (int) PaletteImageType.Armor) {
-         return createArmorDyeBox(storeItem);
+
+         bool isActuallyHat = false;
+
+         if (palette.paletteName.ToLower().StartsWith("hat")) {
+            isActuallyHat = true;
+         }
+
+         if (isActuallyHat) {
+            return createHatDyeBox(storeItem);
+         } else {
+            return createArmorDyeBox(storeItem);
+         }
+      }
+
+      if (palette.paletteType == (int) PaletteImageType.Weapon) {
+         return createWeaponDyeBox(storeItem);
       }
 
       return null;
@@ -429,16 +439,45 @@ public class StoreScreen : Panel
       box.armorDye = dyeData;
       box.itemName = box.armorDye.itemName;
       box.itemDescription = box.armorDye.itemDescription;
-      box.playerArmor = this._userObjectsCache.armor;
+      box.playerArmor = Global.userObjects.armor;
       tryOverrideNameAndDescription(storeItem, box);
       box.initialize();
       return box;
    }
 
-   protected StoreHaircutBox createHatBox (StoreItem storeItem) {
-      StoreHaircutBox box = Instantiate(PrefabsManager.self.haircutBoxPrefab);
+   protected StoreWeaponDyeBox createWeaponDyeBox (StoreItem storeItem) {
+      DyeData dyeData = DyeXMLManager.self.getDyeData(storeItem.itemId);
+
+      if (dyeData == null) {
+         return null;
+      }
+
+      StoreWeaponDyeBox box = Instantiate(PrefabsManager.self.weaponDyeBoxPrefab);
       prepareStoreItemBox(storeItem, box);
+      box.weaponDye = dyeData;
+      box.itemName = box.weaponDye.itemName;
+      box.itemDescription = box.weaponDye.itemDescription;
+      box.playerWeapon = Global.userObjects.weapon;
       tryOverrideNameAndDescription(storeItem, box);
+      box.initialize();
+      return box;
+   }
+
+   protected StoreHatDyeBox createHatDyeBox (StoreItem storeItem) {
+      DyeData dyeData = DyeXMLManager.self.getDyeData(storeItem.itemId);
+
+      if (dyeData == null) {
+         return null;
+      }
+
+      StoreHatDyeBox box = Instantiate(PrefabsManager.self.hatDyeBoxPrefab);
+      prepareStoreItemBox(storeItem, box);
+      box.hatDye = dyeData;
+      box.itemName = box.hatDye.itemName;
+      box.itemDescription = box.hatDye.itemDescription;
+      box.playerHat = Global.userObjects.hat;
+      tryOverrideNameAndDescription(storeItem, box);
+      box.initialize();
       return box;
    }
 
@@ -504,7 +543,7 @@ public class StoreScreen : Panel
                createdBox = createDyeBox(item);
                break;
             case Item.Category.Hats:
-               createdBox = createHatBox(item);
+               createdBox = createHatDyeBox(item);
                break;
             case Item.Category.Pet:
                createdBox = createPetBox(item);
@@ -549,9 +588,6 @@ public class StoreScreen : Panel
 
    // Store Items
    private List<StoreItemBox> _storeItemBoxes = new List<StoreItemBox>();
-
-   // User Objects Cache
-   private UserObjects _userObjectsCache;
 
    // Store Items Cache
    private List<StoreItem> _storeItemsCache;

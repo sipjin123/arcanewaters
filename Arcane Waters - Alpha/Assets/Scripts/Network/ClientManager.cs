@@ -108,7 +108,7 @@ public class ClientManager : GenericGameManager {
             Global.lastSteamId = steamId.ToString();
 
             // Extract the credentials
-            LogInUserMessage msg = new LogInUserMessage(Global.netId, "", "", true, 
+            LogInUserMessage msg = new LogInUserMessage( "", "", true, 
                Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, Global.isSinglePlayer, _.m_Ticket, _.m_pcbTicket, machineIdentifier, Global.isFirstLogin, SteamUtils.GetAppID().ToString(), Global.lastSteamId, Global.isRedirecting, deploymentId);
 
             // Send a message to the Server letting them know which of our Users we want to log in to
@@ -118,7 +118,7 @@ public class ClientManager : GenericGameManager {
          // Trigger the fetching of the ownership info
          SteamLoginManager.self.getAuthenticationTicket();
       } else {
-         LogInUserMessage msg = new LogInUserMessage(Global.netId, Global.lastUsedAccountName, Global.lastUserAccountPassword, false, 
+         LogInUserMessage msg = new LogInUserMessage(Global.lastUsedAccountName, Global.lastUserAccountPassword, false, 
             Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, Global.isSinglePlayer, new byte[0], 0, machineIdentifier, Global.isFirstLogin, "0", "", Global.isRedirecting, deploymentId);
 
          // Send a message to the Server letting them know which of our Users we want to log in to

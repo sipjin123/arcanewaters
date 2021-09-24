@@ -42,6 +42,23 @@ public class BodyLayer : SpriteLayer {
       return _type;
    }
 
+
+   public static Type getRandomBodyTypeOfGender (Gender.Type gender) {
+      List<Type> genderTypes = new List<Type>();
+      Array bodyTypes = Enum.GetValues(typeof(Type));
+
+      foreach (var item in bodyTypes) {
+         var bodyType = (Type) item;
+
+         if ((gender == Gender.Type.Male && bodyType.ToString().ToLower().StartsWith("male")) || (gender == Gender.Type.Female && bodyType.ToString().ToLower().StartsWith("female"))) {
+            genderTypes.Add(bodyType);
+         }
+      }
+
+      int index = Mathf.FloorToInt(UnityEngine.Random.Range(0, genderTypes.Count - 1));
+      return genderTypes[index];
+   }
+
    #region Private Variables
 
    // Our current type

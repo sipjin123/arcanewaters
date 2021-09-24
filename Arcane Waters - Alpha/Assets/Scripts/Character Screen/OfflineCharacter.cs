@@ -149,7 +149,9 @@ public class OfflineCharacter : ClientMonoBehaviour {
          hatData = HatStatData.getDefaultData();
          hatData.palettes = hat.paletteNames;
       }
-      setHat(hatData.hatType, hatData.palettes, HatStatData.serializeHatStatData(hatData));
+
+      string hatPalette = Item.parseItmPalette(Item.overridePalette(hat.paletteNames, hatData.palettes));
+      setHat(hatData.hatType, hatPalette, HatStatData.serializeHatStatData(hatData));
 
       setWeapon(userInfo, weapon);
 

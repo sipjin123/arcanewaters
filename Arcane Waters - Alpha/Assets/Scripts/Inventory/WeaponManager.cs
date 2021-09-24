@@ -99,9 +99,10 @@ public class WeaponManager : EquipmentManager {
       }
    }
 
-   [ClientRpc]
-   public void Rpc_EquipWeapon (string rawReaponData, string newPalettes) {
-      WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(rawReaponData);
+
+   [TargetRpc]
+   public void Target_EquipWeapon(NetworkConnection connection, string rawWeaponData, string newPalettes) {
+      WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(rawWeaponData);
       cachedWeaponData = weaponData;
 
       // Update the sprites for the new weapon type
@@ -120,6 +121,16 @@ public class WeaponManager : EquipmentManager {
          category = Item.Category.Weapon,
          itemTypeId = weaponType
       };
+   }
+
+   [ClientRpc]
+   public void Rpc_BroadcastEquipWeapon (string rawWeaponData, string newPalettes) {
+      WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(rawWeaponData);
+      cachedWeaponData = weaponData;
+
+      // Update the sprites for the new weapon type
+      int newType = weaponData == null ? 0 : weaponData.weaponType;
+      updateSprites(newType, newPalettes);
    }
    
    public void updateDurability (int newDurability) {
@@ -148,8 +159,26 @@ public class WeaponManager : EquipmentManager {
       this.actionType = weaponData == null ? Weapon.ActionType.None : weaponData.actionType;
       this.weaponDurability = durability;
 
+      NetworkConnection connection = null;
+
+      if (_body != null) {
+         connection = _body.connectionToClient;
+      }
+
+      if (_battler != null && _battler.player != null) {
+         connection = _battler.player.connectionToClient;
+      }
+
+      if (connection == null) {
+         D.debug("Connection to client was null!");
+         return;
+      }
+
+      // Send the weapon info to the owner client
+      Target_EquipWeapon(connection, WeaponStatData.serializeWeaponStatData(weaponData), this.palettes);
+
       // Send the Weapon Info to all clients
-      Rpc_EquipWeapon(WeaponStatData.serializeWeaponStatData(weaponData), this.palettes);
+      Rpc_BroadcastEquipWeapon(WeaponStatData.serializeWeaponStatData(weaponData), this.palettes);
    }
 
    #region Private Variables

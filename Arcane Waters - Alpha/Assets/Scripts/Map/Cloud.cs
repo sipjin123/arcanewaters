@@ -85,6 +85,7 @@ public class Cloud : ClientMonoBehaviour {
       // Update the opacity
       float targetOpacity = hasSomethingNearby ? .5f : 1f;
       spriteGroup.alpha += (spriteGroup.alpha < targetOpacity) ? Time.smoothDeltaTime * OPACITY_CHANGE_SPEED : Time.smoothDeltaTime * -OPACITY_CHANGE_SPEED;
+      spriteGroup.alpha = Mathf.Clamp(spriteGroup.alpha, .5f, 1f);
    }
 
    protected void checkNearby () {

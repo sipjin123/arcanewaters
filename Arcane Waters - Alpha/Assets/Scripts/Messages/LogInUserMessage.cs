@@ -9,9 +9,6 @@ public class LogInUserMessage : NetworkMessage
 {
    #region Public Variables
 
-   // The network instance id associated with this message
-   public uint netId;
-
    // The credentials
    public string accountName;
    public string accountPassword;
@@ -59,14 +56,9 @@ public class LogInUserMessage : NetworkMessage
 
    public LogInUserMessage () { }
 
-   public LogInUserMessage (uint netId) {
-      this.netId = netId;
-   }
-
-   public LogInUserMessage (uint netId, string accountName, string accountPassword, bool isSteamLogin,
+   public LogInUserMessage (string accountName, string accountPassword, bool isSteamLogin,
       int clientGameVersion, int selectedUserId, RuntimePlatform clientPlatform, bool isSinglePlayer, 
       byte[] steamAuthTicket, uint steamTicketSize, string machineIdentifier, bool isFirstLogin, string steamAppId, string steamUserId, bool isRedirecting, int deploymentId) {
-      this.netId = netId;
       this.selectedUserId = selectedUserId;
       this.accountName = accountName;
       this.clientGameVersion = clientGameVersion;

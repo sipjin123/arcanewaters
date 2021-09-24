@@ -308,7 +308,7 @@ public class ServerMessageManager : MonoBehaviour
                D.adminLog("Account Log: Login Authentication Complete! {" + logInUserMessage.accountName + "}" + " : {" + accountId + "}", D.ADMIN_LOG_TYPE.Server_AccountLogin);
 
                // Now tell the client to move forward with the login process
-               LogInCompleteMessage msg = new LogInCompleteMessage(Global.netId, users[0].userId, (Direction) users[0].facingDirection,
+               LogInCompleteMessage msg = new LogInCompleteMessage(users[0].userId, (Direction) users[0].facingDirection,
                   userObjects.accountEmail, userObjects.accountCreationTime, loginMessage);
                conn.Send(msg);
 
@@ -354,7 +354,7 @@ public class ServerMessageManager : MonoBehaviour
                D.adminLog("Account Log: Login Complete with No Characters! {" + logInUserMessage.accountName + "}" + " : {" + accountId + "}", D.ADMIN_LOG_TYPE.Server_AccountLogin);
 
                // If there was an account ID but not user ID, send the info on all of their characters for display on the Character screen
-               CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), armorItemList.ToArray(), weaponItemList.ToArray(), hatItemList.ToArray(), armorPalettes, startingEquipmentIds.ToArray(), startingSpriteIds.ToArray());
+               CharacterListMessage msg = new CharacterListMessage(users.ToArray(), armorItemList.ToArray(), weaponItemList.ToArray(), hatItemList.ToArray(), armorPalettes, startingEquipmentIds.ToArray(), startingSpriteIds.ToArray());
                conn.Send(msg);
 
                // Note how long it took us to finish the authentication process
@@ -458,22 +458,22 @@ public class ServerMessageManager : MonoBehaviour
 
 
    public static void sendConfirmation (ConfirmMessage.Type confirmType, NetEntity player, string customMessage = "") {
-      ConfirmMessage confirmMessage = new ConfirmMessage(Global.netId, confirmType, System.DateTime.UtcNow.ToBinary(), customMessage);
+      ConfirmMessage confirmMessage = new ConfirmMessage(confirmType, System.DateTime.UtcNow.ToBinary(), customMessage);
       NetworkServer.SendToClientOfPlayer(player.netIdent, confirmMessage);
    }
 
    public static void sendConfirmation (ConfirmMessage.Type confirmType, int connectionId, string customMessage = "") {
-      ConfirmMessage confirmMessage = new ConfirmMessage(Global.netId, confirmType, System.DateTime.UtcNow.ToBinary(), customMessage);
+      ConfirmMessage confirmMessage = new ConfirmMessage(confirmType, System.DateTime.UtcNow.ToBinary(), customMessage);
       NetworkServer.connections[connectionId].Send(confirmMessage);
    }
 
    public static void sendError (ErrorMessage.Type errorType, NetEntity player, string customMessage = "") {
-      ErrorMessage errorMessage = new ErrorMessage(Global.netId, errorType, customMessage);
+      ErrorMessage errorMessage = new ErrorMessage(errorType, customMessage);
       NetworkServer.SendToClientOfPlayer(player.netIdent, errorMessage);
    }
 
    public static void sendError (ErrorMessage.Type errorType, int connectionId) {
-      ErrorMessage errorMessage = new ErrorMessage(Global.netId, errorType);
+      ErrorMessage errorMessage = new ErrorMessage(errorType);
 
       if (NetworkServer.connections.ContainsKey(connectionId)) {
          NetworkServer.connections[connectionId].Send(errorMessage);
@@ -481,7 +481,7 @@ public class ServerMessageManager : MonoBehaviour
    }
 
    public static void sendError (ErrorMessage.Type errorType, int connectionId, string customMessage = "") {
-      ErrorMessage errorMessage = new ErrorMessage(Global.netId, errorType, customMessage);
+      ErrorMessage errorMessage = new ErrorMessage(errorType, customMessage);
       NetworkServer.connections[connectionId].Send(errorMessage);
    }
 
@@ -673,7 +673,7 @@ public class ServerMessageManager : MonoBehaviour
             MyNetworkManager.noteUserIdForConnection(userId, steamUserId, conn);
 
             // Now tell the client to move forward with the login process
-            LogInCompleteMessage loginCompleteMsg = new LogInCompleteMessage(Global.netId, userId, (Direction) userInfo.facingDirection,
+            LogInCompleteMessage loginCompleteMsg = new LogInCompleteMessage(userId, (Direction) userInfo.facingDirection,
                userObjects.accountEmail, userObjects.accountCreationTime);
             conn.Send(loginCompleteMsg);
          } else {

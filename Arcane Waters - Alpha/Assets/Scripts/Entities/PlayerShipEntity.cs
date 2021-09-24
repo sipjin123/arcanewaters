@@ -297,15 +297,16 @@ public class PlayerShipEntity : ShipEntity
          primaryAbilityId = shipAbilities[0];
       }
 
-      // If the player is not currently part of a voyage then initialize their health to full health
-      if (this.voyageGroupId < 1) {
-         initHealth();
-      }
+      // If the player is in a voyage, its current hp is persistent between maps and we must not restore it
+      initHealth(isInGroup());
    }
 
-   private void initHealth () {
+   private void initHealth (bool skipCurrentHealth = false) {
       float healthMultiplierAdditive = 1.0f + PerkManager.self.getPerkMultiplierAdditive(userId, Perk.Category.ShipHealth) + PowerupManager.self.getPowerupMultiplierAdditive(userId, Powerup.Type.IncreasedHealth);
-      currentHealth = (int) (healthMultiplierAdditive * _baseHealth);
+
+      if (!skipCurrentHealth) {
+         currentHealth = (int) (healthMultiplierAdditive * _baseHealth);
+      }
       maxHealth = (int) (healthMultiplierAdditive * _baseHealth);
    }
 
@@ -349,7 +350,7 @@ public class PlayerShipEntity : ShipEntity
             }
          }
 
-         if (!isPerformingAttack()) {
+         if (!ChatManager.self.chatPanel.inputField.isFocused) {
             if (KeyUtils.GetKeyDown(Key.Digit1)) {
                selectAbility(0);
             } else if (KeyUtils.GetKeyDown(Key.Digit2)) {
@@ -395,7 +396,7 @@ public class PlayerShipEntity : ShipEntity
          }
       }
 
-      if (!isDead() && !isGhost) {
+      if (!isDead() && !isGhost && !isPerformingAttack()) {
          // Start charging attack with mouse
          if (InputManager.isFireCannonMouseDown() || (InputManager.isFireCannonMouse() && !_isChargingCannon)) {
             _chargingWithMouse = true;
@@ -516,16 +517,18 @@ public class PlayerShipEntity : ShipEntity
       }
 
       // Disable game objects from the old targeting type
-      switch (oldAttackType) {
-         case CannonAttackType.Cone:
-            _targetCone.gameObject.SetActive(false);
-            break;
-         case CannonAttackType.Circle:
-            _targetCircle.gameObject.SetActive(false);
-            break;
-         default:
-            _cannonTargeter.gameObject.SetActive(false);
-            break;
+      if (!isPerformingAttack()) {
+         switch (oldAttackType) {
+            case CannonAttackType.Cone:
+               _targetCone.gameObject.SetActive(false);
+               break;
+            case CannonAttackType.Circle:
+               _targetCircle.gameObject.SetActive(false);
+               break;
+            default:
+               _cannonTargeter.gameObject.SetActive(false);
+               break;
+         }
       }
 
       cannonAttackType = newAttackType;
@@ -679,8 +682,22 @@ public class PlayerShipEntity : ShipEntity
          Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, -rotAngleDivider * i), false, false);
       }
 
-      _shouldUpdateTargeting = false;
-      _targetCone.targetingConfirmed(() => _shouldUpdateTargeting = true);
+      switch (cannonAttackType) {
+         case CannonAttackType.Normal:
+            _shouldUpdateTargeting = false;
+            _cannonTargeter.targetingConfirmed(() => _shouldUpdateTargeting = true);
+            break;
+         case CannonAttackType.Cone:
+            _shouldUpdateTargeting = false;
+            _targetCone.targetingConfirmed(() => _shouldUpdateTargeting = true);
+            break;
+         case CannonAttackType.Circle:
+            _shouldUpdateTargeting = false;
+            _targetCircle.targetingConfirmed(() => _shouldUpdateTargeting = true);
+            break;
+         default:
+            break;
+      }
    }
 
    private void updateTargeting () {
@@ -882,7 +899,7 @@ public class PlayerShipEntity : ShipEntity
       float multiShotMultiplier = PowerupManager.self.getPowerupMultiplierAdditive(userId, Powerup.Type.MultiShots);
 
       // If the user has the MultiShots powerup
-      if (multiShotMultiplier > 0.01f) {
+      if (multiShotMultiplier > 0.01f && PowerupManager.self.canPlayerUsePowerup(userId, Powerup.Type.MultiShots)) {
          // Store the activation chance for the powerup
          float activationChance = multiShotMultiplier * 2.0f;
          int maxExtraShots = (int) (multiShotMultiplier * 10.0f);
@@ -1067,19 +1084,39 @@ public class PlayerShipEntity : ShipEntity
       armorType = armorData == null ? 0 : armorData.armorType;
       hatType = hatData == null ? 0 : hatData.hatType;
 
-      armorColors = armor.paletteNames;
+      hatColors = hat != null ? hat.paletteNames : hatData.palettes;
+      weaponColors = weapon != null ? weapon.paletteNames : weaponData.palettes;
+      armorColors = armor != null ? armor.paletteNames : armorData.palettes;
    }
 
    public override Armor getArmorCharacteristics () {
-      return new Armor(0, armorType, armorColors);
+      ArmorStatData armorData = EquipmentXMLManager.self.armorStatList.Find(_ => _.armorType == armorType);
+
+      if (armorData == null) {
+         return new Armor();
+      }
+
+      return new Armor(0, armorData.sqlId, armorColors);
    }
 
    public override Weapon getWeaponCharacteristics () {
-      return new Weapon(0, weaponType, weaponColors);
+      WeaponStatData weaponData = EquipmentXMLManager.self.weaponStatList.Find(_ => _.weaponType == weaponType);
+
+      if (weaponData == null) {
+         return new Weapon();
+      }
+
+      return new Weapon(0, weaponData.sqlId, weaponColors);
    }
 
    public override Hat getHatCharacteristics () {
-      return new Hat(0, hatType, hatColors);
+      HatStatData hatData = EquipmentXMLManager.self.hatStatList.Find(_ => _.hatType == hatType);
+
+      if (hatData == null) {
+         return new Hat();
+      }
+
+      return new Hat(0, hatData.sqlId, hatColors);
    }
 
    protected void adjustMovementAudio () {

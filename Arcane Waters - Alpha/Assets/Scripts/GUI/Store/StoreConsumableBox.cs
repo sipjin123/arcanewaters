@@ -13,6 +13,16 @@
       if (this.imageIcon == null) {
          return;
       }
+
+      imageIcon.sprite = ImageManager.getSprite(computeConsumableIconPath());
+   }
+
+   private string computeConsumableIconPath () {
+      if (consumable == null || string.IsNullOrWhiteSpace(consumable.itemIconPath)) {
+         return "Icons/Store/respec_item";
+      }
+
+      return consumable.itemIconPath;
    }
 
    #region Private Variables

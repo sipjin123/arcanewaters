@@ -9,9 +9,6 @@ public class LogInCompleteMessage : NetworkMessage
 {
    #region Public Variables
 
-   // The network instance id associated with this message
-   public uint netId;
-
    // The user id associated with this login
    public int userId;
 
@@ -31,8 +28,7 @@ public class LogInCompleteMessage : NetworkMessage
 
    public LogInCompleteMessage () { }
 
-   public LogInCompleteMessage (uint netId, int userId, Direction initialFacingDirection, string accountEmail, long accountCreationTime, string loginMessage = "") {
-      this.netId = netId;
+   public LogInCompleteMessage (int userId, Direction initialFacingDirection, string accountEmail, long accountCreationTime, string loginMessage = "") {
       this.userId = userId;
       this.initialFacingDirection = initialFacingDirection;
       this.accountEmail = accountEmail;

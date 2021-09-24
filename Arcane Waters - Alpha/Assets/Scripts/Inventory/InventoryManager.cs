@@ -84,7 +84,7 @@ public class InventoryManager : MonoBehaviour
       PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmUseItem(castedItem));
 
       // Show a confirmation panel
-      PanelManager.self.confirmScreen.show("Are you sure you want to use your " + castedItem.getName() + "?");
+      PanelManager.self.confirmScreen.show("Are you sure you want to use '" + castedItem.getName() + "'?");
    }
 
    protected static void confirmUseItem (Item item) {
