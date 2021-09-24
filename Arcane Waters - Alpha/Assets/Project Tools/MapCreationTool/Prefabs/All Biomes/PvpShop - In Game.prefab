@@ -495,7 +495,7 @@ MonoBehaviour:
   buildingObject: {fileID: 6989246763249188479}
   solidColliderRef: {fileID: 8630223415900935463}
   triggerColliderRef: {fileID: 3993831171790374592}
-  isActive: 0
+  isActive: 1
 --- !u!114 &1964489795130427793
 MonoBehaviour:
   m_ObjectHideFlags: 0

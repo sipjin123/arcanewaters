@@ -37,6 +37,10 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
       radiusGameObject.SetActive(isEnabled);
       isActive = isEnabled;
       triggerColliderRef.enabled = isEnabled;
+
+      if (isEnabled && !gameObject.activeInHierarchy) {
+         gameObject.SetActive(true);
+      }
    }
 
    public void receiveData (DataField[] dataFields) {

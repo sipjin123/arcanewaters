@@ -378,7 +378,7 @@ namespace MapCreationTool
                } else if (original.GetComponent<SpiderWeb>() != null) {
                   pref.GetComponent<SpiderWeb>().initializeBiome(project.biome);
                } else if (original.GetComponent<PvpShopEntity>()) {
-                  if (area.isSea && VoyageManager.isAnyLeagueArea(area.areaKey)) {
+                  if (area.isSea && VoyageManager.isAnyLeagueArea(area.areaKey) && !VoyageManager.isPvpArenaArea(area.areaKey)) {
                      PvpShopEntity shopEntity = pref.GetComponent<PvpShopEntity>();
                      shopEntity.enableShop(false);
                   }
