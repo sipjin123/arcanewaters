@@ -436,8 +436,6 @@ public class MyNetworkManager : NetworkManager
             player.voyageGroupId = voyageGroupInfo != null ? voyageGroupInfo.groupId : -1;
             player.isGhost = voyageGroupInfo != null ? voyageGroupInfo.isGhost : false;
 
-            // OLD: InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);
-
             // If user has a declared instance to visit, add instance id by fetching from server assigned user ids
             if (ServerNetworkingManager.self.server.assignedUserIds.ContainsKey(player.userId)) {
                AssignedUserInfo serverInfo = ServerNetworkingManager.self.server.assignedUserIds[player.userId];

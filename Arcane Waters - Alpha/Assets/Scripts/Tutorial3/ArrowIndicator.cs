@@ -25,7 +25,7 @@ public class ArrowIndicator : MonoBehaviour {
    // The screen point in world view
    public Vector3 screenPoint;
 
-   // If the arrow is horrizontal
+   // If the arrow is horizontal
    public bool isHorizontal;
 
    // If this arrow is active
