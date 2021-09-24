@@ -36,11 +36,6 @@ public class RedirectionManager : GenericGameManager
 
       NetworkedServer currentServer = ServerNetworkingManager.self.getServer(currentServerPort);
       
-      // If a port was specified during redirection, get that server
-      if (targetServerPort > 0) {
-         currentServer = ServerNetworkingManager.self.getServer(targetServerPort);
-      }
-
       if (currentServer == null) {
          D.error($"Could not find the server {currentServerPort}");
          return Global.MASTER_SERVER_PORT;
@@ -48,6 +43,11 @@ public class RedirectionManager : GenericGameManager
 
       // Find the best available server
       NetworkedServer bestServer = findBestServerForConnectingUser(userId, userName, voyageId, destinationAreaKey, isSinglePlayer, currentServerPort, currentAddress);
+      
+      // If a port was specified during redirection, get that server
+      if (targetServerPort > 0) {
+         bestServer = ServerNetworkingManager.self.getServer(targetServerPort);
+      }
 
       // Already move the user from one server to the other, so that the server load is immediately updated
       if (currentServer.assignedUserIds.ContainsKey(userId)) {
