@@ -634,6 +634,15 @@ public class BattleManager : MonoBehaviour {
 
             float targetDefenseElement = target.getDefense(element);
 
+            // Add powerup defense
+            if (target.userId > 0) {
+               if (LandPowerupManager.self.hasPowerup(source.userId, LandPowerupType.DefenseBoost)) {
+                  int boostedDefense = (int) (targetDefenseElement * LandPowerupManager.self.getPowerupValue(source.userId, LandPowerupType.DefenseBoost) / 100);
+                  D.debug("Add {" + boostedDefense + "} defense to {" + targetDefenseElement + "}: Total: {" + (targetDefenseElement + boostedDefense) + "}");
+                  targetDefenseElement += boostedDefense;
+               }
+            }
+
             // Determines if the unit is resistant or weak against an element
             float resistantModifier = 0;
             if (target.isWeakAgainst(element)) {
