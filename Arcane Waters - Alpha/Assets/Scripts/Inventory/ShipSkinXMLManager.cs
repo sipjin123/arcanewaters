@@ -52,13 +52,15 @@ public class ShipSkinXMLManager : MonoBehaviour
          if (xmlPair.isEnabled) {
             try {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
-               ShipSkinData rawData = Util.xmlLoad<ShipSkinData>(newTextAsset);
-               rawData.itemID = xmlPair.xmlId;
+               if (newTextAsset.text.Contains(EquipmentXMLManager.VALID_XML_FORMAT)) {
+                  ShipSkinData rawData = Util.xmlLoad<ShipSkinData>(newTextAsset);
+                  rawData.itemID = xmlPair.xmlId;
 
-               // Save the data in the memory cache
-               if (!_shipSkinDataRegistry.ContainsKey(xmlPair.xmlId) && xmlPair.isEnabled) {
-                  _shipSkinDataRegistry.Add(xmlPair.xmlId, rawData);
-                  _shipSkinDataList.Add(rawData);
+                  // Save the data in the memory cache
+                  if (!_shipSkinDataRegistry.ContainsKey(xmlPair.xmlId) && xmlPair.isEnabled) {
+                     _shipSkinDataRegistry.Add(xmlPair.xmlId, rawData);
+                     _shipSkinDataList.Add(rawData);
+                  }
                }
             } catch {
                D.editorLog("Failed to translate data: " + xmlPair.rawXmlData, Color.red);

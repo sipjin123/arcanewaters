@@ -952,10 +952,16 @@ public class XmlVersionManagerClient : GenericGameManager {
                // Extract the segregated data and assign to the xml manager
                if (xmlSubGroup.Length == 2) {
                   int dataId = int.Parse(xmlSubGroup[0]);
-                  ShipSkinData actualData = Util.xmlLoad<ShipSkinData>(xmlSubGroup[1]);
-                  actualData.itemID = dataId;
-                  shipSkinDataList.Add(actualData);
-                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+                  if (xmlSubGroup[1].Contains(EquipmentXMLManager.VALID_XML_FORMAT)) {
+                     try {
+                        ShipSkinData actualData = Util.xmlLoad<ShipSkinData>(xmlSubGroup[1]);
+                        actualData.itemID = dataId;
+                        shipSkinDataList.Add(actualData);
+                        message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+                     } catch {
+                     
+                     }
+                  }
                }
             }
 

@@ -256,7 +256,9 @@ public class SimpleAnimation : ClientMonoBehaviour {
          return;
       } else {
          // Change the sprite
-         setSprite(_sprites[_index]);
+         if (_index < _sprites.Length) {
+            setSprite(_sprites[_index]);
+         }
       }
 
       // Make note of the time
