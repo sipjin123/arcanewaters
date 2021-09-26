@@ -145,7 +145,7 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       PvpStatusPanel.self.silverAddedEvent.AddListener(_ => updatedShopTemplates(_));
    }
 
-   private void updatedShopTemplates (int silverValue) {
+   public void updatedShopTemplates (int silverValue) {
       bool isShipDisplaying = shipTemplateHolder.childCount > 0;
       Transform parentHolder = isShipDisplaying ? shipTemplateHolder : shopTemplateHolder;
       foreach (Transform child in parentHolder) {
@@ -241,7 +241,7 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
             Instantiate(shipTemplatePrefab, shipTemplateHolder) : Instantiate(shopTemplatePrefab, shopTemplateHolder);
          shopTemplate.setupData(shopItemData);
          shopTemplate.selectTemplateEvent.AddListener(() => {
-            if (Global.player != null && Global.player is PlayerShipEntity && shopTemplate.buyButton.IsInteractable()) {
+            if (Global.player != null && Global.player is PlayerShipEntity && shopTemplate.buyButton.IsInteractable() && shopTemplate.itemCost <= userSilver) {
                PlayerShipEntity playerShip = (PlayerShipEntity) Global.player;
                playerShip.rpc.Cmd_BuyPvpItem(shopItemData.itemId, shopId, (int) shopItemData.shopItemType);
                loadingPanel.SetActive(true);

@@ -65,7 +65,9 @@ public class PvpShopTemplate : MonoBehaviour {
       rarityType = data.rarityType;
 
       if (data.isDisabled) {
-         disabledIcon.SetActive(true);
+         enableBlocker(true);
+      } else {
+         enableBlocker(false);
       }
 
       ToolTipComponent toolTip = GetComponentInChildren<ToolTipComponent>();

@@ -4183,6 +4183,7 @@ public class RPCManager : NetworkBehaviour
       panel.enableShopButton(true);
       panel.userSilver = remainingSilver;
       panel.userSilverText.text = remainingSilver.ToString();
+      panel.updatedShopTemplates(remainingSilver);
       panel.receivePurchaseResult(pvpShopList[0]);
    }
 

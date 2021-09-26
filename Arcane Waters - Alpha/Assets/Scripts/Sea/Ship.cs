@@ -15,8 +15,16 @@ public class Ship : SeaEntity {
 
    // The Type of Skin
    public enum SkinType {
-      None = 0, Type_1_Painted = 101, Type_2_DarkBlue = 201, Type_3_Orange = 301, Type_4_Tropical = 401, 
-      Type_5_Striped = 501, Type_6_Frost = 601, Type_7_Dark = 701, Type_8_Royal = 801 }
+      None = 0,
+      Type_1_Painted = 101, Type_1_Armored = 102, Type_1_Fancy = 103, Type_1_Ghost = 104, Type_1_Green = 105, Type_1_Ice = 106, Type_1_Marlin = 107, Type_1_Oak = 108, Type_1_Oceanic = 109, Type_1_Orange = 110, Type_1_Pale = 111, Type_1_Pink = 112, Type_1_Purple = 113, Type_1_Shadow = 114, Type_1_Snow = 115, Type_1_Sunset = 116, Type_1_Teal = 117, Type_1_Tiger = 118, Type_1_Tropical = 119, Type_1_Zebra = 120,
+      Type_2_DarkBlue = 201,
+      Type_3_Orange = 301,
+      Type_4_Tropical = 401, 
+      Type_5_Striped = 501,
+      Type_6_Frost = 601,
+      Type_7_Dark = 701,
+      Type_8_Royal = 801
+   }
 
    // Our ship ID
    public int shipId = -1;
