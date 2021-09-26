@@ -4013,6 +4013,7 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_RequestPvpShopData (int shopId, int itemCategoryType) {
+      PvpShopItem.PvpShopItemType itemType = (PvpShopItem.PvpShopItemType) itemCategoryType;
       PvpShopData shopData = PvpShopManager.self.getShopData(shopId);
 
       if (shopData == null) {
@@ -4021,11 +4022,24 @@ public class RPCManager : NetworkBehaviour
       }
 
       if (GameStatsManager.self.isUserRegistered(_player.userId)) {
+         int totalCategoryTypes = Enum.GetValues(typeof(PvpShopItem.PvpShopItemType)).Length;
          List<PvpShopItem> shopItemList = new List<PvpShopItem>();
+         int currentShopContentCount = shopData.shopItems.FindAll(_ => _.shopItemType == itemType).Count;
+
+         // If the current category type has no existing shop items, iterate through the next options
+         if (currentShopContentCount < 1 && itemCategoryType > 0 && itemCategoryType < totalCategoryTypes) {
+            for (int i = itemCategoryType; i < totalCategoryTypes; i++) {
+               if (shopData.shopItems.FindAll(_ => _.shopItemType == (PvpShopItem.PvpShopItemType) i).Count > 0) {
+                  // Override the item category type to select if atleast one item exists
+                  itemType = (PvpShopItem.PvpShopItemType) i;
+                  break;
+               }
+            }
+         }
 
          // Disabled shop items here if needed
          foreach (PvpShopItem shopItem in shopData.shopItems) {
-            if (shopItem.shopItemType == (PvpShopItem.PvpShopItemType) itemCategoryType) {
+            if (shopItem.shopItemType == itemType) {
                shopItemList.Add(shopItem);
             }
          }

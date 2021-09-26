@@ -33,14 +33,13 @@ public class PvpShopItem {
    // The rarity type
    public Rarity.Type rarityType;
 
-   public enum PvpShopItemType
-   {
+   public enum PvpShopItemType {
       None = 0,
-      Powerup = 1,
-      Ship = 2,
-      Ability = 3,
-      Stats = 4,
-      Item = 5,
+      Ship = 1,
+      Powerup = 2,
+      Item = 3,
+      Ability = 4,
+      Stats = 5,
       CraftingIngredient = 6,
       LandPowerup = 7
    }

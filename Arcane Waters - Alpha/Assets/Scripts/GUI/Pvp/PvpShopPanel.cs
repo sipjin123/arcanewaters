@@ -206,6 +206,12 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       shopTemplateHolder.gameObject.DestroyChildren();
       shipTemplateHolder.gameObject.DestroyChildren();
 
+      // Override selected category 
+      if (pvpItemDataList.Count > 0) {
+         selectedCategory = pvpItemDataList[0].shopItemType;
+         selectPvpItemCategory(selectedCategory);
+      }
+
       // Enable stat panel if shop list has ship item
       if (selectedCategory == PvpShopItemType.Ship) {
          shopTemplateScroller.gameObject.SetActive(false);
