@@ -4087,26 +4087,29 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
-      if (_player is PlayerShipEntity) {
-         SeaEntity seaEntity = (SeaEntity) _player;
-         if (GameStatsManager.self.isUserRegistered(_player.userId)) {
-            GameStatsManager.self.addSilverAmount(_player.userId, -shopItem.itemCost);
-            int userSilver = GameStatsManager.self.getSilverAmount(_player.userId);
-            Target_ReceivePvpShopResult(seaEntity.connectionToClient, userSilver, Util.serialize(new List<PvpShopItem> { shopItem }));
-            seaEntity.Target_ReceiveSilverCurrency(seaEntity.connectionToClient, -shopItem.itemCost, SilverManager.SilverRewardReason.None);
+      if (GameStatsManager.self.isUserRegistered(_player.userId)) {
+         GameStatsManager.self.addSilverAmount(_player.userId, -shopItem.itemCost);
+         int userSilver = GameStatsManager.self.getSilverAmount(_player.userId);
+         _player.Target_ReceiveSilverCurrency(_player.connectionToClient, -shopItem.itemCost, SilverManager.SilverRewardReason.None);
+         Target_ReceivePvpShopResult(_player.connectionToClient, userSilver, Util.serialize(new List<PvpShopItem> { shopItem }));
 
-            switch (shopItem.shopItemType) {
-               case PvpShopItem.PvpShopItemType.Powerup:
+         switch (shopItem.shopItemType) {
+            case PvpShopItem.PvpShopItemType.Powerup:
+               if (_player is PlayerShipEntity) {
+                  SeaEntity seaEntity = (SeaEntity) _player;
                   seaEntity.rpc.Target_ReceivePowerup((Powerup.Type) shopItem.itemId, shopItem.rarityType, seaEntity.transform.position);
                   PowerupManager.self.addPowerupServer(seaEntity.userId, new Powerup {
                      powerupRarity = shopItem.rarityType,
                      powerupType = (Powerup.Type) shopItem.itemId
                   });
-                  break;
-               case PvpShopItem.PvpShopItemType.Ship:
-                  int shipSqlId = shopItem.itemId;
-                  ShipData shipData = ShipDataManager.self.getShipData(shipSqlId);
-                  if (shipData != null) {
+               }
+               break;
+            case PvpShopItem.PvpShopItemType.Ship:
+               int shipSqlId = shopItem.itemId;
+               ShipData shipData = ShipDataManager.self.getShipData(shipSqlId);
+               if (shipData != null) {
+                  if (_player is PlayerShipEntity) {
+                     SeaEntity seaEntity = (SeaEntity) _player;
                      PlayerShipEntity playerShip = (PlayerShipEntity) seaEntity;
                      ShipInfo purchasedShip = Ship.generateNewShip(shipData.shipType, Rarity.Type.Common);
 
@@ -4119,22 +4122,43 @@ public class RPCManager : NetworkBehaviour
                      // Sprite updates
                      playerShip.changeShipInfo(purchasedShip);
                      playerShip.Target_RefreshSprites(playerShip.connectionToClient, (int) shipData.shipType, (int) shipData.shipSize, (int) purchasedShip.skinType);
-                  } else {
-                     D.debug("Cant process shop purchase: {" + shipSqlId + "} does not exist");
                   }
-                  break;
-               case PvpShopItem.PvpShopItemType.Ability:
-
-                  break;
-               case PvpShopItem.PvpShopItemType.Item:
-                  PlayerShipEntity playersShip = (PlayerShipEntity) seaEntity;
+               } else {
+                  D.debug("Cant process shop purchase: {" + shipSqlId + "} does not exist");
+               }
+               break;
+            case PvpShopItem.PvpShopItemType.LandPowerup:
+               LandPowerupData newPowerup = new LandPowerupData();
+               switch ((LandPowerupType) shopItem.itemId) {
+                  case LandPowerupType.DamageBoost:
+                     newPowerup = new LandPowerupData {
+                        counter = 1200, // Set as 1200 secs for now
+                        expiryType = LandPowerupExpiryType.Time, // Set as timer for now
+                        landPowerupType = LandPowerupType.DamageBoost,
+                        userId = _player.userId,
+                        value = 20, // Set as 20% damage boost for now
+                     };
+                     break;
+                  case LandPowerupType.DefenseBoost:
+                     newPowerup = new LandPowerupData {
+                        counter = 1200, // Set as 1200 secs for now
+                        expiryType = LandPowerupExpiryType.Time, // Set as timer for now
+                        landPowerupType = LandPowerupType.DefenseBoost,
+                        userId = _player.userId,
+                        value = 20, // Set as 20% defense boost for now
+                     };
+                     break;
+               }
+               LandPowerupManager.self.updateNewPowerupData(newPowerup.userId, newPowerup.landPowerupType, newPowerup.expiryType, newPowerup.counter, newPowerup.value);
+               break;
+            case PvpShopItem.PvpShopItemType.Item:
+               if (_player is PlayerShipEntity) {
+                  PlayerShipEntity playersShip = (PlayerShipEntity) _player;
                   int repairValue = 100;
                   playersShip.currentHealth = Mathf.Clamp(playersShip.currentHealth + repairValue, 0, playersShip.maxHealth);
                   Target_RepairShip(playersShip.connectionToClient, repairValue);
-                  break;
-            }
-         } else {
-            D.debug("Warning, user {" + _player.userId + "} does not exist in the game stat manager");
+               }
+               break;
          }
       } else {
          D.debug("Warning, user {" + _player.userId + "} is not a ship");

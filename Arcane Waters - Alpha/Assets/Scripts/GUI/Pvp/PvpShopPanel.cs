@@ -62,9 +62,9 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
    public Sprite[] borderSprites;
 
    // The category icons on the left side of the panel
-   public RectTransform shipCategoryObj, powerupCategoryObj, abilityCategoryObj, itemCategoryObj;
-   public RectTransform shipCategoryObjHover, powerupCategoryObjHover, abilityCategoryObjHover, itemCategoryObjHover;
-   public RectTransform shipCategoryObjSelect, powerupCategoryObjSelect, abilityCategoryObjSelect, itemCategoryObjSelect;
+   public RectTransform shipCategoryObj, powerupCategoryObj, abilityCategoryObj, itemCategoryObj, landPowerupCategoryObj;
+   public RectTransform shipCategoryObjHover, powerupCategoryObjHover, abilityCategoryObjHover, itemCategoryObjHover, landPowerupCategoryObjHover;
+   public RectTransform shipCategoryObjSelect, powerupCategoryObjSelect, abilityCategoryObjSelect, itemCategoryObjSelect, landPowerupCategoryObjSelect;
 
    // The coordinates of the category icons depending on their button state
    public const int IDLE_POS = -55;
@@ -111,6 +111,9 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       itemCategoryObj.GetComponent<Button>().onClick.AddListener(() => {
          onSelectItemCategory();
       });
+      landPowerupCategoryObj.GetComponent<Button>().onClick.AddListener(() => {
+         onSelectLandCategory();
+      });
 
       // Setup the hover functionalities
       EventTrigger shipEventTrigger = shipCategoryObj.GetComponent<EventTrigger>();
@@ -124,6 +127,9 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
 
       EventTrigger itemEventTrigger = itemCategoryObj.GetComponent<EventTrigger>();
       setupHovering(itemEventTrigger, PvpShopItemType.Item);
+
+      EventTrigger landPowerupEventTrigger = landPowerupCategoryObj.GetComponent<EventTrigger>();
+      setupHovering(landPowerupEventTrigger, PvpShopItemType.LandPowerup);
 
       shipAttackText.text = "";
       shipSpeedText.text = "";
@@ -228,6 +234,7 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       powerupCategoryObj.parent.gameObject.SetActive(shopItemTypes.Exists(_ => _ == PvpShopItemType.Powerup));
       abilityCategoryObj.parent.gameObject.SetActive(shopItemTypes.Exists(_ => _ == PvpShopItemType.Ability));
       itemCategoryObj.parent.gameObject.SetActive(shopItemTypes.Exists(_ => _ == PvpShopItemType.Item));
+      landPowerupCategoryObj.parent.gameObject.SetActive(shopItemTypes.Exists(_ => _ == PvpShopItemType.LandPowerup));
 
       foreach (PvpShopItem shopItemData in pvpItemDataList) {
          PvpShopTemplate shopTemplate = selectedCategory == PvpShopItemType.Ship ? 
@@ -247,7 +254,7 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
          }
          if (shopItemData.isDisabled) {
             shopTemplate.buyButton.interactable = false;
-            shopTemplate.disabledIcon.SetActive(true);
+            shopTemplate.enableBlocker(true);
          }
 
          if (selectedCategory == PvpShopItemType.Ship) {
@@ -310,6 +317,15 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
                   newItemInfo.description = shipAbilityData.abilityDescription;
                }
                break;
+            case PvpShopItemType.LandPowerup:
+               LandPowerupType landPowerupType = (LandPowerupType) itemData.itemId;
+               LandPowerupInfo landPowerupInfo = LandPowerupManager.self.landPowerupInfo[landPowerupType];
+               if (landPowerupInfo != null) {
+                  newItemInfo.sprite = ImageManager.getSprite(landPowerupInfo.iconPath);
+                  newItemInfo.name = landPowerupInfo.powerupName;
+                  newItemInfo.description = landPowerupInfo.powerupInfo;
+               }
+               break;
             case PvpShopItemType.Item:
                switch ((PvpConsumableItem) itemData.itemId) {
                   case PvpConsumableItem.RepairTool:
@@ -354,6 +370,13 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       selectPvpItemCategory(selectedCategory);
    }
 
+   public void onSelectLandCategory () {
+      Global.player.rpc.Cmd_RequestPvpShopData(shopId, (int) PvpShopItemType.LandPowerup);
+      loadingPanel.SetActive(true);
+      selectedCategory = PvpShopItemType.LandPowerup;
+      selectPvpItemCategory(selectedCategory);
+   }
+
    public void onSelectPowerupCategory () {
       Global.player.rpc.Cmd_RequestPvpShopData(shopId, (int) PvpShopItemType.Powerup);
       loadingPanel.SetActive(true);
@@ -366,6 +389,7 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       shipCategoryObjHover.gameObject.SetActive(false);
       abilityCategoryObjHover.gameObject.SetActive(false);
       itemCategoryObjHover.gameObject.SetActive(false);
+      landPowerupCategoryObjHover.gameObject.SetActive(false);
 
       switch (itemType) {
          case PvpShopItemType.Ability:
@@ -380,6 +404,9 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
          case PvpShopItemType.Item:
             itemCategoryObjHover.gameObject.SetActive(true);
             break;
+         case PvpShopItemType.LandPowerup:
+            landPowerupCategoryObjHover.gameObject.SetActive(true);
+            break;
       }
    }
 
@@ -388,6 +415,7 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       shipCategoryObjSelect.gameObject.SetActive(false);
       abilityCategoryObjSelect.gameObject.SetActive(false); 
       itemCategoryObjSelect.gameObject.SetActive(false);
+      landPowerupCategoryObjSelect.gameObject.SetActive(false);
 
       switch (itemType) {
          case PvpShopItemType.Ability:
@@ -401,6 +429,9 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
             break;
          case PvpShopItemType.Item:
             itemCategoryObjSelect.gameObject.SetActive(true);
+            break;
+         case PvpShopItemType.LandPowerup:
+            landPowerupCategoryObjSelect.gameObject.SetActive(true);
             break;
       }
    }
