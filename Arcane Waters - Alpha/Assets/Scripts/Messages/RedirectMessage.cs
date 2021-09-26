@@ -8,10 +8,6 @@ using UnityEngine.UI;
 public class RedirectMessage : NetworkMessage
 {
    #region Public Variables
-
-   // The network instance id associated with this message
-   public uint netId;
-
    // The new ip address to connect to
    public string newIpAddress;
 
@@ -22,8 +18,7 @@ public class RedirectMessage : NetworkMessage
 
    public RedirectMessage () { }
 
-   public RedirectMessage (uint netId, string newIpAddress, int newPort) {
-      this.netId = netId;
+   public RedirectMessage (string newIpAddress, int newPort) {
       this.newIpAddress = newIpAddress;
       this.newPort = newPort;
    }

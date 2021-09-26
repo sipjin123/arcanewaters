@@ -100,7 +100,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0.2}
+  m_AnchoredPosition: {x: 0.218, y: 0.2}
   m_SizeDelta: {x: 32, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &21707
@@ -121,7 +121,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
-  m_SortingLayerID: 0
+  m_SortingLayerID: -1548297251
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &25317
@@ -379,8 +379,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1695306897
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 8106666463214275111, guid: 7b6ec5be4aaf27847b0701a95054d3ea,
     type: 3}
@@ -1195,10 +1195,8 @@ MonoBehaviour:
   shipId: 0
   isNextShotDefined: 0
   nextShotTarget: {x: 0, y: 0}
-  shipAbilities: 
   weaponType: 0
   weaponColors: 
-  cannonEffectType: 0
   armorType: 0
   armorColors: 
   hatType: 0
@@ -1249,7 +1247,7 @@ MonoBehaviour:
   heldPvpCaptureTarget: {fileID: 0}
   coinTrailEffect: {fileID: 1167599934295133048}
   holdingPvpCaptureTarget: 0
-  currentShipAbility: 0
+  selectedShipAbilityIndex: 0
   levelUpEffect: {fileID: 7550838590573805722}
 --- !u!50 &20007
 Rigidbody2D:
@@ -8708,8 +8706,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1695306897
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -9203,7 +9201,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
-  m_SortingLayerID: 0
+  m_SortingLayerID: -1548297251
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &8908030412345087062
@@ -9678,8 +9676,11 @@ MonoBehaviour:
   onEffectEnded:
     m_PersistentCalls:
       m_Calls: []
-  timePerFrame: 0.14
+  secondsPerFrame: 0.25
   startIndex: 5
+  holdTime: 5
+  shouldFadeOut: 0
+  fadeDuration: 3
 --- !u!1 &5925823283528186470
 GameObject:
   m_ObjectHideFlags: 0

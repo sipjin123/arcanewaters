@@ -1149,6 +1149,8 @@ public class RPCManager : NetworkBehaviour
    public void Cmd_SendChat (string message, ChatInfo.Type chatType) {
       GuildIconData guildIconData = null;
       string guildIconDataString = "";
+
+      // Is the player muted or stealth muted?
       bool muted = _player.isMuted();
       bool stealthMuted = muted && _player.isStealthMuted;
 
@@ -1167,7 +1169,7 @@ public class RPCManager : NetworkBehaviour
 
       // The player is muted (normal) and can't send messages. We notify the player about it
       if (muted && !_player.isStealthMuted) {
-         _player.Target_ReceiveNormalChat($"Your message could not be sent because you have been muted until {Util.getTimeInEST(_player.muteExpirationDate)} EST.", ChatInfo.Type.System);
+         _player.Target_ReceiveNormalChat($"Your message could not be sent because you have been muted until {Util.getTimeInEST(new DateTime(_player.muteExpirationDate))} EST", ChatInfo.Type.System);
          return;
       }
 
@@ -7487,14 +7489,6 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   public void requestSetHatId (int hatId) {
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         requestSetHatIdSync(hatId);
-      });
-   }
-
-   [Server]
    private void requestSetWeaponIdSync(int weaponId) {
       // Update the Weapon object here on the server based on what's in the database
       DB_Main.setWeaponId(_player.userId, weaponId);
@@ -7543,6 +7537,14 @@ public class RPCManager : NetworkBehaviour
          } else {
             D.debug("Cant change equipment while player is destroyed");
          }
+      });
+   }
+
+   [Server]
+   public void requestSetHatId (int hatId) {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         requestSetHatIdSync(hatId);
       });
    }
 

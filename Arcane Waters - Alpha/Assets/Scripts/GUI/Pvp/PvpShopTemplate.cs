@@ -17,7 +17,8 @@ public class PvpShopTemplate : MonoBehaviour {
    public Text nameText;
 
    // Cost of the item
-   public Text currencyText;
+   public Text currencyTextEnabled;
+   public Text currencyTextDisabled;
 
    // Icon of the item
    public Image itemIcon;
@@ -57,7 +58,8 @@ public class PvpShopTemplate : MonoBehaviour {
    public void setupData (PvpShopItem data) {
       itemData = data;
       itemId = itemData.itemId;
-      currencyText.text = itemData.itemCost.ToString();
+      currencyTextEnabled.text = itemData.itemCost.ToString();
+      currencyTextDisabled.text = itemData.itemCost.ToString();
       itemCost = itemData.itemCost;
       shopItemType = itemData.shopItemType;
       rarityType = data.rarityType;
@@ -79,6 +81,8 @@ public class PvpShopTemplate : MonoBehaviour {
 
    public void enableBlocker (bool isEnabled) {
       disabledIcon.SetActive(isEnabled);
+      currencyTextEnabled.gameObject.SetActive(!isEnabled);
+      currencyTextDisabled.gameObject.SetActive(isEnabled);
    }
 
    public void onHoverEnter () {

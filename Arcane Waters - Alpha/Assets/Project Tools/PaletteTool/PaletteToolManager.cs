@@ -238,7 +238,8 @@ public class PaletteToolManager : XmlDataToolManager {
       Guild = 10,
       Flag = 11,
       SeaStructure = 12,
-      MAX = 13
+      MAX = 13,
+      Hat = 14
    }
 
    public static string[] paletteImageTypePaths = {

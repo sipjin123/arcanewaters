@@ -396,11 +396,11 @@ public class BattleManager : MonoBehaviour {
 
       // Copy the Hat Info
       if (player.hatsManager.hatType < 1) {
-         battler.hatManager.updateHatSyncVars(0, 0);
+         battler.hatManager.updateHatSyncVars(0, 0, "");
          battler.hatManager.hatType = 0;
          battler.hatManager.palettes = "";
       } else {
-         battler.hatManager.updateHatSyncVars(player.hatsManager.equipmentDataId, player.hatsManager.equippedHatId);
+         battler.hatManager.updateHatSyncVars(player.hatsManager.equipmentDataId, player.hatsManager.equippedHatId, "");
          battler.hatManager.hatType = player.hatsManager.hatType;
          battler.hatManager.palettes = player.hatsManager.palettes;
       }

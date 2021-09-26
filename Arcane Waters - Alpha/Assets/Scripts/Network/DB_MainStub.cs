@@ -731,28 +731,32 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static List<PendingActionInfo> getPendingActions (PendingActionServerType serverType) {
-      return new List<PendingActionInfo>();
+   public static List<PenaltyInfo> getPenaltiesForAccount (int accId) {
+      return new List<PenaltyInfo>();
    }
 
-   public static void completePendingAction (int pendingActionId) {
-
-   }
-
-   public static bool forceSinglePlayerForAccount (int accId, bool forceSinglePlayer) {
+   public static bool forceSinglePlayerForAccount (PenaltyInfo penalty) {
       return false;
    }
 
-   public static PenaltyInfo getPenaltyInfoForAccount (int accId, PenaltyType penaltyType) {
-      return new PenaltyInfo();
+   public static bool muteAccount (PenaltyInfo penalty) {
+      return false;
    }
 
-   public static void liftPenaltyForAccount (int accId, PenaltyType penaltyType) {
-
+   public static bool unMuteAccount (PenaltyInfo penalty) {
+      return false;
    }
 
-   public static PenaltyStatus penalizeAccount (PenaltyInfo penaltyInfo) {
-      return PenaltyStatus.None;
+   public static bool banAccount (PenaltyInfo penalty) {
+      return false;
+   }
+
+   public static bool unBanAccount (PenaltyInfo penalty) {
+      return false;
+   }
+
+   public static void kickAccount (PenaltyInfo penalty) {
+
    }
 
    public static int getAccountId (string accountName, string accountPassword, string accountPasswordCapsLock) {
@@ -903,6 +907,10 @@ public class DB_MainStub : MonoBehaviour
       return new List<PenaltyQueueItem>();
    }
 
+   public static void processPenaltyFromQueue (int id) {
+      
+   }
+
    public static List<UserInfo> getUserInfoList (int[] userIdArray) {
       return null;
    }
@@ -938,7 +946,7 @@ public class DB_MainStub : MonoBehaviour
    public static bool setWeaponPalette(int userId, int weaponId, string weaponPalettes) {
       return false;
    }
-   
+
    public static UserObjects getUserObjects (int userId) {
       return null;
    }
@@ -1599,6 +1607,14 @@ public class DB_MainStub : MonoBehaviour
 
    public static int insertNewShipSkin (int userId, int shipSkinId, Ship.Type shipType, Ship.SkinType skinType) {
       return 0;
+   }
+
+   public static void clearWorldMap () {
+      return;
+   }
+
+   public static bool uploadWorldMapSector (byte[] data){
+      return false;
    }
 
    /*

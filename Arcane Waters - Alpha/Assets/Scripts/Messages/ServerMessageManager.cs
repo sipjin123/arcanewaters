@@ -144,14 +144,18 @@ public class ServerMessageManager : MonoBehaviour
             }
          }
 
-         // Prevent banned accounts from signing in
          if (accountId > 0) {
-            PenaltyInfo banInfo = DB_Main.getPenaltyInfoForAccount(accountId, PenaltyType.Ban);
-            // If the ban isn't expired
-            if (banInfo != null && !banInfo.hasPenaltyExpired()) {
+            List<PenaltyInfo> penalties = DB_Main.getPenaltiesForAccount(accountId);
+
+            // Prevent banned accounts from signing in
+            PenaltyInfo penalty = penalties.FirstOrDefault(x => x.penaltyType == PenaltyActionType.Ban || x.penaltyType == PenaltyActionType.PermanentBan);
+            if (penalty != null) {
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  D.debug("This is a banned user! {" + accountId + "}");
-                  sendError(ErrorMessage.Type.Banned, conn.connectionId, getPenaltyMessage(banInfo));
+                  if (penalty.penaltyType == PenaltyActionType.Ban) {
+                     sendError(ErrorMessage.Type.Kicked, conn.connectionId, string.Format("Your account has been suspended until {0} EST", Util.getTimeInEST(new DateTime(penalty.expiresAt))));
+                  } else {
+                     sendError(ErrorMessage.Type.Kicked, conn.connectionId, "Your account has been suspended indefinitely");
+                  }
                });
                UnityThreadHelper.UnityDispatcher.Dispatch(() => { _numUsersAuthenticating--; });
                return;
@@ -366,32 +370,6 @@ public class ServerMessageManager : MonoBehaviour
             _numUsersAuthenticating--;
          });
       });
-   }
-
-   public static string getPenaltyMessage (PenaltyInfo penaltyInfo) {
-      string message = "";
-
-      switch (penaltyInfo.penaltyType) {
-         case PenaltyType.Ban:
-            // If the penalty has already expired, we ignore the message.
-            if (penaltyInfo.hasPenaltyExpired()) {
-               return "";
-            }
-
-            if (penaltyInfo.isTemporary()) {
-               message = $"Your account has been suspended until {Util.getTimeInEST(DateTime.FromBinary(penaltyInfo.penaltyEnd))} EST";
-            } else {
-               message = $"Your account has been suspended indefinitely";
-            }
-
-            break;
-         case PenaltyType.Kick:
-            message = $"You've been kicked out of the game";
-            break;
-      }
-
-      message += $"\n\nReason: {penaltyInfo.penaltyReason}";
-      return message;
    }
 
    [ServerOnly]

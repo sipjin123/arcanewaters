@@ -141,10 +141,10 @@ public class MyNetworkManager : NetworkManager
    public override void OnClientConnect (NetworkConnection conn) {
       // This code is called on the client after connecting to a server
 
-      D.debug($"OnClientConnect triggered, Global.netId is {Global.netId}");
+      D.debug($"OnClientConnect triggered");
 
       // Check version
-      CheckVersionMessage checkVersionMessage = new CheckVersionMessage(Global.netId, Global.clientGameVersion, Application.platform);
+      CheckVersionMessage checkVersionMessage = new CheckVersionMessage(Global.clientGameVersion, Application.platform);
       NetworkClient.Send(checkVersionMessage);
    }
 
@@ -361,7 +361,7 @@ public class MyNetworkManager : NetworkManager
             // If the area is invalid, warp the player to the starting town as a fallback machamism
             if (!AreaManager.self.doesAreaExists(baseMapAreaKey)) {
                D.debug($"OnServerAddPlayer The user '{userInfo.username}' claims to be in the '{baseMapAreaKey}' area, but this area is not valid - Redirecting.");
-               
+
                UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                   DB_Main.setNewLocalPosition(userInfo.userId, Vector2.zero, Direction.South, Area.STARTING_TOWN);
 
@@ -506,13 +506,14 @@ public class MyNetworkManager : NetworkManager
                });
             });
 
-            // Get player's mute info if exists, and send it to the client
+            // Get player's mute info if exists, and send it to the player
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               PenaltyInfo muteInfo = DB_Main.getPenaltyInfoForAccount(player.accountId, PenaltyType.Mute);
+               List<PenaltyInfo> penalties = DB_Main.getPenaltiesForAccount(player.accountId);
+               PenaltyInfo muteInfo = penalties.FirstOrDefault(x => x.penaltyType == PenaltyActionType.Mute || x.penaltyType == PenaltyActionType.StealthMute);
+
                if (muteInfo != null) {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     player.muteExpirationDate = DateTime.FromBinary(muteInfo.penaltyEnd);
-                     player.isStealthMuted = muteInfo.penaltyType == PenaltyType.StealthMute;
+                     player.setMuteInfo(muteInfo.expiresAt, muteInfo.penaltyType == PenaltyActionType.StealthMute);
                   });
                }
             });
@@ -672,7 +673,7 @@ public class MyNetworkManager : NetworkManager
          yield return null;
       }
 
-      RedirectMessage redirectMessage = new RedirectMessage(Global.netId, networkAddress, bestServerPort.Value);
+      RedirectMessage redirectMessage = new RedirectMessage(networkAddress, bestServerPort.Value);
 
       // If the destination server is this same server, we don't disconnect the client
       if (bestServerPort.Value == getCurrentPort()) {

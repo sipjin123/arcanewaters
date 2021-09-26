@@ -1080,6 +1080,7 @@ MonoBehaviour:
   interactingAnimation: 0
   isSpeedingUp: 0
   passedOnTemporaryControl: 0
+  ignoredRenderers: []
   _ignoredAnimators: []
   _animators: []
   debugImageHolder: {fileID: 0}
@@ -1100,6 +1101,7 @@ MonoBehaviour:
   currentImpactMagnitude: 0
   combatCollider: {fileID: 0}
   totalDamageDealt: 0
+  sinkOnDeath: 1
   currentSecondsPatrolingTerritory: 0
   initialPosition: {x: 0, y: 0, z: 0}
   distanceFromInitialPosition: 0
@@ -1415,7 +1417,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
-  m_SortingLayerID: 0
+  m_SortingLayerID: -1548297251
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &2952694713337433463

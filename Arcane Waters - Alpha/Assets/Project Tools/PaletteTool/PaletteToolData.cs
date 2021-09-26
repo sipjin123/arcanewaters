@@ -53,6 +53,14 @@ public class PaletteToolData
       return subcategory.ToLower().Contains("secondary");
    }
 
+   public bool isAccent () {
+      if (string.IsNullOrWhiteSpace(subcategory)) {
+         return false;
+      }
+
+      return subcategory.ToLower().Contains("accent");
+   }
+
    #region Private Variables
 
    #endregion

@@ -145,12 +145,12 @@ GameObject:
   - component: {fileID: 3357081646286800563}
   - component: {fileID: 3357081646286800559}
   - component: {fileID: 3357081646286800558}
+  - component: {fileID: 4016485856784013012}
   - component: {fileID: 278520372197668654}
   - component: {fileID: 4701183806088601655}
   - component: {fileID: 4964043332479750203}
-  - component: {fileID: 869188517499832976}
   m_Layer: 5
-  m_Name: Consumable Box
+  m_Name: Gem Box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -225,6 +225,34 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &4016485856784013012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3357081646286800562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cc2cb057be809e4a9efed258b7bab29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 6
+  itemName: Little Gems Pack
+  itemCost: 10
+  itemDescription: Some Gems for ye!
+  itemCategory: 0
+  itemQuantity: 0
+  nameText: {fileID: 2276450660651273146}
+  costText: {fileID: 4067204445541917367}
+  imageIcon: {fileID: 3357081648208747312}
+  hoverBorder: {fileID: 3546620244143775045}
+  selectionBorder: {fileID: 1333989573302260746}
+  gemsBundle:
+    itemID: 0
+    itemName: 
+    itemDescription: 
+    itemIconPath: 
 --- !u!222 &278520372197668654
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -275,36 +303,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fixedScale: {x: 1, y: 1, z: 1}
---- !u!114 &869188517499832976
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3357081646286800562}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6675324398761a4d9d5ba4dcc2da450, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 0
-  itemName: 
-  itemCost: 0
-  itemDescription: 
-  itemCategory: 0
-  itemQuantity: 0
-  nameText: {fileID: 2276450660651273146}
-  costText: {fileID: 4067204445541917367}
-  imageIcon: {fileID: 3357081648208747312}
-  hoverBorder: {fileID: 3546620244143775045}
-  selectionBorder: {fileID: 1333989573302260746}
-  storeTabCategory: 0
-  consumable:
-    itemID: 0
-    itemName: 
-    itemDescription: 
-    itemIconPath: 
-    consumableType: 0
 --- !u!1 &3357081646736320152
 GameObject:
   m_ObjectHideFlags: 0
@@ -369,7 +367,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8c2546b7b9136c944a2c304c8308c157, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 209ed0d4508cef64db05205531b4a833, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -511,7 +509,7 @@ RectTransform:
   m_GameObject: {fileID: 3357081648208747317}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.6, y: 1.6, z: 1}
+  m_LocalScale: {x: 3, y: 3, z: 1}
   m_Children: []
   m_Father: {fileID: 6320514699052453427}
   m_RootOrder: 0
@@ -573,7 +571,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: dc02d975b4624244f9614a302bb25f71, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 37158a821060b4dec96800b08675904f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -869,7 +867,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Water
+  m_text: Gems
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 82365751fbd7421469edc09df0069294, type: 2}
   m_sharedMaterial: {fileID: 21451269468267556, guid: 82365751fbd7421469edc09df0069294,
@@ -897,14 +895,14 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
-  m_fontSizeBase: 16
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 1
   m_fontSizeMax: 12
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0

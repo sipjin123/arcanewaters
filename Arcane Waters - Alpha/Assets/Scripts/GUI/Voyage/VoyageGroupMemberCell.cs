@@ -49,6 +49,9 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
    }
 
    public void Start () {
+      // Initial update
+      updatePortrait();
+
       // Regularly update the portrait if the user is locally visible
       InvokeRepeating(nameof(updatePortrait), Random.Range(0f, 2f), 3f);
    }

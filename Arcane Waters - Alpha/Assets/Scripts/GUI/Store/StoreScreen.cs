@@ -51,6 +51,12 @@ public class StoreScreen : Panel
    // The reference to the load blocker
    public GameObject loadBlocker;
 
+   // The reference to the label holding the current tab's name
+   public Text tabTitleText;
+
+   // The reference to the label holding the price of the item in the description container
+   public Text descPriceText;
+
    // Self
    public static StoreScreen self;
 
@@ -182,37 +188,69 @@ public class StoreScreen : Panel
       this.characterStack.gameObject.SetActive(showPreview);
       StoreItemBox itemBox = this.selectedItem;
 
+      // Refresh
+      this.characterStack.updateLayers(Global.userObjects);
+
       // Did they unselect the current item?
       if (itemBox == null) {
          this.selectedItem = null;
          this.itemTitleText.text = "";
          this.descriptionText.text = "";
+         descPriceText.text = "---";
          this.characterStack.updateLayers(Global.userObjects);
       } else {
          this.selectedItem = itemBox;
          itemTitleText.text = itemBox.itemName;
          descriptionText.text = itemBox.itemDescription;
+         descPriceText.text = itemBox.itemCost.ToString();
 
-         if (itemBox is StoreHairDyeBox) {
-            StoreHairDyeBox hairBox = (StoreHairDyeBox) itemBox;
-            characterStack.updateHair(Global.userObjects.userInfo.hairType, hairBox.palette.paletteName);
-         } else if (itemBox is StoreHaircutBox) {
-            StoreHaircutBox hairBox = (StoreHaircutBox) itemBox;
+         if (itemBox is StoreGemBox storeGemBox) {
+            descPriceText.text = storeGemBox.getDisplayCost();
+         } else {
+            descPriceText.text += " GEMS";
+         }
+
+         if (itemBox is StoreHairDyeBox hairDyeBox) {
+            string mergedPalette = Item.parseItmPalette(Item.overridePalette(hairDyeBox.palette.paletteName, Global.userObjects.userInfo.hairPalettes));
+            characterStack.updateHair(Global.userObjects.userInfo.hairType, mergedPalette);
+         } else if (itemBox is StoreHaircutBox hairBox) {
             characterStack.updateHair(hairBox.haircut.type, Global.userObjects.userInfo.hairPalettes);
-         } else if (itemBox is StoreArmorDyeBox) {
-            StoreArmorDyeBox armorBox = (StoreArmorDyeBox) itemBox;
+         } else if (itemBox is StoreArmorDyeBox armorDyeBox) {
             ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(Global.userObjects.armor.itemTypeId);
+            string mergedPalette = Item.parseItmPalette(Item.overridePalette(armorDyeBox.palette.paletteName, Global.userObjects.weapon.paletteNames));
 
             if (armorData == null) {
                armorData = EquipmentXMLManager.self.armorStatList.First();
             }
 
             if (armorData != null) {
-               characterStack.updateArmor(Global.player.gender, armorData.armorType, armorBox.palette.paletteName);
+               characterStack.updateArmor(Global.player.gender, armorData.armorType, mergedPalette);
+            }
+         } else if (itemBox is StoreWeaponDyeBox weaponDyeBox) {
+            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(Global.userObjects.weapon.itemTypeId);
+            string mergedPalette = Item.parseItmPalette(Item.overridePalette(weaponDyeBox.palette.paletteName, Global.userObjects.weapon.paletteNames));
+
+            if (weaponData == null) {
+               weaponData = EquipmentXMLManager.self.weaponStatList.First();
             }
 
-            itemBox.select();
+            if (weaponData != null) {
+               characterStack.updateWeapon(Global.player.gender, weaponData.weaponType, mergedPalette);
+            }
+         } else if (itemBox is StoreHatDyeBox hatDyeBox) {
+            HatStatData hatData = EquipmentXMLManager.self.getHatData(Global.userObjects.hat.itemTypeId);
+            string mergedPalette = Item.parseItmPalette(Item.overridePalette(hatDyeBox.palette.paletteName, Global.userObjects.hat.paletteNames));
+
+            if (hatData == null) {
+               hatData = EquipmentXMLManager.self.hatStatList.First();
+            }
+
+            if (hatData != null) {
+               characterStack.updateHats(Global.player.gender, hatData.hatType, mergedPalette);
+            }
          }
+
+         itemBox.select();
       }
 
       characterStack.synchronizeAnimationIndexes();
@@ -265,6 +303,10 @@ public class StoreScreen : Panel
          gridLayout.cellSize = new Vector2(148, 200);
          gridLayout.spacing = new Vector2(16, 16);
          gridLayout.constraintCount = 3;
+      } else if (tabType == StoreTab.StoreTabType.Gems) {
+         gridLayout.cellSize = new Vector2(130,180);
+         gridLayout.spacing = new Vector2(0,0);
+         gridLayout.constraintCount = 4;
       } else {
          gridLayout.cellSize = new Vector2(100, 150);
          gridLayout.spacing = new Vector2(24, 16);
@@ -284,7 +326,45 @@ public class StoreScreen : Panel
    public void performTabSwitch (int tabIndex) {
       _currentStoreTabType = (StoreTab.StoreTabType) (tabIndex + 1);
       D.debug($"New Store Tab Type is: { _currentStoreTabType }");
+      deselectAllItems();
+      updateCharacterPreview(showPreview: true);
       filterItems();
+      updateTabTitle();
+   }
+
+   private void updateTabTitle () {
+      if (tabTitleText == null) {
+         return;
+      }
+
+      string title = "";
+
+      switch (_currentStoreTabType) {
+         case StoreTab.StoreTabType.None:
+            break;
+         case StoreTab.StoreTabType.Gems:
+         case StoreTab.StoreTabType.Haircuts:
+         case StoreTab.StoreTabType.Consumables:
+            title = _currentStoreTabType.ToString();
+            break;
+         case StoreTab.StoreTabType.HairDyes:
+            title = "Hair Dyes";
+            break;
+         case StoreTab.StoreTabType.ArmorDyes:
+            title = "Armor Dyes";
+            break;
+         case StoreTab.StoreTabType.HatDyes:
+            title = "Hat Dyes";
+            break;
+         case StoreTab.StoreTabType.WeaponDyes:
+            title = "Weapon Dyes";
+            break;
+         case StoreTab.StoreTabType.ShipSkins:
+            title = "Ship Skins";
+            break;
+      }
+
+      tabTitleText.text = title;
    }
 
    protected void checkGems () {

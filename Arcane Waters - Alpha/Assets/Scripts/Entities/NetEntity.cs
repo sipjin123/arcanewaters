@@ -59,13 +59,13 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public float desiredAngle;
 
-   // The mute expiration date
-   [SyncVar]
-   public DateTime muteExpirationDate;
-
    // Is this player stealth muted?
    [SyncVar]
    public bool isStealthMuted;
+
+   // The mute expiration date
+   [SyncVar]
+   public long muteExpirationDate;
 
    [Header("PlayerAppearance")]
 
@@ -581,9 +581,7 @@ public class NetEntity : NetworkBehaviour
    }
 
    public bool isMuted () {
-      // DateTime.Compare() returns a number < 0 if DateTime.Now is earlier than the muteExpirationDate, 0 if the dates are equal or a number > 0 otherwise
-      int isEarlier = DateTime.Compare(DateTime.UtcNow, muteExpirationDate);
-      return isEarlier < 0;
+      return DateTime.UtcNow.Ticks < this.muteExpirationDate;
    }
 
    [Command]
@@ -1417,6 +1415,12 @@ public class NetEntity : NetworkBehaviour
       StartCoroutine(CO_ProcessBattleExp(xpGained));
    }
 
+   [Server]
+   public void setMuteInfo (long expiresAt, bool isStealth) {
+      this.muteExpirationDate = expiresAt;
+      this.isStealthMuted = isStealth;
+   }
+
    private IEnumerator CO_ProcessBattleExp (int xpGained) {
       yield return new WaitForSeconds(1.5f);
       GameObject xpCanvas = Instantiate(PrefabsManager.self.xpGainPrefab);
@@ -1477,7 +1481,7 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
-   protected virtual void showLevelUpEffect(Jobs.Type jobType) {
+   protected virtual void showLevelUpEffect (Jobs.Type jobType) {
       return;
    }
 
@@ -1891,11 +1895,11 @@ public class NetEntity : NetworkBehaviour
       NetworkConnection connectionToClient = this.connectionToClient;
 
       if (isPlayerShip() && VoyageManager.isAnyLeagueArea(areaKey)) {
-         if (VoyageManager.isAnyLeagueArea(newArea) || (this.voyageGroupId > 0)) {
-            // When warping between league maps, the hp is persistent
+         if (VoyageManager.isAnyLeagueArea(newArea) || (isInGroup() && !isDead())) {
+            // While the user is in a league or part of a group, the hp is persistent
             ((PlayerShipEntity) this).storeCurrentShipHealth();
          } else {
-            // When leaving league maps, the hp is restored
+            // When leaving leagues or respawning, the hp is restored
             ((PlayerShipEntity) this).restoreMaxShipHealth();
          }
       }
@@ -2186,7 +2190,7 @@ public class NetEntity : NetworkBehaviour
 
    public virtual bool isLandEnemy () { return false; }
 
-   public virtual bool isPvpTower() { return false; }
+   public virtual bool isPvpTower () { return false; }
 
    protected virtual void onMaxHealthChanged (int oldValue, int newValue) { }
 

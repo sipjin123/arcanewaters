@@ -232,10 +232,6 @@ public class TitleScreen : MonoBehaviour {
          case ErrorMessage.Type.FailedUserOrPass:
             PanelManager.self.noticeScreen.show("Invalid account/password combination.");
             break;
-         case ErrorMessage.Type.Banned:
-            string panelMessage = message != null ? message.customMessage : "Your account has been suspended.";
-            PanelManager.self.noticeScreen.show(panelMessage);
-            break;
          case ErrorMessage.Type.AlreadyOnline:
             PanelManager.self.noticeScreen.show("Your account has been disconnected because you logged in somewhere else.");
             break;

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-[CreateAssetMenu(fileName = "HatClipMaskGenerationSettings", menuName = "Hat ClipMask Generation Settings")]
+[CreateAssetMenu(fileName = "HatClipMaskGenerationSettings", menuName = "Hat ClipMask Generation Tool - Settings")]
 public class HatClipMaskGenerationSettings : ScriptableObject {
    #region Public Variables
 

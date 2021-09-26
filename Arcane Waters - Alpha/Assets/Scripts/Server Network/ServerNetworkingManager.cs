@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using MLAPI;
 using System.Linq;
 using MLAPI.Messaging;
+using System;
 
 public class ServerNetworkingManager : MonoBehaviour
 {
@@ -134,7 +135,7 @@ public class ServerNetworkingManager : MonoBehaviour
 
       foreach (NetworkedServer server in servers) {
          int serverPlayerCount = server.assignedUserIds.Count;
-         
+
          // If this is the master server, we will act as though it has extra players, to only use it when the other servers have many more players
          if (server.networkedPort.Value == Global.MASTER_SERVER_PORT) {
             serverPlayerCount += MASTER_SERVER_PLAYER_OFFSET;
@@ -222,7 +223,7 @@ public class ServerNetworkingManager : MonoBehaviour
    }
 
    public void sendDirectChatMessage (ChatInfo chatInfo) {
-      server.InvokeServerRpc(server.MasterServer_SendPvpAnnouncement, chatInfo.senderId, chatInfo.text,chatInfo.sender, chatInfo.recipient);
+      server.InvokeServerRpc(server.MasterServer_SendPvpAnnouncement, chatInfo.senderId, chatInfo.text, chatInfo.sender, chatInfo.recipient);
    }
 
    public void sendGlobalChatMessage (ChatInfo chatInfo) {
@@ -321,16 +322,24 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_SummonUser, targetUserId, adminLocation);
    }
 
-   public void setPenaltyInPlayerEntityByUser (int userId, PenaltyInfo penaltyInfo) {
-      server.InvokeServerRpc(server.MasterServer_SetPenaltyInPlayerEntityByUser, userId, penaltyInfo);
+   public void forceSinglePlayerModeForUser (int userId) {
+      server.InvokeServerRpc(server.MasterServer_ForceSinglePlayerForUser, userId);
    }
 
-   public void setPenaltyInPlayerEntityByAccount (int accId, PenaltyInfo penaltyInfo) {
-      server.InvokeServerRpc(server.MasterServer_SetPenaltyInPlayerEntityByAccount, accId, penaltyInfo);
+   public void mutePlayer (int userId, bool isStealth, long expiresAt) {
+      server.InvokeServerRpc(server.MasterServer_MutePlayer, userId, isStealth, expiresAt);
    }
 
-   public void liftPenaltyInPlayerEntityByAccount (int accId, PenaltyType penaltyType) {
-      server.InvokeServerRpc(server.MasterServer_LiftPenaltyInPlayerEntityByAccount, accId, penaltyType);
+   public void unMutePlayer (int userId) {
+      server.InvokeServerRpc(server.MasterServer_UnMutePlayer, userId);
+   }
+
+   public void banPlayer (int userId, bool isPermanent, long expiresAt) {
+      server.InvokeServerRpc(server.MasterServer_BanPlayer, userId, isPermanent, expiresAt);
+   }
+
+   public void kickPlayer (int userId) {
+      server.InvokeServerRpc(server.MasterServer_KickPlayer, userId);
    }
 
    public void recreateLeagueInstanceAndAddUserToGroup (int voyageId, int groupId, int userId, string userName) {

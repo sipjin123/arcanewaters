@@ -6,134 +6,76 @@ using MySql.Data.MySqlClient;
 public class PenaltyInfo
 {
    #region Public Variables
-   // The accId who is banning or muting
+
+   // The penalties queue item SQL id
+   public int id;
+
+   // The source account's id
    public int sourceAccId;
 
-   // The usrId who is banning or muting
+   // The source user's id
    public int sourceUsrId;
 
-   // The usrName who is banning or muting
+   // The source user's name
    public string sourceUsrName;
 
-   // The accId being banned or muted
+   // The target account's id
    public int targetAccId;
 
-   // The usrId being banned or muted
+   // The target user's id
    public int targetUsrId;
 
-   // The usrName being banned or muted
+   // The target user's name
    public string targetUsrName;
 
-   // The reason for the penalty
+   // This item penalty type
+   public PenaltyActionType penaltyType;
+
+   // The reason for this penalty
    public string penaltyReason;
 
-   // The type of the penalty applied to the account
-   public PenaltyType penaltyType = PenaltyType.None;
+   // The time for the penalty
+   public int penaltyTime;
 
-   // When the account was penalized
-   public long penaltyStart;
+   // The source of this penalty
+   public PenaltySource penaltySource;
 
-   // When the account's penalty is over
-   public long penaltyEnd;
+   // If this is a Force Single Player action, then we use this value
+   public bool forceSinglePlayer;
 
-   // Is this a permanent penalty?
-   public bool isPermanent;
+   // The expiration date for the penalty (mute & ban)
+   public long expiresAt = DateTime.MinValue.Ticks;
 
    #endregion
 
    public PenaltyInfo () { }
 
-#if IS_SERVER_BUILD
+   #if IS_SERVER_BUILD
 
    public PenaltyInfo (MySqlDataReader dataReader) {
-      try {
-         sourceAccId = DataUtil.getInt(dataReader, "sourceAccId");
-         sourceUsrId = DataUtil.getInt(dataReader, "sourceUsrId");
-         sourceUsrName = DataUtil.getString(dataReader, "sourceUsrName");
-         targetAccId = DataUtil.getInt(dataReader, "targetAccId");
-         targetUsrId = DataUtil.getInt(dataReader, "targetUsrId");
-         targetUsrName = DataUtil.getString(dataReader, "targetUsrName");
-         penaltyReason = DataUtil.getString(dataReader, "penaltyReason");
-         penaltyType = (PenaltyType) DataUtil.getInt(dataReader, "penaltyType");
-         penaltyStart = DataUtil.getDateTime(dataReader, "penaltyStart").ToBinary();
-         penaltyEnd = DataUtil.getDateTime(dataReader, "penaltyEnd").ToBinary();
-
-         isPermanent = penaltyEnd == DateTime.MinValue.ToBinary();
-      } catch (Exception ex) {
-         D.debug("Error in parsing MySqlData for PenaltyInfo " + ex.ToString());
-      }
+      this.id = DataUtil.getInt(dataReader, "id");
+      this.sourceAccId = DataUtil.getInt(dataReader, "sourceAccId");
+      this.sourceUsrId = DataUtil.getInt(dataReader, "sourceUsrId");
+      this.sourceUsrName = DataUtil.getString(dataReader, "sourceUsrName");
+      this.targetAccId = DataUtil.getInt(dataReader, "targetAccId");
+      this.targetUsrId = DataUtil.getInt(dataReader, "targetUsrId");
+      this.targetUsrName = DataUtil.getString(dataReader, "targetUsrName");
+      this.penaltyType = (PenaltyActionType) DataUtil.getInt(dataReader, "penaltyType");
+      this.penaltyReason = DataUtil.getString(dataReader, "penaltyReason");
+      this.penaltySource = (PenaltySource) DataUtil.getInt(dataReader, "penaltySource");
+      this.penaltyTime = DataUtil.getInt(dataReader, "penaltyTime");
+      this.forceSinglePlayer = DataUtil.getInt(dataReader, "forceSinglePlayer") == 1;
+      this.expiresAt = DataUtil.getDateTime(dataReader, "expiresAt").Ticks;
    }
 
-#endif
-
-   public PenaltyInfo (int sourceAccId, int sourceUsrId, string sourceUsrName, PenaltyType penaltyType, string penaltyReason, int penaltyTime, bool isPermanent) {
-      this.sourceAccId = sourceAccId;
-      this.sourceUsrId = sourceUsrId;
-      this.sourceUsrName = sourceUsrName;
-      this.penaltyType = penaltyType;
-      this.penaltyReason = penaltyReason;
-      this.isPermanent = isPermanent;
-
-      penaltyStart = DateTime.UtcNow.ToBinary();
-      penaltyEnd = DateTime.UtcNow.AddMinutes(penaltyTime).ToBinary();
-   }
-
-   public bool hasPenaltyExpired () {
-      if (DateTime.FromBinary(penaltyEnd) == DateTime.MinValue) {
-         return false;
-      } else {
-         return DateTime.Compare(DateTime.UtcNow, DateTime.FromBinary(penaltyEnd)) > 0;
-      }
-   }
-
-   public string getAction () {
-      if (penaltyType == PenaltyType.Ban) {
-         return "ban";
-      } else if (penaltyType == PenaltyType.Mute || penaltyType == PenaltyType.StealthMute) {
-         return "mute";
-      } else {
-         return "";
-      }
-   }
-
-   public string getPastAction () {
-      if (penaltyType == PenaltyType.Ban) {
-         return "banned";
-      } else if (penaltyType == PenaltyType.Mute || penaltyType == PenaltyType.StealthMute) {
-         return "muted";
-      } else {
-         return "";
-      }
-   }
-
-   public PenaltyStatus getAlreadyAppliedError () {
-      if (penaltyType == PenaltyType.Ban) {
-         return PenaltyStatus.AlreadyBanned;
-      } else if (penaltyType == PenaltyType.Mute || penaltyType == PenaltyType.StealthMute) {
-         return PenaltyStatus.AlreadyMuted;
-      } else {
-         return PenaltyStatus.None;
-      }
-   }
-
-   public bool isTemporary () {
-      return DateTime.FromBinary(penaltyEnd) > DateTime.MinValue;
-   }
+   #endif
 
    #region Private Variables
 
    #endregion
 }
 
-public enum PenaltyStatus
-{
-   None = 0,
-   AlreadyMuted = 1,
-   AlreadyBanned = 2,
-   Error = 3
-}
-
-public enum PenaltyType
+public enum PenaltyActionType
 {
    None = 0,
    Mute = 1,
@@ -141,10 +83,14 @@ public enum PenaltyType
    Ban = 3,
    PermanentBan = 4,
    Kick = 5,
-   ForceSinglePlayer = 6
-   //None = 0,
-   //Mute = 1,
-   //StealthMute = 2,
-   //Ban = 3,
-   //Kick = 4
+   ForceSinglePlayer = 6,
+   LiftMute = 7,
+   LiftBan = 8
+}
+
+public enum PenaltySource
+{
+   None = 0,
+   Game = 1,
+   WebTools = 2
 }
