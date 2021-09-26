@@ -55,6 +55,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   powerupIconPrefab: {fileID: 911787271387183723, guid: 2e01329b64770d748a0e118ddd331fd1,
     type: 3}
+  landPowerupIconPrefab: {fileID: 911787271387183723, guid: bcb5c530bf073b540ad758d506cb053a,
+    type: 3}
   rarityColors:
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 0.7686275, g: 0.48627454, b: 0.36078432, a: 1}
