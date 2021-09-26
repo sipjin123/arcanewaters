@@ -496,6 +496,9 @@ MonoBehaviour:
   solidColliderRef: {fileID: 8630223415900935463}
   triggerColliderRef: {fileID: 3993831171790374592}
   isActive: 1
+  currentRenderer: {fileID: 493611879735007233}
+  northSprite: {fileID: -5711660060493023765, guid: 838a1e57ae60d754e87f197040e4f9ce,
+    type: 3}
 --- !u!114 &1964489795130427793
 MonoBehaviour:
   m_ObjectHideFlags: 0

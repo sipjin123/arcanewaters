@@ -17,6 +17,9 @@ namespace MapCreationTool{
       // The building of the shop
       public GameObject buildingObject;
 
+      // The north facing sprite replacement
+      public Sprite northSprite;
+
       #endregion
 
       private void Start () {
@@ -38,6 +41,12 @@ namespace MapCreationTool{
          } else if (field.k.CompareTo(DataField.HAS_SHOP_BUILDING) == 0) {
             string isStationaryData = field.v.Split(':')[0];
             buildingObject.SetActive(isStationaryData.ToLower() == "true" ? true : false);
+         } else if (field.k.CompareTo(DataField.IS_FACING_NORTH) == 0) {
+            string rawData = field.v.Split(':')[0];
+            bool isFacingNorth = rawData.ToLower() == "true" ? true : false;
+            if (isFacingNorth) {
+               currentRenderer.sprite = northSprite;
+            }
          }
       }
 

@@ -31,6 +31,12 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
    // If this object is active
    public bool isActive;
 
+   // The renderer
+   public SpriteRenderer currentRenderer;
+
+   // The north facing sprite replacement
+   public Sprite northSprite;
+
    #endregion
 
    public void enableShop (bool isEnabled) {
@@ -66,6 +72,13 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
             bool hasBuildingDisplay = rawData.ToLower() == "true" ? true : false;
             buildingObject.SetActive(hasBuildingDisplay);
             solidColliderRef.gameObject.SetActive(hasBuildingDisplay);
+         }
+         if (dataField.k.CompareTo(DataField.IS_FACING_NORTH) == 0) {
+            string rawData = dataField.v.Split(':')[0];
+            bool isFacingNorth = rawData.ToLower() == "true" ? true : false;
+            if (isFacingNorth) {
+               currentRenderer.sprite = northSprite;
+            }
          }
       }
    }

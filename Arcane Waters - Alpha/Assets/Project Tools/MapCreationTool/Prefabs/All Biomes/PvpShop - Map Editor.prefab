@@ -644,6 +644,9 @@ MonoBehaviour:
   shopName: {fileID: 8382928332548662876}
   rangeDisplay: {fileID: 4534180728361059687}
   buildingObject: {fileID: 2938113404619800486}
+  currentRenderer: {fileID: 346172744004801910}
+  northSprite: {fileID: -5711660060493023765, guid: 838a1e57ae60d754e87f197040e4f9ce,
+    type: 3}
 --- !u!114 &-2625523471515602761
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -664,6 +667,10 @@ MonoBehaviour:
   - name: has shop building
     defaultValue: True
     toolTip: If building will render
+    type: 3
+  - name: is facing north
+    defaultValue: False
+    toolTip: If building is facing north
     type: 3
   selectDataFields: []
   customDataFields:
