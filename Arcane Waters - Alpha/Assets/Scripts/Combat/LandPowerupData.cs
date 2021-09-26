@@ -1,7 +1,8 @@
 ﻿public enum LandPowerupType {
    None = 0,
    DamageBoost = 1,
-   SpeedBoost = 2,
+   DefenseBoost = 2,
+   SpeedBoost = 3,
 }
 
 public enum LandPowerupExpiryType {
@@ -31,4 +32,18 @@ public class LandPowerupData {
 
    // The value of the powerup
    public int value;
+}
+
+public class LandPowerupInfo {
+   // The type of powerup
+   public LandPowerupType powerupType;
+
+   // The name of the powerup
+   public string powerupName;
+
+   // The info of the powerup
+   public string powerupInfo;
+
+   // The path of the icon
+   public string iconPath = "";
 }

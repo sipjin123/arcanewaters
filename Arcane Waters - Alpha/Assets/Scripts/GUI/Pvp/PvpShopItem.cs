@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 [Serializable]
 public class PvpShopItem {
@@ -55,6 +56,30 @@ public class PvpShopItem {
       };
 
       return newShopItem;
+   }
+
+   public static List<PvpShopItem> defaultLandPowerups () {
+      List<PvpShopItem> defaultList = new List<PvpShopItem>();
+      PvpShopItem damageBoost = new PvpShopItem {
+         itemCost = 100,
+         itemId = (int) LandPowerupType.DamageBoost,
+         shopItemType = PvpShopItem.PvpShopItemType.LandPowerup,
+         itemName = LandPowerupType.DamageBoost.ToString(),
+         rarityType = Rarity.Type.Common,
+         spritePath = "Sprites/Powerups/LandPowerUpIcons",
+      };
+      PvpShopItem defenseBoost = new PvpShopItem {
+         itemCost = 100,
+         itemId = (int) LandPowerupType.DefenseBoost,
+         shopItemType = PvpShopItem.PvpShopItemType.LandPowerup,
+         itemName = LandPowerupType.DefenseBoost.ToString(),
+         rarityType = Rarity.Type.Common,
+         spritePath = "Sprites/Powerups/LandPowerUpIcons",
+      };
+
+      defaultList.Add(damageBoost);
+      defaultList.Add(defenseBoost);
+      return defaultList;
    }
 
    #endregion

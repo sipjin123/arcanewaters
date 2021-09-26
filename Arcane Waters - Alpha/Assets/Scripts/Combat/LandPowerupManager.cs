@@ -13,30 +13,33 @@ public class LandPowerupManager : MonoBehaviour {
    // The data collection containing info about users land powerups
    public Dictionary<int, List<LandPowerupData>> landPowerupDataSet = new Dictionary<int, List<LandPowerupData>>();
 
+   // The info of the powerups for display
+   public Dictionary<LandPowerupType, LandPowerupInfo> landPowerupInfo = new Dictionary<LandPowerupType, LandPowerupInfo>();
+
+   // Log screen
+   public bool toggleScreenLog;
+
    #endregion
 
    public void Awake () {
       self = this;
+
+      // TODO: Setup web tool to have a way to register information for powerups, hard code for now
+      landPowerupInfo.Add(LandPowerupType.DamageBoost, new LandPowerupInfo {
+         powerupInfo = "Increases damage by 20% for land combat",
+         powerupName = "Damage Boost",
+         powerupType = LandPowerupType.DamageBoost
+      });
+      landPowerupInfo.Add(LandPowerupType.DefenseBoost, new LandPowerupInfo {
+         powerupInfo = "Increases defense by 20% for land combat",
+         powerupName = "Defense Boost",
+         powerupType = LandPowerupType.DefenseBoost
+      });
    }
 
    private void Start () {
-      // TODO: Remove after playtest
-      // InvokeRepeating(nameof(tickPowerupState), 1, 1);
+      InvokeRepeating(nameof(tickPowerupState), 1, 1);
    }
-
-   // TODO: Remove after playtest
-   /*
-   private void Update () {
-      if (KeyUtils.GetKeyDown(UnityEngine.InputSystem.Key.X)) {
-         PowerupPanel.self.addLandPowerup(new LandPowerupData {
-            counter = 100,
-            expiryType = LandPowerupExpiryType.BossKills,
-            landPowerupType = LandPowerupType.DamageBoost,
-            userId = Global.player.userId,
-            value = 10
-         });
-      }
-   }*/
 
    private void tickPowerupState () {
       if (landPowerupDataSet == null) {
