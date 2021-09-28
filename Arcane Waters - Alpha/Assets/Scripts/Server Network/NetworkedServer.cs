@@ -238,30 +238,32 @@ public class NetworkedServer : NetworkedBehaviour
    #region Visit System
 
    [ServerRPC]
-   public void MasterServer_FindUserLocationToVisit (int visitorUserId, int visitedUserId) {
+   public void MasterServer_FindUserLocationToVisit (int visitorUserId, int visitedUserId, string areaKeyOverride) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(visitedUserId);
-
       if (targetServer != null) {
-         targetServer.InvokeClientRpcOnOwner(Server_FindUserLocationToVisit, visitorUserId, visitedUserId);
+         targetServer.InvokeClientRpcOnOwner(Server_FindUserLocationToVisit, visitorUserId, visitedUserId, areaKeyOverride);
       }
    }
 
    [ClientRPC]
-   public void Server_FindUserLocationToVisit (int visitorUserId, int visitedUserId) {
+   public void Server_FindUserLocationToVisit (int visitorUserId, int visitedUserId, string areaKeyOverride) {
       NetEntity player = EntityManager.self.getEntity(visitedUserId);
 
       if (!CustomMapManager.isUserSpecificAreaKey(player.areaKey)) {
          InvokeServerRpc(MasterServer_DenyUserVisit, visitorUserId);
       } else {
          if (player != null) {
+            bool hasAreaKeyOverride = areaKeyOverride.Length > 0;
             UserLocationBundle location = new UserLocationBundle();
             location.userId = player.userId;
             location.serverPort = ServerNetworkingManager.self.server.networkedPort.Value;
-            location.areaKey = player.areaKey;
-            location.instanceId = player.instanceId;
+            location.areaKey = hasAreaKeyOverride ? areaKeyOverride : player.areaKey;
+            location.instanceId = hasAreaKeyOverride ? 0 : player.instanceId;
             location.localPositionX = player.transform.localPosition.x;
             location.localPositionY = player.transform.localPosition.y;
             location.voyageGroupId = player.voyageGroupId;
+
+            D.adminLog("Override Location Bundle: {" + hasAreaKeyOverride + "} : {" + location.areaKey + "} {" + areaKeyOverride + "} {" + player.instanceId + "}", D.ADMIN_LOG_TYPE.Visit);
             InvokeServerRpc(MasterServer_ReturnUserLocationToVisit, visitorUserId, location);
          }
       }
