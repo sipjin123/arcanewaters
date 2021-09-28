@@ -334,7 +334,7 @@ public class MyNetworkManager : NetworkManager
 
          // Get information about owned map
          string baseMapAreaKey = previousAreaKey;
-
+         bool isSpecificArea = CustomMapManager.isUserSpecificAreaKey(previousAreaKey);
          int mapOwnerId = CustomMapManager.isUserSpecificAreaKey(previousAreaKey) ? CustomMapManager.getUserId(previousAreaKey) : -1;
          UserInfo ownerInfo = mapOwnerId < 0 ? null : (mapOwnerId == userInfo.userId ? userInfo : DB_Main.getUserInfoById(mapOwnerId));
 
@@ -355,10 +355,20 @@ public class MyNetworkManager : NetworkManager
             if (ownerInfo != null) {
                if (AreaManager.self.tryGetCustomMapManager(previousAreaKey, out CustomMapManager customMapManager)) {
                   baseMapAreaKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(ownerInfo));
+
+                  D.adminLog("Successfully fetched custom map: " +
+                     "ID:{" + customMapManager.getBaseMapId(ownerInfo) + "} " +
+                     "Base:{" + baseMapAreaKey + "} " +
+                     "Prev:{" + previousAreaKey + "} " +
+                     "Farm:{" + (customMapManager is CustomFarmManager) + "} " +
+                     "House:{" + (customMapManager is CustomHouseManager) + "}" +
+                     "Info:{" + (ownerInfo == null ? "null" : ownerInfo.userId + " " + ownerInfo.customHouseBaseId) + "}", D.ADMIN_LOG_TYPE.Visit);
+               } else {
+                  D.adminLog("Failed to fetch custom map: {" + customMapManager.getBaseMapId(ownerInfo) + "} {" + previousAreaKey + "}", D.ADMIN_LOG_TYPE.Visit);
                }
             }
 
-            // If the area is invalid, warp the player to the starting town as a fallback machamism
+            // If the area is invalid, warp the player to the starting town as a fallback mechanism
             if (!AreaManager.self.doesAreaExists(baseMapAreaKey)) {
                D.debug($"OnServerAddPlayer The user '{userInfo.username}' claims to be in the '{baseMapAreaKey}' area, but this area is not valid - Redirecting.");
 
@@ -441,6 +451,7 @@ public class MyNetworkManager : NetworkManager
                AssignedUserInfo serverInfo = ServerNetworkingManager.self.server.assignedUserIds[player.userId];
                if (serverInfo != null && serverInfo.instanceId > 0) {
                   player.instanceId = serverInfo.instanceId;
+                  D.adminLog("Adding user to instance to visit! " + serverInfo.instanceId, D.ADMIN_LOG_TYPE.Visit);
                   InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId, serverInfo.instanceId);
                } else {
                   InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);

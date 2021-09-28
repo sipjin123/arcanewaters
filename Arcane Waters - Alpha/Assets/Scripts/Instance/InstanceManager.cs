@@ -91,6 +91,17 @@ public class InstanceManager : MonoBehaviour {
          }
       }
 
+      // Fetch existing visitable custom map here if the target area is a custom map, for visit feature
+      if (instance == null && CustomMapManager.isUserSpecificAreaKey(areaKey)) {
+         Instance openInst = getVisitablePrivateOpenInstance(areaKey);
+         if (openInst) {
+            D.adminLog("Found Visitable Area: {" + openInst.areaKey + "} {" + openInst.id + "}", D.ADMIN_LOG_TYPE.Visit);
+            instance = openInst;
+         } else {
+            D.adminLog("Failed to Visit Area: {" + areaKey + "}", D.ADMIN_LOG_TYPE.Visit);
+         }
+      }
+
       // If there isn't one, we'll have to make it
       if (instance == null) {
          instance = createNewInstance(areaKey, player.isSinglePlayer);
@@ -248,6 +259,16 @@ public class InstanceManager : MonoBehaviour {
    public Instance getPlayerPrivateOpenInstance (string areaKey, int userId) {
       foreach (Instance instance in _instances.Values) {
          if (instance.areaKey == areaKey && instance.getPlayerCount() < instance.getMaxPlayers() && instance.privateAreaUserId == userId) {
+            return instance;
+         }
+      }
+
+      return null;
+   }
+
+   public Instance getVisitablePrivateOpenInstance (string areaKey) {
+      foreach (Instance instance in _instances.Values) {
+         if (instance.areaKey == areaKey) {
             return instance;
          }
       }
