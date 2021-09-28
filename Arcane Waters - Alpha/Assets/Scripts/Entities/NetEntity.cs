@@ -1841,13 +1841,16 @@ public class NetEntity : NetworkBehaviour
    public void visitUserToLocation (int requesterUserId, UserLocationBundle targetLocation) {
       // If our player is in the same instance than the target, simply teleport
       if (ServerNetworkingManager.self.server.networkedPort.Value == targetLocation.serverPort && areaKey == targetLocation.areaKey && instanceId == targetLocation.instanceId) {
+         D.adminLog("Failed to warp to area {" + targetLocation.areaKey + "}, move instead", D.ADMIN_LOG_TYPE.Visit);
          moveToPosition(targetLocation.getLocalPosition());
          return;
       }
 
       if (CustomMapManager.isUserSpecificAreaKey(targetLocation.areaKey) && targetLocation.instanceId > 0 && targetLocation.serverPort > 0) {
+         D.adminLog("Visit Area: {" + targetLocation.areaKey + "} : {" + targetLocation.instanceId + "} : {" + targetLocation.serverPort + "}", D.ADMIN_LOG_TYPE.Visit);
          spawnInNewMap(targetLocation.areaKey, targetLocation.getLocalPosition(), Direction.South, targetLocation.instanceId, targetLocation.serverPort);
       } else {
+         D.adminLog("Failed to visit area {" + targetLocation.areaKey + "}, warp to town", D.ADMIN_LOG_TYPE.Visit);
          spawnInNewMap(targetLocation.areaKey, targetLocation.getLocalPosition(), Direction.South, -1, -1);
       }
    }
@@ -1995,7 +1998,13 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_PlayerVisit (string targetPlayerName) {
+   public void Cmd_PlayerVisit (string targetPlayerName, string areaKeyOverride) {
+      D.debug(this.userId + ": Adding user to visit! " + targetPlayerName + " at " + areaKeyOverride);
+      playerVisit(targetPlayerName, areaKeyOverride);
+   }
+
+   [Server]
+   public void playerVisit (string targetPlayerName, string areaKeyOverride) {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Try to retrieve the target info
@@ -2019,7 +2028,7 @@ public class NetEntity : NetworkBehaviour
             }
 
             // Redirect to the master server to find the location of the target user
-            ServerNetworkingManager.self.findUserLocationToVisit(this.userId, targetUserInfo.userId);
+            ServerNetworkingManager.self.findUserLocationToVisit(this.userId, targetUserInfo.userId, areaKeyOverride);
          });
       });
    }

@@ -169,7 +169,20 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             }
          }
       } else {
-         player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
+         bool isInSpecificArea = CustomMapManager.isUserSpecificAreaKey(player.areaKey);
+         bool isUserInVisitedArea = isInSpecificArea ? CustomMapManager.getUserId(player.areaKey) != player.userId : false;
+         bool isWarpingToCustomArea = areaTarget.Contains(CustomHouseManager.GROUP_AREA_KEY) || areaTarget.Contains(CustomFarmManager.GROUP_AREA_KEY);
+
+         if (isUserInVisitedArea && isWarpingToCustomArea && isInSpecificArea) {
+            NetEntity visitedUser = EntityManager.self.getEntity(CustomMapManager.getUserId(player.areaKey));
+            string visitedArea = areaTarget + "_user" + CustomMapManager.getUserId(player.areaKey);
+
+            D.adminLog(player.userId + " is now visiting {" + visitedArea + "} of {" + visitedUser.userId + " : " + visitedUser.entityName + "} " +
+               "Visited by user data: {" + CustomMapManager.getUserId(player.areaKey) + "}", D.ADMIN_LOG_TYPE.Visit);
+            player.playerVisit(visitedUser.entityName, visitedArea);
+         } else {
+            player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
+         }
       }
    }
 
