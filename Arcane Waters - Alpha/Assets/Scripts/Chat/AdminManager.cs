@@ -253,7 +253,7 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestClearPowerups () {
-      PowerupPanel.self.clearPowerups();
+      PowerupPanel.self.clearSeaPowerups();
       Cmd_ClearPowerups();
    }
 

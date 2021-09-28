@@ -38,27 +38,48 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
    #region Land Powerup
 
+   public void updateLandPowerups (List<LandPowerupData> powerups) {
+      clearSeaPowerups();
+      clearLandPowerups();
+
+      foreach (LandPowerupData powerup in powerups) {
+         addLandPowerup(powerup);
+      }
+   }
+
+   public void clearLandPowerups () {
+      foreach (LandPowerupIcon icon in _landPowerupIcons) {
+         Destroy(icon.gameObject);
+      }
+      _landPowerupIcons.Clear();
+
+      // Hide the panel container if there are no powerups
+      powerupPanelContainer.gameObject.SetActive(false);
+   }
+
    public void addLandPowerup (LandPowerupData powerupData) {
-      if (!gameObject.activeInHierarchy) {
-         gameObject.SetActive(true);
-      }
-
-      LandPowerupIcon newPowerup = Instantiate(landPowerupIconPrefab, transform).GetComponent<LandPowerupIcon>();
-      newPowerup.init(powerupData.landPowerupType, Rarity.Type.Common);
-      _landPowerupIcons.Add(newPowerup);
-
-      // When a new powerup icon is added, sort the list by rarity
-      LandPowerupIcon[] orderedIcons = _landPowerupIcons.OrderBy(x => (int) x.rarity).ToArray();
-      for (int i = 0; i < orderedIcons.Length; i++) {
-         if (orderedIcons[i].transform.childCount >= i) {
-            orderedIcons[i].transform.SetSiblingIndex(i);
+      if (Global.player is PlayerBodyEntity) {
+         if (!gameObject.activeInHierarchy) {
+            gameObject.SetActive(true);
          }
+
+         LandPowerupIcon newPowerup = Instantiate(landPowerupIconPrefab, transform).GetComponent<LandPowerupIcon>();
+         newPowerup.init(powerupData.landPowerupType, Rarity.Type.Common);
+         _landPowerupIcons.Add(newPowerup);
+
+         // When a new powerup icon is added, sort the list by rarity
+         LandPowerupIcon[] orderedIcons = _landPowerupIcons.OrderBy(x => (int) x.rarity).ToArray();
+         for (int i = 0; i < orderedIcons.Length; i++) {
+            if (orderedIcons[i].transform.childCount >= i) {
+               orderedIcons[i].transform.SetSiblingIndex(i);
+            }
+         }
+
+         newPowerup.transform.DOPunchScale(Vector3.one * 0.3f, 0.3f);
+
+         // Show the powerup container
+         powerupPanelContainer.gameObject.SetActive(true);
       }
-
-      newPowerup.transform.DOPunchScale(Vector3.one * 0.3f, 0.3f);
-
-      // Show the powerup container
-      powerupPanelContainer.gameObject.SetActive(true);
    }
 
    public void removePowerup (LandPowerupData powerupData) {
@@ -87,23 +108,25 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
    #region Sea Powerup
 
    public void addPowerup (Powerup.Type type, Rarity.Type rarity) {
-      PowerupIcon newPowerup = Instantiate(powerupIconPrefab, transform).GetComponent<PowerupIcon>();
-      
-      newPowerup.init(type, rarity);
-      _powerupIcons.Add(newPowerup);
+      if (Global.player is ShipEntity) {
+         PowerupIcon newPowerup = Instantiate(powerupIconPrefab, transform).GetComponent<PowerupIcon>();
 
-      // When a new powerup icon is added, sort the list by rarity
-      PowerupIcon[] orderedIcons = _powerupIcons.OrderBy(x => (int) x.rarity).ToArray();
-      for (int i = 0; i < orderedIcons.Length; i++) {
-         if (orderedIcons[i].transform.childCount >= i) {
-            orderedIcons[i].transform.SetSiblingIndex(i);
+         newPowerup.init(type, rarity);
+         _powerupIcons.Add(newPowerup);
+
+         // When a new powerup icon is added, sort the list by rarity
+         PowerupIcon[] orderedIcons = _powerupIcons.OrderBy(x => (int) x.rarity).ToArray();
+         for (int i = 0; i < orderedIcons.Length; i++) {
+            if (orderedIcons[i].transform.childCount >= i) {
+               orderedIcons[i].transform.SetSiblingIndex(i);
+            }
          }
+
+         newPowerup.transform.DOPunchScale(Vector3.one * 0.3f, 0.3f);
+
+         // Show the powerup container
+         powerupPanelContainer.gameObject.SetActive(true);
       }
-
-      newPowerup.transform.DOPunchScale(Vector3.one * 0.3f, 0.3f);
-
-      // Show the powerup container
-      powerupPanelContainer.gameObject.SetActive(true);
    }
 
    public void removePowerup (Powerup.Type type, Rarity.Type rarity) {
@@ -127,7 +150,7 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
       }
    }
 
-   public void clearPowerups () {
+   public void clearSeaPowerups () {
       foreach (PowerupIcon icon in _powerupIcons) {
          Destroy(icon.gameObject);
       }
@@ -138,7 +161,8 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
    }
 
    public void updatePowerups (List<Powerup> powerups) {
-      clearPowerups();
+      clearLandPowerups();
+      clearSeaPowerups();
 
       foreach (Powerup powerup in powerups) {
          addPowerup(powerup.powerupType, powerup.powerupRarity);

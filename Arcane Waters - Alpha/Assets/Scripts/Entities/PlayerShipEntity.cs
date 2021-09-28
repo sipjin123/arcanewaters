@@ -1696,7 +1696,7 @@ public class PlayerShipEntity : ShipEntity
 
       // Clear powerup GUI
       if (isLocalPlayer) {
-         PowerupPanel.self.clearPowerups();
+         PowerupPanel.self.clearSeaPowerups();
       }
 
       // Reset flag

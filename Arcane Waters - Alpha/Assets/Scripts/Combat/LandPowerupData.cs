@@ -38,6 +38,9 @@ public class LandPowerupInfo {
    // The type of powerup
    public LandPowerupType powerupType;
 
+   // The expiry type
+   public LandPowerupExpiryType expiryType = LandPowerupExpiryType.None;
+
    // The name of the powerup
    public string powerupName;
 
@@ -46,4 +49,10 @@ public class LandPowerupInfo {
 
    // The path of the icon
    public string iconPath = "";
+
+   // The base attribute this powerup provides
+   public int baseAttribute = 1;
+
+   // The default counter of this powerup
+   public int baseCounter = 1;
 }

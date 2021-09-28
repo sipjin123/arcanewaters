@@ -183,7 +183,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             }
          };
 
-         PanelManager.self.hidePowerupPanel();
+         PanelManager.self.showPowerupPanel();
          Cmd_CheckAmbientSfx();
       }
 
@@ -194,6 +194,11 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
       // Show the local player's level tag
       showLevelTag(isLocalPlayer);
+
+      if (isServer) {
+         // When we enter a new scene, update powerups on the client
+         rpc.Target_UpdateLandPowerups(connectionToClient, LandPowerupManager.self.getPowerupsForUser(userId));
+      }
    }
 
    public void npcCheck () {

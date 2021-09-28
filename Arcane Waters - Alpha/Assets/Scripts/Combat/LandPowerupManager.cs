@@ -93,26 +93,23 @@ public class LandPowerupManager : MonoBehaviour {
 
       if (!landPowerupDataSet[userId].Exists(_ => _.landPowerupType == type)) {
          // Add a new powerup entry to the user
-         D.debug("Add powerup data: {" + userId + "} T:{" + type + "} ET:{" + expiryType + "} C:{" + count + "}");
-         landPowerupDataSet[userId].Add(new LandPowerupData {
+         LandPowerupData powerUpToAdd = new LandPowerupData {
             counter = count,
             userId = userId,
             landPowerupType = type,
             expiryType = expiryType,
             value = value
-         });
+         };
 
          // Cache player and powerup data
          NetEntity player = EntityManager.self.getEntity(userId);
-         LandPowerupData powerUpToAdd = landPowerupDataSet[userId].Find(_ => _.landPowerupType == type);
 
          // Tell the client to remove on their end and update their gui
-         if (player && player is NetEntity) {
+         if (player) {
+            landPowerupDataSet[userId].Add(powerUpToAdd);
+            D.debug("Add powerup data: {" + userId + "} T:{" + type + "} ET:{" + expiryType + "} C:{" + count + "} NC:{" + landPowerupDataSet[userId].Count + "}");
             player.rpc.Target_AddLandPowerup(player.connectionToClient, powerUpToAdd);
          }
-
-         // Remove entry from server collection
-         landPowerupDataSet[userId].Add(powerUpToAdd);
       } else {
          // Update the powerup entry of the user
          landPowerupDataSet[userId].Find(_ => _.landPowerupType == type).counter = count;
@@ -143,6 +140,20 @@ public class LandPowerupManager : MonoBehaviour {
       }
 
       return 0;
+   }
+
+   public List<LandPowerupData> getPowerupsForUser (int userId) {
+      List<LandPowerupData> landPowerups = new List<LandPowerupData>();
+
+      if (!landPowerupDataSet.ContainsKey(userId)) {
+         return landPowerups;
+      }
+
+      foreach (LandPowerupData powerupList in landPowerupDataSet[userId]) {
+         landPowerups.Add(powerupList);
+      }
+
+      return landPowerups;
    }
 
    #region Private Variables
