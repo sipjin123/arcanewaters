@@ -5778,6 +5778,12 @@ public class RPCManager : NetworkBehaviour
    public void Target_ReceiveCraftedItem (NetworkConnection connection, Item item) {
       SoundEffectManager.self.playFmodSfx(SoundEffectManager.CRAFT_SUCCESS);
       //SoundEffectManager.self.playSoundEffect(SoundEffectManager.CRAFT_COMPLETE, SoundEffectManager.self.transform);
+
+      // Craft bone sword tutorial trigger
+      if (item.category == Item.Category.Weapon && item.itemTypeId == CraftingManager.BONE_SWORD_RECIPE) {
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.Craft_Bone_Sword);
+      }
+
       RewardManager.self.showItemInRewardPanel(item);
    }
 
@@ -8317,6 +8323,11 @@ public class RPCManager : NetworkBehaviour
    private IEnumerator CO_DelayJoinTeamCombat (uint enemyId, float delay) {
       yield return new WaitForSeconds(delay);
       Global.player.rpc.Cmd_StartNewBattle(enemyId, Battle.TeamType.Attackers, false);
+   }
+
+   [TargetRpc]
+   public void Target_UpdateLandPowerups (NetworkConnection connection, List<LandPowerupData> landPowerups) {
+      PowerupPanel.self.updateLandPowerups(landPowerups);
    }
 
    [TargetRpc]

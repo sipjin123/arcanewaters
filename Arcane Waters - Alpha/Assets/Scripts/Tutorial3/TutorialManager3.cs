@@ -437,5 +437,6 @@ public enum TutorialTrigger
    SwitchToDefensiveStance = 46,
    KillBoss = 47,
    OpenMap = 48,
-   Loot_Blueprint = 49
+   Loot_Blueprint = 49,
+   Craft_Bone_Sword = 50
 };
