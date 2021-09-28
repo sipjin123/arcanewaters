@@ -114,7 +114,7 @@ public class ShipBars : MonoBehaviour {
    protected void handleHealthBar () {
       bool isAnEnemy = _entity.isEnemyOf(Global.player, false);
 
-      if (_entity.currentHealth == _lastHealth) {
+      if (_entity.currentHealth == _lastHealth && isAnEnemy == _lastIsAnEnemy) {
          return;
       }
 
@@ -130,10 +130,12 @@ public class ShipBars : MonoBehaviour {
       }
 
       _lastHealth = _entity.currentHealth;
+      _lastIsAnEnemy = isAnEnemy;
    }
 
    public void initializeHealthBar () {
-      bool isAnEnemy = _entity.isEnemyOf(Global.player, false);
+      _lastHealth = _entity.currentHealth;
+      _lastIsAnEnemy = _entity.isEnemyOf(Global.player, false);
 
       healthBlockContainer.DestroyChildren();
       _healthBlocks.Clear();
@@ -161,7 +163,7 @@ public class ShipBars : MonoBehaviour {
          }
 
          ShipHealthBlock block = Instantiate(shipHealthBlockPrefab, healthBlockContainer.transform, false);
-         block.updateBlock(tier, blockOpacity, isAnEnemy);
+         block.updateBlock(tier, blockOpacity, _lastIsAnEnemy);
          _healthBlocks.Add(block);
       }
    }
@@ -191,6 +193,9 @@ public class ShipBars : MonoBehaviour {
 
    // The last registered ship health value
    private int _lastHealth = 0;
+
+   // The last registered ship enemy status (compared to the global player)
+   private bool _lastIsAnEnemy = false;
 
    #endregion
 }

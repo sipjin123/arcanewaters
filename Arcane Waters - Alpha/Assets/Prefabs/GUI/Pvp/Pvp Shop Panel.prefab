@@ -1233,6 +1233,36 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 3842401654629772005, guid: 479781de2bb317e448e8eb96f7bd9d22,
+        type: 3}
+      propertyPath: onBackgroundClickedAction.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3842401654629772005, guid: 479781de2bb317e448e8eb96f7bd9d22,
+        type: 3}
+      propertyPath: onBackgroundClickedAction.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3842401654629772005, guid: 479781de2bb317e448e8eb96f7bd9d22,
+        type: 3}
+      propertyPath: onBackgroundClickedAction.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3842401654629772005, guid: 479781de2bb317e448e8eb96f7bd9d22,
+        type: 3}
+      propertyPath: onBackgroundClickedAction.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 3717255269734821994}
+    - target: {fileID: 3842401654629772005, guid: 479781de2bb317e448e8eb96f7bd9d22,
+        type: 3}
+      propertyPath: onBackgroundClickedAction.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: closePopup
+      objectReference: {fileID: 0}
+    - target: {fileID: 3842401654629772005, guid: 479781de2bb317e448e8eb96f7bd9d22,
+        type: 3}
+      propertyPath: onBackgroundClickedAction.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 3872743068747311249, guid: 479781de2bb317e448e8eb96f7bd9d22,
         type: 3}
       propertyPath: m_SizeDelta.y

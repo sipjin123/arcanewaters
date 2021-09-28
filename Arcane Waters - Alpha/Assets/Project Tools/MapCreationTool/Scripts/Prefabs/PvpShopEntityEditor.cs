@@ -17,6 +17,9 @@ namespace MapCreationTool{
       // The building of the shop
       public GameObject buildingObject;
 
+      // The renderer
+      public SpriteRenderer currentRenderer;
+
       // The north facing sprite replacement
       public Sprite northSprite;
 

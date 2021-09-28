@@ -88,8 +88,8 @@ public class VoyageGroupPanel : ClientMonoBehaviour
                memberCell.updateCellDamage(((PlayerShipEntity) entity).totalDamageDealt);
             }
 
-            VoyageMemberArrows voyageMemArrow = directionalArrowList[i];
             if (i < directionalArrowList.Count) {
+               VoyageMemberArrows voyageMemArrow = directionalArrowList[i];
                voyageMemArrow.setTarget(entity.gameObject);
                voyageMemArrow.setTargetName(entity.entityName);
                bool isOutsideScreen = Global.player == null ? false : Vector3.Distance(Global.player.transform.position, entity.transform.position) > CLAMP_HIDE_DISTANCE;

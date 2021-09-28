@@ -242,6 +242,7 @@ MonoBehaviour:
   XP: 0
   desiredAngle: 0
   isStealthMuted: 0
+  muteExpirationDate: 0
   gender: 1
   bodyType: 0
   eyesType: 0
@@ -276,6 +277,7 @@ MonoBehaviour:
   isUnderExternalControl: 0
   lastNPCTalkTime: -30
   pvpTeam: 0
+  faction: 0
   guildId: 0
   guildPermissions: 0
   guildRankPriority: 0
@@ -290,6 +292,7 @@ MonoBehaviour:
   interactingAnimation: 0
   isSpeedingUp: 0
   passedOnTemporaryControl: 0
+  ignoredRenderers: []
   _ignoredAnimators: []
   _animators: []
   animGroupType: 0
@@ -301,6 +304,8 @@ MonoBehaviour:
   bodyAnim: {fileID: 5845733378842891813}
   shadowAnim: {fileID: 283542780861010356}
   shadowObject: {fileID: 2548054682750233640}
+  shadowRenderer: {fileID: 5927719481427878778}
+  largeShadowSprite: {fileID: 21300000, guid: a985caa15b3ade44391f65fbe2d5d749, type: 3}
   circleCollider: {fileID: 58000012360398758}
   bossCollider: {fileID: 6484027093327965980}
   enemyBattleCollider: {fileID: 5423198842395343190}

@@ -3121,6 +3121,8 @@ MonoBehaviour:
   useSpecialAttack: 1
   isAttacking: 0
   shadowTransform: {fileID: 1097139193521384825}
+  shadowRenderer: {fileID: 5058219426935446876}
+  largeShadowSprite: {fileID: 21300000, guid: a985caa15b3ade44391f65fbe2d5d749, type: 3}
   mainSpriteRenderer: {fileID: 6527673177897736797}
   selectedBattleBar: {fileID: 0}
   minionBattleBar: {fileID: 4897325508947964398}
