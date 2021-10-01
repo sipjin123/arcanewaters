@@ -281,6 +281,9 @@ MonoBehaviour:
   - name: pvp monster powerup
     toolTip: 
     type: 16
+  - name: loot group id
+    toolTip: The loot group reference
+    type: 17
 --- !u!114 &7942291701031589172
 MonoBehaviour:
   m_ObjectHideFlags: 0

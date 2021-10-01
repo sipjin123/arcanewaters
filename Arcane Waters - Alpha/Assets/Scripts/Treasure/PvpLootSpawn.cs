@@ -123,6 +123,7 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
          if (powerupDataList.Count > 0) {
             TreasureDropsData treasureDropsData = powerupDataList.ChooseRandom();
             powerupType = treasureDropsData.powerUp;
+            rarity = treasureDropsData.rarity;
          } else {
             D.debug("No powerup data found in loot group {" + lootGroupId + "} with rarity {" + rarity + "}");
             powerupType = Powerup.Type.SpeedUp;
