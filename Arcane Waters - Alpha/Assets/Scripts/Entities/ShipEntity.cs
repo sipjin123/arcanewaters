@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using MapCreationTool;
+using System;
 
 public class ShipEntity : SeaEntity
 {
@@ -249,24 +250,34 @@ public class ShipEntity : SeaEntity
       // Cast abilities to allies if buff radius declared in web tool is greater than 0
       if (hasUsedBuff && shipAbilityData.buffRadius > 0) {
          List<NetEntity> allyEntities = EntityManager.self.getEntitiesWithVoyageId(voyageGroupId);
-         if (allyEntities.Count > 0) {
-            foreach (NetEntity allyEntity in allyEntities) {
-               float distanceBetweenAlly = Vector2.Distance(transform.position, allyEntity.transform.position);
-               if (allyEntity is PlayerShipEntity && userId != allyEntity.userId) {
-                  if (distanceBetweenAlly < shipAbilityData.buffRadius) {
-                     PlayerShipEntity allyShip = (PlayerShipEntity) allyEntity;
-                     switch (shipAbilityData.selectedAttackType) {
-                        case Attack.Type.Heal:
-                           int healValue = (int) (shipAbilityData.damageModifier * 100);
-                           allyShip.currentHealth += healValue;
-                           allyShip.Rpc_CastSkill(shipAbilityId, shipAbilityData, allyShip.transform.position, healValue);
-                           break;
-                        case Attack.Type.SpeedBoost:
-                           StartCoroutine(CO_TriggerTemporaryBuff(allyShip, shipAbilityData, shipAbilityData.statusDuration));
-                           break;
+
+         if (shipAbilityData.isBuffRadiusDependent) {
+            switch (shipAbilityData.selectedAttackType) {
+               case Attack.Type.SpeedBoost:
+                  StartCoroutine(CO_TriggerActiveAOEBuff(shipAbilityData, shipAbilityData.statusDuration));
+                  break;
+            }
+         } else {
+            if (allyEntities.Count > 0) {
+               foreach (NetEntity allyEntity in allyEntities) {
+                  float distanceBetweenAlly = Vector2.Distance(transform.position, allyEntity.transform.position);
+                  if (allyEntity is PlayerShipEntity && userId != allyEntity.userId) {
+                     if (distanceBetweenAlly < shipAbilityData.buffRadius) {
+                        PlayerShipEntity allyShip = (PlayerShipEntity) allyEntity;
+                        switch (shipAbilityData.selectedAttackType) {
+                           case Attack.Type.Heal:
+                              int healValue = (int) (shipAbilityData.damageModifier * 100);
+                              allyShip.currentHealth += healValue;
+                              allyShip.Rpc_CastSkill(shipAbilityId, shipAbilityData, allyShip.transform.position, healValue);
+                              Rpc_AddAbilityOrbs(new List<Attack.Type> { Attack.Type.Heal }, allyShip.userId, false);
+                              break;
+                           case Attack.Type.SpeedBoost:
+                              StartCoroutine(CO_TriggerTemporaryBuff(allyShip, shipAbilityData, shipAbilityData.statusDuration));
+                              break;
+                        }
+                     } else {
+                        // TODO: If ally is out of bounds, add logic here if needed
                      }
-                  } else {
-                     // TODO: If ally is out of bounds, add logic here if needed
                   }
                }
             }
@@ -280,12 +291,19 @@ public class ShipEntity : SeaEntity
    private IEnumerator CO_TriggerTemporaryBuff (ShipEntity targetEntity, ShipAbilityData shipAbilityData, float statusDuration) {
       int value = (int) (shipAbilityData.damageModifier * 100);
 
+      Rpc_AddAbilityOrbs(new List<Attack.Type> { shipAbilityData.selectedAttackType }, targetEntity.userId, false);
+      yield return new WaitForSeconds(ShipAbilityData.STATUS_CAST_DELAY);
       modifyStats(targetEntity, shipAbilityData, value);
       yield return new WaitForSeconds(statusDuration);
       modifyStats(targetEntity, shipAbilityData, -value);
    }
 
    private void modifyStats (ShipEntity targetEntity, ShipAbilityData shipAbilityData, int value) {
+      // Skip process if target is missing, probably got destroyed via warp
+      if (targetEntity == null) {
+         return;
+      }
+
       switch (shipAbilityData.selectedAttackType) {
          case Attack.Type.SpeedBoost:
             targetEntity.speed += value;
@@ -294,6 +312,10 @@ public class ShipEntity : SeaEntity
             targetEntity.damage += value;
             break;
       }
+      if (value < 0) {
+         Rpc_RemoveAbilityOrb(new List<Attack.Type> { shipAbilityData.selectedAttackType }, targetEntity.userId);
+      }
+
       targetEntity.Rpc_CastSkill(shipAbilityData.abilityId, shipAbilityData, targetEntity.transform.position, value);
    }
 
