@@ -84,7 +84,8 @@ namespace MapCustomization
             AreaManager.self.getArea(Global.player.areaKey) != null && // Check that the area is already created
             (currentArea == null || currentArea.areaKey == Global.player.areaKey) && // Check that the area hasn't changed to a different customizable area
             (Global.player as PlayerBodyEntity).weaponManager.actionType == Weapon.ActionType.CustomizeMap && // Check that customization action weapon is equipped
-            (Global.player as PlayerBodyEntity).weaponManager.weaponType > 0;
+            (Global.player as PlayerBodyEntity).weaponManager.weaponType > 0 && 
+            (CustomMapManager.isUserSpecificAreaKey(Global.player.areaKey) && CustomMapManager.getUserId(Global.player.areaKey) == Global.player.userId); // Make sure that the user can only edit on their own map
 
          if (!isCustomizing && shouldBeCustomizing) {
             enterCustomization(Global.player.areaKey);
