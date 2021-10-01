@@ -288,6 +288,55 @@ public class ShipEntity : SeaEntity
       hasEnteredPvP = true;
    }
 
+   private IEnumerator CO_TriggerActiveAOEBuff (ShipAbilityData shipAbilityData, float statusDuration) {
+      DateTime endTime = DateTime.UtcNow.AddSeconds(statusDuration);
+      List<NetEntity> allyEntities = EntityManager.self.getEntitiesWithVoyageId(voyageGroupId);
+      int value = (int) (shipAbilityData.damageModifier * 100);
+
+      List<int> withinBuffEffectivityList = new List<int>();
+      while (DateTime.UtcNow < endTime) {
+         yield return new WaitForSeconds(.5f);
+
+         foreach (NetEntity allyEntity in allyEntities) {
+            // Skip self
+            if (allyEntity.userId == userId) {
+               continue;
+            }
+
+            PlayerShipEntity allyShip = (PlayerShipEntity) allyEntity;
+            float distanceToTarget = Vector2.Distance(transform.position, allyShip.transform.position);
+
+            bool isWithinBuffEffectivity = withinBuffEffectivityList.Contains(allyShip.userId);
+            if (distanceToTarget < shipAbilityData.buffRadius) {
+               if (isWithinBuffEffectivity == false) {
+                  withinBuffEffectivityList.Add(allyShip.userId);
+                  Rpc_AddAbilityOrbs(new List<Attack.Type> { shipAbilityData.selectedAttackType }, allyShip.userId, true);
+                  modifyStats(allyShip, shipAbilityData, value);
+               }
+            } else {
+               if (isWithinBuffEffectivity) {
+                  withinBuffEffectivityList.Remove(allyShip.userId);
+                  modifyStats(allyShip, shipAbilityData, -value);
+               }
+            }
+         }
+      }
+
+      // Clear all buffed users after expiry
+      foreach (NetEntity allyShip in allyEntities) {
+         if (allyShip.userId == userId || allyShip == null || !(allyShip is PlayerShipEntity)) {
+            continue;
+         }
+
+         bool isWithinBuffEffectivity = withinBuffEffectivityList.Contains(allyShip.userId);
+         if (isWithinBuffEffectivity) {
+            withinBuffEffectivityList.Remove(allyShip.userId);
+            modifyStats((PlayerShipEntity) allyShip, shipAbilityData, -value);
+         }
+      }
+   }
+
+
    private IEnumerator CO_TriggerTemporaryBuff (ShipEntity targetEntity, ShipAbilityData shipAbilityData, float statusDuration) {
       int value = (int) (shipAbilityData.damageModifier * 100);
 
