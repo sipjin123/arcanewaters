@@ -571,6 +571,14 @@ public class PlayerShipEntity : ShipEntity
       _cannonChargeStartTime = NetworkTime.time;
       _isChargingCannon = true;
 
+      // Skip targetting setup if ability selected is buff type
+      ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(getSelectedShipAbilityId());
+      switch (abilityData.selectedAttackType) {
+         case Attack.Type.Heal:
+         case Attack.Type.SpeedBoost:
+            return;
+      }
+
       switch (cannonAttackType) {
          case CannonAttackType.Normal:
             _cannonTargeter.gameObject.SetActive(true);
