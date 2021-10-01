@@ -373,6 +373,7 @@ public class SeaEntity : NetEntity
 
       if (!isDead()) {
          updatePowerupOrbs();
+         updateAbilityOrbs();
       }
 
       // If we've died, start slowing moving our sprites downward
@@ -2011,19 +2012,75 @@ public class SeaEntity : NetEntity
       }
    }
 
-   [ClientRpc]
-   public void Rpc_AddPowerupOrbs (List<Powerup.Type> powerupTypes) {
-      addPowerupOrbs(powerupTypes);
+   #region Ability Orbs
+
+   protected void addAbilityOrbs (List<Attack.Type> powerupTypes, int targetUser, bool snapToTargetInstantly) {
+      foreach (Attack.Type attackType in powerupTypes) {
+         AbilityOrb newOrb = Instantiate(PrefabsManager.self.abilityOrbPrefab, transform.position + Vector3.up * POWERUP_ORB_ELLIPSE_HEIGHT, Quaternion.identity, transform);
+         newOrb.init(attackType, transform, targetUser, snapToTargetInstantly);
+
+         // Heal orbs expires immediately after snapping to target
+         if (attackType == Attack.Type.Heal) {
+            newOrb.snappedToTargetEvent.AddListener(() => {
+               Cmd_ExpireAbilityOrb(powerupTypes, targetUser);
+            });
+         }
+         _abilityOrbs.Add(newOrb);
+         newOrb.rotationValue = _powerupOrbRotation + (1.0f / _abilityOrbs.Count) * (_abilityOrbs.Count - 1);
+      }
+   }
+
+   [Command]
+   public void Cmd_ExpireAbilityOrb (List<Attack.Type> attackTypes, int targetUser) {
+      Rpc_RemoveAbilityOrb(attackTypes, targetUser);
+   }
+
+   protected void removeAbilityOrb (List<Attack.Type> powerupTypes, int targetUser) {
+      foreach (Attack.Type powerupType in powerupTypes) {
+         AbilityOrb orbToRemove = _abilityOrbs.Find((x) => x.attackType == powerupType && x.targetUserId == targetUser);
+         if (orbToRemove) {
+            _abilityOrbs.Remove(orbToRemove);
+            Destroy(orbToRemove.gameObject);
+         }
+      }
+   }
+
+   protected void removeAllAbilityOrbs () {
+      foreach (AbilityOrb orb in _abilityOrbs) {
+         Destroy(orb.gameObject);
+      }
+      _abilityOrbs.Clear();
+   }
+
+   protected void updateAbilityOrbs () {
+      _powerupOrbRotation += Time.deltaTime * POWERUP_ORB_ROTATION_SPEED;
+
+      float orbSpacing = 1.0f / _abilityOrbs.Count;
+
+      for (int i = 0; i < _abilityOrbs.Count; i++) {
+         AbilityOrb orb = _abilityOrbs[i];
+         if (!orb.isSnapping) {
+            float targetValue = _powerupOrbRotation + orbSpacing * i;
+            float newValue = Mathf.SmoothStep(orb.rotationValue, targetValue, Time.deltaTime * 10.0f);
+            orb.rotationValue = newValue;
+            Util.setLocalXY(orb.localOrbRotator, Util.getPointOnEllipse(POWERUP_ORB_ELLIPSE_WIDTH, POWERUP_ORB_ELLIPSE_HEIGHT, newValue));
+         }
+      }
    }
 
    [ClientRpc]
-   public void Rpc_RemovePowerupOrb (Powerup.Type powerupType) {
-      removePowerupOrb(powerupType);
+   public void Rpc_AddAbilityOrbs (List<Attack.Type> attackTypes, int targetUser, bool snapToTargetInstantly) {
+      addAbilityOrbs(attackTypes, targetUser, snapToTargetInstantly);
    }
 
    [ClientRpc]
-   public void Rpc_RemoveAllPowerupOrbs () {
-      removeAllPowerupOrbs();
+   public void Rpc_RemoveAbilityOrb (List<Attack.Type> attackType, int targetUser) {
+      removeAbilityOrb(attackType, targetUser);
+   }
+
+   [ClientRpc]
+   public void Rpc_RemoveAllAbilityOrbs () {
+      removeAllAbilityOrbs();
    }
 
    #endregion
@@ -2163,6 +2220,9 @@ public class SeaEntity : NetEntity
 
    // A list of references to any active powerup orbs, used to visually indicate what powerups this entity has
    protected List<PowerupOrb> _powerupOrbs = new List<PowerupOrb>();
+
+   // A list of references to any active ability orbs, used to visually indicate what ability this entity has
+   protected List<AbilityOrb> _abilityOrbs = new List<AbilityOrb>();
 
    // A value that controls the rotation of the powerup orbs as it is incremented (0.0f - 1.0f is one rotation)
    protected float _powerupOrbRotation = 0.0f;
