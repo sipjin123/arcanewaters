@@ -302,6 +302,12 @@ public class SeaProjectile : NetworkBehaviour
          Destroy(trail.gameObject, 3.0f);
       }
 
+      // Check if there is a custom trail and detach it as well
+      if (tryGetCustomTrailEffect(out GameObject customTrail)) {
+         customTrail.transform.SetParent(null);
+         Destroy(customTrail, 3.0f);
+      }
+
       NetworkServer.Destroy(gameObject);
    }
 
@@ -338,6 +344,11 @@ public class SeaProjectile : NetworkBehaviour
       foreach (SpriteRenderer renderer in spriteRenderers) {
          Util.setAlpha(renderer, newAlpha);
       }
+   }
+
+   protected virtual bool tryGetCustomTrailEffect (out GameObject trail) {
+      trail = null;
+      return false;
    }
 
    #region Private Variables

@@ -575,9 +575,18 @@ public class VoyageManager : GenericGameManager {
             // The last league map is always a boss
             areaKey = getLeagueSeaBossAreaKeys()[UnityEngine.Random.Range(0, getLeagueSeaBossAreaKeys().Count)];
          } else {
+            // Get the list of league maps
+            List<string> mapList = getLeagueAreaKeys();
+
+            if (mapList.Count == 0) {
+               D.error("No league maps available!");
+               onFailureAction?.Invoke();
+               yield break;
+            }
+
             // Generate a random list of league maps indexes to ensure there is no repetition in the same league
             List<int> mapIndexes = new List<int>();
-            for (int i = 0; i < Voyage.MAPS_PER_LEAGUE; i++) {
+            for (int i = 0; i < mapList.Count; i++) {
                mapIndexes.Add(i);
             }
 
@@ -588,15 +597,6 @@ public class VoyageManager : GenericGameManager {
 
             System.Random r = new System.Random(randomSeed);
             mapIndexes = mapIndexes.OrderBy(x => r.Next()).ToList();
-
-            // Get the list of league maps
-            List<string> mapList = getLeagueAreaKeys();
-
-            if (mapList.Count == 0) {
-               D.error("No league maps available!");
-               onFailureAction?.Invoke();
-               yield break;
-            }
 
             // Pick the index corresponding to the league index
             if (mapIndexes[leagueIndex - 1] < mapList.Count) {

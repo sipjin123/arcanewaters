@@ -17,6 +17,9 @@ public class PowerupData {
    // The sprite icon
    public Sprite spriteIcon;
 
+   // The minimum amount of time that must pass after activating this powerup, before it can be activated again.
+   public float minimumTimeBetweenActivations;
+
    // The boost that each rarity of this powerup will give, normalised (1 = 100%)
    public float[] rarityBoostFactors = { 0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f };
 

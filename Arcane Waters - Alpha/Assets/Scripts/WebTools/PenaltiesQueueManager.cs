@@ -12,8 +12,10 @@ public class PenaltiesQueueManager : GenericGameManager
    protected override void Awake () {
       base.Awake();
 
-      // The game will check for new items in the penalties queue, every 10 seconds
-      InvokeRepeating(nameof(checkForPenaltiesQueue), 0, 10);
+      // The game will check for new items in the penalties queue, every 10 seconds, only if this is a Cloud Build
+      if (Util.isCloudBuild()) {
+         InvokeRepeating(nameof(checkForPenaltiesQueue), 0, 10);
+      }
    }
 
    [ServerOnly]
@@ -84,6 +86,32 @@ public class PenaltiesQueueManager : GenericGameManager
                      }
 
                      DB_Main.processPenaltyFromQueue(item.id);
+                     break;
+                  case PenaltyActionType.LiftMute:
+                     if (penalties.Any(x => x.penaltyType == PenaltyActionType.Mute || x.penaltyType == PenaltyActionType.StealthMute)) {
+                        success = DB_Main.unMuteAccount(penaltyContent);
+                        if (success) {
+                           UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                              ServerNetworkingManager.self.unMutePlayer(penaltyContent.targetUsrId);
+                           });
+                        } else {
+                           D.log("Penalty Queue: Error while trying to unmute an account.");
+                        }
+                     } else {
+                        D.log(string.Format("Penalty Queue: {0} is not currently muted.", penaltyContent.targetUsrName));
+                     }
+                     break;
+                  case PenaltyActionType.LiftBan:
+                     if (penalties.Any(x => x.penaltyType == PenaltyActionType.Ban || x.penaltyType == PenaltyActionType.PermanentBan)) {
+                        success = DB_Main.unBanAccount(penaltyContent);
+
+                        // We don't need to send anything to the servers, since the banned status is checked when the player logs in.
+                        if (!success) {
+                           D.log("Penalty Queue: Error while trying to unban an account.");
+                        }
+                     } else {
+                        D.log(string.Format("Penalty Queue: {0} is not currently banned.", penaltyContent.targetUsrName));
+                     }
                      break;
                }
             }

@@ -57,6 +57,9 @@ public class StoreScreen : Panel
    // The reference to the label holding the price of the item in the description container
    public Text descPriceText;
 
+   // The reference to the store filter
+   public StoreFilter storeFilter;
+
    // Self
    public static StoreScreen self;
 
@@ -73,6 +76,15 @@ public class StoreScreen : Panel
 
       // Enable or disable stuff based on whether there's a selection
       buyButton.interactable = (selectedItem != null);
+   }
+
+   private void OnEnable () {
+      storeFilter.onFilterToggleValueChanged.RemoveAllListeners();
+      storeFilter.onFilterToggleValueChanged.AddListener(onStoreFilterToggleValueChanged);    
+   }
+
+   private void OnDisable () {
+      storeFilter.onFilterToggleValueChanged.RemoveAllListeners();
    }
 
    public void showPanel (int gold, int gems) {
@@ -286,6 +298,29 @@ public class StoreScreen : Panel
          if (_currentStoreTabType == StoreTab.StoreTabType.Haircuts && itemBox is StoreHaircutBox haircutItemBox) {
             haircutItemBox.gameObject.SetActive(haircutItemBox.haircut.getGender() == Global.player.gender);
          }
+
+         // Apply the filter (if necessary)
+         if (shouldShowStoreFilter() && storeFilter.getCurrentToggle().type != StoreFilterToggle.ToggleType.All) {
+            if (itemBox is StoreDyeBox dyeBox) {
+               if (storeFilter.getCurrentToggle().type == StoreFilterToggle.ToggleType.Primary) {
+                  if (!dyeBox.palette.isPrimary()) {
+                     itemBox.gameObject.SetActive(false);
+                  }
+               }
+
+               if (storeFilter.getCurrentToggle().type == StoreFilterToggle.ToggleType.Secondary) {
+                  if (!dyeBox.palette.isSecondary()) {
+                     itemBox.gameObject.SetActive(false);
+                  }
+               }
+
+               if (storeFilter.getCurrentToggle().type == StoreFilterToggle.ToggleType.Tertiary) {
+                  if (!dyeBox.palette.isAccent()) {
+                     itemBox.gameObject.SetActive(false);
+                  }
+               }
+            }
+         }
       }
 
       // Update layout based on the selected tab
@@ -330,6 +365,7 @@ public class StoreScreen : Panel
       updateCharacterPreview(showPreview: true);
       filterItems();
       updateTabTitle();
+      updateStoreFilter();
    }
 
    private void updateTabTitle () {
@@ -409,6 +445,7 @@ public class StoreScreen : Panel
       prepareStoreItemBox(storeItem, box);
       box.gemsBundle = gemsData;
       box.itemName = box.gemsBundle.itemName;
+      box.title = $"{storeItem.quantity} Gems";
       box.itemDescription = box.gemsBundle.itemDescription;
       tryOverrideNameAndDescription(storeItem, box);
       box.initialize();
@@ -499,9 +536,9 @@ public class StoreScreen : Panel
 
       StoreHairDyeBox box = Instantiate(PrefabsManager.self.hairDyeBoxPrefab);
       prepareStoreItemBox(storeItem, box);
-      box.hairdye = dyeData;
-      box.itemName = box.hairdye.itemName;
-      box.itemDescription = box.hairdye.itemDescription;
+      box.dye = dyeData;
+      box.itemName = box.dye.itemName;
+      box.itemDescription = box.dye.itemDescription;
       tryOverrideNameAndDescription(storeItem, box);
       box.initialize();
       return box;
@@ -516,9 +553,9 @@ public class StoreScreen : Panel
 
       StoreArmorDyeBox box = Instantiate(PrefabsManager.self.armorDyeBoxPrefab);
       prepareStoreItemBox(storeItem, box);
-      box.armorDye = dyeData;
-      box.itemName = box.armorDye.itemName;
-      box.itemDescription = box.armorDye.itemDescription;
+      box.dye = dyeData;
+      box.itemName = box.dye.itemName;
+      box.itemDescription = box.dye.itemDescription;
       box.playerArmor = Global.userObjects.armor;
       tryOverrideNameAndDescription(storeItem, box);
       box.initialize();
@@ -534,9 +571,9 @@ public class StoreScreen : Panel
 
       StoreWeaponDyeBox box = Instantiate(PrefabsManager.self.weaponDyeBoxPrefab);
       prepareStoreItemBox(storeItem, box);
-      box.weaponDye = dyeData;
-      box.itemName = box.weaponDye.itemName;
-      box.itemDescription = box.weaponDye.itemDescription;
+      box.dye = dyeData;
+      box.itemName = box.dye.itemName;
+      box.itemDescription = box.dye.itemDescription;
       box.playerWeapon = Global.userObjects.weapon;
       tryOverrideNameAndDescription(storeItem, box);
       box.initialize();
@@ -552,9 +589,9 @@ public class StoreScreen : Panel
 
       StoreHatDyeBox box = Instantiate(PrefabsManager.self.hatDyeBoxPrefab);
       prepareStoreItemBox(storeItem, box);
-      box.hatDye = dyeData;
-      box.itemName = box.hatDye.itemName;
-      box.itemDescription = box.hatDye.itemDescription;
+      box.dye = dyeData;
+      box.itemName = box.dye.itemName;
+      box.itemDescription = box.dye.itemDescription;
       box.playerHat = Global.userObjects.hat;
       tryOverrideNameAndDescription(storeItem, box);
       box.initialize();
@@ -658,6 +695,44 @@ public class StoreScreen : Panel
 
    #endregion
 
+   #region Filter
+
+   public void onStoreFilterToggleValueChanged(StoreFilterToggle toggle) {
+      if (toggle == null || !toggle.toggle.isOn) {
+         return;
+      }
+
+      D.debug($"Filter state changed. The new value is {toggle.type}");
+      _currentStoreFilterToggleType = toggle.type;
+
+      if (shouldShowStoreFilter()) {
+         filterItems();
+      }
+   }
+
+   public void updateStoreFilter () {
+      if (this.storeFilter == null) {
+         return;
+      }
+
+      bool showStoreFilter = shouldShowStoreFilter();
+
+      if (!showStoreFilter) {
+         // Reset the filter to the default toggle
+         this.storeFilter.setToggle(StoreFilterToggle.ToggleType.All);
+      }
+
+      this.storeFilter.gameObject.SetActive(showStoreFilter);
+   }
+
+   private bool shouldShowStoreFilter () {
+      return (_currentStoreTabType == StoreTab.StoreTabType.ArmorDyes ||
+        _currentStoreTabType == StoreTab.StoreTabType.HatDyes ||
+        _currentStoreTabType == StoreTab.StoreTabType.WeaponDyes);
+   }
+
+   #endregion
+
    #region Private Variables
 
    // Store values of all boxes used for choosing hair palette; Key is box hashes
@@ -671,6 +746,9 @@ public class StoreScreen : Panel
 
    // Store Items Cache
    private List<StoreItem> _storeItemsCache;
+
+   // Current Store Tab filter
+   private StoreFilterToggle.ToggleType _currentStoreFilterToggleType;
 
    #endregion
 }

@@ -221,6 +221,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating weapon dyes
    public StoreWeaponDyeBox weaponDyeBoxPrefab;
 
+   // The prefab we use for creating powerup orbs
+   public PowerupOrb powerupOrbPrefab;
+
    // Self
    public static PrefabsManager self;
 

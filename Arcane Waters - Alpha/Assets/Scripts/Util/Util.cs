@@ -1326,6 +1326,13 @@ public class Util : MonoBehaviour
       return y;
    }
 
+   public static Vector2 getPointOnEllipse (float width, float height, float t) {
+      float angle = t * 360.0f * Mathf.Deg2Rad;
+      float x = Mathf.Sin(angle) * width;
+      float y = Mathf.Cos(angle) * height;
+      return new Vector2(x, y);
+   }
+
    public static float getNormalisedScrollValue (int selectedIndex, int numItems) {
       // Calculates the value required to position a scroll view, in order to have a specific item visible
       float verticalPosition = 1.0f - Mathf.Clamp01((float) (selectedIndex) / (float) (numItems - 1));

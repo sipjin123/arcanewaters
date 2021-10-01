@@ -11163,12 +11163,61 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
 
-            using (MySqlCommand command = new MySqlCommand("INSERT INTO global.world_map (wmMapData) VALUES (@wmMapData)", connection)) {
+            using (MySqlCommand command = new MySqlCommand("INSERT INTO global.world_map (wmMapData, wmMapDataLength) VALUES (@wmMapData, @wmMapDataLength)", connection)) {
                command.Parameters.Add("@wmMapData", MySqlDbType.MediumBlob).Value = data;
+               command.Parameters.AddWithValue("@wmMapDataLength", data.Length);
                int rowsAffected = command.ExecuteNonQuery();
 
                if (rowsAffected > 0) {
                   result = true;
+               }
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return result;
+   }
+
+   public static new int getWorldMapSectorsCount () {
+      int result = 0;
+
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+
+            using (MySqlCommand command = new MySqlCommand("SELECT COUNT(*) FROM global.world_map", connection)) {
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  if (reader.Read()) {
+                     result = reader.GetInt32(0);
+                  }
+               }
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return result;
+   }
+
+   public static new byte[] fetchWorldMapSector (int sectorIndex) {
+      byte[] result = null;
+
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+
+            using (MySqlCommand command = new MySqlCommand("SELECT wmMapData, wmMapDataLength FROM global.world_map WHERE wmId=@wmId", connection)) {
+               command.Parameters.AddWithValue("@wmId", sectorIndex+1);
+
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  if (reader.Read()) {
+                     int dataLength = reader.GetInt32("wmMapDataLength");
+                     result = new byte[dataLength];
+                     reader.GetBytes(0, 0, result, 0, dataLength);
+                  }
                }
             }
          }

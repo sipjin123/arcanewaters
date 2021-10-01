@@ -1,32 +1,26 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class StoreWeaponDyeBox : StoreItemBox
+public class StoreWeaponDyeBox : StoreDyeBox
 {
    #region Public Variables
 
    // The hair layers
    public Image weaponImage;
 
-   // The dye information
-   public DyeData weaponDye;
-
    // Reference to the player's weapon
    public Item playerWeapon;
-
-   // Palette information
-   public PaletteToolData palette;
 
    #endregion
 
    public void initialize () {
       this.storeTabCategory = StoreTab.StoreTabType.WeaponDyes;
 
-      if (this.weaponImage == null || Util.isBatch() || weaponDye == null) {
+      if (this.weaponImage == null || Util.isBatch() || dye == null) {
          return;
       }
 
-      this.palette = PaletteSwapManager.self.getPalette(weaponDye.paletteId);
+      this.palette = PaletteSwapManager.self.getPalette(dye.paletteId);
 
       if (this.palette == null) {
          return;

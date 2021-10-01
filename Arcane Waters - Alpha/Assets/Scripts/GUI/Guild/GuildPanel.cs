@@ -89,6 +89,41 @@ public class GuildPanel : Panel {
    // Decarations used for player who is not a leader
    public GameObject bottomDecarationNoLeader;
 
+   // Sort Direction
+   public enum SortDirection
+   {
+      // None
+      None = 0,
+
+      // Ascending order
+      Ascending = 1,
+
+      // Descending order
+      Descending = 2
+   }
+
+   // Columns used for sorting
+   public enum SortedColumn
+   {
+      // None
+      None = 0,
+
+      // Name
+      Name = 1,
+
+      // Level
+      Level = 2,
+
+      // rank
+      Rank = 3,
+
+      // Zone
+      Zone = 4,
+
+      // Date
+      Date = 5
+   }
+
    // Self
    public static GuildPanel self;
 
@@ -176,6 +211,9 @@ public class GuildPanel : Panel {
 
       // Update buttons interactivity
       checkButtonPermissions();
+
+      // Sync order
+      sort(_sortedColumn, _sortDirection);
    }
 
    public void createGuildPressed () {
@@ -270,56 +308,101 @@ public class GuildPanel : Panel {
       }
    }
 
+   #region Sorting
+
    public void sortByName () {
-      toggleIcons(nameAsc, nameDesc);
-      _guildMemberRowsReference.Sort((a, b) => {
-         return nameAsc.activeSelf ? a.memberName.text.CompareTo(b.memberName.text) : b.memberName.text.CompareTo(a.memberName.text);
-      });
-      orderRows();
+      sort(SortedColumn.Name, computeNextSortDirection(SortedColumn.Name));
    }
 
    public void sortByRank () {
-      toggleIcons(rankAsc, rankDesc);
-      _guildMemberRowsReference.Sort((a, b) => {
-         return rankAsc.activeSelf ? a.memberRankName.text.CompareTo(b.memberRankName.text) : b.memberRankName.text.CompareTo(a.memberRankName.text);
-      });
-      orderRows();
+      sort(SortedColumn.Rank, computeNextSortDirection(SortedColumn.Rank));
    }
 
    public void sortByZone () {
-      toggleIcons(zoneAsc, zoneDesc);
-      _guildMemberRowsReference.Sort((a, b) => {
-         return zoneAsc.activeSelf ? a.memberZone.text.CompareTo(b.memberZone.text) : b.memberZone.text.CompareTo(a.memberZone.text);
-      });
-      orderRows();
+      sort(SortedColumn.Zone, computeNextSortDirection(SortedColumn.Zone));
    }
 
    public void sortByDate () {
-      toggleIcons(dateAsc, dateDesc);
-      _guildMemberRowsReference.Sort((a, b) => {
-         return dateAsc.activeSelf ? a.lastActiveInMinutes.CompareTo(b.lastActiveInMinutes) : b.lastActiveInMinutes.CompareTo(a.lastActiveInMinutes);
-      });
-      orderRows();
+      sort(SortedColumn.Date, computeNextSortDirection(SortedColumn.Date));
    }
 
    public void sortByLevel () {
-      toggleIcons(levelAsc, levelDesc);
-      _guildMemberRowsReference.Sort((a, b) => {
-         return levelAsc.activeSelf ? a.memberLevel.text.CompareTo(b.memberLevel.text) : b.memberLevel.text.CompareTo(a.memberLevel.text);
-      });
+      sort(SortedColumn.Level, computeNextSortDirection(SortedColumn.Level));
+   }
+
+   public void sortByNone () {
+      sort(SortedColumn.None, computeNextSortDirection(SortedColumn.None));
+   }
+
+   private SortDirection computeNextSortDirection (SortedColumn column) {
+      SortDirection direction = _sortDirection;
+
+      if (_sortedColumn != column) {
+         direction = SortDirection.None;
+      }
+
+      switch (direction) {
+         case SortDirection.None:
+         case SortDirection.Descending:
+            return SortDirection.Ascending;
+         case SortDirection.Ascending:
+            return SortDirection.Descending;
+         default:
+            return SortDirection.None;
+      }
+   }
+
+   public void sort (SortedColumn column, SortDirection direction) {
+      _sortDirection = direction;
+      _sortedColumn = column;
+
+      switch (column) {
+         case SortedColumn.None:
+            _sortedColumn = SortedColumn.None;
+            _sortDirection = SortDirection.None;
+            disableAllSortIcons();
+            break;
+         case SortedColumn.Name:
+            toggleIcons(nameAsc, nameDesc);
+            _guildMemberRowsReference.Sort((a, b) => {
+               return _sortDirection == SortDirection.Ascending ? a.memberName.text.CompareTo(b.memberName.text) : b.memberName.text.CompareTo(a.memberName.text);
+            });
+            break;
+         case SortedColumn.Level:
+            toggleIcons(levelAsc, levelDesc);
+            _guildMemberRowsReference.Sort((a, b) => {
+               return _sortDirection == SortDirection.Ascending ? a.memberLevel.text.CompareTo(b.memberLevel.text) : b.memberLevel.text.CompareTo(a.memberLevel.text);
+            });
+            break;
+         case SortedColumn.Rank:
+            toggleIcons(rankAsc, rankDesc);
+            _guildMemberRowsReference.Sort((a, b) => {
+               return _sortDirection == SortDirection.Ascending ? a.memberRankName.text.CompareTo(b.memberRankName.text) : b.memberRankName.text.CompareTo(a.memberRankName.text);
+            });
+            break;
+         case SortedColumn.Zone:
+            toggleIcons(zoneAsc, zoneDesc);
+            _guildMemberRowsReference.Sort((a, b) => {
+               return _sortDirection == SortDirection.Ascending ? a.memberZone.text.CompareTo(b.memberZone.text) : b.memberZone.text.CompareTo(a.memberZone.text);
+            });
+            break;
+         case SortedColumn.Date:
+            toggleIcons(dateAsc, dateDesc);
+            _guildMemberRowsReference.Sort((a, b) => {
+               return _sortDirection == SortDirection.Ascending ? a.lastActiveInMinutes.CompareTo(b.lastActiveInMinutes) : b.lastActiveInMinutes.CompareTo(a.lastActiveInMinutes);
+            });
+            break;
+      }
+
       orderRows();
    }
 
-   private void toggleIcons(GameObject asc, GameObject desc) {
-      if (!asc.activeSelf && !desc.activeSelf) {
-         disableAllSortIcons();
-         asc.SetActive(true);
-      } else {
-         bool nameAscBool = !asc.activeSelf;
-         disableAllSortIcons();
-         asc.SetActive(nameAscBool);
-         desc.SetActive(!nameAscBool);
-      }
+   #endregion
+
+   private void toggleIcons (GameObject asc, GameObject desc) {
+      disableAllSortIcons();
+      asc.SetActive(this._sortDirection == SortDirection.Ascending);
+      desc.SetActive(this._sortDirection == SortDirection.Descending);
    }
 
    private void disableAllSortIcons () {
@@ -336,8 +419,20 @@ public class GuildPanel : Panel {
    }
 
    private void orderRows () {
-      for (int i = 0; i < _guildMemberRowsReference.Count; i++) {
-         _guildMemberRowsReference[i].transform.SetSiblingIndex(i);
+      if (_guildMemberRowsReference == null || _guildMemberRowsReference.Count == 0) {
+         return;
+      }
+
+      Transform parent = _guildMemberRowsReference[0].transform.parent;
+
+      if (parent == null) {
+         return;
+      }
+
+      parent.DetachChildren();
+
+      foreach (GuildMemberRow row in _guildMemberRowsReference) {
+         row.transform.SetParent(parent);
       }
    }
 
@@ -353,6 +448,12 @@ public class GuildPanel : Panel {
 
    // References to the objects representing guild members
    private List<GuildMemberRow> _guildMemberRowsReference = new List<GuildMemberRow>();
+
+   // The current sort direction
+   private SortDirection _sortDirection;
+
+   // The column used for sorting
+   private SortedColumn _sortedColumn;
 
    #endregion
 }

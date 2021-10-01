@@ -25,6 +25,7 @@ public class MetricsManager : GenericGameManager
 
    public void Start () {
       startGatheringMetrics();
+      StartCoroutine(CO_ClearAllPreviousGameMetrics());
    }
 
    private void startGatheringMetrics () {
@@ -55,6 +56,25 @@ public class MetricsManager : GenericGameManager
          } catch (Exception ex) {
             D.warning("MetricsManager: Couldn't update metrics. | " + ex.Message);
          }
+      }
+   }
+
+   private IEnumerator CO_ClearAllPreviousGameMetrics () {
+      // Wait until our server is defined
+      while (ServerNetworkingManager.self == null || ServerNetworkingManager.self.server == null) {
+         yield return null;
+      }
+
+      // Wait until our server port is initialized
+      while (ServerNetworkingManager.self.server.networkedPort.Value == 0) {
+         yield return null;
+      }
+
+      // Only the master server performs this operation
+      if (ServerNetworkingManager.self.server.isMasterServer()) {
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            DB_Main.clearOldGameMetrics(0);
+         });
       }
    }
 

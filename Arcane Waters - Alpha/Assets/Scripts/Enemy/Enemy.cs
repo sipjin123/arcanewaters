@@ -59,6 +59,12 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    // Static shadow object beneath enemy character
    public GameObject shadowObject;
 
+   // The shadow renderer
+   public SpriteRenderer shadowRenderer;
+
+   // The shadow to use for large enemies
+   public Sprite largeShadowSprite;
+
    // A convenient reference to our collider
    public CircleCollider2D circleCollider;
 
@@ -163,6 +169,10 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
 
          shadowObject.transform.localScale = new Vector2(battlerData.shadowScale, battlerData.shadowScale);
          shadowObject.transform.localPosition = new Vector3(battlerData.shadowOffset.x, battlerData.shadowOffset.y, shadowObject.transform.localPosition.z);
+
+         if (isBossType) {
+            shadowRenderer.sprite = largeShadowSprite;
+         }
       }
       bodyAnim.group = animGroupType;
       
@@ -375,7 +385,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       }
       // Standard case - use group type name
       else {
-         sprite = ImageManager.getSprite("Sprites/EnemyShadows/" + shadowAnim.group.ToString() + "Shadow.png");
+         sprite = ImageManager.getSprite("Sprites/EnemyShadows/" + shadowAnim.group.ToString().Replace("_", "") + "Shadow.png");
       }
 
       // Assign shadow sprite and use it during death animation instead of static shadow sprite

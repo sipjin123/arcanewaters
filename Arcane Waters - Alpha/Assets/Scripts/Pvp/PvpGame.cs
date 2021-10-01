@@ -614,18 +614,31 @@ public class PvpGame : MonoBehaviour {
          }
       }
 
+      int gameGemRewards = getGameGemRewards();
+
       foreach (int userId in _usersInGame) {
          NetEntity player = EntityManager.self.getEntity(userId);
          if (player) {
             bool playerWon = (player.pvpTeam == winningTeam);
-            player.rpc.Target_ShowPvpPostGameScreen(player.connectionToClient, playerWon, winningTeam);
+            player.rpc.Target_ShowPvpPostGameScreen(player.connectionToClient, playerWon, winningTeam, gameGemRewards);
 
             int goldAwarded = (playerWon) ? WINNER_GOLD : LOSER_GOLD;
             int xpAwarded = (playerWon) ? WINNER_XP : LOSER_XP;
 
+            // If the game wasn't valid for rewards, make rewards 0
+            if (gameGemRewards == 0) {
+               goldAwarded = 0;
+               xpAwarded = 0;
+               continue;
+            }
+
             // Go to background thread to award gold and xp
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                DB_Main.addGoldAndXP(userId, goldAwarded, xpAwarded);
+
+               if (playerWon) {
+                  DB_Main.addGems(player.accountId, gameGemRewards);
+               }
 
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                   // Show battle xp to player
@@ -648,6 +661,31 @@ public class PvpGame : MonoBehaviour {
          if (playerEntity) {
             playerEntity.rpc.Target_UpdatePvpInstructionsPanelPlayers(playerEntity.connectionToClient, _usersInGame);
          }
+      }
+   }
+
+   private int getGameGemRewards () {
+
+      float timeSinceGameStart = Time.realtimeSinceStartup - _startTime;
+      PvpArenaSize arenaSize = AreaManager.self.getAreaPvpArenaSize(areaKey);
+
+      // Check that the teams have enough 
+      List<GameStats> instanceStatData = GameStatsManager.self.getStatsForInstance(instanceId);
+      List<int> teamStatTotals = new List<int>() { 0, 0, 0 };
+      foreach (GameStats stats in instanceStatData) {
+         teamStatTotals[stats.playerTeam] += stats.PvpPlayerKills;
+         teamStatTotals[stats.playerTeam] += stats.PvpPlayerDeaths;
+      }
+
+      int statRequirement = PVP_ARENA_MINIMUM_STAT_REQUIREMENTS[arenaSize];
+      bool enoughStats = (teamStatTotals[(int) PvpTeamType.A] >= statRequirement) && (teamStatTotals[(int) PvpTeamType.B] >= statRequirement);
+      bool enoughTimePassed = timeSinceGameStart >= PVP_ARENA_MINIMUM_GAME_DURATIONS[arenaSize];
+
+      if (enoughStats && enoughTimePassed) {
+         return PVP_ARENA_GEM_REWARDS[arenaSize];
+      } else {
+         D.debug("Pvp game wasn't valid for rewards. enoughStats: " + enoughStats + ", enoughTimePassed: " + enoughTimePassed);
+         return 0;
       }
    }
 
@@ -1170,6 +1208,15 @@ public class PvpGame : MonoBehaviour {
 
    // Start Time
    private float _startTime;
+
+   // The number of gems awarded to the winning team, indexed by pvp arena size
+   private readonly Dictionary<PvpArenaSize, int> PVP_ARENA_GEM_REWARDS = new Dictionary<PvpArenaSize, int>() { { PvpArenaSize.Small, 1 }, { PvpArenaSize.Medium, 2 }, { PvpArenaSize.Large, 3 } };
+
+   // The minimum duration a game needs to last in order to qualify for rewards, in seconds, indexed by pvp arena size
+   private readonly Dictionary<PvpArenaSize, float> PVP_ARENA_MINIMUM_GAME_DURATIONS = new Dictionary<PvpArenaSize, float>() { { PvpArenaSize.Small, 180.0f }, { PvpArenaSize.Medium, 240.0f }, { PvpArenaSize.Large, 300.0f } };
+
+   // The minimum number of stats (Kills + Deaths) each team must have in order to qualify for rewards, indexed by pvp arena size
+   private readonly Dictionary<PvpArenaSize, int> PVP_ARENA_MINIMUM_STAT_REQUIREMENTS = new Dictionary<PvpArenaSize, int>() { { PvpArenaSize.Small, 3 }, { PvpArenaSize.Medium, 4 }, { PvpArenaSize.Large, 5 } };
 
    #endregion
 }

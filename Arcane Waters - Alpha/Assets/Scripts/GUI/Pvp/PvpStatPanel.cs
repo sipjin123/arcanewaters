@@ -42,8 +42,14 @@ public class PvpStatPanel : Panel {
    // References to the icons that indicate what quality reward a team was awarded
    public List<Image> teamRewardIcons;
 
+   // References to the images that show gem icons
+   public List<GameObject> teamGemIconContainers;
+
    // References to the text that indicates what quantity reward a team was awarded
-   public List<TextMeshProUGUI> teamRewardTexts;
+   public List<TextMeshProUGUI> teamGoldRewardTexts;
+
+   // References to the text that indicates how many gems a team was awarded
+   public List<TextMeshProUGUI> teamGemRewardTexts;
 
    // References to the text that indicates what faction a team represents
    public List<TextMeshProUGUI> teamNames;
@@ -57,7 +63,7 @@ public class PvpStatPanel : Panel {
    // The prefab used for visually separating teams
    public GameObject separatorPrefab;
 
-   // The nameplate color of each tem in the pvp score panel
+   // The nameplate color of each team in the pvp score panel
    public Color aTeamColor, bTeamColor, cTeamColor, dTeamColor;
 
    #endregion
@@ -171,11 +177,11 @@ public class PvpStatPanel : Panel {
       statRow.setCellBackgroundSprites(cellBackgroundSprite);
    }
 
-   public void updateDisplayMode (string areaKey, bool isGameEnded, bool isVictory, PvpTeamType winningTeam) {
+   public void updateDisplayMode (string areaKey, bool isGameEnded, bool isVictory, PvpTeamType winningTeam, int gemReward = 0) {
       PvpGameMode gameMode = AreaManager.self.getAreaPvpGameMode(areaKey);
       
       if (_requestTeamFactions != null) {
-         StopCoroutine(_requestTeamFactions);
+         PvpManager.self.StopCoroutine(_requestTeamFactions);
       }
 
       _requestTeamFactions = PvpManager.self.StartCoroutine(CO_RequestTeamFactions());
@@ -200,9 +206,26 @@ public class PvpStatPanel : Panel {
          // Update team reward texts and icons
          foreach (PvpTeamType team in allTeams) {
             bool isWinningTeam = winningTeams.Contains(team);
-
-            teamRewardTexts[(int) team].text = (isWinningTeam) ? PvpGame.WINNER_GOLD.ToString() : PvpGame.LOSER_GOLD.ToString();
             teamRewardIcons[(int) team].sprite = (isWinningTeam) ? _rewardIcons[0] : _rewardIcons[1];
+
+            // If the game was valid for rewards, populate rewards
+            if (gemReward > 0) {
+               teamGoldRewardTexts[(int) team].text = (isWinningTeam) ? PvpGame.WINNER_GOLD.ToString() : PvpGame.LOSER_GOLD.ToString();
+
+               if (isWinningTeam) {
+                  teamGemRewardTexts[(int) team].text = gemReward.ToString();
+               } else {
+                  teamGemRewardTexts[(int) team].gameObject.SetActive(false);
+               }
+
+               teamGemIconContainers[(int) team].gameObject.SetActive(isWinningTeam);
+            
+            // If the game wasn't valid for rewards, don't display gems, and show 0 reward.
+            } else {
+               teamGoldRewardTexts[(int) team].text = "0";
+               teamGemRewardTexts[(int) team].gameObject.SetActive(false);
+               teamGemIconContainers[(int) team].gameObject.SetActive(false);
+            }
          }
 
          // Enable the victory / defeat banner

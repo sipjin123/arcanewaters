@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StoreHatDyeBox : StoreItemBox
+public class StoreHatDyeBox : StoreDyeBox
 {
    #region Public Variables
 
@@ -15,25 +15,19 @@ public class StoreHatDyeBox : StoreItemBox
    // Reference to the Recolored sprite for the hat
    public RecoloredSprite hatSprite;
 
-   // The hat dye information
-   public DyeData hatDye;
-
    // The hat of the current player
    public Item playerHat;
-
-   // Palette information
-   public PaletteToolData palette;
 
    #endregion
 
    public virtual void initialize () {
       this.storeTabCategory = StoreTab.StoreTabType.HatDyes;
 
-      if (this.hatImage == null || this.bodyImage == null || this.hatSprite == null || Util.isBatch() || hatDye == null) {
+      if (this.hatImage == null || this.bodyImage == null || this.hatSprite == null || Util.isBatch() || dye == null) {
          return;
       }
 
-      this.palette = PaletteSwapManager.self.getPalette(hatDye.paletteId);
+      this.palette = PaletteSwapManager.self.getPalette(dye.paletteId);
 
       if (this.palette == null) {
          return;

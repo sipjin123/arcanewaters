@@ -21,6 +21,10 @@ MonoBehaviour:
     defaultValue: 
     toolTip: 
     type: 2
+  - name: grave text
+    defaultValue: 
+    toolTip: 
+    type: 2
   selectDataFields: []
   customDataFields: []
 --- !u!1001 &5115326599357662135
@@ -51,6 +55,11 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5300415696525229336, guid: df76d68c436a32a47b17b80c8b70da0c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6041015228377086116, guid: df76d68c436a32a47b17b80c8b70da0c,
         type: 3}
       propertyPath: m_IsActive
       value: 0

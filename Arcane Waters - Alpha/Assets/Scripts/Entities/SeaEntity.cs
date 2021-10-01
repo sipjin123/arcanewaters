@@ -371,6 +371,10 @@ public class SeaEntity : NetEntity
          currentHealth += (int) HEALTH_REGEN_RATE;
       }
 
+      if (!isDead()) {
+         updatePowerupOrbs();
+      }
+
       // If we've died, start slowing moving our sprites downward
       if (isDead()) {
          _outline.setVisibility(false);
@@ -1967,6 +1971,63 @@ public class SeaEntity : NetEntity
 
    #endregion
 
+   #region Powerup VFX
+
+   protected void addPowerupOrbs (List<Powerup.Type> powerupTypes) {
+      foreach (Powerup.Type powerupType in powerupTypes) {
+         PowerupOrb newOrb = Instantiate(PrefabsManager.self.powerupOrbPrefab, transform.position + Vector3.up * POWERUP_ORB_ELLIPSE_HEIGHT, Quaternion.identity, transform);
+         newOrb.init(powerupType, transform);
+         _powerupOrbs.Add(newOrb);
+         newOrb.rotationValue = _powerupOrbRotation + (1.0f / _powerupOrbs.Count) * (_powerupOrbs.Count - 1);
+      }
+   }
+
+   protected void removePowerupOrb (Powerup.Type powerupType) {
+      PowerupOrb orbToRemove = _powerupOrbs.Find((x) => x.powerupType == powerupType);
+      if (orbToRemove) {
+         _powerupOrbs.Remove(orbToRemove);
+         Destroy(orbToRemove.gameObject);
+      }
+   }
+
+   protected void removeAllPowerupOrbs () {
+      foreach (PowerupOrb orb in _powerupOrbs) {
+         Destroy(orb.gameObject);
+      }
+      _powerupOrbs.Clear();
+   }
+
+   protected void updatePowerupOrbs () {
+      _powerupOrbRotation += Time.deltaTime * POWERUP_ORB_ROTATION_SPEED;
+
+      float orbSpacing = 1.0f / _powerupOrbs.Count;
+      
+      for (int i = 0; i < _powerupOrbs.Count; i++) {
+         PowerupOrb orb = _powerupOrbs[i];
+         float targetValue = _powerupOrbRotation + orbSpacing * i;
+         float newValue = Mathf.SmoothStep(orb.rotationValue, targetValue, Time.deltaTime * 10.0f);
+         orb.rotationValue = newValue;         
+         Util.setLocalXY(orb.transform, Util.getPointOnEllipse(POWERUP_ORB_ELLIPSE_WIDTH, POWERUP_ORB_ELLIPSE_HEIGHT, newValue));
+      }
+   }
+
+   [ClientRpc]
+   public void Rpc_AddPowerupOrbs (List<Powerup.Type> powerupTypes) {
+      addPowerupOrbs(powerupTypes);
+   }
+
+   [ClientRpc]
+   public void Rpc_RemovePowerupOrb (Powerup.Type powerupType) {
+      removePowerupOrb(powerupType);
+   }
+
+   [ClientRpc]
+   public void Rpc_RemoveAllPowerupOrbs () {
+      removeAllPowerupOrbs();
+   }
+
+   #endregion
+
    #region Private Variables
 
    // The cached sea ability list
@@ -2094,12 +2155,26 @@ public class SeaEntity : NetEntity
    [SyncVar]
    private bool _isInvulnerable = false;
 
-
    // Gets set to true when the 'defeatship' tutorial has been triggered
    protected bool _isDefeatShipTutorialTriggered = false;
 
    // The damage amount each attacker has done on this entity
    protected Dictionary<int, int> _damageReceivedPerAttacker = new Dictionary<int, int>();
+
+   // A list of references to any active powerup orbs, used to visually indicate what powerups this entity has
+   protected List<PowerupOrb> _powerupOrbs = new List<PowerupOrb>();
+
+   // A value that controls the rotation of the powerup orbs as it is incremented (0.0f - 1.0f is one rotation)
+   protected float _powerupOrbRotation = 0.0f;
+
+   // The width of the ellipse around which powerup orbs move
+   private const float POWERUP_ORB_ELLIPSE_WIDTH = 0.375f;
+
+   // The height of the ellipse around which powerup orbs move
+   private const float POWERUP_ORB_ELLIPSE_HEIGHT = 0.1875f;
+
+   // A modifier affecting how fast the powerup orbs will rotate
+   private const float POWERUP_ORB_ROTATION_SPEED = 0.5f;
 
    #endregion
 

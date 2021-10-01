@@ -111,6 +111,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
          hideTargetingEffects();
          Rpc_NotifyCancelCharge();
+         Rpc_RemoveAllPowerupOrbs();
       }
 
       aimTransform.gameObject.SetActive(false);
@@ -403,6 +404,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    private void getRandomPowerup () {
       Powerup.Type[] allowedPowerups = { Powerup.Type.BouncingShots, Powerup.Type.ElectricShots, Powerup.Type.MultiShots, Powerup.Type.ExplosiveShots };
       _powerup = allowedPowerups[Random.Range(0, 4)];
+      Rpc_AddPowerupOrbs(new List<Powerup.Type>() { _powerup });
    }
 
    private void triggerPowerupsOnFire () {

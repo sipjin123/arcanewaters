@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class StoreHairDyeBox : StoreItemBox
+public class StoreHairDyeBox : StoreDyeBox
 {
    #region Public Variables
 
@@ -9,22 +9,16 @@ public class StoreHairDyeBox : StoreItemBox
    public Image hairBack;
    public Image hairFront;
 
-   // The hair dye information
-   public DyeData hairdye;
-
-   // Palette information
-   public PaletteToolData palette;
-
    #endregion
 
    public void initialize () {
       this.storeTabCategory = StoreTab.StoreTabType.HairDyes;
 
-      if (this.imageIcon == null || Util.isBatch() || hairdye == null) {
+      if (this.imageIcon == null || Util.isBatch() || dye == null) {
          return;
       }
 
-      this.palette = PaletteSwapManager.self.getPalette(hairdye.paletteId);
+      this.palette = PaletteSwapManager.self.getPalette(dye.paletteId);
 
       if (this.palette == null) {
          return;

@@ -254,8 +254,18 @@ public class PlayerShipEntity : ShipEntity
       _targetCircle.maxRange = getCannonballDistance(1.0f) * CANNON_BARRAGE_RANGE_MULTIPLIER;
 
       if (isServer) {
+         List<Powerup> userPowerups = PowerupManager.self.getPowerupsForUser(userId);
+
          // When we enter a new scene, update powerups on the client
-         rpc.Target_UpdatePowerups(connectionToClient, PowerupManager.self.getPowerupsForUser(userId));
+         rpc.Target_UpdatePowerups(connectionToClient, userPowerups);
+
+         // When we enter a new scene, create powerup orbs for all existing powerups
+         List<Powerup.Type> powerupTypes = new List<Powerup.Type>();
+         foreach (Powerup powerup in userPowerups) {
+            powerupTypes.Add(powerup.powerupType);
+         }
+
+         Rpc_AddPowerupOrbs(powerupTypes);
       }
    }
 
@@ -669,7 +679,7 @@ public class PlayerShipEntity : ShipEntity
       Vector2 pos = transform.position;
 
       float rotAngle = (45.0f - (getCannonChargeAmount() * 25.0f)) / 1.25f;
-      abilityData.splitAttackCap = 8;
+      abilityData.splitAttackCap = 5;
       float rotAngleDivider = rotAngle / abilityData.splitAttackCap;
 
       // Fire barrage of cannonballs

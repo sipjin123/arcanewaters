@@ -269,6 +269,8 @@ public class PowerupManager : MonoBehaviour {
       if (powerups[newPowerup.powerupType].Count > 0) {
          powerups[newPowerup.powerupType].RemoveAt(0);
       }
+
+      updatePowerupSyncListForUser(userId);
    }
 
    public void addPowerupServer (int userId, Powerup newPowerup) {
@@ -315,6 +317,8 @@ public class PowerupManager : MonoBehaviour {
             remainingTime = newPowerup.powerupDuration
          });
       }
+
+      updatePowerupSyncListForUser(userId);
    }
 
    public bool powerupActivationRoll (int userId, Powerup.Type type) {
@@ -371,6 +375,7 @@ public class PowerupManager : MonoBehaviour {
    public void clearPowerupsForUser (int userId) {
       if (_serverPlayerPowerups.ContainsKey(userId)) {
          _serverPlayerPowerups.Remove(userId);
+         updatePowerupSyncListForUser(userId);
       } else if (EntityManager.self.getEntity(userId) == null) {
          // If the user is not connected to this server, try to find him in another
          ServerNetworkingManager.self.clearPowerupsForUser(userId);
@@ -403,6 +408,66 @@ public class PowerupManager : MonoBehaviour {
       }
    }
 
+   public void notePlayerUsedPowerup (int userId, Powerup.Type powerupType) {      
+      // If the user isn't present in the dictionary yet, add them
+      if (!_lastPowerupActivationTimesByUser.ContainsKey(userId)) {
+         _lastPowerupActivationTimesByUser.Add(userId, new Dictionary<Powerup.Type, float>());
+      }
+      Dictionary<Powerup.Type, float> lastPowerupActivationTimes = _lastPowerupActivationTimesByUser[userId];
+
+      lastPowerupActivationTimes[powerupType] = (float) NetworkTime.time;
+   }
+
+   public bool canPlayerUsePowerup (int userId, Powerup.Type powerupType) {
+      // If this isn't a player, return true
+      if (userId <= 0) {
+         return true;
+      }
+
+      // If the user isn't present in the dictionary yet, then they can use the powerup
+      if (!_lastPowerupActivationTimesByUser.ContainsKey(userId)) {
+         return true;
+      }
+
+      Dictionary<Powerup.Type, float> lastPowerupActivationTimes = _lastPowerupActivationTimesByUser[userId];
+
+      // If the powerup isn't present in the dictionary yet, then they can use the powerup
+      if (!lastPowerupActivationTimes.ContainsKey(powerupType)) {
+         return true;
+      }
+
+      float minimumTimeBetweenActivations = _powerupData[powerupType].minimumTimeBetweenActivations;
+      float timeSincePowerupUsed = ((float) NetworkTime.time) - lastPowerupActivationTimes[powerupType];
+      return timeSincePowerupUsed > minimumTimeBetweenActivations;
+   }
+
+   private void updatePowerupSyncListForUser (int userId) {
+      NetEntity player = EntityManager.self.getEntity(userId);
+      if (player) {
+         PlayerShipEntity playerShip = player.getPlayerShipEntity();
+         if (playerShip) {
+            playerShip.setPowerups(getPowerupsForUser(userId));
+         }
+      }
+   }
+
+   public static Powerup.Type getPowerupTypeFromEffectorType (CannonballEffector.Type effectorType) {
+      switch (effectorType) {
+         case CannonballEffector.Type.Bouncing:
+            return Powerup.Type.BouncingShots;
+         case CannonballEffector.Type.Electric:
+            return Powerup.Type.ElectricShots;
+         case CannonballEffector.Type.Explosion:
+            return Powerup.Type.ExplosiveShots;
+         case CannonballEffector.Type.Fire:
+            return Powerup.Type.FireShots;
+         case CannonballEffector.Type.Ice:
+            return Powerup.Type.IceShots;
+         default:
+            return Powerup.Type.None;
+      }
+   }
+
    #region Private Variables
 
    // Information for each existing powerup type, sorted by powerup type
@@ -415,6 +480,9 @@ public class PowerupManager : MonoBehaviour {
    private Dictionary<int, PlayerPowerups> _serverPlayerPowerups = new Dictionary<int, PlayerPowerups>();
 
    private class PlayerPowerups : Dictionary<Powerup.Type, List<Powerup>> { }
+
+   // Stores the last time a user triggered each type of powerup
+   private Dictionary<int, Dictionary<Powerup.Type, float>> _lastPowerupActivationTimesByUser = new Dictionary<int, Dictionary<Powerup.Type, float>>();
 
    // The base damage for the fire effect
    private const float FIRE_BASE_DAMAGE = 10.0f;

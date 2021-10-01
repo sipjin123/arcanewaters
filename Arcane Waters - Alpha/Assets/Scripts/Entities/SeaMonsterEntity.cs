@@ -871,6 +871,13 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          }
       }
 
+      // Clear all pending secondary attack commands
+      foreach (SeaMonsterEntity childEntity in seaMonsterChildrenList) {
+         if (!childEntity.isDead()) {
+            childEntity.clearSecondaryAttackSchedule();
+         }
+      }
+
       // Command a random child to schedule a secondary attack
       if (childsUnderAttack.Count > 0) {
          childsUnderAttack.ChooseRandom().scheduleSecondaryAttack();
@@ -880,6 +887,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    [Server]
    private void scheduleSecondaryAttack () {
       _isNextAttackSecondary = true;
+   }
+
+   [Server]
+   private void clearSecondaryAttackSchedule () {
+      _isNextAttackSecondary = false;
    }
 
    protected override void onMaxHealthChanged (int oldValue, int newValue) {

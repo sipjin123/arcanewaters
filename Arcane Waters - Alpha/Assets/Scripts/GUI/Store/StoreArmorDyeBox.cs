@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StoreArmorDyeBox : StoreItemBox
+public class StoreArmorDyeBox : StoreDyeBox
 {
    #region Public Variables
 
@@ -17,25 +17,19 @@ public class StoreArmorDyeBox : StoreItemBox
    // Reference to the Recolored sprite for the armor
    public RecoloredSprite armorSprite;
 
-   // The clothing dye information
-   public DyeData armorDye;
-
    // Palette of the current armor
    public Item playerArmor;
-
-   // Palette information
-   public PaletteToolData palette;
 
    #endregion
 
    public virtual void initialize () {
       this.storeTabCategory = StoreTab.StoreTabType.ArmorDyes;
 
-      if (this.armorImage == null || this.bodyImage == null || this.armorSprite == null || Util.isBatch() || armorDye == null) {
+      if (this.armorImage == null || this.bodyImage == null || this.armorSprite == null || Util.isBatch() || dye == null) {
          return;
       }
 
-      this.palette = PaletteSwapManager.self.getPalette(armorDye.paletteId);
+      this.palette = PaletteSwapManager.self.getPalette(dye.paletteId);
 
       if (this.palette == null) {
          return;

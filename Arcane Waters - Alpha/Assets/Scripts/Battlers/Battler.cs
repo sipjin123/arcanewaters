@@ -242,6 +242,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // Reference to the shadow
    public Transform shadowTransform;
 
+   // The shadow renderer
+   public SpriteRenderer shadowRenderer;
+
+   // The shadow to use for large enemies
+   public Sprite largeShadowSprite;
+
    // Reference to the main SpriteRenderer, always set to the body sprite renderer.
    public SpriteRenderer mainSpriteRenderer;
 
@@ -625,6 +631,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
                shadowTransform.localScale = new Vector2(_alteredBattlerData.shadowScale, _alteredBattlerData.shadowScale);
                shadowTransform.localPosition = new Vector3(_alteredBattlerData.shadowOffset.x, _alteredBattlerData.shadowOffset.y, shadowTransform.localPosition.z);
+
+               if (isBossType) {
+                  shadowRenderer.sprite = largeShadowSprite;
+               }
             }
 
             setBattlerAbilities(new List<int>(battlerData.battlerAbilities.basicAbilityDataList), battlerType);

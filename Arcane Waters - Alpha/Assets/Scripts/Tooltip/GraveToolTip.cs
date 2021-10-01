@@ -22,6 +22,9 @@ public class GraveToolTip : MonoBehaviour, IMapEditorDataReceiver
    // The rect transform of the tooltip canvas
    public RectTransform toolTipRectTransform;
 
+   // The tooltip canvas group
+   public CanvasGroup toolTipCanvasGroup;
+
    // The message
    public static string MESSAGE = "Here lies ";
 
@@ -33,12 +36,26 @@ public class GraveToolTip : MonoBehaviour, IMapEditorDataReceiver
 
    public virtual void toggleToolTip (bool isActive) {
       toolTipPanel.SetActive(isActive);
+      toolTipCanvasGroup.alpha = 0f;
+
+      StopAllCoroutines();
+      if (isActive) {
+         StartCoroutine(CO_ShowTooltip());
+      }
+   }
+
+   private IEnumerator CO_ShowTooltip () {
+      // Wait for the panel to be drawn
+      yield return null;
 
       // Reset position of tooltip to default
-      toolTipRectTransform.anchoredPosition = Vector2.zero;
+      toolTipRectTransform.anchoredPosition = new Vector2(0,  toolTipRectTransform.rect.size.y / 2);
 
       // Check if tooltip repositioning is needed
       TooltipManager.self.keepToolTipOnScreen(toolTipRectTransform);
+
+      // Show the tooltip
+      toolTipCanvasGroup.alpha = 1;
    }
 
    public void receiveData (DataField[] dataFields) {
@@ -48,6 +65,15 @@ public class GraveToolTip : MonoBehaviour, IMapEditorDataReceiver
             toolTipMessage = MESSAGE + graveName;
             toolTipText.SetText(toolTipMessage);
          }
+
+         // If the grave stone text is used, it overwrites the name
+         if (field.k.CompareTo(DataField.GRAVE_TEXT) == 0) {
+            string graveText = field.v;
+            if (!string.IsNullOrEmpty(graveText)) {
+               toolTipText.SetText(field.v);
+            }
+         }
+
       }
    }
 

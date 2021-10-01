@@ -120,18 +120,30 @@ public class PvpInstructionsPanel : MonoBehaviour {
          }
       }
 
+      List<int> playersStillJoining = new List<int>();
+
       foreach (int userId in playerUserIds) {
          NetEntity playerEntity = EntityManager.self.getEntity(userId);
 
-         // If the player's entity can't be found yet, wait a small delay for it to be created on this client, then try again.
+         // If the player's entity can't be found yet, add it to the list of players still joining
+         if (!playerEntity || playerEntity.pvpTeam == PvpTeamType.None) {
+            playersStillJoining.Add(userId);
+            continue;
+         }
+
+         addPlayerCell(playerEntity, playerEntity.pvpTeam);
+      }
+
+      // After adding all connected players, wait for players still joining, and add them once they are connected
+      foreach (int userId in playersStillJoining) {
+         NetEntity playerEntity = EntityManager.self.getEntity(userId);
+
          while (!playerEntity || playerEntity.pvpTeam == PvpTeamType.None) {
-            yield return new WaitForSeconds(1.0f);
+            yield return null;
             playerEntity = EntityManager.self.getEntity(userId);
          }
 
-         if (playerEntity) {
-            addPlayerCell(playerEntity, playerEntity.pvpTeam);
-         }
+         addPlayerCell(playerEntity, playerEntity.pvpTeam);
       }
    }
 

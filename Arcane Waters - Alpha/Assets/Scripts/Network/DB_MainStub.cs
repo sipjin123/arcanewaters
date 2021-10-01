@@ -1617,6 +1617,14 @@ public class DB_MainStub : MonoBehaviour
       return false;
    }
 
+   public static int getWorldMapSectorsCount () {
+      return 0;
+   }
+
+   public static byte[] fetchWorldMapSector (int sectorIndex) {
+      return null;
+   }
+
    /*
 
    public static void refillSupplies (int userId) {
