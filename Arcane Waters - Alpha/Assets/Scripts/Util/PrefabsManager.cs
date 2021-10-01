@@ -224,6 +224,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating powerup orbs
    public PowerupOrb powerupOrbPrefab;
 
+   // The prefab we use for creating ability orbs
+   public AbilityOrb abilityOrbPrefab;
+
    // Self
    public static PrefabsManager self;
 
