@@ -687,7 +687,6 @@ public class PlayerShipEntity : ShipEntity
       Vector2 pos = transform.position;
 
       float rotAngle = (45.0f - (getCannonChargeAmount() * 25.0f)) / 1.25f;
-      abilityData.splitAttackCap = 5;
       float rotAngleDivider = rotAngle / abilityData.splitAttackCap;
 
       // Fire barrage of cannonballs
