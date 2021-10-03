@@ -111,6 +111,8 @@ public class PanelManager : GenericGameManager {
          BottomBar.self.toggleTradeHistoryPanel();
       } else if (KeyUtils.GetKeyDown(Key.F)) {
          BottomBar.self.toggleFriendListPanel();
+      } else if (KeyUtils.GetKeyDown(Key.N)) {
+         BottomBar.self.toggleFriendVisitPanel();
       } else if (KeyUtils.GetKeyDown(Key.U)) {
          BottomBar.self.toggleAbilityPanel();
       } else if (KeyUtils.GetKeyDown(Key.K)) {

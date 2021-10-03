@@ -206,6 +206,20 @@ public class BottomBar : MonoBehaviour {
          PanelManager.self.togglePanel(Panel.Type.LeaderBoards);
       }
    }
+   
+   public void toggleFriendVisitPanel () {
+      VisitListPanel panel = (VisitListPanel) PanelManager.self.get(Panel.Type.VisitPanel);
+
+      if (!panel.isShowing()) {
+         if (Global.player != null) {
+            SoundEffectManager.self.playGuiMenuOpenSfx();
+
+            panel.refreshPanel();
+         }
+      } else {
+         PanelManager.self.togglePanel(Panel.Type.VisitPanel);
+      }
+   }
 
    public void toggleFriendListPanel () {
       FriendListPanel panel = (FriendListPanel) PanelManager.self.get(Panel.Type.FriendList);

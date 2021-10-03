@@ -931,6 +931,21 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
+   public void Target_ReceiveFriendVisitInfo (NetworkConnection connection, FriendshipInfo[] friendshipInfo, int pageNumber, int totalFriendInfoCount) {
+      List<FriendshipInfo> friendshipInfoList = new List<FriendshipInfo>(friendshipInfo);
+
+      // Make sure the panel is showing
+      VisitListPanel panel = (VisitListPanel) PanelManager.self.get(Panel.Type.VisitPanel);
+
+      if (!panel.isShowing()) {
+         PanelManager.self.linkPanel(panel.type);
+      }
+
+      // Pass the data to the panel
+      panel.updatePanelWithFriendshipInfo(friendshipInfoList, totalFriendInfoCount);
+   }
+   
+   [TargetRpc]
    public void Target_ReceiveFriendsList (NetworkConnection connection, FriendshipInfo[] friendshipInfo) {
       List<FriendshipInfo> friendshipInfoList = new List<FriendshipInfo>(friendshipInfo);
       if (friendshipInfoList == null) {
@@ -3509,6 +3524,52 @@ public class RPCManager : NetworkBehaviour
                requestFriendsListFromServer(friend);
             }
 
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_RequestFriendshipVisitFromServer (int pageNumber, int itemsPerPage) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Enforce a reasonable max here
+      if (itemsPerPage > 200) {
+         D.warning("Requesting too many items per page.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Get the number of items
+         int totalFriendInfoCount = DB_Main.getFriendshipInfoCount(_player.userId, Friendship.Status.Friends);
+
+         // Calculate the maximum page number
+         int maxPage = Mathf.CeilToInt((float) totalFriendInfoCount / itemsPerPage);
+         if (maxPage == 0) {
+            maxPage = 1;
+         }
+
+         // Clamp the requested page number to the max page - the number of items could have changed
+         pageNumber = Mathf.Clamp(pageNumber, 1, maxPage);
+
+         // Get the items from the database
+         List<FriendshipInfo> friendshipInfoList = DB_Main.getFriendshipInfoList(_player.userId, Friendship.Status.Friends, pageNumber, itemsPerPage);
+
+         // Get the number of friends
+         int friendCount = totalFriendInfoCount;
+
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Determine if the friends are online
+            foreach (FriendshipInfo friend in friendshipInfoList) {
+               friend.isOnline = ServerNetworkingManager.self.isUserOnline(friend.friendUserId);
+            }
+
+            Target_ReceiveFriendVisitInfo(_player.connectionToClient, friendshipInfoList.ToArray(), pageNumber, totalFriendInfoCount);
          });
       });
    }
