@@ -29,11 +29,11 @@ public class FriendListRow : MonoBehaviour
    // The guild icon of the friend
    public GuildIcon friendGuildIcon;
 
+   // The guild tooltip
+   public ToolTipComponent friendGuildToolTip;
+
    // If this user is online
    public bool isOnline;
-
-   // The button that is displayed if friend can be visited
-   public GameObject visitButtonObj, disabledVisitButtonObj;
 
    #endregion
 
@@ -45,29 +45,19 @@ public class FriendListRow : MonoBehaviour
       if (entry.isOnline) {
          onlineIcon.SetActive(true);
          offlineIcon.SetActive(false);
-         visitButtonObj.SetActive(true);
-         disabledVisitButtonObj.SetActive(false);
       } else {
          onlineIcon.SetActive(false);
          offlineIcon.SetActive(true);
-         visitButtonObj.SetActive(false);
-         disabledVisitButtonObj.SetActive(true);
       }
       level.text = LevelUtil.levelForXp(entry.friendXP).ToString();
       if (entry.friendGuildId > 0) {
          friendGuildIcon.setBackground(entry.friendIconBackground, entry.friendIconBackPalettes);
          friendGuildIcon.setBorder(entry.friendIconBorder);
          friendGuildIcon.setSigil(entry.friendIconSigil, entry.friendIconSigilPalettes);
+         friendGuildToolTip.message = entry.friendGuildName;
          rootGuildIcon.SetActive(true);
       } else {
          rootGuildIcon.SetActive(false);
-      }
-   }
-
-   public void visitUser () {
-      if (isOnline) {
-         FriendListPanel.self.close();
-         Global.player.Cmd_PlayerVisit(friendName.text, "");
       }
    }
 
