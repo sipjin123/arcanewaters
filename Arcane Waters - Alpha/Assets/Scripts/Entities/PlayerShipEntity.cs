@@ -611,6 +611,7 @@ public class PlayerShipEntity : ShipEntity
             case Attack.Type.Heal:
                Cmd_CastAbility(abilityData.abilityId);
                useCannonAttack = false;
+               enableTargeting();
                break;
          }
       }
@@ -632,7 +633,7 @@ public class PlayerShipEntity : ShipEntity
 
                   Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), _cannonTargeter.barrelSocket.position, targetPosition, true, true);
                   _shouldUpdateTargeting = false;
-                  _cannonTargeter.targetingConfirmed(() => _shouldUpdateTargeting = true);
+                  _cannonTargeter.targetingConfirmed(() => enableTargeting());
                   TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
                }
                break;
@@ -651,7 +652,7 @@ public class PlayerShipEntity : ShipEntity
                   Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, Util.getMousePos(), false, false);
                   Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, -rotAngle), false, false);
                   _shouldUpdateTargeting = false;
-                  _targetCone.targetingConfirmed(() => _shouldUpdateTargeting = true);
+                  _targetCone.targetingConfirmed(() => enableTargeting());
                }
                break;
             case CannonAttackType.Circle:
@@ -661,9 +662,7 @@ public class PlayerShipEntity : ShipEntity
 
                float circleRadius = (0.625f - (getCannonChargeAmount() * 0.125f));
                _shouldUpdateTargeting = false;
-               _targetCircle.targetingConfirmed(() => {
-                  _shouldUpdateTargeting = true;
-               });
+               _targetCircle.targetingConfirmed(() => enableTargeting());
 
                _cannonBarrageCoroutine = StartCoroutine(CO_CannonBarrage(_targetCircle.transform.position, circleRadius));
                _targetCircle.setFillColor(Color.white);
@@ -680,6 +679,10 @@ public class PlayerShipEntity : ShipEntity
       _isChargingCannon = false;
 
       Cmd_AbilityUsed(selectedShipAbilityIndex);
+   }
+
+   private void enableTargeting () {
+      _shouldUpdateTargeting = true;
    }
 
    private void splitAttackCap (ShipAbilityData abilityData) {
@@ -702,15 +705,15 @@ public class PlayerShipEntity : ShipEntity
       switch (cannonAttackType) {
          case CannonAttackType.Normal:
             _shouldUpdateTargeting = false;
-            _cannonTargeter.targetingConfirmed(() => _shouldUpdateTargeting = true);
+            _cannonTargeter.targetingConfirmed(() => enableTargeting());
             break;
          case CannonAttackType.Cone:
             _shouldUpdateTargeting = false;
-            _targetCone.targetingConfirmed(() => _shouldUpdateTargeting = true);
+            _targetCone.targetingConfirmed(() => enableTargeting());
             break;
          case CannonAttackType.Circle:
             _shouldUpdateTargeting = false;
-            _targetCircle.targetingConfirmed(() => _shouldUpdateTargeting = true);
+            _targetCircle.targetingConfirmed(() => enableTargeting());
             break;
          default:
             break;
@@ -1709,7 +1712,7 @@ public class PlayerShipEntity : ShipEntity
       boostTimingSprites.gameObject.SetActive(true);
 
       // Reset this bool to ensure players can attack
-      _shouldUpdateTargeting = true;
+      enableTargeting();
 
       // Clear powerup GUI
       if (isLocalPlayer) {
