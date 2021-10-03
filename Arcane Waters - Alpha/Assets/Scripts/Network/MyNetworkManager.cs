@@ -181,7 +181,11 @@ public class MyNetworkManager : NetworkManager
    #region Server Functions
 
    public override void OnStartServer () {
-      D.debug("Server started on port: " + MyNetworkManager.getCurrentPort() + " with Cloud Build version: " + Util.getGameVersion());
+      D.debug("Server started on machine: " + System.Environment.MachineName + " port: " + MyNetworkManager.getCurrentPort() + " with Cloud Build version: " + Util.getGameVersion());
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.serverStatStarted(System.Environment.MachineName, MyNetworkManager.getCurrentPort());
+      });
 
       // If this is the "Master" server, then start hosting the Server Network
       if (getCurrentPort() == Global.MASTER_SERVER_PORT) {

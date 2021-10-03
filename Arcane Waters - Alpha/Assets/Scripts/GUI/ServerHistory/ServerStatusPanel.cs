@@ -14,7 +14,7 @@ public class ServerStatusPanel : ClientMonoBehaviour
    public static int HISTORY_HOURS = 24;
 
    // The number of rows the panel can contain
-   public static int HISTORY_ROWS = 8;
+   public static int HISTORY_ROWS = 9;
 
    // The prefab we use for instantiating event rows
    public ServerStatusPanelRow rowPrefab;

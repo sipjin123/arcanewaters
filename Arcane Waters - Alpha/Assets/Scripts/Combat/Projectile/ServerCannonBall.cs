@@ -291,6 +291,11 @@ public class ServerCannonBall : SeaProjectile
       _playFiringSound = value;
    }
 
+   protected override bool tryGetCustomTrailEffect (out GameObject trail) {
+      trail = trailParticles.gameObject;
+      return true;
+   }
+
    #region Private Variables
 
    // Whether this will play a firing sound effect

@@ -1048,6 +1048,7 @@ MonoBehaviour:
   XP: 0
   desiredAngle: 0
   isStealthMuted: 0
+  muteExpirationDate: 0
   gender: 1
   bodyType: 0
   eyesType: 0
@@ -2415,7 +2416,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1167599934295133048}
   serializedVersion: 6
-  lengthInSec: 0.666
+  lengthInSec: 1
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -2490,7 +2491,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.6666667
+      scalar: 1
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -3040,7 +3041,7 @@ ParticleSystem:
     boxThickness: {x: 0, y: 0, z: 0}
     radiusThickness: 1
     donutRadius: 0.2
-    m_Position: {x: 0, y: 0, z: 0}
+    m_Position: {x: 0, y: -0.08, z: 0}
     m_Rotation: {x: 0, y: 0, z: 0}
     m_Scale: {x: 0.15, y: 0.15, z: 1}
     placementMode: 0
@@ -3293,7 +3294,7 @@ ParticleSystem:
     rateOverDistance:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 4
+      scalar: 8
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -3874,7 +3875,7 @@ ParticleSystem:
     flipU: 0
     flipV: 0
   VelocityModule:
-    enabled: 0
+    enabled: 1
     x:
       serializedVersion: 2
       minMaxState: 0
@@ -4355,7 +4356,7 @@ ParticleSystem:
     radial:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0
+      scalar: 0.1
       minScalar: 0
       maxCurve:
         serializedVersion: 2

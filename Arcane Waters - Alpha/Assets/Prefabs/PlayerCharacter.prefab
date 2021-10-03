@@ -1690,6 +1690,7 @@ MonoBehaviour:
   XP: 0
   desiredAngle: 0
   isStealthMuted: 0
+  muteExpirationDate: 0
   gender: 1
   bodyType: 0
   eyesType: 0

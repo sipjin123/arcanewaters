@@ -1621,10 +1621,21 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
+   #region Server stats
+   public static void serverStatStarted (string machine, int port) {
+   }
+   
+   public static void serverStatStopped (string machine, int port) {
+   }
+   
+   public static void serverStatUpdateCcu(string machine, int port, int ccu) {
+   }   
+
    public static byte[] fetchWorldMapSector (int sectorIndex) {
       return null;
    }
-
+   #endregion   
+   
    /*
 
    public static void refillSupplies (int userId) {

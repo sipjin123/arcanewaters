@@ -98,7 +98,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 10.5
   m_fontSizeMax: 42
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
@@ -493,11 +493,17 @@ MonoBehaviour:
   hoverBorder: {fileID: 3546620244143775045}
   selectionBorder: {fileID: 1333989573302260746}
   storeTabCategory: 0
+  gemIcons:
+  - {fileID: 5620501285972282496, guid: 3270f9e1cd965ee47a68e7a8853299b4, type: 3}
+  - {fileID: 7053666621870576291, guid: 3270f9e1cd965ee47a68e7a8853299b4, type: 3}
+  - {fileID: -1819400499457854770, guid: 3270f9e1cd965ee47a68e7a8853299b4, type: 3}
+  - {fileID: -369645877290062610, guid: 3270f9e1cd965ee47a68e7a8853299b4, type: 3}
   gemsBundle:
     itemID: 0
     itemName: 
     itemDescription: 
     itemIconPath: 
+  title: 
 --- !u!222 &278520372197668654
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -833,7 +839,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -369645877290062610, guid: 3270f9e1cd965ee47a68e7a8853299b4,
+  m_Sprite: {fileID: 5620501285972282496, guid: 3270f9e1cd965ee47a68e7a8853299b4,
     type: 3}
   m_Type: 0
   m_PreserveAspect: 0

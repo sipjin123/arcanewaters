@@ -186,6 +186,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: 3.5
   text: {fileID: 8958577175267948295}
+  customTag: 
 --- !u!114 &5352988452133731678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -294,8 +295,8 @@ MonoBehaviour:
 
     +1 MINER Xp'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: b994f06fe19f75e46b62c962a3dfde93, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 7c6ed0dead7ef0b4a9de71db1a034636, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 4d043e70ded93ca41a3a53240f2db50f, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 44eedf0c7a03b804e890de3d096da2f5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

@@ -11631,6 +11631,59 @@ public class DB_Main : DB_MainStub
    }
    #endregion
 
+   #region Server stats
+   public static new void serverStatStarted (string machine, int port) {
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+
+            using (MySqlCommand command = new MySqlCommand("REPLACE INTO server_stats (`machine`, `port`, `start_datetime`, `stop_datetime`, `ccu`, `ccu_min`, `ccu_max`, `ccu_avg`, `fps_min`, `fps_max`, `fps_avg`, `memory`, `bandwidth`, `latency`) VALUES (@machine, @port, @start_datetime, null, 0,0,0,0,0,0,0,0,0,0)", connection)) {
+               command.Parameters.Add("@machine", MySqlDbType.String).Value = machine;
+               command.Parameters.Add("@port", MySqlDbType.Int16).Value = port;
+               command.Parameters.Add("@start_datetime", MySqlDbType.Timestamp).Value = DateTime.Now;
+               command.ExecuteNonQuery();
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }      
+   }
+   
+   public static new void serverStatStopped (string machine, int port) {
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+
+            using (MySqlCommand command = new MySqlCommand("UPDATE server_stats SET `stop_datetime` = @stop_datetime WHERE `machine` = @machine and `port` = @port", connection)) {
+               command.Parameters.Add("@machine", MySqlDbType.String).Value = machine;
+               command.Parameters.Add("@port", MySqlDbType.Int16).Value = port;
+               command.Parameters.Add("@stop_datetime", MySqlDbType.Timestamp).Value = DateTime.Now;
+               command.ExecuteNonQuery();
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }      
+   }
+   
+   public static new void serverStatUpdateCcu(string machine, int port, int ccu) {
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+
+            using (MySqlCommand command = new MySqlCommand("UPDATE server_stats SET ccu = @ccu, ccu_min = IF (@ccu < ccu_min, @ccu, ccu_min), ccu_max = IF (@ccu > ccu_max, @ccu, ccu_max), ccu_avg = (ccu_avg + @ccu) / 2 WHERE `machine` = @machine and `port` = @port", connection)) {
+               command.Parameters.Add("@machine", MySqlDbType.String).Value = machine;
+               command.Parameters.Add("@port", MySqlDbType.Int16).Value = port;
+               command.Parameters.Add("@ccu", MySqlDbType.Int16).Value = ccu;
+               command.ExecuteNonQuery();
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }      
+   }   
+   #endregion
+   
    /*
    public static new void deleteAccount (int accountId) {
       try {

@@ -8689,8 +8689,8 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ShowPvpPostGameScreen (NetworkConnection conn, bool wonGame, PvpTeamType winningTeam) {
-      PvpStatPanel.self.updateDisplayMode(Global.player.areaKey, true, wonGame, winningTeam);
+   public void Target_ShowPvpPostGameScreen (NetworkConnection conn, bool wonGame, PvpTeamType winningTeam, int gemReward) {
+      PvpStatPanel.self.updateDisplayMode(Global.player.areaKey, true, wonGame, winningTeam, gemReward);
       BottomBar.self.enablePvpStatPanel();
    }
 
