@@ -803,7 +803,7 @@ public class Instance : NetworkBehaviour
       }
 
       // If randomize ship is set in web tool, override randomized xml id
-      if (randomizeShip) {
+      if (!randomizeShip) {
          xmlId = xmlIdOverride;
       }
 

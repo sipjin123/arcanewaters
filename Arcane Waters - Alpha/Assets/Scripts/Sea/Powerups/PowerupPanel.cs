@@ -41,6 +41,7 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
    public void updateLandPowerups (List<LandPowerupData> powerups) {
       clearSeaPowerups();
       clearLandPowerups();
+      transform.gameObject.DestroyChildren();
 
       foreach (LandPowerupData powerup in powerups) {
          addLandPowerup(powerup);
@@ -48,8 +49,8 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
    }
 
    public void clearLandPowerups () {
-      foreach (LandPowerupIcon icon in _landPowerupIcons) {
-         Destroy(icon.gameObject);
+      for (int i = 0; i < _landPowerupIcons.Count; i++) {
+         Destroy(_landPowerupIcons[i].gameObject);
       }
       _landPowerupIcons.Clear();
 
@@ -151,8 +152,8 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
    }
 
    public void clearSeaPowerups () {
-      foreach (PowerupIcon icon in _powerupIcons) {
-         Destroy(icon.gameObject);
+      for (int i = 0; i < _powerupIcons.Count; i++) {
+         Destroy(_powerupIcons[i].gameObject);
       }
       _powerupIcons.Clear();
 
@@ -163,6 +164,7 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
    public void updatePowerups (List<Powerup> powerups) {
       clearLandPowerups();
       clearSeaPowerups();
+      transform.gameObject.DestroyChildren();
 
       foreach (Powerup powerup in powerups) {
          addPowerup(powerup.powerupType, powerup.powerupRarity);
@@ -206,9 +208,11 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
    private const float EXPAND_SPEED = 10.0f;
 
    // A list of references to our current powerups
+   [SerializeField]
    private List<PowerupIcon> _powerupIcons = new List<PowerupIcon>();
 
    // A list of references to our current powerups
+   [SerializeField]
    private List<LandPowerupIcon> _landPowerupIcons = new List<LandPowerupIcon>();
 
    // A reference to the rect transform of this panel
