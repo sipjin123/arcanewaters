@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 using Random = UnityEngine.Random;
+using System.Linq;
 
 [Serializable]
 public class PrefabTypes
@@ -1083,8 +1084,20 @@ public class BattleManager : MonoBehaviour {
          // Only Spawn one lootbag per combat win
          int battlerEnemyID = (int) defeatedBattlers[0].getBattlerData().enemyType;
          if (defeatedBattlers[0].player is Enemy) {
-            Transform[] spawnNodeTarget = ((Enemy) defeatedBattlers[0].player).lootSpawnPositions;
-            winningBattlers[0].player.rpc.spawnBattlerMonsterChest(winningBattlers[0].player.instanceId, spawnNodeTarget[0].position, battlerEnemyID);
+            // Filter spawn nodes
+            List<Transform> filteredNodeTarget = ((Enemy) defeatedBattlers[0].player).lootSpawnPositions.ToList();
+            foreach (Battler winningBattler in winningBattlers) {
+               Transform spawnNode = filteredNodeTarget.Find(_ => (Vector2) _.position == (Vector2) winningBattler.transform.position);
+               if (spawnNode != null) {
+                  filteredNodeTarget.Remove(spawnNode);
+               }
+            }
+
+            // Spawn Chest
+            List<Transform> spawnNodeTarget = ((Enemy) defeatedBattlers[0].player).lootSpawnPositions.ToList();
+            winningBattlers[0].player.rpc.spawnBattlerMonsterChest(winningBattlers[0].player.instanceId, 
+               filteredNodeTarget.Count > 0 ? filteredNodeTarget.ChooseRandom().position : spawnNodeTarget.ChooseRandom().position, 
+               battlerEnemyID);
          }
       }
 
