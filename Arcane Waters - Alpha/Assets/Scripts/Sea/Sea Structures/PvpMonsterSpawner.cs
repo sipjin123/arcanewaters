@@ -79,7 +79,8 @@ public class PvpMonsterSpawner : NetworkBehaviour, IMapEditorDataReceiver {
                      // Assign default powerup as fall back option if there are no valid loot group powerup
                      Powerup newPowerupData = new Powerup {
                         powerupRarity = Rarity.Type.Common,
-                        powerupType = powerupType
+                        powerupType = powerupType,
+                        expiry = Powerup.Expiry.None
                      };
 
                      // Assign random powerup based on the loot group id set in map tool
@@ -90,6 +91,7 @@ public class PvpMonsterSpawner : NetworkBehaviour, IMapEditorDataReceiver {
                            TreasureDropsData randomLoot = validPowerupLoots.ChooseRandom();
                            newPowerupData.powerupRarity = randomLoot.rarity;
                            newPowerupData.powerupType = randomLoot.powerUp;
+                           newPowerupData.expiry = Powerup.Expiry.None;
                         }
                      }
                      

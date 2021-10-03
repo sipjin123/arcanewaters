@@ -400,7 +400,7 @@ public class PowerupManager : MonoBehaviour {
       Powerup.Type type = Util.randomEnumStartAt<Powerup.Type>(1);
       Rarity.Type rarity = Rarity.getRandom();
 
-      Powerup newPowerup = new Powerup(type, rarity);
+      Powerup newPowerup = new Powerup(type, rarity, Powerup.Expiry.None);
       addPowerupServer(userId, newPowerup);
       NetEntity player = EntityManager.self.getEntity(userId);
       if (player) {

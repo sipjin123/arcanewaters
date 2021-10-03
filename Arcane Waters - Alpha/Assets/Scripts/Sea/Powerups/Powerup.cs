@@ -23,11 +23,23 @@ public class Powerup {
       IncreasedHealth = 10
    }
 
+   public enum Expiry {
+      None = 0,
+      OnWarp = 1,
+      Timed = 2
+   }
+
    // What type of powerup this is
    public Powerup.Type powerupType;
 
    // What rarity this powerup is
    public Rarity.Type powerupRarity;
+
+   // The type of expiry
+   public Expiry expiry;
+
+   // The number of warps used while wielding the powerup
+   public int warpCounter;
 
    // Where the icon sprites for the powerups are located
    public static string ICON_SPRITES_LOCATION = "Sprites/Powerups/PowerUpIcons";
@@ -42,9 +54,10 @@ public class Powerup {
 
    public Powerup () { }
    
-   public Powerup (Powerup.Type type, Rarity.Type rarity) {
+   public Powerup (Powerup.Type type, Rarity.Type rarity, Expiry expiry) {
       powerupType = type;
       powerupRarity = rarity;
+      this.expiry = expiry;
    }
 
    #region Private Variables

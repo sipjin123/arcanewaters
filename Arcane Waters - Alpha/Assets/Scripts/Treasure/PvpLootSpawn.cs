@@ -102,7 +102,8 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
             PowerupManager.self.addPowerupServer(playerEntity.userId, new Powerup {
                powerupDuration = powerupDuration,
                powerupRarity = rarity,
-               powerupType = powerupType
+               powerupType = powerupType,
+               expiry = powerupDuration > 0 ? Powerup.Expiry.Timed : Powerup.Expiry.None
             });
 
             updatePowerup(false, 0);

@@ -691,11 +691,12 @@ public class RPCManager : NetworkBehaviour
          Rarity.Type newPowerupRarity = Rarity.getRandom();
          Target_GivePowerupToPlayer(_player.connectionToClient, newPowerupType, newPowerupRarity, chestId);
 
+         // If area is tutorial, make the powerups temporary so it doesnt get farmed and used in voyages
          Powerup newPowerUp = new Powerup {
             powerupRarity = newPowerupRarity,
-            powerupType = newPowerupType
+            powerupType = newPowerupType,
+            expiry = chest.areaKey.ToLower().Contains("tutorial") ? Powerup.Expiry.OnWarp : Powerup.Expiry.None
          };
-
 
          PowerupManager.self.addPowerupServer(_player.userId, newPowerUp);
          Target_AddPowerup(_player.connectionToClient, newPowerUp);
@@ -4161,7 +4162,8 @@ public class RPCManager : NetworkBehaviour
                   seaEntity.rpc.Target_ReceivePowerup((Powerup.Type) shopItem.itemId, shopItem.rarityType, seaEntity.transform.position);
                   PowerupManager.self.addPowerupServer(seaEntity.userId, new Powerup {
                      powerupRarity = shopItem.rarityType,
-                     powerupType = (Powerup.Type) shopItem.itemId
+                     powerupType = (Powerup.Type) shopItem.itemId,
+                     expiry = Powerup.Expiry.None
                   });
                }
                break;

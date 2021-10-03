@@ -286,7 +286,7 @@ public class AdminManager : NetworkBehaviour
             return;
          }
 
-         Powerup newPowerup = new Powerup(type, rarity);
+         Powerup newPowerup = new Powerup(type, rarity, Powerup.Expiry.None);
          PowerupManager.self.addPowerupServer(_player.userId, newPowerup);
          _player.rpc.Target_AddPowerup(connectionToClient, newPowerup);
       }

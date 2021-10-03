@@ -255,6 +255,7 @@ public class PlayerShipEntity : ShipEntity
 
       if (isServer) {
          List<Powerup> userPowerups = PowerupManager.self.getPowerupsForUser(userId);
+         setPowerups(userPowerups, true);
 
          // When we enter a new scene, update powerups on the client
          rpc.Target_UpdatePowerups(connectionToClient, userPowerups);
@@ -1898,6 +1899,23 @@ public class PlayerShipEntity : ShipEntity
    [Server]
    public void setPowerups (List<Powerup> powerups, bool isInitialize = false) {
       _powerups.Clear();
+
+      List<Powerup> powerupToDiscard = new List<Powerup>();
+      if (isInitialize) {
+         // Take note of the powerups to discard
+         foreach (Powerup powerup in powerups) {
+            if (powerup.expiry == Powerup.Expiry.OnWarp) {
+               powerupToDiscard.Add(powerup);
+            }
+         }
+
+         // Discard powerups from this list and from powerup manager
+         foreach (Powerup powerUp in powerupToDiscard) {
+            powerups.Remove(powerUp);
+            PowerupManager.self.removePowerupServer(userId, powerUp);
+            rpc.Target_RemovePowerup(connectionToClient, powerUp);
+         }
+      }
 
       _powerups.AddRange(powerups);
    }
