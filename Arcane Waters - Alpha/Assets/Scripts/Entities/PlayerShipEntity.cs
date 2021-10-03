@@ -264,8 +264,6 @@ public class PlayerShipEntity : ShipEntity
          foreach (Powerup powerup in userPowerups) {
             powerupTypes.Add(powerup.powerupType);
          }
-
-         Rpc_AddPowerupOrbs(powerupTypes);
       }
    }
 
@@ -1771,6 +1769,11 @@ public class PlayerShipEntity : ShipEntity
       base.onDeath();
 
       heldPvpCaptureTarget?.onPlayerDied(this);
+
+      foreach (PowerupOrb orb in _powerupOrbs) {
+         Destroy(orb.gameObject);
+      }
+      _powerupOrbs.Clear();
    }
 
    private void updateCoinTrail () {
@@ -1890,6 +1893,13 @@ public class PlayerShipEntity : ShipEntity
 
    public bool isAbilityOnCooldown (int abilityIndex) {
       return _currentAbilityCooldowns[abilityIndex] > Mathf.Epsilon;
+   }
+
+   [Server]
+   public void setPowerups (List<Powerup> powerups, bool isInitialize = false) {
+      _powerups.Clear();
+
+      _powerups.AddRange(powerups);
    }
 
    private static CannonAttackType getCannonAttackTypeFromAttackType (Attack.Type attackType) {

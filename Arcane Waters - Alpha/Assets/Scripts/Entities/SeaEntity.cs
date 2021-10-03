@@ -1974,15 +1974,6 @@ public class SeaEntity : NetEntity
 
    #region Powerup VFX
 
-   protected void addPowerupOrbs (List<Powerup.Type> powerupTypes) {
-      foreach (Powerup.Type powerupType in powerupTypes) {
-         PowerupOrb newOrb = Instantiate(PrefabsManager.self.powerupOrbPrefab, transform.position + Vector3.up * POWERUP_ORB_ELLIPSE_HEIGHT, Quaternion.identity, transform);
-         newOrb.init(powerupType, transform);
-         _powerupOrbs.Add(newOrb);
-         newOrb.rotationValue = _powerupOrbRotation + (1.0f / _powerupOrbs.Count) * (_powerupOrbs.Count - 1);
-      }
-   }
-
    protected void removePowerupOrb (Powerup.Type powerupType) {
       PowerupOrb orbToRemove = _powerupOrbs.Find((x) => x.powerupType == powerupType);
       if (orbToRemove) {
@@ -1999,6 +1990,12 @@ public class SeaEntity : NetEntity
    }
 
    protected void updatePowerupOrbs () {
+      if (Util.isBatch()) {
+         return;
+      }
+      
+      checkPowerupOrbs();
+
       _powerupOrbRotation += Time.deltaTime * POWERUP_ORB_ROTATION_SPEED;
 
       float orbSpacing = 1.0f / _powerupOrbs.Count;
@@ -2007,10 +2004,49 @@ public class SeaEntity : NetEntity
          PowerupOrb orb = _powerupOrbs[i];
          float targetValue = _powerupOrbRotation + orbSpacing * i;
          float newValue = Mathf.SmoothStep(orb.rotationValue, targetValue, Time.deltaTime * 10.0f);
-         orb.rotationValue = newValue;         
+         orb.rotationValue = newValue;
+
          Util.setLocalXY(orb.transform, Util.getPointOnEllipse(POWERUP_ORB_ELLIPSE_WIDTH, POWERUP_ORB_ELLIPSE_HEIGHT, newValue));
       }
    }
+
+   protected void checkPowerupOrbs () {
+      // Store the latest powerups from the server in a list
+      List<Powerup.Type> powerupTypes = new List<Powerup.Type>();
+      foreach (Powerup powerup in _powerups) {
+         powerupTypes.Add(powerup.powerupType);
+      }
+      int orbsCreated = 0;
+
+      // If the list from the server is larger, we need to create new orbs
+      if (powerupTypes.Count > _powerupOrbs.Count) {
+         orbsCreated = powerupTypes.Count - _powerupOrbs.Count;
+
+         // Create any new orbs needed
+         for (int i = 0; i < orbsCreated; i++) {
+            PowerupOrb newOrb = Instantiate(PrefabsManager.self.powerupOrbPrefab, transform.position + Vector3.up * POWERUP_ORB_ELLIPSE_HEIGHT, Quaternion.identity, transform);
+            _powerupOrbs.Add(newOrb);
+            newOrb.rotationValue = _powerupOrbRotation + (1.0f / _powerupOrbs.Count) * (_powerupOrbs.Count - 1);
+         }
+      } else if (_powerupOrbs.Count > powerupTypes.Count) {
+         int orbsToRemove = _powerupOrbs.Count - powerupTypes.Count;
+
+         // Remove any orbs that aren't needed
+         for (int i = 0; i < orbsToRemove; i++) {
+            PowerupOrb orbToRemove = _powerupOrbs[_powerupOrbs.Count - 1];
+            _powerupOrbs.Remove(orbToRemove);
+            Destroy(orbToRemove.gameObject);
+         }
+      }
+
+      // Update types of orbs
+      for (int i = 0; i < _powerupOrbs.Count; i++) {
+         bool isNewOrb = (i >= _powerupOrbs.Count - orbsCreated);
+         _powerupOrbs[i].init(powerupTypes[i], transform, isNewOrb);
+      }
+   }
+
+   #endregion
 
    #region Ability Orbs
 
@@ -2235,6 +2271,9 @@ public class SeaEntity : NetEntity
 
    // A modifier affecting how fast the powerup orbs will rotate
    private const float POWERUP_ORB_ROTATION_SPEED = 0.5f;
+
+   // The powerups that this sea entity currently has
+   protected SyncList<Powerup> _powerups = new SyncList<Powerup>();
 
    #endregion
 

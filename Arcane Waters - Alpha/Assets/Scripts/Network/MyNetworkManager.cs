@@ -629,11 +629,19 @@ public class MyNetworkManager : NetworkManager
       connectionData.address = conn.address;
 
       _players.Add(conn.connectionId, connectionData);
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.serverStatUpdateCcu(System.Environment.MachineName, MyNetworkManager.getCurrentPort(), _players.Count);
+      });
    }
 
    public override void OnServerDisconnect (NetworkConnection conn) {
       // Called on the server when a client disconnects
       disconnectClient(conn);
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.serverStatUpdateCcu(System.Environment.MachineName, MyNetworkManager.getCurrentPort(), _players.Count);
+      });
    }
 
    public void disconnectClient (int accountId) {
@@ -832,6 +840,11 @@ public class MyNetworkManager : NetworkManager
          D.debug($"The ClientConnectionData is not authenticated, so not removing account {data.accountId} from this server's connectedAccountIds.");
       }
    }
+   
+   private void OnApplicationQuit () {
+      DB_Main.serverStatStopped(System.Environment.MachineName, MyNetworkManager.getCurrentPort());
+   }
+
 
    #region Private Variables
 
