@@ -457,6 +457,29 @@ public class MyNetworkManager : NetworkManager
                   player.instanceId = serverInfo.instanceId;
                   D.adminLog("Adding user to instance to visit! " + serverInfo.instanceId, D.ADMIN_LOG_TYPE.Visit);
                   InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId, serverInfo.instanceId);
+
+                  Vector2 visitSpawnPosition = mapPosition;
+                  if (CustomMapManager.isUserSpecificAreaKey(previousAreaKey)) {
+                     int getUser = CustomMapManager.getUserId(previousAreaKey);
+                     if (getUser > 0) {
+                        NetEntity entityUser = EntityManager.self.getEntity(getUser);
+                        if (entityUser) {
+                           AreaManager.self.tryGetCustomMapManager(previousAreaKey, out CustomMapManager customMapManager);
+                           if (customMapManager != null) {
+                              // Try to get the custom map associated to the custom map key
+                              int baseMapId = customMapManager.getBaseMapId(entityUser);
+                              string privateAreaName = AreaManager.self.getAreaName(baseMapId);
+
+                              // Spawn in the spawn points registered to this area
+                              if (SpawnManager.self.getAllSpawnsInArea(privateAreaName).Count > 0) {
+                                 Vector2 areaSpawn = SpawnManager.self.getDefaultLocalPosition(privateAreaName);
+                                 visitSpawnPosition = areaSpawn;
+                              }
+                           }
+                        }
+                     }
+                  }
+                  player.transform.position = visitSpawnPosition;
                } else {
                   InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);
                }
