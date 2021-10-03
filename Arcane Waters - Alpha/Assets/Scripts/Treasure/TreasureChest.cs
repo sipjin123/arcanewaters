@@ -342,19 +342,30 @@ public class TreasureChest : NetworkBehaviour {
    }
 
    public Powerup.Type getPowerUp () {
-      SeaMonsterEntity.Type monsterType = (SeaMonsterEntity.Type) enemyType;
-      SeaMonsterEntityData battlerData = SeaMonsterManager.self.getMonster(monsterType);
+      SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getMonster(enemyType);
 
-      TreasureDropsData treasureDropsData =
-         TreasureDropsDataManager.self.getTreasureDropsById(battlerData.lootGroupId, rarity).
-         FindAll(_ => _.powerUp != Powerup.Type.None).ChooseRandom();
+      if (seaMonsterData == null) {
+         D.debug("Warning! Sea Enemy Data {" + enemyType + "} does not exist!");
+         return Powerup.Type.SpeedUp;
 
-      return treasureDropsData.powerUp;
+      }
+
+      if (TreasureDropsDataManager.self.getTreasureDropsById(seaMonsterData.lootGroupId, rarity).FindAll(_ => _.powerUp != Powerup.Type.None).Count > 0) {
+         TreasureDropsData treasureDropsData = TreasureDropsDataManager.self.getTreasureDropsById(seaMonsterData.lootGroupId, rarity).
+            FindAll(_ => _.powerUp != Powerup.Type.None).ChooseRandom();
+         return treasureDropsData.powerUp;
+      }
+
+      D.debug("Warning! Sea Enemy Data {" + enemyType + "} does not have the right powerup for {" + seaMonsterData.lootGroupId + " : " + rarity + "}");
+      return Powerup.Type.SpeedUp;
    }
 
    public Item getSeaMonsterLootContents (int userId) {
-      SeaMonsterEntity.Type monsterType = (SeaMonsterEntity.Type) enemyType;
-      SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getMonster(monsterType);
+      SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getMonster(enemyType);
+      if (seaMonsterData == null) {
+         D.debug("Warning! Sea Enemy Data {" + enemyType + "} does not exist!");
+         return Item.defaultLootItem();
+      }
       D.adminLog("Getting sea monster contents {" + seaMonsterData.lootGroupId + "}", D.ADMIN_LOG_TYPE.Treasure);
       return getGenericMonsterContent(seaMonsterData.lootGroupId, seaMonsterData.monsterName, false, userId);
    }

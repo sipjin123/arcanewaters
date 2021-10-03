@@ -86,7 +86,7 @@ public class TreasureManager : MonoBehaviour {
       return chest;
    }
 
-   public TreasureChest createSeaMonsterChest (Instance instance, Vector3 spot, SeaMonsterEntity.Type enemyType, int userId, uint[] attackers) {
+   public TreasureChest createSeaMonsterChest (Instance instance, Vector3 spot, int enemyXmlId, int userId, uint[] attackers) {
       // Instantiate a new Treasure Chest
       TreasureChest chest = Instantiate(seaChestPrefab, spot, Quaternion.identity);
 
@@ -113,7 +113,7 @@ public class TreasureManager : MonoBehaviour {
       }
 
       // Setup the chest variables
-      initEnemyDropChest(chest, (int) enemyType, instance, true);
+      initEnemyDropChest(chest, (int) enemyXmlId, instance, true);
 
       // Allow the user who triggered the spawn to see and interact with this loot bag
       chest.allowedUserIds.Add(userId);
@@ -147,7 +147,7 @@ public class TreasureManager : MonoBehaviour {
                   TreasureChest bonusChest = Instantiate(seaChestPrefab, spot + Vector3.up * 0.1f * (i + 1), Quaternion.identity);
 
                   // Setup the chest variables
-                  initEnemyDropChest(bonusChest, (int) enemyType, instance, true);
+                  initEnemyDropChest(bonusChest, (int) enemyXmlId, instance, true);
 
                   // Only the player who got the extra drop is allowed to open it (or see it)
                   bonusChest.allowedUserIds.Add(entity.userId);

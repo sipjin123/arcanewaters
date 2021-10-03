@@ -612,7 +612,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
                offset += Random.insideUnitCircle * 0.3f;
             }
 
-            TreasureManager.self.createSeaMonsterChest(currentInstance, transform.position + (Vector3) offset, seaMonsterData.seaMonsterType, killerUserId, _attackers.Keys.ToArray());
+            TreasureManager.self.createSeaMonsterChest(currentInstance, transform.position + (Vector3) offset, seaMonsterData.xmlId, killerUserId, _attackers.Keys.ToArray());
          }
       }
    }
