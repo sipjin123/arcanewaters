@@ -385,6 +385,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          D.debug("Cant get ship data for: {" + shipType + "}");
       }
       SeaMonsterEntityData seaEnemyData = SeaMonsterManager.self.getMonster(enemyXmlData);
+      dataXmlId = enemyXmlData;
       if (seaEnemyData == null) {
          D.debug("Failed to get sea monster data");
       }

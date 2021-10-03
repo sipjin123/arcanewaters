@@ -133,6 +133,9 @@ public class SeaEntity : NetEntity
 
    #endregion
 
+   // The xml id of this enemy data
+   public int dataXmlId;
+
    [Header("Components")]
 
    // The container for our sprites
