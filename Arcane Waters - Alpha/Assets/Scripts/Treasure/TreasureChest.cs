@@ -347,12 +347,11 @@ public class TreasureChest : NetworkBehaviour {
       if (seaMonsterData == null) {
          D.debug("Warning! Sea Enemy Data {" + enemyType + "} does not exist!");
          return Powerup.Type.SpeedUp;
-
       }
 
-      if (TreasureDropsDataManager.self.getTreasureDropsById(seaMonsterData.lootGroupId, rarity).FindAll(_ => _.powerUp != Powerup.Type.None).Count > 0) {
-         TreasureDropsData treasureDropsData = TreasureDropsDataManager.self.getTreasureDropsById(seaMonsterData.lootGroupId, rarity).
-            FindAll(_ => _.powerUp != Powerup.Type.None).ChooseRandom();
+      List<TreasureDropsData> treasureContent = TreasureDropsDataManager.self.getTreasureDropsById(seaMonsterData.lootGroupId, rarity).FindAll(_ => _.powerUp != Powerup.Type.None);
+      if (treasureContent.Count > 0) {
+         TreasureDropsData treasureDropsData = treasureContent.ChooseRandom();
          return treasureDropsData.powerUp;
       }
 

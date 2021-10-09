@@ -74,6 +74,14 @@ public class TreasureDropsDataManager : MonoBehaviour {
       return LootGroupData.DEFAULT_LOOT_GROUP.treasureDropsCollection; 
    }
 
+   public List<TreasureDropsData> getTreasureDropsById (int groupId) {
+      if (lootDropsCollection.ContainsKey(groupId)) {
+         LootGroupData groupDataLoots = lootDropsCollection[groupId];
+         return groupDataLoots.treasureDropsCollection;
+      }
+      return LootGroupData.DEFAULT_LOOT_GROUP.treasureDropsCollection;
+   }
+
    public List<TreasureDropsData> getTreasureDropsById (int groupId, Rarity.Type rarity) {
       if (lootDropsCollection.ContainsKey(groupId)) {
          LootGroupData groupDataLoots = lootDropsCollection[groupId];
