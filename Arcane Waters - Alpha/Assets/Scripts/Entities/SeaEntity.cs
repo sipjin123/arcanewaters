@@ -569,14 +569,19 @@ public class SeaEntity : NetEntity
 
       List<Vector2> lightningPositions = new List<Vector2>();
       foreach (Collider2D hit in hits) {
-         if (hit != null && hit.GetComponent<SeaEntity>() != null) {
-            SeaEntity hitEntity = hit.GetComponent<SeaEntity>();
-            if (this.isEnemyOf(hitEntity) && !collidedEntities.ContainsKey(hitEntity) && !hitEntity.isDead() && hitEntity.instanceId == this.instanceId && hitEntity.netId != primaryTargetNetID) {
-               int finalDamage = hitEntity.applyDamage(damageInt, attackerNetId);
-               hitEntity.Rpc_ShowDamage(Attack.Type.None, hitEntity.transform.position, finalDamage);
-               lightningPositions.Add(hitEntity.spritesContainer.transform.position);
-               collidedEntities.Add(hitEntity, hit.transform);
-               targetNetIdList.Add(hitEntity.netId);
+         if (hit != null) {
+            if (hit.GetComponent<SeaEntity>() != null) {
+               SeaEntity hitEntity = hit.GetComponent<SeaEntity>();
+               if (this.isEnemyOf(hitEntity) && !collidedEntities.ContainsKey(hitEntity) && !hitEntity.isDead() && hitEntity.instanceId == this.instanceId && hitEntity.netId != primaryTargetNetID) {
+                  int finalDamage = hitEntity.applyDamage(damageInt, attackerNetId);
+                  hitEntity.Rpc_ShowDamage(Attack.Type.None, hitEntity.transform.position, finalDamage);
+                  if (hitEntity.spritesContainer == null) {
+                     D.debug("Sprite container for chain lighting is missing!");
+                  }
+                  lightningPositions.Add(hitEntity.spritesContainer == null ? hitEntity.transform.position : hitEntity.spritesContainer.transform.position);
+                  collidedEntities.Add(hitEntity, hit.transform);
+                  targetNetIdList.Add(hitEntity.netId);
+               }
             }
          }
       }
