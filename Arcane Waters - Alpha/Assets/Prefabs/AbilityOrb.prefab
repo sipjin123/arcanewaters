@@ -68,7 +68,9 @@ MonoBehaviour:
   snapTimer: 0
   localOrbRotator: {fileID: 7763317885854874720}
   targetUserId: 0
+  ownerId: 0
   isSnapping: 0
+  attachedToTarget: 0
 --- !u!1 &4749831508429226238
 GameObject:
   m_ObjectHideFlags: 0
@@ -4908,8 +4910,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -4708660590307690105, guid: 432f6a4542bc8124a8402e2fd7754ed8,
-    type: 3}
+  m_Sprite: {fileID: 21300000, guid: 85d831daf58f08241a6153e5fe3a1739, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

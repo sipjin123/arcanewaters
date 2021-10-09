@@ -4662,7 +4662,7 @@ PrefabInstance:
     - target: {fileID: 5749744351137502123, guid: 2efab30275442584fa3e0d7446148938,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5749744351137502123, guid: 2efab30275442584fa3e0d7446148938,
         type: 3}
@@ -7309,7 +7309,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &712403171
 GameObject:
@@ -9984,7 +9984,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 1835145701}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -15377,8 +15378,8 @@ RectTransform:
   m_Children:
   - {fileID: 5833386}
   - {fileID: 631334678}
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_Father: {fileID: 1124990929}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -17865,6 +17866,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrollList:
   - {fileID: 1660121116}
+  canvasParent: {fileID: 0}
 --- !u!224 &2088553119
 RectTransform:
   m_ObjectHideFlags: 0
