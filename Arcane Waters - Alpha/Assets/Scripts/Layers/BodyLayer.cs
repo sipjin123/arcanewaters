@@ -62,6 +62,7 @@ public class BodyLayer : SpriteLayer {
    #region Private Variables
 
    // Our current type
+   [SerializeField]
    protected Type _type;
 
    #endregion

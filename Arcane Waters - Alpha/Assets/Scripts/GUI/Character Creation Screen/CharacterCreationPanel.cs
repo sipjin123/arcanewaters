@@ -480,6 +480,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       // Adjust the index
       int currentIndex = list.IndexOf(_char.body.getType());
+      BodyLayer.Type cachedIndex = _char.body.getType();
       if (currentIndex == -1) {
          currentIndex = 0;
       }
@@ -488,7 +489,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       // Update the Info and apply it to the character
       UserInfo info = _char.getUserInfo();
-      info.bodyType = list[currentIndex];
+      info.bodyType = cachedIndex;
       _char.setBodyLayers(info);
    }
 
