@@ -298,6 +298,8 @@ public class SeaEntity : NetEntity
          Rpc_OnDeath();
          _hasRunOnDeath = true;
       }
+
+      removeAllPowerupOrbs();
    }
 
    [ClientRpc]
@@ -2014,6 +2016,10 @@ public class SeaEntity : NetEntity
    }
 
    protected void checkPowerupOrbs () {
+      if (Util.isBatch() || isDead()) {
+         return;
+      }
+
       // Store the latest powerups from the server in a list
       List<Powerup.Type> powerupTypes = new List<Powerup.Type>();
       foreach (Powerup powerup in _powerups) {
@@ -2047,58 +2053,26 @@ public class SeaEntity : NetEntity
          bool isNewOrb = (i >= _powerupOrbs.Count - orbsCreated);
          _powerupOrbs[i].init(powerupTypes[i], transform, isNewOrb);
       }
+
+      }
    }
 
    #endregion
 
    #region Ability Orbs
 
-   protected void addAbilityOrbs (List<Attack.Type> powerupTypes, int targetUser, bool snapToTargetInstantly) {
-      foreach (Attack.Type attackType in powerupTypes) {
-         AbilityOrb newOrb = Instantiate(PrefabsManager.self.abilityOrbPrefab, transform.position + Vector3.up * POWERUP_ORB_ELLIPSE_HEIGHT, Quaternion.identity, transform);
-         newOrb.init(attackType, transform, targetUser, snapToTargetInstantly);
-
-         // Heal orbs expires immediately after snapping to target
-         if (attackType == Attack.Type.Heal) {
-            newOrb.snappedToTargetEvent.AddListener(() => {
-               Cmd_ExpireAbilityOrb(powerupTypes, targetUser);
-            });
-         }
-         _abilityOrbs.Add(newOrb);
-         newOrb.rotationValue = _powerupOrbRotation + (1.0f / _abilityOrbs.Count) * (_abilityOrbs.Count - 1);
-      }
-   }
-
-   [Command]
-   public void Cmd_ExpireAbilityOrb (List<Attack.Type> attackTypes, int targetUser) {
-      Rpc_RemoveAbilityOrb(attackTypes, targetUser);
-   }
-
-   protected void removeAbilityOrb (List<Attack.Type> powerupTypes, int targetUser) {
-      foreach (Attack.Type powerupType in powerupTypes) {
-         AbilityOrb orbToRemove = _abilityOrbs.Find((x) => x.attackType == powerupType && x.targetUserId == targetUser);
-         if (orbToRemove) {
-            _abilityOrbs.Remove(orbToRemove);
-            Destroy(orbToRemove.gameObject);
-         }
-      }
-   }
-
-   protected void removeAllAbilityOrbs () {
-      foreach (AbilityOrb orb in _abilityOrbs) {
-         Destroy(orb.gameObject);
-      }
-      _abilityOrbs.Clear();
-   }
-
    protected void updateAbilityOrbs () {
+      // Ignore this process on cloud build server
+      if (Util.isBatch()) {
+         return;
+      }
       _powerupOrbRotation += Time.deltaTime * POWERUP_ORB_ROTATION_SPEED;
 
       float orbSpacing = 1.0f / _abilityOrbs.Count;
 
       for (int i = 0; i < _abilityOrbs.Count; i++) {
          AbilityOrb orb = _abilityOrbs[i];
-         if (!orb.isSnapping) {
+         if (!orb.isSnapping && (orb.attachedToTarget && orb.targetUserId == userId)) {
             float targetValue = _powerupOrbRotation + orbSpacing * i;
             float newValue = Mathf.SmoothStep(orb.rotationValue, targetValue, Time.deltaTime * 10.0f);
             orb.rotationValue = newValue;
@@ -2107,19 +2081,56 @@ public class SeaEntity : NetEntity
       }
    }
 
-   [ClientRpc]
-   public void Rpc_AddAbilityOrbs (List<Attack.Type> attackTypes, int targetUser, bool snapToTargetInstantly) {
-      addAbilityOrbs(attackTypes, targetUser, snapToTargetInstantly);
+   [Server]
+   public void addServerAbilityOrbs (List<Attack.Type> attackTypes, int targetUser, bool snapToTargetInstantly) {
+      foreach (Attack.Type atkType in attackTypes) {
+         _abilityOrbData.Add(new AbilityOrbData {
+            attackType = atkType,
+            targetUserId = targetUser,
+            snapToTargetInstantly = snapToTargetInstantly
+         });
+      }
+      Rpc_AddAClientbilityOrbs(userId, attackTypes, targetUser, snapToTargetInstantly);
    }
 
    [ClientRpc]
-   public void Rpc_RemoveAbilityOrb (List<Attack.Type> attackType, int targetUser) {
-      removeAbilityOrb(attackType, targetUser);
+   public void Rpc_AddAClientbilityOrbs (int ownerId, List<Attack.Type> attackTypes, int targetUser, bool snapToTargetInstantly) {
+      foreach (Attack.Type attackType in attackTypes) {
+         AbilityOrb newOrb = Instantiate(PrefabsManager.self.abilityOrbPrefab, transform.position + Vector3.up * POWERUP_ORB_ELLIPSE_HEIGHT, Quaternion.identity, transform);
+         newOrb.init(ownerId, attackType, transform, targetUser, snapToTargetInstantly);
+         _abilityOrbs.Add(newOrb);
+         newOrb.rotationValue = _powerupOrbRotation + (1.0f / _abilityOrbs.Count) * (_abilityOrbs.Count - 1);
+      }
+   }
+
+   [Server]
+   public void removeServerAbilityOrbs (List<Attack.Type> attackTypes, int targetUser) {
+      foreach (Attack.Type atkType in attackTypes) {
+         AbilityOrbData orbToRemove = _abilityOrbData.Find((x) => x.attackType == atkType && x.targetUserId == targetUser);
+         if (orbToRemove != null) {
+            _abilityOrbData.Remove(orbToRemove);
+         }
+      }
+      Rpc_RemoveClientAbilityOrb(attackTypes, targetUser);
+   }
+
+   [ClientRpc]
+   public void Rpc_RemoveClientAbilityOrb (List<Attack.Type> attackType, int targetUser) {
+      foreach (Attack.Type powerupType in attackType) {
+         AbilityOrb orbToRemove = _abilityOrbs.Find((x) => x.attackType == powerupType && x.targetUserId == targetUser);
+         if (orbToRemove) {
+            _abilityOrbs.Remove(orbToRemove);
+            Destroy(orbToRemove.gameObject);
+         }
+      }
    }
 
    [ClientRpc]
    public void Rpc_RemoveAllAbilityOrbs () {
-      removeAllAbilityOrbs();
+      foreach (AbilityOrb orb in _abilityOrbs) {
+         Destroy(orb.gameObject);
+      }
+      _abilityOrbs.Clear();
    }
 
    #endregion
@@ -2277,6 +2288,9 @@ public class SeaEntity : NetEntity
 
    // The powerups that this sea entity currently has
    protected SyncList<Powerup> _powerups = new SyncList<Powerup>();
+
+   // The ability that this sea entity currently has
+   protected SyncList<AbilityOrbData> _abilityOrbData = new SyncList<AbilityOrbData>();
 
    #endregion
 
