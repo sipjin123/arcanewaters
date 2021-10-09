@@ -266,10 +266,7 @@ public class ShipEntity : SeaEntity
                         PlayerShipEntity allyShip = (PlayerShipEntity) allyEntity;
                         switch (shipAbilityData.selectedAttackType) {
                            case Attack.Type.Heal:
-                              int healValue = (int) (shipAbilityData.damageModifier * 100);
-                              allyShip.currentHealth += healValue;
-                              allyShip.Rpc_CastSkill(shipAbilityId, shipAbilityData, allyShip.transform.position, healValue);
-                              Rpc_AddAbilityOrbs(new List<Attack.Type> { Attack.Type.Heal }, allyShip.userId, false);
+                              StartCoroutine(CO_TriggerOneShotBuff(allyShip, shipAbilityData, new List<Attack.Type> { Attack.Type.Heal }, allyShip.userId, false));
                               break;
                            case Attack.Type.SpeedBoost:
                               StartCoroutine(CO_TriggerTemporaryBuff(allyShip, shipAbilityData, shipAbilityData.statusDuration));
@@ -286,6 +283,16 @@ public class ShipEntity : SeaEntity
 
       // Casting a skill is considered a PvP action
       hasEnteredPvP = true;
+   }
+
+   private IEnumerator CO_TriggerOneShotBuff (PlayerShipEntity targetEntity, ShipAbilityData shipAbilityData, List<Attack.Type> attackTypes, int targetUser, bool snapToTargetInstantly) {
+      addServerAbilityOrbs(attackTypes, targetUser, false);
+
+      yield return new WaitForSeconds(1 / AbilityOrb.SNAP_SPEED_MULTIPLIER);
+      int healValue = (int) (shipAbilityData.damageModifier * 100);
+      targetEntity.currentHealth += healValue;
+      targetEntity.Rpc_CastSkill(shipAbilityData.abilityId, shipAbilityData, targetEntity.transform.position, healValue);
+      removeServerAbilityOrbs(attackTypes, targetUser);
    }
 
    private IEnumerator CO_TriggerActiveAOEBuff (ShipAbilityData shipAbilityData, float statusDuration) {
@@ -310,7 +317,7 @@ public class ShipEntity : SeaEntity
             if (distanceToTarget < shipAbilityData.buffRadius) {
                if (isWithinBuffEffectivity == false) {
                   withinBuffEffectivityList.Add(allyShip.userId);
-                  Rpc_AddAbilityOrbs(new List<Attack.Type> { shipAbilityData.selectedAttackType }, allyShip.userId, true);
+                  addServerAbilityOrbs(new List<Attack.Type> { shipAbilityData.selectedAttackType }, allyShip.userId, true);
                   modifyStats(allyShip, shipAbilityData, value);
                }
             } else {
@@ -340,7 +347,7 @@ public class ShipEntity : SeaEntity
    private IEnumerator CO_TriggerTemporaryBuff (ShipEntity targetEntity, ShipAbilityData shipAbilityData, float statusDuration) {
       int value = (int) (shipAbilityData.damageModifier * 100);
 
-      Rpc_AddAbilityOrbs(new List<Attack.Type> { shipAbilityData.selectedAttackType }, targetEntity.userId, false);
+      addServerAbilityOrbs(new List<Attack.Type> { shipAbilityData.selectedAttackType }, targetEntity.userId, false);
       yield return new WaitForSeconds(ShipAbilityData.STATUS_CAST_DELAY);
       modifyStats(targetEntity, shipAbilityData, value);
       yield return new WaitForSeconds(statusDuration);
@@ -362,7 +369,7 @@ public class ShipEntity : SeaEntity
             break;
       }
       if (value < 0) {
-         Rpc_RemoveAbilityOrb(new List<Attack.Type> { shipAbilityData.selectedAttackType }, targetEntity.userId);
+         removeServerAbilityOrbs(new List<Attack.Type> { shipAbilityData.selectedAttackType }, targetEntity.userId);
       }
 
       targetEntity.Rpc_CastSkill(shipAbilityData.abilityId, shipAbilityData, targetEntity.transform.position, value);
