@@ -14,9 +14,6 @@ public class WorldMapGenerationSettings : ScriptableObject
    // Number of rows in the source texture;
    public int rows;
 
-   // Should clean up temporary files
-   public bool shouldCleanUp;
-
    #endregion
 
    #region Private Variables

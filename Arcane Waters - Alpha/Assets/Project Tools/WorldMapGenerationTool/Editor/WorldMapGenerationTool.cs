@@ -6,6 +6,7 @@ using System.IO;
 using Newtonsoft.Json;
 using System.IO.Compression;
 using System.Text;
+using System;
 
 public class WorldMapGenerationTool : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class WorldMapGenerationTool : MonoBehaviour
    #endregion
 
    #region Generate
-
+   
    [MenuItem("Util/Generate World Map")]
    public static void generatedworldMapCommand () {
       bool userHasAccepted = EditorUtility.DisplayDialog(_toolName, "This tool will generate the World Map. Do you want to proceed?", "Yes", "No");
@@ -39,7 +40,7 @@ public class WorldMapGenerationTool : MonoBehaviour
          return;
       }
 
-      bool success = uploadWorldMap(map, settings.shouldCleanUp);
+      bool success = uploadWorldMap(map);
 
       if (!success) {
          EditorUtility.ClearProgressBar();
@@ -76,7 +77,7 @@ public class WorldMapGenerationTool : MonoBehaviour
       }
 
       D.debug($"{_toolName}: {map.sectorCount} sectors generated.");
-      rep("Generating Maps: OK", 1.0f,cancelable: false);
+      rep("Generating Maps: OK", 1.0f, cancelable: false);
       return map;
    }
 
@@ -86,15 +87,10 @@ public class WorldMapGenerationTool : MonoBehaviour
          y = sectorY,
          w = texture.width / settings.columns,
          h = texture.height / settings.rows,
-         map = new WorldMapInfo {
-            columns = settings.columns,
-            rows = settings.rows,
-            sectors = settings.columns * settings.rows
-         },
          sectorIndex = settings.columns * sectorY + sectorX,
       };
 
-      var sb = new StringBuilder();
+      StringBuilder sb = new StringBuilder();
 
       for (int r = 0; r < sector.h; r++) {
          for (int c = 0; c < sector.w; c++) {
@@ -121,15 +117,29 @@ public class WorldMapGenerationTool : MonoBehaviour
 
    #region Upload
 
-   private static bool uploadWorldMap (WorldMap map, bool cleanUp = false) {
+   private static bool uploadWorldMap (WorldMap map) {
       DB_Main.clearWorldMap();
       int counter = 0;
-      string awFolderPath = createTempDesktopFolder();
 
       foreach (WorldMapSector sector in map.sectors) {
-         string txtFilePath = serializeSectorToDisk(awFolderPath, sector);
-         string compressedFilePath = compressSerializedSector(awFolderPath, sector, txtFilePath);
-         DB_Main.uploadWorldMapSector(File.ReadAllBytes(compressedFilePath));
+         string serializedSector = serializeSector(sector);
+         string filenameInArchive = $"aw_world_map_sector_{sector.sectorIndex}.zip";
+         byte[] compressedData = GZipUtility.compressString(filenameInArchive, serializedSector);
+
+         if (compressedData == null) {
+            EditorUtility.ClearProgressBar();
+            D.error($"{_toolName}: Error encountered while compressing sector {sector.sectorIndex}. Aborting task.");
+            return false;
+         }
+
+         bool uploaded = DB_Main.uploadWorldMapSector(compressedData);
+         
+         if (!uploaded) {
+            EditorUtility.ClearProgressBar();
+            D.error($"{_toolName}: Error encountered while uploading sector {sector.sectorIndex}. Aborting task.");
+            return false;
+         }
+
          counter++;
 
          if (rep($"Uploading Map: {counter}/{map.sectorCount}", (float) counter / map.sectorCount)) {
@@ -140,16 +150,6 @@ public class WorldMapGenerationTool : MonoBehaviour
       }
 
       D.debug($"{_toolName}: Map sectors uploaded.");
-
-      if (cleanUp) {
-         rep("Cleaning Up...", 1.0f, cancelable: false);
-
-         if (Directory.Exists(awFolderPath)) {
-            Directory.Delete(awFolderPath);
-            D.debug($"{_toolName}: Map files at '{awFolderPath}' deleted.");
-         }
-      }
-
       return true;
    }
 
@@ -161,37 +161,26 @@ public class WorldMapGenerationTool : MonoBehaviour
       WorldMapSector sector = null;
 
       try {
-         int totalSectors = getWorldMapSectorsCount();
+         int totalSectors = DB_Main.getWorldMapSectorsCount();
 
          if (sectorIndex < 0 || sectorIndex >= totalSectors) {
             D.error($"{_toolName}: Couldn't find the selected sector.");
             return sector;
          }
 
-         byte[] sectorData = DB_Main.fetchWorldMapSector(sectorIndex);
-         string tempFolderPath = createTempDesktopFolder();
-         string zipFilePath = createTempZipFile(sectorIndex, sectorData, tempFolderPath);
+         byte[] compressedSectorData = DB_Main.fetchWorldMapSector(sectorIndex);
+         Dictionary<string, byte[]> entries = GZipUtility.decompressData(compressedSectorData);
 
-         // Decompress data
-         using (ZipStorer storer = ZipStorer.Open(zipFilePath, FileAccess.Read)) {
-            List<ZipStorer.ZipFileEntry> entries = storer.ReadCentralDir();
+         if (entries == null) {
+            D.error($"{_toolName}: Couldn't decompress the downloaded data.");
+            return sector;
+         }
 
-            foreach (ZipStorer.ZipFileEntry entry in entries) {
-               if (entry.FilenameInZip.StartsWith("aw_world_map_sector")) {
-                  storer.ExtractFile(entry, out byte[] entryData);
-                  string entryAsString = Encoding.ASCII.GetString(entryData);
-                  sector = WorldMapSector.parse(entryAsString);
-               }
+         foreach (string filename in entries.Keys) {
+            if (filename.ToLower().StartsWith("aw_world_map_sector")) {
+               sector = WorldMapSector.parse(Encoding.ASCII.GetString(entries[filename]));
+               break;
             }
-         }
-
-         // delete temporary files
-         if (File.Exists(zipFilePath)) {
-            File.Delete(zipFilePath);
-         }
-
-         if (Directory.Exists(tempFolderPath)) {
-            Directory.Delete(tempFolderPath);
          }
       } catch (System.Exception ex) {
          D.error(ex.Message);
@@ -213,44 +202,8 @@ public class WorldMapGenerationTool : MonoBehaviour
       return false;
    }
 
-   private static string createTempZipFile (int sectorIndex, byte[] sectorData, string awFolderPath) {
-      string tempFile = $"aw_map_sector_{sectorIndex}_{System.DateTime.Now.Ticks}.zip";
-      string tempFilePath = Path.Combine(awFolderPath, tempFile);
-      File.WriteAllBytes(tempFilePath, sectorData);
-      return tempFilePath;
-   }
-
-   private static string createTempDesktopFolder () {
-      string desktopPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.DesktopDirectory);
-      string awFolder = "aw-" + System.DateTime.Now.Ticks.ToString();
-      string awFolderPath = Path.Combine(desktopPath, awFolder);
-
-      if (!Directory.Exists(awFolderPath)) {
-         Directory.CreateDirectory(awFolderPath);
-      }
-
-      return awFolderPath;
-   }
-
-   private static string compressSerializedSector (string awFolderPath, WorldMapSector sector, string txtFilePath) {
-      string compressedFilePath = Path.Combine(awFolderPath, $"aw_world_map_sector_{sector.sectorIndex}.zip");
-
-      using (ZipStorer storer = ZipStorer.Create(compressedFilePath)) {
-         storer.AddFile(ZipStorer.Compression.Deflate, txtFilePath, Path.GetFileName(txtFilePath));
-      }
-
-      return compressedFilePath;
-   }
-
-   private static string serializeSectorToDisk (string awFolderPath, WorldMapSector sector) {
-      string txtFilePath = Path.Combine(awFolderPath, $"aw_world_map_sector_{sector.sectorIndex}.txt");
-      string contents = $"{sector.sectorIndex} {sector.x} {sector.y} {sector.w} {sector.h}\n{sector.tilesString}";
-      File.WriteAllText(txtFilePath, contents);
-      return txtFilePath;
-   }
-
-   private static int getWorldMapSectorsCount () {
-      return DB_Main.getWorldMapSectorsCount();
+   private static string serializeSector (WorldMapSector sector) {
+      return $"{sector.sectorIndex} {sector.x} {sector.y} {sector.w} {sector.h}\n{sector.tilesString}";
    }
 
    public static WorldMapGenerationSettings findSettings () {

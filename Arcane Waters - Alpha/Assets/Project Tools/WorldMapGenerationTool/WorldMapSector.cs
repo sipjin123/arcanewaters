@@ -22,9 +22,6 @@ public class WorldMapSector
    // The height of the sector
    public int h;
 
-   // Object holding information about the parent map
-   public WorldMapInfo map;
-
    // Tile set as string
    public string tilesString;
 
