@@ -286,7 +286,8 @@ namespace MapCreationTool
          Undo.clear();
       }
 
-      private void editorTypeChanged (EditorType from, EditorType to) {
+      public void editorTypeChanged (EditorType from, EditorType to) {
+         D.debug("Editor changed from {" + from + "} to {" + to + "}");
          switch (to) {
             case EditorType.Area:
                palette.populatePalette(areaPaletteData[Tools.biome], Tools.biome);

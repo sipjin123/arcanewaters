@@ -322,10 +322,14 @@ namespace MapCreationTool
       public void pointerClick (PointerEventData data) {
          if (data.button == PointerEventData.InputButton.Left && draggingFrom == null) {
             Vector3Int cellCoors = tilemap.WorldToCell(data.pointerPressRaycast.worldPosition);
-            var group = paletteData.getGroup(cellCoors.x, cellCoors.y);
+            simulateTileSelection(cellCoors);
+         }
+      }
 
-            if (group != Tools.tileGroup)
-               Tools.changeTileGroup(group);
+      public void simulateTileSelection (Vector3Int cellCoors) {
+         TileGroup group = paletteData.getGroup(cellCoors.x, cellCoors.y);
+         if (group != Tools.tileGroup) {
+            Tools.changeTileGroup(group);
          }
       }
 

@@ -65,6 +65,9 @@ namespace MapCreationTool
       public static SettingsPanel settingsPanel { get; private set; }
       public static MapDetailsPanel mapDetailsPanel { get; private set; }
 
+      // Reference to self
+      public static UI self;
+
       private static UIPanel[] uiPanels;
 
       private Dictionary<string, Biome.Type> optionsPacks = new Dictionary<string, Biome.Type>
@@ -128,6 +131,7 @@ namespace MapCreationTool
       }
 
       private void Awake () {
+         self = this;
          canvasScaler = GetComponent<CanvasScaler>();
          yesNoDialog = GetComponentInChildren<YesNoDialog>();
          mapList = GetComponentInChildren<MapListPanel>();

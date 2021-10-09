@@ -770,7 +770,7 @@ namespace MapCreationTool
          MainCamera.pan(-delta);
       }
 
-      private void pointerScroll (Vector3 at, float scroll) {
+      public void pointerScroll (Vector3 at, float scroll) {
          MainCamera.zoom(-scroll * Time.deltaTime);
       }
       #endregion

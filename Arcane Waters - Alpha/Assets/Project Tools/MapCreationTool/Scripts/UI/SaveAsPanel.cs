@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using MapCreationTool.Serialization;
 using System.Linq;
+using UnityEngine.Events;
 
 namespace MapCreationTool
 {
@@ -15,6 +16,9 @@ namespace MapCreationTool
       private Button saveButton = null;
       [SerializeField]
       private Text saveButtonText = null;
+
+      // Save complete event
+      public UnityEvent saveCompleteEvent = new UnityEvent();
 
       public void open () {
          saveButtonText.text = "Save";
@@ -83,6 +87,7 @@ namespace MapCreationTool
                      DrawBoard.changeLoadedVersion(mapVersion);
                      Overlord.loadAllRemoteData();
                      hide();
+                     saveCompleteEvent.Invoke();
                   }
                });
             });
@@ -91,6 +96,10 @@ namespace MapCreationTool
             saveButton.interactable = true;
             saveButtonText.text = "Save";
          }
+      }
+
+      public void forceSaveName (string mapName) {
+         inputField.text = mapName;
       }
 
       public void close () {

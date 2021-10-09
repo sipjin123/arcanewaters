@@ -9,13 +9,16 @@ namespace MapCreationTool
 {
    public class BrushTool : Tool
    {
-      private BrushStroke stroke = new BrushStroke();
+      public BrushStroke stroke = new BrushStroke();
 
       // If horizontal is the beginning behavior of the brush
       public bool hasPaintStarted = false;
       public bool isHorizontal = false;
 
       protected override ToolType toolType => ToolType.Brush;
+
+      // Self reference
+      public static BrushTool instance;
 
       protected override void registerUIEvents () {
          DrawBoardEvents.PointerDown += pointerDown;
@@ -41,7 +44,11 @@ namespace MapCreationTool
          DrawBoardEvents.CancelAction -= cancelAction;
       }
 
-      private void pointerDown (Vector3 position) {
+      private void Awake () {
+         instance = this;
+      }
+
+      public void pointerDown (Vector3 position) {
          newStroke(position);
          if (stroke.tileGroup != null && stroke.type != BrushStroke.Type.Prefab) {
             stroke.paintPosition(position);
@@ -49,7 +56,7 @@ namespace MapCreationTool
          }
       }
 
-      private void pointerUp (Vector3 position) {
+      public void pointerUp (Vector3 position) {
          DrawBoard.instance.changeBoard(stroke.calculateTileChange());
 
          newStroke(position);
@@ -134,7 +141,7 @@ namespace MapCreationTool
          DrawBoard.instance.setPrefabsModifyPreview(null);
       }
 
-      private void newStroke (Vector3 position) {
+      public void newStroke (Vector3 position) {
          if (Tools.tileGroup != null) {
             if (Tools.tileGroup.type == TileGroupType.Prefab || Tools.tileGroup.type == TileGroupType.TreePrefab) {
                stroke.newPrefabStroke(Tools.tileGroup, position);
