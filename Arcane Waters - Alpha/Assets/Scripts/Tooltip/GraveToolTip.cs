@@ -35,6 +35,10 @@ public class GraveToolTip : MonoBehaviour, IMapEditorDataReceiver
    }
 
    public virtual void toggleToolTip (bool isActive) {
+      if (toolTipPanel.activeSelf == isActive) {
+         return;
+      }
+
       toolTipPanel.SetActive(isActive);
       toolTipCanvasGroup.alpha = 0f;
 

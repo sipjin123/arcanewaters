@@ -219,6 +219,11 @@ public class SeaProjectile : NetworkBehaviour
          return;
       }
 
+      // Don't hit pvp capture target holder
+      if (hitEntity.isPvpCaptureTargetHolder()) {
+         return;
+      }
+
       // If the hit entity is on the list of enemies to ignore, don't collide
       if (_enemiesToIgnore.Contains(hitEntity.netId)) {
          return;
@@ -292,22 +297,6 @@ public class SeaProjectile : NetworkBehaviour
          sourceEntity.Rpc_SpawnBossVenomResidue(sourceEntity.netId, _instanceId, transform.position);
       }
 
-      // If we have a trail renderer, detach it, so it can continue to show while this object is destroyed
-      TrailRenderer trail = GetComponentInChildren<TrailRenderer>();
-      if (trail != null) {
-         trail.autodestruct = true;
-         trail.transform.SetParent(null);
-
-         // For some reason, autodestruct doesn't always work resulting in infinite TrailRenderers being left in the scene, so we force it.
-         Destroy(trail.gameObject, 3.0f);
-      }
-
-      // Check if there is a custom trail and detach it as well
-      if (tryGetCustomTrailEffect(out GameObject customTrail)) {
-         customTrail.transform.SetParent(null);
-         Destroy(customTrail, 3.0f);
-      }
-
       NetworkServer.Destroy(gameObject);
    }
 
@@ -328,6 +317,25 @@ public class SeaProjectile : NetworkBehaviour
       _hitEnemy = true;
    }
 
+   public override void OnStopClient () {
+      base.OnStopClient();
+
+      // Don't need to handle any of these effects in Batch Mode
+      if (Util.isBatch() || ClientManager.isApplicationQuitting) {
+         return;
+      }
+
+      // If we have a trail renderer, detach it, so it can continue to show while this object is destroyed
+      TrailRenderer trail = GetComponentInChildren<TrailRenderer>();
+      if (trail != null) {
+         trail.autodestruct = true;
+         trail.transform.SetParent(null);
+
+         // For some reason, autodestruct doesn't always work resulting in infinite TrailRenderers being left in the scene, so we force it.
+         Destroy(trail.gameObject, 3.0f);
+      }
+   }
+
    protected virtual void OnDestroy () {}
 
    public int getInstanceId () {
@@ -344,11 +352,6 @@ public class SeaProjectile : NetworkBehaviour
       foreach (SpriteRenderer renderer in spriteRenderers) {
          Util.setAlpha(renderer, newAlpha);
       }
-   }
-
-   protected virtual bool tryGetCustomTrailEffect (out GameObject trail) {
-      trail = null;
-      return false;
    }
 
    #region Private Variables

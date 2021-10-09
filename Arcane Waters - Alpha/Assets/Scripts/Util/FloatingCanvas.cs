@@ -12,7 +12,7 @@ public class FloatingCanvas : MonoBehaviour {
    public float lifetime = 1.75f;
 
    // How fast this should float up
-   public static float RISE_SPEED = .0025f;
+   public float riseSpeed = .0025f;
 
    // Main text component of this canvas
    public TextMeshProUGUI text;
@@ -43,7 +43,7 @@ public class FloatingCanvas : MonoBehaviour {
 
       // Slowly move upwards
       Vector3 currentPos = this.transform.position;
-      currentPos.y += RISE_SPEED;
+      currentPos.y += riseSpeed;
       this.transform.position = currentPos;
 
       // Also fade out

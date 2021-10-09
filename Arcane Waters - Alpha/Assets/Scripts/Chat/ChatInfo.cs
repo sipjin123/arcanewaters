@@ -72,7 +72,7 @@ public class ChatInfo
 
    }
 
-   public ChatInfo (int chatId, string text, DateTime chatTime, Type messageType, string sender = "", string receiver = "", int senderId = 0, GuildIconData guildIconData = null, bool isSenderMuted = false, bool isSenderAdmin = false) {
+   public ChatInfo (int chatId, string text, DateTime chatTime, Type messageType, string sender = "", string receiver = "", int senderId = 0, GuildIconData guildIconData = null, string guildName="", bool isSenderMuted = false, bool isSenderAdmin = false) {
       this.chatId = chatId;
       this.text = text;
       this.chatTime = chatTime;
@@ -81,6 +81,7 @@ public class ChatInfo
       this.recipient = receiver;
       this.senderId = senderId;
       this.guildIconData = guildIconData;
+      this.guildName = guildName;
       this.isSenderMuted = isSenderMuted;
       this.isSenderAdmin = isSenderAdmin;
 

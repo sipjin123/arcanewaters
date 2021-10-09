@@ -354,6 +354,10 @@ public class PvpStatPanel : Panel {
    }
 
    public override void OnPointerClick (PointerEventData eventData) {
+      if (eventData.rawPointerPress == this.gameObject) {
+         // If the mouse is over the input field zone, select it through the panel black background
+         tryFocusChatInputField();
+      }
    }
 
    #region Private Variables

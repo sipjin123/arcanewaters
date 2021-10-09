@@ -199,6 +199,10 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public int guildId;
 
+   // The guild name this user belongs to
+   [SyncVar]
+   public string guildName;
+
    // The guild permissions that this user holds
    [SyncVar]
    public int guildPermissions;
@@ -651,6 +655,7 @@ public class NetEntity : NetworkBehaviour
       this.customFarmBaseId = userInfo.customFarmBaseId;
       this.customHouseBaseId = userInfo.customHouseBaseId;
       this.guildId = userInfo.guildId;
+      this.guildName = guildInfo.guildName;
       if (guildRankInfo != null) {
          this.guildPermissions = guildRankInfo.permissions;
       }
@@ -1555,25 +1560,25 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveGlobalChat (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, bool isSenderMuted, bool isSenderAdmin) {
+   public void Target_ReceiveGlobalChat (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted, bool isSenderAdmin) {
       // Convert Json string back into a GuildIconData object and add to chatInfo
       GuildIconData guildIconData = JsonUtility.FromJson<GuildIconData>(guildIconDataString);
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), ChatInfo.Type.Global, senderName, "", senderUserId, guildIconData, isSenderMuted, isSenderAdmin);
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), ChatInfo.Type.Global, senderName, "", senderUserId, guildIconData, guildName, isSenderMuted, isSenderAdmin);
 
       // Add it to the Chat Manager
       ChatManager.self.addChatInfo(chatInfo);
    }
 
    [ClientRpc]
-   public void Rpc_ChatWasSent (int chatId, string message, long timestamp, ChatInfo.Type chatType, string guildIconDataString, bool isSenderMuted, bool isSenderAdmin) {
+   public void Rpc_ChatWasSent (int chatId, string message, long timestamp, ChatInfo.Type chatType, string guildIconDataString, string guildName, bool isSenderMuted, bool isSenderAdmin) {
       GuildIconData guildIconData = JsonUtility.FromJson<GuildIconData>(guildIconDataString);
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, entityName, "", userId, guildIconData, isSenderMuted, isSenderAdmin);
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, entityName, "", userId, guildIconData, guildName, isSenderMuted, isSenderAdmin);
       ChatManager.self.addChatInfo(chatInfo);
    }
 
    [TargetRpc]
-   public void Target_ReceiveSpecialChat (NetworkConnection conn, int chatId, string message, string senderName, string receiverName, long timestamp, ChatInfo.Type chatType, GuildIconData guildIconData, int senderId, bool isSenderMuted) {
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, senderName, receiverName, senderId, guildIconData, isSenderMuted);
+   public void Target_ReceiveSpecialChat (NetworkConnection conn, int chatId, string message, string senderName, string receiverName, long timestamp, ChatInfo.Type chatType, GuildIconData guildIconData, string guildName, int senderId, bool isSenderMuted) {
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, senderName, receiverName, senderId, guildIconData, guildName, isSenderMuted);
 
       // Add it to the Chat Manager
       ChatManager.self.addChatInfo(chatInfo);
@@ -1589,6 +1594,11 @@ public class NetEntity : NetworkBehaviour
 
       // Add it to the Chat Manager
       ChatManager.self.addChatInfo(chatInfo);
+   }
+
+   [TargetRpc]
+   public void Target_CensorGlobalMessagesFromUser (int userId) {
+      ChatPanel.self.censorGlobalMessagesFromUser(userId);
    }
 
    [TargetRpc]
@@ -2220,6 +2230,16 @@ public class NetEntity : NetworkBehaviour
       }
 
       Vector3 pos = bodyTx.position;
+      Target_ReceiveSilverCurrencyImpl(silverCount, rewardReason, pos);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveSilverCurrencyWithEffect (NetworkConnection connection, int silverCount, SilverManager.SilverRewardReason rewardReason, Vector3 floatingCanvasSpawnPosition) {
+      Target_ReceiveSilverCurrencyImpl(silverCount, rewardReason, floatingCanvasSpawnPosition);
+   }
+
+   public void Target_ReceiveSilverCurrencyImpl (int silverCount, SilverManager.SilverRewardReason rewardReason, Vector3 targetPos) {
+      Vector3 pos = targetPos;
 
       if (silverCount > 0) {
          // Move the already spawned messages a little up
@@ -2244,9 +2264,13 @@ public class NetEntity : NetworkBehaviour
 
       // Show a message that they gained some XP along with the item they received
       GameObject gainItemCanvas = Instantiate(PrefabsManager.self.itemReceivedPrefab);
-      gainItemCanvas.transform.position = transform.position;
+      gainItemCanvas.transform.position = pos;
       gainItemCanvas.GetComponentInChildren<TextMeshProUGUI>().text = silverCount.ToString();
-      gainItemCanvas.GetComponentInChildren<FloatingCanvas>().customTag = Global.player.userId.ToString();
+
+      FloatingCanvas floatingCanvas = gainItemCanvas.GetComponentInChildren<FloatingCanvas>();
+      floatingCanvas.customTag = Global.player.userId.ToString();
+      floatingCanvas.lifetime *= 2;
+      floatingCanvas.riseSpeed /= 3;
 
       if (silverCount < 0) {
          gainItemCanvas.GetComponentInChildren<TextMeshProUGUI>().color = Color.red;
@@ -2268,7 +2292,7 @@ public class NetEntity : NetworkBehaviour
       gainItemCanvas.GetComponentInChildren<Image>().SetNativeSize();
 
       // Play SFX
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.COLLECT_SILVER, bodyTx);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.COLLECT_SILVER, targetPos: targetPos);
 
       // Update the Silver indicator
       PvpStatusPanel.self.addSilver(silverCount);

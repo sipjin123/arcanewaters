@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using TMPro;
+using UnityEngine.EventSystems;
 
-public class PvpInstructionsPanel : MonoBehaviour {
+public class PvpInstructionsPanel : MonoBehaviour, IPointerClickHandler {
    #region Public Variables
 
    // Singleton instance
@@ -66,12 +67,14 @@ public class PvpInstructionsPanel : MonoBehaviour {
 
    public void show () {
       panelCanvasGroup.alpha = 1.0f;
+      panelCanvasGroup.interactable = true;
       panelCanvasGroup.blocksRaycasts = true;
       isShowing = true;
    }
 
    public void hide () {
       panelCanvasGroup.alpha = 0.0f;
+      panelCanvasGroup.interactable = false;
       panelCanvasGroup.blocksRaycasts = false;
       isShowing = false;
    }
@@ -162,6 +165,13 @@ public class PvpInstructionsPanel : MonoBehaviour {
 
    public void updateGameStatusMessage (string newMessage) {
       gameStatusText.text = "Game Status: " + newMessage;
+   }
+
+   public void OnPointerClick (PointerEventData eventData) {
+      if (eventData.rawPointerPress == this.gameObject) {
+         // If the mouse is over the input field zone, select it through the panel black background
+         Panel.tryFocusChatInputField();
+      }
    }
 
    #region Private Variables

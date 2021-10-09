@@ -130,7 +130,6 @@ public class Battle : NetworkBehaviour {
          if (battler.isDead()) {
             if (!getDeadBattlersPreviousTick().Contains(battler)) {
                BattleManager.self.onBattlerDeath(battler);
-
                getDeadBattlersPreviousTick().Add(battler);
             }
 

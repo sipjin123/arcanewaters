@@ -3,10 +3,13 @@ using System.IO;
 using System.Text;
 using System;
 using System.IO.Compression;
+using System.Collections.Generic;
 
 public static class GZipUtility
 {
    public delegate void ProgressDelegate (string sMessage);
+
+   #region Decompression
 
    public static void decompressToDirectory (string sCompressedFile, string sDir, ProgressDelegate progress) {
       using (FileStream inFile = new FileStream(sCompressedFile, FileMode.Open, FileAccess.Read, FileShare.None)) {
@@ -74,6 +77,61 @@ public static class GZipUtility
       }
    }
 
+   /// <summary>
+   /// Decompresses a Zip Archive specified as a sequence of bytes
+   /// </summary>
+   /// <param name="source">The bytes that form the zip archive</param>
+   /// <returns></returns>
+   public static Dictionary<string,byte[]> decompressData (byte[] source) {
+      Dictionary<string, byte[]> compressedDatas = new Dictionary<string, byte[]>();
+
+      if (source == null) {
+         return compressedDatas;
+      }
+
+      using (MemoryStream inMemory = new MemoryStream(source)) {
+         using (GZipStream zipStream = new GZipStream(inMemory, CompressionMode.Decompress, true)) {
+            while (true) {
+               //Decompress file name
+               byte[] bytes = new byte[sizeof(int)];
+               int Readed = zipStream.Read(bytes, 0, sizeof(int));
+
+               if (Readed < sizeof(int)) {
+                  break;
+               }
+
+               int iNameLen = BitConverter.ToInt32(bytes, 0);
+               bytes = new byte[sizeof(char)];
+               StringBuilder sb = new StringBuilder();
+
+               for (int i = 0; i < iNameLen; i++) {
+                  zipStream.Read(bytes, 0, sizeof(char));
+                  char c = BitConverter.ToChar(bytes, 0);
+                  sb.Append(c);
+               }
+
+               string sFileName = sb.ToString();
+
+               //Decompress file content
+               bytes = new byte[sizeof(int)];
+               zipStream.Read(bytes, 0, sizeof(int));
+               int iFileLen = BitConverter.ToInt32(bytes, 0);
+
+               bytes = new byte[iFileLen];
+               zipStream.Read(bytes, 0, bytes.Length);
+
+               compressedDatas.Add(sFileName, bytes);
+            }
+         }
+      }
+
+      return compressedDatas;
+   }
+
+   #endregion
+
+   #region Compression
+
    private static void compressFile (string sDir, string sRelativePath, GZipStream zipStream) {
       //Compress file name
       char[] chars = sRelativePath.ToCharArray();
@@ -87,4 +145,55 @@ public static class GZipUtility
       zipStream.Write(BitConverter.GetBytes(bytes.Length), 0, sizeof(int));
       zipStream.Write(bytes, 0, bytes.Length);
    }
+
+   public static byte[] compressData (string filenameInArchive, byte[] data) {
+      if (string.IsNullOrWhiteSpace(filenameInArchive) || data == null) {
+         return null;
+      }
+
+      byte[] result = null;
+
+      using (MemoryStream outStream = new MemoryStream()) {
+         using (GZipStream zipStream = new GZipStream(outStream, CompressionMode.Compress)) {
+            //Compress the file name
+            char[] chars = filenameInArchive.ToCharArray();
+
+            // write out the length of the filename
+            zipStream.Write(BitConverter.GetBytes(chars.Length), 0, sizeof(int));
+
+            // write out the filename
+            foreach (char c in chars) {
+               zipStream.Write(BitConverter.GetBytes(c), 0, sizeof(char));
+            }
+
+            // Write out the length of the file content
+            zipStream.Write(BitConverter.GetBytes(data.Length), 0, sizeof(int));
+
+            // Write out the file content
+            zipStream.Write(data, 0, data.Length);
+         }
+
+         result = outStream.ToArray();
+      }
+
+      return result;
+   }
+
+   public static byte[] compressFile (string filenameInArchive, string filePath) {
+      if (string.IsNullOrWhiteSpace(filenameInArchive) || !File.Exists(filePath)) {
+         return null;
+      }
+
+      return compressData(filenameInArchive, File.ReadAllBytes(filePath));
+   }
+
+   public static byte[] compressString (string filenameInArchive, string source) {
+      if (string.IsNullOrWhiteSpace(filenameInArchive) || string.IsNullOrWhiteSpace(source)) {
+         return null;
+      }
+
+      return compressData(filenameInArchive, Encoding.ASCII.GetBytes(source));
+   }
+
+   #endregion
 }

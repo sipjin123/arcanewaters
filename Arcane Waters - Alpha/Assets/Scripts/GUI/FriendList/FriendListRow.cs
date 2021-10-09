@@ -29,9 +29,6 @@ public class FriendListRow : MonoBehaviour
    // The guild icon of the friend
    public GuildIcon friendGuildIcon;
 
-   // The guild tooltip
-   public ToolTipComponent friendGuildToolTip;
-
    // If this user is online
    public bool isOnline;
 
@@ -54,7 +51,7 @@ public class FriendListRow : MonoBehaviour
          friendGuildIcon.setBackground(entry.friendIconBackground, entry.friendIconBackPalettes);
          friendGuildIcon.setBorder(entry.friendIconBorder);
          friendGuildIcon.setSigil(entry.friendIconSigil, entry.friendIconSigilPalettes);
-         friendGuildToolTip.message = entry.friendGuildName;
+         friendGuildIcon.setGuildName(entry.friendGuildName);
          rootGuildIcon.SetActive(true);
       } else {
          rootGuildIcon.SetActive(false);

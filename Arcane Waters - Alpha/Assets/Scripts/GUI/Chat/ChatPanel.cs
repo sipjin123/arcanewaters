@@ -125,6 +125,9 @@ public class ChatPanel : MonoBehaviour {
    // Font that is being used for local chat in the form of bubble
    public TMPro.TMP_FontAsset chatBubbleFont;
 
+   // The rect transform of the input field zone
+   public RectTransform inputFieldZoneRect;
+
    // Reference to the containing canvas container
    public Canvas canvas;
 
@@ -344,6 +347,8 @@ public class ChatPanel : MonoBehaviour {
    }
 
    void processGuiInputfield () {
+      bool wasInputFocused = _isInputFocused;
+
       // If the input field has just gained / lost focus, call appropriate events
       if (inputField.isFocused && !_isInputFocused) {
          ChatManager.self.onChatGainedFocus();
@@ -362,8 +367,8 @@ public class ChatPanel : MonoBehaviour {
 
       _isNameInputFocused = nameInputField.isFocused;
 
-      // Submit the field when enter is pressed and the field is focused
-      if (KeyUtils.GetEnterKeyDown()) {
+      // Submit the field when enter is pressed and the field was already focused
+      if (wasInputFocused && KeyUtils.GetEnterKeyDown()) {
          if (inputField.text != "") {
             // Send the message off to the server for processing
             string message = inputField.text;
@@ -483,6 +488,7 @@ public class ChatPanel : MonoBehaviour {
 
       // Create a new Chat Row instance and assign the parent
       GameObject chatRow = Instantiate(speakChatRow, messagesContainer.transform);
+      SpeakChatRow chatRowComponent = chatRow.GetComponentInChildren<SpeakChatRow>();
       SpeakChatLine chatLine = chatRow.GetComponentInChildren<SpeakChatLine>();
       GuildIcon rowGuildIcon = chatRow.GetComponentInChildren<GuildIcon>();
       chatLine.name = "Chat Message";
@@ -499,6 +505,7 @@ public class ChatPanel : MonoBehaviour {
          rowGuildIcon.setBorder(chatInfo.guildIconData.iconBorder);
          rowGuildIcon.setBackground(chatInfo.guildIconData.iconBackground, chatInfo.guildIconData.iconBackPalettes);
          rowGuildIcon.setSigil(chatInfo.guildIconData.iconSigil, chatInfo.guildIconData.iconSigilPalettes);
+         rowGuildIcon.setGuildName(chatInfo.guildName);
       } else {
          rowGuildIcon.gameObject.SetActive(false);
       }
@@ -517,32 +524,7 @@ public class ChatPanel : MonoBehaviour {
          }
       }
 
-      // We'll set the message up differently based on whether a sender was defined
-      if (Util.isEmpty(chatInfo.sender)) {
-         chatLine.text.text = string.Format("<color={0}>{1}</color>", getSenderNameColor(chatInfo.messageType), chatInfo.text);
-      } else if (chatInfo.messageType == ChatInfo.Type.Emote) {
-         chatLine.text.text = string.Format("<color={0}>{1} {2}</color>", getColorString(chatInfo.messageType), chatInfo.sender, chatInfo.text);
-      } else if (chatInfo.messageType == ChatInfo.Type.Group) {
-         chatLine.text.text = string.Format("<color={0}>[GROUP] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType), chatInfo.sender, getColorString(chatInfo.messageType), chatInfo.text);
-      } else if (chatInfo.messageType == ChatInfo.Type.Guild) {
-         chatLine.text.text = string.Format("<color={0}>[GUILD] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, false), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), chatInfo.text);
-      } else if (chatInfo.messageType == ChatInfo.Type.Officer) {
-         chatLine.text.text = string.Format("<color={0}>[OFFICER] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, false), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), chatInfo.text);
-      } else {
-         string messageSource = chatInfo.sender;
-         if (chatInfo.messageType == ChatInfo.Type.Whisper) {
-            messageSource = isLocalPlayer ? ("To " + chatInfo.recipient) : (chatInfo.sender + " whispers");
-         }
-
-         // If the message is from an Admin, set color of message to Admin color
-         if (chatInfo.isSenderAdmin) {
-            string senderAdminColor = "#" + ColorUtility.ToHtmlStringRGBA(adminNameColor);
-            chatLine.text.text = string.Format("<color={0}>[ADMIN] {1}:</color> <color={2}>{3}</color>", senderAdminColor, messageSource, getColorString(chatInfo.messageType, isLocalPlayer), chatInfo.text);
-         } else {
-            string stringFormat = chatInfo.messageType == ChatInfo.Type.Global ? "<color={0}>[GLOBAL] {1}:</color> <color={2}>{3}</color>" : "<color={0}>{1}:</color> <color={2}>{3}</color>";
-            chatLine.text.text = string.Format(stringFormat, getSenderNameColor(chatInfo.messageType, isLocalPlayer), messageSource, getColorString(chatInfo.messageType, isLocalPlayer), chatInfo.text);
-         }
-      }
+      chatLine.text.text = getFormattedChatLine(chatInfo, chatInfo.text);
 
       // In minimized mode, keep the scrollbar at the bottom
       if (_mode == Mode.Minimized) {
@@ -571,6 +553,46 @@ public class ChatPanel : MonoBehaviour {
             if (seaEntity != null && seaEntity is PlayerShipEntity) {
                SpeechManager.self.showSpeechBubble((PlayerShipEntity) seaEntity, chatInfo.text);
             }
+         }
+      }
+	  
+	  // Highlight the message if directed at the local player
+      if (Global.player != null) {
+         bool shouldHighlight = chatLine.text.text.ToLower().Contains("@" + Global.player.entityName.ToLower());
+         chatRowComponent.toggleHighlight(shouldHighlight);
+      }
+   }
+
+   public string getFormattedChatLine (ChatInfo chatInfo, string message) {
+      bool isLocalPlayer = true;
+      if (Global.player != null) {
+         isLocalPlayer = chatInfo.senderId == Global.player.userId ? true : false;
+      }
+
+      // We'll set the message up differently based on whether a sender was defined
+      if (Util.isEmpty(chatInfo.sender)) {
+         return string.Format("<color={0}>{1}</color>", getSenderNameColor(chatInfo.messageType), message);
+      } else if (chatInfo.messageType == ChatInfo.Type.Emote) {
+         return string.Format("<color={0}>{1} {2}</color>", getColorString(chatInfo.messageType), chatInfo.sender, message);
+      } else if (chatInfo.messageType == ChatInfo.Type.Group) {
+         return string.Format("<color={0}>[GROUP] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType), chatInfo.sender, getColorString(chatInfo.messageType), message);
+      } else if (chatInfo.messageType == ChatInfo.Type.Guild) {
+         return string.Format("<color={0}>[GUILD] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, false), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), message);
+      } else if (chatInfo.messageType == ChatInfo.Type.Officer) {
+         return string.Format("<color={0}>[OFFICER] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, false), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), message);
+      } else {
+         string messageSource = chatInfo.sender;
+         if (chatInfo.messageType == ChatInfo.Type.Whisper) {
+            messageSource = isLocalPlayer ? ("To " + chatInfo.recipient) : (chatInfo.sender + " whispers");
+         }
+
+         // If the message is from an Admin, set color of message to Admin color
+         if (chatInfo.isSenderAdmin) {
+            string senderAdminColor = "#" + ColorUtility.ToHtmlStringRGBA(adminNameColor);
+            return string.Format("<color={0}>[ADMIN] {1}:</color> <color={2}>{3}</color>", senderAdminColor, messageSource, getColorString(chatInfo.messageType, isLocalPlayer), message);
+         } else {
+            string stringFormat = chatInfo.messageType == ChatInfo.Type.Global ? "<color={0}>[GLOBAL] {1}:</color> <color={2}>{3}</color>" : "<color={0}>{1}:</color> <color={2}>{3}</color>";
+            return string.Format(stringFormat, getSenderNameColor(chatInfo.messageType, isLocalPlayer), messageSource, getColorString(chatInfo.messageType, isLocalPlayer), message);
          }
       }
    }
@@ -854,6 +876,15 @@ public class ChatPanel : MonoBehaviour {
       }
    }
 
+   public void censorGlobalMessagesFromUser (int userId) {
+      // Cycle over all of the chat lines in our container
+      foreach (SpeakChatLine chatLine in messagesContainer.GetComponentsInChildren<SpeakChatLine>(true)) {
+         if (chatLine.chatInfo.senderId == userId) {
+            chatLine.text.text = getFormattedChatLine(chatLine.chatInfo, "<Message deleted>");
+         }
+      }
+   }
+
    public void clearChat () {
       messagesContainer.DestroyChildren();
       nameInputField.text = "";
@@ -938,11 +969,18 @@ public class ChatPanel : MonoBehaviour {
    }
 
    public IEnumerator CO_MoveCaretToEnd (InputField field) {
+      // Hide the text selection
+      Color selectionColor = inputField.selectionColor;
+      inputField.selectionColor = new Color(selectionColor.r, selectionColor.g, selectionColor.b, 0f);
+
       // Wait a frame
       yield return null;
 
       // Don't select the text, that's annoying
       field.MoveTextEnd(false);
+
+      // Restore the text selection color
+      inputField.selectionColor = selectionColor;
    }
 
    private void setMode (Mode mode) {
@@ -991,6 +1029,10 @@ public class ChatPanel : MonoBehaviour {
          default:
             break;
       }
+   }
+
+   public bool isPointerOverInputFieldZone () {
+      return mainContainer.activeSelf && RectTransformUtility.RectangleContainsScreenPoint(self.inputFieldZoneRect, MouseUtils.mousePosition);
    }
 
    #region Private Variables

@@ -70,7 +70,7 @@ namespace MapCustomization
             }
          }
 
-         if (KeyUtils.GetKey(Key.Delete)) {
+         if (KeyUtils.GetKeyDown(Key.Delete)) {
             MapCustomizationManager.keyDelete();
          }
       }

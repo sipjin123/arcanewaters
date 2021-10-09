@@ -40,9 +40,6 @@ public class PenaltyInfo
    // The source of this penalty
    public PenaltySource penaltySource;
 
-   // If this is a Force Single Player action, then we use this value
-   public bool forceSinglePlayer;
-
    // The expiration date for the penalty (mute & ban)
    public long expiresAt = DateTime.MinValue.Ticks;
 
@@ -64,7 +61,6 @@ public class PenaltyInfo
       this.penaltyReason = DataUtil.getString(dataReader, "penaltyReason");
       this.penaltySource = (PenaltySource) DataUtil.getInt(dataReader, "penaltySource");
       this.penaltyTime = DataUtil.getInt(dataReader, "penaltyTime");
-      this.forceSinglePlayer = DataUtil.getInt(dataReader, "forceSinglePlayer") == 1;
       this.expiresAt = DataUtil.getDateTime(dataReader, "expiresAt").Ticks;
    }
 
@@ -85,7 +81,8 @@ public enum PenaltyActionType
    Kick = 5,
    ForceSinglePlayer = 6,
    LiftMute = 7,
-   LiftBan = 8
+   LiftBan = 8,
+   LiftForceSinglePlayer = 9
 }
 
 public enum PenaltySource

@@ -243,6 +243,10 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for consumables
    public StoreConsumableBox consumableBoxPrefab;
 
+   [Header("Silver")]
+   // The reference to the Silver Burst Effect
+   public GameObject silverBurstEffectPrefab;
+
    #endregion
 
    protected void Awake () {

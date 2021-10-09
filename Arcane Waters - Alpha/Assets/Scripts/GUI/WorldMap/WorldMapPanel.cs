@@ -90,6 +90,9 @@ public class WorldMapPanel : Panel
 
    public void onBiomeHomeTownButtonPressed (Biome.Type biome) {
       Global.player.rpc.Cmd_RequestWarpToBiomeHomeTown(biome);
+      
+      // Close any opened panel
+      PanelManager.self.unlinkPanel();
    }
 
    #region Private Variables

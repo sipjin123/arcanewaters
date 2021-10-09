@@ -166,6 +166,11 @@ public class ContextMenuPanel : MonoBehaviour
 
          addButton("Whisper", () => ChatPanel.self.sendWhisperTo(userName));
          addButton("Message", () => ((MailPanel) PanelManager.self.get(Panel.Type.Mail)).composeMailTo(userName));
+
+         if (Global.player.isAdmin()) {
+            addButton("Mute 5 min", () => Global.player.admin.requestMutePlayerWithConfirmation(userName, 5 * 60, ""));
+            addButton("Ban 5 min", () => Global.player.admin.requestBanPlayerWithConfirmation(userName, 5 * 60, ""));
+         }
       } else if (!VoyageGroupManager.isInGroup(Global.player)) {
          addButton("Create Group", () => VoyageGroupManager.self.requestPrivateGroupCreation());
       } else {

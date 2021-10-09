@@ -90,8 +90,11 @@ public class Hat : EquippableItem
       string colorHex = ColorUtility.ToHtmlStringRGBA(color);
 
       string palettes = Item.trimItmPalette(paletteNames);
+      if (palettes != "") {
+         palettes = "(" + palettes + ")";
+      }      
 
-      return string.Format("<color={0}>{1}</color> (" + palettes + ")\n\n{2}\n\nHat = <color=red>{3}</color>",
+      return string.Format("<color={0}>{1}</color> " + palettes + "\n\n{2}\n\nHat = <color=red>{3}</color>",
          "#" + colorHex, getName(), getDescription(), getHatDefense());
    }
 

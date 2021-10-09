@@ -388,9 +388,12 @@ public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
    }
 
    public virtual void OnPointerClick (PointerEventData eventData) {
-      // If the black background outside is clicked, hide the panel
       if (eventData.rawPointerPress == this.gameObject) {
-         hide();
+         // If the mouse is over the input field zone, select it through the panel black background
+         if (!Panel.tryFocusChatInputField()) {
+            // If the black background outside is clicked, hide the panel
+            hide();
+         }
       }
    }
 

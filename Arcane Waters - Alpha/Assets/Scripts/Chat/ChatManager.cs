@@ -8,6 +8,7 @@ using TMPro;
 using System.Text;
 using System;
 using UnityEngine.InputSystem;
+using System.Linq;
 
 public class ChatManager : GenericGameManager
 {
@@ -411,6 +412,7 @@ public class ChatManager : GenericGameManager
 
       // Remove autocompletes when we are typing a bug report
       if (inputString.StartsWith("/bug ")) {
+         autoCompletePanel.setUserSuggestions(null);
          autoCompletePanel.setAutoCompletes(null);
          autoCompletePanel.setAutoCompletesWithParameters(null);
          return;
@@ -458,6 +460,43 @@ public class ChatManager : GenericGameManager
                }
             }
          }
+      }
+
+      if (chatPanel.inputField.isFocused) {
+         List<UserSuggestionData> userSuggestionDataList = new List<UserSuggestionData>();
+         int symbolIndex = inputString.LastIndexOf('@');
+         int caretIndex = chatPanel.inputField.caretPosition;
+         string partialStr = "";
+         bool shouldShowUserSuggestions = false;
+
+         if (symbolIndex >= 0 && caretIndex >= symbolIndex) {
+            partialStr = inputString.Substring(symbolIndex, caretIndex - symbolIndex);
+
+            if (!partialStr.Contains(" ")) {
+               shouldShowUserSuggestions = true;
+            }
+         } 
+
+         if (shouldShowUserSuggestions) {
+            autoCompleteCommands.Clear();
+            autoCompleteParameters.Clear();
+
+            // Fetch the set of users who wrote a message in chat so far
+            foreach (ChatInfo chatInfo in _chats) {
+               if (!string.IsNullOrEmpty(partialStr) && partialStr.Length > 1) {
+                  if (!chatInfo.sender.ToLower().StartsWith(partialStr.Substring(1).ToLower())) {
+                     continue;
+                  }
+               }
+
+               if (!userSuggestionDataList.Any(_ => _.getUserName() == chatInfo.sender) && chatInfo.senderId > 0) {
+                  UserSuggestionData suggestionData = new UserSuggestionData(chatInfo.sender, "@" + chatInfo.sender, inputString, partialStr);
+                  userSuggestionDataList.Add(suggestionData);
+               }
+            }
+         }
+
+         autoCompletePanel.setUserSuggestions(userSuggestionDataList);
       }
 
       autoCompletePanel.setAutoCompletes(autoCompleteCommands);

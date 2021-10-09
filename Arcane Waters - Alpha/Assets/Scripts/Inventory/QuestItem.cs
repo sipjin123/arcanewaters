@@ -67,8 +67,11 @@ public class QuestItem : Item
       string colorHex = ColorUtility.ToHtmlStringRGBA(color);
 
       string palettes = Item.trimItmPalette(paletteNames);
+      if (palettes != "") {
+         palettes = "(" + palettes + ")";
+      }
 
-      return string.Format("<color={0}>{1}</color> (" + palettes + ")\n\n{4}",
+      return string.Format("<color={0}>{1}</color> " + palettes + "\n\n{4}",
          "#" + colorHex, getName(), getDescription());
    }
 

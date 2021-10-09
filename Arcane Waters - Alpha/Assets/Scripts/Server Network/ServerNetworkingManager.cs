@@ -227,15 +227,19 @@ public class ServerNetworkingManager : MonoBehaviour
    }
 
    public void sendGlobalChatMessage (ChatInfo chatInfo) {
-      server.InvokeServerRpc(server.MasterServer_SendGlobalMessage, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.isSenderMuted, chatInfo.isSenderAdmin);
+      server.InvokeServerRpc(server.MasterServer_SendGlobalMessage, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.guildName, chatInfo.isSenderMuted, chatInfo.isSenderAdmin);
    }
 
    public void sendGuildChatMessage (int guildId, ChatInfo chatInfo) {
-      server.InvokeServerRpc(server.MasterServer_SendGuildChatMessage, guildId, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.isSenderMuted);
+      server.InvokeServerRpc(server.MasterServer_SendGuildChatMessage, guildId, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.guildName, chatInfo.isSenderMuted);
    }
 
    public void sendSpecialChatMessage (int userId, ChatInfo chatInfo) {
-      server.InvokeServerRpc(server.MasterServer_SendSpecialChatMessage, userId, chatInfo.chatId, chatInfo.messageType, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.recipient, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.isSenderMuted);
+      server.InvokeServerRpc(server.MasterServer_SendSpecialChatMessage, userId, chatInfo.chatId, chatInfo.messageType, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.recipient, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.guildName, chatInfo.isSenderMuted);
+   }
+
+   public void censorGlobalMessagesFromUser (int userId) {
+      server.InvokeServerRpc(server.MasterServer_CensorGlobalMessagesFromUser, userId);
    }
 
    public void sendConfirmationMessage (ConfirmMessage.Type confirmType, int userId, string customMessage = "") {

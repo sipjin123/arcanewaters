@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using Newtonsoft.Json;
 
 public class PenaltiesQueueManager : GenericGameManager
 {
@@ -32,10 +33,15 @@ public class PenaltiesQueueManager : GenericGameManager
          // If we have items in the penalties queue
          if (queue.Count > 0) {
             foreach (PenaltyQueueItem item in queue) {
-               PenaltyInfo penaltyContent = MiniJSON.Json.Deserialize(item.jsonContent) as PenaltyInfo;
+               PenaltyInfo penaltyContent = JsonConvert.DeserializeObject<PenaltyInfo>(item.jsonContent);
                bool success = false;
 
                List<PenaltyInfo> penalties = DB_Main.getPenaltiesForAccount(penaltyContent.targetAccId);
+
+               // Adding penalty time, only if it's a ban or non-permanent ban
+               if (penaltyContent.penaltyType == PenaltyActionType.Mute || penaltyContent.penaltyType == PenaltyActionType.StealthMute || penaltyContent.penaltyType == PenaltyActionType.Ban) {
+                  penaltyContent.expiresAt = DateTime.UtcNow.AddSeconds(penaltyContent.penaltyTime).Ticks;
+               }
 
                switch (penaltyContent.penaltyType) {
                   case PenaltyActionType.Mute:
@@ -76,11 +82,14 @@ public class PenaltiesQueueManager : GenericGameManager
                      });
                      break;
                   case PenaltyActionType.ForceSinglePlayer:
+                  case PenaltyActionType.LiftForceSinglePlayer:
                      success = DB_Main.forceSinglePlayerForAccount(penaltyContent);
                      if (success) {
-                        UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                           ServerNetworkingManager.self.forceSinglePlayerModeForUser(penaltyContent.targetUsrId);
-                        });
+                        if (penaltyContent.penaltyType == PenaltyActionType.ForceSinglePlayer) {
+                           UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                              ServerNetworkingManager.self.forceSinglePlayerModeForUser(penaltyContent.targetUsrId);
+                           });
+                        }
                      } else {
                         D.log("Penalty Queue: Error while trying to force an account to Single Player mode.");
                      }
@@ -114,6 +123,8 @@ public class PenaltiesQueueManager : GenericGameManager
                      }
                      break;
                }
+
+               DB_Main.processPenaltyFromQueue(item.id);
             }
          }
       });

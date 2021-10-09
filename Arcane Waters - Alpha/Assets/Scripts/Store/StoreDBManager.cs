@@ -23,6 +23,9 @@ public class StoreDBManager : GenericGameManager
    // Initialization flag
    public bool isInitialized;
 
+   // Force the disabled state?
+   public bool isDisabled;
+
    // Self
    public static StoreDBManager self;
 
@@ -39,6 +42,10 @@ public class StoreDBManager : GenericGameManager
    }
 
    public void initialize () {
+      if (isDisabled) {
+         return;
+      }
+
       D.debug("Updating Store Items...");
       isExecuting = true;
 

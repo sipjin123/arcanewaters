@@ -248,8 +248,17 @@ public class Minimap : ClientMonoBehaviour {
          biomeType = instance.biome;
       }
 
+      string minimapKey = area.areaKey;
+
+      // If this area is a custom farm, find the appropriate minimap
+      if (minimapKey.StartsWith("customfarm")) {
+         string baseAreaKey = area.baseAreaKey;
+         baseAreaKey = baseAreaKey.Replace(' ', '_').ToLower();
+         minimapKey = baseAreaKey;
+      }
+
       // Change the background image - load static images
-      backgroundImage.sprite = ImageManager.getSprite("Minimaps/" + area.areaKey, true);
+      backgroundImage.sprite = ImageManager.getSprite("Minimaps/" + minimapKey, true);
 
       // Dynamically generate minimap for base map player entered - lack of static images
       if (backgroundImage.sprite == null || backgroundImage.sprite == ImageManager.self.blankSprite) {

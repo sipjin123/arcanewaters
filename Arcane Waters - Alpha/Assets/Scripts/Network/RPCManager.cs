@@ -945,7 +945,7 @@ public class RPCManager : NetworkBehaviour
       // Pass the data to the panel
       panel.updatePanelWithFriendshipInfo(friendshipInfoList, totalFriendInfoCount);
    }
-   
+
    [TargetRpc]
    public void Target_ReceiveFriendsList (NetworkConnection connection, FriendshipInfo[] friendshipInfo) {
       List<FriendshipInfo> friendshipInfoList = new List<FriendshipInfo>(friendshipInfo);
@@ -1165,6 +1165,7 @@ public class RPCManager : NetworkBehaviour
    public void Cmd_SendChat (string message, ChatInfo.Type chatType) {
       GuildIconData guildIconData = null;
       string guildIconDataString = "";
+      string guildName = "";
 
       // Is the player muted or stealth muted?
       bool muted = _player.isMuted();
@@ -1172,13 +1173,14 @@ public class RPCManager : NetworkBehaviour
 
       if (_player.guildId > 0) {
          guildIconData = new GuildIconData(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
+         guildName = _player.guildName;
       }
 
       if (guildIconData != null) {
          guildIconDataString = GuildIconData.guildIconDataToString(guildIconData);
       }
 
-      ChatInfo chatInfo = new ChatInfo(0, message, DateTime.UtcNow, chatType, _player.entityName, "", _player.userId, guildIconData, stealthMuted, _player.isAdmin());
+      ChatInfo chatInfo = new ChatInfo(0, message, DateTime.UtcNow, chatType, _player.entityName, "", _player.userId, guildIconData, guildName, stealthMuted, _player.isAdmin());
 
       // Replace bad words
       message = BadWordManager.ReplaceAll(message);
@@ -1191,7 +1193,7 @@ public class RPCManager : NetworkBehaviour
 
       // Pass this message along to the relevant people
       if (chatType == ChatInfo.Type.Local || chatType == ChatInfo.Type.Emote) {
-         _player.Rpc_ChatWasSent(chatInfo.chatId, message, chatInfo.chatTime.ToBinary(), chatType, guildIconDataString, stealthMuted, _player.isAdmin());
+         _player.Rpc_ChatWasSent(chatInfo.chatId, message, chatInfo.chatTime.ToBinary(), chatType, guildIconDataString, guildName, stealthMuted, _player.isAdmin());
       } else if (chatType == ChatInfo.Type.Global) {
          ServerNetworkingManager.self.sendGlobalChatMessage(chatInfo);
       } else if (chatType == ChatInfo.Type.Whisper) {
@@ -1217,12 +1219,12 @@ public class RPCManager : NetworkBehaviour
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                if (destinationUserInfo == null) {
                   string errorMsg = "Recipient does not exist!";
-                  _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, errorMsg, "", "", chatInfo.chatTime.ToBinary(), ChatInfo.Type.Error, null, 0, stealthMuted);
+                  _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, errorMsg, "", "", chatInfo.chatTime.ToBinary(), ChatInfo.Type.Error, null, "", 0, stealthMuted);
                   return;
                }
 
                ServerNetworkingManager.self.sendSpecialChatMessage(destinationUserInfo.userId, chatInfo);
-               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, extractedUserName, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.senderId, stealthMuted);
+               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, extractedUserName, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.guildName, chatInfo.senderId, stealthMuted);
             });
          });
       } else if (chatType == ChatInfo.Type.Group) {
@@ -8843,6 +8845,27 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_InitPvpInstructionsPanel (NetworkConnection connection, int instanceId, List<Faction.Type> teamFactions) {
       PvpInstructionsPanel.self.init(teamFactions, instanceId);
+   }
+
+   [TargetRpc]
+   public void Target_ShowSilverBurstEffect (NetworkConnection connection, int silverReward, Vector3 position) {
+      try {
+         float radius = 0.2f;
+         float zOffset = 0.2f;
+         int numCoins = 10;
+
+         for (int i = 0; i < numCoins; i++) {
+            int randomAngle = Random.Range(0, 360);
+            float x = Mathf.Cos(Mathf.Deg2Rad * randomAngle) * radius;
+            float y = Mathf.Sin(Mathf.Deg2Rad * randomAngle) * radius;
+            Vector3 pos = new Vector3(position.x + x, position.y + y, position.z + zOffset);
+            GameObject burstEffectGameObject = Instantiate(PrefabsManager.self.silverBurstEffectPrefab, pos, Quaternion.identity);
+            GenericSpriteEffect effect = burstEffectGameObject.GetComponent<GenericSpriteEffect>();
+            effect.play();
+         }
+      } catch {
+
+      }
    }
 
    #region Private Variables

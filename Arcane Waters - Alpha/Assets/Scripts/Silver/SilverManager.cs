@@ -11,6 +11,9 @@ public class SilverManager : NetworkBehaviour
    // In Pvp Battles this is the amount of silver that players have at the beginning of the match
    public static int SILVER_PLAYER_INITIAL_AMOUNT = 0;
 
+   // Amount of silver earned after winning a land battle
+   public static int SILVER_PLAYER_LAND_BATTLE_KILL_REWARD = 100;
+
    // Amount of silver earned after destroying a player's ship
    public static int SILVER_PLAYER_SHIP_KILL_REWARD = 100;
 

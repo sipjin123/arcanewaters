@@ -6261,12 +6261,13 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.account_penalties_v2 " +
             "WHERE targetAccId = @accId AND ((expiresAt IS NULL AND penaltyType = @penaltyType) " +
-            "OR expiresAt > CURRENT_TIMESTAMP) AND lifted = 0 ORDER BY addedAt DESC", conn)) {
+            "OR expiresAt > @currentDate) AND lifted = 0 ORDER BY addedAt DESC", conn)) {
             conn.Open();
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@accId", accId);
             cmd.Parameters.AddWithValue("@penaltyType", (int) PenaltyActionType.PermanentBan);
+            cmd.Parameters.AddWithValue("@currentDate", DateTime.UtcNow);
             DebugQuery(cmd);
 
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -6297,15 +6298,15 @@ public class DB_Main : DB_MainStub
                updateCmd.Prepare();
 
                updateCmd.Parameters.AddWithValue("@accId", penalty.targetAccId);
-               updateCmd.Parameters.AddWithValue("@forceSinglePlayer", penalty.forceSinglePlayer ? 1 : 0);
+               updateCmd.Parameters.AddWithValue("@forceSinglePlayer", penalty.penaltyType == PenaltyActionType.ForceSinglePlayer ? 1 : 0);
 
                DebugQuery(updateCmd);
                updateCmd.ExecuteNonQuery();
             }
 
             // Then, we add this event to the account penalties table, for history purposes
-            using (MySqlCommand insertCmd = new MySqlCommand("INSERT INTO global.account_penalties_v2(sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, forceSinglePlayer, penaltySource) " +
-               "VALUES(@sourceAccId, @sourceUsrId, @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @forceSinglePlayer, @penaltySource)", conn)) {
+            using (MySqlCommand insertCmd = new MySqlCommand("INSERT INTO global.account_penalties_v2(sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltySource) " +
+               "VALUES(@sourceAccId, @sourceUsrId, @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltySource)", conn)) {
                insertCmd.Prepare();
 
                insertCmd.Parameters.AddWithValue("@sourceAccId", penalty.sourceAccId);
@@ -6316,7 +6317,6 @@ public class DB_Main : DB_MainStub
                insertCmd.Parameters.AddWithValue("@targetUsrName", penalty.targetUsrName);
                insertCmd.Parameters.AddWithValue("@penaltyType", (int) penalty.penaltyType);
                insertCmd.Parameters.AddWithValue("@penaltyReason", penalty.penaltyReason);
-               insertCmd.Parameters.AddWithValue("@forceSinglePlayer", penalty.forceSinglePlayer ? 1 : 0);
                insertCmd.Parameters.AddWithValue("@penaltySource", (int) penalty.penaltySource);
 
                DebugQuery(insertCmd);

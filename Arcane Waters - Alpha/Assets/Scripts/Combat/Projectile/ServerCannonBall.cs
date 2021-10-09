@@ -75,6 +75,21 @@ public class ServerCannonBall : SeaProjectile
       applyEffectorsOnHit(hitEntity, _isCrit);
    }
 
+   public override void OnStopClient () {
+      base.OnStopClient();
+
+      // Don't need to handle any of these effects in Batch Mode
+      if (Util.isBatch() || ClientManager.isApplicationQuitting) {
+         return;
+      }
+
+      // Detach the smoke trail so that it can continue to show after this object is destroyed
+      if (trailParticles != null) {
+         trailParticles.transform.SetParent(null);
+         Destroy(trailParticles.gameObject, 3.0f);
+      }
+   }
+
    protected override void OnDestroy () {
       base.OnDestroy();
 
@@ -289,11 +304,6 @@ public class ServerCannonBall : SeaProjectile
 
    public void setPlayFiringSound (bool value) {
       _playFiringSound = value;
-   }
-
-   protected override bool tryGetCustomTrailEffect (out GameObject trail) {
-      trail = trailParticles.gameObject;
-      return true;
    }
 
    #region Private Variables

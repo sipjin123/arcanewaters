@@ -1,9 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
-using TMPro;
+﻿using TMPro;
 using UnityEngine.EventSystems;
 
 public class SpeakChatLine : ChatLine, IScrollHandler

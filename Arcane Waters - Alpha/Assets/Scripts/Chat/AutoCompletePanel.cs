@@ -117,6 +117,7 @@ public class AutoCompletePanel : MonoBehaviour {
          ChatManager.self.tryAutoCompleteChatCommand();
       } else {
          setAutoCompletes(null);
+         setUserSuggestions(null);
       }
 
       if (inputFieldFocused && !_mouseOverPanel) {
@@ -133,6 +134,11 @@ public class AutoCompletePanel : MonoBehaviour {
       scrollViewContainer.SetActive(isActive);
    }
 
+   public void setUserSuggestions(List<UserSuggestionData> userSuggestions) {
+      this._userSuggestions = userSuggestions;
+      updateAutoCompletes();
+   }
+
    public void setAutoCompletes (List<CommandData> autoCompleteCommands) {
       _autoCompleteCommands = autoCompleteCommands;
       updateAutoCompletes();
@@ -145,7 +151,7 @@ public class AutoCompletePanel : MonoBehaviour {
 
    public void updateAutoCompletes () {
       // If there are no auto-completes, disable all
-      if (_autoCompleteCommands == null || _autoCompleteCommands.Count == 0) {
+      if ((_autoCompleteCommands == null || _autoCompleteCommands.Count == 0) && (_userSuggestions == null || _userSuggestions.Count == 0)) {
          scrollViewContainer.SetActive(false);
          InputManager.enableKey(Key.UpArrow);
          InputManager.enableKey(Key.DownArrow);
@@ -161,13 +167,16 @@ public class AutoCompletePanel : MonoBehaviour {
 
       int optionCount = 0;
 
-      foreach (CommandData data in _autoCompleteCommands) {
-         AutoCompleteOption option = _autoCompleteOptions[optionCount];
-         option.autocompleteParameter = "";
-         option.gameObject.SetActive(true);
-         option.updateOption(data);
-         option.indexInList = optionCount;
-         optionCount++;
+      if (_autoCompleteCommands != null) {
+         foreach (CommandData data in _autoCompleteCommands) {
+            AutoCompleteOption option = _autoCompleteOptions[optionCount];
+            option.autocompleteParameter = "";
+            option.gameObject.SetActive(true);
+            option.updateOption(data);
+            option.indexInList = optionCount;
+            option.optionType = AutoCompleteOption.OptionTypes.Command;
+            optionCount++;
+         }
       }
 
       if (_autoCompleteCommandsWithParameters != null) {
@@ -177,6 +186,19 @@ public class AutoCompletePanel : MonoBehaviour {
             option.gameObject.SetActive(true);
             option.updateOption(parameterData.Item1);
             option.indexInList = optionCount;
+            option.optionType = AutoCompleteOption.OptionTypes.Command;
+            optionCount++;
+         }
+      }
+
+      if (_userSuggestions != null) {
+         foreach (UserSuggestionData suggestionData in _userSuggestions) {
+            AutoCompleteOption option = _autoCompleteOptions[optionCount];
+            option.autocompleteParameter = suggestionData.getDescription();
+            option.gameObject.SetActive(true);
+            option.updateOption(suggestionData);
+            option.indexInList = optionCount;
+            option.optionType = AutoCompleteOption.OptionTypes.UserSuggestion;
             optionCount++;
          }
       }
@@ -213,9 +235,9 @@ public class AutoCompletePanel : MonoBehaviour {
    }
 
    public void optionClicked (int indexInList) {
-      string autoComplete = _autoCompleteOptions[indexInList].getText();
+      AutoCompleteOption option = _autoCompleteOptions[indexInList];
+      ChatPanel.self.inputField.text = option.getText();
       ChatPanel.self.focusInputField();
-      ChatPanel.self.inputField.text = autoComplete;
    }
 
    public void optionSelected (int indexInList) {
@@ -231,15 +253,21 @@ public class AutoCompletePanel : MonoBehaviour {
    }
    
    private int getNumAutoCompletes () {
-      if (_autoCompleteCommands == null || _autoCompleteCommands.Count < 1) {
-         return 0;
+      int totalAutoCompletes = 0;
+
+      if (_autoCompleteCommands != null) {
+         totalAutoCompletes += _autoCompleteCommands.Count;
       }
 
-      if (_autoCompleteCommandsWithParameters == null || _autoCompleteCommandsWithParameters.Count < 1) {
-         return _autoCompleteCommands.Count;
+      if (_autoCompleteCommandsWithParameters != null) {
+         totalAutoCompletes += _autoCompleteCommandsWithParameters.Count;
       }
 
-      return _autoCompleteCommands.Count + _autoCompleteCommandsWithParameters.Count;
+      if (_userSuggestions != null) {
+         totalAutoCompletes += _userSuggestions.Count;
+      }
+
+      return totalAutoCompletes;
    }
 
    private AutoCompleteOption getSelectedAutoComplete () {
@@ -260,6 +288,9 @@ public class AutoCompletePanel : MonoBehaviour {
 
    // A copy of the auto-complete parameter command data pairs passed on to us last
    private List<Tuple<CommandData, string>> _autoCompleteCommandsWithParameters = new List<Tuple<CommandData, string>>();
+
+   // The set of suggested users
+   private List<UserSuggestionData> _userSuggestions;
 
    // The index of the auto-complete option that is selected
    private int _selectedAutoComplete = -1;

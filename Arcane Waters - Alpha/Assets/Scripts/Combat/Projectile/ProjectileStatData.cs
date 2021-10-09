@@ -19,6 +19,12 @@ public class ProjectileStatData  {
    // The speed of the projectile animation
    public float animationSpeed = 1;
 
+   // The amount of force applied to entities affected by this ability, positive will push outwards within the radius, negative will pull inwards within the radius.
+   public float knockbackForce = 0.0f;
+
+   // The range within which entities will be affected by knockback
+   public float knockbackRadius = 0.0f;
+
    // The path of the projectile sprite
    public string projectileSpritePath;
 

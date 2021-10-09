@@ -1447,6 +1447,7 @@ MonoBehaviour:
   message: 
   maxWidth: 0
   nudgeAwayFromBorder: 0
+  isKeyDerivedFromChildObject: 0
 --- !u!1 &749233296748240749
 GameObject:
   m_ObjectHideFlags: 0
@@ -2160,6 +2161,7 @@ MonoBehaviour:
   message: 
   maxWidth: 0
   nudgeAwayFromBorder: 0
+  isKeyDerivedFromChildObject: 0
 --- !u!1 &1193486356538647130
 GameObject:
   m_ObjectHideFlags: 0
@@ -6188,6 +6190,7 @@ MonoBehaviour:
   message: 
   maxWidth: 0
   nudgeAwayFromBorder: 0
+  isKeyDerivedFromChildObject: 0
 --- !u!1 &4245130800870495892
 GameObject:
   m_ObjectHideFlags: 0
@@ -7694,6 +7697,7 @@ MonoBehaviour:
   message: 
   maxWidth: 0
   nudgeAwayFromBorder: 0
+  isKeyDerivedFromChildObject: 0
 --- !u!1 &5126870323470671304
 GameObject:
   m_ObjectHideFlags: 0
@@ -11256,6 +11260,7 @@ MonoBehaviour:
   message: 
   maxWidth: 0
   nudgeAwayFromBorder: 1
+  isKeyDerivedFromChildObject: 0
 --- !u!1 &7399467277472569823
 GameObject:
   m_ObjectHideFlags: 0
@@ -11892,6 +11897,7 @@ MonoBehaviour:
   message: 
   maxWidth: 0
   nudgeAwayFromBorder: 0
+  isKeyDerivedFromChildObject: 0
 --- !u!1 &7399637695244799769
 GameObject:
   m_ObjectHideFlags: 0
@@ -12469,6 +12475,7 @@ MonoBehaviour:
   message: 
   maxWidth: 0
   nudgeAwayFromBorder: 0
+  isKeyDerivedFromChildObject: 0
 --- !u!1 &7400080721921479427
 GameObject:
   m_ObjectHideFlags: 0
@@ -13231,6 +13238,7 @@ MonoBehaviour:
   message: 
   maxWidth: 0
   nudgeAwayFromBorder: 0
+  isKeyDerivedFromChildObject: 0
 --- !u!1 &7400426979802703145
 GameObject:
   m_ObjectHideFlags: 0
@@ -13551,6 +13559,7 @@ MonoBehaviour:
   message: 
   maxWidth: 0
   nudgeAwayFromBorder: 0
+  isKeyDerivedFromChildObject: 0
 --- !u!1 &7400982558880692279
 GameObject:
   m_ObjectHideFlags: 0
@@ -13784,6 +13793,7 @@ MonoBehaviour:
   resizeHandleZone: {fileID: 3559927426922390765}
   whisperAutoCompletePanel: {fileID: 96025021642069725}
   chatBubbleFont: {fileID: 11400000, guid: f05e9c7d6fe58044a84b191658c875d5, type: 2}
+  inputFieldZoneRect: {fileID: 7325810895842883651}
   canvas: {fileID: 0}
   enemySpeechColor: {r: 1, g: 0.36862746, b: 0.36862746, a: 1}
   playerSpeechColor: {r: 1, g: 0.9372549, b: 0.5921569, a: 1}
@@ -14000,6 +14010,7 @@ MonoBehaviour:
   message: 
   maxWidth: 0
   nudgeAwayFromBorder: 0
+  isKeyDerivedFromChildObject: 0
 --- !u!1 &7401189714509245946
 GameObject:
   m_ObjectHideFlags: 0
@@ -14321,6 +14332,7 @@ MonoBehaviour:
   message: 
   maxWidth: 0
   nudgeAwayFromBorder: 0
+  isKeyDerivedFromChildObject: 0
 --- !u!1 &7502676018110042980
 GameObject:
   m_ObjectHideFlags: 0
@@ -15129,6 +15141,7 @@ MonoBehaviour:
   message: 
   maxWidth: 0
   nudgeAwayFromBorder: 0
+  isKeyDerivedFromChildObject: 0
 --- !u!1 &8008774867907088601
 GameObject:
   m_ObjectHideFlags: 0
@@ -16718,6 +16731,7 @@ MonoBehaviour:
   message: 
   maxWidth: 0
   nudgeAwayFromBorder: 0
+  isKeyDerivedFromChildObject: 0
 --- !u!1001 &310537983090910848
 PrefabInstance:
   m_ObjectHideFlags: 0

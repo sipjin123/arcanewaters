@@ -47,6 +47,21 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
    // An auto-completed parameter for this auto-complete option to display
    public string autocompleteParameter = "";
 
+   // The type of the option
+   public OptionTypes optionType;
+
+   // Option types
+   public enum OptionTypes {
+      // None
+      None = 0,
+
+      // Command
+      Command = 1,
+
+      // User suggestion
+      UserSuggestion = 2
+   }
+
    #endregion
 
    private void Awake () {
@@ -60,6 +75,12 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
       _commandData = newCommand;
       updateColors();
       tooltipText.text = _commandData.getDescription();
+   }
+
+   public void updateOption (UserSuggestionData newUserSuggestion) {
+      _userSuggestionData = newUserSuggestion;
+      updateColors();
+      tooltipText.text = _userSuggestionData.getDescription();
    }
 
    public void setTooltip (bool isEnabled) {
@@ -101,15 +122,35 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
       string commandColorString = "#" + ColorUtility.ToHtmlStringRGBA(commandColor);
       string parameterColorString = "#" + ColorUtility.ToHtmlStringRGBA(parameterColor);
 
-      if (autocompleteParameter == "") {
-         autoCompleteText.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", commandColorString, _commandData.getPrefix(), parameterColorString, _commandData.getParameters());
-      } else {
-         autoCompleteText.text = string.Format("<color={0}>{1}</color>", commandColorString, _commandData.getPrefix() + " " + autocompleteParameter);
+      if (optionType == OptionTypes.Command) {       
+         if (autocompleteParameter == "") {
+            autoCompleteText.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", commandColorString, _commandData.getPrefix(), parameterColorString, _commandData.getParameters());
+         } else {
+            autoCompleteText.text = string.Format("<color={0}>{1}</color>", commandColorString, _commandData.getPrefix() + " " + autocompleteParameter);
+         }
+      }
+
+      if (optionType == OptionTypes.UserSuggestion) {
+         autoCompleteText.text = string.Format("<color={0}>{1}</color>", commandColorString, _userSuggestionData.getDescription());
       }
    }
 
    public string getText () {
-      return _commandData.getPrefix() + " " + autocompleteParameter;
+      if (optionType == OptionTypes.Command) {
+         return _commandData.getPrefix() + " " + autocompleteParameter;
+      }
+
+      if (optionType == OptionTypes.UserSuggestion) {
+         string input = _userSuggestionData.getInput();
+         string partialStr = _userSuggestionData.getPartial();
+         int partialStartIndex = input.LastIndexOf(partialStr);
+         string suggestion = "@" + _userSuggestionData.getUserName();
+         string prefix = input.Substring(0, partialStartIndex);
+         string suffix = input.Substring(partialStartIndex, input.Length - partialStartIndex).Replace(partialStr, suggestion);
+         return prefix + suffix + " ";
+      }
+      
+      return autocompleteParameter;
    }
 
    public void OnPointerEnter (UnityEngine.EventSystems.PointerEventData eventData) {
@@ -118,7 +159,10 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
          return;
       }
 
-      setTooltip(true);
+      if (optionType != OptionTypes.UserSuggestion) {
+         setTooltip(true);
+      }
+
       onSelected();
       onSelectedAction?.Invoke(indexInList);
    }
@@ -135,6 +179,9 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
 
    // A reference to the command data that this autocomplete represents
    private CommandData _commandData;
+
+   // A reference to the user suggestion that this autocomplete represents
+   private UserSuggestionData _userSuggestionData;
 
    // The starting preferred width of a tooltip
    private float _tooltipPreferredWidth;

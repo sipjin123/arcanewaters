@@ -106,9 +106,12 @@ public class Weapon : EquippableItem {
       string colorHex = ColorUtility.ToHtmlStringRGBA(color);
 
       string palettes = Item.trimItmPalette(paletteNames);
+      if (palettes != "") {
+         palettes = "(" + palettes + ")";
+      }
       float modifiedDamage = getDamage() * getDamageModifier(getRarity());
 
-      return string.Format("<color={0}>{1}</color> (" + palettes + ")\n\n{2}\n\nDamage = <color=red>{3}</color>",
+      return string.Format("<color={0}>{1}</color> " + palettes + "\n\n{2}\n\nDamage = <color=red>{3}</color>",
          "#" +colorHex, getName(), getDescription(), (int) modifiedDamage);
    }
 

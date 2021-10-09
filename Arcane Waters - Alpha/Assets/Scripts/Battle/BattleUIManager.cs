@@ -8,6 +8,7 @@ using System.Linq;
 using TMPro;
 using DG.Tweening;
 using UnityEngine.InputSystem;
+using System;
 
 public class BattleUIManager : MonoBehaviour {
    #region Public Variables
@@ -489,7 +490,6 @@ public class BattleUIManager : MonoBehaviour {
       // Enable UI
       StartCoroutine(CO_FadeInBattleUI());
       
-
       // Battler stances are always reset to balanced when a new battle begins, so we reset the UI too.
       onStanceChanged(_playerLocalBattler.stance);
 
@@ -759,7 +759,7 @@ public class BattleUIManager : MonoBehaviour {
 
       damageText.setDamageAmount(damage, false, false);
       float offsetPosition = .2f;
-      damageText.transform.position = new Vector3(Random.Range(damageSpawnPosition.x - offsetPosition, damageSpawnPosition.x + offsetPosition), damageSpawnPosition.y, damageSpawnPosition.z);
+      damageText.transform.position = new Vector3(UnityEngine.Random.Range(damageSpawnPosition.x - offsetPosition, damageSpawnPosition.x + offsetPosition), damageSpawnPosition.y, damageSpawnPosition.z);
       damageText.transform.SetParent(EffectManager.self.transform, false);
       damageText.name = "DamageText_" + element;
 

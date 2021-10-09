@@ -197,7 +197,7 @@ public class BattleManager : MonoBehaviour {
       // Update the observers associated with the Battle and the associated players
       rebuildObservers(battler, battle);
    }
-   
+
    public void addEnemyToBattle (Battle battle, Enemy enemy, Battle.TeamType teamType, PlayerBodyEntity aggressor, int companionId, int battlerXp, int difficultyLevel) {
       // Create a Battler for this Enemy
       Battler battler = createBattlerForEnemy(battle, enemy, teamType, companionId, battlerXp, difficultyLevel);
@@ -263,7 +263,7 @@ public class BattleManager : MonoBehaviour {
    public void storeBattle (Battle battle) {
       _battles[battle.battleId] = battle;
    }
-   
+
    public void storeBattler (Battler battler) {
       _battlers[battler.userId] = battler;
    }
@@ -274,12 +274,12 @@ public class BattleManager : MonoBehaviour {
          // Don't tick unless the Battle is still in progress
          if (!battle.isOver()) {
             Battle.TickResult tickResult = battle.tick();
-            
+
             // If a battle just ended, notify all the clients involved
             if (tickResult == Battle.TickResult.BattleOver) {
                StartCoroutine(endBattleAfterDelay(battle, END_BATTLE_DELAY));
-            } 
-         } 
+            }
+         }
       }
    }
 
@@ -477,7 +477,7 @@ public class BattleManager : MonoBehaviour {
       int enemyCount = playersInInstance;
 
       if (playersInInstance == 1) {
-         return 1; 
+         return 1;
       }
 
       // If it's a boss, we always have just 1
@@ -520,7 +520,7 @@ public class BattleManager : MonoBehaviour {
          D.editorLog("Enemy: " + source.battlerType + " has no proper ability assigned", Color.red);
          abilityData = AbilityManager.self.getPunchAbility();
       }
-      
+
       if (abilityType == AbilityType.Standard) {
          CancelAction cancelAction = new CancelAction(battle.battleId, source.userId, 0, 0, 0);
          cancelAction.abilityGlobalID = abilityData.itemID;
@@ -538,7 +538,7 @@ public class BattleManager : MonoBehaviour {
 
             // Send it to clients
             battle.Rpc_SendCombatAction(stringList.ToArray(), BattleActionType.Attack, true);
-         } 
+         }
       }
    }
 
@@ -570,9 +570,9 @@ public class BattleManager : MonoBehaviour {
 
       // String action list that will be sent to clients
       List<string> stringList = new List<string>();
-      
+
       if (abilityData == null) {
-         D.error("The Ability Data is NULL!! : "+ source.enemyType);
+         D.error("The Ability Data is NULL!! : " + source.enemyType);
          return;
       }
       if (abilityData.abilityType == AbilityType.Standard) {
@@ -588,18 +588,18 @@ public class BattleManager : MonoBehaviour {
          }
 
          foreach (Battler target in targets) {
-            
+
             float blockChance = 0.25f;
             if (target.canBlock()) {
                blockChance = getStanceBlockChance(target.stance);
             }
-            
+
             // For now, players have a 25% chance of blocking monsters
             if (target.canBlock() && attackAbilityData.canBeBlocked) {
                float blockRandomizer = Random.Range(0.0f, 1.0f);
                wasBlocked = blockRandomizer < blockChance;
             }
-            
+
             // If the attack wasn't blocked, 25% chance to be a critical attack
             if (!wasBlocked) {
                wasCritical = Random.Range(0.0f, 1.0f) < critChance;
@@ -691,7 +691,7 @@ public class BattleManager : MonoBehaviour {
             // Apply the adjustments to the damage
             damage *= (1f + increaseAdditive);
             damage *= decreaseMultiply;
-            
+
             // Make note of the time that this battle action is going to be fully completed, considering animation times
             double timeAttackEnds = NetworkTime.time + timeToWait + attackAbilityData.getTotalAnimLength(source, target);
             float cooldownDuration = abilityData.abilityCooldown * source.getCooldownModifier() * AdminGameSettingsManager.self.settings.battleAttackCooldown;
@@ -729,7 +729,7 @@ public class BattleManager : MonoBehaviour {
                // Deduct 50% damage output if source just recently changed weapon
                damage -= damage * .5f;
             }
-            
+
             // Create the Action object
             AttackAction action = new AttackAction(battle.battleId, currentActionType, source.userId, target.userId,
                 (int) damage, timeAttackEnds, abilityInventoryIndex, wasCritical, wasBlocked, cooldownDuration, sourceApChange,
@@ -748,7 +748,7 @@ public class BattleManager : MonoBehaviour {
             if (source.isBossType) {
                D.adminLog("Boss Monster is attacking: "
                   + " TimeToWait: " + (timeToWait)
-                  + " Cooldown: " + cooldownDuration  
+                  + " Cooldown: " + cooldownDuration
                   + " AtkEnds: " + timeAttackEnds.ToString("f2")
                   + " CurrTime: " + NetworkTime.time.ToString("f2")
                   + " Target: " + target.userId + " - " + target.enemyType
@@ -1095,8 +1095,8 @@ public class BattleManager : MonoBehaviour {
 
             // Spawn Chest
             List<Transform> spawnNodeTarget = ((Enemy) defeatedBattlers[0].player).lootSpawnPositions.ToList();
-            winningBattlers[0].player.rpc.spawnBattlerMonsterChest(winningBattlers[0].player.instanceId, 
-               filteredNodeTarget.Count > 0 ? filteredNodeTarget.ChooseRandom().position : spawnNodeTarget.ChooseRandom().position, 
+            winningBattlers[0].player.rpc.spawnBattlerMonsterChest(winningBattlers[0].player.instanceId,
+               filteredNodeTarget.Count > 0 ? filteredNodeTarget.ChooseRandom().position : spawnNodeTarget.ChooseRandom().position,
                battlerEnemyID);
          }
       }
@@ -1209,13 +1209,47 @@ public class BattleManager : MonoBehaviour {
    }
 
    public void onBattlerDeath(Battler battler) {
-      if (GameStatsManager.self.isUserRegistered(battler.userId)) {
-         D.debug($"Battler '{battler.userId}' died in battle.");
-         int penalty = SilverManager.computeSilverPenalty(battler.player);
-         D.debug($"Battler '{battler.userId}' received a penalty of {penalty} silver.");
-         GameStatsManager.self.addSilverAmount(battler.userId, -penalty);
-         battler.player.Target_ReceiveSilverCurrency(battler.player.connectionToClient, -penalty, SilverManager.SilverRewardReason.Death);
+      if (battler.battlerType == BattlerType.AIEnemyControlled) {
+         // Silver management
+         int silverReward = SilverManager.SILVER_PLAYER_LAND_BATTLE_KILL_REWARD;
+
+         // Spawn Silver Burst Effect
+         Vector3 silverBurstEffectOffsetWhenFacingEast = new Vector3(-0.194f, -0.129f, 0);
+
+         // Mirror the east offset to obtain the offset when facing west
+         Vector3 silverBurstEffectOffsetWhenFacingWest = silverBurstEffectOffsetWhenFacingEast;
+         silverBurstEffectOffsetWhenFacingWest.Scale(new Vector3(-1.0f, 1.0f, 1.0f));
+
+         Vector3 position = battler.transform.position + ((battler.teamType == Battle.TeamType.Defenders) ? silverBurstEffectOffsetWhenFacingWest : silverBurstEffectOffsetWhenFacingEast);
+
+         // Get the battlers in the opposite team
+         Battle.TeamType otherTeam = (battler.teamType == Battle.TeamType.Attackers) ? Battle.TeamType.Defenders : Battle.TeamType.Attackers;
+         List<Battler> otherBattlers = battler.battle.getTeam(otherTeam);
+
+         foreach (Battler otherBattler in otherBattlers) {
+            NetEntity otherPlayer = otherBattler.player;
+
+            if (GameStatsManager.self.isUserRegistered(otherPlayer.userId)) {
+               // Assign silver to all the players on the attacking team
+               StartCoroutine(CO_ProcessSilverAfterBattlerDeath(otherPlayer, silverReward, position, 3.0f));
+            }
+         }
+      } else if (battler.battlerType == BattlerType.PlayerControlled) {
+         if (GameStatsManager.self.isUserRegistered(battler.userId)) {
+            D.debug($"Battler '{battler.userId}' died in battle.");
+            int penalty = SilverManager.computeSilverPenalty(battler.player);
+            D.debug($"Battler '{battler.userId}' received a penalty of {penalty} silver.");
+            GameStatsManager.self.addSilverAmount(battler.userId, -penalty);
+            battler.player.Target_ReceiveSilverCurrency(battler.player.connectionToClient, -penalty, SilverManager.SilverRewardReason.Death);
+         }
       }
+   }
+
+   private IEnumerator CO_ProcessSilverAfterBattlerDeath (NetEntity otherPlayer, int silverReward, Vector3 position, float delay) {
+      yield return new WaitForSeconds(delay);
+      GameStatsManager.self.addSilverAmount(otherPlayer.userId, silverReward);
+      otherPlayer.rpc.Target_ShowSilverBurstEffect(otherPlayer.connectionToClient, silverReward, position);
+      otherPlayer.Target_ReceiveSilverCurrencyWithEffect(otherPlayer.connectionToClient, silverReward, SilverManager.SilverRewardReason.Kill, position);
    }
 
    #region Private Variables
@@ -1225,7 +1259,7 @@ public class BattleManager : MonoBehaviour {
 
    // Stores Battles by their Battle ID
    protected Dictionary<int, Battle> _battles = new Dictionary<int, Battle>();
-   
+
    // Stored references of the battlers that are currently in a battle
    private Dictionary<int, Battler> _battlers = new Dictionary<int, Battler>();
 

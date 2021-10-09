@@ -230,6 +230,10 @@ public class GameStatsManager : MonoBehaviour
       return instanceStats;
    }
 
+   public GameStats getStatsForUser (int userId) {
+      return gameStatsData.stats.Find(_ => _.userId == userId);
+   }
+
    #endregion
 
    #region Private Variables

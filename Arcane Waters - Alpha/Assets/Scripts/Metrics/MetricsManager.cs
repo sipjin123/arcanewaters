@@ -45,12 +45,13 @@ public class MetricsManager : GenericGameManager
             string procName = proc.ProcessName;
             string procID = proc.Id.ToString();
 
+            int playersCount = InstanceManager.self.getPlayerCountAllInstances();
+
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                // Clear old metrics
                DB_Main.clearOldGameMetrics(_metricLifetimeSecs);
 
                // Upload Players Count metric
-               int playersCount = InstanceManager.self.getPlayerCountAllInstances();
                DB_Main.setGameMetric(machineID, procID, procName, "PLAYERS_COUNT", playersCount.ToString(), Metric.MetricValueType.INT);
             });
          } catch (Exception ex) {

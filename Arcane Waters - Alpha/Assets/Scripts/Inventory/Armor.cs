@@ -89,9 +89,13 @@ public class Armor : EquippableItem {
       string colorHex = ColorUtility.ToHtmlStringRGBA(color);
 
       string palettes = Item.trimItmPalette(paletteNames);
+      if (palettes != "") {
+         palettes = "(" + palettes + ")";
+      }
+
       float modifiedArmor = getArmorValue() * getArmorModifier(getRarity());
      
-      return string.Format("<color={0}>{1}</color> (" + palettes + ")\n\n{2}\n\nArmor = <color=red>{3}</color>",
+      return string.Format("<color={0}>{1}</color> " + palettes + "\n\n{2}\n\nArmor = <color=red>{3}</color>",
          "#" + colorHex, getName(), getDescription(), (int) modifiedArmor);
    }
 

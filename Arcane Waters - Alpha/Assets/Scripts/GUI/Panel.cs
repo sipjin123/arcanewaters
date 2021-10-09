@@ -114,10 +114,21 @@ public class Panel : MonoBehaviour, IPointerClickHandler
    }
 
    public virtual void OnPointerClick (PointerEventData eventData) {
-      // If the black background outside is clicked, hide the panel
       if (eventData.rawPointerPress == this.gameObject) {
-         close();
+         // If the mouse is over the input field zone, select it through the panel black background
+         if (!tryFocusChatInputField()) {
+            // If the black background outside is clicked, hide the panel
+            close();
+         }
       }
+   }
+
+   public static bool tryFocusChatInputField () {
+      if (ChatPanel.self != null && ChatPanel.self.isPointerOverInputFieldZone()) {
+         ChatPanel.self.focusInputField();
+         return true;
+      }
+      return false;
    }
 
    #region Private Variables

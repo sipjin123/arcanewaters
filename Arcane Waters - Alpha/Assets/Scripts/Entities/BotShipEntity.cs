@@ -109,14 +109,10 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             D.error("Bot ship couldn't drop a chest, due to not being able to locate last attacker");
          }
 
+         _powerups.Clear();
          hideTargetingEffects();
          Rpc_NotifyCancelCharge();
       }
-
-      foreach (PowerupOrb orb in _powerupOrbs) {
-         Destroy(orb.gameObject);
-      }
-      _powerupOrbs.Clear();
 
       aimTransform.gameObject.SetActive(false);
    }

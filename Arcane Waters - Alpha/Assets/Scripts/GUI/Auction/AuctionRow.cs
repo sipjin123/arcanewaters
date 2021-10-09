@@ -34,7 +34,7 @@ public class AuctionRow : MonoBehaviour
    public Text timeLeftText;
 
    // The row tooltip
-   public Tooltipped tooltip;
+   public ToolTipComponent tooltip;
 
    // The colors for different auction statuses
    public Color ownAuctionColor;
@@ -90,7 +90,7 @@ public class AuctionRow : MonoBehaviour
       } else {
          // Set detailed item data only if the auction is still running (otherwise the item could not exist anymore)
          itemCell.setCellForItem(auction.item);
-         tooltip.text = itemCell.getItem().getTooltip();
+         tooltip.message = itemCell.getItem().getTooltip();
 
          // Rarity stars
          if (auction.item.category == Item.Category.Weapon ||

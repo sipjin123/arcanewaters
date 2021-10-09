@@ -167,8 +167,10 @@ public class PvpGame : MonoBehaviour {
       if (isGameReadyToBegin()) {
          StartCoroutine(CO_StartGame());
       } else {
-         int playersNeededToStart = (_numTeams * MIN_PLAYERS_PER_TEAM_TO_START) - getNumPlayers();
-         updateGameStatusMessage("Waiting for " + playersNeededToStart + " more players to begin.");
+         if (!_gameIsStarting) {
+            int playersNeededToStart = (_numTeams * MIN_PLAYERS_PER_TEAM_TO_START) - getNumPlayers();
+            updateGameStatusMessage("Waiting for " + playersNeededToStart + " more players to begin.");
+         }
       }
 
       // Notify players to update their pvp instructions panel team list with the new player
@@ -210,14 +212,16 @@ public class PvpGame : MonoBehaviour {
       _gameIsStarting = true;
 
       updateGameStatusMessage("The game will begin in " + GAME_START_DELAY + " seconds!");
-      yield return new WaitForSeconds(GAME_START_DELAY - 3.0f);
 
-      updateGameStatusMessage("The game will begin in 3 seconds!");
-      yield return new WaitForSeconds(1.0f);
-      updateGameStatusMessage("The game will begin in 2 seconds!");
-      yield return new WaitForSeconds(1.0f);
-      updateGameStatusMessage("The game will begin in 1 seconds!");
-      yield return new WaitForSeconds(1.0f);
+      float elapsedCountdownTime = 0.0f;
+
+      while (elapsedCountdownTime < GAME_START_DELAY) {
+         int secondsUntilStart = Mathf.RoundToInt(GAME_START_DELAY - elapsedCountdownTime);
+         updateGameStatusMessage("The game will begin in " + secondsUntilStart + " seconds!");
+         elapsedCountdownTime += 1.0f;
+         yield return new WaitForSeconds(1.0f);
+      }
+
       updateGameStatusMessage("The game has begun!");
 
       // Determine what game mode this pvp game will be
@@ -553,6 +557,10 @@ public class PvpGame : MonoBehaviour {
          VoyageGroupManager.self.removeUserFromGroup(voyageGroup, player.userId);
       }
 
+      GameStats userStats = GameStatsManager.self.getStatsForUser(player.userId);
+      if (userStats != null) {
+         _leaverGameStats.Add(userStats);
+      }
       GameStatsManager.self.unregisterUser(player.userId);
       player.rpc.ResetPvpSilverPanel();
 
@@ -669,10 +677,16 @@ public class PvpGame : MonoBehaviour {
       float timeSinceGameStart = Time.realtimeSinceStartup - _startTime;
       PvpArenaSize arenaSize = AreaManager.self.getAreaPvpArenaSize(areaKey);
 
-      // Check that the teams have enough 
+      // Check that the teams have enough stats to count as a valid game
       List<GameStats> instanceStatData = GameStatsManager.self.getStatsForInstance(instanceId);
       List<int> teamStatTotals = new List<int>() { 0, 0, 0 };
       foreach (GameStats stats in instanceStatData) {
+         teamStatTotals[stats.playerTeam] += stats.PvpPlayerKills;
+         teamStatTotals[stats.playerTeam] += stats.PvpPlayerDeaths;
+      }
+
+      // Add stats for players who left the game
+      foreach (GameStats stats in _leaverGameStats) {
          teamStatTotals[stats.playerTeam] += stats.PvpPlayerKills;
          teamStatTotals[stats.playerTeam] += stats.PvpPlayerDeaths;
       }
@@ -1208,6 +1222,9 @@ public class PvpGame : MonoBehaviour {
 
    // Start Time
    private float _startTime;
+
+   // Stored game stats of users who left the game
+   private List<GameStats> _leaverGameStats = new List<GameStats>();
 
    // The number of gems awarded to the winning team, indexed by pvp arena size
    private readonly Dictionary<PvpArenaSize, int> PVP_ARENA_GEM_REWARDS = new Dictionary<PvpArenaSize, int>() { { PvpArenaSize.Small, 1 }, { PvpArenaSize.Medium, 2 }, { PvpArenaSize.Large, 3 } };

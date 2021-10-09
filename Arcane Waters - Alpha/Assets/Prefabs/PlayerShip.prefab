@@ -379,8 +379,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1695306897
-  m_SortingLayer: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 8106666463214275111, guid: 7b6ec5be4aaf27847b0701a95054d3ea,
     type: 3}
@@ -1019,6 +1019,7 @@ Transform:
   - {fileID: 3528694981534091233}
   - {fileID: 8246119289816141062}
   - {fileID: 4700351022819255988}
+  - {fileID: 6787728459848174014}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1085,6 +1086,7 @@ MonoBehaviour:
   pvpTeam: 0
   faction: 0
   guildId: 0
+  guildName: 
   guildPermissions: 0
   guildRankPriority: 0
   guildIconBorder: 
@@ -1138,8 +1140,10 @@ MonoBehaviour:
   newWaypointsRadius: 10
   secondsPatrolingUntilChoosingNewTreasureSite: 30
   patrolingWaypointsRadius: 1
+  dataXmlId: 0
   spritesContainer: {fileID: 16379}
   ripplesContainer: {fileID: 16993}
+  orbHolder: {fileID: 6787728459848174014}
   _currentPath: []
   _currentPathIndex: 0
   _isChasingEnemy: 0
@@ -8707,8 +8711,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1695306897
-  m_SortingLayer: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -10137,6 +10141,36 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!1 &6909243656886139751
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6787728459848174014}
+  m_Layer: 8
+  m_Name: OrbHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6787728459848174014
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6909243656886139751}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 19304}
+  m_RootOrder: 15
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6969853556748040210
 GameObject:
   m_ObjectHideFlags: 0
@@ -12230,12 +12264,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1403226637596184815}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &2872083525666463054 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3792861630930390433, guid: 4bc53f6d1c2dbe444ba4d9cd276b0a23,
-    type: 3}
-  m_PrefabInstance: {fileID: 1403226637596184815}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &5551809496225748552 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6805711320569366183, guid: 4bc53f6d1c2dbe444ba4d9cd276b0a23,
@@ -12248,6 +12276,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3c92048c62ffc34587fc92d8c058731, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &2872083525666463054 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3792861630930390433, guid: 4bc53f6d1c2dbe444ba4d9cd276b0a23,
+    type: 3}
+  m_PrefabInstance: {fileID: 1403226637596184815}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3123374448880576137
 PrefabInstance:
   m_ObjectHideFlags: 0

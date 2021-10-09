@@ -300,14 +300,24 @@ public class PlayerShipEntity : ShipEntity
 
          // Notify client to update abilities in cannon panel
          Target_UpdateCannonPanel(connectionToClient, shipAbilities.ToArray());
+
+         if (isInGroup()) {
+            // If the player is in a voyage, not in the lobby, and not in a pvp game, don't restore max health, it should be persistent between leagues
+            if (!VoyageManager.isLobbyArea(areaKey) && !VoyageManager.isPvpArenaArea(areaKey)) {
+               initHealth(skipCurrentHealth: true);
+
+            // If the player is in a pvp arena or a voyage lobby, restore their full health.
+            } else {
+               initHealth(skipCurrentHealth: false);
+            }
+         } else {
+            initHealth(skipCurrentHealth: false);
+         }
       }
 
       if (shipAbilities.Count > 0) {
          primaryAbilityId = shipAbilities[0];
       }
-
-      // If the player is in a voyage, its current hp is persistent between maps and we must not restore it
-      initHealth(isInGroup());
    }
 
    private void initHealth (bool skipCurrentHealth = false) {
@@ -693,9 +703,9 @@ public class PlayerShipEntity : ShipEntity
 
       // Fire barrage of cannonballs
       for (int i = 1; i < (abilityData.splitAttackCap / 2) + 1; i++) {
-         Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, rotAngleDivider * i), false, true);
+         Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, rotAngleDivider * i), false, false);
       }
-      Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, Util.getMousePos(), false, false);
+      Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, Util.getMousePos(), false, true);
 
       for (int i = 1; i < (abilityData.splitAttackCap / 2) + 1; i++) {
          Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, -rotAngleDivider * i), false, false);
@@ -818,7 +828,7 @@ public class PlayerShipEntity : ShipEntity
          float dist = toEndPos.magnitude;
          lifetime = Mathf.Lerp(2.0f, 3.0f, dist / 5.0f);
 
-         Cmd_FireSpecialCannonAtTarget(null, endPos, lifetime, false, true, abilityId);
+         Cmd_FireSpecialCannonAtTarget(null, endPos, lifetime, false, true, abilityId, disableColliderFor: 0.9f);
          yield return new WaitForSeconds(0.2f);
       }
 
@@ -895,7 +905,7 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Command]
-   protected void Cmd_FireSpecialCannonAtTarget (GameObject target, Vector2 requestedTargetPoint, float lifetime, bool checkReload, bool playSound, int abilityId) {
+   protected void Cmd_FireSpecialCannonAtTarget (GameObject target, Vector2 requestedTargetPoint, float lifetime, bool checkReload, bool playSound, int abilityId, float disableColliderFor) {
       if (isDead() || (checkReload && !hasReloaded()) || isAbilityOnCooldown(selectedShipAbilityIndex)) {
          return;
       }
@@ -910,7 +920,7 @@ public class PlayerShipEntity : ShipEntity
       // Firing the cannon is considered a PvP action
       hasEnteredPvP = true;
 
-      fireSpecialCannonBallAtTarget(startPosition, targetPosition, lifetime, playSound, abilityId);
+      fireSpecialCannonBallAtTarget(startPosition, targetPosition, lifetime, playSound, abilityId, disableColliderFor);
    }
 
    [Server]
@@ -1060,7 +1070,7 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Server]
-   public void fireSpecialCannonBallAtTarget (Vector2 startPosition, Vector2 endPosition, float lifetime, bool playSound, int abilityId) {
+   public void fireSpecialCannonBallAtTarget (Vector2 startPosition, Vector2 endPosition, float lifetime, bool playSound, int abilityId, float disableColliderFor = 0.0f) {
       // Create the cannon ball object from the prefab
       ServerCannonBall netBall = Instantiate(PrefabsManager.self.serverCannonBallPrefab, transform.position, Quaternion.identity);
 
@@ -1078,7 +1088,7 @@ public class PlayerShipEntity : ShipEntity
       Vector2 velocity = speed * toEndPos.normalized;
 
       // Setup cannonball
-      netBall.initAbilityProjectile(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, statusType: abilityStatus, lifetime: lifetime);
+      netBall.initAbilityProjectile(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, statusType: abilityStatus, lifetime: lifetime, disableColliderFor: disableColliderFor);
       netBall.setPlayFiringSound(playSound);
 
       netBall.addEffectors(PowerupManager.self.getEffectors(userId));
@@ -1709,6 +1719,9 @@ public class PlayerShipEntity : ShipEntity
 
       // Enable the boost timing circle
       boostTimingSprites.gameObject.SetActive(true);
+      boostTimingSprites.alpha = 0.0f;
+      boostFillCircle.color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+      _isChargingBoost = false;
 
       // Reset this bool to ensure players can attack
       enableTargeting();
@@ -1770,11 +1783,6 @@ public class PlayerShipEntity : ShipEntity
       base.onDeath();
 
       heldPvpCaptureTarget?.onPlayerDied(this);
-
-      foreach (PowerupOrb orb in _powerupOrbs) {
-         Destroy(orb.gameObject);
-      }
-      _powerupOrbs.Clear();
    }
 
    private void updateCoinTrail () {

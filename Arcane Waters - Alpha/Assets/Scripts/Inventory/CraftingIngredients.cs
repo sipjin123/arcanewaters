@@ -191,6 +191,13 @@ public class CraftingIngredients : RecipeItem
          case Type.Wood:
             return "A piece of Wood";
 
+         // Skeleton Loot
+         case Type.Rib_Bone:
+            return "A skeleton's rib bone.";
+
+         case Type.Grave_Dirt:
+            return "Dirt from the cemetery.";
+
          default:
             return "";
       }
@@ -326,6 +333,13 @@ public class CraftingIngredients : RecipeItem
 
          case Type.Wood:
             return "Wood";
+
+         // Skeleton Loot
+         case Type.Rib_Bone:
+            return "Rib Bone";
+
+         case Type.Grave_Dirt:
+            return "Grave Dirt";
 
          default:
             return "";
