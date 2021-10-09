@@ -66,7 +66,7 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
 
       // Enable powerups on client side if joining the match right after the active trigger was called
       if (!NetworkServer.active && isShowingPowerup) {
-         updatePowerup(true, (int) powerupType);
+         updatePowerup(true, (int) powerupType, rarity);
       }
    }
 
@@ -84,7 +84,6 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
 
    public void initializeSpawner (float delay) {
       if (isServer) {
-         rarity = (Rarity.Type) UnityEngine.Random.Range(1, Enum.GetValues(typeof(Rarity.Type)).Length);
          generatePowerup(delay);
       }
    }
@@ -106,8 +105,8 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
                expiry = powerupDuration > 0 ? Powerup.Expiry.Timed : Powerup.Expiry.None
             });
 
-            updatePowerup(false, 0);
-            Rpc_ToggleDisplay(false, 0);
+            updatePowerup(false, 0, rarity);
+            Rpc_ToggleDisplay(false, 0, rarity);
             initializeSpawner(spawnFrequency);
          }
       }
@@ -120,7 +119,7 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
 
    private void delayPowerupTrigger () {
       if (lootGroupId > 0) {
-         List<TreasureDropsData> powerupDataList = TreasureDropsDataManager.self.getTreasureDropsById(lootGroupId, rarity).FindAll(_ => _.powerUp != Powerup.Type.None);
+         List<TreasureDropsData> powerupDataList = TreasureDropsDataManager.self.getTreasureDropsById(lootGroupId).FindAll(_ => _.powerUp != Powerup.Type.None);
          if (powerupDataList.Count > 0) {
             TreasureDropsData treasureDropsData = powerupDataList.ChooseRandom();
             powerupType = treasureDropsData.powerUp;
@@ -131,22 +130,22 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
          }
       }
       isShowingPowerup = true;
-      updatePowerup(true, (int) powerupType);
-      Rpc_ToggleDisplay(true, (int) powerupType);
+      updatePowerup(true, (int) powerupType, rarity);
+      Rpc_ToggleDisplay(true, (int) powerupType, rarity);
    }
 
    [ClientRpc]
-   public void Rpc_ToggleDisplay (bool isActive, int powerupVal) {
-      updatePowerup(isActive, powerupVal);
+   public void Rpc_ToggleDisplay (bool isActive, int powerupVal, Rarity.Type rarityType) {
+      updatePowerup(isActive, powerupVal, rarityType);
    }
 
-   private void updatePowerup (bool isEnabled, int powerupVal) {
+   private void updatePowerup (bool isEnabled, int powerupVal, Rarity.Type rarityType) {
       isActive = isEnabled;
       powerupIndicator.SetActive(isEnabled);
 
       // Setup rarity frames
       Sprite[] borderSprites = Resources.LoadAll<Sprite>(Powerup.BORDER_SPRITES_LOCATION);
-      rarityFrame.sprite = borderSprites[(int) rarity - 1];
+      rarityFrame.sprite = borderSprites[(int) rarityType - 1];
 
       foreach (SpriteRenderer spriteRender in spriteRendererList) {
          spriteRender.enabled = isEnabled;
