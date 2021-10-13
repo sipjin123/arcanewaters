@@ -89,14 +89,12 @@ public class ArmorManager : EquipmentManager {
    }
 
    [ClientRpc]
-   public void Rpc_EquipArmor (string rawArmorData, string palettes) {
+   public void Rpc_EquipArmor (int newArmorId, int newArmorSqlId, int newArmorType, string rawArmorData, string palettes) {
       ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(rawArmorData);
       cachedArmorData = armorData;
 
       // Update the sprites for the new armor type
-      int newType = armorData == null ? 0 : armorData.armorType;
-
-      updateSprites(newType, palettes);
+      updateSprites(newArmorType, palettes);
 
       // Play a sound
       SoundManager.create3dSound("equip_", this.transform.position, 2);
@@ -105,9 +103,9 @@ public class ArmorManager : EquipmentManager {
          "} Class: {" + armorData.armorType + "}", D.ADMIN_LOG_TYPE.Equipment);
 
       Global.getUserObjects().armor = new Armor {
-         id = equippedArmorId,
+         id = newArmorId,
          category = Item.Category.Armor,
-         itemTypeId = armorType
+         itemTypeId = newArmorSqlId
       };
    }
 
@@ -148,7 +146,7 @@ public class ArmorManager : EquipmentManager {
       this.armorDurability = durability;
 
       // Send the Info to all clients
-      Rpc_EquipArmor(ArmorStatData.serializeArmorStatData(armorData), palettes);
+      Rpc_EquipArmor(armorId, armorData.sqlId, armorData.armorType, ArmorStatData.serializeArmorStatData(armorData), palettes);
    }
 
    #region Private Variables

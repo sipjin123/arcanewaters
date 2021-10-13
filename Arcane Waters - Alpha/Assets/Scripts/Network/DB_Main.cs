@@ -6337,8 +6337,8 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.account_penalties_v2(sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltySource, expiresAt) " +
-            "VALUES(@sourceAccId, @sourceUsrId, @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltySource, @expiresAt)", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.account_penalties_v2(sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltyTime, penaltySource, expiresAt) " +
+            "VALUES(@sourceAccId, @sourceUsrId, @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltyTime, @penaltySource, @expiresAt)", conn)) {
             conn.Open();
             cmd.Prepare();
 
@@ -6350,6 +6350,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@targetUsrName", penalty.targetUsrName);
             cmd.Parameters.AddWithValue("@penaltyType", (int) penalty.penaltyType);
             cmd.Parameters.AddWithValue("@penaltyReason", penalty.penaltyReason);
+            cmd.Parameters.AddWithValue("@penaltyTime", penalty.penaltyTime);
             cmd.Parameters.AddWithValue("@penaltySource", (int) penalty.penaltySource);
             cmd.Parameters.AddWithValue("@expiresAt", new DateTime(penalty.expiresAt));
 
@@ -6409,10 +6410,13 @@ public class DB_Main : DB_MainStub
    public static new bool banAccount (PenaltyInfo penalty) {
       bool success = false;
 
-      string query = "INSERT INTO global.account_penalties_v2(sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltySource, expiresAt) VALUES(@sourceAccId, @sourceUsrId, @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltySource, @expiresAt)";
+      string query = "INSERT INTO global.account_penalties_v2(sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, penaltyType, penaltyReason, penaltyTime, penaltySource, expiresAt) " +
+         "VALUES(@sourceAccId, @sourceUsrId, @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltyTime, @penaltySource, @expiresAt)";
 
       // If our ban is permanent, we remove the expiresAt parameter, since we don't need to specify a date for it
       if (penalty.penaltyType == PenaltyActionType.PermanentBan) {
+         query = query.Replace(", penaltyTime", string.Empty);
+         query = query.Replace(", @penaltyTime", string.Empty);
          query = query.Replace(", expiresAt", string.Empty);
          query = query.Replace(", @expiresAt", string.Empty);
       }
@@ -6434,6 +6438,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@penaltySource", (int) penalty.penaltySource);
 
             if (penalty.penaltyType == PenaltyActionType.Ban) {
+               cmd.Parameters.AddWithValue("@penaltyTime", penalty.penaltyTime);
                cmd.Parameters.AddWithValue("@expiresAt", new DateTime(penalty.expiresAt));
             }
 
@@ -11210,7 +11215,7 @@ public class DB_Main : DB_MainStub
             connection.Open();
 
             using (MySqlCommand command = new MySqlCommand("SELECT wmMapData, wmMapDataLength FROM global.world_map WHERE wmId=@wmId", connection)) {
-               command.Parameters.AddWithValue("@wmId", sectorIndex+1);
+               command.Parameters.AddWithValue("@wmId", sectorIndex + 1);
 
                using (MySqlDataReader reader = command.ExecuteReader()) {
                   if (reader.Read()) {
@@ -11637,7 +11642,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
 
-            using (MySqlCommand command = new MySqlCommand("REPLACE INTO server_stats (`machine`, `port`, `start_datetime`, `stop_datetime`, `ccu`, `ccu_min`, `ccu_max`, `ccu_avg`, `fps_min`, `fps_max`, `fps_avg`, `memory`, `bandwidth`, `latency`) VALUES (@machine, @port, @start_datetime, null, 0,0,0,0,0,0,0,0,0,0)", connection)) {
+            using (MySqlCommand command = new MySqlCommand("REPLACE INTO server_stats (`machine`, `port`, `start_datetime`, `stop_datetime`, `ccu`, `ccu_min`, `ccu_max`, `ccu_avg`, `fps_min`, `fps_max`, `fps_avg`, `memory`, `bandwidth`, `latency`) VALUES (@machine, @port, @start_datetime, null, 0,0,0,0,30,0,0,0,0,0)", connection)) {
                command.Parameters.Add("@machine", MySqlDbType.String).Value = machine;
                command.Parameters.Add("@port", MySqlDbType.Int16).Value = port;
                command.Parameters.Add("@start_datetime", MySqlDbType.Timestamp).Value = DateTime.Now;
@@ -11646,9 +11651,9 @@ public class DB_Main : DB_MainStub
          }
       } catch (Exception ex) {
          D.error(ex.Message);
-      }      
+      }
    }
-   
+
    public static new void serverStatStopped (string machine, int port) {
       try {
          using (MySqlConnection connection = getConnection()) {
@@ -11663,10 +11668,10 @@ public class DB_Main : DB_MainStub
          }
       } catch (Exception ex) {
          D.error(ex.Message);
-      }      
+      }
    }
-   
-   public static new void serverStatUpdateCcu(string machine, int port, int ccu) {
+
+   public static new void serverStatUpdateCcu (string machine, int port, int ccu) {
       try {
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
@@ -11680,10 +11685,27 @@ public class DB_Main : DB_MainStub
          }
       } catch (Exception ex) {
          D.error(ex.Message);
-      }      
-   }   
+      }
+   }
+
+   public static new void serverStatUpdateFps (string machine, int port, float fps) {
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+
+            using (MySqlCommand command = new MySqlCommand("UPDATE server_stats SET fps_min = IF (@fps < fps_min, @fps, fps_min), fps_max = IF (@fps > fps_max, @fps, fps_max), fps_avg = (fps_avg + @fps) / 2 WHERE `machine` = @machine and `port` = @port", connection)) {
+               command.Parameters.Add("@machine", MySqlDbType.String).Value = machine;
+               command.Parameters.Add("@port", MySqlDbType.Int16).Value = port;
+               command.Parameters.Add("@fps", MySqlDbType.Decimal).Value = fps;
+               command.ExecuteNonQuery();
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+   }
    #endregion
-   
+
    /*
    public static new void deleteAccount (int accountId) {
       try {

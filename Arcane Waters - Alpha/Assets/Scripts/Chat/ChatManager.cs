@@ -475,7 +475,7 @@ public class ChatManager : GenericGameManager
             if (!partialStr.Contains(" ")) {
                shouldShowUserSuggestions = true;
             }
-         } 
+         }
 
          if (shouldShowUserSuggestions) {
             autoCompleteCommands.Clear();
@@ -489,7 +489,7 @@ public class ChatManager : GenericGameManager
                   }
                }
 
-               if (!userSuggestionDataList.Any(_ => _.getUserName() == chatInfo.sender) && chatInfo.senderId > 0) {
+               if (!userSuggestionDataList.Any(_ => _.getUserName().Equals(chatInfo.sender, StringComparison.InvariantCultureIgnoreCase) && chatInfo.senderId > 0)) {
                   UserSuggestionData suggestionData = new UserSuggestionData(chatInfo.sender, "@" + chatInfo.sender, inputString, partialStr);
                   userSuggestionDataList.Add(suggestionData);
                }

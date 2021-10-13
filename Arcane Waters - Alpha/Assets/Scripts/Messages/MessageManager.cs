@@ -11,42 +11,31 @@ public class MessageManager : MonoBehaviour {
    #endregion
 
    public static void registerClientHandlers () {
-      // Make sure we only add these handlers once
-      if (!_hasRegisteredHandlers) {
-         D.debug("Registering client handlers.");
+      NetworkClient.RegisterHandler<RedirectMessage>(ClientMessageManager.On_Redirect);
+      NetworkClient.RegisterHandler<ErrorMessage>(ClientMessageManager.On_ErrorMessage);
+      NetworkClient.RegisterHandler<ConfirmMessage>(ClientMessageManager.On_ConfirmMessage);
+      NetworkClient.RegisterHandler<CharacterListMessage>(ClientMessageManager.On_CharacterList);
+      NetworkClient.RegisterHandler<LogInCompleteMessage>(ClientMessageManager.On_LoginIsComplete);
+      NetworkClient.RegisterHandler<CharacterCreationValidMessage>(ClientMessageManager.On_CharacterCreationValid);
+      NetworkClient.RegisterHandler<StoreMessage>(ClientMessageManager.On_Store);
+      NetworkClient.ReplaceHandler<DisconnectMessage>(ClientMessageManager.On_FailedToConnectToServer);
 
-         NetworkClient.RegisterHandler<RedirectMessage>(ClientMessageManager.On_Redirect);
-         NetworkClient.RegisterHandler<ErrorMessage>(ClientMessageManager.On_ErrorMessage);
-         NetworkClient.RegisterHandler<ConfirmMessage>(ClientMessageManager.On_ConfirmMessage);
-         NetworkClient.RegisterHandler<CharacterListMessage>(ClientMessageManager.On_CharacterList);
-         NetworkClient.RegisterHandler<LogInCompleteMessage>(ClientMessageManager.On_LoginIsComplete);
-         NetworkClient.RegisterHandler<CharacterCreationValidMessage>(ClientMessageManager.On_CharacterCreationValid);
-         NetworkClient.RegisterHandler<StoreMessage>(ClientMessageManager.On_Store);
-         NetworkClient.ReplaceHandler<DisconnectMessage>(ClientMessageManager.On_FailedToConnectToServer);
-
-         Transport.activeTransport.OnClientDisconnected.AddListener(ClientMessageManager.On_ClientDisconnected);
-
-         _hasRegisteredHandlers = true;
-      }
+      Transport.activeTransport.OnClientDisconnected.AddListener(ClientMessageManager.On_ClientDisconnected);
    }
 
    public static void unregisterClientHandlers () {
-      if (_hasRegisteredHandlers) {
-         D.debug("Unregistering client handlers.");
+      D.debug("Unregistering client handlers.");
 
-         NetworkClient.UnregisterHandler<RedirectMessage>();
-         NetworkClient.UnregisterHandler<ErrorMessage>();
-         NetworkClient.UnregisterHandler<ConfirmMessage>();
-         NetworkClient.UnregisterHandler<CharacterListMessage>();
-         NetworkClient.UnregisterHandler<LogInCompleteMessage>();
-         NetworkClient.UnregisterHandler<CharacterCreationValidMessage>();
-         NetworkClient.UnregisterHandler<StoreMessage>();
-         NetworkClient.UnregisterHandler<DisconnectMessage>();
+      NetworkClient.UnregisterHandler<RedirectMessage>();
+      NetworkClient.UnregisterHandler<ErrorMessage>();
+      NetworkClient.UnregisterHandler<ConfirmMessage>();
+      NetworkClient.UnregisterHandler<CharacterListMessage>();
+      NetworkClient.UnregisterHandler<LogInCompleteMessage>();
+      NetworkClient.UnregisterHandler<CharacterCreationValidMessage>();
+      NetworkClient.UnregisterHandler<StoreMessage>();
+      NetworkClient.UnregisterHandler<DisconnectMessage>();
 
-         Transport.activeTransport.OnClientDisconnected.RemoveListener(ClientMessageManager.On_ClientDisconnected);
-
-         _hasRegisteredHandlers = false;
-      }
+      Transport.activeTransport.OnClientDisconnected.RemoveListener(ClientMessageManager.On_ClientDisconnected);
    }
 
    public static void registerServerHandlers () {
@@ -64,9 +53,6 @@ public class MessageManager : MonoBehaviour {
    }
 
    #region Private Variables
-
-   // Gets set to true after we register our handlers for the first time
-   protected static bool _hasRegisteredHandlers = false;
 
    #endregion
 }

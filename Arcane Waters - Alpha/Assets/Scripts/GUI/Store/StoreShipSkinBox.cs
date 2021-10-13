@@ -33,6 +33,14 @@ public class StoreShipSkinBox : StoreItemBox {
          this.imageIcon.rectTransform.Translate(-12, 0, 0);
       }
 
+      ShipData data = ShipDataManager.self.shipDataList.Find(_ => _.shipType == shipSkin.shipType);
+      
+      if (data == null) {
+         return;
+      }
+
+      _shipName = data.shipName;
+
       adjustDescription();
    }
 
@@ -41,13 +49,7 @@ public class StoreShipSkinBox : StoreItemBox {
          return;
       }
 
-      ShipData data = ShipDataManager.self.shipDataList.Find(_ => _.shipType == shipSkin.shipType);
-
-      if (data == null) {
-         return;
-      }
-
-      string newDesc = $"Skin for the '{data.shipName}'.";
+      string newDesc = $"Skin for the '{_shipName}'.";
 
       if (string.IsNullOrWhiteSpace(this.itemDescription)) {
          this.itemDescription = newDesc;
@@ -56,7 +58,14 @@ public class StoreShipSkinBox : StoreItemBox {
       }
    }
 
+   public string getShipName () {
+      return _shipName;
+   }
+
    #region Private Variables
+
+   // The name of the ship
+   private string _shipName;
 
    #endregion
 }

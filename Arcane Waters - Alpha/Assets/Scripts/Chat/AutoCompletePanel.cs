@@ -235,6 +235,14 @@ public class AutoCompletePanel : MonoBehaviour {
    }
 
    public void optionClicked (int indexInList) {
+      performOptionClicked(indexInList);
+   }
+
+   public void performOptionClicked(int indexInList) {
+      if (indexInList < 0 || indexInList >= _autoCompleteOptions.Count) {
+         return;
+      }
+
       AutoCompleteOption option = _autoCompleteOptions[indexInList];
       ChatPanel.self.inputField.text = option.getText();
       ChatPanel.self.focusInputField();
@@ -252,7 +260,7 @@ public class AutoCompletePanel : MonoBehaviour {
       selectedOption?.setTooltip(false);
    }
    
-   private int getNumAutoCompletes () {
+   public int getNumAutoCompletes () {
       int totalAutoCompletes = 0;
 
       if (_autoCompleteCommands != null) {

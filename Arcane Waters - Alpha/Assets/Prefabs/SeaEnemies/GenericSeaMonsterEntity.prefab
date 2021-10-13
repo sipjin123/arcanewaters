@@ -187,6 +187,7 @@ GameObject:
   - component: {fileID: 114502046227778398}
   - component: {fileID: 6174198582837861343}
   - component: {fileID: -6676230034923001748}
+  - component: {fileID: 2120492554127063598}
   m_Layer: 16
   m_Name: GenericSeaMonsterEntity
   m_TagString: Untagged
@@ -247,6 +248,7 @@ MonoBehaviour:
   XP: 0
   desiredAngle: 0
   isStealthMuted: 0
+  muteExpirationDate: 0
   gender: 1
   bodyType: 0
   eyesType: 0
@@ -283,6 +285,7 @@ MonoBehaviour:
   pvpTeam: 0
   faction: 0
   guildId: 0
+  guildName: 
   guildPermissions: 0
   guildRankPriority: 0
   guildIconBorder: 
@@ -350,8 +353,10 @@ MonoBehaviour:
   newWaypointsRadius: 10
   secondsPatrolingUntilChoosingNewTreasureSite: 30
   patrolingWaypointsRadius: 1
+  dataXmlId: 0
   spritesContainer: {fileID: 1013934132990528}
   ripplesContainer: {fileID: 1658159506029436}
+  orbHolder: {fileID: 0}
   _currentPath: []
   _currentPathIndex: 0
   _isChasingEnemy: 0
@@ -446,8 +451,8 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 50
+  m_Mass: 5
+  m_LinearDrag: 3
   m_AngularDrag: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 6200000, guid: 85d5d0a47c772d24ca0b79efe93fa021, type: 2}
@@ -614,6 +619,21 @@ MonoBehaviour:
   snapPositionThreshold: 5
   clientAuthority: 0
   lastVelocityTime: 0
+--- !u!114 &2120492554127063598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1505246131218474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a537d958aa5bb4f35b0d7b40d72278f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 1
+  penalty: 20
+  randomStep: 5
 --- !u!1 &1658159506029436
 GameObject:
   m_ObjectHideFlags: 0

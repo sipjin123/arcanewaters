@@ -131,7 +131,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -200}
+  m_AnchoredPosition: {x: 0, y: -280}
   m_SizeDelta: {x: 160, y: 45}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &3324075947388102739
@@ -217,14 +217,14 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 3717255269734821994}
         m_MethodName: onShopButtonPressed
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &3324075947388103598
 MonoBehaviour:
@@ -431,6 +431,7 @@ MonoBehaviour:
   shipSailorsText: {fileID: 3399557976763028195}
   shipStatTab: {fileID: 7944951116005543893}
   selectedCategory: 0
+  isSeaShop: 0
 --- !u!1001 &7275847211328528852
 PrefabInstance:
   m_ObjectHideFlags: 0

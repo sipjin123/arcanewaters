@@ -101,13 +101,12 @@ public class WeaponManager : EquipmentManager {
 
 
    [TargetRpc]
-   public void Target_EquipWeapon(NetworkConnection connection, string rawWeaponData, string newPalettes) {
+   public void Target_EquipWeapon(NetworkConnection connection, int newWeaponId, int newWeaponSqlId, int newWeaponType, string rawWeaponData, string newPalettes) {
       WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(rawWeaponData);
       cachedWeaponData = weaponData;
 
       // Update the sprites for the new weapon type
-      int newType = weaponData == null ? 0 : weaponData.weaponType;
-      updateSprites(newType, newPalettes);
+      updateSprites(newWeaponType, newPalettes);
       D.adminLog("Equipped weapon" + " SQL: {" + weaponData.sqlId +
          "} Name: {" + weaponData.equipmentName +
          "} Type: {" + weaponData.weaponType +
@@ -117,9 +116,9 @@ public class WeaponManager : EquipmentManager {
       SoundManager.create3dSound("equip_", this.transform.position, 2);
 
       Global.getUserObjects().weapon = new Weapon {
-         id = equippedWeaponId,
+         id = newWeaponId,
          category = Item.Category.Weapon,
-         itemTypeId = weaponType
+         itemTypeId = newWeaponSqlId
       };
    }
 
@@ -175,7 +174,7 @@ public class WeaponManager : EquipmentManager {
       }
 
       // Send the weapon info to the owner client
-      Target_EquipWeapon(connection, WeaponStatData.serializeWeaponStatData(weaponData), this.palettes);
+      Target_EquipWeapon(connection, weaponId, weaponData.sqlId, weaponData.weaponType, WeaponStatData.serializeWeaponStatData(weaponData), this.palettes);
 
       // Send the Weapon Info to all clients
       Rpc_BroadcastEquipWeapon(WeaponStatData.serializeWeaponStatData(weaponData), this.palettes);

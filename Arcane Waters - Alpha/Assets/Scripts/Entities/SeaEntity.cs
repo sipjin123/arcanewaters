@@ -144,6 +144,9 @@ public class SeaEntity : NetEntity
    // The container for our ripples
    public GameObject ripplesContainer;
 
+   // The transform that will contain all of our orbs (powerup orbs and ability orbs)
+   public Transform orbHolder;
+
    #endregion
 
    protected virtual bool isBot () { return true; }
@@ -173,6 +176,9 @@ public class SeaEntity : NetEntity
          InvokeRepeating(nameof(checkEnemiesToAggro), 0.0f, 0.5f);
          StartCoroutine(CO_AttackEnemiesInRange(0.25f));
       }
+
+      // Adding of powerup orbs is now disabled, code to be removed once we no longer need it as a reference for ability orbs.
+      // InvokeRepeating(nameof(checkPowerupOrbs), 0.0f, 0.1f);
 
       editorGenerateAggroCone();
       initialPosition = transform.localPosition;
@@ -2003,8 +2009,6 @@ public class SeaEntity : NetEntity
       if (Util.isBatch()) {
          return;
       }
-      
-      checkPowerupOrbs();
 
       _powerupOrbRotation += Time.deltaTime * POWERUP_ORB_ROTATION_SPEED;
 
@@ -2038,10 +2042,12 @@ public class SeaEntity : NetEntity
 
          // Create any new orbs needed
          for (int i = 0; i < orbsCreated; i++) {
-            PowerupOrb newOrb = Instantiate(PrefabsManager.self.powerupOrbPrefab, transform.position + Vector3.up * POWERUP_ORB_ELLIPSE_HEIGHT, Quaternion.identity, transform);
+            PowerupOrb newOrb = Instantiate(PrefabsManager.self.powerupOrbPrefab, transform.position + Vector3.up * POWERUP_ORB_ELLIPSE_HEIGHT, Quaternion.identity, orbHolder);
             _powerupOrbs.Add(newOrb);
             newOrb.rotationValue = _powerupOrbRotation + (1.0f / _powerupOrbs.Count) * (_powerupOrbs.Count - 1);
          }
+
+      // If the list from the server is smaller, we need to remove some orbs
       } else if (_powerupOrbs.Count > powerupTypes.Count) {
          int orbsToRemove = _powerupOrbs.Count - powerupTypes.Count;
 
@@ -2059,6 +2065,9 @@ public class SeaEntity : NetEntity
          _powerupOrbs[i].init(powerupTypes[i], transform, isNewOrb);
       }
 
+      bool particlesEnabled = _powerupOrbs.Count <= POWERUP_MAX_ORB_PARTICLES;
+      foreach (PowerupOrb orb in _powerupOrbs) {
+         orb.setParticleVisibility(particlesEnabled);
       }
    }
 
@@ -2289,7 +2298,10 @@ public class SeaEntity : NetEntity
    private const float POWERUP_ORB_ELLIPSE_HEIGHT = 0.1875f;
 
    // A modifier affecting how fast the powerup orbs will rotate
-   private const float POWERUP_ORB_ROTATION_SPEED = 0.5f;
+   private const float POWERUP_ORB_ROTATION_SPEED = 0.3f;
+
+   // The max number of orbs that can have particles at once. If there are more orbs than this number, all orbs will have their particles disabled.
+   private const int POWERUP_MAX_ORB_PARTICLES = 6;
 
    // The powerups that this sea entity currently has
    protected SyncList<Powerup> _powerups = new SyncList<Powerup>();

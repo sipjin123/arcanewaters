@@ -275,10 +275,7 @@ public class TutorialManager3 : MonoBehaviour {
 
    private void refreshUI () {
       string selectedTutorialKey = _currentTutorial.key;
-      bool isNextStepManual = _currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.Manual
-         || _currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.PlantCrop
-         || _currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.CropGrewToMaxLevel
-         || _currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.HarvestCrop;
+      bool isNextStepManual = _currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.Manual;
 
       string npcSpeech = _currentTutorial.steps[_currentStep].npcSpeech;
 
@@ -297,7 +294,7 @@ public class TutorialManager3 : MonoBehaviour {
       }
 
       panel.refreshTutorialStep(selectedTutorialKey, npcSpeech, _currentStep + 1, _currentTutorial.steps.Count,
-         isNextStepManual, _currentTutorial.isCompleted, _currentStep < _highestReachedStep);
+         isNextStepManual, _currentTutorial.isCompleted, _currentStep < _highestReachedStep, _currentTutorial.steps[_currentStep].canBeSkipped);
       arrow.setTarget(_currentTutorial.steps[_currentStep].targetAreaKey);
    }
 

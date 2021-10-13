@@ -89,12 +89,12 @@ public class TutorialPanel3 : MonoBehaviour
    }
 
    public void refreshTutorialStep (string selectedTutorialKey, string npcSpeech, int currentStepIndex,
-      int maxStepIndex, bool isNextStepManual, bool isTutorialCompleted, bool isNextStepAlreadyReached) {
+      int maxStepIndex, bool isNextStepManual, bool isTutorialCompleted, bool isNextStepAlreadyReached, bool canNextStepBeSkipped) {
       _npcSpeech = npcSpeech;
       _isNavigationRowVisible = false;
 
       // The navigation buttons are only visible if the tutorial has been completed before
-      if (isTutorialCompleted || isNextStepAlreadyReached) {
+      if (isTutorialCompleted || isNextStepAlreadyReached || canNextStepBeSkipped) {
          rightButton.gameObject.SetActive(true);
       } else {
          rightButton.gameObject.SetActive(false);

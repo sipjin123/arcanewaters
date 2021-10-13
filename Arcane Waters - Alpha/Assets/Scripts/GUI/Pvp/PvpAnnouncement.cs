@@ -36,6 +36,18 @@ public class PvpAnnouncement : ClientMonoBehaviour
    // List of announce patterns for structures
    public string[] structureAnnouncePatterns;
 
+   // The importance of this announcement's message
+   public Priority announcementPriority = Priority.None;
+
+   public enum Priority
+   {
+      None = 0,
+      PlayerKill = 1,
+      ObjectiveUpdate = 2,
+      ScoreChange = 3,
+      GameEnd = 4
+   }
+
    #endregion
 
    public void Start () {

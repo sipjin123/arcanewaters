@@ -281,6 +281,7 @@ public class SeaProjectile : NetworkBehaviour
       }
    }
 
+   [Server]
    protected virtual void processDestruction () {
       if (_cancelDestruction) {
          _cancelDestruction = false;
@@ -295,6 +296,23 @@ public class SeaProjectile : NetworkBehaviour
          venomResidue.creatorNetId = sourceEntity.netId;
          venomResidue.instanceId = _instanceId;
          sourceEntity.Rpc_SpawnBossVenomResidue(sourceEntity.netId, _instanceId, transform.position);
+      }
+
+      // If this ability has any knockback, apply it now
+      ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(projectileTypeId);
+      if (projectileData != null && projectileData.knockbackForce != 0.0f && projectileData.knockbackRadius > 0.0f) {
+
+         // Check for enemies in the knockback radius
+         List<SeaEntity> enemiesHit = Util.getEnemiesInCircle(sourceEntity, transform.position, projectileData.knockbackRadius);
+         foreach (SeaEntity enemyHit in enemiesHit) {
+            
+            // Ensure the enemy has a rigidbody
+            Rigidbody2D enemyRigidbody = enemyHit.getRigidbody();
+            if (enemyRigidbody != null) {
+               // Apply the explosive force
+               enemyRigidbody.AddExplosiveForce(projectileData.knockbackForce * EXPLOSIVE_FORCE_DROPOFF, projectileData.knockbackForce, projectileData.knockbackRadius, transform.position, ForceMode2D.Impulse);
+            }
+         }
       }
 
       NetworkServer.Destroy(gameObject);
@@ -424,6 +442,9 @@ public class SeaProjectile : NetworkBehaviour
 
    // The minimum size of the drop shadow for this projectile - when it's at the height of its arc
    private float _minDropShadowScale = 1.0f;
+
+   // Controls how the explosive force of a projectile drops off as you reach the edge of its range
+   private const float EXPLOSIVE_FORCE_DROPOFF = 0.25f;
 
    #endregion
 }

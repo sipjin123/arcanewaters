@@ -110,12 +110,27 @@ public class CraftingPanel : Panel
    // An event triggered when receiving refinement data
    public UnityEvent receiveRefinementData = new UnityEvent();
 
+   // Tab types
+   public enum TabType
+   {
+      // None
+      None = 0,
+
+      // Crafting
+      Crafting = 1,
+
+      // Refinement
+      Refinement = 2
+   }
+
    #endregion
 
    public override void Awake () {
       base.Awake();
       self = this;
    }
+
+   #region Common
 
    public void clearContent () {
       toggleBlockers(true);
@@ -136,25 +151,116 @@ public class CraftingPanel : Panel
       durabilityText.text = "";
    }
 
+   public void toggleBlockers (bool isActive) {
+      nextPageButton.interactable = !isActive;
+      previousPageButton.interactable = !isActive;
+      loadBlockerList.SetActive(isActive);
+      loadBlockerContent.SetActive(isActive);
+      loadBlockerIngredients.SetActive(isActive);
+   }
+
+   public void nextPage () {
+      if (_currentPageIndex >= _lastPageIndex) {
+         return;
+      }
+
+      _currentPageIndex++;
+
+      if (craftingTabButon.gameObject.activeInHierarchy) {
+         refreshBlueprintList();
+      } else {
+         refreshRefinementList();
+      }
+   }
+
+   public void previousPage () {
+      if (_currentPageIndex <= 0) {
+         return;
+      }
+
+      _currentPageIndex--;
+
+      if (craftingTabButon.gameObject.activeInHierarchy) {
+         refreshBlueprintList();
+      } else {
+         refreshRefinementList();
+      }
+   }
+
+   private void configurePanelForMode (Mode mode) {
+      switch (mode) {
+         case Mode.NoBlueprintSelected:
+            noBlueprintSelectedSection.SetActive(true);
+            blueprintSelectedSection.SetActive(false);
+            break;
+         case Mode.BlueprintSelected:
+            noBlueprintSelectedSection.SetActive(false);
+            blueprintSelectedSection.SetActive(true);
+            break;
+         default:
+            break;
+      }
+      _currentMode = mode;
+   }
+
+   private void updateNavigationButtons () {
+      // Activate or deactivate the navigation buttons if we reached a limit
+      previousPageButton.interactable = true;
+      nextPageButton.interactable = true;
+
+      if (_currentPageIndex <= 0) {
+         previousPageButton.interactable = false;
+      }
+
+      if (_currentPageIndex >= _lastPageIndex) {
+         nextPageButton.interactable = false;
+      }
+   }
+
+   #endregion
+
+   #region Crafting
+
+   public void craft () {
+      if (_selectedBlueprintId != -1) {
+         Global.player.rpc.Cmd_CraftItem(_selectedBlueprintId);
+      }
+   }
+
    public void refreshBlueprintList () {
       selectCraftingTab();
       toggleBlockers(true);
-      NubisDataFetcher.self.fetchCraftableData(_currentPage, ROWS_PER_PAGE);
+      NubisDataFetcher.self.fetchCraftableData(_currentPageIndex, ROWS_PER_PAGE);
    }
 
-   public void refreshRefinementList () {
-      loadBlockerRefinementList.SetActive(true);
-      loadBlockerRefinementIngredients.SetActive(true);
-
-      if (latestRefineableItem != null) {
-         latestRefineableItem.hideSelectedBox();
+   public void updateCraftButton () {
+      if (_selectedBlueprintId == -1 || !_canSelectedBlueprintBeCrafted) {
+         craftButton.interactable = false;
+      } else {
+         craftButton.interactable = true;
       }
-      refineAbleItemSelection.gameObject.DestroyChildren();
-      refinementIngredientsHolder.gameObject.DestroyChildren();
+   }
 
-      NubisDataFetcher.self.getUserInventory(new List<Item.Category> {
-         Item.Category.Weapon, Item.Category.Armor, Item.Category.Hats
-      }, _currentPage, ROWS_PER_PAGE, Item.DurabilityFilter.ReducedDurability, Type.Craft);
+   public void selectCraftingTab () {
+      refineableItemsHolder.gameObject.DestroyChildren();
+      refinementIngredientsHolder.gameObject.DestroyChildren();
+      refineAbleItemSelection.gameObject.DestroyChildren();
+
+      if (_currentTab != TabType.Crafting) {
+         _currentPageIndex = 0;
+      }
+
+      _currentTab = TabType.Crafting;
+      craftingTabButon.interactable = false;
+      refinementTabButton.interactable = true;
+      titleText.text = "Crafting";
+
+      foreach (GameObject ui in refinementPanelEntities) {
+         ui.SetActive(false);
+      }
+      foreach (GameObject ui in craftingPanelEntities) {
+         ui.SetActive(true);
+      }
    }
 
    public void displayBlueprint (int itemId) {
@@ -167,49 +273,38 @@ public class CraftingPanel : Panel
       NubisDataFetcher.self.checkCraftingInfo(_selectedBlueprintId);
    }
 
-   public void toggleBlockers (bool isActive) {
-      nextPageButton.interactable = !isActive;
-      previousPageButton.interactable = !isActive;
-      loadBlockerList.SetActive(isActive);
-      loadBlockerContent.SetActive(isActive);
-      loadBlockerIngredients.SetActive(isActive);
-   }
-
    public void clearSelectedBlueprint () {
       _selectedBlueprintId = -1;
       configurePanelForMode(Mode.NoBlueprintSelected);
    }
 
-   public void updatePanelWithBlueprintList (Item[] blueprintArray, Blueprint.Status[] blueprintStatusesArray, int pageNumber, int totalBlueprintCount) {
+   public void updatePanelWithBlueprintList (Item[] blueprintArray, Blueprint.Status[] blueprintStatusesArray, int pageNumber, int blueprintsPerPage) {
       selectCraftingTab();
 
       // Update the current page number
-      _currentPage = pageNumber;
+      _currentPageIndex = pageNumber;
 
       // Calculate the maximum page number
-      _maxPage = Mathf.CeilToInt((float) totalBlueprintCount / ROWS_PER_PAGE);
-      if (_maxPage == 0) {
-         _maxPage = 1;
-      }
+      _lastPageIndex = blueprintArray.Length / ROWS_PER_PAGE;
 
       // Update the current page text
-      pageNumberText.text = "Page " + (_currentPage == 0 ? "1" : _currentPage.ToString()) + " of " + _maxPage.ToString();
-
-      // Update the navigation buttons
-      updateNavigationButtons();
+      pageNumberText.text = "Page " + (_currentPageIndex + 1).ToString() + " of " + (_lastPageIndex + 1).ToString();
 
       // Clear out any items in the list
       blueprintRowsContainer.DestroyChildren();
       blueprintRowList = new List<BlueprintRow>();
 
       // Create the blueprint rows
-      for (int i = 0; i < blueprintArray.Length; i++) {
+      Item[] blueprintsInPage = Util.getArraySlice(blueprintArray, pageNumber, blueprintsPerPage);
+      Blueprint.Status[] statusesOfBlueprintsInPage = Util.getArraySlice(blueprintStatusesArray, pageNumber, blueprintsPerPage);
+
+      for (int i = 0; i < blueprintsInPage.Count(); i++) {
          if (i < ROWS_PER_PAGE) {
             // Instantiates the row
             BlueprintRow row = Instantiate(blueprintRowPrefab, blueprintRowsContainer.transform, false);
 
             // Initializes the row
-            row.setRowForBlueprint(blueprintArray[i], _selectedBlueprintId == blueprintArray[i].id, blueprintStatusesArray[i]);
+            row.setRowForBlueprint(blueprintsInPage[i], _selectedBlueprintId == blueprintsInPage[i].id, statusesOfBlueprintsInPage[i]);
             blueprintRowList.Add(row);
          }
       }
@@ -221,11 +316,14 @@ public class CraftingPanel : Panel
       if (_currentMode == Mode.None) {
          configurePanelForMode(Mode.NoBlueprintSelected);
       }
+
       toggleBlockers(false);
+
+      // Update the navigation buttons
+      updateNavigationButtons();
    }
-   
-   public void updatePanelWithSingleBlueprintWebRequest (Item resultItem, List<Item> equippedItems,
-     List<Item> inventoryIngredients, Item[] requiredIngredients) {
+
+   public void updatePanelWithSingleBlueprintWebRequest (Item resultItem, List<Item> equippedItems, List<Item> inventoryIngredients, Item[] requiredIngredients) {
       _selectedBlueprintId = resultItem.id;
 
       // Configure the panel
@@ -353,11 +451,9 @@ public class CraftingPanel : Panel
       toggleBlockers(false);
    }
 
-   public void craft () {
-      if (_selectedBlueprintId != -1) {
-         Global.player.rpc.Cmd_CraftItem(_selectedBlueprintId);
-      }
-   }
+   #endregion
+
+   #region Refinement
 
    public void refine () {
       D.adminLog("Attempt to refine item:: " +
@@ -371,78 +467,31 @@ public class CraftingPanel : Panel
       loadBlockerRefinementIngredients.SetActive(true);
    }
 
-   public void updateCraftButton () {
-      if (_selectedBlueprintId == -1 || !_canSelectedBlueprintBeCrafted) {
-         craftButton.interactable = false;
-      } else {
-         craftButton.interactable = true;
+   public void refreshRefinementList () {
+      loadBlockerRefinementList.SetActive(true);
+      loadBlockerRefinementIngredients.SetActive(true);
+
+      if (latestRefineableItem != null) {
+         latestRefineableItem.hideSelectedBox();
       }
-   }
-
-   private void configurePanelForMode (Mode mode) {
-      switch (mode) {
-         case Mode.NoBlueprintSelected:
-            noBlueprintSelectedSection.SetActive(true);
-            blueprintSelectedSection.SetActive(false);
-            break;
-         case Mode.BlueprintSelected:
-            noBlueprintSelectedSection.SetActive(false);
-            blueprintSelectedSection.SetActive(true);
-            break;
-         default:
-            break;
-      }
-      _currentMode = mode;
-   }
-
-   public void nextPage () {
-      if (_currentPage < _maxPage) {
-         _currentPage++;
-
-         if (!craftingTabButon.gameObject.activeInHierarchy) {
-            refreshBlueprintList();
-         } else {
-            refreshRefinementList();
-         }
-      }
-   }
-
-   public void previousPage () {
-      if (_currentPage > 1) {
-         _currentPage--;
-
-         if (!craftingTabButon.gameObject.activeInHierarchy) {
-            refreshBlueprintList();
-         } else {
-            refreshRefinementList();
-         }
-      }
-   }
-   
-   public void selectCraftingTab () {
-      refineableItemsHolder.gameObject.DestroyChildren();
-      refinementIngredientsHolder.gameObject.DestroyChildren();
       refineAbleItemSelection.gameObject.DestroyChildren();
-      _currentPage = 0;
+      refinementIngredientsHolder.gameObject.DestroyChildren();
 
-      craftingTabButon.interactable = false;
-      refinementTabButton.interactable = true;
-      titleText.text = "Crafting";
-
-      foreach (GameObject ui in refinementPanelEntities) {
-         ui.SetActive(false);
-      }
-      foreach (GameObject ui in craftingPanelEntities) {
-         ui.SetActive(true);
-      }
+      NubisDataFetcher.self.getUserInventory(new List<Item.Category> {
+         Item.Category.Weapon, Item.Category.Armor, Item.Category.Hats
+      }, _currentPageIndex, ROWS_PER_PAGE, Item.DurabilityFilter.ReducedDurability, Type.Craft);
    }
 
    public void selectRefinementTab () {
       loadBlockerRefinementList.SetActive(true);
       loadBlockerRefinementIngredients.SetActive(true);
       blueprintRowsContainer.DestroyChildren();
-      _currentPage = 0;
 
+      if (_currentTab != TabType.Refinement) {
+         _currentPageIndex = 0;
+      }
+
+      _currentTab = TabType.Refinement;
       refinementTabButton.interactable = false;
       craftingTabButon.interactable = true;
       titleText.text = "Repair";
@@ -454,9 +503,9 @@ public class CraftingPanel : Panel
          ui.SetActive(false);
       }
 
-      NubisDataFetcher.self.getUserInventory(new List<Item.Category> { 
+      NubisDataFetcher.self.getUserInventory(new List<Item.Category> {
          Item.Category.Weapon, Item.Category.Armor, Item.Category.Hats
-      }, _currentPage, ROWS_PER_PAGE, Item.DurabilityFilter.ReducedDurability, Panel.Type.Craft);
+      }, _currentPageIndex, ROWS_PER_PAGE, Item.DurabilityFilter.ReducedDurability, Panel.Type.Craft);
    }
 
    public void receiveRefineableItems (List<Item> itemList, int currentPageIndex) {
@@ -471,8 +520,27 @@ public class CraftingPanel : Panel
          itemCell.setCellForItem(item);
          itemCell.leftClickEvent.RemoveAllListeners();
          itemCell.leftClickEvent.AddListener(() => onRefineableItemClicked(item, itemCell));
+
+         // Adjust Tooltip (disables the default tooltip in order to allow clicking on the internal icon)
+         if (itemCell.TryGetComponent(out ToolTipComponent tooltip)) {
+            tooltip.tooltipType = ToolTipComponent.Type.DynamicText;
+            tooltip.tooltipPlacement = ToolTipComponent.TooltipPlacement.AboveUIElement;
+            tooltip.message = item.category == Item.Category.Blueprint ? EquipmentXMLManager.self.getItemName(item) : item.getTooltip();
+            tooltip.message += Item.isUsingEquipmentXML(item.category) ? "\nDurability = " + item.durability : "";
+            
+            // Disable the preset tooltip game object
+            itemCell.tooltip.gameObject.SetActive(false);
+         }
       }
+
       receiveRefinementData.Invoke();
+      _currentPageIndex = currentPageIndex;
+      _lastPageIndex = currentPageIndex;
+
+      // Update the current page text
+      pageNumberText.text = "Page " + (_currentPageIndex + 1).ToString() + " of " + (_lastPageIndex + 1).ToString();
+
+      updateNavigationButtons();
    }
 
    public void onRefineableItemClicked (Item item, ItemCell itemCell) {
@@ -531,19 +599,7 @@ public class CraftingPanel : Panel
       refineButton.interactable = hasSufficientRequirements;
    }
 
-   private void updateNavigationButtons () {
-      // Activate or deactivate the navigation buttons if we reached a limit
-      previousPageButton.interactable = true;
-      nextPageButton.interactable = true;
-
-      if (_currentPage <= 1) {
-         previousPageButton.interactable = false;
-      }
-
-      if (_currentPage >= _maxPage) {
-         nextPageButton.interactable = false;
-      }
-   }
+   #endregion
 
    #region Private Variables
 
@@ -557,10 +613,10 @@ public class CraftingPanel : Panel
    private Armor _equippedArmor;
 
    // The index of the current page
-   private int _currentPage = 1;
+   private int _currentPageIndex = 1;
 
    // The maximum page index (starting at 1)
-   private int _maxPage = 1;
+   private int _lastPageIndex = 1;
 
    // The item id of the currently displayed blueprint
    private int _selectedBlueprintId = -1;
@@ -570,6 +626,9 @@ public class CraftingPanel : Panel
 
    // The current panel mode
    private Mode _currentMode = Mode.None;
+
+   // The current panel tab
+   private TabType _currentTab = TabType.Crafting;
 
    #endregion
 }

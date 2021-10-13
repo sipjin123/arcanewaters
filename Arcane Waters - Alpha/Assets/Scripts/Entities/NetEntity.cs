@@ -901,9 +901,19 @@ public class NetEntity : NetworkBehaviour
       damageText.setDamage(damage);
    }
 
+   protected virtual float getBaseMoveSpeed () {
+      if (this is PlayerShipEntity) {
+         return 70.0f;
+      } else if (this is SeaEntity) {
+         return 25.0f;
+      } else {
+         return 135.0f;
+      }
+   }
+
    public virtual float getMoveSpeed () {
       // Figure out our base movement speed
-      float baseSpeed = (this is SeaEntity) ? 70f : 135f;
+      float baseSpeed = getBaseMoveSpeed();
 
       // Check if we need to apply a slow modifier
       float modifier = 1.0f;
@@ -2296,6 +2306,33 @@ public class NetEntity : NetworkBehaviour
 
       // Update the Silver indicator
       PvpStatusPanel.self.addSilver(silverCount);
+   }
+
+   [TargetRpc]
+   public void Target_ShowSilverBurstEffect (NetworkConnection connection, int silverReward, Vector3 position) {
+      try {
+         float radius = 0.2f;
+         int numCoins = 10;
+
+         for (int i = 0; i < numCoins; i++) {
+            int randomAngle = UnityEngine.Random.Range(0, 360);
+            float x = Mathf.Cos(Mathf.Deg2Rad * randomAngle) * radius;
+            float y = Mathf.Sin(Mathf.Deg2Rad * randomAngle) * radius;
+            float z = y;
+            Vector3 pos = new Vector3(position.x + x, position.y + y, position.z + z);
+            GameObject burstEffectGameObject = Instantiate(PrefabsManager.self.silverBurstEffectPrefab, pos, Quaternion.identity);
+
+            if (burstEffectGameObject == null) {
+               D.warning("Couldn't find the prefab for the Silver Burst Effect.");
+               return;
+            }
+
+            GenericSpriteEffect effect = burstEffectGameObject.GetComponent<GenericSpriteEffect>();
+            effect.play();
+         }
+      } catch {
+
+      }
    }
 
    #region Private Variables

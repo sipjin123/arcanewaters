@@ -398,6 +398,11 @@ public class ChatPanel : MonoBehaviour {
          inputField.Select();
       }
 
+      // If we press TAB while the autocomplete panel displays a single value, apply it
+      if (inputField.isFocused && KeyUtils.GetKeyDown(Key.Tab) && ChatManager.self.autoCompletePanel.isActive() && ChatManager.self.autoCompletePanel.getNumAutoCompletes() == 1) {
+         ChatManager.self.autoCompletePanel.performOptionClicked(0);
+      }
+
       // Activate the input field when enter is pressed and the field is unfocused, except if the
       // player is writing a mail      
       if (KeyUtils.GetEnterKeyDown() && !((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail()) {

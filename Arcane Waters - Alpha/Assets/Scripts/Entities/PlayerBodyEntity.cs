@@ -202,6 +202,11 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    public void npcCheck () {
+      // Skip displaying guild icon based on npc distance, when guild icons are disabled in options
+      if (OptionsPanel.onlyShowGuildIconsOnMouseover) {
+         return;
+      }
+      
       // If an npc is above the player, hide the guild icon
       bool isNpcNear = false;
       Collider2D[] colliders = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y + 0.5f), 0.25f);

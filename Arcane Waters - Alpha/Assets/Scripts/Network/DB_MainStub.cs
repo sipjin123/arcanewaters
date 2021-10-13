@@ -1629,7 +1629,10 @@ public class DB_MainStub : MonoBehaviour
    }
    
    public static void serverStatUpdateCcu(string machine, int port, int ccu) {
-   }   
+   }
+
+   public static void serverStatUpdateFps (string machine, int port, float fps) {
+   }
 
    public static byte[] fetchWorldMapSector (int sectorIndex) {
       return null;

@@ -1,100 +1,114 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.UI;
 
 public class StoreFilter : MonoBehaviour
 {
    #region Public Variables
 
-   // Event called when a child toggle changes state
-   public StoreFilterToggleValueChangedEvent onFilterToggleValueChanged = new StoreFilterToggleValueChangedEvent();
+   // Event when the filter option changes
+   public Dropdown.DropdownEvent onFilterChanged = new Dropdown.DropdownEvent();
 
-   // When a toggle, belonging to a group, is toggled on, all the other toggles will turned off
-   public bool exclusiveMode;
-
-   // The set of toggles
-   public StoreFilterToggle[] toggles;
+   // Reference to a dropdown with the options
+   public Dropdown dropdown;
 
    #endregion
 
    private void Start () {
-      setToggle(StoreFilterToggle.ToggleType.All);
+      activateFirstOption();
+
+      dropdown.onValueChanged.RemoveAllListeners();
+      dropdown.onValueChanged.AddListener(onDropDownValueChanged);
    }
 
-   public StoreFilterToggle getCurrentToggle () {
-      if (_currentToggle == null) {
-         return toggles.First();
-      }
-
-      return _currentToggle;
+   public int getCurrentOption() {
+      return dropdown.value;
    }
 
-   public void notifyToggleValueChanged(StoreFilterToggle toggle) {
-      if (onFilterToggleValueChanged == null) {
+   public string getCurrentOptionText () {
+      int index = getCurrentOption();
+      Dropdown.OptionData option = dropdown.options[index];
+      return option.text;
+   }
+
+   public void addOption (string name) {
+      if (string.IsNullOrWhiteSpace(name)) {
          return;
       }
 
-      if (exclusiveMode) {
-         disableOtherToggles(toggle.type);
-      }
-
-      this._currentToggle = toggle;
-      onFilterToggleValueChanged.Invoke(toggle);
+      dropdown.AddOptions(new List<string> { name });
    }
 
-   public void showToggle(StoreFilterToggle.ToggleType toggleType, bool show = true) {
-      if (toggles == null || toggles.Length == 0) {
+   public void addOptions (IEnumerable<string> names) {
+      if (dropdown == null) {
          return;
       }
 
-      StoreFilterToggle toggle = getToggleByType(toggleType);
+      dropdown.AddOptions(names.ToList());
+   }
 
-      if (toggle == null) {
+   public void activateOption (string value) {
+      if (dropdown == null || string.IsNullOrWhiteSpace(value)) {
          return;
       }
 
-      toggle.gameObject.SetActive(show);
-   }
+      Dropdown.OptionData option = dropdown.options.FirstOrDefault(_ => Util.areStringsEqual(_.text, value));
 
-   public void setToggle(StoreFilterToggle.ToggleType toggleType) {
-      StoreFilterToggle toggle = getToggleByType(toggleType);
-
-      if (toggle == null) {
+      if (option == null) {
          return;
       }
 
-      toggle.toggle.SetIsOnWithoutNotify(true);
-      this._currentToggle = toggle;
+      int index = dropdown.options.IndexOf(option);
 
-      if (exclusiveMode) {
-         disableOtherToggles(toggle.type);
-      }
-   }
-
-   private StoreFilterToggle getToggleByType (StoreFilterToggle.ToggleType toggleType) {
-      return toggles.FirstOrDefault(_ => _.type == toggleType);
-   }
-
-   private void disableOtherToggles(StoreFilterToggle.ToggleType toggleType) {
-      StoreFilterToggle toggle = getToggleByType(toggleType);
-
-      if (toggle == null) {
+      if (index < 0) {
          return;
       }
 
-      if (exclusiveMode) {
-         IEnumerable<StoreFilterToggle> otherToggles = toggles.Where(_ => _ != toggle);
+      dropdown.SetValueWithoutNotify(index);
+   }
 
-         foreach (StoreFilterToggle otherToggle in otherToggles) {
-            otherToggle.toggle.SetIsOnWithoutNotify(false);
-         }
+   public void activateFirstOption () {
+      if (getOptionsCount() == 0) {
+         return;
       }
+
+      dropdown.SetValueWithoutNotify(0);
+   }
+
+   public bool hasOption(string value, bool ignoreCase = true) {
+      if (dropdown == null || string.IsNullOrWhiteSpace(value)) {
+         return false;
+      }
+
+      return dropdown.options.Any(_ => Util.areStringsEqual(_.text, value, ignoreCase));
+   }
+
+   public int getOptionsCount () {
+      if (dropdown == null) {
+         return 0;
+      }
+
+      return dropdown.options.Count;
+   }
+
+   public void clearOptions () {
+      if (dropdown == null) {
+         return;
+      }
+
+      dropdown.ClearOptions();
+   }
+
+   public void onDropDownValueChanged (int newIndex) {
+      if (onFilterChanged == null) {
+         return;
+      }
+
+      onFilterChanged.Invoke(newIndex);
    }
 
    #region Private Variables
-
-   // The current toggle
-   private StoreFilterToggle _currentToggle;
 
    #endregion
 }

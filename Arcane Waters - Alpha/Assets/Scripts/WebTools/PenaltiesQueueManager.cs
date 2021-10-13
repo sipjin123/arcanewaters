@@ -98,7 +98,9 @@ public class PenaltiesQueueManager : GenericGameManager
                      break;
                   case PenaltyActionType.LiftMute:
                      if (penalties.Any(x => x.penaltyType == PenaltyActionType.Mute || x.penaltyType == PenaltyActionType.StealthMute)) {
+                        penaltyContent.id = penalties.First(x => x.penaltyType == PenaltyActionType.Mute || x.penaltyType == PenaltyActionType.StealthMute).id;
                         success = DB_Main.unMuteAccount(penaltyContent);
+
                         if (success) {
                            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                               ServerNetworkingManager.self.unMutePlayer(penaltyContent.targetUsrId);
@@ -112,6 +114,7 @@ public class PenaltiesQueueManager : GenericGameManager
                      break;
                   case PenaltyActionType.LiftBan:
                      if (penalties.Any(x => x.penaltyType == PenaltyActionType.Ban || x.penaltyType == PenaltyActionType.PermanentBan)) {
+                        penaltyContent.id = penalties.First(x => x.penaltyType == PenaltyActionType.Ban || x.penaltyType == PenaltyActionType.PermanentBan).id;
                         success = DB_Main.unBanAccount(penaltyContent);
 
                         // We don't need to send anything to the servers, since the banned status is checked when the player logs in.

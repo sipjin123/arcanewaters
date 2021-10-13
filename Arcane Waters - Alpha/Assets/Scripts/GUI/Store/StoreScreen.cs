@@ -79,12 +79,12 @@ public class StoreScreen : Panel
    }
 
    private void OnEnable () {
-      storeFilter.onFilterToggleValueChanged.RemoveAllListeners();
-      storeFilter.onFilterToggleValueChanged.AddListener(onStoreFilterToggleValueChanged);    
+      storeFilter.onFilterChanged.RemoveAllListeners();
+      storeFilter.onFilterChanged.AddListener(onStoreFilterValueChanged);
    }
 
    private void OnDisable () {
-      storeFilter.onFilterToggleValueChanged.RemoveAllListeners();
+      storeFilter.onFilterChanged.RemoveAllListeners();
    }
 
    public void showPanel (int gold, int gems) {
@@ -94,10 +94,13 @@ public class StoreScreen : Panel
       this.goldText.text = gold + "";
       this.gemsText.text = gems + "";
       this.nameText.text = Global.userObjects.userInfo.username;
-      
+
       destroyStoreBoxes();
       deselectAllItems();
       updateCharacterPreview(showPreview: false);
+
+      // Reset filter
+      _currentFilterOption = "";
 
       // Request Store Items
       Global.player.rpc.Cmd_RequestStoreResources(requestStoreItems: true);
@@ -144,7 +147,7 @@ public class StoreScreen : Panel
             _currentStoreTabType = StoreTab.StoreTabType.Gems;
          }
 
-         filterItems();
+         performTabSwitch((int) _currentStoreTabType - 1);
       }
 
       toggleBlocker(false);
@@ -229,7 +232,7 @@ public class StoreScreen : Panel
             characterStack.updateHair(hairBox.haircut.type, Global.userObjects.userInfo.hairPalettes);
          } else if (itemBox is StoreArmorDyeBox armorDyeBox) {
             ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(Global.userObjects.armor.itemTypeId);
-            string mergedPalette = Item.parseItmPalette(Item.overridePalette(armorDyeBox.palette.paletteName, Global.userObjects.weapon.paletteNames));
+            string mergedPalette = Item.parseItmPalette(Item.overridePalette(armorDyeBox.palette.paletteName, Global.userObjects.armor.paletteNames));
 
             if (armorData == null) {
                armorData = EquipmentXMLManager.self.armorStatList.First();
@@ -268,7 +271,7 @@ public class StoreScreen : Panel
       characterStack.synchronizeAnimationIndexes();
    }
 
-   public void onStoreItemBoxClicked(StoreItemBox itemBox) {
+   public void onStoreItemBoxClicked (StoreItemBox itemBox) {
       bool wasSelected = itemBox.isSelected();
       deselectAllItems();
 
@@ -299,23 +302,35 @@ public class StoreScreen : Panel
             haircutItemBox.gameObject.SetActive(haircutItemBox.haircut.getGender() == Global.player.gender);
          }
 
-         // Apply the filter (if necessary)
-         if (shouldShowStoreFilter() && storeFilter.getCurrentToggle().type != StoreFilterToggle.ToggleType.All) {
-            if (itemBox is StoreDyeBox dyeBox) {
-               if (storeFilter.getCurrentToggle().type == StoreFilterToggle.ToggleType.Primary) {
-                  if (!dyeBox.palette.isPrimary()) {
-                     itemBox.gameObject.SetActive(false);
+         if (shouldShowStoreFilter()) {
+            _currentFilterOption = storeFilter.getCurrentOptionText();
+
+            if (!Util.areStringsEqual(_currentFilterOption, StoreFilterConstants.ALL)) {
+               if (isDyeTab()) {
+                  // Apply the filter (if necessary)
+                  if (itemBox is StoreDyeBox dyeBox) {
+                     if (Util.areStringsEqual(_currentFilterOption, StoreFilterConstants.PRIMARY)) {
+                        if (!dyeBox.palette.isPrimary()) {
+                           itemBox.gameObject.SetActive(false);
+                        }
+                     }
+
+                     if (Util.areStringsEqual(_currentFilterOption, StoreFilterConstants.SECONDARY)) {
+                        if (!dyeBox.palette.isSecondary()) {
+                           itemBox.gameObject.SetActive(false);
+                        }
+                     }
+
+                     if (Util.areStringsEqual(_currentFilterOption, StoreFilterConstants.ACCENT)) {
+                        if (!dyeBox.palette.isAccent()) {
+                           itemBox.gameObject.SetActive(false);
+                        }
+                     }
                   }
                }
 
-               if (storeFilter.getCurrentToggle().type == StoreFilterToggle.ToggleType.Secondary) {
-                  if (!dyeBox.palette.isSecondary()) {
-                     itemBox.gameObject.SetActive(false);
-                  }
-               }
-
-               if (storeFilter.getCurrentToggle().type == StoreFilterToggle.ToggleType.Tertiary) {
-                  if (!dyeBox.palette.isAccent()) {
+               if (_currentStoreTabType == StoreTab.StoreTabType.ShipSkins) {
+                  if (itemBox is StoreShipSkinBox shipSkinBox && !_currentFilterOption.Equals(shipSkinBox.getShipName(), System.StringComparison.OrdinalIgnoreCase)) {
                      itemBox.gameObject.SetActive(false);
                   }
                }
@@ -339,8 +354,8 @@ public class StoreScreen : Panel
          gridLayout.spacing = new Vector2(16, 16);
          gridLayout.constraintCount = 3;
       } else if (tabType == StoreTab.StoreTabType.Gems) {
-         gridLayout.cellSize = new Vector2(130,180);
-         gridLayout.spacing = new Vector2(0,0);
+         gridLayout.cellSize = new Vector2(130, 180);
+         gridLayout.spacing = new Vector2(0, 0);
          gridLayout.constraintCount = 4;
       } else {
          gridLayout.cellSize = new Vector2(100, 150);
@@ -363,9 +378,10 @@ public class StoreScreen : Panel
       D.debug($"New Store Tab Type is: { _currentStoreTabType }");
       deselectAllItems();
       updateCharacterPreview(showPreview: true);
-      filterItems();
       updateTabTitle();
+      regenerateStoreFilter();
       updateStoreFilter();
+      filterItems();
    }
 
    private void updateTabTitle () {
@@ -697,13 +713,32 @@ public class StoreScreen : Panel
 
    #region Filter
 
-   public void onStoreFilterToggleValueChanged(StoreFilterToggle toggle) {
-      if (toggle == null || !toggle.toggle.isOn) {
-         return;
+   private bool shouldShowStoreFilter () {
+      return (_currentStoreTabType == StoreTab.StoreTabType.ArmorDyes ||
+        _currentStoreTabType == StoreTab.StoreTabType.HatDyes ||
+        _currentStoreTabType == StoreTab.StoreTabType.WeaponDyes ||
+        _currentStoreTabType == StoreTab.StoreTabType.ShipSkins);
+   }
+
+   public void regenerateStoreFilter () {
+      this.storeFilter.clearOptions();
+      List<string> options = new List<string>();
+
+      if (isDyeTab()) {
+         options.AddRange(new[] { StoreFilterConstants.PRIMARY, StoreFilterConstants.SECONDARY, StoreFilterConstants.ACCENT });
       }
 
-      D.debug($"Filter state changed. The new value is {toggle.type}");
-      _currentStoreFilterToggleType = toggle.type;
+      if (_currentStoreTabType == StoreTab.StoreTabType.ShipSkins) {
+         options.AddRange(computeShipNames().Select(Util.UppercaseFirst));
+         options.Sort();
+      }
+
+      options.Insert(0, StoreFilterConstants.ALL);
+      this.storeFilter.addOptions(options);
+   }
+
+   public void onStoreFilterValueChanged (int valueIndex) {
+      D.debug($"Filter state changed. The new value is {_currentFilterOption}");
 
       if (shouldShowStoreFilter()) {
          filterItems();
@@ -715,20 +750,32 @@ public class StoreScreen : Panel
          return;
       }
 
-      bool showStoreFilter = shouldShowStoreFilter();
+      this.storeFilter.gameObject.SetActive(shouldShowStoreFilter());
 
-      if (!showStoreFilter) {
-         // Reset the filter to the default toggle
-         this.storeFilter.setToggle(StoreFilterToggle.ToggleType.All);
+      if (this.storeFilter.hasOption(_currentFilterOption)) {
+         this.storeFilter.activateOption(_currentFilterOption);
+         return;
       }
 
-      this.storeFilter.gameObject.SetActive(showStoreFilter);
+      if (this.storeFilter.getOptionsCount() > 0) {
+         this.storeFilter.activateFirstOption();
+      }
    }
 
-   private bool shouldShowStoreFilter () {
-      return (_currentStoreTabType == StoreTab.StoreTabType.ArmorDyes ||
-        _currentStoreTabType == StoreTab.StoreTabType.HatDyes ||
-        _currentStoreTabType == StoreTab.StoreTabType.WeaponDyes);
+   #endregion
+
+   #region Utils
+
+   private bool isDyeTab () {
+      return _currentStoreTabType == StoreTab.StoreTabType.ArmorDyes ||
+         _currentStoreTabType == StoreTab.StoreTabType.HairDyes ||
+         _currentStoreTabType == StoreTab.StoreTabType.HatDyes ||
+         _currentStoreTabType == StoreTab.StoreTabType.WeaponDyes;
+   }
+
+   private string[] computeShipNames () {
+      List<ShipData> shipDatas = ShipDataManager.self.shipDataList;
+      return shipDatas.Select(_ => _.shipName).ToArray();
    }
 
    #endregion
@@ -747,8 +794,8 @@ public class StoreScreen : Panel
    // Store Items Cache
    private List<StoreItem> _storeItemsCache;
 
-   // Current Store Tab filter
-   private StoreFilterToggle.ToggleType _currentStoreFilterToggleType;
+   // Current value of the store filter
+   private string _currentFilterOption;
 
    #endregion
 }

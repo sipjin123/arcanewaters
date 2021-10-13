@@ -347,7 +347,7 @@ RectTransform:
   - {fileID: 5497291615178198080}
   - {fileID: 8129995697625842832}
   m_Father: {fileID: 688314740650915000}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -875,8 +875,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 147.35, y: -65.325}
-  m_SizeDelta: {x: 284.7, y: 120.649994}
+  m_AnchoredPosition: {x: 147.35, y: -73.325}
+  m_SizeDelta: {x: 284.7, y: 136.65}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5847326500042733592
 CanvasRenderer:
@@ -1259,7 +1259,7 @@ GameObject:
   - component: {fileID: 203241151867765548}
   - component: {fileID: 6209019849452104865}
   m_Layer: 5
-  m_Name: CraftingBlueprint Section
+  m_Name: Left Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1277,6 +1277,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5436647542232871098}
+  - {fileID: 2197685772126583251}
   - {fileID: 2698167664367322567}
   m_Father: {fileID: 393003704971520949}
   m_RootOrder: 0
@@ -4384,7 +4385,6 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 2197685772126583251}
   - {fileID: 5253523191663284837}
   m_Father: {fileID: 393003704971520949}
   m_RootOrder: 1
@@ -4917,12 +4917,12 @@ GameObject:
   - component: {fileID: 723667477912099148}
   - component: {fileID: 7803646531474058090}
   m_Layer: 5
-  m_Name: Blueprint List (1)
+  m_Name: RefinementSection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2197685772126583251
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4936,13 +4936,13 @@ RectTransform:
   m_Children:
   - {fileID: 1745623805098518732}
   - {fileID: 4969786917937470825}
-  m_Father: {fileID: 543875587649611021}
-  m_RootOrder: 0
+  m_Father: {fileID: 688314740650915000}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 157.35, y: -65.325}
-  m_SizeDelta: {x: 294.7, y: 130.65}
+  m_AnchoredPosition: {x: 157.35, y: -374.97498}
+  m_SizeDelta: {x: 294.7, y: 146.65}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7820233555052624666
 MonoBehaviour:
@@ -5539,16 +5539,20 @@ MonoBehaviour:
   craftingTabButon: {fileID: 2449919309008880174}
   titleText: {fileID: 428607376118280}
   refinementPanelEntities:
-  - {fileID: 5227391827289260192}
+  - {fileID: 6245562550153917650}
   - {fileID: 3173137070141676284}
   craftingPanelEntities:
-  - {fileID: 2013217230278854734}
+  - {fileID: 7528766993551153810}
   - {fileID: 6948143106896047832}
   durabilityText: {fileID: 4680280758432515084}
   refineableItemsHolder: {fileID: 1745623805098518732}
   refineAbleItemSelection: {fileID: 1777789897095491296}
   latestRefineableItem: {fileID: 0}
   refinementIngredientsHolder: {fileID: 3296683719509658604}
+  receiveRefinementData:
+    m_PersistentCalls:
+      m_Calls: []
+  _currentTab: 1
 --- !u!1 &6586040196818888656
 GameObject:
   m_ObjectHideFlags: 0
@@ -6543,7 +6547,7 @@ GameObject:
   - component: {fileID: 3704944944350957909}
   - component: {fileID: 2107629304940899412}
   m_Layer: 5
-  m_Name: Blueprint List (1)
+  m_Name: CraftinSection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7272,7 +7276,7 @@ RectTransform:
   - {fileID: 2698264809204598494}
   - {fileID: 4267997953458246910}
   m_Father: {fileID: 543875587649611021}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}

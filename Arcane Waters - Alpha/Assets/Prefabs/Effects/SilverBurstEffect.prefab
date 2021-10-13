@@ -55,7 +55,7 @@ MonoBehaviour:
   shouldFadeOut: 1
   fadeDuration: 0.2
   destroyOnEnd: 1
-  texture: {fileID: 2800000, guid: 49e9e65299ffffc46a0860cef7e964d5, type: 3}
+  texturePath: Effects/Silver Burst FX/silver_coin
   spriteRenderer: {fileID: 41742383549190567}
 --- !u!1 &8708005187594779014
 GameObject:
@@ -127,7 +127,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 5170498726258266109, guid: 49e9e65299ffffc46a0860cef7e964d5,
+  m_Sprite: {fileID: -3327782329261469467, guid: 49e9e65299ffffc46a0860cef7e964d5,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

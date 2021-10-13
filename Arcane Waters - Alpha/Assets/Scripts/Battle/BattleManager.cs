@@ -1209,18 +1209,13 @@ public class BattleManager : MonoBehaviour {
    }
 
    public void onBattlerDeath(Battler battler) {
+      if (!NetworkServer.active) {
+         return;
+      }
+
       if (battler.battlerType == BattlerType.AIEnemyControlled) {
          // Silver management
          int silverReward = SilverManager.SILVER_PLAYER_LAND_BATTLE_KILL_REWARD;
-
-         // Spawn Silver Burst Effect
-         Vector3 silverBurstEffectOffsetWhenFacingEast = new Vector3(-0.194f, -0.129f, 0);
-
-         // Mirror the east offset to obtain the offset when facing west
-         Vector3 silverBurstEffectOffsetWhenFacingWest = silverBurstEffectOffsetWhenFacingEast;
-         silverBurstEffectOffsetWhenFacingWest.Scale(new Vector3(-1.0f, 1.0f, 1.0f));
-
-         Vector3 position = battler.transform.position + ((battler.teamType == Battle.TeamType.Defenders) ? silverBurstEffectOffsetWhenFacingWest : silverBurstEffectOffsetWhenFacingEast);
 
          // Get the battlers in the opposite team
          Battle.TeamType otherTeam = (battler.teamType == Battle.TeamType.Attackers) ? Battle.TeamType.Defenders : Battle.TeamType.Attackers;

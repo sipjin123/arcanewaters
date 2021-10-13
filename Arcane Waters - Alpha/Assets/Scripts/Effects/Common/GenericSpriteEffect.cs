@@ -35,31 +35,31 @@ public class GenericSpriteEffect : MonoBehaviour
    public bool destroyOnEnd = false;
 
    // Reference to the texture that holds the frames of the effect
-   public Texture2D texture;
+   public string texturePath;
 
    // Reference to the Sprite renderer
    public SpriteRenderer spriteRenderer;
 
    #endregion
 
-   private void OnEnable () {
+   private void OnEnable() {
       if (_activeObjects == null) {
          _activeObjects = new List<GameObject>();
       }
    }
 
-   private void Update () {
+   private void Update() {
       if (spriteRenderer != null) {
          spriteRenderer.flipX = false;
       }
    }
 
-   public bool isVisible () {
+   public bool isVisible() {
       return _isVisible;
    }
 
-   public void play () {
-      Sprite[] foundSprites = ImageManager.getSprites(texture);
+   public void play() {
+      Sprite[] foundSprites = ImageManager.getSprites(texturePath);
 
       if (foundSprites == null) {
          D.debug($"Couldn't play the effect because the texture could not found.");
@@ -88,16 +88,16 @@ public class GenericSpriteEffect : MonoBehaviour
       InvokeRepeating(nameof(changeSprite), startDelay, secondsPerFrame);
    }
 
-   public void stop () {
+   public void stop() {
       CancelInvoke(nameof(changeSprite));
       hold();
    }
 
-   private void hold () {
+   private void hold() {
       Invoke(nameof(onHoldEnded), holdTime);
    }
 
-   private void onHoldEnded () {
+   private void onHoldEnded() {
       if (!shouldFadeOut) {
          hide();
          return;
@@ -106,7 +106,7 @@ public class GenericSpriteEffect : MonoBehaviour
       spriteRenderer.DOFade(0.0f, fadeDuration).OnComplete(hide);
    }
 
-   private void hide () {
+   private void hide() {
       // Disable the effect
       this.gameObject.SetActive(false);
 
@@ -127,7 +127,7 @@ public class GenericSpriteEffect : MonoBehaviour
       }
    }
 
-   protected void changeSprite () {
+   protected void changeSprite() {
       _isVisible = true;
 
       if (_index >= _sprites.Length) {
@@ -139,7 +139,7 @@ public class GenericSpriteEffect : MonoBehaviour
       _index++;
    }
 
-   private Sprite[] getEffectSprites (string path) {
+   private Sprite[] getEffectSprites(string path) {
       // Load our sprites
       Sprite[] sprites = ImageManager.getSprites(path);
 
@@ -150,7 +150,7 @@ public class GenericSpriteEffect : MonoBehaviour
       return sprites;
    }
 
-   private void toggleGameObjects (bool show = true) {
+   private void toggleGameObjects(bool show = true) {
       if (_activeObjects == null || _activeObjects.Count == 0) {
          return;
       }

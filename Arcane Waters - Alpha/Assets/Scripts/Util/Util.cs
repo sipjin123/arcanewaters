@@ -1397,6 +1397,43 @@ public class Util : MonoBehaviour
       return enemies;
    }
 
+   public static bool areStringsEqual(string a, string b, bool ignoreCase = true) {
+      if (string.IsNullOrWhiteSpace(a) || string.IsNullOrWhiteSpace(b)) {
+         return false;
+      }
+
+      return a.Equals(b, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+   }
+
+   public static T[] getArraySlice<T>(IEnumerable<T> source, int sliceIndex, int sliceSize) {
+      if (source == null || sliceIndex < 0 || sliceSize == 0 || source.Count() == 0) {
+         return Array.Empty<T>();
+      }
+
+      int maxItems = source.Count();
+      int maxSliceIndex = maxItems / sliceSize;
+
+      if (sliceIndex > maxSliceIndex) {
+         return Array.Empty<T>();
+      }
+
+      int sliceStartIndex = sliceSize * sliceIndex;
+      int sliceEndIndex = sliceStartIndex + sliceSize - 1;
+      sliceEndIndex = Math.Min(sliceEndIndex, maxItems - 1);
+      List<T> resultList = new List<T>();
+      int counter = 0;
+
+      foreach (T element in source) {
+         if (sliceStartIndex <= counter && counter <= sliceEndIndex) {
+            resultList.Add(element);
+         }
+
+         counter++;
+      }
+
+      return resultList.ToArray();
+   }
+
    // A Random instance we can use for generating random numbers
    private static System.Random r = new System.Random();
 

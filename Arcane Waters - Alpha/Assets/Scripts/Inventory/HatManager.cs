@@ -74,21 +74,20 @@ public class HatManager : EquipmentManager {
    }
 
    [TargetRpc]
-   public void Target_EquipHat (NetworkConnection connection, string rawHatData, string palettes) {
+   public void Target_EquipHat (NetworkConnection connection, int newHatId, int newHatSqlId, int newHatType, string rawHatData, string palettes) {
       HatStatData hatData = Util.xmlLoad<HatStatData>(rawHatData);
       cachedHatData = hatData;
 
       // Update the sprites for the new hat type
-      int newType = hatData == null ? 0 : hatData.hatType;
-      updateSprites(newType, palettes);
+      updateSprites(newHatType, palettes);
 
       // Play a sound
       SoundManager.create3dSound("equip_", this.transform.position, 2);
 
       Global.getUserObjects().hat = new Hat {
-         id = equippedHatId,
+         id = newHatId,
          category = Item.Category.Hats,
-         itemTypeId = hatType
+         itemTypeId = newHatSqlId
       };
    }
 
@@ -137,7 +136,7 @@ public class HatManager : EquipmentManager {
          return;
       }
 
-      Target_EquipHat(connection, HatStatData.serializeHatStatData(hatData), palettes);
+      Target_EquipHat(connection, hatId, hatData.sqlId, hatData.hatType, HatStatData.serializeHatStatData(hatData), palettes);
 
       // Send the Info to all clients
       Rpc_BroadcastEquipHat(HatStatData.serializeHatStatData(hatData), palettes);

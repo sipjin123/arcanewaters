@@ -82,6 +82,7 @@ public class HatClipMaskGenerationTool : MonoBehaviour
          rep($"Generating Clip Masks for '{texture.name}'... ({counter + 1}/{total})", (float) (counter + 1) / total);
          Texture2D clipMaskTexture = generateClipMaskFor(texture);
          applyExtraClipMaskTo(clipMaskTexture, getExtraClipMaskFor(texture, settings));
+         applyPaintedClipMaskTo(clipMaskTexture, getPaintedClipMaskFor(texture, settings));
          addTextureToProject(clipMaskTexture, computePathOfClipMaskFor(texture));
          counter++;
       }
@@ -104,6 +105,10 @@ public class HatClipMaskGenerationTool : MonoBehaviour
 
    public static Texture2D getExtraClipMaskFor (Texture2D texture, HatClipMaskGenerationSettings settings) {
       return getSettingFor(texture, settings).extraClipMaskTexture;
+   }
+   
+   public static Texture2D getPaintedClipMaskFor (Texture2D texture, HatClipMaskGenerationSettings settings) {
+      return getSettingFor(texture, settings).paintedClipMaskTexture;
    }
 
    public static bool clipMaskExistsFor (Texture2D texture) {
@@ -157,6 +162,33 @@ public class HatClipMaskGenerationTool : MonoBehaviour
       }
 
       D.debug($"Applying extra clipping to the clipmask texture '{clipMaskTexture.name}': DONE");
+
+      return true;
+   }
+
+   public static bool applyPaintedClipMaskTo (Texture2D clipMaskTexture, Texture2D paintedClipMaskTexture) {
+      // Black pixels in the painted clip mask texture will be merged to the mask
+      if (clipMaskTexture == null) {
+         D.debug($"Invalid ClipMask Texture");
+         return false;
+      }
+
+      if (paintedClipMaskTexture == null) {
+         D.debug($"No Painted Clipmask Texture specified for ClipMask '{clipMaskTexture.name}'. Skipping...");
+         return false;
+      }
+
+      D.debug($"Applying painted clipping to the clipmask texture '{clipMaskTexture.name}'...");
+
+      for (int row = 0; row < paintedClipMaskTexture.height; row++) {
+         for (int column = 0; column < paintedClipMaskTexture.width; column++) {
+            bool isBlack = paintedClipMaskTexture.GetPixel(column, row).r < 0.5f;
+            Color originalColor = clipMaskTexture.GetPixel(column, row);
+            clipMaskTexture.SetPixel(column, row, isBlack ? Color.cyan : originalColor);
+         }
+      }
+
+      D.debug($"Applying painted clipping to the clipmask texture '{clipMaskTexture.name}': DONE");
 
       return true;
    }
@@ -259,7 +291,7 @@ public class HatClipMaskGenerationTool : MonoBehaviour
       }
 
       foreach (HatClipMaskGenerationSetting setting in settings.values) {
-         if (setting == null || setting.texture == null) {
+         if (setting == null || setting.texture == null || !setting.isEnabled) {
             continue;
          }
 

@@ -37,7 +37,7 @@ public class PvpGame : MonoBehaviour {
    public Transform topLaneCenter, midLaneCenter, botLaneCenter;
 
    // Default Respawn Timeout (Seconds)
-   public const float RESPAWN_TIMEOUT = 5.0f;
+   public const float RESPAWN_TIMEOUT = 10.0f;
 
    // Holds the current ship data of each player in the pvp game
    public Dictionary<int, ShipInfo> playerShipCache = new Dictionary<int, ShipInfo>();
@@ -570,20 +570,20 @@ public class PvpGame : MonoBehaviour {
       broadcastInstructionsPanelPlayerList();
    }
 
-   public void sendGameMessage (string message, List<int> receivingPlayers = null) {
+   public void sendGameMessage (string message, PvpAnnouncement.Priority priority, List<int> receivingPlayers = null) {
       // If players aren't specified, send the message to all players
       if (receivingPlayers == null) {
          receivingPlayers = _usersInGame;
       }
 
-      sendGameMessageToPlayers(message, receivingPlayers);
+      sendGameMessageToPlayers(message, priority, receivingPlayers);
    }
 
-   private void sendGameMessageToPlayers (string message, List<int> receivingPlayers) {
+   private void sendGameMessageToPlayers (string message, PvpAnnouncement.Priority priority, List<int> receivingPlayers) {
       foreach (int userId in receivingPlayers) {
          NetEntity playerEntity = EntityManager.self.getEntity(userId);
          if (playerEntity && playerEntity.rpc) {
-            playerEntity.rpc.Target_ReceiveBroadcastPvpAnnouncement(message);
+            playerEntity.rpc.Target_ReceiveBroadcastPvpAnnouncement(message, priority);
          }
       }
    }
@@ -604,14 +604,14 @@ public class PvpGame : MonoBehaviour {
          if (lastAttacker.isPlayerShip() && structure is PvpTower tower) {
             lastAttacker.getPlayerShipEntity().rpc.broadcastPvpTowerDestruction(lastAttacker, tower);
          } else {
-            sendGameMessage("The " + structure.faction.ToString() + "' " + structure.GetType().ToString() + " has been destroyed.");
+            sendGameMessage("The " + structure.faction.ToString() + "' " + structure.GetType().ToString() + " has been destroyed.", PvpAnnouncement.Priority.ObjectiveUpdate);
          }
       }
    }
 
    private void onGameEnd (PvpTeamType winningTeam) {
       _gameState = State.PostGame;
-      sendGameMessage("The " + _teamFactions[winningTeam].ToString() + " have won the game!");
+      sendGameMessage("The " + _teamFactions[winningTeam].ToString() + " have won the game!", PvpAnnouncement.Priority.GameEnd);
       StopAllCoroutines();
 
       setStructuresActivated(false);
@@ -747,7 +747,6 @@ public class PvpGame : MonoBehaviour {
          }
       }
 
-      sendGameMessage("This game will close in 10 seconds.");
       yield return new WaitForSeconds(10.0f);
 
       // Delete the team groups
@@ -830,16 +829,16 @@ public class PvpGame : MonoBehaviour {
    private Vector3 getSpawnPositionForTeam (PvpTeamType teamType) {
       Vector3 spawnPosition;
 
-      // If base positions have been setup, return the position of the team's base
-      if ((int)teamType < _basePositions.Count) {
-         spawnPosition = _basePositions[(int) teamType];
-
-         // Otherwise, use spawns from map editor
-      } else {
+      // If base positions haven't been setup, or if this is a CTF game
+      if ((int)teamType > _basePositions.Count || gameMode == PvpGameMode.CaptureTheFlag) {
+         // Use map editor spawn
          int teamIndex = (int) (teamType) - 1;
          SpawnManager.MapSpawnData mapSpawnData = SpawnManager.self.getAllMapSpawnData(areaKey);
-
          spawnPosition = mapSpawnData.spawns.Values.ElementAt(teamIndex).localPosition;
+
+      // Otherwise, base positions have been setup, use the position of the team's base
+      } else {
+         spawnPosition = _basePositions[(int) teamType];
       }
 
       // Choose an area around the spawn position
@@ -1215,7 +1214,7 @@ public class PvpGame : MonoBehaviour {
    private const float RESPAWN_TIMEOUT_TIME_UNIT = 5.0f;
 
    // Represents the amount of seconds added to the Respawn Timeout after every time unit passes (Seconds)
-   private const float RESPAWN_TIMEOUT_INCREASE_DELTA = 2.0f;
+   private const float RESPAWN_TIMEOUT_INCREASE_DELTA = 5.0f;
 
    // Deaths Registry
    private Dictionary<int, PvPGameDeathInfo> _deathsRegistry = new Dictionary<int, PvPGameDeathInfo>();

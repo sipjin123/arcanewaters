@@ -41,28 +41,51 @@ public class PvpAnnouncementHolder : MonoBehaviour
    }
 
    public void addTowerDestructionAnnouncement(NetEntity attacker, PvpTower target, bool blink = false, PvpTeamType pvpTeam = PvpTeamType.None) {
+      PvpAnnouncement.Priority priority = PvpAnnouncement.Priority.ObjectiveUpdate;
+      
+      // If this announcement's priority is lower than the current one, don't show it
+      if (priority < getCurrentAnnouncementPriority()) {
+         return;
+      }
+
       PvpAnnouncement newAnnouncement = createAnnouncement(this.transform, blink);
 
       if (newAnnouncement != null) {
          newAnnouncement.blinkingColor = PvpGame.getColorForTeam(pvpTeam);
          newAnnouncement.announceTowerDestruction(attacker, target);
+         newAnnouncement.announcementPriority = priority;
       }
    }
 
    public void addKillAnnouncement (NetEntity attacker, NetEntity target, bool blink = false, PvpTeamType pvpTeam = PvpTeamType.None) {
+      PvpAnnouncement.Priority priority = PvpAnnouncement.Priority.PlayerKill;
+
+      // If this announcement's priority is lower than the current one, don't show it
+      if (priority < getCurrentAnnouncementPriority()) {
+         return;
+      }
+
       PvpAnnouncement newAnnouncement = createAnnouncement(this.transform, blink);
 
       if (newAnnouncement != null) {
          newAnnouncement.blinkingColor = PvpGame.getColorForTeam(pvpTeam);
          newAnnouncement.announceKill(attacker, target);
+         newAnnouncement.announcementPriority = priority;
       }
    }
 
-   public void addAnnouncement (string announcementText, bool blink = false) {
+   public void addAnnouncement (string announcementText, PvpAnnouncement.Priority priority, bool blink = false) {
+
+      // If this announcement's priority is lower than the current one, don't show it
+      if (priority < getCurrentAnnouncementPriority()) {
+         return;
+      }
+
       PvpAnnouncement newAnnouncement = createAnnouncement(this.transform, blink);
 
       if (newAnnouncement != null) {
          newAnnouncement.announce(announcementText);
+         newAnnouncement.announcementPriority = priority;
       }
    }
 
@@ -72,6 +95,26 @@ public class PvpAnnouncementHolder : MonoBehaviour
       for (int i = childrenCount-1; i >= 0; i--) {
          Transform childTransform = this.transform.GetChild(i);
          Destroy(childTransform.gameObject);
+      }
+   }
+
+   private PvpAnnouncement getCurrentAnnouncement () {
+      int childCount = this.transform.childCount;
+
+      if (childCount > 0) {
+         return this.transform.GetChild(0).GetComponent<PvpAnnouncement>();
+      }
+
+      return null;
+   }
+
+   private PvpAnnouncement.Priority getCurrentAnnouncementPriority () {
+      PvpAnnouncement currentAnnouncement = getCurrentAnnouncement();
+
+      if (currentAnnouncement != null) {
+         return currentAnnouncement.announcementPriority;
+      } else {
+         return PvpAnnouncement.Priority.None;
       }
    }
 

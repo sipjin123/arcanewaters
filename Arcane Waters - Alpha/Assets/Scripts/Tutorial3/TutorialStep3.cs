@@ -23,6 +23,9 @@ public class TutorialStep3
    // The text spoken by the NPC during this step
    public string npcSpeech;
 
+   // Gets set to true when the step can be skipped by pressing on the 'next' button
+   public bool canBeSkipped = false;
+
    #endregion
 
    public TutorialStep3 () { }

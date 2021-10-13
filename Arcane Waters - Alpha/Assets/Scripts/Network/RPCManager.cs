@@ -8573,8 +8573,9 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveBroadcastPvpAnnouncement (string announcementText) {
-      PvpAnnouncementHolder.self.addAnnouncement(announcementText);
+   public void Target_ReceiveBroadcastPvpAnnouncement (string announcementText, PvpAnnouncement.Priority priority) {
+      PvpAnnouncementHolder.self.addAnnouncement(announcementText, priority);
+      ChatPanel.self.addChatInfo(new ChatInfo(0, announcementText, DateTime.Now, ChatInfo.Type.System));
    }
 
    [Server]
@@ -8846,28 +8847,7 @@ public class RPCManager : NetworkBehaviour
    public void Target_InitPvpInstructionsPanel (NetworkConnection connection, int instanceId, List<Faction.Type> teamFactions) {
       PvpInstructionsPanel.self.init(teamFactions, instanceId);
    }
-
-   [TargetRpc]
-   public void Target_ShowSilverBurstEffect (NetworkConnection connection, int silverReward, Vector3 position) {
-      try {
-         float radius = 0.2f;
-         float zOffset = 0.2f;
-         int numCoins = 10;
-
-         for (int i = 0; i < numCoins; i++) {
-            int randomAngle = Random.Range(0, 360);
-            float x = Mathf.Cos(Mathf.Deg2Rad * randomAngle) * radius;
-            float y = Mathf.Sin(Mathf.Deg2Rad * randomAngle) * radius;
-            Vector3 pos = new Vector3(position.x + x, position.y + y, position.z + zOffset);
-            GameObject burstEffectGameObject = Instantiate(PrefabsManager.self.silverBurstEffectPrefab, pos, Quaternion.identity);
-            GenericSpriteEffect effect = burstEffectGameObject.GetComponent<GenericSpriteEffect>();
-            effect.play();
-         }
-      } catch {
-
-      }
-   }
-
+   
    #region Private Variables
 
    // Our associated Player object

@@ -113,7 +113,7 @@ public class PvpCaptureTarget : SeaEntity {
       player.holdingPvpCaptureTarget = true;
 
       PvpGame activeGame = PvpManager.self.getGameWithInstance(instanceId);
-      activeGame?.sendGameMessage(player.entityName + " picked up the " + faction.ToString() + "' treasure.");
+      activeGame?.sendGameMessage(player.entityName + " picked up the " + faction.ToString() + "' treasure.", PvpAnnouncement.Priority.ObjectiveUpdate);
 
       // Assign holdingEntity
       assignHoldingEntity(player);
@@ -126,7 +126,7 @@ public class PvpCaptureTarget : SeaEntity {
 
    private void playerReturnedTarget (PlayerShipEntity player) {
       PvpGame activeGame = PvpManager.self.getGameWithInstance(instanceId);
-      activeGame?.sendGameMessage(player.entityName + " returned the " + player.faction.ToString() + "' treasure.");
+      activeGame?.sendGameMessage(player.entityName + " returned the " + player.faction.ToString() + "' treasure.", PvpAnnouncement.Priority.ObjectiveUpdate);
 
       returnFlag();
 
@@ -140,7 +140,7 @@ public class PvpCaptureTarget : SeaEntity {
 
    private void playerDroppedTarget (PlayerShipEntity player) {
       PvpGame activeGame = PvpManager.self.getGameWithInstance(instanceId);
-      activeGame?.sendGameMessage(player.entityName + " dropped the " + faction.ToString() + "' treasure.");
+      activeGame?.sendGameMessage(player.entityName + " dropped the " + faction.ToString() + "' treasure.", PvpAnnouncement.Priority.ObjectiveUpdate);
 
       // Remove visual effect from player
       player.holdingPvpCaptureTarget = false;

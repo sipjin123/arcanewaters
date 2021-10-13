@@ -34,6 +34,10 @@ public class PowerupOrb : ClientMonoBehaviour {
       // Apply different orb & trail sprites based on powerup type
    }
 
+   public void setParticleVisibility (bool isVisible) {
+      trailParticles.gameObject.SetActive(isVisible);
+   }
+
    #region Private Variables
       
    #endregion

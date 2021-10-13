@@ -1217,6 +1217,7 @@ public class AdminManager : NetworkBehaviour
                   penalty.targetUsrName = userAccountInfo.username;
                   penalty.penaltySource = PenaltySource.Game;
                   penalty.penaltyType = isIndefinite ? PenaltyActionType.PermanentBan : PenaltyActionType.Ban;
+                  penalty.penaltyTime = seconds;
 
                   if (!isIndefinite) {
                      penalty.expiresAt = DateTime.UtcNow.AddSeconds(seconds).Ticks;
@@ -1292,6 +1293,7 @@ public class AdminManager : NetworkBehaviour
                   penalty.penaltySource = PenaltySource.Game;
                   penalty.penaltyType = isStealth ? PenaltyActionType.StealthMute : PenaltyActionType.Mute;
                   penalty.expiresAt = DateTime.UtcNow.AddSeconds(seconds).Ticks;
+                  penalty.penaltyTime = seconds;
 
                   if (!string.IsNullOrEmpty(reason)) {
                      penalty.penaltyReason = reason;
@@ -1888,7 +1890,8 @@ public class AdminManager : NetworkBehaviour
          username = list[0];
          gold = System.Convert.ToInt32(list[1]);
       } catch (System.Exception e) {
-         D.warning("Unable to parse gold int from: " + parameters + ", exception: " + e);
+         D.debug("Unable to parse gold int from: " + list[1] + ", exception: " + e);
+         ChatManager.self.addChat($"Unable to parse gold amount {list[1]}. Make sure that value is number and it's not bigger than 2147483647", ChatInfo.Type.Error);
          return;
       }
 
