@@ -4091,6 +4091,30 @@ public class RPCManager : NetworkBehaviour
             }
          }
 
+         // Disable land powerups that has already been purchased
+         if (itemType == PvpShopItem.PvpShopItemType.LandPowerup) {
+            foreach (PvpShopItem shopItem in shopItemList) {
+               LandPowerupType landPowerup = (LandPowerupType) shopItem.itemId;
+               if (LandPowerupManager.self.hasPowerup(_player.userId, landPowerup)) {
+                  shopItem.isDisabled = true;
+               }
+            }
+         }
+
+         // Alter price of healing item based on ship type
+         if (itemType == PvpShopItem.PvpShopItemType.Item && _player is PlayerShipEntity) {
+            PlayerShipEntity playerShip = (PlayerShipEntity) _player;
+
+            foreach (PvpShopItem shopItem in shopItemList) {
+               if ((PvpConsumableItem) shopItem.itemId == PvpConsumableItem.RepairTool) {
+                  // Weakest ship max is 10, strongest ship max is 52
+                  // Increase item cost in percentage depending on sailor count
+                  int newItemCost = shopItem.itemCost + (int) (shopItem.itemCost * (float) (playerShip.sailors / 100f));
+                  shopItem.itemCost = newItemCost;
+               }
+            }
+         }
+
          int userSilver = GameStatsManager.self.getSilverAmount(_player.userId);
          Target_ProcessShopData(_player.connectionToClient, shopData.shopId, userSilver, shopData.shopName, shopData.shopDescription, Util.serialize(shopItemList), shopItemTypeList.ToArray());
       } else {
@@ -4158,6 +4182,7 @@ public class RPCManager : NetworkBehaviour
 
                      // Update health to max value
                      playerShip.currentHealth = shipData.baseHealthMax;
+                     playerShip.maxHealth = shipData.baseHealthMax;
 
                      // Sprite updates
                      playerShip.changeShipInfo(purchasedShip);
@@ -4194,7 +4219,9 @@ public class RPCManager : NetworkBehaviour
             case PvpShopItem.PvpShopItemType.Item:
                if (_player is PlayerShipEntity) {
                   PlayerShipEntity playersShip = (PlayerShipEntity) _player;
-                  int repairValue = 100;
+
+                  // Repair 40% of the ships life bar
+                  int repairValue = (int) (playersShip.maxHealth * .4);
                   playersShip.currentHealth = Mathf.Clamp(playersShip.currentHealth + repairValue, 0, playersShip.maxHealth);
                   Target_RepairShip(playersShip.connectionToClient, repairValue);
                }
@@ -6084,7 +6111,6 @@ public class RPCManager : NetworkBehaviour
          }
 
          if (!Item.isValidItem(newDatabaseItem)) {
-            D.debug("Generating default loot item for player due to None Category: giveItemRewardsToPlayer()");
             newDatabaseItem = Item.defaultLootItem();
          }
 
