@@ -940,7 +940,7 @@ public class BattleManager : MonoBehaviour {
                float attackApplyDelay = 0;
                AttackAbilityData abilityDataReference = (AttackAbilityData) AbilityManager.getAbility(action.abilityGlobalID, AbilityType.Standard);
                if (abilityDataReference.abilityActionType == AbilityActionType.Ranged || abilityDataReference.abilityActionType == AbilityActionType.CastToTarget) {
-                  attackApplyDelay += abilityDataReference.getTotalAnimLength(source, target) * delayMagnitude;
+                  attackApplyDelay += abilityDataReference.getAimDuration();
                }
 
                yield return new WaitForSeconds(attackApplyDelay);

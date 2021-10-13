@@ -60,6 +60,9 @@ public class Battle : NetworkBehaviour {
    // The damager per tick of the burn status
    public const int BURN_DAMAGE_PER_TICK = 2;
 
+   // The tick count
+   public int tickCount = 0;
+
    #endregion
 
    public void Start () {
@@ -102,6 +105,8 @@ public class Battle : NetworkBehaviour {
    }
    
    public TickResult tick () {
+      tickCount++;
+
       // Everything below here is only valid for the server
       if (!NetworkServer.active) {
          return TickResult.None;
@@ -161,10 +166,12 @@ public class Battle : NetworkBehaviour {
 
                   switch (currentStatusType) {
                      case Status.Type.Burning:
-                        battler.health -= BURN_DAMAGE_PER_TICK;
-                        battler.displayedHealth -= BURN_DAMAGE_PER_TICK;
-                        Rpc_DealDamagePerTick(battleId, battler.userId, BURN_DAMAGE_PER_TICK, Element.Fire);
-
+                        if (tickCount > 1) {
+                           battler.health -= BURN_DAMAGE_PER_TICK;
+                           battler.displayedHealth -= BURN_DAMAGE_PER_TICK;
+                           Rpc_DealDamagePerTick(battleId, battler.userId, BURN_DAMAGE_PER_TICK, Element.Fire);
+                           tickCount = 0;
+                        }
                         if (battler.health < 1) {
                            battler.isAlreadyDead = true;
                         }

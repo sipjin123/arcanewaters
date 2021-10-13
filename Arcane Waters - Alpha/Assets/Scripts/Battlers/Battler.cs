@@ -1964,9 +1964,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             yield return new WaitForSeconds(getKnockupLength());
          } else if (abilityDataReference.hasShake && !abilityDataReference.useSpecialAnimation) {
             // If the ability magnitude will shake the screen to simulate impact
-            Coroutine shakeCoroutine = targetBattler.StartCoroutine(targetBattler.CO_AnimateShake());
-            yield return new WaitForSeconds(getShakeLength());
-            targetBattler.StopCoroutine(shakeCoroutine);
+            if (targetBattler.enemyType == Enemy.Type.PlayerBattler) {
+               Coroutine shakeCoroutine = targetBattler.StartCoroutine(targetBattler.CO_AnimateShake());
+               yield return new WaitForSeconds(getShakeLength());
+               targetBattler.StopCoroutine(shakeCoroutine);
+            } else {
+               Coroutine shakeCoroutine = targetBattler.StartCoroutine(targetBattler.CO_SimulateShake());
+               yield return new WaitForSeconds(getShakeLength());
+               targetBattler.StopCoroutine(shakeCoroutine);
+            }
          } else if (abilityDataReference.hasKnockBack) {
             // Move the sprite back and forward to simulate knockback
             targetBattler.playAnim(Anim.Type.Hurt_East);
@@ -2084,9 +2090,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       yield return new WaitForSeconds(getShakeSpecialLength());
    }
 
-   private IEnumerator CO_AnimateShakeOld () {
+   private IEnumerator CO_SimulateShake () {
       float startTime = Time.time;
-      const float shakeIntensity = 0.01f; // Original Value = 0.03f;
+      const float shakeIntensity = 0.015f; // Original Value = 0.03f;
       Vector2 startPos = this.battleSpot.transform.position;
 
       // If the client's player is the target of this shake, then also shake the camera
@@ -2103,14 +2109,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          float radians = degrees * Mathf.Deg2Rad;
          float xOffset = Mathf.Sin(radians) * shakeIntensity;
-
-         // For logging shake formula
-         /*
-         D.debug("Degrees: " + degrees.ToString("f2")
-            + " Deg: " + (timePassed / SHAKE_LENGTH).ToString("f2")
-            + " Rad: " + radians.ToString("f2")
-            + " Offset: " + xOffset.ToString("f3"));
-         */
 
          // Add a positional offset to our starting position
          transform.position = new Vector3(
@@ -2258,11 +2256,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       return .6f;
    }
 
-   public static float getAimDuration () {
-      // Determines the aiming duration
-      return .1f * AdminGameSettingsManager.self.settings.battleAttackDuration;
-   }
-
    public static float getPreCastDelay () {
       // Determines the delay before animation the cast clip
       return .25f * AdminGameSettingsManager.self.settings.battleAttackDuration;
@@ -2271,6 +2264,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public static float getPostCastDelay () {
       // Determines the delay before ending cast Pose
       return .13f * AdminGameSettingsManager.self.settings.battleAttackDuration;
+   }
+
+   public static float getAimDuration () {
+      // Determines the aiming duration
+      return .1f * AdminGameSettingsManager.self.settings.battleAttackDuration;
    }
 
    public static float getPreShootDelay () {
