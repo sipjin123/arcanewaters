@@ -28,6 +28,13 @@ namespace MapCreationTool {
          _outline = GetComponentInChildren<SpriteOutline>();
       }
 
+      private void Start () {
+         if (transform.parent.gameObject.name == "prefabs") {
+            Vector3 currScale = transform.localScale;
+            transform.localScale = currScale * 1.5f;
+         }
+      }
+
       public void dataFieldChanged (DataField field) {
          if (field.k.CompareTo(DataField.SEA_ENEMY_DATA_KEY) == 0) {
             try {

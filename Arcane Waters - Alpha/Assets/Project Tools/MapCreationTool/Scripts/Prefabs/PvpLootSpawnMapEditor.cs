@@ -14,8 +14,14 @@ public class PvpLootSpawnMapEditor : MapEditorPrefab, IPrefabDataListener, IHigh
       outline = GetComponentInChildren<SpriteOutline>();
    }
 
-   public void dataFieldChanged (DataField field) {
+   private void Start () {
+      if (transform.parent.gameObject.name == "prefabs") {
+         Vector3 currScale = transform.localScale;
+         transform.localScale = currScale * 1.5f;
+      }
+   }
 
+   public void dataFieldChanged (DataField field) {
    }
 
    public void setHighlight (bool hovered, bool selected, bool deleting) {
