@@ -677,51 +677,26 @@ public class RPCManager : NetworkBehaviour
 
       // Check what we're going to give the user
       Item item = chest.getContents(_player.userId);
-      bool spawnPowerup = item == null;
-      if (item != null) {
-         spawnPowerup = item.category == 0 || item.itemTypeId == 0;
-      }
-
-      if (chest.chestType == ChestSpawnType.Sea && spawnPowerup) {
-         Powerup.Type newPowerupType = chest.getPowerUp();
-         if (newPowerupType == Powerup.Type.None) {
-            newPowerupType = Powerup.Type.SpeedUp;
+      if (!Item.isValidItem(item)) {
+         if (_player) {
+            Instance currInstance = InstanceManager.self.getInstance(_player.instanceId);
+            D.debug("Cannot process Loot bag rewards for chest {" + chestId + "}! Category is None for: " +
+               _player.userId + " " + _player.areaKey + " " +
+               chest.rarity + " " + (currInstance == null ? "No Instance" : currInstance.biome.ToString()));
+         } else {
+            D.debug("Cannot process Loot bag rewards for chest {" + chestId + "}! Category is None, NetEntityNotFound");
          }
 
-         Rarity.Type newPowerupRarity = Rarity.getRandom();
-         Target_GivePowerupToPlayer(_player.connectionToClient, newPowerupType, newPowerupRarity, chestId);
-
-         // If area is tutorial, make the powerups temporary so it doesnt get farmed and used in voyages
-         Powerup newPowerUp = new Powerup {
-            powerupRarity = newPowerupRarity,
-            powerupType = newPowerupType,
-            expiry = chest.areaKey.ToLower().Contains("tutorial") ? Powerup.Expiry.OnWarp : Powerup.Expiry.None
-         };
-
-         PowerupManager.self.addPowerupServer(_player.userId, newPowerUp);
-         Target_AddPowerup(_player.connectionToClient, newPowerUp);
-      } else {
-         if (!Item.isValidItem(item)) {
-            if (_player) {
-               Instance currInstance = InstanceManager.self.getInstance(_player.instanceId);
-               D.debug("Cannot process Loot bag rewards for chest {" + chestId + "}! Category is None for: " +
-                  _player.userId + " " + _player.areaKey + " " +
-                  chest.rarity + " " + (currInstance == null ? "No Instance" : currInstance.biome.ToString()));
-            } else {
-               D.debug("Cannot process Loot bag rewards for chest {" + chestId + "}! Category is None, NetEntityNotFound");
-            }
-
-            // Replace invalid item into default item
-            item = Item.defaultLootItem();
-         }
-
-         // Grant the rewards to the user
-         giveItemRewardsToPlayer(_player.userId, new List<Item>() { item }, false, chest.id);
-
-         // Registers the interaction of loot bags to the achievement database for recording
-         AchievementManager.registerUserAchievement(_player, ActionType.OpenedLootBag);
-         AchievementManager.registerUserAchievement(_player, ActionType.LootGainTotal);
+         // Replace invalid item into default item
+         item = Item.defaultLootItem();
       }
+
+      // Grant the rewards to the user
+      giveItemRewardsToPlayer(_player.userId, new List<Item>() { item }, false, chest.id);
+
+      // Registers the interaction of loot bags to the achievement database for recording
+      AchievementManager.registerUserAchievement(_player, ActionType.OpenedLootBag);
+      AchievementManager.registerUserAchievement(_player, ActionType.LootGainTotal);
    }
 
    [TargetRpc]
