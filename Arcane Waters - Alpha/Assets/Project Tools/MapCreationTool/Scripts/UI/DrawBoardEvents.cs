@@ -98,10 +98,10 @@ namespace MapCreationTool
          // Data setup
          BrushStroke stroke = BrushTool.instance.stroke;
          char cachedChar = 'x';
-         char landRepresentation = '1';
-         char seaRepresentation = '2';
+         char landRepresentation = '2';
+         char seaRepresentation = '1';
          bool forceBreak = false;
-         int widthOffset = 3;
+         int widthOffset = 0;
 
          DateTime startTime = DateTime.UtcNow;
          int dataStart = 0;
@@ -127,8 +127,8 @@ namespace MapCreationTool
          WorldMapTranslator.instance.triggerProgressPanel(true);
 
          // Offset setup
-         float newHorizontalOffset = (worldMapData.x - (worldMapData.w * .5f) - widthOffset);
-         float newVerticalOffset = (worldMapData.y - (worldMapData.h * .5f));
+         float newHorizontalOffset = (0 - (worldMapData.w * .5f) - widthOffset);
+         float newVerticalOffset = (0 - (worldMapData.h * .5f));
          int tileStringIndex = dataStart;
          Vector3Int targetClick = Vector3Int.zero;
 

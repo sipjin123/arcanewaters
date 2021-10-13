@@ -37,6 +37,11 @@ public class WorldMapTranslator : MonoBehaviour {
    // The panel displaying the progress
    public GameObject progressPanel;
 
+   // Constant values of the world map array
+   public const int ROW_COUNT = 15;
+   public const int COLUMN_COUNT = 9;
+   public const string ALPHABET = "ABCDEFGHIJKLMNO";
+
    #endregion
 
    private void Awake () {
@@ -87,7 +92,17 @@ public class WorldMapTranslator : MonoBehaviour {
       // Save map
       yield return new WaitForSeconds(1);
       DateTime currDateData = DateTime.UtcNow;
-      string saveName = "auto_map_" + currentMapIndex + "_D:" + currDateData.Month + "-" + currDateData.Day + "-" + currDateData.Year.ToString().Remove(0, 2) + "_T:" + currDateData.Hour + ":" + currDateData.Minute;
+      int rowCount = 0;
+      char columnValue = 'x';
+      string saveName = "";
+      bool includeTimeStamp = false;
+      try {
+         rowCount = (int) (currentMapIndex / ROW_COUNT);
+         columnValue = ALPHABET[(currentMapIndex - (ROW_COUNT * rowCount))];
+         saveName = "world_map_" + columnValue + rowCount + (includeTimeStamp ? ("_T:" + currDateData.Hour + ":" + currDateData.Minute) : "");
+      } catch {
+         saveName = "world_map_" + currentMapIndex + (includeTimeStamp ? ("_T:" + currDateData.Hour + ":" + currDateData.Minute) : "");
+      }
       UI.saveAsPanel.forceSaveName(saveName);
       yield return new WaitForSeconds(1);
       UI.saveAsPanel.save();
