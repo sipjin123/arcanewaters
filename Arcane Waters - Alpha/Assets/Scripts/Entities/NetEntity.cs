@@ -2037,6 +2037,11 @@ public class NetEntity : NetworkBehaviour
                return;
             }
 
+            if (targetUserInfo.customFarmBaseId < 1 || targetUserInfo.customHouseBaseId < 1) {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, this, "The player " + targetPlayerName + " did not set the custom maps yet!");
+               return;
+            }
+
             if (!ServerNetworkingManager.self.isUserOnline(targetUserInfo.userId)) {
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, this, "The player " + targetPlayerName + " is offline!");
                return;

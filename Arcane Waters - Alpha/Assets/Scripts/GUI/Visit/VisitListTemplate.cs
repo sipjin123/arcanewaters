@@ -65,8 +65,8 @@ public class VisitListTemplate : MonoBehaviour {
 
    public void visitUser () {
       if (isOnline) {
-         FriendListPanel.self.close();
          Global.player.Cmd_PlayerVisit(friendName.text, "");
+         VisitListPanel.self.close();
       }
    }
 
