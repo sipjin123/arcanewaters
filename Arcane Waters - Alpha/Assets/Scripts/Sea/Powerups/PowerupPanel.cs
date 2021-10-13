@@ -50,7 +50,9 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
    public void clearLandPowerups () {
       for (int i = 0; i < _landPowerupIcons.Count; i++) {
-         Destroy(_landPowerupIcons[i].gameObject);
+         if (_landPowerupIcons[i] != null) {
+            Destroy(_landPowerupIcons[i].gameObject);
+         }
       }
       _landPowerupIcons.Clear();
 
@@ -153,7 +155,9 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
    public void clearSeaPowerups () {
       for (int i = 0; i < _powerupIcons.Count; i++) {
-         Destroy(_powerupIcons[i].gameObject);
+         if (_powerupIcons[i] != null) {
+            Destroy(_powerupIcons[i].gameObject);
+         }
       }
       _powerupIcons.Clear();
 

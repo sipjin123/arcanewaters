@@ -125,7 +125,6 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
             powerupType = treasureDropsData.powerUp;
             rarity = treasureDropsData.rarity;
          } else {
-            D.debug("No powerup data found in loot group {" + lootGroupId + "} with rarity {" + rarity + "}");
             powerupType = Powerup.Type.SpeedUp;
          }
       }
