@@ -63,6 +63,13 @@ namespace MapCreationTool
                   toolTip = customData.toolTip,
                   options = ShopManager.instance.formSelectionOptions()
                };
+            } else if (customData.type == CustomFieldType.PvpShopName && ShopManager.instance.pvpShopEntryCount > 0) {
+               Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
+               selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
+                  name = customData.name,
+                  toolTip = customData.toolTip,
+                  options = ShopManager.instance.formPvpShopSelectionOptions()
+               };
             } else if (customData.type == CustomFieldType.PvpShopName && ShopManager.instance.pvpShopDataCollection.Count > 0) {
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
                selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
