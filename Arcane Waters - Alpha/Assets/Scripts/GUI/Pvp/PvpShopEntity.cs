@@ -83,14 +83,14 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
       }
    }
 
-   private void OnTriggerEnter2D (Collider2D collision) {
+   private void OnTriggerStay2D (Collider2D collision) {
       if (!isActive) {
          return;
       }
       
       PlayerShipEntity playerEntity = collision.GetComponent<PlayerShipEntity>();
       if (Global.player != null && playerEntity != null) {
-         if (Global.player.userId == playerEntity.userId && playerEntity.pvpTeam == pvpTeamType) {
+         if (Global.player.userId == playerEntity.userId && playerEntity.pvpTeam == pvpTeamType && !PvpShopPanel.self.shopButton.activeInHierarchy) {
             PvpShopPanel.self.shopId = shopId;
             PvpShopPanel.self.enableShopButton(true);
          }
@@ -104,7 +104,7 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
 
       PlayerShipEntity playerEntity = collision.GetComponent<PlayerShipEntity>();
       if (Global.player != null && playerEntity != null) {
-         if (Global.player.userId == playerEntity.userId && playerEntity.pvpTeam == pvpTeamType) {
+         if (Global.player.userId == playerEntity.userId && playerEntity.pvpTeam == pvpTeamType && PvpShopPanel.self.shopButton.activeInHierarchy) {
             PvpShopPanel.self.enableShopButton(false);
          }
       }

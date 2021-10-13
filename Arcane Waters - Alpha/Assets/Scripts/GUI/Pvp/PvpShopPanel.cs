@@ -86,6 +86,9 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
    // The current category
    public PvpShopItemType selectedCategory;
 
+   // If the shop is for sea
+   public bool isSeaShop;
+
    public class PvpItemInfo {
       public string name, description;
       public Sprite sprite;
@@ -151,12 +154,14 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       foreach (Transform child in parentHolder) {
          PvpShopTemplate shopTemplate = child.GetComponent<PvpShopTemplate>();
          bool canAffordItem = silverValue >= shopTemplate.itemCost;
-         if (canAffordItem) {
-            shopTemplate.enableBlocker(false);
-            shopTemplate.buyButton.interactable = true;
-         } else {
-            shopTemplate.enableBlocker(true);
-            shopTemplate.buyButton.interactable = false;
+         if (shopTemplate.shopItemType != PvpShopItemType.LandPowerup) {
+            if (canAffordItem) {
+               shopTemplate.enableBlocker(false);
+               shopTemplate.buyButton.interactable = true;
+            } else {
+               shopTemplate.enableBlocker(true);
+               shopTemplate.buyButton.interactable = false;
+            }
          }
 
          if (isShipDisplaying) {
@@ -241,9 +246,8 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
             Instantiate(shipTemplatePrefab, shipTemplateHolder) : Instantiate(shopTemplatePrefab, shopTemplateHolder);
          shopTemplate.setupData(shopItemData);
          shopTemplate.selectTemplateEvent.AddListener(() => {
-            if (Global.player != null && Global.player is PlayerShipEntity && shopTemplate.buyButton.IsInteractable() && shopTemplate.itemCost <= userSilver) {
-               PlayerShipEntity playerShip = (PlayerShipEntity) Global.player;
-               playerShip.rpc.Cmd_BuyPvpItem(shopItemData.itemId, shopId, (int) shopItemData.shopItemType);
+            if (Global.player != null && shopTemplate.buyButton.IsInteractable() && shopTemplate.itemCost <= userSilver) {
+               Global.player.rpc.Cmd_BuyPvpItem(shopItemData.itemId, shopId, (int) shopItemData.shopItemType);
                loadingPanel.SetActive(true);
                shopTemplate.selectedObj.SetActive(true);
             }
@@ -274,6 +278,11 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
    }
 
    public void closePopup () {
+      if (Global.player && !isSeaShop) {
+         loadingPanel.SetActive(true);
+         Global.player.rpc.Cmd_RequestPvpShopData(shopId, (int) PvpShopItemType.LandPowerup);
+      }
+
       popUpResult.SetActive(false);
       loadingPanel.SetActive(false);
    }
@@ -321,7 +330,9 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
                LandPowerupType landPowerupType = (LandPowerupType) itemData.itemId;
                LandPowerupInfo landPowerupInfo = LandPowerupManager.self.landPowerupInfo[landPowerupType];
                if (landPowerupInfo != null) {
-                  newItemInfo.sprite = ImageManager.getSprite(landPowerupInfo.iconPath);
+                  if (landPowerupInfo.iconPath.Length > 1) {
+                     newItemInfo.sprite = ImageManager.getSprite(landPowerupInfo.iconPath);
+                  }
                   newItemInfo.name = landPowerupInfo.powerupName;
                   newItemInfo.description = landPowerupInfo.powerupInfo;
                }
@@ -345,8 +356,18 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       return newItemInfo;
    }
 
-   public void onShopButtonPressed () {
-      onSelectShipCategory();
+   public void onShopButtonPressed (bool isSeaShop) {
+      this.isSeaShop = isSeaShop;
+      if (isSeaShop) {
+         landPowerupCategoryObj.gameObject.SetActive(false);
+         onSelectShipCategory();
+      } else {
+         shipCategoryObj.gameObject.SetActive(false);
+         powerupCategoryObj.gameObject.SetActive(false);
+         abilityCategoryObj.gameObject.SetActive(false);
+         itemCategoryObj.gameObject.SetActive(false);
+         onSelectLandCategory();
+      }
    }
 
    public void onSelectShipCategory () {
