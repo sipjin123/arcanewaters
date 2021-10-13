@@ -121,6 +121,11 @@ namespace MapCreationTool
          get { return _shopDataArray.Length; }
       }
 
+      public int pvpShopEntryCount
+      {
+         get { return _pvpShopDataArray.Length; }
+      }
+
       #region Private Variables
 
       // Array of shop data loaded

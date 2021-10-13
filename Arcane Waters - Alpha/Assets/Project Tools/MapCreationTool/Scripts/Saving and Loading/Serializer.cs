@@ -380,6 +380,7 @@ namespace MapCreationTool.Serialization
       public const string POWERUP_DURATION = "powerup duration";
 
       public const string SHOP_ID = "shop id";
+      public const string PVP_SHOP_ID = "pvp shop id";
       public const string HAS_SHOP_BUILDING = "has shop building";
       public const string IS_FACING_NORTH = "is facing north";
 
