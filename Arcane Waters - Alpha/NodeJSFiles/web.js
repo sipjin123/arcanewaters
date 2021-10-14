@@ -388,17 +388,43 @@ const postUpdates = async (buildIdDeployed) => {
 				elHandleArray[0].click();
 				
 				// Navigate to Publish Tab
-				console.log("Select publish Button");
+				console.log("Select publish Button Phase 1");
+				await page2.waitFor(actionInterval);
+				await page2.waitFor(actionInterval);
+				await page2.waitFor(actionInterval);
+
+				await page2.evaluate(() => {
+						  var nameOfClass = 'tabbar_GraphicalAssetsTab_3lJb_ ';
+						  document.querySelectorAll('.' + nameOfClass)[4].click();
+						});
+
+				console.log("Select publish Button Phase 2");
+
+				await page2.waitFor(actionInterval);
+				await page2.evaluate(() => {
+						  var nameOfClass = 'tabbar_GraphicalAssetsTab_3lJb_ ';
+						  document.querySelectorAll('.' + nameOfClass)[0].click();
+						});
+
+				console.log("Select publish Button Phase 3");
+
 				await page2.waitFor(actionInterval);
 				await page2.evaluate(() => {
 						  var nameOfClass = 'tabbar_GraphicalAssetsTab_3lJb_ ';
 						  document.querySelectorAll('.' + nameOfClass)[4].click();
 						});
+
+				console.log("Select publish Button Phase 4");
+
+				await page2.waitFor(actionInterval);
+				await page2.waitFor(actionInterval);
 				await page2.waitFor(actionInterval);
 				await page2.evaluate(() => {
 				  var nameOfClass = 'partnereventshared_EventPublishButton_3nIAe';
 				  document.querySelector('.' + nameOfClass).click();
 				});
+
+				console.log("Select publish Button Phase 5");
 
 				// Trigger publish action
 				await page2.waitFor(actionInterval);
