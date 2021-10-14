@@ -194,13 +194,16 @@ const postUpdates = async (buildIdDeployed) => {
 			  document.querySelector('.' + nameOfClass).click();
 			});
 
-			// Select Sub category
-			console.log("Select patch Button");
-			await page2.waitFor(actionInterval);
-			await page2.evaluate(() => {
-			  var nameOfClass = 'partnereventeditor_EventSubCategory_Desc_kjyqb';
-			  document.querySelector('.' + nameOfClass).click();
-			});
+			// Non playtest patch updater has different ui, no option for categorized patch note
+			if (buildType != "playtest") {
+				// Select Sub category
+				console.log("Select patch Button");
+				await page2.waitFor(actionInterval);
+				await page2.evaluate(() => {
+				  var nameOfClass = 'partnereventeditor_EventSubCategory_Desc_kjyqb';
+				  document.querySelector('.' + nameOfClass).click();
+				});
+			}
 
 			// Register text field content
 			await page2.waitFor(actionInterval);
