@@ -221,9 +221,51 @@ const postUpdates = async (buildIdDeployed) => {
 
 			await page2.waitFor(typingInterval);
 			
-            await page2.type('.partnereventeditor_EventEditorDescription_3C8iP', patchNoteMessage + '\n');
+      	  await page2.type('.partnereventeditor_EventEditorDescription_3C8iP', patchNoteMessage + '\n');
 			await page2.waitFor(actionInterval);
 
+			// =======================================================================
+			// Non playtest patch updater does not have option to select build attachment
+			if (buildType != "playtest") {
+				// Select the build target
+				await page2.waitFor(actionInterval);
+				const findBuildSelectButton = await page2.$$('button');
+				if (findBuildSelectButton.length < 1) {
+					console.log('Missing select build button');
+				} else {
+					findBuildSelectButton[0].click();
+				}
+
+				console.log('Select Build Attachment');
+
+				var dropDownIndividualData = 'dropdown_DialogDropDownMenu_Item_2oAiZ';
+				var indexMeter = 'data-dropdown-index';
+				var dropDownData = 'dropdown_DialogDropDownMenu_30wJO _DialogInputContainer';
+				var productionBranch = 'production - Build 7517457 (10/12/2021)';
+				var dropdownClassName = 'DialogDropDown _DialogInputContainer  Panel Focusable';
+
+				await page2.waitFor(actionInterval);
+
+				if (buildType == "main") {
+					await page2.evaluate(() => {
+						document.querySelector("div.DialogDropDown_Arrow").click();
+						Array.from(document.querySelectorAll("div[data-dropdown-index]").values())[1].click();
+						document.querySelector("button.Primary").click();
+					});
+				} else if (buildType == "playtest") {
+					await page2.evaluate(() => {
+						document.querySelector("div.DialogDropDown_Arrow").click();
+						Array.from(document.querySelectorAll("div[data-dropdown-index]").values())[3].click();
+						document.querySelector("button.Primary").click();
+					});
+				} else {
+						const [button] = await page2.$x("//button[contains(., 'Confirm')]");
+						if (button) {
+						    await button.click();
+						}
+				}
+			}
+			// =======================================================================
 			// Navigate to Graphic Assets Tab
 			console.log("Navigate to Graphic Assets Tab");
 			await page2.waitFor(actionInterval);
