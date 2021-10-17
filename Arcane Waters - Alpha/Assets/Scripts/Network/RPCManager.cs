@@ -4079,7 +4079,7 @@ public class RPCManager : NetworkBehaviour
          // Disabled shop items here if needed
          foreach (PvpShopItem shopItem in shopData.shopItems) {
             if (shopItem.shopItemType == itemType) {
-               shopItemList.Add(shopItem);
+               shopItemList.Add(PvpShopItem.generateItemCopy(shopItem));
             }
          }
 
@@ -4095,9 +4095,8 @@ public class RPCManager : NetworkBehaviour
          if (itemType == PvpShopItem.PvpShopItemType.LandPowerup) {
             foreach (PvpShopItem shopItem in shopItemList) {
                LandPowerupType landPowerup = (LandPowerupType) shopItem.itemId;
-               if (LandPowerupManager.self.hasPowerup(_player.userId, landPowerup)) {
-                  shopItem.isDisabled = true;
-               }
+               bool isDisabled = LandPowerupManager.self.hasPowerup(_player.userId, landPowerup);
+               shopItem.isDisabled = isDisabled;
             }
          }
 
@@ -4247,7 +4246,9 @@ public class RPCManager : NetworkBehaviour
       }
 
       PvpShopPanel panel = PvpShopPanel.self;
-      panel.enableShopButton(true);
+      if (Global.player != null && Global.player is PlayerShipEntity) {
+         panel.enableShopButton(true);
+      }
       panel.userSilver = remainingSilver;
       panel.userSilverText.text = remainingSilver.ToString();
       panel.updatedShopTemplates(remainingSilver);

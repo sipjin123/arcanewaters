@@ -44,6 +44,21 @@ public class PvpShopItem {
       LandPowerup = 7
    }
 
+   public static PvpShopItem generateItemCopy (PvpShopItem item) {
+      PvpShopItem newShopItem = new PvpShopItem();
+      newShopItem.isDisabled = item.isDisabled;
+      newShopItem.itemId = item.itemId;
+      newShopItem.itemName = item.itemName;
+      newShopItem.itemCategory = item.itemCategory;
+      newShopItem.itemType = item.itemType;
+      newShopItem.itemCost = item.itemCost;
+      newShopItem.spritePath = item.spritePath;
+      newShopItem.itemData = item.itemData;
+      newShopItem.shopItemType = item.shopItemType;
+      newShopItem.rarityType = item.rarityType;
+      return newShopItem;
+   }
+
    public static PvpShopItem defaultConsumableItem () {
       PvpShopItem newShopItem = new PvpShopItem {
          itemCost = 100,
