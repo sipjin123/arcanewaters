@@ -112,16 +112,26 @@ public class EnemyManager : MonoBehaviour {
       Area area = AreaManager.self.getArea(instance.areaKey);
       int randomEnemyTypeVal = Random.Range(0, 100);
       int spawnsPerSpot = getSpawnsPerSpot(instance.difficulty);
+      float spawnShipChange = 60;
+
+      // Override random value to fix ship spawning only if the map does not allow seamonsters
+      MapCreationTool.Serialization.Map mapInfo = AreaManager.self.getMapInfo(instance.areaKey);
+      if (mapInfo != null) {
+         if (!mapInfo.spawnsSeaMonsters && randomEnemyTypeVal >= spawnShipChange) {
+            D.debug("Map Data override! This map {" + instance.areaKey + "} does not allow spawning of SeaMonsters!");
+            randomEnemyTypeVal = 0;
+         }
+      }
 
       foreach (Enemy_Spawner spawner in _spawners[instance.areaKey]) {
          // Spawning ships has a 60% chance
-         if (randomEnemyTypeVal < 60) {
+         if (randomEnemyTypeVal < spawnShipChange) {
             for (int i = 0; i < spawnsPerSpot; i++) {
-               spawnBotShip(instance, area, spawner.transform.localPosition, guildId);
+               spawnBotShip(instance, area, spawner.transform.localPosition, guildId, i!=0);
             }
          } else {
             for (int i = 0; i < spawnsPerSpot; i++) {
-               spawnSeaMonster(instance, area, spawner.transform.localPosition);
+               spawnSeaMonster(instance, area, spawner.transform.localPosition, i!=0);
             }
          }
       }

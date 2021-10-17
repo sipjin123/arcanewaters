@@ -991,7 +991,7 @@ public class XmlVersionManagerClient : GenericGameManager {
             List<Map> mapKeyDataList = new List<Map>();
             foreach (string subGroup in xmlGroup) {
                string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
-
+              
                // Extract the segregated data and assign to the xml manager
                if (xmlSubGroup.Length >= 6) {
                   int id = 0;
@@ -1005,31 +1005,55 @@ public class XmlVersionManagerClient : GenericGameManager {
                   int maxPlayerCount = 0;
                   int pvpGameMode = 0;
                   int pvpArenaSize = 0;
+                  bool spawnSeaMonsters = false;
 
-                  try {
-                     id = int.Parse(xmlSubGroup[0]);
-                     name = xmlSubGroup[1];
-                     displayName = xmlSubGroup[2];
-                     specialType = int.Parse(xmlSubGroup[3]);
-                     sourceMapId = int.Parse(xmlSubGroup[4]);
-                     weatherEffectType = int.Parse(xmlSubGroup[5]);
-                     biome = int.Parse(xmlSubGroup[6]);
-                  } catch { 
-                     D.debug("Failed to get index 0-6"); 
+                  id = int.Parse(xmlSubGroup[0]);
+                  name = xmlSubGroup[1];
+                  displayName = xmlSubGroup[2];
+                  specialType = int.Parse(xmlSubGroup[3]);
+                  sourceMapId = int.Parse(xmlSubGroup[4]);
+                  weatherEffectType = int.Parse(xmlSubGroup[5]);
+                  biome = int.Parse(xmlSubGroup[6]);
+
+                  int.TryParse(xmlSubGroup[7], out int retEditorType);
+                  if (retEditorType > 0) {
+                     editorType = retEditorType;
+                  } else {
+                     editorType = 0;
                   }
 
-                  try {
-                     editorType = xmlSubGroup.Length >= 7 ? int.Parse(xmlSubGroup[7]) : (int) MapCreationTool.EditorType.Area;
-                  } catch {
-                     D.debug("Failed to get index 7 {editorType}");
+                  int.TryParse(xmlSubGroup[8], out int retPlayerCount);
+                  if (retPlayerCount > 0) {
+                     maxPlayerCount = retPlayerCount;
+                  } else {
+                     maxPlayerCount = 0;
                   }
 
-                  try {
-                     maxPlayerCount = int.Parse(xmlSubGroup[8]);
-                     pvpGameMode = int.Parse(xmlSubGroup[9]);
-                     pvpArenaSize = int.Parse(xmlSubGroup[10]);
-                  } catch { 
-                     D.debug("Failed to get index 8-10"); 
+                  int.TryParse(xmlSubGroup[9], out int retGameMode);
+                  if (retGameMode > 0) {
+                     pvpGameMode = retGameMode;
+                  } else {
+                     pvpGameMode = 0;
+                  }
+
+                  int.TryParse(xmlSubGroup[10], out int retArenaSize);
+                  if (retArenaSize > 0) {
+                     pvpArenaSize = retArenaSize;
+                  } else {
+                     pvpArenaSize = 0;
+                  }
+
+                  if (xmlSubGroup.Length >= 12) {
+                     int.TryParse(xmlSubGroup[11], out int retSpawnSeamonsters);
+                     if (retSpawnSeamonsters > 0) {
+                        spawnSeaMonsters = true;
+                     } else {
+                        spawnSeaMonsters = false;
+                     }
+                     spawnSeaMonsters = int.Parse(xmlSubGroup[11]) == 1 ? true : false;
+                  } else {
+                     spawnSeaMonsters = false;
+                     D.debug("Xml subgroup has insufficient data! " + xmlSubGroup.Length);
                   }
 
                   Map newMapEntry = new Map {
@@ -1044,7 +1068,9 @@ public class XmlVersionManagerClient : GenericGameManager {
                      maxPlayerCount = maxPlayerCount,
                      pvpGameMode = (PvpGameMode) pvpGameMode,
                      pvpArenaSize = (PvpArenaSize) pvpArenaSize,
+                     spawnsSeaMonsters = spawnSeaMonsters
                   };
+
                   mapKeyDataList.Add(newMapEntry);
                   message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
                }
