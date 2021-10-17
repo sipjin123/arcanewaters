@@ -25,7 +25,7 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
    public GameObject buildingObject;
 
    // Reference to the colliders
-   public BoxCollider2D solidColliderRef;
+   public GameObject solidColliderRef, southCollider, northCollider;
    public CircleCollider2D triggerColliderRef;
 
    // If this object is active
@@ -71,13 +71,18 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
             string rawData = dataField.v.Split(':')[0];
             bool hasBuildingDisplay = rawData.ToLower() == "true" ? true : false;
             buildingObject.SetActive(hasBuildingDisplay);
-            solidColliderRef.gameObject.SetActive(hasBuildingDisplay);
+            solidColliderRef.SetActive(hasBuildingDisplay);
          }
          if (dataField.k.CompareTo(DataField.IS_FACING_NORTH) == 0) {
             string rawData = dataField.v.Split(':')[0];
             bool isFacingNorth = rawData.ToLower() == "true" ? true : false;
             if (isFacingNorth) {
                currentRenderer.sprite = northSprite;
+               southCollider.SetActive(false);
+               northCollider.SetActive(true);
+            } else {
+               southCollider.SetActive(true);
+               northCollider.SetActive(false);
             }
          }
       }
