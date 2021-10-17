@@ -1095,10 +1095,15 @@ public class BattleManager : MonoBehaviour {
             }
 
             // Spawn Chest
-            List<Transform> spawnNodeTarget = ((Enemy) defeatedBattlers[0].player).lootSpawnPositions.ToList();
-            winningBattlers[0].player.rpc.spawnBattlerMonsterChest(winningBattlers[0].player.instanceId,
-               filteredNodeTarget.Count > 0 ? filteredNodeTarget.ChooseRandom().position : spawnNodeTarget.ChooseRandom().position,
-               battlerEnemyID);
+            Enemy enemy = (Enemy) defeatedBattlers[0].player;
+            List<Transform> spawnNodeTarget = enemy.lootSpawnPositions.ToList();
+            Vector3 targetSpawnPos = filteredNodeTarget.Count > 0 ? filteredNodeTarget.ChooseRandom().position : spawnNodeTarget.ChooseRandom().position;
+            
+            // Offset spawn position of the loot spawn for boss monsters, due to their huge corpse sprite
+            if (enemy.isBossType) {
+               targetSpawnPos += new Vector3(0, .825f, 0);
+            }
+            winningBattlers[0].player.rpc.spawnBattlerMonsterChest(winningBattlers[0].player.instanceId, targetSpawnPos, battlerEnemyID);
          }
       }
 
