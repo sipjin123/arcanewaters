@@ -424,10 +424,22 @@ public class PlayerShipEntity : ShipEntity
          } else if (_targetSelector.getTarget() != null && (InputManager.getKeyActionDown(KeyAction.FireMainCannon) || (InputManager.getKeyAction(KeyAction.FireMainCannon) && !_isChargingCannon))) {
             _chargingWithMouse = false;
             cannonAttackPressed();
+         } else {
+            if (InputManager.isFireCannonMouseDown() || InputManager.isFireCannonMouse()) {
+               if (_isChargingCannon) {
+                  D.debug("Cannot cast, this user is still performing charging attack!");
+               }
+            }
          }
 
          if ((InputManager.isFireCannonMouseUp() && _chargingWithMouse) || (InputManager.getKeyActionUp(KeyAction.FireMainCannon) && !_chargingWithMouse)) {
             cannonAttackReleased();
+         }
+      } else {
+         if (InputManager.isFireCannonMouseDown() || InputManager.getKeyActionDown(KeyAction.FireMainCannon)) {
+            if (isPerformingAttack()) {
+               D.debug("Cannot cast, this user is still performing an attack!");
+            }
          }
       }
 
@@ -609,6 +621,7 @@ public class PlayerShipEntity : ShipEntity
 
    private void cannonAttackReleased () {
       if (!_isChargingCannon || isPerformingAttack()) {
+         D.adminLog("Cannot attack! " + (!_isChargingCannon ? "Cant Release, is charging cannon" : "") + " : " + (isPerformingAttack() ? "Cant Release, is already attacking!" : ""), D.ADMIN_LOG_TYPE.AbilityCast);
          return;
       }
 

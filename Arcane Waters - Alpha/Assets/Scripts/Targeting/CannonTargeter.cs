@@ -69,6 +69,9 @@ public class CannonTargeter : MonoBehaviour {
    }
 
    public void targetingConfirmed (Action onTargetingComplete) {
+      if (!gameObject.activeInHierarchy) {
+         gameObject.SetActive(true);
+      }
       StartCoroutine(CO_OnTargetingConfirmed(onTargetingComplete));
    }
 
