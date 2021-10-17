@@ -6217,8 +6217,15 @@ public class RPCManager : NetworkBehaviour
          if (item.category == Item.Category.Blueprint) {
             CraftableItemRequirements craftingData = CraftingManager.self.getCraftableData(item.itemTypeId);
             if (craftingData != null) {
-               Item itemCopy = item;
+               Item itemCopy = new Item {
+                  category = item.category,
+                  itemTypeId = item.itemTypeId,
+                  id = item.id,
+                  count = item.count,
+                  data = item.data,
+               };
                itemCopy.itemTypeId = craftingData.resultItem.itemTypeId;
+               D.debug("Created database item: " + itemCopy.category + " : " + itemCopy.itemTypeId);
                itemCopy = DB_Main.createItemOrUpdateItemCount(_player.userId, itemCopy);
             }
          } else {
@@ -6238,6 +6245,10 @@ public class RPCManager : NetworkBehaviour
       // Registers the interaction of treasure chests to the achievement database for recording
       AchievementManager.registerUserAchievement(_player, ActionType.OpenTreasureChest);
       AchievementManager.registerUserAchievement(_player, ActionType.LootGainTotal);
+
+      if (item.category == Item.Category.Blueprint) {
+         D.debug("Sending Item Reward to player {" + _player.userId + "} item: " + item.category + " : " + item.itemTypeId);
+      }
 
       // Send it to the specific player that opened it
       Target_OpenChest(_player.connectionToClient, item, chest.id);
