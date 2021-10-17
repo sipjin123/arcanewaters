@@ -740,7 +740,6 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceiveEndBattle (NetworkConnection connection, string battleId) {
       // Remove after confirming fix for battle end
-      D.debug("Player has Ended Battle with: " + battleId);
       StartCoroutine(CO_RecalibrateSpriteBody());
       BattleUIManager.self.abilitiesCG.Hide();
 
@@ -7110,9 +7109,6 @@ public class RPCManager : NetworkBehaviour
       }
 
       if (Global.player is PlayerBodyEntity) {
-         // Remove after confirming fix for battle end
-         D.debug("Player was granted ability to move again after finishing combat: " + battleId);
-
          PlayerBodyEntity playerBody = (PlayerBodyEntity) Global.player;
          playerBody.isWithinEnemyRadius = false;
          playerBody.playerBattleCollider.combatInitCollider.enabled = true;
