@@ -3232,6 +3232,7 @@ MonoBehaviour:
   maxPlayerCountInput: {fileID: 69730479}
   pvpGameModeDropdown: {fileID: 552210763}
   pvpArenaSizeDropdown: {fileID: 1892092799}
+  spawnsSeaMonsterToggle: {fileID: 1133843876}
 --- !u!1 &380757961
 GameObject:
   m_ObjectHideFlags: 0
@@ -11898,6 +11899,142 @@ MonoBehaviour:
   nameLabel: {fileID: 569729627195748541}
   dateLabel: {fileID: 3806616340453267941}
   creatorLabel: {fileID: 4094266165744289472}
+--- !u!1001 &1133843875
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1929567671}
+    m_Modifications:
+    - target: {fileID: 6936254462352074596, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_Text
+      value: Can Spawn Seamonsters
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 44
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 181
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 190
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983617, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936254462507983618, guid: 28854e4bb4eb26a439e964133307f132,
+        type: 3}
+      propertyPath: m_Name
+      value: CanSpawnSeaMonsters
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 28854e4bb4eb26a439e964133307f132, type: 3}
+--- !u!114 &1133843876 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6936254462507983103, guid: 28854e4bb4eb26a439e964133307f132,
+    type: 3}
+  m_PrefabInstance: {fileID: 1133843875}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1155243158 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1836465159709203878, guid: 471baee57d6cf9146a8d2ea80376691b,

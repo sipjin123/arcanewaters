@@ -29,6 +29,8 @@ namespace MapCreationTool
       private Dropdown pvpGameModeDropdown = null;
       [SerializeField]
       private Dropdown pvpArenaSizeDropdown = null;
+      [SerializeField]
+      private Toggle spawnsSeaMonsterToggle;
 
       private Map targetMap;
       private (int id, string displayText)[] sourceOptions;
@@ -87,6 +89,7 @@ namespace MapCreationTool
          notesInput.text = map.notes;
          maxPlayerCountInput.text = map.maxPlayerCount.ToString();
          sourceMapDropdown.options = sourceOptions.Select(o => new Dropdown.OptionData { text = o.displayText }).ToList();
+         spawnsSeaMonsterToggle.isOn = map.spawnsSeaMonsters;
 
          sourceMapDropdown.value = 0;
          for (int i = 0; i < sourceOptions.Length; i++) {
@@ -141,6 +144,7 @@ namespace MapCreationTool
                maxPlayerCount = maxPlayerCount,
                pvpGameMode = pvpGameModeOptions[pvpGameModeDropdown.value].type,
                pvpArenaSize = pvpArenaSizeOptions[pvpArenaSizeDropdown.value].type,
+               spawnsSeaMonsters = spawnsSeaMonsterToggle.isOn
             };
 
             if (string.IsNullOrWhiteSpace(newMap.name)) {
@@ -205,6 +209,7 @@ namespace MapCreationTool
                         version.map.maxPlayerCount = newMap.maxPlayerCount;
                         version.map.pvpGameMode = newMap.pvpGameMode;
                         version.map.pvpArenaSize = newMap.pvpArenaSize;
+                        version.map.spawnsSeaMonsters = newMap.spawnsSeaMonsters;
                         DrawBoard.changeLoadedVersion(version);
                      }
                      Overlord.loadAllRemoteData();
