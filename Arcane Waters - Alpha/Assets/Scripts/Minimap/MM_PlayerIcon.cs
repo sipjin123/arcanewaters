@@ -31,7 +31,6 @@ public class MM_PlayerIcon : ClientMonoBehaviour {
       // Keep the icon in the right position
       Area currentArea = AreaManager.self.getArea(Global.player.areaKey);
 
-
       // Physical map size is in range [-5, 5], we need to transform it to minimap space which is [-64, 64]
       const float worldToMapSpaceTransform = 64f / 5f;
       if (currentArea != null) {

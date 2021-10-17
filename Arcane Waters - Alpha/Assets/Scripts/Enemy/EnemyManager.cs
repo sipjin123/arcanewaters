@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 using Random = UnityEngine.Random;
+using Pathfinding;
 
 public class EnemyManager : MonoBehaviour {
    #region Public Variables
@@ -126,13 +127,17 @@ public class EnemyManager : MonoBehaviour {
       }
    }
 
-   private void spawnBotShip (Instance instance, Area area, Vector2 localPosition, int guildId) {
+   private void spawnBotShip (Instance instance, Area area, Vector2 localPosition, int guildId, bool isPositionRandomized = false) {
       Ship.Type shipType = randomizeShipType(instance.biome);
 
       SeaMonsterEntityData seaEnemyData = SeaMonsterManager.self.getAllSeaMonsterData().Find(ent => ent.subVarietyTypeId == (int)shipType);
       if (seaEnemyData == null) {
          D.debug("Ship type {" + shipType + "} does not have matching data registered in sea enemy manager!");
          return;
+      }
+
+      if (isPositionRandomized) {
+         localPosition = getRandomWalkableLocalPositionAround(localPosition, area);
       }
 
       BotShipEntity botShip = Instantiate(PrefabsManager.self.botShipPrefab);
@@ -156,7 +161,7 @@ public class EnemyManager : MonoBehaviour {
       NetworkServer.Spawn(botShip.gameObject);
    }
 
-   private void spawnSeaMonster (Instance instance, Area area, Vector2 localPosition) {
+   private void spawnSeaMonster (Instance instance, Area area, Vector2 localPosition, bool isPositionRandomized = false) {
       // Spawn sea monster type based on biome
       SeaMonsterEntity.Type seaMonsterType = SeaMonsterEntity.Type.None;
       switch (instance.biome) {
@@ -176,6 +181,10 @@ public class EnemyManager : MonoBehaviour {
             break;
       }
 
+      if (isPositionRandomized) {
+         localPosition = getRandomWalkableLocalPositionAround(localPosition, area);
+      }
+
       SeaMonsterEntity seaEntity = Instantiate(PrefabsManager.self.seaMonsterPrefab);
       SeaMonsterEntityData data = SeaMonsterManager.self.getMonster(seaMonsterType);
 
@@ -191,6 +200,16 @@ public class EnemyManager : MonoBehaviour {
       // Network Setup
       InstanceManager.self.addSeaMonsterToInstance(seaEntity, instance);
       NetworkServer.Spawn(seaEntity.gameObject);
+   }
+
+   private Vector2 getRandomWalkableLocalPositionAround (Vector2 localPosition, Area area) {
+      Vector2 spawnWorldPosition = localPosition + (Vector2)area.transform.position + Random.insideUnitCircle.normalized * Random.Range(SPAWN_POSITION_DISTANCE_MIN, SPAWN_POSITION_DISTANCE_MAX);
+      NNInfo nodeInfo = AstarPath.active.GetNearest(spawnWorldPosition, NNConstraint.Default);
+      if (nodeInfo.node != null) {
+         return (Vector3) nodeInfo.node.position - area.transform.position;
+      } else {
+         return localPosition;
+      }
    }
 
    private Ship.Type randomizeShipType (Biome.Type biome) {
@@ -276,6 +295,10 @@ public class EnemyManager : MonoBehaviour {
    }
 
    #region Private Variables
+
+   // The distance from the spawn point where enemies can spawn, when the position is randomized
+   private static float SPAWN_POSITION_DISTANCE_MIN = 0.5f;
+   private static float SPAWN_POSITION_DISTANCE_MAX = 1f;
 
    // Stores a list of Enemy Spawners for each type of Site
    protected Dictionary<string, List<Enemy_Spawner>> _spawners = new Dictionary<string, List<Enemy_Spawner>>();

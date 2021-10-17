@@ -66,6 +66,9 @@ public class GenericSpriteEffect : MonoBehaviour
          return;
       }
 
+      int frames = foundSprites.Length;
+      D.debug($"Silver Burst Effect Debug: {frames} found.");
+
       _index = Mathf.Max(0, startIndex);
       _sprites = foundSprites;
 
@@ -73,9 +76,11 @@ public class GenericSpriteEffect : MonoBehaviour
       _activeObjects.Clear();
 
       // Filter the items that were actually active before the effect played
-      foreach (GameObject activeGameObject in objectsToHide) {
-         if (activeGameObject.activeSelf) {
-            _activeObjects.Add(activeGameObject);
+      if (objectsToHide != null) {
+         foreach (GameObject activeGameObject in objectsToHide) {
+            if (activeGameObject.activeSelf) {
+               _activeObjects.Add(activeGameObject);
+            }
          }
       }
 

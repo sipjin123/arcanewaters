@@ -132,7 +132,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("network_profile", "Saves last 60 seconds of network profiling data", networkProfile, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("temp_password", "Temporary access any account using temporary password", overridePassword, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "accountName", "tempPassword" }));
       cm.addCommand(new CommandData("db_test", "Runs a given number of queries per seconds and returns execution time statistics", requestDBTest, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "queriesPerSecond" }));
-      cm.addCommand(new CommandData("name_change", "Change the name of another player", nameChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "oldUsername", "newUsername" }));
+      cm.addCommand(new CommandData("name_change", "Change the name of another player", requestNameChange, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "oldUsername", "newUsername", "reason" }));
 
       // Support commands
       cm.addCommand(new CommandData("force_single_player", "Forces Single Player mode for a specific account", requestForceSinglePlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "reason" }));
@@ -948,7 +948,7 @@ public class AdminManager : NetworkBehaviour
          ChatManager.self.addChat("You must specify a valid duration in seconds", ChatInfo.Type.Error);
          return;
       }
-      
+
       if (values.Count > 2) {
          reason = string.Join(" ", values.Skip(2).Take(values.Count - 2)).Trim();
       }
@@ -995,14 +995,14 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestMutePlayer (string parameters) {
-      requestMutePlayer(parameters, false);
+      mutePlayer(parameters, false);
    }
 
    private void requestStealthMutePlayer (string parameters) {
-      requestMutePlayer(parameters, true);
+      mutePlayer(parameters, true);
    }
 
-   private void requestMutePlayer (string parameters, bool isStealth) {
+   private void mutePlayer (string parameters, bool isStealth) {
       if (!_player.isAdmin()) {
          return;
       }
@@ -1021,14 +1021,14 @@ public class AdminManager : NetworkBehaviour
          ChatManager.self.addChat("You must specify a valid duration in seconds", ChatInfo.Type.Error);
          return;
       }
-      
+
       if (values.Count > 2) {
          reason = string.Join(" ", values.Skip(2).Take(values.Count - 2)).Trim();
       }
 
       Cmd_MutePlayer(username, seconds, reason, isStealth);
    }
-   
+
    public void requestMutePlayerWithConfirmation (string userName, int seconds, string reason) {
       if (!_player.isAdmin()) {
          return;
@@ -3375,71 +3375,98 @@ public class AdminManager : NetworkBehaviour
       AdminPanel.self.show();
    }
 
-   public void nameChange (string parameters) {
-      string[] names = parameters.Split(' ');
-
-      // Parse the parameters
-      string oldName = names[0];
-      string newName = names[1];
-
-      Cmd_NameChange(oldName, newName);
+   public void requestNameChange (string parameters) {
+      Cmd_NameChange(parameters);
    }
 
    [Command]
-   public void Cmd_NameChange (string oldName, string newName) {
-      // Check if new name is valid
-      bool nameTaken = false;
-      bool userExists = false;
-
-      if (!NameUtil.isValid(newName)) {
-         D.debug("New name " + newName + " is not valid");
+   public void Cmd_NameChange (string parameters) {
+      if (!_player.isAdmin()) {
+         D.warning("Requested command by non-admin");
          return;
       }
 
-      // Make sure the name is available
-      int newNameUserId = -1;
-      int oldNameUserId = -1;
+      List<string> values = parameters.Split(' ').ToList();
 
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         newNameUserId = DB_Main.getUserId(newName);
-         oldNameUserId = DB_Main.getUserId(oldName);
-         userExists = oldNameUserId > 0;
+      if (values.Count >= 2) {
+         // Parse the parameters
+         string oldName = values[0];
+         string newName = values[1];
+         string reason = "";
+         UserAccountInfo targetInfo = null;
 
-         if (userExists) {
-            if (newNameUserId > 0) {
-               nameTaken = true;
-            } else {
-               DB_Main.changeUserName(oldName, newName);
-            }
+         if (values.Count > 2) {
+            reason = string.Join(" ", values.Skip(2).Take(values.Count - 2)).Trim();
          }
 
-         // Back to the Unity thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (!userExists) {
-               string msg = "The user " + oldName + " does not exist!";
-               _player.Target_ReceiveNormalChat(msg, ChatInfo.Type.System);
-               D.debug(msg);
-            } else {
-               if (nameTaken) {
-                  string msg = "The name " + newName + " is already taken!";
+         // Check if new name is valid
+         bool nameTaken = false;
+         bool userExists = false;
+
+         if (!NameUtil.isValid(newName)) {
+            D.debug("New name " + newName + " is not valid");
+            return;
+         }
+
+         // Make sure the name is available
+         int newNameUserId = -1;
+         int oldNameUserId = -1;
+
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            newNameUserId = DB_Main.getUserId(newName);
+            oldNameUserId = DB_Main.getUserId(oldName);
+            userExists = oldNameUserId > 0;
+
+            if (userExists) {
+               if (newNameUserId > 0) {
+                  nameTaken = true;
+               } else {
+                  targetInfo = DB_Main.getUserAccountInfo(oldName);
+                  if (targetInfo != null) {
+                     DB_Main.changeUserName(_player.accountId, targetInfo.accountId, targetInfo.userId, targetInfo.username, newName, reason);
+                  }
+               }
+            }
+
+            // Back to the Unity thread
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               if (!userExists) {
+                  string msg = "The user " + oldName + " does not exist!";
                   _player.Target_ReceiveNormalChat(msg, ChatInfo.Type.System);
                   D.debug(msg);
                } else {
-                  string msg = "Changed the player name from  " + oldName + " to " + newName;
-                  _player.Target_ReceiveNormalChat(msg, ChatInfo.Type.System);
-                  Rpc_ReceiveNewName(oldNameUserId, newName);
+                  if (nameTaken) {
+                     string msg = "The name " + newName + " is already taken!";
+                     _player.Target_ReceiveNormalChat(msg, ChatInfo.Type.System);
+                     D.debug(msg);
+                  } else if (targetInfo == null) {
+                     string msg = "Could not find info for user: " + oldName;
+                     _player.Target_ReceiveNormalChat(msg, ChatInfo.Type.System);
+                     D.debug(msg);
+                  } else {
+                     string msg = "Changed the player name from " + targetInfo.username + " to " + newName;
+                     _player.Target_ReceiveNormalChat(msg, ChatInfo.Type.System);
+                     Rpc_ReceiveNewName(oldNameUserId, newName);
+                  }
                }
-            }
+            });
          });
-      });
+      } else {
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            _player.Target_ReceiveNormalChat("You must specify at least two parameters for this command", ChatInfo.Type.Error);
+         });
+      }
    }
 
    [ClientRpc]
    public void Rpc_ReceiveNewName (int userId, string newName) {
       NetEntity entity = EntityManager.self.getEntity(userId);
-      entity.entityName = newName;
-      entity.nameText.text = newName;
-      entity.nameTextOutline.text = newName;
+
+      if (entity != null) {
+         entity.entityName = newName;
+         entity.nameText.text = newName;
+         entity.nameTextOutline.text = newName;
+      }
    }
 
    #region Private Variables

@@ -36,7 +36,7 @@ public class ServerStatusPanelRow : MonoBehaviour
    public void setRowForServerEvent (ServerHistoryInfo info) {
       // Calculates the time since the event took place
       DateTime utcTime = DateTime.FromBinary(info.eventDate);
-      DateTime estTime = Util.getTimeInEST(utcTime);
+      DateTime estTime = DateTime.FromBinary(info.eventDateEST);
       TimeSpan timeInterval = DateTime.UtcNow.Subtract(utcTime);
 
       // Show the seconds if it happened in the last 60s, the

@@ -955,7 +955,7 @@ public class DB_MainStub : MonoBehaviour
       return "";
    }
 
-   public static void changeUserName (string oldName, string newName) {
+   public static void changeUserName (int accId, int targetAccId, int targetUsrId, string oldName, string newName, string reason) {
 
    }
 

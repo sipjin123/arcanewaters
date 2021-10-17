@@ -13,39 +13,28 @@ public class StairEffector : MonoBehaviour {
    #endregion
 
    private void Awake () {
-      _effector = GetComponent<AreaEffector2D>();
+      _collider = GetComponent<Collider2D>();
    }
 
    private void OnEnable () {
       _activeEffectors.Add(this);
-      setEffector(effectorsEnabled);
    }
 
    private void OnDisable () {
       _activeEffectors.Remove(this);
    }
 
-   public void setEffector (bool enabled) {
-      _effector.enabled = enabled;
-   }
-
-   public static void setEffectors (bool enabled) {
-      if (enabled == effectorsEnabled) {
-         return;
-      }
-
-      effectorsEnabled = enabled;
+   public static void setEffectorCollisions (Collider2D otherCollider, bool shouldCollide) {
       foreach (StairEffector effector in _activeEffectors) {
-         if (effector) {
-            effector.setEffector(enabled);
-         }
+         Physics2D.IgnoreCollision(effector._collider, otherCollider, !shouldCollide);
       }
+      effectorsEnabled = shouldCollide;
    }
 
    #region Private Variables
 
-   // A reference to the AreaEffector slowing the player's movement for these stairs
-   private AreaEffector2D _effector;
+   // A reference to the collider for this effector
+   private Collider2D _collider;
 
    // A list of all active stair effectors
    private static List<StairEffector> _activeEffectors = new List<StairEffector>();

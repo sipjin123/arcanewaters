@@ -592,6 +592,7 @@ public class BattleManager : MonoBehaviour {
             float blockChance = 0.25f;
             if (target.canBlock()) {
                blockChance = getStanceBlockChance(target.stance);
+               blockChance += PerkManager.self.getPerkMultiplierAdditive(Perk.Category.BlockChance);
             }
 
             // For now, players have a 25% chance of blocking monsters
@@ -1226,7 +1227,7 @@ public class BattleManager : MonoBehaviour {
 
             if (GameStatsManager.self.isUserRegistered(otherPlayer.userId)) {
                // Assign silver to all the players on the attacking team
-               StartCoroutine(CO_ProcessSilverAfterBattlerDeath(otherPlayer, silverReward, position, 3.0f));
+               StartCoroutine(CO_ProcessSilverAfterBattlerDeath(otherPlayer, battler, silverReward, 3.0f));
             }
          }
       } else if (battler.battlerType == BattlerType.PlayerControlled) {
@@ -1240,10 +1241,14 @@ public class BattleManager : MonoBehaviour {
       }
    }
 
-   private IEnumerator CO_ProcessSilverAfterBattlerDeath (NetEntity otherPlayer, int silverReward, Vector3 position, float delay) {
+   private IEnumerator CO_ProcessSilverAfterBattlerDeath (NetEntity otherPlayer, Battler battler, int silverReward, float delay) {
       yield return new WaitForSeconds(delay);
       GameStatsManager.self.addSilverAmount(otherPlayer.userId, silverReward);
-      otherPlayer.rpc.Target_ShowSilverBurstEffect(otherPlayer.connectionToClient, silverReward, position);
+      Vector3 silverBurstEffectOffsetWhenFacingEast = new Vector3(-0.194f, -0.129f, 0);
+      Vector3 silverBurstEffectOffsetWhenFacingWest = silverBurstEffectOffsetWhenFacingEast;
+      silverBurstEffectOffsetWhenFacingWest.Scale(new Vector3(-1.0f, 1.0f, 1.0f));
+      Vector3 position = battler.transform.position + ((battler.teamType == Battle.TeamType.Defenders) ? silverBurstEffectOffsetWhenFacingWest : silverBurstEffectOffsetWhenFacingEast);
+      otherPlayer.Target_ShowSilverBurstEffect(otherPlayer.connectionToClient, silverReward, position);
       otherPlayer.Target_ReceiveSilverCurrencyWithEffect(otherPlayer.connectionToClient, silverReward, SilverManager.SilverRewardReason.Kill, position);
    }
 

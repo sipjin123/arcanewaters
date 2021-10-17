@@ -1690,6 +1690,7 @@ MonoBehaviour:
   XP: 0
   desiredAngle: 0
   isStealthMuted: 0
+  muteExpirationDate: 0
   gender: 1
   bodyType: 0
   eyesType: 0
@@ -1726,6 +1727,7 @@ MonoBehaviour:
   pvpTeam: 0
   faction: 0
   guildId: 0
+  guildName: 
   guildPermissions: 0
   guildRankPriority: 0
   guildIconBorder: 
@@ -1790,6 +1792,7 @@ MonoBehaviour:
   followJumpHeight: {fileID: 7748199939710571711}
   levelTag: {fileID: 6747293067536991787}
   levelUpEffect: {fileID: 8553150314754777727}
+  effectorCollisionEnabled: 1
 --- !u!58 &58574232978621698
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -2516,6 +2519,7 @@ MonoBehaviour:
   textureSwappedEvent:
     m_PersistentCalls:
       m_Calls: []
+  _type: 0
 --- !u!114 &7134036831248214437
 MonoBehaviour:
   m_ObjectHideFlags: 0

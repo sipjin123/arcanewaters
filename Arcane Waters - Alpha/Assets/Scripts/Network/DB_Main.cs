@@ -7045,20 +7045,34 @@ public class DB_Main : DB_MainStub
       return stats;
    }
 
-   public static new void changeUserName (string oldName, string newName) {
+   public static new void changeUserName (int accId, int targetAccId, int targetUsrId, string oldName, string newName, string reason) {
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "UPDATE users SET usrName = @newName WHERE usrName = @oldName", conn)) {
+         using (MySqlConnection conn = getConnection()) {
             conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrName", oldName);
-            cmd.Parameters.AddWithValue("@oldName", oldName);
-            cmd.Parameters.AddWithValue("@newName", newName);
-            DebugQuery(cmd);
+            using (MySqlCommand updateCmd = new MySqlCommand(
+               "UPDATE users SET usrName = @newName WHERE usrName = @oldName", conn)) {
+               updateCmd.Prepare();
+               updateCmd.Parameters.AddWithValue("@oldName", oldName);
+               updateCmd.Parameters.AddWithValue("@newName", newName);
+               DebugQuery(updateCmd);
 
-            // Execute the command
-            cmd.ExecuteNonQuery();
+               // Execute the command
+               updateCmd.ExecuteNonQuery();
+            }
+            using(MySqlCommand insertCmd = new MySqlCommand(
+               "INSERT INTO users_names_changes(accId,targetAccId,targetUsrId,prevUsrName,newUsrName,reason) VALUES(@accId,@targetAccId,@targetUsrId,@prevUsrName,@newUsrName,@reason)", conn)) {
+               insertCmd.Prepare();
+               insertCmd.Parameters.AddWithValue("@accId", accId);
+               insertCmd.Parameters.AddWithValue("@targetAccId", targetAccId);
+               insertCmd.Parameters.AddWithValue("@targetUsrId", targetUsrId);
+               insertCmd.Parameters.AddWithValue("@prevUsrName", oldName);
+               insertCmd.Parameters.AddWithValue("@newUsrName", newName);
+               insertCmd.Parameters.AddWithValue("@reason", string.IsNullOrEmpty(reason) ? null : reason);
+
+               DebugQuery(insertCmd);
+
+               insertCmd.ExecuteNonQuery();
+            }
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());

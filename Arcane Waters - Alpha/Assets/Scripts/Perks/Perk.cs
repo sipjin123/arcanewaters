@@ -34,7 +34,8 @@ public class Perk
       ShopPriceReduction = 12,
       ExperienceGain = 13,
       ItemDropChances = 14,
-      MiningDrops = 15
+      MiningDrops = 15,
+      BlockChance = 16,
    }
 
    // The unique ID of the perk using the points

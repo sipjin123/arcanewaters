@@ -945,12 +945,10 @@ public class NetEntity : NetworkBehaviour
          moveSpeedModifier = 2;
       }
 
-      float perkMultiplier = PerkManager.self.getPerkMultiplier(Perk.Category.WalkingSpeed);
-
       // Add a speed multiplier when in ghost mode 
       float ghostMultiplier = isGhost ? GHOST_SPEED_MULTIPLIER : 1;
 
-      return (baseSpeed * modifier) * moveSpeedModifier * perkMultiplier * ghostMultiplier;
+      return (baseSpeed * modifier) * moveSpeedModifier * ghostMultiplier;
    }
 
    public virtual void handleSpriteOutline () {
@@ -1304,7 +1302,7 @@ public class NetEntity : NetworkBehaviour
             if (interactingAnimation) {
                sprintingSpeedMultiplier *= 0.25f;
             } else if (isSpeedingUp) {
-               sprintingSpeedMultiplier = SPEEDUP_MULTIPLIER_LAND + PerkManager.self.getPerkMultiplierAdditive(Perk.Category.WalkingSpeed);
+               sprintingSpeedMultiplier = SPEEDUP_MULTIPLIER_LAND;
             }
 
             baseMoveSpeed *= sprintingSpeedMultiplier;
@@ -1472,6 +1470,7 @@ public class NetEntity : NetworkBehaviour
       int newXP = jobs.getXP(jobType);
       int oldXP = newXP - xpGained;
       int levelsGained = LevelUtil.levelsGained(oldXP, newXP);
+      int newLevel = LevelUtil.levelForXp(newXP);
 
       // If they gained a level, show a special message
       if (levelsGained > 0) {
@@ -1482,7 +1481,7 @@ public class NetEntity : NetworkBehaviour
          SoundManager.create3dSound("tutorial_step", Global.player.transform.position);
 
          // Show the level up in chat
-         string levelsMsg = string.Format("You gained {0} {1} {2}!", levelsGained, jobType, levelsGained > 1 ? "levels" : "level");
+         string levelsMsg = string.Format("You gained {0} {1} {2}! Current level: {3}", levelsGained, jobType, levelsGained > 1 ? "levels" : "level", newLevel);
          ChatManager.self.addChat(levelsMsg, ChatInfo.Type.System);
       }
    }
@@ -1762,7 +1761,7 @@ public class NetEntity : NetworkBehaviour
          VoyageGroupManager.self.removeUserFromGroup(voyageGroup, userId);
       }
 
-      D.debug("Returning player to town: Go Home Command!");
+      D.debug($"Returning player {entityName} to town: Go Home Command!");
       spawnInBiomeHomeTown(Biome.Type.Forest);
    }
 
@@ -2316,6 +2315,7 @@ public class NetEntity : NetworkBehaviour
    [TargetRpc]
    public void Target_ShowSilverBurstEffect (NetworkConnection connection, int silverReward, Vector3 position) {
       try {
+         D.debug("SilverBurstEffect Debug: Effect triggered...");
          float radius = 0.2f;
          int numCoins = 10;
 
@@ -2325,18 +2325,23 @@ public class NetEntity : NetworkBehaviour
             float y = Mathf.Sin(Mathf.Deg2Rad * randomAngle) * radius;
             float z = y;
             Vector3 pos = new Vector3(position.x + x, position.y + y, position.z + z);
-            GameObject burstEffectGameObject = Instantiate(PrefabsManager.self.silverBurstEffectPrefab, pos, Quaternion.identity);
+            D.debug("SilverBurstEffect Debug: Effect instantiating...");
+            GameObject burstEffectGameObject = Instantiate(PrefabsManager.self.silverBurstEffectPrefab);
+            D.debug("SilverBurstEffect Debug: Effect instantiated");
 
             if (burstEffectGameObject == null) {
                D.warning("Couldn't find the prefab for the Silver Burst Effect.");
                return;
             }
 
+            burstEffectGameObject.transform.position = pos;
             GenericSpriteEffect effect = burstEffectGameObject.GetComponent<GenericSpriteEffect>();
+            D.debug("SilverBurstEffect Debug: Effect about to play...");
             effect.play();
+            D.debug("SilverBurstEffect Debug: Effect played.");
          }
-      } catch {
-
+      } catch (Exception ex) {
+         D.error(ex.Message);
       }
    }
 

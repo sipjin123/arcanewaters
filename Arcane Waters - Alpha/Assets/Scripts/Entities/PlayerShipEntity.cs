@@ -1672,7 +1672,7 @@ public class PlayerShipEntity : ShipEntity
       initHealth();
       restoreMaxShipHealth();
 
-      Rpc_OnRespawnedInInstance();
+      Rpc_OnRespawnedInInstance(currentHealth);
       setIsInvulnerable(false);
       setCollisions(true);
 
@@ -1683,18 +1683,19 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [ClientRpc]
-   public void Rpc_OnRespawnedInInstance () {
+   public void Rpc_OnRespawnedInInstance (int newCurrentHealth) {
       if (_respawnCoroutine != null) {
          StopCoroutine(_respawnCoroutine);
       }
 
-      _respawnCoroutine = StartCoroutine(CO_OnRespawnedInInstance());
+      _respawnCoroutine = StartCoroutine(CO_OnRespawnedInInstance(newCurrentHealth));
    }
 
-   private IEnumerator CO_OnRespawnedInInstance () {
-      // Wait for currentHealth syncvar to be updated
-      while (currentHealth <= 0) {
-         yield return null;
+   private IEnumerator CO_OnRespawnedInInstance (int newCurrentHealth) {
+      currentHealth = newCurrentHealth;
+
+      if (currentHealth <= 0) {
+         D.error($"Received currentHealth is not valid. New health value: {currentHealth}");
       }
 
       // Show all the sprites
@@ -1733,6 +1734,8 @@ public class PlayerShipEntity : ShipEntity
 
       // Reset flag
       _hasRunOnDeath = false;
+
+      yield return null;
    }
 
    public void cancelCannonBarrage () {

@@ -132,6 +132,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // Reference to the Level Up Effect
    public LevelUpEffect levelUpEffect;
 
+   // Whether the collision with effectors is currently enabled for this player
+   public bool effectorCollisionEnabled = true;
+
    #endregion
 
    protected override void Awake () {
@@ -358,8 +361,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       // If the player has finished jumping, re-enable the stair effectors
-      if (isLocalPlayer && !isJumping() && !StairEffector.effectorsEnabled) {
-         StairEffector.setEffectors(true);
+      if (!isJumping() && !effectorCollisionEnabled) {
+         setEffectorCollisions(true);
       }
 
       setSpritesHeight(y);
@@ -543,7 +546,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          if (isLocalPlayer) {
             _jumpStartTime = NetworkTime.time;
             playJumpAnimation();
-            StairEffector.setEffectors(false);
+            setEffectorCollisions(false);
          }
 
          Cmd_NoteJump();
@@ -563,6 +566,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    [Command]
    public void Cmd_NoteJump () {
       Rpc_NoteJump();
+      setEffectorCollisions(false);
    }
 
    [ClientRpc]
@@ -570,6 +574,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       if (!isLocalPlayer) {
          _jumpStartTime = NetworkTime.time;
          playJumpAnimation();
+         setEffectorCollisions(false);
       }
    }
 
@@ -1008,6 +1013,15 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       if (levelUpEffect != null) {
          levelUpEffect.play(jobType);
       }
+   }
+
+   private void setEffectorCollisions (bool collisionsEnabled) {
+      if (effectorCollisionEnabled == collisionsEnabled) {
+         return;
+      }
+
+      StairEffector.setEffectorCollisions(getMainCollider(), collisionsEnabled);
+      effectorCollisionEnabled = collisionsEnabled;
    }
 
    #region Private Variables

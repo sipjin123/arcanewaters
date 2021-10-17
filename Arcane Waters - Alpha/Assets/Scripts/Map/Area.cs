@@ -494,6 +494,13 @@ public class Area : MonoBehaviour
          tileSize = new Vector2Int(_tilemapLayers.Max(t => t.tilemap.size.x), _tilemapLayers.Max(t => t.tilemap.size.y));
       }
 
+      // Some pvp arenas have a playable area that is smaller than the total area size, so we have to calculate it with the 'arena size'
+      if (VoyageManager.isPvpArenaArea(areaKey)) {
+         PvpArenaSize arenaSize = AreaManager.self.getAreaPvpArenaSize(areaKey);
+         int tileWidth = (int)AreaManager.getWidthForPvpArenaSize(arenaSize);
+         tileSize = new Vector2Int(tileWidth, tileWidth);
+      }
+
       return new Vector2(tileSize.x * _grid.transform.localScale.x, tileSize.y * _grid.transform.localScale.y);
    }
 
