@@ -408,7 +408,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
             case Panel.Type.PvpShop:
                PvpShopPanel.self.shopId = pvpShopId;
                PvpShopPanel.self.onShopButtonPressed(false);
-               break;
+               return;
          }
       } else {
          // Make sure the panel is showing
@@ -592,9 +592,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          _shopTrigger.panelType = (Panel.Type) Enum.Parse(typeof(Panel.Type), panelName);
          isShopNpc = true;
          shopPanelType = _shopTrigger.panelType;
-      }
-
-      if (pvpShopId > 0) {
+      } else if (pvpShopId > 0) {
          _shopTrigger = gameObject.AddComponent<ShopTrigger>();
          _shopTrigger.panelType = Panel.Type.PvpShop;
          isShopNpc = true;

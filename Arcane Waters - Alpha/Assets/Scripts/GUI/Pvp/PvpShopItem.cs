@@ -51,7 +51,7 @@ public class PvpShopItem {
          shopItemType = PvpShopItem.PvpShopItemType.Item,
          itemName = "Repair Tool",
          rarityType = Rarity.Type.Common,
-         spritePath = "Sprites/GUI/PvpShop/icons/items_on",
+         spritePath = "Sprites/GUI/PvpShop/icons/repair",
       };
 
       return newShopItem;
