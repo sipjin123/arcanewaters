@@ -70,7 +70,6 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
       }
    }
 
-
    protected IEnumerator CO_SetAreaParent () {
       // Wait until we have finished instantiating the area
       while (AreaManager.self.getArea(this.areaKey) == null) {

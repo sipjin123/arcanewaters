@@ -6279,7 +6279,6 @@ public class RPCManager : NetworkBehaviour
                   data = item.data,
                };
                itemCopy.itemTypeId = craftingData.resultItem.itemTypeId;
-               D.debug("Created database item: " + itemCopy.category + " : " + itemCopy.itemTypeId);
                itemCopy = DB_Main.createItemOrUpdateItemCount(_player.userId, itemCopy);
             }
          } else {
