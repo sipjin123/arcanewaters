@@ -529,6 +529,30 @@ public class VoyageManager : GenericGameManager {
          ServerNetworkingManager.self.sendConfirmationMessage(ConfirmMessage.Type.General, userId, "Cannot join the group while group members are close to danger!");
          return;
       }
+
+      int activeTreasureSiteCount = 0;
+      foreach (TreasureSite site in oldInstance.treasureSites) {
+         if (site.isActive()) {
+            activeTreasureSiteCount++;
+         }
+      }
+
+      // If the sea instance has been cleared and there are active treasure sites, we only need to recreate the treasure site instances
+      if (oldInstance.aliveNPCEnemiesCount == 0 && activeTreasureSiteCount > 0) {
+         foreach (TreasureSite site in oldInstance.treasureSites) {
+            Instance oldTreasureSiteInstance = InstanceManager.self.getInstance(site.destinationInstanceId);
+            if (oldTreasureSiteInstance != null) {
+               Instance newTreasureSiteInstance = InstanceManager.self.createNewInstance(oldTreasureSiteInstance.areaKey, false, oldTreasureSiteInstance.voyageId, voyageGroup.members.Count + 1);
+               InstanceManager.self.removeEmptyInstance(oldTreasureSiteInstance);
+               site.destinationInstanceId = newTreasureSiteInstance.id;
+            }
+         }
+
+         // Add the new member to the group
+         VoyageGroupManager.self.addUserToGroup(voyageGroup, userId, userName);
+
+         return;
+      }
       
       // Create the new league instance
       StartCoroutine(CO_CreateLeagueInstance(oldVoyage.leagueIndex, oldVoyage.biome, voyageGroup.members.Count + 1, ServerNetworkingManager.self.server.networkedPort.Value, null, (newVoyage) => onRecreateLeagueInstanceSuccess(newVoyage, oldInstance, groupId, userId, userName), oldVoyage.leagueRandomSeed, oldVoyage.areaKey));

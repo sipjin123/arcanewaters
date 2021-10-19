@@ -161,6 +161,9 @@ public class CropManager : NetworkBehaviour {
                   _cropsProcessing.Remove(cropNumber);
                }
 
+               // Let them know they gained experience
+               _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Farmer, cropNumber, true);
+
                sendCropsToPlayer(cropInfo, false, quickGrow);
             }
          });
@@ -261,6 +264,9 @@ public class CropManager : NetworkBehaviour {
                + "} EndTime:{" + NetworkTime.time.ToString("f1") + "} Duration is:{"
                + (NetworkTime.time - startWaterTime).ToString("f1") + "}", D.ADMIN_LOG_TYPE.Crop);
 
+            // Let them know they gained experience
+            _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Farmer, cropNumber, true);
+
             sendCropsToPlayer(cropToWater, true, quickGrow);
          });
       });
@@ -311,6 +317,9 @@ public class CropManager : NetworkBehaviour {
             // Registers the harvesting action to the achievement database for recording
             AchievementManager.registerUserAchievement(_player, ActionType.HarvestCrop);
             AchievementManager.registerUserAchievement(_player, ActionType.GatherItem);
+
+            // Let them know they gained experience
+            _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Farmer, 0, true);
 
             // Let the player see the crop go away
             this.Target_HarvestCrop(_player.connectionToClient, cropToHarvest);

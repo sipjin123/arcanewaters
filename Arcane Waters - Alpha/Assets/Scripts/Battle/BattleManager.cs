@@ -937,7 +937,6 @@ public class BattleManager : MonoBehaviour {
                }
 
                // Applies damage delay for abilities with extra animation durations such as casting and aiming
-               float delayMagnitude = .5f;
                float attackApplyDelay = 0;
                AttackAbilityData abilityDataReference = (AttackAbilityData) AbilityManager.getAbility(action.abilityGlobalID, AbilityType.Standard);
                if (abilityDataReference.abilityActionType == AbilityActionType.Ranged || abilityDataReference.abilityActionType == AbilityActionType.CastToTarget) {
@@ -1227,12 +1226,20 @@ public class BattleManager : MonoBehaviour {
          Battle.TeamType otherTeam = (battler.teamType == Battle.TeamType.Attackers) ? Battle.TeamType.Defenders : Battle.TeamType.Attackers;
          List<Battler> otherBattlers = battler.battle.getTeam(otherTeam);
 
+         // Compute position
+         Vector3 silverBurstEffectOffsetWhenFacingEast = new Vector3(-0.194f, -0.129f, 0);
+         Vector3 silverBurstEffectOffsetWhenFacingWest = silverBurstEffectOffsetWhenFacingEast;
+         silverBurstEffectOffsetWhenFacingWest.Scale(new Vector3(-1.0f, 1.0f, 1.0f));
+         Vector3 spotPosition = battler.battleSpot.transform.position;
+         Vector3 shiftedSpotPosition = new Vector3(spotPosition.x, spotPosition.y, 0);
+         shiftedSpotPosition += ((battler.teamType == Battle.TeamType.Defenders) ? silverBurstEffectOffsetWhenFacingWest : silverBurstEffectOffsetWhenFacingEast);
+
          foreach (Battler otherBattler in otherBattlers) {
             NetEntity otherPlayer = otherBattler.player;
 
             if (GameStatsManager.self.isUserRegistered(otherPlayer.userId)) {
                // Assign silver to all the players on the attacking team
-               StartCoroutine(CO_ProcessSilverAfterBattlerDeath(otherPlayer, battler, silverReward, 3.0f));
+               StartCoroutine(CO_ProcessSilverAfterBattlerDeath(otherPlayer, shiftedSpotPosition, silverReward, 3.0f));
             }
          }
       } else if (battler.battlerType == BattlerType.PlayerControlled) {
@@ -1246,13 +1253,9 @@ public class BattleManager : MonoBehaviour {
       }
    }
 
-   private IEnumerator CO_ProcessSilverAfterBattlerDeath (NetEntity otherPlayer, Battler battler, int silverReward, float delay) {
+   private IEnumerator CO_ProcessSilverAfterBattlerDeath (NetEntity otherPlayer, Vector3 position, int silverReward, float delay) {
       yield return new WaitForSeconds(delay);
       GameStatsManager.self.addSilverAmount(otherPlayer.userId, silverReward);
-      Vector3 silverBurstEffectOffsetWhenFacingEast = new Vector3(-0.194f, -0.129f, 0);
-      Vector3 silverBurstEffectOffsetWhenFacingWest = silverBurstEffectOffsetWhenFacingEast;
-      silverBurstEffectOffsetWhenFacingWest.Scale(new Vector3(-1.0f, 1.0f, 1.0f));
-      Vector3 position = battler.transform.position + ((battler.teamType == Battle.TeamType.Defenders) ? silverBurstEffectOffsetWhenFacingWest : silverBurstEffectOffsetWhenFacingEast);
       otherPlayer.Target_ShowSilverBurstEffect(otherPlayer.connectionToClient, silverReward, position);
       otherPlayer.Target_ReceiveSilverCurrencyWithEffect(otherPlayer.connectionToClient, silverReward, SilverManager.SilverRewardReason.Kill, position);
    }

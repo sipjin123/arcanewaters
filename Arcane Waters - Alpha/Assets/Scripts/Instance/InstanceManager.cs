@@ -203,8 +203,12 @@ public class InstanceManager : MonoBehaviour {
    }
 
    public Instance createNewInstance (string areaKey, bool isSinglePlayer, int voyageId) {
-      Biome.Type biome = getBiomeForInstance(areaKey, voyageId);
       int difficulty = getDifficultyForInstance(voyageId);
+      return createNewInstance(areaKey, isSinglePlayer, voyageId, difficulty);
+   }
+
+   public Instance createNewInstance (string areaKey, bool isSinglePlayer, int voyageId, int difficulty) {
+      Biome.Type biome = getBiomeForInstance(areaKey, voyageId);
       return createNewInstance(areaKey, isSinglePlayer, false, voyageId, false, false, 0, -1, difficulty, biome);
    }
 

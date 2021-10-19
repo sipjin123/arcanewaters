@@ -2315,7 +2315,6 @@ public class NetEntity : NetworkBehaviour
    [TargetRpc]
    public void Target_ShowSilverBurstEffect (NetworkConnection connection, int silverReward, Vector3 position) {
       try {
-         D.debug("SilverBurstEffect Debug: Effect triggered...");
          float radius = 0.2f;
          int numCoins = 10;
 
@@ -2325,9 +2324,7 @@ public class NetEntity : NetworkBehaviour
             float y = Mathf.Sin(Mathf.Deg2Rad * randomAngle) * radius;
             float z = y;
             Vector3 pos = new Vector3(position.x + x, position.y + y, position.z + z);
-            D.debug("SilverBurstEffect Debug: Effect instantiating...");
             GameObject burstEffectGameObject = Instantiate(PrefabsManager.self.silverBurstEffectPrefab);
-            D.debug("SilverBurstEffect Debug: Effect instantiated");
 
             if (burstEffectGameObject == null) {
                D.warning("Couldn't find the prefab for the Silver Burst Effect.");
@@ -2336,9 +2333,7 @@ public class NetEntity : NetworkBehaviour
 
             burstEffectGameObject.transform.position = pos;
             GenericSpriteEffect effect = burstEffectGameObject.GetComponent<GenericSpriteEffect>();
-            D.debug("SilverBurstEffect Debug: Effect about to play...");
             effect.play();
-            D.debug("SilverBurstEffect Debug: Effect played.");
          }
       } catch (Exception ex) {
          D.error(ex.Message);

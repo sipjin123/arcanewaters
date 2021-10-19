@@ -1031,6 +1031,7 @@ MonoBehaviour:
   XP: 0
   desiredAngle: 0
   isStealthMuted: 0
+  muteExpirationDate: 0
   gender: 1
   bodyType: 0
   eyesType: 0
@@ -1067,6 +1068,7 @@ MonoBehaviour:
   pvpTeam: 0
   faction: 0
   guildId: 0
+  guildName: 
   guildPermissions: 0
   guildRankPriority: 0
   guildIconBorder: 
@@ -1114,8 +1116,10 @@ MonoBehaviour:
   newWaypointsRadius: 10
   secondsPatrolingUntilChoosingNewTreasureSite: 30
   patrolingWaypointsRadius: 1
+  dataXmlId: 0
   spritesContainer: {fileID: 0}
   ripplesContainer: {fileID: 0}
+  orbHolder: {fileID: 0}
   _currentPath: []
   _currentPathIndex: 0
   _isChasingEnemy: 0
@@ -1161,7 +1165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e851007333b54a4190716c035b83695, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offsetZ: 0
+  offsetZ: 1
   inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 0}

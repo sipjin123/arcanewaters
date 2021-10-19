@@ -387,15 +387,20 @@ public class VoyageGroupManager : MonoBehaviour
                if (voyage.leagueIndex > 0) {
                   int aliveNPCEnemyCount = voyage.aliveNPCEnemyCount;
                   int playerCount = voyage.playerCount;
+                  bool hasTreasureSite = false;
 
                   // Find the treasure site (if any) and add the npc enemies and players it contains
                   if (VoyageManager.self.tryGetVoyage(voyage.voyageId, out Voyage treasureSite, true)) {
+                     if (VoyageManager.isTreasureSiteArea(treasureSite.areaKey)) {
+                        hasTreasureSite = true;
+                     }
+
                      aliveNPCEnemyCount += treasureSite.aliveNPCEnemyCount;
                      playerCount += treasureSite.playerCount;
                   }
 
                   // More members can be invited if the league instance is cleared of enemies
-                  if (aliveNPCEnemyCount == 0) {
+                  if (aliveNPCEnemyCount == 0 && !hasTreasureSite) {
                      return false;
                   }
 

@@ -66,9 +66,6 @@ public class GenericSpriteEffect : MonoBehaviour
          return;
       }
 
-      int frames = foundSprites.Length;
-      D.debug($"Silver Burst Effect Debug: {frames} found.");
-
       _index = Mathf.Max(0, startIndex);
       _sprites = foundSprites;
 

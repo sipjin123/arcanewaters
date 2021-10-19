@@ -53,6 +53,7 @@ MonoBehaviour:
   darkCloudSprite: {fileID: -1205877163343838545, guid: 7227d68947db43044b6a8ae32f064228,
     type: 3}
   darkCloudShadow: {fileID: 21300000, guid: 809f03fbeb85ab04d9a3b1ecb92f940e, type: 3}
+  area: {fileID: 0}
 --- !u!114 &114968141414527150
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -88,8 +88,8 @@ public class ArmorManager : EquipmentManager {
       }
    }
 
-   [ClientRpc]
-   public void Rpc_EquipArmor (int newArmorId, int newArmorSqlId, int newArmorType, string rawArmorData, string palettes) {
+   [TargetRpc]
+   public void Target_ReceiveEquipArmor (int newArmorId, int newArmorSqlId, int newArmorType, string rawArmorData, string palettes) {
       ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(rawArmorData);
       cachedArmorData = armorData;
 
@@ -107,6 +107,15 @@ public class ArmorManager : EquipmentManager {
          category = Item.Category.Armor,
          itemTypeId = newArmorSqlId
       };
+   }
+
+   [ClientRpc]
+   public void Rpc_EquipArmor (int newArmorId, int newArmorSqlId, int newArmorType, string rawArmorData, string palettes) {
+      ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(rawArmorData);
+      cachedArmorData = armorData;
+
+      // Update the sprites for the new armor type
+      updateSprites(newArmorType, palettes);
    }
 
    public void updateDurability (int newDurability) {
@@ -145,7 +154,7 @@ public class ArmorManager : EquipmentManager {
       this.palettes = palettes;
       this.armorDurability = durability;
 
-      // Send the Info to all clients
+      Target_ReceiveEquipArmor(armorId, armorData.sqlId, armorData.armorType, ArmorStatData.serializeArmorStatData(armorData), palettes);
       Rpc_EquipArmor(armorId, armorData.sqlId, armorData.armorType, ArmorStatData.serializeArmorStatData(armorData), palettes);
    }
 

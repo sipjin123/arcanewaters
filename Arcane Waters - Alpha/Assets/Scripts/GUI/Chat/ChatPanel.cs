@@ -547,7 +547,7 @@ public class ChatPanel : MonoBehaviour {
          return;
       }
 
-      if (chatInfo.messageType != ChatInfo.Type.Emote && chatInfo.messageType != ChatInfo.Type.Whisper) {
+      if (chatInfo.messageType != ChatInfo.Type.Emote && chatInfo.messageType != ChatInfo.Type.Whisper && chatInfo.messageType != ChatInfo.Type.UserOnline && chatInfo.messageType != ChatInfo.Type.UserOffline) {
          // If we have a Body for the specified sender, create a speech bubble
          BodyEntity body = BodyManager.self.getBody(chatInfo.senderId);
          if (body != null) {
@@ -585,6 +585,8 @@ public class ChatPanel : MonoBehaviour {
          return string.Format("<color={0}>[GUILD] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, false), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), message);
       } else if (chatInfo.messageType == ChatInfo.Type.Officer) {
          return string.Format("<color={0}>[OFFICER] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, false), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), message);
+      } else if (chatInfo.messageType == ChatInfo.Type.UserOnline || chatInfo.messageType == ChatInfo.Type.UserOffline) {
+         return string.Format("<color={0}>{1}</color>", getColorString(chatInfo.messageType, isLocalPlayer), message);
       } else {
          string messageSource = chatInfo.sender;
          if (chatInfo.messageType == ChatInfo.Type.Whisper) {
@@ -652,6 +654,12 @@ public class ChatPanel : MonoBehaviour {
             } else {
                newColor = officerChatOtherColor;
             }
+            break;
+         case ChatInfo.Type.UserOnline:
+            newColor = systemNameColor;
+            break;
+         case ChatInfo.Type.UserOffline:
+            newColor = systemNameColor;
             break;
       }
       return "#" + ColorUtility.ToHtmlStringRGBA(newColor);
@@ -949,6 +957,9 @@ public class ChatPanel : MonoBehaviour {
             return Color.magenta;
          case ChatInfo.Type.Emote:
             return Color.magenta;
+         case ChatInfo.Type.UserOnline:
+         case ChatInfo.Type.UserOffline:
+            return globalChatLocalColor;
          default:
             return Color.white;
       }

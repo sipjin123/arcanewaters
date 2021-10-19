@@ -452,6 +452,11 @@ public class PlayerShipEntity : ShipEntity
 
       // Update FMOD Studio Listener attachment
       FMODUnity.RuntimeManager.AttachInstanceToGameObject(_boostState, transform, _body);
+
+      // Update Ship Bars
+      if (!isLocalPlayer && !isDead() && !isDisabled) {
+         toggleShipDisplayInfo(show: isMouseOver(), force: true);
+      }
    }
 
    private void LateUpdate () {
@@ -1427,7 +1432,7 @@ public class PlayerShipEntity : ShipEntity
          yield break;
       }
 
-      shipInformationDisplay.alpha = 0;
+      toggleShipDisplayInfo(show: false);
 
       invulnerable = true;
       _clickableBox.gameObject.SetActive(false);
@@ -1447,7 +1452,7 @@ public class PlayerShipEntity : ShipEntity
       invulnerable = false;
       _clickableBox.gameObject.SetActive(true);
 
-      shipInformationDisplay.alpha = 1;
+      toggleShipDisplayInfo(show: true);
 
       if (!isDead()) {
          foreach (Collider2D c in GetComponents<Collider2D>()) {
@@ -1955,6 +1960,16 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
+   private void toggleShipDisplayInfo(bool show, bool force = false) {
+      if (!isLocalPlayer && show) {
+         if (!force) {
+            return;
+         }
+      }
+
+      shipInformationDisplay.alpha = show ? 1.0f : NON_LOCAL_SHIP_INFO_DEFAULT_ALPHA;
+   }
+
    #region Private Variables
 
    // Our ship movement sound
@@ -2046,6 +2061,9 @@ public class PlayerShipEntity : ShipEntity
 
    // How long a cooldown each ability will have after casting it
    private Dictionary<int, float> _abilityCooldownDurations = new Dictionary<int, float>();
+
+   // The default alpha for the ship info of non-local ships
+   private const float NON_LOCAL_SHIP_INFO_DEFAULT_ALPHA = 0.2f;
 
    #endregion
 }

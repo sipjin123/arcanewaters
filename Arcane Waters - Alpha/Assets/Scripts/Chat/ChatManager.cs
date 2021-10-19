@@ -113,7 +113,55 @@ public class ChatManager : GenericGameManager
       ChatManager.self.addChat("Couldn't find command: " + command, ChatInfo.Type.System);
    }
 
+   private bool processUserOnlineStatusChangedMessage(ChatInfo chatInfo) {
+      // Returns false if the message should be ignored
+      if (chatInfo.messageType == ChatInfo.Type.UserOnline || chatInfo.messageType == ChatInfo.Type.UserOffline) {
+         bool onlineReported = _chats.Any(_ => _.senderId == chatInfo.senderId && _.messageType == ChatInfo.Type.UserOnline);
+         bool offlineReported = _chats.Any(_ => _.senderId == chatInfo.senderId && _.messageType == ChatInfo.Type.UserOffline);
+
+         if (chatInfo.messageType == ChatInfo.Type.UserOnline && onlineReported && !offlineReported) {
+            // If the message notifies that the sender is online, but the sender was online already, ignore the message
+            return false;
+         }
+
+         if (chatInfo.messageType == ChatInfo.Type.UserOffline && !onlineReported && offlineReported) {
+            // If the message notifies that the sender is offline, but the sender was offline already, ignore the message
+            return false;
+         }
+
+         if (onlineReported && offlineReported) {
+            List<ChatInfo> sortedChats = _chats.ToList();
+            sortedChats.Sort((a, b) => DateTime.Compare(a.chatTime, b.chatTime));
+            sortedChats.Reverse();
+
+            // Find the last "online" message
+            ChatInfo onlineNotification = sortedChats.First(_ => _.senderId == chatInfo.senderId && _.messageType == ChatInfo.Type.UserOnline);
+
+            // Find the last "offline" message
+            ChatInfo offlineNotification = sortedChats.First(_ => _.senderId == chatInfo.senderId && _.messageType == ChatInfo.Type.UserOffline);
+
+            if (onlineNotification != null && offlineNotification != null) {
+               // If the message notifies that the sender is online, but the sender was online already, ignore the message
+               if (onlineNotification.chatTime > offlineNotification.chatTime && chatInfo.messageType == ChatInfo.Type.UserOnline) {
+                  return false;
+               }
+
+               // If the message notifies that the sender is offline, but the sender was offline already, ignore the message
+               if (offlineNotification.chatTime > onlineNotification.chatTime && chatInfo.messageType == ChatInfo.Type.UserOffline) {
+                  return false;
+               }
+            }
+         }
+      }
+
+      return true;
+   }
+
    public void addChatInfo (ChatInfo chatInfo) {
+      if (!processUserOnlineStatusChangedMessage(chatInfo)) {
+         return;
+      }
+
       // Store it locally
       _chats.Add(chatInfo);
 
@@ -471,10 +519,7 @@ public class ChatManager : GenericGameManager
 
          if (symbolIndex >= 0 && caretIndex >= symbolIndex) {
             partialStr = inputString.Substring(symbolIndex, caretIndex - symbolIndex);
-
-            if (!partialStr.Contains(" ")) {
-               shouldShowUserSuggestions = true;
-            }
+            shouldShowUserSuggestions = !partialStr.Contains(" ");
          }
 
          if (shouldShowUserSuggestions) {
@@ -482,16 +527,14 @@ public class ChatManager : GenericGameManager
             autoCompleteParameters.Clear();
 
             // Fetch the set of users who wrote a message in chat so far
-            foreach (ChatInfo chatInfo in _chats) {
-               if (!string.IsNullOrEmpty(partialStr) && partialStr.Length > 1) {
-                  if (!chatInfo.sender.ToLower().StartsWith(partialStr.Substring(1).ToLower())) {
-                     continue;
-                  }
-               }
-
-               if (!userSuggestionDataList.Any(_ => _.getUserName().Equals(chatInfo.sender, StringComparison.InvariantCultureIgnoreCase) && chatInfo.senderId > 0)) {
-                  UserSuggestionData suggestionData = new UserSuggestionData(chatInfo.sender, "@" + chatInfo.sender, inputString, partialStr);
-                  userSuggestionDataList.Add(suggestionData);
+            if (!string.IsNullOrEmpty(partialStr) && _chats != null && _chats.Count > 0) {
+               try {
+                  IEnumerable<ChatInfo> filteredChats = _chats.Where(_ => !Util.isEmpty(_.sender) && _.senderId > 0 && $"@{_.sender}".ToLower().StartsWith(partialStr.ToLower()));
+                  HashSet<string> uniqueNames = new HashSet<string>(filteredChats.Select(_ => _.sender));
+                  IEnumerable<UserSuggestionData> suggestions = uniqueNames.Select(_ => new UserSuggestionData(_, "@" + _, inputString, partialStr));
+                  userSuggestionDataList.AddRange(suggestions);
+               } catch (Exception ex) {
+                  D.error(ex.Message);
                }
             }
          }

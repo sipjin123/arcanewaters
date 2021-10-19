@@ -1387,6 +1387,46 @@ public class RPCManager : NetworkBehaviour
       _player.rpc.Target_ReceiveOptionsInfo(_player.connectionToClient, instance.numberInArea, totalInstances);
    }
 
+   [Server]
+   public void notifyOnlineStatusToFriends(NetEntity player, bool isOnline, string customMessage) {
+      // Notify Friends
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<FriendshipInfo> friends = DB_Main.getFriendshipInfoList(player.userId, Friendship.Status.Friends, 1, 200);
+
+         foreach (FriendshipInfo friend in friends) {
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               UserInfo friendUserInfo = DB_Main.getUserInfo(friend.friendName);
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  if (friendUserInfo == null) {
+                     D.error($"The player {friend.friendName} couldn't be found. online status notification wasn't sent.");
+                     return;
+                  }
+
+                  // Adjust message if not valid
+                  if (Util.isEmpty(customMessage)) {
+                     if (isOnline) {
+                        customMessage = $"{player.entityName} is online!";
+                     } else {
+                        customMessage = $"{player.entityName} went offline.";
+                     }
+                  }
+
+                  ChatInfo chatInfo = new ChatInfo(0,
+                     customMessage, DateTime.UtcNow,
+                     isOnline ? ChatInfo.Type.UserOnline : ChatInfo.Type.UserOffline,
+                     senderId: player.userId,
+                     sender: player.entityName,
+                     receiver: friend.friendName);
+
+                  ServerNetworkingManager.self.sendSpecialChatMessage(friendUserInfo.userId, chatInfo);
+                  D.debug($"Player {player.entityName} changed online status. Friend '{friend.friendName}' ({friendUserInfo.userId}) has been notified!");
+               });
+            });
+         }
+      });
+   }
+
    [Command]
    public void Cmd_OnPlayerLogOutSafely () {
       if (_player == null) {
@@ -3650,6 +3690,16 @@ public class RPCManager : NetworkBehaviour
       });
    }
 
+   [Server]
+   public void receivePlayerAddedToServer () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+      
+      notifyOnlineStatusToFriends(_player, isOnline: true, null);
+   }
+
    [Command]
    public void Cmd_CreateMail (string recipientName, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount, int price, bool autoDelete) {
       if (_player == null) {
@@ -5528,17 +5578,22 @@ public class RPCManager : NetworkBehaviour
       if (destinationGroup.voyageId > 0 && VoyageManager.self.tryGetVoyage(destinationGroup.voyageId, out Voyage destinationVoyage) && destinationVoyage.isLeague && destinationVoyage.leagueIndex > 0) {
          int aliveNPCEnemyCount = destinationVoyage.aliveNPCEnemyCount;
          int playerCount = destinationVoyage.playerCount;
-
+         bool hasTreasureSite = false;
+         
          // Find the treasure site (if any) and add the npc enemies and players it contains
          if (VoyageManager.self.tryGetVoyage(destinationGroup.voyageId, out Voyage treasureSite, true)) {
+            if (VoyageManager.isTreasureSiteArea(treasureSite.areaKey)) {
+               hasTreasureSite = true;
+            }
             aliveNPCEnemyCount += treasureSite.aliveNPCEnemyCount;
             playerCount += treasureSite.playerCount;
          }
          
-         if (aliveNPCEnemyCount == 0) {
+         if (aliveNPCEnemyCount == 0 && !hasTreasureSite) {
             // When the current instance has been cleared of enemies, more members can join
+            // Note that if there is an active treasure site, it will always be recreated to prevent inviting players only to open the chest
             VoyageGroupManager.self.addUserToGroup(destinationGroup, _player.userId, _player.entityName);
-         } else if (aliveNPCEnemyCount != 0 && playerCount <= 0) {
+         } else if (playerCount <= 0) {
             // When the current instance has enemies left, but no players, we can recreate it and allow more members to join
             VoyageManager.self.recreateLeagueInstanceAndAddUserToGroup(destinationGroup.groupId, _player.userId, _player.entityName);
          } else {

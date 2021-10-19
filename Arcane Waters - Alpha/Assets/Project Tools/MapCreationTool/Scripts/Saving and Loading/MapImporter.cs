@@ -338,13 +338,13 @@ namespace MapCreationTool
                         }
                      }
                   }
-                  original.GetComponent<TreasureSpot>().mapDataId = prefabId;
+                  pref.GetComponent<TreasureSpot>().mapDataId = prefabId;
                } else if (original.GetComponent<DisplayAnvil>() != null) {
                   if (prefab.d != null) {
                      foreach (DataField field in prefab.d) {
                         if (field.k.CompareTo(DataField.IS_FUNCTIONAL_ANVIL) == 0) {
                            if (field.v == "True") {
-                              original.GetComponent<DisplayAnvil>().loadFunctionalAnvil();
+                              pref.GetComponent<DisplayAnvil>().loadFunctionalAnvil();
                            }
                         }
                      }

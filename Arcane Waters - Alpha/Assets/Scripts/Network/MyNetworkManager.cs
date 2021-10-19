@@ -388,7 +388,7 @@ public class MyNetworkManager : NetworkManager
             }
 
             // Check if the player disconnected a few seconds ago and its object is still in the server
-            ClientConnectionData existingConnection = DisconnectionManager.self.getConnectionDataForUser(authenticatedUserId);
+            ClientConnectionData existingConnection = DisconnectionManager.self.getConnectionDataForUser(authenticatedUserId);           
             if (existingConnection != null && existingConnection.isReconnecting) {
                D.debug($"There was an existing connection for user id {authenticatedUserId}, so we're going to remove that user ID from the Disconnection Manager.");
 
@@ -576,6 +576,11 @@ public class MyNetworkManager : NetworkManager
 
             // Note how long it took to completely process the user login for this account
             LagMonitorManager.self.noteAccountLoginDuration(userInfo.accountName, (Time.realtimeSinceStartup - startTime));
+
+            if (!_players[conn.connectionId].wasFirstLoginHandled) {
+               _players[conn.connectionId].wasFirstLoginHandled = true;
+               player.rpc.receivePlayerAddedToServer();
+            }
          });
       });
    }
@@ -685,6 +690,11 @@ public class MyNetworkManager : NetworkManager
 
       ClientConnectionData data = _players[conn.connectionId];
       NetEntity player = data.netEntity;
+
+      // Notify friends
+      if (player != null) {
+         player.rpc.notifyOnlineStatusToFriends(player, isOnline: false, null);
+      }
 
       // Notify the master server that a user disconnected from this server
       int userId = player != null ? player.userId : data.userId;
