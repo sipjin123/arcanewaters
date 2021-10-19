@@ -119,7 +119,7 @@ public class WorldMapTranslator : MonoBehaviour {
    private void fetchWorldData (int mapId) {
       D.debug("Fetching world data: " + mapId);
       DrawBoard.instance.newMap();
-      Overlord.instance.editorTypeChanged(EditorType.Area, EditorType.Sea);
+      Tools.changeEditorType(EditorType.Sea);
 
       cachedWorldMap = new WorldMapSector();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
