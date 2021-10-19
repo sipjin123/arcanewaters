@@ -43,6 +43,10 @@ namespace MapCreationTool
       [SerializeField]
       private TileBase hoveredTileHighlight = null;
 
+      // The object showing the size of the eraser based on scale
+      [SerializeField]
+      private GameObject eraserOutline;
+
       private Preview preview = new Preview();
 
       public Dictionary<string, Layer> layers { get; private set; }
@@ -566,6 +570,8 @@ namespace MapCreationTool
       private void updateBrushOutline () {
          brushOutline.enabled = false;
          if (Tools.toolType == ToolType.Eraser) {
+            eraserOutline.SetActive(true);
+            eraserOutline.transform.localScale = new Vector3(EraserTool.size, EraserTool.size, EraserTool.size);
             placedPrefabs.ForEach(p => p.setHighlight(false, false, false));
             PlacedPrefab hoveredPrefab = getHoveredPrefab();
             if (hoveredPrefab != null) {
@@ -577,6 +583,7 @@ namespace MapCreationTool
                brushOutline.color = Color.red;
             }
          } else if (Tools.toolType == ToolType.Selection) {
+            eraserOutline.SetActive(false);
             brushOutline.enabled = DrawBoardEvents.isDragging && !SelectionTool.cancelled;
 
             if (!brushOutline.enabled)
@@ -599,6 +606,7 @@ namespace MapCreationTool
                brushOutline.color = Color.blue;
             }
          } else {
+            eraserOutline.SetActive(false);
             brushOutline.enabled = (Tools.toolType == ToolType.Brush && Tools.tileGroup != null && !(Tools.tileGroup is PrefabGroup));
 
             if (!brushOutline.enabled)

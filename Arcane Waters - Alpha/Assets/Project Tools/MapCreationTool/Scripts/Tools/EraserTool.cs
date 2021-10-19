@@ -8,6 +8,17 @@ namespace MapCreationTool
 
       private EraserStroke stroke = new EraserStroke();
 
+      #region Eraser scaling feature
+
+      // The selected size of the eraser
+      public static int size = 1;
+
+      // UI of the scaling
+      public Text textDisplay;
+      public Slider scaleSlider;
+
+      #endregion
+
       protected override void registerUIEvents () {
          DrawBoardEvents.PointerDown += pointerDown;
          DrawBoardEvents.PointerUp += pointerUp;

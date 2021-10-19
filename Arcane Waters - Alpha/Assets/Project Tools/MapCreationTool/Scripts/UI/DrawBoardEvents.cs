@@ -109,7 +109,7 @@ namespace MapCreationTool
          int landValCount = 0;
 
          Vector3Int seaTileCoord = new Vector3Int(8, 31, 1);
-         Vector3Int landTileCoord = new Vector3Int(10, 34, 1);
+         Vector3Int landTileCoord = new Vector3Int(10, 33, 1);
          //Vector3Int landData = new Vector3Int(3, 14, 1);
 
          foreach (char charData in worldMapData.tilesString) {
