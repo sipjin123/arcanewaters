@@ -124,7 +124,7 @@ public class ContextMenuPanel : MonoBehaviour
       _hasAtLeastOneButton = true;
    }
 
-   public void showDefaultMenuForUser (int userId, string userName, bool isInSameGroup = false) {
+   public void showDefaultMenuForUser (int userId, string userName, bool isInSameGroup = false, bool isFriend = false) {
       if (Global.player == null) {
          return;
       }
@@ -153,6 +153,17 @@ public class ContextMenuPanel : MonoBehaviour
 
          if (!FriendListManager.self.isFriend(userId)) {
             addButton("Friend Invite", () => FriendListManager.self.sendFriendshipInvite(userId, userName));
+         }
+
+         if (FriendListManager.self.isFriend(userId)) {
+            addButton("Visit User", () => {
+               VisitListPanel panel = (VisitListPanel) PanelManager.self.get(Panel.Type.VisitPanel);
+               if (!panel.isShowing()) {
+                  panel.refreshPanel();
+               } else {
+                  PanelManager.self.togglePanel(Panel.Type.VisitPanel);
+               }
+            });
          }
 
          if (Global.player.canInvitePracticeDuel(targetEntity)) {

@@ -589,6 +589,22 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Command]
+   public void Cmd_CheckContextMenuStatus (int senderId, string sender) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         FriendshipInfo friendInfo = DB_Main.getFriendshipInfo(this.userId, senderId);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            bool isFriend = friendInfo.friendshipStatus == Friendship.Status.Friends;
+            Target_ReceiveContextMenuStatus(senderId, sender, isFriend);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveContextMenuStatus (int senderId, string sender, bool isFriend) {
+      PanelManager.self.contextMenuPanel.showDefaultMenuForUser(senderId, sender, false, isFriend);
+   }
+
+   [Command]
    public void Cmd_ToggleAdminInvisibility () {
       // Make sure only admin players can request invisibility
       if (!isAdmin()) {

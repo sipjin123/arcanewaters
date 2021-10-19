@@ -15,7 +15,7 @@ public class SpeakChatLine : ChatLine, IScrollHandler
          if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
             ((PvpArenaPanel) PanelManager.self.get(Panel.Type.PvpArena)).togglePanel();
          } else {
-            PanelManager.self.contextMenuPanel.showDefaultMenuForUser(chatInfo.senderId, chatInfo.sender);
+            Global.player.Cmd_CheckContextMenuStatus(chatInfo.senderId, chatInfo.sender);
          }
       }
    }
