@@ -1008,6 +1008,11 @@ public class PlayerShipEntity : ShipEntity
    protected override void OnDestroy () {
       base.OnDestroy();
 
+      // Disable pvp shop panel if its open
+      if (isLocalPlayer && PvpShopPanel.self.isActive()) {
+         PvpShopPanel.self.clearPanel();
+      }
+
       if (_targetCone != null && _targetCone.gameObject != null) {
          Destroy(_targetCone.gameObject);
       }

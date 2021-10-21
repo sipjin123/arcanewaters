@@ -356,6 +356,11 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       return newItemInfo;
    }
 
+   public void clearPanel () {
+      shopButton.SetActive(false);
+      hideEntirePanel();
+   }
+
    public void onShopButtonPressed (bool isSeaShop) {
       this.isSeaShop = isSeaShop;
       if (isSeaShop) {
@@ -465,6 +470,10 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
             hideEntirePanel();
          }
       }
+   }
+
+   public bool isActive () {
+      return shopButton.activeInHierarchy || entirePanel.activeInHierarchy;
    }
 
    #region Private Variables
