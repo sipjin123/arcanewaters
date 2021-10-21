@@ -498,9 +498,9 @@ public class ChatPanel : MonoBehaviour {
       GuildIcon rowGuildIcon = chatRow.GetComponentInChildren<GuildIcon>();
       chatLine.name = "Chat Message";
       chatLine.chatInfo = chatInfo;
+      setChatLineText(chatLine);
 
       if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
-         chatLine.text.text = string.Format("<color={0}>[PVP]:</color> <color={1}>{2}</color>", getSenderNameColor(chatInfo.messageType, false), getColorString(chatInfo.messageType, false), chatInfo.text);
          return;
       }
 
@@ -519,17 +519,6 @@ public class ChatPanel : MonoBehaviour {
       if (Global.player != null) {
          isLocalPlayer = chatInfo.senderId == Global.player.userId ? true : false;
       }
-
-      if (chatInfo.senderId > 0) {
-         // Filter out any bad words
-         bool containsBadWord = BadWordManager.Contains(chatInfo.text);
-         if (containsBadWord) {
-            string filteredMessage = BadWordManager.ReplaceAll(chatInfo.text);
-            chatInfo.text = filteredMessage;
-         }
-      }
-
-      chatLine.text.text = getFormattedChatLine(chatInfo, chatInfo.text);
 
       // In minimized mode, keep the scrollbar at the bottom
       if (_mode == Mode.Minimized) {
@@ -565,6 +554,42 @@ public class ChatPanel : MonoBehaviour {
       if (Global.player != null) {
          bool shouldHighlight = chatLine.text.text.ToLower().Contains("@" + Global.player.entityName.ToLower());
          chatRowComponent.toggleHighlight(shouldHighlight);
+      }
+   }
+
+   private void setChatLineText(SpeakChatLine chatLine) {
+      ChatInfo chatInfo = chatLine.chatInfo;
+
+      if (chatInfo == null) {
+         return;
+      }
+
+      if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
+         chatLine.text.text = string.Format("<color={0}>[PVP]:</color> <color={1}>{2}</color>", getSenderNameColor(chatInfo.messageType, false), getColorString(chatInfo.messageType, false), chatInfo.text);
+         return;
+      }
+
+      if (chatInfo.senderId > 0) {
+         // Filter out any bad words
+         bool containsBadWord = BadWordManager.Contains(chatInfo.text);
+         if (containsBadWord) {
+            string filteredMessage = BadWordManager.ReplaceAll(chatInfo.text);
+            chatInfo.text = filteredMessage;
+         }
+      }
+
+      chatLine.text.text = getFormattedChatLine(chatInfo, chatInfo.text);
+   }
+
+   public void refreshChatLines() {
+      SpeakChatLine[] chatLines = messagesContainer.GetComponentsInChildren<SpeakChatLine>();
+
+      if (chatLines == null || chatLines.Length == 0) {
+         return;
+      }
+
+      foreach (SpeakChatLine chatLine in chatLines) {
+         setChatLineText(chatLine);
       }
    }
 

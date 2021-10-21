@@ -147,7 +147,9 @@ public class TutorialPanel3 : MonoBehaviour
    }
 
    public void Update () {
-      if (Global.player == null || !AreaManager.self.hasArea(Global.player.areaKey)) {
+      bool isCameraFading = CameraManager.defaultCamera != null && CameraManager.defaultCamera.isFading();
+
+      if (Global.player == null || !AreaManager.self.hasArea(Global.player.areaKey) || isCameraFading) {
          if (canvasGroup.IsShowing()) {
             canvasGroup.Hide();
             AutoTyper.FinishText(npcSpeechText);
@@ -247,6 +249,14 @@ public class TutorialPanel3 : MonoBehaviour
 
    public void onPreviousStepButtonPressed () {
       TutorialManager3.self.previousStep();
+   }
+
+   public void onEnterBattle () {
+      if (canvasGroup.IsShowing()) {
+         canvasGroup.Hide();
+         AutoTyper.FinishText(npcSpeechText);
+         _timeSinceWarp = 0;
+      }
    }
 
    public void confirmClosePanel () {

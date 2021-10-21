@@ -489,6 +489,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       // Update the Info and apply it to the character
       UserInfo info = _char.getUserInfo();
+      
       info.bodyType = cachedIndex;
       _char.setBodyLayers(info);
    }

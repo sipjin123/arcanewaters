@@ -884,7 +884,7 @@ public class SeaEntity : NetEntity
       }
 
       updateState(ref _patrolingWaypointState, 0.0f, 0, ref _currentSecondsBetweenPatrolRoutes,
-         ref _currentSecondsPatroling, (x) => { return initialPosition; });
+         ref _currentSecondsPatroling, findRandomVicinityPosition);
    }
 
    public bool hasReloaded () {
@@ -1449,7 +1449,7 @@ public class SeaEntity : NetEntity
    [Server]
    private void setPath_Asynchronous (Path newPath) {
       _currentPath = newPath.vectorPath;
-      _currentPathIndex = 0;
+      _currentPathIndex = 1;
       _seeker.CancelCurrentPathRequest(true);
    }
 
@@ -1465,7 +1465,7 @@ public class SeaEntity : NetEntity
          return;
       }
 
-      if (isSeamonsterPvp() && _patrolingWaypointState == WaypointState.RETREAT && distanceFromInitialPosition > PVP_MONSTER_TERRITORY_RADIUS) {
+      if (isSeamonsterPvp() && _patrolingWaypointState == WaypointState.RETREAT) {
          return;
       }
 
@@ -1642,7 +1642,7 @@ public class SeaEntity : NetEntity
          }
 
          // If ship got too close to spawn point - change path
-         if (!_isChasingEnemy && !_disableSpawnDistanceTmp) {
+         if (!_isChasingEnemy && !_disableSpawnDistanceTmp && !isSeamonsterPvp() && pvpTeam == PvpTeamType.None) {
             foreach (Vector3 spawn in _playerSpawnPoints) {
                float dist = Vector2.Distance(spawn, _currentPath[_currentPathIndex]);
                if (dist < _minDistanceToSpawn) {
@@ -1892,7 +1892,7 @@ public class SeaEntity : NetEntity
 
       // If this unit is a sea monster pvp and is retreating, find a target position around the spawn point
       if (isSeamonsterPvp() && _patrolingWaypointState == WaypointState.RETREAT) {
-         return findPositionAroundPosition(_originalPosition, .5f);
+         return findPositionAroundPosition(_originalPosition, 1.5f);
       }
 
       // If ship is near original position - try to find new distant location to move to

@@ -148,10 +148,10 @@ public class ServerMessageManager : MonoBehaviour
             List<PenaltyInfo> penalties = DB_Main.getPenaltiesForAccount(accountId);
 
             // Prevent banned accounts from signing in
-            PenaltyInfo penalty = penalties.FirstOrDefault(x => x.penaltyType == PenaltyActionType.Ban || x.penaltyType == PenaltyActionType.PermanentBan);
+            PenaltyInfo penalty = penalties.FirstOrDefault(x => x.penaltyType == PenaltyInfo.ActionType.Ban || x.penaltyType == PenaltyInfo.ActionType.PermanentBan);
             if (penalty != null) {
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  if (penalty.penaltyType == PenaltyActionType.Ban) {
+                  if (penalty.penaltyType == PenaltyInfo.ActionType.Ban) {
                      sendError(ErrorMessage.Type.Kicked, conn.connectionId, string.Format("Your account has been suspended until {0} EST", Util.getTimeInEST(new DateTime(penalty.expiresAt))));
                   } else {
                      sendError(ErrorMessage.Type.Kicked, conn.connectionId, "Your account has been suspended indefinitely");

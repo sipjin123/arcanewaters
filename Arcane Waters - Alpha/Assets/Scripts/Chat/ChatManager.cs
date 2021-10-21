@@ -113,7 +113,7 @@ public class ChatManager : GenericGameManager
       ChatManager.self.addChat("Couldn't find command: " + command, ChatInfo.Type.System);
    }
 
-   private bool processUserOnlineStatusChangedMessage(ChatInfo chatInfo) {
+   private bool processUserOnlineStatusChangedMessage (ChatInfo chatInfo) {
       // Returns false if the message should be ignored
       if (chatInfo.messageType == ChatInfo.Type.UserOnline || chatInfo.messageType == ChatInfo.Type.UserOffline) {
          bool onlineReported = _chats.Any(_ => _.senderId == chatInfo.senderId && _.messageType == ChatInfo.Type.UserOnline);
@@ -363,6 +363,18 @@ public class ChatManager : GenericGameManager
 
    public void onWhisperNameInputValueChanged (string inputString) {
       tryAutoCompleteWhisperName();
+   }
+
+   public void changePlayerNameInChat (int userId, string oldName, string newName) {
+      foreach (ChatInfo chat in _chats) {
+         if (chat.senderId == userId || Util.areStringsEqual(oldName, chat.sender)) {
+            chat.sender = newName;
+         }
+      }
+
+      if (ChatPanel.self != null) {
+         ChatPanel.self.refreshChatLines();
+      }
    }
 
    protected void executeChatCommand (string message) {

@@ -955,7 +955,7 @@ public class DB_MainStub : MonoBehaviour
       return "";
    }
 
-   public static void changeUserName (int accId, int targetAccId, int targetUsrId, string oldName, string newName, string reason) {
+   public static void changeUserName (int sourceAccId, int sourceUsrId, string sourceUsrName, int targetAccId, int targetUsrId, string oldName, string newName, string reason) {
 
    }
 
@@ -1620,6 +1620,22 @@ public class DB_MainStub : MonoBehaviour
    public static int getWorldMapSectorsCount () {
       return 0;
    }
+
+   #region Soul Binding
+
+   public static Item.SoulBindingType getSoulBindingType (Item.Category itemCategory, int itemTypeId) {
+      return Item.SoulBindingType.None;
+   }
+
+   public static bool updateItemSoulBinding (int itemId, bool isBound) {
+      return false;
+   }
+
+   public static bool isItemSoulBound (int itemId) {
+      return false;
+   }
+
+   #endregion
 
    #region Server stats
    public static void serverStatStarted (string machine, int port) {

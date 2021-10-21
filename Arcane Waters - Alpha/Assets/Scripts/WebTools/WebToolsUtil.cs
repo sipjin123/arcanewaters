@@ -26,6 +26,13 @@
    public const string BUG_REPORT_SUBMIT = BASE_URL + "/tasks/submit";
    public const string BUG_REPORT_SERVER_LOG_SUBMIT = BASE_URL + "/tasks/submitServerLog";
    public const string COMPLAINT_SUBMIT = BASE_URL + "/supportTickets/submit";
+
+   public enum ActionSource
+   {
+      None = 0,
+      Game = 1,
+      WebTools = 2
+   }
 }
 
 public enum TicketSourceType

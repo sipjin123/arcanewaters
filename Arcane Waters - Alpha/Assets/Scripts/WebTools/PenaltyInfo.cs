@@ -29,7 +29,7 @@ public class PenaltyInfo
    public string targetUsrName;
 
    // This item penalty type
-   public PenaltyActionType penaltyType;
+   public ActionType penaltyType;
 
    // The reason for this penalty
    public string penaltyReason;
@@ -38,7 +38,7 @@ public class PenaltyInfo
    public int penaltyTime;
 
    // The source of this penalty
-   public PenaltySource penaltySource;
+   public WebToolsUtil.ActionSource penaltySource;
 
    // The expiration date for the penalty (mute & ban)
    public long expiresAt = DateTime.MinValue.Ticks;
@@ -46,6 +46,29 @@ public class PenaltyInfo
    #endregion
 
    public PenaltyInfo () { }
+
+   public PenaltyInfo (int sourceAccId, int sourceUsrId, string sourceUsrName, int targetAccId, int targetUsrId, string targetUsrName, ActionType penaltyType, WebToolsUtil.ActionSource penaltySource, string penaltyReason, int penaltyTime = 0, int id = 0) {
+      this.id = id;
+      this.sourceAccId = sourceAccId;
+      this.sourceUsrId = sourceUsrId;
+      this.sourceUsrName = sourceUsrName;
+      this.targetAccId = targetAccId;
+      this.targetUsrId = targetUsrId;
+      this.targetUsrName = targetUsrName;
+      this.penaltyType = penaltyType;
+      this.penaltyTime = penaltyTime;
+      this.penaltySource = penaltySource;
+
+      if (!string.IsNullOrEmpty(penaltyReason)) {
+         this.penaltyReason = penaltyReason;
+      }
+
+      if(penaltyTime > 0) {
+         this.expiresAt = DateTime.UtcNow.AddSeconds(penaltyTime).Ticks;
+      }
+   }
+
+
 
    #if IS_SERVER_BUILD
 
@@ -57,9 +80,9 @@ public class PenaltyInfo
       this.targetAccId = DataUtil.getInt(dataReader, "targetAccId");
       this.targetUsrId = DataUtil.getInt(dataReader, "targetUsrId");
       this.targetUsrName = DataUtil.getString(dataReader, "targetUsrName");
-      this.penaltyType = (PenaltyActionType) DataUtil.getInt(dataReader, "penaltyType");
+      this.penaltyType = (ActionType) DataUtil.getInt(dataReader, "penaltyType");
       this.penaltyReason = DataUtil.getString(dataReader, "penaltyReason");
-      this.penaltySource = (PenaltySource) DataUtil.getInt(dataReader, "penaltySource");
+      this.penaltySource = (WebToolsUtil.ActionSource) DataUtil.getInt(dataReader, "penaltySource");
       this.penaltyTime = DataUtil.getInt(dataReader, "penaltyTime");
       this.expiresAt = DataUtil.getDateTime(dataReader, "expiresAt").Ticks;
    }
@@ -69,25 +92,19 @@ public class PenaltyInfo
    #region Private Variables
 
    #endregion
+
+   public enum ActionType
+   {
+      None = 0,
+      Mute = 1,
+      StealthMute = 2,
+      Ban = 3,
+      PermanentBan = 4,
+      Kick = 5,
+      ForceSinglePlayer = 6,
+      LiftMute = 7,
+      LiftBan = 8,
+      LiftForceSinglePlayer = 9
+   }
 }
 
-public enum PenaltyActionType
-{
-   None = 0,
-   Mute = 1,
-   StealthMute = 2,
-   Ban = 3,
-   PermanentBan = 4,
-   Kick = 5,
-   ForceSinglePlayer = 6,
-   LiftMute = 7,
-   LiftBan = 8,
-   LiftForceSinglePlayer = 9
-}
-
-public enum PenaltySource
-{
-   None = 0,
-   Game = 1,
-   WebTools = 2
-}

@@ -39,53 +39,53 @@ public class PenaltiesQueueManager : GenericGameManager
                List<PenaltyInfo> penalties = DB_Main.getPenaltiesForAccount(penaltyContent.targetAccId);
 
                // Adding penalty time, only if it's a ban or non-permanent ban
-               if (penaltyContent.penaltyType == PenaltyActionType.Mute || penaltyContent.penaltyType == PenaltyActionType.StealthMute || penaltyContent.penaltyType == PenaltyActionType.Ban) {
+               if (penaltyContent.penaltyType == PenaltyInfo.ActionType.Mute || penaltyContent.penaltyType == PenaltyInfo.ActionType.StealthMute || penaltyContent.penaltyType == PenaltyInfo.ActionType.Ban) {
                   penaltyContent.expiresAt = DateTime.UtcNow.AddSeconds(penaltyContent.penaltyTime).Ticks;
                }
 
                switch (penaltyContent.penaltyType) {
-                  case PenaltyActionType.Mute:
-                  case PenaltyActionType.StealthMute:
-                     if (penalties.Any(x => x.penaltyType == PenaltyActionType.Mute || x.penaltyType == PenaltyActionType.StealthMute)) {
+                  case PenaltyInfo.ActionType.Mute:
+                  case PenaltyInfo.ActionType.StealthMute:
+                     if (penalties.Any(x => x.penaltyType == PenaltyInfo.ActionType.Mute || x.penaltyType == PenaltyInfo.ActionType.StealthMute)) {
                         D.log(string.Format("Penalty Queue: {0} is already muted.", penaltyContent.targetUsrName));
                      } else {
                         success = DB_Main.muteAccount(penaltyContent);
                         if (success) {
                            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                              ServerNetworkingManager.self.mutePlayer(penaltyContent.targetUsrId, penaltyContent.penaltyType == PenaltyActionType.StealthMute, penaltyContent.expiresAt);
+                              ServerNetworkingManager.self.mutePlayer(penaltyContent.targetUsrId, penaltyContent.penaltyType == PenaltyInfo.ActionType.StealthMute, penaltyContent.expiresAt);
                            });
                         } else {
                            D.log("Penalty Queue: Error while trying to mute or stealth mute an account.");
                         }
                      }
                      break;
-                  case PenaltyActionType.Ban:
-                  case PenaltyActionType.PermanentBan:
-                     if (penalties.Any(x => x.penaltyType == PenaltyActionType.Ban || x.penaltyType == PenaltyActionType.PermanentBan)) {
+                  case PenaltyInfo.ActionType.Ban:
+                  case PenaltyInfo.ActionType.PermanentBan:
+                     if (penalties.Any(x => x.penaltyType == PenaltyInfo.ActionType.Ban || x.penaltyType == PenaltyInfo.ActionType.PermanentBan)) {
                         D.log(string.Format("Penalty Queue: {0} is already banned.", penaltyContent.targetUsrName));
                      } else {
                         success = DB_Main.banAccount(penaltyContent);
                         if (success) {
                            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                              ServerNetworkingManager.self.banPlayer(penaltyContent.targetUsrId, penaltyContent.penaltyType == PenaltyActionType.PermanentBan, penaltyContent.expiresAt);
+                              ServerNetworkingManager.self.banPlayer(penaltyContent.targetUsrId, penaltyContent.penaltyType == PenaltyInfo.ActionType.PermanentBan, penaltyContent.expiresAt);
                            });
                         } else {
                            D.log("Penalty Queue: Error while trying to ban an account.");
                         }
                      }
                      break;
-                  case PenaltyActionType.Kick:
+                  case PenaltyInfo.ActionType.Kick:
                      // We store this penalty for history purposes
                      DB_Main.kickAccount(penaltyContent);
                      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                         ServerNetworkingManager.self.kickPlayer(penaltyContent.targetUsrId);
                      });
                      break;
-                  case PenaltyActionType.ForceSinglePlayer:
-                  case PenaltyActionType.LiftForceSinglePlayer:
+                  case PenaltyInfo.ActionType.ForceSinglePlayer:
+                  case PenaltyInfo.ActionType.LiftForceSinglePlayer:
                      success = DB_Main.forceSinglePlayerForAccount(penaltyContent);
                      if (success) {
-                        if (penaltyContent.penaltyType == PenaltyActionType.ForceSinglePlayer) {
+                        if (penaltyContent.penaltyType == PenaltyInfo.ActionType.ForceSinglePlayer) {
                            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                               ServerNetworkingManager.self.forceSinglePlayerModeForUser(penaltyContent.targetUsrId);
                            });
@@ -96,9 +96,9 @@ public class PenaltiesQueueManager : GenericGameManager
 
                      DB_Main.processPenaltyFromQueue(item.id);
                      break;
-                  case PenaltyActionType.LiftMute:
-                     if (penalties.Any(x => x.penaltyType == PenaltyActionType.Mute || x.penaltyType == PenaltyActionType.StealthMute)) {
-                        penaltyContent.id = penalties.First(x => x.penaltyType == PenaltyActionType.Mute || x.penaltyType == PenaltyActionType.StealthMute).id;
+                  case PenaltyInfo.ActionType.LiftMute:
+                     if (penalties.Any(x => x.penaltyType == PenaltyInfo.ActionType.Mute || x.penaltyType == PenaltyInfo.ActionType.StealthMute)) {
+                        penaltyContent.id = penalties.First(x => x.penaltyType == PenaltyInfo.ActionType.Mute || x.penaltyType == PenaltyInfo.ActionType.StealthMute).id;
                         success = DB_Main.unMuteAccount(penaltyContent);
 
                         if (success) {
@@ -112,9 +112,9 @@ public class PenaltiesQueueManager : GenericGameManager
                         D.log(string.Format("Penalty Queue: {0} is not currently muted.", penaltyContent.targetUsrName));
                      }
                      break;
-                  case PenaltyActionType.LiftBan:
-                     if (penalties.Any(x => x.penaltyType == PenaltyActionType.Ban || x.penaltyType == PenaltyActionType.PermanentBan)) {
-                        penaltyContent.id = penalties.First(x => x.penaltyType == PenaltyActionType.Ban || x.penaltyType == PenaltyActionType.PermanentBan).id;
+                  case PenaltyInfo.ActionType.LiftBan:
+                     if (penalties.Any(x => x.penaltyType == PenaltyInfo.ActionType.Ban || x.penaltyType == PenaltyInfo.ActionType.PermanentBan)) {
+                        penaltyContent.id = penalties.First(x => x.penaltyType == PenaltyInfo.ActionType.Ban || x.penaltyType == PenaltyInfo.ActionType.PermanentBan).id;
                         success = DB_Main.unBanAccount(penaltyContent);
 
                         // We don't need to send anything to the servers, since the banned status is checked when the player logs in.

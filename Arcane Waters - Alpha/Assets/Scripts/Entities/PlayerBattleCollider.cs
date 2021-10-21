@@ -27,6 +27,7 @@ public class PlayerBattleCollider : MonoBehaviour {
                   playerBody.isWithinEnemyRadius = true;
                   Global.player.rpc.Cmd_StartNewBattle(enemy.netId, Battle.TeamType.Attackers, Global.forceJoin);
                   TutorialManager3.self.tryCompletingStep(TutorialTrigger.EnterBattle);
+                  TutorialManager3.self.onEnterBattle();
                } else {
                   Vector3 pos = this.transform.position + new Vector3(0f, .32f);
                   GameObject messageCanvas = Instantiate(PrefabsManager.self.warningTextPrefab);

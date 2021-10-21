@@ -97,6 +97,18 @@ public class RPCManager : NetworkBehaviour
       }
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         if (Bkg_ShouldBeSoulBound(item, isBeingEquipped: false)) {
+            if (!Bkg_IsItemSoulBound(item)) {
+               DB_Main.updateItemSoulBinding(item.id, isBound: true);
+            }
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendError(ErrorMessage.Type.ItemIsSoulBound, _player, $"Soul bound items can't be traded.");
+            });
+
+            return;
+         }
+
          int gold = DB_Main.getGold(_player.userId);
 
          // Make sure they have enough gold and the price is positive
@@ -857,8 +869,7 @@ public class RPCManager : NetworkBehaviour
          exploringEntries, tradingEntries, craftingEntries, miningEntries);
    }
 
-   [TargetRpc]
-   public void Target_OnEquipItem (NetworkConnection connection, Item equippedWeapon, Item equippedArmor, Item equippedHat) {
+   private void receiveOnEquipItem(Item equippedWeapon, Item equippedArmor, Item equippedHat, Item soulBoundItem) {
       // Update the equipped items cache
       Global.setUserEquipment(equippedWeapon, equippedArmor, equippedHat);
 
@@ -870,6 +881,21 @@ public class RPCManager : NetworkBehaviour
 
       // Trigger the tutorial
       TutorialManager3.self.tryCompletingStepByWeaponEquipped();
+
+      // This value is not null, when one of the equipped items has been soul bound
+      if (soulBoundItem != null) {
+         PanelManager.self.noticeScreen.show($"The item {soulBoundItem.itemName} is now bound to you! You can't transfer it to anyone else, and only you can equip it.");
+      }
+   }
+
+   [TargetRpc]
+   public void Target_OnEquipSoulBoundItem (NetworkConnection connection, Item equippedWeapon, Item equippedArmor, Item equippedHat, Item soulBoundItem) {
+      receiveOnEquipItem(equippedWeapon, equippedArmor, equippedHat, soulBoundItem);
+   }
+
+   [TargetRpc]
+   public void Target_OnEquipItem (NetworkConnection connection, Item equippedWeapon, Item equippedArmor, Item equippedHat) {
+      receiveOnEquipItem(equippedWeapon, equippedArmor, equippedHat, null);
    }
 
    [TargetRpc]
@@ -1388,7 +1414,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   public void notifyOnlineStatusToFriends(NetEntity player, bool isOnline, string customMessage) {
+   public void notifyOnlineStatusToFriends (NetEntity player, bool isOnline, string customMessage) {
       // Notify Friends
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<FriendshipInfo> friends = DB_Main.getFriendshipInfoList(player.userId, Friendship.Status.Friends, 1, 200);
@@ -1606,7 +1632,7 @@ public class RPCManager : NetworkBehaviour
             List<StoreItem> allStoreItems = DB_Main.getAllStoreItems();
             storeItems = allStoreItems.Where(isStoreItemEnabled).ToList();
          }
-         
+
          UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -1941,10 +1967,21 @@ public class RPCManager : NetworkBehaviour
          // Remove the gems
          DB_Main.addGems(_player.accountId, -storeItem.price);
 
+         // Update soul binding
+         bool soulBound = false;
+
+         if (Bkg_ShouldBeSoulBound(updatedItem, isBeingEquipped: false)) {
+            soulBound = Bkg_IsItemSoulBound(updatedItem);
+
+            if (!soulBound) {
+               soulBound = DB_Main.updateItemSoulBinding(updatedItem.id, isBound: true);
+            }
+         }
+
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Let the player know that we gave them their item
-            Target_OnStorePurchaseCompleted(_player.connectionToClient, storeItem.category, purchasedItemName, purchasedItemId);
+            Target_OnStorePurchaseCompleted(_player.connectionToClient, storeItem.category, purchasedItemName, purchasedItemId, soulBound);
          });
       });
    }
@@ -2159,7 +2196,7 @@ public class RPCManager : NetworkBehaviour
 
             // Report to the user
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               Target_OnStorePurchaseCompleted(_player.connectionToClient, Item.Category.Gems, "Gems", 0);
+               Target_OnStorePurchaseCompleted(_player.connectionToClient, Item.Category.Gems, "Gems", 0, false);
             });
          } catch (Exception ex) {
             D.error($"[{ex.GetHashCode()}] error while processing order {orderId} by player {_player.userId}");
@@ -2171,7 +2208,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_OnStorePurchaseCompleted (NetworkConnection connection, Item.Category itemCategory, string itemName, int itemId) {
+   public void Target_OnStorePurchaseCompleted (NetworkConnection connection, Item.Category itemCategory, string itemName, int itemId, bool soulBound) {
       string feedback = "Thank you for your purchase!";
 
       // Play the SFX for purchasing an item
@@ -2207,6 +2244,10 @@ public class RPCManager : NetworkBehaviour
          PanelManager.self.confirmScreen.cancelButton.onClick.AddListener(() => {
             if (StoreScreen.self.isShowing()) {
                StoreScreen.self.refreshPanel();
+            }
+
+            if (soulBound) {
+               PanelManager.self.noticeScreen.show($"The item is now bound to you! It can't be transferred and only you can use it.");
             }
          });
 
@@ -2397,6 +2438,8 @@ public class RPCManager : NetworkBehaviour
             // Delete the dye
             DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, 1);
 
+            Bkg_RequestSetArmorId(userObjects.armor.id);
+
             // Fetch the updated user objects
             userObjects = DB_Main.getUserObjects(_player.userId);
 
@@ -2419,7 +2462,7 @@ public class RPCManager : NetworkBehaviour
          // Hat Dye
          if (paletteToolData.paletteType == (int) PaletteToolManager.PaletteImageType.Hat || isHatDye) {
             UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
-            
+
             // A hat dye can only be applied if the player has a hat
             if (userObjects.hat == null || userObjects.hat.itemTypeId == 0) {
                reportUseItemFailure("You are not wearing a hat!");
@@ -2433,7 +2476,7 @@ public class RPCManager : NetworkBehaviour
 
             // Set the new hat color
             bool updated = DB_Main.setHatPalette(_player.userId, userObjects.hat.id, mergedPalette);
-            
+
             if (!updated) {
                reportUseItemFailure("");
                return;
@@ -2442,7 +2485,7 @@ public class RPCManager : NetworkBehaviour
             // Delete the dye
             DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, 1);
 
-            requestSetHatIdSync(userObjects.hat.id);
+            Bkg_RequestSetHatId(userObjects.hat.id);
 
             // Back to Unity
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -2479,7 +2522,7 @@ public class RPCManager : NetworkBehaviour
             // Delete the dye
             DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, 1);
 
-            requestSetWeaponIdSync(weapon.id);
+            Bkg_RequestSetWeaponId(weapon.id);
 
             // Back to Unity
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -3302,9 +3345,12 @@ public class RPCManager : NetworkBehaviour
 
                // Let the potential friend know that he has got invitation
                NetEntity friend = EntityManager.self.getEntity(friendUserId);
+
                if (friend) {
+                  friend.rpc.addFriendshipInviteNotification(_player.userId);
                   friend.rpc.checkForPendingFriendshipRequests();
                }
+
             } else {
                ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, feedbackMessage);
             }
@@ -3691,12 +3737,34 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
+   public void addFriendshipInviteNotification (int senderId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         if (senderId <= 0) {
+            D.error($"Couldn't add the friendship invite notification to the chat of player {_player.entityName} ({_player.userId}). Invalid senderId: {senderId}");
+            return;
+         }
+
+         string sender = DB_Main.getUserName(senderId);
+
+         if (Util.isEmpty(sender)) {
+            D.error($"Couldn't add the friendship invite notification to the chat of player {_player.entityName} ({_player.userId}). Invalid sender name: {sender}.");
+            return;
+         }
+         
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            string message = $"{sender} sent you a friend request!";
+            _player.Target_ReceiveNormalChat(message, ChatInfo.Type.System);
+         });
+      });
+   }
+
+   [Server]
    public void receivePlayerAddedToServer () {
       if (_player == null) {
          D.warning("No player object found.");
          return;
       }
-      
+
       notifyOnlineStatusToFriends(_player, isOnline: true, null);
    }
 
@@ -3716,6 +3784,26 @@ public class RPCManager : NetworkBehaviour
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         foreach (int itemId in attachedItemsIds) {
+            // Get the item
+            Item item = DB_Main.getItem(_player.userId, itemId);
+
+            if (item == null) {
+               continue;
+            }
+
+            if (Bkg_ShouldBeSoulBound(item, isBeingEquipped: false)) {
+               if (!Bkg_IsItemSoulBound(item)) {
+                  DB_Main.updateItemSoulBinding(item.id, isBound: true);
+               }
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  ServerMessageManager.sendError(ErrorMessage.Type.ItemIsSoulBound, _player, "One or more items are soul bound and can't be attached to the mail!");
+               });
+
+               return;
+            }
+         }
 
          // Try to retrieve the recipient info
          UserInfo recipientUserInfo = DB_Main.getUserInfo(recipientName);
@@ -3768,6 +3856,20 @@ public class RPCManager : NetworkBehaviour
    // This function must be called from the background thread!
    [Server]
    private int createMailCommon (int recipientUserId, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount, bool autoDelete, bool sendBack) {
+      // Check soul binding
+      foreach (int itemId in attachedItemsIds) {
+         // Get the item
+         Item item = DB_Main.getItem(_player.userId, itemId);
+
+         if (item == null) {
+            continue;
+         }
+
+         if (Bkg_IsItemSoulBound(item)) {
+            return -1;
+         }
+      }
+
       // Verify that the number of attached items is below the maximum
       if (attachedItemsIds.Length > MailManager.MAX_ATTACHED_ITEMS) {
          D.error(string.Format("The mail from user {0} to recipient {1} has too many attached items ({2}).", _player.userId, recipientUserId, attachedItemsIds.Length));
@@ -4133,7 +4235,7 @@ public class RPCManager : NetworkBehaviour
          }
 
          // Filter shop item categories that does not exist in this shop
-         List< PvpShopItem.PvpShopItemType> shopItemTypeList = new List<PvpShopItem.PvpShopItemType>();
+         List<PvpShopItem.PvpShopItemType> shopItemTypeList = new List<PvpShopItem.PvpShopItemType>();
          foreach (PvpShopItem.PvpShopItemType typeId in Enum.GetValues(typeof(PvpShopItem.PvpShopItemType))) {
             if (shopData.shopItems.Exists(_ => _.shopItemType == typeId)) {
                shopItemTypeList.Add(typeId);
@@ -4357,6 +4459,17 @@ public class RPCManager : NetworkBehaviour
                }
             } else {
                newItem = DB_Main.createNewItem(_player.userId, singleShopItem);
+            }
+
+            // Update soul binding
+            if (Bkg_ShouldBeSoulBound(newItem, isBeingEquipped: false)) {
+               if (!Bkg_IsItemSoulBound(newItem)) {
+                  if (DB_Main.updateItemSoulBinding(newItem.id, isBound: true)) {
+                     UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                        ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ItemSoulBound, _player, $"Item '{newItem.itemName}' is soul bound!");
+                     });
+                  }
+               }
             }
          }
 
@@ -5134,6 +5247,17 @@ public class RPCManager : NetworkBehaviour
             return;
          }
 
+         // Update soul binding
+         if (Bkg_ShouldBeSoulBound(craftedItem, isBeingEquipped: false)) {
+            if (!Bkg_IsItemSoulBound(craftedItem)) {
+               if (DB_Main.updateItemSoulBinding(craftedItem.id, isBound: true)) {
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ItemSoulBound, _player, $"Item '{craftedItem.itemName}' is soul bound!");
+                  });
+               }
+            }
+         }
+
          // Decrease the quantity of each used ingredient in the user inventory
          foreach (Item requiredIngredient in craftingRequirements.combinationRequirements) {
 
@@ -5579,7 +5703,7 @@ public class RPCManager : NetworkBehaviour
          int aliveNPCEnemyCount = destinationVoyage.aliveNPCEnemyCount;
          int playerCount = destinationVoyage.playerCount;
          bool hasTreasureSite = false;
-         
+
          // Find the treasure site (if any) and add the npc enemies and players it contains
          if (VoyageManager.self.tryGetVoyage(destinationGroup.voyageId, out Voyage treasureSite, true)) {
             if (VoyageManager.isTreasureSiteArea(treasureSite.areaKey)) {
@@ -5588,7 +5712,7 @@ public class RPCManager : NetworkBehaviour
             aliveNPCEnemyCount += treasureSite.aliveNPCEnemyCount;
             playerCount += treasureSite.playerCount;
          }
-         
+
          if (aliveNPCEnemyCount == 0 && !hasTreasureSite) {
             // When the current instance has been cleared of enemies, more members can join
             // Note that if there is an active treasure site, it will always be recreated to prevent inviting players only to open the chest
@@ -6188,6 +6312,17 @@ public class RPCManager : NetworkBehaviour
                D.debug("Error Here! Category Cant be none for Group Item Rewards");
             }
             DB_Main.createItemOrUpdateItemCount(userID, newDatabaseItem);
+
+            // Update soul binding
+            if (Bkg_ShouldBeSoulBound(newDatabaseItem, isBeingEquipped: false)) {
+               if (!Bkg_IsItemSoulBound(newDatabaseItem)) {
+                  if (DB_Main.updateItemSoulBinding(newDatabaseItem.id, isBound: true)) {
+                     UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                        ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ItemSoulBound, _player, $"Item '{newDatabaseItem.itemName}' is soul bound!");
+                     });
+                  }
+               }
+            }
          }
       });
    }
@@ -6283,6 +6418,17 @@ public class RPCManager : NetworkBehaviour
             }
          } else {
             item = DB_Main.createItemOrUpdateItemCount(_player.userId, item);
+         }
+
+         // Update Soul Binding
+         if (Bkg_ShouldBeSoulBound(item, isBeingEquipped: false)) {
+            if (!Bkg_IsItemSoulBound(item)) {
+               if (DB_Main.updateItemSoulBinding(item.id, isBound: true)) {
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ItemSoulBound, _player, $"The item {item.itemName} is soul bound!");
+                  });
+               }
+            }
          }
 
          if (item.category == Item.Category.None) {
@@ -7574,57 +7720,79 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   public void requestSetArmorId (int armorId) {
-      D.adminLog("Requesting new armor: " + armorId, D.ADMIN_LOG_TYPE.Equipment);
+   private void Bkg_RequestSetArmorId (int armorId) {
+      DB_Main.setArmorId(_player.userId, armorId);
+      UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+      bool justSoulBound = false;
 
-      // They may be in an island scene, or at sea
-      PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
+      if (Bkg_ShouldBeSoulBound(userObjects.armor, isBeingEquipped: true)) {
+         if (!Bkg_IsItemSoulBound(userObjects.armor)) {
+            justSoulBound = DB_Main.updateItemSoulBinding(armorId, isBound: true);
+         }
+      }
 
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.setArmorId(_player.userId, armorId);
-         UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+      // Back to Unity
+      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+         Armor armor = Armor.castItemToArmor(userObjects.armor);
 
-         // Back to Unity
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Armor armor = Armor.castItemToArmor(userObjects.armor);
+         if (armor.data.Length < 1 && armor.itemTypeId > 0 && armor.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
+            armor.data = ArmorStatData.serializeArmorStatData(EquipmentXMLManager.self.getArmorDataBySqlId(armor.itemTypeId));
+            userObjects.armor.data = armor.data;
+         }
 
-            if (armor.data.Length < 1 && armor.itemTypeId > 0 && armor.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
-               armor.data = ArmorStatData.serializeArmorStatData(EquipmentXMLManager.self.getArmorDataBySqlId(armor.itemTypeId));
-               userObjects.armor.data = armor.data;
+         PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
+
+         if (body != null) {
+            body.armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id, armor.paletteNames, armor.durability);
+
+            // Update the battler entity if the user is in battle
+            if (body.isInBattle()) {
+               BattleManager.self.onPlayerEquipItem(body);
             }
+         }
 
-            if (body != null) {
-               body.armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id, armor.paletteNames, armor.durability);
+         PlayerShipEntity ship = _player.GetComponent<PlayerShipEntity>();
 
-               // Update the battler entity if the user is in battle
-               if (body.isInBattle()) {
-                  BattleManager.self.onPlayerEquipItem(body);
-               }
-            }
+         if (ship != null) {
+            ArmorStatData data = EquipmentXMLManager.self.getArmorDataBySqlId(armor.itemTypeId);
+            ship.armorType = data != null ? data.armorType : 0;
+            ship.armorColors = armor.paletteNames;
+         }
 
-            PlayerShipEntity ship = _player.GetComponent<PlayerShipEntity>();
-
-            if (ship != null) {
-               ArmorStatData data = EquipmentXMLManager.self.getArmorDataBySqlId(armor.itemTypeId);
-               ship.armorType = data != null ? data.armorType : 0;
-               ship.armorColors = armor.paletteNames;
-            }
-
-            if (userObjects == null) {
-               D.debug("Null user objects!");
+         if (userObjects == null) {
+            D.debug("Null user objects!");
+         } else {
+            if (justSoulBound) {
+               Target_OnEquipSoulBoundItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.armor);
             } else {
                Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
             }
-         });
+         }
       });
    }
 
    [Server]
-   private void requestSetHatIdSync(int hatId) {
+   public void requestSetArmorId (int armorId) {
+      D.adminLog("Requesting new armor: " + armorId, D.ADMIN_LOG_TYPE.Equipment);
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         Bkg_RequestSetArmorId(armorId);
+      });
+   }
+
+   [Server]
+   private void Bkg_RequestSetHatId (int hatId) {
       DB_Main.setHatId(_player.userId, hatId);
       UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
       Item hat = userObjects.hat;
+      bool justSoulBound = false;
+
+      if (Bkg_ShouldBeSoulBound(userObjects.hat, isBeingEquipped: true)) {
+         if (!Bkg_IsItemSoulBound(userObjects.hat)) {
+            justSoulBound = DB_Main.updateItemSoulBinding(hatId, isBound: true);
+         }
+      }
 
       // Back to Unity
       UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -7656,16 +7824,27 @@ public class RPCManager : NetworkBehaviour
          if (userObjects == null) {
             D.debug("Null user objects!");
          } else {
-            Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+            if (justSoulBound) {
+               Target_OnEquipSoulBoundItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.hat);
+            } else {
+               Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+            }
          }
       });
    }
 
    [Server]
-   private void requestSetWeaponIdSync(int weaponId) {
+   private void Bkg_RequestSetWeaponId (int weaponId) {
       // Update the Weapon object here on the server based on what's in the database
       DB_Main.setWeaponId(_player.userId, weaponId);
       UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+      bool justSoulBound = false;
+
+      if (Bkg_ShouldBeSoulBound(userObjects.weapon, isBeingEquipped: true)) {
+         if (!Bkg_IsItemSoulBound(userObjects.weapon)) {
+            justSoulBound = DB_Main.updateItemSoulBinding(weaponId, isBound: true);
+         }
+      }
 
       // Back to Unity Thread to call RPC functions
       UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -7705,7 +7884,11 @@ public class RPCManager : NetworkBehaviour
             if (userObjects == null) {
                D.debug("Null user objects!");
             } else {
-               Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+               if (justSoulBound) {
+                  Target_OnEquipSoulBoundItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat, userObjects.weapon);
+               } else {
+                  Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+               }
             }
          } else {
             D.debug("Cant change equipment while player is destroyed");
@@ -7717,7 +7900,7 @@ public class RPCManager : NetworkBehaviour
    public void requestSetHatId (int hatId) {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         requestSetHatIdSync(hatId);
+         Bkg_RequestSetHatId(hatId);
       });
    }
 
@@ -7727,7 +7910,7 @@ public class RPCManager : NetworkBehaviour
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         requestSetWeaponIdSync(weaponId);
+         Bkg_RequestSetWeaponId(weaponId);
       });
    }
 
@@ -8492,7 +8675,7 @@ public class RPCManager : NetworkBehaviour
          landPowerupType = newPowerup.landPowerupType,
          userId = newPowerup.userId,
          value = newPowerup.value
-      }); 
+      });
    }
 
    [Command]
@@ -8910,7 +9093,17 @@ public class RPCManager : NetworkBehaviour
    public void Target_InitPvpInstructionsPanel (NetworkConnection connection, int instanceId, List<Faction.Type> teamFactions) {
       PvpInstructionsPanel.self.init(teamFactions, instanceId);
    }
-   
+
+   [Server]
+   private bool Bkg_IsItemSoulBound (Item item) {
+      return SoulBindingManager.Bkg_IsItemSoulBound(item);
+   }
+
+   [Server]
+   private bool Bkg_ShouldBeSoulBound (Item item, bool isBeingEquipped) {
+      return SoulBindingManager.Bkg_ShouldBeSoulBound(item, isBeingEquipped);
+   }
+
    #region Private Variables
 
    // Our associated Player object

@@ -97,6 +97,12 @@ public class TutorialManager3 : MonoBehaviour {
       refreshUI();
    }
 
+   public void onEnterBattle () {
+      if (isActive()) {
+         panel.onEnterBattle();
+      }
+   }
+
    public void onUserLogOut () {
       saveConfigAndProgress();
       _userId = -1;

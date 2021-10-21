@@ -6273,7 +6273,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@accId", accId);
-            cmd.Parameters.AddWithValue("@penaltyType", (int) PenaltyActionType.PermanentBan);
+            cmd.Parameters.AddWithValue("@penaltyType", (int) PenaltyInfo.ActionType.PermanentBan);
             cmd.Parameters.AddWithValue("@currentDate", DateTime.UtcNow);
             DebugQuery(cmd);
 
@@ -6305,7 +6305,7 @@ public class DB_Main : DB_MainStub
                updateCmd.Prepare();
 
                updateCmd.Parameters.AddWithValue("@accId", penalty.targetAccId);
-               updateCmd.Parameters.AddWithValue("@forceSinglePlayer", penalty.penaltyType == PenaltyActionType.ForceSinglePlayer ? 1 : 0);
+               updateCmd.Parameters.AddWithValue("@forceSinglePlayer", penalty.penaltyType == PenaltyInfo.ActionType.ForceSinglePlayer ? 1 : 0);
 
                DebugQuery(updateCmd);
                updateCmd.ExecuteNonQuery();
@@ -6421,7 +6421,7 @@ public class DB_Main : DB_MainStub
          "VALUES(@sourceAccId, @sourceUsrId, @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @penaltyType, @penaltyReason, @penaltyTime, @penaltySource, @expiresAt)";
 
       // If our ban is permanent, we remove the expiresAt parameter, since we don't need to specify a date for it
-      if (penalty.penaltyType == PenaltyActionType.PermanentBan) {
+      if (penalty.penaltyType == PenaltyInfo.ActionType.PermanentBan) {
          query = query.Replace(", penaltyTime", string.Empty);
          query = query.Replace(", @penaltyTime", string.Empty);
          query = query.Replace(", expiresAt", string.Empty);
@@ -6444,7 +6444,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@penaltyReason", penalty.penaltyReason);
             cmd.Parameters.AddWithValue("@penaltySource", (int) penalty.penaltySource);
 
-            if (penalty.penaltyType == PenaltyActionType.Ban) {
+            if (penalty.penaltyType == PenaltyInfo.ActionType.Ban) {
                cmd.Parameters.AddWithValue("@penaltyTime", penalty.penaltyTime);
                cmd.Parameters.AddWithValue("@expiresAt", new DateTime(penalty.expiresAt));
             }
@@ -7052,7 +7052,7 @@ public class DB_Main : DB_MainStub
       return stats;
    }
 
-   public static new void changeUserName (int accId, int targetAccId, int targetUsrId, string oldName, string newName, string reason) {
+   public static new void changeUserName (int sourceAccId, int sourceUsrId, string sourceUsrName, int targetAccId, int targetUsrId, string oldName, string newName, string reason) {
       try {
          using (MySqlConnection conn = getConnection()) {
             conn.Open();
@@ -7066,10 +7066,13 @@ public class DB_Main : DB_MainStub
                // Execute the command
                updateCmd.ExecuteNonQuery();
             }
-            using(MySqlCommand insertCmd = new MySqlCommand(
-               "INSERT INTO users_names_changes(accId,targetAccId,targetUsrId,prevUsrName,newUsrName,reason) VALUES(@accId,@targetAccId,@targetUsrId,@prevUsrName,@newUsrName,@reason)", conn)) {
+            using (MySqlCommand insertCmd = new MySqlCommand(
+               "INSERT INTO users_names_changes(sourceAccId,sourceUsrId,sourceUsrName,targetAccId,targetUsrId,prevUsrName,newUsrName,reason) " +
+               "VALUES(@sourceAccId,@sourceUsrId,@sourceUsrName,@targetAccId,@targetUsrId,@prevUsrName,@newUsrName,@reason)", conn)) {
                insertCmd.Prepare();
-               insertCmd.Parameters.AddWithValue("@accId", accId);
+               insertCmd.Parameters.AddWithValue("@sourceAccId", sourceAccId);
+               insertCmd.Parameters.AddWithValue("@sourceUsrId", sourceUsrId);
+               insertCmd.Parameters.AddWithValue("@sourceUsrName", sourceUsrName);
                insertCmd.Parameters.AddWithValue("@targetAccId", targetAccId);
                insertCmd.Parameters.AddWithValue("@targetUsrId", targetUsrId);
                insertCmd.Parameters.AddWithValue("@prevUsrName", oldName);
@@ -11243,6 +11246,81 @@ public class DB_Main : DB_MainStub
                      int dataLength = reader.GetInt32("wmMapDataLength");
                      result = new byte[dataLength];
                      reader.GetBytes(0, 0, result, 0, dataLength);
+                  }
+               }
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return result;
+   }
+
+   #endregion
+
+   #region Soul Binding
+
+   public static new Item.SoulBindingType getSoulBindingType (Item.Category itemCategory, int itemTypeId) {
+      Item.SoulBindingType type = Item.SoulBindingType.None;
+
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+
+            using (MySqlCommand command = new MySqlCommand("SELECT sbdSoulBindingType FROM global.soul_binding_definitions WHERE sbdItemCategory=@itmCategory AND sbdItemTypeId=@itmTypeId", connection)) {
+               command.Parameters.AddWithValue("@itmCategory", (int) itemCategory);
+               command.Parameters.AddWithValue("@itmTypeId", itemTypeId);
+
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  if (reader.Read()) {
+                     type = (Item.SoulBindingType) reader.GetInt32(0);
+                  }
+               }
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return type;
+   }
+
+   public static new bool updateItemSoulBinding (int itemId, bool isBound) {
+      // Actually binds the item to its owner
+      bool success = false;
+
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+
+            using (MySqlCommand command = new MySqlCommand("INSERT INTO soul_binding_items (sbiBound, sbiItemId) VALUES (@isBound, @itemId) ON DUPLICATE KEY UPDATE sbiBound = @isBound", connection)) {
+               command.Parameters.AddWithValue("@isBound", isBound);
+               command.Parameters.AddWithValue("@itemId", itemId);
+               success = command.ExecuteNonQuery() > 0;
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return success;
+   }
+
+   public static new bool isItemSoulBound (int itemId) {
+      // Returns true if the item is soul bound
+      bool result = false;
+
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+
+            using (MySqlCommand command = new MySqlCommand("SELECT sbiBound FROM soul_binding_items WHERE sbiItemId=@itemId", connection)) {
+               command.Parameters.AddWithValue("@itemId", itemId);
+
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  if (reader.Read()) {
+                     result = reader.GetBoolean(0);
                   }
                }
             }

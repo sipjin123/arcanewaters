@@ -1063,33 +1063,22 @@ public class AdminManager : NetworkBehaviour
          }
 
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            UserAccountInfo userAccountInfo = DB_Main.getUserAccountInfo(username);
+            UserAccountInfo targetInfo = DB_Main.getUserAccountInfo(username);
 
-            if (userAccountInfo != null) {
-               if (userAccountInfo.accountId == _player.accountId) {
+            if (targetInfo != null) {
+               if (targetInfo.accountId == _player.accountId) {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                      _player.Target_ReceiveNormalChat("You can't kick yourself", ChatInfo.Type.Error);
                   });
                } else {
-                  PenaltyInfo penalty = new PenaltyInfo();
-                  penalty.sourceAccId = _player.accountId;
-                  penalty.sourceUsrId = _player.userId;
-                  penalty.sourceUsrName = _player.entityName;
-                  penalty.targetAccId = userAccountInfo.accountId;
-                  penalty.targetUsrId = userAccountInfo.userId;
-                  penalty.targetUsrName = userAccountInfo.username;
-                  penalty.penaltySource = PenaltySource.Game;
-                  penalty.penaltyType = PenaltyActionType.Kick;
-
-                  if (!string.IsNullOrEmpty(reason)) {
-                     penalty.penaltyReason = reason;
-                  }
+                  PenaltyInfo penalty = new PenaltyInfo(_player.accountId, _player.userId, _player.entityName, targetInfo.accountId, targetInfo.userId,
+                     targetInfo.username, PenaltyInfo.ActionType.Kick, WebToolsUtil.ActionSource.Game, reason);
 
                   // We add this penalty to the database, for history purposes
                   DB_Main.kickAccount(penalty);
 
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     ServerNetworkingManager.self.kickPlayer(userAccountInfo.userId);
+                     ServerNetworkingManager.self.kickPlayer(targetInfo.userId);
                   });
                }
             } else {
@@ -1126,41 +1115,30 @@ public class AdminManager : NetworkBehaviour
          }
 
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            UserAccountInfo userAccountInfo = DB_Main.getUserAccountInfo(username);
+            UserAccountInfo targetInfo = DB_Main.getUserAccountInfo(username);
 
-            if (userAccountInfo != null) {
-               if (userAccountInfo.accountId == _player.accountId) {
+            if (targetInfo != null) {
+               if (targetInfo.accountId == _player.accountId) {
                   // You can't force single player to yourself
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                      _player.Target_ReceiveNormalChat("You can't force Single Player Mode to yourself", ChatInfo.Type.Error);
                   });
                } else {
-                  PenaltyInfo penalty = new PenaltyInfo();
-                  penalty.sourceAccId = _player.accountId;
-                  penalty.sourceUsrId = _player.userId;
-                  penalty.sourceUsrName = _player.entityName;
-                  penalty.targetAccId = userAccountInfo.accountId;
-                  penalty.targetUsrId = userAccountInfo.userId;
-                  penalty.targetUsrName = userAccountInfo.username;
-                  penalty.penaltySource = PenaltySource.Game;
-                  penalty.penaltyType = userAccountInfo.forceSinglePlayer ? PenaltyActionType.LiftForceSinglePlayer : PenaltyActionType.ForceSinglePlayer;
-
-                  if (!string.IsNullOrEmpty(reason)) {
-                     penalty.penaltyReason = reason;
-                  }
+                  PenaltyInfo penalty = new PenaltyInfo(_player.accountId, _player.userId, _player.entityName, targetInfo.accountId, targetInfo.userId, targetInfo.username,
+                     targetInfo.forceSinglePlayer ? PenaltyInfo.ActionType.LiftForceSinglePlayer : PenaltyInfo.ActionType.ForceSinglePlayer, WebToolsUtil.ActionSource.Game, reason);
 
                   // We toggle the forceSinglePlayer field in the database
                   bool success = DB_Main.forceSinglePlayerForAccount(penalty);
 
                   if (success) {
-                     if (userAccountInfo.forceSinglePlayer) {
+                     if (targetInfo.forceSinglePlayer) {
                         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                           _player.Target_ReceiveNormalChat(string.Format("{0} is no longer locked to Single Player mode.", userAccountInfo.username), ChatInfo.Type.System);
+                           _player.Target_ReceiveNormalChat(string.Format("{0} is no longer locked to Single Player mode.", targetInfo.username), ChatInfo.Type.System);
                         });
                      } else {
                         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                           _player.Target_ReceiveNormalChat(string.Format("{0} is now locked to Single Player mode.", userAccountInfo.username), ChatInfo.Type.System);
-                           ServerNetworkingManager.self.forceSinglePlayerModeForUser(userAccountInfo.userId);
+                           _player.Target_ReceiveNormalChat(string.Format("{0} is now locked to Single Player mode.", targetInfo.username), ChatInfo.Type.System);
+                           ServerNetworkingManager.self.forceSinglePlayerModeForUser(targetInfo.userId);
                         });
                      }
                   } else {
@@ -1193,39 +1171,24 @@ public class AdminManager : NetworkBehaviour
       }
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         UserAccountInfo userAccountInfo = DB_Main.getUserAccountInfo(username);
+         UserAccountInfo targetInfo = DB_Main.getUserAccountInfo(username);
 
-         if (userAccountInfo != null) {
-            if (userAccountInfo.accountId == _player.accountId) {
+         if (targetInfo != null) {
+            if (targetInfo.accountId == _player.accountId) {
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                   _player.Target_ReceiveNormalChat("You can't ban yourself", ChatInfo.Type.Error);
                });
             } else {
-               List<PenaltyInfo> penalties = DB_Main.getPenaltiesForAccount(userAccountInfo.accountId);
+               List<PenaltyInfo> penalties = DB_Main.getPenaltiesForAccount(targetInfo.accountId);
 
-               if (penalties.Any(x => x.penaltyType == PenaltyActionType.Ban || x.penaltyType == PenaltyActionType.PermanentBan)) {
+               if (penalties.Any(x => x.penaltyType == PenaltyInfo.ActionType.Ban || x.penaltyType == PenaltyInfo.ActionType.PermanentBan)) {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     _player.Target_ReceiveNormalChat(string.Format("{0} is already banned!", userAccountInfo.username), ChatInfo.Type.Error);
+                     _player.Target_ReceiveNormalChat(string.Format("{0} is already banned!", targetInfo.username), ChatInfo.Type.Error);
                   });
                } else {
-                  PenaltyInfo penalty = new PenaltyInfo();
-                  penalty.sourceAccId = _player.accountId;
-                  penalty.sourceUsrId = _player.userId;
-                  penalty.sourceUsrName = _player.entityName;
-                  penalty.targetAccId = userAccountInfo.accountId;
-                  penalty.targetUsrId = userAccountInfo.userId;
-                  penalty.targetUsrName = userAccountInfo.username;
-                  penalty.penaltySource = PenaltySource.Game;
-                  penalty.penaltyType = isIndefinite ? PenaltyActionType.PermanentBan : PenaltyActionType.Ban;
-                  penalty.penaltyTime = seconds;
-
-                  if (!isIndefinite) {
-                     penalty.expiresAt = DateTime.UtcNow.AddSeconds(seconds).Ticks;
-                  }
-
-                  if (!string.IsNullOrEmpty(reason)) {
-                     penalty.penaltyReason = reason;
-                  }
+                  PenaltyInfo penalty = new PenaltyInfo(_player.accountId, _player.userId, _player.entityName, targetInfo.accountId,
+                     targetInfo.userId, targetInfo.username, isIndefinite ? PenaltyInfo.ActionType.PermanentBan : PenaltyInfo.ActionType.Ban,
+                     WebToolsUtil.ActionSource.Game, reason, seconds);
 
                   bool success = DB_Main.banAccount(penalty);
 
@@ -1234,14 +1197,14 @@ public class AdminManager : NetworkBehaviour
                         string message = "";
 
                         if (isIndefinite) {
-                           message = string.Format("{0} is now banned indefinitely", userAccountInfo.username);
+                           message = string.Format("{0} is now banned indefinitely", targetInfo.username);
                         } else {
-                           message = string.Format("{0} is now banned until {1} EST", userAccountInfo.username, Util.getTimeInEST(new DateTime(penalty.expiresAt)));
+                           message = string.Format("{0} is now banned until {1} EST", targetInfo.username, Util.getTimeInEST(new DateTime(penalty.expiresAt)));
                         }
 
                         _player.Target_ReceiveNormalChat(message, ChatInfo.Type.System);
-                        ServerNetworkingManager.self.banPlayer(userAccountInfo.userId, isIndefinite, penalty.expiresAt);
-                        ServerNetworkingManager.self.censorGlobalMessagesFromUser(userAccountInfo.userId);
+                        ServerNetworkingManager.self.banPlayer(targetInfo.userId, isIndefinite, penalty.expiresAt);
+                        ServerNetworkingManager.self.censorGlobalMessagesFromUser(targetInfo.userId);
                      });
                   } else {
                      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -1267,46 +1230,33 @@ public class AdminManager : NetworkBehaviour
       }
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         UserAccountInfo userAccountInfo = DB_Main.getUserAccountInfo(username);
+         UserAccountInfo targetInfo = DB_Main.getUserAccountInfo(username);
 
-         if (userAccountInfo != null) {
-            if (userAccountInfo.accountId == _player.accountId) {
+         if (targetInfo != null) {
+            if (targetInfo.accountId == _player.accountId) {
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                   _player.Target_ReceiveNormalChat("You can't mute yourself", ChatInfo.Type.Error);
                });
             } else {
                // Is this player already muted?
-               List<PenaltyInfo> penalties = DB_Main.getPenaltiesForAccount(userAccountInfo.accountId);
+               List<PenaltyInfo> penalties = DB_Main.getPenaltiesForAccount(targetInfo.accountId);
 
-               if (penalties.Any(x => x.penaltyType == PenaltyActionType.Mute || x.penaltyType == PenaltyActionType.StealthMute)) {
+               if (penalties.Any(x => x.penaltyType == PenaltyInfo.ActionType.Mute || x.penaltyType == PenaltyInfo.ActionType.StealthMute)) {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     _player.Target_ReceiveNormalChat(string.Format("{0} is already muted!", userAccountInfo.username), ChatInfo.Type.Error);
+                     _player.Target_ReceiveNormalChat(string.Format("{0} is already muted!", targetInfo.username), ChatInfo.Type.Error);
                   });
                } else {
-                  PenaltyInfo penalty = new PenaltyInfo();
-                  penalty.sourceAccId = _player.accountId;
-                  penalty.sourceUsrId = _player.userId;
-                  penalty.sourceUsrName = _player.entityName;
-                  penalty.targetAccId = userAccountInfo.accountId;
-                  penalty.targetUsrId = userAccountInfo.userId;
-                  penalty.targetUsrName = userAccountInfo.username;
-                  penalty.penaltySource = PenaltySource.Game;
-                  penalty.penaltyType = isStealth ? PenaltyActionType.StealthMute : PenaltyActionType.Mute;
-                  penalty.expiresAt = DateTime.UtcNow.AddSeconds(seconds).Ticks;
-                  penalty.penaltyTime = seconds;
-
-                  if (!string.IsNullOrEmpty(reason)) {
-                     penalty.penaltyReason = reason;
-                  }
-
+                  PenaltyInfo penalty = new PenaltyInfo(_player.accountId, _player.userId, _player.entityName, targetInfo.accountId,
+                     targetInfo.userId, targetInfo.username, isStealth ? PenaltyInfo.ActionType.StealthMute : PenaltyInfo.ActionType.Mute,
+                     WebToolsUtil.ActionSource.Game, reason, seconds);
                   bool success = DB_Main.muteAccount(penalty);
 
                   if (success) {
                      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                        _player.Target_ReceiveNormalChat(string.Format("{0} is now muted until {1} EST", userAccountInfo.username, Util.getTimeInEST(new DateTime(penalty.expiresAt))), ChatInfo.Type.System);
-                        ServerNetworkingManager.self.mutePlayer(userAccountInfo.userId, isStealth, penalty.expiresAt);
+                        _player.Target_ReceiveNormalChat(string.Format("{0} is now muted until {1} EST", targetInfo.username, Util.getTimeInEST(new DateTime(penalty.expiresAt))), ChatInfo.Type.System);
+                        ServerNetworkingManager.self.mutePlayer(targetInfo.userId, isStealth, penalty.expiresAt);
                         if (!isStealth) {
-                           ServerNetworkingManager.self.censorGlobalMessagesFromUser(userAccountInfo.userId);
+                           ServerNetworkingManager.self.censorGlobalMessagesFromUser(targetInfo.userId);
                         }
                      });
                   } else {
@@ -1343,38 +1293,26 @@ public class AdminManager : NetworkBehaviour
          }
 
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            UserAccountInfo userAccountInfo = DB_Main.getUserAccountInfo(username);
+            UserAccountInfo targetInfo = DB_Main.getUserAccountInfo(username);
 
-            if (userAccountInfo != null) {
-               if (userAccountInfo.accountId == _player.accountId) {
+            if (targetInfo != null) {
+               if (targetInfo.accountId == _player.accountId) {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                      _player.Target_ReceiveNormalChat("You can't unmute yourself", ChatInfo.Type.Error);
                   });
                } else {
-                  List<PenaltyInfo> penalties = DB_Main.getPenaltiesForAccount(userAccountInfo.accountId);
+                  List<PenaltyInfo> penalties = DB_Main.getPenaltiesForAccount(targetInfo.accountId);
 
-                  if (penalties.Any(x => x.penaltyType == PenaltyActionType.Mute || x.penaltyType == PenaltyActionType.StealthMute)) {
-                     PenaltyInfo penalty = new PenaltyInfo();
-                     penalty.id = penalties.First(x => x.penaltyType == PenaltyActionType.Mute || x.penaltyType == PenaltyActionType.StealthMute).id;
-                     penalty.sourceAccId = _player.accountId;
-                     penalty.sourceUsrId = _player.userId;
-                     penalty.sourceUsrName = _player.entityName;
-                     penalty.targetAccId = userAccountInfo.accountId;
-                     penalty.targetUsrId = userAccountInfo.userId;
-                     penalty.targetUsrName = userAccountInfo.username;
-                     penalty.penaltySource = PenaltySource.Game;
-                     penalty.penaltyType = PenaltyActionType.LiftMute;
-
-                     if (!string.IsNullOrEmpty(reason)) {
-                        penalty.penaltyReason = reason;
-                     }
-
+                  if (penalties.Any(x => x.penaltyType == PenaltyInfo.ActionType.Mute || x.penaltyType == PenaltyInfo.ActionType.StealthMute)) {
+                     int penaltyId = penalties.First(x => x.penaltyType == PenaltyInfo.ActionType.Mute || x.penaltyType == PenaltyInfo.ActionType.StealthMute).id;
+                     PenaltyInfo penalty = new PenaltyInfo(_player.accountId, _player.userId, _player.entityName, targetInfo.accountId, targetInfo.userId,
+                        targetInfo.username, PenaltyInfo.ActionType.LiftMute, WebToolsUtil.ActionSource.Game, reason, id: penaltyId);
                      bool success = DB_Main.unMuteAccount(penalty);
 
                      if (success) {
                         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                           _player.Target_ReceiveNormalChat(string.Format("{0} is not muted anymore!", userAccountInfo.username), ChatInfo.Type.System);
-                           ServerNetworkingManager.self.unMutePlayer(userAccountInfo.userId);
+                           _player.Target_ReceiveNormalChat(string.Format("{0} is not muted anymore!", targetInfo.username), ChatInfo.Type.System);
+                           ServerNetworkingManager.self.unMutePlayer(targetInfo.userId);
                         });
                      } else {
                         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -1384,7 +1322,7 @@ public class AdminManager : NetworkBehaviour
 
                   } else {
                      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                        _player.Target_ReceiveNormalChat(string.Format("{0} is not currently muted!", userAccountInfo.username), ChatInfo.Type.Error);
+                        _player.Target_ReceiveNormalChat(string.Format("{0} is not currently muted!", targetInfo.username), ChatInfo.Type.Error);
                      });
                   }
                }
@@ -1421,37 +1359,25 @@ public class AdminManager : NetworkBehaviour
          }
 
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            UserAccountInfo userAccountInfo = DB_Main.getUserAccountInfo(username);
+            UserAccountInfo targetInfo = DB_Main.getUserAccountInfo(username);
 
-            if (userAccountInfo != null) {
-               if (userAccountInfo.accountId == _player.accountId) {
+            if (targetInfo != null) {
+               if (targetInfo.accountId == _player.accountId) {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                      _player.Target_ReceiveNormalChat("You can't unban yourself", ChatInfo.Type.Error);
                   });
                } else {
-                  List<PenaltyInfo> penalties = DB_Main.getPenaltiesForAccount(userAccountInfo.accountId);
+                  List<PenaltyInfo> penalties = DB_Main.getPenaltiesForAccount(targetInfo.accountId);
 
-                  if (penalties.Any(x => x.penaltyType == PenaltyActionType.Ban || x.penaltyType == PenaltyActionType.PermanentBan)) {
-                     PenaltyInfo penalty = new PenaltyInfo();
-                     penalty.id = penalties.First(x => x.penaltyType == PenaltyActionType.Ban || x.penaltyType == PenaltyActionType.PermanentBan).id;
-                     penalty.sourceAccId = _player.accountId;
-                     penalty.sourceUsrId = _player.userId;
-                     penalty.sourceUsrName = _player.entityName;
-                     penalty.targetAccId = userAccountInfo.accountId;
-                     penalty.targetUsrId = userAccountInfo.userId;
-                     penalty.targetUsrName = userAccountInfo.username;
-                     penalty.penaltySource = PenaltySource.Game;
-                     penalty.penaltyType = PenaltyActionType.LiftBan;
-
-                     if (!string.IsNullOrEmpty(reason)) {
-                        penalty.penaltyReason = reason;
-                     }
-
+                  if (penalties.Any(x => x.penaltyType == PenaltyInfo.ActionType.Ban || x.penaltyType == PenaltyInfo.ActionType.PermanentBan)) {
+                     int penaltyId = penalties.First(x => x.penaltyType == PenaltyInfo.ActionType.Ban || x.penaltyType == PenaltyInfo.ActionType.PermanentBan).id;
+                     PenaltyInfo penalty = new PenaltyInfo(_player.accountId, _player.userId, _player.entityName, targetInfo.accountId, targetInfo.userId,
+                        targetInfo.username, PenaltyInfo.ActionType.LiftBan, WebToolsUtil.ActionSource.Game, reason, id: penaltyId);
                      bool success = DB_Main.unBanAccount(penalty);
 
                      if (success) {
                         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                           _player.Target_ReceiveNormalChat(string.Format("{0} is not banned anymore!", userAccountInfo.username), ChatInfo.Type.System);
+                           _player.Target_ReceiveNormalChat(string.Format("{0} is not banned anymore!", targetInfo.username), ChatInfo.Type.System);
                            // No need to notify any servers, because the banned status is checked when signing in into the game
                         });
                      } else {
@@ -1462,7 +1388,7 @@ public class AdminManager : NetworkBehaviour
 
                   } else {
                      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                        _player.Target_ReceiveNormalChat(string.Format("{0} is not currently muted!", userAccountInfo.username), ChatInfo.Type.Error);
+                        _player.Target_ReceiveNormalChat(string.Format("{0} is not currently muted!", targetInfo.username), ChatInfo.Type.Error);
                      });
                   }
                }
@@ -3423,7 +3349,7 @@ public class AdminManager : NetworkBehaviour
                } else {
                   targetInfo = DB_Main.getUserAccountInfo(oldName);
                   if (targetInfo != null) {
-                     DB_Main.changeUserName(_player.accountId, targetInfo.accountId, targetInfo.userId, targetInfo.username, newName, reason);
+                     DB_Main.changeUserName(_player.accountId, _player.userId, _player.entityName, targetInfo.accountId, targetInfo.userId, targetInfo.username, newName, reason);
                   }
                }
             }
@@ -3463,9 +3389,16 @@ public class AdminManager : NetworkBehaviour
       NetEntity entity = EntityManager.self.getEntity(userId);
 
       if (entity != null) {
+         string oldName = entity.entityName;
+
          entity.entityName = newName;
          entity.nameText.text = newName;
          entity.nameTextOutline.text = newName;
+
+         // Update the name in chat
+         if (ChatManager.self != null) {
+            ChatManager.self.changePlayerNameInChat(userId, oldName, newName);
+         }
       }
    }
 

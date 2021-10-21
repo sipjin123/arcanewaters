@@ -152,7 +152,13 @@ public class ClientMessageManager : MonoBehaviour {
             if (StoreScreen.self.isShowing()) {
                StoreScreen.self.refreshPanel();
             }
-
+            return;
+         case ErrorMessage.Type.ItemIsSoulBound:
+            if (string.IsNullOrWhiteSpace(msg.customMessage)) {
+               PanelManager.self.noticeScreen.show("The item is soul bound, and it can't be transferred.");
+            } else {
+               PanelManager.self.noticeScreen.show(msg.customMessage);
+            }
             return;
          /*case ErrorMessage.Type.NoGoldForCargo:
          case ErrorMessage.Type.OutOfCargoSpace:
@@ -403,6 +409,13 @@ public class ClientMessageManager : MonoBehaviour {
 
          case ConfirmMessage.Type.CorrectClientVersion:
             TitleScreen.self.continueAfterCheckingClientVersion();
+            return;
+         case ConfirmMessage.Type.ItemSoulBound:
+            if (string.IsNullOrWhiteSpace(msg.customMessage)) {
+               PanelManager.self.noticeScreen.show("The item is now soul bound!");
+            } else {
+               PanelManager.self.noticeScreen.show(msg.customMessage);
+            }
             return;
             /*case ConfirmMessage.Type.SeaWarp:
                // Pixelate the screen

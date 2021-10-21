@@ -319,9 +319,6 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          if (targetEntity != null && _currentPathIndex >= _currentPath.Count) {
             // Look at target entity
             this.facing = (Direction) SeaMonsterUtility.getDirectionToFace(targetEntity, sortPoint.transform.position);
-         } else if (getVelocity().magnitude > MIN_MOVEMENT_MAGNITUDE) {
-            // Update our facing direction
-            faceVelocityDirection();
          }
       } else {
          // Forces minions to look at direction in relation to the parent

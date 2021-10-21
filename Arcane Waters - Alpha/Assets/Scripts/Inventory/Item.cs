@@ -60,6 +60,18 @@ public class Item {
    // Max cap in randomizing item durability deduction
    public const int PERCENT_CHANCE = 100;
 
+   // Soul binding types
+   public enum SoulBindingType {
+      // No soul binding
+      None = 0,
+
+      // Soul binding on acquisition
+      Acquisition = 1,
+
+      // Soul binding on equip
+      Equip = 2
+   }
+
    #endregion
 
    public Item () {

@@ -65,6 +65,10 @@ public class BaseCamera : MonoBehaviour {
       return _pixelFadeEffect;
    }
 
+   public bool isFading () {
+      return _pixelFadeEffect.isFadingIn || _pixelFadeEffect.isFadingOut;
+   }
+
    public void shakeCamera (float duration) {
       StartCoroutine(CO_ShakeCamera(duration));
    }

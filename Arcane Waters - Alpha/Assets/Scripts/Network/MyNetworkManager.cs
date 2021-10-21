@@ -547,11 +547,11 @@ public class MyNetworkManager : NetworkManager
             // Get player's mute info if exists, and send it to the player
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                List<PenaltyInfo> penalties = DB_Main.getPenaltiesForAccount(player.accountId);
-               PenaltyInfo muteInfo = penalties.FirstOrDefault(x => x.penaltyType == PenaltyActionType.Mute || x.penaltyType == PenaltyActionType.StealthMute);
+               PenaltyInfo muteInfo = penalties.FirstOrDefault(x => x.penaltyType == PenaltyInfo.ActionType.Mute || x.penaltyType == PenaltyInfo.ActionType.StealthMute);
 
                if (muteInfo != null) {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     player.setMuteInfo(muteInfo.expiresAt, muteInfo.penaltyType == PenaltyActionType.StealthMute);
+                     player.setMuteInfo(muteInfo.expiresAt, muteInfo.penaltyType == PenaltyInfo.ActionType.StealthMute);
                   });
                }
             });
