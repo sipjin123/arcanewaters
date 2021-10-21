@@ -36,7 +36,7 @@ public class VisitListTemplate : MonoBehaviour {
 
    #endregion
 
-   public void setRowForFriendshipInfo (FriendshipInfo entry) {
+   public void setRowForFriendshipInfo (FriendshipInfo entry, bool isCustomMapSet) {
       _friendUserId = entry.friendUserId;
       friendName.text = entry.friendName;
       friendAreaName.text = Area.getName(entry.friendAreaKey);
@@ -44,14 +44,14 @@ public class VisitListTemplate : MonoBehaviour {
       if (entry.isOnline) {
          onlineIcon.SetActive(true);
          offlineIcon.SetActive(false);
-         visitButtonObj.SetActive(true);
-         disabledVisitButtonObj.SetActive(false);
       } else {
          onlineIcon.SetActive(false);
          offlineIcon.SetActive(true);
-         visitButtonObj.SetActive(false);
-         disabledVisitButtonObj.SetActive(true);
       }
+
+      visitButtonObj.SetActive(isCustomMapSet && entry.isOnline);
+      disabledVisitButtonObj.SetActive(!isCustomMapSet || !entry.isOnline);
+
       level.text = LevelUtil.levelForXp(entry.friendXP).ToString();
       if (entry.friendGuildId > 0) {
          friendGuildIcon.setBackground(entry.friendIconBackground, entry.friendIconBackPalettes);

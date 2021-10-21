@@ -18,7 +18,8 @@ public class ConfirmMessage : NetworkMessage
       FriendshipDeleted = 17, MailSent = 18, MailDeleted = 19, ItemsAddedToInventory = 20,
       ModifiedOwnAuction = 21, BidOnAuction = 22, EditGuildRanks = 23, GuildActionLocal = 24,
       GuildActionGlobal = 25, GuildActionUpdate = 26, CorrectClientVersion = 27, SoldAuctionItem = 28,
-      ReturnAuctionItem = 29, UsedConsumable = 30, UsedArmorDye = 31, UsedHatDye = 32, UsedWeaponDye = 33
+      ReturnAuctionItem = 29, UsedConsumable = 30, UsedArmorDye = 31, UsedHatDye = 32, UsedWeaponDye = 33,
+      ItemSoulBound = 34, GeneralPopup = 35
    }
 
    // The Type of confirmation

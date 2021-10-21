@@ -932,7 +932,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveFriendVisitInfo (NetworkConnection connection, FriendshipInfo[] friendshipInfo, int pageNumber, int totalFriendInfoCount) {
+   public void Target_ReceiveFriendVisitInfo (NetworkConnection connection, FriendshipInfo[] friendshipInfo, bool isCustomMapSet, int pageNumber, int totalFriendInfoCount) {
       List<FriendshipInfo> friendshipInfoList = new List<FriendshipInfo>(friendshipInfo);
 
       // Make sure the panel is showing
@@ -943,7 +943,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Pass the data to the panel
-      panel.updatePanelWithFriendshipInfo(friendshipInfoList, totalFriendInfoCount);
+      panel.updatePanelWithFriendshipInfo(isCustomMapSet, friendshipInfoList, totalFriendInfoCount);
    }
 
    [TargetRpc]
@@ -3610,6 +3610,8 @@ public class RPCManager : NetworkBehaviour
          // Get the number of items
          int totalFriendInfoCount = DB_Main.getFriendshipInfoCount(_player.userId, Friendship.Status.Friends);
 
+         UserInfo userInfo = DB_Main.getUserInfoById(_player.userId);
+
          // Calculate the maximum page number
          int maxPage = Mathf.CeilToInt((float) totalFriendInfoCount / itemsPerPage);
          if (maxPage == 0) {
@@ -3632,7 +3634,7 @@ public class RPCManager : NetworkBehaviour
                friend.isOnline = ServerNetworkingManager.self.isUserOnline(friend.friendUserId);
             }
 
-            Target_ReceiveFriendVisitInfo(_player.connectionToClient, friendshipInfoList.ToArray(), pageNumber, totalFriendInfoCount);
+            Target_ReceiveFriendVisitInfo(_player.connectionToClient, friendshipInfoList.ToArray(), userInfo.customHouseBaseId > 0 && userInfo.customFarmBaseId > 0, pageNumber, totalFriendInfoCount);
          });
       });
    }

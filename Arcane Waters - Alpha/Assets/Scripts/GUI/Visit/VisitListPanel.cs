@@ -23,6 +23,9 @@ public class VisitListPanel : Panel {
    // The previous page button
    public Button previousPageButton;
 
+   // The warning panel activated if the user has not selected their house and farm
+   public GameObject setCustomMapWarningObj;
+
    #endregion
 
    public override void Awake () {
@@ -30,12 +33,14 @@ public class VisitListPanel : Panel {
       self = this;
    }
 
-   public void updatePanelWithFriendshipInfo (List<FriendshipInfo> friendshipInfoList, int totalFriends) {
+   public void updatePanelWithFriendshipInfo (bool isCustomMapSet, List<FriendshipInfo> friendshipInfoList, int totalFriends) {
       visitTempHolder.gameObject.DestroyChildren();
       FriendListManager.self.cachedFriendshipInfoList = friendshipInfoList;
       if (FriendListManager.self.cachedFriendshipInfoList == null) {
          FriendListManager.self.cachedFriendshipInfoList = new List<FriendshipInfo>();
       }
+
+      setCustomMapWarningObj.SetActive(!isCustomMapSet);
 
       // Sort the list by online status
       friendshipInfoList = friendshipInfoList.OrderByDescending(f => f.isOnline).ToList();
@@ -47,7 +52,7 @@ public class VisitListPanel : Panel {
       foreach (FriendshipInfo friend in friendshipInfoList) {
          // Instantiate and initialize the row
          VisitListTemplate rowFriend = Instantiate(visitTemplatePrefab, visitTempHolder.transform, false);
-         rowFriend.setRowForFriendshipInfo(friend);
+         rowFriend.setRowForFriendshipInfo(friend, isCustomMapSet);
       }
    }
 

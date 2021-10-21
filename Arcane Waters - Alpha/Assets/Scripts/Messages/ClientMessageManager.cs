@@ -279,6 +279,9 @@ public class ClientMessageManager : MonoBehaviour {
             }
 
             return;
+         case ConfirmMessage.Type.GeneralPopup:
+            PanelManager.self.noticeScreen.show(msg.customMessage);
+            break;
          case ConfirmMessage.Type.General:
             // Add the confirmation message in the chat panel
             ChatManager.self.addChat(msg.customMessage, msg.timestamp, ChatInfo.Type.System);

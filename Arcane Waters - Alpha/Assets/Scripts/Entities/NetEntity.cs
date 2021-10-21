@@ -2053,7 +2053,7 @@ public class NetEntity : NetworkBehaviour
             }
 
             if (targetUserInfo.customFarmBaseId < 1 || targetUserInfo.customHouseBaseId < 1) {
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, this, "The player " + targetPlayerName + " did not set the custom maps yet!");
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GeneralPopup, this, "The player " + targetPlayerName + " did not set the custom maps yet!");
                return;
             }
 
