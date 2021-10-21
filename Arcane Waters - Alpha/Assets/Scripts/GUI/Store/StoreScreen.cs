@@ -775,7 +775,24 @@ public class StoreScreen : Panel
 
    private string[] computeShipNames () {
       List<ShipData> shipDatas = ShipDataManager.self.shipDataList;
-      return shipDatas.Select(_ => _.shipName).ToArray();
+      List<ShipData> validShipData = new List<ShipData>();
+      List<string> validShipNames = new List<string>();
+
+      foreach (ShipData ship in shipDatas) {
+         if (validShipData.Any(_=>_.shipType == ship.shipType)){
+            continue;
+         }
+
+         if (validShipData.Find(_ => _.shipType == ship.shipType) == null) {
+            validShipData.Add(ship);
+         }
+      }
+
+      foreach (ShipData validShip in validShipData) {
+         validShipNames.Add(validShip.shipName);
+      }
+
+      return validShipNames.ToArray();
    }
 
    #endregion
