@@ -137,6 +137,10 @@ public class BattleManager : MonoBehaviour {
       return null;
    }
 
+   public List<Battle> getAllBattles () {
+      return _battles.Values.ToList();
+   }
+
    public Battler getBattler (int userId) {
       if (_battlers.ContainsKey(userId)) {
          return _battlers[userId];
@@ -277,6 +281,10 @@ public class BattleManager : MonoBehaviour {
 
             // If a battle just ended, notify all the clients involved
             if (tickResult == Battle.TickResult.BattleOver) {
+               StartCoroutine(endBattleAfterDelay(battle, END_BATTLE_DELAY));
+            }
+            if (tickResult == Battle.TickResult.Missing) {
+               D.debug("Battle manager has detected a missing battle data: " + battle.battleId);
                StartCoroutine(endBattleAfterDelay(battle, END_BATTLE_DELAY));
             }
          }

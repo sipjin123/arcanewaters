@@ -11,7 +11,7 @@ public class Battle : NetworkBehaviour {
    public enum TeamType { None = 0, Attackers = 1, Defenders = 2 };
 
    // The result of the last Battle tick
-   public enum TickResult { None, BattleOver }
+   public enum TickResult { None, BattleOver, Missing }
 
    // The unique ID assigned to this battle
    [SyncVar]
@@ -110,6 +110,11 @@ public class Battle : NetworkBehaviour {
       // Everything below here is only valid for the server
       if (!NetworkServer.active) {
          return TickResult.None;
+      }
+
+      if (getParticipants().FindAll(_ => _.health > 0 && _.displayedHealth > 0).Count < 1 || getParticipants().Count < 1) {
+         D.debug("There are no more battlers alive at this point!");
+         return TickResult.Missing;
       }
 
       // Check if a queued action end time has already lapsed, if so then remove from list

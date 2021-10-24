@@ -113,6 +113,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("warp", "Warps you to an area", requestWarp, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "areaName" }, parameterAutocompletes: AreaManager.self.getAllAreaNames()));
       cm.addCommand(new CommandData("show_admin_panel", "Show the Admin Panel", showAdminPanel, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("reset_shop", "Refreshes all the shops", resetShops, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("log_battle", "Logs the current battle manager info", logBattle, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("simulate_steam_purchase_response", "Simulates the response received by the server", simulateSteamPurchaseAuthorizationResponse, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "orderId", "appId", "orderAuthorized" }));
       cm.addCommand(new CommandData("add_xp", "Gives XP to the player", addXP, requiredPrefix: CommandType.Admin, parameterNames: new List<string> { "amount" }));
       cm.addCommand(new CommandData("set_level", "Sets the Level of the player", setPlayerLevel, requiredPrefix: CommandType.Admin, parameterNames: new List<string> { "level" }));
@@ -3166,6 +3167,29 @@ public class AdminManager : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceivePartialServerLogBytes (NetworkConnection connection, byte[] serverLogData) {
       D.serverLogBytes.AddRange(serverLogData);
+   }
+
+   protected void logBattle () {
+      D.debug("The battle id of player {" + _player.userId + "} is {" + _player.battleId + "}");
+      string messageResult = "";
+      if (_player.battleId > 0) {
+         Battle battleInfo = BattleManager.self.getBattle(_player.battleId);
+         if (battleInfo == null) {
+            messageResult += "Missing battle reference for id {" + _player.battleId + "}";
+         } else {
+            messageResult += "Found battle reference for id {" + _player.battleId + "} " +
+               "Attackers {" + battleInfo.getAttackers().Count + " : " + battleInfo.getAttackers().Where(_ => _.health > 0).Count() + "} " +
+               "Defenders {" + battleInfo.getDefenders().Count + " : " + battleInfo.getDefenders().Where(_ => _.health > 0).Count() + "}";
+         }
+      } else {
+         foreach (Battle battleInfo in BattleManager.self.getAllBattles()) {
+            messageResult += "(ID:{" + battleInfo.battleId + "} " +
+               "ATK:{" + battleInfo.getAttackers().Count + " : " + battleInfo.getAttackers().Where(_ => _.health > 0).Count() + "} " +
+               "DEF:{" + battleInfo.getAttackers().Count + " : " + battleInfo.getAttackers().Where(_ => _.health > 0).Count() + "}) : ";
+         }
+      }
+      D.debug("BatteLog: " + messageResult);
+      _player.rpc.Target_ReceiveMsgFromServer(_player.connectionToClient, messageResult);
    }
 
    protected void resetShops () {
