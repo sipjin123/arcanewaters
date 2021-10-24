@@ -282,11 +282,10 @@ public class RPCManager : NetworkBehaviour
       if (isLocalPlayer && playedLocally) {
          return;
       }
-      _player.requestAnimationPlay(animType);
 
-      if (!isLocalPlayer) {
-         PlayerBodyEntity playerBody = _player.getPlayerBodyEntity();
-         if (playerBody) {
+      PlayerBodyEntity playerBody = _player.getPlayerBodyEntity();
+      if (playerBody) {
+         if (!isLocalPlayer) {
             // Legacy support for previous implementation
             //SoundEffectManager.self.playLegacyInteractionOneShot(playerBody.weaponManager.equipmentDataId, playerBody.transform);
             // Playing FMOD SFX for interaction
@@ -294,6 +293,10 @@ public class RPCManager : NetworkBehaviour
             SoundEffectManager.self.playInteractionSfx(weaponData.actionType, weaponData.weaponClass, weaponData.sfxType, playerBody.transform);
 
             playerBody.playInteractParticles();
+         }
+
+         if (playerBody.isJumpGrounded() && !playerBody.isJumping()) {
+            _player.requestAnimationPlay(animType);
          }
       }
    }

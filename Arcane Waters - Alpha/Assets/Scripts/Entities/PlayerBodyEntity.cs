@@ -282,8 +282,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       webBounceUpdate();
-      processJumpLogic();
       processActionLogic();
+      processJumpLogic();
 
       // Display land players' name when ALT key is pressed.
       if (KeyUtils.GetKey(Key.LeftAlt) || KeyUtils.GetKey(Key.RightAlt)) {
@@ -477,6 +477,10 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       spritesTransform.localPosition = new Vector3(spritesTransform.localPosition.x, newHeight, spritesTransform.localPosition.z);
    }
 
+   public bool isJumpGrounded () {
+      return spritesTransform.localPosition.y < .05f;
+   }
+
    private void processJumpLogic () {
       // Blocks movement when unit is jumping over an obstacle
       if (isJumpingOver) {
@@ -613,7 +617,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private void triggerInteractAction (bool faceMouseDirection = true) {
-      if (isJumping()) {
+      if (isJumping() || !isJumpGrounded()) {
          return;
       }
 
@@ -904,7 +908,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    public bool isJumping () {
       float timeSinceLastJump = (float) (NetworkTime.time - _jumpStartTime);
-      return (timeSinceLastJump < JUMP_DURATION);
+      return (timeSinceLastJump < JUMP_DURATION || animators[0].GetBool("jump"));
    }
 
    protected override void webBounceUpdate () {
