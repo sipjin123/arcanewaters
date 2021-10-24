@@ -296,12 +296,11 @@ public class ShipEntity : SeaEntity
    }
 
    private IEnumerator CO_TriggerActiveAOEBuff (ShipAbilityData shipAbilityData, float statusDuration) {
-      DateTime endTime = DateTime.UtcNow.AddSeconds(statusDuration);
+      double endTimeVal = NetworkTime.time + statusDuration;
       List<NetEntity> allyEntities = EntityManager.self.getEntitiesWithVoyageId(voyageGroupId);
       int value = (int) (shipAbilityData.damageModifier * 100);
-
       List<int> withinBuffEffectivityList = new List<int>();
-      while (DateTime.UtcNow < endTime) {
+      while (NetworkTime.time < endTimeVal) {
          yield return new WaitForSeconds(.5f);
 
          foreach (NetEntity allyEntity in allyEntities) {
@@ -342,7 +341,6 @@ public class ShipEntity : SeaEntity
          }
       }
    }
-
 
    private IEnumerator CO_TriggerTemporaryBuff (ShipEntity targetEntity, ShipAbilityData shipAbilityData, float statusDuration) {
       int value = (int) (shipAbilityData.damageModifier * 100);
