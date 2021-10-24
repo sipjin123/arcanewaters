@@ -361,8 +361,10 @@ public class MapManager : MonoBehaviour
    }
 
    public void addCustomizations (Area area, Biome.Type biome, PrefabState changes) {
+      bool hasFoundAnyChanges = false;
       foreach (CustomizablePrefab pref in area.gameObject.GetComponentsInChildren<CustomizablePrefab>()) {
          if (pref.unappliedChanges.id == changes.id) {
+            hasFoundAnyChanges = true;
             pref.unappliedChanges = changes;
             pref.submitUnappliedChanges();
 
@@ -373,6 +375,16 @@ public class MapManager : MonoBehaviour
             break;
          }
       }
+
+      // Check if there are any prefab changes that occurred that does not exist for visiting users
+      bool isSpecificKey = CustomMapManager.isUserSpecificAreaKey(area.areaKey);
+      if (!hasFoundAnyChanges && isSpecificKey && Global.player != null) {
+         int userOwner = CustomMapManager.getUserId(area.areaKey);
+         if (userOwner != Global.player.userId) {
+            createPrefab(area, biome, changes, true);
+         }
+      }
+
       // *** This code is causing a duplicate prop to be created when MapCustomizationManager._newPrefab is not null and pressing the "Delete" key to delete the prop.
       // *** Not sure if this code is even needed.  The customization seems to work without it.
       //if (!found && changes.created) {

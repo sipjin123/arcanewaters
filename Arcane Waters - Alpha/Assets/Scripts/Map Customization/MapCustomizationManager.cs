@@ -694,6 +694,8 @@ namespace MapCustomization
          Area area = AreaManager.self.getArea(areaKey);
          if (area != null) {
             MapManager.self.addCustomizations(area, biome, changes);
+         } else {
+            D.debug("Missing area! " + area);
          }
       }
 
