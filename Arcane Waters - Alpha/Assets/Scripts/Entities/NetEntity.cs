@@ -2055,7 +2055,7 @@ public class NetEntity : NetworkBehaviour
             }
 
             if (targetUserInfo.customFarmBaseId < 1 || targetUserInfo.customHouseBaseId < 1) {
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GeneralPopup, this, "The player " + targetPlayerName + " did not set the custom maps yet!");
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GeneralPopup, this, targetPlayerName + " has not selected a house yet, so they can not receive visitors!");
                return;
             }
 

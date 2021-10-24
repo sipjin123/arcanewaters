@@ -2056,11 +2056,11 @@ public class SeaEntity : NetEntity
             snapToTargetInstantly = snapToTargetInstantly
          });
       }
-      Rpc_AddAClientAbilityOrbs(userId, attackTypes, targetUser, snapToTargetInstantly);
+      Rpc_AddClientAbilityOrbs(userId, attackTypes, targetUser, snapToTargetInstantly);
    }
 
    [ClientRpc]
-   public void Rpc_AddAClientAbilityOrbs (int ownerId, List<Attack.Type> attackTypes, int targetUser, bool snapToTargetInstantly) {
+   public void Rpc_AddClientAbilityOrbs (int ownerId, List<Attack.Type> attackTypes, int targetUser, bool snapToTargetInstantly) {
       foreach (Attack.Type attackType in attackTypes) {
          AbilityOrb newOrb = Instantiate(PrefabsManager.self.abilityOrbPrefab, transform.position + Vector3.up * POWERUP_ORB_ELLIPSE_HEIGHT, Quaternion.identity, transform);
          newOrb.init(ownerId, attackType, transform, targetUser, snapToTargetInstantly);
