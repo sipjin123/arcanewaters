@@ -1247,7 +1247,7 @@ public class BattleManager : MonoBehaviour {
 
             if (GameStatsManager.self.isUserRegistered(otherPlayer.userId)) {
                // Assign silver to all the players on the attacking team
-               StartCoroutine(CO_ProcessSilverAfterBattlerDeath(otherPlayer, shiftedSpotPosition, silverReward, 3.0f));
+               StartCoroutine(CO_ProcessSilverAfterBattlerDeath(otherPlayer, shiftedSpotPosition, silverReward, 2.5f));
             }
          }
       } else if (battler.battlerType == BattlerType.PlayerControlled) {

@@ -1061,8 +1061,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          Enemy.assignDeathShadowSprite(enemyType, _anims[0], _anims[1], shadowTransform.gameObject);
       }
 
-      modifyAnimSpeed(SimpleAnimation.DEFAULT_TIME_PER_FRAME);
-      playAnim(Anim.Type.Death_East);
+      playAnim(Anim.Type.Death_East, SimpleAnimation.DEFAULT_TIME_PER_FRAME / 2);
 
       if (battlerType == BattlerType.AIEnemyControlled) {
          // Play our customized death sound

@@ -2351,6 +2351,8 @@ public class NetEntity : NetworkBehaviour
 
             burstEffectGameObject.transform.position = pos;
             GenericSpriteEffect effect = burstEffectGameObject.GetComponent<GenericSpriteEffect>();
+            effect.startDelay /= 2;
+            effect.secondsPerFrame /= 2;
             effect.play();
          }
       } catch (Exception ex) {
