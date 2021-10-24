@@ -33,6 +33,9 @@ public class PvpShopItem {
    // The rarity type
    public Rarity.Type rarityType;
 
+   // The repair value in percentage, on this case 40% of ships health will be repaired
+   public const float REPAIR_VALUE = .4f;
+
    public enum PvpShopItemType {
       None = 0,
       Ship = 1,

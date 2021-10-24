@@ -38,9 +38,6 @@ public class Powerup {
    // The type of expiry
    public Expiry expiry;
 
-   // The number of warps used while wielding the powerup
-   public int warpCounter;
-
    // Where the icon sprites for the powerups are located
    public static string ICON_SPRITES_LOCATION = "Sprites/Powerups/PowerUpIcons";
 

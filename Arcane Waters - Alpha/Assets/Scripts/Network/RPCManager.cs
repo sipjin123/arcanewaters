@@ -4376,7 +4376,7 @@ public class RPCManager : NetworkBehaviour
                   PlayerShipEntity playersShip = (PlayerShipEntity) _player;
 
                   // Repair 40% of the ships life bar
-                  int repairValue = (int) (playersShip.maxHealth * .4);
+                  int repairValue = (int) (playersShip.maxHealth * PvpShopItem.REPAIR_VALUE);
                   playersShip.currentHealth = Mathf.Clamp(playersShip.currentHealth + repairValue, 0, playersShip.maxHealth);
                   Target_RepairShip(playersShip.connectionToClient, repairValue);
                }
