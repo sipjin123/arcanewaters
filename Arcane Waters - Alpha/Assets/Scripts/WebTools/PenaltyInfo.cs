@@ -7,7 +7,7 @@ public class PenaltyInfo
 {
    #region Public Variables
 
-   // The penalties queue item SQL id
+   // The penalty SQL id
    public int id;
 
    // The source account's id
@@ -67,8 +67,6 @@ public class PenaltyInfo
          this.expiresAt = DateTime.UtcNow.AddSeconds(penaltyTime).Ticks;
       }
    }
-
-
 
    #if IS_SERVER_BUILD
 

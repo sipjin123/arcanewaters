@@ -111,7 +111,7 @@ public class NetworkedServer : NetworkedBehaviour
       int playerCountTeamB = 0;
       int pvpGameMaxPlayerCount = 0;
       PvpGame.State pvpGameState = PvpGame.State.None;
-      
+
       PvpGame pvpGame = PvpManager.self.getGameWithInstance(instance.id);
       if (pvpGame != null) {
          playerCountTeamA = pvpGame.getPlayerCountInTeam(PvpTeamType.A);
@@ -215,7 +215,7 @@ public class NetworkedServer : NetworkedBehaviour
       try {
          recipientId = int.Parse(recipient);
       } catch {
-      
+
       }
 
       if (recipientId < 1) {
@@ -765,9 +765,9 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ServerRPC]
-   public void MasterServer_ForceSinglePlayerForUser(int userId) {
+   public void MasterServer_ForceSinglePlayerForUser (int userId) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
-      if(targetServer != null) {
+      if (targetServer != null) {
          targetServer.InvokeClientRpcOnOwner(Server_ForceSinglePlayerForUser, userId);
       }
    }
@@ -841,6 +841,22 @@ public class NetworkedServer : NetworkedBehaviour
       NetEntity targetEntity = EntityManager.self.getEntity(userId);
       if (targetEntity != null) {
          targetEntity.admin.banPlayer(isPermanent, expiresAt);
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_ChangeUserName (int userId, string newName) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_ChangeUserName, userId, newName);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_ChangeUserName (int userId, string newName) {
+      NetEntity targetEntity = EntityManager.self.getEntity(userId);
+      if (targetEntity != null) {
+         targetEntity.admin.Rpc_ReceiveNewName(userId, newName);
       }
    }
 

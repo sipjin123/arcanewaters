@@ -903,12 +903,20 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
-   public static List<PenaltyQueueItem> getPenaltiesQueue () {
-      return new List<PenaltyQueueItem>();
+   public static List<QueueItem> getPenaltiesQueue () {
+      return new List<QueueItem>();
    }
 
    public static void processPenaltyFromQueue (int id) {
       
+   }
+
+   public static List<QueueItem> getUserNamesChangesQueue () {
+      return new List<QueueItem>();
+   }
+
+   public static void processUserNameChangeFromQueue (int id) {
+
    }
 
    public static List<UserInfo> getUserInfoList (int[] userIdArray) {
@@ -955,7 +963,7 @@ public class DB_MainStub : MonoBehaviour
       return "";
    }
 
-   public static void changeUserName (int sourceAccId, int sourceUsrId, string sourceUsrName, int targetAccId, int targetUsrId, string oldName, string newName, string reason) {
+   public static void changeUserName (NameChangeInfo info) {
 
    }
 

@@ -346,6 +346,10 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_KickPlayer, userId);
    }
 
+   public void changeUserName (int userId, string newName) {
+      server.InvokeServerRpc(server.MasterServer_ChangeUserName, userId, newName);
+   }
+
    public void recreateLeagueInstanceAndAddUserToGroup (int voyageId, int groupId, int userId, string userName) {
       server.InvokeServerRpc(server.MasterServer_RecreateLeagueInstanceAndAddUserToGroup, voyageId, groupId, userId, userName);
    }

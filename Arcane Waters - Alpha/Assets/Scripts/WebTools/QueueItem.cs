@@ -2,7 +2,7 @@
 using MySql.Data.MySqlClient;
 #endif
 
-public class PenaltyQueueItem {
+public class QueueItem {
    #region Public Variables
 
    // The queue item's id from the database
@@ -13,11 +13,11 @@ public class PenaltyQueueItem {
 
    #endregion
 
-   public PenaltyQueueItem () { }
+   public QueueItem () { }
 
    #if IS_SERVER_BUILD
 
-   public PenaltyQueueItem (MySqlDataReader dataReader) {
+   public QueueItem (MySqlDataReader dataReader) {
       this.id = dataReader.GetInt32("id");
       this.jsonContent = dataReader.GetString("jsonContent");
    }

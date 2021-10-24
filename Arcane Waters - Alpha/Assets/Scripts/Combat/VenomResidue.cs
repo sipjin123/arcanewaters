@@ -26,13 +26,17 @@ public class VenomResidue : MonoBehaviour {
 
    private void Start () {
       transform.position = new Vector3(transform.position.x, transform.position.y, 0);
-      InvokeRepeating("damageEnemies", DAMAGE_FREQUENCY, DAMAGE_FREQUENCY);
+      InvokeRepeating(nameof(damageEnemies), DAMAGE_FREQUENCY, DAMAGE_FREQUENCY);
    }
 
    private void damageEnemies () {
       if (NetworkServer.active) {
          if (targetEntities.Count > 0) {
             foreach (SeaEntity seaEntity in targetEntities) {
+               if (seaEntity.isDead()) {
+                  continue;
+               }
+
                int finalDamage = seaEntity.applyDamage(damagePerSec, creatorNetId);
                seaEntity.Rpc_ShowExplosion(creatorNetId, seaEntity.transform.position, finalDamage, Attack.Type.Venom, false);
                seaEntity.Rpc_AttachEffect(finalDamage, Attack.Type.Venom);
@@ -41,7 +45,7 @@ public class VenomResidue : MonoBehaviour {
       }
    }
 
-   private void OnTriggerStay2D (Collider2D other) {
+   private void OnTriggerEnter2D (Collider2D other) {
       PlayerShipEntity playerShipEntity = other.GetComponent<PlayerShipEntity>();
 
       if (playerShipEntity != null && playerShipEntity.instanceId == instanceId) {

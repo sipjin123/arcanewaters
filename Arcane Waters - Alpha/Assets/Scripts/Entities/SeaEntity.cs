@@ -378,7 +378,7 @@ public class SeaEntity : NetEntity
       base.Update();
 
       // Regenerate health
-      if (NetworkServer.active && isSeamonsterPvp() && regenerateHealth && currentHealth < maxHealth && currentHealth > 0) {
+      if (NetworkServer.active && isSeaMonsterPvp() && regenerateHealth && currentHealth < maxHealth && currentHealth > 0) {
          currentHealth += (int) HEALTH_REGEN_RATE;
       }
 
@@ -415,17 +415,7 @@ public class SeaEntity : NetEntity
                monsterEntity.corpseHolder.SetActive(true);
                spritesContainer.SetActive(false);
                if (sinkOnDeath) {
-                  Util.setLocalY(monsterEntity.corpseHolder.transform, monsterEntity.corpseHolder.transform.localPosition.y - .09f * Time.smoothDeltaTime);
-               }
-            }
-
-            if (sinkOnDeath) {
-               Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .06f * Time.smoothDeltaTime);
-               foreach (SpriteRenderer renderer in _renderers) {
-                  if (renderer.enabled) {
-                     float newAlpha = Mathf.Lerp(1f, 0f, spritesContainer.transform.localPosition.y * -10f);
-                     Util.setMaterialBlockAlpha(renderer, newAlpha);
-                  }
+                  Util.setLocalY(monsterEntity.corpseHolder.transform, monsterEntity.corpseHolder.transform.localPosition.y - .01f * Time.smoothDeltaTime);
                }
             }
          } else if (!_playedDestroySound && this is ShipEntity && isClient) {
@@ -447,7 +437,17 @@ public class SeaEntity : NetEntity
          }
 
          if (sinkOnDeath) {
-            Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .03f * Time.smoothDeltaTime);
+            if (this.isSeaMonster()) {
+               Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .01f * Time.smoothDeltaTime);
+               foreach (SpriteRenderer renderer in _renderers) {
+                  if (renderer.enabled) {
+                     float newAlpha = Mathf.Lerp(1f, 0f, spritesContainer.transform.localPosition.y * - 50f);
+                     Util.setMaterialBlockAlpha(renderer, newAlpha);
+                  }
+               }
+            } else {
+               Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .03f * Time.smoothDeltaTime);
+            }
          }
       }
    }
@@ -461,7 +461,7 @@ public class SeaEntity : NetEntity
       }
 
       // If pvp sea monster moves away from its territory, retreat back to it
-      if (isSeamonsterPvp()) {
+      if (isSeaMonsterPvp()) {
          distanceFromInitialPosition = Vector2.Distance(transform.localPosition, initialPosition);
          if (distanceFromInitialPosition > PVP_MONSTER_TERRITORY_RADIUS) {
             retreatToSpawn();
@@ -844,11 +844,16 @@ public class SeaEntity : NetEntity
    }
 
    public virtual void noteAttacker (uint netId) {
-      _attackers[netId] = NetworkTime.time;
       _lastAttackerNetId = netId;
 
+      if (_patrolingWaypointState == WaypointState.RETREAT) {
+         return;
+      }
+      
+      _attackers[netId] = NetworkTime.time;
+
       // If this is a seamonster and is attacked by a tower, immediately retreat to spawn point
-      if (isServer && isSeamonsterPvp()) {
+      if (isServer && isSeaMonsterPvp()) {
          NetEntity entity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(_lastAttackerNetId);
          if (entity && entity is SeaStructure) {
             retreatToSpawn();
@@ -974,7 +979,7 @@ public class SeaEntity : NetEntity
          case Attack.Type.Boulder:
             // Create networked projectile
             D.adminLog("Trigger timed projectile: " + shipAbility.selectedAttackType, D.ADMIN_LOG_TYPE.Sea);
-            fireTimedGenericProjectile(spawnPosition, spot, abilityId, launchDelay);
+            StartCoroutine(CO_FireAtSpot(spot, abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
             break;
          case Attack.Type.Mini_Boulder:
             // Fire multiple projectiles around the entity
@@ -986,16 +991,16 @@ public class SeaEntity : NetEntity
 
             if (attackCounter % 2 == 0) {
                // North East West South Attack Pattern
-               StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(0, target), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(0, offset)));
-               StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(0, -target), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(0, -offset)));
-               StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(target, 0), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(offset, 0)));
-               StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(-target, 0), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(-offset, 0)));
+               StartCoroutine(CO_FireAtSpot(sourcePos + new Vector2(0, target), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(0, offset)));
+               StartCoroutine(CO_FireAtSpot(sourcePos + new Vector2(0, -target), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(0, -offset)));
+               StartCoroutine(CO_FireAtSpot(sourcePos + new Vector2(target, 0), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(offset, 0)));
+               StartCoroutine(CO_FireAtSpot(sourcePos + new Vector2(-target, 0), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(-offset, 0)));
             } else {
                // Diagonal Attack Pattern
-               StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(diagonalTargetValue, target), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(diagonalValue, offset)));
-               StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(diagonalTargetValue, -target), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(diagonalValue, -offset)));
-               StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(-target, diagonalTargetValue), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(-offset, diagonalValue)));
-               StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(-target, -diagonalTargetValue), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(-offset, -diagonalValue)));
+               StartCoroutine(CO_FireAtSpot(sourcePos + new Vector2(diagonalTargetValue, target), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(diagonalValue, offset)));
+               StartCoroutine(CO_FireAtSpot(sourcePos + new Vector2(diagonalTargetValue, -target), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(diagonalValue, -offset)));
+               StartCoroutine(CO_FireAtSpot(sourcePos + new Vector2(-target, diagonalTargetValue), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(-offset, diagonalValue)));
+               StartCoroutine(CO_FireAtSpot(sourcePos + new Vector2(-target, -diagonalTargetValue), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(-offset, -diagonalValue)));
             }
             break;
          case Attack.Type.Poison_Circle:
@@ -1006,18 +1011,18 @@ public class SeaEntity : NetEntity
 
             // Inner circle
             for (float angle = 0; angle < 360f; angle += angleStep) {
-               StartCoroutine(CO_FireAtSpotSingle(spot + new Vector2(innerRadius * Mathf.Cos(Mathf.Deg2Rad * angle), innerRadius * Mathf.Sin(Mathf.Deg2Rad * angle)), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
+               StartCoroutine(CO_FireAtSpot(spot + new Vector2(innerRadius * Mathf.Cos(Mathf.Deg2Rad * angle), innerRadius * Mathf.Sin(Mathf.Deg2Rad * angle)), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
             }
 
             // Outer circle
             for (float angle = angleStep / 2; angle < 360f; angle += angleStep) {
-               StartCoroutine(CO_FireAtSpotSingle(spot + new Vector2(outerRadius * Mathf.Cos(Mathf.Deg2Rad * angle), outerRadius * Mathf.Sin(Mathf.Deg2Rad * angle)), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
+               StartCoroutine(CO_FireAtSpot(spot + new Vector2(outerRadius * Mathf.Cos(Mathf.Deg2Rad * angle), outerRadius * Mathf.Sin(Mathf.Deg2Rad * angle)), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
             }
             break;
 
          default:
             D.adminLog("Trigger generic projectile at spot, Delay is: " + attackDelay, D.ADMIN_LOG_TYPE.Sea);
-            StartCoroutine(CO_FireAtSpotSingle(spot, abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
+            StartCoroutine(CO_FireAtSpot(spot, abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
             break;
       }
 
@@ -1031,9 +1036,17 @@ public class SeaEntity : NetEntity
    }
 
    [Server]
-   private IEnumerator CO_FireAtSpotSingle (Vector2 spot, int abilityId, Attack.Type attackType, float attackDelay, float launchDelay, Vector2 spawnPosition = new Vector2()) {
+   private IEnumerator CO_FireAtSpot (Vector2 spot, int abilityId, Attack.Type attackType, float attackDelay, float launchDelay, Vector2 spawnPosition = new Vector2()) {
+      if (isDead()) {
+         yield break;
+      }
+
       // Wait for the attack delay, if any
       yield return new WaitForSeconds(attackDelay);
+
+      if (isDead()) {
+         yield break;
+      }
 
       fireProjectileAtTarget(spawnPosition, spot, abilityId);
    }
@@ -1048,11 +1061,13 @@ public class SeaEntity : NetEntity
       Attack.Type attackType = Attack.Type.None;
       Attack.ImpactMagnitude attackMagnitude = Attack.ImpactMagnitude.None;
       bool hasArch = true;
+      float projectileSpeed = 1.0f;
 
       if (abilityData != null) {
          attackType = abilityData.selectedAttackType;
          attackMagnitude = abilityData.impactMagnitude;
          hasArch = abilityData.hasArch;
+         projectileSpeed = abilityData.projectileSpeed;
       }
 
       // Load projectile data
@@ -1062,18 +1077,21 @@ public class SeaEntity : NetEntity
 
       // Modify projectile speed based on attack type
       timeToReachTarget /= Attack.getSpeedModifier(attackType);
+      timeToReachTarget /= projectileSpeed;
 
       // Calculate projectile values
       float speed = distanceToTarget / timeToReachTarget;
       Vector2 toEndPos = endPosition - startPosition;
       Vector2 projectileVelocity = speed * toEndPos.normalized;
       float lobHeight = Mathf.Clamp(1.0f / speed, 0.3f, 1.0f);
+      float disableColliderFor = 0.9f;
 
       if (!hasArch) {
          lobHeight = 0.0f;
+         disableColliderFor = 0.0f;
       }
 
-      projectile.initAbilityProjectile(netId, instanceId, attackMagnitude, abilityId, projectileVelocity, lobHeight, lifetime: timeToReachTarget, attackType: attackType, disableColliderFor: 0.8f, minDropShadowScale: 0.5f);
+      projectile.initAbilityProjectile(netId, instanceId, attackMagnitude, abilityId, projectileVelocity, lobHeight, lifetime: timeToReachTarget, attackType: attackType, disableColliderFor: disableColliderFor, minDropShadowScale: 0.5f);
       NetworkServer.Spawn(projectile.gameObject);
 
       Rpc_SpawnProjectileIndicator(endPosition, timeToReachTarget);
@@ -1254,79 +1272,6 @@ public class SeaEntity : NetEntity
       return hits;
    }
 
-   [Server]
-   private void fireTimedGenericProjectile (Vector2 startPos, Vector2 targetPos, int abilityId, float launchDelay) {
-      if (isDead()) {
-         return;
-      }
-
-      ShipAbilityData abilityData = getSeaAbility(abilityId);
-      int attackCount = 1;
-      if (abilityData.splitsAfterAttackCap) {
-         // Shoots 3 projectiles each 3 attacks
-         if (attackCounter % abilityData.splitAttackCap == 0) {
-            attackCount = abilityData.splitAttackCap;
-         }
-      }
-
-      // We either fire out the left or right side depending on which was clicked
-      for (int i = 0; i < attackCount; i++) {
-         Vector2 direction = targetPos - (Vector2) startPos;
-         direction = direction.normalized;
-
-         if (attackCount > 1) {
-            direction = direction.Rotate(i * 10f);
-         }
-
-         // Figure out the desired velocity
-         Vector2 velocity = direction.normalized * abilityData.projectileSpeed;//NetworkedVenomProjectile.MOVE_SPEED;
-
-         // Delay the firing a little bit to compensate for lag
-         double timeToStartFiring = NetworkTime.time + launchDelay + 0.150f;
-         D.adminLog("TimeNow:" + NetworkTime.time +
-            " TimeToFire:" + timeToStartFiring +
-            " Seconds:" + (NetworkTime.time - timeToStartFiring +
-            " LaunchDelay: " + launchDelay), D.ADMIN_LOG_TYPE.Sea);
-
-         // Note the time at which we last successfully attacked
-         _lastAttackTime = NetworkTime.time;
-
-         // Make note on the clients that the ship just attacked
-         Rpc_NoteAttack();
-
-         // Tell all clients to fire the venom projectile at the same time
-         Rpc_FireTimedGenericProjectile(timeToStartFiring, velocity, startPos, targetPos, abilityId);
-
-         // Standalone Server needs to call this as well
-         if (!MyNetworkManager.isHost) {
-            StartCoroutine(CO_FireTimedGenericProjectile(timeToStartFiring, velocity, startPos, targetPos, abilityId));
-         }
-      }
-   }
-
-   [ClientRpc]
-   public void Rpc_FireTimedGenericProjectile (double startTime, Vector2 velocity, Vector3 startPos, Vector3 endPos, int abilityId) {
-      StartCoroutine(CO_FireTimedGenericProjectile(startTime, velocity, startPos, endPos, abilityId));
-   }
-
-   protected IEnumerator CO_FireTimedGenericProjectile (double startTime, Vector2 velocity, Vector3 startPos, Vector3 endPos, int abilityId) {
-      while (NetworkTime.time < startTime) {
-         yield return null;
-      }
-
-      // Create the projectile object from the prefab
-      GameObject projectileObj = Instantiate(PrefabsManager.self.networkProjectilePrefab, startPos, Quaternion.identity);
-      NetworkedProjectile networkProjectile = projectileObj.GetComponent<NetworkedProjectile>();
-      networkProjectile.init(this.netId, this.instanceId, currentImpactMagnitude, abilityId, startPos);
-      networkProjectile.setDirection((Direction) facing, endPos);
-
-      // Add velocity to the projectile
-      networkProjectile.body.velocity = velocity;
-
-      // Destroy the projectile after a couple seconds
-      Destroy(projectileObj, getSeaAbility(abilityId).lifeTime);
-   }
-
    [ClientRpc]
    public void Rpc_RegisterAttackTime (float delayTime) {
       _attackStartAnimateTime = Time.time + delayTime;
@@ -1465,7 +1410,7 @@ public class SeaEntity : NetEntity
          return;
       }
 
-      if (isSeamonsterPvp() && _patrolingWaypointState == WaypointState.RETREAT) {
+      if (isSeaMonsterPvp() && _patrolingWaypointState == WaypointState.RETREAT) {
          return;
       }
 
@@ -1479,7 +1424,7 @@ public class SeaEntity : NetEntity
             continue;
          }
 
-         if (isSeamonsterPvp() && iEntity is SeaStructure) {
+         if (isSeaMonsterPvp() && iEntity is SeaStructure) {
             continue;
          }
 
@@ -1642,7 +1587,7 @@ public class SeaEntity : NetEntity
          }
 
          // If ship got too close to spawn point - change path
-         if (!_isChasingEnemy && !_disableSpawnDistanceTmp && !isSeamonsterPvp() && pvpTeam == PvpTeamType.None) {
+         if (!_isChasingEnemy && !_disableSpawnDistanceTmp && !isSeaMonsterPvp() && pvpTeam == PvpTeamType.None) {
             foreach (Vector3 spawn in _playerSpawnPoints) {
                float dist = Vector2.Distance(spawn, _currentPath[_currentPathIndex]);
                if (dist < _minDistanceToSpawn) {
@@ -1680,7 +1625,7 @@ public class SeaEntity : NetEntity
             float tempMajorRef = 0.0f;
             updateState(ref _attackingWaypointState, secondsBetweenFindingAttackRoutes, 9001.0f, ref _currentSecondsBetweenAttackRoutes, ref tempMajorRef, findAttackerVicinityPosition, true);
          } else {
-            if (isSeamonsterPvp()) {
+            if (isSeaMonsterPvp()) {
                // Immediately stop chasing enemy if the enemy is too far, this will cause monster to return to spawn point and regenerate
                if (NetworkIdentity.spawned.ContainsKey(_currentAttacker) && _currentAttacker != 0) {
                   NetworkIdentity attackerIdentity = NetworkIdentity.spawned[_currentAttacker];
@@ -1701,7 +1646,7 @@ public class SeaEntity : NetEntity
             // If we've already reached the middle of the lane, look for the next target structure to attack
          } else {
             // Sea monsters should not engage buildings
-            if (isSeamonsterPvp()) {
+            if (isSeaMonsterPvp()) {
                return;
             }
 
@@ -1715,7 +1660,6 @@ public class SeaEntity : NetEntity
             }
          }
       } else {
-         // Use treasure site only in maps with more than two treasure sites
          Func<bool, Vector3> findingFunction = findRandomVicinityPosition;
 
          if (_isChasingEnemy) {
@@ -1729,8 +1673,10 @@ public class SeaEntity : NetEntity
          }
 
          // Default behavior state of sea monster pvp should be patrolling around its spawn point
-         if (isSeamonsterPvp()) {
-            _patrolingWaypointState = WaypointState.RETREAT;
+         if (isSeaMonsterPvp()) {
+            float distanceToSpawn = Vector2.Distance(transform.position, _lastSpawnPosition);
+            bool inTerritory = (distanceFromInitialPosition < PVP_MONSTER_TERRITORY_RADIUS);
+            _patrolingWaypointState = (inTerritory) ? WaypointState.PATROLING : WaypointState.RETREAT;
          }
 
          updateState(ref _patrolingWaypointState, secondsBetweenFindingPatrolRoutes, secondsPatrolingUntilChoosingNewTreasureSite,
@@ -1806,7 +1752,7 @@ public class SeaEntity : NetEntity
    private void updateState (ref WaypointState state, float secondsBetweenMinorSearch, float secondsBetweenMajorSearch, ref float currentSecondsBetweenMinorSearch, ref float currentSecondsBetweenMajorSearch, System.Func<bool, Vector3> targetPositionFunction, bool isAtk = false) {
       switch (state) {
          case WaypointState.RETREAT:
-            if (isSeamonsterPvp() && _seeker != null) {
+            if (isSeaMonsterPvp() && _seeker != null) {
                _attackingWaypointState = WaypointState.FINDING_PATH;
                _attackers.Clear();
                _currentAttacker = 0;
@@ -1882,6 +1828,11 @@ public class SeaEntity : NetEntity
                findAndSetPath_Asynchronous(targetPositionFunction(false));
                state = WaypointState.FINDING_PATH;
             }
+
+            if (isSeaMonsterPvp() && regenerateHealth && currentHealth >= maxHealth) {
+               setHealthRegeneration(false);
+            }
+
             break;
       }
    }
@@ -1890,9 +1841,10 @@ public class SeaEntity : NetEntity
    private Vector3 findRandomVicinityPosition (bool placeholder) {
       Vector3 start = _body.transform.position;
 
-      // If this unit is a sea monster pvp and is retreating, find a target position around the spawn point
-      if (isSeamonsterPvp() && _patrolingWaypointState == WaypointState.RETREAT) {
-         return findPositionAroundPosition(_originalPosition, 1.5f);
+      // If this unit is a sea monster pvp, find a target position around the spawn point
+      if (isSeaMonsterPvp()) {
+         float moveRadius = (_patrolingWaypointState == WaypointState.RETREAT) ? PVP_MONSTER_TERRITORY_RADIUS * 0.5f : PVP_MONSTER_TERRITORY_RADIUS;
+         return findPositionAroundPosition(_originalPosition, moveRadius);
       }
 
       // If ship is near original position - try to find new distant location to move to
@@ -1973,7 +1925,7 @@ public class SeaEntity : NetEntity
    }
 
    public void setHealthRegeneration (bool isOn) {
-      if (isSeamonsterPvp()) {
+      if (isSeaMonsterPvp()) {
          // Do not enable regeneration if this entity is already dead
          if (isOn && currentHealth < 1) {
             return;
@@ -1982,7 +1934,7 @@ public class SeaEntity : NetEntity
       }
    }
 
-   public bool isSeamonsterPvp () {
+   public bool isSeaMonsterPvp () {
       return this is SeaMonsterEntity && isPvpAI;
    }
 

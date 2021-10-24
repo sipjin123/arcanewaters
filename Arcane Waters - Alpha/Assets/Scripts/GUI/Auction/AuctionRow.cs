@@ -66,7 +66,12 @@ public class AuctionRow : MonoBehaviour
       itemSellerName.text = $"by {auction.sellerName}";
       bidAmounts.text = string.Format("{0:n0}", auction.highestBidPrice) + "/";
       if (auction.isBuyoutAllowed) {
-         bidAmounts.text = bidAmounts.text + string.Format("{0:n0}", auction.buyoutPrice);
+         if (auction.buyoutPrice > 9999999) {
+            // The buyout price is truncated if there is not enough space in the panel to display it
+            bidAmounts.text = bidAmounts.text + "...";
+         } else {
+            bidAmounts.text = bidAmounts.text + string.Format("{0:n0}", auction.buyoutPrice);
+         }
       } else {
          bidAmounts.text = bidAmounts.text + "-";
       }
@@ -87,6 +92,8 @@ public class AuctionRow : MonoBehaviour
          foreach (Text t in rowTexts) {
             t.color = expiredAuctionColor;
          }
+
+         tooltip.enabled = false;
       } else {
          // Set detailed item data only if the auction is still running (otherwise the item could not exist anymore)
          itemCell.setCellForItem(auction.item);
@@ -127,6 +134,7 @@ public class AuctionRow : MonoBehaviour
 
    public void onRowPressed () {
       ((AuctionPanel) PanelManager.self.get(Panel.Type.Auction)).onAuctionRowPressed(auctionData);
+      TooltipHandler.self.cancelToolTip();
    }
 
    #region Private Variables

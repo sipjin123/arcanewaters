@@ -17,7 +17,8 @@ public class ErrorMessage : NetworkMessage
       UsernameNotFound = 10, ServerStartingUp = 11, AlreadyOnline = 12, Banned = 13, ClientOutdated = 14,
       InvalidUsername = 15, ServerDown = 16, NoCropsOfThatType = 17, NotEnoughGems = 18, NotEnoughGold = 19,
       Misc = 20, Kicked = 21, ServerOffline = 22, SteamWebOffline = 23, PvpJoinError = 24, MailInvalidUserName = 25,
-      PlayerCountLimitReached = 26, UserNotAdmin = 27, PurchaseError = 28, Generic = 29, UseItemFailed = 30, StoreItemPurchaseFailed = 31
+      PlayerCountLimitReached = 26, UserNotAdmin = 27, PurchaseError = 28, Generic = 29, UseItemFailed = 30, StoreItemPurchaseFailed = 31,
+      ItemIsSoulBound = 32
    }
 
    // The Type of error

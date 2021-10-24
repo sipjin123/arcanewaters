@@ -3328,55 +3328,54 @@ public class AdminManager : NetworkBehaviour
          // Check if new name is valid
          bool nameTaken = false;
          bool userExists = false;
+         string msg = "";
 
-         if (!NameUtil.isValid(newName)) {
-            D.debug("New name " + newName + " is not valid");
-            return;
-         }
+         if (NameUtil.isValid(newName)) {
+            // Make sure the name is available
+            int newNameUserId = -1;
+            int oldNameUserId = -1;
 
-         // Make sure the name is available
-         int newNameUserId = -1;
-         int oldNameUserId = -1;
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               newNameUserId = DB_Main.getUserId(newName);
+               oldNameUserId = DB_Main.getUserId(oldName);
+               userExists = oldNameUserId > 0;
 
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            newNameUserId = DB_Main.getUserId(newName);
-            oldNameUserId = DB_Main.getUserId(oldName);
-            userExists = oldNameUserId > 0;
-
-            if (userExists) {
-               if (newNameUserId > 0) {
-                  nameTaken = true;
-               } else {
-                  targetInfo = DB_Main.getUserAccountInfo(oldName);
-                  if (targetInfo != null) {
-                     DB_Main.changeUserName(_player.accountId, _player.userId, _player.entityName, targetInfo.accountId, targetInfo.userId, targetInfo.username, newName, reason);
+               if (userExists) {
+                  if (newNameUserId > 0) {
+                     nameTaken = true;
+                  } else {
+                     targetInfo = DB_Main.getUserAccountInfo(oldName);
+                     if (targetInfo != null) {
+                        NameChangeInfo info = new NameChangeInfo(_player.accountId, _player.userId, _player.entityName,
+                           targetInfo.accountId, targetInfo.userId, targetInfo.username, newName, reason, WebToolsUtil.ActionSource.Game);
+                        DB_Main.changeUserName(info);
+                     }
                   }
                }
-            }
 
-            // Back to the Unity thread
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               if (!userExists) {
-                  string msg = "The user " + oldName + " does not exist!";
+               // Back to the Unity thread
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  if (userExists) {
+                     if (nameTaken) {
+                        msg = "The name " + newName + " is already taken!";
+                     } else if (targetInfo == null) {
+                        msg = "Could not find info for user: " + oldName;
+                     } else {
+                        msg = "Changed the player name from " + targetInfo.username + " to " + newName;
+                        ServerNetworkingManager.self.changeUserName(oldNameUserId, newName);
+                     }
+                  } else {
+                     msg = "The user " + oldName + " does not exist!";
+                  }
                   _player.Target_ReceiveNormalChat(msg, ChatInfo.Type.System);
                   D.debug(msg);
-               } else {
-                  if (nameTaken) {
-                     string msg = "The name " + newName + " is already taken!";
-                     _player.Target_ReceiveNormalChat(msg, ChatInfo.Type.System);
-                     D.debug(msg);
-                  } else if (targetInfo == null) {
-                     string msg = "Could not find info for user: " + oldName;
-                     _player.Target_ReceiveNormalChat(msg, ChatInfo.Type.System);
-                     D.debug(msg);
-                  } else {
-                     string msg = "Changed the player name from " + targetInfo.username + " to " + newName;
-                     _player.Target_ReceiveNormalChat(msg, ChatInfo.Type.System);
-                     Rpc_ReceiveNewName(oldNameUserId, newName);
-                  }
-               }
+               });
             });
-         });
+         } else {
+            msg = $"New name {newName} is not valid";
+            _player.Target_ReceiveNormalChat(msg, ChatInfo.Type.System);
+            D.debug(msg);
+         }
       } else {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             _player.Target_ReceiveNormalChat("You must specify at least two parameters for this command", ChatInfo.Type.Error);

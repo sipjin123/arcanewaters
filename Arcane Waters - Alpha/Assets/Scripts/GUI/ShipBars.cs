@@ -106,7 +106,7 @@ public class ShipBars : MonoBehaviour {
          enemyIcon.gameObject.SetActiveIfNeeded(false);
       }
 
-      if (_entity.isSeamonsterPvp()) {
+      if (_entity.isSeaMonsterPvp()) {
          regenerateIcon.gameObject.SetActive(_entity.regenerateHealth);
       }
    }

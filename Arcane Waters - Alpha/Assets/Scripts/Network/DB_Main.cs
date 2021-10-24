@@ -6882,8 +6882,8 @@ public class DB_Main : DB_MainStub
       return userAccountInfo;
    }
 
-   public static new List<PenaltyQueueItem> getPenaltiesQueue () {
-      List<PenaltyQueueItem> queue = new List<PenaltyQueueItem>();
+   public static new List<QueueItem> getPenaltiesQueue () {
+      List<QueueItem> queue = new List<QueueItem>();
 
       try {
          using (MySqlConnection conn = getConnection())
@@ -6895,7 +6895,7 @@ public class DB_Main : DB_MainStub
 
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  PenaltyQueueItem item = new PenaltyQueueItem(dataReader);
+                  QueueItem item = new QueueItem(dataReader);
                   queue.Add(item);
                }
             }
@@ -6922,6 +6922,35 @@ public class DB_Main : DB_MainStub
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
+   }
+
+   public static new List<QueueItem> getUserNamesChangesQueue () {
+      List<QueueItem> queue = new List<QueueItem>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users_names_changes_queue " +
+            "WHERE processedAt IS NULL", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  QueueItem item = new QueueItem(dataReader);
+                  queue.Add(item);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return queue;
+   }
+
+   public static new void processUserNameChangeFromQueue (int id) {
+
    }
 
    public static new UserInfo getUserInfo (string userName) {
@@ -7052,32 +7081,33 @@ public class DB_Main : DB_MainStub
       return stats;
    }
 
-   public static new void changeUserName (int sourceAccId, int sourceUsrId, string sourceUsrName, int targetAccId, int targetUsrId, string oldName, string newName, string reason) {
+   public static new void changeUserName (NameChangeInfo info) {
       try {
          using (MySqlConnection conn = getConnection()) {
             conn.Open();
             using (MySqlCommand updateCmd = new MySqlCommand(
                "UPDATE users SET usrName = @newName WHERE usrName = @oldName", conn)) {
                updateCmd.Prepare();
-               updateCmd.Parameters.AddWithValue("@oldName", oldName);
-               updateCmd.Parameters.AddWithValue("@newName", newName);
+               updateCmd.Parameters.AddWithValue("@oldName", info.prevUsrName);
+               updateCmd.Parameters.AddWithValue("@newName", info.newUsrName);
                DebugQuery(updateCmd);
 
                // Execute the command
                updateCmd.ExecuteNonQuery();
             }
             using (MySqlCommand insertCmd = new MySqlCommand(
-               "INSERT INTO users_names_changes(sourceAccId,sourceUsrId,sourceUsrName,targetAccId,targetUsrId,prevUsrName,newUsrName,reason) " +
-               "VALUES(@sourceAccId,@sourceUsrId,@sourceUsrName,@targetAccId,@targetUsrId,@prevUsrName,@newUsrName,@reason)", conn)) {
+               "INSERT INTO users_names_changes(sourceAccId,sourceUsrId,sourceUsrName,targetAccId,targetUsrId,prevUsrName,newUsrName,reason,changeSource) " +
+               "VALUES(@sourceAccId,@sourceUsrId,@sourceUsrName,@targetAccId,@targetUsrId,@prevUsrName,@newUsrName,@reason,@changeSource)", conn)) {
                insertCmd.Prepare();
-               insertCmd.Parameters.AddWithValue("@sourceAccId", sourceAccId);
-               insertCmd.Parameters.AddWithValue("@sourceUsrId", sourceUsrId);
-               insertCmd.Parameters.AddWithValue("@sourceUsrName", sourceUsrName);
-               insertCmd.Parameters.AddWithValue("@targetAccId", targetAccId);
-               insertCmd.Parameters.AddWithValue("@targetUsrId", targetUsrId);
-               insertCmd.Parameters.AddWithValue("@prevUsrName", oldName);
-               insertCmd.Parameters.AddWithValue("@newUsrName", newName);
-               insertCmd.Parameters.AddWithValue("@reason", string.IsNullOrEmpty(reason) ? null : reason);
+               insertCmd.Parameters.AddWithValue("@sourceAccId", info.sourceAccId);
+               insertCmd.Parameters.AddWithValue("@sourceUsrId", info.sourceUsrId);
+               insertCmd.Parameters.AddWithValue("@sourceUsrName", info.sourceUsrName);
+               insertCmd.Parameters.AddWithValue("@targetAccId", info.targetAccId);
+               insertCmd.Parameters.AddWithValue("@targetUsrId", info.targetUsrId);
+               insertCmd.Parameters.AddWithValue("@prevUsrName", info.prevUsrName);
+               insertCmd.Parameters.AddWithValue("@newUsrName", info.newUsrName);
+               insertCmd.Parameters.AddWithValue("@reason", string.IsNullOrEmpty(info.reason) ? null : info.reason);
+               insertCmd.Parameters.AddWithValue("@changeSource", (int) info.changeSource);
 
                DebugQuery(insertCmd);
 
@@ -7086,6 +7116,7 @@ public class DB_Main : DB_MainStub
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
+         throw e;
       }
    }
 

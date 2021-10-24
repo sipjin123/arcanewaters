@@ -151,6 +151,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          croppedTexture.SetPixels(pixels);
          ripplesContainer.GetComponent<SpriteSwap>().newTexture = rippleTextureSprite == null ? ImageManager.self.blankTexture : croppedTexture;
          ripplesContainer.transform.localPosition += seaMonsterData.rippleLocOffset;
+         deathBubbleEffect.transform.localPosition += seaMonsterData.rippleLocOffset;
 
          // Scale Update
          ripplesContainer.transform.localScale = new Vector3(seaMonsterData.rippleScaleOverride, seaMonsterData.rippleScaleOverride, seaMonsterData.rippleScaleOverride);
@@ -478,6 +479,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    private void handleAnimations () {
       if (isDead()) {
+         if (_simpleAnim.frameLengthOverride > SimpleAnimation.DEFAULT_TIME_PER_FRAME * 0.75f) {
+            _simpleAnim.modifyAnimSpeed(SimpleAnimation.DEFAULT_TIME_PER_FRAME * 0.75f);
+         }
          _simpleAnim.playAnimation(Anim.Type.Death_East);
          return;
       }
@@ -555,8 +559,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          // Play SFX
          SoundEffectManager.self.playSeaBossDeathSfx(monsterType, this.transform);
 
-         deathBubbleEffect.GetComponentInChildren<SimpleAnimation>().resetAnimation();
-         deathBubbleEffect.SetActive(true);
+         if (!isSeaMonsterMinion()) {
+            deathBubbleEffect.SetActive(true);
+         }
       }
 
       if (seaMonsterData.shouldDropTreasure && !isPvpAI) {

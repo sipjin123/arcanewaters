@@ -28,11 +28,11 @@ public class PenaltiesQueueManager : GenericGameManager
       }
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<PenaltyQueueItem> queue = DB_Main.getPenaltiesQueue();
+         List<QueueItem> queue = DB_Main.getPenaltiesQueue();
 
          // If we have items in the penalties queue
          if (queue.Count > 0) {
-            foreach (PenaltyQueueItem item in queue) {
+            foreach (QueueItem item in queue) {
                PenaltyInfo penaltyContent = JsonConvert.DeserializeObject<PenaltyInfo>(item.jsonContent);
                bool success = false;
 
