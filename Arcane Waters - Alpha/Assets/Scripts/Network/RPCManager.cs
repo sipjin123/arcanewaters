@@ -6896,6 +6896,9 @@ public class RPCManager : NetworkBehaviour
 
       if (battle == null) {
          D.debug("Error here! Trying to engage battle but the Battle is NULL!! Battle id {" + enemy.battleId + "} is probably finished");
+
+         // Reset player movement restriction if the battle engagement is invalid
+         Target_ResetMoveDisable(_player.connectionToClient, "NA");
       } else {
          // If the Battle is full, we can't proceed
          if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {

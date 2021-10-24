@@ -553,6 +553,8 @@ public class NetEntity : NetworkBehaviour
       // Reset weather effects since player will be spawned somewhere else, weather effect manager will be set again after that
       if (isLocalPlayer && (this is PlayerBodyEntity || this is PlayerShipEntity)) {
          WeatherManager.self.setWeatherSimulation(WeatherEffectType.None);
+         PowerupPanel.self.clearLandPowerups();
+         PowerupPanel.self.clearSeaPowerups();
       }
 
       // Registering the game user destroy event

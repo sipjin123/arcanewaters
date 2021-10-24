@@ -164,7 +164,9 @@ public class PvpTower : SeaStructure
    [ClientRpc]
    private void Rpc_NotifyCancelCharge () {
       hideTargetingEffects();
-      _reticleRenderer.enabled = false;
+      if (_reticleRenderer != null) {
+         _reticleRenderer.enabled = false;
+      }
    }
 
    [ClientRpc]
