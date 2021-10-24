@@ -298,7 +298,7 @@ public class TreasureChest : NetworkBehaviour {
       List<TreasureDropsData> treasureDropsList = lootGroupId > 0 ? TreasureDropsDataManager.self.getTreasureDropsById(lootGroupId, rarity) : TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome, rarity).ToList();
 
       if (treasureDropsList.Count < 1) {
-         D.error("There are no treasure drops generated for Biome:{" + biome + "} Checking alternative item");
+         D.error("There are no treasure drops generated for user {" + userId + "} Biome:{" + biome + "} Checking alternative item: G:{" + lootGroupId + "} R:{" + rarity + "}");
          Item nextAvailableItem = getNextAvailableItemByRarity(rarity);
          if (nextAvailableItem != null) {
             return nextAvailableItem;
@@ -381,7 +381,7 @@ public class TreasureChest : NetworkBehaviour {
 
       List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(lootGroupId, rarity);
       if (treasureDropsDataList.Count < 1) {
-         D.debug("Insufficient Data Here! Something went wrong with treasure drops (Blank List), Loot ID: {" + lootGroupId + "} Rarity is {" + rarity + "} Finding alternative item");
+         D.adminLog("Insufficient Data Here! Something went wrong with treasure drops (Blank List) when slaying {" + monsterName + "}, Loot ID: {" + lootGroupId + "} Rarity is {" + rarity + "} Finding alternative item", D.ADMIN_LOG_TYPE.Treasure);
       } else {
          // TODO: Remove this after polishing item drops
          foreach (TreasureDropsData newData in treasureDropsDataList) {
