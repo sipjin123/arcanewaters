@@ -449,7 +449,8 @@ public class MyNetworkManager : NetworkManager
             Vector3 playerCreationPos = mapPosition + userInfo.localPos;
 
             // Set information for the player
-            player.transform.position = playerCreationPos;
+            Vector2 randomOffset = (UnityEngine.Random.insideUnitCircle * .15f);
+            player.transform.position = playerCreationPos + new Vector3(randomOffset.x, randomOffset.y, 0);
             player.isSinglePlayer = userObjects.isSinglePlayer;
             player.areaKey = previousAreaKey;
             player.userId = userInfo.userId;
