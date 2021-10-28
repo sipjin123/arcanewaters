@@ -12,9 +12,6 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
    // The shop id
    public int shopId;
 
-   // The object that enables when highlighted
-   public GameObject highlightGameObject;
-
    // The object that shows the radius of the collision
    public GameObject radiusGameObject;
 
@@ -37,7 +34,17 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
    // The north facing sprite replacement
    public Sprite northSprite;
 
+   // If the shop is set in the sea
+   public bool isSeaShop;
+
+   // If the user is within this shops range
+   public bool isWithinRange;
+
    #endregion
+
+   private void Awake () {
+      _outline = GetComponentInChildren<SpriteOutline>();
+   }
 
    public void enableShop (bool isEnabled) {
       radiusGameObject.SetActive(isEnabled);
@@ -46,6 +53,13 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
 
       if (isEnabled && !gameObject.activeInHierarchy) {
          gameObject.SetActive(true);
+      }
+   }
+
+   public void clickOnShop () {
+      if (isWithinRange) {
+         PvpShopPanel.self.shopId = shopId;
+         PvpShopPanel.self.onShopButtonPressed(isSeaShop);
       }
    }
 
@@ -95,9 +109,8 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
       
       PlayerShipEntity playerEntity = collision.GetComponent<PlayerShipEntity>();
       if (Global.player != null && playerEntity != null) {
-         if (Global.player.userId == playerEntity.userId && playerEntity.pvpTeam == pvpTeamType && !PvpShopPanel.self.shopButton.activeInHierarchy) {
-            PvpShopPanel.self.shopId = shopId;
-            PvpShopPanel.self.enableShopButton(true);
+         if (Global.player.userId == playerEntity.userId && playerEntity.pvpTeam == pvpTeamType) {
+            isWithinRange = true;
          }
       }
    }
@@ -109,21 +122,26 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
 
       PlayerShipEntity playerEntity = collision.GetComponent<PlayerShipEntity>();
       if (Global.player != null && playerEntity != null) {
-         if (Global.player.userId == playerEntity.userId && playerEntity.pvpTeam == pvpTeamType && PvpShopPanel.self.shopButton.activeInHierarchy) {
-            PvpShopPanel.self.enableShopButton(false);
+         if (Global.player.userId == playerEntity.userId && playerEntity.pvpTeam == pvpTeamType) {
+            isWithinRange = false;
          }
       }
    }
 
    public void onPointerEnter () {
-      highlightGameObject.SetActive(true);
+      if (isWithinRange) {
+         _outline.setVisibility(true);
+      }
    }
 
    public void onPointerExit () {
-      highlightGameObject.SetActive(false);
+      _outline.setVisibility(false);
    }
 
    #region Private Variables
+
+   // Our various components
+   protected SpriteOutline _outline;
 
    #endregion
 }
