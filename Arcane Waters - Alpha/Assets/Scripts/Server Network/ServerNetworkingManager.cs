@@ -217,6 +217,7 @@ public class ServerNetworkingManager : MonoBehaviour
    }
 
    public void findUserLocationToVisit (int visitorUserId, int visitedUserId, string areaKeyOverride) {
+      D.debug("User {" + visitorUserId + "} is attempting to visit {" + visitedUserId + "}");
       server.InvokeServerRpc(server.MasterServer_FindUserLocationToVisit, visitorUserId, visitedUserId, areaKeyOverride);
    }
 

@@ -242,7 +242,10 @@ public class NetworkedServer : NetworkedBehaviour
    public void MasterServer_FindUserLocationToVisit (int visitorUserId, int visitedUserId, string areaKeyOverride) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(visitedUserId);
       if (targetServer != null) {
+         D.debug("Successfully found server containing user {" + visitedUserId + "} for area {" + areaKeyOverride + "}");
          targetServer.InvokeClientRpcOnOwner(Server_FindUserLocationToVisit, visitorUserId, visitedUserId, areaKeyOverride);
+      } else {
+         D.debug("Could not find server container user {" + visitedUserId + "} for area {" + areaKeyOverride + "}");
       }
    }
 
@@ -264,8 +267,11 @@ public class NetworkedServer : NetworkedBehaviour
             location.localPositionY = player.transform.localPosition.y;
             location.voyageGroupId = player.voyageGroupId;
 
-            D.adminLog("Override Location Bundle: {" + hasAreaKeyOverride + "} : {" + location.areaKey + "} {" + areaKeyOverride + "} {" + player.instanceId + "}", D.ADMIN_LOG_TYPE.Visit);
+            D.debug("Override Location Bundle: {" + hasAreaKeyOverride + "} : {" + location.areaKey + "} {" + areaKeyOverride + "} {" + player.instanceId + "}");
             InvokeServerRpc(MasterServer_ReturnUserLocationToVisit, visitorUserId, location);
+         } else {
+            InvokeServerRpc(MasterServer_DenyUserVisit, visitorUserId);
+            D.debug("Could not find player {" + visitedUserId + "} Failed to visit {" + areaKeyOverride + "}!");
          }
       }
    }
