@@ -4422,9 +4422,6 @@ public class RPCManager : NetworkBehaviour
       }
 
       PvpShopPanel panel = PvpShopPanel.self;
-      if (Global.player != null && Global.player is PlayerShipEntity) {
-         panel.enableShopButton(true);
-      }
       panel.userSilver = remainingSilver;
       panel.userSilverText.text = remainingSilver.ToString();
       panel.updatedShopTemplates(remainingSilver);

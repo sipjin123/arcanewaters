@@ -73,7 +73,11 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
          if (PanelManager.self.loadingScreen != null) {
             PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation);
-            LoadingUtil.executeAfterFade(() => Global.player.rpc.Cmd_RequestWarp(areaTarget, spawnTarget));
+            LoadingUtil.executeAfterFade(() => {
+               if (Global.player) {
+                  Global.player.rpc.Cmd_RequestWarp(areaTarget, spawnTarget);
+               }
+            });
          } else {
             Global.player.rpc.Cmd_RequestWarp(areaTarget, spawnTarget);
          }
