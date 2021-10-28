@@ -342,6 +342,17 @@ public class MyNetworkManager : NetworkManager
          int mapOwnerId = CustomMapManager.isUserSpecificAreaKey(previousAreaKey) ? CustomMapManager.getUserId(previousAreaKey) : -1;
          UserInfo ownerInfo = mapOwnerId < 0 ? null : (mapOwnerId == userInfo.userId ? userInfo : DB_Main.getUserInfoById(mapOwnerId));
 
+         // If spawn map is owned by another user, fetch that users info
+         UserObjects visiterUserObject = null;
+         if (CustomMapManager.isUserSpecificAreaKey(previousAreaKey)) {
+            int getmapUser = CustomMapManager.getUserId(previousAreaKey);
+            if (getmapUser != userObjects.userInfo.userId) {
+               visiterUserObject = DB_Main.getUserObjects(getmapUser);
+            } else {
+               visiterUserObject = userObjects;
+            }
+         }
+
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Get the current voyage info the user is part of, if any
