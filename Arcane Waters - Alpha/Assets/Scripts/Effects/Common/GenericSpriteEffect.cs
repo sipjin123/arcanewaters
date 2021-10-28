@@ -37,6 +37,9 @@ public class GenericSpriteEffect : MonoBehaviour
    // Reference to the texture that holds the frames of the effect
    public string texturePath;
 
+   // Should the animation loop?
+   public bool isLooping = false;
+
    // Reference to the Sprite renderer
    public SpriteRenderer spriteRenderer;
 
@@ -92,6 +95,13 @@ public class GenericSpriteEffect : MonoBehaviour
 
    public void stop() {
       CancelInvoke(nameof(changeSprite));
+
+      if (isLooping) {
+         _index = Mathf.Max(0, startIndex);
+         InvokeRepeating(nameof(changeSprite), startDelay, secondsPerFrame);
+         return;
+      }
+
       hold();
    }
 
@@ -160,6 +170,10 @@ public class GenericSpriteEffect : MonoBehaviour
       foreach (GameObject gameObject in _activeObjects) {
          gameObject.SetActive(show);
       }
+   }
+
+   private void OnDestroy () {
+      CancelInvoke(nameof(changeSprite));
    }
 
    #region Private Variables

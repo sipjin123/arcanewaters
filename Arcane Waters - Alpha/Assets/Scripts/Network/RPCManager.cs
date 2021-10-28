@@ -1416,11 +1416,21 @@ public class RPCManager : NetworkBehaviour
       _player.rpc.Target_ReceiveOptionsInfo(_player.connectionToClient, instance.numberInArea, totalInstances);
    }
 
+   [Command]
+   public void Cmd_NotifyOnlineStatusToFriends(bool isOnline, string customMessage) {
+      if (_player == null) {
+         return;
+      }
+
+      notifyOnlineStatusToFriends(_player.userId, isOnline, customMessage);
+   }
+
    [Server]
-   public void notifyOnlineStatusToFriends (NetEntity player, bool isOnline, string customMessage) {
+   public static void notifyOnlineStatusToFriends (int userId, bool isOnline, string customMessage) {
       // Notify Friends
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<FriendshipInfo> friends = DB_Main.getFriendshipInfoList(player.userId, Friendship.Status.Friends, 1, 200);
+         string userName = DB_Main.getUserName(userId);
+         List<FriendshipInfo> friends = DB_Main.getFriendshipInfoList(userId, Friendship.Status.Friends, 1, 200);
 
          foreach (FriendshipInfo friend in friends) {
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -1435,21 +1445,21 @@ public class RPCManager : NetworkBehaviour
                   // Adjust message if not valid
                   if (Util.isEmpty(customMessage)) {
                      if (isOnline) {
-                        customMessage = $"{player.entityName} is online!";
+                        customMessage = $"{userName} is online!";
                      } else {
-                        customMessage = $"{player.entityName} went offline.";
+                        customMessage = $"{userName} went offline.";
                      }
                   }
 
                   ChatInfo chatInfo = new ChatInfo(0,
                      customMessage, DateTime.UtcNow,
                      isOnline ? ChatInfo.Type.UserOnline : ChatInfo.Type.UserOffline,
-                     senderId: player.userId,
-                     sender: player.entityName,
+                     senderId: userId,
+                     sender: userName,
                      receiver: friend.friendName);
 
                   ServerNetworkingManager.self.sendSpecialChatMessage(friendUserInfo.userId, chatInfo);
-                  D.debug($"Player {player.entityName} changed online status. Friend '{friend.friendName}' ({friendUserInfo.userId}) has been notified!");
+                  D.debug($"Player {userName} changed online status. Friend '{friend.friendName}' ({friendUserInfo.userId}) has been notified!");
                });
             });
          }
@@ -3770,7 +3780,17 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
-      notifyOnlineStatusToFriends(_player, isOnline: true, null);
+      Target_ReceivePlayerAddedToServer(_player.connectionToClient);
+   }
+
+   [TargetRpc]
+   private void Target_ReceivePlayerAddedToServer(NetworkConnection connection) {
+      if (Global.isFirstSpawn) {
+         Cmd_NotifyOnlineStatusToFriends(isOnline: true, null);
+         D.debug($"First spawn!");
+      }
+
+      Global.isFirstSpawn = false;
    }
 
    [Command]

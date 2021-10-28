@@ -33,6 +33,12 @@ public class SeaProjectile : NetworkBehaviour
    // A reference to the shadow renderer for this projectile
    public SpriteRenderer shadowRenderer;
 
+   // Reference to the gameobject that holds the visuals for the animated projectile
+   public GenericSpriteEffect animatedGO;
+
+   // Reference to the gameobject that holds the visuals for the static projectile
+   public GameObject staticGO;
+
    #endregion
 
    protected virtual void Awake () {
@@ -107,6 +113,7 @@ public class SeaProjectile : NetworkBehaviour
       _rigidbody.velocity = velocity;
       if (_abilityData != null) {
          ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(_abilityData.projectileId);
+
          if (projectileData != null) {
             //_rigidbody.velocity *= (_abilityData == null ? 1 : projectileData.animationSpeed);
             //_rigidbody.mass = projectileData.projectileMass;
@@ -115,6 +122,8 @@ public class SeaProjectile : NetworkBehaviour
       }
       _rigidbody.drag = linearDrag;
       _circleCollider = GetComponentInChildren<CircleCollider2D>();
+
+      updateAnimatedVisuals();
 
       // If set to greater than 0, the collider will be disabled for a percentage of its lifetime
       if (disableColliderFor > 0.0f) {
@@ -156,6 +165,42 @@ public class SeaProjectile : NetworkBehaviour
       D.adminLog("Projectile id is: " + projectileTypeId, D.ADMIN_LOG_TYPE.SeaAbility);
    }
 
+   protected void updateAnimatedVisuals () {
+      ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(projectileTypeId);
+
+      if (projectileData == null) {
+         return;
+      }
+
+      if (animatedGO != null && animatedGO.gameObject != null) {
+         animatedGO.gameObject.SetActive(projectileData.isAnimating);
+      } else {
+         return;
+      }
+      
+      if (!projectileData.isAnimating) {
+         return;
+      }
+
+      GenericSpriteEffect spriteEffect = GetComponentInChildren<GenericSpriteEffect>();
+
+      if (spriteEffect == null) {
+         D.error("Couldn't find the Generic sprite effect component in the Cannon ball.");
+         return;
+      }
+
+      spriteEffect.texturePath = projectileData.projectileSpritePath;
+      float secondsPerFrame = Mathf.Max(projectileData.animationSpeed, 0.1f) * spriteEffect.secondsPerFrame;
+      spriteEffect.secondsPerFrame = Mathf.Max(secondsPerFrame, 0f);
+      spriteEffect.isLooping = true;
+      spriteEffect.play();
+
+      // Hide the static component of the projectile
+      if (staticGO != null) {
+         staticGO.SetActive(false);
+      }
+   }
+
    protected virtual void Update () {
       if (_hasCollided) {
          return;
@@ -173,7 +218,7 @@ public class SeaProjectile : NetworkBehaviour
       }
 
       if (!Util.isBatch() && fadeOverLifetime) {
-         float normalisedTimeAlive = Mathf.Clamp01((float)timeAlive / _lifetime);
+         float normalisedTimeAlive = Mathf.Clamp01((float) timeAlive / _lifetime);
          setAlphaForRenderers(alphaOverLifetime.Evaluate(normalisedTimeAlive));
       }
    }
@@ -245,10 +290,10 @@ public class SeaProjectile : NetworkBehaviour
          int projectileBaseDamage = (int) projectileData.projectileDamage;
          int shipDamage = (int) (sourceEntity.damage * projectileBaseDamage);
          int abilityDamage = 0;
-         if (_abilityData != null) { 
+         if (_abilityData != null) {
             abilityDamage = (int) (_abilityData.damageModifier * projectileBaseDamage);
          }
-            
+
          int critDamage = (int) (_isCrit ? projectileBaseDamage * 0.5f : 0.0f);
          int perkDamage = 0;
          if (sourceEntity.userId != 0) {
@@ -305,7 +350,7 @@ public class SeaProjectile : NetworkBehaviour
          // Check for enemies in the knockback radius
          List<SeaEntity> enemiesHit = Util.getEnemiesInCircle(sourceEntity, transform.position, projectileData.knockbackRadius);
          foreach (SeaEntity enemyHit in enemiesHit) {
-            
+
             // Ensure the enemy has a rigidbody
             Rigidbody2D enemyRigidbody = enemyHit.getRigidbody();
             if (enemyRigidbody != null) {
@@ -354,8 +399,6 @@ public class SeaProjectile : NetworkBehaviour
       }
    }
 
-   protected virtual void OnDestroy () {}
-
    public int getInstanceId () {
       return _instanceId;
    }
@@ -371,6 +414,8 @@ public class SeaProjectile : NetworkBehaviour
          Util.setAlpha(renderer, newAlpha);
       }
    }
+
+   protected virtual void OnDestroy () {}
 
    #region Private Variables
 

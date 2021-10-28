@@ -7,12 +7,9 @@ using Mirror;
 using UnityEngine.EventSystems;
 using System.Linq;
 
-public class PerksPanel : MonoBehaviour, IPointerClickHandler
+public class PerksPanel : SubPanel
 {
    #region Public Variables
-
-   // Our associated Canvas Group
-   public CanvasGroup canvasGroup;
 
    // The template for perks in the list
    [Header("Perks")]
@@ -92,11 +89,8 @@ public class PerksPanel : MonoBehaviour, IPointerClickHandler
       hide();
    }
 
-   public void show () {
-      this.canvasGroup.alpha = 1f;
-      this.canvasGroup.blocksRaycasts = true;
-      this.canvasGroup.interactable = true;
-      this.gameObject.SetActive(true);
+   public override void show () {
+      base.show();
 
       // Temporarily disable the automatic tooltips
       TooltipManager.self.isAutomaticTooltipEnabled = false;
@@ -105,27 +99,11 @@ public class PerksPanel : MonoBehaviour, IPointerClickHandler
       perksGridLayoutGroup.enabled = true;
    }
 
-   public void hide () {
-      this.canvasGroup.alpha = 0f;
-      this.canvasGroup.blocksRaycasts = false;
-      this.canvasGroup.interactable = false;
+   public override void hide () {
+      base.hide();
 
       // Disable any tooltip we may have enabled and reenable automatic tooltips
       TooltipHandler.self.cancelToolTip();
-   }
-
-   public bool isShowing () {
-      return this.gameObject.activeSelf && canvasGroup.alpha > 0f;
-   }
-
-   public virtual void OnPointerClick (PointerEventData eventData) {
-      if (eventData.rawPointerPress == this.gameObject) {
-         // If the mouse is over the input field zone, select it through the panel black background
-         if (!Panel.tryFocusChatInputField()) {
-            // If the black background outside is clicked, hide the panel
-            hide();
-         }
-      }
    }
 
    #region Private Variables

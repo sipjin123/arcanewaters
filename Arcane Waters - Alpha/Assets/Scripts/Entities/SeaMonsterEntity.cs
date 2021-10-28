@@ -269,7 +269,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       // Note our spawn position
       _spawnPos = sortPoint.transform.position;
 
-      _simpleAnim.playAnimation(Anim.Type.Idle_North);
+      playAnimation(Anim.Type.Idle_North);
 
       if (!isServer) {
          return;
@@ -298,15 +298,17 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       // Handles attack animations
       if (NetworkTime.time > _attackStartAnimateTime && !_hasAttackAnimTriggered) {
          _simpleAnim.stayAtLastFrame = true;
+         _simpleAnimRipple.stayAtLastFrame = true;
          isAttacking = true;
          _hasAttackAnimTriggered = true;
          _attackEndAnimateTime = NetworkTime.time + getAttackDuration();
       } else {
          if (isAttacking && (NetworkTime.time > _attackEndAnimateTime)) {
-            _simpleAnim.modifyAnimSpeed(cachedAnimSpeed);
+            modifyAnimationSpeed(cachedAnimSpeed);
             _attackStartAnimateTime = NetworkTime.time + 50;
             isAttacking = false;
             _simpleAnim.stayAtLastFrame = false;
+            _simpleAnimRipple.stayAtLastFrame = false;
             isMinionPlanning = false;
          }
       }
@@ -389,8 +391,8 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       isAttacking = true;
       _attackEndAnimateTime = NetworkTime.time + getAttackDuration();
       if (_simpleAnim != null) {
-         _simpleAnim.modifyAnimSpeed(cachedAttackAnimSpeed);
-         _simpleAnim.playAnimation(animType);
+         modifyAnimationSpeed(cachedAttackAnimSpeed);
+         playAnimation(animType);
       }
    }
 
@@ -479,44 +481,53 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    private void handleAnimations () {
       if (isDead()) {
-         if (_simpleAnim.frameLengthOverride > SimpleAnimation.DEFAULT_TIME_PER_FRAME * 0.75f) {
-            _simpleAnim.modifyAnimSpeed(SimpleAnimation.DEFAULT_TIME_PER_FRAME * 0.75f);
-         }
-         _simpleAnim.playAnimation(Anim.Type.Death_East);
+         modifyAnimationSpeed(SimpleAnimation.DEFAULT_TIME_PER_FRAME * 0.75f);
+         playAnimation(Anim.Type.Death_East);
          return;
       }
 
       if (!isAttacking) {
-         if (_simpleAnim.frameLengthOverride != cachedAnimSpeed) {
-            _simpleAnim.modifyAnimSpeed(cachedAnimSpeed);
-         }
+         modifyAnimationSpeed(cachedAnimSpeed);
 
          _simpleAnim.isPaused = false;
+         _simpleAnimRipple.isPaused = false;
          if (getVelocity().magnitude > MIN_MOVEMENT_MAGNITUDE) {
             switch (this.facing) {
                case Direction.North:
-                  _simpleAnim.playAnimation(Anim.Type.Run_North);
+                  playAnimation(Anim.Type.Run_North);
                   break;
                case Direction.South:
-                  _simpleAnim.playAnimation(Anim.Type.Run_South);
+                  playAnimation(Anim.Type.Run_South);
                   break;
                default:
-                  _simpleAnim.playAnimation(Anim.Type.Run_East);
+                  playAnimation(Anim.Type.Run_East);
                   break;
             }
          } else {
             switch (this.facing) {
                case Direction.North:
-                  _simpleAnim.playAnimation(Anim.Type.Idle_North);
+                  playAnimation(Anim.Type.Idle_North);
                   break;
                case Direction.South:
-                  _simpleAnim.playAnimation(Anim.Type.Idle_South);
+                  playAnimation(Anim.Type.Idle_South);
                   break;
                default:
-                  _simpleAnim.playAnimation(Anim.Type.Idle_East);
+                  playAnimation(Anim.Type.Idle_East);
                   break;
             }
          }
+      }
+   }
+
+   protected void playAnimation (Anim.Type animType) {
+      _simpleAnim.playAnimation(animType);
+      _simpleAnimRipple.playAnimation(animType);
+   }
+
+   protected void modifyAnimationSpeed (float frameLenght) {
+      if (_simpleAnim.frameLengthOverride != frameLenght) {
+         _simpleAnim.modifyAnimSpeed(frameLenght);
+         _simpleAnimRipple.modifyAnimSpeed(frameLenght);
       }
    }
 
@@ -555,13 +566,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          }
       }
 
-      if (isDead()) {
-         // Play SFX
-         SoundEffectManager.self.playSeaBossDeathSfx(monsterType, this.transform);
+      // Play SFX
+      SoundEffectManager.self.playSeaBossDeathSfx(monsterType, this.transform);
 
-         if (!isSeaMonsterMinion()) {
-            deathBubbleEffect.SetActive(true);
-         }
+      if (!isSeaMonsterMinion()) {
+         deathBubbleEffect.SetActive(true);
       }
 
       if (seaMonsterData.shouldDropTreasure && !isPvpAI) {

@@ -829,14 +829,14 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: cc72aaed1b20f294fb876f91801a8321, type: 3}
     m_FontSize: 18
     m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 0
-    m_MaxSize: 188
+    m_BestFit: 1
+    m_MinSize: 10
+    m_MaxSize: 18
     m_Alignment: 0
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 1
-    m_VerticalOverflow: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Serenity Village
 --- !u!114 &1395538310989875529
@@ -854,7 +854,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 150
+  m_PreferredWidth: 225
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -1165,7 +1165,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: -19.12, y: 0}
-  m_SizeDelta: {x: 552.6, y: 28}
+  m_SizeDelta: {x: 650, y: 28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1395538311875893679
 MonoBehaviour:
@@ -1219,7 +1219,6 @@ MonoBehaviour:
   level: {fileID: 3044334857824559604}
   rootGuildIcon: {fileID: 7575607905745933948}
   friendGuildIcon: {fileID: 3072776934270255652}
-  friendGuildToolTip: {fileID: 1284943589183086877}
   isOnline: 0
 --- !u!1 &1395538312148295611
 GameObject:
@@ -2075,18 +2074,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d57bd3865ece73142a8e669afaf93059, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1284943589183086877 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3943511554767978367, guid: 5c20705c7cd1fef48a41c790991d9d6b,
-    type: 3}
-  m_PrefabInstance: {fileID: 2841529194754317922}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &7575607905745933948 stripped

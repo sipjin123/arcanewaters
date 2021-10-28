@@ -284,7 +284,7 @@ public class DB_MainStub : MonoBehaviour
    public static void updateHaircutXML (int xmlID, string rawData, int accIDOverride = 0) {
       return;
    }
-   
+
    public static List<XMLPair> getHaircutsXML () {
       return new List<XMLPair>();
    }
@@ -297,7 +297,7 @@ public class DB_MainStub : MonoBehaviour
       return;
    }
 
-   public static bool toggleDyeXML (int xmlID, bool isEnabled, int accIDOverride = 0) { 
+   public static bool toggleDyeXML (int xmlID, bool isEnabled, int accIDOverride = 0) {
       return false;
    }
 
@@ -908,14 +908,14 @@ public class DB_MainStub : MonoBehaviour
    }
 
    public static void processPenaltyFromQueue (int id) {
-      
+
    }
 
    public static List<QueueItem> getUserNamesChangesQueue () {
       return new List<QueueItem>();
    }
 
-   public static void processUserNameChangeFromQueue (int id) {
+   public static void processUserNameChangeFromQueue (int id, bool isValid) {
 
    }
 
@@ -951,7 +951,7 @@ public class DB_MainStub : MonoBehaviour
       return false;
    }
 
-   public static bool setWeaponPalette(int userId, int weaponId, string weaponPalettes) {
+   public static bool setWeaponPalette (int userId, int weaponId, string weaponPalettes) {
       return false;
    }
 
@@ -1621,7 +1621,7 @@ public class DB_MainStub : MonoBehaviour
       return;
    }
 
-   public static bool uploadWorldMapSector (byte[] data){
+   public static bool uploadWorldMapSector (byte[] data) {
       return false;
    }
 
@@ -1648,11 +1648,11 @@ public class DB_MainStub : MonoBehaviour
    #region Server stats
    public static void serverStatStarted (string machine, int port) {
    }
-   
+
    public static void serverStatStopped (string machine, int port) {
    }
-   
-   public static void serverStatUpdateCcu(string machine, int port, int ccu) {
+
+   public static void serverStatUpdateCcu (string machine, int port, int ccu) {
    }
 
    public static void serverStatUpdateFps (string machine, int port, float fps) {
@@ -1661,8 +1661,8 @@ public class DB_MainStub : MonoBehaviour
    public static byte[] fetchWorldMapSector (int sectorIndex) {
       return null;
    }
-   #endregion   
-   
+   #endregion
+
    /*
 
    public static void refillSupplies (int userId) {

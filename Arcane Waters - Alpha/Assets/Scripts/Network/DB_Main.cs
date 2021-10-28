@@ -6949,8 +6949,22 @@ public class DB_Main : DB_MainStub
       return queue;
    }
 
-   public static new void processUserNameChangeFromQueue (int id) {
+   public static new void processUserNameChangeFromQueue (int id, bool isValid) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE users_names_changes_queue SET processedAt = CURRENT_TIMESTAMP, isValid = @isValid WHERE id = @id", conn)) {
+            conn.Open();
+            cmd.Prepare();
 
+            cmd.Parameters.AddWithValue("@isValid", isValid ? 1 : 0);
+            cmd.Parameters.AddWithValue("@id", id);
+
+            DebugQuery(cmd);
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
    }
 
    public static new UserInfo getUserInfo (string userName) {

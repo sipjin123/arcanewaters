@@ -36,6 +36,9 @@ public class ColorCurveReferences : MonoBehaviour {
    // A gradient controlling the color of the bot ship targeting parabola
    public Gradient botShipTargetingParabolaColor;
 
+   // A gradient controlling the color of the projectile targeting indicator
+   public Gradient projectileTargetingIndicatorColor;
+
    #endregion
 
    private void Awake () {

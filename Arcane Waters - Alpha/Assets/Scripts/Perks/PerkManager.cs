@@ -12,6 +12,9 @@ public class PerkManager : MonoBehaviour {
    // Self
    public static PerkManager self;
 
+   // A list of perks that have been removed from use
+   public static List<int> removedPerkIds = new List<int>() { 1 };
+
    #endregion
 
    private void Awake () {

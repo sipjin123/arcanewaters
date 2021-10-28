@@ -416,6 +416,10 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       itemCountText.gameObject.SetActive(false);
    }
 
+   public void LeftClick () {
+      leftClickEvent.Invoke();
+   }
+
    #region Private Variables
 
    // A reference to the item being displayed

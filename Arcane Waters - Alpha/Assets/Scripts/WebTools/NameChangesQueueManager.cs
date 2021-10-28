@@ -33,10 +33,22 @@ public class NameChangesQueueManager : GenericGameManager
             foreach (QueueItem item in queue) {
                NameChangeInfo content = JsonConvert.DeserializeObject<NameChangeInfo>(item.jsonContent);
                try {
-                  DB_Main.changeUserName(content);
-                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     ServerNetworkingManager.self.changeUserName(content.targetUsrId, content.newUsrName);
-                  });
+                  bool isValid = NameUtil.isValid(content.newUsrName);
+                  int newNameUsrId = DB_Main.getUserId(content.newUsrName);
+                  int oldNameUsrId = DB_Main.getUserId(content.prevUsrName);
+                  bool userExists = oldNameUsrId > 0;
+
+                  if (userExists) {
+                     if(newNameUsrId > 0) {
+                        isValid = false;
+                     } else if(isValid) {
+                        DB_Main.changeUserName(content);
+                        UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                           ServerNetworkingManager.self.changeUserName(content.targetUsrId, content.prevUsrName, content.newUsrName);
+                        });
+                     }
+                  }
+                  DB_Main.processUserNameChangeFromQueue(item.id, isValid);
                } catch {
                   D.log($"User Names Changes Queue: Error while trying to process a request, {item.id}");
                }

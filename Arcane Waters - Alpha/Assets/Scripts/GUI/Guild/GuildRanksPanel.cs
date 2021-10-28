@@ -5,12 +5,9 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 
-public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
+public class GuildRanksPanel : SubPanel
 {
    #region Public Variables
-
-   // A convenient reference to the Canvas Group
-   public CanvasGroup canvasGroup;
 
    // Button which adds new rank to edit panel
    public Button addRankButton;
@@ -195,11 +192,8 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
       }
    }
 
-   public void show () {
-      this.canvasGroup.alpha = 1f;
-      this.canvasGroup.blocksRaycasts = true;
-      this.canvasGroup.interactable = true;
-      this.gameObject.SetActive(true);
+   public override void show () {
+      base.show();
 
       // Initial data is always correct
       rankNamesValidation.SetActive(false);
@@ -217,23 +211,6 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
       }
 
       return guildRankRows.FindAll(x => x.isActive).Count < MAXIMUM_NUMBER_OF_RANKS;
-   }
-
-   public void hide () {
-      this.canvasGroup.alpha = 0f;
-      this.canvasGroup.blocksRaycasts = false;
-      this.canvasGroup.interactable = false;
-      this.gameObject.SetActive(false);
-   }
-
-   public virtual void OnPointerClick (PointerEventData eventData) {
-      if (eventData.rawPointerPress == this.gameObject) {
-         // If the mouse is over the input field zone, select it through the panel black background
-         if (!Panel.tryFocusChatInputField()) {
-            // If the black background outside is clicked, hide the panel
-            hide();
-         }
-      }
    }
 
    #region Private Variables

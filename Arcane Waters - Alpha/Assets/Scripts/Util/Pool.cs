@@ -5,33 +5,40 @@ public delegate bool CanBeUsedCondition (MonoBehaviour element);
 
 public class Pool<T> where T : MonoBehaviour
 {
-   // The prefab instantiated by this pool
-   private readonly T _prefab;
+   #region Public Variables
 
-   // The list of pooled object
-   private List<T> _pooledObjects = new List<T>();
+   #endregion
 
    public Pool (T prefab) {
       this._prefab = prefab;
    }
 
-   // The condition for a pooled object to be considered available for recycle
-   public CanBeUsedCondition isAvailableCondition = ((x) => {
-      return !x.gameObject.activeInHierarchy;
-   });
-
-   public T get (bool enableGameObject = true) {
+   public T pop (bool enableGameObject = true) {
       foreach (T o in _pooledObjects) {
-         if (isAvailableCondition(o)) {
-            if (enableGameObject) {
-               o.gameObject.SetActive(true);
-            }
-
-            return o;
+         if (isCheckedOut(o)) {
+            continue;
          }
+
+         o.gameObject.SetActive(enableGameObject);
+         _checkedOutObjects.Add(o);
+         return o;
       }
 
-      return createNew();
+      T createdObj = createNew();
+      _checkedOutObjects.Add(createdObj);
+      return createdObj;
+   }
+
+   public void push (T o) {
+      if (!isCheckedOut(o)) {
+         return;
+      }
+
+      _checkedOutObjects.Remove(o);
+   }
+
+   private bool isCheckedOut (T o) {
+      return _checkedOutObjects.Contains(o);
    }
 
    private T createNew () {
@@ -43,4 +50,17 @@ public class Pool<T> where T : MonoBehaviour
    public IReadOnlyCollection<T> getPooledObjects () {
       return _pooledObjects.AsReadOnly();
    }
+
+   #region Private Variables
+
+   // The prefab instantiated by this pool
+   private readonly T _prefab;
+
+   // The list of pooled object
+   private List<T> _pooledObjects = new List<T>();
+
+   // The list of checked out objects
+   private List<T> _checkedOutObjects = new List<T>();
+
+   #endregion
 }

@@ -190,6 +190,16 @@ public class ServerNetworkingManager : MonoBehaviour
       return false;
    }
 
+   public bool isUserAssignedAnywhere(int userId) {
+      foreach (NetworkedServer server in servers) {
+         if (server.assignedUserIds.ContainsKey(userId)){
+            return true;
+         }
+      }
+
+      return false;
+   }
+
    public void claimPlayer (int userId) {
       server.claimedUserIds[userId] = true;
    }
@@ -346,8 +356,8 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_KickPlayer, userId);
    }
 
-   public void changeUserName (int userId, string newName) {
-      server.InvokeServerRpc(server.MasterServer_ChangeUserName, userId, newName);
+   public void changeUserName (int userId, string oldName, string newName) {
+      server.InvokeServerRpc(server.MasterServer_ChangeUserName, userId, oldName, newName);
    }
 
    public void recreateLeagueInstanceAndAddUserToGroup (int voyageId, int groupId, int userId, string userName) {

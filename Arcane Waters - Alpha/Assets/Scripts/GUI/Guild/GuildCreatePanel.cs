@@ -7,12 +7,9 @@ using UnityEngine.Events;
 using System;
 using UnityEngine.EventSystems;
 
-public class GuildCreatePanel : MonoBehaviour, IPointerClickHandler
+public class GuildCreatePanel : SubPanel
 {
    #region Public Variables
-
-   // Our associated Canvas Group
-   public CanvasGroup canvasGroup;
 
    // The main guild icon
    public GuildIcon guildIcon;
@@ -239,33 +236,6 @@ public class GuildCreatePanel : MonoBehaviour, IPointerClickHandler
    private void refreshSigil () {
       guildIcon.setSigil(_sigils[_sigilIndex], Item.parseItmPalette(new string[2] { _sigilPalette1, _sigilPalette2 }));
       sigilSelection.setSigil(_sigils[_sigilIndex], Item.parseItmPalette(new string[2] { _sigilPalette1, _sigilPalette2 }));
-   }
-
-   public void show () {
-      this.canvasGroup.alpha = 1f;
-      this.canvasGroup.blocksRaycasts = true;
-      this.canvasGroup.interactable = true;
-      this.gameObject.SetActive(true);
-   }
-
-   public void hide () {
-      this.canvasGroup.alpha = 0f;
-      this.canvasGroup.blocksRaycasts = false;
-      this.canvasGroup.interactable = false;
-   }
-
-   public bool isShowing () {
-      return this.gameObject.activeSelf && canvasGroup.alpha > 0f;
-   }
-
-   public virtual void OnPointerClick (PointerEventData eventData) {
-      if (eventData.rawPointerPress == this.gameObject) {
-         // If the mouse is over the input field zone, select it through the panel black background
-         if (!Panel.tryFocusChatInputField()) {
-            // If the black background outside is clicked, hide the panel
-            hide();
-         }
-      }
    }
 
    #region Private Variables

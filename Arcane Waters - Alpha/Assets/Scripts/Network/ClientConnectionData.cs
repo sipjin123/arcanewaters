@@ -32,8 +32,8 @@ public class ClientConnectionData
    // Whether this user is currently reconnecting
    public bool isReconnecting;
 
-   // Was the first login handled?
-   public bool wasFirstLoginHandled;
+   // Was the first spawn handled?
+   public bool wasFirstSpawnHandled;
 
    public bool isAuthenticated () {
       return accountId >= 0;

@@ -101,6 +101,7 @@ public class NetworkedServer : NetworkedBehaviour
          // If the user has been offline for too long, remove him from the assigned users
          if ((DateTime.UtcNow - DateTime.FromBinary(userInfo.lastOnlineTime)).TotalSeconds > DisconnectionManager.SECONDS_UNTIL_PLAYERS_DESTROYED * 1.5f) {
             assignedUserIds.Remove(userInfo.userId);
+            MyNetworkManager.self.onUserUnassignedFromServer(userInfo.userId);
          }
       }
    }
@@ -845,18 +846,19 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ServerRPC]
-   public void MasterServer_ChangeUserName (int userId, string newName) {
+   public void MasterServer_ChangeUserName (int userId, string oldName, string newName) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
       if (targetServer != null) {
-         targetServer.InvokeClientRpcOnOwner(Server_ChangeUserName, userId, newName);
+         targetServer.InvokeClientRpcOnOwner(Server_ChangeUserName, userId, oldName, newName);
       }
    }
 
    [ClientRPC]
-   public void Server_ChangeUserName (int userId, string newName) {
+   public void Server_ChangeUserName (int userId, string oldName, string newName) {
       NetEntity targetEntity = EntityManager.self.getEntity(userId);
       if (targetEntity != null) {
-         targetEntity.admin.Rpc_ReceiveNewName(userId, newName);
+         targetEntity.entityName = newName;
+         targetEntity.admin.Rpc_ReceiveNewName(userId, oldName, newName);
       }
    }
 

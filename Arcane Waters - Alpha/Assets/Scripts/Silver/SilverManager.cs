@@ -32,7 +32,7 @@ public class SilverManager : NetworkBehaviour
    // The fraction of silver lost after death
    public static float SILVER_DEATH_PENALTY_MULTIPLIER = 0.40f;
 
-   // The fraction of silver lost during the ship healing process
+   // The amount of silver lost during the ship healing process
    public static int SILVER_SHIP_HEAL_PENALTY = 20;
 
    #endregion
@@ -41,36 +41,42 @@ public class SilverManager : NetworkBehaviour
       return Mathf.CeilToInt(number / 10.0f) * 10;
    }
 
-   public static int computeAssistReward (NetEntity mainAttacker, NetEntity assistAttacker, NetEntity target) {
-      int computedReward = computeSilverReward(mainAttacker, target);
+   public static int computeSilverReward (NetEntity target) {
+      if (target == null) {
+         return 0;
+      }
+
+      if (target is PlayerShipEntity) {
+         int targetRank = GameStatsManager.self.getSilverRank(target.userId);
+         return targetRank * SILVER_PLAYER_SHIP_KILL_REWARD;
+      }
+
+      if (target is BotShipEntity) {
+         return SILVER_BOT_SHIP_KILL_REWARD;
+      }
+
+      if (target is SeaMonsterEntity) {
+         return SILVER_SEA_MONSTER_KILL_REWARD;
+      }
+
+      if (target is SeaStructure) {
+         return SILVER_SEA_STRUCTURE_KILL_REWARD;
+      }
+
+      return 0;
+   }
+
+   public static int computeAssistReward (NetEntity target) {
+      if (target == null) {
+         return 0;
+      }
+
+      int computedReward = computeSilverReward(target);
       float computedAssistRewardRaw = computedReward * SILVER_ASSIST_REWARD_MULTIPLIER;
 
       // Rounds to the next multiple of 10
       int computedAssistRewardRounded = computeClosestMultipleOfTen(computedAssistRewardRaw);
-      return computedAssistRewardRounded * GameStatsManager.self.getSilverRank(assistAttacker.userId);
-   }
-
-   public static int computeSilverReward (NetEntity attacker, NetEntity target) {
-      int attackerRank = GameStatsManager.self.getSilverRank(attacker.userId);
-
-      if (target is PlayerShipEntity) {
-         int targetRank = GameStatsManager.self.getSilverRank(target.userId);
-         return (attackerRank + targetRank * 2) * SILVER_PLAYER_SHIP_KILL_REWARD;
-      }
-
-      if (target is BotShipEntity) {
-         return attackerRank * SILVER_BOT_SHIP_KILL_REWARD;
-      }
-
-      if (target is SeaMonsterEntity) {
-         return attackerRank * SILVER_SEA_MONSTER_KILL_REWARD;
-      }
-
-      if (target is SeaStructure) {
-         return attackerRank * SILVER_SEA_STRUCTURE_KILL_REWARD;
-      }
-
-      return 0;
+      return computedAssistRewardRounded;
    }
 
    public static int computeSilverPenalty (NetEntity target) {

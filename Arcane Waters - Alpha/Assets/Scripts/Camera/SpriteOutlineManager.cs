@@ -20,29 +20,61 @@ public class SpriteOutlineManager : GenericGameManager {
       base.Awake();
       self = this;
 
-      _quadPool = new Pool<SpriteOutlineRenderer>(outlineQuadPrefab);
+      _renderersPool = new Pool<SpriteOutlineRenderer>(outlineQuadPrefab);
    }
 
-   public void addOutlinedSprite (SpriteOutline shaderSpriteOutline) {
-      SpriteOutlineRenderer outlineQuad = _quadPool.get();
-      shaderSpriteOutline.outlineRenderer = outlineQuad;
-
-      outlineQuad.setOutlinedSprite(shaderSpriteOutline);
-   }
-
-   public void removeOutlinedSprite (SpriteOutline shaderSpriteOutline) {
-      if (shaderSpriteOutline == null || shaderSpriteOutline.outlineRenderer == null) {
-         return;
+   private bool registerOutline (SpriteOutline outline, out SpriteOutlineRenderer renderer) {
+      if (outline == null) {
+         renderer = null;
+         return false;
       }
 
-      shaderSpriteOutline.outlineRenderer.gameObject.SetActive(false);
-      shaderSpriteOutline.outlineRenderer = null;
+      if (_outlineRegistry.ContainsKey(outline)) {
+         renderer = _outlineRegistry[outline];
+         return true;
+      }
+
+      renderer = _renderersPool.pop();
+      renderer.reset();
+      _outlineRegistry.Add(outline, renderer);
+      return true;
+   }
+
+   private bool unregisterOutline (SpriteOutline outline) {
+      if (outline == null || !_outlineRegistry.ContainsKey(outline)) {
+         return true;
+      }
+
+      SpriteOutlineRenderer renderer = _outlineRegistry[outline];
+      renderer.reset();
+      _outlineRegistry.Remove(outline);
+      _renderersPool.push(renderer);
+      return true;
+   }
+
+   public void onOutlineWillRenderObject (SpriteOutline outline, bool show) {
+      if (show) {
+         if (registerOutline(outline, out SpriteOutlineRenderer renderer)) {
+            renderer.updateDepth(outline.transform.position.z);
+            renderer.updateColor(outline.getColor());
+            renderer.updateRenderBuffer(outline.getRenderers());
+         }
+      } else {
+         unregisterOutline(outline);
+      }
+   }
+
+   public void onOutlineDestroyed(SpriteOutline outline) {
+      unregisterOutline(outline);
    }
 
    #region Private Variables
 
    // A pool of all the quads we already instantiated
-   private Pool<SpriteOutlineRenderer> _quadPool;
+   private Pool<SpriteOutlineRenderer> _renderersPool;
+
+   // Sprite Outline Registry
+   private Dictionary<SpriteOutline, SpriteOutlineRenderer> _outlineRegistry = new Dictionary<SpriteOutline, SpriteOutlineRenderer>();
 
    #endregion
 }

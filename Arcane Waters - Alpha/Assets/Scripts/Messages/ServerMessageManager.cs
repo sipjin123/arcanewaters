@@ -263,6 +263,20 @@ public class ServerMessageManager : MonoBehaviour
             }
          }
 
+         // If the user has any points in a perk that has been removed, reset their perk points.
+         List<Perk> perks = DB_Main.getPerkPointsForUser(selectedUserId);
+         Perk removedPerk = perks.Find((x) => PerkManager.removedPerkIds.Contains(x.perkId));
+         if (removedPerk != null) {
+            int totalPerkPoints = 0;
+            
+            foreach (Perk perk in perks) {
+               totalPerkPoints += perk.points;
+            }
+
+            DB_Main.resetPerkPointsAll(selectedUserId, totalPerkPoints);
+            D.debug("User " + selectedUserId + " had a removed perk: " + removedPerk.perkId + ", their perk points have been reset.");
+         }
+
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (accountId > 0) {

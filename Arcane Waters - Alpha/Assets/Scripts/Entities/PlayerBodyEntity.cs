@@ -1024,7 +1024,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          return;
       }
 
-      StairEffector.setEffectorCollisions(getMainCollider(), collisionsEnabled);
+      GenericEffector.setEffectorCollisions(getMainCollider(), collisionsEnabled);
       effectorCollisionEnabled = collisionsEnabled;
    }
 

@@ -7,7 +7,7 @@ using System.Text;
 using NubisDataHandling;
 using UnityEngine.EventSystems;
 
-public class ItemSelectionScreen : FullScreenSeparatePanel, IPointerClickHandler
+public class ItemSelectionScreen : SubPanel
 {
    #region Public Variables
 
@@ -19,9 +19,6 @@ public class ItemSelectionScreen : FullScreenSeparatePanel, IPointerClickHandler
 
    // The number of selected items
    public static int selectedItemCount = 1;
-
-   // Our associated Canvas Group
-   public CanvasGroup canvasGroup;
 
    // Load Blocker when data is fetching
    public GameObject loadBlocker;
@@ -55,7 +52,7 @@ public class ItemSelectionScreen : FullScreenSeparatePanel, IPointerClickHandler
 
    #endregion
 
-   public void show () {
+   public override void show () {
       List<int> itemIdsToExclude = new List<int>();
       show(itemIdsToExclude);
    }
@@ -85,20 +82,7 @@ public class ItemSelectionScreen : FullScreenSeparatePanel, IPointerClickHandler
       refreshPanel();
 
       // Make the panel visible
-      this.canvasGroup.alpha = 1f;
-      this.canvasGroup.blocksRaycasts = true;
-      this.canvasGroup.interactable = true;
-      this.gameObject.SetActive(true);
-   }
-
-   public void hide () {
-      this.canvasGroup.alpha = 0f;
-      this.canvasGroup.blocksRaycasts = false;
-      this.canvasGroup.interactable = false;
-   }
-
-   public bool isShowing () {
-      return this.gameObject.activeSelf && canvasGroup.alpha > 0f;
+      base.show();
    }
 
    public void refreshPanel () {
@@ -224,16 +208,6 @@ public class ItemSelectionScreen : FullScreenSeparatePanel, IPointerClickHandler
 
       // Disables the select button
       selectButton.interactable = false;
-   }
-
-   public virtual void OnPointerClick (PointerEventData eventData) {
-      if (eventData.rawPointerPress == this.gameObject) {
-         // If the mouse is over the input field zone, select it through the panel black background
-         if (!Panel.tryFocusChatInputField()) {
-            // If the black background outside is clicked, hide the panel
-            hide();
-         }
-      }
    }
 
    #region Private Variables

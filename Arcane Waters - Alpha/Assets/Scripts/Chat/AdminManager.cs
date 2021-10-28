@@ -3386,7 +3386,7 @@ public class AdminManager : NetworkBehaviour
                         msg = "Could not find info for user: " + oldName;
                      } else {
                         msg = "Changed the player name from " + targetInfo.username + " to " + newName;
-                        ServerNetworkingManager.self.changeUserName(oldNameUserId, newName);
+                        ServerNetworkingManager.self.changeUserName(oldNameUserId, oldName, newName);
                      }
                   } else {
                      msg = "The user " + oldName + " does not exist!";
@@ -3408,13 +3408,10 @@ public class AdminManager : NetworkBehaviour
    }
 
    [ClientRpc]
-   public void Rpc_ReceiveNewName (int userId, string newName) {
+   public void Rpc_ReceiveNewName (int userId, string oldName, string newName) {
       NetEntity entity = EntityManager.self.getEntity(userId);
 
       if (entity != null) {
-         string oldName = entity.entityName;
-
-         entity.entityName = newName;
          entity.nameText.text = newName;
          entity.nameTextOutline.text = newName;
 

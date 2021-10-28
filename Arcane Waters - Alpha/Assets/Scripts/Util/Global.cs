@@ -99,6 +99,9 @@ public class Global
    // Gets set to false if the player has already logged in successfully.
    public static bool isFirstLogin = true;
 
+   // Gets set to false if the player has been spawned at least once
+   public static bool isFirstSpawn = true;
+
    // Gets set to true when the screen is transitioning, to block loading while the screen is transitioning
    public static bool isScreenTransitioning = false;
 

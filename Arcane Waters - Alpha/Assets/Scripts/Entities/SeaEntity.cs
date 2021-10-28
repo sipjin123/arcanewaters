@@ -177,6 +177,10 @@ public class SeaEntity : NetEntity
          StartCoroutine(CO_AttackEnemiesInRange(0.25f));
       }
 
+      if (useSeaEnemyAI()) {
+         GenericEffector.setEffectorCollisions(getMainCollider(), false);
+      }
+
       // Adding of powerup orbs is now disabled, code to be removed once we no longer need it as a reference for ability orbs.
       // InvokeRepeating(nameof(checkPowerupOrbs), 0.0f, 0.1f);
 
@@ -248,7 +252,7 @@ public class SeaEntity : NetEntity
 
             if (gameStatsManager != null) {
                if (lastAttacker.isPlayerShip()) {
-                  int silverReward = SilverManager.computeSilverReward(lastAttacker, this);
+                  int silverReward = SilverManager.computeSilverReward(this);
                   gameStatsManager.addSilverRank(lastAttacker.userId, 1);
                   gameStatsManager.addSilverAmount(lastAttacker.userId, silverReward);
                   Target_ReceiveSilverCurrency(lastAttacker.getPlayerShipEntity().connectionToClient, silverReward, SilverManager.SilverRewardReason.Kill);
@@ -290,7 +294,7 @@ public class SeaEntity : NetEntity
                      gameStatsManager.addAssistCount(attackerEntity.userId);
 
                      if (attackerEntity.isPlayerShip()) {
-                        int assistReward = SilverManager.computeAssistReward(lastAttacker, attackerEntity, this);
+                        int assistReward = SilverManager.computeAssistReward(this);
                         gameStatsManager.addSilverAmount(attackerEntity.userId, assistReward);
                         Target_ReceiveSilverCurrency(attackerEntity.getPlayerShipEntity().connectionToClient, assistReward, SilverManager.SilverRewardReason.Assist);
                      }
@@ -1009,13 +1013,26 @@ public class SeaEntity : NetEntity
             float outerRadius = .9f;
             float angleStep = 60f;
 
+            // We will pick a random shot to skip, so there is a gap in the circle to escape through.
+            int totalNumShots = 2 * (Mathf.RoundToInt(360.0f / angleStep));
+            int shotToSkip = UnityEngine.Random.Range(0, totalNumShots);
+            int shotCounter = -1;
+
             // Inner circle
             for (float angle = 0; angle < 360f; angle += angleStep) {
+               shotCounter++;
+               if (shotCounter == shotToSkip) {
+                  continue;
+               }
                StartCoroutine(CO_FireAtSpot(spot + new Vector2(innerRadius * Mathf.Cos(Mathf.Deg2Rad * angle), innerRadius * Mathf.Sin(Mathf.Deg2Rad * angle)), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
             }
 
             // Outer circle
             for (float angle = angleStep / 2; angle < 360f; angle += angleStep) {
+               shotCounter++;
+               if (shotCounter == shotToSkip) {
+                  continue;
+               }
                StartCoroutine(CO_FireAtSpot(spot + new Vector2(outerRadius * Mathf.Cos(Mathf.Deg2Rad * angle), outerRadius * Mathf.Sin(Mathf.Deg2Rad * angle)), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
             }
             break;
@@ -1084,7 +1101,7 @@ public class SeaEntity : NetEntity
       Vector2 toEndPos = endPosition - startPosition;
       Vector2 projectileVelocity = speed * toEndPos.normalized;
       float lobHeight = Mathf.Clamp(1.0f / speed, 0.3f, 1.0f);
-      float disableColliderFor = 0.9f;
+      float disableColliderFor = 0.95f;
 
       if (!hasArch) {
          lobHeight = 0.0f;

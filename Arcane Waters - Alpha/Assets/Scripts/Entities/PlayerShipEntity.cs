@@ -345,6 +345,13 @@ public class PlayerShipEntity : ShipEntity
    protected override void Update () {
       base.Update();
 
+      // Update Ship Bars
+      if (isDead() || isDisabled) {
+         toggleShipDisplayInfo(false);
+      } else {
+         toggleShipDisplayInfo(isLocalPlayer || isMouseOver());
+      }
+
       // Hide targeting UI when dead
       if (isDead()) {
          _targetCone.gameObject.SetActive(false);
@@ -452,11 +459,6 @@ public class PlayerShipEntity : ShipEntity
 
       // Update FMOD Studio Listener attachment
       FMODUnity.RuntimeManager.AttachInstanceToGameObject(_boostState, transform, _body);
-
-      // Update Ship Bars
-      if (!isLocalPlayer && !isDead() && !isDisabled) {
-         toggleShipDisplayInfo(show: isMouseOver(), force: true);
-      }
    }
 
    private void LateUpdate () {
@@ -1437,8 +1439,6 @@ public class PlayerShipEntity : ShipEntity
          yield break;
       }
 
-      toggleShipDisplayInfo(show: false);
-
       invulnerable = true;
       _clickableBox.gameObject.SetActive(false);
 
@@ -1456,8 +1456,6 @@ public class PlayerShipEntity : ShipEntity
 
       invulnerable = false;
       _clickableBox.gameObject.SetActive(true);
-
-      toggleShipDisplayInfo(show: true);
 
       if (!isDead()) {
          foreach (Collider2D c in GetComponents<Collider2D>()) {
@@ -1965,13 +1963,7 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
-   private void toggleShipDisplayInfo(bool show, bool force = false) {
-      if (!isLocalPlayer && show) {
-         if (!force) {
-            return;
-         }
-      }
-
+   private void toggleShipDisplayInfo(bool show) {
       shipInformationDisplay.alpha = show ? 1.0f : NON_LOCAL_SHIP_INFO_DEFAULT_ALPHA;
    }
 

@@ -17,31 +17,15 @@ public class SpriteOutlineRenderer : MonoBehaviour
       _outlineColorPropertyID = Shader.PropertyToID("_OutlineColor");
    }
 
-   private void OnEnable () {
-      if (CameraManager.self != null) {
-         CameraManager.self.resolutionChanged += updateQuadSize;
-      }
-
-      updateQuadSize();
-      updateRenderBuffer();
-   }
-
-   private void OnDisable () {
-      if (CameraManager.self != null) {
-         CameraManager.self.resolutionChanged -= updateQuadSize;
-      }
-
-      removeCommandBuffer();
-      _renderTexture.Release();
-   }
-
-   private void updateQuadSize () {
-      if (_renderTexture == null) {
+   private bool resizeRenderTexture () {
+      if (_renderTexture == null || _renderTexture.width != Screen.width || _renderTexture.height != Screen.height) {
          _renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
          _renderTexture.filterMode = FilterMode.Point;
+         _quadRenderer.material.SetTexture("_MainTex", _renderTexture);
+         return true;
       }
 
-      _quadRenderer.material.SetTexture("_MainTex", _renderTexture);
+      return false;
    }
 
    private void updatePixelSize () {
@@ -62,36 +46,6 @@ public class SpriteOutlineRenderer : MonoBehaviour
       return Camera.main;
    }
 
-   private void Update () {
-      Camera cam = getCurrentCamera();
-
-      // Make sure our quad always fills the entire screen
-      float orthographicSize = cam.orthographicSize;
-
-      Vector3 scale = transform.localScale;
-
-      scale.y = orthographicSize * 2 * cam.rect.height;
-      scale.x = orthographicSize * 2 * cam.rect.width * Screen.width / Screen.height;
-
-      transform.localScale = scale;
-
-      updatePixelSize();
-
-      if (_currentOutline != null && _currentOutline.didRendererStateChange()) {
-         removeCommandBuffer();
-         updateRenderBuffer();
-      }
-   }
-
-   private void LateUpdate () {
-      // Our quad should always be at the same Z position as the outlined object so it doesn't render in front of everything
-      if (_currentOutline != null) {
-         Vector3 quadPos = _quadRenderer.transform.position;
-         quadPos.z = _currentOutline.transform.position.z - OUTLINE_Z_OFFSET;
-         _quadRenderer.transform.position = quadPos;
-      }
-   }
-
    private void removeCommandBuffer () {
       foreach (KeyValuePair<Camera, CommandBuffer> cam in _cameras) {
          if (cam.Key) {
@@ -99,83 +53,87 @@ public class SpriteOutlineRenderer : MonoBehaviour
          }
       }
 
-      _cameras.Clear();      
+      _cameras.Clear();
    }
 
-   public void onWillRenderObject (SpriteOutline outline) {
-      // Currently outlined gameobject will call this method
-      if (_currentOutline != null && outline == _currentOutline) {
-         _quadRenderer.material.SetColor(_outlineColorPropertyID, _currentOutline.getColor());
-         updateRenderBuffer();
-      }
-   }
-
-   private void OnWillRenderObject () {
-      // Only use the quad's OnWillRenderObject if no other object is currently being outlined.
-      // The reason is we may end up drawing the outline of a sprite before the sprite itself is rendered (or updated, in case of animations), causing the outline not to match the real sprite.
-      // We still need to update the buffer if no sprite is selected so we clear the RenderTexture.
-      if (_currentOutline == null) {
-         updateRenderBuffer();
-      }
-   }
-
-   public void updateRenderBuffer () {
+   public void updateRenderBuffer (SpriteRenderer[] renderers) {
       Camera cam = getCurrentCamera();
 
-      // Make sure we only add the buffer to the camera once!
-      if (cam == null || _cameras.ContainsKey(cam)) {
-         return;
+      if (cam != null) {
+         resizeRenderTexture();
+         resizeQuad(cam);
+         updatePixelSize();
+         positionQuad(cam);
+         createCommandBuffer(renderers, cam);
+      }
+   }
+
+   private void createCommandBuffer (SpriteRenderer[] renderers, Camera cam) {
+      if (_cameras.ContainsKey(cam)) {
+         cam.RemoveCommandBuffer(CameraEvent.BeforeForwardAlpha, _cameras[cam]);
       }
 
+      CommandBuffer outlineCommandBuffer = new CommandBuffer();
+      outlineCommandBuffer.name = "Draw Outlines Buffer";
+      _cameras[cam] = outlineCommandBuffer;
+
+      // Tell our command buffer to use the texture we created as the render target
+      outlineCommandBuffer.SetRenderTarget(_renderTexture);
+
+      // Make sure the texture is completely clear before we render to it
+      outlineCommandBuffer.ClearRenderTarget(true, true, Color.clear);
+
+      // Draw all the sprites of our SpriteOutline to the texture using the "silhouette only" shader
+      foreach (SpriteRenderer rend in renderers) {
+         if (SpriteOutline.isRendererVisible(rend)) {
+            outlineCommandBuffer.DrawRenderer(rend, rend.material);
+         }
+      }
+
+      // Add the command buffer to the pipeline after transparents are rendered
+      cam.AddCommandBuffer(CameraEvent.BeforeForwardAlpha, outlineCommandBuffer);
+   }
+
+   private void positionQuad (Camera cam) {
       _quadRenderer.transform.SetParent(cam.transform, false);
 
       Vector3 pos = _quadRenderer.transform.localPosition;
       pos.x = 0;
       pos.y = 0;
       _quadRenderer.transform.localPosition = pos;
-
-      _outlinesBuffer = new CommandBuffer();
-      _outlinesBuffer.name = "Draw Outlines Buffer";
-      _cameras[cam] = _outlinesBuffer;
-
-      // Tell our command buffer to use the texture we created as the render target
-      _outlinesBuffer.SetRenderTarget(_renderTexture);
-
-      // Make sure the texture is completely clear before we render to it
-      _outlinesBuffer.ClearRenderTarget(true, true, Color.clear);
-
-      if (_currentOutline != null) {         
-         // Draw all the sprites of our SpriteOutline to the texture using the "silhouette only" shader
-         SpriteRenderer[] renderers = _currentOutline.getRenderers();
-
-         foreach (SpriteRenderer rend in renderers) {
-            if (SpriteOutline.isRendererVisible(rend)) {
-               _outlinesBuffer.DrawRenderer(rend, rend.material);
-            }
-         }
-      }
-
-      // Add the command buffer to the pipeline after transparents are rendered
-      cam.AddCommandBuffer(CameraEvent.BeforeForwardAlpha, _outlinesBuffer);
    }
 
-   public void setOutlinedSprite (SpriteOutline sprite) {
-      if (_currentOutline != sprite) {
-         // Let the current outline know it's no longer visible
-         if (_currentOutline != null) {
-            _currentOutline.setVisibility(false);
-         }
+   private void resizeQuad (Camera cam) {
+      // Make sure our quad always fills the entire screen
+      cam = getCurrentCamera();
+      float orthographicSize = cam.orthographicSize;
+      Vector3 scale = transform.localScale;
+      scale.y = orthographicSize * 2 * cam.rect.height;
+      scale.x = orthographicSize * 2 * cam.rect.width * Screen.width / Screen.height;
+      transform.localScale = scale;
+   }
 
-         _currentOutline = sprite;
-         removeCommandBuffer();
+   public void updateColor (Color newColor) {
+      _quadRenderer.material.SetColor(_outlineColorPropertyID, newColor);
+   }
+
+   public void updateDepth (float depth) {
+      Vector3 quadPos = _quadRenderer.transform.position;
+      quadPos.z = depth - OUTLINE_Z_OFFSET;
+      _quadRenderer.transform.position = quadPos;
+   }
+
+   public void reset () {
+      removeCommandBuffer();
+
+      if (_renderTexture != null) {
+         _renderTexture.Release();
       }
+
+      _renderTexture = null;
    }
 
    #region Private Variables
-
-   // The sprite we're currently outlining
-   [SerializeField]
-   private SpriteOutline _currentOutline;
 
    // The quad we use for displaying the outline
    [SerializeField]
@@ -183,9 +141,6 @@ public class SpriteOutlineRenderer : MonoBehaviour
 
    // The texture to which we draw
    private RenderTexture _renderTexture = null;
-
-   // The command buffer
-   private CommandBuffer _outlinesBuffer;
 
    // All the cameras using the buffer
    private Dictionary<Camera, CommandBuffer> _cameras = new Dictionary<Camera, CommandBuffer>();
@@ -201,6 +156,6 @@ public class SpriteOutlineRenderer : MonoBehaviour
 
    // The distance between the object and the outline in the Z axis
    public const float OUTLINE_Z_OFFSET = -0.0001f;
-   
+
    #endregion
 }

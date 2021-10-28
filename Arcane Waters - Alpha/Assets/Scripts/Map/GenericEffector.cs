@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class StairEffector : MonoBehaviour {
+public class GenericEffector : MonoBehaviour {
    #region Public Variables
 
-   // Whether all stair effectors are currently enabled or not
+   // Whether all effectors are currently enabled or not
    public static bool effectorsEnabled = true;
 
    #endregion
@@ -25,7 +25,7 @@ public class StairEffector : MonoBehaviour {
    }
 
    public static void setEffectorCollisions (Collider2D otherCollider, bool shouldCollide) {
-      foreach (StairEffector effector in _activeEffectors) {
+      foreach (GenericEffector effector in _activeEffectors) {
          Physics2D.IgnoreCollision(effector._collider, otherCollider, !shouldCollide);
       }
       effectorsEnabled = shouldCollide;
@@ -36,8 +36,8 @@ public class StairEffector : MonoBehaviour {
    // A reference to the collider for this effector
    private Collider2D _collider;
 
-   // A list of all active stair effectors
-   private static List<StairEffector> _activeEffectors = new List<StairEffector>();
+   // A list of all active effectors
+   private static List<GenericEffector> _activeEffectors = new List<GenericEffector>();
 
    #endregion
 }
