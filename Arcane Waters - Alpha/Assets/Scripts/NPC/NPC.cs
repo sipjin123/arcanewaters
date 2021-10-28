@@ -50,10 +50,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    [SyncVar]
    public int shopId = 0;
 
-   // Pvp shop id (if any)
-   [SyncVar]
-   public int pvpShopId = 0;
-
    // The type of shop panel this npc will generate if this is a shop npc
    [SyncVar]
    public Panel.Type shopPanelType;
@@ -405,10 +401,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
                merchantPanel.headIconSprite = getHeadIconSprite();
                merchantPanel.refreshPanel();
                break;
-            case Panel.Type.PvpShop:
-               PvpShopPanel.self.shopId = pvpShopId;
-               PvpShopPanel.self.onShopButtonPressed(false);
-               return;
          }
       } else {
          // Make sure the panel is showing
@@ -564,13 +556,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
             } catch {
                shopId = 0;
             }
-         } else if (field.k.CompareTo(DataField.PVP_SHOP_ID) == 0) {
-            // Get Shop id (if any)
-            try {
-               pvpShopId = int.Parse(field.v.Split(':')[0]);
-            } catch {
-               pvpShopId = 0;
-            }
          } else if (field.k.CompareTo(DataField.NPC_PANEL_TYPE_KEY) == 0) {
             // Get Shop Panel Type (if any)
             panelName = field.v.Split(':')[0];
@@ -592,11 +577,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          _shopTrigger.panelType = (Panel.Type) Enum.Parse(typeof(Panel.Type), panelName);
          isShopNpc = true;
          shopPanelType = _shopTrigger.panelType;
-      } else if (pvpShopId > 0) {
-         _shopTrigger = gameObject.AddComponent<ShopTrigger>();
-         _shopTrigger.panelType = Panel.Type.PvpShop;
-         isShopNpc = true;
-         shopPanelType = Panel.Type.PvpShop;
       }
    }
 
