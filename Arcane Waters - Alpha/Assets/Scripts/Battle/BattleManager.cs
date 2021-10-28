@@ -1108,9 +1108,10 @@ public class BattleManager : MonoBehaviour {
             
             // Offset spawn position of the loot spawn for boss monsters, due to their huge corpse sprite
             if (enemy.isBossType) {
-               targetSpawnPos += new Vector3(0, .825f, 0);
+               targetSpawnPos += new Vector3(0, .95f, 0);
             }
-            winningBattlers[0].player.rpc.spawnBattlerMonsterChest(winningBattlers[0].player.instanceId, targetSpawnPos, battlerEnemyID);
+
+            StartCoroutine(CO_SpawnChest(winningBattlers[0].player, targetSpawnPos, winningBattlers[0].player.instanceId, battlerEnemyID));
          }
       }
 
@@ -1180,6 +1181,58 @@ public class BattleManager : MonoBehaviour {
 
       // Pass along the request to the Battle Manager to handle shutting everything down
       this.endBattle(battle, teamThatWon);
+   }
+
+   private IEnumerator CO_SpawnChest (NetEntity winningBattler, Vector3 targetSpawnPos, int battlerInstanceId, int enemyId) {
+      yield return new WaitForSeconds(.1f);
+
+      // This prevents the crop from bounding over obstructed areas
+      int collisionCount = 40;
+      Collider2D[] hits = new Collider2D[collisionCount];
+      float radiusSize = 0.005f;
+      Physics2D.OverlapCircleNonAlloc(targetSpawnPos, radiusSize, hits);
+      int index = 0;
+
+      // Check if initial spawning collides with any map objects
+      if (hits.Length > 0) {
+         foreach (Collider2D hit in hits) {
+            if (hit != null) {
+               index++;
+            }
+         }
+      }
+
+      Vector3 newSpawnPosition = targetSpawnPos;
+      if (index > 0) {
+         int tryCount = 100;
+         float internalRadiusSize = 0.005f;
+         float externalRadiusSize = 0.4f;
+         for (int i = 0; i < tryCount; i++) {
+            int internalCollisionCount = 10;
+            Collider2D[] internalHits = new Collider2D[internalCollisionCount];
+            Physics2D.OverlapCircleNonAlloc(newSpawnPosition, internalRadiusSize, internalHits);
+
+            int objectHits = 0;
+            foreach (Collider2D hit in internalHits) {
+               if (hit != null && hit.gameObject != null) {
+                  // Ignore camera bounds, check for object collisions
+                  if (hit.GetComponent<PolygonCollider2D>() == null) {
+                     objectHits++;
+                  }
+               }
+            }
+
+            // If collided with anything, find random position that has no collider
+            if (internalHits.Length > 0 && objectHits > 0) {
+               Vector3 offset = Random.insideUnitCircle * externalRadiusSize;
+               newSpawnPosition = targetSpawnPos + offset;
+            } else {
+               break;
+            }
+         }
+      }
+
+      winningBattler.rpc.spawnBattlerMonsterChest(battlerInstanceId, newSpawnPosition, enemyId);
    }
 
    public void onPlayerEquipItem (PlayerBodyEntity playerBody) {
