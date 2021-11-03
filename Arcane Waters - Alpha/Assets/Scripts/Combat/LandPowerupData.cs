@@ -9,6 +9,7 @@ public enum LandPowerupExpiryType {
    None = 0,
    Time = 1,
    BossKills = 2,
+   OnWarp = 3
 }
 
 public class LandPowerupData {

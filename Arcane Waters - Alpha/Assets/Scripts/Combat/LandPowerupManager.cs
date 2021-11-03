@@ -144,13 +144,24 @@ public class LandPowerupManager : MonoBehaviour {
 
    public List<LandPowerupData> getPowerupsForUser (int userId) {
       List<LandPowerupData> landPowerups = new List<LandPowerupData>();
+      List<LandPowerupData> powerupToRemove = new List<LandPowerupData>();
 
       if (!landPowerupDataSet.ContainsKey(userId)) {
          return landPowerups;
       }
 
-      foreach (LandPowerupData powerupList in landPowerupDataSet[userId]) {
-         landPowerups.Add(powerupList);
+      List<LandPowerupData> userLandPowerupData = landPowerupDataSet[userId];
+      foreach (LandPowerupData powerupData in userLandPowerupData) {
+         if (powerupData.expiryType == LandPowerupExpiryType.OnWarp) {
+            powerupToRemove.Add(powerupData);
+         } else {
+            landPowerups.Add(powerupData);
+         }
+      }
+
+      foreach (LandPowerupData powerupData in powerupToRemove) {
+         landPowerups.Remove(powerupData);
+         landPowerupDataSet[userId].Remove(powerupData);
       }
 
       return landPowerups;

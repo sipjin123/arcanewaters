@@ -441,5 +441,6 @@ public enum TutorialTrigger
    KillBoss = 47,
    OpenMap = 48,
    Loot_Blueprint = 49,
-   Craft_Bone_Sword = 50
+   Craft_Bone_Sword = 50,
+   Receive_Land_Powerup = 51
 };

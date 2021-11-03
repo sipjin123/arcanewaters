@@ -4410,6 +4410,11 @@ public class RPCManager : NetworkBehaviour
                      };
                      break;
                }
+
+               if (_player.areaKey.ToLower().Contains(Area.TUTORIAL_AREA.ToLower())) {
+                  newPowerup.expiryType = LandPowerupExpiryType.OnWarp;
+               }
+
                LandPowerupManager.self.updateNewPowerupData(newPowerup.userId, newPowerup.landPowerupType, newPowerup.expiryType, newPowerup.counter, newPowerup.value);
                break;
             case PvpShopItem.PvpShopItemType.Item:
@@ -8712,6 +8717,8 @@ public class RPCManager : NetworkBehaviour
          userId = newPowerup.userId,
          value = newPowerup.value
       });
+
+      TutorialManager3.self.tryCompletingStep(TutorialTrigger.Receive_Land_Powerup);
    }
 
    [TargetRpc]
