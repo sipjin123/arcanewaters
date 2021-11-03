@@ -6202,13 +6202,13 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Make sure the user is in the right instance
-      if (_player.instanceId != oreNode.instanceId) {
+      if (_player.instanceId != oreNode.instanceId && oreNode.mapSpecialType == Area.SpecialType.TreasureSite) {
          D.warning("Player trying to open ore node from a different instance!");
          return;
       }
 
       // If the user has no voyage group check the owner id, if it has a voyage group check the owner group id of the ore
-      if ((voyageGroupId < 0 && _player.userId != ownerId) || (voyageGroupId >= 0 && _player.voyageGroupId != voyageGroupId)) {
+      if ((voyageGroupId < 0 && _player.userId != ownerId) || (voyageGroupId >= 0 && _player.voyageGroupId != voyageGroupId) && oreNode.mapSpecialType == Area.SpecialType.TreasureSite) {
          string message = "This does not belong to you!";
          _player.Target_FloatingMessage(_player.connectionToClient, message);
          return;
