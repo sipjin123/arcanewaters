@@ -361,18 +361,21 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       hideEntirePanel();
    }
 
-   public void onShopButtonPressed (bool isSeaShop) {
+   public void onShopButtonPressed (bool isSeaShop, int shopId) {
+      this.shopId = shopId;
       this.isSeaShop = isSeaShop;
+
       if (isSeaShop) {
-         landPowerupCategoryObj.gameObject.SetActive(false);
          onSelectShipCategory();
       } else {
-         shipCategoryObj.gameObject.SetActive(false);
-         powerupCategoryObj.gameObject.SetActive(false);
-         abilityCategoryObj.gameObject.SetActive(false);
-         itemCategoryObj.gameObject.SetActive(false);
          onSelectLandCategory();
       }
+
+      shipCategoryObj.gameObject.SetActive(isSeaShop);
+      powerupCategoryObj.gameObject.SetActive(isSeaShop);
+      abilityCategoryObj.gameObject.SetActive(isSeaShop);
+      itemCategoryObj.gameObject.SetActive(isSeaShop);
+      landPowerupCategoryObj.gameObject.SetActive(!isSeaShop);
    }
 
    public void onSelectShipCategory () {

@@ -58,8 +58,7 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
 
    public void clickOnShop () {
       if (isWithinRange) {
-         PvpShopPanel.self.shopId = shopId;
-         PvpShopPanel.self.onShopButtonPressed(isSeaShop);
+         PvpShopPanel.self.onShopButtonPressed(true, shopId);
       }
    }
 

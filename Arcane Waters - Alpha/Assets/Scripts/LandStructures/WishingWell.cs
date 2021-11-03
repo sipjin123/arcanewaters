@@ -23,8 +23,7 @@ public class WishingWell : MonoBehaviour, IMapEditorDataReceiver
 
    public void clientClickedMe () {
       if (isWithinDistance) {
-         PvpShopPanel.self.shopId = pvpShopId;
-         PvpShopPanel.self.onShopButtonPressed(false);
+         PvpShopPanel.self.onShopButtonPressed(false, pvpShopId);
       }
    }
 
