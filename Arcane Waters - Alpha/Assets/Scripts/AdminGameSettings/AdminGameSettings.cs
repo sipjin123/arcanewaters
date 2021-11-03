@@ -46,6 +46,9 @@ public class AdminGameSettings
    // The additional health the land bosses receive depending on the party count, this value is set in %
    public float bossHealthPerMember = 20;
 
+   // The multipler of health and damage of land battles depending on difficulty value
+   public float landDifficultyScaling = 0.01f;
+
    #endregion
 
    public AdminGameSettings () { }
@@ -64,13 +67,14 @@ public class AdminGameSettings
       this.seaMaxHealth = DataUtil.getFloat(dataReader, "seaMaxHealth");
       this.bossDamagePerMember = DataUtil.getFloat(dataReader, "landBossAddedDamage");
       this.bossHealthPerMember = DataUtil.getFloat(dataReader, "landBossAddedHealth");
+      this.landDifficultyScaling = DataUtil.getFloat(dataReader, "landDifficultyScaling");
    }
 
 #endif
 
    public AdminGameSettings (int id, DateTime creationDate, float battleAttackCooldown, float battleJumpDuration, 
       float battleAttackDuration, float battleTimePerFrame, float seaSpawnsPerSpot, float seaAttackCooldown, float seaMaxHealth, 
-      float landBossAddedHealth, float landBossAddedDamage) {
+      float landBossAddedHealth, float landBossAddedDamage, float landDifficultyScaling) {
       this.id = id;
       this.creationDate = creationDate.ToBinary();
       this.battleAttackCooldown = battleAttackCooldown;
@@ -82,6 +86,7 @@ public class AdminGameSettings
       this.seaMaxHealth = seaMaxHealth;
       this.bossHealthPerMember = landBossAddedHealth;
       this.bossDamagePerMember = landBossAddedDamage;
+      this.landDifficultyScaling = landDifficultyScaling;
    }
 
    public override bool Equals (object rhs) {

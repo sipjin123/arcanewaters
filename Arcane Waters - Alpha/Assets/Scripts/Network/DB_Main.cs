@@ -10847,8 +10847,8 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO admin_game_settings (creationDate, battleAttackCooldown, battleJumpDuration, battleAttackDuration, battleTimePerFrame, seaSpawnsPerSpot, seaAttackCooldown, seaMaxHealth, landBossAddedHealth, landBossAddedDamage) " +
-            "VALUES(@creationDate, @battleAttackCooldown, @battleJumpDuration, @battleAttackDuration, @battleTimePerFrame, @seaSpawnsPerSpot, @seaAttackCooldown, @seaMaxHealth, @landBossAddedHealth, @landBossAddedDamage) "
+            "INSERT INTO admin_game_settings (creationDate, battleAttackCooldown, battleJumpDuration, battleAttackDuration, battleTimePerFrame, seaSpawnsPerSpot, seaAttackCooldown, seaMaxHealth, landBossAddedHealth, landBossAddedDamage, landDifficultyScaling) " +
+            "VALUES(@creationDate, @battleAttackCooldown, @battleJumpDuration, @battleAttackDuration, @battleTimePerFrame, @seaSpawnsPerSpot, @seaAttackCooldown, @seaMaxHealth, @landBossAddedHealth, @landBossAddedDamage, @landDifficultyScaling) "
             , conn)) {
             conn.Open();
             cmd.Prepare();
@@ -10862,6 +10862,8 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@seaMaxHealth", settings.seaMaxHealth);
             cmd.Parameters.AddWithValue("@landBossAddedHealth", settings.bossHealthPerMember);
             cmd.Parameters.AddWithValue("@landBossAddedDamage", settings.bossDamagePerMember);
+            cmd.Parameters.AddWithValue("@landDifficultyScaling", settings.landDifficultyScaling);
+            
             DebugQuery(cmd);
 
             // Execute the command
@@ -10880,7 +10882,7 @@ public class DB_Main : DB_MainStub
          using (MySqlCommand cmd = new MySqlCommand(
          "UPDATE admin_game_settings SET battleAttackCooldown=@battleAttackCooldown, battleJumpDuration=@battleJumpDuration, battleAttackDuration=@battleAttackDuration, " +
          "battleTimePerFrame=@battleTimePerFrame, seaSpawnsPerSpot=@seaSpawnsPerSpot, seaAttackCooldown=@seaAttackCooldown, seaMaxHealth=@seaMaxHealth, " +
-         "landBossAddedHealth=@landBossAddedHealth, landBossAddedDamage=@landBossAddedDamage " +
+         "landBossAddedHealth=@landBossAddedHealth, landBossAddedDamage=@landBossAddedDamage, landDifficultyScaling=@landDifficultyScaling " +
          "WHERE id=@id", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -10894,6 +10896,8 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@seaMaxHealth", settings.seaMaxHealth);
             cmd.Parameters.AddWithValue("@landBossAddedHealth", settings.bossHealthPerMember);
             cmd.Parameters.AddWithValue("@landBossAddedDamage", settings.bossDamagePerMember);
+            cmd.Parameters.AddWithValue("@landDifficultyScaling", settings.landDifficultyScaling);
+            
             DebugQuery(cmd);
 
             // Execute the command

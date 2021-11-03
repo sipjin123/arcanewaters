@@ -23,6 +23,7 @@ public class AdminGameSettingsPanel : MonoBehaviour
    public AdminGameSettingsRow seaMaxHealthRow;
    public AdminGameSettingsRow landBossAddedHealthRow;
    public AdminGameSettingsRow landBossAddedDamageRow;
+   public AdminGameSettingsRow landDifficultyScalingRow; 
 
    // The number of enemy spawns per spawner in leagues after applying the admin parameter
    public Text spawnsPerSpot1;
@@ -69,6 +70,8 @@ public class AdminGameSettingsPanel : MonoBehaviour
       seaMaxHealthRow.initialize(AdminGameSettingsManager.self.settings.seaMaxHealth);
       landBossAddedHealthRow.initialize(AdminGameSettingsManager.self.settings.bossHealthPerMember);
       landBossAddedDamageRow.initialize(AdminGameSettingsManager.self.settings.bossDamagePerMember);
+      landDifficultyScalingRow.initialize(AdminGameSettingsManager.self.settings.landDifficultyScaling);
+
       updateSpawnsPerSpot();
       changesAppliedMessage.Show();
    }
@@ -96,8 +99,8 @@ public class AdminGameSettingsPanel : MonoBehaviour
          seaAttackCooldownRow.getValue(),
          seaMaxHealthRow.getValue(),
          landBossAddedHealthRow.getValue(),
-         landBossAddedDamageRow.getValue()
-         );
+         landBossAddedDamageRow.getValue(),
+         landDifficultyScalingRow.getValue());
       Global.player.rpc.Cmd_SetAdminGameSettings(settings);
       changesAppliedMessage.Show();
       _areChangesPending = false;
