@@ -737,6 +737,10 @@ public class Instance : NetworkBehaviour
 
             // Create the ore node locally and through the network
             OreNode newOreNode = OreManager.self.createOreNode(this, targetLocalPos, oreType);
+            Map map = AreaManager.self.getMapInfo(areaKey);
+            if (map != null) {
+               newOreNode.mapSpecialType = map.specialType;
+            }
          }
       }
 

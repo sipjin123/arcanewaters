@@ -59,11 +59,11 @@ public class OrePickup : MonoBehaviour {
 
    private void OnTriggerEnter2D (Collider2D collision) {
       if (collision.GetComponent<PlayerBodyEntity>() != null && collision.GetComponent<PlayerBodyEntity>() == Global.player) {
-         if (voyageGroupId < 1) {
+         if (voyageGroupId < 1 && oreNode.mapSpecialType == Area.SpecialType.TreasureSite) {
             triggerWarningMessage("Invalid Voyage Group!");
             return;
          }
-         if (collision.GetComponent<PlayerBodyEntity>().voyageGroupId != voyageGroupId) {
+         if (collision.GetComponent<PlayerBodyEntity>().voyageGroupId != voyageGroupId && oreNode.mapSpecialType == Area.SpecialType.TreasureSite) {
             triggerWarningMessage("This does not belong to you!");
             return;
          }

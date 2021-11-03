@@ -51,6 +51,10 @@ public class OreNode : NetworkBehaviour
    // The total interact count for each ore node
    public static int MAX_INTERACT_COUNT = 2;
 
+   // Determines the type of map this ore node belongs to
+   [SyncVar]
+   public Area.SpecialType mapSpecialType;
+
    // The voyage id
    [SyncVar]
    public int voyageId = -1;
