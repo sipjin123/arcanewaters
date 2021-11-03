@@ -238,7 +238,7 @@ public class NetworkedProjectile : MonoBehaviour {
                AchievementManager.registerUserAchievement(hitEntity, ActionType.Poisoned);
 
                // Spawn Damage Per Second Residue
-               hitEntity.Rpc_AttachEffect(finalDamage, Attack.Type.Venom);
+               hitEntity.attachResidue(Attack.Type.Venom, _creatorNetId, finalDamage);
                break;
             default:
                D.debug("Cant process attack");

@@ -131,8 +131,6 @@ public class BugReportManager : MonoBehaviour
       string operatingSystem = SystemInfo.operatingSystem;
       string steamState = SteamLoginManager.getSteamState();
 
-      int width = Screen.width;
-      int height = Screen.height;
       //int maxPacketSize = Transport.activeTransport.GetMaxPacketSize();
 
       addMetaDataToBugReport(ref bugReport);
@@ -142,9 +140,9 @@ public class BugReportManager : MonoBehaviour
 
       // Getting player area
       string playerPosition = AreaManager.self.getArea(player.areaKey) + ": (" + player.gameObject.transform.position.x.ToString() + "; " + player.gameObject.transform.position.y.ToString() + ")";
-
+      
       // Getting the screenshot
-      Texture2D standardTex = takeScreenshot(width, height);
+      Texture2D standardTex = ScreenCapture.CaptureScreenshotAsTexture();
 
       // Sending the request to Web Tools
       List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
@@ -247,51 +245,6 @@ public class BugReportManager : MonoBehaviour
       tex.SetPixels(finalColors.ToArray());
 
       return tex;
-   }
-
-   public Texture2D takeScreenshot (int resWidth, int resHeight) {
-      // Prepare data
-      Camera camera = Camera.main;
-
-      // Use battle camera if player is currently in battle
-      if (BattleCamera.self.GetComponent<Camera>() && BattleCamera.self.GetComponent<Camera>().enabled) {
-         camera = BattleCamera.self.GetComponent<Camera>();
-      }
-
-      RenderTexture savedCameraRT = camera.targetTexture;
-      RenderTexture savedActiveRT = RenderTexture.active;
-      RenderMode cameraRenderMode = canvasGUI.renderMode;
-      Camera canvasWorldCamera = canvasGUI.worldCamera;
-      float planeDistance = canvasGUI.planeDistance;
-
-      // Temporary change render mode of Canvas to "Screen Space - Camera" to enable UI capture in screenshot
-      if (cameraRenderMode != RenderMode.ScreenSpaceCamera) {
-         canvasGUI.renderMode = RenderMode.ScreenSpaceCamera;
-         canvasGUI.worldCamera = camera;
-         canvasGUI.planeDistance = camera == Camera.main ? 1.0f : -2.0f;
-      }
-
-      // Create render texture, assign and render to it
-      RenderTexture rt = new RenderTexture(resWidth, resHeight, 24);
-      camera.targetTexture = rt;
-      Texture2D screenShot = new Texture2D(resWidth, resHeight, TextureFormat.RGB24, false);
-      camera.Render();
-
-      // Revert changes in Canvas
-      canvasGUI.renderMode = cameraRenderMode;
-      canvasGUI.worldCamera = canvasWorldCamera;
-      canvasGUI.planeDistance = planeDistance;
-
-      // Read pixels to Texture2D
-      RenderTexture.active = rt;
-      screenShot.ReadPixels(new Rect(0, 0, resWidth, resHeight), 0, 0);
-
-      // Cleanup
-      camera.targetTexture = savedCameraRT;
-      RenderTexture.active = savedActiveRT;
-      Destroy(rt);
-
-      return screenShot;
    }
 
    #region Private Variables

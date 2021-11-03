@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 using TMPro;
 using DG.Tweening;
 using UnityEngine.InputSystem;
+using Assets.Scripts.Map;
 
 public class PlayerShipEntity : ShipEntity
 {
@@ -31,6 +32,8 @@ public class PlayerShipEntity : ShipEntity
    public int weaponType = 0;
    [SyncVar]
    public string weaponColors;
+   [SyncVar]
+   public int weaponCount = 1;
 
    // The equipped armor characteristics
    [SyncVar]
@@ -306,7 +309,7 @@ public class PlayerShipEntity : ShipEntity
             if (!VoyageManager.isLobbyArea(areaKey) && !VoyageManager.isPvpArenaArea(areaKey)) {
                initHealth(skipCurrentHealth: true);
 
-            // If the player is in a pvp arena or a voyage lobby, restore their full health.
+               // If the player is in a pvp arena or a voyage lobby, restore their full health.
             } else {
                initHealth(skipCurrentHealth: false);
             }
@@ -432,10 +435,8 @@ public class PlayerShipEntity : ShipEntity
             _chargingWithMouse = false;
             cannonAttackPressed();
          } else {
-            if (InputManager.isFireCannonMouseDown() || InputManager.isFireCannonMouse()) {
-               if (_isChargingCannon) {
-                  D.debug("Cannot cast, this user is still performing charging attack!");
-               }
+            if (InputManager.isFireCannonMouseDown() && _isChargingCannon) {
+               D.debug("Cannot cast, this user is still performing charging attack!");
             }
          }
 
@@ -873,16 +874,16 @@ public class PlayerShipEntity : ShipEntity
          // TODO: Notify the player that the ability is on cooldown?
          return;
       }
-      
+
       if (shipAbilities.Count > abilityIndex) {
          selectedShipAbilityIndex = abilityIndex;
 
          ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(shipAbilities[abilityIndex]);
-         
+
          if (isServerOnly) {
             cannonAttackType = getCannonAttackTypeFromAttackType(shipAbilityData.selectedAttackType);
          }
-         
+
          Target_ReceiveAttackOption(abilityIndex);
       } else {
          D.debug("Couldn't change attack option, ability index was out of range. Num abilities: " + shipAbilities.Count);
@@ -972,9 +973,9 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
-   [TargetRpc]
-   public void Target_RefreshSprites (NetworkConnection connection, int shipType, int shipSize, int shipSkinType) {
-      overrideSprite((Ship.Type)shipType, (ShipSize) shipSize, (Ship.SkinType) shipSkinType);
+   [ClientRpc]
+   public void Rpc_RefreshSprites (int shipType, int shipSize, int shipSkinType) {
+      overrideSprite((Ship.Type) shipType, (ShipSize) shipSize, (Ship.SkinType) shipSkinType);
    }
 
    [TargetRpc]
@@ -1133,7 +1134,7 @@ public class PlayerShipEntity : ShipEntity
       WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
       HatStatData hatData = EquipmentXMLManager.self.getHatData(hat.itemTypeId);
       ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(armor.itemTypeId);
-      
+
       weaponType = weaponData == null ? 0 : weaponData.weaponType;
       armorType = armorData == null ? 0 : armorData.armorType;
       hatType = hatData == null ? 0 : hatData.hatType;
@@ -1141,6 +1142,8 @@ public class PlayerShipEntity : ShipEntity
       hatColors = hat != null ? hat.paletteNames : hatData.palettes;
       weaponColors = weapon != null ? weapon.paletteNames : weaponData.palettes;
       armorColors = armor != null ? armor.paletteNames : armorData.palettes;
+
+      weaponCount = weapon != null ? weapon.count : 1;
    }
 
    public override Armor getArmorCharacteristics () {
@@ -1831,7 +1834,7 @@ public class PlayerShipEntity : ShipEntity
       setFlag(_currentFlag, force: true);
    }
 
-   protected override void showLevelUpEffect (Jobs.Type jobType) {
+   public override void showLevelUpEffect (Jobs.Type jobType) {
       base.showLevelUpEffect(jobType);
 
       if (levelUpEffect != null) {
@@ -1963,8 +1966,55 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
-   private void toggleShipDisplayInfo(bool show) {
+   private void toggleShipDisplayInfo (bool show) {
       shipInformationDisplay.alpha = show ? 1.0f : NON_LOCAL_SHIP_INFO_DEFAULT_ALPHA;
+   }
+
+   private void OnCollisionEnter2D (Collision2D collision) {
+      // Process only local player collisions
+      if (!isLocalPlayer) {
+         return;
+      }
+
+      EdgeCollider2D edgeCollider = null;
+      MapEdges mapEdges = null;
+
+      // Get the right collider
+      if (collision.collider is EdgeCollider2D collider) {
+         if (collider.gameObject.TryGetComponent(out mapEdges)) {
+            edgeCollider = collider;
+         }
+      } else if (collision.otherCollider is EdgeCollider2D otherCollider) {
+         if (otherCollider.gameObject.TryGetComponent(out mapEdges)) {
+            edgeCollider = otherCollider;
+         }
+      }
+
+      if (edgeCollider == null || mapEdges == null) {
+         return;
+      }
+
+      onMapEdgeReached(mapEdges, edgeCollider);
+   }
+
+   private void onMapEdgeReached (MapEdges mapEdges, EdgeCollider2D edge) {
+      if (Global.player == null) {
+         return;
+      }
+
+      if (mapEdges.top == edge) {
+         Cmd_SpawnInNewMapSpawn(MapManager.computeNextOpenWorldMap(areaKey, Direction.North), "", Direction.North);
+         D.debug($"Player {Global.player.userId} reached the top edge.");
+      } else if (mapEdges.right == edge) {
+         Cmd_SpawnInNewMapSpawn(MapManager.computeNextOpenWorldMap(areaKey, Direction.East), "", Direction.East);
+         D.debug($"Player {Global.player.userId} reached the right edge.");
+      } else if (mapEdges.bottom == edge) {
+         Cmd_SpawnInNewMapSpawn(MapManager.computeNextOpenWorldMap(areaKey, Direction.South), "", Direction.South);
+         D.debug($"Player {Global.player.userId} reached the bottom edge.");
+      } else if (mapEdges.left == edge) {
+         Cmd_SpawnInNewMapSpawn(MapManager.computeNextOpenWorldMap(areaKey, Direction.West), "", Direction.West);
+         D.debug($"Player {Global.player.userId} reached the left edge.");
+      }
    }
 
    #region Private Variables

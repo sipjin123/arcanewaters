@@ -147,6 +147,9 @@ public class SeaEntity : NetEntity
    // The transform that will contain all of our orbs (powerup orbs and ability orbs)
    public Transform orbHolder;
 
+   // The container for the residue effects
+   public Transform residueHolder;
+
    #endregion
 
    protected virtual bool isBot () { return true; }
@@ -600,10 +603,13 @@ public class SeaEntity : NetEntity
    }
 
    [ClientRpc]
-   public void Rpc_SpawnBossVenomResidue (uint creatorNetId, int instanceId, Vector3 location) {
-      VenomResidue venomResidue = Instantiate(PrefabsManager.self.bossVenomResiduePrefab, location, Quaternion.identity);
-      venomResidue.creatorNetId = creatorNetId;
-      venomResidue.instanceId = instanceId;
+   public void Rpc_SpawnBossVenomResidue (uint creatorNetId, int instanceId, Vector3 location, bool spawnResidue) {
+      if (spawnResidue) {
+         VenomResidue venomResidue = Instantiate(PrefabsManager.self.bossVenomResiduePrefab, location, Quaternion.identity);
+         venomResidue.creatorNetId = creatorNetId;
+         venomResidue.instanceId = instanceId;
+      }
+      
       ExplosionManager.createSlimeExplosion(location);
       SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Coralbow_Attack, this.transform.position);
    }
@@ -632,27 +638,20 @@ public class SeaEntity : NetEntity
 
       float zAxis = 2;
       Transform parentTransform = parentEntity.spritesContainer.transform;
-      GameObject shockResidue = Instantiate(PrefabsManager.self.lightningResiduePrefab);
-      shockResidue.transform.SetParent(parentTransform);
-      shockResidue.transform.position = new Vector3(sourcePos.x, sourcePos.y, zAxis);
       EffectManager.self.create(Effect.Type.Shock_Collision, sourcePos);
 
       foreach (Vector2 targetPos in targetPosGround) {
          // Setup lightning chain
          LightningBoltScript lightning = Instantiate(PrefabsManager.self.lightningChainPrefab);
-         lightning.transform.SetParent(shockResidue.transform, false);
+         lightning.transform.SetParent(parentTransform, false);
          lightning.StartObject.transform.position = lightning.transform.position;
          lightning.EndObject.transform.position = targetPos;
-         lightning.EndObject.transform.SetParent(shockResidue.transform);
+         lightning.EndObject.transform.SetParent(parentTransform);
          if (lightning.GetComponent<LineRenderer>() != null) {
             lightning.GetComponent<LineRenderer>().enabled = true;
          } else {
             D.debug("Lightning has no Line Renderer!!");
          }
-
-         GameObject subShockResidue = Instantiate(PrefabsManager.self.lightningResiduePrefab);
-         subShockResidue.GetComponent<ZSnap>().enabled = false;
-         subShockResidue.transform.position = new Vector3(targetPos.x, targetPos.y, zAxis);
 
          EffectManager.self.create(Effect.Type.Shock_Collision, targetPos);
       }
@@ -792,17 +791,6 @@ public class SeaEntity : NetEntity
          // FMOD sfx for water
          SoundEffectManager.self.playCannonballImpact(CannonballSfxType.Water_Impact, pos);
          //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, pos);
-      }
-   }
-
-   [ClientRpc]
-   public void Rpc_AttachEffect (int damage, Attack.Type attackType) {
-      Transform targetTransform = spritesContainer.transform;
-
-      // If venom attack calls slime effect
-      if (attackType == Attack.Type.Venom) {
-         GameObject stickyInstance = Instantiate(PrefabsManager.self.venomStickyPrefab, targetTransform);
-         stickyInstance.transform.localPosition = Vector3.zero;
       }
    }
 
@@ -1043,8 +1031,6 @@ public class SeaEntity : NetEntity
             break;
       }
 
-      Debug.Log(shipAbility.selectedAttackType);
-
       _lastAttackTime = NetworkTime.time;
       attackCounter++;
 
@@ -1264,14 +1250,20 @@ public class SeaEntity : NetEntity
       }
 
       if (attackType == Attack.Type.Tentacle || attackType == Attack.Type.Poison_Circle) {
-         // Only spawn a venom residue on sea tiles
+         
          Area area = AreaManager.self.getArea(areaKey);
-         if (area != null && !area.hasLandTile(circleCenter)) {
+         bool hitSeaTile = !area.hasLandTile(circleCenter);
+         if (area != null) {
             SeaEntity sourceEntity = SeaManager.self.getEntity(netId);
-            VenomResidue venomResidue = Instantiate(PrefabsManager.self.bossVenomResiduePrefab, circleCenter, Quaternion.identity);
-            venomResidue.creatorNetId = netId;
-            venomResidue.instanceId = instanceId;
-            sourceEntity.Rpc_SpawnBossVenomResidue(netId, instanceId, circleCenter);
+
+            // Only spawn a venom residue on sea tiles
+            if (hitSeaTile) {
+               VenomResidue venomResidue = Instantiate(PrefabsManager.self.bossVenomResiduePrefab, circleCenter, Quaternion.identity);
+               venomResidue.creatorNetId = netId;
+               venomResidue.instanceId = instanceId;
+            }
+            
+            sourceEntity.Rpc_SpawnBossVenomResidue(netId, instanceId, circleCenter, hitSeaTile);
          }
       }
 
@@ -2116,6 +2108,63 @@ public class SeaEntity : NetEntity
       _abilityOrbs.Clear();
    }
 
+   [Server]
+   public void attachResidue (Attack.Type attackType, uint creatorNetId, int damagePerTick) {
+      EffectResidue residue = attachResidueCommon(attackType, damagePerTick);
+      if (residue == null) {
+         return;
+      }
+
+      residue.creatorNetId = creatorNetId;
+
+      Rpc_AttachResidue(attackType);
+   }
+
+   [ClientRpc]
+   public void Rpc_AttachResidue (Attack.Type attackType) {
+      if (isServer) {
+         return;
+      }
+
+      attachResidueCommon(attackType, 0);
+   }
+
+   public EffectResidue attachResidueCommon (Attack.Type attackType, int damagePerTick) {
+      EffectResidue residue = null;
+
+      // Check if this residue type is already affecting this entity
+      foreach (EffectResidue activeResidue in _activeResidueList) {
+         if (activeResidue.attackType == attackType) {
+            residue = activeResidue;
+            break;
+         }
+      }
+
+      if (residue == null) {
+         // If the entity is not currently being affected by this residue type, instantiate a new one
+         switch (attackType) {
+            case Attack.Type.Venom:
+               residue = Instantiate(PrefabsManager.self.venomStickyPrefab, residueHolder);
+               residue.transform.localPosition = Vector3.zero;
+               _activeResidueList.Add(residue);
+               break;
+            default:
+               D.error($"The effect residue for the attack type {attackType} is not defined!");
+               break;
+         }
+      }
+
+      residue.damagePerTick = damagePerTick;
+      residue.seaEntity = this;
+      residue.restart();
+
+      return residue;
+   }
+
+   public void removeResidue (EffectResidue residue) {
+      _activeResidueList.Remove(residue);
+   }
+
    #endregion
 
    #region Private Variables
@@ -2277,6 +2326,9 @@ public class SeaEntity : NetEntity
 
    // The ability that this sea entity currently has
    protected SyncList<AbilityOrbData> _abilityOrbData = new SyncList<AbilityOrbData>();
+
+   // The list of residues currently affecting this entity
+   protected List<EffectResidue> _activeResidueList = new List<EffectResidue>();
 
    #endregion
 

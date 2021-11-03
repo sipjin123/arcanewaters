@@ -96,7 +96,7 @@ public class PvpMonsterSpawner : NetworkBehaviour, IMapEditorDataReceiver {
                      }
                      
                      PowerupManager.self.addPowerupServer(memberEntity.userId, newPowerupData);
-                     memberEntity.rpc.Target_ReceivePowerup(powerupType, Rarity.getRandom(), seaEntity.transform.position);
+                     memberEntity.rpc.Target_ReceivePowerup(newPowerupData.powerupType, newPowerupData.powerupRarity, seaEntity.transform.position);
                   }
                }
             }

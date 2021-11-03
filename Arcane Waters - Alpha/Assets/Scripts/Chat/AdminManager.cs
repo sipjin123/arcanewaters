@@ -119,6 +119,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("set_level", "Sets the Level of the player", setPlayerLevel, requiredPrefix: CommandType.Admin, parameterNames: new List<string> { "level" }));
       cm.addCommand(new CommandData("get_armor_with_palettes", "Gives you an armor with specified palettes. Requires a comma after the armor name.", getArmorWithPalettes, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "armorName", "paletteNameN" }));
       cm.addCommand(new CommandData("add_gems", "Gives an amount of gems to a user", requestAddGems, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "gemsAmount" }));
+      cm.addCommand(new CommandData("add_silver", "Gives an amount of silver to a user, during a pvp game.", requestAddSilver, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "silverAmount" }));
 
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
@@ -197,6 +198,23 @@ public class AdminManager : NetworkBehaviour
       }
 
       return true;
+   }
+
+   private void requestAddSilver (string parameters) {
+      Cmd_AddSilver(parameters);
+   }
+
+   [Command]
+   private void Cmd_AddSilver (string parameters) {
+      string[] inputs = parameters.Split(' ');
+      if (inputs.Length == 0) {
+         return;
+      }
+
+      int silverAmount = int.Parse(inputs[0]);
+
+      GameStatsManager.self.addSilverAmount(_player.userId, silverAmount);
+      _player.Target_ReceiveSilverCurrency(_player.connectionToClient, silverAmount, SilverManager.SilverRewardReason.None);
    }
 
    private void setPvpMap (string mapName) {

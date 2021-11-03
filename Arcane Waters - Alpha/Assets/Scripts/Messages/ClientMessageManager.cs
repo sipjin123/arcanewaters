@@ -290,7 +290,7 @@ public class ClientMessageManager : MonoBehaviour {
             // Show the confirmation message in the notice screen
             PanelManager.self.noticeScreen.show(msg.customMessage);
 
-            if (StoreScreen.self.isShowing()) {
+            if (StoreScreen.self != null && StoreScreen.self.isShowing()) {
                StoreScreen.self.refreshPanel();
             }
 

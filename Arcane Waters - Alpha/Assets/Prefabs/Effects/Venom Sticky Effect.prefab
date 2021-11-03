@@ -39,9 +39,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4920324331762766}
-  - component: {fileID: 3818260736789133845}
-  - component: {fileID: -4484021391034602585}
-  - component: {fileID: 2082489589812046251}
   - component: {fileID: -8308675019159773677}
   m_Layer: 0
   m_Name: Venom Sticky Effect
@@ -65,66 +62,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3818260736789133845
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1946685176054144}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ba859c178d8c124db767c6511e87792, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  delay: 3
---- !u!61 &-4484021391034602585
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1946685176054144}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 0.36, y: 0.25}
-  m_EdgeRadius: 0
---- !u!50 &2082489589812046251
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1946685176054144}
-  m_BodyType: 1
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 7
 --- !u!114 &-8308675019159773677
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -137,6 +74,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99118c0b23ad52a4d8308496a5f56e45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damagePerTick: 0
+  duration: 3
+  creatorNetId: 0
+  attackType: 5
+  seaEntity: {fileID: 0}
 --- !u!1 &7511378881459224776
 GameObject:
   m_ObjectHideFlags: 0
@@ -148,7 +90,6 @@ GameObject:
   - component: {fileID: 7505906518947951878}
   - component: {fileID: 7695067769814980498}
   - component: {fileID: 6146037194359151773}
-  - component: {fileID: 5826064476700001594}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -164,7 +105,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7511378881459224776}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.011, z: 0.2}
+  m_LocalPosition: {x: 0, y: -0.011, z: -0.001}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.25}
   m_Children:
   - {fileID: 4217145405721754}
@@ -241,19 +182,3 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &5826064476700001594
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7511378881459224776}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e851007333b54a4190716c035b83695, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  offsetZ: -5
-  inheritedOffsetZ: 0
-  isActive: 1
-  sortPoint: {fileID: 0}

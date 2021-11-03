@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Events;
 using DG.Tweening;
@@ -39,6 +40,9 @@ public class GenericSpriteEffect : MonoBehaviour
 
    // Should the animation loop?
    public bool isLooping = false;
+
+   // Should the animation ignore the specified speed, and try to sync with the game's frame per second?
+   public bool playAtGameSpeed = false;
 
    // Reference to the Sprite renderer
    public SpriteRenderer spriteRenderer;
@@ -90,15 +94,29 @@ public class GenericSpriteEffect : MonoBehaviour
       Color oldColor = spriteRenderer.color;
       spriteRenderer.color = new Color(oldColor.r, oldColor.g, oldColor.b, 1.0f);
 
-      InvokeRepeating(nameof(changeSprite), startDelay, secondsPerFrame);
+      // Start the animation
+      startAnimation();
+   }
+
+   private void startAnimation () {
+      if (!playAtGameSpeed) {
+         InvokeRepeating(nameof(changeSprite), startDelay, secondsPerFrame);
+      } else {
+         StartCoroutine(nameof(CO_changeSprite));
+      }
+   }
+
+   private void stopAnimation () {
+      CancelInvoke(nameof(changeSprite));
+      StopCoroutine(nameof(StartCoroutine_Auto));
    }
 
    public void stop() {
-      CancelInvoke(nameof(changeSprite));
+      stopAnimation();
 
       if (isLooping) {
          _index = Mathf.Max(0, startIndex);
-         InvokeRepeating(nameof(changeSprite), startDelay, secondsPerFrame);
+         startAnimation();
          return;
       }
 
@@ -139,16 +157,30 @@ public class GenericSpriteEffect : MonoBehaviour
       }
    }
 
-   protected void changeSprite() {
+   protected bool changeSprite() {
+      // Returns true if the animation has run to completion
       _isVisible = true;
 
       if (_index >= _sprites.Length) {
          stop();
-         return;
+         return true;
       }
 
       spriteRenderer.sprite = _sprites[_index];
       _index++;
+      return false;
+   }
+
+   private IEnumerator CO_changeSprite () {
+      while (true) {
+         yield return null;
+
+         bool isAnimFinished = changeSprite();
+
+         if (isAnimFinished) {
+            yield break;
+         }
+      }
    }
 
    private Sprite[] getEffectSprites(string path) {

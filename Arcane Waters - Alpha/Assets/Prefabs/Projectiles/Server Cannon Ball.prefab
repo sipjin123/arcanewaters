@@ -5479,4 +5479,5 @@ MonoBehaviour:
   destroyOnEnd: 0
   texturePath: 
   isLooping: 0
+  playAtGameSpeed: 1
   spriteRenderer: {fileID: 3658820893937478596}

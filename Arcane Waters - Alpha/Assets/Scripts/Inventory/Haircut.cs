@@ -72,11 +72,23 @@ public class Haircut : Item {
    }
 
    public override string getName () {
-      return this.itemName;
+      HaircutData haircutData = HaircutXMLManager.self.getHaircutData(itemTypeId);
+
+      if (haircutData == null) {
+         return this.itemName;
+      }
+
+      return haircutData.itemName;
    }
 
    public override string getDescription () {
-      return this.itemDescription;
+      HaircutData haircutData = HaircutXMLManager.self.getHaircutData(itemTypeId);
+
+      if (haircutData == null) {
+         return this.itemDescription;
+      }
+
+      return haircutData.itemDescription;
    }
 
    public override string getTooltip () {

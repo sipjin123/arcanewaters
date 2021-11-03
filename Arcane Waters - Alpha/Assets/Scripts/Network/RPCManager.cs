@@ -68,7 +68,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_CreateAuction (Item item, int startingBid, bool isBuyoutAllowed, int buyoutPrice, long expiryDateBinary, int auctionCost) {
+   public void Cmd_CreateAuction (Item item, int startingBid, bool isBuyoutAllowed, int buyoutPrice, long expiryDateBinary) {
       DateTime expiryDate = DateTime.FromBinary(expiryDateBinary);
 
       if (_player == null) {
@@ -110,6 +110,9 @@ public class RPCManager : NetworkBehaviour
          }
 
          int gold = DB_Main.getGold(_player.userId);
+
+         // The auction cost is computed as a fraction of the starting bid
+         int auctionCost = AuctionManager.computeAuctionCost(startingBid);
 
          // Make sure they have enough gold and the price is positive
          if (gold < auctionCost || auctionCost < 0) {
@@ -438,6 +441,8 @@ public class RPCManager : NetworkBehaviour
 
    #endregion
 
+   #region Experience and Leveling
+
    [Server]
    public void checkForLevelUp (int userId, int oldXp, int newXp) {
       // This function handles the different type of logic that will take place when a user reaches a certain level
@@ -482,6 +487,22 @@ public class RPCManager : NetworkBehaviour
          DB_Main.updateCompanionExp(companionId, _player.userId, exp);
       });
    }
+
+   [Command]
+   public void Cmd_ShowLevelUpEffect(Jobs.Type jobType) {
+      Rpc_BroadcastShowLevelUpEffect(jobType);
+   }
+
+   [ClientRpc]
+   private void Rpc_BroadcastShowLevelUpEffect(Jobs.Type jobType) {
+      if (_player == null) {
+         return;
+      }
+
+      _player.showLevelUpEffect(jobType);
+   }
+
+   #endregion
 
    [Command]
    public void Cmd_UpdateCompanionRoster (int companionId, int equipSlot) {
@@ -4361,7 +4382,7 @@ public class RPCManager : NetworkBehaviour
 
                      // Sprite updates
                      playerShip.changeShipInfo(purchasedShip);
-                     playerShip.Target_RefreshSprites(playerShip.connectionToClient, (int) shipData.shipType, (int) shipData.shipSize, (int) purchasedShip.skinType);
+                     playerShip.Rpc_RefreshSprites((int) shipData.shipType, (int) shipData.shipSize, (int) purchasedShip.skinType);
                   }
                } else {
                   D.debug("Cant process shop purchase: {" + shipSqlId + "} does not exist");
@@ -4450,37 +4471,32 @@ public class RPCManager : NetworkBehaviour
          if (gold >= price) {
             DB_Main.addGold(_player.userId, -price);
 
-            // Create a copy of the shop item and set its count to 1
-            Item singleShopItem = shopItem.Clone();
-            singleShopItem.count = 1;
+            // Create a copy of the shop item
+            Item shopItemCopy = shopItem.Clone();
 
             // Process the appropriate data for blueprint items
-            if (singleShopItem.category == Item.Category.Blueprint) {
-               CraftableItemRequirements craftingData = CraftingManager.self.getCraftableData(shopItem.itemTypeId);
+            if (shopItemCopy.category == Item.Category.Blueprint) {
+               CraftableItemRequirements craftingData = CraftingManager.self.getCraftableData(shopItemCopy.itemTypeId);
                switch (craftingData.resultItem.category) {
                   case Item.Category.Weapon:
-                     singleShopItem.data = Blueprint.WEAPON_DATA_PREFIX;
-                     singleShopItem.itemTypeId = craftingData.resultItem.itemTypeId;
+                     shopItemCopy.data = Blueprint.WEAPON_DATA_PREFIX;
+                     shopItemCopy.itemTypeId = craftingData.resultItem.itemTypeId;
                      break;
                   case Item.Category.Armor:
-                     singleShopItem.data = Blueprint.ARMOR_DATA_PREFIX;
-                     singleShopItem.itemTypeId = craftingData.resultItem.itemTypeId;
+                     shopItemCopy.data = Blueprint.ARMOR_DATA_PREFIX;
+                     shopItemCopy.itemTypeId = craftingData.resultItem.itemTypeId;
                      break;
                   case Item.Category.Hats:
-                     singleShopItem.data = Blueprint.HAT_DATA_PREFIX;
-                     singleShopItem.itemTypeId = craftingData.resultItem.itemTypeId;
+                     shopItemCopy.data = Blueprint.HAT_DATA_PREFIX;
+                     shopItemCopy.itemTypeId = craftingData.resultItem.itemTypeId;
                      break;
                }
             }
 
             // Create a new instance of the item
-            if (shopItem.category == Item.Category.CraftingIngredients) {
-               newItem = DB_Main.createItemOrUpdateItemCount(_player.userId, singleShopItem);
-               if (newItem.category == Item.Category.None) {
-                  D.debug("Error Here! Category Cant be none for Shop Item");
-               }
-            } else {
-               newItem = DB_Main.createNewItem(_player.userId, singleShopItem);
+            newItem = DB_Main.createItemOrUpdateItemCount(_player.userId, shopItemCopy);
+            if (newItem.category == Item.Category.None) {
+               D.debug("Error Here! Category Cant be none for Shop Item");
             }
 
             // Update soul binding
@@ -4540,6 +4556,11 @@ public class RPCManager : NetworkBehaviour
 
             // Make sure their gold display gets updated
             getItemsForArea(shopId);
+
+            // If the new item is stackable, update the item shortcuts in case the count has been updated
+            if (newItem.canBeStacked()) {
+               sendItemShortcutList();
+            }
          });
       });
    }
@@ -7859,7 +7880,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   private void Bkg_RequestSetWeaponId (int weaponId) {
+   public void Bkg_RequestSetWeaponId (int weaponId) {
       // Update the Weapon object here on the server based on what's in the database
       DB_Main.setWeaponId(_player.userId, weaponId);
       UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
@@ -7883,7 +7904,7 @@ public class RPCManager : NetworkBehaviour
          PlayerBodyEntity body = _player.GetComponent<PlayerBodyEntity>();
 
          if (body != null) {
-            body.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames, userObjects.weapon.durability);
+            body.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames, userObjects.weapon.durability, weapon.count);
             D.adminLog("Player {" + body.userId + "} is equipping item" +
                "} ID: {" + weapon.id +
                "} TypeId: {" + weapon.itemTypeId +
@@ -7903,6 +7924,7 @@ public class RPCManager : NetworkBehaviour
             WeaponStatData data = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
             ship.weaponType = data != null ? data.weaponType : 0;
             ship.weaponColors = weapon.paletteNames;
+            ship.weaponCount = weapon.count;
          }
 
          if (_player != null) {

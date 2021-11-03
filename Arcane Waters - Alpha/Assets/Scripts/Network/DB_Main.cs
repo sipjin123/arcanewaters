@@ -397,7 +397,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
             using (MySqlCommand command = new MySqlCommand(
-               "SELECT itmId, itmCategory, itmType, itmPalettes, durability, itmData " +
+               "SELECT itmId, itmCategory, itmType, itmPalettes, durability, itmCount, itmData " +
                "FROM items " +
                "left join users on armId = itmId or wpnId = itmId or hatId = itmId " +
                "where(armId = itmId or wpnId = itmId or hatId = itmId) and items.usrId = @usrId",
@@ -413,8 +413,9 @@ public class DB_Main : DB_MainStub
                      int itmType = reader.GetInt32("itmType");
                      string itemPalette = reader.GetString("itmPalettes");
                      int itmDurability = reader.GetInt32("durability");
+                     int itmCount = reader.GetInt32("itmCount");
                      string itmData = reader.GetString("itmData");
-                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{itemPalette}[space]{itmDurability}[space]{itmData}[space]";
+                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{itemPalette}[space]{itmDurability}[space]{itmCount}[space]{itmData}[space]";
                      stringBuilder.AppendLine(result);
                   }
                }
@@ -6690,7 +6691,7 @@ public class DB_Main : DB_MainStub
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT *, " +
             "armor.itmId AS armorId, armor.durability AS armorDurability, armor.itmType AS armorType, armor.itmPalettes AS armorPalettes, armor.itmData AS armorData, " +
-            "weapon.itmId AS weaponId, weapon.durability AS weaponDurability, weapon.itmType AS weaponType, weapon.itmPalettes AS weaponPalettes, weapon.itmData AS weaponData, " +
+            "weapon.itmId AS weaponId, weapon.durability AS weaponDurability, weapon.itmType AS weaponType, weapon.itmPalettes AS weaponPalettes, weapon.itmData AS weaponData, weapon.itmCount AS weaponCount, " +
             "hat.itmId AS hatId, hat.itmType AS hatType, hat.itmPalettes AS hatPalettes, hat.itmData AS hatData " +
             "FROM users JOIN global.accounts USING(accId) LEFT JOIN ships USING(shpId) " +
             "LEFT JOIN guilds ON(users.gldId = guilds.gldId)" +
@@ -7331,20 +7332,21 @@ public class DB_Main : DB_MainStub
       return itemId;
    }
 
-   public static new int insertNewWeapon (int userId, int weaponType, string palettes) {
+   public static new int insertNewWeapon (int userId, int weaponType, string palettes, int count = 1) {
       int itemId = 0;
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO items (usrId, itmCategory, itmType, itmPalettes, itmData) " +
-                 "VALUES(@usrId, @itmCategory, @itmType, @itmPalettes, @itmData) ", conn)) {
+            "INSERT INTO items (usrId, itmCategory, itmType, itmPalettes, itmCount, itmData) " +
+                 "VALUES(@usrId, @itmCategory, @itmType, @itmPalettes, @itmCount, @itmData) ", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@itmCategory", (int) Item.Category.Weapon);
             cmd.Parameters.AddWithValue("@itmType", (int) weaponType);
             cmd.Parameters.AddWithValue("@itmPalettes", palettes);
+            cmd.Parameters.AddWithValue("@itmCount", count);
             cmd.Parameters.AddWithValue("@itmData", "");
             DebugQuery(cmd);
 
@@ -7458,7 +7460,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void decreaseQuantityOrDeleteItem (int userId, int itemId, int deductedValue) {
+   public static new bool decreaseQuantityOrDeleteItem (int userId, int itemId, int deductedValue) {
       // First query deletes the entry which has only 1 of item left
       // Second query decreases the count by deductedValue if the item wasn't deleted (had more than deductedValue left)
       string cmdText = "DELETE FROM items WHERE usrId=@usrId AND itmId=@itmId AND itmCount<=@deductBy; " +
@@ -7473,11 +7475,14 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@deductBy", deductedValue);
             DebugQuery(cmd);
 
-            cmd.ExecuteNonQuery();
+            int affectedRows = cmd.ExecuteNonQuery();
+            return affectedRows > 0;
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
+
+      return false;
    }
 
    public static new Item createItemOrUpdateItemCount (int userId, Item baseItem) {
@@ -11452,8 +11457,9 @@ public class DB_Main : DB_MainStub
       string palettes = DataUtil.getString(dataReader, "weaponPalettes");
       string itemData = DataUtil.getString(dataReader, "weaponData");
       int durability = DataUtil.getInt(dataReader, "weaponDurability");
+      int count = DataUtil.getInt(dataReader, "weaponCount");
 
-      return new Weapon(itemId, itemTypeId, palettes, itemData, durability);
+      return new Weapon(itemId, itemTypeId, palettes, itemData, durability, count);
    }
 
    protected static Hat getHat (MySqlDataReader dataReader) {

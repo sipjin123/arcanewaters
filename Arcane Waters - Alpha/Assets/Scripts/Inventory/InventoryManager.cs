@@ -9,7 +9,7 @@ public class InventoryManager : MonoBehaviour
    #region Public Variables
 
    // The weapons new characters start with
-   public static int[] STARTING_WEAPON_TYPE_IDS = new int[] { 25, 17, 16, 35, 30 };
+   public static Dictionary<int, int> STARTING_WEAPON_TYPE_IDS_AND_COUNT = new Dictionary<int, int>() { {25, 50} , {17, 1}, {16, 1}, {35, 1}, {30, 1} };
 
    // ID of the hammer item
    public const int HAMMER_ID = 30;
@@ -160,6 +160,7 @@ public class InventoryManager : MonoBehaviour
          objects.weapon.itemTypeId = bodyEntity.weaponManager.equipmentDataId;
          objects.weapon.id = bodyEntity.weaponManager.equippedWeaponId;
          objects.weapon.paletteNames = bodyEntity.weaponManager.palettes;
+         objects.weapon.count = bodyEntity.weaponManager.count;
 
          ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(bodyEntity.armorManager.equipmentDataId);
          objects.armor = armorData != null ? ArmorStatData.translateDataToArmor(armorData) : new Armor();
@@ -180,6 +181,7 @@ public class InventoryManager : MonoBehaviour
          objects.weapon.itemTypeId = shipEntity.weaponType;
          objects.weapon.id = shipEntity.weaponType;
          objects.weapon.paletteNames = shipEntity.weaponColors;
+         objects.weapon.count = shipEntity.weaponCount;
 
          ArmorStatData armorData = EquipmentXMLManager.self.armorStatList.Find(_ => _.armorType == shipEntity.armorType);
          objects.armor = armorData != null ? ArmorStatData.translateDataToArmor(armorData) : new Armor();

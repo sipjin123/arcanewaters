@@ -216,6 +216,10 @@ public class VoyageManager : GenericGameManager {
       return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.PvpArena;
    }
 
+   public static bool isOpenWorld(string areaKey) {
+      return !Util.isEmpty(areaKey) && areaKey.StartsWith(MapManager.OPEN_WORLD_MAP_PREFIX);
+   }
+
    public List<string> getVoyageAreaKeys () {
       return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.Voyage).ToList();
    }
@@ -442,12 +446,17 @@ public class VoyageManager : GenericGameManager {
          }
       }
 
-      StartCoroutine(CO_CreateLeagueInstance(leagueIndex, biome, difficulty, serverPort, () => player.rpc.Target_OnWarpFailed("No league maps available"), (voyageId) => warpPlayerToLeagueInstance(player, voyageId), randomSeed, areaKey));
+      StartCoroutine(CO_CreateLeagueInstance(leagueIndex, biome, difficulty, serverPort, () => player.rpc.Target_OnWarpFailed("No league maps available"), (voyage) => warpPlayerToLeagueInstance(player, voyage), randomSeed, areaKey));
    }
 
    [Server]
    private void warpPlayerToLeagueInstance (NetEntity player, Voyage voyage) {
       if (player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
+         if (player.tryGetVoyage(out Voyage currentVoyage) && currentVoyage.leagueIndex == voyage.leagueIndex) {
+            // It can happen that two group members launch the creation of the next league map at exactly the same time. If the next instance has already been assigned to the group, ignore this new voyage and stop the process.
+            return;
+         }
+
          // Link the group to the voyage instance
          voyageGroup.voyageId = voyage.voyageId;
          VoyageGroupManager.self.updateGroup(voyageGroup);
@@ -685,7 +694,7 @@ public class VoyageManager : GenericGameManager {
    // Gets toggled every time a new voyage is created, to ensure an equal number of PvP and PvE instances
    private bool _isNewVoyagePvP = false;
 
-   // The last id used to create a voyage group
+   // The last id used to create a voyage
    private int _lastVoyageId = 0;
 
    #endregion

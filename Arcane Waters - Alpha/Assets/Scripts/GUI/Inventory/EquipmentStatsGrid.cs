@@ -31,6 +31,7 @@ public class EquipmentStatsGrid : MonoBehaviour {
          weapon.id = userObjects.weapon.id;
          weapon.paletteNames = userObjects.weapon.paletteNames;
          weapon.data = userObjects.weapon.data;
+         weapon.count = userObjects.weapon.count;
          refreshStats(weapon);
       }
 

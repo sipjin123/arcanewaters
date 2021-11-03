@@ -53,11 +53,23 @@ public class Dye : Item
    }
 
    public override string getName () {
-      return this.itemName;
+      DyeData dyeData = DyeXMLManager.self.getDyeData(itemTypeId);
+
+      if (dyeData == null) {
+         return itemName;
+      }
+
+      return dyeData.itemName;
    }
 
    public override string getDescription () {
-      return this.itemDescription;
+      DyeData dyeData = DyeXMLManager.self.getDyeData(itemTypeId);
+
+      if (dyeData == null) {
+         return itemDescription;
+      }
+
+      return dyeData.itemDescription;
    }
 
    public override string getTooltip () {

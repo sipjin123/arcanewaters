@@ -411,36 +411,12 @@ public class AnimUtil : MonoBehaviour {
 
          case Anim.Group.Tentacle:
             switch (animType) {
-               case Anim.Type.Idle_East:
+               default:
                   return new AnimInfo(animType, 0, 3);
-               case Anim.Type.Idle_North:
-                  return new AnimInfo(animType, 0, 3);
-               case Anim.Type.Idle_South:
-                  return new AnimInfo(animType, 0, 3);
-
-               case Anim.Type.Run_East:
-                  return new AnimInfo(animType, 4, 7);
-               case Anim.Type.Run_North:
-                  return new AnimInfo(animType, 4, 7);
-               case Anim.Type.Run_South:
-                  return new AnimInfo(animType, 4, 7);
-
-               case Anim.Type.Attack_East:
-                  return new AnimInfo(animType, 8, 15);
-               case Anim.Type.Attack_North:
-                  return new AnimInfo(animType, 8, 15);
-               case Anim.Type.Attack_South:
-                  return new AnimInfo(animType, 8, 15);
-
-               case Anim.Type.Death_East:
-                  return new AnimInfo(animType, 16, 22);
             }
-            break;
 
          case Anim.Group.Horror:
             switch (animType) {
-               case Anim.Type.Death_East:
-                  return new AnimInfo(animType, 4, 13);
                default:
                   return new AnimInfo(animType, 0, 3);
             }

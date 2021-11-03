@@ -1435,6 +1435,14 @@ public class Util : MonoBehaviour
       return resultList.ToArray();
    }
 
+   public static Vector2 mirrorX (Vector2 vector) {
+      return new Vector3(-vector.x, vector.y);
+   }
+
+   public static Vector2 mirrorY (Vector2 vector) {
+      return new Vector3(vector.x, -vector.y);
+   }
+
    // A Random instance we can use for generating random numbers
    private static System.Random r = new System.Random();
 

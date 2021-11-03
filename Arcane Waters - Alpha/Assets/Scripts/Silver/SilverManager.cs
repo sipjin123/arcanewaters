@@ -11,20 +11,29 @@ public class SilverManager : NetworkBehaviour
    // In Pvp Battles this is the amount of silver that players have at the beginning of the match
    public static int SILVER_PLAYER_INITIAL_AMOUNT = 0;
 
-   // Amount of silver earned after winning a land battle
-   public static int SILVER_PLAYER_LAND_BATTLE_KILL_REWARD = 100;
+   // Amount of silver earned after knocking down a land battle opponent
+   public static int SILVER_PLAYER_LAND_BATTLE_KILL_REWARD = 15;
+
+   // Amount of silver earned after knocking down a land battle opponent (Boss)
+   public static int SILVER_PLAYER_LAND_BATTLE_BOSS_KILL_REWARD = 100;
 
    // Amount of silver earned after destroying a player's ship
    public static int SILVER_PLAYER_SHIP_KILL_REWARD = 100;
 
-   // Amount of silver earned after killing a sea monster
-   public static int SILVER_SEA_MONSTER_KILL_REWARD = 30;
+   // Amount of silver earned after killing a sea monster (Leagues)
+   public static int SILVER_SEA_MONSTER_LEAGUE_KILL_REWARD = 75;
+
+   // Amount of silver earned after killing a sea monster (PvP)
+   public static int SILVER_SEA_MONSTER_PVP_KILL_REWARD = 30;
 
    // Amount of silver earned after destroying a sea structure
    public static int SILVER_SEA_STRUCTURE_KILL_REWARD = 400;
 
-   // Amount of silver earned after destroying an enemy bot ship
-   public static int SILVER_BOT_SHIP_KILL_REWARD = 20;
+   // Amount of silver earned after destroying an enemy bot ship (Leagues)
+   public static int SILVER_BOT_SHIP_LEAGUE_KILL_REWARD = 75;
+
+   // Amount of silver earned after destroying an enemy bot ship (PvP)
+   public static int SILVER_BOT_SHIP_PVP_KILL_REWARD = 20;
 
    // The fraction of silver earned by player who assisted a kill
    public static float SILVER_ASSIST_REWARD_MULTIPLIER = 0.25f;
@@ -51,12 +60,12 @@ public class SilverManager : NetworkBehaviour
          return targetRank * SILVER_PLAYER_SHIP_KILL_REWARD;
       }
 
-      if (target is BotShipEntity) {
-         return SILVER_BOT_SHIP_KILL_REWARD;
+      if (target is BotShipEntity botShip) {
+         return botShip.isPvpAI ? SILVER_BOT_SHIP_PVP_KILL_REWARD : SILVER_BOT_SHIP_LEAGUE_KILL_REWARD;
       }
 
-      if (target is SeaMonsterEntity) {
-         return SILVER_SEA_MONSTER_KILL_REWARD;
+      if (target is SeaMonsterEntity seaMonster) {
+         return seaMonster.isSeaMonsterPvp() ? SILVER_SEA_MONSTER_PVP_KILL_REWARD : SILVER_SEA_MONSTER_LEAGUE_KILL_REWARD;
       }
 
       if (target is SeaStructure) {

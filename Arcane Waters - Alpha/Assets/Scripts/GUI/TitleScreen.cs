@@ -109,11 +109,6 @@ public class TitleScreen : MonoBehaviour {
       float currentAlpha = _canvasGroup.alpha;
 
       if (isActive || !_hasClientVersionBeenApproved) {
-         // If they press Enter in the password field, activate the Play button
-         if (KeyUtils.GetEnterKeyDown() && Util.isSelected(passwordInputField) && passwordInputField.text != "" && passwordInputField.text.Length > 0 && accountInputField.text.Length > 0) {
-            Util.clickButton(loginButton);
-         }
-
          // Check for an assortment of keys
          bool moveToNextField = KeyUtils.GetKeyDown(Key.Tab) || KeyUtils.GetEnterKeyDown() || KeyUtils.GetKeyDown(Key.DownArrow);
          bool tryToLogin = KeyUtils.GetKeyDown(Key.Enter) || KeyUtils.GetKeyDown(Key.NumpadEnter);

@@ -1493,7 +1493,7 @@ public class NetEntity : NetworkBehaviour
       // If they gained a level, show a special message
       if (levelsGained > 0) {
          // Show an effect
-         showLevelUpEffect(jobType);
+         rpc.Cmd_ShowLevelUpEffect(jobType);
 
          // Play a sound
          SoundManager.create3dSound("tutorial_step", Global.player.transform.position);
@@ -1513,7 +1513,7 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
-   protected virtual void showLevelUpEffect (Jobs.Type jobType) {
+   public virtual void showLevelUpEffect (Jobs.Type jobType) {
       return;
    }
 
@@ -1690,7 +1690,7 @@ public class NetEntity : NetworkBehaviour
          return;
       }
 
-      this.cropManager.plantCrop(cropType, cropNumber, areaKey);
+      this.cropManager.plantCrop(cropType, cropNumber, areaKey, body.weaponManager.equippedWeaponId, true);
    }
 
    [Command]
@@ -1868,6 +1868,22 @@ public class NetEntity : NetworkBehaviour
                newFacingDirection = (Direction) spawnData.arriveFacing;
                D.adminLog("Override facing direction, Spawn is" + " " + newArea + " " + SpawnManager.self.getMapSpawnData(newArea, spawn) + " " + newFacingDirection, D.ADMIN_LOG_TYPE.Warp);
             }
+         }
+      }
+
+      // Override the local position if we are in an Open World Area
+      if (VoyageManager.isOpenWorld(areaKey) && VoyageManager.isOpenWorld(newArea)) {
+         targetLocalPos = transform.localPosition;
+         float offset = 0.2f;
+
+         if (facing == Direction.North) {
+            targetLocalPos = Util.mirrorY(targetLocalPos) + Vector2.up * offset;
+         } else if (facing == Direction.South) {
+            targetLocalPos = Util.mirrorY(targetLocalPos) + Vector2.down * offset;
+         } else if (facing == Direction.East) {
+            targetLocalPos = Util.mirrorX(targetLocalPos) + Vector2.right * offset;
+         } else if (facing == Direction.West) {
+            targetLocalPos = Util.mirrorX(targetLocalPos) + Vector2.left * offset;
          }
       }
 

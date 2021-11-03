@@ -51,11 +51,13 @@ namespace NubisDataHandling {
                      paletteNames = "armor_one_white, armor_two_white, , ";
                   }
                   int itemDurability = 0;
+                  int itemCount = 1;
                   string itemData = "";
 
                   try {
                      itemDurability = int.Parse(dataGroup[4]);
-                     itemData = dataGroup[5];
+                     itemCount = int.Parse(dataGroup[5]);
+                     itemData = dataGroup[6];
                   } catch {
                      D.log("Failed to parse durability and item data");
                   }
@@ -68,7 +70,8 @@ namespace NubisDataHandling {
                            itemTypeId = itemTypeID,
                            data = itemData,
                            paletteNames = paletteNames,
-                           durability = itemDurability
+                           durability = itemDurability,
+                           count = itemCount
                         };
                         break;
                      case Item.Category.Armor:
@@ -78,7 +81,8 @@ namespace NubisDataHandling {
                            itemTypeId = itemTypeID,
                            data = itemData,
                            paletteNames = paletteNames,
-                           durability = itemDurability
+                           durability = itemDurability,
+                           count = itemCount
                         };
                         break;
                      case Item.Category.Hats:
@@ -88,7 +92,8 @@ namespace NubisDataHandling {
                            itemTypeId = itemTypeID,
                            data = itemData,
                            paletteNames = paletteNames,
-                           durability = itemDurability
+                           durability = itemDurability,
+                           count = itemCount
                         };
                         break;
                   }

@@ -66,9 +66,7 @@ public class SupportTicketManager : MonoBehaviour
       string playerPosition = AreaManager.self.getArea(player.areaKey) + ": (" + player.gameObject.transform.position.x.ToString() + "; " + player.gameObject.transform.position.y.ToString() + ")";
 
       // Getting the screenshot
-      int width = Screen.width;
-      int height = Screen.height;
-      Texture2D standardTex = BugReportManager.self.takeScreenshot(width, height);
+      Texture2D standardTex = ScreenCapture.CaptureScreenshotAsTexture();
 
       // Sending the request to Web Tools
       List<IMultipartFormSection> formData = new List<IMultipartFormSection>();

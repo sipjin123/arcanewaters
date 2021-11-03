@@ -19,7 +19,9 @@ public class AudioListenerManager : GenericGameManager
    protected override void Awake () {
       base.Awake();
       self = this;
+   }
 
+   private void Start () {
       AudioListener startingListener = FindObjectOfType<AudioListener>();
       FMODUnity.StudioListener startingFmodListener = FindObjectOfType<FMODUnity.StudioListener>();
 

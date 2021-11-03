@@ -43,6 +43,11 @@ public class SpeechManager : MonoBehaviour {
    }
 
    public void showSpeechBubble (NetEntity player, string message) {
+      if (player.isInvisible) {
+         // Skipping speech bubble for invisible players
+         return;
+      }
+      
       SpeechBubble speechInstance = null;
 
       // No need to bother with this in batch mode

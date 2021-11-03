@@ -67,11 +67,23 @@ public class Consumable : Item
    }
 
    public override string getName () {
-      return this.itemName;
+      ConsumableData consumableData = ConsumableXMLManager.self.getConsumableData(itemTypeId);
+
+      if (consumableData == null) {
+         return this.itemName;
+      }
+
+      return consumableData.itemName;
    }
 
    public override string getDescription () {
-      return this.itemDescription;
+      ConsumableData consumableData = ConsumableXMLManager.self.getConsumableData(itemTypeId);
+
+      if (consumableData == null) {
+         return this.itemDescription;
+      }
+
+      return consumableData.itemDescription;
    }
 
    public override string getTooltip () {

@@ -336,11 +336,17 @@ public class SeaProjectile : NetworkBehaviour
       // If this is a tentacle / poison circle attack, spawn venom
       SeaEntity sourceEntity = SeaManager.self.getEntity(_creatorNetId);
       Area area = AreaManager.self.getArea(sourceEntity.areaKey);
+      bool hitSeaTile = !Util.hasLandTile(transform.position);
       if (area != null && (_attackType == Attack.Type.Tentacle || _attackType == Attack.Type.Poison_Circle)) {
-         VenomResidue venomResidue = Instantiate(PrefabsManager.self.bossVenomResiduePrefab, transform.position, Quaternion.identity);
-         venomResidue.creatorNetId = sourceEntity.netId;
-         venomResidue.instanceId = _instanceId;
-         sourceEntity.Rpc_SpawnBossVenomResidue(sourceEntity.netId, _instanceId, transform.position);
+         
+         // Only spawn residue if we hit a sea tile
+         if (hitSeaTile) {
+            VenomResidue venomResidue = Instantiate(PrefabsManager.self.bossVenomResiduePrefab, transform.position, Quaternion.identity);
+            venomResidue.creatorNetId = sourceEntity.netId;
+            venomResidue.instanceId = _instanceId;
+         }
+         
+         sourceEntity.Rpc_SpawnBossVenomResidue(sourceEntity.netId, _instanceId, transform.position, hitSeaTile);
       }
 
       // If this ability has any knockback, apply it now

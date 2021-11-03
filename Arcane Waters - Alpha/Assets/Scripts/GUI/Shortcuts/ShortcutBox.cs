@@ -89,7 +89,6 @@ public class ShortcutBox : MonoBehaviour, IPointerClickHandler
       if (item.itemTypeId != 0 && item.id != 0) {
          _itemCell.disablePointerEvents();
          _itemCell.hideBackground();
-         _itemCell.hideItemCount();
          _itemCell.hideSelectedBox();
 
          toolTipText.SetText(_itemCell.getItem().getName());

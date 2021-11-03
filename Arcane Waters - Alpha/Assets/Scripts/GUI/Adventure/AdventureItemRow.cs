@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using TMPro;
 
 public class AdventureItemRow : MonoBehaviour {
    #region Public Variables
@@ -18,6 +19,9 @@ public class AdventureItemRow : MonoBehaviour {
 
    // The item name
    public Text itemName;
+
+   // The item count
+   public TextMeshProUGUI itemCountField;
 
    // The rarity stars
    public Image star1Image;
@@ -75,6 +79,7 @@ public class AdventureItemRow : MonoBehaviour {
                   newWeapon.id = item.id;
                   newWeapon.paletteNames = item.paletteNames;
                   newWeapon.durability = item.durability;
+                  newWeapon.count = item.count;
                   item = newWeapon;
                   item.data = rawItemData;
                }
@@ -165,6 +170,14 @@ public class AdventureItemRow : MonoBehaviour {
             iconShadow.sprite = icon.sprite;
             itemName.text = Item.isUsingEquipmentXML(item.category) ? item.itemName : item.getName();
          }
+      }
+
+      // Show the item count when relevant
+      if (item.count > 1) {
+         itemCountField.SetText(item.count.ToString());
+         itemCountField.gameObject.SetActive(true);
+      } else {
+         itemCountField.gameObject.SetActive(false);
       }
 
       float perkMultiplier = 1.0f - PerkManager.self.getPerkMultiplierAdditive(Perk.Category.ShopPriceReduction);

@@ -1011,7 +1011,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
    }
 
-   protected override void showLevelUpEffect (Jobs.Type jobType) {
+   public override void showLevelUpEffect (Jobs.Type jobType) {
       base.showLevelUpEffect(jobType);
 
       if (levelUpEffect != null) {

@@ -616,8 +616,8 @@ public class ServerMessageManager : MonoBehaviour
 
       // Add the default starting items
       int slotNumber = 1;
-      foreach (int itemTypeId in InventoryManager.STARTING_WEAPON_TYPE_IDS) {
-         int itemId = DB_Main.insertNewWeapon(userId, itemTypeId, "");
+      foreach (KeyValuePair<int, int> startingWeapons in InventoryManager.STARTING_WEAPON_TYPE_IDS_AND_COUNT) {
+         int itemId = DB_Main.insertNewWeapon(userId, startingWeapons.Key, "", startingWeapons.Value);
          DB_Main.updateItemShortcut(userId, slotNumber, itemId);
          slotNumber++;
       }

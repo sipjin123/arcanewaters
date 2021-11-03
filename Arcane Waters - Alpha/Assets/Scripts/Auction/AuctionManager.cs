@@ -14,13 +14,17 @@ public class AuctionManager : MonoBehaviour
    // Self
    public static AuctionManager self;
    
-   // The cost for starting an auction
-   public static int AUCTION_COST = 10;
+   // The cost for starting an auction (fraction)
+   public static int AUCTION_COST_FRACTION = 30;
 
    #endregion
 
    void Awake () {
       self = this;
+   }
+
+   public static int computeAuctionCost(int bid) {
+      return Mathf.CeilToInt(bid * (AUCTION_COST_FRACTION / 100.0f));
    }
 
    public void startAuctionManagement() {

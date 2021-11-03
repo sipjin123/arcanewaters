@@ -45,7 +45,7 @@ public class PrefabsManager : MonoBehaviour {
    public GenericSeaProjectile seaEntityProjectile;
 
    // The Prefab we use for creating venom sticky residue
-   public GameObject venomStickyPrefab;
+   public EffectResidue venomStickyPrefab;
 
    // The Prefab we use for creating lightning residue
    public GameObject lightningResiduePrefab;

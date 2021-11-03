@@ -979,7 +979,7 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
-   public static int insertNewWeapon (int userId, int weaponType, string palettes) {
+   public static int insertNewWeapon (int userId, int weaponType, string palettes, int count = 1) {
       return 0;
    }
 

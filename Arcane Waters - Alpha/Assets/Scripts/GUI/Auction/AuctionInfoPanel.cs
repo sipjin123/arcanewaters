@@ -317,14 +317,21 @@ public class AuctionInfoPanel : SubPanel
          }
       }
 
-      PanelManager.self.showConfirmationPanel("Confirm Auction",
-         () => {
-            bool isBuyoutAllowed = buyoutPriceToggle.isOn;
-            bid = int.Parse(startingBidCreate.text);
-            int buyout = isBuyoutAllowed ? int.Parse(buyoutPriceCreate.text) : 0;
-            TimeSpan duration = getSelectedAuctionDuration();
-            Global.player.rpc.Cmd_CreateAuction(_selectedItem, bid, isBuyoutAllowed, buyout, (DateTime.UtcNow + duration).ToBinary(), AuctionManager.AUCTION_COST);
-         }, null, true, AuctionManager.AUCTION_COST, "Are you sure you want to auction \"" + EquipmentXMLManager.self.getItemName(_selectedItem) + "\" ?");
+      string itemName = _selectedItem.getName();
+
+      if (_selectedItem.canBeEquipped()) {
+         itemName = EquipmentXMLManager.self.getItemName(_selectedItem);
+      }
+
+      PanelManager.self.showConfirmationPanel("Confirm Auction", onAuctionCreationConfirmed, null, true, AuctionManager.computeAuctionCost(bid), "Are you sure you want to auction \"" + itemName + "\" ?");
+   }
+
+   private void onAuctionCreationConfirmed () {
+      bool isBuyoutAllowed = buyoutPriceToggle.isOn;
+      int bid = int.Parse(startingBidCreate.text);
+      int buyout = isBuyoutAllowed ? int.Parse(buyoutPriceCreate.text) : 0;
+      TimeSpan duration = getSelectedAuctionDuration();
+      Global.player.rpc.Cmd_CreateAuction(_selectedItem, bid, isBuyoutAllowed, buyout, (DateTime.UtcNow + duration).ToBinary());
    }
 
    public void onBidButtonPressed () {

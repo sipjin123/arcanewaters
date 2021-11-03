@@ -240,6 +240,11 @@ public class Weapon : EquippableItem {
       return getWeaponData().equipmentIconPath;
    }
 
+   public override bool canBeStacked () {
+      // Seed bags can be stacked
+      return getActionType() == ActionType.PlantCrop;
+   }
+
    public static Weapon castItemToWeapon (Item item) {
       Weapon newWeapon = new Weapon {
          category = Category.Weapon,
@@ -250,6 +255,7 @@ public class Weapon : EquippableItem {
          itemName = item.itemName,
          data = item.data,
          paletteNames = item.paletteNames,
+         count = item.count,
       };
 
       return newWeapon;

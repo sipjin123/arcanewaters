@@ -98,7 +98,7 @@ public class EffectManager : MonoBehaviour {
 
       // Swap in the desired Effect texture
       SimpleAnimation anim = genericEffect.GetComponent<SimpleAnimation>();
-      anim.setNewTexture(ImageManager.getSprite("Effects/" + effectType).texture);
+      anim.setNewTexture(ImageManager.getSprite("Effects/" + effectType, true).texture);
 
       // Check if we need to set a custom speed
       float frameLength = getFrameLength(effectType);

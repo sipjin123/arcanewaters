@@ -39,7 +39,8 @@ public class VenomResidue : MonoBehaviour {
 
                int finalDamage = seaEntity.applyDamage(damagePerSec, creatorNetId);
                seaEntity.Rpc_ShowExplosion(creatorNetId, seaEntity.transform.position, finalDamage, Attack.Type.Venom, false);
-               seaEntity.Rpc_AttachEffect(finalDamage, Attack.Type.Venom);
+
+               seaEntity.attachResidue(Attack.Type.Venom, creatorNetId, Mathf.CeilToInt((float)damagePerSec / 2));
             }
          }
       }

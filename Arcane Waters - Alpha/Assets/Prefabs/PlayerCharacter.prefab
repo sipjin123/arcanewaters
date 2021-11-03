@@ -1901,6 +1901,7 @@ MonoBehaviour:
   equipmentDataId: 0
   weaponDurability: 0
   palettes: 
+  count: 1
   actionType: 0
   actionTypeValue: 0
   cachedWeaponData:
@@ -18754,7 +18755,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
   _renderers:
   - {fileID: 212757530221421376}
   - {fileID: 212922552416507748}
@@ -24486,8 +24486,8 @@ MonoBehaviour:
   secondsPerFrame: 0.1
   startIndex: 5
   holdTime: 5
-  shouldFadeOut: 0
-  fadeDuration: 1.5
+  shouldFadeOut: 1
+  fadeDuration: 1
 --- !u!212 &2544488381621621543
 SpriteRenderer:
   m_ObjectHideFlags: 0

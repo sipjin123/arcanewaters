@@ -128,7 +128,6 @@ public class ShopManager : MonoBehaviour {
                   Item item = new Item {
                      category = (Item.Category) rawItemData.shopItemCategoryIndex,
                      itemTypeId = rawItemData.shopItemTypeIndex,
-                     count = 1,
                      id = _itemId++,
                      paletteNames = "",
                      data = ""
@@ -161,8 +160,17 @@ public class ShopManager : MonoBehaviour {
 
                   item.data = data;
 
+                  item = item.getCastItem();
+
+                  // Set the item count
+                  if (item.canBeStacked()) {
+                     item.count = UnityEngine.Random.Range(rawItemData.shopItemCountMin, rawItemData.shopItemCountMax + 1);
+                  } else {
+                     item.count = 1;
+                  }
+
                   // Store the item
-                  _items[item.id] = item.getCastItem();
+                  _items[item.id] = item;
 
                   // Add it to the list
                   _itemsByShopId[shopData.shopId].Add(item.id);

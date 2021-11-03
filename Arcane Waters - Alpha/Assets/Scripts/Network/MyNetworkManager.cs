@@ -399,7 +399,7 @@ public class MyNetworkManager : NetworkManager
             }
 
             // Check if the player disconnected a few seconds ago and its object is still in the server
-            ClientConnectionData existingConnection = DisconnectionManager.self.getConnectionDataForUser(authenticatedUserId);           
+            ClientConnectionData existingConnection = DisconnectionManager.self.getConnectionDataForUser(authenticatedUserId);
             if (existingConnection != null && existingConnection.isReconnecting) {
                D.debug($"There was an existing connection for user id {authenticatedUserId}, so we're going to remove that user ID from the Disconnection Manager.");
 
@@ -606,8 +606,8 @@ public class MyNetworkManager : NetworkManager
             // Note how long it took to completely process the user login for this account
             LagMonitorManager.self.noteAccountLoginDuration(userInfo.accountName, (Time.realtimeSinceStartup - startTime));
 
-            if (!_players[conn.connectionId].wasFirstLoginHandled) {
-               _players[conn.connectionId].wasFirstLoginHandled = true;
+            if (!_players[conn.connectionId].wasFirstSpawnHandled) {
+               _players[conn.connectionId].wasFirstSpawnHandled = true;
                player.rpc.receivePlayerAddedToServer();
             }
          });
@@ -712,7 +712,7 @@ public class MyNetworkManager : NetworkManager
 
    public override void OnServerDisconnect (NetworkConnection conn) {
       // Called on the server when a client disconnects
-      disconnectClient(conn);
+      disconnectClient(conn, DisconnectionReason.UserLogout);
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.serverStatUpdateCcu(System.Environment.MachineName, MyNetworkManager.getCurrentPort(), _players.Count);
@@ -721,10 +721,10 @@ public class MyNetworkManager : NetworkManager
 
    public void disconnectClient (int accountId) {
       NetworkConnection connection = getConnectedClientDataForAccount(accountId).connection;
-      disconnectClient(connection);
+      disconnectClient(connection, DisconnectionReason.UserLogout);
    }
 
-   public void disconnectClient (NetworkConnection conn, bool forceFinishDisconnection = false) {
+   public void disconnectClient (NetworkConnection conn, DisconnectionReason disconnectionReason = DisconnectionReason.Unknown, bool forceFinishDisconnection = false) {
       if (conn == null) {
          return;
       }

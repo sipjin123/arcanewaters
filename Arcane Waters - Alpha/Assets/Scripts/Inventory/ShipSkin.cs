@@ -61,11 +61,24 @@ public class ShipSkin : Item {
    }
 
    public override string getName () {
-      return this.itemName;
+      ShipSkinData skinData = ShipSkinXMLManager.self.getShipSkinData(itemTypeId);
+
+      if (skinData == null) {
+         return itemName;
+      }
+
+      return skinData.itemName;
    }
 
    public override string getDescription () {
-      ShipData data = ShipDataManager.self.shipDataList.Find(_ => _.shipType == this.shipType);
+      ShipSkinData skinData = ShipSkinXMLManager.self.getShipSkinData(itemTypeId);
+
+      if (skinData == null) {
+         return this.itemDescription;
+      }
+
+      Ship.Type shipType = skinData.shipType;
+      ShipData data = ShipDataManager.self.shipDataList.Find(_ => _.shipType == shipType);
 
       if (data == null) {
          return this.itemDescription;
