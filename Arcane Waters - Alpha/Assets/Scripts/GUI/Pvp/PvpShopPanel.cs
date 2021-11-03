@@ -328,13 +328,17 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
                break;
             case PvpShopItemType.LandPowerup:
                LandPowerupType landPowerupType = (LandPowerupType) itemData.itemId;
-               LandPowerupInfo landPowerupInfo = LandPowerupManager.self.landPowerupInfo[landPowerupType];
-               if (landPowerupInfo != null) {
-                  if (landPowerupInfo.iconPath.Length > 1) {
-                     newItemInfo.sprite = ImageManager.getSprite(landPowerupInfo.iconPath);
+               if (LandPowerupManager.self.landPowerupInfo.ContainsKey(landPowerupType)) {
+                  LandPowerupInfo landPowerupInfo = LandPowerupManager.self.landPowerupInfo[landPowerupType];
+                  if (landPowerupInfo != null) {
+                     if (landPowerupInfo.iconPath.Length > 1) {
+                        newItemInfo.sprite = ImageManager.getSprite(landPowerupInfo.iconPath);
+                     }
+                     newItemInfo.name = landPowerupInfo.powerupName;
+                     newItemInfo.description = landPowerupInfo.powerupInfo;
                   }
-                  newItemInfo.name = landPowerupInfo.powerupName;
-                  newItemInfo.description = landPowerupInfo.powerupInfo;
+               } else {
+                  D.debug("Does not contain land powerup type {" + landPowerupType + "}");
                }
                break;
             case PvpShopItemType.Item:

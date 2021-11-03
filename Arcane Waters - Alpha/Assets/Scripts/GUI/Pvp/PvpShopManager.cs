@@ -81,8 +81,10 @@ public class PvpShopManager : MonoBehaviour {
 
                      // TODO: After web tool updates from Jose, remove these and input data to web tool
                      pvpShopData.shopItems.Add(PvpShopItem.defaultConsumableItem());
-                     foreach (PvpShopItem landPowerup in PvpShopItem.defaultLandPowerups()) {
-                        pvpShopData.shopItems.Add(landPowerup);
+                     if (pvpShopData.shopItems.FindAll(_ => _.shopItemType == PvpShopItem.PvpShopItemType.LandPowerup).Count < 1) {
+                        foreach (PvpShopItem landPowerup in PvpShopItem.defaultLandPowerups()) {
+                           pvpShopData.shopItems.Add(landPowerup);
+                        }
                      }
 
                      shopDataList.Add(pvpShopData);
