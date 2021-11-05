@@ -226,9 +226,9 @@ public class ServerNetworkingManager : MonoBehaviour
       return server.InvokeServerRpc(server.MasterServer_GetNewVoyageId);
    }
 
-   public void findUserLocationToVisit (int visitorUserId, int visitedUserId, string areaKeyOverride) {
-      D.debug("User {" + visitorUserId + "} is attempting to visit {" + visitedUserId + "}");
-      server.InvokeServerRpc(server.MasterServer_FindUserLocationToVisit, visitorUserId, visitedUserId, areaKeyOverride);
+   public void findUserLocationToVisit (int visitorUserId, int visitedUserId, string areaKeyOverride, string spawnTarget, Direction facing) {
+      D.adminLog("1> User {" + visitorUserId + "} is attempting to visit {" + visitedUserId + "} {" + areaKeyOverride + "} {" + spawnTarget + "}", D.ADMIN_LOG_TYPE.Visit);
+      server.InvokeServerRpc(server.MasterServer_FindUserLocationToVisit, visitorUserId, visitedUserId, areaKeyOverride, spawnTarget, facing);
    }
 
    public void findUserLocationForAdminGoTo (int adminUserId, int userId) {

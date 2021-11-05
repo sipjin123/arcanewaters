@@ -98,13 +98,16 @@ public class InstanceManager : MonoBehaviour {
             D.adminLog("Found Visitable Area: {" + openInst.areaKey + "} {" + openInst.id + "}", D.ADMIN_LOG_TYPE.Visit);
             instance = openInst;
          } else {
-            D.adminLog("Failed to Visit Area: {" + areaKey + "}", D.ADMIN_LOG_TYPE.Visit);
+            D.adminLog("Failed to Visit Area: {" + areaKey + "} No private instance Open!", D.ADMIN_LOG_TYPE.Visit);
          }
       }
 
       // If there isn't one, we'll have to make it
       if (instance == null) {
          instance = createNewInstance(areaKey, player.isSinglePlayer);
+         if (CustomMapManager.isUserSpecificAreaKey(areaKey) && instance != null) {
+            D.adminLog("Created new Visit Area: {" + areaKey + "}", D.ADMIN_LOG_TYPE.Visit);
+         }
       }
 
       // Set the player's instance ID
