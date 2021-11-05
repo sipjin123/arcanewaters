@@ -371,7 +371,8 @@ public class MyNetworkManager : NetworkManager
                if (AreaManager.self.tryGetCustomMapManager(previousAreaKey, out CustomMapManager customMapManager)) {
                   baseMapAreaKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(ownerInfo));
 
-                  D.adminLog("Successfully fetched custom map: " +
+                  D.adminLog("Successfully {User: " + userObjects.userInfo.userId + "} fetched custom map: " +
+                     "Connecting User: {" + userObjects.userInfo.username + " " + userObjects.userInfo.accountName + "} " +
                      "ID:{" + customMapManager.getBaseMapId(ownerInfo) + "} " +
                      "Base:{" + baseMapAreaKey + "} " +
                      "Prev:{" + previousAreaKey + "} " +
@@ -467,50 +468,10 @@ public class MyNetworkManager : NetworkManager
                AssignedUserInfo serverInfo = ServerNetworkingManager.self.server.assignedUserIds[player.userId];
                if (serverInfo != null && serverInfo.instanceId > 0) {
                   player.instanceId = serverInfo.instanceId;
-                  D.adminLog("1. Adding user {" + player.userId + "} to instance {" + serverInfo.instanceId + "} to visit! ", D.ADMIN_LOG_TYPE.Visit);
+                  D.adminLog("Adding user {" + player.userId + "} to instance {" + serverInfo.instanceId + "} to visit! ", D.ADMIN_LOG_TYPE.Visit);
                   InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId, serverInfo.instanceId);
-
-                  Vector2 visitSpawnPosition = mapPosition;
-                  if (CustomMapManager.isUserSpecificAreaKey(previousAreaKey)) {
-                     int getUser = CustomMapManager.getUserId(previousAreaKey);
-                     if (getUser > 0) {
-                        D.adminLog("2. Spawning in a user specific area {" + player.userId + "} for area {" + previousAreaKey + "}", D.ADMIN_LOG_TYPE.Visit);
-                        if (visiterUserObject != null) {
-                           AreaManager.self.tryGetCustomMapManager(previousAreaKey, out CustomMapManager customMapManager);
-                           if (customMapManager != null) {
-                              D.adminLog("3. Successfully retrieved custom map manager of user {" + player.userId + "} for area {" + previousAreaKey + "}", D.ADMIN_LOG_TYPE.Visit);
-
-                              // Try to get the custom map associated to the custom map key
-                              int baseMapId = customMapManager.getBaseMapId(visiterUserObject.userInfo);
-                              string privateAreaName = AreaManager.self.getAreaName(baseMapId);
-                              visitSpawnPosition = getSpawnPointForArea(visitSpawnPosition, player.userId, previousAreaKey, privateAreaName);
-                           } else {
-                              D.adminLog("3. Failed to get custom map manager of user {" + player.userId + "} for area {" + previousAreaKey + "}", D.ADMIN_LOG_TYPE.Visit);
-                           }
-                        } else {
-                           D.adminLog("User Info missing for user! " + player.userId, D.ADMIN_LOG_TYPE.Visit);
-                        }
-                     } else {
-                        D.adminLog("2. Failed to find owner of the map {" + getUser + "} while spawning {" + player.userId + "} at {" + previousAreaKey + "}", D.ADMIN_LOG_TYPE.Visit);
-                     }
-                  }
-                  player.transform.position = visitSpawnPosition;
                } else {
                   InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);
-               }
-
-               if (CustomMapManager.isUserSpecificAreaKey(previousAreaKey)) {
-                  int getUser = CustomMapManager.getUserId(previousAreaKey);
-                  AreaManager.self.tryGetCustomMapManager(previousAreaKey, out CustomMapManager customMapManager);
-
-                  if (visiterUserObject != null) {
-                     int baseMapId = customMapManager.getBaseMapId(visiterUserObject.userInfo);
-                     string privateAreaName = AreaManager.self.getAreaName(baseMapId);
-                     player.transform.position = getSpawnPointForArea(mapPosition, player.userId, previousAreaKey, privateAreaName);
-                     D.adminLog("-- Found user area spawn position {" + player.userId + "}" + " " + player.transform.position, D.ADMIN_LOG_TYPE.Visit);
-                  } else {
-                     D.adminLog("-- Failed to find net entity for user {" + player.userId + "}", D.ADMIN_LOG_TYPE.Visit);
-                  }
                }
             } else {
                InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);
@@ -612,24 +573,6 @@ public class MyNetworkManager : NetworkManager
             }
          });
       });
-   }
-
-   private Vector3 getSpawnPointForArea (Vector3 initialPosition, int userId, string previousAreaKey, string privateAreaName) {
-      Vector3 visitSpawnPosition = initialPosition;
-      if (SpawnManager.self.getAllSpawnsInArea(privateAreaName).Count > 0) {
-         // Spawn in the spawn points registered to this area
-         Vector2 areaSpawn = SpawnManager.self.getDefaultLocalPosition(privateAreaName);
-         visitSpawnPosition = areaSpawn;
-      } else if (MapManager.self.isAreaUnderCreation(previousAreaKey)) {
-         // If the area is under creation
-         visitSpawnPosition = MapManager.self.getAreaUnderCreationPosition(previousAreaKey);
-      } else if (AreaManager.self.hasArea(previousAreaKey)) {
-         // If the area is already instantiated
-         visitSpawnPosition = AreaManager.self.getArea(previousAreaKey).transform.position;
-      } else {
-         D.debug("Failed to find Spawn Position of {" + userId + "} for area {" + privateAreaName + "}");
-      }
-      return visitSpawnPosition;
    }
 
    [ServerOnly]
