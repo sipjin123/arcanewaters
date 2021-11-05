@@ -242,7 +242,7 @@ public class ShipEntity : SeaEntity
             hasUsedBuff = true;
             int healValue = (int) (shipAbilityData.damageModifier * 100);
             currentHealth += healValue;
-            Rpc_CastSkill(shipAbilityId, shipAbilityData, transform.position, healValue);
+            Rpc_CastSkill(shipAbilityId, shipAbilityData, transform.position, healValue, true, true);
             break;
          case Attack.Type.SpeedBoost:
             hasUsedBuff = true;
@@ -294,7 +294,7 @@ public class ShipEntity : SeaEntity
       yield return new WaitForSeconds(1 / AbilityOrb.SNAP_SPEED_MULTIPLIER);
       int healValue = (int) (shipAbilityData.damageModifier * 100);
       targetEntity.currentHealth += healValue;
-      targetEntity.Rpc_CastSkill(shipAbilityData.abilityId, shipAbilityData, targetEntity.transform.position, healValue);
+      targetEntity.Rpc_CastSkill(shipAbilityData.abilityId, shipAbilityData, targetEntity.transform.position, healValue, true, true);
       removeServerAbilityOrbs(attackTypes, targetUser);
    }
 
@@ -373,13 +373,15 @@ public class ShipEntity : SeaEntity
          removeServerAbilityOrbs(new List<Attack.Type> { shipAbilityData.selectedAttackType }, targetEntity.userId);
       }
 
-      targetEntity.Rpc_CastSkill(shipAbilityData.abilityId, shipAbilityData, targetEntity.transform.position, value);
+      targetEntity.Rpc_CastSkill(shipAbilityData.abilityId, shipAbilityData, targetEntity.transform.position, value, value > 0, value > 0);
    }
 
    [ClientRpc]
-   public void Rpc_CastSkill (int abilityId, ShipAbilityData shipData, Vector2 pos, int displayValue) {
+   public void Rpc_CastSkill (int abilityId, ShipAbilityData shipData, Vector2 pos, int displayValue, bool showCastVfx, bool showValue) {
       // Play The effect of the buff
-      EffectManager.createDynamicEffect(shipData.castSpritePath, pos, shipData.abilitySpriteFXPerFrame);
+      if (showCastVfx) {
+         EffectManager.createDynamicEffect(shipData.castSpritePath, Vector2.zero, shipData.abilitySpriteFXPerFrame, abilityEffectHolder, true);
+      }
 
       // Play an appropriate sound
       AudioClip clip = AudioClipManager.self.getAudioClipData(shipData.castSFXPath).audioClip;
@@ -389,13 +391,15 @@ public class ShipEntity : SeaEntity
          playAttackSound();
       }
 
-      // Show the damage text
-      ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(shipData.selectedAttackType, displayValue < 1), pos, Quaternion.identity);
-      damageText.setIcon(shipData.skillIconPath);
-      damageText.negativeEffect = displayValue < 1;
-      damageText.setDamage(displayValue);
-      if (damageText.notificationText != null) {
-         damageText.notificationText.text = shipData.abilityName;
+      if (showValue) {
+         // Show the damage text
+         ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(shipData.selectedAttackType, displayValue < 1), pos, Quaternion.identity);
+         damageText.setIcon(shipData.skillIconPath);
+         damageText.negativeEffect = displayValue < 1;
+         damageText.setDamage(displayValue);
+         if (damageText.notificationText != null) {
+            damageText.notificationText.text = shipData.abilityName;
+         }
       }
    }
 
