@@ -2162,7 +2162,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       int health = ((int) battData.baseHealth + (int) battData.healthPerlevel * level);
 
       // Based on the difficulty level, add additional health (Easy: + 10% health / Medium: + 20% health / Hard: + 30% health)
-      health = (int) (health + (health * (difficultyLevel * .1f)));
       health = (int) (health + (health * (difficultyLevel * AdminGameSettingsManager.self.settings.landDifficultyScaling)));
 
       // If this is a boss monster, add health (based from admin game settings) depending on number of team members

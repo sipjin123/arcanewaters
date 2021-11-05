@@ -169,7 +169,7 @@ public class TreasureManager : MonoBehaviour {
       TreasureChest chest = Instantiate(monsterBagPrefab, spot, Quaternion.identity);
 
       // Raycast around spawned chest to ensure that there is some distance between chest and nearby colliders
-      const float MIN_DISTANCE = 0.15f;
+      const float MIN_DISTANCE = 0.1f;
       const int MAX_RETRIES = 20;
       int layerMask = LayerMask.GetMask(LayerUtil.GRID_COLLIDERS);
       int retries = 0;
