@@ -239,40 +239,59 @@ public class NetworkedServer : NetworkedBehaviour
    #region Visit System
 
    [ServerRPC]
-   public void MasterServer_FindUserLocationToVisit (int visitorUserId, int visitedUserId, string areaKeyOverride) {
+   public void MasterServer_FindUserLocationToVisit (int visitorUserId, int visitedUserId, string areaKeyOverride, string spawnTarget, Direction facing) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(visitedUserId);
       if (targetServer != null) {
-         D.debug("Successfully found server containing user {" + visitedUserId + "} for area {" + areaKeyOverride + "}");
-         targetServer.InvokeClientRpcOnOwner(Server_FindUserLocationToVisit, visitorUserId, visitedUserId, areaKeyOverride);
+         targetServer.InvokeClientRpcOnOwner(Server_FindUserLocationToVisit, visitorUserId, visitedUserId, areaKeyOverride, spawnTarget, facing);
       } else {
-         D.debug("Could not find server container user {" + visitedUserId + "} for area {" + areaKeyOverride + "}");
+         NetworkedServer sourceServer = ServerNetworkingManager.self.getServerContainingUser(visitorUserId);
+         if (sourceServer != null) {
+            sourceServer.InvokeClientRpcOnOwner(Server_ReturnUserDenyVisit, visitorUserId);
+         }
       }
    }
 
    [ClientRPC]
-   public void Server_FindUserLocationToVisit (int visitorUserId, int visitedUserId, string areaKeyOverride) {
-      NetEntity player = EntityManager.self.getEntity(visitedUserId);
+   public void Server_FindUserLocationToVisit (int visitorUserId, int visitedUserId, string areaKeyOverride, string spawnTarget, Direction facing) {
+      NetEntity ownerEntity = EntityManager.self.getEntity(visitedUserId);
 
-      if (!CustomMapManager.isUserSpecificAreaKey(player.areaKey)) {
+      if (ownerEntity == null) {
          InvokeServerRpc(MasterServer_DenyUserVisit, visitorUserId);
-      } else {
-         if (player != null) {
-            bool hasAreaKeyOverride = areaKeyOverride.Length > 0;
-            UserLocationBundle location = new UserLocationBundle();
-            location.userId = player.userId;
-            location.serverPort = ServerNetworkingManager.self.server.networkedPort.Value;
-            location.areaKey = hasAreaKeyOverride ? areaKeyOverride : player.areaKey;
-            location.instanceId = hasAreaKeyOverride ? 0 : player.instanceId;
-            location.localPositionX = player.transform.localPosition.x;
-            location.localPositionY = player.transform.localPosition.y;
-            location.voyageGroupId = player.voyageGroupId;
+         return;
+      }
 
-            D.debug("Override Location Bundle: {" + hasAreaKeyOverride + "} : {" + location.areaKey + "} {" + areaKeyOverride + "} {" + player.instanceId + "}");
-            InvokeServerRpc(MasterServer_ReturnUserLocationToVisit, visitorUserId, location);
-         } else {
-            InvokeServerRpc(MasterServer_DenyUserVisit, visitorUserId);
-            D.debug("Could not find player {" + visitedUserId + "} Failed to visit {" + areaKeyOverride + "}!");
+      // Deny visit if the area is not a custom map
+      if (!CustomMapManager.isUserSpecificAreaKey(ownerEntity.areaKey)) {
+         InvokeServerRpc(MasterServer_DenyUserVisit, visitorUserId);
+         return;
+      }
+
+      // Assign location bundle data
+      bool hasAreaKeyOverride = areaKeyOverride.Length > 0;
+      UserLocationBundle location = new UserLocationBundle();
+      location.userId = ownerEntity.userId;
+      location.serverPort = ServerNetworkingManager.self.server.networkedPort.Value;
+      location.areaKey = hasAreaKeyOverride ? areaKeyOverride : ownerEntity.areaKey;
+      location.instanceId = hasAreaKeyOverride ? 0 : ownerEntity.instanceId;
+      location.voyageGroupId = ownerEntity.voyageGroupId;
+      location.localPositionX = ownerEntity.transform.localPosition.x;
+      location.localPositionY = ownerEntity.transform.localPosition.y;
+
+      // Override local position if the spawn location is found
+      if (location.areaKey.Length > 0) {
+         AreaManager.self.tryGetCustomMapManager(location.areaKey, out CustomMapManager customMapManager);
+         if (customMapManager != null) {
+            string baseMapKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(ownerEntity));
+            Vector2 newArea2 = SpawnManager.self.getLocalPosition(baseMapKey, spawnTarget);
+            location.localPositionX = newArea2.x;
+            location.localPositionY = newArea2.y;
          }
+      }
+
+      if (location.areaKey.Length > 0 && location.areaKey != CustomHouseManager.GROUP_AREA_KEY && location.areaKey != CustomFarmManager.GROUP_AREA_KEY) {
+         InvokeServerRpc(MasterServer_ReturnUserLocationToVisit, visitorUserId, location);
+      } else {
+         InvokeServerRpc(MasterServer_DenyUserVisit, visitorUserId);
       }
    }
 
