@@ -96,6 +96,11 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
    [ServerOnly]
    private IEnumerator CO_ExecWarpServer (NetEntity player, float delay) {
+      if (player == null) {
+         D.adminLog("Cannot Process warp! Reference to player has been removed!", D.ADMIN_LOG_TYPE.Warp);
+         yield return null;
+      }
+
       D.adminLog("Warping player: " + player.userId + " : To area: " + areaTarget + " : Spawn Target: " + spawnTarget + " Delay: " + delay, D.ADMIN_LOG_TYPE.Warp);
       yield return new WaitForSeconds(delay);
 
@@ -173,17 +178,30 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             }
          }
       } else {
+         D.adminLog("1. Checking to see if user {" + player.userId + ":" + player.areaKey + ":" + areaTarget + "} is in custom area in warp script", D.ADMIN_LOG_TYPE.Visit);
          bool isInSpecificArea = CustomMapManager.isUserSpecificAreaKey(player.areaKey);
-         bool isUserInVisitedArea = isInSpecificArea ? CustomMapManager.getUserId(player.areaKey) != player.userId : false;
+         bool isUserInVisitedArea = isInSpecificArea;
          bool isWarpingToCustomArea = areaTarget.Contains(CustomHouseManager.GROUP_AREA_KEY) || areaTarget.Contains(CustomFarmManager.GROUP_AREA_KEY);
 
          if (isUserInVisitedArea && isWarpingToCustomArea && isInSpecificArea) {
             NetEntity visitedUser = EntityManager.self.getEntity(CustomMapManager.getUserId(player.areaKey));
-            string visitedArea = areaTarget + "_user" + CustomMapManager.getUserId(player.areaKey);
+            if (visitedUser != null) {
+               string visitedArea = areaTarget + "_user" + CustomMapManager.getUserId(player.areaKey);
 
-            D.adminLog(player.userId + " is now visiting {" + visitedArea + "} of {" + visitedUser.userId + " : " + visitedUser.entityName + "} " +
-               "Visited by user data: {" + CustomMapManager.getUserId(player.areaKey) + "}", D.ADMIN_LOG_TYPE.Visit);
-            player.playerVisit(visitedUser.entityName, visitedArea);
+               D.adminLog("2. "+player.userId + " is now visiting {" + visitedArea + "} of {" + visitedUser.userId + " : " + visitedUser.entityName + "} " +
+                  "Visited by user data: {" + CustomMapManager.getUserId(player.areaKey) + "} Spawn Target: {" + spawnTarget + "}", D.ADMIN_LOG_TYPE.Visit);
+               player.playerVisit(visitedUser.entityName, visitedArea, spawnTarget, newFacingDirection);
+            } else {
+               int mapOwnerId = CustomMapManager.getUserId(player.areaKey);
+               AreaManager.self.tryGetCustomMapManager(areaTarget, out CustomMapManager customMapManager);
+               if (mapOwnerId == player.userId) {
+                  D.adminLog("3a. User owns this map! User:{" + player.userId + "} Owner:{" + mapOwnerId + "} Areas: {" + player.areaKey + " " + areaTarget + "} SpawnTarget: {" + spawnTarget + "}", D.ADMIN_LOG_TYPE.Visit);
+                  player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
+               } else {
+                  D.adminLog("3b. ser {" + player.userId + "} does NOT own this map {" + player.areaKey + ":" + areaTarget + "} AND failed to find netEntity of Owner:{" + mapOwnerId + "}! SpawnTarget: {" + spawnTarget + "}", D.ADMIN_LOG_TYPE.Visit);
+                  player.playerVisit(mapOwnerId, areaTarget, spawnTarget, newFacingDirection);
+               }
+            }
          } else {
             player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
          }
