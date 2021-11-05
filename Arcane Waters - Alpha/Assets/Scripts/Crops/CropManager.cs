@@ -95,7 +95,7 @@ public class CropManager : NetworkBehaviour {
    }
 
    [Server]
-   public void plantCrop (Crop.Type cropType, int cropNumber, string areaKey) {
+   public void plantCrop (Crop.Type cropType, int cropNumber, string areaKey, int seedBagId, bool isSeedBagEquipped) {
       int userId = _player.userId;
 
       // Make sure there's not already a Crop in that spot
@@ -127,7 +127,31 @@ public class CropManager : NetworkBehaviour {
 
       // Insert it into the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Remove a seed from the bag
+         bool success = DB_Main.decreaseQuantityOrDeleteItem(userId, seedBagId, 1);
+
+         // Stop the process if there were not enough seeds
+         if (!success) {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               onPlantCropEnd(cropNumber);
+            });
+            return;
+         }
+
+         // Plant the crop
          int newCropId = DB_Main.insertCrop(cropInfo, areaKey);
+         if (newCropId <= 0) {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               onPlantCropEnd(cropNumber);
+            });
+            return;
+         }
+
+         // If this was the last seed of an equipped bag, unequip it
+         Item seedBag = DB_Main.getItem(userId, seedBagId);
+         if (isSeedBagEquipped && (seedBag == null || seedBag.count == 0)) {
+            _player.rpc.Bkg_RequestSetWeaponId(0);
+         }
 
          // Add the farming XP
          int xp = Crop.getXP(cropType);
@@ -137,37 +161,46 @@ public class CropManager : NetworkBehaviour {
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (newCropId > 0) {
-               // Registers the planting action to the achievement database for recording
-               AchievementManager.registerUserAchievement(_player, ActionType.PlantCrop);
+            // Registers the planting action to the achievement database for recording
+            AchievementManager.registerUserAchievement(_player, ActionType.PlantCrop);
 
-               // Checks achievements to determine if the plant will grow quickly for tutorial purposes
-               bool quickGrow = false;
-               if (harvestCropAchievements.Count < 1) {
+            // Checks achievements to determine if the plant will grow quickly for tutorial purposes
+            bool quickGrow = false;
+            if (harvestCropAchievements.Count < 1) {
+               quickGrow = true;
+            }
+            foreach (AchievementData achievementData in harvestCropAchievements) {
+               if (achievementData.count < TUTORIAL_CROP_COUNT) {
                   quickGrow = true;
                }
-               foreach (AchievementData achievementData in harvestCropAchievements) {
-                  if (achievementData.count < TUTORIAL_CROP_COUNT) {
-                     quickGrow = true;
-                  }
-               }
-
-               cropInfo = getUpdatedCropInfo(quickGrow, cropInfo);
-
-               // Store the result
-               _crops.Add(cropInfo);
-
-               if (_cropsProcessing.Contains(cropNumber)) {
-                  _cropsProcessing.Remove(cropNumber);
-               }
-
-               // Let them know they gained experience
-               _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Farmer, cropNumber, true);
-
-               sendCropsToPlayer(cropInfo, false, quickGrow);
             }
+
+            cropInfo = getUpdatedCropInfo(quickGrow, cropInfo);
+
+            // Store the result
+            _crops.Add(cropInfo);
+
+            if (_cropsProcessing.Contains(cropNumber)) {
+               _cropsProcessing.Remove(cropNumber);
+            }
+
+            // Let them know they gained experience
+            _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Farmer, cropNumber, true);
+
+            sendCropsToPlayer(cropInfo, false, quickGrow);
+
+            onPlantCropEnd(cropNumber);
          });
       });
+   }
+
+   private void onPlantCropEnd (int cropNumber) {
+      if (_cropsProcessing.Contains(cropNumber)) {
+         _cropsProcessing.Remove(cropNumber);
+      }
+
+      // Send the updated shortcuts to the client
+      _player.rpc.sendItemShortcutList();
    }
 
    private void sendCropsToPlayer (CropInfo cropInfo, bool justGrew, bool isQuickGrow = false) {

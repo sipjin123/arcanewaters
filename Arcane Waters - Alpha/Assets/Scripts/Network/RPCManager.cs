@@ -4251,7 +4251,6 @@ public class RPCManager : NetworkBehaviour
    public void Cmd_RequestPvpShopData (int shopId, int itemCategoryType) {
       PvpShopItem.PvpShopItemType itemType = (PvpShopItem.PvpShopItemType) itemCategoryType;
       PvpShopData shopData = PvpShopManager.self.getShopData(shopId);
-
       if (shopData == null) {
          D.debug("Invalid Shop Data! " + shopId);
          return;
@@ -4267,7 +4266,9 @@ public class RPCManager : NetworkBehaviour
             for (int i = itemCategoryType; i < totalCategoryTypes; i++) {
                if (shopData.shopItems.FindAll(_ => _.shopItemType == (PvpShopItem.PvpShopItemType) i).Count > 0) {
                   // Override the item category type to select if atleast one item exists
-                  itemType = (PvpShopItem.PvpShopItemType) i;
+                  PvpShopItem.PvpShopItemType newItemType = (PvpShopItem.PvpShopItemType) i;
+                  D.debug("Missing {" + itemType + "} Next available Category is {" + newItemType + "}");
+                  itemType = newItemType;
                   break;
                }
             }
@@ -9156,6 +9157,18 @@ public class RPCManager : NetworkBehaviour
    [Server]
    private bool Bkg_ShouldBeSoulBound (Item item, bool isBeingEquipped) {
       return SoulBindingManager.Bkg_ShouldBeSoulBound(item, isBeingEquipped);
+   }
+
+   [ClientRpc]
+   public void Rpc_ShowWhirlpoolEffect (Vector3 position, float effectRadius) {
+      WhirlpoolEffect whirlpoolEffect = Instantiate(PrefabsManager.self.whirlpoolEffectPrefab, position, Quaternion.identity);
+      whirlpoolEffect.init(effectRadius);
+   }
+
+   [ClientRpc]
+   public void Rpc_ShowKnockbackEffect (Vector3 position, float effectRadius) {
+      KnockbackEffect knockbackEffect = Instantiate(PrefabsManager.self.knockbackEffectPrefab, position, Quaternion.identity);
+      knockbackEffect.init(effectRadius);
    }
 
    #region Private Variables

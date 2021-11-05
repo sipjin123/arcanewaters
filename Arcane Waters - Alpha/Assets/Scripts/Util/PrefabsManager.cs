@@ -227,6 +227,15 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating ability orbs
    public AbilityOrb abilityOrbPrefab;
 
+   // The prefab we use for creating whirlpool effects
+   public WhirlpoolEffect whirlpoolEffectPrefab;
+
+   // The prefab we use for creating knockback effects
+   public KnockbackEffect knockbackEffectPrefab;
+
+   // The prefab we use for some components that help to make up the knockback effect
+   public GameObject knockbackEffectProjectilePrefab;
+
    // Self
    public static PrefabsManager self;
 

@@ -29,6 +29,9 @@ public class Minimap : ClientMonoBehaviour {
    // The prefab we use for creating treasure chest icon
    public MM_Icon treasureChestIconPrefab;
 
+   // The prefab we use for creating treasure chest icons for pvp games
+   public MM_Icon pvpTreasureChestIconPrefab;
+
    // The prefab we use for creating a discovery icon
    public MM_Icon discoveryIconPrefab;
 
@@ -448,6 +451,16 @@ public class Minimap : ClientMonoBehaviour {
          MM_Icon icon = Instantiate(treasureChestIconPrefab, this.iconContainer.transform);
          icon.target = chestObject;
          _treasureChestIcons.Add(icon);
+      }
+   }
+
+   public void addPvpTreasureChestIcon (GameObject chestObject, PvpTeamType teamType) {
+      if (_pvpTreasureChestIcons.Find(iconItem => iconItem.target == chestObject) == null) {
+         MM_Icon icon = Instantiate(pvpTreasureChestIconPrefab, this.iconContainer.transform);
+         icon.target = chestObject;
+         _pvpTreasureChestIcons.Add(icon);
+         Sprite[] chestSprites = ImageManager.getSprites("Sprites/Pvp/ctf_treasure_icons");
+         icon.GetComponent<Image>().sprite = chestSprites[(int) teamType];
       }
    }
 
@@ -1779,6 +1792,9 @@ public class Minimap : ClientMonoBehaviour {
 
    // Current list of chest icons
    private List<MM_Icon> _treasureChestIcons = new List<MM_Icon>();
+
+   // Current list of pvp chest icons
+   private List<MM_Icon> _pvpTreasureChestIcons = new List<MM_Icon>();
 
    // Current list of discovery icons
    private List<MM_Icon> _discoveryIcons = new List<MM_Icon>();

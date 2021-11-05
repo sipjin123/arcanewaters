@@ -361,9 +361,18 @@ public class SeaProjectile : NetworkBehaviour
             Rigidbody2D enemyRigidbody = enemyHit.getRigidbody();
             if (enemyRigidbody != null) {
                // Apply the explosive force
-               enemyRigidbody.AddExplosiveForce(projectileData.knockbackForce * EXPLOSIVE_FORCE_DROPOFF, projectileData.knockbackForce, projectileData.knockbackRadius, transform.position, ForceMode2D.Impulse);
+               float distanceFromCenter = Vector2.Distance(transform.position, enemyHit.transform.position);
+               float forceDropoffMultiplier = Mathf.Lerp(1.0f, EXPLOSIVE_FORCE_DROPOFF, (distanceFromCenter / projectileData.knockbackRadius));
+               enemyRigidbody.AddExplosiveForce(projectileData.knockbackForce * forceDropoffMultiplier, projectileData.knockbackForce, projectileData.knockbackRadius, transform.position, ForceMode2D.Impulse);
             }
          }
+
+         if (projectileData.knockbackForce < 0.0f) {
+            sourceEntity.rpc.Rpc_ShowWhirlpoolEffect(transform.position, projectileData.knockbackRadius);
+         } else {
+            sourceEntity.rpc.Rpc_ShowKnockbackEffect(transform.position, projectileData.knockbackRadius);
+         }
+         
       }
 
       NetworkServer.Destroy(gameObject);

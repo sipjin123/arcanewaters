@@ -56,6 +56,9 @@ public class ShipEntity : SeaEntity
    // A manual override for the ship's sprites
    public Texture2D spritesOverride = null;
 
+   // A reference to the transform that will hold visual effects created by casting abilities
+   public Transform abilityEffectHolder;
+
    #endregion
 
    protected virtual void initialize (ShipData data) {
@@ -463,7 +466,7 @@ public class ShipEntity : SeaEntity
       Vector2 direction = endPos - startPos;
       Vector2 offset = direction.normalized * .1f;
 
-      EffectManager.createDynamicEffect(shipAbilityData.castSpritePath, startPos, shipAbilityData.abilitySpriteFXPerFrame);
+      EffectManager.createDynamicEffect(shipAbilityData.castSpritePath, startPos, shipAbilityData.abilitySpriteFXPerFrame, null);
 
       // Create a cannon ball
       GenericSeaProjectile ball = Instantiate(PrefabsManager.self.seaEntityProjectile, startPos, Quaternion.identity);

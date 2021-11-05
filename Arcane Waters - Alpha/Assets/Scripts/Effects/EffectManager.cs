@@ -38,7 +38,7 @@ public class EffectManager : MonoBehaviour {
       return effect;
    }
 
-   public static void createDynamicEffect (string spritePath, Vector2 pos, float timePerFrame) {
+   public static void createDynamicEffect (string spritePath, Vector2 pos, float timePerFrame, Transform parent, bool setLocalPosition = false) {
       Sprite[] sprites = ImageManager.getSprites(spritePath);
 
       //If we do not have any effect sprites we cancel
@@ -46,7 +46,14 @@ public class EffectManager : MonoBehaviour {
          return;
       }
 
-      CombatEffect effect = Instantiate(self.worldCombatVFXPrefab, pos, Quaternion.identity).GetComponent<CombatEffect>();
+      CombatEffect effect = Instantiate(self.worldCombatVFXPrefab, Vector3.zero, Quaternion.identity, parent).GetComponent<CombatEffect>();
+
+      if (setLocalPosition) {
+         effect.transform.localPosition = pos;
+      } else {
+         effect.transform.position = pos;
+      }
+
       effect.initEffect(sprites, timePerFrame);
    }
 

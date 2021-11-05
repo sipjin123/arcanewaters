@@ -143,7 +143,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
   _renderers: []
 --- !u!1 &1307228615476472
 GameObject:
@@ -228,6 +227,7 @@ Transform:
   - {fileID: 5837780066448879261}
   - {fileID: 7685597297549427210}
   - {fileID: 8305972367148596338}
+  - {fileID: 8761302255727354717}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -351,6 +351,7 @@ MonoBehaviour:
   spritesContainer: {fileID: 1013934132990528}
   ripplesContainer: {fileID: 1658159506029436}
   orbHolder: {fileID: 8305972367148596338}
+  residueHolder: {fileID: 0}
   _currentPath: []
   _currentPathIndex: 0
   _isChasingEnemy: 0
@@ -398,6 +399,7 @@ MonoBehaviour:
   shipSize: 0
   rb2d: {fileID: 0}
   spritesOverride: {fileID: 0}
+  abilityEffectHolder: {fileID: 8761302255727354717}
   seaEntityData:
     monsterName: 
     seaMonsterType: 0
@@ -988,6 +990,36 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!1 &577707485303499175
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8761302255727354717}
+  m_Layer: 8
+  m_Name: EffectHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8761302255727354717
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 577707485303499175}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.25, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4900218821786150}
+  m_RootOrder: 14
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &688756565834754581
 GameObject:
   m_ObjectHideFlags: 0
@@ -3866,6 +3898,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 96aac5a2c5570c044a9d58ed6fb66eb7, type: 3}
+--- !u!1 &2836318127835288167 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6109443657379021876, guid: 96aac5a2c5570c044a9d58ed6fb66eb7,
+    type: 3}
+  m_PrefabInstance: {fileID: 8328768610055525971}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &7685597297549427210 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1818610829380703321, guid: 96aac5a2c5570c044a9d58ed6fb66eb7,
@@ -3890,12 +3928,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &2836318127835288167 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6109443657379021876, guid: 96aac5a2c5570c044a9d58ed6fb66eb7,
-    type: 3}
-  m_PrefabInstance: {fileID: 8328768610055525971}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8394520115255553849
 PrefabInstance:
   m_ObjectHideFlags: 0

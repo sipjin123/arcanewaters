@@ -743,7 +743,7 @@ public class SeaEntity : NetEntity
                // Show generic explosion
                Instantiate(PrefabsManager.self.requestCannonExplosionPrefab(currentImpactMagnitude), pos, Quaternion.identity);
             } else {
-               EffectManager.createDynamicEffect(shipData.collisionSpritePath, pos, shipData.abilitySpriteFXPerFrame);
+               EffectManager.createDynamicEffect(shipData.collisionSpritePath, pos, shipData.abilitySpriteFXPerFrame, null);
                // TODO: Add sfx here for ability collision
             }
          }

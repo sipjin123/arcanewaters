@@ -37,6 +37,9 @@ public class ShipBars : MonoBehaviour {
    // The container of health units
    public GameObject healthBlockContainer;
 
+   // The target value for the transparency of the ship bars
+   public float targetAlpha = 1.0f;
+
    #endregion
 
    void Awake () {
@@ -79,7 +82,7 @@ public class ShipBars : MonoBehaviour {
       }
 
       // Hide the canvas if the ship is dead
-      _canvasGroup.alpha = _entity.isDead() ? 0 : 1;
+      _canvasGroup.alpha = _entity.isDead() ? 0 : targetAlpha;
 
       /*if (_entity.hasRecentCombat()) {
          _canvasGroup.alpha = 1f;
@@ -178,6 +181,10 @@ public class ShipBars : MonoBehaviour {
          }
       }
       return tier;
+   }
+
+   public float getAlpha () {
+      return _canvasGroup.alpha;
    }
 
    #region Private Variables

@@ -393,11 +393,11 @@ public class BattleManager : MonoBehaviour {
 
       // Copy the Weapon Info
       if (player.weaponManager.weaponType < 1) {
-         battler.weaponManager.updateWeaponSyncVars(0, 0, "", 0);
+         battler.weaponManager.updateWeaponSyncVars(0, 0, "", 0, 0);
          battler.weaponManager.weaponType = 0;
          battler.weaponManager.palettes = "";
       } else {
-         battler.weaponManager.updateWeaponSyncVars(player.weaponManager.equipmentDataId, player.weaponManager.equippedWeaponId, player.weaponManager.palettes, player.weaponManager.weaponDurability);
+         battler.weaponManager.updateWeaponSyncVars(player.weaponManager.equipmentDataId, player.weaponManager.equippedWeaponId, player.weaponManager.palettes, player.weaponManager.weaponDurability, player.weaponManager.count);
          battler.weaponManager.weaponType = player.weaponManager.weaponType;
          battler.weaponManager.palettes = player.weaponManager.palettes;
          D.adminLog("Equipping battler weapon: {" + battler.weaponManager.weaponType + "}", D.ADMIN_LOG_TYPE.Equipment);
@@ -1186,7 +1186,7 @@ public class BattleManager : MonoBehaviour {
    private IEnumerator CO_SpawnChest (NetEntity winningBattler, Vector3 targetSpawnPos, int battlerInstanceId, int enemyId) {
       yield return new WaitForSeconds(.1f);
 
-      // This prevents the crop from bounding over obstructed areas
+      // This prevents the chest from bounding over obstructed areas
       int collisionCount = 40;
       Collider2D[] hits = new Collider2D[collisionCount];
       float radiusSize = 0.005f;
@@ -1281,7 +1281,7 @@ public class BattleManager : MonoBehaviour {
 
       if (battler.battlerType == BattlerType.AIEnemyControlled) {
          // Silver management
-         int silverReward = SilverManager.SILVER_PLAYER_LAND_BATTLE_KILL_REWARD;
+         int silverReward = battler.isBossType ? SilverManager.SILVER_PLAYER_LAND_BATTLE_BOSS_KILL_REWARD : SilverManager.SILVER_PLAYER_LAND_BATTLE_KILL_REWARD;
 
          // Get the battlers in the opposite team
          Battle.TeamType otherTeam = (battler.teamType == Battle.TeamType.Attackers) ? Battle.TeamType.Defenders : Battle.TeamType.Attackers;
@@ -1300,7 +1300,7 @@ public class BattleManager : MonoBehaviour {
 
             if (GameStatsManager.self.isUserRegistered(otherPlayer.userId)) {
                // Assign silver to all the players on the attacking team
-               StartCoroutine(CO_ProcessSilverAfterBattlerDeath(otherPlayer, shiftedSpotPosition, silverReward, 2.5f));
+               StartCoroutine(CO_ProcessSilverAfterBattlerDeath(otherPlayer, shiftedSpotPosition, silverReward, 1.5f));
             }
          }
       } else if (battler.battlerType == BattlerType.PlayerControlled) {

@@ -200,6 +200,16 @@ public class ServerNetworkingManager : MonoBehaviour
       return false;
    }
 
+   public bool isUserAssignedToAnotherServer (int userId) {
+      foreach (NetworkedServer server in servers) {
+         if (server.networkedPort != this.server.networkedPort && server.assignedUserIds.ContainsKey(userId)) {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
    public void claimPlayer (int userId) {
       server.claimedUserIds[userId] = true;
    }

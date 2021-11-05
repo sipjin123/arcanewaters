@@ -21,6 +21,15 @@ public class MapManager : MonoBehaviour
    // Convenient self reference
    public static MapManager self;
 
+   // The x coordinates for the Open World
+   public const string OPEN_WORLD_MAP_COORDS_X = "ABCDEFGHIJKLMNO";
+
+   // The y coordinates for the Opoen World
+   public const string OPEN_WORLD_MAP_COORDS_Y = "012345678";
+
+   // Open World Map Prefix
+   public const string OPEN_WORLD_MAP_PREFIX = "world_map_";
+
    #endregion
 
    private void Awake () {
@@ -222,9 +231,6 @@ public class MapManager : MonoBehaviour
             yield return null;
          }
 
-         MapImporter.setCameraBounds(result, bounds);
-         MapImporter.addEdgeColliders(result, bounds);
-
          // Set up Flock Manager if it's a sea map, delete otherwise
          if (exportedProject.editorType == EditorType.Sea) {
             result.flockManager.spawnBox.size = bounds.size * 0.16f;
@@ -246,6 +252,9 @@ public class MapManager : MonoBehaviour
 
          // Initialize the area
          area.initialize();
+
+         MapImporter.setCameraBounds(result, bounds);
+         MapImporter.addEdgeColliders(result, bounds);
 
          onAreaCreationIsFinished(area, biome);
       }
@@ -463,6 +472,69 @@ public class MapManager : MonoBehaviour
          Destroy(_lastMap.gameObject);
          _lastMap = null;
       }
+   }
+
+   public static Vector2Int getOpenWorldMapCoords(string areaKey) {
+      if (Util.isEmpty(areaKey) || areaKey.Length < 2 || !areaKey.StartsWith(OPEN_WORLD_MAP_PREFIX)) {
+         return new Vector2Int(-1,-1);
+      }
+
+      char cx = areaKey[areaKey.Length - 2];
+      char cy = areaKey[areaKey.Length - 1];
+
+      int x = OPEN_WORLD_MAP_COORDS_X.IndexOf(cx);
+      int y = OPEN_WORLD_MAP_COORDS_Y.IndexOf(cy);
+
+      return new Vector2Int(x, y);
+   }
+
+   public static string computeOpenWorldMapSuffix (Vector2Int mapCoords) {
+      if (!areValidOpenWorldMapCoords(mapCoords)) {
+         return "";
+      }
+
+      char cx = OPEN_WORLD_MAP_COORDS_X[mapCoords.x];
+      char cy = OPEN_WORLD_MAP_COORDS_Y[mapCoords.y];
+
+      return $"{cx}{cy}".ToUpper();
+   }
+
+   public static string computeNextOpenWorldMap (string areaKey, Direction direction) {
+      Vector2Int mapCoords = getOpenWorldMapCoords(areaKey);
+
+      if (!areValidOpenWorldMapCoords(mapCoords)) {
+         return "";
+      }
+
+      switch (direction) {
+         case Direction.North:
+            mapCoords.y += 1;
+            break;
+         case Direction.East:
+            mapCoords.x += 1;
+            break;
+         case Direction.South:
+            mapCoords.y -= 1;
+            break;
+         case Direction.West:
+            mapCoords.x -= 1;
+            break;
+      }
+
+      if (!areValidOpenWorldMapCoords(mapCoords)) {
+         return "";
+      }
+
+      string suffix = computeOpenWorldMapSuffix(mapCoords);
+      return $"{OPEN_WORLD_MAP_PREFIX}{suffix}";
+   }
+
+   private static bool areValidOpenWorldMapCoords(Vector2Int mapCoords) {
+      if (mapCoords.x < 0 || mapCoords.x >= OPEN_WORLD_MAP_COORDS_X.Length || mapCoords.y < 0 || mapCoords.y >= OPEN_WORLD_MAP_COORDS_Y.Length) {
+         return false;
+      }
+
+      return true;
    }
 
    #region Private Variables

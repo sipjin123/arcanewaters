@@ -353,6 +353,13 @@ public class PlayerShipEntity : ShipEntity
          toggleShipDisplayInfo(false);
       } else {
          toggleShipDisplayInfo(isLocalPlayer || isMouseOver());
+
+         float barsTargetAlpha = 1.0f;
+         if (abilityEffectHolder != null && abilityEffectHolder.transform.childCount > 0) {
+            barsTargetAlpha = 0.0f;
+         }
+
+         shipBars.targetAlpha = Mathf.Lerp(shipBars.targetAlpha, barsTargetAlpha, Time.deltaTime * 5.0f);
       }
 
       // Hide targeting UI when dead
@@ -1967,7 +1974,11 @@ public class PlayerShipEntity : ShipEntity
    }
 
    private void toggleShipDisplayInfo (bool show) {
-      shipInformationDisplay.alpha = show ? 1.0f : NON_LOCAL_SHIP_INFO_DEFAULT_ALPHA;
+      if (abilityEffectHolder != null && abilityEffectHolder.transform.childCount > 0) {
+         shipInformationDisplay.alpha = NON_LOCAL_SHIP_INFO_DEFAULT_ALPHA;
+      } else {
+         shipInformationDisplay.alpha = show ? 1.0f : NON_LOCAL_SHIP_INFO_DEFAULT_ALPHA;
+      }
    }
 
    private void OnCollisionEnter2D (Collision2D collision) {
@@ -2002,19 +2013,9 @@ public class PlayerShipEntity : ShipEntity
          return;
       }
 
-      if (mapEdges.top == edge) {
-         Cmd_SpawnInNewMapSpawn(MapManager.computeNextOpenWorldMap(areaKey, Direction.North), "", Direction.North);
-         D.debug($"Player {Global.player.userId} reached the top edge.");
-      } else if (mapEdges.right == edge) {
-         Cmd_SpawnInNewMapSpawn(MapManager.computeNextOpenWorldMap(areaKey, Direction.East), "", Direction.East);
-         D.debug($"Player {Global.player.userId} reached the right edge.");
-      } else if (mapEdges.bottom == edge) {
-         Cmd_SpawnInNewMapSpawn(MapManager.computeNextOpenWorldMap(areaKey, Direction.South), "", Direction.South);
-         D.debug($"Player {Global.player.userId} reached the bottom edge.");
-      } else if (mapEdges.left == edge) {
-         Cmd_SpawnInNewMapSpawn(MapManager.computeNextOpenWorldMap(areaKey, Direction.West), "", Direction.West);
-         D.debug($"Player {Global.player.userId} reached the left edge.");
-      }
+      setupForWarpClient();
+      Direction direction = mapEdges.computeDirectionFromEdge(edge);
+      Cmd_SpawnInNewMapSpawn(MapManager.computeNextOpenWorldMap(areaKey, direction), null, direction);
    }
 
    #region Private Variables

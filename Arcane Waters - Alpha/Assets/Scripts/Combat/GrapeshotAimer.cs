@@ -14,26 +14,30 @@ public class GrapeshotAimer : ClientMonoBehaviour {
    }
 
    private void Update () {
-      // Check if the right mouse is being held down for the grapeshot attack
-      bool rightMouseDown = KeyUtils.GetButton(MouseButton.Right);
-      // Can't do anything until we have a player
-      if (Global.player == null || !(Global.player is SeaEntity)) {
-         return;
+      bool forceEnable = false;
+
+      if (forceEnable) {
+         // Check if the right mouse is being held down for the grapeshot attack
+         bool rightMouseDown = KeyUtils.GetButton(MouseButton.Right);
+         // Can't do anything until we have a player
+         if (Global.player == null || !(Global.player is SeaEntity)) {
+            return;
+         }
+         _renderer.enabled = (rightMouseDown && SeaManager.getAttackType() == Attack.Type.Air);
+
+         // Only show when we've selected grapeshot
+         if (SeaManager.getAttackType() != Attack.Type.Air) {
+            return;
+         }
+
+         // Center on the player's ship
+         Util.setXY(this.transform, Global.player.transform.position);
+
+         // Rotate according to the direction towards the mouse
+         Vector3 targetDir = Util.getMousePos() - this.transform.position;
+         float angle = Util.angle(targetDir);
+         this.transform.rotation = Quaternion.Euler(0f, 0f, 315f - angle);
       }
-      _renderer.enabled = (rightMouseDown && SeaManager.getAttackType() == Attack.Type.Air);
-
-      // Only show when we've selected grapeshot
-      if (SeaManager.getAttackType() != Attack.Type.Air) {
-         return;
-      }
-
-      // Center on the player's ship
-      Util.setXY(this.transform, Global.player.transform.position);
-
-      // Rotate according to the direction towards the mouse
-      Vector3 targetDir = Util.getMousePos() - this.transform.position;
-      float angle = Util.angle(targetDir);
-      this.transform.rotation = Quaternion.Euler(0f, 0f, 315f - angle);
    }
 
    #region Private Variables

@@ -632,6 +632,19 @@ public class MyNetworkManager : NetworkManager
       return visitSpawnPosition;
    }
 
+   [ServerOnly]
+   public void onUserUnassignedFromServer (int userId) {
+      // A user was removed from the server for inactivity
+      bool isUserAssignedToAnotherServer = ServerNetworkingManager.self.isUserAssignedToAnotherServer(userId);
+
+      if (!isUserAssignedToAnotherServer) {
+         D.debug($"[MyNetworkManager.onUserUnassignedFromServer] User {userId} disconnected for inactivity and friends were notified. isUserAssignedAnyWhere: {isUserAssignedToAnotherServer}");
+         RPCManager.notifyOnlineStatusToFriends(userId, false, "");
+      } else {
+         D.debug($"[MyNetworkManager.onUserUnassignedFromServer] User {userId} disconnected for inactivity but friends were not notified. isUserAssignedAnyWhere: {isUserAssignedToAnotherServer}");
+      }
+   }
+
    public ClientConnectionData getConnectedClientDataForAccount (int accountId) {
       return _players.Values.FirstOrDefault(x => x.isAuthenticated() && x.accountId == accountId);
    }
@@ -738,15 +751,18 @@ public class MyNetworkManager : NetworkManager
       ClientConnectionData data = _players[conn.connectionId];
       NetEntity player = data.netEntity;
 
-      // Notify friends
-      if (player != null) {
-         player.rpc.notifyOnlineStatusToFriends(player, isOnline: false, null);
-      }
-
       // Notify the master server that a user disconnected from this server
       int userId = player != null ? player.userId : data.userId;
       if (userId > 0) {
          ServerNetworkingManager.self.onUserDisconnectsFromServer(userId);
+      }
+
+      if (player != null) {
+         if (disconnectionReason != DisconnectionReason.Redirection) {
+            RPCManager.notifyOnlineStatusToFriends(player.userId, false, "");
+         } else {
+            D.debug($"[disconnectClient] Player {player.userId} is redirecting. Friends were not notified.");
+         }
       }
 
       if (player != null) {
@@ -796,7 +812,7 @@ public class MyNetworkManager : NetworkManager
       D.debug($"OnServerAddPlayer is sending redirect to {bestServerPort.Value} for {userName}");
 
       // Disconnect the player from this server
-      disconnectClient(conn, true);
+      disconnectClient(conn, DisconnectionReason.Redirection, true);
    }
 
    public IEnumerator CO_RedirectUser (NetworkConnection conn, int accountId, int userId, string userName, int voyageId, bool isSinglePlayer, string destinationAreaKey, string currentAreaKey, GameObject entityToDestroy, int instanceId, int serverPort) {

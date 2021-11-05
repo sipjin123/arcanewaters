@@ -1865,8 +1865,8 @@ public class NetEntity : NetworkBehaviour
          if (spawn != null) {
             SpawnManager.SpawnData spawnData = SpawnManager.self.getMapSpawnData(newArea, spawn);
             if (spawnData != null) {
-               newFacingDirection = (Direction) spawnData.arriveFacing;
-               D.adminLog("Override facing direction, Spawn is" + " " + newArea + " " + SpawnManager.self.getMapSpawnData(newArea, spawn) + " " + newFacingDirection, D.ADMIN_LOG_TYPE.Warp);
+               adjustedNewFacingDirection = (Direction) spawnData.arriveFacing;
+               D.adminLog("Override facing direction, Spawn is" + " " + newArea + " " + SpawnManager.self.getMapSpawnData(newArea, spawn) + " " + adjustedNewFacingDirection, D.ADMIN_LOG_TYPE.Warp);
             }
          }
       }
@@ -1876,18 +1876,18 @@ public class NetEntity : NetworkBehaviour
          targetLocalPos = transform.localPosition;
          float offset = 0.2f;
 
-         if (facing == Direction.North) {
+         if (newFacingDirection == Direction.North) {
             targetLocalPos = Util.mirrorY(targetLocalPos) + Vector2.up * offset;
-         } else if (facing == Direction.South) {
+         } else if (newFacingDirection == Direction.South) {
             targetLocalPos = Util.mirrorY(targetLocalPos) + Vector2.down * offset;
-         } else if (facing == Direction.East) {
+         } else if (newFacingDirection == Direction.East) {
             targetLocalPos = Util.mirrorX(targetLocalPos) + Vector2.right * offset;
-         } else if (facing == Direction.West) {
+         } else if (newFacingDirection == Direction.West) {
             targetLocalPos = Util.mirrorX(targetLocalPos) + Vector2.left * offset;
          }
       }
 
-      spawnInNewMap(newArea, targetLocalPos, newFacingDirection, -1, -1);
+      spawnInNewMap(newArea, targetLocalPos, adjustedNewFacingDirection, -1, -1);
    }
 
    [Server]
@@ -1938,7 +1938,7 @@ public class NetEntity : NetworkBehaviour
    [Server]
    public void findBestServerAndWarp (string newArea, Vector2 newLocalPosition, int voyageId, Direction newFacingDirection, int instanceId, int serverPort) {
       if (this.isAboutToWarpOnServer) {
-         D.log($"The player {netId} is already being warped.");
+         D.log($"The player {netId} is already being warped. Cannot warp again to {newArea}");
          return;
       }
 

@@ -29,7 +29,7 @@ public class PvpCaptureTarget : SeaEntity {
       getHoldingEntity();
       updateParent();
 
-      Minimap.self.addTreasureChestIcon(this.gameObject);
+      Minimap.self.addPvpTreasureChestIcon(this.gameObject, pvpTeam);
    }
 
    private void findHolder () {

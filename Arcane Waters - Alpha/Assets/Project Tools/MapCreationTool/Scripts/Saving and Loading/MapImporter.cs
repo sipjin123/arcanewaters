@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System;
 using MapCustomization;
 using FMODUnity;
+using Assets.Scripts.Map;
 
 namespace MapCreationTool
 {
@@ -186,10 +187,19 @@ namespace MapCreationTool
          container.transform.localPosition = Vector2.zero;
          container.transform.localScale = 0.16f * Vector2.one;
 
-         container.AddComponent<EdgeCollider2D>().points = new Vector2[] { new Vector2(bounds.min.x, bounds.max.y), bounds.max };
-         container.AddComponent<EdgeCollider2D>().points = new Vector2[] { bounds.max, new Vector2(bounds.max.x, bounds.min.y) };
-         container.AddComponent<EdgeCollider2D>().points = new Vector2[] { new Vector2(bounds.max.x, bounds.min.y), bounds.min };
-         container.AddComponent<EdgeCollider2D>().points = new Vector2[] { bounds.min, new Vector2(bounds.min.x, bounds.max.y) };
+         MapEdges edges = container.AddComponent<MapEdges>();
+
+         edges.top = container.AddComponent<EdgeCollider2D>();
+         edges.top.points = new Vector2[] { new Vector2(bounds.min.x, bounds.max.y), bounds.max };
+
+         edges.right = container.AddComponent<EdgeCollider2D>();
+         edges.right.points = new Vector2[] { bounds.max, new Vector2(bounds.max.x, bounds.min.y) };
+
+         edges.bottom = container.AddComponent<EdgeCollider2D>();
+         edges.bottom.points = new Vector2[] { new Vector2(bounds.max.x, bounds.min.y), bounds.min };
+
+         edges.left = container.AddComponent<EdgeCollider2D>();
+         edges.left.points = new Vector2[] { bounds.min, new Vector2(bounds.min.x, bounds.max.y) };
       }
 
       /// <summary>
@@ -207,10 +217,9 @@ namespace MapCreationTool
 
          map.confiner.m_BoundingShape2D = map.camBounds;
 
-         Vector3 confinerScale = map.area.cameraBounds.transform.localScale;
          Vector3 confinerPosition = map.area.cameraBounds.transform.localPosition;
-         map.area.cameraBounds.transform.localScale = new Vector3(confinerScale.x, confinerScale.y, confinerScale.z);
-         map.area.cameraBounds.transform.localPosition = new Vector3(confinerPosition.x, confinerPosition.y - .1f, confinerPosition.z);
+         map.area.cameraBounds.transform.localScale = new Vector3(0.16f, 0.16f, 0.16f);
+         map.area.cameraBounds.transform.localPosition = new Vector3(confinerPosition.x, confinerPosition.y, confinerPosition.z);
       }
 
       public static Bounds calculateBounds (ExportedProject001 project) {
