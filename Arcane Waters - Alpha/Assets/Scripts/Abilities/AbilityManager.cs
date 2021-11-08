@@ -273,6 +273,20 @@ public class AbilityManager : MonoBehaviour
          return;
       }
 
+      // Cancel any queued stance changes
+      if (sourceBattler.stanceChangeCoroutine != null) {
+         StopCoroutine(sourceBattler.stanceChangeCoroutine);
+      }
+
+      // Queue up stance change
+      sourceBattler.stanceChangeCoroutine = StartCoroutine(CO_RequestStanceChange(battle, sourceBattler, action));
+   }
+
+   private IEnumerator CO_RequestStanceChange (Battle battle, Battler sourceBattler, StanceAction action) {
+      while (!sourceBattler.canExecuteAction || sourceBattler.isAttacking) {
+         yield return null;
+      }
+      
       // Make note of the time that this action is going to occur
       sourceBattler.lastStanceChange = action.actionEndTime;
       sourceBattler.stanceCooldownEndTime = action.actionEndTime;

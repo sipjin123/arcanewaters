@@ -1342,6 +1342,19 @@ public class PlayerShipEntity : ShipEntity
          return;
       }
 
+      // Ensure the player's ship is always on water
+      if (VoyageManager.isOpenWorld(area.areaKey)) {
+         if (area.isOpenWaterTile(transform.position)) {
+            return;
+         }
+
+         Vector3[] surroundingTiles = Util.createGridAroundPoint(transform.position, new Vector3(0.2f, 0.2f, 0.2f), new Vector3(8, 8, 1));
+         Vector3[] waterTiles = surroundingTiles.Where(area.isOpenWaterTile).ToArray();
+         Vector3 nearestWaterTile = Util.getNearestPoint(transform.position, waterTiles);
+         transform.position = nearestWaterTile;
+         return;
+      }
+
       // Teleport ship to spawn position in case if it blocks on collider after spawning in new area
       Vector2 nearestSpawnPos = transform.position;
       float minDistance = float.MaxValue;

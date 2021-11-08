@@ -20,7 +20,6 @@ public class KnockbackEffect : MonoBehaviour {
    #endregion
 
    public void init (float effectRadius) {
-      Util.setZ(transform, 6.0f);
       explosionStartRenderer.DOFade(0.0f, FADE_DURATION);
 
       float scaleFactor = effectRadius / DEFAULT_RADIUS;

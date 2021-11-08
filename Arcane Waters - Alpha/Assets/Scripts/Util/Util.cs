@@ -1443,6 +1443,38 @@ public class Util : MonoBehaviour
       return new Vector3(vector.x, -vector.y);
    }
 
+   public static Vector3[] createGridAroundPoint(Vector3 center, Vector3 spacing, Vector3 size) {
+      // Creates a set of points around the center
+      List<Vector3> points = new List<Vector3>();
+
+      for (int z = 0; z < size.z; z++) {
+         for (int y = 0; y < size.y; y++) {
+            for (int x = 0; x < size.x; x++) {
+               var v = new Vector3(x * spacing.x, y * spacing.y, z * spacing.z);
+               v += center;
+               v -= new Vector3((size.x - 1) * spacing.x, (size.y - 1) * spacing.y, (size.z - 1) * spacing.z) * 0.5f;
+               points.Add(v);
+            }
+         }
+      }
+
+      return points.ToArray();
+   }
+
+   public static Vector3 getNearestPoint(Vector3 target, Vector3[] points) {
+      float distanceSquared = float.NaN;
+      Vector3 nearestPoint = target;
+
+      foreach (Vector3 point in points) {
+         if (float.IsNaN(distanceSquared) || (point - target).sqrMagnitude < distanceSquared) {
+            distanceSquared = (point - target).sqrMagnitude;
+            nearestPoint = point;
+         }
+      }
+
+      return nearestPoint;
+   }
+
    // A Random instance we can use for generating random numbers
    private static System.Random r = new System.Random();
 

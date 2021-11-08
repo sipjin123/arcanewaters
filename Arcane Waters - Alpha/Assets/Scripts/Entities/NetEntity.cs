@@ -273,6 +273,9 @@ public class NetEntity : NetworkBehaviour
    // The duration of auto-move actions
    public static float AUTO_MOVE_ACTION_DURATION = 2f;
 
+   // The interval in seconds between farming xp gain notifications
+   public static float FARM_XP_NOTIFICATION_INTERVAL = 4f;
+
    // If this netentity is under control by a temporary controller, and had control passed from another temporary controller
    [SyncVar]
    public bool passedOnTemporaryControl = false;
@@ -1463,7 +1466,34 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
+   public void Target_GainedFarmXp (NetworkConnection conn, int xpGained, Jobs jobs) {
+      CancelInvoke(nameof(displayFarmXpGain));
+
+      _lastJobsXp = jobs;
+      _accumulatedFarmingXp += xpGained;
+
+      // If there has been no farming xp gain notification in the past seconds, immediately display the accumulated xp (in a few frames, in case there have been multiple simultaneous actions)
+      if (NetworkTime.time - _lastFarmingXpNotificationTime > FARM_XP_NOTIFICATION_INTERVAL) {
+         Invoke(nameof(displayFarmXpGain), 0.1f);
+         return;
+      }
+
+      // If a few seconds pass without farming actions, display the accumulated xp gained
+      Invoke(nameof(displayFarmXpGain), FARM_XP_NOTIFICATION_INTERVAL / 2);
+   }
+
+   protected void displayFarmXpGain () {
+      onGainedJobXP(_accumulatedFarmingXp, _lastJobsXp, Jobs.Type.Farmer, -1, true);
+      _accumulatedFarmingXp = 0;
+      _lastFarmingXpNotificationTime = NetworkTime.time;
+   }
+
+   [TargetRpc]
    public void Target_GainedXP (NetworkConnection conn, int xpGained, Jobs jobs, Jobs.Type jobType, int cropNumber, bool showFloatingXp) {
+      onGainedJobXP(xpGained, jobs, jobType, cropNumber, showFloatingXp);
+   }
+
+   protected void onGainedJobXP (int xpGained, Jobs jobs, Jobs.Type jobType, int cropNumber, bool showFloatingXp) {
       Vector3 pos = this.transform.position + new Vector3(0f, .32f);
 
       // If it happened at a crop spot, show the XP gain there
@@ -2509,6 +2539,15 @@ public class NetEntity : NetworkBehaviour
 
    // The web that we are currently bouncing on, if we have one
    protected SpiderWeb _activeWeb = null;
+
+   // The last job xp update received from the server
+   protected Jobs _lastJobsXp;
+
+   // The farm xp gained in the last seconds, that has not been displayed yet
+   protected int _accumulatedFarmingXp = 0;
+
+   // The time at which the last farm xp notification has been shown
+   protected double _lastFarmingXpNotificationTime = 0;
 
    #endregion
 }

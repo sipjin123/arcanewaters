@@ -58,6 +58,19 @@ public class MyNetworkManager : NetworkManager
    // An event triggered when the client has disconnected
    public event Action clientDisconnected;
 
+   // Reason for disconnecting
+   public enum DisconnectionReason
+   {
+      // Unknown
+      Unknown = 0,
+
+      // Logout
+      UserLogout = 1,
+
+      // Redirection
+      Redirection = 2
+   }
+
    #endregion
 
    public override void Awake () {

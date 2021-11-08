@@ -393,7 +393,7 @@ namespace MapCreationTool
                   }
                   shopEntity.isSeaShop = area.isSea;
                }
-
+               
                foreach (IBiomable biomable in pref.GetComponentsInChildren<IBiomable>()) {
                   biomable.setBiome(project.biome);
                }
