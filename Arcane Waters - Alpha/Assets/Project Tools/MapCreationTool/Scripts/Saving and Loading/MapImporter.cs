@@ -257,6 +257,7 @@ namespace MapCreationTool
          int cropSpotCounter = 0;
          int spawnIdCounter = 0;
 
+         OreNodeMapController oreController = null;
          foreach (var prefab in project.prefabs) {
             GameObject original = AssetSerializationMaps.tryGetPrefabGame(prefab.i, project.biome);
             if (original == null) {
@@ -386,6 +387,8 @@ namespace MapCreationTool
                   pref.transform.localScale = new Vector3(0.16f, 0.16f, 1f);
                } else if (original.GetComponent<SpiderWeb>() != null) {
                   pref.GetComponent<SpiderWeb>().initializeBiome(project.biome);
+               } else if (original.GetComponent<OreNodeMapController>() != null) {
+                  oreController = pref.GetComponent<OreNodeMapController>();
                } else if (original.GetComponent<PvpShopEntity>()) {
                   PvpShopEntity shopEntity = pref.GetComponent<PvpShopEntity>();
                   if (area.isSea && VoyageManager.isAnyLeagueArea(area.areaKey) && !VoyageManager.isPvpArenaArea(area.areaKey)) {
@@ -439,7 +442,7 @@ namespace MapCreationTool
          area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData,
             shipData, seaMonstersData, bossSpawnerData, pvpTowerData,
             pvpBaseData, pvpShipyardTowerData, pvpWaypointsData, pvpMonsterSpawnerData,
-            pvpLootSpawnData, pvpCaptureTargetHolderData);
+            pvpLootSpawnData, pvpCaptureTargetHolderData, oreController);
       }
    }
 }

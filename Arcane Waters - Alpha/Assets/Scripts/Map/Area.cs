@@ -137,6 +137,9 @@ public class Area : MonoBehaviour
    // Networked entity parents
    public Transform npcParent, enemyParent, oreNodeParent, secretsParent, treasureSiteParent, seaMonsterParent, botShipParent, userParent;
 
+   // The ore node controller reference
+   public OreNodeMapController oreNodeController;
+
    // The cloud manager
    public CloudManager cloudManager;
 
@@ -159,7 +162,7 @@ public class Area : MonoBehaviour
       List<ExportedPrefab001> shipDataFields, List<ExportedPrefab001> seaMonsterDataFields, List<ExportedPrefab001> bossSpawnerDataFields, 
       List<ExportedPrefab001> pvpTowerDataFields, List<ExportedPrefab001> pvpBaseDataFields, List<ExportedPrefab001> pvpShipyardDataFields, 
       List<ExportedPrefab001> pvpWaypoints, List<ExportedPrefab001> pvpMonsterSpawnerFields, List<ExportedPrefab001> pvpLootSpawners, 
-      List<ExportedPrefab001> pvpCaptureTargetHolders) {
+      List<ExportedPrefab001> pvpCaptureTargetHolders, OreNodeMapController oreNodeController) {
       this.npcDatafields = npcDatafields;
       this.enemyDatafields = enemyDatafields;
       this.oreDataFields = oreDataFields;
@@ -174,6 +177,7 @@ public class Area : MonoBehaviour
       this.pvpMonsterSpawnerDataFields = pvpMonsterSpawnerFields;
       this.pvpLootSpawners = pvpLootSpawners;
       this.pvpCaptureTargetHolders = pvpCaptureTargetHolders;
+      this.oreNodeController = oreNodeController;
 
       if (CommandCodes.get(CommandCodes.Type.NPC_DISABLE) || Util.isForceServerLocalWithAutoDbconfig()) {
          this.npcDatafields.Clear();

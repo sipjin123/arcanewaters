@@ -714,6 +714,7 @@ public class Instance : NetworkBehaviour
          }
       }
 
+      List<OreNode> oreNodeList = new List<OreNode>();
       if (area.oreDataFields.Count > 0) {
          foreach (ExportedPrefab001 dataField in area.oreDataFields) {
             Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
@@ -737,11 +738,17 @@ public class Instance : NetworkBehaviour
 
             // Create the ore node locally and through the network
             OreNode newOreNode = OreManager.self.createOreNode(this, targetLocalPos, oreType);
+            oreNodeList.Add(newOreNode);
             Map map = AreaManager.self.getMapInfo(areaKey);
             if (map != null) {
                newOreNode.mapSpecialType = map.specialType;
             }
          }
+      }
+
+      // Register the ore spots to the ore controller if it exists
+      if (area.oreNodeController) {
+         area.oreNodeController.setOreSpotList(oreNodeList);
       }
 
       if (area.shipDataFields.Count > 0) {

@@ -299,6 +299,8 @@ namespace MapCreationTool.Serialization
 
       public const string ORE_SPOT_DATA_KEY = "ore id";
       public const string ORE_TYPE_DATA_KEY = "ore type";
+      public const string ORE_RESPAWN_TIME_DATA_KEY = "ore respawn time";
+      public const string ORE_TOTAL_ACTIVE_DATA_KEY = "ore total active";
 
       public const string SEA_ENEMY_DATA_KEY = "enemy data";
 
