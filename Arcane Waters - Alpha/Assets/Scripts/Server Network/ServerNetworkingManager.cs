@@ -25,6 +25,9 @@ public class ServerNetworkingManager : MonoBehaviour
    // Self
    public static ServerNetworkingManager self;
 
+   // The cached logs
+   public string lastMasterServerLog, lastServerLog;
+
    #endregion
 
    private void Awake () {
@@ -72,9 +75,18 @@ public class ServerNetworkingManager : MonoBehaviour
       if (server != null) {
          // If this is the master server
          if (server.isMasterServer()) {
-            D.debug($"Total client connections: {self.servers.Sum(x => x.connectedUserIds.Count)}, Total assigned users: {self.servers.Sum(x => x.assignedUserIds.Count)}");
+            string newMasterServerLog = $"Total client connections: {self.servers.Sum(x => x.connectedUserIds.Count)}, Total assigned users: {self.servers.Sum(x => x.assignedUserIds.Count)}";
+            if (lastMasterServerLog != newMasterServerLog) {
+               D.debug(newMasterServerLog);
+               lastMasterServerLog = newMasterServerLog;
+            }
          }
-         D.debug($"My client connections: {server.connectedUserIds.Count}, My assigned users: {server.assignedUserIds.Count}");
+
+         string newServerLog = $"My client connections: {server.connectedUserIds.Count}, My assigned users: {server.assignedUserIds.Count}";
+         if (lastServerLog != newServerLog) {
+            D.debug(newServerLog);
+            lastServerLog = newServerLog;
+         }
       }
    }
 
