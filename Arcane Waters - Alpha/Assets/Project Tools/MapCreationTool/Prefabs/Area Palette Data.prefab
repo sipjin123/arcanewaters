@@ -984,6 +984,7 @@ Transform:
   - {fileID: 2049871651172625534}
   - {fileID: 1859274531861103512}
   - {fileID: 8806036594251653408}
+  - {fileID: 8414881306168434685}
   m_Father: {fileID: 6003827098852396580}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -14673,11 +14674,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 4
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 4
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -14933,11 +14934,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 4
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 4
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -18359,6 +18360,50 @@ MonoBehaviour:
     type: 3}
   burrowedPref: {fileID: 9205348245959253201, guid: be77f572143cfa54fbd05662b666a483,
     type: 3}
+--- !u!1 &7662807259843947040
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8414881306168434685}
+  - component: {fileID: 2101447449942079421}
+  m_Layer: 0
+  m_Name: ore controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8414881306168434685
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7662807259843947040}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 15, y: 57, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3719976920741877196}
+  m_RootOrder: 59
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2101447449942079421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7662807259843947040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d14a3bae45cba31478d29685e1dea398, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 6928936740555346515, guid: 4a6ca88bff6100a42b414b38cfb8cb4a, type: 3}
 --- !u!1 &7695178053639037948
 GameObject:
   m_ObjectHideFlags: 0
