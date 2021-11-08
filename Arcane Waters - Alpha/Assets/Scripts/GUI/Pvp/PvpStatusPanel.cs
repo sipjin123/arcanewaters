@@ -68,7 +68,7 @@ public class PvpStatusPanel : ClientMonoBehaviour
          return;
       }
 
-      if (!isInstanceValid(Global.player.getInstance())) {
+      if (!isInstanceValid(Global.player.getInstance()) && !Global.player.areaKey.Contains(Area.TUTORIAL_AREA)) {
          hide();
          return;
       }
@@ -94,7 +94,7 @@ public class PvpStatusPanel : ClientMonoBehaviour
          return;
       }
 
-      if (!isInstanceValid(Global.player.getInstance())) {
+      if (!isInstanceValid(Global.player.getInstance()) && !Global.player.areaKey.Contains(Area.TUTORIAL_AREA)) {
          return;
       }
 

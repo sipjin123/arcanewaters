@@ -5951,7 +5951,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // If the area is a PvP area, a Voyage or a TreasureSite, add the player to the GameStats System
-      if (_player.tryGetVoyage(out Voyage v) || VoyageManager.isAnyLeagueArea(_player.areaKey) || VoyageManager.isPvpArenaArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)) {
+      if (_player.tryGetVoyage(out Voyage v) || VoyageManager.isAnyLeagueArea(_player.areaKey) || VoyageManager.isPvpArenaArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey) || _player.areaKey.Contains(Area.TUTORIAL_AREA)) {
          GameStatsManager.self.registerUser(_player.userId);
       } else {
          PvpAnnouncementHolder.self.clearAnnouncements();
