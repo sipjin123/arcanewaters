@@ -38,6 +38,12 @@ public class QuestDataNode {
    // The quest dialogue node array
    public QuestDialogueNode[] questDialogueNodes;
 
+   // If the quest is repeatable
+   public bool isRepeatable = false;
+
+   // The repeat rate
+   public float repeatRateInSeconds;
+
    // The current quest progress required so that this quest node will be available
    public int questNodeLevelRequirement = -1;
 }

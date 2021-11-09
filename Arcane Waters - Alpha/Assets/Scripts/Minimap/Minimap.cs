@@ -273,6 +273,8 @@ public class Minimap : ClientMonoBehaviour {
             TilemapToTextureColorsStatic(area, Biome.Type.Forest, _savingMinimapsWithScript);
          } else if (AreaManager.self.isHouseOfUser(Global.player.areaKey, Global.player.userId)) {
             TilemapToTextureColorsStatic(area, Biome.Type.Forest, _savingMinimapsWithScript);
+         } else if (minimapKey.StartsWith("customhouse")) {
+            TilemapToTextureColorsStatic(area, Biome.Type.Forest, _savingMinimapsWithScript);
          }
       } else {
          // Static minimap was found - setup data (minimap size for static images might be different than real area size)
