@@ -6184,7 +6184,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_MineNode (int nodeId, int oreEffectId, int ownerId, int voyageGroupId) {
+   public void Cmd_PickupOre (int nodeId, int oreEffectId, int ownerId, int voyageGroupId) {
       OreNode oreNode = OreManager.self.getOreNode(nodeId);
 
       // Make sure we found the Node

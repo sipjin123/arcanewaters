@@ -76,7 +76,7 @@ public class OrePickup : MonoBehaviour {
          // Sound effect triggered for collecting the ores
          SoundEffectManager.self.playSoundEffect(SoundEffectManager.ORE_PICKUP, transform);
 
-         Global.player.rpc.Cmd_MineNode(oreNode.id, oreEffectId, ownerId, voyageGroupId);
+         Global.player.rpc.Cmd_PickupOre(oreNode.id, oreEffectId, ownerId, voyageGroupId);
          GetComponent<BoxCollider2D>().enabled = false;
          gameObject.SetActive(false);
       }

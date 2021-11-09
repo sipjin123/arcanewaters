@@ -84,7 +84,7 @@ public class MiningTrigger : MonoBehaviour
                   // RPC for playing SFX. It doesn't matter if the ore node is full or empty
                   bodyEntity.rpc.Cmd_PlayOreSfx(oreNode.id);
 
-                  if (!oreNode.hasBeenMined() && !oreIdsInteracted.Exists(_ => _ == oreNode.id) && !oreNode.finishedMining()) {
+                  if (!oreNode.hasBeenMinedByUser() && !oreIdsInteracted.Exists(_ => _ == oreNode.id) && !oreNode.finishedMining()) {
                      if ((oreNode.voyageId > 0 && oreNode.mapSpecialType == Area.SpecialType.TreasureSite) || oreNode.mapSpecialType != Area.SpecialType.TreasureSite) {
                         D.adminLog("Player attempting to mine ore {" + oreNode.id + "}", D.ADMIN_LOG_TYPE.Mine);
                         bodyEntity.rpc.Cmd_InteractOre(oreNode.id, transform.position, oreNode.transform.position);
@@ -97,7 +97,7 @@ public class MiningTrigger : MonoBehaviour
                      }
                   } else {
                      D.adminLog("Player cannot mine:: " +
-                        "hasBeenMined:{" + oreNode.hasBeenMined() + "} " +
+                        "hasBeenMined:{" + oreNode.hasBeenMinedByUser() + "} " +
                         "finishedMining:{" + oreNode.finishedMining() + "} " +
                         "oreIdInteracted:{" + oreIdsInteracted.Exists(_ => _ == oreNode.id) + "}", D.ADMIN_LOG_TYPE.Mine);
                   }

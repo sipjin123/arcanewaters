@@ -81,7 +81,7 @@ public class OreNode : NetworkBehaviour
       }
 
       // Update the sprite shown if we've already mined this node
-      if (hasBeenMined() || finishedMining()) {
+      if (hasBeenMinedByUser() || finishedMining()) {
          spriteRenderer.sprite = oreSprites.Last();
          _outline.setVisibility(false);
          _clickableBox.enabled = false;
@@ -103,7 +103,7 @@ public class OreNode : NetworkBehaviour
          }
       }
 
-      if (hasBeenMined() || finishedMining()) {
+      if (hasBeenMinedByUser() || finishedMining()) {
          _outline.setVisibility(false);
          _clickableBox.enabled = false;
       }
@@ -115,7 +115,7 @@ public class OreNode : NetworkBehaviour
    }
 
    public void tryToMineNodeOnClient () {
-      if (hasBeenMined()) {
+      if (hasBeenMinedByUser()) {
          return;
       }
 
@@ -138,7 +138,7 @@ public class OreNode : NetworkBehaviour
       } 
    }
 
-   public bool hasBeenMined () {
+   public bool hasBeenMinedByUser () {
       if (Global.player == null) {
          return false;
       }
