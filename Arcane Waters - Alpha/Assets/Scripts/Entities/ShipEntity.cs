@@ -246,7 +246,7 @@ public class ShipEntity : SeaEntity
             break;
          case Attack.Type.SpeedBoost:
             hasUsedBuff = true;
-            StartCoroutine(CO_TriggerTemporaryBuff(this, shipAbilityData, shipAbilityData.statusDuration));
+            StartCoroutine(CO_TriggerTemporaryBuff(this, shipAbilityData, shipAbilityData.statusDuration, true));
             break;
       }
 
@@ -272,7 +272,7 @@ public class ShipEntity : SeaEntity
                               StartCoroutine(CO_TriggerOneShotBuff(allyShip, shipAbilityData, new List<Attack.Type> { Attack.Type.Heal }, allyShip.userId, false));
                               break;
                            case Attack.Type.SpeedBoost:
-                              StartCoroutine(CO_TriggerTemporaryBuff(allyShip, shipAbilityData, shipAbilityData.statusDuration));
+                              StartCoroutine(CO_TriggerTemporaryBuff(allyShip, shipAbilityData, shipAbilityData.statusDuration, false));
                               break;
                         }
                      } else {
@@ -320,12 +320,12 @@ public class ShipEntity : SeaEntity
                if (isWithinBuffEffectivity == false) {
                   withinBuffEffectivityList.Add(allyShip.userId);
                   addServerAbilityOrbs(new List<Attack.Type> { shipAbilityData.selectedAttackType }, allyShip.userId, true);
-                  modifyStats(allyShip, shipAbilityData, value);
+                  modifyStats(allyShip, shipAbilityData, value, false);
                }
             } else {
                if (isWithinBuffEffectivity) {
                   withinBuffEffectivityList.Remove(allyShip.userId);
-                  modifyStats(allyShip, shipAbilityData, -value);
+                  modifyStats(allyShip, shipAbilityData, -value, false);
                }
             }
          }
@@ -340,22 +340,22 @@ public class ShipEntity : SeaEntity
          bool isWithinBuffEffectivity = withinBuffEffectivityList.Contains(allyShip.userId);
          if (isWithinBuffEffectivity) {
             withinBuffEffectivityList.Remove(allyShip.userId);
-            modifyStats((PlayerShipEntity) allyShip, shipAbilityData, -value);
+            modifyStats((PlayerShipEntity) allyShip, shipAbilityData, -value, false);
          }
       }
    }
 
-   private IEnumerator CO_TriggerTemporaryBuff (ShipEntity targetEntity, ShipAbilityData shipAbilityData, float statusDuration) {
+   private IEnumerator CO_TriggerTemporaryBuff (ShipEntity targetEntity, ShipAbilityData shipAbilityData, float statusDuration, bool castToSelf) {
       int value = (int) (shipAbilityData.damageModifier * 100);
 
       addServerAbilityOrbs(new List<Attack.Type> { shipAbilityData.selectedAttackType }, targetEntity.userId, false);
       yield return new WaitForSeconds(ShipAbilityData.STATUS_CAST_DELAY);
-      modifyStats(targetEntity, shipAbilityData, value);
+      modifyStats(targetEntity, shipAbilityData, value, castToSelf);
       yield return new WaitForSeconds(statusDuration);
-      modifyStats(targetEntity, shipAbilityData, -value);
+      modifyStats(targetEntity, shipAbilityData, -value, castToSelf);
    }
 
-   private void modifyStats (ShipEntity targetEntity, ShipAbilityData shipAbilityData, int value) {
+   private void modifyStats (ShipEntity targetEntity, ShipAbilityData shipAbilityData, int value, bool castToSelf) {
       // Skip process if target is missing, probably got destroyed via warp
       if (targetEntity == null) {
          return;
@@ -373,7 +373,8 @@ public class ShipEntity : SeaEntity
          removeServerAbilityOrbs(new List<Attack.Type> { shipAbilityData.selectedAttackType }, targetEntity.userId);
       }
 
-      targetEntity.Rpc_CastSkill(shipAbilityData.abilityId, shipAbilityData, targetEntity.transform.position, value, value > 0, value > 0);
+      bool showEffects = value > 0 && castToSelf;
+      targetEntity.Rpc_CastSkill(shipAbilityData.abilityId, shipAbilityData, targetEntity.transform.position, value, showEffects, value > 0);
    }
 
    [ClientRpc]
