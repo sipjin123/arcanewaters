@@ -1,82 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Mirror;
 using SteamLoginSystem;
 using UnityEngine.Networking;
-using System.Text;
-using System;
 
-public class BugReportManager : MonoBehaviour
+public class BugReportManager : GenericGameManager
 {
    #region Public Variables
 
    // Self
    public static BugReportManager self;
 
-   // Reference to main canvas
-   public Canvas canvasGUI;
-
    #endregion
 
-   public void Awake () {
+   protected override void Awake () {
+      base.Awake();
       self = this;
-   }
-
-   //private void OnEnable () {
-   //   Application.logMessageReceived += addErrorLogMessage;
-   //}
-
-   //private void OnDisable () {
-   //   Application.logMessageReceived -= addErrorLogMessage;
-   //}
-
-   //private void addErrorLogMessage (string logString, string stackTrace, LogType type) {
-   //   if (type == LogType.Exception) {
-   //      D.log("[EXCEPTION]: " + logString + "\n" + stackTrace);
-   //   }
-   //}
-
-   [ServerOnly]
-   public void storeBugReportOnServer (NetEntity player, string subject, string message, int ping, int fps, byte[] screenshotBytes, string screenResolution, string operatingSystem, string steamState, string ipAddress, int deploymentId) {
-      // Check when they last submitted a bug report
-      if (_lastBugReportTime.ContainsKey(player.userId)) {
-         float timeSinceLastReport = Time.time - _lastBugReportTime[player.userId];
-         if (timeSinceLastReport < BUG_REPORT_INTERVAL) {
-            D.warning("Ignoring bug report from player: " + player.userId + " who submitted one: " +
-                timeSinceLastReport + " seconds ago.");
-            return;
-         }
-      }
-
-      // Keep track of the time they last submitted a bug report
-      _lastBugReportTime[player.userId] = Time.time;
-
-      string playerPosition = AreaManager.self.getArea(player.areaKey) + ": (" + player.gameObject.transform.position.x.ToString() + "; " + player.gameObject.transform.position.y.ToString() + ")";
-
-      // Save the report in the database
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         long bugId = DB_Main.saveBugReport(player, subject, message, ping, fps, playerPosition, screenshotBytes, screenResolution, operatingSystem, deploymentId, steamState, ipAddress);
-
-         // Send a confirmation to the client
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.BugReport, player, bugId.ToString());
-         });
-      });
-   }
-
-   [ServerOnly]
-   public void storeBugReportOnServerScreenshot (NetEntity player, long bugId, byte[] screenshotBytes) {
-      if (bugId != -1) {
-         // Save the screenshot in the database
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            DB_Main.saveBugReportScreenshot(player, bugId, screenshotBytes);
-         });
-      }
-   }
-
-   public void sendBugReportScreenshotToServer (long bugId) {
-      Global.player.rpc.Cmd_BugReportScreenshot(bugId, _screenshotBytes);
    }
 
    public void sendBugReport (string subjectString) {
@@ -95,13 +34,13 @@ public class BugReportManager : MonoBehaviour
       }
 
       // Require a decent subject
-      if (subjectString.Length < MIN_SUBJECT_LENGTH) {
+      if (subjectString.Length < WebToolsUtil.MinSubjectLength) {
          ChatManager.self.addChat("Please include a descriptive subject for the bug report.", ChatInfo.Type.System);
          yield break;
       }
 
       // Make sure the subject isn't too long
-      if (subjectString.Length > MAX_SUBJECT_LENGTH) {
+      if (subjectString.Length > WebToolsUtil.MaxSubjectLength) {
          ChatManager.self.addChat("The subject of the bug report is too long.", ChatInfo.Type.System);
          yield break;
       }
@@ -110,7 +49,7 @@ public class BugReportManager : MonoBehaviour
 
       // Make sure we're not spamming the server
       if (_lastBugReportTime.ContainsKey(userId)) {
-         if (Time.time - _lastBugReportTime[userId] < BUG_REPORT_INTERVAL) {
+         if (Time.time - _lastBugReportTime[userId] < WebToolsUtil.ReportInterval) {
             D.warning("Bug report already submitted.");
             yield break;
          }
@@ -133,15 +72,16 @@ public class BugReportManager : MonoBehaviour
 
       //int maxPacketSize = Transport.activeTransport.GetMaxPacketSize();
 
-      addMetaDataToBugReport(ref bugReport);
+      //addMetaDataToBugReport(ref bugReport);
 
       // Getting deploymentId on client side
       int deploymentId = Util.getDeploymentId();
 
       // Getting player area
-      string playerPosition = AreaManager.self.getArea(player.areaKey) + ": (" + player.gameObject.transform.position.x.ToString() + "; " + player.gameObject.transform.position.y.ToString() + ")";
-      
+      string playerPosition = WebToolsUtil.formatAreaPosition(AreaManager.self.getArea(player.areaKey), player.gameObject.transform.position.x, player.gameObject.transform.position.y);
+
       // Getting the screenshot
+      yield return new WaitForEndOfFrame();
       Texture2D standardTex = ScreenCapture.CaptureScreenshotAsTexture();
 
       // Sending the request to Web Tools
@@ -213,53 +153,53 @@ public class BugReportManager : MonoBehaviour
       }
    }
 
-   private bool addMetaDataToBugReport (ref string bugReport) {
-      // Make sure the bug report file hasn't grown too large
-      if (System.Text.Encoding.Unicode.GetByteCount(bugReport) > MAX_BYTES) {
-         int diff = (System.Text.Encoding.Unicode.GetByteCount(bugReport) - MAX_BYTES) / 2 + 1;
-         bugReport = bugReport.Remove(0, diff);
+   //private bool addMetaDataToBugReport (ref string bugReport) {
+   //   // Make sure the bug report file hasn't grown too large
+   //   if (System.Text.Encoding.Unicode.GetByteCount(bugReport) > MAX_BYTES) {
+   //      int diff = (System.Text.Encoding.Unicode.GetByteCount(bugReport) - MAX_BYTES) / 2 + 1;
+   //      bugReport = bugReport.Remove(0, diff);
 
-         if (System.Text.Encoding.Unicode.GetByteCount(bugReport) > MAX_BYTES) {
-            ChatManager.self.addChat("The bug report file is currently too large to submit.", ChatInfo.Type.System);
-            return false;
-         }
-      }
+   //      if (System.Text.Encoding.Unicode.GetByteCount(bugReport) > MAX_BYTES) {
+   //         ChatManager.self.addChat("The bug report file is currently too large to submit.", ChatInfo.Type.System);
+   //         return false;
+   //      }
+   //   }
 
-      return true;
-   }
+   //   return true;
+   //}
 
-   private Texture2D removeEvenRowsAndColumns (Texture2D tex) {
-      List<Color[]> listColors = new List<Color[]>();
-      List<Color> finalColors = new List<Color>();
+   //private Texture2D removeEvenRowsAndColumns (Texture2D tex) {
+   //   List<Color[]> listColors = new List<Color[]>();
+   //   List<Color> finalColors = new List<Color>();
 
-      for (int y = 0; y < tex.height; y += 2) {
-         listColors.Add(tex.GetPixels(0, y, tex.width, 1));
-      }
+   //   for (int y = 0; y < tex.height; y += 2) {
+   //      listColors.Add(tex.GetPixels(0, y, tex.width, 1));
+   //   }
 
-      for (int i = 0; i < listColors.Count; i++) {
-         for (int x = 0; x < listColors[i].Length; x += 2) {
-            finalColors.Add(listColors[i][x]);
-         }
-      }
-      tex = new Texture2D(tex.width / 2, tex.height / 2);
-      tex.SetPixels(finalColors.ToArray());
+   //   for (int i = 0; i < listColors.Count; i++) {
+   //      for (int x = 0; x < listColors[i].Length; x += 2) {
+   //         finalColors.Add(listColors[i][x]);
+   //      }
+   //   }
+   //   tex = new Texture2D(tex.width / 2, tex.height / 2);
+   //   tex.SetPixels(finalColors.ToArray());
 
-      return tex;
-   }
+   //   return tex;
+   //}
 
    #region Private Variables
 
    // The amount of time to wait between consecutive bug reports
-   protected static float BUG_REPORT_INTERVAL = 5f;
+   //protected static float BUG_REPORT_INTERVAL = 5f;
 
    // The minimum subject length for bugs
-   protected static int MIN_SUBJECT_LENGTH = 3;
+   //protected static int MIN_SUBJECT_LENGTH = 3;
 
    // The max length of bug report subject lines
-   protected static int MAX_SUBJECT_LENGTH = 256;
+   //protected static int MAX_SUBJECT_LENGTH = 256;
 
    // The maximum number of bytes we'll allow a submitted bug report to have
-   protected static int MAX_BYTES = 5 * 1024 * 1024;
+   //protected static int MAX_BYTES = 5 * 1024 * 1024;
 
    // The maximum number of string length we'll allow a submitted bug report to have
    protected static int MAX_LOG_LENGTH = 1024 * 6;
@@ -271,7 +211,7 @@ public class BugReportManager : MonoBehaviour
    protected Dictionary<int, float> _lastBugReportTime = new Dictionary<int, float>();
 
    // Stored screenshot to send after confirmation of bug report
-   protected byte[] _screenshotBytes;
+   //protected byte[] _screenshotBytes;
 
    // Secret token used for submitting bug reports
    //protected const string secretToken = "arcane_game_vjk53fx";

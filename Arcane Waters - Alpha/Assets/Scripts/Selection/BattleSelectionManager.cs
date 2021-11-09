@@ -18,15 +18,6 @@ public class BattleSelectionManager : MonoBehaviour {
    // Self reference
    public static BattleSelectionManager self;
 
-   // Sprites that is determined by the selected battler if is an ally or enemy
-   public GameObject enemySelection, allySelection;
-
-   // Sprite Render used for the enemy
-   public SpriteRenderer currentEnemySprite;
-
-   // Sprites that are swapped depending on the size of the enemy
-   public Sprite smallEnemyTarget, largeEnemyTarget;
-
    #endregion
 
    void Awake () {
@@ -107,10 +98,6 @@ public class BattleSelectionManager : MonoBehaviour {
       // Deselection process
       if (selectedBattler == battler) {
          return;
-      }
-
-      if (selectedBattler != null) {
-         selectedBattler.deselectThis();
       }
 
       // If it is another battler

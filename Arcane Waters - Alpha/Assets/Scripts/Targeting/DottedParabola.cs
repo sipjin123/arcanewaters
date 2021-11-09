@@ -31,11 +31,14 @@ public class DottedParabola : MonoBehaviour {
    // What z-offset will be applied to the z-snap script attached to the dots for this line
    public float dotsZOffset = 0.0f;
 
-   #endregion
+   // The color of this dotted parabola
+   public Color parabolaColor;
 
-   private void Start () {
+   #endregion
+   private void Awake () {
       createSegments();
       updateParabola();
+      setParabolaColor(parabolaColor);
    }
 
    private void createSegments () {
@@ -93,9 +96,35 @@ public class DottedParabola : MonoBehaviour {
    }
 
    public void setParabolaColor (Color newColor) {
+      parabolaColor = newColor;
       foreach (SpriteRenderer renderer in _parabolaSegmentRenderers) {
-         renderer.color = newColor;
+         renderer.color = parabolaColor;
       }
+   }
+
+   private void overrideSprites () {
+      for (int i = 0; i < numSegments; i++) {
+         // Override the last dot if appropriate
+         if (i == numSegments - 1 && endDotOverride) {
+            _parabolaSegmentRenderers[i].sprite = endDotOverride;
+
+            // Override other dots if appropriate
+         } else if (dotOverride) {
+            _parabolaSegmentRenderers[i].sprite = dotOverride;
+         }
+      }
+   }
+
+   public void setNewSprites (Sprite newDotSprite, Sprite newEndDotSprite = null) {
+      if (newDotSprite != null) {
+         dotOverride = newDotSprite;
+      }
+
+      if (newEndDotSprite != null) {
+         endDotOverride = newEndDotSprite;
+      }
+
+      overrideSprites();
    }
 
    #region Private Variables

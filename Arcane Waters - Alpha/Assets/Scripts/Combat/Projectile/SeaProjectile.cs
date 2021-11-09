@@ -49,6 +49,7 @@ public class SeaProjectile : NetworkBehaviour
    protected virtual void Start () {
       if (!Util.isBatch()) {
          updateVisuals();
+         updateAnimatedVisuals();
       }
    }
 

@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine.Networking;
+using System.Linq;
+using System.Text;
 
-public class SupportTicketManager : MonoBehaviour
+public class SupportTicketManager : GenericGameManager
 {
    #region Public Variables
 
@@ -13,57 +14,51 @@ public class SupportTicketManager : MonoBehaviour
 
    #endregion
 
-   public void Awake () {
+   protected override void Awake () {
+      base.Awake();
       self = this;
    }
 
-   //private void OnEnable () {
-   //   Application.logMessageReceived += addErrorLogMessage;
-   //}
-
-   //private void OnDisable () {
-   //   Application.logMessageReceived -= addErrorLogMessage;
-   //}
-
-   //private void addErrorLogMessage (string logString, string stackTrace, LogType type) {
-   //   if (type == LogType.Exception) {
-   //      D.log("[EXCEPTION]: " + logString + "\n" + stackTrace);
-   //   }
-   //}
-
-   public void sendComplaint (string message) {
-      StopAllCoroutines();
-      StartCoroutine(CO_CollectDataAndSendComplaint(message));
+   public void requestComplaint (string message) {
+      // Format is "username details"
+      List<string> values = message.Split(' ').ToList();
+      if (values.Count >= 2) {
+         string username = values[0];
+         string details = string.Join(" ", values.Skip(1).Take(values.Count - 1)).Trim();
+         Global.player.rpc.Cmd_ComplaintTicket(username, details);
+      } else {
+         ChatManager.self.addChat("You must specify 2 parameters for this command", ChatInfo.Type.System);
+      }
    }
 
-   private IEnumerator CO_CollectDataAndSendComplaint (string message) {
+   public void submitComplaint (SupportTicketInfo ticket) {
+      StartCoroutine(CO_CollectDataAndSendComplaint(ticket));
+   }
+
+   private IEnumerator CO_CollectDataAndSendComplaint (SupportTicketInfo ticket) {
       NetEntity player = Global.player;
 
       if (player == null) {
-         D.warning("Can't submit a complaint because we have no player object");
+         D.warning("Can't submit a complaint because we don't have a player object");
          yield break;
       }
 
-      int sourceUsrId = player.userId;
-
       // Make sure we're not spamming the server
-      if (_lastComplaintTime.ContainsKey(sourceUsrId)) {
-         if (Time.time - _lastComplaintTime[sourceUsrId] < COMPLAINT_INTERVAL) {
+      if (_lastTicketTime.ContainsKey(player.userId)) {
+         if (Time.time - _lastTicketTime[player.userId] < WebToolsUtil.ReportInterval) {
             D.warning("Complaint already submitted");
             yield break;
          }
       }
 
-      string targetUsername = extractComplainNameFromChat(message);
-      string subject = extractComplainMessageFromChat(message, targetUsername);
-      string machineIdentifier = SystemInfo.deviceName;
-
-      int deploymentId = Util.getDeploymentId();
-
-      string chatLog = ChatManager.self.getChatLog();
+      string chatLogs = ChatManager.self.getChatLog();
+      ticket.ticketMachineIdentifier = SystemInfo.deviceName;
+      ticket.deploymentId = Util.getDeploymentId();
 
       // Getting player area
-      string playerPosition = AreaManager.self.getArea(player.areaKey) + ": (" + player.gameObject.transform.position.x.ToString() + "; " + player.gameObject.transform.position.y.ToString() + ")";
+      ticket.playerPosition = WebToolsUtil.formatAreaPosition(AreaManager.self.getArea(player.areaKey), player.gameObject.transform.position.x, player.gameObject.transform.position.y);
+
+      yield return new WaitForEndOfFrame();
 
       // Getting the screenshot
       Texture2D standardTex = ScreenCapture.CaptureScreenshotAsTexture();
@@ -72,88 +67,48 @@ public class SupportTicketManager : MonoBehaviour
       List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
 
       // Adding complaint data as form data
-      formData.Add(new MultipartFormDataSection("ticketSubject", subject));
-      formData.Add(new MultipartFormDataSection("sourceUsrId", player.userId.ToString()));
-      formData.Add(new MultipartFormDataSection("sourceAccId", player.accountId.ToString()));
-      formData.Add(new MultipartFormDataSection("sourceUsrName", player.entityName));
-      formData.Add(new MultipartFormDataSection("sourceMachineIdentifier", machineIdentifier));
-      formData.Add(new MultipartFormDataSection("targetUsrName", targetUsername));
+      formData.Add(new MultipartFormDataSection("ticketSubject", ticket.ticketSubject));
+      formData.Add(new MultipartFormDataSection("sourceAccId", ticket.sourceAccId.ToString()));
+      formData.Add(new MultipartFormDataSection("sourceUsrId", ticket.sourceUsrId.ToString()));
+      formData.Add(new MultipartFormDataSection("sourceUsrName", ticket.sourceUsrName));
+      formData.Add(new MultipartFormDataSection("targetAccId", ticket.targetAccId.ToString()));
+      formData.Add(new MultipartFormDataSection("targetUsrId", ticket.targetUsrId.ToString()));
+      formData.Add(new MultipartFormDataSection("targetUsrName", ticket.targetUsrName));
+      formData.Add(new MultipartFormDataSection("sourceType", ((int) ticket.sourceType).ToString()));
+      formData.Add(new MultipartFormDataSection("ticketType", ((int) ticket.ticketType).ToString()));
+      formData.Add(new MultipartFormDataSection("ticketIpAddress", ticket.ticketIpAddress));
+      formData.Add(new MultipartFormDataSection("ticketMachineIdentifier", ticket.ticketMachineIdentifier));
+      formData.Add(new MultipartFormDataSection("playerPosition", ticket.playerPosition));
+      formData.Add(new MultipartFormDataSection("deploymentId", ticket.deploymentId.ToString()));
 
-      if (!string.IsNullOrEmpty(chatLog)) {
-         formData.Add(new MultipartFormDataSection("ticketLog", chatLog));
+      if (!string.IsNullOrEmpty(ticket.steamState)) {
+         formData.Add(new MultipartFormDataSection("steamState", ticket.steamState));
       }
 
-      formData.Add(new MultipartFormDataSection("playerPosition", playerPosition));
-      formData.Add(new MultipartFormDataSection("deploymentId", deploymentId.ToString()));
-      formData.Add(new MultipartFormDataSection("sourceType", ((int) TicketSourceType.Game).ToString()));
-      formData.Add(new MultipartFormDataSection("branch", Util.getBranchType()));
+      if (!string.IsNullOrEmpty(chatLogs)) {
+         formData.Add(new MultipartFormFileSection("chatLogs", Encoding.ASCII.GetBytes(chatLogs), "chatLogs.txt", "text/plain"));
+      }
 
       // Adding the screenshot as a form file
-      formData.Add(new MultipartFormFileSection(standardTex.EncodeToPNG()));
+      formData.Add(new MultipartFormFileSection("screenshot", standardTex.EncodeToPNG(), "screenshot.png", "image/png"));
 
-      UnityWebRequest www = UnityWebRequest.Post(WebToolsUtil.COMPLAINT_SUBMIT, formData);
-
-      // We need to set the GameToken Header
-      www.SetRequestHeader(WebToolsUtil.GAME_TOKEN_HEADER, WebToolsUtil.GAME_TOKEN);
+      UnityWebRequest www = UnityWebRequest.Post(WebToolsUtil.SubmitTicket, formData);
 
       yield return www.SendWebRequest();
 
       if (www.responseCode == WebToolsUtil.SUCCESS) {
          ChatManager.self.addChat("Complaint submitted successfully, thanks!", ChatInfo.Type.System);
-      } else if (www.responseCode == WebToolsUtil.BAD_REQUEST) {
-         int result = int.Parse(www.downloadHandler.text);
-         string resultMessage = "";
-
-         // -1 auto report, -2 player not found
-         switch (result) {
-            case -1:
-               resultMessage = "You cannot report yourself!";
-               break;
-            case -2:
-               resultMessage = $"Player with username '{targetUsername}' not found!";
-               break;
-         }
-
-         ChatManager.self.addChat(resultMessage, ChatInfo.Type.System);
       } else {
-         D.error("Could not submit complaint, needs investigation");
+         ChatManager.self.addChat("Could not submit complaint", ChatInfo.Type.Error);
       }
 
-      _lastComplaintTime[player.userId] = Time.time;
-   }
-
-   public string extractComplainNameFromChat (string message) {
-      foreach (string command in ChatUtil.commandTypePrefixes[CommandType.Complain]) {
-         message = message.Replace(command + " ", "");
-      }
-
-      StringBuilder extractedName = new StringBuilder();
-      foreach (char letter in message) {
-         if (letter == ' ') {
-            break;
-         }
-
-         extractedName.Append(letter);
-      }
-
-      return extractedName.ToString();
-   }
-
-   public string extractComplainMessageFromChat (string message, string username) {
-      foreach (string command in ChatUtil.commandTypePrefixes[CommandType.Complain]) {
-         message = message.Replace(command, "");
-      }
-
-      return message.Replace($"{username} ", "").Trim();
+      _lastTicketTime[player.userId] = Time.time;
    }
 
    #region Private Variables
 
-   // The amount of time to wait between consecutive bug reports
-   private static float COMPLAINT_INTERVAL = 5f;
-
    // Stores the time at which a complaint was last submitted, indexed by user ID for the server's sake
-   protected Dictionary<int, float> _lastComplaintTime = new Dictionary<int, float>();
+   protected Dictionary<int, float> _lastTicketTime = new Dictionary<int, float>();
 
    #endregion
 }

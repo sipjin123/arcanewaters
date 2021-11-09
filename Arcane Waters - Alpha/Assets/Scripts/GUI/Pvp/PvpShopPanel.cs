@@ -345,7 +345,7 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
                switch ((PvpConsumableItem) itemData.itemId) {
                   case PvpConsumableItem.RepairTool:
                      newItemInfo.name = "Repair Tool";
-                     newItemInfo.description = "Repairs your ship for 100 hp";
+                     newItemInfo.description = "Repairs 40% of ship health.";
                      newItemInfo.sprite = ImageManager.getSprite(itemData.spritePath);
                      break;
                   default:

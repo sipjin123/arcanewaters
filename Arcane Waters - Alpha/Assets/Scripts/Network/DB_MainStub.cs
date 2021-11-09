@@ -162,10 +162,6 @@ public class DB_MainStub : MonoBehaviour
       return "";
    }
 
-   public static void saveComplaint (int sourceUsrId, int sourceAccId, string sourceUsrName, string sourceEmail, string sourceIPAddress, int targetUsrId, int targetAccId, string targetUsrName, string ticketDescription, string playerPosition, string playerArea, string chatLog, byte[] screenshotBytes, string sourceMachineIdentifier, int deploymentId) {
-
-   }
-
    public static ChatInfo getLatestChatInfo () {
       return new ChatInfo();
    }

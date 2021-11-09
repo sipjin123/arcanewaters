@@ -59,9 +59,6 @@ public class SeaEntity : NetEntity
    public GameObject leftSideTarget;
    public GameObject rightSideTarget;
 
-   // Determines if this entity can be damaged
-   public bool invulnerable;
-
    // The position data where the projectile starts
    public List<DirectionalTransform> projectileSpawnLocations;
 
@@ -143,6 +140,9 @@ public class SeaEntity : NetEntity
 
    // The container for our ripples
    public GameObject ripplesContainer;
+
+   // The shadow used by some boss entities
+   public GameObject seaEntityShadowContainer;
 
    // The transform that will contain all of our orbs (powerup orbs and ability orbs)
    public Transform orbHolder;
@@ -1160,7 +1160,7 @@ public class SeaEntity : NetEntity
 
                   hitEnemy = true;
 
-                  if (!targetEntity.invulnerable) {
+                  if (!targetEntity.getIsInvulnerable()) {
                      int damage = getDamageForShot(attackType, distanceModifier);
                      if (abilityId > 0) {
                         ShipAbilityData shipAbilityData = getSeaAbility(abilityId);
@@ -1923,6 +1923,10 @@ public class SeaEntity : NetEntity
    [Server]
    public void setIsInvulnerable (bool value) {
       _isInvulnerable = value;
+   }
+
+   public bool getIsInvulnerable () {
+      return _isInvulnerable;
    }
 
    private void OnDrawGizmosSelected () {

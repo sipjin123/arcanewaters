@@ -381,7 +381,7 @@ public class ClientMessageManager : MonoBehaviour {
 
          case ConfirmMessage.Type.BugReport:
             // Add the confirmation message in the chat panel
-            BugReportManager.self.sendBugReportScreenshotToServer(long.Parse(msg.customMessage));
+            //BugReportManager.self.sendBugReportScreenshotToServer(long.Parse(msg.customMessage));
             ChatManager.self.addChat("Your bug has been successfully submitted!", msg.timestamp, ChatInfo.Type.System);
             return;
 

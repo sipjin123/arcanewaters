@@ -489,12 +489,12 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_ShowLevelUpEffect(Jobs.Type jobType) {
+   public void Cmd_ShowLevelUpEffect (Jobs.Type jobType) {
       Rpc_BroadcastShowLevelUpEffect(jobType);
    }
 
    [ClientRpc]
-   private void Rpc_BroadcastShowLevelUpEffect(Jobs.Type jobType) {
+   private void Rpc_BroadcastShowLevelUpEffect (Jobs.Type jobType) {
       if (_player == null) {
          return;
       }
@@ -893,7 +893,7 @@ public class RPCManager : NetworkBehaviour
          exploringEntries, tradingEntries, craftingEntries, miningEntries);
    }
 
-   private void receiveOnEquipItem(Item equippedWeapon, Item equippedArmor, Item equippedHat, Item soulBoundItem) {
+   private void receiveOnEquipItem (Item equippedWeapon, Item equippedArmor, Item equippedHat, Item soulBoundItem) {
       // Update the equipped items cache
       Global.setUserEquipment(equippedWeapon, equippedArmor, equippedHat);
 
@@ -1121,52 +1121,43 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_BugReport (string subject, string message, int ping, int fps, byte[] screenshotBytes, string screenResolution, string operatingSystem, string steamState, int deploymentId) {
-      // We need a player object
+   public void Cmd_ComplaintTicket (string username, string details) {
       if (_player == null) {
-         D.warning("Received bug report from sender with no PlayerController.");
+         D.warning("Received a complaint, but the sender doesn't have a PlayerController");
          return;
       }
 
-      // Pass things along to the Bug Report Manager to handle
-      BugReportManager.self.storeBugReportOnServer(_player, subject, message, ping, fps, screenshotBytes, screenResolution, operatingSystem, steamState, connectionToClient.address, deploymentId);
-   }
-
-   [Command]
-   public void Cmd_BugReportScreenshot (long bugId, byte[] screenshotBytes) {
-      // We need a player object
-      if (_player == null) {
-         D.warning("Received bug report from sender with no PlayerController.");
-         return;
-      }
-
-      // Pass things along to the Bug Report Manager to handle
-      BugReportManager.self.storeBugReportOnServerScreenshot(_player, bugId, screenshotBytes);
-   }
-
-   [Command]
-   public void Cmd_SubmitComplaint (string username, string details, string chatLog, byte[] screenshotBytes, string machineIdentifier, int deploymentId) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         UserInfo reportedUserInfo = DB_Main.getUserInfo(username);
-         UserObjects sourceObjects = DB_Main.getUserObjects(_player.userId);
+         UserAccountInfo targetInfo = DB_Main.getUserAccountInfo(username);
 
-         if (reportedUserInfo == null) {
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               _player.Target_ReceiveNormalChat("The player name is not valid", ChatInfo.Type.System);
-            });
-         } else if (reportedUserInfo.accountId == sourceObjects.accountId || reportedUserInfo.userId == sourceObjects.userInfo.userId) {
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               _player.Target_ReceiveNormalChat("Report has not been submitted. You cannot report yourself.", ChatInfo.Type.System);
-            });
+         if (targetInfo != null) {
+            if (targetInfo.accountId == _player.accountId) {
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  _player.Target_ReceiveNormalChat("You can't report yourself", ChatInfo.Type.Error);
+               });
+            } else {
+               string ticketSubject = $"Complaint about {targetInfo.username}";
+               string ipAddress = Util.formatIpAddress(connectionToClient.address);
+
+               SupportTicketInfo ticket = new SupportTicketInfo(ticketSubject, details, _player.accountId, _player.userId, _player.entityName,
+                  targetInfo.accountId, targetInfo.userId, targetInfo.username, ipAddress, WebToolsUtil.SupportTicketType.Complaint);
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  Target_SubmitComplaint(ticket);
+               });
+            }
          } else {
-            DB_Main.saveComplaint(_player.userId, _player.accountId, _player.entityName, sourceObjects.accountEmail, connectionToClient.address,
-               reportedUserInfo.userId, reportedUserInfo.accountId, username, details, reportedUserInfo.localPos.ToString(), reportedUserInfo.areaKey, chatLog, screenshotBytes, machineIdentifier, deploymentId);
-
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               _player.Target_ReceiveNormalChat("Your report was submitted successfully", ChatInfo.Type.System);
+               string message = string.Format("Could not find user {0}.", username);
+               _player.Target_ReceiveNormalChat(message, ChatInfo.Type.Error);
             });
          }
       });
+   }
+
+   [TargetRpc]
+   public void Target_SubmitComplaint (SupportTicketInfo ticket) {
+      SupportTicketManager.self.submitComplaint(ticket);
    }
 
    [Command]
@@ -1438,7 +1429,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_NotifyOnlineStatusToFriends(bool isOnline, string customMessage) {
+   public void Cmd_NotifyOnlineStatusToFriends (bool isOnline, string customMessage) {
       if (_player == null) {
          return;
       }
@@ -2049,11 +2040,11 @@ public class RPCManager : NetworkBehaviour
             }
 
             if (!isSteamIdValid) {
-               #if UNITY_EDITOR
+#if UNITY_EDITOR
                // Try to use the debug Steam Id instead
                steamId = SteamPurchaseManagerServer.self.debugSteamId;
                D.debug($"Purchase Warning: Couldn't get the steamId for user '{_player.userId}'. Using the debug Steam ID...");
-               #endif
+#endif
             }
 
             if (steamId == 0) {
@@ -3786,7 +3777,7 @@ public class RPCManager : NetworkBehaviour
             D.error($"Couldn't add the friendship invite notification to the chat of player {_player.entityName} ({_player.userId}). Invalid sender name: {sender}.");
             return;
          }
-         
+
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             string message = $"{sender} sent you a friend request!";
             _player.Target_ReceiveNormalChat(message, ChatInfo.Type.System);
@@ -3805,7 +3796,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   private void Target_ReceivePlayerAddedToServer(NetworkConnection connection) {
+   private void Target_ReceivePlayerAddedToServer (NetworkConnection connection) {
       if (Global.isFirstSpawn) {
          Cmd_NotifyOnlineStatusToFriends(isOnline: true, null);
          D.debug($"First spawn!");

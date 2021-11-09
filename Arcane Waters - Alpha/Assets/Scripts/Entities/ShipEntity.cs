@@ -286,6 +286,10 @@ public class ShipEntity : SeaEntity
 
       // Casting a skill is considered a PvP action
       hasEnteredPvP = true;
+
+      if (this.isPlayerShip()) {
+         ((PlayerShipEntity) this).hasPerformedFirstActionAfterSpawn = true;
+      }
    }
 
    private IEnumerator CO_TriggerOneShotBuff (PlayerShipEntity targetEntity, ShipAbilityData shipAbilityData, List<Attack.Type> attackTypes, int targetUser, bool snapToTargetInstantly) {

@@ -21,17 +21,72 @@
    public const int BAD_REQUEST = 400;
 
    // Endpoints
-   public const string BASE_URL = "https://tools.arcanewaters.com/api";
+   public const bool IsProduction = false;
+   public const string BaseUrl = IsProduction ? "https://tools.arcanewaters.com/api" : "https://localhost:5001/api";
 
-   public const string BUG_REPORT_SUBMIT = BASE_URL + "/tasks/submit";
-   public const string BUG_REPORT_SERVER_LOG_SUBMIT = BASE_URL + "/tasks/submitServerLog";
-   public const string COMPLAINT_SUBMIT = BASE_URL + "/supportTickets/submit";
+   public const string BUG_REPORT_SUBMIT = BaseUrl + "/tasks/submit";
+   public const string BUG_REPORT_SERVER_LOG_SUBMIT = BaseUrl + "/tasks/submitServerLog";
+   public const string SubmitTicket = BaseUrl + "/supportTickets/submit";
+
+   public const string SubmitTicketLogs = BaseUrl + "/supportTickets/submitLogs";
+   public const string SubmitTicketScreenshot = BaseUrl + "/supportTickets/submitScreenshot";
+
+   // Subject lengths for bug reports and support tickets (complaints)
+   public const int MinSubjectLength = 3;
+   public const int MaxSubjectLength = 256;
+
+   // Minimum interval between reports (bugs & tickets)
+   public const float ReportInterval = 5f;
 
    public enum ActionSource
    {
       None = 0,
       Game = 1,
-      WebTools = 2
+      WebTools = 2,
+      Email = 3
+   }
+
+   public enum HistoryActionType
+   {
+      None = 0,
+      Create = 1,
+      ReOpen = 2,
+      Close = 3,
+      ModifyRelated = 4
+   }
+
+   public enum ModifyRelatedType
+   {
+      None = 0,
+      Add = 1,
+      Remove = 2
+   }
+
+   public enum RelatedRole
+   {
+      None = 0,
+      Assignee = 1,
+      Watcher = 2
+   }
+
+   public enum Status
+   {
+      None = 0,
+      Unassigned = 1,
+      Open = 2,
+      Closed = 3
+   }
+
+   public enum SupportTicketType
+   {
+      None = 0,
+      Complaint = 1,
+      Help = 2,
+      SuspiciousActivity = 3
+   }
+
+   public static string formatAreaPosition (Area area, float posX, float posY) {
+      return $"{area}: ({posX}; {posY})";
    }
 }
 

@@ -161,6 +161,22 @@ public class DottedLine : MonoBehaviour {
       }
    }
 
+   public void setNewSprites (Sprite newDotSprite, Sprite newStartDotSprite = null, Sprite newEndDotSprite = null) {
+      if (newDotSprite != null) {
+         dotOverride = newDotSprite;
+      }
+
+      if (newStartDotSprite != null) {
+         startDotOverride = newStartDotSprite;
+      }
+
+      if (newEndDotSprite != null) {
+         endDotOverride = newEndDotSprite;
+      }
+
+      overrideSprites();
+   }
+
    #region Private Variables
 
    // A list of the objects that represent each segment of this dotted line

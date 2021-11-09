@@ -151,7 +151,12 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          croppedTexture.SetPixels(pixels);
          ripplesContainer.GetComponent<SpriteSwap>().newTexture = rippleTextureSprite == null ? ImageManager.self.blankTexture : croppedTexture;
          ripplesContainer.transform.localPosition += seaMonsterData.rippleLocOffset;
+         ripplesContainer.GetComponent<FixedZ>().newZ += seaMonsterData.rippleLocOffset.z;
          deathBubbleEffect.transform.localPosition += seaMonsterData.rippleLocOffset;
+
+         if (seaEntityShadowContainer != null) {
+            seaEntityShadowContainer.SetActive(monsterType == Type.Horror);
+         }
 
          // Scale Update
          ripplesContainer.transform.localScale = new Vector3(seaMonsterData.rippleScaleOverride, seaMonsterData.rippleScaleOverride, seaMonsterData.rippleScaleOverride);
@@ -215,7 +220,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          seaMonsterBars.initializeHealthBar();
       }
 
-      invulnerable = seaMonsterData.isInvulnerable;
+      if (isServer) {
+         setIsInvulnerable(seaMonsterData.isInvulnerable);
+      }
 
       if (seaMonsterData.projectileSpawnLocations.Count > 0) {
          foreach (DirectionalPositions directionalPos in seaMonsterData.projectileSpawnLocations) {
@@ -521,7 +528,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    protected void playAnimation (Anim.Type animType) {
       _simpleAnim.playAnimation(animType);
-      _simpleAnimRipple.playAnimation(animType);
+      if (monsterType == Type.Horror || monsterType == Type.Horror_Tentacle) {
+         _simpleAnimRipple.playAnimation(Anim.Type.Idle_East);
+      } else {
+         _simpleAnimRipple.playAnimation(animType);
+      }
    }
 
    protected void modifyAnimationSpeed (float frameLenght) {
@@ -569,7 +580,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       // Play SFX
       SoundEffectManager.self.playSeaBossDeathSfx(monsterType, this.transform);
 
-      if (!isSeaMonsterMinion()) {
+      if (!isSeaMonsterMinion() && monsterType != Type.Horror) {
          deathBubbleEffect.SetActive(true);
       }
 

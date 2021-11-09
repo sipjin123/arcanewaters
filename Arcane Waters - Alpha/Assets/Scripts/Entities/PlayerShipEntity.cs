@@ -63,6 +63,10 @@ public class PlayerShipEntity : ShipEntity
    [SyncVar]
    public bool isDisabled = true;
 
+   // Gets set to true as soon as the player has performed an action after spawning
+   [SyncVar]
+   public bool hasPerformedFirstActionAfterSpawn = false;
+
    // The object icon indicating the shoop boost cooling down
    public GameObject shipBoostCooldownObj;
 
@@ -910,6 +914,8 @@ public class PlayerShipEntity : ShipEntity
       } else {
          cannonAttackType = newAttackType;
       }
+
+      _cannonTargeter.updateTargetDotStyle(abilityIndex);
    }
 
    [Command]
@@ -927,6 +933,8 @@ public class PlayerShipEntity : ShipEntity
 
       // Firing the cannon is considered a PvP action
       hasEnteredPvP = true;
+
+      hasPerformedFirstActionAfterSpawn = true;
 
       fireCannonBallAtTarget(spawnPosition, fireDirection, chargeAmount, playSound);
       triggerPowerupsOnFire(chargeAmount);
@@ -947,6 +955,8 @@ public class PlayerShipEntity : ShipEntity
 
       // Firing the cannon is considered a PvP action
       hasEnteredPvP = true;
+
+      hasPerformedFirstActionAfterSpawn = true;
 
       fireSpecialCannonBallAtTarget(startPosition, targetPosition, lifetime, playSound, abilityId, disableColliderFor);
    }
@@ -1255,6 +1265,7 @@ public class PlayerShipEntity : ShipEntity
 
          _lastInputChangeTime = NetworkTime.time;
          this.isSpeedingUp = isSpeedingUp;
+         hasPerformedFirstActionAfterSpawn = true;
       }
    }
 
@@ -1282,6 +1293,8 @@ public class PlayerShipEntity : ShipEntity
       heldPvpCaptureTarget?.onPlayerBoosted(this);
 
       Rpc_NoteBoost();
+
+      hasPerformedFirstActionAfterSpawn = true;
    }
 
    protected override void updateMassAndDrag (bool increasedMass) {
@@ -1462,8 +1475,11 @@ public class PlayerShipEntity : ShipEntity
          yield break;
       }
 
-      invulnerable = true;
+      if (isServer) {
+         setIsInvulnerable(true);
+      }
       _clickableBox.gameObject.SetActive(false);
+      hasPerformedFirstActionAfterSpawn = false;
 
       foreach (Collider2D c in GetComponents<Collider2D>()) {
          c.enabled = false;
@@ -1477,20 +1493,44 @@ public class PlayerShipEntity : ShipEntity
          yield return null;
       }
 
-      invulnerable = false;
       _clickableBox.gameObject.SetActive(true);
 
-      if (!isDead()) {
-         foreach (Collider2D c in GetComponents<Collider2D>()) {
-            c.enabled = true;
-         }
+      if (isDead()) {
+         yield break;
+      }
 
-         foreach (SpriteRenderer renderer in _renderers) {
-            renderer.enabled = true;
-         }
-         // Force the character portrait to redraw
-         playerPortrait.SetActive(false);
-         playerPortrait.SetActive(true);
+      foreach (Collider2D c in GetComponents<Collider2D>()) {
+         c.enabled = true;
+      }
+
+      foreach (SpriteRenderer renderer in _renderers) {
+         renderer.enabled = true;
+      }
+      // Force the character portrait to redraw
+      playerPortrait.SetActive(false);
+      playerPortrait.SetActive(true);
+
+      float spawnInvulnerabilityDuration = 0;
+      if (VoyageManager.isAnyLeagueArea(areaKey)) {
+         spawnInvulnerabilityDuration = SPAWN_INVULNERABILITY_DURATION;
+      }
+
+      if (!isInvisible && !isGhost) {
+         Util.setAlphaInShader(gameObject, 0.6f);
+      }
+
+      // The ship is invulnerable until the player has made a first action, or the time runs out
+      float time = Time.time;
+      while (!hasPerformedFirstActionAfterSpawn && Time.time - time < spawnInvulnerabilityDuration) {
+         yield return null;
+      }
+
+      if (isServer) {
+         setIsInvulnerable(false);
+      }
+
+      if (!isInvisible && !isGhost) {
+         Util.setAlphaInShader(gameObject, 1f);
       }
    }
 
@@ -2125,6 +2165,9 @@ public class PlayerShipEntity : ShipEntity
 
    // The default alpha for the ship info of non-local ships
    private const float NON_LOCAL_SHIP_INFO_DEFAULT_ALPHA = 0.2f;
+
+   // The maximum number of seconds player ships are invulnerable after spawning
+   private const float SPAWN_INVULNERABILITY_DURATION = 5;
 
    #endregion
 }

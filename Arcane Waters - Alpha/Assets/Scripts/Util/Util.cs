@@ -1109,7 +1109,7 @@ public class Util : MonoBehaviour
       return deploymentId;
    }
 
-   public static string getIpAddress (string address) {
+   public static string formatIpAddress (string address) {
       string finalAddress = address;
 
       if (finalAddress.StartsWith("::ffff:")) {

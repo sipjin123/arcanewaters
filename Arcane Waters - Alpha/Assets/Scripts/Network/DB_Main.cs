@@ -732,68 +732,6 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   public static new void saveComplaint (int sourceUsrId, int sourceAccId, string sourceUsrName, string sourceEmail, string sourceIPAddress, int targetUsrId, int targetAccId, string targetUsrName, string ticketDescription, string playerPosition, string playerArea, string ticketLog, byte[] screenshotBytes, string sourceMachineIdentifier, int deploymentId) {
-      try {
-         // We'll save the ticket's ID
-         long ticketId;
-
-         string myAddress = Util.getIpAddress(sourceIPAddress);
-
-         using (MySqlConnection conn = getConnection()) {
-            using (MySqlCommand cmd = new MySqlCommand(
-               "INSERT INTO global.support_tickets (ticketSubject, ticketDescription, sourceUsrId, sourceAccId, sourceUsrName, sourceEmail, sourceIPAddress, sourceMachineIdentifier, targetUsrId, targetAccId, targetUsrName, ticketLog, status, playerPosition, deploymentId, sourceType) VALUES " +
-                "(@ticketSubject, @ticketDescription, @sourceUsrId, @sourceAccId, @sourceUsrName, @sourceEmail, @sourceIPAddress, @sourceMachineIdentifier, @targetUsrId, @targetAccId, @targetUsrName, @ticketLog, @status, @playerPosition, @deploymentId, @sourceType);", conn)) {
-               conn.Open();
-               cmd.Prepare();
-
-               cmd.Parameters.AddWithValue("@ticketSubject", $"Complaint about {targetUsrName}");
-               cmd.Parameters.AddWithValue("@ticketDescription", ticketDescription);
-               cmd.Parameters.AddWithValue("@sourceUsrId", sourceUsrId);
-               cmd.Parameters.AddWithValue("@sourceAccId", sourceAccId);
-               cmd.Parameters.AddWithValue("@sourceUsrName", sourceUsrName);
-               cmd.Parameters.AddWithValue("@sourceEmail", sourceEmail);
-               cmd.Parameters.AddWithValue("@sourceIPAddress", myAddress);
-               cmd.Parameters.AddWithValue("@targetUsrId", targetUsrId);
-               cmd.Parameters.AddWithValue("@targetAccId", targetAccId);
-               cmd.Parameters.AddWithValue("@targetUsrName", targetUsrName);
-               cmd.Parameters.AddWithValue("@status", WebToolsUtil.UNASSIGNED);
-               cmd.Parameters.AddWithValue("@playerPosition", $"{playerArea} : {playerPosition}");
-               cmd.Parameters.AddWithValue("@ticketLog", ticketLog);
-               cmd.Parameters.AddWithValue("@sourceMachineIdentifier", sourceMachineIdentifier);
-               cmd.Parameters.AddWithValue("@deploymentId", deploymentId);
-               cmd.Parameters.AddWithValue("@sourceType", (int) TicketSourceType.Game);
-
-               DebugQuery(cmd);
-
-               // Execute the command
-               cmd.ExecuteNonQuery();
-               ticketId = cmd.LastInsertedId;
-            }
-
-            // Saving the initial "Create" action for history purposes
-            using (MySqlCommand actionCmd = new MySqlCommand("INSERT INTO global.support_tickets_actions (ticketId, actionType, performerAccId) VALUES(@ticketId, @actionType, @performerAccId)", conn)) {
-               actionCmd.Prepare();
-               actionCmd.Parameters.AddWithValue("@ticketId", ticketId);
-               actionCmd.Parameters.AddWithValue("@actionType", WebToolsUtil.CREATE);
-               actionCmd.Parameters.AddWithValue("@performerAccId", sourceAccId);
-               DebugQuery(actionCmd);
-               actionCmd.ExecuteNonQuery();
-            }
-
-            // Saving screenshot in support_tickets_screenshots
-            using (MySqlCommand screenshotCmd = new MySqlCommand("INSERT INTO global.support_tickets_screenshots (ticketId, image) VALUES(@ticketId, @image)", conn)) {
-               screenshotCmd.Prepare();
-               screenshotCmd.Parameters.AddWithValue("@ticketId", ticketId);
-               screenshotCmd.Parameters.AddWithValue("@image", screenshotBytes);
-               DebugQuery(screenshotCmd);
-               screenshotCmd.ExecuteNonQuery();
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
    #region Server Communications
 
    public static new ChatInfo getLatestChatInfo () {
@@ -5953,7 +5891,7 @@ public class DB_Main : DB_MainStub
 
    public static new long saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem, int deploymentId, string steamState, string ipAddress) {
       try {
-         string myAddress = Util.getIpAddress(ipAddress);
+         string myAddress = Util.formatIpAddress(ipAddress);
 
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.bug_reports (usrId, usrName, accId, bugSubject, bugIpAddress, bugLog, ping, fps, playerPosition, screenResolution, operatingSystem, status, deploymentId, steamState) VALUES(@usrId, @usrName, @accId, @bugSubject, @bugIpAddress, @bugLog, @ping, @fps, @playerPosition, @screenResolution, @operatingSystem, @status, @deploymentId, @steamState)", conn)) {
@@ -6000,38 +5938,38 @@ public class DB_Main : DB_MainStub
       return -1;
    }
 
-   public static new void saveBugReportScreenshot (NetEntity player, long bugId, byte[] screenshotBytes) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT accId FROM global.bug_reports WHERE bugId=@bugId", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@bugId", bugId);
-            DebugQuery(cmd);
-            cmd.ExecuteNonQuery();
+   //public static new void saveBugReportScreenshot (NetEntity player, long bugId, byte[] screenshotBytes) {
+   //   try {
+   //      using (MySqlConnection conn = getConnection())
+   //      using (MySqlCommand cmd = new MySqlCommand("SELECT accId FROM global.bug_reports WHERE bugId=@bugId", conn)) {
+   //         conn.Open();
+   //         cmd.Prepare();
+   //         cmd.Parameters.AddWithValue("@bugId", bugId);
+   //         DebugQuery(cmd);
+   //         cmd.ExecuteNonQuery();
 
-            int accId = -1;
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  accId = dataReader.GetInt32("accId");
-               }
-            }
+   //         int accId = -1;
+   //         // Create a data reader and Execute the command
+   //         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+   //            while (dataReader.Read()) {
+   //               accId = dataReader.GetInt32("accId");
+   //            }
+   //         }
 
-            if (accId != -1 && player.accountId == accId) {
-               // Saving screenshot in bug_reports_screenshots
-               MySqlCommand actionCmd = new MySqlCommand("INSERT INTO global.bug_reports_screenshots (taskId, image) VALUES(@taskId, @image)", conn);
-               actionCmd.Prepare();
-               actionCmd.Parameters.AddWithValue("@taskId", bugId);
-               actionCmd.Parameters.AddWithValue("@image", screenshotBytes);
-               DebugQuery(actionCmd);
-               actionCmd.ExecuteNonQuery();
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
+   //         if (accId != -1 && player.accountId == accId) {
+   //            // Saving screenshot in bug_reports_screenshots
+   //            MySqlCommand actionCmd = new MySqlCommand("INSERT INTO global.bug_reports_screenshots (taskId, image) VALUES(@taskId, @image)", conn);
+   //            actionCmd.Prepare();
+   //            actionCmd.Parameters.AddWithValue("@taskId", bugId);
+   //            actionCmd.Parameters.AddWithValue("@image", screenshotBytes);
+   //            DebugQuery(actionCmd);
+   //            actionCmd.ExecuteNonQuery();
+   //         }
+   //      }
+   //   } catch (Exception e) {
+   //      D.error("MySQL Error: " + e.ToString());
+   //   }
+   //}
 
    public static new int storeChatLog (int userId, string userName, string message, DateTime dateTime, ChatInfo.Type chatType, string serverIpAddress) {
       int chatId = 0;
@@ -10863,7 +10801,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@landBossAddedHealth", settings.bossHealthPerMember);
             cmd.Parameters.AddWithValue("@landBossAddedDamage", settings.bossDamagePerMember);
             cmd.Parameters.AddWithValue("@landDifficultyScaling", settings.landDifficultyScaling);
-            
+
             DebugQuery(cmd);
 
             // Execute the command
@@ -10897,7 +10835,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@landBossAddedHealth", settings.bossHealthPerMember);
             cmd.Parameters.AddWithValue("@landBossAddedDamage", settings.bossDamagePerMember);
             cmd.Parameters.AddWithValue("@landDifficultyScaling", settings.landDifficultyScaling);
-            
+
             DebugQuery(cmd);
 
             // Execute the command
@@ -11686,7 +11624,7 @@ public class DB_Main : DB_MainStub
          // Getting the current time, in UTC
          DateTime currTime = DateTime.UtcNow;
 
-         string myAddress = Util.getIpAddress(ipAddress);
+         string myAddress = Util.formatIpAddress(ipAddress);
 
          try {
             using (MySqlConnection conn = getConnection())
@@ -11733,7 +11671,7 @@ public class DB_Main : DB_MainStub
 
    public static new void storeGameUserCreateEvent (int usrId, int accId, string usrName, string ipAddress) {
       if (usrId > 0 && accId > 0) {
-         string myAddress = Util.getIpAddress(ipAddress);
+         string myAddress = Util.formatIpAddress(ipAddress);
 
          try {
             using (MySqlConnection conn = getConnection())
@@ -11758,7 +11696,7 @@ public class DB_Main : DB_MainStub
 
    public static new void storeGameUserDestroyEvent (int usrId, int accId, string usrName, string ipAddress) {
       if (usrId > 0 && accId > 0) {
-         string myAddress = Util.getIpAddress(ipAddress);
+         string myAddress = Util.formatIpAddress(ipAddress);
 
          try {
             using (MySqlConnection conn = getConnection())

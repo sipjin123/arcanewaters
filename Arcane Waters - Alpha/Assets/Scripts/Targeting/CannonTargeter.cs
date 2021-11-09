@@ -38,6 +38,15 @@ public class CannonTargeter : MonoBehaviour {
    [HideInInspector]
    public float parabolaHeight;
 
+   // A list of target dot styles, for each ability the player can select (1-5)
+   public List<Sprite> targetDotStyles;
+
+   // A list of target dot colors, for each ability the player can select (1-5)
+   public List<Color> targetDotColors;
+
+   // A list of gradients, controlling the color of the parabola over its lifetime, for each ability the player can select (1-5)
+   public List<Gradient> targeterColors;
+
    #endregion
 
    private void Awake () {
@@ -84,7 +93,7 @@ public class CannonTargeter : MonoBehaviour {
    }
 
    private void updateColor () {
-      dottedParabola.setParabolaColor(targeterColor.Evaluate(chargeAmount));
+      dottedParabola.setParabolaColor(targeterColors[_selectedAbilityIndex].Evaluate(chargeAmount));
    }
 
    private IEnumerator CO_OnTargetingConfirmed (Action onTargetingComplete) {
@@ -113,6 +122,14 @@ public class CannonTargeter : MonoBehaviour {
       dottedLine.setLineColor(newColor);
    }
 
+   public void updateTargetDotStyle (int newAbilityIndex) {
+      if (targetDotStyles.Count > newAbilityIndex) {
+         dottedParabola.setNewSprites(targetDotStyles[newAbilityIndex]);
+      }
+
+      _selectedAbilityIndex = newAbilityIndex;
+   }
+
    #region Private Variables
 
    // The last position that the player targeted
@@ -123,6 +140,9 @@ public class CannonTargeter : MonoBehaviour {
 
    // Animator parameter name for the fire trigger
    private const string FIRE = "Fire";
+
+   // Which ability index the player has selected
+   private int _selectedAbilityIndex = 0;
 
    #endregion
 }
