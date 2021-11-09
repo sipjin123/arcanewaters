@@ -6093,6 +6093,17 @@ public class RPCManager : NetworkBehaviour
       }
    }
 
+   [Command]
+   public void Cmd_ResetOreReference (int oreId) {
+      OreNode oreNode = OreManager.self.getOreNode(oreId);
+      if (oreNode == null) {
+         D.debug("Ore node is missing! No ore with id:{" + oreId + "} registered to OreManager");
+         return;
+      }
+
+      oreNode.userIds.Remove(_player.userId);
+   }
+
    [TargetRpc]
    public void Target_MineOre (NetworkConnection connection, int oreId, Vector2 startingPosition, Vector2 endPosition) {
       OreNode oreNode = OreManager.self.getOreNode(oreId);
@@ -6101,9 +6112,15 @@ public class RPCManager : NetworkBehaviour
          D.debug("Ore node is missing! No ore with id:{" + oreId + "} registered to OreManager");
          return;
       }
-      oreNode.interactCount++;
+      oreNode.incrementInteractCount();
       oreNode.updateSprite(oreNode.interactCount);
       ExplosionManager.createMiningParticle(oreNode.transform.position);
+
+      // Start refresh timer for local instance
+      if (oreNode.finishedMining() && oreNode.mapSpecialType != Area.SpecialType.TreasureSite) {
+         oreNode.startResetTimer();
+         Cmd_ResetOreReference(oreId);
+      }
 
       // SFX
       //SoundEffectManager.self.playFmodWithPath(SoundEffectManager.MINING_ROCKS, oreNode.transform);
@@ -6207,7 +6224,9 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Add the user ID to the list
-      oreNode.userIds.Add(_player.userId);
+      if (oreNode.mapSpecialType == Area.SpecialType.TreasureSite) {
+         oreNode.userIds.Add(_player.userId);
+      }
 
       // Build the list of rewarded items
       List<Item> rewardedItems = new List<Item>();

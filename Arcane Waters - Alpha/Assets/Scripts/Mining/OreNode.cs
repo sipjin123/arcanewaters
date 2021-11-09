@@ -59,6 +59,14 @@ public class OreNode : NetworkBehaviour
    [SyncVar]
    public int voyageId = -1;
 
+   // The duration to wait before refreshing this node
+   [SyncVar]
+   public double refreshTimer = 15;
+
+   // If is disabled
+   [SyncVar]
+   public bool isDisabledByController;
+
    #endregion
 
    public void Awake () {
@@ -92,6 +100,10 @@ public class OreNode : NetworkBehaviour
       if (!NetworkServer.active) {
          OreManager.self.registerOreNode(id, this);
       }
+
+      if (isDisabledByController) {
+         disableThisNode();
+      }
    }
 
    public void updateSprite (int spriteId) {
@@ -112,6 +124,10 @@ public class OreNode : NetworkBehaviour
    public void Update () {
       // Figure out whether our outline should be showing
       handleSpriteOutline();
+
+      if (isDisabledByController && !finishedMining()) {
+         disableThisNode();
+      }
    }
 
    public void tryToMineNodeOnClient () {
@@ -123,8 +139,34 @@ public class OreNode : NetworkBehaviour
       spriteRenderer.sprite = oreSprites[getNextSpriteIndex()];
    }
 
+   public void incrementInteractCount () {
+      interactCount++;
+   }
+
    public bool finishedMining () {
       return interactCount >= MAX_INTERACT_COUNT;
+   }
+
+   public void startResetTimer () {
+      Invoke(nameof(resetSettings), (float) refreshTimer);
+   }
+
+   public void disableThisNode () {
+      interactCount = MAX_INTERACT_COUNT;
+      spriteRenderer.sprite = oreSprites[MAX_INTERACT_COUNT];
+
+   }
+
+   public void resetSettings () {
+      if (isDisabledByController) {
+         disableThisNode();
+      } else {
+         interactCount = 0;
+         spriteRenderer.sprite = oreSprites[0];
+
+         _outline.setVisibility(true);
+         _clickableBox.enabled = true;
+      }
    }
 
    public void handleSpriteOutline () {
