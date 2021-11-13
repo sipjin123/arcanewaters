@@ -184,6 +184,9 @@ public class ServerCannonBall : SeaProjectile
             case CannonballEffector.Type.Fire:
                hitEntity.applyStatus(Status.Type.Burning, effector.effectStrength, effector.effectDuration, sourceEntity.netId);
                break;
+            case CannonballEffector.Type.Poison:
+               hitEntity.applyStatus(Status.Type.Poisoned, effector.effectStrength, effector.effectDuration, sourceEntity.netId);
+               break;
             case CannonballEffector.Type.Electric:
                if (sourceEntity.userId > 0 && PowerupManager.self.powerupActivationRoll(sourceEntity.userId, Powerup.Type.ElectricShots)) {
                   sourceEntity.cannonballChainLightning(_creatorNetId, transform.position, hitEntity.netId, effector.effectRange, effector.effectStrength);

@@ -57,8 +57,11 @@ public class Battle : NetworkBehaviour {
    // The queued rpc action executed by the battle manager
    public List<QueuedRpcAction> queuedRpcActionList = new List<QueuedRpcAction>();
 
-   // The damager per tick of the burn status
-   public const int BURN_DAMAGE_PER_TICK = 2;
+   // The damager per tick of the burn status in percentage (2% per tick)
+   public const float BURN_DAMAGE_PER_TICK_PERCENTAGE = .02f;
+
+   // The damager per tick of the poison status in percentage (2.5% per tick)
+   public const float POISON_DAMAGE_PER_TICK_PERCENTAGE = .025f;
 
    #endregion
 
@@ -142,10 +145,10 @@ public class Battle : NetworkBehaviour {
          }
 
          if (battler.debuffList.Count > 0) {
-            Dictionary<Status.Type, float> newDebuffData = new Dictionary<Status.Type, float>();
+            Dictionary<Status.Type, StatusData> newDebuffData = new Dictionary<Status.Type, StatusData>();
             List<Status.Type> endedDebuffs = new List<Status.Type>();
-            foreach (KeyValuePair<Status.Type, float> debuffData in battler.debuffList) {
-               if (debuffData.Value < 1 && debuffData.Value >= 0) {
+            foreach (KeyValuePair<Status.Type, StatusData> debuffData in battler.debuffList) {
+               if (debuffData.Value.statusDuration < 1 && debuffData.Value.statusDuration >= 0) {
                   // Mark the debuffs that recently ended for future game logic such as in game notification
                   if (!endedDebuffs.Contains(debuffData.Key)) {
                      endedDebuffs.Add(debuffData.Key);
@@ -162,13 +165,23 @@ public class Battle : NetworkBehaviour {
                } else { 
                   // Deduct the timer value based on the tick interval
                   Status.Type currentStatusType = debuffData.Key;
-                  float newValue = debuffData.Value - BattleManager.TICK_INTERVAL;
-
+                  float newValue = debuffData.Value.statusDuration - BattleManager.TICK_INTERVAL;
+                  int damagePerTick = 1;
                   switch (currentStatusType) {
                      case Status.Type.Burning:
-                        battler.health -= BURN_DAMAGE_PER_TICK;
-                        battler.displayedHealth -= BURN_DAMAGE_PER_TICK;
-                        Rpc_DealDamagePerTick(battleId, battler.userId, BURN_DAMAGE_PER_TICK, Element.Fire);
+                        damagePerTick = (int) (battler.getStartingHealth() * BURN_DAMAGE_PER_TICK_PERCENTAGE);
+                        battler.health -= damagePerTick;
+                        battler.displayedHealth -= damagePerTick;
+                        Rpc_DealDamagePerTick(battleId, battler.userId, damagePerTick, Element.Fire);
+                        if (battler.health < 1) {
+                           battler.isAlreadyDead = true;
+                        }
+                        break;
+                     case Status.Type.Poisoned:
+                        damagePerTick = (int) (battler.health * POISON_DAMAGE_PER_TICK_PERCENTAGE);
+                        battler.health -= damagePerTick;
+                        battler.displayedHealth -= damagePerTick;
+                        Rpc_DealDamagePerTick(battleId, battler.userId, damagePerTick, Element.Poison);
                         if (battler.health < 1) {
                            battler.isAlreadyDead = true;
                         }
@@ -179,17 +192,23 @@ public class Battle : NetworkBehaviour {
                   }
 
                   // Add debuff to the new list that will override the synclist
-                  newDebuffData.Add(currentStatusType, newValue);
+                  newDebuffData.Add(currentStatusType, new StatusData {
+                     abilityIdReference = debuffData.Value.abilityIdReference,
+                     statusDuration = newValue
+                  });
                } 
             }
 
             if (newDebuffData.Count > 0) {
                // Override the debuff synclist with the new one
                battler.debuffList.Clear();
-               foreach (KeyValuePair<Status.Type, float> debuffData in newDebuffData) {
+               foreach (KeyValuePair<Status.Type, StatusData> debuffData in newDebuffData) {
                   // For logging purposes
                   // D.debug("Updated value of {" + debuffData.Key + "} to {" + debuffData.Value + "}");
-                  battler.debuffList.Add(debuffData.Key, debuffData.Value);
+                  battler.debuffList.Add(debuffData.Key, new StatusData {
+                     abilityIdReference = debuffData.Value.abilityIdReference,
+                     statusDuration = debuffData.Value.statusDuration
+                  });
                }
             } else {
                // Clear the debuff list if the new debuff data is blank

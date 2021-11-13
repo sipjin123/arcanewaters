@@ -316,7 +316,7 @@ public class SeaProjectile : NetworkBehaviour
 
          // Apply the status effect
          if (_statusType != Status.Type.None) {
-            hitEntity.applyStatus(_statusType, 1.0f, _statusDuration, sourceEntity.netId);
+            hitEntity.applyStatus(_statusType, projectileData.projectileDamage * .1f, _statusDuration, sourceEntity.netId);
          }
 
          _lastHitEntityNetId = hitEntity.netId;

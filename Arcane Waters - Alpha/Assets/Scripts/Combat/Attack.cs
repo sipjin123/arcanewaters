@@ -14,7 +14,7 @@ public class Attack : MonoBehaviour {
       Mini_Boulder = 9, Fire = 10, Heal = 11, SpeedBoost = 12,
       DamageAmplify = 13, SpawnStoneBlocker = 14, Poison_Circle = 15,
       Standard_NoEffect = 16, Standard_Slow = 17, Standard_Stunned = 18,
-      Cone_NoEffect = 19, Circle_NoEffect = 20, ArmorBoost = 21,
+      Cone_NoEffect = 19, Circle_NoEffect = 20, ArmorBoost = 21, Poison = 22
    }
 
    public enum ImpactMagnitude

@@ -1085,12 +1085,14 @@ public class PlayerShipEntity : ShipEntity
       ServerCannonBall netBall = Instantiate(PrefabsManager.self.serverCannonBallPrefab, spawnPosition, Quaternion.identity);
 
       int abilityId = -1;
+      float statusDuration = 3;
       Status.Type abilityStatus = Status.Type.None;
       if (shipAbilities.Count > 0) {
          ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(getSelectedShipAbilityId());
          if (shipAbilityData != null) {
             abilityId = shipAbilityData.abilityId;
             abilityStatus = (Status.Type) shipAbilityData.statusType;
+            statusDuration = shipAbilityData.statusDuration;
          }
       }
 
@@ -1103,7 +1105,7 @@ public class PlayerShipEntity : ShipEntity
       float lifetime = getCannonballLifetime(chargeAmount) / critModifier;
 
       // Setup cannonball
-      netBall.initAbilityProjectile(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, statusType: abilityStatus, lifetime: lifetime, isCrit: isCritical);
+      netBall.initAbilityProjectile(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, statusType: abilityStatus, statusDuration, lifetime: lifetime, isCrit: isCritical);
       netBall.setPlayFiringSound(playSound);
 
       // Add effectors to cannonball

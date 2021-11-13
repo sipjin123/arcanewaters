@@ -302,7 +302,7 @@ public class BattleManager : MonoBehaviour {
       // Note that this battler is in a pvp or not
       battler.isPvp = battle.isPvp;
       battler = assignBattlerData(battle, battler, player, teamType);
-      battler.health = battler.getStartingHealth(Enemy.Type.PlayerBattler);
+      battler.health = battler.getStartingHealth(Enemy.Type.PlayerBattler, true);
       battler.enemyType = Enemy.Type.PlayerBattler;
       battler.playerNetId = player.netId;
 
@@ -354,7 +354,10 @@ public class BattleManager : MonoBehaviour {
             // TODO: Setup a way to determine the duration of debuffs, maybe a debuff web tool?
             // Add armor debuff to the player, lasts 15 seconds
             if (!battler.debuffList.ContainsKey(Status.Type.ArmorChangeDebuff)) {
-               battler.debuffList.Add(Status.Type.ArmorChangeDebuff, 15);
+               battler.debuffList.Add(Status.Type.ArmorChangeDebuff, new StatusData {
+                  abilityIdReference = -1,
+                  statusDuration = 15
+               });
             }
          }
 
@@ -362,19 +365,28 @@ public class BattleManager : MonoBehaviour {
             // TODO: Setup a way to determine the duration of debuffs, maybe a debuff web tool?
             // Add damage debuff to the player, lasts 15 seconds
             if (!battler.debuffList.ContainsKey(Status.Type.WeaponChangeDebuff)) {
-               battler.debuffList.Add(Status.Type.WeaponChangeDebuff, 15);
+               battler.debuffList.Add(Status.Type.WeaponChangeDebuff, new StatusData {
+                  abilityIdReference = -1,
+                  statusDuration = 15
+               });
             }
          }
       } else {
          if (player.weaponManager.weaponDurability < 1) {
             if (!battler.debuffList.ContainsKey(Status.Type.WeaponBreakDebuff)) {
-               battler.debuffList.Add(Status.Type.WeaponBreakDebuff, -1);
+               battler.debuffList.Add(Status.Type.WeaponBreakDebuff, new StatusData {
+                  abilityIdReference = -1,
+                  statusDuration = -1
+               });
             }
          }
 
          if (player.armorManager.armorDurability < 1) {
             if (!battler.debuffList.ContainsKey(Status.Type.ArmorChangeDebuff)) {
-               battler.debuffList.Add(Status.Type.ArmorBreakDebuff, -1);
+               battler.debuffList.Add(Status.Type.ArmorBreakDebuff, new StatusData {
+                  abilityIdReference = -1,
+                  statusDuration = -1
+               });
             }
          }
       }
@@ -436,7 +448,7 @@ public class BattleManager : MonoBehaviour {
 
       // Set starting stats
       battler.battle = battle;
-      battler.health = battler.getStartingHealth(overrideType);
+      battler.health = battler.getStartingHealth(overrideType, true);
       battler.displayedHealth = battler.getStartingHealth(overrideType);
 
       // Set up our initial data and position
@@ -619,12 +631,11 @@ public class BattleManager : MonoBehaviour {
 
             float sourceDamageElement = source.getDamage(element);
             float damage = sourceDamageElement + attackAbilityData.baseDamage * attackAbilityData.getModifier;
-
+            
             // Add powerup damage
             if (source.userId > 0) {
                if (LandPowerupManager.self.hasPowerup(source.userId, LandPowerupType.DamageBoost)) {
                   int boostedDamage = (int) (damage * LandPowerupManager.self.getPowerupValue(source.userId, LandPowerupType.DamageBoost) / 100);
-                  D.debug("Add {" + boostedDamage + "} damage to {" + damage + "}: Total: {" + (damage + boostedDamage) + "}");
                   damage += boostedDamage;
                }
             }
@@ -648,7 +659,6 @@ public class BattleManager : MonoBehaviour {
             if (target.userId > 0) {
                if (LandPowerupManager.self.hasPowerup(source.userId, LandPowerupType.DefenseBoost)) {
                   int boostedDefense = (int) (targetDefenseElement * LandPowerupManager.self.getPowerupValue(source.userId, LandPowerupType.DefenseBoost) / 100);
-                  D.debug("Add {" + boostedDefense + "} defense to {" + targetDefenseElement + "}: Total: {" + (targetDefenseElement + boostedDefense) + "}");
                   targetDefenseElement += boostedDefense;
                }
             }
@@ -973,7 +983,7 @@ public class BattleManager : MonoBehaviour {
                   if (canBeDisabled) {
                      float randomizedChance = Random.Range(1, 100);
                      if (randomizedChance < abilityDataReference.statusChance) {
-                        StartCoroutine(CO_UpdateStatusAfterCollision(target, abilityDataReference.statusType, abilityDataReference.statusDuration, action.actionEndTime));
+                        StartCoroutine(CO_UpdateStatusAfterCollision(target, abilityDataReference.statusType, abilityDataReference.statusDuration, action.actionEndTime, abilityDataReference.itemID));
                      }
                   }
                }
@@ -1006,13 +1016,13 @@ public class BattleManager : MonoBehaviour {
       }
    }
 
-   protected IEnumerator CO_UpdateStatusAfterCollision (Battler battlerReference, Status.Type statusType, float statusDuration, double endTime) {
+   protected IEnumerator CO_UpdateStatusAfterCollision (Battler battlerReference, Status.Type statusType, float statusDuration, double endTime, int abilityId) {
       // Wait for client side attack to finish before applying the status effect
       while (NetworkTime.time < endTime) {
          yield return 0;
       }
 
-      battlerReference.applyStatusEffect(statusType, statusDuration);
+      battlerReference.applyStatusEffect(statusType, statusDuration, abilityId);
    }
 
    protected IEnumerator CO_KillBattlerAtEndTime (AttackAction attackAction) {

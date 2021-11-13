@@ -31,6 +31,7 @@ public class CannonballEffector {
       Ice = 3,
       Explosion = 4,
       Bouncing = 5,
+      Poison = 6
    }
 
    #endregion

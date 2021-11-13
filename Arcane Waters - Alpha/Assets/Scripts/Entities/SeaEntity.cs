@@ -1329,9 +1329,15 @@ public class SeaEntity : NetEntity
       }
 
       Status newStatus = StatusManager.self.create(statusType, strength, duration, netId);
-
-      if (statusType == Status.Type.Burning) {
-         _burningCoroutines.Add(applyDamageOverTime((int) strength, 1.0f, duration, attackerNetId));
+      switch (statusType) {
+         case Status.Type.Burning:
+            strength = maxHealth * Battle.BURN_DAMAGE_PER_TICK_PERCENTAGE;
+            _burningCoroutines.Add(applyDamageOverTime((int) strength, 1.0f, duration, attackerNetId, Attack.Type.Fire));
+            break;
+         case Status.Type.Poisoned:
+            strength = currentHealth * Battle.POISON_DAMAGE_PER_TICK_PERCENTAGE;
+            _burningCoroutines.Add(applyDamageOverTime((int) strength, 1.0f, duration, attackerNetId, Attack.Type.Poison));
+            break;
       }
 
       Rpc_ApplyStatusIcon(statusType, duration);
@@ -1358,12 +1364,12 @@ public class SeaEntity : NetEntity
       }
    }
 
-   public Coroutine applyDamageOverTime (int tickDamage, float tickInterval, float duration, uint attackerNetId) {
+   public Coroutine applyDamageOverTime (int tickDamage, float tickInterval, float duration, uint attackerNetId, Attack.Type attackType) {
       // Applies a damage over time effect to this net entity, dealing 'tickDamage' damage every 'tickInterval' seconds, for 'duration' seconds
-      return StartCoroutine(CO_DamageOverTime(tickDamage, tickInterval, duration, attackerNetId));
+      return StartCoroutine(CO_DamageOverTime(tickDamage, tickInterval, duration, attackerNetId, attackType));
    }
 
-   private IEnumerator CO_DamageOverTime (int tickDamage, float tickInterval, float duration, uint attackerNetId) {
+   private IEnumerator CO_DamageOverTime (int tickDamage, float tickInterval, float duration, uint attackerNetId, Attack.Type attackType) {
       float totalTimer = 0.0f;
       float tickTimer = 0.0f;
 
@@ -1373,9 +1379,14 @@ public class SeaEntity : NetEntity
 
          // If enough time has passed for a damage tick, apply it
          if (tickTimer >= tickInterval) {
+            switch (attackType) {
+               case Attack.Type.Poison:
+                  tickDamage = (int) (currentHealth * Battle.POISON_DAMAGE_PER_TICK_PERCENTAGE);
+                  break;
+            }
             int finalTickDamage = applyDamage(tickDamage, attackerNetId);
 
-            Rpc_ShowDamage(Attack.Type.Fire, transform.position, finalTickDamage);
+            Rpc_ShowDamage(attackType, transform.position, finalTickDamage);
 
             tickTimer -= tickInterval;
          }
