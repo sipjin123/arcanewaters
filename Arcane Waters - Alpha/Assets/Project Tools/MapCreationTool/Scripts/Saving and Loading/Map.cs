@@ -20,7 +20,7 @@ namespace MapCreationTool.Serialization
       public int maxPlayerCount;
       public PvpGameMode pvpGameMode;
       public PvpArenaSize pvpArenaSize;
-      public bool spawnsSeaMonsters;
+      public bool spawnsSeaMonsters = true;
       public string creatorName;
    }
 }
