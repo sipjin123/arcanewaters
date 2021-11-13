@@ -70,6 +70,10 @@ public class DB_MainStub : MonoBehaviour
 
    #endregion
 
+   public static List<QuestTimer> getQuestTimers () {
+      return new List<QuestTimer>();
+   }
+
    public static string getMapContents () {
       return "";
    }
@@ -693,6 +697,9 @@ public class DB_MainStub : MonoBehaviour
 
    public static void createQuestStatus (int npcId, int userId, int questId, int questNodeId) {
 
+   }
+
+   public static void resetQuestsWithNodeId (int questId, int questNodeId) {
    }
 
    public static List<Item> getRequiredItems (List<Item> itemList, int userId) {

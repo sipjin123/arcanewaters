@@ -846,6 +846,38 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
+   public static new List<QuestTimer> getQuestTimers () {
+      List<QuestTimer> questTimerDataList = new List<QuestTimer>();
+
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.quest_timers", conn)) {
+         conn.Open();
+         cmd.Prepare();
+         try {
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  int repeatRateInMins = dataReader.GetInt32("repeatRateInMins");
+                  int timerId = dataReader.GetInt32("timerId");
+                  string name = dataReader.GetString("name");
+                  string description = dataReader.GetString("description");
+
+                  QuestTimer newData = new QuestTimer {
+                     timerId = timerId,
+                     description = description,
+                     name = name,
+                     repeatRateInMins = repeatRateInMins
+                  };
+                  questTimerDataList.Add(newData);
+               }
+            }
+         } catch (Exception e) {
+            D.error("MySQL Error: " + e.ToString());
+         }
+      }
+      return questTimerDataList;
+   }
+
    public static new List<XMLPair> getProjectileXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
 
@@ -1347,6 +1379,28 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@questId", questId);
             cmd.Parameters.AddWithValue("@questNodeId", questNodeId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void resetQuestsWithNodeId (int questId, int questNodeId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE quest_status_v3 SET questDialogueId = @questDialogueId WHERE questId = @questId AND questNodeId = @questNodeId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@questId", questId);
+            cmd.Parameters.AddWithValue("@questNodeId", questNodeId);
+            cmd.Parameters.AddWithValue("@questDialogueId", 0);
             DebugQuery(cmd);
 
             // Execute the command
