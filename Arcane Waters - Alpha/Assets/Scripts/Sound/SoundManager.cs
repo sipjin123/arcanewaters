@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using UnityEngine.Audio;
 using FMODUnity;
 
-public class SoundManager : GenericGameManager {
+public class SoundManager : GenericGameManager
+{
    #region Public Variables
 
    // The minimum amount of time we'll wait between playing the same clip
@@ -61,11 +62,12 @@ public class SoundManager : GenericGameManager {
    public FMOD.Studio.VCA sfxVCA;
 
    // The type of sound to play
-   public enum Type {
+   public enum Type
+   {
       None = 0, Silence = 1, Intro_Music = 2,
 
       // Sea Music
-      Sea_Forest = 100, Sea_Desert = 101, Sea_Pine = 102, Sea_Snow = 103, Sea_Mushroom = 104, Sea_Lava = 105,
+      Sea_Forest = 100, Sea_Desert = 101, Sea_Pine = 102, Sea_Snow = 103, Sea_Mushroom = 104, Sea_Lava = 105, Sea_League = 106,
 
       // Town Music
       Town_Forest = 150, Town_Pine = 151, Town_Desert = 152, Town_Mushroom = 153, Town_Snow = 154, Town_Lava = 155, Interior = 156,
@@ -316,7 +318,7 @@ public class SoundManager : GenericGameManager {
    public static AudioSource play2DClip (Type type, float spatialBlend = 1f, bool allowBurst = false) {
       // Don't try to play audio in batch mode
       if (Util.isBatch()) return null;
-      
+
       // Don't do anything if not enough time has passed since the last hover event
       if (!allowBurst && Time.time - getLastClipTime(type) < MIN_DELAY) {
          return null;
@@ -346,7 +348,7 @@ public class SoundManager : GenericGameManager {
    public static AudioSource playEnvironmentClipAtPoint (Type type, Vector3 pos, bool logInfo = false) {
       AudioSource source = playClipAtPoint(type, pos);
       applySoundEffectSettings(source, type, logInfo);
-      
+
       return source;
    }
 
@@ -516,8 +518,13 @@ public class SoundManager : GenericGameManager {
 
       SoundEffectManager.self.playBackgroundMusic(type);
 
-      //// Smoothly transition to the new music using a coroutine
-      //self.StartCoroutine(self.transitionBackgroundMusic(type));
+      // Smoothly transition to the new music using a coroutine, only if it's normal Sea Music
+      if (type == Type.Sea_Forest || type == Type.Sea_Desert || type == Type.Sea_Snow ||
+         type == Type.Sea_Pine || type == Type.Sea_Lava || type == Type.Sea_Mushroom) {
+         self.StartCoroutine(self.transitionBackgroundMusic(type));
+      } else {
+         self.StartCoroutine(self.transitionBackgroundMusic(Type.None));
+      }
    }
 
    public static void create3dSound (string audioClipName, Vector3 position, int countToChooseFrom = 0) {

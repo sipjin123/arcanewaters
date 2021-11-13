@@ -11,7 +11,7 @@ public class MyCamera : BaseCamera
    #region Public Variables
 
    // The height of the confiner
-   public const float CONFINER_DEFAULT_HEIGHT = 0.163125f;
+   public const float CONFINER_DEFAULT_HEIGHT = 0.16f;
 
    // The width of the confiner
    public const float CONFINER_DEFAULT_WIDTH = 0.16f;
@@ -66,17 +66,22 @@ public class MyCamera : BaseCamera
             // If the current resolution requires a bigger camera size than the current confiner bounds, modify the confiner scales            
             if (confiner != null && confiner.m_BoundingShape2D != null) {
                Bounds confinerBounds = confiner.m_BoundingShape2D.bounds;
-               float camWidth = _orthographicSize * 2 * Screen.width / Screen.height;
-               float confinerWidth = confinerBounds.size.x / confiner.m_BoundingShape2D.transform.localScale.x;
-               float newScaleX = camWidth / confinerWidth;
+               Vector2 camSize = new Vector2 (_orthographicSize * 2 * Screen.width / Screen.height, _orthographicSize * 2);
+               Vector2 confinerSize = confinerBounds.size / (Vector2)confiner.m_BoundingShape2D.transform.localScale;
+               Vector2 newSize = camSize / confinerSize;
                               
-               if (newScaleX > confiner.m_BoundingShape2D.transform.localScale.x) {
-                  Vector3 scale = confiner.m_BoundingShape2D.transform.localScale;
-                  scale.x = newScaleX;
-                  confiner.m_BoundingShape2D.transform.localScale = scale;
+               Vector3 scale = confiner.m_BoundingShape2D.transform.localScale;
+               if (newSize.x > confiner.m_BoundingShape2D.transform.localScale.x) {
+                  scale.x = newSize.x;
                }
+
+               if (newSize.y > confiner.m_BoundingShape2D.transform.localScale.y) {
+                  scale.y = newSize.y;
+               }
+
+               confiner.m_BoundingShape2D.transform.localScale = scale;
             }
-         } 
+         }
       }
 
       _vcam.m_Lens.OrthographicSize = _orthographicSize;

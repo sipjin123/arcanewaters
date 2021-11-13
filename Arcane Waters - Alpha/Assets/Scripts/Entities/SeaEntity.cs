@@ -1423,6 +1423,10 @@ public class SeaEntity : NetEntity
          return;
       }
 
+      if (shouldIgnoreAttackers()) {
+         return;
+      }
+
       float degreesToDot = aggroConeDegrees / 90.0f;
 
       foreach (NetworkBehaviour iBehaviour in instance.getEntities()) {
@@ -1620,6 +1624,27 @@ public class SeaEntity : NetEntity
    private void checkForPathUpdate () {
       // Check if there are attackers to chase
       if (_attackers != null && _attackers.Count > 0) {
+
+         // If we are a bot ship in a pvp game
+         if (pvpTeam != PvpTeamType.None && isBotShip()) {
+            uint currentAttackerNetId = _currentAttacker;
+            SeaEntity currentAttacker = SeaManager.self.getEntity(currentAttackerNetId);
+            
+            if (currentAttacker != null) {
+               BotShipEntity shipEntity = this as BotShipEntity;
+               float currentAttackerDistance = (currentAttacker.transform.position - transform.position).magnitude;
+
+               // If our current attacker is significantly out of attack range, or too far from its objective
+               bool attackerIsTooFar = currentAttackerDistance >= shipEntity.getAttackRange() * 2.0f;
+               bool tooFarFromObjective = isTooFarFromObjective();
+               if (attackerIsTooFar || tooFarFromObjective) {
+
+                  // Ignore enemies for a duration, and move back to current objective
+                  activateLeash();
+               }
+            }
+         }
+
          double chaseDuration = NetworkTime.time - _chaseStartTime;
          if (!_isChasingEnemy || (chaseDuration > maxSecondsOnChasePath)) {
             _currentSecondsBetweenAttackRoutes = 0.0f;
@@ -1648,11 +1673,11 @@ public class SeaEntity : NetEntity
          // If there are no attackers to chase, and we're in a pvp game, move towards the current objective
       } else if (pvpTeam != PvpTeamType.None) {
          // If we haven't reached the middle of the lane yet, move towards it
-         if (_pvpLaneTarget != null) {
+         if (!_hasReachedLaneTarget) {
             updateState(ref _patrolingWaypointState, 0.0f, secondsPatrolingUntilChoosingNewTreasureSite,
                ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, (x) => { return _pvpLaneTarget.position; });
 
-            // If we've already reached the middle of the lane, look for the next target structure to attack
+         // If we've already reached the middle of the lane, look for the next target structure to attack
          } else {
             // Sea monsters should not engage buildings
             if (isSeaMonsterPvp()) {
@@ -1900,10 +1925,10 @@ public class SeaEntity : NetEntity
    private void checkHasArrivedInLane () {
       // Once we have arrived in the middle of the lane, set our lane target to null, and we will move to our target structure, the first enemy tower
       const float ARRIVE_DIST = 2.0f;
-      if (pvpTeam != PvpTeamType.None && _pvpLaneTarget != null) {
+      if (pvpTeam != PvpTeamType.None && _pvpLaneTarget != null  && !_hasReachedLaneTarget) {
          Vector2 toLaneCenter = _pvpLaneTarget.position - transform.position;
          if (toLaneCenter.sqrMagnitude < ARRIVE_DIST * ARRIVE_DIST) {
-            _pvpLaneTarget = null;
+            _hasReachedLaneTarget = true;
          }
       }
    }
@@ -1949,6 +1974,57 @@ public class SeaEntity : NetEntity
 
    public bool isSeaMonsterPvp () {
       return this is SeaMonsterEntity && isPvpAI;
+   }
+   private bool isTooFarFromObjective () {
+      // By creating a line between our previous and next target structures, we will detect if a ship is too far away from this 'objective line'
+
+      // Ensure this is a pvp ship, and has target structures
+      if (pvpTeam == PvpTeamType.None || _pvpTargetStructures == null || _pvpTargetStructures.Count <= 0) {
+         return false;
+      }
+
+      float distanceFromObjectiveLineSquared;
+      SeaStructure targetSeaStructure = getTargetSeaStructure();
+      Vector3 targetPoint = (_hasReachedLaneTarget) ? targetSeaStructure.transform.position : _pvpLaneTarget.position;
+
+      // If we are moving towards our lane target, we will use a line from our spawn position, to the lane target
+      if (!_hasReachedLaneTarget) {
+         Vector3 initialPositionWorld = transform.parent.TransformPoint(initialPosition);
+         float distanceFromObjectiveLine = Util.distanceFromPointToLineSegment(transform.position, initialPositionWorld, targetPoint);
+         distanceFromObjectiveLineSquared = distanceFromObjectiveLine * distanceFromObjectiveLine;
+
+      // If we are moving towards the first sea structure we will use a line from our lane target to the structure
+      } else if (targetSeaStructure == _pvpTargetStructures[0]) {
+         float distanceFromObjectiveLine = Util.distanceFromPointToLineSegment(transform.position, _pvpLaneTarget.position, targetPoint);
+         distanceFromObjectiveLineSquared = distanceFromObjectiveLine * distanceFromObjectiveLine;
+
+      // If we are moving towards the final target structure, just calculate distance from it
+      } else if (targetSeaStructure == _pvpTargetStructures[_pvpTargetStructures.Count - 1]) {
+         distanceFromObjectiveLineSquared = (transform.position - targetPoint).sqrMagnitude;
+      
+      // Otherwise, use the previous and current objectives to make the objective line
+      } else {
+         int currentObjectiveIndex = _pvpTargetStructures.FindIndex((x) => x == targetSeaStructure);
+
+         if (currentObjectiveIndex == -1) {
+            return false;
+         }
+         SeaStructure previousTarget = _pvpTargetStructures[currentObjectiveIndex - 1];
+
+         float distanceFromObjectiveLine = Util.distanceFromPointToLineSegment(transform.position, previousTarget.transform.position, _pvpLaneTarget.position);
+         distanceFromObjectiveLineSquared = distanceFromObjectiveLine * distanceFromObjectiveLine;
+      }
+
+      bool tooFarFromObjective = distanceFromObjectiveLineSquared > LEASH_DISTANCE * LEASH_DISTANCE;
+      return tooFarFromObjective;
+   }
+
+   private void activateLeash () {
+      _ignoreEnemiesUntil = NetworkTime.time + LEASH_ENEMY_IGNORE_TIMER;
+      _attackers.Clear();
+      _currentAttacker = 0;
+      _currentPath.Clear();
+      _patrolingWaypointState = WaypointState.FINDING_PATH;
    }
 
    #endregion
@@ -2169,6 +2245,10 @@ public class SeaEntity : NetEntity
       _activeResidueList.Remove(residue);
    }
 
+   protected bool shouldIgnoreAttackers () {
+      return (_ignoreEnemiesUntil > NetworkTime.time);
+   }
+
    #endregion
 
    #region Private Variables
@@ -2333,6 +2413,18 @@ public class SeaEntity : NetEntity
 
    // The list of residues currently affecting this entity
    protected List<EffectResidue> _activeResidueList = new List<EffectResidue>();
+
+   // A timestamp for how long this entity will be ignoring enemies for
+   private double _ignoreEnemiesUntil = 0.0;
+
+   // After chasing an enemy too far in a pvp game, this sea entity will ignore enemies for this amount of time, as it heads back to its objective
+   private const double LEASH_ENEMY_IGNORE_TIMER = 2.0;
+
+   // If a sea entity travels this distance away from its allowed area, it will be 'leashed' back to its current objective, ignoring enemies for a short time.
+   private const float LEASH_DISTANCE = 2.0f;
+
+   // Set to true once this entity reaches its lane target, causing it to move on and target sea structures
+   private bool _hasReachedLaneTarget = false;
 
    #endregion
 

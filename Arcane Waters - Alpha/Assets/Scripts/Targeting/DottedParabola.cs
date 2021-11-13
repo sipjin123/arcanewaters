@@ -35,6 +35,7 @@ public class DottedParabola : MonoBehaviour {
    public Color parabolaColor;
 
    #endregion
+
    private void Awake () {
       createSegments();
       updateParabola();

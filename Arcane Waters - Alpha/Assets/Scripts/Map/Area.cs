@@ -295,8 +295,6 @@ public class Area : MonoBehaviour
 
       configurePathfindingGraph();
 
-      vcam.GetComponent<MyCamera>().setInternalOrthographicSize();
-
       // Store it in the Area Manager
       AreaManager.self.storeArea(this);
    }
@@ -441,6 +439,8 @@ public class Area : MonoBehaviour
 
       if (AreaManager.self.isInteriorArea(areaKey)) {
          return SoundManager.Type.Interior;
+      } else if (VoyageManager.isLeagueArea(areaKey)) {
+         return SoundManager.Type.Sea_League;
       } else if (VoyageManager.isLeagueSeaBossArea(areaKey)) {
          return SoundManager.Type.Sea_Lava;
       } else if (AreaManager.self.isSeaArea(areaKey)) {

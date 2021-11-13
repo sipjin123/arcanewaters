@@ -189,7 +189,7 @@ public class AdminManagerSingleton : GenericGameManager
 
    private void addToItemNameDictionary (Dictionary<string, int> dictionary, Item.Category category, int itemTypeId) {
       // Create a base item
-      Item baseItem = new Item(-1, category, itemTypeId, 1, "", "", Item.MAX_DURABILITY);
+      Item baseItem = ItemGenerator.generate(category, itemTypeId);
       baseItem = baseItem.getCastItem();
 
       addToItemNameDictionary(dictionary, category, itemTypeId, baseItem.getName());

@@ -313,7 +313,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: b5d3318ec2b8d8c48806f6c2722ae632, type: 2}
+  m_Material: {fileID: 2100000, guid: 48552bb98a2ed9040a098607153711b8, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
@@ -852,13 +852,20 @@ MonoBehaviour:
   hoverBorder: {fileID: 153979773060014014}
   selectionBorder: {fileID: 4234280945365512885}
   storeTabCategory: 0
-  weaponImage: {fileID: 4320780134585899928}
-  weaponDye:
+  dye:
     itemID: 0
     itemName: 
     itemDescription: 
     itemIconPath: 
     paletteId: 0
+  palette:
+    paletteName: 
+    srcColor: []
+    dstColor: []
+    paletteType: 0
+    subcategory: 
+    tagId: 0
+  weaponImage: {fileID: 4320780134585899928}
   playerWeapon:
     category: 0
     id: 0
@@ -870,13 +877,6 @@ MonoBehaviour:
     itemDescription: 
     iconPath: 
     durability: 100
-  palette:
-    paletteName: 
-    srcColor: []
-    dstColor: []
-    paletteType: 0
-    subcategory: 
-    tagId: 0
 --- !u!1 &8406372791036644156
 GameObject:
   m_ObjectHideFlags: 0

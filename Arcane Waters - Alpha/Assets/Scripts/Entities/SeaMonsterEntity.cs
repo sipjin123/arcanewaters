@@ -189,10 +189,10 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          if (monsterType == Type.Horror) {
             sortPoint.transform.localPosition = new Vector3(sortPoint.transform.localPosition.x, BOSS_SORT_POINT, sortPoint.transform.localPosition.z);
          }
+      }
 
-         if (seaMonsterData.roleType == RoleType.Minion) {
-            sinkOnDeath = false;
-         }
+      if (seaMonsterData.roleType == RoleType.Minion) {
+         sinkOnDeath = false;
       }
 
       // Update the collider scale and offset
@@ -769,7 +769,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       while (!isDead()) {
 
          // Wait for the reload to finish
-         while (!hasReloaded() || !canAttack()) {
+         while (!hasReloaded() || !canAttack() || shouldIgnoreAttackers()) {
             yield return null;
          }
 

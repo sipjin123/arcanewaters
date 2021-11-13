@@ -21,8 +21,7 @@
    public const int BAD_REQUEST = 400;
 
    // Endpoints
-   public const bool IsProduction = false;
-   public const string BaseUrl = IsProduction ? "https://tools.arcanewaters.com/api" : "https://localhost:5001/api";
+   public const string BaseUrl = "https://tools.arcanewaters.com/api";
 
    public const string BUG_REPORT_SUBMIT = BaseUrl + "/tasks/submit";
    public const string BUG_REPORT_SERVER_LOG_SUBMIT = BaseUrl + "/tasks/submitServerLog";

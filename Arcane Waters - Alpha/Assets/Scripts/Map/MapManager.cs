@@ -238,6 +238,11 @@ public class MapManager : MonoBehaviour
             Destroy(result.flockManager.gameObject);
          }
 
+         // Cut a hole in the background of the same size than the area
+         Material backgroundMaterial = result.backgroundRenderer.material;
+         backgroundMaterial.SetVector("_Center", result.backgroundRenderer.transform.position);
+         backgroundMaterial.SetVector("_Size", bounds.size * 0.16f);
+
          yield return null;
 
          if (customizationData != null) {
@@ -255,6 +260,8 @@ public class MapManager : MonoBehaviour
 
          MapImporter.setCameraBounds(result, bounds);
          MapImporter.addEdgeColliders(result, bounds);
+
+         area.vcam.GetComponent<MyCamera>().setInternalOrthographicSize();
 
          onAreaCreationIsFinished(area, biome);
       }
@@ -499,11 +506,12 @@ public class MapManager : MonoBehaviour
       return $"{cx}{cy}".ToUpper();
    }
 
-   public static string computeNextOpenWorldMap (string areaKey, Direction direction) {
+   public static bool computeNextOpenWorldMap (string areaKey, Direction direction, out string nextMapKey) {
       Vector2Int mapCoords = getOpenWorldMapCoords(areaKey);
+      nextMapKey = "";
 
       if (!areValidOpenWorldMapCoords(mapCoords)) {
-         return "";
+         return false;
       }
 
       switch (direction) {
@@ -522,11 +530,12 @@ public class MapManager : MonoBehaviour
       }
 
       if (!areValidOpenWorldMapCoords(mapCoords)) {
-         return "";
+         return false;
       }
 
       string suffix = computeOpenWorldMapSuffix(mapCoords);
-      return $"{OPEN_WORLD_MAP_PREFIX}{suffix}";
+      nextMapKey = $"{OPEN_WORLD_MAP_PREFIX}{suffix}";
+      return true;
    }
 
    private static bool areValidOpenWorldMapCoords(Vector2Int mapCoords) {

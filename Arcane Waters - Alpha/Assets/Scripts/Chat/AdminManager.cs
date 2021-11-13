@@ -2867,7 +2867,7 @@ public class AdminManager : NetworkBehaviour
          // Check if the user has the item
          if (!DB_Main.hasItem(_player.userId, itemId, (int) category)) {
             // If not, create the item object
-            Item item = new Item(-1, category, itemTypeId, count, "", "", Item.MAX_DURABILITY);
+            Item item = ItemGenerator.generate(category, itemTypeId, count);
 
             // Write the item in the DB
             DB_Main.createItemOrUpdateItemCount(_player.userId, item);
@@ -2904,7 +2904,7 @@ public class AdminManager : NetworkBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Create the item object
-         Item item = new Item(-1, category, itemTypeId, count, "", "", Item.MAX_DURABILITY);
+         Item item = ItemGenerator.generate(category, itemTypeId);
 
          // Write the item in the DB
          Item databaseItem = DB_Main.createItemOrUpdateItemCount(_player.userId, item);
@@ -2931,7 +2931,7 @@ public class AdminManager : NetworkBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Create the item object
-         Item item = new Item(-1, category, itemTypeId, count, paletteNames, "", Item.MAX_DURABILITY);
+         Item item = ItemGenerator.generate(category, itemTypeId, count, palettes: paletteNames);
 
          // Write the item in the DB
          Item databaseItem = DB_Main.createItemOrUpdateItemCount(_player.userId, item);
@@ -3125,7 +3125,7 @@ public class AdminManager : NetworkBehaviour
 
       if (shouldCreateItem) {
          // If the item does not exist, create a new one
-         Item baseItem = new Item(-1, category, itemTypeId, count, "", "", Item.MAX_DURABILITY).getCastItem();
+         Item baseItem = ItemGenerator.generate(category, itemTypeId, count).getCastItem();
          DB_Main.createItemOrUpdateItemCount(_player.userId, baseItem);
          wasItemCreated = true;
       }

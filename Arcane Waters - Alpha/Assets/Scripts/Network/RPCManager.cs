@@ -9181,6 +9181,70 @@ public class RPCManager : NetworkBehaviour
       knockbackEffect.init(effectRadius);
    }
 
+   #region User Search
+   
+   [Command]
+   public void Cmd_SearchUser (UserSearchInfo searchInfo) {
+      List<UserSearchResult> results = new List<UserSearchResult>();
+
+      switch (searchInfo.filter) {
+         case UserSearchInfo.FilteringMode.None:
+            break;
+         case UserSearchInfo.FilteringMode.Name:
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               UserInfo userInfo = DB_Main.getUserInfo(searchInfo.input);
+
+               if (userInfo != null) {
+                  UserSearchResult result = new UserSearchResult {
+                     name = userInfo.username,
+                     level = LevelUtil.levelForXp(userInfo.XP),
+                     userId = _player.isAdmin() ? userInfo.userId : 0,
+                     area = _player.isAdmin() ? userInfo.areaKey : "",
+                     biome = Biome.getName(AreaManager.self.getDefaultBiome(userInfo.areaKey)),
+                     lastTimeOnline = userInfo.lastLoginTime,
+                     isOnline = ServerNetworkingManager.self.isUserOnline(userInfo.userId)
+                  };
+
+                  results.Add(result);
+               }
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  Target_ReceiveUserSearchResults(_player.connectionToClient, searchInfo, results.ToArray());
+               });
+            });
+
+            break;
+         case UserSearchInfo.FilteringMode.Biome:
+            break;
+         case UserSearchInfo.FilteringMode.Level:
+            break;
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveUserSearchResults (NetworkConnection connection, UserSearchInfo searchInfo, UserSearchResult[] results) {
+      if (results == null || results.Length == 0) {
+         ChatManager.self.addChat($"Search complete! No users found...", ChatInfo.Type.System);
+         return;
+      }
+
+      string itemsStr = results.Length == 1 ? "user" : "users";
+      ChatManager.self.addChat($"Search complete! {results.Length} {itemsStr} found:", ChatInfo.Type.System);
+
+      int counter = 1;
+
+      foreach (UserSearchResult result in results) {
+         string areaStr = "Location: " + (Util.isEmpty(result.area) ? "Somewhere" : $"{result.area}");
+         string onlineStr = result.isOnline ? "Online" : "Offline";
+         string lastOnlineStr = !result.isOnline ? $", Last Seen: {result.lastTimeOnline.ToLocalTime()}" : "";
+         string userIdStr = (Global.player.isAdmin() && result.userId > 0) ? $", UID: {result.userId}" : "";
+         ChatManager.self.addChat($"[{counter}/{results.Length}] {result.name}{userIdStr}, Lv: {result.level}, {areaStr} in {result.biome}, Status: {onlineStr}{lastOnlineStr}", ChatInfo.Type.System);
+         counter++;
+      }
+   }
+
+   #endregion
+
    #region Private Variables
 
    // Our associated Player object

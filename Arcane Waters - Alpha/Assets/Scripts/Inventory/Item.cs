@@ -392,6 +392,20 @@ public class Item {
          category == Category.Consumable;
    }
 
+   public static bool isEquippable (Category category) {
+      return category == Category.Weapon ||
+         category == Category.Armor ||
+         category == Category.Hats;
+   }
+
+   public static bool isRecolorable (Category category) {
+      return category == Item.Category.Weapon ||
+         category == Item.Category.Armor ||
+         category == Item.Category.Hats ||
+         category == Item.Category.Haircut ||
+         category == Item.Category.ShipSkin;
+   }
+
    #region Private Variables
 
    #endregion

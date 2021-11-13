@@ -1475,6 +1475,25 @@ public class Util : MonoBehaviour
       return nearestPoint;
    }
 
+   public static float distanceFromPointToLineSegment (Vector2 point, Vector2 lineStart, Vector2 lineEnd) {
+      // Returns the minimum distance between a point and a line segment
+
+      float lineLengthSquared = (lineEnd - lineStart).sqrMagnitude;
+
+      // If the line start and end are in the same position, return the distance between points
+      if (lineLengthSquared == 0.0f) {
+         return Vector2.Distance(point, lineStart);
+      }
+
+      // Calculate how far along the line the closest point is, clamping between 0 and 1.
+      float t = Vector2.Dot(point - lineStart, lineEnd - lineStart) / lineLengthSquared;
+      t = Mathf.Max(0, Mathf.Min(1.0f, t));
+
+      // Project t onto the line segment, to find the point we will measure from
+      Vector2 projection = lineStart + t * (lineEnd - lineStart);
+      return Vector2.Distance(point, projection);
+   }
+
    // A Random instance we can use for generating random numbers
    private static System.Random r = new System.Random();
 

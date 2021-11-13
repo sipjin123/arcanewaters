@@ -128,6 +128,11 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    [Server]
    protected override IEnumerator CO_AttackEnemiesInRange (float delayInSecondsWhenNotReloading) {
       while (!isDead()) {
+
+         while (shouldIgnoreAttackers()) {
+            yield return null;
+         }
+
          NetEntity target = getAttackerInRange();
 
          // Show the charging animation on clients

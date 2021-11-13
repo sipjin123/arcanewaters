@@ -52,6 +52,7 @@ public class ChatManager : GenericGameManager
       _commandData.Add(new CommandData("/whisper", "Sends a private message to a user", sendWhisperMessageToServer, parameterNames: new List<string>() { "userName", "message" }));
       _commandData.Add(new CommandData("/w", "Sends a private message to a user", sendWhisperMessageToServer, parameterNames: new List<string>() { "userName", "message" }));
       _commandData.Add(new CommandData("/r", "Sends a private message to the last user that whispered to you", tryReply, parameterNames: new List<string>() { "message" }));
+      _commandData.Add(new CommandData("/who", "Search users", searchUser, parameterNames: new List<string>() { "filter ('is','in','level')", "username, area or level" }));
    }
 
    private void Update () {
@@ -647,6 +648,36 @@ public class ChatManager : GenericGameManager
    private bool typedRecently () {
       float timeSinceTyping = (float) (NetworkTime.time - _lastTypeTime);
       return timeSinceTyping < AUTO_COMPLETE_SHOW_DELAY;
+   }
+
+   private void searchUser (string parameters) {
+      if (Util.isEmpty(parameters)) {
+         self.addChat("Search failed: Invalid parameters", ChatInfo.Type.System);
+         return;
+      }
+
+      string[] inputs = parameters.Split(' ');
+      if (inputs.Length < 2) {
+         self.addChat("Search failed: The command requires at least two parameters!", ChatInfo.Type.System);
+         return;
+      }
+
+      if (UserSearchInfo.tryParseFilteringMode(inputs[0], out UserSearchInfo.FilteringMode filter)) {
+         if (filter == UserSearchInfo.FilteringMode.Biome || filter == UserSearchInfo.FilteringMode.Level) {
+            self.addChat($"Search aborted: The selected filter is not implemented yet.", ChatInfo.Type.System);
+            return;
+         }
+         
+         UserSearchInfo searchInfo = new UserSearchInfo {
+            input = inputs[1],
+            filter = filter
+         };
+
+         self.addChat($"Search started! keyword: '{searchInfo.input}'", ChatInfo.Type.System);
+         Global.player.rpc.Cmd_SearchUser(searchInfo);
+      } else {
+         self.addChat($"Search failed: The filter must be one of: 'is', 'in', 'level'. Example: /who is {Global.player.entityName}", ChatInfo.Type.System);
+      }
    }
 
    #region Private Variables

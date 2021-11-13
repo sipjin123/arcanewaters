@@ -2216,7 +2216,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5835180122061992977}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3377057182505258172}
@@ -3522,6 +3522,8 @@ MonoBehaviour:
   teamType: 0
   gender: 1
   animGroup: 0
+  captureDeathLog: 0
+  deathAnimPlayed: 0
   player: {fileID: 0}
   battle: {fileID: 0}
   battleSpot: {fileID: 0}
@@ -3596,8 +3598,6 @@ MonoBehaviour:
   attackingTimingOutline: {fileID: 178007765260029678}
   attackTimingFill: {fileID: 594375610664482580}
   spriteContainers: {fileID: 432566873849742730}
-  waitingDots: {fileID: 6690160877422147922}
-  targetPoint: {fileID: 1334991522599786947}
   attackIndicators: {fileID: 8169932401694036090}
   debugLogCanvas: {fileID: 1180496241242295566}
   debugTextLog: {fileID: 8099639037594870784}
@@ -3794,6 +3794,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoredRenderers:
+  - {fileID: 3360414000837120979}
+  - {fileID: 1203803297405391354}
+  - {fileID: 52347676407015505}
+  - {fileID: 5983232541379242226}
+  - {fileID: 4526667402497215642}
+  - {fileID: 521683644741836287}
   _renderers: []
 --- !u!212 &3943463322191477998
 SpriteRenderer:

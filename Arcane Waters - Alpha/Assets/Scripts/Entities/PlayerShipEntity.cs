@@ -2066,9 +2066,12 @@ public class PlayerShipEntity : ShipEntity
          return;
       }
 
-      setupForWarpClient();
       Direction direction = mapEdges.computeDirectionFromEdge(edge);
-      Cmd_SpawnInNewMapSpawn(MapManager.computeNextOpenWorldMap(areaKey, direction), null, direction);
+
+      if (MapManager.computeNextOpenWorldMap(areaKey, direction, out string nextAreaKey)) {
+         setupForWarpClient();
+         Cmd_SpawnInNewMapSpawn(nextAreaKey, spawn: null, direction);
+      }
    }
 
    #region Private Variables

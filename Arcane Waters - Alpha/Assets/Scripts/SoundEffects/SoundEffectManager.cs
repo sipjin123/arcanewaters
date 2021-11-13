@@ -342,12 +342,7 @@ public class SoundEffectManager : GenericGameManager
          case SoundManager.Type.Interior:
             param = 8;
             break;
-         case SoundManager.Type.Sea_Forest:
-         case SoundManager.Type.Sea_Desert:
-         case SoundManager.Type.Sea_Pine:
-         case SoundManager.Type.Sea_Snow:
-         case SoundManager.Type.Sea_Lava:
-         case SoundManager.Type.Sea_Mushroom:
+         case SoundManager.Type.Sea_League:
             param = 9;
             break;
          case SoundManager.Type.Battle_Music:
@@ -367,7 +362,6 @@ public class SoundEffectManager : GenericGameManager
       if (param == -1) {
          _backgroundMusicEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
       }
-
    }
 
    public void playAnimalCry (string path, Transform target) {

@@ -39,7 +39,7 @@ public class SilverManager : NetworkBehaviour
    public static float SILVER_ASSIST_REWARD_MULTIPLIER = 0.25f;
 
    // The fraction of silver lost after death
-   public static float SILVER_DEATH_PENALTY_MULTIPLIER = 0.40f;
+   public static float SILVER_DEATH_PENALTY_MULTIPLIER = 0.20f;
 
    // The amount of silver lost during the ship healing process
    public static int SILVER_SHIP_HEAL_PENALTY = 20;

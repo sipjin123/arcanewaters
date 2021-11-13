@@ -18755,6 +18755,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoredRenderers: []
   _renderers:
   - {fileID: 212757530221421376}
   - {fileID: 212922552416507748}

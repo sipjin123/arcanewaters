@@ -44,7 +44,10 @@ public class StoreWeaponDyeBox : StoreDyeBox
 
       weaponImage.sprite = sprite;
       weaponImage.material = new Material(this.weaponImage.material);
-      weaponImage.GetComponent<RecoloredSprite>().recolor(weaponPalette);
+
+      string mergedPalette = Item.parseItmPalette(Item.overridePalette(this.playerWeapon.paletteNames, weaponData.palettes));
+      mergedPalette = Item.parseItmPalette(Item.overridePalette(weaponPalette, mergedPalette));
+      weaponImage.GetComponent<RecoloredSprite>().recolor(mergedPalette);
       return true;
    }
 

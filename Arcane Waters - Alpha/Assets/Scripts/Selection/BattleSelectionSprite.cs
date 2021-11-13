@@ -20,6 +20,15 @@ public class BattleSelectionSprite : MonoBehaviour {
    // Holds the sprite content
    public GameObject spriteHolder;
 
+   // Sprites that is determined by the selected battler if is an ally or enemy
+   public GameObject enemySelection, allySelection;
+
+   // Sprite Render used for the enemy
+   public SpriteRenderer currentEnemySprite;
+
+   // Sprites that are swapped depending on the size of the enemy
+   public Sprite smallEnemyTarget, largeEnemyTarget;
+
    #endregion
 
    void Start () {
@@ -29,9 +38,11 @@ public class BattleSelectionSprite : MonoBehaviour {
 
    void Update () {
       Battler selectedBattler = BattleSelectionManager.self.selectedBattler;
+      enemySelection.SetActive(false);
+      allySelection.SetActive(false);
 
       // Start out hidden if we don't have a selected entity
-      if (selectedBattler == null) {
+      if (selectedBattler == null || selectedBattler.isDead()) {
          hide();
       }
 
@@ -43,11 +54,20 @@ public class BattleSelectionSprite : MonoBehaviour {
 
       // Do some extra stuff if we have a Battler selected
       if (selectedBattler != null) {
-         // Keep it positioned under the selected Battler
-         Vector3 targetPosition = selectedBattler.transform.position;
-         targetPosition.z -= .001f;
+         Battler currentBattler = BattleManager.self.getBattler(Global.player.userId);
 
-         this.transform.position = targetPosition + BattleSelectionManager.getOffsetToFeet();
+         if (currentBattler == null) {
+            return;
+         }
+
+         if (!selectedBattler.isJumping) {
+            // Keep it positioned under the selected Battler
+            Vector3 targetPosition = selectedBattler.transform.position;
+            targetPosition.z -= .001f;
+            this.transform.position = targetPosition + BattleSelectionManager.getOffsetToFeet();
+         }
+
+         Util.setZ(this.transform, 0.0f);
 
          // Move the arrows around based on the orientation of our target
          setDistances(selectedBattler);
@@ -57,6 +77,15 @@ public class BattleSelectionSprite : MonoBehaviour {
 
          // Make sure we're visible
          show();
+
+         // Show the appropriate target sprite
+         bool isAlly = currentBattler.teamType == selectedBattler.teamType;
+         enemySelection.SetActive(!isAlly);
+         allySelection.SetActive(isAlly);
+
+         if (!isAlly) {
+            currentEnemySprite.sprite = selectedBattler.isBossType ? largeEnemyTarget : smallEnemyTarget;
+         }
       }
    }
 
