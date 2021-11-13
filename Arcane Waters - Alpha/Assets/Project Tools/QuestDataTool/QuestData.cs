@@ -44,6 +44,9 @@ public class QuestDataNode {
    // The repeat rate
    public float repeatRateInSeconds;
 
+   // Reference to the quest timer id in the database
+   public int questTimerIdReference = 0;
+
    // The current quest progress required so that this quest node will be available
    public int questNodeLevelRequirement = -1;
 }
