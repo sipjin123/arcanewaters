@@ -26,6 +26,12 @@ public class VisitListPanel : Panel {
    // The warning panel activated if the user has not selected their house and farm
    public GameObject setCustomMapWarningObj;
 
+   // The text ui of the panel
+   public Text pageText, friendCountText;
+
+   // The max display of visitable players in a page
+   public const int MAX_ITEM_PER_PAGE = 10;
+   
    #endregion
 
    public override void Awake () {
@@ -45,8 +51,12 @@ public class VisitListPanel : Panel {
       // Sort the list by online status
       friendshipInfoList = friendshipInfoList.OrderByDescending(f => f.isOnline).ToList();
 
-      // Update the rows per page
-      _rowsPerPage = Friendship.MAX_FRIENDS;
+      friendCountText.text = friendshipInfoList.Count + "/" + totalFriends;
+      int totalPages = 0;
+      if (totalFriends > 0) {
+         totalPages = totalFriends / MAX_ITEM_PER_PAGE;
+      }
+      pageText.text = _currentPage + " / " + Mathf.Clamp(totalPages, 1, Friendship.MAX_FRIENDS);
 
       // Create the friend rows
       foreach (FriendshipInfo friend in friendshipInfoList) {
@@ -57,7 +67,7 @@ public class VisitListPanel : Panel {
    }
 
    public void refreshPanel () {
-      Global.player.rpc.Cmd_RequestFriendshipVisitFromServer(_currentPage, _rowsPerPage);
+      Global.player.rpc.Cmd_RequestFriendshipVisitFromServer(_currentPage, MAX_ITEM_PER_PAGE);
    }
 
    public void nextPage () {
@@ -95,9 +105,6 @@ public class VisitListPanel : Panel {
 
    // The maximum page index (starting at 1)
    private int _maxPage = 1;
-
-   // The number of rows per page
-   private int _rowsPerPage = Friendship.MAX_FRIENDS;
 
    #endregion
 }

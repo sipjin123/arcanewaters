@@ -3782,6 +3782,8 @@ MonoBehaviour:
   nextPageButton: {fileID: 3341497206279727405}
   previousPageButton: {fileID: 8143921444886255542}
   setCustomMapWarningObj: {fileID: 274676036699315108}
+  pageText: {fileID: 2934532499523134221}
+  friendCountText: {fileID: 6971222972776835739}
 --- !u!1 &6971222973502864509
 GameObject:
   m_ObjectHideFlags: 0
