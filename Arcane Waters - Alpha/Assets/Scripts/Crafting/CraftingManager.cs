@@ -17,7 +17,7 @@ public class CraftingManager : MonoBehaviour {
    public List<RefinementData> refinementDataList = new List<RefinementData>();
 
    // The xml id of the bone sword craftable item
-   public const int BONE_SWORD_RECIPE = 46;
+   public const int BONE_SWORD_RECIPE = 78;
 
    #endregion
 
