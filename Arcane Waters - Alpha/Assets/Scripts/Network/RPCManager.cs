@@ -8433,6 +8433,7 @@ public class RPCManager : NetworkBehaviour
                ((PlayerBodyEntity) _player).weaponManager.Rpc_HideWeapons(false);
             }
 
+            AchievementManager.registerUserAchievement(_player, ActionType.PetAnimal);
             npc.finishedPetting.RemoveAllListeners();
          });
 
