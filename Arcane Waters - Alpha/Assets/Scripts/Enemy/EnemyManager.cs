@@ -131,7 +131,11 @@ public class EnemyManager : MonoBehaviour {
             }
          } else {
             for (int i = 0; i < spawnsPerSpot; i++) {
-               spawnSeaMonster(instance, area, spawner.transform.localPosition, i!=0);
+               if (mapInfo.spawnsSeaMonsters) {
+                  spawnSeaMonster(instance, area, spawner.transform.localPosition, i != 0);
+               } else {
+                  spawnBotShip(instance, area, spawner.transform.localPosition, guildId, i != 0);
+               }
             }
          }
       }

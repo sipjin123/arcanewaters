@@ -16,6 +16,9 @@ public class ScrollRectOverride : MonoBehaviour {
    // The parent object containing all of the canvas of the game
    public GameObject canvasParent;
 
+   // The sscroll magnitude of linux inverted scroll override
+   public const float SCROLL_MAGNITUDE = 3;
+
    #endregion 
 
    private void Start () {
@@ -33,7 +36,7 @@ public class ScrollRectOverride : MonoBehaviour {
          }
 
          foreach (ScrollRect scroller in scrollList) {
-            scroller.scrollSensitivity *= -1;
+            scroller.scrollSensitivity *= -SCROLL_MAGNITUDE;
          }
       }
    }
