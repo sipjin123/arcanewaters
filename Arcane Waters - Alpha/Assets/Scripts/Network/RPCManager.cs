@@ -4401,6 +4401,15 @@ public class RPCManager : NetworkBehaviour
                         value = 20, // Set as 20% defense boost for now
                      };
                      break;
+                  case LandPowerupType.SpeedBoost:
+                     newPowerup = new LandPowerupData {
+                        counter = 1200, // Set as 1200 secs for now
+                        expiryType = LandPowerupExpiryType.Time, // Set as timer for now
+                        landPowerupType = LandPowerupType.SpeedBoost,
+                        userId = _player.userId,
+                        value = 100, // Set as 100% speed boost for now
+                     };
+                     break;
                }
 
                if (_player.areaKey.ToLower().Contains(Area.TUTORIAL_AREA.ToLower())) {
@@ -8706,7 +8715,7 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_UpdatePowerups (NetworkConnection connection, List<Powerup> powerups) {
-      PowerupPanel.self.updatePowerups(powerups);
+      PowerupPanel.self.updatePowerups(powerups, _player);
    }
 
    [TargetRpc]

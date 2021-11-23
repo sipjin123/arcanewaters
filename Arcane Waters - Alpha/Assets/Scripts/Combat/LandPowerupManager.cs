@@ -35,6 +35,11 @@ public class LandPowerupManager : MonoBehaviour {
          powerupName = "Defense Boost",
          powerupType = LandPowerupType.DefenseBoost
       });
+      landPowerupInfo.Add(LandPowerupType.SpeedBoost, new LandPowerupInfo {
+         powerupInfo = "Increases speed of the user by 20% when traveling in land",
+         powerupName = "Speed Boost",
+         powerupType = LandPowerupType.SpeedBoost
+      });
    }
 
    private void Start () {

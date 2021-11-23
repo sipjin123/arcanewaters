@@ -30,7 +30,7 @@ public class LandPowerupIcon : MonoBehaviour {
 
    // The type of this powerup that this icon represents
    [HideInInspector]
-   public LandPowerupType type;
+   public LandPowerupType landPowerupType;
 
    #endregion
 
@@ -50,7 +50,7 @@ public class LandPowerupIcon : MonoBehaviour {
       descriptionText.text = "";
       nameText.faceColor = PowerupPanel.self.rarityColors[(int) rarity];
 
-      this.type = type;
+      this.landPowerupType = type;
       this.rarity = rarity;
 
       _parentCanvasTransform = PowerupPanel.self.parentCanvas.GetComponent<RectTransform>();
