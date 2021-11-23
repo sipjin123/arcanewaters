@@ -2168,7 +2168,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       return getBattlerData().apGainWhenDamaged;
    }
 
-   public int getStartingHealth (Enemy.Type enemyType) {
+   public int getStartingHealth (Enemy.Type enemyType, bool initialFetch = false) {
       BattlerData battData = MonsterManager.self.getBattlerData(enemyType);
       int level = LevelUtil.levelForXp(XP);
 
@@ -2176,7 +2176,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       int health = ((int) battData.baseHealth + (int) battData.healthPerlevel * level);
 
       // Based on the difficulty level, add additional health (Easy: + 10% health / Medium: + 20% health / Hard: + 30% health)
-      health = (int) (health + (health * (difficultyLevel * AdminGameSettingsManager.self.settings.landDifficultyScaling)));
+      int difficultyComputation = (int) (health + (health * (difficultyLevel * AdminGameSettingsManager.self.settings.landDifficultyScaling)));
+
+      if (initialFetch && battData.isBossType) {
+         D.debug("Boss health is computed as {" + difficultyComputation + "} Breakdown: {" + health + " * " + (difficultyLevel * AdminGameSettingsManager.self.settings.landDifficultyScaling) + "} Difficulty is: {" + difficultyLevel + "}");
+      }
+
+      health = difficultyComputation;
 
       // If this is a boss monster, add health (based from admin game settings) depending on number of team members
       if (battData.isBossType) {
