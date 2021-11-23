@@ -212,6 +212,7 @@ public class NetworkedServer : NetworkedBehaviour
 
    [ClientRPC]
    public void ClientRPCReceivePvpAnnouncement (int instanceId, string message, string senderName, string recipient) {
+      D.adminLog("Sending client rpc chat message to player {" + recipient + "} for pvp announcement: {" + senderName + "}", D.ADMIN_LOG_TYPE.PvpAnnouncement);
       int recipientId = 0;
       try {
          recipientId = int.Parse(recipient);
@@ -220,13 +221,15 @@ public class NetworkedServer : NetworkedBehaviour
       }
 
       if (recipientId < 1) {
+         D.adminLog("Invalid Pvp Announcement Recipient: " + recipientId, D.ADMIN_LOG_TYPE.PvpAnnouncement);
          return;
       }
 
       // Send the chat message to all users connected to this server
       foreach (NetEntity netEntity in MyNetworkManager.getPlayers()) {
          // Make sure that only players in voyage or battle will not receive this announcement
-         if (netEntity.battleId > 0 || netEntity is PlayerShipEntity) {
+         if (netEntity.battleId > 0) {
+            D.adminLog("Invalid Pvp Announcement, {" + netEntity.userId + ":" + netEntity.entityName + "} is in a battle!", D.ADMIN_LOG_TYPE.PvpAnnouncement);
             continue;
          }
 

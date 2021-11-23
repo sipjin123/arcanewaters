@@ -256,6 +256,7 @@ public class ServerNetworkingManager : MonoBehaviour
    }
 
    public void sendDirectChatMessage (ChatInfo chatInfo) {
+      D.adminLog("Sending direct chat message to player for pvp announcement: {" + chatInfo.sender + " : " + chatInfo.recipient + "}", D.ADMIN_LOG_TYPE.PvpAnnouncement);
       server.InvokeServerRpc(server.MasterServer_SendPvpAnnouncement, chatInfo.senderId, chatInfo.text, chatInfo.sender, chatInfo.recipient);
    }
 

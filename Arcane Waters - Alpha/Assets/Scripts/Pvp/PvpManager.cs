@@ -61,7 +61,6 @@ public class PvpManager : MonoBehaviour {
 
          // If the pvp game is not a pregame or the announcement interval is less than the expected, skip
          if (pvpAnnouncement.pvpState != PvpGame.State.PreGame) {
-            D.adminLog("This is not a pvp state: " + pvpAnnouncement.instanceId + " " + pvpAnnouncement.pvpState, D.ADMIN_LOG_TYPE.PvpAnnouncement);
             continue;
          }
 
@@ -69,21 +68,19 @@ public class PvpManager : MonoBehaviour {
          pvpAnnouncement.lastAnnouncementTime = DateTime.UtcNow;
 
          if (!_activeGames.ContainsKey(pvpAnnouncement.instanceId)) {
-            D.adminLog("There are no active games in: " + pvpAnnouncement.instanceId, D.ADMIN_LOG_TYPE.PvpAnnouncement);
             continue;
          }
 
          PvpGame activePvpGame = _activeGames[pvpAnnouncement.instanceId];
-         pvpAnnouncement.pvpState = activePvpGame.getGameState();
-
-         if (activePvpGame.getAllUsersInGame().Count < 1) {
-            D.adminLog("There are no users in game: " + activePvpGame.instanceId, D.ADMIN_LOG_TYPE.PvpAnnouncement);
+         if (activePvpGame == null) {
             continue;
          }
 
-         D.adminLog("Announcements are being checked! " +
-            "Total servers to check: " + ServerNetworkingManager.self.servers.Count +
-            " TotalGames: " + pvpAnnouncementDataList.Count, D.ADMIN_LOG_TYPE.PvpAnnouncement);
+         pvpAnnouncement.pvpState = activePvpGame.getGameState();
+
+         if (activePvpGame.getAllUsersInGame().Count < 1) {
+            continue;
+         }
 
          // Cycle through all servers
          foreach (NetworkedServer currServer in ServerNetworkingManager.self.servers) {
@@ -96,6 +93,12 @@ public class PvpManager : MonoBehaviour {
                      pvpAnnouncement.playerTimeStamp.Remove(userAssignedInfo.Key);
                      D.adminLog("User is already in a pvp game: " + userAssignedInfo.Key, D.ADMIN_LOG_TYPE.PvpAnnouncement);
                   }
+
+                  continue;
+               }
+
+               if (AreaManager.self.getMapInfo(activePvpGame.areaKey) == null) {
+                  D.adminLog("Cant find map info: {" + activePvpGame.areaKey + "}", D.ADMIN_LOG_TYPE.PvpAnnouncement);
                   continue;
                }
 
@@ -116,8 +119,7 @@ public class PvpManager : MonoBehaviour {
                         recipient = userAssignedInfo.Key.ToString()
                      };
 
-                     NetEntity localEntiy = EntityManager.self.getEntity(userAssignedInfo.Key);
-                     StartCoroutine(CO_SendMessageToPlayer(localEntiy, newChatInfo, userAssignedInfo.Key));
+                     StartCoroutine(CO_SendMessageToPlayer(newChatInfo, userAssignedInfo.Key));
                   }
                } else {
                   // Register user and send message announcing the new pvp
@@ -129,26 +131,17 @@ public class PvpManager : MonoBehaviour {
                      recipient = userAssignedInfo.Key.ToString()
                   };
 
-                  NetEntity localEntiy = EntityManager.self.getEntity(userAssignedInfo.Key);
-                  StartCoroutine(CO_SendMessageToPlayer(localEntiy, newChatInfo, userAssignedInfo.Key));
+                  StartCoroutine(CO_SendMessageToPlayer(newChatInfo, userAssignedInfo.Key));
                }
             }
          }
       }
    }
 
-   private IEnumerator CO_SendMessageToPlayer (NetEntity localEntity, ChatInfo newChatInfo, int targetUser) {
+   private IEnumerator CO_SendMessageToPlayer (ChatInfo newChatInfo, int targetUser) {
       yield return new WaitForSeconds(5);
 
-      if (localEntity == null) {
-         D.debug("This is NOT a local entity: {" + localEntity.userId + "} Sending globally");
-         D.adminLog("Sending Global message to: " + targetUser, D.ADMIN_LOG_TYPE.PvpAnnouncement);
-         ServerNetworkingManager.self?.sendDirectChatMessage(newChatInfo);
-      } else {
-         D.debug("This is a local entity: {" + localEntity.userId + "} Sending directly");
-         D.adminLog("Sending private message to: " + targetUser, D.ADMIN_LOG_TYPE.PvpAnnouncement);
-         localEntity.Target_ReceivePvpChat(localEntity.connectionToClient, newChatInfo.senderId, newChatInfo.text);
-      }
+      ServerNetworkingManager.self?.sendDirectChatMessage(newChatInfo);
    }
 
    public void startPvpManagement () {
@@ -161,7 +154,6 @@ public class PvpManager : MonoBehaviour {
       InvokeRepeating(nameof(createPvpGamesIfNeeded), 5f, 10f);
 
       pvpMapsInitialized = true;
-      D.debug("Pvp Announcement Checker has Started");
       InvokeRepeating(nameof(checkPvpForAnnouncement), 1, ANNOUNCEMENT_CHECK_INTERVAL);
    }
 
