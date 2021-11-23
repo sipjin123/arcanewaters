@@ -17,6 +17,21 @@ TextureImporter:
   - first:
       213: 21300008
     second: patch_4
+  - first:
+      213: 5985686756308564866
+    second: patch_1_0
+  - first:
+      213: -3483192428451677297
+    second: patch_1_1
+  - first:
+      213: 1155321854582923455
+    second: patch_1_2
+  - first:
+      213: 4962147360471498059
+    second: patch_1_3
+  - first:
+      213: 8229281596918264950
+    second: patch_1_4
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -126,7 +141,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: patch_0
+      name: patch_1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -140,14 +155,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 68df1bce0731f38418a8b7b538c146a3
-      internalID: 21300000
+      spriteID: 28b388e246e611350800000000000000
+      internalID: 5985686756308564866
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: patch_1
+      name: patch_1_1
       rect:
         serializedVersion: 2
         x: 29
@@ -161,14 +176,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 06e8e327d25102d4fac5f2e36fcc0c7c
-      internalID: 21300002
+      spriteID: f8bbec9e0f639afc0800000000000000
+      internalID: -3483192428451677297
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: patch_2
+      name: patch_1_2
       rect:
         serializedVersion: 2
         x: 58
@@ -182,14 +197,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 80a0ebdb3ba1d5649bfef6e6374ac81d
-      internalID: 21300004
+      spriteID: fb029a70b17880010800000000000000
+      internalID: 1155321854582923455
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: patch_3
+      name: patch_1_3
       rect:
         serializedVersion: 2
         x: 87
@@ -203,14 +218,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8d225b50a1f70684682d1212a350c025
-      internalID: 21300006
+      spriteID: b4dbb08dbb61dd440800000000000000
+      internalID: 4962147360471498059
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: patch_4
+      name: patch_1_4
       rect:
         serializedVersion: 2
         x: 116
@@ -224,8 +239,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6a0eda46a2d7ea745904defe732fa7ee
-      internalID: 21300008
+      spriteID: 674f8f40308443270800000000000000
+      internalID: 8229281596918264950
       vertices: []
       indices: 
       edges: []

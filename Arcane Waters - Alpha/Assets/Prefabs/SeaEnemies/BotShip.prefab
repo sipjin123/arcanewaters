@@ -143,6 +143,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &1307228615476472
 GameObject:
@@ -326,7 +327,6 @@ MonoBehaviour:
     type: 3}
   leftSideTarget: {fileID: 2083341788368610960}
   rightSideTarget: {fileID: 6334897482679909241}
-  invulnerable: 0
   projectileSpawnLocations: []
   colliderList:
   - {fileID: 58256050713667648}
@@ -350,6 +350,7 @@ MonoBehaviour:
   dataXmlId: 0
   spritesContainer: {fileID: 1013934132990528}
   ripplesContainer: {fileID: 1658159506029436}
+  seaEntityShadowContainer: {fileID: 0}
   orbHolder: {fileID: 8305972367148596338}
   residueHolder: {fileID: 0}
   _currentPath: []
@@ -1078,7 +1079,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
-  m_SortingLayerID: -1044794655
+  m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &4298963032167265655
@@ -1137,6 +1138,7 @@ MonoBehaviour:
   shipHealthBlockPrefab: {fileID: 210412077248137537, guid: 1af460cda2e441d4aa4f2c9dab03d4a8,
     type: 3}
   healthBlockContainer: {fileID: 524273851013023261}
+  targetAlpha: 1
   guildIcon: {fileID: 3740703048108942071}
   privateersIcon: {fileID: 21300000, guid: 41929b7ea8e795f48bb120bb1976ca73, type: 3}
   piratesIcon: {fileID: 21300000, guid: e353e0a6cca68764281c10828827d312, type: 3}

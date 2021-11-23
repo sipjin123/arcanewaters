@@ -17,6 +17,21 @@ TextureImporter:
   - first:
       213: 21300008
     second: headband_4
+  - first:
+      213: 4082304946741950355
+    second: headband_1_0
+  - first:
+      213: -2677631764530055542
+    second: headband_1_1
+  - first:
+      213: 5543315879401252453
+    second: headband_1_2
+  - first:
+      213: 4157669069715771154
+    second: headband_1_3
+  - first:
+      213: 1025677326396888018
+    second: headband_1_4
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -126,7 +141,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: headband_0
+      name: headband_1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -140,14 +155,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1785f356f11969244813f0f795d3ac82
-      internalID: 21300000
+      spriteID: 397bf5758b247a830800000000000000
+      internalID: 4082304946741950355
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: headband_1
+      name: headband_1_1
       rect:
         serializedVersion: 2
         x: 29
@@ -161,14 +176,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f273324dad544f3478f60b9f09ee9f4e
-      internalID: 21300002
+      spriteID: a8632ebc81427dad0800000000000000
+      internalID: -2677631764530055542
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: headband_2
+      name: headband_1_2
       rect:
         serializedVersion: 2
         x: 58
@@ -182,14 +197,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d911b9decba2df84484c34bbf58c4962
-      internalID: 21300004
+      spriteID: 5666e7d2c60ddec40800000000000000
+      internalID: 5543315879401252453
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: headband_3
+      name: headband_1_3
       rect:
         serializedVersion: 2
         x: 87
@@ -203,14 +218,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00da0d8595a533e4cbf2adc889774177
-      internalID: 21300006
+      spriteID: 21f890a9df103b930800000000000000
+      internalID: 4157669069715771154
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: headband_4
+      name: headband_1_4
       rect:
         serializedVersion: 2
         x: 116
@@ -224,8 +239,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9e7a459113a05294083f3c4bfbc0e208
-      internalID: 21300008
+      spriteID: 2d31f061810fb3e00800000000000000
+      internalID: 1025677326396888018
       vertices: []
       indices: 
       edges: []

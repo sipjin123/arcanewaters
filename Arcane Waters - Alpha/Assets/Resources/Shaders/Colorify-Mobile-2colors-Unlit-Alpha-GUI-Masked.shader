@@ -20,6 +20,13 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent-GUI-Masked"
 
 		[Toggle(SHOW_HAT_CLIPPING)]
 		_ShowHatClipping("Show Hat Clipping", Int) = 0
+
+		_StencilComp("Stencil Comparison", Float) = 8
+		_Stencil("Stencil ID", Float) = 0
+		_StencilOp("Stencil Operation", Float) = 0
+		_StencilWriteMask("Stencil Write Mask", Float) = 255
+		_StencilReadMask("Stencil Read Mask", Float) = 255
+		_ColorMask("Color Mask", Float) = 15
 	}
 
 	SubShader
@@ -62,11 +69,13 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent-GUI-Masked"
 			struct appdata_t {
 				float4 vertex : POSITION;
 				float2 texcoord : TEXCOORD0;
+				fixed4 color : COLOR0;
 			};
 
 			struct v2f {
 				float4 vertex : SV_POSITION;
 				half2 texcoord : TEXCOORD0;
+				fixed4 color : COLOR0;
 			};
 
 			int _ShowHatClipping;
@@ -93,6 +102,7 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent-GUI-Masked"
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
+				o.color = v.color;
 				return o;
 			}
 			
@@ -108,8 +118,8 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent-GUI-Masked"
 
 				// Conditionally apply hat clipmask
 				fixed4 clipmask_c = tex2D(_ClipTex, i.texcoord);
-				float originalPixelAlpha = c.a;
-				float clippedPixelAlpha = lerp(0, c.a, clipmask_c.r);
+				float originalPixelAlpha = c.a * i.color.a;
+				float clippedPixelAlpha = lerp(0, originalPixelAlpha, clipmask_c.r);
 				c.a = lerp(originalPixelAlpha, clippedPixelAlpha, _ShowHatClipping);
 
 				return c;

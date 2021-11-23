@@ -44,6 +44,7 @@ public class EquipmentStatData
 
    // The current rarity of the equipment data
    public Rarity.Type rarity = Rarity.Type.Common;
+
 }
 
 public class RarityModifier

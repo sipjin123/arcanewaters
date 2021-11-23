@@ -17,6 +17,21 @@ TextureImporter:
   - first:
       213: 4901165905069739925
     second: PirateGirl_4
+  - first:
+      213: 3251640344746736914
+    second: PirateGirl_1_0
+  - first:
+      213: -8822134750773633933
+    second: PirateGirl_1_1
+  - first:
+      213: -64207188183635364
+    second: PirateGirl_1_2
+  - first:
+      213: 1392377669586877943
+    second: PirateGirl_1_3
+  - first:
+      213: -1627611856563206527
+    second: PirateGirl_1_4
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -102,7 +117,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: PirateGirl_0
+      name: PirateGirl_1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -110,20 +125,20 @@ TextureImporter:
         width: 29
         height: 34
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: da115d656d9b175d0800000000000000
-      internalID: -3066465541031652947
+      spriteID: 21d35f56aa5202d20800000000000000
+      internalID: 3251640344746736914
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateGirl_1
+      name: PirateGirl_1_1
       rect:
         serializedVersion: 2
         x: 29
@@ -131,20 +146,20 @@ TextureImporter:
         width: 29
         height: 34
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8105558af917014c0800000000000000
-      internalID: -4318827112110403560
+      spriteID: 37c12839f2b719580800000000000000
+      internalID: -8822134750773633933
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateGirl_2
+      name: PirateGirl_1_2
       rect:
         serializedVersion: 2
         x: 58
@@ -152,20 +167,20 @@ TextureImporter:
         width: 29
         height: 34
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cc7f8d3b1a4fcce10800000000000000
-      internalID: 2219417691731064780
+      spriteID: c5aa94c07e3eb1ff0800000000000000
+      internalID: -64207188183635364
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateGirl_3
+      name: PirateGirl_1_3
       rect:
         serializedVersion: 2
         x: 87
@@ -173,20 +188,20 @@ TextureImporter:
         width: 29
         height: 34
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 79591fb916bc66c30800000000000000
-      internalID: 4352389709988730263
+      spriteID: 7fd79e40d18b25310800000000000000
+      internalID: 1392377669586877943
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateGirl_4
+      name: PirateGirl_1_4
       rect:
         serializedVersion: 2
         x: 116
@@ -194,14 +209,14 @@ TextureImporter:
         width: 29
         height: 34
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 59f00f45c60740440800000000000000
-      internalID: 4901165905069739925
+      spriteID: 1860651d3af8969e0800000000000000
+      internalID: -1627611856563206527
       vertices: []
       indices: 
       edges: []

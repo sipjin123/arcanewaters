@@ -1,0 +1,311 @@
+fileFormatVersion: 2
+guid: 2e1ba68d8deaf3740a548b761e340bd5
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6887028082637139217
+    second: boss_horror_body_shadow_0
+  - first:
+      213: -967306637312261954
+    second: boss_horror_body_shadow_1
+  - first:
+      213: 169577531893947137
+    second: boss_horror_body_shadow_2
+  - first:
+      213: -8588816009687035970
+    second: boss_horror_body_shadow_3
+  - first:
+      213: -2602450824877673151
+    second: boss_horror_body_shadow_4
+  - first:
+      213: -5339287319328629126
+    second: boss_horror_body_shadow_5
+  - first:
+      213: 1941535930988496678
+    second: boss_horror_body_shadow_6
+  - first:
+      213: -6672477964026404178
+    second: boss_horror_body_shadow_7
+  - first:
+      213: -1580987709457051347
+    second: boss_horror_body_shadow_8
+  - first:
+      213: 4078843598313108505
+    second: boss_horror_body_shadow_9
+  - first:
+      213: -4529793684637791714
+    second: boss_horror_body_shadow_10
+  - first:
+      213: 4111473962709175555
+    second: boss_horror_body_shadow_11
+  - first:
+      213: -922101750680358848
+    second: boss_horror_body_shadow_12
+  - first:
+      213: -268264520997085404
+    second: boss_horror_body_shadow_13
+  - first:
+      213: -5637954346405583502
+    second: boss_horror_body_shadow_14
+  - first:
+      213: -6531215346026775253
+    second: boss_horror_body_shadow_15
+  - first:
+      213: -226811776677914836
+    second: boss_horror_body_shadow_16
+  - first:
+      213: 4965340471311740887
+    second: boss_horror_body_shadow_17
+  - first:
+      213: -4793432928229821269
+    second: boss_horror_body_shadow_18
+  - first:
+      213: 556462918776047371
+    second: boss_horror_body_shadow_19
+  - first:
+      213: -4211893861440197312
+    second: boss_horror_body_shadow_20
+  - first:
+      213: -8464721863864254929
+    second: boss_horror_body_shadow_21
+  - first:
+      213: 382693271806334219
+    second: boss_horror_body_shadow_22
+  - first:
+      213: 4148018477494006998
+    second: boss_horror_body_shadow_23
+  - first:
+      213: 3323415366362149600
+    second: boss_horror_body_shadow_24
+  - first:
+      213: 2116954796868838261
+    second: boss_horror_body_shadow_25
+  - first:
+      213: 3713960330601596710
+    second: boss_horror_body_shadow_26
+  - first:
+      213: 717967448785162579
+    second: boss_horror_body_shadow_27
+  - first:
+      213: -6985271250928003639
+    second: boss_horror_body_shadow_28
+  - first:
+      213: 3430562294308159067
+    second: boss_horror_body_shadow_29
+  - first:
+      213: 4546936046104602812
+    second: boss_horror_body_shadow_30
+  - first:
+      213: 5409775497658106630
+    second: boss_horror_body_shadow_31
+  - first:
+      213: -1996226178826239538
+    second: boss_horror_body_shadow_32
+  - first:
+      213: 2104620095824846539
+    second: boss_horror_body_shadow_33
+  - first:
+      213: -7665914883505179789
+    second: boss_horror_body_shadow_34
+  - first:
+      213: -3309336540732181756
+    second: boss_horror_body_shadow_35
+  - first:
+      213: 5439457974748251515
+    second: boss_horror_body_shadow_36
+  - first:
+      213: 2550081950151060505
+    second: boss_horror_body_shadow_37
+  - first:
+      213: -9007755563556567673
+    second: boss_horror_body_shadow_38
+  - first:
+      213: 7572891827639634920
+    second: boss_horror_body_shadow_39
+  - first:
+      213: -2867181170551405289
+    second: boss_horror_body_shadow_40
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: -1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 4
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 4
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: boss_horror_body_shadow_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 144
+        height: 154
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11de9b75d83a39f50800000000000000
+      internalID: 6887028082637139217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_horror_body_shadow_1
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 0
+        width: 144
+        height: 154
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb000260dbf6392f0800000000000000
+      internalID: -967306637312261954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_horror_body_shadow_2
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 0
+        width: 144
+        height: 154
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10b1d66edd57a5200800000000000000
+      internalID: 169577531893947137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_horror_body_shadow_3
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 0
+        width: 144
+        height: 154
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebf8a6d38556ec880800000000000000
+      internalID: -8588816009687035970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 8a7b16d8fc1223a45a88f8def03e8db0
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

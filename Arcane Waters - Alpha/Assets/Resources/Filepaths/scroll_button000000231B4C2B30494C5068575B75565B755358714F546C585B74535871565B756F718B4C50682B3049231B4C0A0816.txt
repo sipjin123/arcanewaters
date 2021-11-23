@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/GUI/scroll_button
+Assets/Resources/Sprites/GUI/Voyages/scroll_button

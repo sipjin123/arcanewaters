@@ -69,11 +69,13 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent-GUI"
 			struct appdata_t {
 				float4 vertex : POSITION;
 				float2 texcoord : TEXCOORD0;
+				fixed4 color : COLOR0;
 			};
 
 			struct v2f {
 				float4 vertex : SV_POSITION;
 				half2 texcoord : TEXCOORD0;
+				fixed4 color : COLOR0;
 			};
 
 			int _ShowHatClipping;
@@ -100,6 +102,7 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent-GUI"
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
+				o.color = v.color;
 				return o;
 			}
 			
@@ -114,8 +117,8 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent-GUI"
 				c.rgb = afterPaletteColor.rgb;
 
 				fixed4 clipmask_c = tex2D(_ClipTex, i.texcoord);
-				float originalPixelAlpha = c.a;
-				float clippedPixelAlpha = lerp(0, c.a, clipmask_c.r);
+				float originalPixelAlpha = c.a * i.color.a;
+				float clippedPixelAlpha = lerp(0, originalPixelAlpha, clipmask_c.r);
 				c.a = lerp(originalPixelAlpha, clippedPixelAlpha, _ShowHatClipping);
 
 				return c;

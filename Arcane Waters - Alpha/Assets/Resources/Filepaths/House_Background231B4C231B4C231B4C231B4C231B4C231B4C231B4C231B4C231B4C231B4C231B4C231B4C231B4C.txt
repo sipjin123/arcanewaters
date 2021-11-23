@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Towns/House_Background
+Assets/Resources/Sprites/Map/House_Background

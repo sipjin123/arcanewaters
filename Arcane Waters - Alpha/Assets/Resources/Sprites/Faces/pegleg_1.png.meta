@@ -17,6 +17,21 @@ TextureImporter:
   - first:
       213: 21300008
     second: pegleg_4
+  - first:
+      213: 5701646380548921573
+    second: pegleg_1_0
+  - first:
+      213: -955473000029410494
+    second: pegleg_1_1
+  - first:
+      213: 6523423954113920271
+    second: pegleg_1_2
+  - first:
+      213: 493896730579376134
+    second: pegleg_1_3
+  - first:
+      213: -3850773855651665489
+    second: pegleg_1_4
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -126,7 +141,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: pegleg_0
+      name: pegleg_1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -140,14 +155,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: aada4092eafa6ad44bb2224332755e3f
-      internalID: 21300000
+      spriteID: 5e8928bac21502f40800000000000000
+      internalID: 5701646380548921573
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pegleg_1
+      name: pegleg_1_1
       rect:
         serializedVersion: 2
         x: 29
@@ -161,14 +176,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 13e95b1216644f6418d1b3315052293b
-      internalID: 21300002
+      spriteID: 24b25c86e5a7db2f0800000000000000
+      internalID: -955473000029410494
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pegleg_2
+      name: pegleg_1_2
       rect:
         serializedVersion: 2
         x: 58
@@ -182,14 +197,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c8d3cea0731932a45a57ef68562901ad
-      internalID: 21300004
+      spriteID: f0dfb30168bd78a50800000000000000
+      internalID: 6523423954113920271
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pegleg_3
+      name: pegleg_1_3
       rect:
         serializedVersion: 2
         x: 87
@@ -203,14 +218,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9eb0c221cd3fda045b5b721b5fae7956
-      internalID: 21300006
+      spriteID: 60819eda57caad600800000000000000
+      internalID: 493896730579376134
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pegleg_4
+      name: pegleg_1_4
       rect:
         serializedVersion: 2
         x: 116
@@ -224,8 +239,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 725b0aa09ac82a3438284f9d7def747f
-      internalID: 21300008
+      spriteID: fa9658f949d4f8ac0800000000000000
+      internalID: -3850773855651665489
       vertices: []
       indices: 
       edges: []

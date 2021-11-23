@@ -17,6 +17,21 @@ TextureImporter:
   - first:
       213: 21300008
     second: feather_4
+  - first:
+      213: -2603993927680779433
+    second: feather_1_0
+  - first:
+      213: -9084862466994939693
+    second: feather_1_1
+  - first:
+      213: 6719699017234850544
+    second: feather_1_2
+  - first:
+      213: -5729752358866719377
+    second: feather_1_3
+  - first:
+      213: -7648930247809196263
+    second: feather_1_4
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -126,7 +141,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: feather_0
+      name: feather_1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -140,14 +155,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 74c76ca9f4a6e1e41a08ab5a22bbc6a2
-      internalID: 21300000
+      spriteID: 75b105fb151ccdbd0800000000000000
+      internalID: -2603993927680779433
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: feather_1
+      name: feather_1_1
       rect:
         serializedVersion: 2
         x: 29
@@ -161,14 +176,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 72e069eea0de3e64cb92de75cd42ac9c
-      internalID: 21300002
+      spriteID: 3d8dc7d48b51ce180800000000000000
+      internalID: -9084862466994939693
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: feather_2
+      name: feather_1_2
       rect:
         serializedVersion: 2
         x: 58
@@ -182,14 +197,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 700517db1fd0e0a4dbacf71f6f2059cb
-      internalID: 21300004
+      spriteID: 0f223d757aa214d50800000000000000
+      internalID: 6719699017234850544
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: feather_3
+      name: feather_1_3
       rect:
         serializedVersion: 2
         x: 87
@@ -203,14 +218,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1bb293d1a097b6240a526f081d49f559
-      internalID: 21300006
+      spriteID: f6deace4694db70b0800000000000000
+      internalID: -5729752358866719377
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: feather_4
+      name: feather_1_4
       rect:
         serializedVersion: 2
         x: 116
@@ -224,8 +239,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 58ffcc1faf6e28a4b94b0bc1b9a747cc
-      internalID: 21300008
+      spriteID: 91f9793277a89d590800000000000000
+      internalID: -7648930247809196263
       vertices: []
       indices: 
       edges: []

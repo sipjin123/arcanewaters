@@ -2402,6 +2402,7 @@ MonoBehaviour:
   barsBackgroundAlt: {fileID: 0}
   shipHealthBlockPrefab: {fileID: 0}
   healthBlockContainer: {fileID: 0}
+  targetAlpha: 1
 --- !u!1 &1972619128998838
 GameObject:
   m_ObjectHideFlags: 0

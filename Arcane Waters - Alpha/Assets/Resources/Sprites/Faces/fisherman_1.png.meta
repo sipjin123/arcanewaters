@@ -17,6 +17,21 @@ TextureImporter:
   - first:
       213: 21300008
     second: fisherman_4
+  - first:
+      213: 8007447379825459573
+    second: fisherman_1_0
+  - first:
+      213: -8339160576388551386
+    second: fisherman_1_1
+  - first:
+      213: -1844587115393282659
+    second: fisherman_1_2
+  - first:
+      213: 5226573457977064395
+    second: fisherman_1_3
+  - first:
+      213: -1457906139627592405
+    second: fisherman_1_4
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -126,7 +141,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: fisherman_0
+      name: fisherman_1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -140,14 +155,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e3185d08436a5eb488a697160898b9c5
-      internalID: 21300000
+      spriteID: 571012877fa202f60800000000000000
+      internalID: 8007447379825459573
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fisherman_1
+      name: fisherman_1_1
       rect:
         serializedVersion: 2
         x: 29
@@ -161,14 +176,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6dd501254f8a8ec469da48319c3aaade
-      internalID: 21300002
+      spriteID: 62d2b6773a9554c80800000000000000
+      internalID: -8339160576388551386
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fisherman_2
+      name: fisherman_1_2
       rect:
         serializedVersion: 2
         x: 58
@@ -182,14 +197,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ce75e7e2d3aa6734f84452c8fd4a53ac
-      internalID: 21300004
+      spriteID: d9d88b5aac5b666e0800000000000000
+      internalID: -1844587115393282659
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fisherman_3
+      name: fisherman_1_3
       rect:
         serializedVersion: 2
         x: 87
@@ -203,14 +218,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6201cab5769a8684c924134b2618dded
-      internalID: 21300006
+      spriteID: bcb35335ed4888840800000000000000
+      internalID: 5226573457977064395
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fisherman_4
+      name: fisherman_1_4
       rect:
         serializedVersion: 2
         x: 116
@@ -224,8 +239,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 732cd657b25f5c440b19b9866d3a7899
-      internalID: 21300008
+      spriteID: b25e2af171a74cbe0800000000000000
+      internalID: -1457906139627592405
       vertices: []
       indices: 
       edges: []

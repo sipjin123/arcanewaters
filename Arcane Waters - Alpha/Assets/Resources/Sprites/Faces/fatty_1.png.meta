@@ -17,6 +17,21 @@ TextureImporter:
   - first:
       213: 21300008
     second: fatty_4
+  - first:
+      213: 4033814078161454623
+    second: fatty_1_0
+  - first:
+      213: -4590631678477993616
+    second: fatty_1_1
+  - first:
+      213: -208224710104547345
+    second: fatty_1_2
+  - first:
+      213: -8394084433880939714
+    second: fatty_1_3
+  - first:
+      213: 9121088494066788295
+    second: fatty_1_4
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -126,7 +141,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: fatty_0
+      name: fatty_1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -140,14 +155,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d6fea70939db7a3498aa577162bf334a
-      internalID: 21300000
+      spriteID: f1688c2388cfaf730800000000000000
+      internalID: 4033814078161454623
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fatty_1
+      name: fatty_1_1
       rect:
         serializedVersion: 2
         x: 29
@@ -161,14 +176,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 98a4e34cf0edac84289114f26daa5752
-      internalID: 21300002
+      spriteID: 079f9a58fccca40c0800000000000000
+      internalID: -4590631678477993616
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fatty_2
+      name: fatty_1_2
       rect:
         serializedVersion: 2
         x: 58
@@ -182,14 +197,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dac5ae62899545943808bebdddc1aebf
-      internalID: 21300004
+      spriteID: fef72c8babc3c1df0800000000000000
+      internalID: -208224710104547345
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fatty_3
+      name: fatty_1_3
       rect:
         serializedVersion: 2
         x: 87
@@ -203,14 +218,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2d98390b9041f2c4db536846fb8c27f6
-      internalID: 21300006
+      spriteID: e3304ef5ea8328b80800000000000000
+      internalID: -8394084433880939714
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fatty_4
+      name: fatty_1_4
       rect:
         serializedVersion: 2
         x: 116
@@ -224,8 +239,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4e6e8ac458293b14f818755318527dfe
-      internalID: 21300008
+      spriteID: 7c7e0c5e8ad949e70800000000000000
+      internalID: 9121088494066788295
       vertices: []
       indices: 
       edges: []

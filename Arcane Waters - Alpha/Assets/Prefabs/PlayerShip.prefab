@@ -179,6 +179,7 @@ MonoBehaviour:
   barsBackgroundAlt: {fileID: 21300000, guid: 468e60adbe0887a429437702a2a8d82e, type: 3}
   shipHealthBlockPrefab: {fileID: 0}
   healthBlockContainer: {fileID: 0}
+  targetAlpha: 1
 --- !u!1 &16366
 GameObject:
   m_ObjectHideFlags: 0
@@ -450,6 +451,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &16428
 GameObject:
@@ -1121,7 +1123,6 @@ MonoBehaviour:
     type: 3}
   leftSideTarget: {fileID: 17463}
   rightSideTarget: {fileID: 17776}
-  invulnerable: 0
   projectileSpawnLocations: []
   colliderList:
   - {fileID: 20112}
@@ -1144,6 +1145,7 @@ MonoBehaviour:
   dataXmlId: 0
   spritesContainer: {fileID: 16379}
   ripplesContainer: {fileID: 16993}
+  seaEntityShadowContainer: {fileID: 0}
   orbHolder: {fileID: 6787728459848174014}
   residueHolder: {fileID: 6822252835635414890}
   _currentPath: []
@@ -1220,6 +1222,7 @@ MonoBehaviour:
   boostCooldown: 3
   boostForce: 15
   isDisabled: 1
+  hasPerformedFirstActionAfterSpawn: 0
   shipBoostCooldownObj: {fileID: 1012508857810683419}
   shipBoostCooldownIcon: {fileID: 4662923214789379973}
   cooldownIconSprites:
@@ -9324,7 +9327,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
-  m_SortingLayerID: -1548297251
+  m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &8908030412345087062
@@ -9383,6 +9386,7 @@ MonoBehaviour:
   shipHealthBlockPrefab: {fileID: 210412077248137537, guid: 1af460cda2e441d4aa4f2c9dab03d4a8,
     type: 3}
   healthBlockContainer: {fileID: 6969853556748040210}
+  targetAlpha: 1
   guildIcon: {fileID: 2739385863978472055}
   togglableSpacer: {fileID: 0}
   portrait: {fileID: 5551809496225748552}

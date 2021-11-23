@@ -17,6 +17,21 @@ TextureImporter:
   - first:
       213: 21300008
     second: hammer_4
+  - first:
+      213: 7552244810875172243
+    second: hammer_1_0
+  - first:
+      213: -3889534959614337339
+    second: hammer_1_1
+  - first:
+      213: -153976126966573814
+    second: hammer_1_2
+  - first:
+      213: -958661166162459148
+    second: hammer_1_3
+  - first:
+      213: 1264378985406195201
+    second: hammer_1_4
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -126,7 +141,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: hammer_0
+      name: hammer_1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -140,14 +155,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0d54b3909a56a6f44a8d5e678a56ec9c
-      internalID: 21300000
+      spriteID: 395700954a6fec860800000000000000
+      internalID: 7552244810875172243
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: hammer_1
+      name: hammer_1_1
       rect:
         serializedVersion: 2
         x: 29
@@ -161,14 +176,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4dbdb99d1704e6848a42d8c55613645f
-      internalID: 21300002
+      spriteID: 5ce59b6df88950ac0800000000000000
+      internalID: -3889534959614337339
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: hammer_2
+      name: hammer_1_2
       rect:
         serializedVersion: 2
         x: 58
@@ -182,14 +197,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 259b29793aef4af4795ef6193ca0f122
-      internalID: 21300004
+      spriteID: a0554404787fcddf0800000000000000
+      internalID: -153976126966573814
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: hammer_3
+      name: hammer_1_3
       rect:
         serializedVersion: 2
         x: 87
@@ -203,14 +218,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ae0ac8eccbdee634abe659767a56cdf6
-      internalID: 21300006
+      spriteID: 4f5cce2afb622b2f0800000000000000
+      internalID: -958661166162459148
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: hammer_4
+      name: hammer_1_4
       rect:
         serializedVersion: 2
         x: 116
@@ -224,8 +239,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f47a1d9b19f692c44929e22fe9599a26
-      internalID: 21300008
+      spriteID: 106ea9efcf9fb8110800000000000000
+      internalID: 1264378985406195201
       vertices: []
       indices: 
       edges: []

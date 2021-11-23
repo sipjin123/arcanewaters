@@ -175,6 +175,159 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   chargeAmount: 0
   parabolaHeight: 0
+  targetDotStyles:
+  - {fileID: -4114944681076324931, guid: 804d86f327293354fbd7bfac74baf175, type: 3}
+  - {fileID: 408784270486634989, guid: 804d86f327293354fbd7bfac74baf175, type: 3}
+  - {fileID: 2800334648567470253, guid: 804d86f327293354fbd7bfac74baf175, type: 3}
+  - {fileID: -2008842521098026449, guid: 804d86f327293354fbd7bfac74baf175, type: 3}
+  - {fileID: -7586060781666185200, guid: 804d86f327293354fbd7bfac74baf175, type: 3}
+  targetDotColors:
+  - {r: 0.98823535, g: 0.21568629, b: 0.21960786, a: 1}
+  - {r: 0.21568629, g: 0.8588236, b: 1, a: 1}
+  - {r: 1, g: 0.95294124, b: 0.21568629, a: 1}
+  - {r: 0.21960786, g: 1, b: 0.27450982, a: 1}
+  - {r: 1, g: 0.56078434, b: 0.16078432, a: 1}
+  targeterColors:
+  - serializedVersion: 2
+    key0: {r: 0.99215686, g: 0.6945098, b: 0.6960131, a: 1}
+    key1: {r: 1, g: 0.21568629, b: 0.21568629, a: 1}
+    key2: {r: 1, g: 1, b: 1, a: 1}
+    key3: {r: 1, g: 1, b: 1, a: 0}
+    key4: {r: 1, g: 0.21568629, b: 0.20784315, a: 0}
+    key5: {r: 0.98823535, g: 0.21568629, b: 0.21960786, a: 0}
+    key6: {r: 0.98823535, g: 0.21568629, b: 0.21960786, a: 0}
+    key7: {r: 0.98823535, g: 0.21568629, b: 0.21960786, a: 0}
+    ctime0: 0
+    ctime1: 52362
+    ctime2: 52428
+    ctime3: 64880
+    ctime4: 64945
+    ctime5: 65535
+    ctime6: 65535
+    ctime7: 65535
+    atime0: 0
+    atime1: 65535
+    atime2: 65535
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 6
+    m_NumAlphaKeys: 2
+  - serializedVersion: 2
+    key0: {r: 0.7, g: 0.9459999, b: 1, a: 1}
+    key1: {r: 0.21568629, g: 0.8588236, b: 1, a: 1}
+    key2: {r: 1, g: 1, b: 1, a: 1}
+    key3: {r: 1, g: 1, b: 1, a: 0}
+    key4: {r: 0.21568629, g: 0.8588236, b: 1, a: 0}
+    key5: {r: 0.21568629, g: 0.8588236, b: 1, a: 0}
+    key6: {r: 0.21568629, g: 0.8588236, b: 1, a: 0}
+    key7: {r: 0.21568629, g: 0.8588236, b: 1, a: 0}
+    ctime0: 0
+    ctime1: 52362
+    ctime2: 52428
+    ctime3: 64880
+    ctime4: 64945
+    ctime5: 65535
+    ctime6: 65535
+    ctime7: 65535
+    atime0: 0
+    atime1: 65535
+    atime2: 65535
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 6
+    m_NumAlphaKeys: 2
+  - serializedVersion: 2
+    key0: {r: 1, g: 0.9781095, b: 0.6, a: 1}
+    key1: {r: 1, g: 0.95294124, b: 0.21568629, a: 1}
+    key2: {r: 1, g: 1, b: 1, a: 1}
+    key3: {r: 1, g: 1, b: 1, a: 0}
+    key4: {r: 1, g: 0.9843138, b: 0.20392159, a: 0}
+    key5: {r: 1, g: 0.95294124, b: 0.21568629, a: 0}
+    key6: {r: 1, g: 0.95294124, b: 0.21568629, a: 0}
+    key7: {r: 1, g: 0.95294124, b: 0.21568629, a: 0}
+    ctime0: 0
+    ctime1: 52362
+    ctime2: 52428
+    ctime3: 64880
+    ctime4: 64945
+    ctime5: 65535
+    ctime6: 65535
+    ctime7: 65535
+    atime0: 0
+    atime1: 65535
+    atime2: 65535
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 6
+    m_NumAlphaKeys: 2
+  - serializedVersion: 2
+    key0: {r: 0.6, g: 1, b: 0.634, a: 1}
+    key1: {r: 0.22352943, g: 1, b: 0.2627451, a: 1}
+    key2: {r: 1, g: 1, b: 1, a: 1}
+    key3: {r: 1, g: 1, b: 1, a: 0}
+    key4: {r: 0.21960786, g: 1, b: 0.2784314, a: 0}
+    key5: {r: 0.22352943, g: 1, b: 0.26666668, a: 0}
+    key6: {r: 0.22352943, g: 1, b: 0.26666668, a: 0}
+    key7: {r: 0.22352943, g: 1, b: 0.26666668, a: 0}
+    ctime0: 0
+    ctime1: 52362
+    ctime2: 52428
+    ctime3: 64880
+    ctime4: 64945
+    ctime5: 65535
+    ctime6: 65535
+    ctime7: 65535
+    atime0: 0
+    atime1: 65535
+    atime2: 65535
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 6
+    m_NumAlphaKeys: 2
+  - serializedVersion: 2
+    key0: {r: 1, g: 0.82899547, b: 0.65, a: 1}
+    key1: {r: 1, g: 0.5254902, b: 0.18823531, a: 1}
+    key2: {r: 1, g: 1, b: 1, a: 1}
+    key3: {r: 1, g: 1, b: 1, a: 0}
+    key4: {r: 1, g: 0.5764706, b: 0.14509805, a: 0}
+    key5: {r: 1, g: 0.52156866, b: 0.19607845, a: 0}
+    key6: {r: 1, g: 0.52156866, b: 0.19607845, a: 0}
+    key7: {r: 1, g: 0.52156866, b: 0.19607845, a: 0}
+    ctime0: 0
+    ctime1: 52362
+    ctime2: 52428
+    ctime3: 64880
+    ctime4: 64945
+    ctime5: 65535
+    ctime6: 65535
+    ctime7: 65535
+    atime0: 0
+    atime1: 65535
+    atime2: 65535
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 6
+    m_NumAlphaKeys: 2
 --- !u!1 &7961384744889474071
 GameObject:
   m_ObjectHideFlags: 0
@@ -307,6 +460,32 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5693116687310579653}
     m_Modifications:
+    - target: {fileID: 3997377675499092283, guid: 67bab2a33593072449989bbc799abe41,
+        type: 3}
+      propertyPath: dotOverride
+      value: 
+      objectReference: {fileID: -4114944681076324931, guid: 804d86f327293354fbd7bfac74baf175,
+        type: 3}
+    - target: {fileID: 3997377675499092283, guid: 67bab2a33593072449989bbc799abe41,
+        type: 3}
+      propertyPath: parabolaColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3997377675499092283, guid: 67bab2a33593072449989bbc799abe41,
+        type: 3}
+      propertyPath: parabolaColor.g
+      value: 0.21568629
+      objectReference: {fileID: 0}
+    - target: {fileID: 3997377675499092283, guid: 67bab2a33593072449989bbc799abe41,
+        type: 3}
+      propertyPath: parabolaColor.b
+      value: 0.20784315
+      objectReference: {fileID: 0}
+    - target: {fileID: 3997377675499092283, guid: 67bab2a33593072449989bbc799abe41,
+        type: 3}
+      propertyPath: parabolaColor.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5693116687310579653, guid: 67bab2a33593072449989bbc799abe41,
         type: 3}
       propertyPath: m_LocalPosition.x

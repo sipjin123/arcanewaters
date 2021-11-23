@@ -17,6 +17,21 @@ TextureImporter:
   - first:
       213: 21300008
     second: glasses_4
+  - first:
+      213: -5610732399349481288
+    second: glasses_1_0
+  - first:
+      213: -6432917555472831451
+    second: glasses_1_1
+  - first:
+      213: -6787027077899814508
+    second: glasses_1_2
+  - first:
+      213: 4205370620519513368
+    second: glasses_1_3
+  - first:
+      213: -6208641549836075057
+    second: glasses_1_4
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -126,7 +141,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: glasses_0
+      name: glasses_1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -140,14 +155,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6c961cff71bda134ea6767c4771b0e47
-      internalID: 21300000
+      spriteID: 8b0cff61c9ca222b0800000000000000
+      internalID: -5610732399349481288
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: glasses_1
+      name: glasses_1_1
       rect:
         serializedVersion: 2
         x: 29
@@ -161,14 +176,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 34fbafb729e974d408e3654ddcf18f57
-      internalID: 21300002
+      spriteID: 52ceaacf09fa9b6a0800000000000000
+      internalID: -6432917555472831451
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: glasses_2
+      name: glasses_1_2
       rect:
         serializedVersion: 2
         x: 58
@@ -182,14 +197,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1da7e899cf7918b4a9e58bff31023664
-      internalID: 21300004
+      spriteID: 499f2d4f4d2afc1a0800000000000000
+      internalID: -6787027077899814508
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: glasses_3
+      name: glasses_1_3
       rect:
         serializedVersion: 2
         x: 87
@@ -203,14 +218,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f4201f655352d3940b6ff8c39964922f
-      internalID: 21300006
+      spriteID: 81dfde06c4a7c5a30800000000000000
+      internalID: 4205370620519513368
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: glasses_4
+      name: glasses_1_4
       rect:
         serializedVersion: 2
         x: 116
@@ -224,8 +239,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dc5f5dc3f9ad5d049a97694eec293ac3
-      internalID: 21300008
+      spriteID: fcf3a4cb76976d9a0800000000000000
+      internalID: -6208641549836075057
       vertices: []
       indices: 
       edges: []
