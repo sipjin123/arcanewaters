@@ -487,6 +487,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    #endregion
 
    private void handleAnimations () {
+      // Server should not process animations
+      if (Util.isBatch()) {
+         return;
+      }
+
       if (isDead()) {
          modifyAnimationSpeed(SimpleAnimation.DEFAULT_TIME_PER_FRAME * 0.75f);
          playAnimation(Anim.Type.Death_East);
@@ -527,6 +532,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    }
 
    protected void playAnimation (Anim.Type animType) {
+      // Server should not process animations
+      if (Util.isBatch()) {
+         return;
+      }
+
       _simpleAnim.playAnimation(animType);
       if (monsterType == Type.Horror || monsterType == Type.Horror_Tentacle) {
          _simpleAnimRipple.playAnimation(Anim.Type.Idle_East);

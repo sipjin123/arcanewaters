@@ -57,7 +57,7 @@ public class AnimUtil : MonoBehaviour {
 
    #endregion
 
-   public static AnimInfo getInfo (Anim.Group animGroup, Anim.Type animType) {
+   public static AnimInfo getInfo (Anim.Group animGroup, Anim.Type animType, GameObject objReference = null) {
       switch (animGroup) {
          case Anim.Group.Player:
             switch (animType) {
@@ -446,7 +446,7 @@ public class AnimUtil : MonoBehaviour {
             }
       }
 
-      D.debug("Couldn't find animation info for group: " + animGroup + " and type: " + animType);
+      D.debug("Couldn't find animation info for group: " + animGroup + " and type: " + animType + ", Game obj is {" + objReference.name + "}");
       return new AnimInfo(animType, 0, 0);
    }
 
