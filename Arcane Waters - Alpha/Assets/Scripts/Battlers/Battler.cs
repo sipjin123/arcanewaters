@@ -193,8 +193,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    // The current stance change coroutine
    public Coroutine stanceChangeCoroutine = null;
+
    // Determines the debuffs that are assigned to this battler
-   public SyncDictionary<Status.Type, float> debuffList = new SyncDictionary<Status.Type, float>();
+   public SyncDictionary<Status.Type, StatusData> debuffList = new SyncDictionary<Status.Type, StatusData>();
 
    [Header("Booleans")]
 
@@ -2035,12 +2036,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       playAnim(Anim.Type.Battle_East);
    }
 
-   public void applyStatusEffect (Status.Type statusType, float duration) {
+   public void applyStatusEffect (Status.Type statusType, float duration, int abilityId) {
       float durationModifier = duration / BattleManager.TICK_INTERVAL;
 
       // Register debuff list if it does not exist yet
       if (!debuffList.ContainsKey(statusType)) {
-         debuffList.Add(statusType, durationModifier);
+         debuffList.Add(statusType, new StatusData {
+            statusDuration = durationModifier,
+            abilityIdReference = abilityId
+         });
       }
    }
 
