@@ -225,7 +225,7 @@ public class PowerupManager : MonoBehaviour {
       }
 
       _localPlayerPowerups[powerupType].Add(newPowerup);
-      PowerupPanel.self.addPowerup(newPowerup.powerupType, newPowerup.powerupRarity);
+      PowerupPanel.self.addPowerup(newPowerup.powerupType, newPowerup.powerupRarity, Global.player.getPlayerShipEntity());
 
       if (newPowerup.powerupType == Powerup.Type.IncreasedHealth) {
          PlayerShipEntity playerShip = Global.player.getPlayerShipEntity();

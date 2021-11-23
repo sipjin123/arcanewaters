@@ -86,9 +86,9 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
    }
 
    public void removePowerup (LandPowerupData powerupData) {
-      LandPowerupIcon powerupIcon = _landPowerupIcons.Find(_ => _.type == powerupData.landPowerupType && _.rarity == Rarity.Type.Common);
+      LandPowerupIcon powerupIcon = _landPowerupIcons.Find(_ => _.landPowerupType == powerupData.landPowerupType && _.rarity == Rarity.Type.Common);
 
-      if (_landPowerupIcons.Count < 1 || transform.childCount < 1) {
+      if (_landPowerupIcons.Count < 1 || transform.childCount < 1 || powerupIcon == null) {
          return;
       }
 
@@ -110,10 +110,13 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
    #region Sea Powerup
 
-   public void addPowerup (Powerup.Type type, Rarity.Type rarity) {
-      if (Global.player is ShipEntity) {
-         PowerupIcon newPowerup = Instantiate(powerupIconPrefab, transform).GetComponent<PowerupIcon>();
+   public void addPowerup (Powerup.Type type, Rarity.Type rarity, NetEntity netEntity) {
+      if (netEntity == null) {
+         return;
+      }
 
+      if (netEntity is ShipEntity) {
+         PowerupIcon newPowerup = Instantiate(powerupIconPrefab, transform).GetComponent<PowerupIcon>();
          newPowerup.init(type, rarity);
          _powerupIcons.Add(newPowerup);
 
@@ -163,13 +166,13 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
       powerupPanelContainer.gameObject.SetActive(false);
    }
 
-   public void updatePowerups (List<Powerup> powerups) {
+   public void updatePowerups (List<Powerup> powerups, NetEntity netEntity) {
       clearLandPowerups();
       clearSeaPowerups();
       transform.gameObject.DestroyChildren();
 
       foreach (Powerup powerup in powerups) {
-         addPowerup(powerup.powerupType, powerup.powerupRarity);
+         addPowerup(powerup.powerupType, powerup.powerupRarity, netEntity);
       }
    }
 
@@ -190,6 +193,10 @@ public class PowerupPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
    public void rebuildLayoutGroup () {
       LayoutRebuilder.ForceRebuildLayoutImmediate(containingLayoutGroup);
+   }
+
+   public bool hasLandPowerup (LandPowerupType landPowerupType) {
+      return _landPowerupIcons.FindAll(_ => _.landPowerupType == landPowerupType).Count > 0;
    }
 
    #region Private Variables
