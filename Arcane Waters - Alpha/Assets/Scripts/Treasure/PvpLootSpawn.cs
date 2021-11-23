@@ -54,6 +54,9 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
    // The rarity frame sprite renderer
    public SpriteRenderer rarityFrame;
 
+   // Reference to the platform holding the spawned powerup
+   public GameObject spawnPlatform;
+
    #endregion
 
    private void Awake () {
@@ -65,8 +68,8 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
       StartCoroutine(CO_SetAreaParent());
 
       // Enable powerups on client side if joining the match right after the active trigger was called
-      if (!NetworkServer.active && isShowingPowerup) {
-         updatePowerup(true, (int) powerupType, rarity);
+      if (!NetworkServer.active) {
+         updatePowerup(isShowingPowerup, (int) powerupType, rarity);
       }
    }
 
@@ -143,8 +146,14 @@ public class PvpLootSpawn : NetworkBehaviour, IMapEditorDataReceiver {
 
       // Setup rarity frames
       Sprite[] borderSprites = Resources.LoadAll<Sprite>(Powerup.BORDER_SPRITES_LOCATION);
-      rarityFrame.sprite = borderSprites[(int) rarityType - 1];
 
+      int offsetIndex = (int) rarityType - 1;
+      offsetIndex = Mathf.Clamp(offsetIndex, 0, Enum.GetValues(typeof(Rarity.Type)).Length);
+      if (borderSprites.Length > offsetIndex) {
+         rarityFrame.sprite = borderSprites[offsetIndex];
+      }
+
+      spawnPlatform.SetActive(isEnabled);
       foreach (SpriteRenderer spriteRender in spriteRendererList) {
          spriteRender.enabled = isEnabled;
       }
