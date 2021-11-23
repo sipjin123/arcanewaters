@@ -192,13 +192,9 @@ public class BattleUIManager : MonoBehaviour {
 
       if (selectedButton != null) {
          if (selectedButton.isEnabled && BattleSelectionManager.self.selectedBattler != null) {
-            if (BattleManager.self.getPlayerBattler().canCastAbility()) {
-               if (selectedButton.cooldownValue < selectedButton.cooldownTarget - .1f) {
-                  //D.error("Ability is cooling down!: " + selectedButton.cooldownValue.ToString("f1") + " / " + selectedButton.cooldownTarget.ToString("f1"));
-               } else {
-                  SoundEffectManager.self.playSoundEffect(SoundEffectManager.ABILITY_SELECTION, transform);
-                  selectedButton.abilityButton.onClick.Invoke();
-               }
+            if (BattleManager.self.getPlayerBattler().canCastAbility() && selectedButton.cooldownValue >= selectedButton.cooldownTarget - .1f) {
+               SoundEffectManager.self.playSoundEffect(SoundEffectManager.ABILITY_SELECTION, transform);
+               triggerAbility(selectedButton, selectedButton.abilityType);
             }
          } else {
             selectedButton.invalidButtonClick();
@@ -264,29 +260,10 @@ public class BattleUIManager : MonoBehaviour {
                // Button Click Setup
                abilityButton.getButton().onClick.RemoveAllListeners();
                abilityButton.getButton().onClick.AddListener(() => {
-                  deselectOtherAbilities();
-
-                  // If no target, start selecting
-                  if (BattleSelectionManager.self.selectedBattler == null) {
-                     BattleSelectionManager.self.autoTargetNextOpponent();
-                  }
-
-                  // Only the local player can auto target
-                  if (BattleSelectionManager.self.selectedBattler.isDead() && _playerLocalBattler) {
-                     BattleSelectionManager.self.autoTargetNextOpponent();
-                  }
-
-                  if (!abilityButton.cooldownImage.enabled) {
-                     if (abilityType == AbilityType.Standard) {
-                        attackPanel.requestAttackTarget(abilityButton.abilityTypeIndex);
-                     } else if (abilityType == AbilityType.BuffDebuff) {
-                        attackPanel.requestBuffTarget(abilityButton.abilityTypeIndex);
-                     }
-                  } else {
-                     abilityButton.invalidButtonClick();
+                  if (BattleManager.self.getPlayerBattler().canCastAbility() && abilityButton.cooldownValue >= abilityButton.cooldownTarget - .1f) {
+                     triggerAbility(abilityButton, abilityType);
                   }
                });
-
                abilityButton.enableButton();
                abilityButton.isInvalidAbility = false;
 
@@ -343,6 +320,30 @@ public class BattleUIManager : MonoBehaviour {
 
       if (BattleSelectionManager.self.selectedBattler != null) {
          BattleSelectionManager.self.selectedBattler.selectThis();
+      }
+   }
+
+   public void triggerAbility (AbilityButton abilityButton, AbilityType abilityType) {
+      deselectOtherAbilities();
+
+      // If no target, start selecting
+      if (BattleSelectionManager.self.selectedBattler == null) {
+         BattleSelectionManager.self.autoTargetNextOpponent();
+      }
+
+      // Only the local player can auto target
+      if (BattleSelectionManager.self.selectedBattler.isDead() && _playerLocalBattler) {
+         BattleSelectionManager.self.autoTargetNextOpponent();
+      }
+
+      if (!abilityButton.cooldownImage.enabled) {
+         if (abilityType == AbilityType.Standard) {
+            attackPanel.requestAttackTarget(abilityButton.abilityTypeIndex);
+         } else if (abilityType == AbilityType.BuffDebuff) {
+            attackPanel.requestBuffTarget(abilityButton.abilityTypeIndex);
+         }
+      } else {
+         abilityButton.invalidButtonClick();
       }
    }
 
