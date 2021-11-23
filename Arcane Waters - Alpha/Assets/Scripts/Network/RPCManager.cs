@@ -1136,10 +1136,9 @@ public class RPCManager : NetworkBehaviour
                   _player.Target_ReceiveNormalChat("You can't report yourself", ChatInfo.Type.Error);
                });
             } else {
-               string ticketSubject = $"Complaint about {targetInfo.username}";
                string ipAddress = Util.formatIpAddress(connectionToClient.address);
 
-               SupportTicketInfo ticket = new SupportTicketInfo(ticketSubject, details, _player.accountId, _player.userId, _player.entityName,
+               SupportTicketInfo ticket = new SupportTicketInfo(details, string.Empty, _player.accountId, _player.userId, _player.entityName,
                   targetInfo.accountId, targetInfo.userId, targetInfo.username, ipAddress, WebToolsUtil.SupportTicketType.Complaint);
 
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {

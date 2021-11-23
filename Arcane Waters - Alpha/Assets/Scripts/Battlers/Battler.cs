@@ -191,6 +191,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // The current coroutine action
    public IEnumerator currentActionCoroutine = null;
 
+   // The current stance change coroutine
+   public Coroutine stanceChangeCoroutine = null;
    // Determines the debuffs that are assigned to this battler
    public SyncDictionary<Status.Type, float> debuffList = new SyncDictionary<Status.Type, float>();
 
@@ -469,6 +471,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       if (isBossType) {
          this.attackIndicators.adjustForBosses();
       }
+
+      if (isServer) {
+         this.canExecuteAction = true;
+      }
    }
 
    private IEnumerator CO_AssignPlayerNetId () {
@@ -544,13 +550,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          handleBattlerBarsVisibility();
 
          if (_targetedBattler != null && battlerType == BattlerType.PlayerControlled) {
-            _targetedBattler.attackIndicators.toggle(battleSpot.boardPosition - 1, show: false);
-
-            if (_hasAttackQueued) {
-               _targetedBattler.attackIndicators.toggle(battleSpot.boardPosition - 1, show: !_targetedBattler.isJumping);
-            }
+            _targetedBattler.attackIndicators.toggle(battleSpot.boardPosition - 1, show: _hasAttackQueued);
          }
       }
+      
+      toggleAttackerIndicator(this, show: _targetedBattler != null && !_targetedBattler.isDead());
    }
 
    // Basic method that will handle the functionality for whenever we click on this battler
@@ -636,14 +640,25 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public void showTargetingEffects (Battler target) {
+      // This battler is the attacker
       _targetedBattler = target;
       _hasAttackQueued = true;
-      target.attackIndicators.toggle(this.battleSpot.boardPosition - 1);
+      toggleAttackerIndicator(target, show: true);
    }
 
    public void hideTargetingEffects (Battler target) {
       _hasAttackQueued = false;
-      target.attackIndicators.toggle(this.battleSpot.boardPosition - 1, show: false);
+      _targetedBattler = null;
+      toggleAttackerIndicator(target, show: false);
+   }
+
+   public static void toggleAttackerIndicator (Battler battler, bool show) {
+      if (battler == null) {
+         return;
+      }
+
+      int position = battler.battleSpot.boardPosition - 1;
+      battler.attackIndicators.toggle(position, show);
    }
 
    private void showAttackTimingIndicator (float timeUntilAttack) {
@@ -926,12 +941,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public void handleEndOfBattle (Battle.TeamType winningTeam) {
       // Turn off targeting arrows at the end of the battle
-      if (BattleSelectionManager.self.enemySelection) {
-         BattleSelectionManager.self.enemySelection.SetActive(false);
-      }
-      if (BattleSelectionManager.self.allySelection) {
-         BattleSelectionManager.self.allySelection.SetActive(false);
-      }
+      BattleSelectionManager.self.selectedBattler = null;
 
       if (teamType != winningTeam) {
          if (isMonster()) {
