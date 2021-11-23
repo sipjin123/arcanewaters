@@ -57,10 +57,10 @@ public class Battle : NetworkBehaviour {
    // The queued rpc action executed by the battle manager
    public List<QueuedRpcAction> queuedRpcActionList = new List<QueuedRpcAction>();
 
-   // The damager per tick of the burn status in percentage (2% per tick)
+   // The damage per tick of the burn status in percentage (2% per tick)
    public const float BURN_DAMAGE_PER_TICK_PERCENTAGE = .02f;
 
-   // The damager per tick of the poison status in percentage (2.5% per tick)
+   // The damage per tick of the poison status in percentage (2.5% per tick)
    public const float POISON_DAMAGE_PER_TICK_PERCENTAGE = .025f;
 
    #endregion
