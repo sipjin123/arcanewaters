@@ -131,8 +131,31 @@ public class VoyageStatusPanel : ClientMonoBehaviour
          pingAnimation.setNewTexture(pingYellow);
       } else {
          pingAnimation.setNewTexture(pingRed);
+
+         // Log high ping
+         if (_highPingMessageCooldown > 0) {
+            _highPingMessageCooldown -= Time.deltaTime;
+         }
+         
+         if (_highPingMessageCooldown <= 0) {
+            D.debug($"Ping to the server is critically low: {ping}");
+            _highPingMessageCooldown = 5; // Add log message once per 5 seconds
+         }
       }
       pingText.text = ping.ToString();
+      
+      // Track low fps
+      if (_lowFpsMessageCooldown > 0) {
+         _lowFpsMessageCooldown -= Time.deltaTime;
+      }
+
+      if (_lowFpsMessageCooldown <= 0) {
+         int fps = (int) (1f / Time.deltaTime);
+         if (fps <= 15) {
+            D.debug($"Client fps is critically low: {fps}");
+            _lowFpsMessageCooldown = 5; // Add log message once per 5 seconds
+         }
+      }
 
       // If the player is not in a group, there is no need to update the rest
       if (!VoyageGroupManager.isInGroup(Global.player)) {
@@ -249,6 +272,10 @@ public class VoyageStatusPanel : ClientMonoBehaviour
 
    // Gets set to true when the panel is constantly expanded
    private bool _isAlwaysExpanded = false;
+   
+   // Low fps last message time cool down
+   private float _lowFpsMessageCooldown;
+   private float _highPingMessageCooldown;
 
    #endregion
 }

@@ -68,6 +68,7 @@ public class SupportTicketManager : GenericGameManager
 
       // Adding complaint data as form data
       formData.Add(new MultipartFormDataSection("ticketSubject", ticket.ticketSubject));
+      formData.Add(new MultipartFormDataSection("ticketDescription", ticket.ticketDescription));
       formData.Add(new MultipartFormDataSection("sourceAccId", ticket.sourceAccId.ToString()));
       formData.Add(new MultipartFormDataSection("sourceUsrId", ticket.sourceUsrId.ToString()));
       formData.Add(new MultipartFormDataSection("sourceUsrName", ticket.sourceUsrName));

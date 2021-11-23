@@ -6,7 +6,7 @@ using Mirror;
 using DG.Tweening;
 using UnityEngine.Events;
 
-public class AbilityOrb : ClientMonoBehaviour {
+public class BuffOrb : ClientMonoBehaviour {
    #region Public Variables
 
    // A value controlling how far around the SeaEntity this powerup orb is currently rotated
@@ -28,10 +28,10 @@ public class AbilityOrb : ClientMonoBehaviour {
    public Transform localOrbRotator;
 
    // The target user id
-   public int targetUserId;
+   public uint targetNetId;
 
    // The source of this orb
-   public int ownerId;
+   public uint ownerNetId;
 
    // The time multiplier for the snapping
    public const float SNAP_SPEED_MULTIPLIER = .5f;
@@ -47,28 +47,31 @@ public class AbilityOrb : ClientMonoBehaviour {
 
    #endregion
 
-   public void init (int ownerId, Attack.Type attackType, Transform parentTransform, int userTarget, bool snapToTargetInstantly) {
-      this.ownerId = ownerId;
-      ParticleSystem.MainModule mainModule = trailParticles.main;
-      mainModule.customSimulationSpace = parentTransform;
+   public void init (uint ownerNetId, Attack.Type attackType, Transform parentTransform, uint targetNetId, bool snapToTargetInstantly, bool isNew) {
+      this.ownerNetId = ownerNetId;
+      
+      if (isNew) {
+         ParticleSystem.MainModule mainModule = trailParticles.main;
+         mainModule.customSimulationSpace = parentTransform;
 
-      // Scale up the orb as it is created
-      transform.localScale = Vector3.one * 0.1f;
-      transform.DOScale(1.0f, 0.5f).SetEase(Ease.OutElastic);
+         // Scale up the orb as it is created
+         transform.localScale = Vector3.one * 0.1f;
+         transform.DOScale(1.0f, 0.5f).SetEase(Ease.OutElastic);
 
-      StartCoroutine(initializeDelay(attackType, parentTransform, userTarget, snapToTargetInstantly));
+         StartCoroutine(initializeDelay(attackType, parentTransform, targetNetId, snapToTargetInstantly));
+      }
    }
 
-   private IEnumerator initializeDelay (Attack.Type attackType, Transform parentTransform, int userTarget, bool snapToTargetInstantly) {
+   private IEnumerator initializeDelay (Attack.Type attackType, Transform parentTransform, uint targetNetId, bool snapToTargetInstantly) {
       this.attackType = attackType;
-      targetUserId = userTarget;
+      this.targetNetId = targetNetId;
       if (snapToTargetInstantly) {
-         targetEntity = EntityManager.self.getEntity(userTarget);
+         targetEntity = SeaManager.self.getEntity(targetNetId);
          attachToTarget();
       } else {
          yield return new WaitForSeconds(ShipAbilityData.STATUS_CAST_DELAY);
          isSnapping = true;
-         targetEntity = EntityManager.self.getEntity(userTarget);
+         targetEntity = SeaManager.self.getEntity(targetNetId);
       }
    }
 
@@ -87,9 +90,13 @@ public class AbilityOrb : ClientMonoBehaviour {
       isSnapping = false;
       transform.position = targetEntity.transform.position;
       attachedToTarget = true;
-      if (Global.player == null || ownerId != targetUserId) {
+      if (Global.player == null || ownerNetId != targetNetId) {
          gameObject.SetActive(false);
       }
+   }
+
+   public void setParticleVisibility (bool isVisible) {
+      trailParticles.gameObject.SetActive(isVisible);
    }
 
    #region Private Variables

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 
 [System.Serializable]
-public class AbilityOrbData {
+public class BuffOrbData {
    #region Public Variables
 
    // The type of attack associated with this ability orb

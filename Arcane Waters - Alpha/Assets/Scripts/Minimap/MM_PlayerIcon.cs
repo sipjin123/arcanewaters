@@ -48,7 +48,12 @@ public class MM_PlayerIcon : ClientMonoBehaviour {
          Vector3 relativePosition = Global.player.transform.localPosition * worldToMapSpaceTransform / relativePositionScale;
 
          // For 64x64 map, there is no minimap translation
-         float minimapTranslationScale = (minimapSpriteWidth - 64.0f) / 64.0f;
+         float minimapTranslationScale = (mapActiveAreaWidth - 64.0f) / 64.0f;
+
+         // For pvp arenas, we never want to have minimap translation
+         if (VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
+            minimapTranslationScale = 0.0f;
+         }
 
          // It is more suited for Minimap class but to avoid race condition and ensure correct calling sequence, it is used here
          if (minimapTranslationScale < 0.0f) {

@@ -1460,7 +1460,7 @@ public class DB_Main : DB_MainStub
                   int count = dataReader.GetInt32("itmCount");
 
                   // Create an Item instance of the proper class, and then add it to the list
-                  Item item = new Item(itemId, itemCategory, itemTypeId, count, palettes, data, Item.MAX_DURABILITY);
+                  Item item = ItemGenerator.generate(itemCategory, itemTypeId, count, itemId, palettes, data);
                   newItemList.Add(item.getCastItem());
                }
             }
@@ -6848,6 +6848,35 @@ public class DB_Main : DB_MainStub
       return userInfo;
    }
 
+   public static new Dictionary<int, UserInfo> getUserInfosByIds (IEnumerable<int> userIds) {
+      Dictionary<int, UserInfo> registry = new Dictionary<int, UserInfo>();
+      string idsStr = string.Join(",", userIds);
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users " +
+            "JOIN global.accounts USING (accId) " +
+            "LEFT JOIN guilds ON (users.gldId = guilds.gldId)" +
+            $"WHERE usrId IN ({idsStr})", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  UserInfo info = new UserInfo(dataReader);
+                  registry.Add(info.userId, info);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return registry;
+   }
+
    public static new UserAccountInfo getUserAccountInfo (string username) {
       UserAccountInfo userAccountInfo = null;
 
@@ -7805,7 +7834,7 @@ public class DB_Main : DB_MainStub
                   int durability = dataReader.GetInt32("durability");
 
                   // Create an Item instance of the proper class, and then add it to the list
-                  Item item = new Item(itemId, itemCategory, itemTypeId, count, palettes, data, durability);
+                  Item item = ItemGenerator.generate(itemCategory, itemTypeId, count, itemId, palettes, data, durability);
                   itemList.Add(item.getCastItem());
                }
             }
@@ -7855,7 +7884,7 @@ public class DB_Main : DB_MainStub
                   string data = DataUtil.getString(dataReader, "itmData");
                   int itemCount = DataUtil.getInt(dataReader, "itmCount");
 
-                  Item newItem = new Item(itemId, category, itemTypeId, itemCount, palettes, data, Item.MAX_DURABILITY);
+                  Item newItem = ItemGenerator.generate(category, itemTypeId, itemCount, itemId, palettes, data);
                   itemList.Add(newItem);
                }
             }
@@ -8030,7 +8059,7 @@ public class DB_Main : DB_MainStub
                   int durability = dataReader.GetInt32("durability");
 
                   // Create an Item instance of the proper class, and then add it to the list
-                  item = new Item(itemId, category, itemTypeId, count, palettes, data, durability);
+                  item = ItemGenerator.generate(category, itemTypeId, count, itemId, palettes, data, durability);
                }
             }
          }
@@ -8087,7 +8116,7 @@ public class DB_Main : DB_MainStub
                   int durability = dataReader.GetInt32("durability");
 
                   // Create an Item instance of the proper class, and then add it to the list
-                  item = new Item(itemId, category, itemTypeId, count, palettes, data, durability);
+                  item = ItemGenerator.generate(category, itemTypeId, count, itemId, palettes, data, durability);
                }
             }
          }
@@ -8126,7 +8155,7 @@ public class DB_Main : DB_MainStub
                   int durability = dataReader.GetInt32("durability");
 
                   // Create an Item instance of the proper class
-                  item = new Item(itemId, itemCategory, itemTypeId, count, palettes, data, durability);
+                  item = ItemGenerator.generate(itemCategory, itemTypeId, count, itemId, palettes, data, durability);
                }
             }
          }
@@ -9514,6 +9543,35 @@ public class DB_Main : DB_MainStub
       }
 
       return friendshipInfo;
+   }
+
+   public static new Dictionary<int, FriendshipInfo> getFriendshipInfos (int userId, IEnumerable<int> friendUserIds) {
+      Dictionary<int, FriendshipInfo> registry = new Dictionary<int, FriendshipInfo>();
+      string friendUsrIdsStr = String.Join(",", friendUserIds);
+      string query = "SELECT * FROM friendship JOIN users ON friendship.friendUsrId = users.usrId " +
+            "LEFT JOIN guilds ON (users.gldId = guilds.gldId) " +
+            $"WHERE friendship.usrId=@usrId AND friendship.friendUsrId IN ({friendUsrIdsStr})";
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  FriendshipInfo friendshipInfo = new FriendshipInfo(dataReader);
+                  registry.Add(friendshipInfo.userId, friendshipInfo);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return registry;
    }
 
    public static new List<FriendshipInfo> getFriendshipInfoList (int userId, Friendship.Status friendshipStatus, int page, int friendsPerPage) {

@@ -292,12 +292,7 @@ public class Minimap : ClientMonoBehaviour {
          Texture2D texture = backgroundImage.sprite.texture;
          Vector2 minimapMaskSize = backgroundImage.GetComponentInParent<Mask>().rectTransform.sizeDelta;
 
-         if (texture.width != minimapMaskSize.x && texture.width * 2.0f + Mathf.Epsilon >= minimapMaskSize.x) {
-            // Background image is twice the size of texture - update size after changing texture size
-            backgroundImage.rectTransform.sizeDelta = new Vector2(texture.width * 2.0f, texture.height * 2.0f);
-         } else {
-            backgroundImage.rectTransform.sizeDelta = minimapMaskSize;
-         }
+         backgroundImage.rectTransform.sizeDelta = minimapMaskSize;
       }
 
       // If we didn't find a background image, just use a black background

@@ -52,7 +52,7 @@ public class ChatManager : GenericGameManager
       _commandData.Add(new CommandData("/whisper", "Sends a private message to a user", sendWhisperMessageToServer, parameterNames: new List<string>() { "userName", "message" }));
       _commandData.Add(new CommandData("/w", "Sends a private message to a user", sendWhisperMessageToServer, parameterNames: new List<string>() { "userName", "message" }));
       _commandData.Add(new CommandData("/r", "Sends a private message to the last user that whispered to you", tryReply, parameterNames: new List<string>() { "message" }));
-      _commandData.Add(new CommandData("/who", "Search users", searchUser, parameterNames: new List<string>() { "filter ('is','in','level')", "username, area or level" }));
+      _commandData.Add(new CommandData("/who", "Search users", searchUsers, parameterNames: new List<string>() { "filter ('is','in','level')", "username, area or level" }));
    }
 
    private void Update () {
@@ -650,7 +650,7 @@ public class ChatManager : GenericGameManager
       return timeSinceTyping < AUTO_COMPLETE_SHOW_DELAY;
    }
 
-   private void searchUser (string parameters) {
+   private void searchUsers (string parameters) {
       if (Util.isEmpty(parameters)) {
          self.addChat("Search failed: Invalid parameters", ChatInfo.Type.System);
          return;
@@ -663,13 +663,26 @@ public class ChatManager : GenericGameManager
       }
 
       if (UserSearchInfo.tryParseFilteringMode(inputs[0], out UserSearchInfo.FilteringMode filter)) {
-         if (filter == UserSearchInfo.FilteringMode.Biome || filter == UserSearchInfo.FilteringMode.Level) {
-            self.addChat($"Search aborted: The selected filter is not implemented yet.", ChatInfo.Type.System);
-            return;
-         }
+         string input = inputs[1];
+
+         if (filter == UserSearchInfo.FilteringMode.Biome) {
+            // Biome names could be space separated. Thus, capture all the string tokens, and compute a single string for the biome name
+            input = string.Join(" ", inputs.Skip(1));
+            if (Biome.fromName(input) == Biome.Type.None) {
+               self.addChat($"Search failed: The biome '{input}' doesn't exist!", ChatInfo.Type.System);
+               return;
+            }
+         } 
          
+         if (filter == UserSearchInfo.FilteringMode.Level) {
+            if (!int.TryParse(input, out int inputLevel)) {
+               self.addChat("Search failed: Invalid Level!", ChatInfo.Type.System);
+               return;
+            }
+         }
+
          UserSearchInfo searchInfo = new UserSearchInfo {
-            input = inputs[1],
+            input = input,
             filter = filter
          };
 

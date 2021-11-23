@@ -202,9 +202,9 @@ public class ServerNetworkingManager : MonoBehaviour
       return false;
    }
 
-   public bool isUserAssignedAnywhere(int userId) {
+   public bool isUserAssignedAnywhere (int userId) {
       foreach (NetworkedServer server in servers) {
-         if (server.assignedUserIds.ContainsKey(userId)){
+         if (server.assignedUserIds.ContainsKey(userId)) {
             return true;
          }
       }
@@ -385,6 +385,16 @@ public class ServerNetworkingManager : MonoBehaviour
 
    public void recreateLeagueInstanceAndAddUserToGroup (int voyageId, int groupId, int userId, string userName) {
       server.InvokeServerRpc(server.MasterServer_RecreateLeagueInstanceAndAddUserToGroup, voyageId, groupId, userId, userName);
+   }
+
+   public List<int> getAllOnlineUsers () {
+      List<int> userIds = new List<int>();
+
+      foreach (NetworkedServer server in servers) {
+         userIds.AddRange(server.connectedUserIds);
+      }
+
+      return userIds;
    }
 
    #region Private Variables

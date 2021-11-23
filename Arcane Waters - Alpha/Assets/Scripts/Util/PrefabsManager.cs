@@ -221,11 +221,8 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating weapon dyes
    public StoreWeaponDyeBox weaponDyeBoxPrefab;
 
-   // The prefab we use for creating powerup orbs
-   public PowerupOrb powerupOrbPrefab;
-
    // The prefab we use for creating ability orbs
-   public AbilityOrb abilityOrbPrefab;
+   public BuffOrb buffOrbPrefab;
 
    // The prefab we use for creating whirlpool effects
    public WhirlpoolEffect whirlpoolEffectPrefab;

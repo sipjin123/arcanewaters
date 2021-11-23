@@ -1435,6 +1435,14 @@ public class Util : MonoBehaviour
       return resultList.ToArray();
    }
 
+   public static int getArraySlicesCount<T>(IEnumerable<T> source, int sliceSize) {
+      if (source == null || sliceSize == 0) {
+         return 0;
+      }
+
+      return Mathf.CeilToInt((float)source.Count() / sliceSize);
+   }
+
    public static Vector2 mirrorX (Vector2 vector) {
       return new Vector3(-vector.x, vector.y);
    }

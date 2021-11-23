@@ -898,6 +898,10 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static Dictionary<int, UserInfo> getUserInfosByIds (IEnumerable<int> userIds) {
+      return new Dictionary<int, UserInfo>();
+   }
+   
    public static UserInfo getUserInfo (string userName) {
       return null;
    }
@@ -1304,6 +1308,10 @@ public class DB_MainStub : MonoBehaviour
 
    public static FriendshipInfo getFriendshipInfo (int userId, int friendUserId) {
       return null;
+   }
+
+   public static Dictionary<int, FriendshipInfo> getFriendshipInfos (int userId, IEnumerable<int> friendUserIds) {
+      return new Dictionary<int, FriendshipInfo>();
    }
 
    public static List<FriendshipInfo> getFriendshipInfoList (int userId, Friendship.Status friendshipStatus, int page, int friendsPerPage) {

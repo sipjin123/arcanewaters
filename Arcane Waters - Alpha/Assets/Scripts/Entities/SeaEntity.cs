@@ -8,6 +8,7 @@ using System;
 using TMPro;
 using Pathfinding;
 using DG.Tweening;
+using System.Linq;
 
 public class SeaEntity : NetEntity
 {
@@ -184,11 +185,14 @@ public class SeaEntity : NetEntity
          GenericEffector.setEffectorCollisions(getMainCollider(), false);
       }
 
-      // Adding of powerup orbs is now disabled, code to be removed once we no longer need it as a reference for ability orbs.
-      // InvokeRepeating(nameof(checkPowerupOrbs), 0.0f, 0.1f);
-
       editorGenerateAggroCone();
       initialPosition = transform.localPosition;
+
+      InvokeRepeating(nameof(checkBuffOrbs), 0.2f, 0.2f);
+
+      if (isServer) {
+         InvokeRepeating(nameof(updateBuffs), 1.0f, 1.0f);
+      }
    }
 
    [Server]
@@ -236,7 +240,6 @@ public class SeaEntity : NetEntity
       // Return the final amount of damage dealt
       return amount;
    }
-
 
    [Server]
    protected virtual void customRegisterDamageReceived (int userId, int amount) {
@@ -312,7 +315,7 @@ public class SeaEntity : NetEntity
          _hasRunOnDeath = true;
       }
 
-      removeAllPowerupOrbs();
+      removeAllBuffOrbs();
    }
 
    [ClientRpc]
@@ -390,8 +393,7 @@ public class SeaEntity : NetEntity
       }
 
       if (!isDead()) {
-         updatePowerupOrbs();
-         updateAbilityOrbs();
+         updateBuffOrbs();
       }
 
       // If we've died, start slowing moving our sprites downward
@@ -1986,6 +1988,7 @@ public class SeaEntity : NetEntity
    public bool isSeaMonsterPvp () {
       return this is SeaMonsterEntity && isPvpAI;
    }
+
    private bool isTooFarFromObjective () {
       // By creating a line between our previous and next target structures, we will detect if a ship is too far away from this 'objective line'
 
@@ -2039,165 +2042,6 @@ public class SeaEntity : NetEntity
    }
 
    #endregion
-
-   #region Powerup VFX
-
-   protected void removePowerupOrb (Powerup.Type powerupType) {
-      PowerupOrb orbToRemove = _powerupOrbs.Find((x) => x.powerupType == powerupType);
-      if (orbToRemove) {
-         _powerupOrbs.Remove(orbToRemove);
-         Destroy(orbToRemove.gameObject);
-      }
-   }
-
-   protected void removeAllPowerupOrbs () {
-      foreach (PowerupOrb orb in _powerupOrbs) {
-         Destroy(orb.gameObject);
-      }
-      _powerupOrbs.Clear();
-   }
-
-   protected void updatePowerupOrbs () {
-      if (Util.isBatch()) {
-         return;
-      }
-
-      _powerupOrbRotation += Time.deltaTime * POWERUP_ORB_ROTATION_SPEED;
-
-      float orbSpacing = 1.0f / _powerupOrbs.Count;
-      
-      for (int i = 0; i < _powerupOrbs.Count; i++) {
-         PowerupOrb orb = _powerupOrbs[i];
-         float targetValue = _powerupOrbRotation + orbSpacing * i;
-         float newValue = Mathf.SmoothStep(orb.rotationValue, targetValue, Time.deltaTime * 10.0f);
-         orb.rotationValue = newValue;
-
-         Util.setLocalXY(orb.transform, Util.getPointOnEllipse(POWERUP_ORB_ELLIPSE_WIDTH, POWERUP_ORB_ELLIPSE_HEIGHT, newValue));
-      }
-   }
-
-   protected void checkPowerupOrbs () {
-      if (Util.isBatch() || isDead()) {
-         return;
-      }
-
-      // Store the latest powerups from the server in a list
-      List<Powerup.Type> powerupTypes = new List<Powerup.Type>();
-      foreach (Powerup powerup in _powerups) {
-         powerupTypes.Add(powerup.powerupType);
-      }
-      int orbsCreated = 0;
-
-      // If the list from the server is larger, we need to create new orbs
-      if (powerupTypes.Count > _powerupOrbs.Count) {
-         orbsCreated = powerupTypes.Count - _powerupOrbs.Count;
-
-         // Create any new orbs needed
-         for (int i = 0; i < orbsCreated; i++) {
-            PowerupOrb newOrb = Instantiate(PrefabsManager.self.powerupOrbPrefab, transform.position + Vector3.up * POWERUP_ORB_ELLIPSE_HEIGHT, Quaternion.identity, orbHolder);
-            _powerupOrbs.Add(newOrb);
-            newOrb.rotationValue = _powerupOrbRotation + (1.0f / _powerupOrbs.Count) * (_powerupOrbs.Count - 1);
-         }
-
-      // If the list from the server is smaller, we need to remove some orbs
-      } else if (_powerupOrbs.Count > powerupTypes.Count) {
-         int orbsToRemove = _powerupOrbs.Count - powerupTypes.Count;
-
-         // Remove any orbs that aren't needed
-         for (int i = 0; i < orbsToRemove; i++) {
-            PowerupOrb orbToRemove = _powerupOrbs[_powerupOrbs.Count - 1];
-            _powerupOrbs.Remove(orbToRemove);
-            Destroy(orbToRemove.gameObject);
-         }
-      }
-
-      // Update types of orbs
-      for (int i = 0; i < _powerupOrbs.Count; i++) {
-         bool isNewOrb = (i >= _powerupOrbs.Count - orbsCreated);
-         _powerupOrbs[i].init(powerupTypes[i], transform, isNewOrb);
-      }
-
-      bool particlesEnabled = _powerupOrbs.Count <= POWERUP_MAX_ORB_PARTICLES;
-      foreach (PowerupOrb orb in _powerupOrbs) {
-         orb.setParticleVisibility(particlesEnabled);
-      }
-   }
-
-   #endregion
-
-   #region Ability Orbs
-
-   protected void updateAbilityOrbs () {
-      // Ignore this process on cloud build server
-      if (Util.isBatch()) {
-         return;
-      }
-      _powerupOrbRotation += Time.deltaTime * POWERUP_ORB_ROTATION_SPEED;
-
-      float orbSpacing = 1.0f / _abilityOrbs.Count;
-
-      for (int i = 0; i < _abilityOrbs.Count; i++) {
-         AbilityOrb orb = _abilityOrbs[i];
-         if (!orb.isSnapping && (orb.attachedToTarget && orb.targetUserId == userId)) {
-            float targetValue = _powerupOrbRotation + orbSpacing * i;
-            float newValue = Mathf.SmoothStep(orb.rotationValue, targetValue, Time.deltaTime * 10.0f);
-            orb.rotationValue = newValue;
-            Util.setLocalXY(orb.localOrbRotator, Util.getPointOnEllipse(POWERUP_ORB_ELLIPSE_WIDTH, POWERUP_ORB_ELLIPSE_HEIGHT, newValue));
-         }
-      }
-   }
-
-   [Server]
-   public void addServerAbilityOrbs (List<Attack.Type> attackTypes, int targetUser, bool snapToTargetInstantly) {
-      foreach (Attack.Type atkType in attackTypes) {
-         _abilityOrbData.Add(new AbilityOrbData {
-            attackType = atkType,
-            targetUserId = targetUser,
-            snapToTargetInstantly = snapToTargetInstantly
-         });
-      }
-      Rpc_AddClientAbilityOrbs(userId, attackTypes, targetUser, snapToTargetInstantly);
-   }
-
-   [ClientRpc]
-   public void Rpc_AddClientAbilityOrbs (int ownerId, List<Attack.Type> attackTypes, int targetUser, bool snapToTargetInstantly) {
-      foreach (Attack.Type attackType in attackTypes) {
-         AbilityOrb newOrb = Instantiate(PrefabsManager.self.abilityOrbPrefab, transform.position + Vector3.up * POWERUP_ORB_ELLIPSE_HEIGHT, Quaternion.identity, transform);
-         newOrb.init(ownerId, attackType, transform, targetUser, snapToTargetInstantly);
-         _abilityOrbs.Add(newOrb);
-         newOrb.rotationValue = _powerupOrbRotation + (1.0f / _abilityOrbs.Count) * (_abilityOrbs.Count - 1);
-      }
-   }
-
-   [Server]
-   public void removeServerAbilityOrbs (List<Attack.Type> attackTypes, int targetUser) {
-      foreach (Attack.Type atkType in attackTypes) {
-         AbilityOrbData orbToRemove = _abilityOrbData.Find((x) => x.attackType == atkType && x.targetUserId == targetUser);
-         if (orbToRemove != null) {
-            _abilityOrbData.Remove(orbToRemove);
-         }
-      }
-      Rpc_RemoveClientAbilityOrb(attackTypes, targetUser);
-   }
-
-   [ClientRpc]
-   public void Rpc_RemoveClientAbilityOrb (List<Attack.Type> attackType, int targetUser) {
-      foreach (Attack.Type powerupType in attackType) {
-         AbilityOrb orbToRemove = _abilityOrbs.Find((x) => x.attackType == powerupType && x.targetUserId == targetUser);
-         if (orbToRemove) {
-            _abilityOrbs.Remove(orbToRemove);
-            Destroy(orbToRemove.gameObject);
-         }
-      }
-   }
-
-   [ClientRpc]
-   public void Rpc_RemoveAllAbilityOrbs () {
-      foreach (AbilityOrb orb in _abilityOrbs) {
-         Destroy(orb.gameObject);
-      }
-      _abilityOrbs.Clear();
-   }
 
    [Server]
    public void attachResidue (Attack.Type attackType, uint creatorNetId, int damagePerTick) {
@@ -2258,6 +2102,166 @@ public class SeaEntity : NetEntity
 
    protected bool shouldIgnoreAttackers () {
       return (_ignoreEnemiesUntil > NetworkTime.time);
+   }
+
+   [Server]
+   public void addBuff (SeaBuff.Category buffCategory, SeaBuff.Type buffType, float buffMagnitude, float buffDuration) {
+      double buffStartTime = NetworkTime.time;
+      double buffEndTime = buffStartTime + buffDuration;
+      SyncList<SeaBuffData> buffList = getBuffList(buffCategory);
+      if (buffList != null) {
+         buffList.Add(new SeaBuffData(buffStartTime, buffEndTime, buffType, buffMagnitude));
+      }
+   }
+
+   [Server]
+   public void addBuff (SeaBuff.Category buffCategory, SeaBuff.Type buffType, ShipAbilityData shipAbilityData) {
+      double buffStartTime = NetworkTime.time;
+      double buffEndTime = buffStartTime + shipAbilityData.statusDuration;
+
+      SyncList<SeaBuffData> buffList = getBuffList(buffCategory);
+      if (buffList != null) {
+         buffList.Add(new SeaBuffData(buffStartTime, buffEndTime, buffType, shipAbilityData.damageModifier * 100.0f));
+      }
+   }
+
+   [Server]
+   public float getBuffValue (SeaBuff.Category buffCategory, SeaBuff.Type buffType) {
+      // Returns the magnitude of the powerup of the specified type and category, with the highest value.
+      SyncList<SeaBuffData> buffList = getBuffList(buffCategory);
+      if (buffList != null) {
+         if (buffList.Count > 0) {
+            return buffList.Max((x) => x.buffMagnitude);
+         }
+      }
+
+      return 0.0f;
+   }
+
+   [Server]
+   protected void updateBuffs () {
+      updateCategoryBuffs(SeaBuff.Category.Buff);
+      updateCategoryBuffs(SeaBuff.Category.Debuff);
+   }
+
+   protected void updateCategoryBuffs (SeaBuff.Category category) {
+      SyncList<SeaBuffData> categoryBuffs = getBuffList(category);
+
+      // Check if the list has any valid buff data, if not, continue
+      if (categoryBuffs == null || categoryBuffs.Count <= 0) {
+         return;
+      }
+
+      // Check if any buffs have expired
+      for (int i = categoryBuffs.Count - 1; i >= 0; i--) {
+         SeaBuffData buffData = categoryBuffs[i];
+
+         // If this buff has expired, remove it from the list
+         if (NetworkTime.time > buffData.buffEndTime) {
+            categoryBuffs.Remove(buffData);
+         }
+      }
+   }
+
+   #region Buff Orbs
+
+   protected void updateBuffOrbs () {
+      if (Util.isBatch()) {
+         return;
+      }
+
+      _buffOrbRotation += Time.deltaTime * BUFF_ORB_ROTATION_SPEED;
+
+      float orbSpacing = 1.0f / _buffOrbs.Count;
+
+      for (int i = 0; i < _buffOrbs.Count; i++) {
+         BuffOrb orb = _buffOrbs[i];
+         float targetValue = _buffOrbRotation + orbSpacing * i;
+         float newValue = Mathf.SmoothStep(orb.rotationValue, targetValue, Time.deltaTime * 10.0f);
+         orb.rotationValue = newValue;
+
+         Util.setLocalXY(orb.transform, Util.getPointOnEllipse(BUFF_ORB_ELLIPSE_WIDTH, BUFF_ORB_ELLIPSE_HEIGHT, newValue));
+      }
+   }
+
+   protected void checkBuffOrbs () {
+      // Store the latest powerups from the server in a list
+      List<SeaBuffData> serverBuffs = new List<SeaBuffData>();
+      List<SeaBuff.Type> buffTypes = new List<SeaBuff.Type>();
+
+      SyncList<SeaBuffData> buffs = getBuffList(SeaBuff.Category.Buff);
+      if (buffs == null) {
+         return;
+      }
+
+      foreach (SeaBuffData buffData in buffs) {
+         // Only count one buff of each type
+         if (!buffTypes.Contains(buffData.buffType)) {
+            serverBuffs.Add(buffData);
+            buffTypes.Add(buffData.buffType);
+         }
+      }
+
+      int orbsCreated = 0;
+
+      // If the list from the server is larger, we need to create new orbs
+      if (serverBuffs.Count > _buffOrbs.Count) {
+         orbsCreated = serverBuffs.Count - _buffOrbs.Count;
+
+         // Create any new orbs needed
+         for (int i = 0; i < orbsCreated; i++) {
+            BuffOrb newOrb = Instantiate(PrefabsManager.self.buffOrbPrefab, transform.position + Vector3.up * BUFF_ORB_ELLIPSE_HEIGHT, Quaternion.identity, transform);
+            _buffOrbs.Add(newOrb);
+            newOrb.rotationValue = _buffOrbRotation + (1.0f / _buffOrbs.Count) * (_buffOrbs.Count - 1);
+         }
+
+      // If the list from the server is smaller, we need to remove orbs
+      } else if (serverBuffs.Count < _buffOrbs.Count) {
+         int numOrbsToRemove = _buffOrbs.Count - serverBuffs.Count;
+
+         // Remove any orbs that aren't needed
+         for (int i = 0; i < numOrbsToRemove; i++) {
+            BuffOrb orbToRemove = _buffOrbs[_buffOrbs.Count - 1];
+            _buffOrbs.Remove(orbToRemove);
+            Destroy(orbToRemove.gameObject);
+         }
+      }
+
+      // Update types of orbs
+      for (int i = 0; i < _buffOrbs.Count; i++) {
+         bool isNewOrb = (i >= _buffOrbs.Count - orbsCreated);
+         Attack.Type attackType = SeaBuffData.getAttackType(buffs[i].buffType);
+         _buffOrbs[i].init(this.netId, attackType, orbHolder, this.netId, true, isNewOrb);
+      }
+
+      bool particlesEnabled = _buffOrbs.Count <= MAX_BUFF_ORBS_WITH_PARTICLES;
+      foreach (BuffOrb orb in _buffOrbs) {
+         orb.setParticleVisibility(particlesEnabled);
+      }
+   }
+
+   [ClientRpc]
+   protected void Rpc_ShowBuffAlly (uint targetNetId, Attack.Type attackType) {
+      BuffOrb newOrb = Instantiate(PrefabsManager.self.buffOrbPrefab, transform.position, Quaternion.identity, orbHolder);
+      newOrb.init(this.netId, attackType, orbHolder, targetNetId, false, true);
+   }
+
+   protected void removeAllBuffOrbs () {
+      foreach (BuffOrb orb in _buffOrbs) {
+         Destroy(orb.gameObject);
+      }
+      _buffOrbs.Clear();
+   }
+
+   protected SyncList<SeaBuffData> getBuffList (SeaBuff.Category category) {
+      switch (category) {
+         case SeaBuff.Category.Buff:
+            return _buffs;
+         case SeaBuff.Category.Debuff:
+            return _debuffs;
+         default:
+            return null;
+      }
    }
 
    #endregion
@@ -2395,32 +2399,29 @@ public class SeaEntity : NetEntity
    // The damage amount each attacker has done on this entity
    protected Dictionary<int, int> _damageReceivedPerAttacker = new Dictionary<int, int>();
 
-   // A list of references to any active powerup orbs, used to visually indicate what powerups this entity has
-   protected List<PowerupOrb> _powerupOrbs = new List<PowerupOrb>();
-
    // A list of references to any active ability orbs, used to visually indicate what ability this entity has
-   protected List<AbilityOrb> _abilityOrbs = new List<AbilityOrb>();
+   protected List<BuffOrb> _abilityOrbs = new List<BuffOrb>();
 
    // A value that controls the rotation of the powerup orbs as it is incremented (0.0f - 1.0f is one rotation)
-   protected float _powerupOrbRotation = 0.0f;
+   protected float _buffOrbRotation = 0.0f;
 
    // The width of the ellipse around which powerup orbs move
-   private const float POWERUP_ORB_ELLIPSE_WIDTH = 0.375f;
+   private const float BUFF_ORB_ELLIPSE_WIDTH = 0.375f;
 
    // The height of the ellipse around which powerup orbs move
-   private const float POWERUP_ORB_ELLIPSE_HEIGHT = 0.1875f;
+   private const float BUFF_ORB_ELLIPSE_HEIGHT = 0.1875f;
 
    // A modifier affecting how fast the powerup orbs will rotate
-   private const float POWERUP_ORB_ROTATION_SPEED = 0.3f;
+   private const float BUFF_ORB_ROTATION_SPEED = 0.5f;
 
    // The max number of orbs that can have particles at once. If there are more orbs than this number, all orbs will have their particles disabled.
-   private const int POWERUP_MAX_ORB_PARTICLES = 6;
+   private const int MAX_BUFF_ORBS_WITH_PARTICLES = 6;
 
    // The powerups that this sea entity currently has
    protected SyncList<Powerup> _powerups = new SyncList<Powerup>();
 
    // The ability that this sea entity currently has
-   protected SyncList<AbilityOrbData> _abilityOrbData = new SyncList<AbilityOrbData>();
+   protected SyncList<BuffOrbData> _abilityOrbData = new SyncList<BuffOrbData>();
 
    // The list of residues currently affecting this entity
    protected List<EffectResidue> _activeResidueList = new List<EffectResidue>();
@@ -2436,6 +2437,15 @@ public class SeaEntity : NetEntity
 
    // Set to true once this entity reaches its lane target, causing it to move on and target sea structures
    private bool _hasReachedLaneTarget = false;
+
+   // All buffs currently active on this sea entity
+   protected SyncList<SeaBuffData> _buffs = new SyncList<SeaBuffData>();
+
+   // All debuffs currently active on this sea entity
+   protected SyncList<SeaBuffData> _debuffs = new SyncList<SeaBuffData>();
+
+   // A list of references to any active buff orbs, used to visually indicate any buffs being applied to this entity
+   protected List<BuffOrb> _buffOrbs = new List<BuffOrb>();
 
    #endregion
 

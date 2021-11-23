@@ -23,6 +23,12 @@
       Level = 3
    }
 
+   // The page to return
+   public int page = 0;
+
+   // The number of results per page requested
+   public int resultsPerPage = 1;
+
    public static bool tryParseFilteringMode(string text, out FilteringMode filter) {
       if (Util.areStringsEqual(text, "is")) {
          filter = FilteringMode.Name;

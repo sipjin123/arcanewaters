@@ -489,9 +489,19 @@ public class PlayerShipEntity : ShipEntity
          // If the player wants to stop the ship, we let the linear drag handle the slowdown
          if (!isDead() && _movementInputDirection != Vector2.zero) {
             float increaseAdditive = 1.0f;
-            increaseAdditive += PerkManager.self.getPerkMultiplierAdditive(userId, Perk.Category.ShipMovementSpeed);
-            increaseAdditive += PowerupManager.self.getPowerupMultiplierAdditive(userId, Powerup.Type.SpeedUp);
-            Vector2 targetVelocity = _movementInputDirection * getMoveSpeed() * Time.fixedDeltaTime * increaseAdditive;
+
+            // Players with the pvp capture target won't receive any speed buffs
+            if (!holdingPvpCaptureTarget) {
+               increaseAdditive += PerkManager.self.getPerkMultiplierAdditive(userId, Perk.Category.ShipMovementSpeed);
+               increaseAdditive += PowerupManager.self.getPowerupMultiplierAdditive(userId, Powerup.Type.SpeedUp);
+            }
+
+            float targetSpeed = getMoveSpeed() * increaseAdditive;
+            if (targetSpeed > MAX_SHIP_SPEED && !isGhost) {
+               targetSpeed = MAX_SHIP_SPEED;
+            }
+
+            Vector2 targetVelocity = _movementInputDirection * targetSpeed * Time.fixedDeltaTime;
             _body.velocity = Vector2.SmoothDamp(_body.velocity, targetVelocity, ref _shipDampVelocity, 0.5f);
 
             // In ghost mode, clamp the position to the area bounds

@@ -7,7 +7,6 @@ using System.Linq;
 
 public class FriendListPanel : Panel
 {
-
    #region Public Variables
 
    // The number of rows to display per page, when displaying friendship requests
@@ -34,6 +33,9 @@ public class FriendListPanel : Panel
    // The object wrapping the list used to display friendship requests
    public GameObject requestList;
 
+   // The object wrapping the list used to display the search result
+   public GameObject searchResultsList;
+
    // The input field holding the name of the user to send a friendship invitation
    public InputField inviteInputField;
 
@@ -58,14 +60,60 @@ public class FriendListPanel : Panel
    public CanvasGroup friendListTabCanvasGroup;
    public CanvasGroup requestReceivedTabCanvasGroup;
    public CanvasGroup requestSentTabCanvasGroup;
+   public CanvasGroup searchResultsTabCanvasGroup;
 
    // The tab buttons
    public Button friendListTabButton;
    public Button requestReceivedTabButton;
    public Button requestSentTabButton;
+   public Button searchResultsTabButton;
+
+   // Reference to the load blocker
+   public GameObject loadBlocker;
 
    // Self
    public static FriendListPanel self;
+
+   [Header("Search")]
+   // The prefab used to create search results
+   public FriendSearchRow SearchResultRowPrefab;
+
+   // Container for the search results
+   public GameObject searchResultContainer;
+
+   // The gameobject that contains the invite controls
+   public GameObject sendInvitesSection;
+
+   // The previous page button (Search)
+   public Button searchPreviousPageButton;
+
+   // The next page button (Search)
+   public Button searchNextPageButton;
+
+   // The text displaying the current page (Search)
+   public Text searchCurrentPageIndicatorText;
+
+   // The text that displays the search title
+   public Text searchTitle;
+
+   // The Panel tabs
+   public enum FriendshipPanelTabs
+   {
+      // None
+      None = 0,
+
+      // Friends
+      Friends = 1,
+
+      // Invites - Sent
+      InvitesSent = 2,
+
+      // Invites - Received
+      InvitesReceived = 3,
+
+      // Search
+      Search = 4
+   }
 
    #endregion
 
@@ -75,6 +123,8 @@ public class FriendListPanel : Panel
    }
 
    public void refreshPanel (bool clearInputFields = false) {
+      toggleBlocker();
+
       if (clearInputFields) {
          inviteInputField.text = "";
       }
@@ -88,6 +138,10 @@ public class FriendListPanel : Panel
       FriendListManager.self.cachedFriendshipInfoList = friendshipInfoList;
       if (FriendListManager.self.cachedFriendshipInfoList == null) {
          FriendListManager.self.cachedFriendshipInfoList = new List<FriendshipInfo>();
+      }
+
+      if (_currentTab == FriendshipPanelTabs.None) {
+         _currentTab = FriendshipPanelTabs.Friends;
       }
 
       // Check if the list is for friends or friendship requests
@@ -129,37 +183,27 @@ public class FriendListPanel : Panel
       friendRowsContainer.DestroyChildren();
       friendRequestRowsContainer.DestroyChildren();
 
+      disableAllTabs();
+      hideAllContent();
+      activateAllTabs();
+
       // Select the correct tab
-      switch (friendshipStatus) {
-         case Friendship.Status.InviteSent:
-            friendListTabCanvasGroup.alpha = 0f;
-            requestReceivedTabCanvasGroup.alpha = 0f;
-            requestSentTabCanvasGroup.alpha = 1f;
-            friendListTabButton.interactable = true;
-            requestReceivedTabButton.interactable = true;
-            requestSentTabButton.interactable = false;
-            friendList.SetActive(false);
-            requestList.SetActive(true);
-            break;
-         case Friendship.Status.InviteReceived:
-            friendListTabCanvasGroup.alpha = 0f;
-            requestReceivedTabCanvasGroup.alpha = 1f;
-            requestSentTabCanvasGroup.alpha = 0f;
-            friendListTabButton.interactable = true;
-            requestReceivedTabButton.interactable = false;
-            requestSentTabButton.interactable = true;
-            friendList.SetActive(false);
-            requestList.SetActive(true);
-            break;
-         case Friendship.Status.Friends:
+      switch (_currentTab) {
+         case FriendshipPanelTabs.Friends:
             friendListTabCanvasGroup.alpha = 1f;
-            requestReceivedTabCanvasGroup.alpha = 0f;
-            requestSentTabCanvasGroup.alpha = 0f;
-            friendListTabButton.interactable = false;
-            requestReceivedTabButton.interactable = true;
-            requestSentTabButton.interactable = true;
             friendList.SetActive(true);
-            requestList.SetActive(false);
+            break;
+         case FriendshipPanelTabs.InvitesReceived:
+            requestReceivedTabCanvasGroup.alpha = 1f;
+            requestList.SetActive(true);
+            break;
+         case FriendshipPanelTabs.InvitesSent:
+            requestSentTabCanvasGroup.alpha = 1f;
+            friendList.SetActive(true);
+            break;
+         case FriendshipPanelTabs.Search:
+            searchResultsTabCanvasGroup.alpha = 1f;
+            searchResultsList.SetActive(true);
             break;
          default:
             break;
@@ -191,9 +235,19 @@ public class FriendListPanel : Panel
 
       // Update the pending friendship request notification
       BottomBar.self.setFriendshipRequestNotificationStatus(pendingRequestCount > 0);
+
+      if (_currentTab == FriendshipPanelTabs.Search) {
+         updateSearchNavigationControls();
+      }
+
+      sendInvitesSection.SetActive(_currentTab != FriendshipPanelTabs.Search);
+      toggleBlocker(show: false);
    }
 
+   #region UI Callbacks
+
    public void onFriendListTabButtonPress () {
+      _currentTab = FriendshipPanelTabs.Friends;
       _friendshipStatusFilter = Friendship.Status.Friends;
       _currentPage = 1;
       _rowsPerPage = Friendship.MAX_FRIENDS;
@@ -201,6 +255,7 @@ public class FriendListPanel : Panel
    }
 
    public void onInvitesReceivedTabButtonPress () {
+      _currentTab = FriendshipPanelTabs.InvitesReceived;
       _friendshipStatusFilter = Friendship.Status.InviteReceived;
       _currentPage = 1;
       _rowsPerPage = ROWS_PER_PAGE_FOR_REQUESTS;
@@ -208,6 +263,7 @@ public class FriendListPanel : Panel
    }
 
    public void onInvitesSentTabButtonPress () {
+      _currentTab = FriendshipPanelTabs.InvitesSent;
       _friendshipStatusFilter = Friendship.Status.InviteSent;
       _currentPage = 1;
       _rowsPerPage = ROWS_PER_PAGE_FOR_REQUESTS;
@@ -272,6 +328,8 @@ public class FriendListPanel : Panel
       PanelManager.self.confirmScreen.show("Are you sure you want to cancel the friendship invitation to " + friendName + "?");
    }
 
+   #endregion
+
    public void nextPage () {
       if (_currentPage < _maxPage) {
          _currentPage++;
@@ -283,6 +341,12 @@ public class FriendListPanel : Panel
       if (_currentPage > 1) {
          _currentPage--;
          refreshPanel();
+      }
+   }
+
+   public void toggleBlocker(bool show = true) {
+      if (loadBlocker) {
+         loadBlocker.SetActive(show);
       }
    }
 
@@ -300,10 +364,115 @@ public class FriendListPanel : Panel
       }
    }
 
+   private void hideAllContent () {
+      friendList.SetActive(false);
+      requestList.SetActive(false);
+      searchResultsList.SetActive(false);
+   }
+
+   private void disableAllTabs () {
+      // Disables tabs
+      friendListTabButton.interactable = false;
+      requestReceivedTabButton.interactable = false;
+      requestSentTabButton.interactable = false;
+      searchResultsTabButton.interactable = false;
+
+      friendListTabCanvasGroup.alpha = 0.0f;
+      requestReceivedTabCanvasGroup.alpha = 0.0f;
+      requestSentTabCanvasGroup.alpha = 0.0f;
+      searchResultsTabCanvasGroup.alpha = 0.0f;
+   }
+
+   private void activateAllTabs () {
+      // Makes all tabs interactable
+      friendListTabButton.interactable = true;
+      requestReceivedTabButton.interactable = true;
+      requestSentTabButton.interactable = true;
+      searchResultsTabButton.interactable = true;
+   }
+
+   #region User Search
+
+   public void showSearchResults (UserSearchResultCollection resultCollection) {
+      if (resultCollection != null && resultCollection.results != null && searchResultContainer != null) {
+         clearSearchResults();
+
+         foreach (UserSearchResult result in resultCollection.results) {
+            FriendSearchRow row = Instantiate(SearchResultRowPrefab, searchResultContainer.transform);
+            row.populate(result);
+         }
+
+         _currentTab = FriendshipPanelTabs.Search;
+         _resultCollection = resultCollection;
+         searchTitle.text = computeSearchTitle(resultCollection);
+      }
+
+      refreshPanel(clearInputFields: true);
+   }
+
+   private string computeSearchTitle (UserSearchResultCollection resultCollection) {
+      if (resultCollection == null || resultCollection.searchInfo == null) {
+         return "";
+      }
+
+      switch (resultCollection.searchInfo.filter) {
+         case UserSearchInfo.FilteringMode.None:
+            return "";
+         case UserSearchInfo.FilteringMode.Name:
+            return $"Search results for '/who is {resultCollection.searchInfo.input}'";
+         case UserSearchInfo.FilteringMode.Biome:
+            return $"Search results for '/who in {resultCollection.searchInfo.input}'";
+         case UserSearchInfo.FilteringMode.Level:
+            return $"Search results for '/who level {resultCollection.searchInfo.input}'";
+      }
+
+      return "";
+   }
+
+   private void clearSearchResults () {
+      searchResultContainer.DestroyChildren();
+   }
+
+   public void onSearchTabButtonPress () {
+      _currentTab = FriendshipPanelTabs.Search;
+      refreshPanel();
+   }
+
+   public void updateSearchNavigationControls () {
+      if (_resultCollection.searchInfo == null) {
+         return;
+      }
+
+      searchPreviousPageButton.gameObject.SetActive(_resultCollection.page > 0);
+      searchNextPageButton.gameObject.SetActive((_resultCollection.page + 1) < _resultCollection.totalPages);
+      searchCurrentPageIndicatorText.text = $"Page {_resultCollection.page + 1} of {_resultCollection.totalPages}";
+   }
+
+   public void nextSearchPage () {
+      if (_resultCollection != null && _resultCollection.searchInfo != null) {
+         UserSearchInfo searchInfo = _resultCollection.searchInfo;
+         searchInfo.page += 1;
+         Global.player.rpc.Cmd_SearchUser(searchInfo);
+      }
+   }
+
+   public void previousSearchPage () {
+      if (_resultCollection != null && _resultCollection.searchInfo != null && _resultCollection.searchInfo.page > 0) {
+         UserSearchInfo searchInfo = _resultCollection.searchInfo;
+         searchInfo.page -= 1;
+         Global.player.rpc.Cmd_SearchUser(searchInfo);
+      }
+   }
+
+   #endregion
+
    #region Private Variables
 
    // The index of the current page
    private int _currentPage = 1;
+
+   // The reference to the container that holds the set of results following a user search
+   private UserSearchResultCollection _resultCollection;
 
    // The maximum page index (starting at 1)
    private int _maxPage = 1;
@@ -316,6 +485,9 @@ public class FriendListPanel : Panel
 
    // The friendship status filter
    private Friendship.Status _friendshipStatusFilter = Friendship.Status.Friends;
+
+   // The current page
+   private FriendshipPanelTabs _currentTab = FriendshipPanelTabs.None;
 
    #endregion
 }

@@ -9182,64 +9182,159 @@ public class RPCManager : NetworkBehaviour
    }
 
    #region User Search
-   
+
    [Command]
    public void Cmd_SearchUser (UserSearchInfo searchInfo) {
       List<UserSearchResult> results = new List<UserSearchResult>();
+      UserSearchResultCollection resultsCollection = new UserSearchResultCollection();
 
-      switch (searchInfo.filter) {
-         case UserSearchInfo.FilteringMode.None:
-            break;
-         case UserSearchInfo.FilteringMode.Name:
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               UserInfo userInfo = DB_Main.getUserInfo(searchInfo.input);
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         if (searchInfo.filter == UserSearchInfo.FilteringMode.Name) {
+            UserInfo userInfo = DB_Main.getUserInfo(searchInfo.input);
+            bool isFriend = DB_Main.getFriendshipInfo(_player.userId, userInfo.userId) != null;
 
-               if (userInfo != null) {
+            if (userInfo != null) {
+               resultsCollection.totalPages = 1;
+
+               UserSearchResult result = new UserSearchResult {
+                  name = userInfo.username,
+                  level = LevelUtil.levelForXp(userInfo.XP),
+                  userId = _player.isAdmin() ? userInfo.userId : 0,
+                  area = _player.isAdmin() ? userInfo.areaKey : "",
+                  biome = AreaManager.self.getDefaultBiome(userInfo.areaKey),
+                  lastTimeOnline = userInfo.lastLoginTime,
+                  isOnline = ServerNetworkingManager.self.isUserOnline(userInfo.userId),
+                  isSameServer = EntityManager.self.getEntity(userInfo.userId) != null,
+                  isFriend = isFriend
+               };
+
+               results.Add(result);
+            }
+         }
+
+         if (searchInfo.filter == UserSearchInfo.FilteringMode.Biome) {
+            Biome.Type requestedBiome = Biome.fromName(searchInfo.input);
+
+            if (requestedBiome != Biome.Type.None) {
+               List<int> onlineUserIdsAll = ServerNetworkingManager.self.getAllOnlineUsers();
+               int[] onlineUserIds = Util.getArraySlice(onlineUserIdsAll, searchInfo.page, searchInfo.resultsPerPage);
+               resultsCollection.totalPages = Util.getArraySlicesCount(onlineUserIds, searchInfo.resultsPerPage);
+               Dictionary<int, UserInfo> userInfos = DB_Main.getUserInfosByIds(onlineUserIds);
+               Dictionary<int, FriendshipInfo> friendshipInfos = DB_Main.getFriendshipInfos(_player.userId, onlineUserIds);
+
+               foreach (KeyValuePair<int, UserInfo> pair in userInfos) {
+                  int userId = pair.Key;
+                  UserInfo userInfo = pair.Value;
+
+                  if (userInfo == null) {
+                     continue;
+                  }
+
+                  Biome.Type userInfoBiome = AreaManager.self.getDefaultBiome(userInfo.areaKey);
+                  if (userInfoBiome != requestedBiome) {
+                     continue;
+                  }
+
                   UserSearchResult result = new UserSearchResult {
                      name = userInfo.username,
                      level = LevelUtil.levelForXp(userInfo.XP),
                      userId = _player.isAdmin() ? userInfo.userId : 0,
                      area = _player.isAdmin() ? userInfo.areaKey : "",
-                     biome = Biome.getName(AreaManager.self.getDefaultBiome(userInfo.areaKey)),
+                     biome = userInfoBiome,
                      lastTimeOnline = userInfo.lastLoginTime,
-                     isOnline = ServerNetworkingManager.self.isUserOnline(userInfo.userId)
+                     isOnline = true,
+                     isSameServer = EntityManager.self.getEntity(userId) != null,
+                     isFriend = friendshipInfos.ContainsKey(userId)
                   };
 
                   results.Add(result);
                }
+            }
+         }
 
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  Target_ReceiveUserSearchResults(_player.connectionToClient, searchInfo, results.ToArray());
-               });
-            });
+         if (searchInfo.filter == UserSearchInfo.FilteringMode.Level) {
+            if (int.TryParse(searchInfo.input, out int requestedLevel)) {
+               List<int> onlineUserIdsAll = ServerNetworkingManager.self.getAllOnlineUsers();
+               int[] onlineUserIds = Util.getArraySlice(onlineUserIdsAll, searchInfo.page, searchInfo.resultsPerPage);
+               resultsCollection.totalPages = Util.getArraySlicesCount(onlineUserIds, searchInfo.resultsPerPage);
+               Dictionary<int, UserInfo> userInfos = DB_Main.getUserInfosByIds(onlineUserIds);
+               Dictionary<int, FriendshipInfo> friendshipInfos = DB_Main.getFriendshipInfos(_player.userId, onlineUserIds);
 
-            break;
-         case UserSearchInfo.FilteringMode.Biome:
-            break;
-         case UserSearchInfo.FilteringMode.Level:
-            break;
-      }
+               foreach (KeyValuePair<int, UserInfo> pair in userInfos) {
+                  int userId = pair.Key;
+                  UserInfo userInfo = pair.Value;
+
+                  if (userInfo == null) {
+                     continue;
+                  }
+
+                  int userInfoLevel = LevelUtil.levelForXp(userInfo.XP);
+                  if (userInfoLevel != requestedLevel) {
+                     continue;
+                  }
+
+                  UserSearchResult result = new UserSearchResult {
+                     name = userInfo.username,
+                     level = userInfoLevel,
+                     userId = _player.isAdmin() ? userInfo.userId : 0,
+                     area = _player.isAdmin() ? userInfo.areaKey : "",
+                     biome = AreaManager.self.getDefaultBiome(userInfo.areaKey),
+                     lastTimeOnline = userInfo.lastLoginTime,
+                     isOnline = true,
+                     isSameServer = EntityManager.self.getEntity(userId) != null,
+                     isFriend = friendshipInfos.ContainsKey(userId)
+                  };
+
+                  results.Add(result);
+               }
+            }
+         }
+
+         resultsCollection.page = searchInfo.page;
+         resultsCollection.searchInfo = searchInfo;
+         resultsCollection.results = results.ToArray();
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveUserSearchResults(_player.connectionToClient, resultsCollection);
+         });
+      });
    }
 
    [TargetRpc]
-   public void Target_ReceiveUserSearchResults (NetworkConnection connection, UserSearchInfo searchInfo, UserSearchResult[] results) {
-      if (results == null || results.Length == 0) {
+   public void Target_ReceiveUserSearchResults (NetworkConnection connection, UserSearchResultCollection resultCollection) {
+      if (resultCollection == null || resultCollection.results == null || resultCollection.results.Length == 0) {
          ChatManager.self.addChat($"Search complete! No users found...", ChatInfo.Type.System);
          return;
       }
 
-      string itemsStr = results.Length == 1 ? "user" : "users";
-      ChatManager.self.addChat($"Search complete! {results.Length} {itemsStr} found:", ChatInfo.Type.System);
+      string itemsStr = resultCollection.results.Length == 1 ? "user" : "users";
+      ChatManager.self.addChat($"Search complete! {resultCollection.results.Length} {itemsStr} found:", ChatInfo.Type.System);
 
-      int counter = 1;
+      if (resultCollection.results.Length > 1) {
+         FriendListPanel friendListPanel = PanelManager.self.get<FriendListPanel>(Panel.Type.FriendList);
 
-      foreach (UserSearchResult result in results) {
-         string areaStr = "Location: " + (Util.isEmpty(result.area) ? "Somewhere" : $"{result.area}");
-         string onlineStr = result.isOnline ? "Online" : "Offline";
-         string lastOnlineStr = !result.isOnline ? $", Last Seen: {result.lastTimeOnline.ToLocalTime()}" : "";
-         string userIdStr = (Global.player.isAdmin() && result.userId > 0) ? $", UID: {result.userId}" : "";
-         ChatManager.self.addChat($"[{counter}/{results.Length}] {result.name}{userIdStr}, Lv: {result.level}, {areaStr} in {result.biome}, Status: {onlineStr}{lastOnlineStr}", ChatInfo.Type.System);
-         counter++;
+         if (friendListPanel != null && !friendListPanel.isShowing()) {
+            friendListPanel.showSearchResults(resultCollection);
+         }
+      } else {
+         int counter = 1;
+         // If the results list is small enough, show them in chat, otherwise show them in a specialized GUI panel
+         foreach (UserSearchResult result in resultCollection.results) {
+
+            bool isCurrentPlayer = Util.areStringsEqual(result.name, _player.entityName);
+            string biomeStr = Biome.getName(result.biome);
+            string areaAdminStr = (Util.isEmpty(result.area) ? "Somewhere" : $"{Area.getName(result.area)} ({result.area})");
+            string areaStr = (Util.isEmpty(result.area) ? "Somewhere" : $"{Area.getName(result.area)}");
+            string sameServerStr = (result.isSameServer && result.area == _player.areaKey && !isCurrentPlayer) ? "*" : "";
+            string onlineStr = "Status: " + (result.isOnline ? "Online" : "Offline");
+            string lastOnlineStr = !result.isOnline ? $", Last Seen: {result.lastTimeOnline.ToLocalTime()}" : "";
+            string userIdStr = Global.player.isAdmin() ? $", UID: {result.userId}" : "";
+            string computedAreaStr = "Location: " + (_player.isAdmin() ? areaAdminStr : areaStr);
+
+            string msg = $"[{counter}/{resultCollection.results.Length}] {result.name}{userIdStr}, Lv: {result.level}, {computedAreaStr}{sameServerStr} in {biomeStr}, {onlineStr}{lastOnlineStr}";
+            ChatManager.self.addChat(msg, ChatInfo.Type.System);
+            counter++;
+         }
       }
    }
 
