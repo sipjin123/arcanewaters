@@ -7,8 +7,7 @@ using MapCreationTool.Serialization;
 
 namespace MapCreationTool
 {
-   public class MapListPanel : UIPanel
-   {
+   public class MapListPanel : UIPanel {
       public enum OrderingType { None = 0, NameAsc = 1, NameDesc = 2, DateAsc = 3, DateDesc = 4, CreatorAsc = 5, CreatorDesc = 6 }
 
       [SerializeField]
@@ -27,6 +26,9 @@ namespace MapCreationTool
 
       private List<UserMapsEntry> entries = new List<UserMapsEntry>();
       private List<Map> loadedMaps;
+
+      [SerializeField]
+      private GameObject focusBlocker;
 
       private void clearEverything () {
          foreach (UserMapsEntry entry in entries) {
@@ -134,6 +136,10 @@ namespace MapCreationTool
          } else {
             creatorLabel.text = "Creator";
          }
+      }
+
+      void OnApplicationFocus (bool hasFocus) {
+         focusBlocker.SetActive(!hasFocus);
       }
 
       public void openLatestVersionConfirm (Map map) {
