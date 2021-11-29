@@ -634,10 +634,34 @@ public class BattleManager : MonoBehaviour {
             
             // Add powerup damage
             if (source.userId > 0) {
+               int allDamageBoost = 0;
                if (LandPowerupManager.self.hasPowerup(source.userId, LandPowerupType.DamageBoost)) {
-                  int boostedDamage = (int) (damage * LandPowerupManager.self.getPowerupValue(source.userId, LandPowerupType.DamageBoost) / 100);
-                  damage += boostedDamage;
+                  allDamageBoost = (int) (damage * LandPowerupManager.self.getPowerupValue(source.userId, LandPowerupType.DamageBoost) / 100);
                }
+
+               PlayerBodyEntity playerBody = source.player.GetComponent<PlayerBodyEntity>();
+               if (playerBody != null) {
+                  WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(playerBody.weaponManager.equipmentDataId);
+                  if (weaponData != null) {
+                     int weaponBoostDamage = 0;
+                     switch (weaponData.weaponClass) {
+                        case Weapon.Class.Melee:
+                           if (LandPowerupManager.self.hasPowerup(source.userId, LandPowerupType.MeleeDamageBoost)) {
+                              weaponBoostDamage = (int) (damage * LandPowerupManager.self.getPowerupValue(source.userId, LandPowerupType.MeleeDamageBoost) / 100);
+                           }
+                           break;
+                        case Weapon.Class.Ranged:
+                           if (LandPowerupManager.self.hasPowerup(source.userId, LandPowerupType.RangeDamageBoost)) {
+                              weaponBoostDamage = (int) (damage * LandPowerupManager.self.getPowerupValue(source.userId, LandPowerupType.RangeDamageBoost) / 100);
+                           }
+                           break;
+                     }
+                     damage += weaponBoostDamage;
+                  }
+               }
+
+               // Stacks the weapon class damage boost as part of the overall damage boost
+               damage += allDamageBoost;
             }
 
             // If this is a boss monster, add damage (based from admin game settings) depending on number of team members
@@ -1068,6 +1092,11 @@ public class BattleManager : MonoBehaviour {
                DB_Main.addGoldAndXP(participant.userId, goldWon, xpWon);
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                   if (participant.enemyType == Enemy.Type.PlayerBattler) {
+                     // If user has exp boost, add experience here
+                     if (LandPowerupManager.self.hasPowerup(participant.userId, LandPowerupType.ExperienceBoost)) {
+                        float experienceValue = .2f; // Add 20% exp for now
+                        xpWon = (int) (xpWon + (xpWon * experienceValue));
+                     }
                      participant.player.Target_ReceiveBattleExp(participant.player.connectionToClient, xpWon);
                   }
                });

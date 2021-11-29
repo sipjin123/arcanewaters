@@ -728,7 +728,13 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Grant the rewards to the user
-      giveItemRewardsToPlayer(_player.userId, new List<Item>() { item }, false, chest.id);
+      List<Item> rewardsToGive = new List<Item>();
+      rewardsToGive.Add(item);
+      if (LandPowerupManager.self.hasPowerup(_player.userId, LandPowerupType.LootDropBoost)) {
+         rewardsToGive.Add(item);
+      }
+
+      giveItemRewardsToPlayer(_player.userId, rewardsToGive, false, chest.id);
 
       // Registers the interaction of loot bags to the achievement database for recording
       AchievementManager.registerUserAchievement(_player, ActionType.OpenedLootBag);
@@ -4407,6 +4413,43 @@ public class RPCManager : NetworkBehaviour
                         landPowerupType = LandPowerupType.SpeedBoost,
                         userId = _player.userId,
                         value = 100, // Set as 100% speed boost for now
+                     };
+                     break;
+                  case LandPowerupType.ExperienceBoost:
+                     newPowerup = new LandPowerupData {
+                        counter = 1200, // Set as 1200 secs for now
+                        expiryType = LandPowerupExpiryType.Time, // Set as timer for now
+                        landPowerupType = LandPowerupType.ExperienceBoost,
+                        userId = _player.userId,
+                        value = 20, // Set as 20% exp boost for now
+                     };
+                     break;
+                  case LandPowerupType.LootDropBoost:
+                     newPowerup = new LandPowerupData {
+                        counter = 1200, // Set as 1200 secs for now
+                        expiryType = LandPowerupExpiryType.Time, // Set as timer for now
+                        landPowerupType = LandPowerupType.LootDropBoost,
+                        userId = _player.userId,
+                        value = 100, // Set as 100% loot drop rate boost for now
+                     };
+                     break;
+
+                  case LandPowerupType.RangeDamageBoost:
+                     newPowerup = new LandPowerupData {
+                        counter = 360, // Set as 6 mins for now
+                        expiryType = LandPowerupExpiryType.Time, // Set as timer for now
+                        landPowerupType = LandPowerupType.RangeDamageBoost,
+                        userId = _player.userId,
+                        value = 20, // Set as 20% ranged damage boost for now
+                     };
+                     break;
+                  case LandPowerupType.MeleeDamageBoost:
+                     newPowerup = new LandPowerupData {
+                        counter = 360, // Set as 6 mins for now
+                        expiryType = LandPowerupExpiryType.Time, // Set as timer for now
+                        landPowerupType = LandPowerupType.MeleeDamageBoost,
+                        userId = _player.userId,
+                        value = 20, // Set as 20% melee damage boost for now
                      };
                      break;
                }
