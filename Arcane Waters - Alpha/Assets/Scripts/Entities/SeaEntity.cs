@@ -182,7 +182,7 @@ public class SeaEntity : NetEntity
       }
 
       if (useSeaEnemyAI()) {
-         GenericEffector.setEffectorCollisions(getMainCollider(), false);
+         GenericEffector.setEffectorCollisions(getMainCollider(), false, GenericEffector.Type.Current);
       }
 
       editorGenerateAggroCone();
@@ -259,12 +259,12 @@ public class SeaEntity : NetEntity
             if (gameStatsManager != null) {
                if (lastAttacker.isPlayerShip()) {
                   int silverReward = SilverManager.computeSilverReward(this);
-                  gameStatsManager.addSilverRank(lastAttacker.userId, 1);
                   gameStatsManager.addSilverAmount(lastAttacker.userId, silverReward);
                   Target_ReceiveSilverCurrency(lastAttacker.getPlayerShipEntity().connectionToClient, silverReward, SilverManager.SilverRewardReason.Kill);
                }
 
                if (this.isPlayerShip()) {
+                  gameStatsManager.addSilverRank(lastAttacker.userId, 1);
                   gameStatsManager.addPlayerKillCount(lastAttacker.userId);
                   gameStatsManager.resetSilverRank(this.userId);
                   gameStatsManager.addDeathCount(this.userId);

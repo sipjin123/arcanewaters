@@ -6,6 +6,103 @@ using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.LowLevel;
 using System.Collections;
 
+/*
+Actions configuration:
+   All action maps with actions are configured in the Assets/Input/InputMaster.asset
+   Current action maps with actions available here https://docs.google.com/spreadsheets/d/10K_nSLf71ZXn7G9dPaPcgZxuHOL0IOVLKC3AVZovnRw/edit#gid=0
+
+      General		
+	      MoveUp	W
+	      MoveLeft	A
+	      MoveDown	S
+	      MoveRight	D
+	      Interact	LMB
+		      
+      Land		
+	      Jump	Space
+	      Action	RMB
+	      Sprint	LShift
+		      
+      LandBattle		
+	      Ability1	1
+	      Ability2	2
+	      Ability3	3
+	      Ability4	4
+	      Ability5	5
+	      StanceDefense	F1
+	      StanceBalanced	F2
+	      StanceAttack	F3
+	      NextTarget	Tab
+		      
+      Sea		
+	      FireCannon	RMB
+	      Dash	LShift
+
+      Pvp			
+	      Stat		Tab
+		      
+      Hud		
+	      Shortcut1	1
+	      Shortcut2	2
+	      Shortcut3	3
+	      Shortcut4	4
+	      Shortcut5	5
+	      ShowPlayerName	LAlt
+		      
+      UIShotcuts		
+	      Abilities	U
+	      Chat	Enter
+	      FriendsList	F
+	      GuildInfo	G
+	      Inventory	I
+	      Mail	K
+	      Map	M
+	      Options	Esc
+	      ShipList	L
+	      Store	B
+	      TradeHistory	T
+	      VisitFriend	N
+	      ChatReply	R
+		      
+      UIControl		
+	      Move	WASD
+	      Equip	E
+	      Use	F
+	      Close	Esc
+		      
+      Chat		
+	      SendMessage	Enter
+	      ExitChat	Esc
+	      HistoryUp	ArrowUp
+	      HistoryDown	ArrowDown
+	      SelectChat	Tab
+         Autocomplete		Tab	      
+ 
+Bindings configuration:
+   Each action should have four bindings with following indexes (used for controls rebinding logic)
+      * (0) Keyboard Primary
+      * (1) Keyboard Secondary
+      * (2) Gamepad Primary
+      * (3) Gamepad Secondary
+
+Usage:
+   Check if action has been performed in the current frame:
+      InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()
+   or read value
+      InputManager.self.inputMaster.Land.Jump.ReadValue<float>()
+   or check if action is pressed
+      InputManager.self.inputMaster.Land.Jump.IsPressed()
+
+   Subscribe on action performed event:
+      InputManager.self.inputMaster.Land.Jump.performed += _ => { Debug.Log("Jump"); };
+   or
+      InputManager.self.inputMaster.Land.Jump.performed += OnJump;
+
+   Enable or disable needed action map:
+      InputManager.self.inputMaster.Land.Enable();
+      InputManager.self.inputMaster.Land.Disable();
+*/
+
 public class InputManager : GenericGameManager {
    #region Public Variables
 
@@ -17,7 +114,13 @@ public class InputManager : GenericGameManager {
 
    // Input Master reference
    public InputMaster inputMaster;
+   
+   // Controls binding types
+   public enum BindingType {Keyboard, Gamepad};
 
+   // Controls bindings ids
+   public enum BindingId {KeyboardPrimary, KeyboardSecondary, GamepadPrimary, GamepadSecondary};
+   
    // The joystick values for gamepad controls
    public Vector2 joystickNavigation;
 
@@ -76,21 +179,31 @@ public class InputManager : GenericGameManager {
 
       // TODO: Setup all gamepad action keybindings here after stabilizing the project by overridding all scripts referencing legacy input system
       inputMaster = new InputMaster();
+      
+      // Restore user custom bindings
+      restoreCustomBindings();
 
-      inputMaster.Player.Enable();
-      inputMaster.Player.ToggleMouseControl.performed += func => mouseToggleAction();
-      inputMaster.Player.Jump.performed += func => jumpAction();
-      inputMaster.Player.Interact.performed += func => interactAction();
-      inputMaster.Player.MouseClick.performed += func => mouseClickAction();
+      // inputMaster.Player.ToggleMouseControl.performed += func => mouseToggleAction();
+      // inputMaster.Player.MouseClick.performed += func => mouseClickAction();
 
-      inputMaster.Player.Dash.performed += func => dashAction(true);
-      inputMaster.Player.Dash.canceled += func => dashAction(false);
+      // inputMaster.Sea.Dash.performed += func => dashAction(true);
+      // inputMaster.Sea.Dash.canceled += func => dashAction(false);
 
-      inputMaster.Player.Move.performed += func => moveAction(func.ReadValue<Vector2>());
-      inputMaster.Player.Move.canceled += func => moveAction(new Vector2(0, 0));
+      // inputMaster.Player.Move.performed += func => moveAction(func.ReadValue<Vector2>());
+      // inputMaster.Player.Move.canceled += func => moveAction(new Vector2(0, 0));
 
-      inputMaster.Player.MouseControl.performed += mfunc => mouseAction(mfunc.ReadValue<Vector2>());
-      inputMaster.Player.MouseControl.canceled += mfunc => mouseAction(new Vector2(0, 0));
+      // inputMaster.Player.MouseControl.performed += mfunc => mouseAction(mfunc.ReadValue<Vector2>());
+      // inputMaster.Player.MouseControl.canceled += mfunc => mouseAction(new Vector2(0, 0));
+      
+      inputMaster.General.Enable();
+      inputMaster.Land.Enable();
+      inputMaster.LandBattle.Disable();
+      inputMaster.Sea.Enable();
+      inputMaster.Pvp.Enable();
+      inputMaster.Hud.Enable();
+      inputMaster.UIShotcuts.Enable();
+      inputMaster.UIControl.Disable();
+      inputMaster.Chat.Disable();
    }
 
    private void Update () {
@@ -113,14 +226,14 @@ public class InputManager : GenericGameManager {
       isFocused = focus;
    }
 
-   private void dashAction (bool isActive) {
-      holdGamepadSprint = isActive;
-      D.adminLog("Dash! {" + isActive + "}", D.ADMIN_LOG_TYPE.Gamepad);
-   }
+   // private void dashAction (bool isActive) {
+   //    holdGamepadSprint = isActive;
+   //    D.adminLog("Dash! {" + isActive + "}", D.ADMIN_LOG_TYPE.Gamepad);
+   // }
 
-   private void mouseClickAction () {
-      StartCoroutine(CO_SimulateMouseClick());
-   }
+   // private void mouseClickAction () {
+   //    StartCoroutine(CO_SimulateMouseClick());
+   // }
 
    private IEnumerator CO_SimulateMouseClick () {
       // Simulate mouse press down by accessing mouse command to trigger
@@ -135,37 +248,33 @@ public class InputManager : GenericGameManager {
       InputState.Change(Mouse.current, mouseState);
    }
 
-   private void jumpAction () {
-      D.adminLog("Jump!", D.ADMIN_LOG_TYPE.Gamepad);
-   }
+   // private void mouseToggleAction () {
+   //    mouseJoystickToggle = !mouseJoystickToggle;
+   // }
 
-   private void interactAction () {
-      D.adminLog("Interact!", D.ADMIN_LOG_TYPE.Gamepad);
-   }
+   // private void moveAction (Vector2 moveVal) {
+   //    if (Global.player == null) {
+   //       return;
+   //    }
+   //
+   //    joystickNavigation = moveVal;
+   // }
 
-   private void mouseToggleAction () {
-      mouseJoystickToggle = !mouseJoystickToggle;
-   }
+   // private void mouseAction (Vector2 mouseVal) {
+   //    if (Global.player == null || !isFocused) {
+   //       return;
+   //    }
+   //
+   //    if (Util.isCloudBuild()) {
+   //       mouseJoystickNavigation = new Vector2(mouseVal.x, -mouseVal.y);
+   //    } else {
+   //       mouseJoystickNavigation = new Vector2(mouseVal.x, mouseVal.y);
+   //    }
+   // }
 
-   private void moveAction (Vector2 moveVal) {
-      if (Global.player == null) {
-         return;
-      }
+   #region Auto move functions
 
-      joystickNavigation = moveVal;
-   }
-
-   private void mouseAction (Vector2 mouseVal) {
-      if (Global.player == null || !isFocused) {
-         return;
-      }
-
-      if (Util.isCloudBuild()) {
-         mouseJoystickNavigation = new Vector2(mouseVal.x, -mouseVal.y);
-      } else {
-         mouseJoystickNavigation = new Vector2(mouseVal.x, mouseVal.y);
-      }
-   }
+   
 
    public void simulateDirectionPress (Direction direction, float seconds) {
       StartCoroutine(CO_SimulateDirectionPress(direction, seconds)); 
@@ -177,6 +286,7 @@ public class InputManager : GenericGameManager {
       yield return new WaitForSeconds(seconds);
       _isMoveSimulated = false;
    }
+   #endregion
 
    private void loadDefaultKeybindings () {
       // Create empty bindings for all defined actions
@@ -206,7 +316,40 @@ public class InputManager : GenericGameManager {
 
       _keybindings[KeyAction.Reply].primary = Key.R;
    }
+   
+   private void saveCustomBindings() {
+      var rebinds = inputMaster.SaveBindingOverridesAsJson();
+      PlayerPrefs.SetString("rebinds", rebinds);
+   }
 
+   private void restoreCustomBindings() {
+      var rebinds = PlayerPrefs.GetString("rebinds");
+      inputMaster.LoadBindingOverridesFromJson(rebinds);
+   }   
+
+   public void rebindAction(InputAction inputAction, BindingType bindingType, BindingId bindingId, Action callback) {
+      string cancelKey = "";
+      switch (bindingType) {
+         case BindingType.Keyboard:
+            cancelKey = "<Keyboard>/escape";
+            break;
+         case BindingType.Gamepad:
+            cancelKey = "<Gamepad>/select";
+            break;
+      }
+        
+      inputAction.PerformInteractiveRebinding()
+         .WithControlsHavingToMatchPath(bindingType.ToString())
+         .WithTargetBinding((int)bindingId)
+         .WithCancelingThrough(cancelKey)
+         .OnComplete(_ => {
+            saveCustomBindings();
+            callback?.Invoke();
+         })
+         .OnCancel(_ => { callback?.Invoke(); })
+         .Start();
+   }   
+   
    public static bool isPressingDirection (Direction direction) {
       if (!self._isInputEnabled) {
          return false;
@@ -271,9 +414,9 @@ public class InputManager : GenericGameManager {
    public static int getHorizontalAxis () {
       int axis = 0;
 
-      if (getKeyAction(KeyAction.MoveLeft) || self.joystickNavigation.x < -JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.West)) {
+      if (self.inputMaster.General.MoveLeft.IsPressed() || self.joystickNavigation.x < -JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.West)) {
          axis = -1;
-      } else if (getKeyAction(KeyAction.MoveRight) || self.joystickNavigation.x > JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.East)) {
+      } else if (self.inputMaster.General.MoveRight.IsPressed() || self.joystickNavigation.x > JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.East)) {
          axis = 1;
       }
 
@@ -283,9 +426,9 @@ public class InputManager : GenericGameManager {
    public static int getVerticalAxis () {
       int axis = 0;
 
-      if (getKeyAction(KeyAction.MoveUp) || self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.North)) {
+      if (self.inputMaster.General.MoveUp.IsPressed() || self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.North)) {
          axis = 1;
-      } else if (getKeyAction(KeyAction.MoveDown) || self.joystickNavigation.y < -JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.South)) {
+      } else if (self.inputMaster.General.MoveDown.IsPressed() || self.joystickNavigation.y < -JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.South)) {
          axis = -1;
       }
 
@@ -294,23 +437,6 @@ public class InputManager : GenericGameManager {
 
    public static Vector2 getMovementInput () {
       return new Vector2(getHorizontalAxis(), getVerticalAxis());
-   }
-
-   public static bool isLeftClickKeyPressed () {
-      if (isActionInputEnabled()) {
-         return KeyUtils.GetButtonDown(MouseButton.Left);
-      }
-
-      return false;
-   }
-
-   public static bool isRightClickKeyPressed () {
-      if (isActionInputEnabled()) {
-         // Define the set of keys that we want to allow as "action" keys
-         return KeyUtils.GetButtonDown(MouseButton.Right);
-      }
-
-      return false;
    }
 
    public static bool isActionKeyPressed () {

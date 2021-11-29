@@ -48,10 +48,10 @@ public class WhirlpoolEffect : MonoBehaviour {
    private const float DEFAULT_RADIUS = 0.62f;
 
    // How long the whirlpool effect takes to fade in or out
-   private const float FADE_DURATION = 0.125f;
+   private const float FADE_DURATION = 0.25f;
 
    // How long the whirlpool effect lasts for
-   private const float EFFECT_DURATION = 0.5f;
+   private const float EFFECT_DURATION = 2.5f;
 
    #endregion
 }

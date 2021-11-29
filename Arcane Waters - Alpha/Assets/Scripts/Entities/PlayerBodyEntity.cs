@@ -133,7 +133,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    public LevelUpEffect levelUpEffect;
 
    // Whether the collision with effectors is currently enabled for this player
-   public bool effectorCollisionEnabled = true;
+   public bool stairEffectorCollisionEnabled = true;
 
    #endregion
 
@@ -177,10 +177,10 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
       if (isLocalPlayer && !Util.isBatch()) {
          // Gamepad action trigger
-         InputManager.self.inputMaster.Player.Interact.performed += func => triggerInteractAction(false);
+         InputManager.self.inputMaster.Land.Action.performed += func => triggerInteractAction(false);
 
          // Gamepad jump trigger
-         InputManager.self.inputMaster.Player.Jump.performed += func => {
+         InputManager.self.inputMaster.Land.Jump.performed += func => {
             if (InputManager.isActionInputEnabled()) {
                triggerJumpAction();
             }
@@ -286,20 +286,12 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       processJumpLogic();
 
       // Display land players' name when ALT key is pressed.
-      if (KeyUtils.GetKey(Key.LeftAlt) || KeyUtils.GetKey(Key.RightAlt)) {
+      if (InputManager.self.inputMaster.Hud.ShowPlayerName.IsPressed()) {
          if (OptionsPanel.onlyShowPlayerNamesOnMouseover) {
             showEntityName();
          }
          if (OptionsPanel.onlyShowGuildIconsOnMouseover) {
             showGuildIcon();
-         }
-      }
-      if (KeyUtils.GetKeyUp(Key.LeftAlt) || KeyUtils.GetKeyUp(Key.RightAlt)) {
-         if (OptionsPanel.onlyShowPlayerNamesOnMouseover) {
-            hideEntityName();
-         }
-         if (OptionsPanel.onlyShowGuildIconsOnMouseover) {
-            hideGuildIcon();
          }
       }
    }
@@ -327,16 +319,15 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private void handleShortcutsInput () {
-      // We should move these to the InputManager
-      if (KeyUtils.GetKeyDown(Key.Digit1)) {
+      if (InputManager.self.inputMaster.Hud.Shortcut1.WasPerformedThisFrame()) {
          PanelManager.self.itemShortcutPanel.activateShortcut(1);
-      } else if (KeyUtils.GetKeyDown(Key.Digit2)) {
+      } else if (InputManager.self.inputMaster.Hud.Shortcut2.WasPerformedThisFrame()) {
          PanelManager.self.itemShortcutPanel.activateShortcut(2);
-      } else if (KeyUtils.GetKeyDown(Key.Digit3)) {
+      } else if (InputManager.self.inputMaster.Hud.Shortcut3.WasPerformedThisFrame()) {
          PanelManager.self.itemShortcutPanel.activateShortcut(3);
-      } else if (KeyUtils.GetKeyDown(Key.Digit4)) {
+      } else if (InputManager.self.inputMaster.Hud.Shortcut4.WasPerformedThisFrame()) {
          PanelManager.self.itemShortcutPanel.activateShortcut(4);
-      } else if (KeyUtils.GetKeyDown(Key.Digit5)) {
+      } else if (InputManager.self.inputMaster.Hud.Shortcut5.WasPerformedThisFrame()) {
          PanelManager.self.itemShortcutPanel.activateShortcut(5);
       }
    }
@@ -361,8 +352,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       // If the player has finished jumping, re-enable the stair effectors
-      if (!isJumping() && !effectorCollisionEnabled) {
-         setEffectorCollisions(true);
+      if (!isJumping() && !stairEffectorCollisionEnabled) {
+         setStairEffectorCollisions(true);
       }
 
       setSpritesHeight(y);
@@ -506,7 +497,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          return;
       }
 
-      if (InputManager.isJumpKeyPressed()) {
+      if (InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
          triggerJumpAction();
       }
    }
@@ -550,7 +541,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          if (isLocalPlayer) {
             _jumpStartTime = NetworkTime.time;
             playJumpAnimation();
-            setEffectorCollisions(false);
+            setStairEffectorCollisions(false);
          }
 
          Cmd_NoteJump();
@@ -570,7 +561,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    [Command]
    public void Cmd_NoteJump () {
       Rpc_NoteJump();
-      setEffectorCollisions(false);
+      setStairEffectorCollisions(false);
    }
 
    [ClientRpc]
@@ -578,7 +569,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       if (!isLocalPlayer) {
          _jumpStartTime = NetworkTime.time;
          playJumpAnimation();
-         setEffectorCollisions(false);
+         setStairEffectorCollisions(false);
       }
    }
 
@@ -587,7 +578,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          return true;
       }
 
-      return (InputManager.isSpeedUpKeyDown() && !isWithinEnemyRadius && getVelocity().magnitude > SPRINTING_MAGNITUDE);
+      return (InputManager.self.inputMaster.Land.Sprint.IsPressed() && !isWithinEnemyRadius && getVelocity().magnitude > SPRINTING_MAGNITUDE);
    }
 
    private void processActionLogic () {
@@ -599,19 +590,23 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          return;
       }
 
-      if (InputManager.isLeftClickKeyPressed() && !PanelManager.self.hasPanelInLinkedList() && !PanelManager.self.isFullScreenSeparatePanelShowing()) {
+      if (
+         InputManager.self.inputMaster.General.Interact.WasPerformedThisFrame() && 
+         !PanelManager.self.hasPanelInLinkedList() && 
+         !PanelManager.self.isFullScreenSeparatePanelShowing()
+      ) {
          NetEntity body = getClickedBody();
          if (body != null && body is PlayerBodyEntity && !Global.player.isInBattle()) {
             PanelManager.self.contextMenuPanel.showDefaultMenuForUser(body.userId, body.entityName);
          }
       }
 
-      if (InputManager.isRightClickKeyPressed()) {
+      if (InputManager.self.inputMaster.Land.Action.WasPerformedThisFrame()) {
          triggerInteractAction();
       }
 
       // Try to open chest through code (instead of UI) in case if UI is blocking raycasts casted to the chest Canvas
-      if (InputManager.isLeftClickKeyPressed()) {
+      if (InputManager.self.inputMaster.General.Interact.WasPerformedThisFrame()) {
          tryToOpenChest();
       }
    }
@@ -1019,13 +1014,13 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
    }
 
-   private void setEffectorCollisions (bool collisionsEnabled) {
-      if (effectorCollisionEnabled == collisionsEnabled) {
+   private void setStairEffectorCollisions (bool collisionsEnabled) {
+      if (stairEffectorCollisionEnabled == collisionsEnabled) {
          return;
       }
 
-      GenericEffector.setEffectorCollisions(getMainCollider(), collisionsEnabled);
-      effectorCollisionEnabled = collisionsEnabled;
+      GenericEffector.setEffectorCollisions(getMainCollider(), collisionsEnabled, GenericEffector.Type.Stair);
+      stairEffectorCollisionEnabled = collisionsEnabled;
    }
 
    #region Private Variables

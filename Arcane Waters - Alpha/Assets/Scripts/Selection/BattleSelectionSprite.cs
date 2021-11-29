@@ -67,7 +67,7 @@ public class BattleSelectionSprite : MonoBehaviour {
             this.transform.position = targetPosition + BattleSelectionManager.getOffsetToFeet();
          }
 
-         Util.setZ(this.transform, 0.0f);
+         Util.setZ(this.transform, 1.6f);
 
          // Move the arrows around based on the orientation of our target
          setDistances(selectedBattler);

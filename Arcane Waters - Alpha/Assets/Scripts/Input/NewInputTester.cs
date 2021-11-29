@@ -20,9 +20,9 @@ public class NewInputTester : MonoBehaviour {
       // TODO: Setup all gamepad action keybindings here after stabilizing the project by overridding all scripts referencing legacy input system
       inputMaster = new InputMaster();
 
-      inputMaster.Player.Enable();
-      inputMaster.Player.Jump.performed += func => jumpAction();
-      inputMaster.Player.Interact.performed += func => interactAction();
+      // inputMaster.Player.Enable();
+      // inputMaster.Player.Jump.performed += func => jumpAction();
+      // inputMaster.Player.Interact.performed += func => interactAction();
 
       InputSystem.onDeviceChange += (device, change) =>
       {
@@ -38,11 +38,11 @@ public class NewInputTester : MonoBehaviour {
       };
 
 
-      inputMaster.Player.Move.performed += func => moveAction(func.ReadValue<Vector2>());
-      inputMaster.Player.Move.canceled += func => moveAction(new Vector2(0, 0), true);
-
-      inputMaster.Player.MouseControl.performed += mfunc => mouseAction(mfunc.ReadValue<Vector2>());
-      inputMaster.Player.MouseControl.canceled += mfunc => mouseAction(new Vector2(0, 0));
+      // inputMaster.Player.Move.performed += func => moveAction(func.ReadValue<Vector2>());
+      // inputMaster.Player.Move.canceled += func => moveAction(new Vector2(0, 0), true);
+      //
+      // inputMaster.Player.MouseControl.performed += mfunc => mouseAction(mfunc.ReadValue<Vector2>());
+      // inputMaster.Player.MouseControl.canceled += mfunc => mouseAction(new Vector2(0, 0));
    }
 
    private void mouseAction (Vector2 mouseVal) {

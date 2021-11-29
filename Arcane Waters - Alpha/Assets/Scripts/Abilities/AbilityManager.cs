@@ -171,10 +171,10 @@ public class AbilityManager : MonoBehaviour
 
          if (sourceBattler.battlerType == BattlerType.PlayerControlled && action.battleActionType == BattleActionType.Cancel) {
             // Hide targeting effects if the action is canceled
-            sourceBattler.hideTargetingEffects(targetBattler);
+            sourceBattler.stopTargeting(targetBattler);
          } else if (sourceBattler.battlerType == BattlerType.PlayerControlled && !sourceBattler.isLocalBattler()) {
             // Show targeting effects on remote clients
-            sourceBattler.showTargetingEffects(targetBattler);
+            sourceBattler.startTargeting(targetBattler);
          }
 
          double timeToWait = 0;

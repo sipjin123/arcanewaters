@@ -81,7 +81,7 @@ public class AttackPanel : MonoBehaviour {
          Global.player.rpc.Cmd_RequestAbility((int) AbilityType.Standard, target.netId, abilityIndex, false);
 
          // Show targeting effects locally
-         BattleManager.self.getPlayerBattler().showTargetingEffects(target);
+         BattleManager.self.getPlayerBattler().startTargeting(target);
 
          // Trigger the tutorial
          TutorialManager3.self.tryCompletingStep(TutorialTrigger.AttackBattleTarget);

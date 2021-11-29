@@ -2465,6 +2465,31 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
+   [ClientRpc]
+   public void Rpc_BroadcastUpdatedCrop (CropInfo cropInfo, bool justGrew, bool isQuickGrow) {
+      this.cropManager.receiveUpdatedCrop(cropInfo, justGrew, isQuickGrow);
+   }
+
+   [ClientRpc]
+   public void Rpc_BroadcastHarvestedCrop (CropInfo cropInfo) {
+      CropSpot cropSpot = CropSpotManager.self.getCropSpot(cropInfo.cropNumber, cropInfo.areaKey);
+      Vector3 effectSpawnPos = cropSpot.cropPickupLocation;
+
+      // Show some effects to notify client that the crop spot is now available again
+      EffectManager.self.create(Effect.Type.Crop_Harvest, effectSpawnPos);
+      EffectManager.self.create(Effect.Type.Crop_Dirt_Large, effectSpawnPos);
+
+      // Then delete the crop
+      if (cropSpot.crop != null) {
+         Destroy(cropSpot.crop.gameObject);
+      }
+
+      // If the this is the player who harvested the crop, trigger the tutorial
+      if (cropInfo.userId == Global.player.userId) {
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.HarvestCrop);
+      }
+   }
+
    #region Private Variables
 
    // Whether we should automatically move around

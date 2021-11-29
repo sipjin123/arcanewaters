@@ -7,7 +7,28 @@ public class BattleAttackIndicators : MonoBehaviour
    // The set of indicators
    public SpriteRenderer[] indicators;
 
+   // Reference to the holder
+   public Transform indicatorHolder;
+
    #endregion
+
+   public static BattleAttackIndicators createFor (Battler battler) {
+      if (battler == null || battler.battleSpot == null) {
+         return null;
+      }
+
+      BattleAttackIndicators indicatorsPrefab = battler.battlerType == BattlerType.PlayerControlled ? PrefabsManager.self.battleAttackIndicatorsAlliesPrefab : PrefabsManager.self.battleAttackIndicatorsEnemiesPrefab;
+      BattleAttackIndicators indicators =  Instantiate(indicatorsPrefab);
+      indicators.setBattler(battler);
+      indicators.transform.position = battler.battleSpot.transform.position;
+
+      if (battler.isBossType) {
+         indicators.adjustForBosses();
+      }
+
+      Util.setZ(indicators.transform, 0);
+      return indicators;
+   }
 
    private bool isValidIndex(int index) {
       return indicators != null && 0 <= index && index < indicators.Length;
@@ -41,28 +62,31 @@ public class BattleAttackIndicators : MonoBehaviour
       return indicators[index].gameObject.activeInHierarchy;
    }
 
-   public void adjustForBosses () {
+   private void adjustForBosses () {
       // Adjust the default positioning of the indicators, to accomodate for larger enemies (e.g. Bosses)
-      if (indicators == null) {
+      if (indicators == null || indicatorHolder == null) {
          return;
       }
 
-      Util.setLocalY(this.transform, -0.17f);
+      Util.setLocalX(indicatorHolder.transform, 0.438f);
+   }
 
-      // Indicator 2
-      indicators[1].transform.Translate(0.0f, 0.02f, 0.0f);
+   public void detach () {
+      Destroy(this.gameObject);
+   }
 
-      // Indicator 3
-      indicators[2].transform.Translate(0.0f, 0.03f, 0.0f);
+   public Battler getBattler () {
+      return _battler;
+   }
 
-      // Indicator 4
-      indicators[3].transform.Translate(0.0f, 0.03f, 0.0f);
-
-      // Indicator 5
-      indicators[4].transform.Translate(0.0f, 0.02f, 0.0f);
+   public void setBattler(Battler battler) {
+      _battler = battler;
    }
 
    #region Private Variables
+
+   // Reference to the battler this attack indicators refer to
+   private Battler _battler;
 
    #endregion
 }

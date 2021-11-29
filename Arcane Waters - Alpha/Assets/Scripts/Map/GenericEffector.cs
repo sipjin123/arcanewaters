@@ -7,6 +7,18 @@ using Mirror;
 public class GenericEffector : MonoBehaviour {
    #region Public Variables
 
+   public enum Type
+   {
+      None = 0,
+      Current = 1,
+      Stair = 2,
+      SeaAbility = 3,
+      Ledge = 4,
+   }
+
+   // What category of effector this is
+   public GenericEffector.Type effectorType = GenericEffector.Type.None;
+
    // Whether all effectors are currently enabled or not
    public static bool effectorsEnabled = true;
 
@@ -24,11 +36,12 @@ public class GenericEffector : MonoBehaviour {
       _activeEffectors.Remove(this);
    }
 
-   public static void setEffectorCollisions (Collider2D otherCollider, bool shouldCollide) {
+   public static void setEffectorCollisions (Collider2D otherCollider, bool shouldCollide, GenericEffector.Type effectorType) { 
       foreach (GenericEffector effector in _activeEffectors) {
-         Physics2D.IgnoreCollision(effector._collider, otherCollider, !shouldCollide);
+         if (effectorType == effector.effectorType) {
+            Physics2D.IgnoreCollision(effector._collider, otherCollider, !shouldCollide);
+         }
       }
-      effectorsEnabled = shouldCollide;
    }
 
    #region Private Variables

@@ -1,6 +1,8 @@
 ﻿using UnityEngine.InputSystem;
 
-// TODO: Cleanup this script after confirming cloud server fix
+// NOTE:
+// KeyUtils should be used for non game logic only (for ex. in MapCreationTool).
+// All gameplay controls should be used though InputManager actions.
 public static class KeyUtils {
 
    #region Keyboard keys

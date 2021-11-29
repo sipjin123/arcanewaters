@@ -1792,7 +1792,7 @@ MonoBehaviour:
   followJumpHeight: {fileID: 7748199939710571711}
   levelTag: {fileID: 6747293067536991787}
   levelUpEffect: {fileID: 8553150314754777727}
-  effectorCollisionEnabled: 1
+  stairEffectorCollisionEnabled: 1
 --- !u!58 &58574232978621698
 CircleCollider2D:
   m_ObjectHideFlags: 0

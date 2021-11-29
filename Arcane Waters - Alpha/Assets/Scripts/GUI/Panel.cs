@@ -59,6 +59,8 @@ public class Panel : MonoBehaviour, IPointerClickHandler
       if (this.gameObject.activeSelf && canvasGroup.alpha == 1) {
          return;
       }
+      
+      InputManager.self.inputMaster.UIControl.Enable();
 
       // Start invisible initially
       canvasGroup.alpha = 0f;
@@ -83,6 +85,8 @@ public class Panel : MonoBehaviour, IPointerClickHandler
    }
 
    public virtual void hide () {
+      InputManager.self.inputMaster.UIControl.Disable();
+      
       // Make sure we're fully hidden
       canvasGroup.alpha = 0f;
       canvasGroup.interactable = false;

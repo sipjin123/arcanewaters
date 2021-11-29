@@ -121,14 +121,12 @@ public class InstanceManager : MonoBehaviour {
          CustomFarmManager farmManager = customMapManager as CustomFarmManager;
          if (farmManager != null) {
             int userId = CustomMapManager.isUserSpecificAreaKey(areaKey) ? CustomMapManager.getUserId(areaKey) : player.userId;
-            if (userId == player.userId) {
-               player.cropManager.loadCrops();
-            }
+            player.cropManager.loadCrops(userId);
          }
       } else {
          // TODO: Update this block of code after setting up farm maps
          if (areaKey.ToLower().Contains("farm")) {
-            player.cropManager.loadCrops();
+            player.cropManager.loadCrops(player.userId);
          }
       }
 

@@ -56,7 +56,17 @@ public class ChatManager : GenericGameManager
    }
 
    private void Update () {
-      if (InputManager.getKeyActionDown(KeyAction.Reply) && !chatPanel.inputField.isFocused && !chatPanel.nameInputField.isFocused && !string.IsNullOrEmpty(_lastWhisperSender)) {
+      // Skip update for batch mode - server
+      if (Util.isBatch()) {
+         return;
+      }
+   
+      if (
+         InputManager.self.inputMaster?.UIShotcuts.ChatReply.WasPressedThisFrame() == true && 
+         !chatPanel.inputField.isFocused && 
+         !chatPanel.nameInputField.isFocused && 
+         !string.IsNullOrEmpty(_lastWhisperSender)
+      ) {
          chatPanel.inputField.text = "/whisper " + _lastWhisperSender + " ";
          chatPanel.focusInputField();
       }
@@ -65,7 +75,7 @@ public class ChatManager : GenericGameManager
          return;
       }
 
-      if (KeyUtils.GetKeyDown(Key.UpArrow)) {
+      if (InputManager.self.inputMaster?.Chat.HistoryUp.WasPressedThisFrame() == true) {
          if (ChatPanel.self.inputField.isFocused) {
             changeNumMessagesAgo(increment: true);
          } else if (ChatPanel.self.nameInputField.isFocused) {
@@ -73,7 +83,7 @@ public class ChatManager : GenericGameManager
          }
       }
 
-      if (KeyUtils.GetKeyDown(Key.DownArrow)) {
+      if (InputManager.self.inputMaster?.Chat.HistoryDown.WasPressedThisFrame() == true) {
          if (ChatPanel.self.inputField.isFocused) {
             changeNumMessagesAgo(increment: false);
          } else if (ChatPanel.self.nameInputField.isFocused) {
@@ -301,11 +311,13 @@ public class ChatManager : GenericGameManager
    }
 
    public void onChatLostFocus () {
+      InputManager.self.inputMaster?.Chat.Disable();
       autoCompletePanel.inputFieldFocused = false;
       autoCompletePanel.updatePanel();
    }
 
    public void onChatGainedFocus () {
+      InputManager.self.inputMaster?.Chat.Enable();
       autoCompletePanel.inputFieldFocused = true;
       autoCompletePanel.updatePanel();
    }
@@ -675,7 +687,12 @@ public class ChatManager : GenericGameManager
          } 
          
          if (filter == UserSearchInfo.FilteringMode.Level) {
-            if (!int.TryParse(input, out int inputLevel)) {
+            if (int.TryParse(input, out int inputLevel)) {
+               if (inputLevel < 1) {
+                  self.addChat("Search failed: The level should be greater than 0!", ChatInfo.Type.System);
+                  return;
+               }
+            } else {
                self.addChat("Search failed: Invalid Level!", ChatInfo.Type.System);
                return;
             }

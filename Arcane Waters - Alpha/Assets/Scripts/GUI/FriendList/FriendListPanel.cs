@@ -96,6 +96,9 @@ public class FriendListPanel : Panel
    // The text that displays the search title
    public Text searchTitle;
 
+   // The amount of entries displayed in each search results page
+   public int searchResultsPerPage = 10;
+
    // The Panel tabs
    public enum FriendshipPanelTabs
    {
@@ -235,11 +238,6 @@ public class FriendListPanel : Panel
 
       // Update the pending friendship request notification
       BottomBar.self.setFriendshipRequestNotificationStatus(pendingRequestCount > 0);
-
-      if (_currentTab == FriendshipPanelTabs.Search) {
-         updateSearchNavigationControls();
-      }
-
       sendInvitesSection.SetActive(_currentTab != FriendshipPanelTabs.Search);
       toggleBlocker(show: false);
    }
@@ -344,7 +342,7 @@ public class FriendListPanel : Panel
       }
    }
 
-   public void toggleBlocker(bool show = true) {
+   public void toggleBlocker (bool show = true) {
       if (loadBlocker) {
          loadBlocker.SetActive(show);
       }
@@ -393,20 +391,32 @@ public class FriendListPanel : Panel
 
    #region User Search
 
-   public void showSearchResults (UserSearchResultCollection resultCollection) {
-      if (resultCollection != null && resultCollection.results != null && searchResultContainer != null) {
-         clearSearchResults();
-
-         foreach (UserSearchResult result in resultCollection.results) {
-            FriendSearchRow row = Instantiate(SearchResultRowPrefab, searchResultContainer.transform);
-            row.populate(result);
-         }
-
-         _currentTab = FriendshipPanelTabs.Search;
-         _resultCollection = resultCollection;
-         searchTitle.text = computeSearchTitle(resultCollection);
+   private void repopulateSearchResults (int page) {
+      if (_resultCollection == null || _resultCollection.results == null || searchResultContainer == null) {
+         return;
       }
 
+      clearSearchResults();
+      _currentSearchResultsPage = page;
+      UserSearchResult[] results = Util.getArraySlice(_resultCollection.results, page, searchResultsPerPage);
+
+      foreach (UserSearchResult result in results) {
+         FriendSearchRow row = Instantiate(SearchResultRowPrefab, searchResultContainer.transform);
+         row.populate(result);
+      }
+   }
+
+   public void showSearchResults (UserSearchResultCollection resultCollection) {
+      if (resultCollection == null || resultCollection.results == null || searchResultContainer == null) {
+         return;
+      }
+
+      _resultCollection = resultCollection;
+      _searchResultsTotalPages = Util.getArraySlicesCount(_resultCollection.results, searchResultsPerPage);
+      _currentTab = FriendshipPanelTabs.Search;
+      searchTitle.text = computeSearchTitle(resultCollection);
+      repopulateSearchResults(page: 0);
+      updateSearchNavigationControls();
       refreshPanel(clearInputFields: true);
    }
 
@@ -443,25 +453,22 @@ public class FriendListPanel : Panel
          return;
       }
 
-      searchPreviousPageButton.gameObject.SetActive(_resultCollection.page > 0);
-      searchNextPageButton.gameObject.SetActive((_resultCollection.page + 1) < _resultCollection.totalPages);
-      searchCurrentPageIndicatorText.text = $"Page {_resultCollection.page + 1} of {_resultCollection.totalPages}";
+      int page = _currentSearchResultsPage + 1;
+      searchPreviousPageButton.gameObject.SetActive(page > 1);
+      searchNextPageButton.gameObject.SetActive(page < _searchResultsTotalPages);
+      searchCurrentPageIndicatorText.text = $"Page {page} of {_searchResultsTotalPages}";
    }
 
    public void nextSearchPage () {
-      if (_resultCollection != null && _resultCollection.searchInfo != null) {
-         UserSearchInfo searchInfo = _resultCollection.searchInfo;
-         searchInfo.page += 1;
-         Global.player.rpc.Cmd_SearchUser(searchInfo);
-      }
+      _currentSearchResultsPage = Mathf.Min(_currentSearchResultsPage + 1, _searchResultsTotalPages - 1);
+      repopulateSearchResults(_currentSearchResultsPage);
+      updateSearchNavigationControls();
    }
 
    public void previousSearchPage () {
-      if (_resultCollection != null && _resultCollection.searchInfo != null && _resultCollection.searchInfo.page > 0) {
-         UserSearchInfo searchInfo = _resultCollection.searchInfo;
-         searchInfo.page -= 1;
-         Global.player.rpc.Cmd_SearchUser(searchInfo);
-      }
+      _currentSearchResultsPage = Mathf.Max(_currentSearchResultsPage - 1, 0);
+      repopulateSearchResults(_currentSearchResultsPage);
+      updateSearchNavigationControls();
    }
 
    #endregion
@@ -488,6 +495,12 @@ public class FriendListPanel : Panel
 
    // The current page
    private FriendshipPanelTabs _currentTab = FriendshipPanelTabs.None;
+
+   // The index of the current search results page
+   private int _currentSearchResultsPage = 0;
+
+   // The number of pages computed from the search results collection
+   private int _searchResultsTotalPages = 0;
 
    #endregion
 }

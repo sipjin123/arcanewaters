@@ -82,8 +82,8 @@ public class FarmingTrigger : MonoBehaviour {
                CropSpot cropSpot = hit.collider.GetComponent<CropSpot>();
                cropSpot.tryToInteractWithCropOnClient();
 
-               // Create dirt particle when colliding with crop spots with crops using a pitchfork
-               if (currentActionType == Weapon.ActionType.HarvestCrop && cropSpot.crop != null) {
+               // Try to harvest crop when colliding with crops using a pitchfork
+               if (currentActionType == Weapon.ActionType.HarvestCrop && cropSpot.crop != null && cropSpot.crop.userId == Global.player.userId) {
                   if (cropSpot.crop.isMaxLevel() && !cropSpot.crop.hasBeenHarvested()) {
                      //anyCropHarvested = true;
 

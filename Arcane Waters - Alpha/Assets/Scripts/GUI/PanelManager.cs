@@ -67,6 +67,11 @@ public class PanelManager : GenericGameManager {
    }
 
    private void Update () {
+      // Skip update for batch mode - server
+      if (Util.isBatch()) {
+         return;
+      }
+      
       // Skip if the game window is not in focus
       if (!Application.isFocused) {
          return;
@@ -78,7 +83,9 @@ public class PanelManager : GenericGameManager {
       }
 
       // Let us easily close panels with the Escape key
-      if (KeyUtils.GetKeyUp(Key.Escape)) {
+      if (
+         InputManager.self.inputMaster?.UIControl.Close.WasPerformedThisFrame() == true 
+      ) {
          onEscapeKeyPressed();
       }
 
@@ -95,27 +102,27 @@ public class PanelManager : GenericGameManager {
       }
 
       // Bottom button panels
-      if (KeyUtils.GetKeyDown(Key.I)) {
+      if (InputManager.self.inputMaster?.UIShotcuts.Inventory.WasPressedThisFrame() == true) {
          BottomBar.self.toggleInventoryPanel();
-      } else if (KeyUtils.GetKeyDown(Key.G)) {
+      } else if (InputManager.self.inputMaster?.UIShotcuts.GuildInfo.WasPressedThisFrame() == true) {
          BottomBar.self.toggleGuildPanel();
-      } else if (KeyUtils.GetKeyDown(Key.L)) {
+      } else if (InputManager.self.inputMaster?.UIShotcuts.ShipList.WasPressedThisFrame() == true) {
          BottomBar.self.toggleShipsPanel();
-      } else if (KeyUtils.GetKeyDown(Key.O)) {
+      } else if (InputManager.self.inputMaster?.UIShotcuts.Options.WasPressedThisFrame() == true) {
          BottomBar.self.toggleOptionsPanel();
-      } else if (KeyUtils.GetKeyDown(Key.M)) {
+      } else if (InputManager.self.inputMaster?.UIShotcuts.Map.WasPressedThisFrame() == true) {
          BottomBar.self.toggleMapPanel();
-      } else if (KeyUtils.GetKeyDown(Key.B)) {
+      } else if (InputManager.self.inputMaster?.UIShotcuts.Store.WasPressedThisFrame() == true) {
          BottomBar.self.toggleStorePanel();
-      } else if (KeyUtils.GetKeyDown(Key.T)) {
+      } else if (InputManager.self.inputMaster?.UIShotcuts.TradeHistory.WasPressedThisFrame() == true) {
          BottomBar.self.toggleTradeHistoryPanel();
-      } else if (KeyUtils.GetKeyDown(Key.F)) {
+      } else if (InputManager.self.inputMaster?.UIShotcuts.FriendsList.WasPressedThisFrame() == true) {
          BottomBar.self.toggleFriendListPanel();
-      } else if (KeyUtils.GetKeyDown(Key.N)) {
+      } else if (InputManager.self.inputMaster?.UIShotcuts.VisitFriend.WasPressedThisFrame() == true) {
          BottomBar.self.toggleFriendVisitPanel();
-      } else if (KeyUtils.GetKeyDown(Key.U)) {
+      } else if (InputManager.self.inputMaster?.UIShotcuts.Abilities.WasPressedThisFrame() == true) {
          BottomBar.self.toggleAbilityPanel();
-      } else if (KeyUtils.GetKeyDown(Key.K)) {
+      } else if (InputManager.self.inputMaster?.UIShotcuts.Mail.WasPressedThisFrame() == true) {
          BottomBar.self.toggleMailPanel();
       } else if (KeyUtils.GetKeyDown(Key.F7)) {
          ((AdminVoyagePanel) get(Panel.Type.AdminVoyage)).togglePanel();
@@ -127,9 +134,9 @@ public class PanelManager : GenericGameManager {
          }
       }
 
-      if (KeyUtils.GetKeyUp(Key.Tab)) {
+      if (InputManager.self.inputMaster?.Pvp.Stat.WasReleasedThisFrame() == true) {
          BottomBar.self.disablePvpStatPanel();
-      } else if (KeyUtils.GetKeyDown(Key.Tab)) {
+      } else if (InputManager.self.inputMaster?.Pvp.Stat.WasPressedThisFrame() == true) {
          BottomBar.self.enablePvpStatPanel();
       }
    }

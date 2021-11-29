@@ -394,12 +394,17 @@ public class ChatPanel : MonoBehaviour {
          }
       }
 
-      if (nameInputField.isFocused && KeyUtils.GetKeyDown(Key.Tab)) {
+      if (nameInputField.isFocused && InputManager.self.inputMaster.Chat.SelectChat.WasPerformedThisFrame()) {
          inputField.Select();
       }
 
       // If we press TAB while the autocomplete panel displays a single value, apply it
-      if (inputField.isFocused && KeyUtils.GetKeyDown(Key.Tab) && ChatManager.self.autoCompletePanel.isActive() && ChatManager.self.autoCompletePanel.getNumAutoCompletes() == 1) {
+      if (
+         inputField.isFocused && 
+         InputManager.self.inputMaster.Chat.Autocomplete.WasPressedThisFrame() &&
+         ChatManager.self.autoCompletePanel.isActive() && 
+         ChatManager.self.autoCompletePanel.getNumAutoCompletes() == 1
+      ) {
          ChatManager.self.autoCompletePanel.performOptionClicked(0);
       }
 

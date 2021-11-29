@@ -96,7 +96,7 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
       }
 
       // Allow right clicking to bring up the context menu, only if no panel is opened
-      if (InputManager.isLeftClickKeyPressed() && _mouseOver && !PanelManager.self.hasPanelInLinkedList()) {
+      if (InputManager.self.inputMaster.General.Interact.WasPerformedThisFrame() && _mouseOver && !PanelManager.self.hasPanelInLinkedList()) {
          PanelManager.self.contextMenuPanel.showDefaultMenuForUser(_userId, playerNameText.text, true);
       }
 

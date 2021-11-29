@@ -1,25 +1,25 @@
 fileFormatVersion: 2
-guid: 676484951222e6f499fc754aaddd7c8d
+guid: 2031c10afdcb25d4b9f1287d7f9032aa
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6390816486799731056
-    second: battle_player_cursor_hori_0
+      213: 8506826463180929230
+    second: battle_character_cursor_round_v2_0
   - first:
-      213: -2715510411010098311
-    second: battle_player_cursor_hori_1
+      213: 784031551900964803
+    second: battle_character_cursor_round_v2_1
   - first:
-      213: -2433173106739100239
-    second: battle_player_cursor_hori_2
+      213: -3419940552179613883
+    second: battle_character_cursor_round_v2_2
   - first:
-      213: -6614361809667524114
-    second: battle_player_cursor_hori_3
+      213: -5464089521520959424
+    second: battle_character_cursor_round_v2_3
   - first:
-      213: 7333984945365164382
-    second: battle_player_cursor_hori_4
+      213: 6903932900578008442
+    second: battle_character_cursor_round_v2_4
   - first:
-      213: 2611387215472014171
-    second: battle_player_cursor_hori_5
+      213: 2119044062577149535
+    second: battle_character_cursor_round_v2_5
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -117,34 +117,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: battle_player_cursor_hori_0
-      rect:
-        serializedVersion: 2
-        x: 3
-        y: 224
-        width: 14
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 0969797e3424f47a0800000000000000
-      internalID: -6390816486799731056
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: battle_player_cursor_hori_1
+      name: battle_character_cursor_round_v2_0
       rect:
         serializedVersion: 2
         x: 20
-        y: 224
-        width: 14
-        height: 11
+        y: 13
+        width: 5
+        height: 12
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -152,20 +131,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 97b3ed72ba1905ad0800000000000000
-      internalID: -2715510411010098311
+      spriteID: ec8bacfd8915e0670800000000000000
+      internalID: 8506826463180929230
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: battle_player_cursor_hori_2
+      name: battle_character_cursor_round_v2_1
       rect:
         serializedVersion: 2
-        x: 37
-        y: 224
-        width: 14
-        height: 11
+        x: 27
+        y: 8
+        width: 5
+        height: 13
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -173,20 +152,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1b548cf63f1ab3ed0800000000000000
-      internalID: -2433173106739100239
+      spriteID: 3c751cfda8071ea00800000000000000
+      internalID: 784031551900964803
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: battle_player_cursor_hori_3
+      name: battle_character_cursor_round_v2_2
       rect:
         serializedVersion: 2
-        x: 54
-        y: 224
-        width: 14
-        height: 11
+        x: 35
+        y: 6
+        width: 5
+        height: 13
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -194,20 +173,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ee97bde7af01534a0800000000000000
-      internalID: -6614361809667524114
+      spriteID: 54f716aff2ee980d0800000000000000
+      internalID: -3419940552179613883
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: battle_player_cursor_hori_4
+      name: battle_character_cursor_round_v2_3
       rect:
         serializedVersion: 2
-        x: 71
-        y: 224
-        width: 14
-        height: 11
+        x: 59
+        y: 6
+        width: 5
+        height: 13
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -215,20 +194,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e51ad80637c87c560800000000000000
-      internalID: 7333984945365164382
+      spriteID: 0402fc8b787ab24b0800000000000000
+      internalID: -5464089521520959424
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: battle_player_cursor_hori_5
+      name: battle_character_cursor_round_v2_4
       rect:
         serializedVersion: 2
-        x: 88
-        y: 224
-        width: 14
-        height: 11
+        x: 67
+        y: 8
+        width: 5
+        height: 13
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -236,8 +215,29 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b53b43536d28d3420800000000000000
-      internalID: 2611387215472014171
+      spriteID: a7d951cf462bfcf50800000000000000
+      internalID: 6903932900578008442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: battle_character_cursor_round_v2_5
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 12
+        width: 5
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f56cf45095b586d10800000000000000
+      internalID: 2119044062577149535
       vertices: []
       indices: 
       edges: []
@@ -245,7 +245,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 5a7b39f6ee7ca4248818005ab9e86a8f
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 

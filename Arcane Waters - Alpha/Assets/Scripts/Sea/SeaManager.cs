@@ -92,7 +92,8 @@ public class SeaManager : MonoBehaviour {
       //   Global.player.Cmd_ToggleVelocityDrivenTransform();
       //}
 
-      if (KeyUtils.GetKey(Key.Z)) {
+      // Allow admin to spawn sea enemies for test purposes
+      if (Global.player.isAdmin() && KeyUtils.GetKey(Key.Z)) {
          // Allow spawning a horror
          if (KeyUtils.GetKeyUp(Key.F1) && Global.player is SeaEntity) {
             Global.player.rpc.Cmd_SpawnBossParent(Util.getMousePos(), SeaMonsterEntity.Type.Horror);

@@ -6941,6 +6941,22 @@ public class RPCManager : NetworkBehaviour
          }
       }
 
+      if (Battle.FORCE_COMPLETE_DEFENDING_TEAM) {
+         int battlerToBeAddedCount = Battle.MAX_ENEMY_COUNT - modifiedDefenderList.Count;
+         
+         for (int i = 0; i < battlerToBeAddedCount; i++) {
+            BattlerInfo battlerInfo = modifiedDefenderList.ChooseRandom();
+            BattlerData battlerData = MonsterManager.self.getBattlerData(battlerInfo.enemyType);
+            modifiedDefenderList.Add(new BattlerInfo {
+               battlerName = battlerData.enemyName,
+               battlerType = BattlerType.AIEnemyControlled,
+               enemyType = battlerInfo.enemyType,
+               battlerXp = battlerInfo.battlerXp,
+               companionId = 0
+            });
+         }
+      }
+
       // Declare the voyage group engaging the enemy
       if (enemy.battleId < 1) {
          if (_player.voyageGroupId == -1) {
@@ -9203,8 +9219,6 @@ public class RPCManager : NetworkBehaviour
             bool isFriend = DB_Main.getFriendshipInfo(_player.userId, userInfo.userId) != null;
 
             if (userInfo != null) {
-               resultsCollection.totalPages = 1;
-
                UserSearchResult result = new UserSearchResult {
                   name = userInfo.username,
                   level = LevelUtil.levelForXp(userInfo.XP),
@@ -9225,16 +9239,14 @@ public class RPCManager : NetworkBehaviour
             Biome.Type requestedBiome = Biome.fromName(searchInfo.input);
 
             if (requestedBiome != Biome.Type.None) {
-               List<int> onlineUserIdsAll = ServerNetworkingManager.self.getAllOnlineUsers();
-               int[] onlineUserIds = Util.getArraySlice(onlineUserIdsAll, searchInfo.page, searchInfo.resultsPerPage);
-               resultsCollection.totalPages = Util.getArraySlicesCount(onlineUserIds, searchInfo.resultsPerPage);
-               Dictionary<int, UserInfo> userInfos = DB_Main.getUserInfosByIds(onlineUserIds);
-               Dictionary<int, FriendshipInfo> friendshipInfos = DB_Main.getFriendshipInfos(_player.userId, onlineUserIds);
+               if (UserInfosCache.needsUpdate()) {
+                  List<int> onlineUserIdsAll = ServerNetworkingManager.self.getAllOnlineUsers();
+                  Dictionary<int, UserInfo> userInfoRegistry = DB_Main.getUserInfosByIds(onlineUserIdsAll);
+                  UserInfosCache.updateCache(userInfoRegistry.Values);
+               }
 
-               foreach (KeyValuePair<int, UserInfo> pair in userInfos) {
-                  int userId = pair.Key;
-                  UserInfo userInfo = pair.Value;
-
+               IEnumerable<UserInfo> userInfos = UserInfosCache.getCache();
+               foreach (UserInfo userInfo in userInfos) {
                   if (userInfo == null) {
                      continue;
                   }
@@ -9252,8 +9264,7 @@ public class RPCManager : NetworkBehaviour
                      biome = userInfoBiome,
                      lastTimeOnline = userInfo.lastLoginTime,
                      isOnline = true,
-                     isSameServer = EntityManager.self.getEntity(userId) != null,
-                     isFriend = friendshipInfos.ContainsKey(userId)
+                     isSameServer = EntityManager.self.getEntity(userInfo.userId) != null,
                   };
 
                   results.Add(result);
@@ -9263,16 +9274,14 @@ public class RPCManager : NetworkBehaviour
 
          if (searchInfo.filter == UserSearchInfo.FilteringMode.Level) {
             if (int.TryParse(searchInfo.input, out int requestedLevel)) {
-               List<int> onlineUserIdsAll = ServerNetworkingManager.self.getAllOnlineUsers();
-               int[] onlineUserIds = Util.getArraySlice(onlineUserIdsAll, searchInfo.page, searchInfo.resultsPerPage);
-               resultsCollection.totalPages = Util.getArraySlicesCount(onlineUserIds, searchInfo.resultsPerPage);
-               Dictionary<int, UserInfo> userInfos = DB_Main.getUserInfosByIds(onlineUserIds);
-               Dictionary<int, FriendshipInfo> friendshipInfos = DB_Main.getFriendshipInfos(_player.userId, onlineUserIds);
+               if (UserInfosCache.needsUpdate()) {
+                  List<int> onlineUserIdsAll = ServerNetworkingManager.self.getAllOnlineUsers();
+                  Dictionary<int, UserInfo> userInfoRegistry = DB_Main.getUserInfosByIds(onlineUserIdsAll);
+                  UserInfosCache.updateCache(userInfoRegistry.Values);
+               }
 
-               foreach (KeyValuePair<int, UserInfo> pair in userInfos) {
-                  int userId = pair.Key;
-                  UserInfo userInfo = pair.Value;
-
+               IEnumerable<UserInfo> userInfos = UserInfosCache.getCache();
+               foreach (UserInfo userInfo in userInfos) {
                   if (userInfo == null) {
                      continue;
                   }
@@ -9290,8 +9299,7 @@ public class RPCManager : NetworkBehaviour
                      biome = AreaManager.self.getDefaultBiome(userInfo.areaKey),
                      lastTimeOnline = userInfo.lastLoginTime,
                      isOnline = true,
-                     isSameServer = EntityManager.self.getEntity(userId) != null,
-                     isFriend = friendshipInfos.ContainsKey(userId)
+                     isSameServer = EntityManager.self.getEntity(userInfo.userId) != null,
                   };
 
                   results.Add(result);
@@ -9299,7 +9307,6 @@ public class RPCManager : NetworkBehaviour
             }
          }
 
-         resultsCollection.page = searchInfo.page;
          resultsCollection.searchInfo = searchInfo;
          resultsCollection.results = results.ToArray();
 

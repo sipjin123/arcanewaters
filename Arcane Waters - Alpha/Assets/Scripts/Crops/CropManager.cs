@@ -33,14 +33,6 @@ public class CropManager : NetworkBehaviour {
    public void createCrop (CropInfo cropInfo, bool justGrew, bool showEffects, bool isQuickGrow) {
       CropSpot cropSpot = CropSpotManager.self.getCropSpot(cropInfo.cropNumber, cropInfo.areaKey);
 
-      // Make sure that crop will be spawned in player's personal area
-      if (Global.player != null) {
-         if (!AreaManager.self.isFarmOfUser(cropInfo.areaKey, Global.player.userId)) {
-            D.error("Trying to spawn crops in wrong area in client session!");
-            return;
-         }
-      }
-
       Crop crop = Instantiate(cropPrefab);
       if (cropSpot != null) {
          // If there was already a Crop here, delete it
@@ -58,6 +50,7 @@ public class CropManager : NetworkBehaviour {
       crop.anim.setNewTexture(ImageManager.getTexture("Crops/" + spriteName));
       crop.name = "Crop " + crop.cropNumber + " [" + crop.cropType + "]";
       crop.waterInterval = cropInfo.waterInterval;
+      crop.userId = cropInfo.userId;
 
       if (cropSpot == null) {
          crop.gameObject.SetActive(false);
@@ -187,7 +180,7 @@ public class CropManager : NetworkBehaviour {
             // Let them know they gained experience
             _player.Target_GainedFarmXp(_player.connectionToClient, xp, newJobXP);
 
-            sendCropsToPlayer(cropInfo, false, quickGrow);
+            sendCropsToPlayers(cropInfo, false, quickGrow);
 
             onPlantCropEnd(cropNumber);
          });
@@ -203,13 +196,13 @@ public class CropManager : NetworkBehaviour {
       _player.rpc.sendItemShortcutList();
    }
 
-   private void sendCropsToPlayer (CropInfo cropInfo, bool justGrew, bool isQuickGrow = false) {
+   private void sendCropsToPlayers (CropInfo cropInfo, bool justGrew, bool isQuickGrow = false) {
       D.adminLog("Player {" + _player.userId + "} just finished interacting with crop Level:{"
          + cropInfo.growthLevel + "} IsMax:{"
          + cropInfo.isMaxLevel() + "}", D.ADMIN_LOG_TYPE.Crop);
 
-      // Send the new Crop to the player
-      this.Target_ReceiveCrop(_player.connectionToClient, cropInfo, justGrew, isQuickGrow);
+      // Send the new Crop to the players
+      _player.Rpc_BroadcastUpdatedCrop(cropInfo, justGrew, isQuickGrow);
    }
 
    [Server]
@@ -300,7 +293,7 @@ public class CropManager : NetworkBehaviour {
             // Let them know they gained experience
             _player.Target_GainedFarmXp(_player.connectionToClient, xp, newJobXP);
 
-            sendCropsToPlayer(cropToWater, true, quickGrow);
+            sendCropsToPlayers(cropToWater, true, quickGrow);
          });
       });
    }
@@ -319,6 +312,11 @@ public class CropManager : NetworkBehaviour {
 
       if (cropToHarvest.cropType == Crop.Type.None) {
          D.debug("No crop in spot number: " + cropNumber);
+         return;
+      }
+
+      // Only the user that planted the crop can harvest it
+      if (cropToHarvest.userId != _player.userId) {
          return;
       }
 
@@ -355,7 +353,7 @@ public class CropManager : NetworkBehaviour {
             _player.Target_GainedFarmXp(_player.connectionToClient, xp, newJobXP);
 
             // Let the player see the crop go away
-            this.Target_HarvestCrop(_player.connectionToClient, cropToHarvest);
+            _player.Rpc_BroadcastHarvestedCrop(cropToHarvest);
 
             // Send their new silo info
             _player.Target_ReceiveSiloInfo(_player.connectionToClient, siloInfo.ToArray());
@@ -482,8 +480,7 @@ public class CropManager : NetworkBehaviour {
    }
 
    [Server]
-   public void loadCrops () {
-      int userId = _player.userId;
+   public void loadCrops (int userId) {
 
       // Get the crops for this player from the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -573,20 +570,23 @@ public class CropManager : NetworkBehaviour {
       TutorialManager3.self.tryCompletingStep(TutorialTrigger.HarvestCrop);
    }
 
-   [TargetRpc]
-   public void Target_ReceiveCrop (NetworkConnection connection, CropInfo cropInfo, bool justGrew, bool isQuickGrow) {
-      // Trigger the tutorial
-      if (cropInfo.growthLevel == 0) {
-         TutorialManager3.self.tryCompletingStep(TutorialTrigger.PlantCrop);
-      }
+   public void receiveUpdatedCrop (CropInfo cropInfo, bool justGrew, bool isQuickGrow) {
+      
+      // Only try to trigger the tutorial for the player who owns the farm
+      if (Global.player != null && _player.userId == Global.player.userId) {
+         // Trigger the tutorial
+         if (cropInfo.growthLevel == 0) {
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.PlantCrop);
+         }
 
-      if (cropInfo.isMaxLevel()) {
-         TutorialManager3.self.tryCompletingStep(TutorialTrigger.CropGrewToMaxLevel);
-      }
+         if (cropInfo.isMaxLevel()) {
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.CropGrewToMaxLevel);
+         }
 
-      D.adminLog("Player {" + _player.userId + "} just finished interacting with crop Level:{"
-     + cropInfo.growthLevel + "} IsMax:{"
-     + cropInfo.isMaxLevel() + "}", D.ADMIN_LOG_TYPE.Crop);
+         D.adminLog("Player {" + _player.userId + "} just finished interacting with crop Level:{"
+        + cropInfo.growthLevel + "} IsMax:{"
+        + cropInfo.isMaxLevel() + "}", D.ADMIN_LOG_TYPE.Crop);
+      }
 
       createCrop(cropInfo, justGrew, true, isQuickGrow);
    }

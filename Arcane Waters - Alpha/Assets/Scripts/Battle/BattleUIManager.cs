@@ -365,28 +365,28 @@ public class BattleUIManager : MonoBehaviour {
 
          // If the player is in the middle of an attack, ignore input
          if ((_playerLocalBattler != null) && !_playerLocalBattler.isAttacking) {
-            if (KeyUtils.GetKeyDown(Key.Digit1)) {
+            if (InputManager.self.inputMaster.LandBattle.Ability1.WasPressedThisFrame()) {
                triggerAbilityByKey(0);
-            } else if (KeyUtils.GetKeyDown(Key.Digit2)) {
+            } else if (InputManager.self.inputMaster.LandBattle.Ability2.WasPressedThisFrame()) {
                triggerAbilityByKey(1);
-            } else if (KeyUtils.GetKeyDown(Key.Digit3)) {
+            } else if (InputManager.self.inputMaster.LandBattle.Ability3.WasPressedThisFrame()) {
                triggerAbilityByKey(2);
-            } else if (KeyUtils.GetKeyDown(Key.Digit4)) {
+            } else if (InputManager.self.inputMaster.LandBattle.Ability4.WasPressedThisFrame()) {
                triggerAbilityByKey(3);
-            } else if (KeyUtils.GetKeyDown(Key.Digit5)) {
+            } else if (InputManager.self.inputMaster.LandBattle.Ability5.WasPressedThisFrame()) {
                triggerAbilityByKey(4);
-            } else if (KeyUtils.GetKeyDown(Key.Tab)) {
+            } else if (InputManager.self.inputMaster.LandBattle.NextTarget.WasPressedThisFrame()) {
                selectNextTarget();
             }
          }
 
          Battler localBattler = BattleManager.self.getPlayerBattler();
          if (localBattler != null && !localBattler.isDead()) {
-            if (KeyUtils.GetKeyDown(Key.F1)) {
+            if (InputManager.self.inputMaster.LandBattle.StanceDefense.WasPressedThisFrame()) {
                changeBattleStance((int) Battler.Stance.Defense);
-            } else if (KeyUtils.GetKeyDown(Key.F2)) {
+            } else if (InputManager.self.inputMaster.LandBattle.StanceBalanced.WasPressedThisFrame()) {
                changeBattleStance((int) Battler.Stance.Balanced);
-            } else if (KeyUtils.GetKeyDown(Key.F3)) {
+            } else if (InputManager.self.inputMaster.LandBattle.StanceAttack.WasPressedThisFrame()) {
                changeBattleStance((int) Battler.Stance.Attack);
             }
          }
@@ -506,7 +506,7 @@ public class BattleUIManager : MonoBehaviour {
 
    private IEnumerator CO_FadeInBattleUI () {
       // Disable input
-      InputManager.toggleInput(false);
+      InputManager.self.inputMaster.LandBattle.Enable();
 
       abilitiesCG.alpha = 0.0f;
       abilitiesCG.gameObject.SetActive(true);
@@ -539,7 +539,7 @@ public class BattleUIManager : MonoBehaviour {
 
       // Enable input
       yield return new WaitForSeconds(PAUSE_AFTER_BATTLE);
-      InputManager.toggleInput(true);
+      InputManager.self.inputMaster.LandBattle.Disable();
    }
 
    // Changes the icon that is at the right side of the player battle ring UI

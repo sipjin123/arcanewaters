@@ -63,6 +63,9 @@ public class Battle : NetworkBehaviour {
    // The damage per tick of the poison status in percentage (2.5% per tick)
    public const float POISON_DAMAGE_PER_TICK_PERCENTAGE = .025f;
 
+   // Completes the opposing team, by filling the empty battle spots
+   public const bool FORCE_COMPLETE_DEFENDING_TEAM = false;
+
    #endregion
 
    public void Start () {

@@ -23,12 +23,23 @@ public class CropPickup : MonoBehaviour {
 
    private void Start () {
       _creationTime = NetworkTime.time;
+
+      if (cropSpot.crop != null) {
+         _targetEntity = EntityManager.self.getEntity(cropSpot.crop.userId);
+      }
    }
 
    private void OnTriggerEnter2D (Collider2D collision) {
-      if (collision.GetComponent<PlayerBodyEntity>() != null && collision.GetComponent<PlayerBodyEntity>() == Global.player) {
+      
+      // Only the player who owns this farm is able to pick up this crop
+      PlayerBodyEntity player = collision.GetComponent<PlayerBodyEntity>();
+      if (player != null && collision.GetComponent<PlayerBodyEntity>() == Global.player && cropSpot.crop != null && player.userId == cropSpot.crop.userId) {
          cropSpot.cropPickupLocation = transform.position;
-         Global.player.Cmd_HarvestCrop(cropSpot.cropNumber);
+
+         // We will only notify the server to harvest the crop from the client who harvested it
+         if (player.userId == Global.player.userId) {
+            Global.player.Cmd_HarvestCrop(cropSpot.cropNumber);
+         }
 
          // Play a sound
          SoundEffectManager.self.playFmodSfx(SoundEffectManager.PICKUP_CROP, transform);
@@ -45,14 +56,19 @@ public class CropPickup : MonoBehaviour {
    }
 
    private void Update () {
+      if (_targetEntity == null) {
+         gameObject.SetActive(false);
+         return;
+      }
+
       // If the pickup has been around long enough, move it towards the player
-      if (Global.player != null && (NetworkTime.time - _creationTime) > GRAVITATE_DELAY) {
-         float distanceToPlayer = Vector2.Distance(Global.player.transform.position, transform.position);
+      if (_targetEntity != null && (NetworkTime.time - _creationTime) > GRAVITATE_DELAY) {
+         float distanceToPlayer = Vector2.Distance(_targetEntity.transform.position, transform.position);
 
          // Only move it towards the player if it's within a certain radius
          if (distanceToPlayer <= MAX_GRAVITATE_DISTANCE) {
             float speed = MAX_GRAVITATE_DISTANCE / distanceToPlayer;
-            Vector2 newPosition = Vector2.Lerp(transform.position, Global.player.transform.position, Time.deltaTime * speed);
+            Vector2 newPosition = Vector2.Lerp(transform.position, _targetEntity.transform.position, Time.deltaTime * speed);
             Util.setXY(transform, newPosition);
          }
       }
@@ -62,6 +78,9 @@ public class CropPickup : MonoBehaviour {
 
    // When this pickup was created
    private double _creationTime;
+
+   // A reference to the entity we are gravitating toward
+   private NetEntity _targetEntity;
 
    // The max distance at which this pickup will gravitate towards the player
    private const float MAX_GRAVITATE_DISTANCE = 1f;

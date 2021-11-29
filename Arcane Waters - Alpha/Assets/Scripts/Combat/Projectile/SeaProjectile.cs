@@ -354,26 +354,20 @@ public class SeaProjectile : NetworkBehaviour
       ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(projectileTypeId);
       if (projectileData != null && projectileData.knockbackForce != 0.0f && projectileData.knockbackRadius > 0.0f) {
 
-         // Check for enemies in the knockback radius
-         List<SeaEntity> enemiesHit = Util.getEnemiesInCircle(sourceEntity, transform.position, projectileData.knockbackRadius);
-         foreach (SeaEntity enemyHit in enemiesHit) {
+         bool isKnockback = projectileData.knockbackForce >= 0.0f;
 
-            // Ensure the enemy has a rigidbody
-            Rigidbody2D enemyRigidbody = enemyHit.getRigidbody();
-            if (enemyRigidbody != null) {
-               // Apply the explosive force
-               float distanceFromCenter = Vector2.Distance(transform.position, enemyHit.transform.position);
-               float forceDropoffMultiplier = Mathf.Lerp(1.0f, EXPLOSIVE_FORCE_DROPOFF, (distanceFromCenter / projectileData.knockbackRadius));
-               enemyRigidbody.AddExplosiveForce(projectileData.knockbackForce * forceDropoffMultiplier, projectileData.knockbackForce, projectileData.knockbackRadius, transform.position, ForceMode2D.Impulse);
-            }
-         }
+         // Create a point effector to apply forces to entities
+         GameObject pointEffector = Instantiate(PrefabsManager.self.pointEffectorPrefab, transform.position, Quaternion.identity, null);
+         pointEffector.GetComponent<CircleCollider2D>().radius = projectileData.knockbackRadius;
+         pointEffector.GetComponent<PointEffector2D>().forceMagnitude = projectileData.knockbackForce;
+         float effectorDuration = (isKnockback) ? 0.5f : 2.5f;
+         Destroy(pointEffector, effectorDuration);
 
-         if (projectileData.knockbackForce < 0.0f) {
-            sourceEntity.rpc.Rpc_ShowWhirlpoolEffect(transform.position, projectileData.knockbackRadius);
-         } else {
+         if (isKnockback) {
             sourceEntity.rpc.Rpc_ShowKnockbackEffect(transform.position, projectileData.knockbackRadius);
+         } else {
+            sourceEntity.rpc.Rpc_ShowWhirlpoolEffect(transform.position, projectileData.knockbackRadius);
          }
-         
       }
 
       NetworkServer.Destroy(gameObject);

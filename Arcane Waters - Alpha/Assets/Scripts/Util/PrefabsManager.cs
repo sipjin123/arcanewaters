@@ -183,6 +183,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating Pvp Capture Target Holders in pvp maps
    public PvpCaptureTargetHolder pvpCaptureTargetHolderPrefab;
 
+   // The prefab we use for creating point effectors
+   public GameObject pointEffectorPrefab;
+
    [Header("Texture prefabs")]
    // Prefab used to create new palette texture for material
    public Texture2D textureSquare256;
@@ -252,6 +255,13 @@ public class PrefabsManager : MonoBehaviour {
    [Header("Silver")]
    // The reference to the Silver Burst Effect
    public GameObject silverBurstEffectPrefab;
+
+   [Header("Battle")]
+   // The reference to the Battle Attack Indicators Effect (Allies)
+   public BattleAttackIndicators battleAttackIndicatorsAlliesPrefab;
+
+   // The reference to the Battle Attack Indicators Effect (Enemies)
+   public BattleAttackIndicators battleAttackIndicatorsEnemiesPrefab;
 
    #endregion
 

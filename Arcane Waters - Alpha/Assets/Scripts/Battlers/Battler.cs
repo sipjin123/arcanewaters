@@ -272,9 +272,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // The sprite containers
    public Transform spriteContainers;
 
-   // A reference to the component that manages the attack indicators
-   public BattleAttackIndicators attackIndicators;
-
    // Debug text mesh
    public GameObject debugLogCanvas;
    public Text debugTextLog;
@@ -469,9 +466,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          debugLogCanvas.SetActive(true);
       }
 
-      if (isBossType) {
-         this.attackIndicators.adjustForBosses();
-      }
+      // Create the attack indicators for this battler
+      _attackIndicators = BattleAttackIndicators.createFor(this);
 
       if (isServer) {
          this.canExecuteAction = true;
@@ -550,12 +546,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          handleSpriteOutline();
          handleBattlerBarsVisibility();
 
-         if (_targetedBattler != null && battlerType == BattlerType.PlayerControlled) {
-            _targetedBattler.attackIndicators.toggle(battleSpot.boardPosition - 1, show: _hasAttackQueued);
+         if (battlerType == BattlerType.PlayerControlled) {
+            handleAttackIndicators();
          }
       }
-      
-      toggleAttackerIndicator(this, show: _targetedBattler != null && !_targetedBattler.isDead());
+
+      // If the battler is dead, clear the attack indicators
+      if (isDead()) {
+         tryDetachAttackIndicators();
+      }
    }
 
    // Basic method that will handle the functionality for whenever we click on this battler
@@ -640,27 +639,106 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
    }
 
-   public void showTargetingEffects (Battler target) {
-      // This battler is the attacker
-      _targetedBattler = target;
-      _hasAttackQueued = true;
-      toggleAttackerIndicator(target, show: true);
+   #region Targeting
+
+   private void handleAttackIndicators () {
+      if (_targetedBattler != null) {
+         bool shouldShowIndicators = !_targetedBattler.isDead() && !isDead() && _targetedBattler.isTargetedBy(this) && (_targetedBattler.isTargetedByLocalBattler() || _targetedBattler == BattleSelectionManager.self.selectedBattler);
+         _targetedBattler.toggleAttackIndicator(boardPosition - 1, shouldShowIndicators);
+      }
+
+      if (_attackIndicators != null) {
+         toggleAttackIndicator(boardPosition - 1, show: !isDead());
+      }
    }
 
-   public void hideTargetingEffects (Battler target) {
-      _hasAttackQueued = false;
-      _targetedBattler = null;
-      toggleAttackerIndicator(target, show: false);
-   }
-
-   public static void toggleAttackerIndicator (Battler battler, bool show) {
-      if (battler == null) {
+   public void startTargeting (Battler target) {
+      if (target == null) {
          return;
       }
 
-      int position = battler.battleSpot.boardPosition - 1;
-      battler.attackIndicators.toggle(position, show);
+      if (_targetedBattler != null) {
+         _targetedBattler.unregisterTargetingBattler(this);
+      }
+
+      _targetedBattler = target;
+      target.toggleAttackIndicator(boardPosition - 1, show: true);
+      target.registerTargetingBattler(this);
    }
+
+   public void stopTargeting (Battler target) {
+      if (_targetedBattler != null) {
+         _targetedBattler.toggleAttackIndicator(boardPosition - 1, show: false);
+         _targetedBattler.unregisterTargetingBattler(this);
+      }
+
+      if (target != null) {
+         target.toggleAttackIndicator(boardPosition - 1, show: false);
+         target.unregisterTargetingBattler(this);
+      }
+
+      _targetedBattler = target;
+   }
+
+   public void tryDetachAttackIndicators () {
+      if (_attackIndicators == null) {
+         return;
+      }
+
+      _attackIndicators.detach();
+      _attackIndicators = null;
+   }
+
+   public bool toggleAttackIndicator (int index, bool show = true) {
+      if (_attackIndicators == null) {
+         return false;
+      }
+
+      _attackIndicators.toggle(index, show);
+      return true;
+   }
+
+   private void clearAttackIndicators () {
+      _attackIndicators.clear();
+   }
+
+   public void registerTargetingBattler(Battler battler) {
+      if (_targetingBattlers.Contains(battler)) {
+         return;
+      }
+
+      _targetingBattlers.Add(battler);
+   }
+
+   public void unregisterTargetingBattler(Battler battler) {
+      if (!_targetingBattlers.Contains(battler)) {
+         return;
+      }
+
+      _targetingBattlers.Remove(battler);
+   }
+
+   public bool isTargetedByLocalBattler () {
+      if (_targetingBattlers == null) {
+         return false;
+      }
+
+      return _targetingBattlers.Any(battler => battler.isLocalBattler());
+   }
+
+   public bool isTargetedBy (Battler battler) {
+      if (_targetingBattlers == null) {
+         return false;
+      }
+
+      return _targetingBattlers.Contains(battler);
+   }
+
+   public Battler getTargetedBattler () {
+      return _targetedBattler;
+   }
+
+   #endregion
 
    private void showAttackTimingIndicator (float timeUntilAttack) {
       _attackTimingIndicatorCoroutine = StartCoroutine(CO_ShowAttackTimingIndicator(timeUntilAttack));
@@ -868,8 +946,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          }
 
          // Restore the flip status of the attack indicators
-         if (attackIndicators != null) {
-            foreach (SpriteRenderer renderer in attackIndicators.GetComponentsInChildren<SpriteRenderer>()) {
+         if (_attackIndicators != null) {
+            foreach (SpriteRenderer renderer in _attackIndicators.GetComponentsInChildren<SpriteRenderer>()) {
                renderer.flipX = false;
             }
          }
@@ -1042,7 +1120,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             Enemy.assignDeathShadowSprite(enemyType, _anims[0], _anims[1], shadowTransform.gameObject);
          }
       }
-      
+
       playAnim(Anim.Type.Death_East, SimpleAnimation.DEFAULT_TIME_PER_FRAME / 2);
 
       if (battlerType == BattlerType.AIEnemyControlled) {
@@ -1385,11 +1463,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Pause for a moment after reaching our destination
             yield return new WaitForSeconds(getPauseLength());
 
-            // Disable targeting effects
-            if (sourceBattler.battlerType == BattlerType.PlayerControlled) {
-               sourceBattler.hideTargetingEffects(targetBattler);
-            }
-
             if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
                sourceBattler.playAnim(Anim.Type.Punch);
             } else {
@@ -1565,6 +1638,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             sourceBattler.displayedAP = Util.clamp<int>(sourceBattler.displayedAP + action.sourceApChange, 0, MAX_AP);
             targetBattler.displayedAP = Util.clamp<int>(targetBattler.displayedAP + action.targetApChange, 0, MAX_AP);
 
+            // Disable targeting effects
+            if (sourceBattler.battlerType == BattlerType.PlayerControlled) {
+               sourceBattler.stopTargeting(targetBattler);
+            }
+
             onBattlerAttackEnd.Invoke();
             break;
          case AbilityActionType.Ranged:
@@ -1601,11 +1679,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Determines the animation speed modification when playing shoot animation
             float shootAnimSpeed = .05f / AdminGameSettingsManager.self.settings.battleAttackDuration;
-
-            // Disable targeting effects
-            if (sourceBattler.battlerType == BattlerType.PlayerControlled) {
-               sourceBattler.hideTargetingEffects(targetBattler);
-            }
 
             // Start the attack animation that will eventually create the projecitle effect
             if (isFirstAction) {
@@ -1716,6 +1789,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                //targetBattler.StartCoroutine(targetBattler.animateDeath());
             }
 
+            // Disable targeting effects
+            if (sourceBattler.battlerType == BattlerType.PlayerControlled) {
+               sourceBattler.stopTargeting(targetBattler);
+            }
+
             onBattlerAttackEnd.Invoke();
 
             break;
@@ -1751,11 +1829,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             projectileSpawnOffsetY = .28f;
             sourcePos = getMagicGroundPosition() + new Vector2(projectileSpawnOffsetX, projectileSpawnOffsetY);
             targetPos = targetBattler.getMagicGroundPosition() + new Vector2(0, projectileSpawnOffsetY);
-
-            // Disable targeting effects
-            if (sourceBattler.battlerType == BattlerType.PlayerControlled) {
-               sourceBattler.hideTargetingEffects(targetBattler);
-            }
 
             // Start the attack animation that will eventually create the magic effect
             if (isFirstAction) {
@@ -1862,15 +1935,16 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                //targetBattler.StartCoroutine(targetBattler.animateDeath());
             }
 
+            // Disable targeting effects
+            if (sourceBattler.battlerType == BattlerType.PlayerControlled) {
+               sourceBattler.stopTargeting(targetBattler);
+            }
+
             onBattlerAttackEnd.Invoke();
 
             break;
 
          case AbilityActionType.Cancel:
-            if (userId > 0) {
-               _targetedBattler.attackIndicators.toggle(battleSpot.boardPosition - 1, show: false);
-            }
-
             if (isLocalBattler()) {
                setAttackTimingIndicatorVisibility(false);
             }
@@ -1888,7 +1962,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Disable targeting effects
             if (sourceBattler.battlerType == BattlerType.PlayerControlled) {
-               _targetedBattler.attackIndicators.toggle(battleSpot.boardPosition - 1, show: false);
+               sourceBattler.stopTargeting(sourceBattler.getTargetedBattler());
             }
 
             // If the battle has ended, no problem
@@ -2140,7 +2214,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
 
       // Remove the indicators
-      attackIndicators.clear();
+      clearAttackIndicators();
    }
 
    #endregion
@@ -2826,6 +2900,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          if (CameraManager.isShowingBattle()) {
             CameraManager.disableBattleDisplay();
          }
+
+         // Destroy the attack indicators
+         tryDetachAttackIndicators();
       }
    }
 
@@ -2871,9 +2948,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // A reference to the battler that this battler has targeted and queued an attack against
    protected Battler _targetedBattler;
 
-   // Whether this battler has an attack queued up
-   protected bool _hasAttackQueued = false;
-
    // The initialized stances that the battlers will have, used for reading correctly the cooldowns
    private BasicAbilityData _balancedInitializedStance;
    private BasicAbilityData _offenseInitializedStance;
@@ -2881,6 +2955,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    // A reference to the coroutine that handles showing when the player will attack
    private Coroutine _attackTimingIndicatorCoroutine = null;
+
+   // Reference to the attack indicators of the current battler
+   private BattleAttackIndicators _attackIndicators;
+
+   // The set of battlers targeting the current battler
+   private List<Battler> _targetingBattlers = new List<Battler>();
 
    #endregion
 }

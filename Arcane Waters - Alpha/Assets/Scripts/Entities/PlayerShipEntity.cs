@@ -217,14 +217,14 @@ public class PlayerShipEntity : ShipEntity
 
          PanelManager.self.showPowerupPanel();
 
-         InputManager.self.inputMaster.Player.Dash.performed += func => {
+         InputManager.self.inputMaster.Sea.Dash.performed += func => {
             if (gamePadDashPressed != true) {
                pressBoost();
                gamePadDashPressed = true;
             }
          };
 
-         InputManager.self.inputMaster.Player.Dash.canceled += func => {
+         InputManager.self.inputMaster.Sea.Dash.canceled += func => {
             if (gamePadDashPressed != false) {
                releaseBoost();
                gamePadDashPressed = false;
@@ -391,15 +391,15 @@ public class PlayerShipEntity : ShipEntity
          }
 
          if (!ChatManager.self.chatPanel.inputField.isFocused) {
-            if (KeyUtils.GetKeyDown(Key.Digit1)) {
+            if (InputManager.self.inputMaster.Hud.Shortcut1.WasPerformedThisFrame()) {
                selectAbility(0);
-            } else if (KeyUtils.GetKeyDown(Key.Digit2)) {
+            } else if (InputManager.self.inputMaster.Hud.Shortcut2.WasPerformedThisFrame()) {
                selectAbility(1);
-            } else if (KeyUtils.GetKeyDown(Key.Digit3)) {
+            } else if (InputManager.self.inputMaster.Hud.Shortcut3.WasPerformedThisFrame()) {
                selectAbility(2);
-            } else if (KeyUtils.GetKeyDown(Key.Digit4)) {
+            } else if (InputManager.self.inputMaster.Hud.Shortcut4.WasPerformedThisFrame()) {
                selectAbility(3);
-            } else if (KeyUtils.GetKeyDown(Key.Digit5)) {
+            } else if (InputManager.self.inputMaster.Hud.Shortcut5.WasPerformedThisFrame()) {
                selectAbility(4);
             }
          }
@@ -429,7 +429,7 @@ public class PlayerShipEntity : ShipEntity
 
       checkAudioListener();
 
-      if (InputManager.isLeftClickKeyPressed() && !PanelManager.self.hasPanelInLinkedList()) {
+      if (InputManager.self.inputMaster.General.Interact.WasPerformedThisFrame() && !PanelManager.self.hasPanelInLinkedList()) {
          NetEntity ship = getClickedBody();
          if (ship != null && ship is PlayerShipEntity) {
             PanelManager.self.contextMenuPanel.showDefaultMenuForUser(ship.userId, ship.entityName);
@@ -438,24 +438,24 @@ public class PlayerShipEntity : ShipEntity
 
       if (!isDead() && !isGhost && !isPerformingAttack()) {
          // Start charging attack with mouse
-         if (InputManager.isFireCannonMouseDown() || (InputManager.isFireCannonMouse() && !_isChargingCannon)) {
+         if (InputManager.self.inputMaster.Sea.FireCannon.WasPressedThisFrame() || (InputManager.self.inputMaster.Sea.FireCannon.WasPerformedThisFrame() && !_isChargingCannon)) {
             _chargingWithMouse = true;
             cannonAttackPressed();
             // Can only start charging with spacebar if we have a valid target
-         } else if (_targetSelector.getTarget() != null && (InputManager.getKeyActionDown(KeyAction.FireMainCannon) || (InputManager.getKeyAction(KeyAction.FireMainCannon) && !_isChargingCannon))) {
+         } else if (_targetSelector.getTarget() != null && (InputManager.self.inputMaster.Sea.FireCannon.WasPressedThisFrame() || (InputManager.self.inputMaster.Sea.FireCannon.WasPerformedThisFrame() && !_isChargingCannon))) {
             _chargingWithMouse = false;
             cannonAttackPressed();
          } else {
-            if (InputManager.isFireCannonMouseDown() && _isChargingCannon) {
+            if (InputManager.self.inputMaster.Sea.FireCannon.WasPressedThisFrame() && _isChargingCannon) {
                D.debug("Cannot cast, this user is still performing charging attack!");
             }
          }
 
-         if ((InputManager.isFireCannonMouseUp() && _chargingWithMouse) || (InputManager.getKeyActionUp(KeyAction.FireMainCannon) && !_chargingWithMouse)) {
+         if ((InputManager.self.inputMaster.Sea.FireCannon.WasReleasedThisFrame() && _chargingWithMouse) || (InputManager.self.inputMaster.Sea.FireCannon.WasReleasedThisFrame() && !_chargingWithMouse)) {
             cannonAttackReleased();
          }
       } else {
-         if (InputManager.isFireCannonMouseDown() || InputManager.getKeyActionDown(KeyAction.FireMainCannon)) {
+         if (InputManager.self.inputMaster.Sea.FireCannon.WasPressedThisFrame()) {
             if (isPerformingAttack()) {
                D.debug("Cannot cast, this user is still performing an attack!");
             }
@@ -465,7 +465,7 @@ public class PlayerShipEntity : ShipEntity
       boostUpdate();
 
       // Try to open chest through code (instead of UI) in case if UI is blocking raycasts casted to the chest Canvas
-      if (InputManager.isLeftClickKeyPressed() && !PriorityOverProcessActionLogic.isAnyHovered()) {
+      if (InputManager.self.inputMaster.General.Interact.WasPerformedThisFrame() && !PriorityOverProcessActionLogic.isAnyHovered()) {
          tryToOpenChest();
       }
 
@@ -512,9 +512,9 @@ public class PlayerShipEntity : ShipEntity
 
    private void boostUpdate () {
       // Begin charging boost
-      if (InputManager.isSpeedUpKeyPressed()) {
+      if (InputManager.self.inputMaster.Sea.Dash.WasPressedThisFrame()) {
          pressBoost();
-      } else if (InputManager.isSpeedUpKeyReleased()) {
+      } else if (InputManager.self.inputMaster.Sea.Dash.WasReleasedThisFrame()) {
          releaseBoost();
       }
 
@@ -1243,7 +1243,7 @@ public class PlayerShipEntity : ShipEntity
 
       Vector2 inputVector = InputManager.getMovementInput();
 
-      if (inputVector != _movementInputDirection || (isSpeedingUp != InputManager.isSpeedUpKeyPressed() && isSpeedingUp != (gamePadDashPressed == true))) {
+      if (inputVector != _movementInputDirection || (isSpeedingUp != InputManager.self.inputMaster.Sea.Dash.WasPressedThisFrame() && isSpeedingUp != (gamePadDashPressed == true))) {
          // If the ship wasn't moving, apply a small force locally to make up for delay
          if (inputVector != Vector2.zero && _body.velocity.sqrMagnitude < 0.025f) {
             _body.AddForce(Quaternion.AngleAxis(this.desiredAngle, Vector3.forward) * Vector3.up * getMoveSpeed() * CLIENT_SIDE_FORCE);

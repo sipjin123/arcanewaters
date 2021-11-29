@@ -253,6 +253,12 @@ public class Util : MonoBehaviour
       transform.position = vector;
    }
 
+   public static void setX (Transform transform, float newX) {
+      Vector3 vector = transform.position;
+      vector.x = newX;
+      transform.position = vector;
+   }
+
    public static void setZ (Transform transform, float newZ) {
       Vector3 vector = transform.position;
       vector.z = newZ;
@@ -1396,6 +1402,20 @@ public class Util : MonoBehaviour
       }
 
       return enemies;
+   }
+
+   public static List<SeaEntity> getSeaEntitiesInCircle (SeaEntity checkingEntity, Vector3 checkPosition, float circleRadius) {
+      Collider2D[] hits = Physics2D.OverlapCircleAll(checkPosition, circleRadius);
+      List<SeaEntity> entities = new List<SeaEntity>();
+
+      foreach (Collider2D hit in hits) {
+         SeaEntity hitEntity = hit.GetComponent<SeaEntity>();
+         if (hitEntity && hitEntity.instanceId == checkingEntity.instanceId && !entities.Contains(hitEntity)) {
+            entities.Add(hitEntity);
+         }
+      }
+
+      return entities;
    }
 
    public static bool areStringsEqual(string a, string b, bool ignoreCase = true) {

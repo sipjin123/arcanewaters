@@ -45,8 +45,8 @@ public class CropSpot : MonoBehaviour {
    }
 
    public void tryToInteractWithCropOnClient () {
-      // If a player tried to plant on this spot holding a seed bag, maybe plant something
-      if (this.crop == null && (Global.player as PlayerBodyEntity).weaponManager.actionType == Weapon.ActionType.PlantCrop) {
+      // If a player tried to plant on this spot holding a seed bag, plant a seed
+      if (this.crop == null && (Global.player as PlayerBodyEntity).weaponManager.actionType == Weapon.ActionType.PlantCrop && AreaManager.self.isFarmOfUser(areaKey, Global.player.userId)) {
          Global.player.Cmd_PlantCrop((Crop.Type)(Global.player as PlayerBodyEntity).weaponManager.actionTypeValue, this.cropNumber, Global.player.areaKey);
          EffectManager.self.create(Effect.Type.Crop_Harvest, transform.position);
          EffectManager.self.create(Effect.Type.Crop_Dirt_Large, transform.position);
@@ -55,7 +55,7 @@ public class CropSpot : MonoBehaviour {
          SoundManager.create3dSound("crop_plant_", transform.position, 5);
       }
 
-      // If the player tried to water this spot holding the watering pot, maybe water something
+      // If the player tried to water this spot holding the watering pot, water the crop
       if (this.crop != null && (Global.player as PlayerBodyEntity).weaponManager.actionType == Weapon.ActionType.WaterCrop && !this.crop.isMaxLevel() && crop.isReadyForWater(true)) {
          D.adminLog("Client is trying to water crop", D.ADMIN_LOG_TYPE.Crop);
          Global.player.Cmd_WaterCrop(this.cropNumber);

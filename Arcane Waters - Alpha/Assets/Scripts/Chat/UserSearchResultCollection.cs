@@ -8,11 +8,5 @@
    // The results
    public UserSearchResult[] results;
 
-   // The index of the page returned
-   public int page;
-
-   // The total number of pages
-   public int totalPages;
-
    #endregion
 }
