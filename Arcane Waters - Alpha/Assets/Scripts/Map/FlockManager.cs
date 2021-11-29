@@ -38,9 +38,10 @@ public class FlockManager : ClientMonoBehaviour
 
          // Pick a spawn pos
          Vector3 spawnPos = Util.RandomPointInBounds(spawnBox.bounds);
-
+         spawnPos = new Vector3(spawnBox.bounds.min.x, spawnPos.y, spawnPos.z) - new Vector3(Random.Range(-.5f, -1.5f), 0f, 0f);
+         
          // Make the target on the other side
-         Vector2 targetPos = spawnPos + new Vector3(15f, 0f);
+         Vector2 targetPos = new Vector3(spawnBox.bounds.max.x, spawnPos.y, spawnPos.z) + new Vector3(Random.Range(.5f, 1.5f), 0f, 0f);
 
          // Create the instance
          Flock flock = Instantiate(flockPrefabs.ChooseRandom(), spawnPos, Quaternion.identity);

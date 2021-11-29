@@ -1007,7 +1007,7 @@ public class Util : MonoBehaviour
    }
 
    public static bool isGeneralInputAllowed () {
-      return !(PanelManager.self.hasPanelInLinkedList() ||
+      return !((PanelManager.self.hasPanelInLinkedList() && !PanelManager.self.get(Panel.Type.PvpScoreBoard).isShowing()) ||
          PanelManager.isLoading ||
          ChatPanel.self.inputField.isFocused ||
          ChatPanel.self.nameInputField.isFocused ||
