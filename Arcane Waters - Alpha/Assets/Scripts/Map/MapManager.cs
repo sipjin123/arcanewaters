@@ -88,20 +88,32 @@ public class MapManager : MonoBehaviour
             // Read the map data
             if (mapInfo.gameData == null) {
                string rawMapInfo = DB_Main.getMapInfo(mapInfo.mapName);
-               mapInfo = JsonUtility.FromJson<MapInfo>(rawMapInfo);
+               if (rawMapInfo.Length > 0) {
+                  mapInfo = JsonUtility.FromJson<MapInfo>(rawMapInfo);
+               } else {
+                  // For non cloud builds, attempt to fetch nubis data if database fetch does not succeed
+                  if (!Util.isCloudBuild()) {
+                     mapInfo = null;
+                     D.debug("Failed to fetch map data");
+                  }
+               }
             }
 
             // Fetch map customization data if required
             if (ownerId != -1 && customizationData == null) {
-               int baseMapId = DB_Main.getMapId(mapInfo.mapName);
-               customizationData = DB_Main.exec((cmd) => DB_Main.getMapCustomizationData(cmd, baseMapId, ownerId));
+               if (mapInfo != null) {
+                  int baseMapId = DB_Main.getMapId(mapInfo.mapName);
+                  customizationData = DB_Main.exec((cmd) => DB_Main.getMapCustomizationData(cmd, baseMapId, ownerId));
+               } else {
+                  D.debug("Null map info!");
+               }
             }
          }
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (mapInfo == null) {
-               D.debug($"Could not find entry for map { areaKey } in the database");
+               D.debug($"Could not find entry for map { areaKey } in the database, proceeding to Nubis fetch");
 
                // If db_main fails to return due to connection issues, attempt nubis connection
                processNubisData(areaKey, mapPosition, customizationData, biome);
@@ -120,7 +132,7 @@ public class MapManager : MonoBehaviour
    }
 
    private async void processNubisData (string areaKey, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type voyageBiome) {
-      D.editorLog("Attempting to fetch using Nubis Data", Color.green);
+      D.editorLog("Attempting to fetch using Nubis Data for area {" + areaKey + "}", Color.green);
 
       // Request the map from Nubis Cloud
       string mapData = await NubisClient.call<string>(nameof(DB_Main.getMapInfo), areaKey);

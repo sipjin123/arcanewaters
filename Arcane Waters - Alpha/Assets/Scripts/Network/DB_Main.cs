@@ -2416,6 +2416,11 @@ public class DB_Main : DB_MainStub
       } catch (Exception e) {
          D.debug("Failed to get Map info for: " + areaKey);
          D.error("MySQL Error: " + e.ToString());
+
+         // For non cloud builds, attempt to fetch nubis data if database fetch does not succeed
+         if (!Util.isCloudBuild()) {
+            return "";
+         }
       }
 
       return JsonUtility.ToJson(mapInfo);
