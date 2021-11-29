@@ -77,6 +77,8 @@ public class PvpShopItem {
 
    public static List<PvpShopItem> defaultLandPowerups () {
       List<PvpShopItem> defaultList = new List<PvpShopItem>();
+
+      // The items are hardcoded if there are no declared land powerups in the shop
       PvpShopItem damageBoost = new PvpShopItem {
          itemCost = 100,
          itemId = (int) LandPowerupType.DamageBoost,
@@ -93,9 +95,55 @@ public class PvpShopItem {
          rarityType = Rarity.Type.Common,
          spritePath = "Sprites/Powerups/LandPowerUpIcons",
       };
+      PvpShopItem speedBoost = new PvpShopItem {
+         itemCost = 100,
+         itemId = (int) LandPowerupType.SpeedBoost,
+         shopItemType = PvpShopItem.PvpShopItemType.LandPowerup,
+         itemName = LandPowerupType.SpeedBoost.ToString(),
+         rarityType = Rarity.Type.Common,
+         spritePath = "Sprites/Powerups/LandPowerUpIcons",
+      };
+
+      PvpShopItem experienceBoost = new PvpShopItem {
+         itemCost = 100,
+         itemId = (int) LandPowerupType.ExperienceBoost,
+         shopItemType = PvpShopItem.PvpShopItemType.LandPowerup,
+         itemName = LandPowerupType.ExperienceBoost.ToString(),
+         rarityType = Rarity.Type.Common,
+         spritePath = "Sprites/Powerups/LandPowerUpIcons",
+      };
+      PvpShopItem lootDropBoost = new PvpShopItem {
+         itemCost = 100,
+         itemId = (int) LandPowerupType.LootDropBoost,
+         shopItemType = PvpShopItem.PvpShopItemType.LandPowerup,
+         itemName = LandPowerupType.LootDropBoost.ToString(),
+         rarityType = Rarity.Type.Common,
+         spritePath = "Sprites/Powerups/LandPowerUpIcons",
+      };
+      PvpShopItem meleeDamageBoost = new PvpShopItem {
+         itemCost = 100,
+         itemId = (int) LandPowerupType.MeleeDamageBoost,
+         shopItemType = PvpShopItem.PvpShopItemType.LandPowerup,
+         itemName = LandPowerupType.MeleeDamageBoost.ToString(),
+         rarityType = Rarity.Type.Common,
+         spritePath = "Sprites/Powerups/LandPowerUpIcons",
+      };
+      PvpShopItem rangeDamageBoost = new PvpShopItem {
+         itemCost = 100,
+         itemId = (int) LandPowerupType.RangeDamageBoost,
+         shopItemType = PvpShopItem.PvpShopItemType.LandPowerup,
+         itemName = LandPowerupType.RangeDamageBoost.ToString(),
+         rarityType = Rarity.Type.Common,
+         spritePath = "Sprites/Powerups/LandPowerUpIcons",
+      };
 
       defaultList.Add(damageBoost);
       defaultList.Add(defenseBoost);
+      defaultList.Add(speedBoost);
+      defaultList.Add(lootDropBoost);
+      defaultList.Add(experienceBoost);
+      defaultList.Add(meleeDamageBoost);
+      defaultList.Add(rangeDamageBoost);
       return defaultList;
    }
 

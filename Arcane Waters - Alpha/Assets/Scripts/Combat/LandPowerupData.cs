@@ -1,8 +1,15 @@
-﻿public enum LandPowerupType {
+﻿using System;
+using UnityEngine;
+
+public enum LandPowerupType {
    None = 0,
    DamageBoost = 1,
    DefenseBoost = 2,
    SpeedBoost = 3,
+   ExperienceBoost = 4,
+   LootDropBoost = 5,
+   MeleeDamageBoost = 6,
+   RangeDamageBoost = 7
 }
 
 public enum LandPowerupExpiryType {
@@ -56,4 +63,13 @@ public class LandPowerupInfo {
 
    // The default counter of this powerup
    public int baseCounter = 1;
+}
+
+[Serializable]
+public class LandPowerupSpritePair {
+   // The type
+   public LandPowerupType type;
+
+   // The sprite reference
+   public Sprite sprite;
 }

@@ -19,6 +19,9 @@ public class LandPowerupManager : MonoBehaviour {
    // Log screen
    public bool toggleScreenLog;
 
+   // The land powerup sprite collection
+   public List<LandPowerupSpritePair> landPowerupSprite;
+
    #endregion
 
    public void Awake () {
@@ -39,6 +42,27 @@ public class LandPowerupManager : MonoBehaviour {
          powerupInfo = "Increases speed of the user by 20% when traveling in land",
          powerupName = "Speed Boost",
          powerupType = LandPowerupType.SpeedBoost
+      });
+
+      landPowerupInfo.Add(LandPowerupType.LootDropBoost, new LandPowerupInfo {
+         powerupInfo = "Increases the loots drop by 100% for 5 mins",
+         powerupName = "Loot Drop Boost",
+         powerupType = LandPowerupType.LootDropBoost
+      });
+      landPowerupInfo.Add(LandPowerupType.ExperienceBoost, new LandPowerupInfo {
+         powerupInfo = "Increases experience gained by 10%",
+         powerupName = "Experience Boost",
+         powerupType = LandPowerupType.ExperienceBoost
+      });
+      landPowerupInfo.Add(LandPowerupType.RangeDamageBoost, new LandPowerupInfo {
+         powerupInfo = "Increases damage of ranged attacks by 20%",
+         powerupName = "Range Damage Boost",
+         powerupType = LandPowerupType.RangeDamageBoost
+      });
+      landPowerupInfo.Add(LandPowerupType.MeleeDamageBoost, new LandPowerupInfo {
+         powerupInfo = "Increases damage of melee attacks by 20%",
+         powerupName = "Melee Damage Boost",
+         powerupType = LandPowerupType.MeleeDamageBoost
       });
    }
 
