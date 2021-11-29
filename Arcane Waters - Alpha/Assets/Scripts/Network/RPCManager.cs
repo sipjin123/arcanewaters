@@ -4252,6 +4252,11 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
+      // Register the user to the stats manager if spawned in tutorial bay
+      if (_player.areaKey.ToLower().Contains(Area.STARTING_TOWN_SEA.ToLower()) && !GameStatsManager.self.isUserRegistered(_player.userId)) {
+         GameStatsManager.self.registerUser(_player.userId);
+      }
+
       if (GameStatsManager.self.isUserRegistered(_player.userId)) {
          int totalCategoryTypes = Enum.GetValues(typeof(PvpShopItem.PvpShopItemType)).Length;
          List<PvpShopItem> shopItemList = new List<PvpShopItem>();

@@ -29,6 +29,7 @@ public class Area : MonoBehaviour
 
    // Dock spawns of each home town
    public static string STARTING_TOWN_DOCK_SPAWN = "Tutorial Town Dock";
+   public static string STARTING_TOWN_SEA = "Tutorial Bay";
    public static string DESERT_TOWN_DOCK_SPAWN = "dock";
    public static string PINE_TOWN_DOCK_SPAWN = "pine_town_dock";
    public static string SNOW_TOWN_DOCK_SPAWN = "Starting Spawn";

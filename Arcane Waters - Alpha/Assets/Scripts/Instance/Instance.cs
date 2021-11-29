@@ -174,6 +174,14 @@ public class Instance : NetworkBehaviour
       // Routinely count the number of enemies that are still alive
       if (voyageId > 0) {
          InvokeRepeating(nameof(countAliveEnemies), 0f, 1f);
+      } else {
+         if (this.areaKey.ToLower().Contains("tutorial")) {
+            // Enable shops when all enemies have been eliminated
+            Area area = AreaManager.self.getArea(this.areaKey);
+            if (area != null) {
+               area.enableSeaShops();
+            }
+         }
       }
 
       // Update this instance in the server network
