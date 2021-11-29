@@ -145,7 +145,7 @@ MonoBehaviour:
     layerType: 0
   - layer: detail
     index: 40
-    zOffset: 0
+    zOffset: 0.1
     layerType: 0
   - layer: tree
     index: 45
