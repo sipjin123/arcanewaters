@@ -20,7 +20,7 @@ public class PlayerBattleCollider : MonoBehaviour {
       if (!playerBody.isInvisible && playerBody.isLocalPlayer && collision.GetComponent<EnemyBattleCollider>() != null) {
          if (!playerBody.isInBattle() && combatInitCollider.enabled && !playerBody.isWithinEnemyRadius) {
             Enemy enemy = collision.GetComponent<EnemyBattleCollider>().enemy;
-            if (playerBody.instanceId == enemy.instanceId && !enemy.isDefeated) {
+            if (playerBody.instanceId == enemy.instanceId && !enemy.isDefeated && !playerBody.isBouncingOnWeb()) {
                if (playerBody.voyageGroupId == enemy.voyageGroupId || enemy.voyageGroupId == -1) {
                   D.adminLog("Engaging combat:: EnemyType: {" + enemy.enemyType + "}" + " NetID: {" + enemy.netId + "}", D.ADMIN_LOG_TYPE.Combat);
                   combatInitCollider.enabled = false;

@@ -903,7 +903,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    public bool isJumping () {
       float timeSinceLastJump = (float) (NetworkTime.time - _jumpStartTime);
-      return (timeSinceLastJump < JUMP_DURATION || animators[0].GetBool("jump"));
+      return (timeSinceLastJump < JUMP_DURATION || (animators.Length > 0 && animators[0] != null && animators[0].GetBool("jump")));
    }
 
    protected override void webBounceUpdate () {
