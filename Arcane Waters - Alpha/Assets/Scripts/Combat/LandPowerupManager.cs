@@ -31,39 +31,52 @@ public class LandPowerupManager : MonoBehaviour {
       landPowerupInfo.Add(LandPowerupType.DamageBoost, new LandPowerupInfo {
          powerupInfo = "Increases damage by 20% for land combat",
          powerupName = "Damage Boost",
-         powerupType = LandPowerupType.DamageBoost
+         powerupType = LandPowerupType.DamageBoost,
+         spriteRef = getLandPowerupSprite(LandPowerupType.DamageBoost)
       });
       landPowerupInfo.Add(LandPowerupType.DefenseBoost, new LandPowerupInfo {
          powerupInfo = "Increases defense by 20% for land combat",
          powerupName = "Defense Boost",
-         powerupType = LandPowerupType.DefenseBoost
+         powerupType = LandPowerupType.DefenseBoost,
+         spriteRef = getLandPowerupSprite(LandPowerupType.DefenseBoost)
       });
       landPowerupInfo.Add(LandPowerupType.SpeedBoost, new LandPowerupInfo {
          powerupInfo = "Increases speed of the user by 20% when traveling in land",
          powerupName = "Speed Boost",
-         powerupType = LandPowerupType.SpeedBoost
+         powerupType = LandPowerupType.SpeedBoost,
+         spriteRef = getLandPowerupSprite(LandPowerupType.SpeedBoost)
       });
 
       landPowerupInfo.Add(LandPowerupType.LootDropBoost, new LandPowerupInfo {
          powerupInfo = "Increases the loots drop by 100% for 5 mins",
          powerupName = "Loot Drop Boost",
-         powerupType = LandPowerupType.LootDropBoost
+         powerupType = LandPowerupType.LootDropBoost,
+         spriteRef = getLandPowerupSprite(LandPowerupType.LootDropBoost)
       });
       landPowerupInfo.Add(LandPowerupType.ExperienceBoost, new LandPowerupInfo {
          powerupInfo = "Increases experience gained by 10%",
          powerupName = "Experience Boost",
-         powerupType = LandPowerupType.ExperienceBoost
+         powerupType = LandPowerupType.ExperienceBoost,
+         spriteRef = getLandPowerupSprite(LandPowerupType.ExperienceBoost)
       });
       landPowerupInfo.Add(LandPowerupType.RangeDamageBoost, new LandPowerupInfo {
          powerupInfo = "Increases damage of ranged attacks by 20%",
          powerupName = "Range Damage Boost",
-         powerupType = LandPowerupType.RangeDamageBoost
+         powerupType = LandPowerupType.RangeDamageBoost,
+         spriteRef = getLandPowerupSprite(LandPowerupType.RangeDamageBoost)
       });
       landPowerupInfo.Add(LandPowerupType.MeleeDamageBoost, new LandPowerupInfo {
          powerupInfo = "Increases damage of melee attacks by 20%",
          powerupName = "Melee Damage Boost",
-         powerupType = LandPowerupType.MeleeDamageBoost
+         powerupType = LandPowerupType.MeleeDamageBoost,
+         spriteRef = getLandPowerupSprite(LandPowerupType.MeleeDamageBoost)
       });
+
+   public Sprite getLandPowerupSprite (LandPowerupType type) {
+      if (landPowerupSprite.Exists(_ => _.type == type)) {
+         return landPowerupSprite.Find(_ => _.type == type).sprite;
+      }
+      return null;
    }
 
    private void Start () {

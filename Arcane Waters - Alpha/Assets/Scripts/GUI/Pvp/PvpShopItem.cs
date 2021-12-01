@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 [Serializable]
 public class PvpShopItem {
@@ -23,6 +24,9 @@ public class PvpShopItem {
 
    // The resource path of the sprite image
    public string spritePath;
+
+   // The sprite reference
+   public Sprite spriteRef;
 
    // The serialized data
    public string itemData;
@@ -59,6 +63,7 @@ public class PvpShopItem {
       newShopItem.itemData = item.itemData;
       newShopItem.shopItemType = item.shopItemType;
       newShopItem.rarityType = item.rarityType;
+      newShopItem.spriteRef = item.spriteRef;
       return newShopItem;
    }
 
@@ -86,6 +91,7 @@ public class PvpShopItem {
          itemName = LandPowerupType.DamageBoost.ToString(),
          rarityType = Rarity.Type.Common,
          spritePath = "Sprites/Powerups/LandPowerUpIcons",
+         spriteRef = LandPowerupManager.self.getLandPowerupSprite(LandPowerupType.DamageBoost),
       };
       PvpShopItem defenseBoost = new PvpShopItem {
          itemCost = 100,
@@ -94,6 +100,7 @@ public class PvpShopItem {
          itemName = LandPowerupType.DefenseBoost.ToString(),
          rarityType = Rarity.Type.Common,
          spritePath = "Sprites/Powerups/LandPowerUpIcons",
+         spriteRef = LandPowerupManager.self.getLandPowerupSprite(LandPowerupType.DefenseBoost),
       };
       PvpShopItem speedBoost = new PvpShopItem {
          itemCost = 100,
@@ -102,6 +109,7 @@ public class PvpShopItem {
          itemName = LandPowerupType.SpeedBoost.ToString(),
          rarityType = Rarity.Type.Common,
          spritePath = "Sprites/Powerups/LandPowerUpIcons",
+         spriteRef = LandPowerupManager.self.getLandPowerupSprite(LandPowerupType.SpeedBoost),
       };
 
       PvpShopItem experienceBoost = new PvpShopItem {
@@ -111,6 +119,7 @@ public class PvpShopItem {
          itemName = LandPowerupType.ExperienceBoost.ToString(),
          rarityType = Rarity.Type.Common,
          spritePath = "Sprites/Powerups/LandPowerUpIcons",
+         spriteRef = LandPowerupManager.self.getLandPowerupSprite(LandPowerupType.ExperienceBoost),
       };
       PvpShopItem lootDropBoost = new PvpShopItem {
          itemCost = 100,
@@ -119,6 +128,7 @@ public class PvpShopItem {
          itemName = LandPowerupType.LootDropBoost.ToString(),
          rarityType = Rarity.Type.Common,
          spritePath = "Sprites/Powerups/LandPowerUpIcons",
+         spriteRef = LandPowerupManager.self.getLandPowerupSprite(LandPowerupType.LootDropBoost),
       };
       PvpShopItem meleeDamageBoost = new PvpShopItem {
          itemCost = 100,
@@ -127,6 +137,7 @@ public class PvpShopItem {
          itemName = LandPowerupType.MeleeDamageBoost.ToString(),
          rarityType = Rarity.Type.Common,
          spritePath = "Sprites/Powerups/LandPowerUpIcons",
+         spriteRef = LandPowerupManager.self.getLandPowerupSprite(LandPowerupType.MeleeDamageBoost),
       };
       PvpShopItem rangeDamageBoost = new PvpShopItem {
          itemCost = 100,
@@ -135,6 +146,7 @@ public class PvpShopItem {
          itemName = LandPowerupType.RangeDamageBoost.ToString(),
          rarityType = Rarity.Type.Common,
          spritePath = "Sprites/Powerups/LandPowerUpIcons",
+         spriteRef = LandPowerupManager.self.getLandPowerupSprite(LandPowerupType.RangeDamageBoost),
       };
 
       defaultList.Add(damageBoost);

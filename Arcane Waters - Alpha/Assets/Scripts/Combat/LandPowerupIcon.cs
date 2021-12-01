@@ -40,10 +40,9 @@ public class LandPowerupIcon : MonoBehaviour {
          return;
       }
 
-      Sprite[] iconSprites = Resources.LoadAll<Sprite>(LandPowerupData.ICON_SPRITES_LOCATION);
       Sprite[] borderSprites = Resources.LoadAll<Sprite>(LandPowerupData.BORDER_SPRITES_LOCATION);
 
-      iconImage.sprite = iconSprites[(int) type - 1];
+      iconImage.sprite = LandPowerupManager.self.getLandPowerupSprite(type);
       borderImage.sprite = borderSprites[(int) rarity - 1];
 
       nameText.text = type.ToString();

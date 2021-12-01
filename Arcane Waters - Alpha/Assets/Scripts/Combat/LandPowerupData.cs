@@ -63,6 +63,9 @@ public class LandPowerupInfo {
 
    // The default counter of this powerup
    public int baseCounter = 1;
+
+   // The sprite reference
+   public Sprite spriteRef;
 }
 
 [Serializable]

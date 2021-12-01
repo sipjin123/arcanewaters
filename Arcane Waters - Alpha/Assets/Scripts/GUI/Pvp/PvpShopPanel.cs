@@ -331,8 +331,12 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
                if (LandPowerupManager.self.landPowerupInfo.ContainsKey(landPowerupType)) {
                   LandPowerupInfo landPowerupInfo = LandPowerupManager.self.landPowerupInfo[landPowerupType];
                   if (landPowerupInfo != null) {
-                     if (landPowerupInfo.iconPath.Length > 1) {
-                        newItemInfo.sprite = ImageManager.getSprite(landPowerupInfo.iconPath);
+                     if (landPowerupInfo.spriteRef != null) {
+                        newItemInfo.sprite = landPowerupInfo.spriteRef;
+                     } else {
+                        if (landPowerupInfo.iconPath.Length > 1) {
+                           newItemInfo.sprite = ImageManager.getSprite(landPowerupInfo.iconPath);
+                        }
                      }
                      newItemInfo.name = landPowerupInfo.powerupName;
                      newItemInfo.description = landPowerupInfo.powerupInfo;
