@@ -28,13 +28,16 @@ public class ProjectileTargetingIndicator : ClientMonoBehaviour {
       _spriteGroup = GetComponent<SpriteGroup>();
    }
 
-   public void init (float lifetime) {
+   public void init (float lifetime, float scaleModifier = 1.0f) {
       _creationTime = (float)NetworkTime.time;
       _lifetime = lifetime;
 
+      float startScale = 1.25f * scaleModifier;
+      float endScale = 0.75f * scaleModifier;
+
       // Scale the circle down towards the impact point, then, upon impact, enable the second circle, scale it up, and fade it out.
-      targetCircle.transform.localScale = Vector3.one * 1.25f;
-      targetCircle.transform.DOScale(0.75f, _lifetime).SetEase(Ease.OutCubic).OnComplete(() => {
+      targetCircle.transform.localScale = Vector3.one * startScale;
+      targetCircle.transform.DOScale(endScale, _lifetime).SetEase(Ease.OutCubic).OnComplete(() => {
          targetCircle.gameObject.SetActive(false);
          impactCircle.gameObject.SetActive(true);
          impactCircle.transform.localScale = Vector3.one * 0.01f;

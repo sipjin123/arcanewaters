@@ -44,7 +44,7 @@ public class CropManager : NetworkBehaviour {
       }
       crop.growthLevel = cropInfo.growthLevel;
       crop.creationTime = cropInfo.creationTime;
-      crop.setData(cropInfo.cropType, cropInfo.cropNumber, cropInfo.lastWaterTimestamp);
+      crop.setData(cropInfo.cropType, cropInfo.cropNumber, cropInfo.lastWaterTimestamp, cropInfo.areaKey);
       int growthLevel = Mathf.Min(cropInfo.growthLevel, Crop.getMaxGrowthLevel(crop.cropType));
       string spriteName = "crop_" + crop.cropType + "_" + growthLevel;
       crop.anim.setNewTexture(ImageManager.getTexture("Crops/" + spriteName));

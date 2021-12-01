@@ -1743,8 +1743,6 @@ public class NetEntity : NetworkBehaviour
 
    [Command]
    public void Cmd_HarvestCrop (int cropNumber) {
-      // We have to holding the pitchfork
-      BodyEntity body = GetComponent<BodyEntity>();
       this.cropManager.harvestCrop(cropNumber);
    }
 
@@ -2488,6 +2486,27 @@ public class NetEntity : NetworkBehaviour
       if (cropInfo.userId == Global.player.userId) {
          TutorialManager3.self.tryCompletingStep(TutorialTrigger.HarvestCrop);
       }
+   }
+
+   [Command]
+   public void Cmd_BroadcastCropProjectile (CropInfo cropInfo) {
+      Rpc_BroadcastCropProjectile(cropInfo);
+   }
+
+   [ClientRpc]
+   public void Rpc_BroadcastCropProjectile (CropInfo cropInfo) {
+      CropSpot cropSpot = CropSpotManager.self.getCropSpot(cropInfo.cropNumber, cropInfo.areaKey);
+
+      Crop harvestedCrop = cropSpot.crop;
+      harvestedCrop.hideCrop();
+      ExplosionManager.createFarmingParticle(Weapon.ActionType.HarvestCrop, cropSpot.transform.position, 1.5f, 4, false);
+
+      CropProjectile cropProjectile = Instantiate(PrefabsManager.self.cropProjectilePrefab, AreaManager.self.getArea(areaKey).transform).GetComponent<CropProjectile>();
+      cropProjectile.cropReference = harvestedCrop;
+      cropProjectile.transform.position = cropSpot.transform.position;
+      Vector2 dir = (cropSpot.transform.position - transform.position).normalized;
+      cropProjectile.setSprite(harvestedCrop.cropType);
+      cropProjectile.init(cropSpot.transform.position, dir, cropSpot);
    }
 
    #region Private Variables

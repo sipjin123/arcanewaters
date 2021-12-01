@@ -1792,7 +1792,7 @@ MonoBehaviour:
   followJumpHeight: {fileID: 7748199939710571711}
   levelTag: {fileID: 6747293067536991787}
   levelUpEffect: {fileID: 8553150314754777727}
-  stairEffectorCollisionEnabled: 1
+  effectorCollisionEnabled: 1
 --- !u!58 &58574232978621698
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1871,6 +1871,8 @@ MonoBehaviour:
     palettes: 
     setAllColors: 0
     rarity: 1
+    canBeSoulBonded: 0
+    soulBindingType: 0
     armorType: 0
     armorBaseDefense: 0
     fireResist: 0
@@ -1914,6 +1916,8 @@ MonoBehaviour:
     palettes: 
     setAllColors: 0
     rarity: 1
+    canBeSoulBonded: 0
+    soulBindingType: 0
     weaponType: 0
     weaponClass: 0
     projectileSprite: 
@@ -2097,6 +2101,8 @@ MonoBehaviour:
     palettes: 
     setAllColors: 0
     rarity: 1
+    canBeSoulBonded: 0
+    soulBindingType: 0
     hatType: 0
     hatBaseDefense: 0
     fireResist: 0

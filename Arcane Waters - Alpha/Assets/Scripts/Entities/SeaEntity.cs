@@ -1099,13 +1099,13 @@ public class SeaEntity : NetEntity
       projectile.initAbilityProjectile(netId, instanceId, attackMagnitude, abilityId, projectileVelocity, lobHeight, lifetime: timeToReachTarget, attackType: attackType, disableColliderFor: disableColliderFor, minDropShadowScale: 0.5f);
       NetworkServer.Spawn(projectile.gameObject);
 
-      Rpc_SpawnProjectileIndicator(endPosition, timeToReachTarget);
+      Rpc_SpawnProjectileIndicator(endPosition, timeToReachTarget, projectileData.projectileScale);
    }
 
    [ClientRpc]
-   protected void Rpc_SpawnProjectileIndicator (Vector2 spawnPosition, float lifetime) {
+   protected void Rpc_SpawnProjectileIndicator (Vector2 spawnPosition, float lifetime, float scaleModifier) {
       ProjectileTargetingIndicator targetingIndicator = Instantiate(PrefabsManager.self.projectileTargetingIndicatorPrefab, spawnPosition, Quaternion.identity);
-      targetingIndicator.init(lifetime);
+      targetingIndicator.init(lifetime, scaleModifier);
    }
 
    [Server]

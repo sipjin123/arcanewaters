@@ -57,6 +57,9 @@ public class Crop : ClientMonoBehaviour {
    // The Object Holder
    public GameObject objectHolder;
 
+   // The key of the area that this crop is in
+   public string areaKey;
+
    #endregion
 
    protected override void Awake () {
@@ -71,10 +74,11 @@ public class Crop : ClientMonoBehaviour {
       GetComponent<SpriteRenderer>().enabled = false;
    }
 
-   public void setData (Crop.Type cropType, int spotNumber, long lastWaterTimeStamp) {
+   public void setData (Crop.Type cropType, int spotNumber, long lastWaterTimeStamp, string areaKey) {
       this.lastWaterTimestamp = lastWaterTimeStamp;
       this.cropType = cropType;
       this.cropNumber = spotNumber;
+      this.areaKey = areaKey;
       dataIsSet = true;
    }
 
@@ -197,6 +201,11 @@ public class Crop : ClientMonoBehaviour {
 
    public bool hasBeenHarvested () {
       return !objectHolder.activeSelf;
+   }
+
+   public CropInfo getCropInfo () {
+      CropInfo cropInfo = new CropInfo(cropType, userId, cropNumber, creationTime, lastWaterTimestamp, (int)waterInterval, growthLevel, areaKey);
+      return cropInfo;
    }
 
    #region Private Variables

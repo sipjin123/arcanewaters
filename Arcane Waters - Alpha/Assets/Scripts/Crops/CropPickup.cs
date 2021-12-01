@@ -33,7 +33,7 @@ public class CropPickup : MonoBehaviour {
       
       // Only the player who owns this farm is able to pick up this crop
       PlayerBodyEntity player = collision.GetComponent<PlayerBodyEntity>();
-      if (player != null && collision.GetComponent<PlayerBodyEntity>() == Global.player && cropSpot.crop != null && player.userId == cropSpot.crop.userId) {
+      if (player != null && cropSpot.crop != null && player.userId == cropSpot.crop.userId) {
          cropSpot.cropPickupLocation = transform.position;
 
          // We will only notify the server to harvest the crop from the client who harvested it

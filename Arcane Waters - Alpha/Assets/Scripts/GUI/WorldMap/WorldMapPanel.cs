@@ -88,7 +88,14 @@ public class WorldMapPanel : Panel
       }
    }
 
-   public void onBiomeHomeTownButtonPressed (Biome.Type biome) {
+   public void onBiomeHomeTownButtonPressed (Biome.Type biome, bool skipPvpCheck = false) {
+      if (!skipPvpCheck && VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
+         PanelManager.self.showConfirmationPanel("Are you sure you want to leave your current Pvp Game?", () => {
+            onBiomeHomeTownButtonPressed(biome, true);
+         });
+         return;
+      }
+
       Global.player.rpc.Cmd_RequestWarpToBiomeHomeTown(biome);
       
       // Close any opened panel

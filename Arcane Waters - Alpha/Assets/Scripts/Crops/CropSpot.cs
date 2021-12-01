@@ -77,11 +77,12 @@ public class CropSpot : MonoBehaviour {
    private void tryAutoFarm (Collider2D collision) {
       // If the local player walked over this crop spot
       PlayerBodyEntity player = collision.GetComponent<PlayerBodyEntity>();
-      if (Global.autoFarm && player && Global.player && player == Global.player && !player.interactingAnimation) {
+      if (Global.autoFarm && player && Global.player && player == Global.player && !player.interactingAnimation && AreaManager.isFarmingAllowed(player.areaKey)) {
+         
          bool triggeredAction = false;
 
          // If the player is holding seeds, try plant seeds here
-         if (player.weaponManager.actionType == Weapon.ActionType.PlantCrop && !crop) {
+         if (player.weaponManager.actionType == Weapon.ActionType.PlantCrop && !crop && AreaManager.self.isFarmOfUser(player.areaKey, player.userId)) {
             player.playFastInteractAnimation(transform.position, true);
             player.Cmd_PlantCrop((Crop.Type) player.weaponManager.actionTypeValue, cropNumber, player.areaKey);
 
@@ -105,7 +106,7 @@ public class CropSpot : MonoBehaviour {
          }
 
          // If the player is holding a pitchfork, try to harvest this plot
-         if (player.weaponManager.actionType == Weapon.ActionType.HarvestCrop && crop && crop.isMaxLevel() && !crop.hasBeenHarvested()) {
+         if (player.weaponManager.actionType == Weapon.ActionType.HarvestCrop && crop && crop.isMaxLevel() && !crop.hasBeenHarvested() && AreaManager.self.isFarmOfUser(player.areaKey, player.userId)) {
             player.playFastInteractAnimation(transform.position, true);
             harvestCrop();
             triggeredAction = true;
@@ -129,18 +130,7 @@ public class CropSpot : MonoBehaviour {
       }
       
       PlayerBodyEntity player = Global.player.getPlayerBodyEntity();
-      ExplosionManager.createFarmingParticle(Weapon.ActionType.HarvestCrop, transform.position, 1.5f, 4, false);
-      crop.hideCrop();
-
-      CropProjectile cropProjectile = Instantiate(PrefabsManager.self.cropProjectilePrefab, AreaManager.self.getArea(areaKey).transform).GetComponent<CropProjectile>();
-      cropProjectile.cropReference = crop;
-      cropProjectile.transform.position = transform.position;
-      Vector2 dir = (transform.position - player.transform.position).normalized;
-      cropProjectile.setSprite(crop.cropType);
-      cropProjectile.init(transform.position, dir, this);
-
-      //SoundEffectManager.self.playSoundEffect(SoundEffectManager.HARVESTING_FLYING, transform);
-      //SoundEffectManager.self.playSoundEffect(SoundEffectManager.HARVESTING_PITCHFORK_HIT, transform);
+      player.Cmd_BroadcastCropProjectile(crop.getCropInfo());
    }
 
    #region Private Variables

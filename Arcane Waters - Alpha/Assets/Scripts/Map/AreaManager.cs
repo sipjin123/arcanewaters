@@ -291,6 +291,10 @@ public class AreaManager : MonoBehaviour
       return false;
    }
 
+   public static bool isFarmingAllowed (string areaKey) {
+      return (areaKey.Contains(CustomFarmManager.GROUP_AREA_KEY) || areaKey.Contains(CustomHouseManager.GROUP_AREA_KEY));
+   }
+
    protected void toggleAreaCollidersForPerformanceImprovement () {
       foreach (Area area in _areas.Values) {
          // We only need colliders for the area that the player is in
