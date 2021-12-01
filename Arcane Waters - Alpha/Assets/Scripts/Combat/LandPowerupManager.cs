@@ -72,6 +72,20 @@ public class LandPowerupManager : MonoBehaviour {
          spriteRef = getLandPowerupSprite(LandPowerupType.MeleeDamageBoost)
       });
 
+      landPowerupInfo.Add(LandPowerupType.ClimbSpeedBoost, new LandPowerupInfo {
+         powerupInfo = "Increases climbing speed",
+         powerupName = "Climb Speed Boost",
+         powerupType = LandPowerupType.ClimbSpeedBoost,
+         spriteRef = getLandPowerupSprite(LandPowerupType.ClimbSpeedBoost)
+      });
+      landPowerupInfo.Add(LandPowerupType.MiningBoost, new LandPowerupInfo {
+         powerupInfo = "Increases total mine drops by 1",
+         powerupName = "Mining Boost",
+         powerupType = LandPowerupType.MiningBoost,
+         spriteRef = getLandPowerupSprite(LandPowerupType.MiningBoost)
+      });
+   }
+
    public Sprite getLandPowerupSprite (LandPowerupType type) {
       if (landPowerupSprite.Exists(_ => _.type == type)) {
          return landPowerupSprite.Find(_ => _.type == type).sprite;

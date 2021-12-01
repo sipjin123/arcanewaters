@@ -148,6 +148,24 @@ public class PvpShopItem {
          spritePath = "Sprites/Powerups/LandPowerUpIcons",
          spriteRef = LandPowerupManager.self.getLandPowerupSprite(LandPowerupType.RangeDamageBoost),
       };
+      PvpShopItem miningBoost = new PvpShopItem {
+         itemCost = 100,
+         itemId = (int) LandPowerupType.MiningBoost,
+         shopItemType = PvpShopItem.PvpShopItemType.LandPowerup,
+         itemName = LandPowerupType.MiningBoost.ToString(),
+         rarityType = Rarity.Type.Common,
+         spritePath = "Sprites/Powerups/LandPowerUpIcons",
+         spriteRef = LandPowerupManager.self.getLandPowerupSprite(LandPowerupType.MiningBoost),
+      };
+      PvpShopItem climbingSpeedBoost = new PvpShopItem {
+         itemCost = 100,
+         itemId = (int) LandPowerupType.ClimbSpeedBoost,
+         shopItemType = PvpShopItem.PvpShopItemType.LandPowerup,
+         itemName = LandPowerupType.ClimbSpeedBoost.ToString(),
+         rarityType = Rarity.Type.Common,
+         spritePath = "Sprites/Powerups/LandPowerUpIcons",
+         spriteRef = LandPowerupManager.self.getLandPowerupSprite(LandPowerupType.ClimbSpeedBoost),
+      };
 
       defaultList.Add(damageBoost);
       defaultList.Add(defenseBoost);
@@ -156,6 +174,8 @@ public class PvpShopItem {
       defaultList.Add(experienceBoost);
       defaultList.Add(meleeDamageBoost);
       defaultList.Add(rangeDamageBoost);
+      defaultList.Add(miningBoost);
+      defaultList.Add(climbingSpeedBoost);
       return defaultList;
    }
 

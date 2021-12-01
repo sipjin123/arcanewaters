@@ -9,7 +9,9 @@ public enum LandPowerupType {
    ExperienceBoost = 4,
    LootDropBoost = 5,
    MeleeDamageBoost = 6,
-   RangeDamageBoost = 7
+   RangeDamageBoost = 7,
+   ClimbSpeedBoost = 8,
+   MiningBoost = 9
 }
 
 public enum LandPowerupExpiryType {

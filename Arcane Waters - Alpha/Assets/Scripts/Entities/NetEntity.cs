@@ -971,6 +971,13 @@ public class NetEntity : NetworkBehaviour
          moveSpeedModifier = (int) (moveSpeedModifier * 1.5f);
       }
 
+      // Climb speed boost calculation based on land powerup
+      if (_isClimbing) {
+         if (PowerupPanel.self.hasLandPowerup(LandPowerupType.ClimbSpeedBoost)) {
+            moveSpeedModifier = (int) (moveSpeedModifier * 1.5f);
+         }
+      }
+
       // Add a speed multiplier when in ghost mode 
       float ghostMultiplier = isGhost ? GHOST_SPEED_MULTIPLIER : 1;
 

@@ -4457,6 +4457,25 @@ public class RPCManager : NetworkBehaviour
                         value = 20, // Set as 20% melee damage boost for now
                      };
                      break;
+
+                  case LandPowerupType.ClimbSpeedBoost:
+                     newPowerup = new LandPowerupData {
+                        counter = 360, // Set as 6 mins for now
+                        expiryType = LandPowerupExpiryType.Time, // Set as timer for now
+                        landPowerupType = LandPowerupType.ClimbSpeedBoost,
+                        userId = _player.userId,
+                        value = 100, // Set as x2 climb speed now
+                     };
+                     break;
+                  case LandPowerupType.MiningBoost:
+                     newPowerup = new LandPowerupData {
+                        counter = 360, // Set as 6 mins for now
+                        expiryType = LandPowerupExpiryType.Time, // Set as timer for now
+                        landPowerupType = LandPowerupType.MiningBoost,
+                        userId = _player.userId,
+                        value = 100, // Set as + 100% loot drops for mining
+                     };
+                     break;
                }
 
                if (_player.areaKey.ToLower().Contains(Area.TUTORIAL_AREA.ToLower())) {
@@ -6195,6 +6214,11 @@ public class RPCManager : NetworkBehaviour
             randomCount++;
          }
 
+         // Add extra ore spawn if has mining powerup
+         if (LandPowerupManager.self.hasPowerup(_player.userId, LandPowerupType.MiningBoost)) {
+            D.debug("User has Mining powerup, added ore from {" + randomCount + "} to {" + (randomCount + 1) + "}");
+            randomCount++;
+         }
          for (int i = 0; i < randomCount; i++) {
             float randomSpeed = Random.Range(.8f, 1.2f);
             float angleOffset = Random.Range(-25, 25);
