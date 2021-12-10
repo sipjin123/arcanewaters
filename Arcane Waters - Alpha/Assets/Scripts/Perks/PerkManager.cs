@@ -116,8 +116,12 @@ public class PerkManager : MonoBehaviour {
    }
 
    public PerkData getPerkData (int perkId) {
-      Perk.Category category = _perkCategoriesById[perkId];
-      return _perkData[category];
+      if (_perkCategoriesById.ContainsKey(perkId)) {
+         Perk.Category category = _perkCategoriesById[perkId];
+         return _perkData[category];
+      }
+
+      return null;
    }
 
    public PerkData getPerkData (Perk.Category category) {
@@ -153,14 +157,15 @@ public class PerkManager : MonoBehaviour {
    }
 
    private float getBoostFactorForCategory (int userId, Perk.Category category) {
-      float boostFactor = 1.0f;
       Dictionary<Perk.Category, int> perkPoints = _serverPerkPointsByUserId[userId];
+
+      float boostFactor = 1.0f;
       boostFactor += getPerkData(category).boostFactor * perkPoints[category];
 
       return boostFactor;
    }
 
-   public float getPerkMultiplier (int userId, Perk.Category category) {      
+   public float getPerkMultiplier (int userId, Perk.Category category) {
       // Print a warning if this is called on a non-server
       if (!NetworkServer.active) {
          D.warning("getPerkMultiplier is being called on a non-server client, it should only be called on the server");
@@ -221,6 +226,10 @@ public class PerkManager : MonoBehaviour {
             updatePerkPointsForUser(userId, userPerks);
          });
       });
+   }
+
+   public Dictionary<int, Perk.Category> getPerkCategories () {
+      return _perkCategoriesById;
    }
 
    public bool perkActivationRoll (int userId, Perk.Category category) {

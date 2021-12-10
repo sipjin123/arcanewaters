@@ -60,8 +60,6 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
    #region Mouse Events
 
    public void OnPointerEnter (PointerEventData eventData) {
-      transform.SetAsLastSibling();
-
       transform.localScale = _originalScale * _iconScaleOnHover;
 
       _iconImage.materialForRendering.SetFloat(_grayscaleIntensityID, 0);

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using TMPro;
 using System.Linq;
+using System;
 
 public class CreationPerksGrid : MonoBehaviour {
    #region Public Variables
@@ -14,6 +15,12 @@ public class CreationPerksGrid : MonoBehaviour {
 
    // Self
    public static CreationPerksGrid self;
+
+   // The prefab of perk icons
+   public GameObject perksPrefab;
+
+   // The transform holding the perks prefab
+   public Transform perkPrefabHolder;
 
    #endregion
 
@@ -43,9 +50,17 @@ public class CreationPerksGrid : MonoBehaviour {
    }
 
    public void initializeIcons () {
-      foreach (CreationPerkIcon icon in _icons) {
-         PerkData data = PerkManager.self.getPerkData(icon.perkId);
-         icon.initialize(data);
+      _icons = new List<CreationPerkIcon>();
+      perkPrefabHolder.gameObject.DestroyChildren();
+      foreach (KeyValuePair<int, Perk.Category> pieceType in PerkManager.self.getPerkCategories()) {
+         CreationPerkIcon newPerkIcon = Instantiate(perksPrefab, perkPrefabHolder).GetComponent<CreationPerkIcon>();
+         newPerkIcon.perkId = (int) pieceType.Key;
+         PerkData data = PerkManager.self.getPerkData(newPerkIcon.perkId);
+         if (data == null) {
+            D.editorLog("Failed to get data: {" + pieceType + "} {" + newPerkIcon.perkId + "}", Color.red);
+         } else {
+            newPerkIcon.initialize(data);
+         }
       }
    }
 
