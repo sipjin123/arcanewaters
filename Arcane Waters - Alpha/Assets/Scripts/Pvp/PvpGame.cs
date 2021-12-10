@@ -153,7 +153,7 @@ public class PvpGame : MonoBehaviour {
 
       PlayerShipEntity playerShip = (PlayerShipEntity) EntityManager.self.getEntity(userId);
       int shipId = ShipDataManager.STARTING_SHIP_ID;
-      ShipInfo startingShip = Ship.generateNewShip(Ship.Type.Type_1, Rarity.Type.Common);
+      ShipInfo startingShip = Ship.generateNewShip(shipId, Rarity.Type.Common);
       startingShip.shipAbilities = ShipDataManager.self.getShipAbilities(shipId);
       playerShip.changeShipInfo(startingShip);
    }

@@ -25,6 +25,9 @@ public class ShipDataManager : MonoBehaviour {
    // The starting ship id
    public const int STARTING_SHIP_ID = 118;
 
+   // The xml id of the starting ships from caravel to buss in the web tool
+   public static int[] ALL_STARTING_SHIP_IDS = new int[] {118, 119, 120, 121, 122, 123, 124, 125 };
+
    #endregion
 
    public void Awake () {
@@ -45,8 +48,10 @@ public class ShipDataManager : MonoBehaviour {
          D.debug("Failed to fetch ship data: {" + shipType + " : " + (int) shipType + "}");
          return _shipData.Values.ToList()[0];
       }
-      ShipData returnData = _shipData.Values.ToList().Find(_=>_.shipType == shipType);
-      return returnData;
+
+      // Always get the first entry of ship type, the next entries are the variants
+      List<ShipData> allShipData = _shipData.Values.ToList().FindAll(_ => _.shipType == shipType);
+      return allShipData[0];
    }
 
    public void initializeDataCache () {

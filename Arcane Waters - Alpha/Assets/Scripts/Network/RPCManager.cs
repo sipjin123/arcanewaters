@@ -4376,14 +4376,14 @@ public class RPCManager : NetworkBehaviour
                   if (_player is PlayerShipEntity) {
                      SeaEntity seaEntity = (SeaEntity) _player;
                      PlayerShipEntity playerShip = (PlayerShipEntity) seaEntity;
-                     ShipInfo purchasedShip = Ship.generateNewShip(shipData.shipType, Rarity.Type.Common);
-
-                     // Update abilities
-                     purchasedShip.shipAbilities = ShipDataManager.self.getShipAbilities(shipSqlId);
+                     ShipInfo purchasedShip = Ship.generateNewShip(shipSqlId, Rarity.Type.Common);
 
                      // Update health to max value
                      playerShip.currentHealth = shipData.baseHealthMax;
                      playerShip.maxHealth = shipData.baseHealthMax;
+
+                     // Update abilities
+                     purchasedShip.shipAbilities = ShipDataManager.self.getShipAbilities(shipSqlId);
 
                      // Sprite updates
                      playerShip.changeShipInfo(purchasedShip);
@@ -6684,11 +6684,11 @@ public class RPCManager : NetworkBehaviour
       shipTypes.Remove(Ship.Type.None);
       bot.shipType = shipTypes[Random.Range(0, shipTypes.Count)];
 
-      bot.speed = Ship.getBaseSpeed(bot.shipType);
-      bot.attackRangeModifier = Ship.getBaseAttackRange(bot.shipType);
+      bot.speed = Ship.getBaseSpeed(bot.dataXmlId);
+      bot.attackRangeModifier = Ship.getBaseAttackRange(bot.dataXmlId);
 
       // Assign ship size to spawned ship
-      ShipData shipData = ShipDataManager.self.getShipData(bot.shipType);
+      ShipData shipData = ShipDataManager.self.getShipData(bot.dataXmlId);
       bot.shipSize = shipData.shipSize;
       bot.seaEntityData.seaMonsterType = SeaMonsterEntity.Type.PirateShip;
 

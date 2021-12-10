@@ -371,8 +371,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       }
    }
 
-   public void setShipData (int enemyXmlData, Ship.Type shipType, int instanceDifficulty) {
-      ShipData shipData = ShipDataManager.self.getShipData(shipType);
+   public void setShipData (int shipXmlId, Ship.Type shipType, int instanceDifficulty) {
+      ShipData shipData = ShipDataManager.self.getShipData(shipXmlId);
       
       // If we've provided a sprite override, apply it
       if (spritesOverride) {
@@ -385,8 +385,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          shipData = ShipDataManager.self.shipDataList[0];
          D.debug("Cant get ship data for: {" + shipType + "}");
       }
-      SeaMonsterEntityData seaEnemyData = SeaMonsterManager.self.getMonster(enemyXmlData);
-      dataXmlId = enemyXmlData;
+      SeaMonsterEntityData seaEnemyData = SeaMonsterManager.self.getMonster(shipXmlId);
+      dataXmlId = shipXmlId;
       if (seaEnemyData == null) {
          D.debug("Failed to get sea monster data");
       }

@@ -113,7 +113,12 @@ public class ShipEntity : SeaEntity
       rarity = info.rarity;
       damage = info.damage;
 
-      ShipData newShipData = ShipDataManager.self.getShipData(info.shipType);
+      ShipData newShipData = new ShipData();
+      if (info.shipXmlId > 0) {
+         newShipData = ShipDataManager.self.getShipData(info.shipXmlId);
+      } else {
+         newShipData = ShipDataManager.self.getShipData(shipType);
+      }
       shipSize = newShipData.shipSize;
       shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);
    }

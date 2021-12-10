@@ -223,14 +223,24 @@ public class ShopManager : MonoBehaviour {
       foreach (string areaKey in AreaManager.self.getAreaKeys()) {
          // Clear out the previous list
          _shipsByArea[areaKey] = new List<int>();
+         List<int> shipIdList = new List<int>();
+         int shipIdCount = 3;
+         int totalShipsAdded = 0;
+
+         while (totalShipsAdded < shipIdCount) {
+            int randomShipId = ShipDataManager.ALL_STARTING_SHIP_IDS.ChooseRandom();
+            if (!shipIdList.Contains(randomShipId)) {
+               shipIdList.Add(randomShipId);
+               totalShipsAdded++;
+            }
+         }
 
          // Make 3 new ships
-         for (int i = 1; i <= 3; i++) {
-            Ship.Type shipType = Util.randomEnumStartAt<Ship.Type>(1);
+         for (int i = 0; i < shipIdCount; i++) {
             Rarity.Type rarity = Rarity.getRandom();
 
-            ShipInfo ship = Ship.generateNewShip(shipType, rarity);
-            ship.shipAbilities = ShipDataManager.self.getShipAbilities(ShipDataManager.self.getShipData(shipType).shipID);
+            ShipInfo ship = Ship.generateNewShip(shipIdList[i], rarity);
+            ship.shipAbilities = ShipDataManager.self.getShipAbilities(shipIdList[i]);
             ship.shipId = _shipId--;
 
             // Store the ship
@@ -254,10 +264,9 @@ public class ShopManager : MonoBehaviour {
             if (shopItem.shopItemCategory == ShopToolPanel.ShopCategory.Ship) {
                int shipXmlId = shopItem.shopItemTypeIndex;
                ShipData shipData = ShipDataManager.self.getShipData(shipXmlId);
-               Ship.Type shipType = shipData.shipType;
                Rarity.Type rarity = Rarity.getRandom();
 
-               ShipInfo ship = Ship.generateNewShip(shipType, rarity);
+               ShipInfo ship = Ship.generateNewShip(shipXmlId, rarity);
                ship.shipAbilities = ShipDataManager.self.getShipAbilities(shipData.shipID);
                ship.shipId = _shipId--;
 

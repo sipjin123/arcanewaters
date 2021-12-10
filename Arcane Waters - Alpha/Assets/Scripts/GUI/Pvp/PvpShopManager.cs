@@ -62,7 +62,7 @@ public class PvpShopManager : MonoBehaviour {
                         // Inject ship info data to item data variable
                         if (pvpShopItem.shopItemType == PvpShopItem.PvpShopItemType.Ship) {
                            ShipData shipData = ShipDataManager.self.getShipData(pvpShopItem.itemId);
-                           ShipInfo newShipData = Ship.generateNewShip(shipData.shipType, pvpShopItem.rarityType);
+                           ShipInfo newShipData = Ship.generateNewShip(shipData.shipID, pvpShopItem.rarityType);
                            newShipData.shipAbilities = ShipDataManager.self.getShipAbilities(shipData.shipID);
 
                            // Serialize ability data

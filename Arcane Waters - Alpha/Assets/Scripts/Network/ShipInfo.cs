@@ -16,6 +16,9 @@ public class ShipInfo {
    // The ship ID from the database
    public int shipId;
 
+   // The ship ID from the web tool
+   public int shipXmlId;
+
    // The user ID that owns this ship
    public int userId;
 
@@ -117,6 +120,7 @@ public class ShipInfo {
       this.sailPalette2 = DataUtil.getString(dataReader, "sailPalette2");
 
       this.shipAbilityXML = DataUtil.getString(dataReader, "shipAbilities");
+      this.shipXmlId = DataUtil.getInt(dataReader, "shipXmlId");
 
       if (this.shipAbilityXML.Length > 0) {
          ShipAbilityInfo shipAbility = Util.xmlLoad<ShipAbilityInfo>(this.shipAbilityXML);
@@ -126,7 +130,7 @@ public class ShipInfo {
 
    #endif
 
-   public ShipInfo (int shipId, int userId, Ship.Type shipType,Ship.SkinType skinType, Ship.MastType mastType, Ship.SailType sailType, string shipName,
+   public ShipInfo (int shipId, int userId, Ship.Type shipType, int shipXmlId, Ship.SkinType skinType, Ship.MastType mastType, Ship.SailType sailType, string shipName,
       string palette1, string palette2, string sailPalette1, string sailPalette2, int supplies, int suppliesMax, int cargoMax, int health, int maxHealth, float damage,
       int attackRange, int speed, int sailors, Rarity.Type rarity, ShipAbilityInfo shipAbilities) {
       this.shipId = shipId;
@@ -151,6 +155,7 @@ public class ShipInfo {
       this.sailors = sailors;
       this.rarity = rarity;
       this.shipAbilities = shipAbilities;
+      this.shipXmlId = shipXmlId;
    }
 
    public override bool Equals (object rhs) {

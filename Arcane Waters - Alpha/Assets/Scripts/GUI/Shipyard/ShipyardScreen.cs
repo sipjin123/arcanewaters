@@ -93,7 +93,7 @@ public class ShipyardScreen : Panel {
       rowsContainer.DestroyChildren();
 
       foreach(ShipInfo shipInfo in shipList) {
-         ShipData shipData = ShipDataManager.self.getShipData(shipInfo.shipType, false);
+         ShipData shipData = ShipDataManager.self.getShipData(shipInfo.shipXmlId);
          if (shipData != null) {
             // Create a new row
             ShipyardRow row = Instantiate(rowPrefab, rowsContainer.transform, false);

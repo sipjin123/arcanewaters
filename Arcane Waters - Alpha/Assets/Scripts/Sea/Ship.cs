@@ -58,42 +58,6 @@ public class Ship : SeaEntity {
       this.name = "Ship - " + this.shipType + " (user: " + this.userId + ")";
    }
 
-   #region Get stat by type
-
-   public static int getBaseDamage (Ship.Type shipType) {
-      return ShipDataManager.self.getShipData(shipType).baseDamage;
-   }
-
-   public static int getBaseAttackRange (Ship.Type shipType) {
-      return ShipDataManager.self.getShipData(shipType).baseRange;
-   }
-
-   public static int getBaseHealth (Ship.Type shipType) {
-      return ShipDataManager.self.getShipData(shipType).baseHealth;
-   }
-
-   public static int getBaseSailors (Ship.Type shipType) {
-      return ShipDataManager.self.getShipData(shipType).baseSailors;
-   }
-
-   public static int getBaseSuppliesRoom (Ship.Type shipType) {
-      return ShipDataManager.self.getShipData(shipType).baseSupplyRoom;
-   }
-
-   public static int getBaseSpeed (Ship.Type shipType) {
-      return ShipDataManager.self.getShipData(shipType).baseSpeed;
-   }
-
-   public static int getBaseCargoRoom (Ship.Type shipType) {
-      return ShipDataManager.self.getShipData(shipType).baseCargoRoom;
-   }
-
-   public static int getBasePrice (Ship.Type shipType) {
-      return ShipDataManager.self.getShipData(shipType).basePrice;
-   }
-
-   #endregion
-
    #region Get stat by id
 
    public static int getBaseDamage (int xmlId) {
@@ -180,14 +144,23 @@ public class Ship : SeaEntity {
    }
 
    public static ShipInfo generateNewShip (Ship.Type shipType, Rarity.Type rarity) {
-      System.Random rand = new System.Random();
       ShipData fetchedShipData = ShipDataManager.self.getShipData(shipType);
+      return generateTheShip(fetchedShipData, fetchedShipData.shipType, rarity);
+   }
+
+   public static ShipInfo generateNewShip (int shipXmlId, Rarity.Type rarity) {
+      ShipData fetchedShipData = ShipDataManager.self.getShipData(shipXmlId);
+      return generateTheShip(fetchedShipData, fetchedShipData.shipType, rarity);
+   }
+
+   private static ShipInfo generateTheShip (ShipData fetchedShipData, Ship.Type shipType, Rarity.Type rarity) {
+      System.Random rand = new System.Random();
       int sailors = rand.Next(fetchedShipData.baseSailorsMin, fetchedShipData.baseSailorsMax);
       int suppliesRoom = rand.Next(fetchedShipData.baseSupplyRoomMin, fetchedShipData.baseSupplyRoomMax);
       int cargoRoom = rand.Next(fetchedShipData.baseCargoRoomMin, fetchedShipData.baseCargoRoomMax);
       float damage = rand.NextFloat(fetchedShipData.baseDamageModifierMin, fetchedShipData.baseDamageModifierMax);
       int health = rand.Next(fetchedShipData.baseHealthMin, fetchedShipData.baseHealthMax);
-      int price = getBasePrice(shipType);
+      int price = getBasePrice(fetchedShipData.shipID);
       int attackRange = rand.Next(fetchedShipData.baseRangeMin, fetchedShipData.baseRangeMax);
       int speed = rand.Next(fetchedShipData.baseSpeedMin, fetchedShipData.baseSpeedMax);
       speed = Mathf.Clamp(speed, 70, 130);
@@ -200,7 +173,7 @@ public class Ship : SeaEntity {
       price = Util.roundToPrettyNumber(price);
       attackRange = Util.roundToPrettyNumber(attackRange);
 
-      ShipInfo ship = new ShipInfo(-1, 0, shipType, SkinType.None, MastType.Type_1, SailType.Type_1, getDisplayName(shipType),
+      ShipInfo ship = new ShipInfo(-1, 0, shipType, fetchedShipData.shipID, SkinType.None, MastType.Type_1, SailType.Type_1, getDisplayName(shipType),
          "", "", "", "", suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
       ship.price = price;
 

@@ -37,6 +37,8 @@ public class PvpShipyard : SeaStructure {
       botShip.maxHealth = _shipData.maxHealth;
       botShip.currentHealth = _shipData.maxHealth;
       botShip.shipType = Ship.Type.Type_1;
+      botShip.dataXmlId = ShipDataManager.STARTING_SHIP_ID;
+      _shipData.xmlId = ShipDataManager.STARTING_SHIP_ID;
       botShip.guildId = BotShipEntity.PIRATES_GUILD_ID;
       botShip.pvpTeam = pvpTeam;
       botShip.faction = faction;
