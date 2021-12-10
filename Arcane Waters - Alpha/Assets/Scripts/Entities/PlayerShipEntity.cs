@@ -1635,6 +1635,7 @@ public class PlayerShipEntity : ShipEntity
 
    public void setLifeboatVisibility (bool shouldShow) {
       lifeboat.SetActive(shouldShow);
+      lifeboat.GetComponent<SpriteRenderer>().enabled = true;
 
       if (shouldShow) {
          lifeboat.transform.localScale = new Vector3(1.0f, 0.01f, 2.0f);

@@ -80,7 +80,8 @@ MonoBehaviour:
       iconSigilPalettes: 
     isSenderMuted: 0
   creationTime: 0
-  text: {fileID: 2670985640526164736}
+  itemInsertPrefab: {fileID: 1120437365050249705, guid: a901348a9b6228f439264e6ce47120c0,
+    type: 3}
 --- !u!114 &2670985640526164736
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -212,7 +213,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 11428686}
-          m_MethodName: chatLineOnClicked
+          m_MethodName: chatlineButtonClick
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}

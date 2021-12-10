@@ -70,6 +70,16 @@ public class SpeakChatLine : ChatLine, IScrollHandler
       }
    }
 
+   public void chatlineButtonClick () {
+      if (isValidInteraction()) {
+         if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
+            ((PvpArenaPanel) PanelManager.self.get(Panel.Type.PvpArena)).togglePanel();
+         } else {
+            Global.player.Cmd_CheckContextMenuStatus(chatInfo.senderId, chatInfo.sender);
+         }
+      }
+   }
+
    public void OnScroll (PointerEventData eventData) {
       ChatPanel.self.scrollRect.OnScroll(eventData);
    }

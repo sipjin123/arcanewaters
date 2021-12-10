@@ -598,7 +598,10 @@ public class NetEntity : NetworkBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          FriendshipInfo friendInfo = DB_Main.getFriendshipInfo(this.userId, senderId);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            bool isFriend = friendInfo.friendshipStatus == Friendship.Status.Friends;
+            bool isFriend = false;
+            if (friendInfo != null) {
+               isFriend = friendInfo.friendshipStatus == Friendship.Status.Friends;
+            }
             Target_ReceiveContextMenuStatus(senderId, sender, isFriend);
          });
       });

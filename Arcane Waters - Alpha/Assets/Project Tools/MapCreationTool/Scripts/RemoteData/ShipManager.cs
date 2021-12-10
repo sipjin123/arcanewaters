@@ -69,7 +69,7 @@ namespace MapCreationTool
 
             foreach (XMLPair data in shipDatas) {
                ShipData shipData = Util.xmlLoad<ShipData>(new TextAsset(data.rawXmlData));
-               int shipTypeID = (int) shipData.shipType;
+               int shipTypeID = (int) shipData.shipID;
 
                if (!idToShipData.ContainsKey(shipTypeID)) {
                   idToShipData.Add(shipTypeID, shipData);
