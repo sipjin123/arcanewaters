@@ -204,7 +204,21 @@ public class PvpGame : MonoBehaviour {
       }
 
       string teamSpawn = getSpawnForTeam(assignedTeam.teamType);
-      ServerNetworkingManager.self.warpUser(userId, voyageId, areaKey, Direction.South, teamSpawn);
+      Direction facingDirection = Direction.South;
+      List<SpawnManager.SpawnData> allSpawnsOfMap = SpawnManager.self.getAllSpawnsInArea(areaKey);
+      if (allSpawnsOfMap.Count > 0) {
+         string spawnName = "team" + ((int) assignedTeam.teamType);
+         if (allSpawnsOfMap.Exists(_ => (_.name).ToString().Contains(spawnName))) {
+            SpawnManager.SpawnData spawnData = allSpawnsOfMap.Find(_ => (_.name).ToString().Contains(spawnName));
+            facingDirection = (Direction) spawnData.arriveFacing;
+         } else {
+            D.debug("Spawn Data does not exist for spawn name {" + spawnName + "}");
+         }
+      } else {
+         D.debug("Does not have any spawn data: {" + areaKey + "}");
+      }
+
+      ServerNetworkingManager.self.warpUser(userId, voyageId, areaKey, facingDirection, teamSpawn);
    }
 
    private IEnumerator CO_StartGame () {
