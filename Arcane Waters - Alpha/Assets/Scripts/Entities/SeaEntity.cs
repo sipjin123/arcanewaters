@@ -450,7 +450,7 @@ public class SeaEntity : NetEntity
                Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .01f * Time.smoothDeltaTime);
                foreach (SpriteRenderer renderer in _renderers) {
                   if (renderer.enabled) {
-                     float newAlpha = Mathf.Lerp(1f, 0f, spritesContainer.transform.localPosition.y * - 50f);
+                     float newAlpha = Mathf.Lerp(1f, 0f, spritesContainer.transform.localPosition.y * -50f);
                      Util.setMaterialBlockAlpha(renderer, newAlpha);
                   }
                }
@@ -611,7 +611,7 @@ public class SeaEntity : NetEntity
          venomResidue.creatorNetId = creatorNetId;
          venomResidue.instanceId = instanceId;
       }
-      
+
       ExplosionManager.createSlimeExplosion(location);
       SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Coralbow_Attack, this.transform.position);
    }
@@ -843,7 +843,7 @@ public class SeaEntity : NetEntity
       if (_patrolingWaypointState == WaypointState.RETREAT) {
          return;
       }
-      
+
       _attackers[netId] = NetworkTime.time;
 
       // If this is a seamonster and is attacked by a tower, immediately retreat to spawn point
@@ -1252,7 +1252,7 @@ public class SeaEntity : NetEntity
       }
 
       if (attackType == Attack.Type.Tentacle || attackType == Attack.Type.Poison_Circle) {
-         
+
          Area area = AreaManager.self.getArea(areaKey);
          bool hitSeaTile = !area.hasLandTile(circleCenter);
          if (area != null) {
@@ -1264,7 +1264,7 @@ public class SeaEntity : NetEntity
                venomResidue.creatorNetId = netId;
                venomResidue.instanceId = instanceId;
             }
-            
+
             sourceEntity.Rpc_SpawnBossVenomResidue(netId, instanceId, circleCenter, hitSeaTile);
          }
       }
@@ -1403,8 +1403,8 @@ public class SeaEntity : NetEntity
    }
 
    [ClientRpc]
-   public void Rpc_PlayHitSfx (bool isShip, bool isCrit, CannonballEffector.Type effectorType, Vector3 position) {
-      SoundEffectManager.self.playEnemyHitSfx(isShip, isCrit, effectorType, position);
+   public void Rpc_PlayHitSfx (bool isShip, SeaMonsterEntity.Type seaMonsterType, bool isCrit, CannonballEffector.Type effectorType, Vector3 position) {
+      SoundEffectManager.self.playEnemyHitSfx(isShip, seaMonsterType, isCrit, effectorType, position);
    }
 
    #region Enemy AI
@@ -1642,7 +1642,7 @@ public class SeaEntity : NetEntity
          if (pvpTeam != PvpTeamType.None && isBotShip()) {
             uint currentAttackerNetId = _currentAttacker;
             SeaEntity currentAttacker = SeaManager.self.getEntity(currentAttackerNetId);
-            
+
             if (currentAttacker != null) {
                BotShipEntity shipEntity = this as BotShipEntity;
                float currentAttackerDistance = (currentAttacker.transform.position - transform.position).magnitude;
@@ -1690,7 +1690,7 @@ public class SeaEntity : NetEntity
             updateState(ref _patrolingWaypointState, 0.0f, secondsPatrolingUntilChoosingNewTreasureSite,
                ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, (x) => { return _pvpLaneTarget.position; });
 
-         // If we've already reached the middle of the lane, look for the next target structure to attack
+            // If we've already reached the middle of the lane, look for the next target structure to attack
          } else {
             // Sea monsters should not engage buildings
             if (isSeaMonsterPvp()) {
@@ -1938,7 +1938,7 @@ public class SeaEntity : NetEntity
    private void checkHasArrivedInLane () {
       // Once we have arrived in the middle of the lane, set our lane target to null, and we will move to our target structure, the first enemy tower
       const float ARRIVE_DIST = 2.0f;
-      if (pvpTeam != PvpTeamType.None && _pvpLaneTarget != null  && !_hasReachedLaneTarget) {
+      if (pvpTeam != PvpTeamType.None && _pvpLaneTarget != null && !_hasReachedLaneTarget) {
          Vector2 toLaneCenter = _pvpLaneTarget.position - transform.position;
          if (toLaneCenter.sqrMagnitude < ARRIVE_DIST * ARRIVE_DIST) {
             _hasReachedLaneTarget = true;
@@ -2007,16 +2007,16 @@ public class SeaEntity : NetEntity
          float distanceFromObjectiveLine = Util.distanceFromPointToLineSegment(transform.position, initialPositionWorld, targetPoint);
          distanceFromObjectiveLineSquared = distanceFromObjectiveLine * distanceFromObjectiveLine;
 
-      // If we are moving towards the first sea structure we will use a line from our lane target to the structure
+         // If we are moving towards the first sea structure we will use a line from our lane target to the structure
       } else if (targetSeaStructure == _pvpTargetStructures[0]) {
          float distanceFromObjectiveLine = Util.distanceFromPointToLineSegment(transform.position, _pvpLaneTarget.position, targetPoint);
          distanceFromObjectiveLineSquared = distanceFromObjectiveLine * distanceFromObjectiveLine;
 
-      // If we are moving towards the final target structure, just calculate distance from it
+         // If we are moving towards the final target structure, just calculate distance from it
       } else if (targetSeaStructure == _pvpTargetStructures[_pvpTargetStructures.Count - 1]) {
          distanceFromObjectiveLineSquared = (transform.position - targetPoint).sqrMagnitude;
-      
-      // Otherwise, use the previous and current objectives to make the objective line
+
+         // Otherwise, use the previous and current objectives to make the objective line
       } else {
          int currentObjectiveIndex = _pvpTargetStructures.FindIndex((x) => x == targetSeaStructure);
 
@@ -2105,7 +2105,7 @@ public class SeaEntity : NetEntity
    }
 
    [Server]
-   public void addBuff (SeaBuff.Category buffCategory, SeaBuff.Type buffType, float buffMagnitude, float buffDuration) {
+   public void addBuff (uint buffSourceNetId, SeaBuff.Category buffCategory, SeaBuff.Type buffType, float buffMagnitude, float buffDuration) {
       double buffStartTime = NetworkTime.time;
       double buffEndTime = buffStartTime + buffDuration;
       SyncList<SeaBuffData> buffList = getBuffList(buffCategory);
@@ -2115,7 +2115,7 @@ public class SeaEntity : NetEntity
    }
 
    [Server]
-   public void addBuff (SeaBuff.Category buffCategory, SeaBuff.Type buffType, ShipAbilityData shipAbilityData) {
+   public void addBuff (uint buffSourceNetId, SeaBuff.Category buffCategory, SeaBuff.Type buffType, ShipAbilityData shipAbilityData) {
       double buffStartTime = NetworkTime.time;
       double buffEndTime = buffStartTime + shipAbilityData.statusDuration;
 
@@ -2123,6 +2123,18 @@ public class SeaEntity : NetEntity
       if (buffList != null) {
          buffList.Add(new SeaBuffData(buffStartTime, buffEndTime, buffType, shipAbilityData.damageModifier * 100.0f));
       }
+
+      Rpc_ShowReceivedAbilityBuff(buffSourceNetId, shipAbilityData);
+   }
+
+   [ClientRpc]
+   public void Rpc_ShowReceivedAbilityBuff (uint buffSourceNetId, ShipAbilityData shipAbilityData) {
+      // Don't show an icon for buffs received from self
+      if (this.netId == buffSourceNetId) {
+         return;
+      }
+
+      EffectManager.createBuffEffect(shipAbilityData.skillIconPath, new Vector2(0.0f, 0.025f), transform, true);
    }
 
    [Server]
@@ -2215,7 +2227,7 @@ public class SeaEntity : NetEntity
             newOrb.rotationValue = _buffOrbRotation + (1.0f / _buffOrbs.Count) * (_buffOrbs.Count - 1);
          }
 
-      // If the list from the server is smaller, we need to remove orbs
+         // If the list from the server is smaller, we need to remove orbs
       } else if (serverBuffs.Count < _buffOrbs.Count) {
          int numOrbsToRemove = _buffOrbs.Count - serverBuffs.Count;
 

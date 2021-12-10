@@ -61,6 +61,11 @@ public class Butterfly : MonoBehaviour {
    }
 
    public void Update () {
+      // Skip update for server in batch mode
+      if (Util.isBatch()) {
+         return;
+      }
+
       // Check the weather
       /*if (_map != null && _map.instance != null) {
          WeatherFX.Type weatherType = _map.instance.weatherType;

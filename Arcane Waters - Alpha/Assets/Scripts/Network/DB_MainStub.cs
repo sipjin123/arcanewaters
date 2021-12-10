@@ -1104,6 +1104,10 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static Item getItem (int itemId) {
+      return null;
+   }
+
    public static Item getFirstItem (int userId, Item.Category itemCategory, int itemTypeId) {
       return null;
    }

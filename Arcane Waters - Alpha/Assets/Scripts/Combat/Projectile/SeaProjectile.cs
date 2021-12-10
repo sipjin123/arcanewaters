@@ -333,13 +333,12 @@ public class SeaProjectile : NetworkBehaviour
          _cancelDestruction = false;
          return;
       }
+      
+      SeaEntity sourceEntity = SeaManager.self.getEntity(_creatorNetId);
+      bool hitSeaTile = !Util.hasLandTile(transform.position);
 
       // If this is a tentacle / poison circle attack, spawn venom
-      SeaEntity sourceEntity = SeaManager.self.getEntity(_creatorNetId);
-      Area area = AreaManager.self.getArea(sourceEntity.areaKey);
-      bool hitSeaTile = !Util.hasLandTile(transform.position);
-      if (area != null && (_attackType == Attack.Type.Tentacle || _attackType == Attack.Type.Poison_Circle)) {
-         
+      if ((_attackType == Attack.Type.Tentacle || _attackType == Attack.Type.Poison_Circle)) {         
          // Only spawn residue if we hit a sea tile
          if (hitSeaTile) {
             VenomResidue venomResidue = Instantiate(PrefabsManager.self.bossVenomResiduePrefab, transform.position, Quaternion.identity);
@@ -348,6 +347,15 @@ public class SeaProjectile : NetworkBehaviour
          }
          
          sourceEntity.Rpc_SpawnBossVenomResidue(sourceEntity.netId, _instanceId, transform.position, hitSeaTile);
+      
+      // If this is a mine attack, spawn a mine
+      } else if (_attackType == Attack.Type.Mine) {
+         if (hitSeaTile) {
+            SeaMine seaMine = Instantiate(PrefabsManager.self.seaMinePrefab, transform.position, Quaternion.identity);
+            seaMine.init(_instanceId, _creatorNetId, 0.6f, 20.0f);
+
+            NetworkServer.Spawn(seaMine.gameObject);
+         }
       }
 
       // If this ability has any knockback, apply it now

@@ -259,6 +259,7 @@ public class OptionsPanel : Panel
       }
    }
 
+
    public void setHelpTipsDisplay () {
       NotificationManager.self.toggleNotifications(displayHelpTipsToggle.isOn);
    }

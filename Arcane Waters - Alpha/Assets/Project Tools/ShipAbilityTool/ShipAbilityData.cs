@@ -109,6 +109,9 @@ public class ShipAbilityData
    // Some abilities will take effect when (casted only) within radius while some will only take effect while (staying) in radius
    public bool isBuffRadiusDependent = false;
 
+   // When displaying a sprite to show we've casted this ability, this determines whether we should display a background for that sprite.
+   public bool showCastSpriteBackground = true;
+
    public static Attack.ImpactMagnitude getImpactType (float normalizedValue) {
       if (normalizedValue < .33f) {
          return Attack.ImpactMagnitude.Strong;

@@ -186,6 +186,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating point effectors
    public GameObject pointEffectorPrefab;
 
+   // The reference to the Generic Frame prefab
+   public GameObject genericFramePrefab;
+
    [Header("Texture prefabs")]
    // Prefab used to create new palette texture for material
    public Texture2D textureSquare256;

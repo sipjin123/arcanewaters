@@ -8136,6 +8136,44 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new Item getItem (int itemId) {
+      Item item = null;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM items WHERE itmId=@itmId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@itmId", itemId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  Item.Category category = (Item.Category) dataReader.GetInt32("itmCategory");
+                  int itemTypeId = dataReader.GetInt32("itmType");
+                  string palettes = dataReader.GetString("itmPalettes");
+                  string data = dataReader.GetString("itmData");
+                  int count = dataReader.GetInt32("itmCount");
+                  int durability = dataReader.GetInt32("durability");
+
+                  // Create an Item instance of the proper class, and then add it to the list
+                  item = ItemGenerator.generate(category, itemTypeId, count, itemId, palettes, data, durability);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      if (item != null) {
+         return item.getCastItem();
+      } else {
+         return null;
+      }
+   }
+
    public static new Item getFirstItem (int userId, Item.Category itemCategory, int itemTypeId) {
       Item item = null;
 

@@ -106,9 +106,6 @@ Usage:
 public class InputManager : GenericGameManager {
    #region Public Variables
 
-   // Event that is triggered when a binding changes
-   public static event Action<BoundKeyAction> keyBindingChanged;
-
    // Singleton instance
    public static InputManager self;
 
@@ -145,38 +142,25 @@ public class InputManager : GenericGameManager {
    // Mouse control movement speed
    public float mouseSpeed = 10f;
 
+   // Action map states bulk control
+   public ActionMapStates actionMapStates;
+   
    #endregion
 
    protected override void Awake () {
       base.Awake();
       self = this;
-      loadDefaultKeybindings();
+      // loadDefaultKeybindings();
 
       // Load all saved user keybindings
-      foreach (BoundKeyAction boundKeyAction in _keybindings.Values) {
-         boundKeyAction.loadLocal();
-      }
+      // foreach (BoundKeyAction boundKeyAction in _keybindings.Values) {
+      //    boundKeyAction.loadLocal();
+      // }
 
       initializeInputMaster();
    }
 
    private void initializeInputMaster () {
-      if (Util.isBatch()) {
-         return;
-      }
-
-      if (Util.isCloudBuild()) {
-         //D.debug("Initializing input system as {DynamicUpdate} " +
-         //   "SystLang: { " + Application.systemLanguage + "} " +
-         //   "Layout: { " + Keyboard.current.keyboardLayout + "}");
-         inputSettings.updateMode = InputSettings.UpdateMode.ProcessEventsInDynamicUpdate;
-      } else {
-         //D.debug("Initializing input system as {ManualUpdate} " +
-         //   "SystLang: { " + Application.systemLanguage + "} " +
-         //   "Layout: { " + Keyboard.current.keyboardLayout + "}");
-         inputSettings.updateMode = InputSettings.UpdateMode.ProcessEventsManually;
-      }
-
       // TODO: Setup all gamepad action keybindings here after stabilizing the project by overridding all scripts referencing legacy input system
       inputMaster = new InputMaster();
       
@@ -194,16 +178,38 @@ public class InputManager : GenericGameManager {
 
       // inputMaster.Player.MouseControl.performed += mfunc => mouseAction(mfunc.ReadValue<Vector2>());
       // inputMaster.Player.MouseControl.canceled += mfunc => mouseAction(new Vector2(0, 0));
+
+      if (Util.isBatch()) {
+         actionMapStates.DisableAll();
+      } 
+      else {
+         inputMaster.General.Enable();
+         inputMaster.Land.Enable();
+         inputMaster.LandBattle.Disable();
+         inputMaster.Sea.Enable();
+         inputMaster.Pvp.Enable();
+         inputMaster.Hud.Enable();
+         inputMaster.UIShotcuts.Enable();
+         inputMaster.UIControl.Disable();
+         inputMaster.Chat.Disable();
+      }
       
-      inputMaster.General.Enable();
-      inputMaster.Land.Enable();
-      inputMaster.LandBattle.Disable();
-      inputMaster.Sea.Enable();
-      inputMaster.Pvp.Enable();
-      inputMaster.Hud.Enable();
-      inputMaster.UIShotcuts.Enable();
-      inputMaster.UIControl.Disable();
-      inputMaster.Chat.Disable();
+      if (Util.isBatch()) {
+         inputSettings.updateMode = InputSettings.UpdateMode.ProcessEventsManually;
+      } 
+      else {
+         if (Util.isCloudBuild()) {
+            //D.debug("Initializing input system as {DynamicUpdate} " +
+            //   "SystLang: { " + Application.systemLanguage + "} " +
+            //   "Layout: { " + Keyboard.current.keyboardLayout + "}");
+            inputSettings.updateMode = InputSettings.UpdateMode.ProcessEventsInDynamicUpdate;
+         } else {
+            //D.debug("Initializing input system as {ManualUpdate} " +
+            //   "SystLang: { " + Application.systemLanguage + "} " +
+            //   "Layout: { " + Keyboard.current.keyboardLayout + "}");
+            inputSettings.updateMode = InputSettings.UpdateMode.ProcessEventsManually;
+         }      
+      }
    }
 
    private void Update () {
@@ -226,15 +232,6 @@ public class InputManager : GenericGameManager {
       isFocused = focus;
    }
 
-   // private void dashAction (bool isActive) {
-   //    holdGamepadSprint = isActive;
-   //    D.adminLog("Dash! {" + isActive + "}", D.ADMIN_LOG_TYPE.Gamepad);
-   // }
-
-   // private void mouseClickAction () {
-   //    StartCoroutine(CO_SimulateMouseClick());
-   // }
-
    private IEnumerator CO_SimulateMouseClick () {
       // Simulate mouse press down by accessing mouse command to trigger
       Mouse.current.CopyState<MouseState>(out var mouseState);
@@ -248,34 +245,7 @@ public class InputManager : GenericGameManager {
       InputState.Change(Mouse.current, mouseState);
    }
 
-   // private void mouseToggleAction () {
-   //    mouseJoystickToggle = !mouseJoystickToggle;
-   // }
-
-   // private void moveAction (Vector2 moveVal) {
-   //    if (Global.player == null) {
-   //       return;
-   //    }
-   //
-   //    joystickNavigation = moveVal;
-   // }
-
-   // private void mouseAction (Vector2 mouseVal) {
-   //    if (Global.player == null || !isFocused) {
-   //       return;
-   //    }
-   //
-   //    if (Util.isCloudBuild()) {
-   //       mouseJoystickNavigation = new Vector2(mouseVal.x, -mouseVal.y);
-   //    } else {
-   //       mouseJoystickNavigation = new Vector2(mouseVal.x, mouseVal.y);
-   //    }
-   // }
-
    #region Auto move functions
-
-   
-
    public void simulateDirectionPress (Direction direction, float seconds) {
       StartCoroutine(CO_SimulateDirectionPress(direction, seconds)); 
    }
@@ -288,35 +258,6 @@ public class InputManager : GenericGameManager {
    }
    #endregion
 
-   private void loadDefaultKeybindings () {
-      // Create empty bindings for all defined actions
-      _keybindings.Clear();
-      foreach (KeyAction action in Enum.GetValues(typeof(KeyAction))) {
-         _keybindings.Add(action, new BoundKeyAction { action = action });
-      }
-
-      // Set movement keys
-      _keybindings[KeyAction.MoveUp].primary = Key.W;
-      _keybindings[KeyAction.MoveRight].primary = Key.D;
-      _keybindings[KeyAction.MoveDown].primary = Key.S;
-      _keybindings[KeyAction.MoveLeft].primary = Key.A;
-      _keybindings[KeyAction.MoveUp].secondary = Key.UpArrow;
-      _keybindings[KeyAction.MoveRight].secondary = Key.RightArrow;
-      _keybindings[KeyAction.MoveDown].secondary = Key.DownArrow;
-      _keybindings[KeyAction.MoveLeft].secondary = Key.LeftArrow;
-      _keybindings[KeyAction.SpeedUp].primary = Key.LeftShift;
-
-      // Set sea battle keys
-      _keybindings[KeyAction.FireMainCannon].primary = Key.Space;
-      _keybindings[KeyAction.SelectNextSeaTarget].primary = Key.Tab;
-
-      // TODO: Setup mouse button key bindings
-      // Camera panning
-      //_keybindings[KeyAction.PanCamera].primary = Mouse.current.middleButton;
-
-      _keybindings[KeyAction.Reply].primary = Key.R;
-   }
-   
    private void saveCustomBindings() {
       var rebinds = inputMaster.SaveBindingOverridesAsJson();
       PlayerPrefs.SetString("rebinds", rebinds);
@@ -328,6 +269,9 @@ public class InputManager : GenericGameManager {
    }   
 
    public void rebindAction(InputAction inputAction, BindingType bindingType, BindingId bindingId, Action callback) {
+      bool actionMapStatus = inputAction.actionMap.enabled;
+      inputAction.actionMap.Disable();
+      
       string cancelKey = "";
       switch (bindingType) {
          case BindingType.Keyboard:
@@ -344,11 +288,76 @@ public class InputManager : GenericGameManager {
          .WithCancelingThrough(cancelKey)
          .OnComplete(_ => {
             saveCustomBindings();
+            if (actionMapStatus) {
+               inputAction.actionMap.Enable();
+            }
             callback?.Invoke();
          })
-         .OnCancel(_ => { callback?.Invoke(); })
+         .OnCancel(_ => {
+            if (actionMapStatus) {
+               inputAction.actionMap.Enable();
+            }            
+            callback?.Invoke();
+         })
          .Start();
-   }   
+   }
+
+   public void restoreDefaults () {
+      foreach (var actionMap in inputMaster.asset.actionMaps) {
+         actionMap.RemoveAllBindingOverrides();
+      }
+      saveCustomBindings();
+   }
+
+   public struct ActionMapStates {
+      public void Save() {
+         _general = InputManager.self.inputMaster.General.enabled;
+         _land = InputManager.self.inputMaster.Land.enabled;
+         _landBattle = InputManager.self.inputMaster.LandBattle.enabled;
+         _sea = InputManager.self.inputMaster.Sea.enabled;
+         _pvp = InputManager.self.inputMaster.Pvp.enabled;
+         _hud = InputManager.self.inputMaster.Hud.enabled;
+         _uiShotcuts = InputManager.self.inputMaster.UIShotcuts.enabled;
+         _uiControl = InputManager.self.inputMaster.UIControl.enabled;
+         _chat = InputManager.self.inputMaster.Chat.enabled;
+      }
+
+      public void Restore() {
+         if (_general) InputManager.self.inputMaster.General.Enable(); else InputManager.self.inputMaster.General.Disable();
+         if (_land) InputManager.self.inputMaster.Land.Enable(); else InputManager.self.inputMaster.Land.Disable();
+         if (_landBattle) InputManager.self.inputMaster.LandBattle.Enable(); else InputManager.self.inputMaster.LandBattle.Disable();
+         if (_sea) InputManager.self.inputMaster.Sea.Enable(); else InputManager.self.inputMaster.Sea.Disable();
+         if (_pvp) InputManager.self.inputMaster.Pvp.Enable(); else InputManager.self.inputMaster.Pvp.Disable();
+         if (_hud) InputManager.self.inputMaster.Hud.Enable(); else InputManager.self.inputMaster.Hud.Disable();
+         if (_uiShotcuts) InputManager.self.inputMaster.UIShotcuts.Enable(); else InputManager.self.inputMaster.UIShotcuts.Disable();
+         if (_uiControl) InputManager.self.inputMaster.UIControl.Enable(); else InputManager.self.inputMaster.UIControl.Disable();
+         if (_chat) InputManager.self.inputMaster.Chat.Enable(); else InputManager.self.inputMaster.Chat.Disable();
+      }
+
+      public void DisableAll() {
+         InputManager.self.inputMaster.General.Disable();
+         InputManager.self.inputMaster.Land.Disable();
+         InputManager.self.inputMaster.LandBattle.Disable();
+         InputManager.self.inputMaster.Sea.Disable();
+         InputManager.self.inputMaster.Pvp.Disable();
+         InputManager.self.inputMaster.Hud.Disable();
+         InputManager.self.inputMaster.UIShotcuts.Disable();
+         InputManager.self.inputMaster.UIControl.Disable();
+         InputManager.self.inputMaster.Chat.Disable();         
+      }
+
+      #region Private Variables
+      private bool _general;
+      private bool _land;
+      private bool _landBattle;
+      private bool _sea;
+      private bool _pvp;
+      private bool _hud;
+      private bool _uiShotcuts;
+      private bool _uiControl;
+      private bool _chat;
+      #endregion      
+   }
    
    public static bool isPressingDirection (Direction direction) {
       if (!self._isInputEnabled) {
@@ -357,13 +366,13 @@ public class InputManager : GenericGameManager {
 
       switch (direction) {
          case Direction.North:
-            return getKeyAction(KeyAction.MoveUp) || self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.North);
+            return self.inputMaster.General.MoveUp.IsPressed() || self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.North);
          case Direction.East:
-            return getKeyAction(KeyAction.MoveRight) || self.joystickNavigation.x > JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.East);
+            return self.inputMaster.General.MoveRight.IsPressed() || self.joystickNavigation.x > JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.East);
          case Direction.South:
-            return getKeyAction(KeyAction.MoveDown) || self.joystickNavigation.y < -JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.South);
+            return self.inputMaster.General.MoveDown.IsPressed() || self.joystickNavigation.y < -JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.South);
          case Direction.West:
-            return getKeyAction(KeyAction.MoveLeft) || self.joystickNavigation.x < -JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.West);
+            return self.inputMaster.General.MoveLeft.IsPressed() || self.joystickNavigation.x < -JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.West);
          case Direction.NorthEast:
             return (self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE && self.joystickNavigation.x > JOYSTICK_ACTIVE_VALUE) 
                || (isPressingDirection(Direction.North) && isPressingDirection(Direction.East));
@@ -376,36 +385,6 @@ public class InputManager : GenericGameManager {
          case Direction.NorthWest:
             return (self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE && self.joystickNavigation.x < -JOYSTICK_ACTIVE_VALUE)
                || (isPressingDirection(Direction.North) && isPressingDirection(Direction.West));
-      }
-
-      return false;
-   }
-
-   public static bool getKeyAction (KeyAction action) {
-      if (self._keybindings.TryGetValue(action, out BoundKeyAction boundAction) && self._isInputEnabled) {
-         bool primary = boundAction.primary != Key.None && KeyUtils.GetKey(boundAction.primary) && (!isKeyDisabled(boundAction.primary));
-         bool secondary = boundAction.secondary != Key.None && KeyUtils.GetKey(boundAction.secondary) && !isKeyDisabled(boundAction.secondary);
-         return primary || secondary;
-      }
-
-      return false;
-   }
-
-   public static bool getKeyActionDown (KeyAction action) {
-      if (self._keybindings.TryGetValue(action, out BoundKeyAction boundAction) && self._isInputEnabled) {
-         bool primary = boundAction.primary != Key.None && KeyUtils.GetKeyDown(boundAction.primary) && !isKeyDisabled(boundAction.primary);
-         bool secondary = boundAction.secondary != Key.None && KeyUtils.GetKeyDown(boundAction.secondary) && !isKeyDisabled(boundAction.secondary);
-         return primary || secondary;
-      }
-
-      return false;
-   }
-
-   public static bool getKeyActionUp (KeyAction action) {
-      if (self._keybindings.TryGetValue(action, out BoundKeyAction boundAction) && self._isInputEnabled) {
-         bool primary = boundAction.primary != Key.None && KeyUtils.GetKeyUp(boundAction.primary) && !isKeyDisabled(boundAction.primary);
-         bool secondary = boundAction.secondary != Key.None && KeyUtils.GetKeyUp(boundAction.secondary) && !isKeyDisabled(boundAction.secondary);
-         return primary || secondary;
       }
 
       return false;
@@ -436,89 +415,10 @@ public class InputManager : GenericGameManager {
    }
 
    public static Vector2 getMovementInput () {
+      if (Util.isBatch()) {
+         return Vector2.zero;
+      }
       return new Vector2(getHorizontalAxis(), getVerticalAxis());
-   }
-
-   public static bool isActionKeyPressed () {
-      if (isActionInputEnabled()) {
-         // Define the set of keys that we want to allow as "action" keys
-         return KeyUtils.GetKeyDown(Key.E);
-      }
-
-      return false;
-   }
-
-   public static bool isJumpKeyPressed () {
-      if (isActionInputEnabled()) {
-         // Define the set of keys that we want to allow as "action" keys
-         return KeyUtils.GetKeyDown(Key.Space);
-      } 
-
-      return false;
-   }
-
-   public static bool isFireCannonKeyDown () {
-      if (isActionInputEnabled()) {
-         return getKeyActionDown(KeyAction.FireMainCannon);
-      }
-
-      return false;
-   }
-
-   public static bool isFireCannonMouseDown () {
-      if (isActionInputEnabled()) {
-         return KeyUtils.GetButtonDown(MouseButton.Right);
-      }
-
-      return false;
-   }
-
-   public static bool isFireCannonMouse () {
-      if (isActionInputEnabled()) {
-         return KeyUtils.GetButton(MouseButton.Right);
-      }
-
-      return false;
-   }
-
-   public static bool isFireCannonMouseUp () {
-      if (isActionInputEnabled()) {
-         return KeyUtils.GetButtonUp(MouseButton.Right);
-      }
-
-      return false;
-   }
-
-   public static bool isSelectNextTargetKeyDown () {
-      if (isActionInputEnabled()) {
-         return getKeyActionDown(KeyAction.SelectNextSeaTarget);
-      }
-
-      return false;
-   }
-
-   public static bool isSpeedUpKeyPressed () {
-      if (isActionInputEnabled()) {
-         return getKeyActionDown(KeyAction.SpeedUp);
-      }
-
-      return false;
-   }
-
-   public static bool isSpeedUpKeyDown () {
-      if (isActionInputEnabled()) {
-         return getKeyAction(KeyAction.SpeedUp) || self.holdGamepadSprint;
-      }
-
-      return false;
-   }
-
-   public static bool isSpeedUpKeyReleased () {
-      if (isActionInputEnabled()) {
-         return getKeyActionUp(KeyAction.SpeedUp);
-      }
-
-      return false;
    }
 
    public static bool isActionInputEnabled () {
@@ -534,51 +434,6 @@ public class InputManager : GenericGameManager {
 
       // Don't respond to action keys if input is globally disabled
       return self._isInputEnabled;
-   }
-
-   public static void setBindingKey (KeyAction action, Key key, bool isPrimary) {
-      // Unbind any actions that uses this key
-      foreach (BoundKeyAction boundKeyAction in self._keybindings.Values) {
-         bool changed = false;
-
-         if (boundKeyAction.primary == key) {
-            boundKeyAction.primary = Key.None;
-            changed = true;
-         }
-
-         if (boundKeyAction.secondary == key) {
-            boundKeyAction.secondary = Key.None;
-            changed = true;
-         }
-
-         if (changed) {
-            boundKeyAction.saveLocal();
-            keyBindingChanged?.Invoke(boundKeyAction);
-         }
-      }
-
-      // Bind the key
-      if (self._keybindings.TryGetValue(action, out BoundKeyAction keyAction)) {
-         if (isPrimary) {
-            keyAction.primary = key;
-         } else {
-            keyAction.secondary = key;
-         }
-
-         keyAction.saveLocal();
-         keyBindingChanged?.Invoke(keyAction);
-      } else {
-         D.error($"Could not find { action } action when binding a key.");
-      }
-   }
-
-   public static BoundKeyAction getBinding (KeyAction action) {
-      if (self._keybindings.TryGetValue(action, out BoundKeyAction boundAction)) {
-         return boundAction;
-      }
-
-      D.error($"Could not find { action } action when looking for a binding.");
-      return new BoundKeyAction { action = action };
    }
 
    public static Vector2 getCameraPanningAxis () {
@@ -618,9 +473,6 @@ public class InputManager : GenericGameManager {
    }
 
    #region Private Variables
-
-   // List of keybindings, indexed by their action
-   private Dictionary<KeyAction, BoundKeyAction> _keybindings = new Dictionary<KeyAction, BoundKeyAction>();
 
    // A list of keys that will be ignored when getting inputs
    private List<Key> _disabledKeys = new List<Key>();

@@ -23,6 +23,9 @@ public class RPCManager : NetworkBehaviour
 {
    #region Public Variables
 
+   // Called when the client receives data about an item from the server
+   public static event Action<Item> itemDataReceived;
+
    #endregion
 
    private void Awake () {
@@ -5659,66 +5662,60 @@ public class RPCManager : NetworkBehaviour
       // Get the current instance
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
 
-      // Check if the user has already joined a voyage
-      if (_player.tryGetGroup(out VoyageGroupInfo voyageGroup) && _player.tryGetVoyage(out Voyage voyage)) {
-         // Check if it is a league and we are in the lobby
-         if (voyage.isLeague && VoyageManager.isLobbyArea(_player.areaKey)) {
-            if (voyage.voyageId != instance.voyageId) {
-               // If the group is already assigned to another voyage map, the next instance has already been created and we simply warp the player to it
-               _player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
-            } else {
-               // When entering the first league map (from the lobby), all the group members must be nearby
-               List<string> missingMembersNames = new List<string>();
-               List<int> missingMembersUserIds = new List<int>();
-               foreach (int memberUserId in voyageGroup.members) {
-                  // Try to find the entity
-                  NetEntity memberEntity = EntityManager.self.getEntity(memberUserId);
-                  if (memberEntity == null) {
-                     missingMembersUserIds.Add(memberUserId);
-                  } else {
-                     if (Vector3.Distance(memberEntity.transform.position, _player.transform.position) > Voyage.LEAGUE_START_MEMBERS_MAX_DISTANCE) {
-                        missingMembersNames.Add(memberEntity.entityName);
-                     }
-                  }
-               }
-
-               // Background thread
-               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-                  // If some user entities are connected to another server or offline, read their names in the DB
-                  foreach (int userId in missingMembersUserIds) {
-                     missingMembersNames.Add(DB_Main.getUserName(userId));
-                  }
-
-                  // Back to the Unity thread
-                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     if (missingMembersNames.Count > 0) {
-                        string allNames = "";
-                        foreach (string name in missingMembersNames) {
-                           allNames = allNames + name + ", ";
-                        }
-                        allNames = allNames.Substring(0, allNames.Length - 2);
-
-                        ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Some group members are missing: " + allNames);
-                        Target_OnWarpFailed("Missing group members");
-                        return;
-                     }
-
-                     // Create the first league map and warp the player to it
-                     VoyageManager.self.createLeagueInstanceAndWarpPlayer(_player, instance.leagueIndex + 1, instance.biome);
-                  });
-               });
-            }
-         } else {
-            Target_OnWarpFailed("Displaying current voyage panel instead of warping immediately");
-
-            // Display a panel with the current voyage map details
-            Target_ReceiveCurrentVoyageInstance(_player.connectionToClient, voyage);
-         }
+      if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
+         // Create a new league with the same biome than the player's current instance
+         VoyageManager.self.createLeagueInstanceAndWarpPlayer(_player, 0, instance.biome);
          return;
       }
 
-      // Create a new lobby with the same biome than the player's current instance (usually the town)
-      VoyageManager.self.createLeagueInstanceAndWarpPlayer(_player, 0, instance.biome);
+      // Check if the user has already joined a voyage
+      if (_player.tryGetVoyage(out Voyage voyage)) {
+         Target_OnWarpFailed("Displaying current voyage panel instead of warping immediately");
+
+         // Display a panel with the current voyage map details
+         Target_ReceiveCurrentVoyageInstance(_player.connectionToClient, voyage);
+      } else {
+         // When entering a league with a group, all the group members must be nearby
+         List<string> missingMembersNames = new List<string>();
+         List<int> missingMembersUserIds = new List<int>();
+         foreach (int memberUserId in voyageGroup.members) {
+            // Try to find the entity
+            NetEntity memberEntity = EntityManager.self.getEntity(memberUserId);
+            if (memberEntity == null) {
+               missingMembersUserIds.Add(memberUserId);
+            } else {
+               if (Vector3.Distance(memberEntity.transform.position, _player.transform.position) > Voyage.LEAGUE_START_MEMBERS_MAX_DISTANCE) {
+                  missingMembersNames.Add(memberEntity.entityName);
+               }
+            }
+         }
+
+         // Background thread
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            // If some user entities are connected to another server or offline, read their names in the DB
+            foreach (int userId in missingMembersUserIds) {
+               missingMembersNames.Add(DB_Main.getUserName(userId));
+            }
+
+            // Back to the Unity thread
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               if (missingMembersNames.Count > 0) {
+                  string allNames = "";
+                  foreach (string name in missingMembersNames) {
+                     allNames = allNames + name + ", ";
+                  }
+                  allNames = allNames.Substring(0, allNames.Length - 2);
+
+                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Some group members are missing: " + allNames);
+                  Target_OnWarpFailed("Missing group members");
+                  return;
+               }
+
+               // Create the first league map and warp the player to it
+               VoyageManager.self.createLeagueInstanceAndWarpPlayer(_player, 0, instance.biome);
+            });
+         });
+      }
    }
 
    [Command]
@@ -5814,7 +5811,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Check if the group is linked to a league that has already started
-      if (destinationGroup.voyageId > 0 && VoyageManager.self.tryGetVoyage(destinationGroup.voyageId, out Voyage destinationVoyage) && destinationVoyage.isLeague && destinationVoyage.leagueIndex > 0) {
+      if (destinationGroup.voyageId > 0 && VoyageManager.self.tryGetVoyage(destinationGroup.voyageId, out Voyage destinationVoyage) && destinationVoyage.isLeague) {
          int aliveNPCEnemyCount = destinationVoyage.aliveNPCEnemyCount;
          int playerCount = destinationVoyage.playerCount;
          bool hasTreasureSite = false;
@@ -6149,6 +6146,29 @@ public class RPCManager : NetworkBehaviour
    }
 
    #endregion
+
+   [Command]
+   public void Cmd_RequestItemData (int itemId) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         Item item = DB_Main.getItem(itemId);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveItemData(item);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveItemData (Item item) {
+      itemDataReceived?.Invoke(item);
+   }
 
    [TargetRpc]
    public void Target_UpdateInventory (NetworkConnection connection) {
@@ -9406,11 +9426,12 @@ public class RPCManager : NetworkBehaviour
          }
       } else {
          int counter = 1;
+
          // If the results list is small enough, show them in chat, otherwise show them in a specialized GUI panel
          foreach (UserSearchResult result in resultCollection.results) {
-
             bool isCurrentPlayer = Util.areStringsEqual(result.name, _player.entityName);
-            string biomeStr = Biome.getName(result.biome);
+            string biome = Biome.getName(result.biome);
+            string biomeStr = string.IsNullOrWhiteSpace(biome) ? "" : $" in {biome}";
             string areaAdminStr = (Util.isEmpty(result.area) ? "Somewhere" : $"{Area.getName(result.area)} ({result.area})");
             string areaStr = (Util.isEmpty(result.area) ? "Somewhere" : $"{Area.getName(result.area)}");
             string sameServerStr = (result.isSameServer && result.area == _player.areaKey && !isCurrentPlayer) ? "*" : "";
@@ -9419,7 +9440,7 @@ public class RPCManager : NetworkBehaviour
             string userIdStr = Global.player.isAdmin() ? $", UID: {result.userId}" : "";
             string computedAreaStr = "Location: " + (_player.isAdmin() ? areaAdminStr : areaStr);
 
-            string msg = $"[{counter}/{resultCollection.results.Length}] {result.name}{userIdStr}, Lv: {result.level}, {computedAreaStr}{sameServerStr} in {biomeStr}, {onlineStr}{lastOnlineStr}";
+            string msg = $"[{counter}/{resultCollection.results.Length}] {result.name}{userIdStr}, Lv: {result.level}, {computedAreaStr}{sameServerStr}{biomeStr}, {onlineStr}{lastOnlineStr}";
             ChatManager.self.addChat(msg, ChatInfo.Type.System);
             counter++;
          }

@@ -30,6 +30,9 @@ public class Util : MonoBehaviour
    public const string STANDALONE_BUILD = "Server-Dev-Windows-Standalone";
    public const string DEVELOPMENT_BUILD = "Client-Dev-Windows-Standalone-";
 
+   // A Random instance we can use for generating random numbers
+   public static System.Random r = new System.Random();
+
    public static Sprite getRawSpriteIcon (Item.Category category, int itemType) {
       if (category != Item.Category.None && itemType != 0) {
          string castItem = new Item { category = category, itemTypeId = itemType }.getCastItem().getIconPath();
@@ -278,6 +281,14 @@ public class Util : MonoBehaviour
           transform.localPosition.x,
           newY,
           transform.localPosition.z
+      );
+   }
+
+   public static void setLocalZ (Transform transform, float newZ) {
+      transform.localPosition = new Vector3(
+          transform.localPosition.x,
+          transform.localPosition.y,
+          newZ
       );
    }
 
@@ -1250,6 +1261,7 @@ public class Util : MonoBehaviour
       Global.currentlySelectedUserId = 0;
       Global.isFirstLogin = true;
       Global.isFirstSpawn = true;
+      Global.isRedirecting = false;
       TitleScreen.self.passwordInputField.text = "";
 
       // Clear the current area - if we reconnect to another server, the area position could be different
@@ -1521,9 +1533,6 @@ public class Util : MonoBehaviour
       Vector2 projection = lineStart + t * (lineEnd - lineStart);
       return Vector2.Distance(point, projection);
    }
-
-   // A Random instance we can use for generating random numbers
-   private static System.Random r = new System.Random();
 
    // A cached reference to the main camera
    private static Camera _mainCamera;

@@ -14,6 +14,12 @@ public class ChatManager : GenericGameManager
 {
    #region Public Variables
 
+   // When we add a <link> tag to the text to mark item insert position, we use this transparent text
+   public const string ITEM_INSERT_TEXT_PLACEHOLDER = "|||";
+
+   // Item insert id prefix we use in texh mesh pro <link> tag
+   public const string ITEM_INSERT_ID_PREFIX = "iteminsertid";
+
    // The Chat Panel, need to have direct reference in case something gets logged during Awake()
    public ChatPanel chatPanel;
 
@@ -62,7 +68,7 @@ public class ChatManager : GenericGameManager
       }
    
       if (
-         InputManager.self.inputMaster?.UIShotcuts.ChatReply.WasPressedThisFrame() == true && 
+         InputManager.self.inputMaster.UIShotcuts.ChatReply.WasPressedThisFrame() == true && 
          !chatPanel.inputField.isFocused && 
          !chatPanel.nameInputField.isFocused && 
          !string.IsNullOrEmpty(_lastWhisperSender)
@@ -311,13 +317,22 @@ public class ChatManager : GenericGameManager
    }
 
    public void onChatLostFocus () {
-      InputManager.self.inputMaster?.Chat.Disable();
+      if (Util.isBatch()) {
+         return;
+      }
+      InputManager.self.actionMapStates.Restore();
+      InputManager.self.inputMaster.Chat.Disable();
       autoCompletePanel.inputFieldFocused = false;
       autoCompletePanel.updatePanel();
    }
 
    public void onChatGainedFocus () {
-      InputManager.self.inputMaster?.Chat.Enable();
+      if (Util.isBatch()) {
+         return;
+      }
+      InputManager.self.actionMapStates.Save();
+      InputManager.self.actionMapStates.DisableAll();
+      InputManager.self.inputMaster.Chat.Enable();
       autoCompletePanel.inputFieldFocused = true;
       autoCompletePanel.updatePanel();
    }
@@ -388,6 +403,52 @@ public class ChatManager : GenericGameManager
       if (ChatPanel.self != null) {
          ChatPanel.self.refreshChatLines();
       }
+   }
+
+   public static string injectItemSnippetLinks (string text) {
+      // Split everything by the beginning of the tag
+      string[] values = text.Split(new string[] { "[itemid=" }, StringSplitOptions.RemoveEmptyEntries);
+
+      // Starting with the second entry, the beginning should attempt to close out the tag
+      // Unless it begins with the tag itself
+
+      int start = 1;
+      string result = values[0];
+
+      if (text.StartsWith("[itemid=")) {
+         start = 0;
+         result = "";
+      }
+      
+      for (int i = start; i < values.Length; i++) {
+         string id = "";
+         bool found = false;
+         string frag = values[i];
+
+         for (int j = 0; j < frag.Length; j++) {
+            if (char.IsNumber(frag[j])) {
+               // Found a number, add to id
+               id += frag[j];
+            } else if (frag[j] == ']') {
+               // Closing of item insert tag
+               found = true;
+               break;
+            } else {
+               // Invalid character in insert tag, cancel
+               break;
+            }
+         }
+
+         // Check if we found the valid tag, insert link if so, otherwise recreate whatever was there
+         if (id.Length > 0 && found) {
+            result += "<link=\"" + ChatManager.ITEM_INSERT_ID_PREFIX + id + "\"><nobr><color=#00000000>" +
+               ChatManager.ITEM_INSERT_TEXT_PLACEHOLDER + "</color></nobr></link>" + frag.Substring(1 + id.Length);
+         } else {
+            result += "[itemid=" + frag;
+         }
+      }
+
+      return result;
    }
 
    protected void executeChatCommand (string message) {

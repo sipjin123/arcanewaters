@@ -8,12 +8,16 @@ using System;
 using System.Linq;
 using UnityEngine.InputSystem;
 using Crosstales.BWF.Manager;
+using TMPro;
 
 public class ChatPanel : MonoBehaviour {
    #region Public Variables
 
    // The height of 1 chat line
    public static float chatLineHeight = 22.6f;
+
+   // The height of the bottom bar in word space
+   public static float bottomBarWorldSpaceHeight = 0.16f;
 
    // The visible number of lines in each mode, which defines the panel height
    public static int CHAT_LINES_MINIMIZED = 4;
@@ -43,6 +47,10 @@ public class ChatPanel : MonoBehaviour {
    // The constant whisper prefix for server message processing
    public const string WHISPER_PREFIX = "/w ";
    public const string WHISPER_PREFIX_FULL = "/whisper ";
+
+   // Position markers for height calculation
+   public RectTransform topPositionMarker = null;
+   public RectTransform botPositionMarker = null;
 
    // The panel modes
    public enum Mode
@@ -76,7 +84,7 @@ public class ChatPanel : MonoBehaviour {
    public Image messageBackgroundImage;
    public RectTransform toolbarRect;
    public CanvasGroup toolbarCanvas;
-   public InputField inputField;
+   public TMP_InputField inputField;
    public GameObject scrollBarContainer;
    public GameObject resizeHandle;
    public Text chatModeText;
@@ -172,6 +180,7 @@ public class ChatPanel : MonoBehaviour {
    }
 
    void Update () {
+      updateBottomBarHeight();
       processGuiInputfield();
 
       if (!shouldShowChat()) {
@@ -290,6 +299,15 @@ public class ChatPanel : MonoBehaviour {
             break;
          default:
             break;
+      }
+   }
+
+   private void updateBottomBarHeight () {
+      Camera cam = CameraManager.defaultCamera.getCamera();
+      if (cam != null) {
+         float top = cam.ScreenToWorldPoint(topPositionMarker.transform.position).y;
+         float bot = cam.ScreenToWorldPoint(botPositionMarker.transform.position).y;
+         bottomBarWorldSpaceHeight = top - bot;
       }
    }
 
@@ -430,6 +448,21 @@ public class ChatPanel : MonoBehaviour {
       }
    }
 
+   public void addItemInsertToInput (Item item) {
+      if (item == null) {
+         return;
+      }
+
+      string toAdd = "[itemid=" + item.id + "]";
+
+      if (inputField.text.Length + toAdd.Length > inputField.characterLimit) {
+         // Too long
+         return;
+      }
+
+      inputField.text += toAdd;
+   }
+
    private float computeTargetHeight (int visibleLinesCount) {
       return toolbarRect.sizeDelta.y + 12 + visibleLinesCount * chatLineHeight;
    }
@@ -557,7 +590,7 @@ public class ChatPanel : MonoBehaviour {
 	  
 	  // Highlight the message if directed at the local player
       if (Global.player != null) {
-         bool shouldHighlight = chatLine.text.text.ToLower().Contains("@" + Global.player.entityName.ToLower());
+         bool shouldHighlight = chatLine.getFormattedText().ToLower().Contains("@" + Global.player.entityName.ToLower());
          chatRowComponent.toggleHighlight(shouldHighlight);
       }
    }
@@ -570,7 +603,7 @@ public class ChatPanel : MonoBehaviour {
       }
 
       if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
-         chatLine.text.text = string.Format("<color={0}>[PVP]:</color> <color={1}>{2}</color>", getSenderNameColor(chatInfo.messageType, false), getColorString(chatInfo.messageType, false), chatInfo.text);
+         chatLine.setFormattedText(string.Format("<color={0}>[PVP]:</color> <color={1}>{2}</color>", getSenderNameColor(chatInfo.messageType, false), getColorString(chatInfo.messageType, false), chatInfo.text));
          return;
       }
 
@@ -583,7 +616,7 @@ public class ChatPanel : MonoBehaviour {
          }
       }
 
-      chatLine.text.text = getFormattedChatLine(chatInfo, chatInfo.text);
+      chatLine.setFormattedText(getFormattedChatLine(chatInfo, chatInfo.text));
    }
 
    public void refreshChatLines() {
@@ -923,7 +956,7 @@ public class ChatPanel : MonoBehaviour {
       // Cycle over all of the chat lines in our container
       foreach (SpeakChatLine chatLine in messagesContainer.GetComponentsInChildren<SpeakChatLine>(true)) {
          if (chatLine.chatInfo.senderId == userId) {
-            chatLine.text.text = getFormattedChatLine(chatLine.chatInfo, "<Message deleted>");
+            chatLine.setFormattedText(getFormattedChatLine(chatLine.chatInfo, "<Message deleted>"));
          }
       }
    }
@@ -1001,6 +1034,32 @@ public class ChatPanel : MonoBehaviour {
 
    public void focusWhisperInputField () {
       StartCoroutine(CO_FocusAfterDelay(nameInputField));
+   }
+
+   protected IEnumerator CO_FocusAfterDelay (TMP_InputField field) {
+      // Wait a frame
+      yield return null;
+
+      // Now we can activate
+      field.ActivateInputField();
+
+      // Have to do this in a separate Coroutine, it's ridiculous
+      StartCoroutine(CO_MoveCaretToEnd(field));
+   }
+
+   public IEnumerator CO_MoveCaretToEnd (TMP_InputField field) {
+      // Hide the text selection
+      Color selectionColor = inputField.selectionColor;
+      inputField.selectionColor = new Color(selectionColor.r, selectionColor.g, selectionColor.b, 0f);
+
+      // Wait a frame
+      yield return null;
+
+      // Don't select the text, that's annoying
+      field.MoveTextEnd(false);
+
+      // Restore the text selection color
+      inputField.selectionColor = selectionColor;
    }
 
    protected IEnumerator CO_FocusAfterDelay (InputField field) {

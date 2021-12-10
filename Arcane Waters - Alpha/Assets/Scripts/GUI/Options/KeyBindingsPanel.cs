@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using SubjectNerd.Utilities;
-using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem;
 
 public class KeyBindingsPanel : Panel
@@ -12,6 +11,8 @@ public class KeyBindingsPanel : Panel
    // Graphic that covers the UI while we wait for user to press a key
    public GameObject inputBlocker;
 
+   // Keybinding section entry
+   public KeybindingsSection keybindingsSectionPref;
    // Keybindings list entry
    public KeybindingsEntry entryPref;
 
@@ -20,14 +21,6 @@ public class KeyBindingsPanel : Panel
 
    #endregion
 
-   private void OnEnable () {
-      InputManager.keyBindingChanged += bindingChanged;
-   }
-
-   private void OnDisable () {
-      InputManager.keyBindingChanged -= bindingChanged;
-   }
-
    public override void show () {
       if (!_initialized) {
          initialize();
@@ -35,95 +28,82 @@ public class KeyBindingsPanel : Panel
 
       base.show();
 
-      // Set values for all entries
-      foreach (KeybindingsEntry entry in _entries.Values) {
-         BoundKeyAction binding = InputManager.getBinding(entry.action);
-         entry.setPrimary(binding.primary);
-         entry.setSecondary(binding.secondary);
-      }
-
       // Disable blocker
       inputBlocker.SetActive(false);
-      _waitingEntry = null;
+   }
+   
+   public void restoreDefaults() {
+      InputManager.self.restoreDefaults();
+      refreshTexts();
    }
 
-   private void bindingChanged (BoundKeyAction binding) {
-      if (_entries.TryGetValue(binding.action, out KeybindingsEntry entry)) {
-         entry.setPrimary(binding.primary);
-         entry.setSecondary(binding.secondary);
-      }
-   }
-
-   public void requestUserForKey (KeybindingsEntry entry, bool isPrimary) {
-      _waitingEntry = entry;
-      _waitingForPrimary = isPrimary;
-      inputBlocker.SetActive(true);
-   }
-
-   public override void Update () {
-      base.Update();
-
-      if (_waitingEntry != null) {
-         if (Keyboard.current.anyKey.wasPressedThisFrame) {
-            foreach (Key key in Enum.GetValues(typeof(Key))) {
-               if (key != Key.None) { 
-                  if (KeyUtils.GetKeyDown(key)) {
-                     // Set the binding
-                     InputManager.setBindingKey(_waitingEntry.action, key, _waitingForPrimary);
-
-                     inputBlocker.SetActive(false);
-                     _waitingEntry = null;
-                     break;
-                  }
-               }
-            }
-         }
+   private void refreshTexts () {
+      foreach (var keybindingsEntry in _keybindingsEntries) {
+         keybindingsEntry.refreshTexts();
       }
    }
 
    private void initialize () {
-      _entries = new Dictionary<KeyAction, KeybindingsEntry>();
-
-      // Destroy any existing entries
-      foreach (KeybindingsEntry entry in entryParent.GetComponentsInChildren<KeybindingsEntry>()) {
+      // Destroy any existing sections and entries 
+      foreach (var entry in entryParent.GetComponentsInChildren<KeybindingsSection>()) {
+         Destroy(entry.gameObject);
+      }
+      foreach (var entry in entryParent.GetComponentsInChildren<KeybindingsEntry>()) {
          Destroy(entry.gameObject);
       }
 
       // Create all entries for every defined action
-      foreach (KeyActionNamePair pair in _actionsToShow) {
-         _entries.Add(pair.keyAction, Instantiate(entryPref, entryParent).initialize(this, pair.keyAction, pair.name));
+      _keybindingsEntries = new List<KeybindingsEntry>();
+      foreach (var rebindActionMap in _rebindActionMaps) {
+         Instantiate(keybindingsSectionPref, entryParent).initialize(rebindActionMap.name);
+         rebindActionMap.Init();
+         
+         foreach (var rebindAction in rebindActionMap.rebindActions) {
+            _keybindingsEntries.Add(Instantiate(entryPref, entryParent).initialize(this, rebindAction));
+         }
       }
 
       _initialized = true;
    }
 
-   #region Private Variables
+   [Serializable]
+   private class RebindActionMap {
+      // Action map key
+      public string key;
+      // Display name of the action map
+      public string name;
+      // Rebind actions
+      public RebindAction[] rebindActions;
+      
+      public void Init () {
+         foreach (var rebindAction in rebindActions) {
+            rebindAction.Init(key);
+         }
+      }
+   }
 
+   [Serializable]
+   public class RebindAction {
+      // Action key
+      public string key;
+      // Display name of the action
+      public string name;
+      // Input action name
+      [HideInInspector] [NonSerialized] 
+      public InputAction inputAction;
+
+      public void Init (string sectionKey) {
+         inputAction = InputManager.self.inputMaster.asset.FindActionMap(sectionKey, true).FindAction(key, true);
+      }
+   }   
+   
+   #region Private Variables
    // Has the panel been initialized yet
    private bool _initialized;
 
-   // Bindings entries in the panel
-   private Dictionary<KeyAction, KeybindingsEntry> _entries;
+   [SerializeField, Reorderable] 
+   private RebindActionMap[] _rebindActionMaps;
 
-   // The entry that is currently waiting for user input
-   private KeybindingsEntry _waitingEntry;
-
-   // Are we waiting for primary or secondary key
-   private bool _waitingForPrimary;
-
-   // List of actions we show in the panel
-   [SerializeField, Reorderable]
-   private KeyActionNamePair[] _actionsToShow;
-
-   [Serializable]
-   private class KeyActionNamePair
-   {
-      // Display name of the action
-      public string name;
-
-      // Key action type
-      public KeyAction keyAction;
-   }
-
+   private List<KeybindingsEntry> _keybindingsEntries;
    #endregion
 }

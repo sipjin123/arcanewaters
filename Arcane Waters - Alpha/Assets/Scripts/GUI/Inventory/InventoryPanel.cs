@@ -183,6 +183,11 @@ public class InventoryPanel : Panel {
 
       cell.rightClickEvent.AddListener(() => showContextMenu(cell));
       cell.doubleClickEvent.AddListener(() => InventoryManager.tryEquipOrUseItem(cell.getItem()));
+      cell.shiftClickEvent.AddListener(() => {
+         if (ChatPanel.self != null) {
+            ChatPanel.self.addItemInsertToInput(cell.getItem());
+         }
+      });
       cell.onPointerEnter.AddListener(() => {
          // Play hover sfx
          SoundEffectManager.self.playFmodGuiHover(SoundEffectManager.HOVER_CURSOR_ITEMS);

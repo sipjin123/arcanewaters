@@ -1,13 +1,11 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
 using Mirror;
 using System.Linq;
-using System.Threading;
 using UnityEngine.EventSystems;
-using TMPro;
 using UnityEngine.InputSystem;
+using Random = UnityEngine.Random;
 
 public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHandler
 {
@@ -177,14 +175,10 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
       if (isLocalPlayer && !Util.isBatch()) {
          // Gamepad action trigger
-         InputManager.self.inputMaster.Land.Action.performed += func => triggerInteractAction(false);
+         InputManager.self.inputMaster.Land.Action.performed += OnActionPerformed;
 
          // Gamepad jump trigger
-         InputManager.self.inputMaster.Land.Jump.performed += func => {
-            if (InputManager.isActionInputEnabled()) {
-               triggerJumpAction();
-            }
-         };
+         InputManager.self.inputMaster.Land.Jump.performed += OnJumpPerformed;
 
          PanelManager.self.showPowerupPanel();
          Cmd_CheckAmbientSfx();
@@ -202,6 +196,24 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          // When we enter a new scene, update powerups on the client
          rpc.Target_UpdateLandPowerups(connectionToClient, LandPowerupManager.self.getPowerupsForUser(userId));
       }
+      
+      InputManager.self.inputMaster.Land.Enable();
+      InputManager.self.inputMaster.Sea.Disable();
+   }
+
+   private void OnActionPerformed (InputAction.CallbackContext ctx) {
+      triggerInteractAction(false);
+   }
+
+   private void OnJumpPerformed (InputAction.CallbackContext ctx) {
+      if (InputManager.isActionInputEnabled()) {
+         triggerJumpAction();
+      }      
+   }
+
+   private void OnDestroy () {
+      InputManager.self.inputMaster.Land.Action.performed -= OnActionPerformed;
+      InputManager.self.inputMaster.Land.Jump.performed -= OnJumpPerformed;
    }
 
    public void npcCheck () {
@@ -497,8 +509,10 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          return;
       }
 
-      if (InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
-         triggerJumpAction();
+      if (!Util.isBatch()) {
+         if (InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
+            triggerJumpAction();
+         }
       }
    }
 

@@ -29,6 +29,11 @@ public class HairLayer : SpriteLayer {
    #endregion
 
    private void Update () {
+      // Skip update for server in batch mode
+      if (Util.isBatch()) {
+         return;
+      }
+      
       setClipmask();
       updateClipmask();
    }

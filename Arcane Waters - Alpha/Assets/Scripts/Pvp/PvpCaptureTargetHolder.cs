@@ -79,7 +79,15 @@ public class PvpCaptureTargetHolder : SeaStructure, IMapEditorDataReceiver {
       if (!_isActivated) {
          return true;
       }
-      return (_captureTarget.getHoldingEntity() == this);
+
+      if (_captureTarget != null) {
+         SeaEntity holdingEntity = _captureTarget.getHoldingEntity();
+         if (holdingEntity != null) {
+            return (_captureTarget.getHoldingEntity() == this);
+         }
+      }
+
+      return false;
    }
 
    public override bool isPvpCaptureTargetHolder () {

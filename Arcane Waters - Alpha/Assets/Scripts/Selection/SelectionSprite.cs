@@ -66,16 +66,43 @@ public class SelectionSprite : MonoBehaviour {
 
    protected void setDistances (NetEntity selectedEntity) {
       // Default distances
-      float horizontalDistance = .20f;
-      float verticalDistance = .20f;
+      float horizontalDistance = .20f + getExtraWidth(selectedEntity);
+      float verticalDistance = .20f + getExtraHeight(selectedEntity);
+      float yOffset = getYOffset(selectedEntity);
 
       // A small offset applied to make the arrows bounce
-      float offset = (Time.time % 1 > .5f) ? .01f : -.01f;
+      float bounceOffset = (Time.time % 1 > .5f) ? .01f : -.01f;
 
-      north.transform.localPosition = new Vector3(0f, verticalDistance + offset, north.transform.localPosition.z);
-      south.transform.localPosition = new Vector3(0f, -verticalDistance - offset, south.transform.localPosition.z);
-      east.transform.localPosition = new Vector3(horizontalDistance + offset, 0f, east.transform.localPosition.z);
-      west.transform.localPosition = new Vector3(-horizontalDistance - offset, 0f, west.transform.localPosition.z);
+      north.transform.localPosition = new Vector3(0f, verticalDistance + bounceOffset + yOffset, north.transform.localPosition.z);
+      south.transform.localPosition = new Vector3(0f, -verticalDistance - bounceOffset + yOffset, south.transform.localPosition.z);
+      east.transform.localPosition = new Vector3(horizontalDistance + bounceOffset, yOffset, east.transform.localPosition.z);
+      west.transform.localPosition = new Vector3(-horizontalDistance - bounceOffset, yOffset, west.transform.localPosition.z);
+   }
+
+   protected float getYOffset (NetEntity selectedEntity) {
+      if (selectedEntity.name.Contains("Horror_Tentacle")) {
+         return -0.19f;
+      } else if (selectedEntity.name.Contains("Horror")) {
+         return -0.335f;
+      }
+      
+      return 0.0f;
+   }
+
+   protected float getExtraWidth (NetEntity selectedEntity) {
+      if (selectedEntity.name.Contains("Horror") && !selectedEntity.name.Contains("Horror_Tentacle")) {
+         return 0.271f;
+      }
+
+      return 0.0f;
+   }
+
+   protected float getExtraHeight (NetEntity selectedEntity) {
+      if (selectedEntity.name.Contains("Horror") && !selectedEntity.name.Contains("Horror_Tentacle")) {
+         return 0.155f;
+      }
+
+      return 0.0f;
    }
 
    protected void setColorsForTarget (NetEntity selectedEntity) {

@@ -336,6 +336,14 @@ public class SimpleAnimation : ClientMonoBehaviour {
       return ImageManager.self.blankTexture;
    }
 
+   private void OnBecameInvisible () {
+      isPaused = true;
+   }
+
+   private void OnBecameVisible () {
+      isPaused = false;
+   }
+
    #region Private Variables
 
    // Our Renderer

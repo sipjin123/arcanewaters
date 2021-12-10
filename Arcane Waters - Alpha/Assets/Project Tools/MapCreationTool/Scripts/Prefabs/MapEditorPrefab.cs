@@ -40,7 +40,7 @@ namespace MapCreationTool
          }
       }
 
-      public void setSpriteOutline (SpriteRenderer sr, bool hovered, bool selected, bool deleting) {
+      public void setSpriteHighlight (SpriteRenderer sr, bool hovered, bool selected, bool deleting) {
          if (deleting) {
             sr.color = DELETING_HIGHLIGHT_COLOR;
          } else if (!hovered && !selected) {

@@ -11,8 +11,8 @@ namespace MapCreationTool
       public Transform prefabParent;
       public Transform npcParent;
       public Transform effectorContainer;
-      public PolygonCollider2D camBounds;
       public CinemachineConfiner confiner;
+      public MapCameraBounds mapCameraBounds;
       public Transform rugMarkerParent;
       public FlockManager flockManager;
       public Transform rightBorder, leftBorder, topBorder, bottomBorder;

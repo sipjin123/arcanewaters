@@ -1363,17 +1363,17 @@ public class NetEntity : NetworkBehaviour
       bool canChangeDirection = (NetworkTime.time - _lastFacingChangeTime > getTurnDelay());
 
       if (canChangeDirection) {
-         if (InputManager.getKeyAction(KeyAction.MoveLeft)) {
+         if (InputManager.self.inputMaster.General.MoveLeft.IsPressed()) {
             Cmd_ModifyFacing(-1);
             _lastFacingChangeTime = NetworkTime.time;
-         } else if (InputManager.getKeyAction(KeyAction.MoveRight)) {
+         } else if (InputManager.self.inputMaster.General.MoveRight.IsPressed()) {
             Cmd_ModifyFacing(+1);
             _lastFacingChangeTime = NetworkTime.time;
          }
       }
 
       // Figure out the force vector we should apply
-      if (InputManager.getKeyAction(KeyAction.MoveUp)) {
+      if (InputManager.self.inputMaster.General.MoveUp.IsPressed()) {
          Vector2 forceToApply = DirectionUtil.getVectorForDirection(this.facing);
          _body.AddForce(forceToApply.normalized * getMoveSpeed());
 

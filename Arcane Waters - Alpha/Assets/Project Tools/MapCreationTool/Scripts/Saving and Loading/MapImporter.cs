@@ -208,14 +208,9 @@ namespace MapCreationTool
       /// <param name="map"></param>
       /// <param name="tiles"></param>
       public static void setCameraBounds (MapTemplate map, Bounds bounds) {
-         map.camBounds.points = new Vector2[] {
-            new Vector2(bounds.min.x, bounds.min.y),
-            new Vector2(bounds.min.x, bounds.max.y),
-            new Vector2(bounds.max.x, bounds.max.y),
-            new Vector2(bounds.max.x, bounds.min.y)
-         };
+         map.mapCameraBounds.setMapBoundingBox(bounds);
 
-         map.confiner.m_BoundingShape2D = map.camBounds;
+         map.confiner.m_BoundingShape2D = map.mapCameraBounds.getCameraBoundsShape();
 
          Vector3 confinerPosition = map.area.cameraBounds.transform.localPosition;
          map.area.cameraBounds.transform.localScale = new Vector3(0.16f, 0.16f, 0.16f);
@@ -411,6 +406,11 @@ namespace MapCreationTool
                         UnityEngine.Object.Destroy(col);
                      }
                   }
+               }
+
+               foreach (SimpleAnimation anims in pref.GetComponentsInChildren<SimpleAnimation>()) {
+                  // Start paused
+                  anims.isPaused = true;
                }
 
                CustomizablePrefab customizablePrefab = pref.GetComponent<CustomizablePrefab>();

@@ -383,37 +383,32 @@ public class VoyageGroupManager : MonoBehaviour
                   return true;
                }
 
-               // Check if the league has started
-               if (voyage.leagueIndex > 0) {
-                  int aliveNPCEnemyCount = voyage.aliveNPCEnemyCount;
-                  int playerCount = voyage.playerCount;
-                  bool hasTreasureSite = false;
+               int aliveNPCEnemyCount = voyage.aliveNPCEnemyCount;
+               int playerCount = voyage.playerCount;
+               bool hasTreasureSite = false;
 
-                  // Find the treasure site (if any) and add the npc enemies and players it contains
-                  if (VoyageManager.self.tryGetVoyage(voyage.voyageId, out Voyage treasureSite, true)) {
-                     if (VoyageManager.isTreasureSiteArea(treasureSite.areaKey)) {
-                        hasTreasureSite = true;
-                     }
-
-                     aliveNPCEnemyCount += treasureSite.aliveNPCEnemyCount;
-                     playerCount += treasureSite.playerCount;
+               // Find the treasure site (if any) and add the npc enemies and players it contains
+               if (VoyageManager.self.tryGetVoyage(voyage.voyageId, out Voyage treasureSite, true)) {
+                  if (VoyageManager.isTreasureSiteArea(treasureSite.areaKey)) {
+                     hasTreasureSite = true;
                   }
 
-                  // More members can be invited if the league instance is cleared of enemies
-                  if (aliveNPCEnemyCount == 0 && !hasTreasureSite) {
-                     return false;
-                  }
-
-                  // More members can be invited if the group members are not in the instance
-                  if (playerCount <= 0) {
-                     return false;
-                  }                
-
-                  errorMessage = "You cannot invite more players while group members are close to danger!";
-                  return true;
+                  aliveNPCEnemyCount += treasureSite.aliveNPCEnemyCount;
+                  playerCount += treasureSite.playerCount;
                }
 
-               return false;
+               // More members can be invited if the league instance is cleared of enemies
+               if (aliveNPCEnemyCount == 0 && !hasTreasureSite) {
+                  return false;
+               }
+
+               // More members can be invited if the group members are not in the instance
+               if (playerCount <= 0) {
+                  return false;
+               }                
+
+               errorMessage = "You cannot invite more players while group members are close to danger!";
+               return true;
             } else if (!voyage.isPvP && voyageGroup.members.Count >= Voyage.getMaxGroupSize(voyage.difficulty)) {
                return true;
             } else if (voyage.isPvP && voyageGroup.members.Count >= Voyage.MAX_PLAYERS_PER_GROUP_PVP) {

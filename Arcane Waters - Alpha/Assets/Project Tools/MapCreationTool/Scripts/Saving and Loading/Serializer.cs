@@ -276,7 +276,8 @@ namespace MapCreationTool.Serialization
    }
 
    [Serializable]
-   public class DataField {
+   public class DataField
+   {
       public static CultureInfo US_CULTURE => CultureInfo.CreateSpecificCulture("en-US");
 
       // For prefabs, the serializable data is saved as key-value pairs
@@ -386,6 +387,11 @@ namespace MapCreationTool.Serialization
       public const string HAS_SHOP_BUILDING = "has shop building";
       public const string IS_FACING_NORTH = "is facing north";
 
+      public const string WIND_GUST_SIZE_X_KEY = "size_x";
+      public const string WIND_GUST_SIZE_Y_KEY = "size_y";
+      public const string WIND_GUST_ROTATION_KEY = "rotation";
+      public const string WIND_GUST_STRENGTH_KEY = "strength";
+
       public string k; // Key
       public string v; // Value
 
@@ -407,6 +413,20 @@ namespace MapCreationTool.Serialization
          }
 
          return JsonConvert.DeserializeObject<T>(v);
+      }
+
+      public bool boolValue
+      {
+         get { return bool.Parse(v); }
+      }
+
+      public bool tryGetBoolValue (out bool value) {
+         if (bool.TryParse(v, out bool val)) {
+            value = val;
+            return true;
+         }
+         value = false;
+         return false;
       }
 
       public float floatValue

@@ -34,7 +34,7 @@ public class Bookshelf : MonoBehaviour, IMapEditorDataReceiver {
       }
       
       // Allow pressing keyboard to open the crafting panel
-      if (InputManager.isActionKeyPressed() && _isGlobalPlayerNearby) {
+      if (InputManager.self.inputMaster.UIControl.Equip.WasPressedThisFrame() && _isGlobalPlayerNearby) {
          openBookReaderPanel();
       }
    }

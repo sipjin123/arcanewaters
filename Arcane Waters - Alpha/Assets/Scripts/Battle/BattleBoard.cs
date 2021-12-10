@@ -101,6 +101,11 @@ public class BattleBoard : MonoBehaviour {
    }
 
    private void Update () {
+      // Skip update for server in batch mode
+      if (Util.isBatch()) {
+         return;
+      }
+
       if (isWeatherActive) {
          switch (weatherEffectType) {
             case WeatherEffectType.Cloud:

@@ -30,7 +30,7 @@ public class Biome
          case Type.Snow: return SNOW;
          case Type.Lava: return LAVA;
          case Type.Mushroom: return MUSHROOM;
-         default: return "Unknown";
+         default: return "";
       }
    }
 

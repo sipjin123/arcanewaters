@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using UnityEngine;
 
 [Serializable]
@@ -25,6 +26,7 @@ public class PvpShopItem {
    // The resource path of the sprite image
    public string spritePath;
 
+   [XmlIgnore]
    // The sprite reference
    public Sprite spriteRef;
 

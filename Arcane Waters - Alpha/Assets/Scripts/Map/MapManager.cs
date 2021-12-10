@@ -273,9 +273,24 @@ public class MapManager : MonoBehaviour
          MapImporter.setCameraBounds(result, bounds);
          MapImporter.addEdgeColliders(result, bounds);
 
+         // Add the frame that will wrap the area
+         addGenericFrame(area, bounds);
+
          area.vcam.GetComponent<MyCamera>().setInternalOrthographicSize();
 
          onAreaCreationIsFinished(area, biome);
+      }
+   }
+
+   private static void addGenericFrame (Area area, Bounds bounds) {
+      GameObject genericFrame = Instantiate(PrefabsManager.self.genericFramePrefab, area.transform);
+
+      // Nudge the frame forward, to avoid being clipped by the background's shader's clipping logic
+      genericFrame.transform.localPosition = new Vector3(0, 0, -4.1f);
+
+      // Resize frame to wrap the area
+      if (genericFrame.TryGetComponent(out SpriteRenderer spriteRenderer)) {
+         spriteRenderer.size = new Vector2(0.16f * bounds.size.x + 0.10f, 0.16f * bounds.size.y + 0.09f);
       }
    }
 
@@ -317,6 +332,19 @@ public class MapManager : MonoBehaviour
       if (area.isInterior) {
          SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_OPEN, transform);
          //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ENTER_DOOR, transform);
+      }
+
+      // Invoke canvas checked in 5 seconds after map load
+      Invoke("CanvasChecker", 5);
+   }
+
+   private void CanvasChecker () {
+      // Disable canvases for server in batch mode
+      if (Util.isBatch()) {
+         foreach (var obj in FindObjectsOfType<Canvas>()) {
+            // Disable main canvas game object
+            obj.gameObject.SetActive(false); 
+         }
       }
    }
 

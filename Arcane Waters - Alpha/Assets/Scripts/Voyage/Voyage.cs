@@ -171,15 +171,15 @@ public class Voyage
    }
 
    public static bool isLastLeagueMap (int leagueIndex) {
-      return leagueIndex >= MAPS_PER_LEAGUE;
+      return leagueIndex >= MAPS_PER_LEAGUE - 1;
+   }
+
+   public static bool isFirstLeagueMap (int leagueIndex) {
+      return leagueIndex == 0;
    }
 
    public static string getLeagueAreaName (int leagueIndex) {
-      if (leagueIndex == 0) {
-         return "Lobby";
-      } else {
-         return leagueIndex + " of " + MAPS_PER_LEAGUE;
-      }
+      return (leagueIndex + 1) + " of " + MAPS_PER_LEAGUE;
    }
 
    #region Private Variables

@@ -345,11 +345,7 @@ public class VoyageManager : GenericGameManager {
             }
             Instance instance = InstanceManager.self.getInstance(admin.instanceId);
 
-            if (isLobbyArea(newArea)) {
-               createLeagueInstanceAndWarpPlayer(admin, 0, instance.biome, -1, newArea);
-            } else {
-               createLeagueInstanceAndWarpPlayer(admin, 1, instance.biome, -1, newArea);
-            }
+            createLeagueInstanceAndWarpPlayer(admin, 0, instance.biome, -1, newArea);
             return;
          }
 
@@ -394,7 +390,7 @@ public class VoyageManager : GenericGameManager {
       }
 
       // Launch the creation of a random sea map instance, to be the parent of the treasure site instance
-      requestVoyageInstanceCreation(voyageId, "", false, true, Voyage.MAPS_PER_LEAGUE, -1, biome, difficulty);
+      requestVoyageInstanceCreation(voyageId, "", false, true, Voyage.MAPS_PER_LEAGUE - 1, -1, biome, difficulty);
 
       // Wait until the voyage instance has been created
       while (!tryGetVoyage(voyageId, out Voyage voyage)) {
@@ -461,17 +457,15 @@ public class VoyageManager : GenericGameManager {
          voyageGroup.voyageId = voyage.voyageId;
          VoyageGroupManager.self.updateGroup(voyageGroup);
 
-         // At the creation of the league lobby, clear powerups of all users
-         if (voyage.leagueIndex == 0) {
+         if (Voyage.isFirstLeagueMap(voyage.leagueIndex)) {
+            // At the creation of the first league map, clear powerups of all users
             foreach (int memberUserId in voyageGroup.members) {
                NetEntity memberEntity = EntityManager.self.getEntity(memberUserId);
                if (memberEntity != null) {
                   PowerupManager.self.clearPowerupsForUser(memberUserId);
                }
             }
-         }
 
-         if (voyage.leagueIndex == 1) {
             // At the creation of the league, warp all the group members to the instance together
             foreach (int memberUserId in voyageGroup.members) {
                NetEntity memberEntity = EntityManager.self.getEntity(memberUserId);
@@ -592,7 +586,7 @@ public class VoyageManager : GenericGameManager {
    }
    
    [Server]
-   private IEnumerator CO_CreateLeagueInstance (int leagueIndex, Biome.Type biome, int difficulty, int serverPort, Action onFailureAction, Action<Voyage> onSuccessAction, int randomSeed = -1, string areaKey = "") {      
+   private IEnumerator CO_CreateLeagueInstance (int leagueIndex, Biome.Type biome, int difficulty, int serverPort, Action onFailureAction, Action<Voyage> onSuccessAction, int randomSeed = -1, string areaKey = "") {
       // Get a new voyage id from the master server
       RpcResponse<int> response = ServerNetworkingManager.self.getNewVoyageId();
       while (!response.IsDone) {
@@ -601,10 +595,7 @@ public class VoyageManager : GenericGameManager {
       int voyageId = response.Value;
 
       if (string.IsNullOrEmpty(areaKey)) {
-         if (leagueIndex == 0) {
-            // The first league map is always a lobby
-            areaKey = getLobbyAreaKeys()[UnityEngine.Random.Range(0, getLobbyAreaKeys().Count)];
-         } else if (Voyage.isLastLeagueMap(leagueIndex)) {
+         if (Voyage.isLastLeagueMap(leagueIndex)) {
             // The last league map is always a boss
             areaKey = getLeagueSeaBossAreaKeys()[UnityEngine.Random.Range(0, getLeagueSeaBossAreaKeys().Count)];
          } else {
@@ -632,8 +623,8 @@ public class VoyageManager : GenericGameManager {
             mapIndexes = mapIndexes.OrderBy(x => r.Next()).ToList();
 
             // Pick the index corresponding to the league index
-            if (mapIndexes[leagueIndex - 1] < mapList.Count) {
-               areaKey = mapList[mapIndexes[leagueIndex - 1]];
+            if (mapIndexes[leagueIndex] < mapList.Count) {
+               areaKey = mapList[mapIndexes[leagueIndex]];
             } else {
                D.error("Not enough league maps. Some will be repeated!");
                areaKey = mapList[UnityEngine.Random.Range(0, mapList.Count)];

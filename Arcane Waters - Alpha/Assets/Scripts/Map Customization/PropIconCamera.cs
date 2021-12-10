@@ -63,10 +63,6 @@ namespace MapCustomization
          result.ReadPixels(new Rect(0, 0, renTex.width, renTex.height), 0, 0);
          result.Apply();
 
-         System.IO.Directory.CreateDirectory(Application.persistentDataPath + "/icons");
-         System.IO.File.WriteAllBytes(Application.persistentDataPath + "/icons/" + DateTime.Now.ToString("MMMM dd H.mm.ss") + " " + prefab.name + ".png",
-           result.EncodeToPNG());
-
          // Clean up
          GL.Clear(false, true, new Color(0, 0, 0, 0));
          RenderTexture.active = prev;

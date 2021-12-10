@@ -289,14 +289,19 @@ public class TutorialManager3 : MonoBehaviour {
 
       // Handle dynamic npc speechs
       if (npcSpeech.Contains("[")) {
-         npcSpeech = npcSpeech.Replace("[northp]", InputManager.getBinding(KeyAction.MoveUp).primary.ToString());
-         npcSpeech = npcSpeech.Replace("[norths]", InputManager.getBinding(KeyAction.MoveUp).secondary.ToString());
-         npcSpeech = npcSpeech.Replace("[eastp]", InputManager.getBinding(KeyAction.MoveRight).primary.ToString());
-         npcSpeech = npcSpeech.Replace("[easts]", InputManager.getBinding(KeyAction.MoveRight).secondary.ToString());
-         npcSpeech = npcSpeech.Replace("[southp]", InputManager.getBinding(KeyAction.MoveDown).primary.ToString());
-         npcSpeech = npcSpeech.Replace("[souths]", InputManager.getBinding(KeyAction.MoveDown).secondary.ToString());
-         npcSpeech = npcSpeech.Replace("[westp]", InputManager.getBinding(KeyAction.MoveLeft).primary.ToString());
-         npcSpeech = npcSpeech.Replace("[wests]", InputManager.getBinding(KeyAction.MoveLeft).secondary.ToString());
+         string moveUp = InputManager.self.inputMaster.General.MoveUp.bindings[(int)InputManager.BindingId.KeyboardPrimary].effectivePath.Replace("<Keyboard>/", "");
+         string moveRight = InputManager.self.inputMaster.General.MoveRight.bindings[(int)InputManager.BindingId.KeyboardPrimary].effectivePath.Replace("<Keyboard>/", "");
+         string moveDown = InputManager.self.inputMaster.General.MoveDown.bindings[(int)InputManager.BindingId.KeyboardPrimary].effectivePath.Replace("<Keyboard>/", "");
+         string moveLeft = InputManager.self.inputMaster.General.MoveLeft.bindings[(int)InputManager.BindingId.KeyboardPrimary].effectivePath.Replace("<Keyboard>/", "");
+         
+         npcSpeech = npcSpeech.Replace("[northp]", moveUp);
+         npcSpeech = npcSpeech.Replace("[norths]", moveUp);
+         npcSpeech = npcSpeech.Replace("[eastp]", moveRight);
+         npcSpeech = npcSpeech.Replace("[easts]", moveRight);
+         npcSpeech = npcSpeech.Replace("[southp]", moveDown);
+         npcSpeech = npcSpeech.Replace("[souths]", moveDown);
+         npcSpeech = npcSpeech.Replace("[westp]", moveLeft);
+         npcSpeech = npcSpeech.Replace("[wests]", moveLeft);
       }
 
       panel.refreshTutorialStep(selectedTutorialKey, npcSpeech, _currentStep + 1, _currentTutorial.steps.Count,

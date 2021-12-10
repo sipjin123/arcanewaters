@@ -60,6 +60,7 @@ public class Panel : MonoBehaviour, IPointerClickHandler
          return;
       }
       
+      InputManager.self.inputMaster.UIShotcuts.Disable();
       InputManager.self.inputMaster.UIControl.Enable();
 
       // Start invisible initially
@@ -85,6 +86,7 @@ public class Panel : MonoBehaviour, IPointerClickHandler
    }
 
    public virtual void hide () {
+      InputManager.self.inputMaster.UIShotcuts.Enable();
       InputManager.self.inputMaster.UIControl.Disable();
       
       // Make sure we're fully hidden

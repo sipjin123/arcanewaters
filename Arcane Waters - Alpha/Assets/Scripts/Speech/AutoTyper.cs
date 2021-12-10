@@ -121,6 +121,14 @@ public class AutoTyper : MonoBehaviour {
       for (int i = 0; i < text.Length; i++) {
          float startTime = Time.realtimeSinceStartup;
          string initialText = textElement.text;
+
+         // In case this is an item insert tag, we want to advance it all fully at once
+         int insertIndex = text.IndexOf("<link=\"" + ChatManager.ITEM_INSERT_ID_PREFIX, i);
+         int insertEndIndex = text.IndexOf("</link>", i);
+         if (insertIndex != -1 && insertEndIndex != -1 && insertIndex == i && insertIndex < insertEndIndex) {
+            i = insertEndIndex + 6;
+         }
+
          textElement.text = text.Substring(0, i + 1);
 
          // Play some little beeps while the text is being shown

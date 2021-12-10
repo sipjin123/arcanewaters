@@ -87,7 +87,7 @@ public class CameraManager : ClientMonoBehaviour {
       CinemachineFramingTransposer transposer = getBaseCameraForCurrentVirtualCamera().getFramingTransposer();
 
       if (transposer != null) {
-         if (isPanningEnabled() && (isAutomaticPanningEnabled() || InputManager.getKeyAction(KeyAction.PanCamera))) {
+         if (isPanningEnabled() && (isAutomaticPanningEnabled())) {
             Vector2 offsetInput = InputManager.getCameraPanningAxis();
 
             if (Mathf.Abs(offsetInput.x - 0.5f) > panningDeadZoneRange) {

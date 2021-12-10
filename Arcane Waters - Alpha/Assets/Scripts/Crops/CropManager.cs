@@ -173,6 +173,21 @@ public class CropManager : NetworkBehaviour {
             // Store the result
             _crops.Add(cropInfo);
 
+            // Add the result to the crop manager of any other players in the instance
+            if (_player != null) {
+               Instance playerInstance = InstanceManager.self.getInstance(_player.instanceId);
+               if (playerInstance != null) {
+                  List<PlayerBodyEntity> players = playerInstance.getPlayerBodyEntities();
+                  foreach (PlayerBodyEntity player in players) {
+                     if (player.userId == _player.userId) {
+                        continue;
+                     }
+
+                     player.cropManager.addNewCropInfo(cropInfo);
+                  }
+               }
+            }
+
             if (_cropsProcessing.Contains(cropNumber)) {
                _cropsProcessing.Remove(cropNumber);
             }
@@ -180,11 +195,16 @@ public class CropManager : NetworkBehaviour {
             // Let them know they gained experience
             _player.Target_GainedFarmXp(_player.connectionToClient, xp, newJobXP);
 
-            sendCropsToPlayers(cropInfo, false, quickGrow);
+            sendCropToPlayers(cropInfo, false, quickGrow);
 
             onPlantCropEnd(cropNumber);
          });
       });
+   }
+
+   [Server]
+   public void addNewCropInfo (CropInfo cropInfo) {
+      _crops.Add(cropInfo);
    }
 
    private void onPlantCropEnd (int cropNumber) {
@@ -196,7 +216,7 @@ public class CropManager : NetworkBehaviour {
       _player.rpc.sendItemShortcutList();
    }
 
-   private void sendCropsToPlayers (CropInfo cropInfo, bool justGrew, bool isQuickGrow = false) {
+   private void sendCropToPlayers (CropInfo cropInfo, bool justGrew, bool isQuickGrow = false) {
       D.adminLog("Player {" + _player.userId + "} just finished interacting with crop Level:{"
          + cropInfo.growthLevel + "} IsMax:{"
          + cropInfo.isMaxLevel() + "}", D.ADMIN_LOG_TYPE.Crop);
@@ -253,7 +273,7 @@ public class CropManager : NetworkBehaviour {
          int xp = Crop.getXP(cropToWater.cropType);
          DB_Main.addJobXP(_player.userId, Jobs.Type.Farmer, xp);
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
-         List<AchievementData> harvestCropAchievements = DB_Main.getAchievementData(_player.userId, ActionType.HarvestCrop);
+         List<AchievementData> farmPlayerHarvestCropAchievements = DB_Main.getAchievementData(cropToWater.userId, ActionType.HarvestCrop);
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -272,10 +292,10 @@ public class CropManager : NetworkBehaviour {
 
             // Checks achievements to determine if the plant will grow quickly for tutorial purposes
             bool quickGrow = false;
-            if (harvestCropAchievements.Count < 1) {
+            if (farmPlayerHarvestCropAchievements.Count < 1) {
                quickGrow = true;
             }
-            foreach (AchievementData achievementData in harvestCropAchievements) {
+            foreach (AchievementData achievementData in farmPlayerHarvestCropAchievements) {
                if (achievementData.count < TUTORIAL_CROP_COUNT) {
                   quickGrow = true;
                }
@@ -293,7 +313,7 @@ public class CropManager : NetworkBehaviour {
             // Let them know they gained experience
             _player.Target_GainedFarmXp(_player.connectionToClient, xp, newJobXP);
 
-            sendCropsToPlayers(cropToWater, true, quickGrow);
+            sendCropToPlayers(cropToWater, true, quickGrow);
          });
       });
    }
@@ -485,7 +505,7 @@ public class CropManager : NetworkBehaviour {
       // Get the crops for this player from the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<CropInfo> cropList = DB_Main.getCropInfo(userId);
-         List<AchievementData> harvestCropAchievements = DB_Main.getAchievementData(_player.userId, ActionType.HarvestCrop);
+         List<AchievementData> harvestCropAchievements = DB_Main.getAchievementData(userId, ActionType.HarvestCrop);
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {

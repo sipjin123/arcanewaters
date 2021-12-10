@@ -35,6 +35,9 @@ public class MouseManager : ClientMonoBehaviour
    }
 
    private void Update () {
+      if (Util.isBatch()) {
+         return;
+      }
       // Check if the mouse is over interactable objects
       bool isOverInteractableObject = isMouseOverSomething();
 

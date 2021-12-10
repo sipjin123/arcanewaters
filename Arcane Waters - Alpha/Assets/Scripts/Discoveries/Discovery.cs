@@ -71,7 +71,7 @@ public class Discovery : NetworkBehaviour
       _outline.setVisibility(_isLocalPlayerInside || isMouseOver);
 
       if (_isLocalPlayerInside || isMouseOver) {
-         if (InputManager.isActionKeyPressed() || (KeyUtils.GetButtonUp(MouseButton.Left) && isMouseOver)) {
+         if (InputManager.self.inputMaster.UIControl.Equip.WasPressedThisFrame() || (KeyUtils.GetButtonUp(MouseButton.Left) && isMouseOver)) {
             openDiscoveryPanel();
          }
       }

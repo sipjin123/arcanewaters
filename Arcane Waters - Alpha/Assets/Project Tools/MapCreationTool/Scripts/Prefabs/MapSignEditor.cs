@@ -6,7 +6,8 @@ using Mirror;
 using MapCreationTool;
 using MapCreationTool.Serialization;
 
-public class MapSignEditor : MapEditorPrefab, IPrefabDataListener, IHighlightable {
+public class MapSignEditor : MapEditorPrefab, IPrefabDataListener, IHighlightable
+{
    #region Public Variables
 
    // The highlight object
@@ -36,6 +37,6 @@ public class MapSignEditor : MapEditorPrefab, IPrefabDataListener, IHighlightabl
    }
 
    public void setHighlight (bool hovered, bool selected, bool deleting) {
-      setSpriteOutline(highlight, hovered, selected, deleting);
+      setSpriteHighlight(highlight, hovered, selected, deleting);
    }
 }

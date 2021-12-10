@@ -43,6 +43,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    public UnityEvent leftClickEvent;
    public UnityEvent rightClickEvent;
    public UnityEvent doubleClickEvent;
+   public UnityEvent shiftClickEvent;
    public UnityEvent onPointerEnter;
    public UnityEvent onPointerExit;
    public UnityEvent onDragStarted;
@@ -84,6 +85,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       leftClickEvent.RemoveAllListeners();
       rightClickEvent.RemoveAllListeners();
       doubleClickEvent.RemoveAllListeners();
+      shiftClickEvent.RemoveAllListeners();
       onPointerEnter.RemoveAllListeners();
       onPointerExit.RemoveAllListeners();
       onDragStarted.RemoveAllListeners();
@@ -370,6 +372,8 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             // Determine if two clicks where close enough in time to be considered a double click
             if (Time.time - _lastClickTime < DOUBLE_CLICK_DELAY) {
                doubleClickEvent.Invoke();
+            } else if (InputManager.self.inputMaster.Land.Sprint.IsPressed()) {
+               shiftClickEvent.Invoke();
             } else {
                leftClickEvent.Invoke();
             }

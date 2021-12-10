@@ -464,6 +464,7 @@ public class MyNetworkManager : NetworkManager
 
             // Set information for the player
             Vector2 randomOffset = (UnityEngine.Random.insideUnitCircle * .1f);
+
             player.transform.position = playerCreationPos + new Vector3(randomOffset.x, randomOffset.y, 0);
             player.isSinglePlayer = userObjects.isSinglePlayer;
             player.areaKey = previousAreaKey;

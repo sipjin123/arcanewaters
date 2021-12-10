@@ -25,10 +25,13 @@ public class MyCamera : BaseCamera
 
    protected override void Start () {
       CameraManager.self.registerCamera(this);
-      setInternalOrthographicSize();
 
       _initialSettings = getVirtualCameraSettings();
       _initialSettings.ppuScale = getPPUScale();
+   }
+
+   protected void OnEnable () {
+      setInternalOrthographicSize();
    }
 
    private void OnDestroy () {

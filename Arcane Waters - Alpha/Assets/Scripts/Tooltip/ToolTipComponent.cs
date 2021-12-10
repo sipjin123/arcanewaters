@@ -108,6 +108,11 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
          if (this.GetComponentInParent<PvpShopTemplate>() != null) {
             itemRarityType = this.GetComponentInParent<PvpShopTemplate>().rarityType;
          }
+
+         // Get rarity level of hoverable icon
+         if (GetComponent<HoverableItemIcon>() != null && GetComponent<HoverableItemIcon>().getItem() != null) {
+            itemRarityType = GetComponent<HoverableItemIcon>().getItem().getRarity();
+         }
       }
 
       // Check if the tooltip text is being created dynamically at runtime (if so, there will be no entry in the xml document)

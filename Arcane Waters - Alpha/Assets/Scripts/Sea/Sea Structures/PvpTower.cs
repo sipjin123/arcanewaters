@@ -25,13 +25,13 @@ public class PvpTower : SeaStructure
    // A reference to the renderer that is displaying our attack range
    public MeshRenderer attackRangeRenderer;
 
-   // A reference to the animator used to show where this ship is aiming
+   // A reference to the animator used to show where this tower is aiming
    public Animator targetingIndicatorAnimator;
 
    // A reference to the transform of the parent of the targeting indicator
    public Transform targetingIndicatorParent;
 
-   // A reference to the renderer used to show where this ship is aiming
+   // A reference to the renderer used to show where this tower is aiming
    public SpriteRenderer targetingIndicatorRenderer;
 
    // References to the colors used for the attack range circle, when the player is being targeted, or safe

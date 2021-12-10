@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 using TMPro;
 
-public class SpeechBubble : MonoBehaviour {
+public class SpeechBubble : MonoBehaviour
+{
    #region Public Variables
 
    // How long the text should stick around before fading
@@ -26,6 +27,9 @@ public class SpeechBubble : MonoBehaviour {
    // Reference to the child gameobject that holds the text
    public GameObject speechBubbleText;
 
+   // Prefab of the item icon we place inside text
+   public HoverableItemIcon itemIconPrefab = null;
+
    #endregion
 
    void Awake () {
@@ -37,6 +41,8 @@ public class SpeechBubble : MonoBehaviour {
    }
 
    void Update () {
+      UpdateItemIcons();
+
       // Check if we recently updated the text
       if (!_lastTextString.Equals(speechText.text)) {
          _lastTextChangeTime = Time.time;
@@ -62,7 +68,52 @@ public class SpeechBubble : MonoBehaviour {
       canvasGroup.alpha = targetAlpha;
    }
 
+   private void UpdateItemIcons () {
+      for (int i = 0; i < speechText.textInfo.linkCount; i++) {
+         string linkId = speechText.textInfo.linkInfo[i].GetLinkID();
+         if (linkId.StartsWith(ChatManager.ITEM_INSERT_ID_PREFIX)) {
+            if (int.TryParse(linkId.Replace(ChatManager.ITEM_INSERT_ID_PREFIX, ""), out int itemId)) {
+               int firstCharIndex = speechText.textInfo.linkInfo[i].linkTextfirstCharacterIndex;
+               int lastCharIndex = firstCharIndex + ChatManager.ITEM_INSERT_TEXT_PLACEHOLDER.Length - 1;
+
+               Vector2 charCenter =
+                  (speechText.textInfo.characterInfo[firstCharIndex].bottomLeft +
+                  speechText.textInfo.characterInfo[lastCharIndex].topRight) / 2f;
+               charCenter.x *= speechText.transform.localScale.x;
+
+               Vector2 center = charCenter + speechText.rectTransform.anchoredPosition;
+
+               if (i >= _itemIcons.Count) {
+                  HoverableItemIcon itemInsert = Instantiate(itemIconPrefab, speechText.transform.parent);
+                  itemInsert.setItemId(itemId, false);
+                  _itemIcons.Add(itemInsert);
+
+                  // Set pivot and anchors so the item icons align
+                  _itemIcons[i].GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+                  _itemIcons[i].GetComponent<RectTransform>().anchorMin = new Vector2(0, 1f);
+                  _itemIcons[i].GetComponent<RectTransform>().anchorMax = new Vector2(0, 1f);
+
+                  _itemIcons[i].GetComponent<RectTransform>().sizeDelta = new Vector2(8, 8);
+                  _itemIcons[i].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 8);
+                  _itemIcons[i].GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 8);
+               }
+
+               _itemIcons[i].GetComponent<RectTransform>().anchoredPosition = center;
+            }
+         }
+      }
+   }
+
    public void sayText (string textToSay) {
+      // Insert item <links> into text before typing it
+      textToSay = ChatManager.injectItemSnippetLinks(textToSay);
+
+      // Destroy any previous item inserts
+      foreach (HoverableItemIcon icon in _itemIcons) {
+         Destroy(icon.gameObject);
+      }
+      _itemIcons.Clear();
+
       // Start typing the text into the speech bubble
       AutoTyper.TypeText(speechText, textToSay, false);
 
@@ -77,6 +128,9 @@ public class SpeechBubble : MonoBehaviour {
 
    // The time at which the number of characters last changed
    protected float _lastTextChangeTime = float.MinValue;
+
+   // Item icons we currently have instantiated
+   protected List<HoverableItemIcon> _itemIcons = new List<HoverableItemIcon>();
 
    #endregion
 }

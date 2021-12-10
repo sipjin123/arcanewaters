@@ -19,6 +19,9 @@ public class EffectManager : MonoBehaviour {
    // Generic effect prefab for use in world combat effects
    public CombatEffect worldCombatVFXPrefab;
 
+   // Generic effect prefab used when ships receive a buff
+   public SeaBuffEffect seaBuffEffectPrefab;
+
    // Self
    public static EffectManager self;
 
@@ -55,6 +58,23 @@ public class EffectManager : MonoBehaviour {
       }
 
       effect.initEffect(sprites, timePerFrame);
+   }
+
+   public static void createBuffEffect (string spritePath, Vector2 pos, Transform parent, bool setLocalPosition = false) {
+      Sprite[] sprites = ImageManager.getSprites(spritePath);
+
+      //If we do not have any effect sprites we cancel
+      if (sprites.Length <= 0) {
+         return;
+      }
+
+      SeaBuffEffect effect = Instantiate(self.seaBuffEffectPrefab, Vector3.zero, Quaternion.identity, parent);
+
+      if (setLocalPosition) {
+         effect.transform.localPosition = pos;
+      } else {
+         effect.transform.position = pos;
+      }
    }
 
    public CombatEffect createCombatEffect (Sprite[] effectSprites, Vector2 pos, float timePerFrame) {
