@@ -1904,13 +1904,13 @@ public class NetEntity : NetworkBehaviour
 
          D.adminLog("{" + entityName + ":" + userId + "} Spawning in new map finish! {" + newArea + ":" + baseMapKey + "} of user {" + owner == null? "Null" : owner.userId + "}", D.ADMIN_LOG_TYPE.Visit);
          targetLocalPos = spawn == null
-            ? SpawnManager.self.getDefaultLocalPosition(baseMapKey)
-            : SpawnManager.self.getLocalPosition(baseMapKey, spawn);
+            ? SpawnManager.self.getDefaultLocalPosition(baseMapKey, true)
+            : SpawnManager.self.getLocalPosition(baseMapKey, spawn, true);
       } else {
          D.adminLog("{" + entityName + ":" + userId + "} Spawning in new map WITHOUT custom map Data! {" + newArea + "}", D.ADMIN_LOG_TYPE.Visit);
          targetLocalPos = spawn == null
-            ? SpawnManager.self.getDefaultLocalPosition(newArea)
-            : SpawnManager.self.getLocalPosition(newArea, spawn);
+            ? SpawnManager.self.getDefaultLocalPosition(newArea, true)
+            : SpawnManager.self.getLocalPosition(newArea, spawn, true);
 
          if (spawn != null) {
             SpawnManager.SpawnData spawnData = SpawnManager.self.getMapSpawnData(newArea, spawn);
@@ -1980,8 +1980,8 @@ public class NetEntity : NetworkBehaviour
    public void spawnInNewMap (int voyageId, string newArea, string spawn, Direction newFacingDirection) {
       // Get the spawn position for the given spawn
       Vector2 spawnLocalPosition = spawn == ""
-            ? SpawnManager.self.getDefaultLocalPosition(newArea)
-            : SpawnManager.self.getLocalPosition(newArea, spawn);
+            ? SpawnManager.self.getDefaultLocalPosition(newArea, true)
+            : SpawnManager.self.getLocalPosition(newArea, spawn, true);
 
       findBestServerAndWarp(newArea, spawnLocalPosition, voyageId, newFacingDirection, -1, -1);
    }

@@ -762,7 +762,7 @@ public class PvpGame : MonoBehaviour {
          if (player) {
             player.spawnInBiomeHomeTown();
          } else {
-            Vector2 spawnPos = SpawnManager.self.getLocalPosition(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
+            Vector2 spawnPos = SpawnManager.self.getLocalPosition(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, true);
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                DB_Main.setNewLocalPosition(userId, spawnPos, Direction.South, Area.STARTING_TOWN);
                D.debug("BT: Set player's position in the DB.");
@@ -843,7 +843,11 @@ public class PvpGame : MonoBehaviour {
 
       // Choose an area around the spawn position
       Vector2 spawnPositionOffset = (teamType == PvpTeamType.A) ? Vector2.one : -Vector2.one;
-      spawnPositionOffset *= 0.5f;
+
+      // Find random position around the spawn point to prevent ships from spawning above each other
+      float offsetRadiusMultiplier = .25f;
+
+      spawnPositionOffset *= offsetRadiusMultiplier;
       int numTeamSpawns = (teamType == PvpTeamType.A) ? _teamASpawns++ : _teamBSpawns++;
       numTeamSpawns = numTeamSpawns % 6;
       float rotationAngle = numTeamSpawns * 60.0f;

@@ -293,7 +293,7 @@ public class NetworkedServer : NetworkedBehaviour
          AreaManager.self.tryGetCustomMapManager(location.areaKey, out CustomMapManager customMapManager);
          if (customMapManager != null) {
             string baseMapKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(ownerEntity));
-            Vector2 newArea2 = SpawnManager.self.getLocalPosition(baseMapKey, spawnTarget);
+            Vector2 newArea2 = SpawnManager.self.getLocalPosition(baseMapKey, spawnTarget, true);
             location.localPositionX = newArea2.x;
             location.localPositionY = newArea2.y;
          }

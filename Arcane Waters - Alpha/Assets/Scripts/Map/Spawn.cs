@@ -41,13 +41,15 @@ public class Spawn : MonoBehaviour, IMapEditorDataReceiver {
       return (_spawnBox == null) ? this.transform.position : Util.RandomPointInBounds(_spawnBox.bounds);
    }
 
-   public Vector2 getRandomPositionOffset () {
+   public Vector2 getRandomPositionOffset (float offsetRadius = 0.5f) {
       if (_spawnBox == null) {
          return Vector2.zero;
       }
 
-      float x = UnityEngine.Random.Range(_spawnBox.size.x * (-0.5f), _spawnBox.size.x * 0.5f) * transform.localScale.x;
-      float y = UnityEngine.Random.Range(_spawnBox.size.y * (-0.5f), _spawnBox.size.y * 0.5f) * transform.localScale.y;
+      float randomX = UnityEngine.Random.Range(_spawnBox.size.x * (-offsetRadius), _spawnBox.size.x * offsetRadius);
+      float randomY = UnityEngine.Random.Range(_spawnBox.size.y * (-offsetRadius), _spawnBox.size.y * offsetRadius);
+      float x = randomX * transform.localScale.x;
+      float y = randomY * transform.localScale.y;
 
       Vector2 offsetPos = new Vector2(x, y);
       Vector2 worldPos = offsetPos + (Vector2)this.transform.position;

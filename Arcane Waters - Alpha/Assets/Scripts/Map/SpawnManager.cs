@@ -75,37 +75,45 @@ public partial class SpawnManager : MonoBehaviour
       }
    }
 
-   public Vector2 getLocalPosition (string mapName, string spawnName) {
+   public Vector2 getLocalPosition (string mapName, string spawnName, bool log = false) {
       if (_mapSpawns.TryGetValue(mapName, out MapSpawnData mapSpawnData)) {
          if (mapSpawnData.spawns.TryGetValue(spawnName, out SpawnData spawnData)) {
             Spawn spawn = null;
             if (instantiatedMapSpawns.TryGetValue(mapName, out List<Spawn> mapSpawnList)) {
                spawn = mapSpawnList.Find(_ => spawnData.spawnId == _.spawnId);
             }
-            return spawnData.localPosition + (spawn ? spawn.getRandomPositionOffset() : Vector2.zero);
-         }
 
+            if (log) {
+               D.editorLog("Random Position: {" + spawnData.localPosition.x + "} Map: {" + mapName + " : " + spawnName + "}", Color.yellow);
+            }
+            return spawnData.localPosition + (spawn ? spawn.getRandomPositionOffset(VoyageManager.isPvpArenaArea(mapName) ? .25f : 0.5f) : Vector2.zero);
+         }
+         
          // Try using any valid spawn point for the area
          if (mapSpawnData.spawns.Any()) {
             return mapSpawnData.spawns.First().Value.localPosition;
          }
 
          // Try using the default location
-         return getDefaultLocalPosition(mapName);
+         return getDefaultLocalPosition(mapName, log);
       }
 
       D.warning($"Could not find position of spawn [{ mapName }:{ spawnName }]");
       return Vector2.zero;
    }
 
-   public Vector2 getDefaultLocalPosition (string areaKey) {
+   public Vector2 getDefaultLocalPosition (string areaKey, bool showLog = false) {
       if (_mapSpawns.TryGetValue(areaKey, out MapSpawnData mapSpawnData)) {
          if (mapSpawnData.defaultSpawn != null) {
             Spawn spawn = null;
             if (instantiatedMapSpawns.TryGetValue(areaKey, out List<Spawn> mapSpawnList)) {
                spawn = mapSpawnList.Find(_ => mapSpawnData.defaultSpawn.spawnId == _.spawnId);
             }
-            return mapSpawnData.defaultSpawn.localPosition + (spawn ? spawn.getRandomPositionOffset() : Vector2.zero);
+
+            if (showLog) {
+               D.editorLog("Returning default Local Position from Origin", Color.magenta);
+               return mapSpawnData.defaultSpawn.localPosition + (spawn ? spawn.getRandomPositionOffset() : Vector2.zero);
+            }
          }
       }
 
