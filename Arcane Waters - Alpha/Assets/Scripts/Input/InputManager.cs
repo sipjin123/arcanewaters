@@ -368,6 +368,10 @@ public class InputManager : GenericGameManager {
    }
    
    public static bool isPressingDirection (Direction direction) {
+      if (Util.isBatch()) {
+         return false;
+      }
+
       if (!self._isInputEnabled) {
          return false;
       }
@@ -445,6 +449,9 @@ public class InputManager : GenericGameManager {
    }
 
    public static Vector2 getCameraPanningAxis () {
+      if (Util.isBatch()) {
+         return Vector2.zero;
+      }
       return new Vector2(MouseUtils.mousePosition.x / Screen.width, MouseUtils.mousePosition.y / Screen.height);
    }
 
