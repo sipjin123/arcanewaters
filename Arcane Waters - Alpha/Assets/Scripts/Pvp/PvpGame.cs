@@ -160,8 +160,9 @@ public class PvpGame : MonoBehaviour {
 
    private void addPlayerToPreGame (int userId, string userName) {
       VoyageGroupManager.self.createGroup(userId, voyageId, true);
-      ServerNetworkingManager.self.warpUser(userId, voyageId, areaKey, Direction.South);
-      D.debug("Adding player to pre-game. Added player: " + userName);
+      Direction newDirection = getTeamFacingDirection(PvpTeamType.None, areaKey);
+      ServerNetworkingManager.self.warpUser(userId, voyageId, areaKey, newDirection);
+      D.debug("Adding player to pre-game. Added player: {" + userName + "} Area:{" + areaKey + "} Facing:{" + newDirection + "}");
 
       // If there are now enough players to start the game, start the game after a delay
       if (isGameReadyToBegin()) {
@@ -183,6 +184,9 @@ public class PvpGame : MonoBehaviour {
    }
 
    private IEnumerator CO_AddPlayerToOngoingGame (int userId, string userName, PvpTeam assignedTeam) {
+      string teamSpawn = getSpawnForTeam(assignedTeam.teamType);
+      Direction facingDirection = getTeamFacingDirection(assignedTeam.teamType, areaKey);
+
       // If the team only has us, create a new voyage group with this player
       if (assignedTeam.Count == 1) {
          VoyageGroupInfo newGroup = null;
@@ -190,35 +194,40 @@ public class PvpGame : MonoBehaviour {
 
          // Store the team's voyage group id
          _teamVoyageGroupIds[assignedTeam.teamType] = newGroup.groupId;
-         D.debug("Adding player to game in-progress. Added player: " + userName + " to team: " + assignedTeam.teamType.ToString() + ", and created group");
+         D.debug("Adding player to game in-progress. Added player: " + userName + " to team: " + assignedTeam.teamType.ToString() + ", and created group. Area:{" + areaKey + "} Facing:{" + facingDirection + "}");
 
          // If the team isn't empty, add the player to the existing voyage group
       } else {
          if (VoyageGroupManager.self.tryGetGroupById(_teamVoyageGroupIds[assignedTeam.teamType], out VoyageGroupInfo voyageGroup)) {
             VoyageGroupManager.self.addUserToGroup(voyageGroup, userId, userName);
-            D.debug("Adding player to game in-progress. Added player: " + userName + " to team: " + assignedTeam.teamType.ToString());
+            D.debug("Adding player to game in-progress. Added player: " + userName + " to team: " + assignedTeam.teamType.ToString() + "Area:{" + areaKey + "} Facing:{" + facingDirection + "}");
          } else {
-            D.error("Couldn't find the voyage group for team: " + assignedTeam.teamType.ToString());
+            D.error("Couldn't find the voyage group for team: " + assignedTeam.teamType.ToString() + "Area:{" + areaKey + "} Facing:{" + facingDirection + "}");
             yield break;
          }
       }
 
-      string teamSpawn = getSpawnForTeam(assignedTeam.teamType);
+      ServerNetworkingManager.self.warpUser(userId, voyageId, areaKey, facingDirection, teamSpawn);
+   }
+
+   private Direction getTeamFacingDirection (PvpTeamType teamType, string areaKey) {
       Direction facingDirection = Direction.South;
       List<SpawnManager.SpawnData> allSpawnsOfMap = SpawnManager.self.getAllSpawnsInArea(areaKey);
       if (allSpawnsOfMap.Count > 0) {
-         string spawnName = "team" + ((int) assignedTeam.teamType);
+         string spawnName = "team" + ((int) teamType);
          if (allSpawnsOfMap.Exists(_ => (_.name).ToString().Contains(spawnName))) {
             SpawnManager.SpawnData spawnData = allSpawnsOfMap.Find(_ => (_.name).ToString().Contains(spawnName));
             facingDirection = (Direction) spawnData.arriveFacing;
          } else {
-            D.debug("Spawn Data does not exist for spawn name {" + spawnName + "}");
+            SpawnManager.SpawnData defaultSpawnData = allSpawnsOfMap[0];
+            D.debug("Spawn Data does not exist for Map:{" + areaKey + "} spawn name {" + spawnName + "} getting first data {" + defaultSpawnData.name + ":" + defaultSpawnData.arriveFacing + "}");
+            facingDirection = (Direction) defaultSpawnData.arriveFacing;
          }
       } else {
          D.debug("Does not have any spawn data: {" + areaKey + "}");
       }
 
-      ServerNetworkingManager.self.warpUser(userId, voyageId, areaKey, facingDirection, teamSpawn);
+      return facingDirection;
    }
 
    private IEnumerator CO_StartGame () {
@@ -307,6 +316,9 @@ public class PvpGame : MonoBehaviour {
 
          // Move the player to their spawn position, with a small offset so players aren't stacked on eachother.
          Vector2 spawnPosition = getSpawnPositionForTeam(team.teamType);
+         Direction facingDirection = getTeamFacingDirection(team.teamType, areaKey);
+         player.facing = facingDirection;
+
          Util.setLocalXY(player.transform, spawnPosition);
       }
 
