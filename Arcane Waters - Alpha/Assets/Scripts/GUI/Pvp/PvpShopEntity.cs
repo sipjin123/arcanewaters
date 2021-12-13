@@ -40,6 +40,9 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
    // If the user is within this shops range
    public bool isWithinRange;
 
+   // The gameobject that gives highlight to this object to be more notice able
+   public GameObject arrowIndicator;
+
    #endregion
 
    private void Awake () {
@@ -110,6 +113,7 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
       if (Global.player != null && playerEntity != null) {
          if (Global.player.userId == playerEntity.userId && playerEntity.pvpTeam == pvpTeamType) {
             isWithinRange = true;
+            arrowIndicator.SetActive(true);
          }
       }
    }
@@ -123,6 +127,7 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
       if (Global.player != null && playerEntity != null) {
          if (Global.player.userId == playerEntity.userId && playerEntity.pvpTeam == pvpTeamType) {
             isWithinRange = false;
+            arrowIndicator.SetActive(false);
          }
       }
    }

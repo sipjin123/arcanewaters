@@ -337,11 +337,11 @@ public class SimpleAnimation : ClientMonoBehaviour {
    }
 
    private void OnBecameInvisible () {
-      isPaused = true;
+      // Add freeze logic here (Notse: 'IsPaused' is causing bugs repeating death animations of land enemies)
    }
 
    private void OnBecameVisible () {
-      isPaused = false;
+      // Add freeze logic here (Notse: 'IsPaused' is causing bugs repeating death animations of land enemies)
    }
 
    #region Private Variables
