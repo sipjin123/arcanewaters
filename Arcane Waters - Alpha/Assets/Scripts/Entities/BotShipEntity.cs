@@ -372,7 +372,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    }
 
    public void setShipData (int shipXmlId, Ship.Type shipType, int instanceDifficulty) {
-      ShipData shipData = ShipDataManager.self.getShipData(shipXmlId);
+      ShipData shipData = ShipDataManager.self.getShipData(shipType);
       
       // If we've provided a sprite override, apply it
       if (spritesOverride) {

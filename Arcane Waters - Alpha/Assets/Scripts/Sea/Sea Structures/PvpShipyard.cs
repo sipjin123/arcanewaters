@@ -38,14 +38,18 @@ public class PvpShipyard : SeaStructure {
       botShip.currentHealth = _shipData.maxHealth;
       botShip.shipType = Ship.Type.Type_1;
       botShip.dataXmlId = ShipDataManager.STARTING_SHIP_ID;
-      _shipData.xmlId = ShipDataManager.STARTING_SHIP_ID;
       botShip.guildId = BotShipEntity.PIRATES_GUILD_ID;
       botShip.pvpTeam = pvpTeam;
       botShip.faction = faction;
       botShip.setPvpLaneTarget(laneCenterTarget);
       botShip.setPvpTargetStructures(targetStructures);
 
-      botShip.setShipData(_shipData.xmlId, Ship.Type.Type_1, _instance.difficulty);
+      SeaMonsterEntityData seaEnemyData = SeaMonsterManager.self.getAllSeaMonsterData().Find(_ => _.subVarietyTypeId == (int) Ship.Type.Type_1);
+      if (seaEnemyData != null) {
+         botShip.setShipData(seaEnemyData.xmlId, Ship.Type.Type_1, _instance.difficulty);
+      } else {
+         botShip.setShipData(_shipData.xmlId, Ship.Type.Type_1, _instance.difficulty);
+      }
 
       InstanceManager.self.addSeaMonsterToInstance(botShip, _instance);
       NetworkServer.Spawn(botShip.gameObject);
