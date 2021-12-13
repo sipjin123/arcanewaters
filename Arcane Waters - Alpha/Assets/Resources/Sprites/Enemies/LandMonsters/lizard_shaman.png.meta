@@ -119,6 +119,123 @@ TextureImporter:
   - first:
       213: 5011963761583034176
     second: LizardShaman_38
+  - first:
+      213: 5340446289726528793
+    second: lizard_shaman_0
+  - first:
+      213: -8667848994604852187
+    second: lizard_shaman_1
+  - first:
+      213: 8633979282461005604
+    second: lizard_shaman_2
+  - first:
+      213: 523756005832292258
+    second: lizard_shaman_3
+  - first:
+      213: -5926106413277386621
+    second: lizard_shaman_4
+  - first:
+      213: -1196179804795912059
+    second: lizard_shaman_5
+  - first:
+      213: -4030770152150530944
+    second: lizard_shaman_6
+  - first:
+      213: -6981984830912543284
+    second: lizard_shaman_7
+  - first:
+      213: -6742605059555481777
+    second: lizard_shaman_8
+  - first:
+      213: -1452749506240708166
+    second: lizard_shaman_9
+  - first:
+      213: -1304468159106507953
+    second: lizard_shaman_10
+  - first:
+      213: -641148176611645700
+    second: lizard_shaman_11
+  - first:
+      213: -403825414932488599
+    second: lizard_shaman_12
+  - first:
+      213: 6918515831898466460
+    second: lizard_shaman_13
+  - first:
+      213: -5114746565168577080
+    second: lizard_shaman_14
+  - first:
+      213: 735450471550914138
+    second: lizard_shaman_15
+  - first:
+      213: -303778326331647318
+    second: lizard_shaman_16
+  - first:
+      213: -6820022486075802159
+    second: lizard_shaman_17
+  - first:
+      213: -9155597280398966046
+    second: lizard_shaman_18
+  - first:
+      213: -3928534467860448302
+    second: lizard_shaman_19
+  - first:
+      213: -6855527502466629408
+    second: lizard_shaman_20
+  - first:
+      213: -9103164181258651636
+    second: lizard_shaman_21
+  - first:
+      213: -3307473572751727172
+    second: lizard_shaman_22
+  - first:
+      213: 3005801047465464573
+    second: lizard_shaman_23
+  - first:
+      213: 1531450431323796254
+    second: lizard_shaman_24
+  - first:
+      213: -1939899604511206406
+    second: lizard_shaman_25
+  - first:
+      213: -2308375775564605085
+    second: lizard_shaman_26
+  - first:
+      213: -5255195078816256565
+    second: lizard_shaman_27
+  - first:
+      213: -3485077727268981181
+    second: lizard_shaman_28
+  - first:
+      213: 232035064955347781
+    second: lizard_shaman_29
+  - first:
+      213: 6526736616615485560
+    second: lizard_shaman_30
+  - first:
+      213: 8894322759850267353
+    second: lizard_shaman_31
+  - first:
+      213: 5070272357911803708
+    second: lizard_shaman_32
+  - first:
+      213: -4389260764084083613
+    second: lizard_shaman_33
+  - first:
+      213: -2306769827586077542
+    second: lizard_shaman_34
+  - first:
+      213: 8036569397973937463
+    second: lizard_shaman_35
+  - first:
+      213: -2871222119675532719
+    second: lizard_shaman_36
+  - first:
+      213: -2748799066003699343
+    second: lizard_shaman_37
+  - first:
+      213: 8738839560954639001
+    second: lizard_shaman_38
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -228,7 +345,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: LizardShaman_0
+      name: lizard_shaman_0
       rect:
         serializedVersion: 2
         x: 0
@@ -242,14 +359,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dd7adce15a3363949b7f5461a403feda
-      internalID: -6551445791048064383
+      spriteID: 91dd3390b931d1a40800000000000000
+      internalID: 5340446289726528793
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_1
+      name: lizard_shaman_1
       rect:
         serializedVersion: 2
         x: 85
@@ -263,14 +380,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 73402a358aea50a4caff028249dfa022
-      internalID: -7975827516911473182
+      spriteID: 52cd9dd734d95b780800000000000000
+      internalID: -8667848994604852187
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_2
+      name: lizard_shaman_2
       rect:
         serializedVersion: 2
         x: 170
@@ -284,14 +401,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7076af27421ac4740b799a3d2363ff7f
-      internalID: 5595701285782539144
+      spriteID: 4279b21a96e02d770800000000000000
+      internalID: 8633979282461005604
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_3
+      name: lizard_shaman_3
       rect:
         serializedVersion: 2
         x: 255
@@ -305,14 +422,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a4daf185e3549d447afde11a3022bdf2
-      internalID: 8063624783870914739
+      spriteID: 2a77c94ff41c44700800000000000000
+      internalID: 523756005832292258
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_4
+      name: lizard_shaman_4
       rect:
         serializedVersion: 2
         x: 340
@@ -326,14 +443,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 39de0e4618875cb4a833c003a5e55265
-      internalID: -8643283955976805758
+      spriteID: 388ef6f6d9d32cda0800000000000000
+      internalID: -5926106413277386621
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_5
+      name: lizard_shaman_5
       rect:
         serializedVersion: 2
         x: 425
@@ -347,14 +464,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 21d85c4da2c326c45a000ae10e53b5a4
-      internalID: -5484413576483397791
+      spriteID: 580c4af1ec0566fe0800000000000000
+      internalID: -1196179804795912059
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_6
+      name: lizard_shaman_6
       rect:
         serializedVersion: 2
         x: 510
@@ -368,14 +485,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1afb4c16bacb7134e922d2aaea0947b6
-      internalID: 73077671449073695
+      spriteID: 08402dd07e3df08c0800000000000000
+      internalID: -4030770152150530944
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_7
+      name: lizard_shaman_7
       rect:
         serializedVersion: 2
         x: 595
@@ -389,14 +506,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8c31257c8d19b634392edb39682beff7
-      internalID: -7490227599369188610
+      spriteID: cc5ca46d9c10b1f90800000000000000
+      internalID: -6981984830912543284
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_8
+      name: lizard_shaman_8
       rect:
         serializedVersion: 2
         x: 680
@@ -410,14 +527,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 45c8470bd5ea31047a5c9e15744e8451
-      internalID: -2932146377707838034
+      spriteID: f47a1741c647d62a0800000000000000
+      internalID: -6742605059555481777
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_9
+      name: lizard_shaman_9
       rect:
         serializedVersion: 2
         x: 765
@@ -431,14 +548,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 012be00745e463d469e9225248365f05
-      internalID: 453187328065697686
+      spriteID: ab106e4650cc6dbe0800000000000000
+      internalID: -1452749506240708166
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_10
+      name: lizard_shaman_10
       rect:
         serializedVersion: 2
         x: 850
@@ -452,14 +569,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ffbcf4892687d0e4ab68422d1e02b6f4
-      internalID: 7071775871743633549
+      spriteID: f4b16a3ee1995ede0800000000000000
+      internalID: -1304468159106507953
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_11
+      name: lizard_shaman_11
       rect:
         serializedVersion: 2
         x: 935
@@ -473,14 +590,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 499ab26fbb6436047b09412cb2ea75e4
-      internalID: -1303879089582505885
+      spriteID: cf66cac512f2a17f0800000000000000
+      internalID: -641148176611645700
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_12
+      name: lizard_shaman_12
       rect:
         serializedVersion: 2
         x: 0
@@ -494,14 +611,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6033c8ab30a2660498ec65a1555923fd
-      internalID: -5754076023727888811
+      spriteID: 96e9ca7bce2556af0800000000000000
+      internalID: -403825414932488599
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_13
+      name: lizard_shaman_13
       rect:
         serializedVersion: 2
         x: 85
@@ -515,14 +632,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bf38859a96499dc4bab7d622b9f55f27
-      internalID: -6227998040116826717
+      spriteID: c9869354e71830060800000000000000
+      internalID: 6918515831898466460
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_14
+      name: lizard_shaman_14
       rect:
         serializedVersion: 2
         x: 170
@@ -536,14 +653,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6efc9aa566790854e865ccafb0328dfb
-      internalID: -231745724122798924
+      spriteID: 8c54afa1915c409b0800000000000000
+      internalID: -5114746565168577080
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_15
+      name: lizard_shaman_15
       rect:
         serializedVersion: 2
         x: 255
@@ -557,14 +674,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 35dffaf5f071a8440b9f10fbc2af2f52
-      internalID: 5532083196787346207
+      spriteID: a5e8faaae48d43a00800000000000000
+      internalID: 735450471550914138
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_16
+      name: lizard_shaman_16
       rect:
         serializedVersion: 2
         x: 340
@@ -578,14 +695,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6fa8a9c7bc1fbf24aadd4864fce076b7
-      internalID: -2510940600373017196
+      spriteID: aaa1a80c833c8cbf0800000000000000
+      internalID: -303778326331647318
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_17
+      name: lizard_shaman_17
       rect:
         serializedVersion: 2
         x: 425
@@ -599,14 +716,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7dd8f4a29c1628a4da5e888431ccb961
-      internalID: 1790859513840434704
+      spriteID: 1dd7645dea96a51a0800000000000000
+      internalID: -6820022486075802159
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_18
+      name: lizard_shaman_18
       rect:
         serializedVersion: 2
         x: 510
@@ -620,14 +737,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2a01f227cc092f047b063d18d51319b2
-      internalID: 8525371808330502740
+      spriteID: 2e2894b28c8c0f080800000000000000
+      internalID: -9155597280398966046
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_19
+      name: lizard_shaman_19
       rect:
         serializedVersion: 2
         x: 595
@@ -641,14 +758,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e058cc756a24b044e8c4885a541b86ea
-      internalID: 6820764243216896861
+      spriteID: 2dbbc4b37ba0b79c0800000000000000
+      internalID: -3928534467860448302
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_20
+      name: lizard_shaman_20
       rect:
         serializedVersion: 2
         x: 680
@@ -662,14 +779,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9e89dbbb31c03204c955631516d06781
-      internalID: 4731136297139234007
+      spriteID: 0e04e830f064cd0a0800000000000000
+      internalID: -6855527502466629408
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_21
+      name: lizard_shaman_21
       rect:
         serializedVersion: 2
         x: 765
@@ -683,14 +800,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 047383c833e800b4ebfa2250452c8297
-      internalID: 8641875688391150368
+      spriteID: c08b40468601ba180800000000000000
+      internalID: -9103164181258651636
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_22
+      name: lizard_shaman_22
       rect:
         serializedVersion: 2
         x: 850
@@ -704,14 +821,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cb5028aa5657daf45b4864d434b93e51
-      internalID: -3052009641576178940
+      spriteID: cb524203f4e7912d0800000000000000
+      internalID: -3307473572751727172
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_23
+      name: lizard_shaman_23
       rect:
         serializedVersion: 2
         x: 935
@@ -725,14 +842,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 38e8b31491bdb1d4a93a9cad4f9c5569
-      internalID: 5218661193885536984
+      spriteID: df21da39020c6b920800000000000000
+      internalID: 3005801047465464573
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_24
+      name: lizard_shaman_24
       rect:
         serializedVersion: 2
         x: 0
@@ -746,14 +863,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3a15a18e5b54a8e4aa0b572dd241f634
-      internalID: -3160587283879599663
+      spriteID: e137c26ad0ec04510800000000000000
+      internalID: 1531450431323796254
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_25
+      name: lizard_shaman_25
       rect:
         serializedVersion: 2
         x: 85
@@ -767,14 +884,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 175c8242134ecd54a997d811aa22505a
-      internalID: 7903283789996719393
+      spriteID: af3503576971415e0800000000000000
+      internalID: -1939899604511206406
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_26
+      name: lizard_shaman_26
       rect:
         serializedVersion: 2
         x: 170
@@ -788,14 +905,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3f8d090daa364924abba1450b2abacee
-      internalID: 4189682653804832469
+      spriteID: 369da51667007ffd0800000000000000
+      internalID: -2308375775564605085
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_27
+      name: lizard_shaman_27
       rect:
         serializedVersion: 2
         x: 255
@@ -809,14 +926,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 05f092a36ccfa5a45b3cb2e5e854552b
-      internalID: -7478560350286062366
+      spriteID: bcda6c54bebc117b0800000000000000
+      internalID: -5255195078816256565
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_28
+      name: lizard_shaman_28
       rect:
         serializedVersion: 2
         x: 340
@@ -830,14 +947,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 37fa691be8f472e44b17060f0d1c65de
-      internalID: -3601069463876688196
+      spriteID: 346b183954482afc0800000000000000
+      internalID: -3485077727268981181
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_29
+      name: lizard_shaman_29
       rect:
         serializedVersion: 2
         x: 425
@@ -851,14 +968,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7c8ea118e7282604ba5acc7fbb2abc2f
-      internalID: 4405172019406823423
+      spriteID: 543291689aa583300800000000000000
+      internalID: 232035064955347781
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_30
+      name: lizard_shaman_30
       rect:
         serializedVersion: 2
         x: 510
@@ -872,14 +989,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6feba7ebb579dea4fbb208cde6bd5f33
-      internalID: 7541619482277359684
+      spriteID: 870a6e76f50a39a50800000000000000
+      internalID: 6526736616615485560
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_31
+      name: lizard_shaman_31
       rect:
         serializedVersion: 2
         x: 595
@@ -893,14 +1010,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fed97f8533716f442abafece9eff26a6
-      internalID: 4454231766186694066
+      spriteID: 9d21c8a0d6bfe6b70800000000000000
+      internalID: 8894322759850267353
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_32
+      name: lizard_shaman_32
       rect:
         serializedVersion: 2
         x: 0
@@ -914,14 +1031,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8a1e70755d4cd5d409dc45b26dfbede6
-      internalID: -5736757625012271697
+      spriteID: c37b0d798d93d5640800000000000000
+      internalID: 5070272357911803708
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_33
+      name: lizard_shaman_33
       rect:
         serializedVersion: 2
         x: 0
@@ -935,14 +1052,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d91bc4adca99d3b42a2200a99a3ecba1
-      internalID: -603976864170457419
+      spriteID: 364653227963613c0800000000000000
+      internalID: -4389260764084083613
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_34
+      name: lizard_shaman_34
       rect:
         serializedVersion: 2
         x: 85
@@ -956,14 +1073,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 72d60bfcae862714f992ce5170b975fc
-      internalID: -5652016600883596680
+      spriteID: a9c84284015bcffd0800000000000000
+      internalID: -2306769827586077542
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_35
+      name: lizard_shaman_35
       rect:
         serializedVersion: 2
         x: 170
@@ -977,14 +1094,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 51449b12f3860c74bacb3987e85bbc19
-      internalID: 4606026856604326641
+      spriteID: 73de203b941a78f60800000000000000
+      internalID: 8036569397973937463
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_36
+      name: lizard_shaman_36
       rect:
         serializedVersion: 2
         x: 255
@@ -998,14 +1115,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c5af30d058d062e41a2ec7b2d3f854b6
-      internalID: 1711585146172674057
+      spriteID: 15aee7dc1be5728d0800000000000000
+      internalID: -2871222119675532719
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_37
+      name: lizard_shaman_37
       rect:
         serializedVersion: 2
         x: 340
@@ -1019,14 +1136,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2a207dcc573944d4dbea8a41a15e7912
-      internalID: 8623081290896358890
+      spriteID: 1798cef20dd4ad9d0800000000000000
+      internalID: -2748799066003699343
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LizardShaman_38
+      name: lizard_shaman_38
       rect:
         serializedVersion: 2
         x: 425
@@ -1040,8 +1157,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b7f53860567397d4699d5be8bbacd18d
-      internalID: 5011963761583034176
+      spriteID: 992f4d3c748964970800000000000000
+      internalID: 8738839560954639001
       vertices: []
       indices: 
       edges: []

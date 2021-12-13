@@ -2264,6 +2264,123 @@ TextureImporter:
   - first:
       213: 1412392758943859911
     second: PirateBerserker_738
+  - first:
+      213: -7934162776634101774
+    second: pirate_berzerker_0
+  - first:
+      213: -2292160360169395708
+    second: pirate_berzerker_1
+  - first:
+      213: -4057309053942863505
+    second: pirate_berzerker_2
+  - first:
+      213: -5818112537825571634
+    second: pirate_berzerker_3
+  - first:
+      213: -6626714692645572575
+    second: pirate_berzerker_4
+  - first:
+      213: -1271252147840933409
+    second: pirate_berzerker_5
+  - first:
+      213: -5525786275195801136
+    second: pirate_berzerker_6
+  - first:
+      213: -6776773863161275942
+    second: pirate_berzerker_7
+  - first:
+      213: 839524338563067242
+    second: pirate_berzerker_8
+  - first:
+      213: -7399350426582407359
+    second: pirate_berzerker_9
+  - first:
+      213: 4514212290334513933
+    second: pirate_berzerker_10
+  - first:
+      213: -5531482781573975215
+    second: pirate_berzerker_11
+  - first:
+      213: -7874869611361959431
+    second: pirate_berzerker_12
+  - first:
+      213: -5735143690598538538
+    second: pirate_berzerker_13
+  - first:
+      213: -5393163913533354951
+    second: pirate_berzerker_14
+  - first:
+      213: -2356886816179071591
+    second: pirate_berzerker_15
+  - first:
+      213: -3374223601526708907
+    second: pirate_berzerker_16
+  - first:
+      213: 603923422036673079
+    second: pirate_berzerker_17
+  - first:
+      213: 4452035240092427258
+    second: pirate_berzerker_18
+  - first:
+      213: -6616507636318908672
+    second: pirate_berzerker_19
+  - first:
+      213: -9103248639682730255
+    second: pirate_berzerker_20
+  - first:
+      213: -4193181307466804256
+    second: pirate_berzerker_21
+  - first:
+      213: 6276107922179937999
+    second: pirate_berzerker_22
+  - first:
+      213: -458519683167808477
+    second: pirate_berzerker_23
+  - first:
+      213: -8855992372992012721
+    second: pirate_berzerker_24
+  - first:
+      213: 4445774138447081064
+    second: pirate_berzerker_25
+  - first:
+      213: -6856519324018960975
+    second: pirate_berzerker_26
+  - first:
+      213: 559929518928044832
+    second: pirate_berzerker_27
+  - first:
+      213: 5077741867922574834
+    second: pirate_berzerker_28
+  - first:
+      213: 7992139054256985747
+    second: pirate_berzerker_29
+  - first:
+      213: -2794266909166998927
+    second: pirate_berzerker_30
+  - first:
+      213: 7947816424637073589
+    second: pirate_berzerker_31
+  - first:
+      213: -2308875581479686315
+    second: pirate_berzerker_32
+  - first:
+      213: -5482960856046434941
+    second: pirate_berzerker_33
+  - first:
+      213: -5709071140224363851
+    second: pirate_berzerker_34
+  - first:
+      213: -437254207811746259
+    second: pirate_berzerker_35
+  - first:
+      213: 3043885107484883835
+    second: pirate_berzerker_36
+  - first:
+      213: 7499519265614070664
+    second: pirate_berzerker_37
+  - first:
+      213: 7934280109550707801
+    second: pirate_berzerker_38
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -2373,13 +2490,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: PirateBerserker_0
+      name: pirate_berzerker_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 426.66666
-        width: 85.333336
-        height: 85.333336
+        y: 427
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2387,20 +2504,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 022c9873d86a48d60800000000000000
-      internalID: 7891615572512326176
+      spriteID: 2ffe89cddf034e190800000000000000
+      internalID: -7934162776634101774
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_1
+      name: pirate_berzerker_1
       rect:
         serializedVersion: 2
         x: 85
-        y: 426.66666
-        width: 85.333336
-        height: 85.333336
+        y: 427
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2408,20 +2525,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 30672f52a32f465c0800000000000000
-      internalID: -4222984219008010749
+      spriteID: 40a2fdbfb4c9030e0800000000000000
+      internalID: -2292160360169395708
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_2
+      name: pirate_berzerker_2
       rect:
         serializedVersion: 2
         x: 170
-        y: 426.66666
-        width: 85.333336
-        height: 85.333336
+        y: 427
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2429,20 +2546,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cbf209d0fed17aac0800000000000000
-      internalID: -3844070844375486532
+      spriteID: f6962c779ea81b7c0800000000000000
+      internalID: -4057309053942863505
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_3
+      name: pirate_berzerker_3
       rect:
         serializedVersion: 2
         x: 255
-        y: 426.66666
-        width: 85.333336
-        height: 85.333336
+        y: 427
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2450,20 +2567,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c6f53af0387bd1080800000000000000
-      internalID: -9215007488999202964
+      spriteID: ecc09a7f879e14fa0800000000000000
+      internalID: -5818112537825571634
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_4
+      name: pirate_berzerker_4
       rect:
         serializedVersion: 2
         x: 340
-        y: 426.66666
-        width: 85.333336
-        height: 85.333336
+        y: 427
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2471,20 +2588,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e4bcca7c7e5889880800000000000000
-      internalID: -8603979857557402802
+      spriteID: 120bffcc81e2904a0800000000000000
+      internalID: -6626714692645572575
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_5
+      name: pirate_berzerker_5
       rect:
         serializedVersion: 2
         x: 425
-        y: 426.66666
-        width: 85.333336
-        height: 85.333336
+        y: 427
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2492,20 +2609,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d4813644c38856a20800000000000000
-      internalID: 3054997714667509837
+      spriteID: fd12dfb28ea9b5ee0800000000000000
+      internalID: -1271252147840933409
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_6
+      name: pirate_berzerker_6
       rect:
         serializedVersion: 2
         x: 510
-        y: 426.66666
-        width: 85.333336
-        height: 85.333336
+        y: 427
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2513,20 +2630,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d95022c3d801eab50800000000000000
-      internalID: 6606235902184392093
+      spriteID: 0d1b93ad8a67053b0800000000000000
+      internalID: -5525786275195801136
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_7
+      name: pirate_berzerker_7
       rect:
         serializedVersion: 2
         x: 595
-        y: 426.66666
-        width: 85.333336
-        height: 85.333336
+        y: 427
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2534,20 +2651,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1ed3c60cbcd79b540800000000000000
-      internalID: 5024185173368651233
+      spriteID: ad9de1b831014f1a0800000000000000
+      internalID: -6776773863161275942
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_8
+      name: pirate_berzerker_8
       rect:
         serializedVersion: 2
         x: 680
-        y: 426.66666
-        width: 85.333336
-        height: 85.333336
+        y: 427
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2555,20 +2672,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a8f1a16d8aa847430800000000000000
-      internalID: 3779798445021863818
+      spriteID: a6da85c10f696ab00800000000000000
+      internalID: 839524338563067242
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_9
+      name: pirate_berzerker_9
       rect:
         serializedVersion: 2
         x: 765
-        y: 426.66666
-        width: 85.333336
-        height: 85.333336
+        y: 427
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2576,20 +2693,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4adba82dc685e49b0800000000000000
-      internalID: -5094036904097432156
+      spriteID: 147abee8df9305990800000000000000
+      internalID: -7399350426582407359
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_10
+      name: pirate_berzerker_10
       rect:
         serializedVersion: 2
         x: 850
-        y: 426.66666
-        width: 85.333336
-        height: 85.333336
+        y: 427
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2597,20 +2714,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 72c10a9e4059b5ff0800000000000000
-      internalID: -46279522825266137
+      spriteID: d0b57162924b5ae30800000000000000
+      internalID: 4514212290334513933
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_11
+      name: pirate_berzerker_11
       rect:
         serializedVersion: 2
         x: 935
-        y: 426.66666
-        width: 85.333336
-        height: 85.333336
+        y: 427
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2618,20 +2735,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1b14a516c2b0726c0800000000000000
-      internalID: -4168350644868333135
+      spriteID: 153f71b97b93c33b0800000000000000
+      internalID: -5531482781573975215
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_12
+      name: pirate_berzerker_12
       rect:
         serializedVersion: 2
         x: 0
-        y: 341.66666
-        width: 85.333336
-        height: 85.333336
+        y: 342
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2639,20 +2756,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2aa4e7ec23bb76970800000000000000
-      internalID: 8748166628077619874
+      spriteID: 9f18042bfc7d6b290800000000000000
+      internalID: -7874869611361959431
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_13
+      name: pirate_berzerker_13
       rect:
         serializedVersion: 2
         x: 85
-        y: 341.66666
-        width: 85.333336
-        height: 85.333336
+        y: 342
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2660,20 +2777,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 36ead50add6b6edc0800000000000000
-      internalID: -3609996988296352157
+      spriteID: 6d22d02133da860b0800000000000000
+      internalID: -5735143690598538538
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_14
+      name: pirate_berzerker_14
       rect:
         serializedVersion: 2
         x: 170
-        y: 341.66666
-        width: 85.333336
-        height: 85.333336
+        y: 342
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2681,20 +2798,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b76825a6214ddb010800000000000000
-      internalID: 1206353450763454075
+      spriteID: 93c836eaef1a725b0800000000000000
+      internalID: -5393163913533354951
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_15
+      name: pirate_berzerker_15
       rect:
         serializedVersion: 2
         x: 255
-        y: 341.66666
-        width: 85.333336
-        height: 85.333336
+        y: 342
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2702,20 +2819,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 89ecf62fe47b7ecd0800000000000000
-      internalID: -2528851116042498408
+      spriteID: 99558d19de7aa4fd0800000000000000
+      internalID: -2356886816179071591
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_16
+      name: pirate_berzerker_16
       rect:
         serializedVersion: 2
         x: 340
-        y: 341.66666
-        width: 85.333336
-        height: 85.333336
+        y: 342
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2723,20 +2840,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e3a741e3e9bcd1fc0800000000000000
-      internalID: -3522435453027059138
+      spriteID: 555e24603895c21d0800000000000000
+      internalID: -3374223601526708907
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_17
+      name: pirate_berzerker_17
       rect:
         serializedVersion: 2
         x: 425
-        y: 341.66666
-        width: 85.333336
-        height: 85.333336
+        y: 342
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2744,20 +2861,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d4f0de4228ce13780800000000000000
-      internalID: -8704916561021038771
+      spriteID: 732c8021721916800800000000000000
+      internalID: 603923422036673079
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_18
+      name: pirate_berzerker_18
       rect:
         serializedVersion: 2
         x: 510
-        y: 341.66666
-        width: 85.333336
-        height: 85.333336
+        y: 342
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2765,20 +2882,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8c58b7a59036dd9b0800000000000000
-      internalID: -5053774315015928376
+      spriteID: af3ea35867ec8cd30800000000000000
+      internalID: 4452035240092427258
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_19
+      name: pirate_berzerker_19
       rect:
         serializedVersion: 2
         x: 595
-        y: 341.66666
-        width: 85.333336
-        height: 85.333336
+        y: 342
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2786,20 +2903,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 662f9f8863df59f10800000000000000
-      internalID: 2276003597373796966
+      spriteID: 00f4d8b4c517d24a0800000000000000
+      internalID: -6616507636318908672
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_20
+      name: pirate_berzerker_20
       rect:
         serializedVersion: 2
         x: 680
-        y: 341.66666
-        width: 85.333336
-        height: 85.333336
+        y: 342
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2807,20 +2924,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6fa9e9af83cec1b20800000000000000
-      internalID: 3106617572445821686
+      spriteID: 1f627a1e793caa180800000000000000
+      internalID: -9103248639682730255
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_21
+      name: pirate_berzerker_21
       rect:
         serializedVersion: 2
         x: 765
-        y: 341.66666
-        width: 85.333336
-        height: 85.333336
+        y: 342
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2828,20 +2945,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 201411fe948518020800000000000000
-      internalID: 2342250355776110850
+      spriteID: 0e312a931d3dec5c0800000000000000
+      internalID: -4193181307466804256
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_22
+      name: pirate_berzerker_22
       rect:
         serializedVersion: 2
         x: 850
-        y: 341.66666
-        width: 85.333336
-        height: 85.333336
+        y: 342
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2849,20 +2966,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 019f9a4e1c8e595d0800000000000000
-      internalID: -3056280852638336752
+      spriteID: fc6dc8927e6391750800000000000000
+      internalID: 6276107922179937999
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_23
+      name: pirate_berzerker_23
       rect:
         serializedVersion: 2
         x: 935
-        y: 341.66666
-        width: 85.333336
-        height: 85.333336
+        y: 342
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2870,20 +2987,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8dcdf1b0f85cd4560800000000000000
-      internalID: 7299707789195074776
+      spriteID: 324124a07c203a9f0800000000000000
+      internalID: -458519683167808477
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_24
+      name: pirate_berzerker_24
       rect:
         serializedVersion: 2
         x: 0
-        y: 256.66666
-        width: 85.333336
-        height: 85.333336
+        y: 257
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2891,20 +3008,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6fde07d55644c8eb0800000000000000
-      internalID: -4716319507613684234
+      spriteID: f4e0e3a9bd1391580800000000000000
+      internalID: -8855992372992012721
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_25
+      name: pirate_berzerker_25
       rect:
         serializedVersion: 2
         x: 85
-        y: 256.66666
-        width: 85.333336
-        height: 85.333336
+        y: 257
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2912,20 +3029,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 185624b01567f5780800000000000000
-      internalID: -8692098665348438655
+      spriteID: 86ea1c1360092bd30800000000000000
+      internalID: 4445774138447081064
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_26
+      name: pirate_berzerker_26
       rect:
         serializedVersion: 2
         x: 170
-        y: 256.66666
-        width: 85.333336
-        height: 85.333336
+        y: 257
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2933,20 +3050,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4281357c60d893a80800000000000000
-      internalID: -8486596962549557212
+      spriteID: 1b59f309000c8d0a0800000000000000
+      internalID: -6856519324018960975
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_27
+      name: pirate_berzerker_27
       rect:
         serializedVersion: 2
         x: 255
-        y: 256.66666
-        width: 85.333336
-        height: 85.333336
+        y: 257
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2954,20 +3071,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8de13a17187f04b70800000000000000
-      internalID: 8881370600503975640
+      spriteID: 02326fa4ee445c700800000000000000
+      internalID: 559929518928044832
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_28
+      name: pirate_berzerker_28
       rect:
         serializedVersion: 2
         x: 340
-        y: 256.66666
-        width: 85.333336
-        height: 85.333336
+        y: 257
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2975,20 +3092,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0326ab883429cfd30800000000000000
-      internalID: 4466605749199069744
+      spriteID: 2fd47aa6353c77640800000000000000
+      internalID: 5077741867922574834
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_29
+      name: pirate_berzerker_29
       rect:
         serializedVersion: 2
         x: 425
-        y: 256.66666
-        width: 85.333336
-        height: 85.333336
+        y: 257
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2996,20 +3113,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e3ee7a4073dd5e150800000000000000
-      internalID: 5901366115109957182
+      spriteID: 396938c2028c9ee60800000000000000
+      internalID: 7992139054256985747
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_30
+      name: pirate_berzerker_30
       rect:
         serializedVersion: 2
         x: 510
-        y: 256.66666
-        width: 85.333336
-        height: 85.333336
+        y: 257
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -3017,20 +3134,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cc9678a1bbbefeb80800000000000000
-      internalID: -8363206794167227956
+      spriteID: 17ae87ffc05c839d0800000000000000
+      internalID: -2794266909166998927
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_31
+      name: pirate_berzerker_31
       rect:
         serializedVersion: 2
         x: 595
-        y: 256.66666
-        width: 85.333336
-        height: 85.333336
+        y: 257
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -3038,20 +3155,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1d7af5652a7ac4750800000000000000
-      internalID: 6290587095205390289
+      spriteID: 5b8028acde05c4e60800000000000000
+      internalID: 7947816424637073589
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_32
+      name: pirate_berzerker_32
       rect:
         serializedVersion: 2
         x: 0
-        y: 171.66666
-        width: 85.333336
-        height: 85.333336
+        y: 172
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -3059,20 +3176,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: aff808c1e2c3d9100800000000000000
-      internalID: 116315334125850618
+      spriteID: 55f645f34e935ffd0800000000000000
+      internalID: -2308875581479686315
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_33
+      name: pirate_berzerker_33
       rect:
         serializedVersion: 2
         x: 0
-        y: 86.666664
-        width: 85.333336
-        height: 85.333336
+        y: 87
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -3080,20 +3197,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f7ddd5d7a4ac14c00800000000000000
-      internalID: 883209423221022079
+      spriteID: 3850bf1c62c98e3b0800000000000000
+      internalID: -5482960856046434941
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_34
+      name: pirate_berzerker_34
       rect:
         serializedVersion: 2
         x: 85
-        y: 86.666664
-        width: 85.333336
-        height: 85.333336
+        y: 87
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -3101,20 +3218,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f43167878d5a1a4a0800000000000000
-      internalID: -6583798831086431409
+      spriteID: 5b21e71cb0e45c0b0800000000000000
+      internalID: -5709071140224363851
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_35
+      name: pirate_berzerker_35
       rect:
         serializedVersion: 2
         x: 170
-        y: 86.666664
-        width: 85.333336
-        height: 85.333336
+        y: 87
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -3122,20 +3239,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c6b0614fcd2941c50800000000000000
-      internalID: 6635089628709129068
+      spriteID: d2606da5d9f8ee9f0800000000000000
+      internalID: -437254207811746259
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_36
+      name: pirate_berzerker_36
       rect:
         serializedVersion: 2
         x: 255
-        y: 86.666664
-        width: 85.333336
-        height: 85.333336
+        y: 87
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -3143,20 +3260,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 13a2594fe4a77a200800000000000000
-      internalID: 191255988715989553
+      spriteID: b7bfcb8c06d0e3a20800000000000000
+      internalID: 3043885107484883835
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_37
+      name: pirate_berzerker_37
       rect:
         serializedVersion: 2
         x: 340
-        y: 86.666664
-        width: 85.333336
-        height: 85.333336
+        y: 87
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -3164,20 +3281,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c06ba54e338fd98c0800000000000000
-      internalID: -3990760793022220788
+      spriteID: 8830025b905a31860800000000000000
+      internalID: 7499519265614070664
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateBerserker_38
+      name: pirate_berzerker_38
       rect:
         serializedVersion: 2
         x: 425
-        y: 86.666664
-        width: 85.333336
-        height: 85.333336
+        y: 87
+        width: 85
+        height: 85
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -3185,8 +3302,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ae83c24309ae874c0800000000000000
-      internalID: -4289420739998893846
+      spriteID: 954a736d8b93c1e60800000000000000
+      internalID: 7934280109550707801
       vertices: []
       indices: 
       edges: []

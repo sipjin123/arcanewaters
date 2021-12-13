@@ -119,6 +119,123 @@ TextureImporter:
   - first:
       213: -3689872278539177290
     second: SwordLizard_38
+  - first:
+      213: -5667239854428697920
+    second: lizard_sword_0
+  - first:
+      213: 4461793279680719482
+    second: lizard_sword_1
+  - first:
+      213: -1357758389451290466
+    second: lizard_sword_2
+  - first:
+      213: -3126724554901778601
+    second: lizard_sword_3
+  - first:
+      213: 872355574436894747
+    second: lizard_sword_4
+  - first:
+      213: -4924829674593495719
+    second: lizard_sword_5
+  - first:
+      213: 1831200572473591923
+    second: lizard_sword_6
+  - first:
+      213: 8798418017726146212
+    second: lizard_sword_7
+  - first:
+      213: 620568212962290361
+    second: lizard_sword_8
+  - first:
+      213: 1738082154720161535
+    second: lizard_sword_9
+  - first:
+      213: 2896578522547714811
+    second: lizard_sword_10
+  - first:
+      213: 8601513649483718136
+    second: lizard_sword_11
+  - first:
+      213: -2420031544449004504
+    second: lizard_sword_12
+  - first:
+      213: -5627140824821682413
+    second: lizard_sword_13
+  - first:
+      213: -5732404928396860615
+    second: lizard_sword_14
+  - first:
+      213: 3697921251891024965
+    second: lizard_sword_15
+  - first:
+      213: 6876990657036405163
+    second: lizard_sword_16
+  - first:
+      213: 646991927241160311
+    second: lizard_sword_17
+  - first:
+      213: -1743250977952254061
+    second: lizard_sword_18
+  - first:
+      213: -9134422879279591458
+    second: lizard_sword_19
+  - first:
+      213: -5743648787163826474
+    second: lizard_sword_20
+  - first:
+      213: 4996854373619539261
+    second: lizard_sword_21
+  - first:
+      213: -4274493137438287293
+    second: lizard_sword_22
+  - first:
+      213: 1767615373298115151
+    second: lizard_sword_23
+  - first:
+      213: 1761495968551386792
+    second: lizard_sword_24
+  - first:
+      213: 5653586391923428563
+    second: lizard_sword_25
+  - first:
+      213: 4289891606606048131
+    second: lizard_sword_26
+  - first:
+      213: 4782824335512903411
+    second: lizard_sword_27
+  - first:
+      213: 8904739580188267610
+    second: lizard_sword_28
+  - first:
+      213: -301991272230094599
+    second: lizard_sword_29
+  - first:
+      213: -3015268488804609799
+    second: lizard_sword_30
+  - first:
+      213: -1416369751813804999
+    second: lizard_sword_31
+  - first:
+      213: 1266486127762453577
+    second: lizard_sword_32
+  - first:
+      213: -8361862244718922092
+    second: lizard_sword_33
+  - first:
+      213: -6519705984470347087
+    second: lizard_sword_34
+  - first:
+      213: 8259170745265242323
+    second: lizard_sword_35
+  - first:
+      213: 6979452169608533868
+    second: lizard_sword_36
+  - first:
+      213: 5902288979830228449
+    second: lizard_sword_37
+  - first:
+      213: -7773913620373229485
+    second: lizard_sword_38
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -228,7 +345,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: SwordLizard_0
+      name: lizard_sword_0
       rect:
         serializedVersion: 2
         x: 0
@@ -242,14 +359,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6ede91d12a83f1c459730231d4151f38
-      internalID: -9179653722846785706
+      spriteID: 0ca47d3f06be951b0800000000000000
+      internalID: -5667239854428697920
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_1
+      name: lizard_sword_1
       rect:
         serializedVersion: 2
         x: 85
@@ -263,14 +380,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d3fb793fed653cf45932e32906fa133a
-      internalID: 6906325023523400406
+      spriteID: a7a289829597bed30800000000000000
+      internalID: 4461793279680719482
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_2
+      name: lizard_sword_2
       rect:
         serializedVersion: 2
         x: 170
@@ -284,14 +401,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0b519910a93c21f4f8654feb319d6d72
-      internalID: -716042183101719030
+      spriteID: e9803f140f5482de0800000000000000
+      internalID: -1357758389451290466
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_3
+      name: lizard_sword_3
       rect:
         serializedVersion: 2
         x: 255
@@ -305,14 +422,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dbbb7095033cc8847a9d762a8f7749d5
-      internalID: -2244073913388981842
+      spriteID: 75f869a5594ab94d0800000000000000
+      internalID: -3126724554901778601
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_4
+      name: lizard_sword_4
       rect:
         serializedVersion: 2
         x: 340
@@ -326,14 +443,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cd887c8916a88134b99b0a4278dce66a
-      internalID: 5260015323091847400
+      spriteID: b189424e5ca3b1c00800000000000000
+      internalID: 872355574436894747
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_5
+      name: lizard_sword_5
       rect:
         serializedVersion: 2
         x: 425
@@ -347,14 +464,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c43aec4dc5db5694c888404c21648d3d
-      internalID: 9127873449253902724
+      spriteID: 9555d8af08d77abb0800000000000000
+      internalID: -4924829674593495719
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_6
+      name: lizard_sword_6
       rect:
         serializedVersion: 2
         x: 510
@@ -368,14 +485,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f3cc0f44d08c21a43b19cb19619799fc
-      internalID: -8874412794943529873
+      spriteID: 378c7c2f73bb96910800000000000000
+      internalID: 1831200572473591923
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_7
+      name: lizard_sword_7
       rect:
         serializedVersion: 2
         x: 595
@@ -389,14 +506,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ba5e4e6210dbcde4c9a5b5b260ba3c0f
-      internalID: 4352836356445111896
+      spriteID: 4a6a6f332924a1a70800000000000000
+      internalID: 8798418017726146212
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_8
+      name: lizard_sword_8
       rect:
         serializedVersion: 2
         x: 680
@@ -410,14 +527,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 65e1b980944ccdd439c2c8989027614b
-      internalID: 5299214654185838415
+      spriteID: 9ba24847083bc9800800000000000000
+      internalID: 620568212962290361
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_9
+      name: lizard_sword_9
       rect:
         serializedVersion: 2
         x: 765
@@ -431,14 +548,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8bb36d5089e894c4f90fed710fc6812b
-      internalID: 3741103099466205808
+      spriteID: ffe6a8ec288ee1810800000000000000
+      internalID: 1738082154720161535
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_10
+      name: lizard_sword_10
       rect:
         serializedVersion: 2
         x: 850
@@ -452,14 +569,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 41d64bece47163d43b8351852905d9de
-      internalID: 7757869154288922168
+      spriteID: bfa7b7cc1d6b23820800000000000000
+      internalID: 2896578522547714811
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_11
+      name: lizard_sword_11
       rect:
         serializedVersion: 2
         x: 935
@@ -473,14 +590,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5e9954b89ccb1dc41b6f05d8b43d58b5
-      internalID: -2339724740295180474
+      spriteID: 8fd96286717be5770800000000000000
+      internalID: 8601513649483718136
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_12
+      name: lizard_sword_12
       rect:
         serializedVersion: 2
         x: 0
@@ -494,14 +611,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dcfe8b1b74561bf41a69d7079d579671
-      internalID: -2815093634554945537
+      spriteID: 82c80e7d1225a6ed0800000000000000
+      internalID: -2420031544449004504
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_13
+      name: lizard_sword_13
       rect:
         serializedVersion: 2
         x: 85
@@ -515,14 +632,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fa55a4b6d5b739049a78931643d82110
-      internalID: 6106315896693881761
+      spriteID: 31fa763db3168e1b0800000000000000
+      internalID: -5627140824821682413
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_14
+      name: lizard_sword_14
       rect:
         serializedVersion: 2
         x: 170
@@ -536,14 +653,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8febc0029796bb04caf1f4c6675d67c4
-      internalID: 30275082306254304
+      spriteID: 933e436d6186270b0800000000000000
+      internalID: -5732404928396860615
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_15
+      name: lizard_sword_15
       rect:
         serializedVersion: 2
         x: 255
@@ -557,14 +674,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 14b34c680c90ce5459b6d93d599da06e
-      internalID: 7326217002455167819
+      spriteID: 544155249c7a15330800000000000000
+      internalID: 3697921251891024965
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_16
+      name: lizard_sword_16
       rect:
         serializedVersion: 2
         x: 340
@@ -578,14 +695,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cbadc8fc451ca9443b26793b09be9543
-      internalID: -2160128299325495244
+      spriteID: ba9c554119aff6f50800000000000000
+      internalID: 6876990657036405163
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_17
+      name: lizard_sword_17
       rect:
         serializedVersion: 2
         x: 425
@@ -599,14 +716,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 240d885115c87ab41a81f9d579d4be7a
-      internalID: -7207178608470076475
+      spriteID: 77631cbdab39af800800000000000000
+      internalID: 646991927241160311
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_18
+      name: lizard_sword_18
       rect:
         serializedVersion: 2
         x: 510
@@ -620,14 +737,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a2bea06dc6f9cbc4da8ae1c40e79d22b
-      internalID: 3106209496764750887
+      spriteID: 397bdc0c87abec7e0800000000000000
+      internalID: -1743250977952254061
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_19
+      name: lizard_sword_19
       rect:
         serializedVersion: 2
         x: 595
@@ -641,14 +758,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7c97da35c4dc4c840a4f1638a014c321
-      internalID: -6401134713810179912
+      spriteID: edfc65c99c20c3180800000000000000
+      internalID: -9134422879279591458
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_20
+      name: lizard_sword_20
       rect:
         serializedVersion: 2
         x: 680
@@ -662,14 +779,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1a888044b84259946a0c9d3e89e84cd2
-      internalID: 1487626294449736036
+      spriteID: 6d63f76fbd57a40b0800000000000000
+      internalID: -5743648787163826474
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_21
+      name: lizard_sword_21
       rect:
         serializedVersion: 2
         x: 765
@@ -683,14 +800,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 66febf71e3b83ea48a075a2e6cbace79
-      internalID: 5487629428754888760
+      spriteID: d3d13fd0494685540800000000000000
+      internalID: 4996854373619539261
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_22
+      name: lizard_sword_22
       rect:
         serializedVersion: 2
         x: 850
@@ -704,14 +821,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1f766514fdf25c8419442eaaba621dab
-      internalID: -7663922127729584418
+      spriteID: 34a55248323fda4c0800000000000000
+      internalID: -4274493137438287293
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_23
+      name: lizard_sword_23
       rect:
         serializedVersion: 2
         x: 935
@@ -725,14 +842,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e48214b9511297d4989b655e997889c5
-      internalID: -1280432016822110886
+      spriteID: f4224f811d4d78810800000000000000
+      internalID: 1767615373298115151
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_24
+      name: lizard_sword_24
       rect:
         serializedVersion: 2
         x: 0
@@ -746,14 +863,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d038c73605d8ee747a9f8cc84016b59a
-      internalID: 2922807150678441287
+      spriteID: 8aeb9c62047127810800000000000000
+      internalID: 1761495968551386792
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_25
+      name: lizard_sword_25
       rect:
         serializedVersion: 2
         x: 85
@@ -767,14 +884,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cf588cb02f17b0044a5bf1e02ae043e9
-      internalID: -2596586518873730529
+      spriteID: 3dc04959ed2957e40800000000000000
+      internalID: 5653586391923428563
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_26
+      name: lizard_sword_26
       rect:
         serializedVersion: 2
         x: 170
@@ -788,14 +905,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1c44add18befac74d8cd79a598af0125
-      internalID: 4341278005585831730
+      spriteID: 38beea8ffa1c88b30800000000000000
+      internalID: 4289891606606048131
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_27
+      name: lizard_sword_27
       rect:
         serializedVersion: 2
         x: 255
@@ -809,14 +926,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fe715921ac9d4c04f8a115e5ee93605c
-      internalID: 1798715713046339717
+      spriteID: 3fe17558461006240800000000000000
+      internalID: 4782824335512903411
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_28
+      name: lizard_sword_28
       rect:
         serializedVersion: 2
         x: 340
@@ -830,14 +947,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f0cdb3c8fbcc470408a18125bb010e0a
-      internalID: 8232192110950295937
+      spriteID: a549b76087df39b70800000000000000
+      internalID: 8904739580188267610
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_29
+      name: lizard_sword_29
       rect:
         serializedVersion: 2
         x: 425
@@ -851,14 +968,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 284bd67621c096a439321908de91f9f6
-      internalID: -7110184303687130898
+      spriteID: 9f8f475b98c1fcbf0800000000000000
+      internalID: -301991272230094599
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_30
+      name: lizard_sword_30
       rect:
         serializedVersion: 2
         x: 510
@@ -872,14 +989,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5c08513ea6a453f41af869ba253c799e
-      internalID: -5388866303803513161
+      spriteID: 9f05f56f84d9726d0800000000000000
+      internalID: -3015268488804609799
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_31
+      name: lizard_sword_31
       rect:
         serializedVersion: 2
         x: 595
@@ -893,14 +1010,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5dbd122acdb402d47ab1e0315e53c427
-      internalID: -1587696498737151713
+      spriteID: 93ca788073b085ce0800000000000000
+      internalID: -1416369751813804999
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_32
+      name: lizard_sword_32
       rect:
         serializedVersion: 2
         x: 0
@@ -914,14 +1031,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 772528d7520208542ba1d62510646fce
-      internalID: -8237818895353320523
+      spriteID: 944bd3e4c66739110800000000000000
+      internalID: 1266486127762453577
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_33
+      name: lizard_sword_33
       rect:
         serializedVersion: 2
         x: 0
@@ -935,14 +1052,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 749f3a9bb452c17489d3ddaf05ef4cf6
-      internalID: 3446185890317906002
+      spriteID: 49637ca6792b4fb80800000000000000
+      internalID: -8361862244718922092
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_34
+      name: lizard_sword_34
       rect:
         serializedVersion: 2
         x: 85
@@ -956,14 +1073,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6d2d4cf45ec56714d8518bcae56af0c2
-      internalID: 5891632839486936009
+      spriteID: 1b218a333f95585a0800000000000000
+      internalID: -6519705984470347087
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_35
+      name: lizard_sword_35
       rect:
         serializedVersion: 2
         x: 170
@@ -977,14 +1094,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: aece6a51336a1dd43a8b137f19094903
-      internalID: -3734455125491770093
+      spriteID: 3d045daa8087e9270800000000000000
+      internalID: 8259170745265242323
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_36
+      name: lizard_sword_36
       rect:
         serializedVersion: 2
         x: 255
@@ -998,14 +1115,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 44edb8f1585d8524c8b050b18adc0618
-      internalID: 8440473577926748508
+      spriteID: c67985005cefbd060800000000000000
+      internalID: 6979452169608533868
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_37
+      name: lizard_sword_37
       rect:
         serializedVersion: 2
         x: 340
@@ -1019,14 +1136,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 045ac615cea637a44b760909a295e92d
-      internalID: 7092220431059200400
+      spriteID: 1e5cb743e8429e150800000000000000
+      internalID: 5902288979830228449
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SwordLizard_38
+      name: lizard_sword_38
       rect:
         serializedVersion: 2
         x: 425
@@ -1040,8 +1157,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2ed05e6e746275a47bd5bde5981404df
-      internalID: -3689872278539177290
+      spriteID: 350351f00c28d1490800000000000000
+      internalID: -7773913620373229485
       vertices: []
       indices: 
       edges: []

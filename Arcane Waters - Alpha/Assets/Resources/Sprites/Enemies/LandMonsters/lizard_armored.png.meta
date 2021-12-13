@@ -119,6 +119,123 @@ TextureImporter:
   - first:
       213: 1953535441026555113
     second: ArmoredLizard_38
+  - first:
+      213: 283538392788277300
+    second: lizard_armored_0
+  - first:
+      213: 3725886128726879679
+    second: lizard_armored_1
+  - first:
+      213: 6151376158037671029
+    second: lizard_armored_2
+  - first:
+      213: 2839889183880226893
+    second: lizard_armored_3
+  - first:
+      213: -7572878876648839332
+    second: lizard_armored_4
+  - first:
+      213: -3270036673597879773
+    second: lizard_armored_5
+  - first:
+      213: -1568476288379476742
+    second: lizard_armored_6
+  - first:
+      213: -7272299208342595501
+    second: lizard_armored_7
+  - first:
+      213: 8763897021287031571
+    second: lizard_armored_8
+  - first:
+      213: 5040171522145670073
+    second: lizard_armored_9
+  - first:
+      213: -3480215552881714154
+    second: lizard_armored_10
+  - first:
+      213: 877367335576754157
+    second: lizard_armored_11
+  - first:
+      213: -596371143116899569
+    second: lizard_armored_12
+  - first:
+      213: 3564613666783660902
+    second: lizard_armored_13
+  - first:
+      213: -4198693103785203332
+    second: lizard_armored_14
+  - first:
+      213: -1814023101797928095
+    second: lizard_armored_15
+  - first:
+      213: 9058602883878423071
+    second: lizard_armored_16
+  - first:
+      213: 4654006090813388017
+    second: lizard_armored_17
+  - first:
+      213: 212384903186185699
+    second: lizard_armored_18
+  - first:
+      213: 8695716577247831879
+    second: lizard_armored_19
+  - first:
+      213: 7911642075826233024
+    second: lizard_armored_20
+  - first:
+      213: 6420070021334078395
+    second: lizard_armored_21
+  - first:
+      213: -6404412403426604114
+    second: lizard_armored_22
+  - first:
+      213: 1910048105389593073
+    second: lizard_armored_23
+  - first:
+      213: 4183529091095628614
+    second: lizard_armored_24
+  - first:
+      213: -3420417201771420911
+    second: lizard_armored_25
+  - first:
+      213: -6334994189742551722
+    second: lizard_armored_26
+  - first:
+      213: 634128691514087100
+    second: lizard_armored_27
+  - first:
+      213: -2779129105921417543
+    second: lizard_armored_28
+  - first:
+      213: -9076515663161272163
+    second: lizard_armored_29
+  - first:
+      213: 8968443122138973386
+    second: lizard_armored_30
+  - first:
+      213: 3548874870266525107
+    second: lizard_armored_31
+  - first:
+      213: 1079742666847298361
+    second: lizard_armored_32
+  - first:
+      213: -6329817987490502705
+    second: lizard_armored_33
+  - first:
+      213: 429573556707065332
+    second: lizard_armored_34
+  - first:
+      213: 899541441108507582
+    second: lizard_armored_35
+  - first:
+      213: -6333311828439407053
+    second: lizard_armored_36
+  - first:
+      213: -6527344764557112773
+    second: lizard_armored_37
+  - first:
+      213: -5324440892755667533
+    second: lizard_armored_38
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -228,7 +345,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ArmoredLizard_0
+      name: lizard_armored_0
       rect:
         serializedVersion: 2
         x: 0
@@ -242,14 +359,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ee6beb1c87e588548b84f112a69aec60
-      internalID: -4530435348744159013
+      spriteID: 438945e7aa45fe300800000000000000
+      internalID: 283538392788277300
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_1
+      name: lizard_armored_1
       rect:
         serializedVersion: 2
         x: 85
@@ -263,14 +380,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1cffba724bd846d429c8316208b7ca98
-      internalID: 9004723598952359230
+      spriteID: fbd225881b105b330800000000000000
+      internalID: 3725886128726879679
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_2
+      name: lizard_armored_2
       rect:
         serializedVersion: 2
         x: 170
@@ -284,14 +401,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c1c86d3ffb8ed7e4cafeca228c7311ce
-      internalID: 6509231187967417687
+      spriteID: 57c74ab36041e5550800000000000000
+      internalID: 6151376158037671029
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_3
+      name: lizard_armored_3
       rect:
         serializedVersion: 2
         x: 255
@@ -305,14 +422,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fde544e6b9b3f9c42bf3cefb6eb40260
-      internalID: -3200942147873755408
+      spriteID: d48a7a69a20596720800000000000000
+      internalID: 2839889183880226893
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_4
+      name: lizard_armored_4
       rect:
         serializedVersion: 2
         x: 340
@@ -326,14 +443,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a88267a8f67383143bc1c7aa507b70e5
-      internalID: -2788080199475861317
+      spriteID: c576946d8cab7e690800000000000000
+      internalID: -7572878876648839332
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_5
+      name: lizard_armored_5
       rect:
         serializedVersion: 2
         x: 425
@@ -347,14 +464,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f00a8bf9372e3ff4990052a498d8c69b
-      internalID: -8652115210183822041
+      spriteID: 32ac2b388fe7e92d0800000000000000
+      internalID: -3270036673597879773
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_6
+      name: lizard_armored_6
       rect:
         serializedVersion: 2
         x: 510
@@ -368,14 +485,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8ee931573b0274f44b7d9dc0d2d4fcfd
-      internalID: 8580095074926668709
+      spriteID: af4a4883027ab3ae0800000000000000
+      internalID: -1568476288379476742
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_7
+      name: lizard_armored_7
       rect:
         serializedVersion: 2
         x: 595
@@ -389,14 +506,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b140e88d2f426fc4e989919fa60ec287
-      internalID: -6885406470826795607
+      spriteID: 358926a766a931b90800000000000000
+      internalID: -7272299208342595501
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_8
+      name: lizard_armored_8
       rect:
         serializedVersion: 2
         x: 680
@@ -410,14 +527,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5ae19e23e13313f48bf6ff0b478cd94e
-      internalID: 105240442396767299
+      spriteID: 313eae168ed9f9970800000000000000
+      internalID: 8763897021287031571
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_9
+      name: lizard_armored_9
       rect:
         serializedVersion: 2
         x: 765
@@ -431,14 +548,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4c00c2bb155d6054ea9b1e74f9b17d2c
-      internalID: -8118573423606897045
+      spriteID: 9b35880ab4942f540800000000000000
+      internalID: 5040171522145670073
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_10
+      name: lizard_armored_10
       rect:
         serializedVersion: 2
         x: 850
@@ -452,14 +569,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 867169be861df2844994b782247dbcb8
-      internalID: 2363538259306309025
+      spriteID: 61c12b4c46ac3bfc0800000000000000
+      internalID: -3480215552881714154
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_11
+      name: lizard_armored_11
       rect:
         serializedVersion: 2
         x: 935
@@ -473,14 +590,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ebbeecc4b1bf6af4fa55cc364e880725
-      internalID: -748282390956926588
+      spriteID: de7559671f80d2c00800000000000000
+      internalID: 877367335576754157
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_12
+      name: lizard_armored_12
       rect:
         serializedVersion: 2
         x: 0
@@ -494,14 +611,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a4eabd7e194340341aca8dfa6f55c255
-      internalID: -7558634999120150125
+      spriteID: f0b3934ea9349b7f0800000000000000
+      internalID: -596371143116899569
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_13
+      name: lizard_armored_13
       rect:
         serializedVersion: 2
         x: 85
@@ -515,14 +632,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 994878cce3f6d0c488363bdd7b0586cd
-      internalID: -2831154465963698648
+      spriteID: 66b842a6e3d087130800000000000000
+      internalID: 3564613666783660902
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_14
+      name: lizard_armored_14
       rect:
         serializedVersion: 2
         x: 170
@@ -536,14 +653,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 987de399d8c15ea4aa698cae5085cd59
-      internalID: -8113783142755047362
+      spriteID: c7920042ede3bb5c0800000000000000
+      internalID: -4198693103785203332
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_15
+      name: lizard_armored_15
       rect:
         serializedVersion: 2
         x: 255
@@ -557,14 +674,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 52abe319a7be28344862445bf51d86b8
-      internalID: -6173195581297471375
+      spriteID: 1637bfa999b43d6e0800000000000000
+      internalID: -1814023101797928095
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_16
+      name: lizard_armored_16
       rect:
         serializedVersion: 2
         x: 340
@@ -578,14 +695,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f53dc52502c2e734391604f70e7e5126
-      internalID: 3721541082742786218
+      spriteID: f1a07ee045f96bd70800000000000000
+      internalID: 9058602883878423071
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_17
+      name: lizard_armored_17
       rect:
         serializedVersion: 2
         x: 425
@@ -599,14 +716,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f05202222532b5447a6d1973dff76ff8
-      internalID: 5826915053672688814
+      spriteID: 1f4bf61b1e9569040800000000000000
+      internalID: 4654006090813388017
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_18
+      name: lizard_armored_18
       rect:
         serializedVersion: 2
         x: 510
@@ -620,14 +737,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ebbb27b3befa8934d9148fb8e44fda2e
-      internalID: -9158779032151184907
+      spriteID: 3ed7116b1fa82f200800000000000000
+      internalID: 212384903186185699
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_19
+      name: lizard_armored_19
       rect:
         serializedVersion: 2
         x: 595
@@ -641,14 +758,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f0e63baed0a583c40b88b40c29066039
-      internalID: 7031653255537092818
+      spriteID: 7472556b7246da870800000000000000
+      internalID: 8695716577247831879
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_20
+      name: lizard_armored_20
       rect:
         serializedVersion: 2
         x: 680
@@ -662,14 +779,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 98842d8e46911a94795991591af8c8e2
-      internalID: 4427254698891970856
+      spriteID: 0ce18afdc8ccbcd60800000000000000
+      internalID: 7911642075826233024
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_21
+      name: lizard_armored_21
       rect:
         serializedVersion: 2
         x: 765
@@ -683,14 +800,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5fb278837425d0d4c9ca9c8a6fc0450a
-      internalID: -3512521770785434297
+      spriteID: bb390ce5baba81950800000000000000
+      internalID: 6420070021334078395
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_22
+      name: lizard_armored_22
       rect:
         serializedVersion: 2
         x: 850
@@ -704,14 +821,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 89a53fcc9d478bf4582b677b51f34ac9
-      internalID: 7081468928185166477
+      spriteID: eabc6a2e9d4fe17a0800000000000000
+      internalID: -6404412403426604114
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_23
+      name: lizard_armored_23
       rect:
         serializedVersion: 2
         x: 935
@@ -725,14 +842,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1fc77d24b13a40d46b276fe7f615c3b9
-      internalID: 448323332422305303
+      spriteID: 1f197a9c1aad18a10800000000000000
+      internalID: 1910048105389593073
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_24
+      name: lizard_armored_24
       rect:
         serializedVersion: 2
         x: 0
@@ -746,14 +863,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 67ea6da480fed84498f5e3f5564e0997
-      internalID: 6404116597496205309
+      spriteID: 64b84460b81ee0a30800000000000000
+      internalID: 4183529091095628614
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_25
+      name: lizard_armored_25
       rect:
         serializedVersion: 2
         x: 85
@@ -767,14 +884,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b12d4e5ae40409f40a0745461677c3d9
-      internalID: -1171186159364678528
+      spriteID: 11367c85dac3880d0800000000000000
+      internalID: -3420417201771420911
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_26
+      name: lizard_armored_26
       rect:
         serializedVersion: 2
         x: 170
@@ -788,14 +905,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c207837b4f76c5940a2aa4eff6d6fe7f
-      internalID: -7924350178919732232
+      spriteID: 65d4b3249549518a0800000000000000
+      internalID: -6334994189742551722
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_27
+      name: lizard_armored_27
       rect:
         serializedVersion: 2
         x: 255
@@ -809,14 +926,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5ada80e1cdad6be42900e81c4401e0f4
-      internalID: -7267020947870962488
+      spriteID: cb694976fa0ecc800800000000000000
+      internalID: 634128691514087100
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_28
+      name: lizard_armored_28
       rect:
         serializedVersion: 2
         x: 340
@@ -830,14 +947,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e5ebbc54d9ce90c429a63211767bd88d
-      internalID: -2196852157953594394
+      spriteID: 9beda987dcc8e69d0800000000000000
+      internalID: -2779129105921417543
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_29
+      name: lizard_armored_29
       rect:
         serializedVersion: 2
         x: 425
@@ -851,14 +968,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1bce64ded9e17df478f1a094be33aa03
-      internalID: 6625447291139841656
+      spriteID: d98d003081db90280800000000000000
+      internalID: -9076515663161272163
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_30
+      name: lizard_armored_30
       rect:
         serializedVersion: 2
         x: 510
@@ -872,14 +989,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 74e9f669ddc03d3439750fe260bc6667
-      internalID: 2236527141223550855
+      spriteID: ac48363b08f467c70800000000000000
+      internalID: 8968443122138973386
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_31
+      name: lizard_armored_31
       rect:
         serializedVersion: 2
         x: 595
@@ -893,14 +1010,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 64bc8a758a761cd4ba07922f96b8e552
-      internalID: -6557339683946374720
+      spriteID: 3b5fb8a44e2204130800000000000000
+      internalID: 3548874870266525107
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_32
+      name: lizard_armored_32
       rect:
         serializedVersion: 2
         x: 0
@@ -914,14 +1031,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a3687abb1c83eec45b5ca8b6eddec6f6
-      internalID: 3339276717782668490
+      spriteID: 933244a1c340cfe00800000000000000
+      internalID: 1079742666847298361
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_33
+      name: lizard_armored_33
       rect:
         serializedVersion: 2
         x: 0
@@ -935,14 +1052,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 835798544ec87a04dadb21dd70cded0f
-      internalID: 4116704295008989004
+      spriteID: fc720c2c318f728a0800000000000000
+      internalID: -6329817987490502705
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_34
+      name: lizard_armored_34
       rect:
         serializedVersion: 2
         x: 85
@@ -956,14 +1073,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ffe13350ce038e7439c87e68395a08f2
-      internalID: 8391260257166874870
+      spriteID: 4fdfc64bfd626f500800000000000000
+      internalID: 429573556707065332
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_35
+      name: lizard_armored_35
       rect:
         serializedVersion: 2
         x: 170
@@ -977,14 +1094,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dac76261e9639c144910f790e941019d
-      internalID: -3027105956901175733
+      spriteID: ebbf30abc20db7c00800000000000000
+      internalID: 899541441108507582
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_36
+      name: lizard_armored_36
       rect:
         serializedVersion: 2
         x: 255
@@ -998,14 +1115,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 46ce03bfe42699c4287e324f8817f4af
-      internalID: 2834140308207693007
+      spriteID: 336e616827e8b18a0800000000000000
+      internalID: -6333311828439407053
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_37
+      name: lizard_armored_37
       rect:
         serializedVersion: 2
         x: 340
@@ -1019,14 +1136,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6cebe11c56b82bd41acb159191308829
-      internalID: 3675051380793540478
+      spriteID: b3a411e15863a65a0800000000000000
+      internalID: -6527344764557112773
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ArmoredLizard_38
+      name: lizard_armored_38
       rect:
         serializedVersion: 2
         x: 425
@@ -1040,8 +1157,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b6eea9739a6b4b944b5988ae0a27eea7
-      internalID: 1953535441026555113
+      spriteID: 3b51cb7d739cb16b0800000000000000
+      internalID: -5324440892755667533
       vertices: []
       indices: 
       edges: []
