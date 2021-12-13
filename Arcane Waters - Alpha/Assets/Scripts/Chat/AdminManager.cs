@@ -23,6 +23,12 @@ public class AdminManager : NetworkBehaviour
    // The key for where we store the message of the day value in PlayerPrefs
    public static readonly string MOTD_KEY = "messageOfTheDay";
 
+   public struct PerformanceInfo {
+      public float cpuUsage;
+      public float ramUsage;
+      public int fps;
+   }
+
    #endregion
 
    void Start () {
@@ -120,6 +126,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("get_armor_with_palettes", "Gives you an armor with specified palettes. Requires a comma after the armor name.", getArmorWithPalettes, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "armorName", "paletteNameN" }));
       cm.addCommand(new CommandData("add_gems", "Gives an amount of gems to a user", requestAddGems, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "gemsAmount" }));
       cm.addCommand(new CommandData("add_silver", "Gives an amount of silver to a user, during a pvp game.", requestAddSilver, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "silverAmount" }));
+      cm.addCommand(new CommandData("create_open_world", "Creates many open world areas at once, measures their performance, and then reports the results.", requestCreateOpenWorld, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "numAreas (30)", "testDuration (30)", "delayBetweenAreas (1)" }));
 
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
@@ -198,6 +205,107 @@ public class AdminManager : NetworkBehaviour
       }
 
       return true;
+   }
+
+   private void requestCreateOpenWorld (string parameters) {
+      Cmd_CreateOpenWorld(parameters);
+   }
+
+   [Command]
+   private void Cmd_CreateOpenWorld (string parameters) {
+      
+      // Default values
+      int numAreas = 30;
+      int duration = 30;
+      int delayBetweenAreas = 1;
+
+      string[] inputs = parameters.Split(' ');
+
+      if (inputs.Length > 0 && inputs[0] != "") {
+         numAreas = int.Parse(inputs[0]);
+      }
+
+      if (inputs.Length > 1) {
+         duration = int.Parse(inputs[1]);
+      }
+
+      if (inputs.Length > 2) {
+         delayBetweenAreas = int.Parse(inputs[2]);
+      }
+
+      StartCoroutine(CO_CreateOpenWorld(numAreas, duration, delayBetweenAreas));
+   }
+
+   private IEnumerator CO_CreateOpenWorld (int numAreas, int testDuration, int delayBetweenCreatingAreas) {
+      D.debug("Beginning open world creation. " + numAreas + " areas, " + testDuration + "s test duration, " + delayBetweenCreatingAreas + "s delay between creating areas.");
+
+      D.debug("Performing baseline performance test for 15 seconds.");
+      // First, check the performance of the server for ~15 seconds, to get a baseline for our test
+      float baselineTestDuration = 15.0f;
+      PerformanceUtil.PerformanceTestResult baselineTestResult = new PerformanceUtil.PerformanceTestResult();
+      StartCoroutine(PerformanceUtil.CO_PerformanceTest(baselineTestDuration, baselineTestResult));
+
+      // Wait for the baseline test to complete
+      while (!baselineTestResult.isDone) {
+         yield return null;
+      }
+      
+      List<int> areaOrder = Enumerable.Range(0, numAreas).ToList();
+      areaOrder.OrderBy(x => Util.r.Next());
+
+      D.debug("Creating open world areas.");
+      List<Instance> createdInstances = new List<Instance>();
+
+      // Create 'numAreas' open world maps, with 'delayBetweenAreas' delay between creating areas
+      for (int i = 0; i < numAreas; i++) {
+         int areaIndex = areaOrder[i];
+         string areaName = getOpenWorldMapName(areaIndex);
+         Instance newInstance = InstanceManager.self.createNewInstance(areaName, _player.isSinglePlayer);
+         createdInstances.Add(newInstance);
+         D.debug("Creating instance for area: " + areaName);
+
+         yield return new WaitForSeconds(delayBetweenCreatingAreas);
+      }
+
+      D.debug("Beginning performance test.");
+      // Once the maps are all creating, start measuring performance
+      PerformanceUtil.PerformanceTestResult testResult = new PerformanceUtil.PerformanceTestResult();
+      StartCoroutine(PerformanceUtil.CO_PerformanceTest(testDuration, testResult));
+
+      // Wait for the performance test to complete
+      while (!testResult.isDone) {
+         yield return null;
+      }
+
+      D.debug("Performance test is complete. Destroying open world instances and reporting results.");
+
+      // Destroy all created open world maps
+      foreach (Instance instance in createdInstances) {
+         InstanceManager.self.removeEmptyInstance(instance);
+      }
+      createdInstances.Clear();
+
+      // After 'duration' has elapsed, report results to the user who ran this command
+      Target_ReportOpenWorldTestResults(_player.connectionToClient, baselineTestResult, testResult);
+   }
+
+   [TargetRpc]
+   private void Target_ReportOpenWorldTestResults (NetworkConnection connectionToClient, PerformanceUtil.PerformanceTestResult baselineTestResult, PerformanceUtil.PerformanceTestResult testResult) {
+      ChatPanel.self.addChatInfo(new ChatInfo(0, "Baseline Test Results: " + baselineTestResult.getResultString(), DateTime.Now, ChatInfo.Type.System));
+      ChatPanel.self.addChatInfo(new ChatInfo(0, "Test Results: " + testResult.getResultString(), DateTime.Now, ChatInfo.Type.System));
+   }
+
+   private string getOpenWorldMapName (int index) {
+      int totalNumMaps = 135;
+      index = index % totalNumMaps;
+      string[] gridLetters = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O" };
+      int[] gridRows = { 8, 7, 6, 5, 4, 3, 2, 1, 0 };
+
+      int column = index % gridLetters.Length;
+      int row = index / gridLetters.Length;
+
+      string mapName = "world_map_" + gridLetters[column] + gridRows[row].ToString();
+      return mapName;
    }
 
    private void requestAddSilver (string parameters) {
@@ -3155,6 +3263,29 @@ public class AdminManager : NetworkBehaviour
       return wasItemCreated;
    }
 
+   public void getRemoteServerLogString (ulong serverNetworkId) {
+      _waitingServerLogs[serverNetworkId] = new List<byte>();
+      Cmd_GetRemoteServerLogString(serverNetworkId);
+   }
+
+   [Command]
+   public void Cmd_GetRemoteServerLogString (ulong serverNetworkId) {
+      ServerNetworkingManager.self.server.requestServerLog(this, serverNetworkId);
+   }
+
+   [TargetRpc]
+   public void Target_ReceivePartialRemoteServerLogBytes (byte[] serverLogData, ulong serverNetworkId, bool last) {
+      if (_waitingServerLogs.TryGetValue(serverNetworkId, out List<byte> byteList)) {
+         byteList.AddRange(serverLogData);
+         if (last) {
+            // It's the last piece of the log, we can now turn it into a string and send it off
+            if (AdminPanel.self != null) {
+               AdminPanel.self.receiveServerLog(serverNetworkId, Encoding.ASCII.GetString(byteList.ToArray()));
+            }
+         }
+      }
+   }
+
    [Command]
    public void Cmd_GetServerLogString () {
       // Transform into a byte array to avoid the 'buffer is too small' error
@@ -3453,6 +3584,9 @@ public class AdminManager : NetworkBehaviour
 
    // The last chat input that went through the auto complete process
    private string _lastAutoCompletedInput = "";
+
+   // The server logs we are waiting for
+   private Dictionary<ulong, List<byte>> _waitingServerLogs = new Dictionary<ulong, List<byte>>();
 
    #endregion
 }

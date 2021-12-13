@@ -431,9 +431,9 @@ public class SeaEntity : NetEntity
             _playedDestroySound = true;
 
             if (this.isBot()) {
-               SoundEffectManager.self.playFmodSfx(SoundEffectManager.ENEMY_SHIP_DESTROYED, this.transform);
+               SoundEffectManager.self.playFmodSfx(SoundEffectManager.ENEMY_SHIP_DESTROYED, this.transform.position);
             } else {
-               SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLAYER_SHIP_DESTROYED, this.transform);
+               SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLAYER_SHIP_DESTROYED, this.transform.position);
             }
 
             // Hide all the sprites

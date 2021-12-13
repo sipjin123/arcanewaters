@@ -83,7 +83,7 @@ public class Door : ClientMonoBehaviour {
       if (biome == Biome.Type.Desert) {
          SoundManager.create3dSound("door_cloth_open", this.transform.position);
       } else {
-         SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_OPEN, this.transform);
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_OPEN, this.transform.position);
          //SoundManager.create3dSound("door_open_", this.transform.position, 3);
       }
    }

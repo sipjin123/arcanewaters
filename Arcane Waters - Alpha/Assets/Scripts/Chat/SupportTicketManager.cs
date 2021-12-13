@@ -97,7 +97,7 @@ public class SupportTicketManager : GenericGameManager
 
       yield return www.SendWebRequest();
 
-      if (www.responseCode == WebToolsUtil.SUCCESS) {
+      if (www.responseCode == (int) WebToolsUtil.ResponseCode.Success) {
          ChatManager.self.addChat("Complaint submitted successfully, thanks!", ChatInfo.Type.System);
       } else {
          ChatManager.self.addChat("Could not submit complaint", ChatInfo.Type.Error);

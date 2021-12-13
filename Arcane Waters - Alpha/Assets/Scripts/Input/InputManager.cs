@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.LowLevel;
 using System.Collections;
+using UnityEngine.InputSystem.UI;
 
 /*
 Actions configuration:
@@ -181,6 +182,13 @@ public class InputManager : GenericGameManager {
 
       if (Util.isBatch()) {
          actionMapStates.DisableAll();
+         inputMaster.Disable();
+         foreach (var obj in FindObjectsOfType<InputSystemUIInputModule>()) {
+            // Disable InputSystemUIInputModule
+            obj.enabled = false;
+            // Disable whole event system
+            obj.gameObject.SetActive(false); 
+         }
       } 
       else {
          inputMaster.General.Enable();
@@ -216,7 +224,7 @@ public class InputManager : GenericGameManager {
       if (!isFocused) {
          return;
       }
-
+      
       if (!Util.isCloudBuild()) {
          InputSystem.Update();
       }
@@ -390,7 +398,7 @@ public class InputManager : GenericGameManager {
       return false;
    }
 
-   public static int getHorizontalAxis () {
+   private static int getHorizontalAxis () {
       int axis = 0;
 
       if (self.inputMaster.General.MoveLeft.IsPressed() || self.joystickNavigation.x < -JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.West)) {
@@ -402,7 +410,7 @@ public class InputManager : GenericGameManager {
       return axis;
    }
 
-   public static int getVerticalAxis () {
+   private static int getVerticalAxis () {
       int axis = 0;
 
       if (self.inputMaster.General.MoveUp.IsPressed() || self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.North)) {

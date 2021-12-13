@@ -42,7 +42,7 @@ public class CropPickup : MonoBehaviour {
          }
 
          // Play a sound
-         SoundEffectManager.self.playFmodSfx(SoundEffectManager.PICKUP_CROP, transform);
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.PICKUP_CROP, transform.position);
          //SoundManager.play2DClip(SoundManager.Type.Harvesting_Picking);
 
          // Spawn collect harvest effect

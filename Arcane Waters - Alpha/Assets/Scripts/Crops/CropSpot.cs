@@ -115,7 +115,7 @@ public class CropSpot : MonoBehaviour {
          if (triggeredAction) {
             // Play weapon SFX upon triggering animation
             WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(player.weaponManager.equipmentDataId);
-            SoundEffectManager.self.playInteractionSfx(weaponData.actionType, weaponData.weaponClass, weaponData.sfxType, transform);
+            SoundEffectManager.self.playInteractionSfx(weaponData.actionType, weaponData.weaponClass, weaponData.sfxType, transform.position);
             //WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(player.weaponManager.equipmentDataId);
             //if (weaponData != null && weaponData.actionSfxDirectory.Length > 1) {
             //   SoundManager.create3dSoundWithPath(weaponData.actionSfxDirectory, transform.position);

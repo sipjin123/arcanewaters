@@ -28,12 +28,7 @@ public class ServerCannonBall : SeaProjectile
       if (!Util.isBatch()) {
          // Play an appropriate sound
          if (_playFiringSound) {
-            _shipCannonEvent = SoundEffectManager.self.getEventInstance(SoundEffectManager.SHIP_CANNON);
-            _shipCannonEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(transform));
-            _shipCannonEvent.start();
-
-            //SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.SHIP_CANNON, this.transform);
-            //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Cannon_1, this.transform.position);
+            FMODUnity.RuntimeManager.PlayOneShotAttached(SoundEffectManager.SHIP_CANNON, this.gameObject);
          }
 
          Instantiate(PrefabsManager.self.poofPrefab, transform.position, Quaternion.identity);
@@ -60,9 +55,6 @@ public class ServerCannonBall : SeaProjectile
       if (_hasCollided) {
          return;
       }
-
-      // Attaching the SFX to our position
-      FMODUnity.RuntimeManager.AttachInstanceToGameObject(_shipCannonEvent, transform, _rigidbody);
    }
 
    protected override void onHitEnemy (SeaEntity hitEntity, SeaEntity sourceEntity, int finalDamage) {
@@ -108,8 +100,6 @@ public class ServerCannonBall : SeaProjectile
       } else {
          Instantiate(PrefabsManager.self.requestCannonSplashPrefab(_impactMagnitude), transform.position, Quaternion.identity);
       }
-
-      _shipCannonEvent.release();
    }
 
    private bool hitSeaStructureIsland () {
@@ -173,7 +163,7 @@ public class ServerCannonBall : SeaProjectile
 
       // Execute the effects of any effectors attached to this cannonball
       foreach (CannonballEffector effector in _effectors) {
-         
+
          // If the player isn't allowed to trigger this powerup yet, continue
          Powerup.Type powerupType = PowerupManager.getPowerupTypeFromEffectorType(effector.effectorType);
          if (!PowerupManager.self.canPlayerUsePowerup(sourceEntity.userId, powerupType)) {
@@ -211,12 +201,21 @@ public class ServerCannonBall : SeaProjectile
          PowerupManager.self.notePlayerUsedPowerup(sourceEntity.userId, powerupType);
       }
 
+      // Check for the hitEntity's type
+      bool isShip = hitEntity.isBotShip() || hitEntity.isPlayerShip();
+      SeaMonsterEntity.Type seaMonsterType = SeaMonsterEntity.Type.None;
+      if (hitEntity.isSeaMonster()) {
+         SeaMonsterEntity seaMonsterEntity = hitEntity.GetComponent<SeaMonsterEntity>();
+         seaMonsterType = seaMonsterEntity.monsterType;
+         Console.WriteLine(seaMonsterType);
+      }
+
       // If the cannonball doesn't have effectors applied
       if (_effectors.Count == 0) {
-         hitEntity.Rpc_PlayHitSfx(hitEntity is ShipEntity, isCrit, CannonballEffector.Type.None, transform.position);
+         hitEntity.Rpc_PlayHitSfx(isShip, seaMonsterType, isCrit, CannonballEffector.Type.None, transform.position);
       } else if (_effectors.Any(e => e.effectorType == CannonballEffector.Type.Explosion)) {
          // Play SFX for explosion effector
-         hitEntity.Rpc_PlayHitSfx(hitEntity is ShipEntity, isCrit, CannonballEffector.Type.Explosion, transform.position);
+         hitEntity.Rpc_PlayHitSfx(isShip, seaMonsterType, isCrit, CannonballEffector.Type.Explosion, transform.position);
       }
    }
 
@@ -316,9 +315,6 @@ public class ServerCannonBall : SeaProjectile
 
    // All effectors that will apply effects to this cannonball
    private List<CannonballEffector> _effectors = new List<CannonballEffector>();
-
-   // FMOD Event instance
-   FMOD.Studio.EventInstance _shipCannonEvent;
 
    // The projectile id for the explosive shot projectile
    private const int EXPLOSIVE_SHOT_PROJECTILE_ID = 33;

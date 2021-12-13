@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using SteamLoginSystem;
 using UnityEngine.Networking;
+using System.Text;
 
 public class BugReportManager : GenericGameManager
 {
@@ -23,10 +24,8 @@ public class BugReportManager : GenericGameManager
       StartCoroutine(CO_CollectDataAndSendBugReport(subjectString));
    }
 
-   private IEnumerator CO_CollectDataAndSendBugReport (string subjectString) {
+   private IEnumerator CO_CollectDataAndSendBugReport (string bugSubject) {
       NetEntity player = Global.player;
-      string bugReport = D.getLogString();
-      int ping = Util.getPing();
 
       if (player == null) {
          D.warning("Can't submit a bug report because we have no player object.");
@@ -34,17 +33,19 @@ public class BugReportManager : GenericGameManager
       }
 
       // Require a decent subject
-      if (subjectString.Length < WebToolsUtil.MinSubjectLength) {
+      if (bugSubject.Length < WebToolsUtil.MinSubjectLength) {
          ChatManager.self.addChat("Please include a descriptive subject for the bug report.", ChatInfo.Type.System);
          yield break;
       }
 
       // Make sure the subject isn't too long
-      if (subjectString.Length > WebToolsUtil.MaxSubjectLength) {
+      if (bugSubject.Length > WebToolsUtil.MaxSubjectLength) {
          ChatManager.self.addChat("The subject of the bug report is too long.", ChatInfo.Type.System);
          yield break;
       }
 
+      string clientLogs = D.getLogString();
+      int ping = Util.getPing();
       int userId = player.userId;
 
       // Make sure we're not spamming the server
@@ -58,11 +59,13 @@ public class BugReportManager : GenericGameManager
       // Calculate the frames per second over the given time interval
       float totalTime = 0;
       int frameCount = 0;
+
       while (totalTime < FPS_CALCULATION_INTERVAL) {
          totalTime += Time.unscaledDeltaTime;
          frameCount++;
          yield return null;
       }
+
       int fps = Mathf.FloorToInt(((float) frameCount) / totalTime);
 
       string screenResolution = Screen.currentResolution.ToString();
@@ -88,31 +91,34 @@ public class BugReportManager : GenericGameManager
       List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
 
       // Adding bug report data as form data
-      formData.Add(new MultipartFormDataSection("userId", player.userId.ToString()));
-      formData.Add(new MultipartFormDataSection("username", player.entityName));
       formData.Add(new MultipartFormDataSection("accId", player.accountId.ToString()));
-      formData.Add(new MultipartFormDataSection("subject", subjectString));
-      formData.Add(new MultipartFormDataSection("log", bugReport));
+      formData.Add(new MultipartFormDataSection("usrId", player.userId.ToString()));
+      formData.Add(new MultipartFormDataSection("usrName", player.entityName));
+      formData.Add(new MultipartFormDataSection("bugSubject", bugSubject));
       formData.Add(new MultipartFormDataSection("ping", ping.ToString()));
       formData.Add(new MultipartFormDataSection("fps", fps.ToString()));
-      formData.Add(new MultipartFormDataSection("resolution", screenResolution));
-      formData.Add(new MultipartFormDataSection("operatingSystem", operatingSystem));
-      formData.Add(new MultipartFormDataSection("steamState", steamState));
-      formData.Add(new MultipartFormDataSection("deploymentId", deploymentId.ToString()));
       formData.Add(new MultipartFormDataSection("playerPosition", playerPosition));
+      formData.Add(new MultipartFormDataSection("screenResolution", screenResolution));
       formData.Add(new MultipartFormDataSection("gameResolution", gameResolution));
+      formData.Add(new MultipartFormDataSection("operatingSystem", operatingSystem));
+      formData.Add(new MultipartFormDataSection("deploymentId", deploymentId.ToString()));
+
+      if (!string.IsNullOrEmpty(steamState)) {
+         formData.Add(new MultipartFormDataSection("steamState", steamState));
+      }
+
+      if (!string.IsNullOrEmpty(clientLogs)) {
+         formData.Add(new MultipartFormFileSection("clientLogs", Encoding.ASCII.GetBytes(clientLogs), "clientLogs.txt", "text/plain"));
+      }
 
       // Adding the screenshot as a form file
-      formData.Add(new MultipartFormFileSection(standardTex.EncodeToPNG()));
+      formData.Add(new MultipartFormFileSection("screenshot", standardTex.EncodeToPNG(), "screenshot.png", "image/png"));
 
       UnityWebRequest www = UnityWebRequest.Post(WebToolsUtil.BUG_REPORT_SUBMIT, formData);
 
-      // We need to set the GameToken header
-      www.SetRequestHeader(WebToolsUtil.GAME_TOKEN_HEADER, WebToolsUtil.GAME_TOKEN);
-
       yield return www.SendWebRequest();
 
-      if (www.responseCode == WebToolsUtil.SUCCESS) {
+      if (www.responseCode == (int) WebToolsUtil.ResponseCode.Success) {
          ChatManager.self.addChat("Bug report submitted successfully, thanks!", ChatInfo.Type.System);
 
          int bugReportId = int.Parse(www.downloadHandler.text);

@@ -309,7 +309,7 @@ namespace MapCustomization
 
             waitingForServer = true;
 
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLACE_EDITABLE_OBJECT, targetPos: prefab.transform.position);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLACE_EDITABLE_OBJECT, position: prefab.transform.position);
             break;
          }
       }
@@ -385,7 +385,7 @@ namespace MapCustomization
             selectPrefab(hoveredPrefab);
             _draggedPrefab = hoveredPrefab;
             updatePrefabOutlines(worldPosition);
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.PICKUP_EDITABLE_OBJECT, targetPos: worldPosition);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.PICKUP_EDITABLE_OBJECT, position: worldPosition);
             //SoundEffectManager.self.playSoundEffect(SoundEffectManager.PICKUP_EDIT_OBJ, SoundEffectManager.self.transform);
          } else {
             _selectedPrefab = null;
@@ -397,7 +397,7 @@ namespace MapCustomization
 
                if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _newPrefab.unappliedChanges, false, out string errorMessage)) {
                   Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges);
-                  SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLACE_EDITABLE_OBJECT, targetPos: worldPosition);
+                  SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLACE_EDITABLE_OBJECT, position: worldPosition);
                   selectPrefab(_newPrefab);
 
                   // Decrease remaining prop item that corresponds to this prefab
@@ -477,7 +477,7 @@ namespace MapCustomization
          _newPrefab.setOutline(false, false, false, false);
 
          if (!soundHasBeenPlayed) {
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLACE_EDITABLE_OBJECT, targetPos: worldPosition);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLACE_EDITABLE_OBJECT, position: worldPosition);
             soundHasBeenPlayed = true;
          }
       }

@@ -27,18 +27,6 @@ public class AudioListenerManager : GenericGameManager
 
       setActiveListener(startingListener);
       setActiveFmodListener(startingFmodListener);
-
-      GameObject fmodStudioGo = new GameObject();
-      fmodStudioGo.name = "FMOD Studio Listener";
-      fmodStudioGo.transform.SetParent(this.transform);
-      _playerFmodListener = fmodStudioGo.AddComponent<FMODUnity.StudioListener>();
-      _playerFmodListener.enabled = false;
-   }
-
-   private void Update () {
-      if (Global.player != null) {
-         this._playerFmodListener.transform.position = new Vector3(Global.player.transform.position.x, Global.player.transform.position.y, CameraManager.getCurrentCamera().transform.position.z);
-      }
    }
 
    public void setActiveListener (AudioListener newListener) {

@@ -16,11 +16,8 @@
    public const string CLOSE = "Close";
    public const string REOPEN = "Re-Open";
 
-   // Response Codes
-   public const int SUCCESS = 200;
-   public const int BAD_REQUEST = 400;
-
    // Endpoints
+   //public const string BaseUrl = "https://localhost:5001/api";
    public const string BaseUrl = "https://tools.arcanewaters.com/api";
 
    public const string BUG_REPORT_SUBMIT = BaseUrl + "/tasks/submit";
@@ -36,6 +33,13 @@
 
    // Minimum interval between reports (bugs & tickets)
    public const float ReportInterval = 5f;
+
+   public enum ResponseCode
+   {
+      None = 0,
+      Success = 200,
+      BadRequest = 400
+   }
 
    public enum ActionSource
    {

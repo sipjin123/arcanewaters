@@ -263,6 +263,10 @@ public class PvpCaptureTarget : SeaEntity {
       }
    }
 
+   public override bool isPvpCaptureTarget () {
+      return true;
+   }
+
    #region Private Variables
 
    // A reference to the entity currently holding the target

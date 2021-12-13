@@ -28,7 +28,7 @@ public class ItemCellInventory : ItemCell, IPointerDownHandler, IPointerEnterHan
    public void OnPointerEnter (PointerEventData eventData) {
       if (_interactable) {
          onPointerEnter?.Invoke();
-         SoundEffectManager.self.playFmodSfx(SoundEffectManager.HOVER_CURSOR_ITEMS, transform);
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.HOVER_CURSOR_ITEMS, transform.position);
       }
    }
 

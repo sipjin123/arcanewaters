@@ -296,7 +296,7 @@ public class RPCManager : NetworkBehaviour
             //SoundEffectManager.self.playLegacyInteractionOneShot(playerBody.weaponManager.equipmentDataId, playerBody.transform);
             // Playing FMOD SFX for interaction
             WeaponStatData weaponData = playerBody.weaponManager.cachedWeaponData;
-            SoundEffectManager.self.playInteractionSfx(weaponData.actionType, weaponData.weaponClass, weaponData.sfxType, playerBody.transform);
+            SoundEffectManager.self.playInteractionSfx(weaponData.actionType, weaponData.weaponClass, weaponData.sfxType, playerBody.transform.position);
 
             playerBody.playInteractParticles();
          }
@@ -843,16 +843,13 @@ public class RPCManager : NetworkBehaviour
       // Play some sounds
       switch (chest.chestType) {
          case ChestSpawnType.Sea:
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.COLLECT_LOOT_SEA, Global.player.transform);
-            //SoundEffectManager.self.playSoundEffect(SoundEffectManager.OPEN_SEA_BAG, Global.player.transform);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.COLLECT_LOOT_SEA);
             break;
          case ChestSpawnType.Land:
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.COLLECT_LOOT_LAND, Global.player.transform);
-            //SoundEffectManager.self.playSoundEffect(SoundEffectManager.OPEN_LAND_BAG, Global.player.transform);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.COLLECT_LOOT_LAND);
             break;
          case ChestSpawnType.Site:
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.OPEN_CHEST, Global.player.transform);
-            //SoundEffectManager.self.playSoundEffect(SoundEffectManager.OPEN_CHEST, Global.player.transform);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.OPEN_CHEST);
             break;
       }
 
@@ -1313,7 +1310,7 @@ public class RPCManager : NetworkBehaviour
 
       if (area != null && area.version == latestVersion) {
          if (area.isInterior) {
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_OPEN, transform);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_OPEN, transform.position);
             //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ENTER_DOOR, transform);
             WeatherManager.self.setWeatherSimulation(WeatherEffectType.None);
          }
@@ -6045,11 +6042,6 @@ public class RPCManager : NetworkBehaviour
             // Not a PvP Voyage
             Debug.LogWarning($"Player '{_player.entityName}' has entered a Voyage or League.");
          }
-
-         // After loading the new area, ensure powerups are cleared, in case they were cleared before we changed server
-         if (VoyageManager.isLobbyArea(playerShipEntity.areaKey)) {
-            PowerupManager.self.clearPowerupsForUser(_player.userId);
-         }
       }
    }
 
@@ -6135,7 +6127,6 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceiveCraftedItem (NetworkConnection connection, Item item) {
       SoundEffectManager.self.playFmodSfx(SoundEffectManager.CRAFT_SUCCESS);
-      //SoundEffectManager.self.playSoundEffect(SoundEffectManager.CRAFT_COMPLETE, SoundEffectManager.self.transform);
 
       // Craft bone sword tutorial trigger
       if (item.category == Item.Category.Weapon && item.itemTypeId == CraftingManager.BONE_SWORD_RECIPE) {
@@ -6257,7 +6248,7 @@ public class RPCManager : NetworkBehaviour
          return;
       }
       // SFX
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.MINING_ROCKS, oreNode.transform);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.MINING_ROCKS, oreNode.transform.position);
    }
 
    [Command]
@@ -7035,7 +7026,7 @@ public class RPCManager : NetworkBehaviour
 
       if (Battle.FORCE_COMPLETE_DEFENDING_TEAM) {
          int battlerToBeAddedCount = Battle.MAX_ENEMY_COUNT - modifiedDefenderList.Count;
-         
+
          for (int i = 0; i < battlerToBeAddedCount; i++) {
             BattlerInfo battlerInfo = modifiedDefenderList.ChooseRandom();
             BattlerData battlerData = MonsterManager.self.getBattlerData(battlerInfo.enemyType);
@@ -9151,6 +9142,39 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
+   public void Cmd_RequestNetworkOverview () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Make sure this is an admin
+      if (!_player.isAdmin()) {
+         D.warning("Received admin command from non-admin!");
+         return;
+      }
+
+      // Tell the client how many servers does he have to wait for
+      Target_ReceiveServerCount(ServerNetworkingManager.self.servers.Count);
+
+      ServerNetworkingManager.self.server.requestServerOverviews(this);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveServerCount (int serverCount) {
+      if (AdminPanel.self != null) {
+         AdminPanel.self.receiveServerCount(serverCount);
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveServerOverview (ServerOverview overview) {
+      if (AdminPanel.self != null) {
+         AdminPanel.self.receiveServerOverview(overview);
+      }
+   }
+
+   [Command]
    public void Cmd_RequestPlayersCountMetrics () {
       if (_player == null) {
          D.warning("No player object found.");
@@ -9174,7 +9198,7 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    private void Target_ReceivePlayersCountMetrics (NetworkConnection conn, MetricCollection metrics) {
-      AdminPanel.self.onPlayersCountMetricsReceived(metrics);
+      //AdminPanel.self.onPlayersCountMetricsReceived(metrics);
    }
 
    [TargetRpc]

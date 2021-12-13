@@ -35,7 +35,7 @@ public class AdminPanel : Panel
 
    // The message to display when kicking all users from the servers
    public TMP_InputField txtKickAllUsersMessage;
-	
+
    // The reference to the load blocker
    public GameObject loadBlocker;
 
@@ -45,8 +45,11 @@ public class AdminPanel : Panel
    // Reference to the Tabs Switcher
    public AdminPanelTabSwitcher tabSwitcher;
 
-   // Reference to the Player Count Metric Holder
-   public AdminPanelMetricsHolder playersCountMetricsHolder;
+   // Reference to the Metric Holder
+   public AdminPanelMetricsHolder metricsHolder;
+
+   // Text that displays how many servers we are fetching
+   public Text serversTitleText = null;
 
    // Self
    public static AdminPanel self;
@@ -78,7 +81,8 @@ public class AdminPanel : Panel
          btnRefresh.interactable = true;
          toggleBlocker(true);
          requestRemoteSettings();
-         requestPlayersCountMetrics();
+
+         refreshMetrics();
       }
 
       PanelManager.self.linkIfNotShowing(Panel.Type.Admin);
@@ -91,10 +95,6 @@ public class AdminPanel : Panel
                   RemoteSettingsManager.SettingNames.ADMIN_ONLY_MODE,
                   RemoteSettingsManager.SettingNames.ADMIN_ONLY_MODE_MESSAGE
          });
-   }
-
-   private void requestPlayersCountMetrics () {
-     Global.player.rpc.Cmd_RequestPlayersCountMetrics();
    }
 
    private void toggleBlocker (bool show) {
@@ -115,28 +115,46 @@ public class AdminPanel : Panel
       toggleBlocker(false);
    }
 
-   public void onPlayersCountMetricsReceived (MetricCollection collection) {
+   public void receiveServerCount (int count) {
+      // Here we receive the number of servers we have in the network, so we know for how many to wait
       if (!Global.isLoggedInAsAdmin()) {
          return;
       }
 
+      _totalServersInNetwork = count;
+      _serverOverviews.Clear();
+
       toggleBlocker(false);
       btnRefresh.interactable = true;
-      playersCountMetricsHolder.clearMetrics();
+      metricsHolder.clearMetrics();
 
-      if (collection == null || collection.metrics.Count() == 0) {
-         playersCountMetricsHolder.addMetric("No", "Metrics");
+      serversTitleText.text = "SERVERS 0/" + count;
+   }
+
+   public void receiveServerOverview (ServerOverview overview) {
+      // Here we receive overview about one of the servers, add an entry for it in the panel
+      if (!Global.isLoggedInAsAdmin()) {
          return;
       }
 
-      // Compute total
-      int total = collection.metrics.Sum(_ => int.Parse(_.value));
-      playersCountMetricsHolder.addMetric("TOTAL", total.ToString());
+      // If we have this server already, ignore
+      foreach (ServerOverview ov in _serverOverviews) {
+         if (ov.serverNetworkId == overview.serverNetworkId) {
+            return;
+         }
+      }
 
-      // Show details
-      foreach (Metric metric in collection.metrics) {
-         string displayName = $"{metric.machineId} {metric.processName} ({metric.processId})";
-         playersCountMetricsHolder.addMetric(displayName, metric.value);
+      _serverOverviews.Add(overview);
+      metricsHolder.addServerOverview(_serverOverviews, overview);
+
+      serversTitleText.text = "SERVERS " + _serverOverviews.Count + "/" + _totalServersInNetwork;
+   }
+
+   public void receiveServerLog (ulong serverNetworkId, string log) {
+      foreach (AdminPanelServerOverview ov in GetComponentsInChildren<AdminPanelServerOverview>()) {
+         if (ov.data != null && ov.data.serverNetworkId == serverNetworkId) {
+            ov.receiveLog(log);
+         }
       }
    }
 
@@ -201,8 +219,8 @@ public class AdminPanel : Panel
       // Show loading blocker
       toggleBlocker(true);
 
-      // Request the metrics again
-      requestPlayersCountMetrics();
+      // Request network overview
+      Global.player.rpc.Cmd_RequestNetworkOverview();
    }
 
    private void onTxtPlayersCountMaxValueChanged (string newText) {
@@ -245,7 +263,7 @@ public class AdminPanel : Panel
       PanelManager.self.confirmScreen.enableConfirmInputField("CONFIRM");
 
       // Ask the admin for confirmation.
-      PanelManager.self.showConfirmationPanel("Are you sure you want to kick all non-admins from the server?", () => onConfirmKickAllNonAdminUsers()) ;
+      PanelManager.self.showConfirmationPanel("Are you sure you want to kick all non-admins from the server?", () => onConfirmKickAllNonAdminUsers());
    }
 
    private void onConfirmKickAllNonAdminUsers () {
@@ -253,6 +271,12 @@ public class AdminPanel : Panel
    }
 
    #region Private Variables
+
+   // How many server are in the network
+   private int _totalServersInNetwork = 0;
+
+   // Server overviews that we know about
+   private List<ServerOverview> _serverOverviews = new List<ServerOverview>();
 
    #endregion
 }

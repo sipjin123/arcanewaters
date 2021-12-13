@@ -131,7 +131,7 @@ public class BasicAbilityData : BattleItemData
       if (soundEffect != null) {
          // Play the fmod sfx if the fmod id is valid
          if (soundEffect.fmodId.Length > 1) {
-            SoundEffectManager.self.playFmodSfx(soundEffect.fmodId, targetTransform);
+            SoundEffectManager.self.playFmodSfx(soundEffect.fmodId, targetTransform.position);
          } else {
             if (SoundEffectManager.self.isValidSoundEffect(castSoundEffectId)) {
                // Play intended sfx using legacy approach, referencing sfx in resource folder
@@ -161,14 +161,14 @@ public class BasicAbilityData : BattleItemData
       if (soundEffect != null) {
          // Play the fmod sfx if the fmod id is valid
          if (soundEffect.fmodId.Length > 1) {
-            SoundEffectManager.self.playFmodSfx(soundEffect.fmodId, targetTransform);
+            SoundEffectManager.self.playFmodSfx(soundEffect.fmodId, targetTransform.position);
          } else {
             if (SoundEffectManager.self.isValidSoundEffect(hitSoundEffectId)) {
                // Play intended sfx using legacy approach, referencing sfx in resource folder
                SoundEffectManager.self.playSoundEffect(hitSoundEffectId, targetTransform);
             } else {
                // Play a default clip
-               SoundEffectManager.self.playFmodSfx(SoundEffectManager.GENERIC_HIT_LAND, targetTransform);
+               SoundEffectManager.self.playFmodSfx(SoundEffectManager.GENERIC_HIT_LAND, targetTransform.position);
                //AudioClip hitClip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultHitAudio).audioClip;
                //SoundManager.playClipAtPoint(hitClip, targetTransform.position);
             }
@@ -183,7 +183,7 @@ public class BasicAbilityData : BattleItemData
             // Play a default clip
             //AudioClip hitClip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultHitAudio).audioClip;
             //SoundManager.playClipAtPoint(hitClip, targetTransform.position);
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.GENERIC_HIT_LAND, targetTransform);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.GENERIC_HIT_LAND, targetTransform.position);
          }
       }
    }

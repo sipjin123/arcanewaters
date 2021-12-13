@@ -60,8 +60,8 @@ public class RespawnScreen : MonoBehaviour {
       if (Global.player != null) {
          PlayerShipEntity playerShip = Global.player.getPlayerShipEntity();
 
-         // If the player dies in a pvp area, respawn them in the same map
-         if (VoyageManager.isPvpArenaArea(playerShip.areaKey)) {
+         // If the player dies in a pvp or league area, respawn them in the same map
+         if (VoyageManager.isPvpArenaArea(playerShip.areaKey) || VoyageManager.isAnyLeagueArea(playerShip.areaKey)) {
             setLifeboatVisibility(false);
             playerShip.Cmd_RespawnPlayerInInstance();
 
@@ -154,6 +154,8 @@ public class RespawnScreen : MonoBehaviour {
    private void updateButtonText () {
       if (Global.player != null && VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
          buttonText.text = BUTTON_TEXT_PVP;
+      } else if (Global.player != null && VoyageManager.isAnyLeagueArea(Global.player.areaKey)) {
+         buttonText.text = BUTTON_TEXT_LEAGUE;
       } else {
          buttonText.text = BUTTON_TEXT_NORMAL;
       }
@@ -188,6 +190,9 @@ public class RespawnScreen : MonoBehaviour {
 
    // The text to be displayed on the button when in a pvp game
    private const string BUTTON_TEXT_PVP = "Respawn";
+
+   // The text to be displayed on the button when in a league area
+   private const string BUTTON_TEXT_LEAGUE = "Respawn";
 
    #endregion
 }

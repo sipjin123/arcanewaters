@@ -3,40 +3,42 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.Linq;
 
-public class AdminPanelMetricsHolder : MonoBehaviour {
+public class AdminPanelMetricsHolder : MonoBehaviour
+{
    #region Public Variables
 
    // Reference to the container that will hold metrics
-   public VerticalLayoutGroup container;
+   public VerticalLayoutGroup container = null;
 
-   // Prefab from which metrics are created
-   public GameObject metricPrefab;
+   // Prefab that holds overview about a server
+   public AdminPanelServerOverview metricPrefab = null;
+
+   // Text that displays total players in all servers
+   public Text totalPlayersText = null;
 
    #endregion
 
    public void clearMetrics () {
-      for (int i = container.transform.childCount-1; i >= 0; i--) {
-         Transform child = container.transform.GetChild(i);
-         Destroy(child.gameObject);
+      foreach (AdminPanelServerOverview overview in GetComponentsInChildren<AdminPanelServerOverview>()) {
+         Destroy(overview.gameObject);
       }
    }
 
-   public AdminPanelMetric addMetric(string name, string value) {
-      GameObject newMetric = Instantiate(metricPrefab);
-      newMetric.transform.SetParent(container.transform);
-      bool hasComponent = newMetric.TryGetComponent(out AdminPanelMetric metricComponent);
+   public void addServerOverview (List<ServerOverview> allOverviews, ServerOverview newOverview) {
+      addServerOverview(newOverview);
 
-      if (!hasComponent) {
-         return null;
-      }
+      totalPlayersText.text = "TOTAL PLAYERS: " + allOverviews.Sum(s => s.instances.Sum(i => i.count));
+   }
 
-      metricComponent.setName(name);
-      metricComponent.setValue(value);
-      return metricComponent;
+   private void addServerOverview (ServerOverview overview) {
+      AdminPanelServerOverview serverEntry = Instantiate(metricPrefab);
+      serverEntry.transform.SetParent(container.transform);
+      serverEntry.setServerOverview(overview);
    }
 
    #region Private Variables
-      
+
    #endregion
 }

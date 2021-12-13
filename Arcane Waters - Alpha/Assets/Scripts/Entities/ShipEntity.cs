@@ -125,9 +125,7 @@ public class ShipEntity : SeaEntity
 
    public override void playAttackSound () {
       // Play a sound effect
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.SHIP_CANNON, this.transform);
-      //SoundEffectManager.self.playFmodOneShot(SoundEffectManager.SHIP_CANNON, this.transform);
-      //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Cannon_1, this.transform.position);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.SHIP_CANNON, this.transform.position);
    }
 
    public void updateSkin (Ship.SkinType newSkinType) {
@@ -260,7 +258,8 @@ public class ShipEntity : SeaEntity
             break;
          case Attack.Type.SpeedBoost:
             hasUsedBuff = true;
-            addBuff(SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost, shipAbilityData);
+            addBuff(this.netId, SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost, shipAbilityData);
+            Rpc_CastSkill(shipAbilityId, shipAbilityData, transform.position, 0, true, false);
             break;
       }
 
@@ -286,7 +285,7 @@ public class ShipEntity : SeaEntity
                               StartCoroutine(CO_TriggerOneShotBuff(allyShip, shipAbilityData, Attack.Type.Heal, allyShip.netId, false));
                               break;
                            case Attack.Type.SpeedBoost:
-                              allyShip.addBuff(SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost, shipAbilityData);
+                              allyShip.addBuff(this.netId, SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost, shipAbilityData);
                               break;
                         }
                      } else {
@@ -331,7 +330,7 @@ public class ShipEntity : SeaEntity
             PlayerShipEntity allyShip = (PlayerShipEntity) allyEntity;
             float distanceToTarget = Vector2.Distance(transform.position, allyShip.transform.position);
             if (distanceToTarget < shipAbilityData.buffRadius) {
-               allyShip.addBuff(SeaBuff.Category.Buff, SeaBuffData.getBuffType(shipAbilityData.selectedAttackType), value, refreshDuration);
+               allyShip.addBuff(this.netId, SeaBuff.Category.Buff, SeaBuffData.getBuffType(shipAbilityData.selectedAttackType), value, refreshDuration);
             }
          }
       }

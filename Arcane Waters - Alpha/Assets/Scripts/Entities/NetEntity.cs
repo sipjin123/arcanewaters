@@ -865,14 +865,14 @@ public class NetEntity : NetworkBehaviour
          case Anim.Type.Pet_East:
          case Anim.Type.Pet_North:
          case Anim.Type.Pet_South:
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.CRITTER_PET, this.transform);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.CRITTER_PET, this.transform.position);
             StartCoroutine(CO_DelayExitAnim(animType, 1.4f));
             interactingAnimation = true;
             break;
          case Anim.Type.NC_Jump_East:
          case Anim.Type.NC_Jump_North:
          case Anim.Type.NC_Jump_South:
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.JUMP, this.transform);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.JUMP, this.transform.position);
             if (!freezeAnim) {
                StartCoroutine(CO_DelayExitAnim(animType, 0.5f));
             }
@@ -910,9 +910,7 @@ public class NetEntity : NetworkBehaviour
          case Anim.Type.NC_Jump_North:
          case Anim.Type.NC_Jump_South:
             shadow.transform.localScale = _shadowInitialScale;
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.LAND, this.transform);
-            //SoundEffectManager.self.playFmodSoundEffect(SoundEffectManager.JUMP_END_ID, Global.player.transform);
-            //SoundEffectManager.self.playSoundEffect(SoundEffectManager.JUMP_END_ID, transform);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.LAND, this.transform.position);
             break;
       }
 
@@ -1717,7 +1715,6 @@ public class NetEntity : NetworkBehaviour
    public void Target_ReceiveUnreadMailNotification (NetworkConnection conn) {
       BottomBar.self.setUnreadMailNotificationStatus(true);
       SoundEffectManager.self.playFmodSfx(SoundEffectManager.MAIL_NOTIFICATION);
-      //SoundEffectManager.self.playSoundEffect(SoundEffectManager.MAIL_NOTIF, transform);
    }
 
    [TargetRpc]
@@ -2348,6 +2345,8 @@ public class NetEntity : NetworkBehaviour
 
    public virtual bool isPvpCaptureTargetHolder () { return false; }
 
+   public virtual bool isPvpCaptureTarget () { return false; }
+
    public virtual bool isSeaMonster () { return false; }
 
    public virtual bool isSeaMonsterMinion () { return false; }
@@ -2437,7 +2436,7 @@ public class NetEntity : NetworkBehaviour
       gainItemCanvas.GetComponentInChildren<Image>().SetNativeSize();
 
       // Play SFX
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.COLLECT_SILVER, targetPos: targetPos);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.COLLECT_SILVER, position: targetPos);
 
       // Update the Silver indicator
       PvpStatusPanel.self.addSilver(silverCount);

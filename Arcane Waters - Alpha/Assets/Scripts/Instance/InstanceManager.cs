@@ -6,7 +6,8 @@ using Mirror;
 using System;
 using System.Linq;
 
-public class InstanceManager : MonoBehaviour {
+public class InstanceManager : MonoBehaviour
+{
    #region Public Variables
 
    // The prefab we use for creating Instances
@@ -135,7 +136,7 @@ public class InstanceManager : MonoBehaviour {
 
    public void addDiscoveryToInstance (Discovery discovery, Instance instance) {
       instance.entities.Add(discovery);
-      discovery.instanceId = instance.id;      
+      discovery.instanceId = instance.id;
    }
 
    public void addEnemyToInstance (Enemy enemy, Instance instance) {
@@ -283,7 +284,7 @@ public class InstanceManager : MonoBehaviour {
 
    public Instance getVisitablePrivateOpenInstance (int userId) {
       foreach (Instance instance in _instances.Values) {
-         if (instance.getPlayerUserIds().Exists(_=> _ == userId)) {
+         if (instance.getPlayerUserIds().Exists(_ => _ == userId)) {
             return instance;
          }
       }
@@ -342,16 +343,16 @@ public class InstanceManager : MonoBehaviour {
       return areaArray;
    }
 
-   public string[] getAreas() {
+   public string[] getAreas () {
       HashSet<string> areas = new HashSet<string>();
 
       foreach (Instance instance in _instances.Values) {
-            areas.Add(instance.areaKey);
+         areas.Add(instance.areaKey);
       }
 
       string[] areaArray = new string[areas.Count];
       areas.CopyTo(areaArray);
-      
+
       return areaArray;
    }
 
@@ -480,9 +481,9 @@ public class InstanceManager : MonoBehaviour {
       if (instance.isPvP) {
          PvpManager.self.tryRemoveEmptyGame(instance.id);
       }
-      
+
       // Remove it from our internal mapping
-      _instances.Remove(instance.id); 
+      _instances.Remove(instance.id);
 
       // Remove the instance from the server network if it is a voyage
       ServerNetworkingManager.self.server.removeVoyageInstance(instance);
@@ -494,12 +495,12 @@ public class InstanceManager : MonoBehaviour {
       NetworkServer.Destroy(instance.gameObject);
    }
 
-   public int getPlayerCountInInstance(int instanceId) {
+   public int getPlayerCountInInstance (int instanceId) {
       Instance instance = getInstance(instanceId);
-      
+
       if (instance == null) {
          return 0;
-      } 
+      }
 
       int playerCount = instance.getPlayerCount();
       return playerCount;
@@ -507,10 +508,16 @@ public class InstanceManager : MonoBehaviour {
 
    public int getPlayerCountAllInstances () {
       int total = 0;
-      foreach (KeyValuePair<int,Instance> pair in _instances) {
+      foreach (KeyValuePair<int, Instance> pair in _instances) {
          total += getPlayerCountInInstance(pair.Key);
       }
       return total;
+   }
+
+   public List<InstanceOverview> createOverviewForAllInstances () {
+      return _instances
+         .Select(kv => new InstanceOverview { area = kv.Value.areaKey, count = getPlayerCountInInstance(kv.Key) })
+         .ToList();
    }
 
    #region Private Variables

@@ -63,6 +63,12 @@ public class D : MonoBehaviour {
    // The maximum number of server log chunks that will be sent to clients
    public static int MAX_SERVER_LOG_CHUNK_COUNT = 20;
 
+   // The maximum size (bytes) of the server log chunks when sending it to clients through the master server
+   public static int MAX_MASTER_SERVER_LOG_CHUNK_SIZE = 1024;
+
+   // The maximum number of server log chunks that will be sent to clients through the master server
+   public static int MAX_MASTER_SERVER_LOG_CHUNK_COUNT = 64;
+
    // Stores the contents of the last retrieved server log
    public static List<byte> serverLogBytes = new List<byte>();
 

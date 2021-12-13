@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using MLAPI.Messaging;
 using System;
 using System.Linq;
+using System.Text;
 
 public class NetworkedServer : NetworkedBehaviour
 {
@@ -74,6 +75,14 @@ public class NetworkedServer : NetworkedBehaviour
    private void Update () {
       // Set the name of this object based on the port
       this.name = "Networked Server #" + this.networkedPort.Value;
+
+      // Record frame times for FPS calculation
+      if (this.IsOwner) {
+         _pastFrameTimes.AddLast(Time.time);
+         if (_pastFrameTimes.Count > 60) {
+            _pastFrameTimes.RemoveFirst();
+         }
+      }
    }
 
    private void updateConnectedPlayers () {
@@ -924,7 +933,171 @@ public class NetworkedServer : NetworkedBehaviour
       VoyageManager.self.recreateLeagueInstanceAndAddUserToGroup(groupId, userId, userName);
    }
 
+   public int getAverageFPS () {
+      // We need at least 2 samples to calculate it
+      if (_pastFrameTimes.Count < 2) return 1;
+
+      return (int) (_pastFrameTimes.Count / (_pastFrameTimes.Last.Value - _pastFrameTimes.First.Value));
+   }
+
+   #region Log Retrieval
+
+   public void requestServerLog (AdminManager man, ulong serverNetworkId) {
+      // Note down the manager that requested this to return to him later
+      _serverLogsRequesters[man.netId] = man;
+      InvokeServerRpc(MasterServer_RequestServerLog, serverNetworkId, man.netId);
+   }
+
+   [ServerRPC]
+   public void MasterServer_RequestServerLog (ulong serverNetworkId, uint forNetId) {
+      // If log is needed for the master server, we can form it immediately
+      if (serverNetworkId == ServerNetworkingManager.self.server.NetworkId) {
+         requestServerLog(serverNetworkId, forNetId);
+         return;
+      }
+
+      // Otherwise find the server and send a request for the log
+      foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
+         if (server.NetworkId == serverNetworkId) {
+            InvokeClientRpcOnClient(Server_RequestServerLog, server.OwnerClientId, serverNetworkId, forNetId);
+            return;
+         }
+      }
+
+      D.warning("Could not find server " + serverNetworkId + " to retrieve logs");
+   }
+
+   [ClientRPC]
+   public void Server_RequestServerLog (ulong serverNetworkId, uint forNetId) {
+      requestServerLog(serverNetworkId, forNetId);
+   }
+
+   private void requestServerLog (ulong serverNetworkId, uint forNetId) {
+      // Transform into a byte array
+      byte[] data = Encoding.ASCII.GetBytes(D.getLogString());
+
+      // Remove the beginning of the log if it is too large
+      int maxServerLogSize = D.MAX_MASTER_SERVER_LOG_CHUNK_SIZE * D.MAX_MASTER_SERVER_LOG_CHUNK_COUNT;
+      if (data.Length > maxServerLogSize) {
+         data = data.RangeSubset(data.Length - maxServerLogSize, maxServerLogSize);
+      }
+
+      // Split the log into chunks smaller than the RPC size limit per message
+      int lastIndex = 0;
+      while (lastIndex < data.Length) {
+         byte[] chunk = data.RangeSubset(lastIndex, Mathf.Min(D.MAX_MASTER_SERVER_LOG_CHUNK_SIZE, data.Length - lastIndex));
+         lastIndex += D.MAX_MASTER_SERVER_LOG_CHUNK_SIZE;
+
+         // If we are not the master server, send over to it first
+         if (ServerNetworkingManager.self.server.isMasterServer()) {
+            receiveServerLogDataMasterServer(chunk, lastIndex >= data.Length, serverNetworkId, forNetId);
+         } else {
+            InvokeServerRpc(MasterServer_ReceiveServerLogData, chunk, lastIndex >= data.Length, serverNetworkId, forNetId);
+         }
+      }
+   }
+
+   [ServerRPC(RequireOwnership = false)]
+   public void MasterServer_ReceiveServerLogData (byte[] serverLogData, bool last, ulong serverNetworkId, uint forNetId) {
+      receiveServerLogDataMasterServer(serverLogData, last, serverNetworkId, forNetId);
+   }
+
+   private void receiveServerLogDataMasterServer (byte[] serverLogData, bool last, ulong serverNetworkId, uint forNetId) {
+      InvokeClientRpcOnOwner(Server_ReceiveServerLog, serverLogData, last, serverNetworkId, forNetId);
+   }
+
+   [ClientRPC]
+   public void Server_ReceiveServerLog (byte[] serverLogData, bool last, ulong serverNetworkId, uint forNetId) {
+      // We arrived at the server, which received log request from the client
+      // Figure out which client requested it and send the partial log data to him
+      if (_serverLogsRequesters.TryGetValue(forNetId, out AdminManager man)) {
+         if (man != null) {
+            man.Target_ReceivePartialRemoteServerLogBytes(serverLogData, serverNetworkId, last);
+         }
+      }
+   }
+
+   #endregion
+
+   #region Network Overview Reports
+
+   public static ServerOverview createServerOverview () {
+      // Create server overview about the CURRENT OWNER server, not his particular entity
+      ServerOverview ow = new ServerOverview {
+         serverNetworkId = ServerNetworkingManager.self.server.NetworkId,
+         port = ServerNetworkingManager.self.server.networkedPort.Value,
+         machineName = Environment.MachineName,
+         processName = System.Diagnostics.Process.GetCurrentProcess()?.ProcessName,
+         fps = ServerNetworkingManager.self.server.getAverageFPS(),
+         instances = InstanceManager.self.createOverviewForAllInstances(),
+      };
+
+      return ow;
+   }
+
+   public void requestServerOverviews (RPCManager man) {
+      // Note down the manager that requested this, so we can find it later
+      _networkOverviewRequesters[man.netId] = man;
+
+      // Ask the master server to send over all server overviews
+      InvokeServerRpc(MasterServer_RequestServerOverviews, man.netId);
+   }
+
+   [ServerRPC]
+   public void MasterServer_RequestServerOverviews (uint forNetId) {
+      foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
+         // Ask for an overview for every server that is not the master, we are on the master right now
+         if (!server.isMasterServer()) {
+            InvokeClientRpcOnClient(Server_RequestServerOverview, server.OwnerClientId, forNetId, DateTime.UtcNow.Ticks);
+         }
+      }
+
+      // We want to create the overview for master server itself as well
+      long sentAt = DateTime.UtcNow.Ticks;
+      receiveServerOverview(createServerOverview(), forNetId, sentAt);
+   }
+
+   [ClientRPC]
+   public void Server_RequestServerOverview (uint forNetId, long sentAt) {
+      // This specific instance should be the remote-server that originally requested the overview
+      // ServerNetworkingManager.self.server should be the owner of this server that we want information about
+      ServerOverview ow = createServerOverview();
+      InvokeServerRpc(MasterServer_ReceiveServerOverview, ow, forNetId, sentAt);
+   }
+
+   [ServerRPC(RequireOwnership = false)]
+   public void MasterServer_ReceiveServerOverview (ServerOverview serverOverview, uint forNetId, long sentAt) {
+      receiveServerOverview(serverOverview, forNetId, sentAt);
+   }
+
+   private void receiveServerOverview (ServerOverview serverOverview, uint forNetId, long sentAt) {
+      // Calculate how much time it took from sending overview request, to receiving the overview
+      serverOverview.toMasterRTT = (DateTime.UtcNow.Ticks - sentAt) / TimeSpan.TicksPerMillisecond;
+      InvokeClientRpcOnOwner(Server_ReceiveServerOverview, serverOverview, forNetId);
+   }
+
+   [ClientRPC]
+   public void Server_ReceiveServerOverview (ServerOverview serverOverview, uint forNetId) {
+      // If the requester is still there, pass on the overview
+      if (_networkOverviewRequesters.TryGetValue(forNetId, out RPCManager man)) {
+         if (man != null) {
+            man.Target_ReceiveServerOverview(serverOverview);
+         }
+      }
+   }
+
+   #endregion
+
    #region Private Variables
+
+   // Which users are requesting network overview
+   private Dictionary<uint, RPCManager> _networkOverviewRequesters = new Dictionary<uint, RPCManager>();
+
+   // Which users are requesting server logs
+   private Dictionary<uint, AdminManager> _serverLogsRequesters = new Dictionary<uint, AdminManager>();
+
+   // List of frame times over the last 60 frames for FPS calculation
+   private LinkedList<float> _pastFrameTimes = new LinkedList<float>();
 
    #endregion
 }

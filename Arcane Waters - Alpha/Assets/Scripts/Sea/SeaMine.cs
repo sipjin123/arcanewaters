@@ -138,7 +138,7 @@ public class SeaMine : NetworkBehaviour, IObserver
       }
 
       SeaEntity detectedEntity = collision.GetComponent<SeaEntity>();
-      if (detectedEntity != null && detectedEntity.instanceId == instanceId && detectedEntity.isEnemyOf(sourceEntity)) {
+      if (detectedEntity != null && detectedEntity.instanceId == instanceId && detectedEntity.isEnemyOf(sourceEntity, false) && !detectedEntity.isDead()) {
          StartCoroutine(CO_TriggerExplosionAfterDelay(EXPLOSION_DELAY));
       }
    }
@@ -191,7 +191,7 @@ public class SeaMine : NetworkBehaviour, IObserver
       GameObject explosionEffect = PrefabsManager.self.requestCannonExplosionPrefab(Attack.ImpactMagnitude.Strong);
       explosionEffect.transform.position = transform.position;
 
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.SHIP_CANNON, this.transform);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.SHIP_CANNON, this.transform.position);
 
       spriteRenderer.enabled = false;
       _collider.enabled = false;

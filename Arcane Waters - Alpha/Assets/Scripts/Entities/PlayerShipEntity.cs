@@ -148,7 +148,8 @@ public class PlayerShipEntity : ShipEntity
    public int selectedShipAbilityIndex = 0;
 
    // The different flags the ship can display
-   public enum Flag {
+   public enum Flag
+   {
       None = 0,
       White = 1,
       Group = 2,
@@ -193,6 +194,7 @@ public class PlayerShipEntity : ShipEntity
 
          // Get a reference to our audio listener
          _audioListener = GetComponent<AudioListener>();
+         _fmodListener = GetComponent<FMODUnity.StudioListener>();
 
          _targetSelector = GetComponentInChildren<PlayerTargetSelector>();
          boostTimingSprites.gameObject.SetActive(true);
@@ -216,13 +218,12 @@ public class PlayerShipEntity : ShipEntity
          boostBarParent.anchoredPosition = boostBarParentPos;
 
          PanelManager.self.showPowerupPanel();
-         
+
          InputManager.self.inputMaster.Sea.Dash.performed += OnSeaDashPerformed;
          InputManager.self.inputMaster.Sea.Dash.canceled += OnSeaDashCanceled;
 
          // Creating the FMOD event Instance
          _boostState = FMODUnity.RuntimeManager.CreateInstance(SoundEffectManager.SHIP_LAUNCH_CHARGE);
-         _boostState.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(this.transform));
       } else if (isServer) {
          _movementInputDirection = Vector2.zero;
       } else {
@@ -234,9 +235,6 @@ public class PlayerShipEntity : ShipEntity
       GameObject targetCirclePrefab = Resources.Load<GameObject>("Prefabs/Targeting/TargetCircle");
       GameObject targetConePrefab = Resources.Load<GameObject>("Prefabs/Targeting/TargetConeDots");
       GameObject cannonTargeterPrefab = Resources.Load<GameObject>("Prefabs/Targeting/CannonTargeter");
-
-      // Get a reference to our FMOD Studio Listener
-      //_fmodListener = GetComponent<FMODUnity.StudioListener>();
 
       _targetCircle = Instantiate(targetCirclePrefab, transform.parent).GetComponent<TargetCircle>();
       _targetCone = Instantiate(targetConePrefab, transform.parent).GetComponent<TargetCone>();
@@ -262,8 +260,8 @@ public class PlayerShipEntity : ShipEntity
             powerupTypes.Add(powerup.powerupType);
          }
       }
-      
-      InputManager.self.inputMaster.Sea.Enable();      
+
+      InputManager.self.inputMaster.Sea.Enable();
       InputManager.self.inputMaster.Land.Disable();
    }
 
@@ -324,12 +322,12 @@ public class PlayerShipEntity : ShipEntity
          pressBoost();
          gamePadDashPressed = true;
       }
-   }   
+   }
    private void OnSeaDashCanceled (InputAction.CallbackContext ctx) {
       if (gamePadDashPressed != false) {
          releaseBoost();
          gamePadDashPressed = false;
-      }      
+      }
    }
 
    private void initHealth (bool skipCurrentHealth = false) {
@@ -443,11 +441,11 @@ public class PlayerShipEntity : ShipEntity
 
       if (!isDead() && !isGhost && !isPerformingAttack()) {
          // Start charging attack with mouse
-         if (InputManager.self.inputMaster.Sea.FireCannon.WasPressedThisFrame() || (InputManager.self.inputMaster.Sea.FireCannon.ReadValue<float>() > 0.0f && !_isChargingCannon)) {
+         if (InputManager.self.inputMaster.Sea.FireCannon.WasPressedThisFrame() || (InputManager.self.inputMaster.Sea.FireCannon.IsPressed() && !_isChargingCannon)) {
             _chargingWithMouse = true;
             cannonAttackPressed();
             // Can only start charging with spacebar if we have a valid target
-         } else if (_targetSelector.getTarget() != null && (InputManager.self.inputMaster.Sea.FireCannon.WasPressedThisFrame() || (InputManager.self.inputMaster.Sea.FireCannon.ReadValue<float>() > 0.0f && !_isChargingCannon))) {
+         } else if (_targetSelector.getTarget() != null && (InputManager.self.inputMaster.Sea.FireCannon.WasPressedThisFrame() || (InputManager.self.inputMaster.Sea.FireCannon.IsPressed() && !_isChargingCannon))) {
             _chargingWithMouse = false;
             cannonAttackPressed();
          } else {
@@ -473,9 +471,6 @@ public class PlayerShipEntity : ShipEntity
       if (InputManager.self.inputMaster.General.Interact.WasPerformedThisFrame() && !PriorityOverProcessActionLogic.isAnyHovered()) {
          tryToOpenChest();
       }
-
-      // Update FMOD Studio Listener attachment
-      FMODUnity.RuntimeManager.AttachInstanceToGameObject(_boostState, transform, _body);
    }
 
    private void LateUpdate () {
@@ -533,7 +528,6 @@ public class PlayerShipEntity : ShipEntity
 
          // FMOD SFX
          if (getBoostChargeAmount() == 1) {
-            //boostEventEmitter.SetParameter(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 1);
             _boostState.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 1);
          }
       }
@@ -545,6 +539,7 @@ public class PlayerShipEntity : ShipEntity
          boostTimingSprites.alpha = 1.0f;
          _isChargingBoost = true;
 
+         FMODUnity.RuntimeManager.AttachInstanceToGameObject(this._boostState, this.transform, this._body);
          _boostState.start();
          _boostState.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 0);
       }
@@ -1535,6 +1530,14 @@ public class PlayerShipEntity : ShipEntity
       playerPortrait.SetActive(false);
       playerPortrait.SetActive(true);
 
+      yield return CO_HandleSpawnInvulnerability();
+   }
+
+   protected IEnumerator CO_HandleSpawnInvulnerability () {
+      if (isServer) {
+         setIsInvulnerable(true);
+      }
+
       float spawnInvulnerabilityDuration = 0;
       if (VoyageManager.isAnyLeagueArea(areaKey)) {
          spawnInvulnerabilityDuration = SPAWN_INVULNERABILITY_DURATION;
@@ -1651,8 +1654,7 @@ public class PlayerShipEntity : ShipEntity
    private void checkAudioListener () {
       if (AudioListenerManager.self.getActiveListener() != _audioListener) {
          AudioListenerManager.self.setActiveListener(_audioListener);
-         AudioListenerManager.self.setActiveFmodListener(null);
-
+         AudioListenerManager.self.setActiveFmodListener(_fmodListener);
       }
    }
 
@@ -1773,16 +1775,20 @@ public class PlayerShipEntity : ShipEntity
    [Server]
    private IEnumerator CO_RespawnPlayerInInstance () {
       setIsInvulnerable(true);
+      hasPerformedFirstActionAfterSpawn = false;
       PowerupManager.self.clearPowerupsForUser(userId);
 
       // Move the player to their spawn point
-      PvpGame game = PvpManager.self.getGameWithPlayer(this);
       Vector3 spawnPosition = transform.localPosition;
 
+      PvpGame game = PvpManager.self.getGameWithPlayer(this);
       if (game != null) {
          spawnPosition = game.getSpawnPositionForUser(this);
-         transform.localPosition = spawnPosition;
+      } else if (tryGetVoyage(out Voyage voyage) && voyage.isLeague) {
+         spawnPosition = SpawnManager.self.getDefaultLocalPosition(areaKey);
       }
+
+      transform.localPosition = spawnPosition;
 
       // Wait a small delay, so the player's camera can move, and see them respawn
       yield return new WaitForSeconds(0.5f);
@@ -1791,13 +1797,16 @@ public class PlayerShipEntity : ShipEntity
       restoreMaxShipHealth();
 
       Rpc_OnRespawnedInInstance(currentHealth);
+
       setIsInvulnerable(false);
       setCollisions(true);
 
-      _respawningInInstanceCoroutine = null;
-
       // Reset flag
       _hasRunOnDeath = false;
+
+      yield return CO_HandleSpawnInvulnerability();
+
+      _respawningInInstanceCoroutine = null;
    }
 
    [ClientRpc]
@@ -1853,7 +1862,7 @@ public class PlayerShipEntity : ShipEntity
       // Reset flag
       _hasRunOnDeath = false;
 
-      yield return null;
+      yield return CO_HandleSpawnInvulnerability();
    }
 
    public void cancelCannonBarrage () {
@@ -2164,6 +2173,9 @@ public class PlayerShipEntity : ShipEntity
    // A reference to the audio listener that follows the ship
    private AudioListener _audioListener;
 
+   // A reference to the FMOD Studio Listener that follows the ship
+   private FMODUnity.StudioListener _fmodListener;
+
    // How long it takes to charge up the ship's cannon
    private const float CANNON_CHARGE_TIME = 1.0f;
 
@@ -2184,9 +2196,6 @@ public class PlayerShipEntity : ShipEntity
 
    // FMOD event instance for managing ship's boost SFX
    FMOD.Studio.EventInstance _boostState;
-
-   // A reference to the FMOD Studio Listener that follows the ship
-   private FMODUnity.StudioListener _fmodListener;
 
    // How much lifeboat collider size should be increased for a short period of time to make sure that boat is not near shore
    private const float LIFEBOAT_COLLIDER_MULTIPLIER = 3.0f;

@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 using DG.Tweening;
 
-public class StanceChangeEffect : MonoBehaviour {
+public class StanceChangeEffect : MonoBehaviour
+{
    #region Public Variables
 
    // References to sprites representing each of the stances
@@ -34,7 +35,7 @@ public class StanceChangeEffect : MonoBehaviour {
 
       // Assign the appropriate sprite
       switch (stance) {
-         case Battler.Stance.Attack: 
+         case Battler.Stance.Attack:
             effectRenderer.sprite = offensiveStanceSprite;
             break;
          case Battler.Stance.Balanced:
@@ -48,7 +49,7 @@ public class StanceChangeEffect : MonoBehaviour {
       float effectHeight = (isLocalBattler) ? 0.55f : 0.45f;
 
       // Play SFX
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.STANCE_CHANGE, battlerTransform);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.STANCE_CHANGE, battlerTransform.position);
 
       effectRenderer.gameObject.SetActive(true);
       effectRenderer.DOFade(1.0f, 0.25f);
@@ -65,6 +66,6 @@ public class StanceChangeEffect : MonoBehaviour {
    }
 
    #region Private Variables
-      
+
    #endregion
 }

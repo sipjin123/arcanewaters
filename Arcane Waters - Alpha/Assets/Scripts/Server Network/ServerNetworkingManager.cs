@@ -41,6 +41,7 @@ public class ServerNetworkingManager : MonoBehaviour
       RegisterSerializableClass<UserLocationBundle>();
       RegisterSerializableClass<AssignedUserInfo>();
       RegisterSerializableClass<PenaltyInfo>();
+      RegisterSerializableClass<ServerOverview>();
 
       // Log the number of connected players
       if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {

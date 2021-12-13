@@ -330,8 +330,7 @@ public class MapManager : MonoBehaviour
       }
 
       if (area.isInterior) {
-         SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_OPEN, transform);
-         //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ENTER_DOOR, transform);
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_OPEN);
       }
 
       // Invoke canvas checked in 5 seconds after map load

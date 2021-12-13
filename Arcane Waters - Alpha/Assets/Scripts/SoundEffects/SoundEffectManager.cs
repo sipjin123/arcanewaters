@@ -30,7 +30,6 @@ public class SoundEffectManager : GenericGameManager
 
    public const int SHORTCUT_SELECTION = 60;
    public const int ABILITY_SELECTION = 61;
-   //public const int STANCE_SELECTION = 62;
    public const int INVENTORY_DRAG_START = 64;
    public const int INVENTORY_DROP = 65;
    public const int NPC_PANEL_POPUP = 66;
@@ -77,6 +76,10 @@ public class SoundEffectManager : GenericGameManager
    public const string NPC_STRIKE = "event:/SFX/Game/Land_Battle/NPC_Strike";
    public const string BLOCK_ATTACK = "event:/SFX/Game/Land_Battle/Block_Attack";
    public const string STANCE_CHANGE = "event:/SFX/Game/Land_Battle/Stance_Change_Generic";
+   public const string LIZARD_KING_ATTACK = "event:/SFX/Game/Land_Battle/Lizard_King/Swipe_Attack";
+   public const string LIZARD_KING_HURT = "event:/SFX/NPC/Enemy/Lizard King/Lizard_Pain_Hit";
+   public const string GOLEM_FOOT_IMPACT = "event:/SFX/NPC/Boss/Rock Golem/Foot_Impact";
+   public const string GOLEM_SCREAM_ATTACK = "event:/SFX/NPC/Boss/Rock Golem/Scream_Attack";
 
    #endregion
 
@@ -203,10 +206,6 @@ public class SoundEffectManager : GenericGameManager
       return _soundEffects.ContainsKey(id);
    }
 
-   public FMOD.Studio.EventInstance getEventInstance (string eventPath) {
-      return FMODUnity.RuntimeManager.CreateInstance(eventPath);
-   }
-
    public void playSoundEffect (int id, Transform target) {
       SoundEffect effect;
 
@@ -230,20 +229,54 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   public void playFmodSfx (string path, Transform target = null, Vector3 targetPos = default) {
+   public void playFmodSfx (string path, Vector3 position = default) {
       if (Util.isBatch()) {
          return;
       }
 
-      FMOD.Studio.EventInstance eventInstance = FMODUnity.RuntimeManager.CreateInstance(path);
-      if (eventInstance.isValid()) {
-         if (target != null) {
-            eventInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(target));
-         } else if (targetPos != default) {
-            eventInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(targetPos));
-         }
-         eventInstance.start();
-         eventInstance.release();
+      // If the SFX is 2D
+      if (position == default) {
+         position = AudioListenerManager.self.getActiveFmodListener().gameObject.transform.position;
+      }
+      FMODUnity.RuntimeManager.PlayOneShot(path, position);
+      //FMOD.Studio.EventInstance eventInstance = FMODUnity.RuntimeManager.CreateInstance(path);
+      //if (eventInstance.isValid()) {
+      //   eventInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
+      //   eventInstance.start();
+      //   eventInstance.release();
+      //}
+   }
+
+   public void playBossAbilitySfx (Enemy.Type enemyType, int abilityId, Vector3 position) {
+      switch (enemyType) {
+         case Enemy.Type.Lizard_King:
+            playFmodSfx(LIZARD_KING_ATTACK, position);
+            break;
+         case Enemy.Type.Golem_Boss:
+            LandAbility ability = (LandAbility) abilityId;
+            switch (ability) {
+               case LandAbility.BoneBreaker:
+                  playFmodSfx(GOLEM_FOOT_IMPACT, position);
+                  break;
+               case LandAbility.GolemShout:
+                  playFmodSfx(GOLEM_SCREAM_ATTACK, position);
+                  break;
+            }
+            break;
+      }
+   }
+
+   public void playFishSfx (Vector3 position) {
+      if (Global.player != null) {
+         playFmodSfx(FISH_SURFACING, position: position);
+      }
+   }
+
+   public void playLandEnemyHitSfx (Enemy.Type enemyType, Vector3 position) {
+      switch (enemyType) {
+         case Enemy.Type.Lizard_King:
+            playFmodSfx(LIZARD_KING_HURT, position);
+            break;
       }
    }
 
@@ -429,10 +462,10 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   public void playSeaBossDeathSfx (SeaMonsterEntity.Type monsterType, Transform target) {
+   public void playSeaBossDeathSfx (SeaMonsterEntity.Type monsterType, Vector3 position) {
       switch (monsterType) {
          case SeaMonsterEntity.Type.Horror:
-            playFmodSfx(HORROR_DEATH, target);
+            playFmodSfx(HORROR_DEATH, position);
             break;
       }
    }
@@ -461,26 +494,26 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   public void playInteractionSfx (Weapon.ActionType weaponAction, Weapon.Class weaponClass, WeaponSfxType sfxType, Transform target) {
+   public void playInteractionSfx (Weapon.ActionType weaponAction, Weapon.Class weaponClass, WeaponSfxType sfxType, Vector3 position) {
       switch (weaponAction) {
          case Weapon.ActionType.PlantCrop:
-            playFmodSfx(THROW_SEEDS, target);
+            playFmodSfx(THROW_SEEDS, position);
             break;
          case Weapon.ActionType.WaterCrop:
-            playFmodSfx(WATERING_PLANTS, target);
+            playFmodSfx(WATERING_PLANTS, position);
             break;
          default:
-            playWeaponSfx(sfxType, weaponClass, target);
+            playWeaponSfx(sfxType, weaponClass, position);
             break;
       }
    }
 
-   public void playWeaponSfx (WeaponSfxType sfxType, Weapon.Class weaponClass, Transform target) {
+   public void playWeaponSfx (WeaponSfxType sfxType, Weapon.Class weaponClass, Vector3 position) {
       if (sfxType != WeaponSfxType.None) {
          FMOD.Studio.EventInstance eventInstance = FMODUnity.RuntimeManager.CreateInstance(WEAPON_SWING);
          eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, ((int) sfxType) - 1);
          eventInstance.setParameterByName(APPLY_MAGIC, weaponClass == Weapon.Class.Magic ? 1 : 0);
-         eventInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(target));
+         eventInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
          eventInstance.start();
          eventInstance.release();
       }
@@ -488,7 +521,7 @@ public class SoundEffectManager : GenericGameManager
 
    public void playEnemyHitSfx (bool isShip, SeaMonsterEntity.Type seaMonsterType, bool isCrit, CannonballEffector.Type effectorType, Vector3 position) {
       FMOD.ATTRIBUTES_3D attributes = FMODUnity.RuntimeUtils.To3DAttributes(position);
-      FMOD.Studio.EventInstance impactEvent = getEventInstance(ENEMY_SHIP_IMPACT);
+      FMOD.Studio.EventInstance impactEvent = FMODUnity.RuntimeManager.CreateInstance(ENEMY_SHIP_IMPACT);
 
       impactEvent.setParameterByName(AUDIO_SWITCH_PARAM, isShip ? 0 : 1);
       impactEvent.setParameterByName(APPLY_CRIT_PARAM, isCrit ? 1 : 0);
@@ -530,11 +563,6 @@ public class SoundEffectManager : GenericGameManager
       if (CameraManager.defaultCamera.getPixelFadeEffect().isFadingIn) {
          playFmodSfx(TIP_FOLDOUT);
       }
-   }
-
-   private IEnumerator CO_PlayFmodSfxAfterDelay (string path, float delay, Transform target, Vector3 pos) {
-      yield return new WaitForSeconds(delay);
-      playFmodSfx(path, target, pos);
    }
 
    private void findAndAssignAudioClip (SoundEffect effect) {
@@ -586,6 +614,13 @@ public class SoundEffectManager : GenericGameManager
 
    // Event for title screen ambience music
    private FMOD.Studio.EventInstance _titleScreenAmbienceEvent;
+
+   private enum LandAbility
+   {
+      None = 0,
+      BoneBreaker = 11,
+      GolemShout = 90
+   }
 
    private enum AmbienceType
    {

@@ -155,9 +155,10 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       // If we are the local player, assign us the audio listener
       if (isLocalPlayer && AudioListenerManager.self) {
          _audioListener = GetComponent<AudioListener>();
+         _fmodListener = GetComponent<FMODUnity.StudioListener>();
 
          AudioListenerManager.self.setActiveListener(_audioListener);
-         AudioListenerManager.self.setActiveFmodListener(null);
+         AudioListenerManager.self.setActiveFmodListener(_fmodListener);
       }
 
       // Retrieve the current sprites for the guild icon
@@ -196,7 +197,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          // When we enter a new scene, update powerups on the client
          rpc.Target_UpdateLandPowerups(connectionToClient, LandPowerupManager.self.getPowerupsForUser(userId));
       }
-      
+
       InputManager.self.inputMaster.Land.Enable();
       InputManager.self.inputMaster.Sea.Disable();
    }
@@ -208,7 +209,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    private void OnJumpPerformed (InputAction.CallbackContext ctx) {
       if (InputManager.isActionInputEnabled()) {
          triggerJumpAction();
-      }      
+      }
    }
 
    private void OnDestroy () {
@@ -221,7 +222,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       if (OptionsPanel.onlyShowGuildIconsOnMouseover) {
          return;
       }
-      
+
       // If an npc is above the player, hide the guild icon
       bool isNpcNear = false;
       Collider2D[] colliders = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y + 0.5f), 0.25f);
@@ -605,8 +606,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       if (
-         InputManager.self.inputMaster.General.Interact.WasPerformedThisFrame() && 
-         !PanelManager.self.hasPanelInLinkedList() && 
+         InputManager.self.inputMaster.General.Interact.WasPerformedThisFrame() &&
+         !PanelManager.self.hasPanelInLinkedList() &&
          !PanelManager.self.isFullScreenSeparatePanelShowing()
       ) {
          NetEntity body = getClickedBody();
@@ -639,7 +640,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       // Don't allow the player to enter the interact animation if they're jumping
-      if (!foundInteractable && !isJumping()) {
+      if (!foundInteractable && !isJumping() && !interactingAnimation) {
          tryInteractAnimation(faceMouseDirection);
       }
    }
@@ -949,7 +950,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          // Make sure the game is using the player's audio listener
          if (_audioListener != AudioListenerManager.self.getActiveListener()) {
             AudioListenerManager.self.setActiveListener(_audioListener);
-            AudioListenerManager.self.setActiveFmodListener(null);
+            AudioListenerManager.self.setActiveFmodListener(_fmodListener);
          }
       } else if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getAudioListener() != null) {
          AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener());
@@ -1048,6 +1049,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    // A reference to the audiolistener attached to the player
    private AudioListener _audioListener;
+
+   // A reference to the FMOD Listener attached to the player
+   private FMODUnity.StudioListener _fmodListener;
 
    // The 'startSizeMultiplier' of the dust trail particle
    private float _dustStartSizeMultiplier;
