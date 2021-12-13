@@ -110,10 +110,7 @@ public partial class SpawnManager : MonoBehaviour
                spawn = mapSpawnList.Find(_ => mapSpawnData.defaultSpawn.spawnId == _.spawnId);
             }
 
-            if (showLog) {
-               D.editorLog("Returning default Local Position from Origin", Color.magenta);
-               return mapSpawnData.defaultSpawn.localPosition + (spawn ? spawn.getRandomPositionOffset() : Vector2.zero);
-            }
+            return mapSpawnData.defaultSpawn.localPosition + (spawn ? spawn.getRandomPositionOffset() : Vector2.zero);
          }
       }
 

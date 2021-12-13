@@ -638,7 +638,6 @@ public class SeaEntity : NetEntity
          return;
       }
 
-      float zAxis = 2;
       Transform parentTransform = parentEntity.spritesContainer.transform;
       EffectManager.self.create(Effect.Type.Shock_Collision, sourcePos);
 
@@ -648,7 +647,6 @@ public class SeaEntity : NetEntity
          lightning.transform.SetParent(parentTransform, false);
          lightning.StartObject.transform.position = lightning.transform.position;
          lightning.EndObject.transform.position = targetPos;
-         lightning.EndObject.transform.SetParent(parentTransform);
          if (lightning.GetComponent<LineRenderer>() != null) {
             lightning.GetComponent<LineRenderer>().enabled = true;
          } else {

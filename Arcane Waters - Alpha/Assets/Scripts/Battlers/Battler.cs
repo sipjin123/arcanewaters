@@ -2128,7 +2128,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
 
       // Display the Hit animation frame for a short period
-      playAnim(Anim.Type.Hurt_East);
+      if (!isLastHit) {
+         playAnim(Anim.Type.Hurt_East);
+      }
 
       // Play the ability hit SFX after the hurt animation frame
       ability.playHitSfxAtTarget(transform);
