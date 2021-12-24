@@ -7663,7 +7663,7 @@ public class RPCManager : NetworkBehaviour
       AbilityType abilityType = (AbilityType) abilityTypeInt;
 
       if (_player == null || !(_player is PlayerBodyEntity)) {
-         Target_ReceiveRefreshCasting(connectionToClient, false);
+         Target_ReceiveRefreshCasting(connectionToClient, false, "Missing Player");
          return;
       }
 
@@ -7671,7 +7671,7 @@ public class RPCManager : NetworkBehaviour
       PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
       Battle battle = BattleManager.self.getBattle(playerBody.battleId);
       if (battle == null) {
-         Target_ReceiveRefreshCasting(connectionToClient, false);
+         Target_ReceiveRefreshCasting(connectionToClient, false, "Missing Battle");
          return;
       }
 
@@ -7703,13 +7703,13 @@ public class RPCManager : NetworkBehaviour
 
       // Ignore invalid or dead sources and targets
       if (sourceBattler == null || targetBattler == null || sourceBattler.isDead() || targetBattler.isDead()) {
-         Target_ReceiveRefreshCasting(connectionToClient, false);
+         Target_ReceiveRefreshCasting(connectionToClient, false, "Invalid Source or Target Battler");
          return;
       }
 
       // Make sure the source battler can use that ability type
       if (!abilityData.isReadyForUseBy(sourceBattler) && !cancelAction) {
-         Target_ReceiveRefreshCasting(connectionToClient, false);
+         Target_ReceiveRefreshCasting(connectionToClient, false, "Ability Not Ready");
          return;
       }
 
@@ -7717,7 +7717,7 @@ public class RPCManager : NetworkBehaviour
          // If it's a Melee Ability, make sure the target isn't currently protected
          if (((AttackAbilityData) abilityData).isMelee() && targetBattler.isProtected(battle)) {
             D.warning("Battler requested melee ability against protected target! Player: " + playerBody.entityName);
-            Target_ReceiveRefreshCasting(connectionToClient, false);
+            Target_ReceiveRefreshCasting(connectionToClient, false, "Target Protected");
             return;
          }
       }
@@ -7726,10 +7726,10 @@ public class RPCManager : NetworkBehaviour
       List<Battler> targetBattlers = new List<Battler>() { targetBattler };
       if (cancelAction) {
          BattleManager.self.cancelBattleAction(battle, sourceBattler, targetBattlers, abilityInventoryIndex, abilityType);
-         Target_ReceiveRefreshCasting(connectionToClient, false);
+         Target_ReceiveRefreshCasting(connectionToClient, false, "Cancel Action");
       } else {
          if (!sourceBattler.battlerAbilitiesInitialized && sourceBattler.getBasicAbilities().Count < 1 && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
-            Target_ReceiveRefreshCasting(connectionToClient, true);
+            Target_ReceiveRefreshCasting(connectionToClient, true, "Invalid Ability Set");
             return;
          }
 
@@ -7739,7 +7739,8 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveRefreshCasting (NetworkConnection connection, bool refreshAbilityCache) {
+   public void Target_ReceiveRefreshCasting (NetworkConnection connection, bool refreshAbilityCache, string reason) {
+      D.adminLog("Battler can now cast again! After Refresh Casting: " + reason, D.ADMIN_LOG_TYPE.AbilityCast);
       BattleManager.self.getPlayerBattler().setBattlerCanCastAbility(true);
       if (refreshAbilityCache) {
          AttackPanel.self.clearCachedAbilityCast();

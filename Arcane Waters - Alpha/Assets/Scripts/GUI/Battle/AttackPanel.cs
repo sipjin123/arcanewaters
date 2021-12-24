@@ -62,7 +62,7 @@ public class AttackPanel : MonoBehaviour {
       }
 
       // Cancels recent ability triggered
-      if (isValidRecentAbility()) {
+      if (isValidRecentAbility() && recentAbilityRequest.abilityIndex == abilityIndex) {
          cancelAbility(recentAbilityRequest.abilityType, recentAbilityRequest.abilityIndex);
       } 
 

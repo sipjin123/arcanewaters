@@ -260,10 +260,34 @@ public class BattleUIManager : MonoBehaviour {
                // Button Click Setup
                abilityButton.getButton().onClick.RemoveAllListeners();
                abilityButton.getButton().onClick.AddListener(() => {
-                  if (BattleManager.self.getPlayerBattler().canCastAbility() && abilityButton.cooldownValue >= abilityButton.cooldownTarget - .1f) {
-                     triggerAbility(abilityButton, abilityType);
+                  if ((_playerLocalBattler != null) && !_playerLocalBattler.isAttacking) {
+                     if (abilityButton != null) {
+                        // If player is using keys 1-5 to attack with no target selected, then select a random target
+                        if ((BattleSelectionManager.self.selectedBattler == null) || BattleSelectionManager.self.selectedBattler.isDead()) {
+                           try {
+                              BattleSelectionManager.self.clickBattler(BattleSelectionManager.self.getRandomTarget());
+                           } catch {
+                              if (!Global.autoAttack) {
+                                 D.debug("Unable to find an opponent to target");
+                              }
+                           }
+                        }
+
+                        if (abilityButton.isEnabled && BattleSelectionManager.self.selectedBattler != null) {
+                           if (BattleManager.self.getPlayerBattler().canCastAbility() && abilityButton.cooldownValue >= abilityButton.cooldownTarget - .1f) {
+                              triggerAbility(abilityButton, abilityType);
+                           } else {
+                              D.debug("Block ability click because cooldown");
+                           }
+                        } else {
+                           D.debug("Block ability click because of " +
+                              "{" + (abilityButton.isEnabled ? "AbilityButtonEnabled" : "AbilityButtonDisabled") + "}" +
+                              "{" + (BattleSelectionManager.self.selectedBattler == null ? "Null Selected" : "Selected Battelr" + BattleSelectionManager.self.selectedBattler.enemyType) + "}");
+                        }
+                     }
                   }
                });
+
                abilityButton.enableButton();
                abilityButton.isInvalidAbility = false;
 
