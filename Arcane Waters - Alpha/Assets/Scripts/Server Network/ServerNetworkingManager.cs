@@ -91,10 +91,27 @@ public class ServerNetworkingManager : MonoBehaviour
       }
    }
 
-
    public NetworkedServer getServerContainingUser (int userId) {
       foreach (NetworkedServer server in servers) {
          if (server.connectedUserIds.Contains(userId)) {
+            return server;
+         }
+      }
+      return null;
+   }
+
+   public NetworkedServer getServerContainingPrivateFarmInstance (int userId) {
+      foreach (NetworkedServer server in servers) {
+         if (server.privateFarmInstances.Contains(userId)) {
+            return server;
+         }
+      }
+      return null;
+   }
+
+   public NetworkedServer getServerContainingPrivateHouseInstance (int userId) {
+      foreach (NetworkedServer server in servers) {
+         if (server.privateHouseInstances.Contains(userId)) {
             return server;
          }
       }
@@ -226,9 +243,35 @@ public class ServerNetworkingManager : MonoBehaviour
    public void claimPlayer (int userId) {
       server.claimedUserIds[userId] = true;
    }
-
+   
    public void releasePlayerClaim (int userId) {
       server.claimedUserIds.Remove(userId);
+   }
+
+   public void addPrivateFarmInstance (int userId) {
+      if (server.privateFarmInstances.Contains(userId)) {
+      } else {
+         server.privateFarmInstances.Add(userId);
+      }
+   }
+   
+   public void releasePrivateFarmInstance (int userId) {
+      if (server.privateFarmInstances.Contains(userId)) {
+         server.privateFarmInstances.Remove(userId);
+      }
+   }
+
+   public void addPrivateHouseInstance (int userId) {
+      if (server.privateHouseInstances.Contains(userId)) {
+      } else {
+         server.privateHouseInstances.Add(userId);
+      }
+   }
+
+   public void releasePrivateHouseInstance (int userId) {
+      if (server.privateHouseInstances.Contains(userId)) {
+         server.privateHouseInstances.Remove(userId);
+      }
    }
 
    public RpcResponse<int> getNewVoyageGroupId () {
@@ -239,9 +282,8 @@ public class ServerNetworkingManager : MonoBehaviour
       return server.InvokeServerRpc(server.MasterServer_GetNewVoyageId);
    }
 
-   public void findUserLocationToVisit (int visitorUserId, int visitedUserId, string areaKeyOverride, string spawnTarget, Direction facing) {
-      D.adminLog("1> User {" + visitorUserId + "} is attempting to visit {" + visitedUserId + "} {" + areaKeyOverride + "} {" + spawnTarget + "}", D.ADMIN_LOG_TYPE.Visit);
-      server.InvokeServerRpc(server.MasterServer_FindUserLocationToVisit, visitorUserId, visitedUserId, areaKeyOverride, spawnTarget, facing);
+   public void findUserPrivateAreaToVisit (int visitorUserId, int visitedUserId, string areaKeyOverride, string spawnTarget, Direction facing) {
+      server.InvokeServerRpc(server.MasterServer_FindUserPrivateAreaVisit, visitorUserId, visitedUserId, areaKeyOverride, spawnTarget, facing);
    }
 
    public void findUserLocationForAdminGoTo (int adminUserId, int userId) {

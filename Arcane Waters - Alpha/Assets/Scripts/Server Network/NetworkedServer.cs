@@ -25,6 +25,12 @@ public class NetworkedServer : NetworkedBehaviour
    // The users connected to this server
    public NetworkedList<int> connectedUserIds = new NetworkedList<int>(Global.defaultNetworkedVarSettings);
 
+   // The private farm instances that already exists
+   public NetworkedList<int> privateFarmInstances = new NetworkedList<int>(Global.defaultNetworkedVarSettings);
+
+   // The private house instances that already exists
+   public NetworkedList<int> privateHouseInstances = new NetworkedList<int>(Global.defaultNetworkedVarSettings);
+   
    // The users that have been assigned to this server - there can be userIds duplicates in multiple servers
    public NetworkedDictionary<int, AssignedUserInfo> assignedUserIds = new NetworkedDictionary<int, AssignedUserInfo>(new NetworkedVarSettings { WritePermission = NetworkedVarPermission.Everyone, SendChannel = "Fragmented", SendTickrate = 0 });
 
