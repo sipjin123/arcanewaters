@@ -59,6 +59,9 @@ public class ShipEntity : SeaEntity
    // A reference to the transform that will hold visual effects created by casting abilities
    public Transform abilityEffectHolder;
 
+   // A list of directional colliders, indexed by ship size
+   public List<GameObject> directionalColliders;
+
    #endregion
 
    protected virtual void initialize (ShipData data) {
@@ -75,6 +78,17 @@ public class ShipEntity : SeaEntity
 
       shipSize = data.shipSize;
       shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);
+
+      // Activate the appropriate directional collider for our ship size
+      int shipSizeIndex = (int) shipSize - 1;
+      if (shipSizeIndex < 0) {
+         shipSizeIndex = 0;
+      }
+
+      for (int i = 0; i < directionalColliders.Count; i++) {
+         GameObject directionalCollider = directionalColliders[i];
+         directionalCollider.SetActive(i == shipSizeIndex);
+      }
    }
 
    protected virtual void initializeAsSeaEnemy (SeaMonsterEntityData enemyData, ShipData shipData, int instanceDifficulty) {
@@ -98,6 +112,17 @@ public class ShipEntity : SeaEntity
 
       shipSize = shipData.shipSize;
       shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);
+
+      // Activate the appropriate directional collider for our ship size
+      int shipSizeIndex = (int) shipSize - 1;
+      if (shipSizeIndex < 0) {
+         shipSizeIndex = 0;
+      }
+
+      for (int i = 0; i < directionalColliders.Count; i++) {
+         GameObject directionalCollider = directionalColliders[i];
+         directionalCollider.SetActive(i == shipSizeIndex);
+      }
    }
 
    protected virtual void initialize (ShipInfo info) {
@@ -121,6 +146,17 @@ public class ShipEntity : SeaEntity
       }
       shipSize = newShipData.shipSize;
       shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);
+
+      // Activate the appropriate directional collider for our ship size
+      int shipSizeIndex = (int) shipSize - 1;
+      if (shipSizeIndex < 0) {
+         shipSizeIndex = 0;
+      }
+
+      for (int i = 0; i < directionalColliders.Count; i++) {
+         GameObject directionalCollider = directionalColliders[i];
+         directionalCollider.SetActive(i == shipSizeIndex);
+      }
    }
 
    public override void playAttackSound () {
@@ -248,48 +284,52 @@ public class ShipEntity : SeaEntity
       ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(shipAbilityId);
       bool hasUsedBuff = false;
 
-      // Self cast buff abilities
-      switch (shipAbilityData.selectedAttackType) {
-         case Attack.Type.Heal:
-            hasUsedBuff = true;
-            int healValue = (int) (shipAbilityData.damageModifier * 100);
-            currentHealth += healValue;
-            Rpc_CastSkill(shipAbilityId, shipAbilityData, transform.position, healValue, true, true);
-            break;
-         case Attack.Type.SpeedBoost:
-            hasUsedBuff = true;
-            addBuff(this.netId, SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost, shipAbilityData);
-            Rpc_CastSkill(shipAbilityId, shipAbilityData, transform.position, 0, true, false);
-            break;
-      }
+      if (shipAbilityData == null) {
+         D.debug("ERROR here! Missing Ship Ability {" + shipAbilityId + "}");
+      } else {
+         // Self cast buff abilities
+         switch (shipAbilityData.selectedAttackType) {
+            case Attack.Type.Heal:
+               hasUsedBuff = true;
+               int healValue = (int) (shipAbilityData.damageModifier * 100);
+               currentHealth += healValue;
+               Rpc_CastSkill(shipAbilityId, shipAbilityData, transform.position, healValue, true, true);
+               break;
+            case Attack.Type.SpeedBoost:
+               hasUsedBuff = true;
+               addBuff(this.netId, SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost, shipAbilityData);
+               Rpc_CastSkill(shipAbilityId, shipAbilityData, transform.position, 0, true, false);
+               break;
+         }
 
-      // Cast abilities to allies if buff radius declared in web tool is greater than 0
-      if (hasUsedBuff && shipAbilityData.buffRadius > 0) {
-         List<NetEntity> allyEntities = EntityManager.self.getEntitiesWithVoyageId(voyageGroupId);
+         // Cast abilities to allies if buff radius declared in web tool is greater than 0
+         if (hasUsedBuff && shipAbilityData.buffRadius > 0) {
+            List<NetEntity> allyEntities = EntityManager.self.getEntitiesWithVoyageId(voyageGroupId);
 
-         if (shipAbilityData.isBuffRadiusDependent) {
-            switch (shipAbilityData.selectedAttackType) {
-               case Attack.Type.SpeedBoost:
-                  StartCoroutine(CO_TriggerActiveAOEBuff(shipAbilityData, shipAbilityData.statusDuration));
-                  break;
-            }
-         } else {
-            if (allyEntities.Count > 0) {
-               foreach (NetEntity allyEntity in allyEntities) {
-                  float distanceBetweenAlly = Vector2.Distance(transform.position, allyEntity.transform.position);
-                  if (allyEntity is PlayerShipEntity && userId != allyEntity.userId) {
-                     if (distanceBetweenAlly < shipAbilityData.buffRadius) {
-                        PlayerShipEntity allyShip = (PlayerShipEntity) allyEntity;
-                        switch (shipAbilityData.selectedAttackType) {
-                           case Attack.Type.Heal:
-                              StartCoroutine(CO_TriggerOneShotBuff(allyShip, shipAbilityData, Attack.Type.Heal, allyShip.netId, false));
-                              break;
-                           case Attack.Type.SpeedBoost:
-                              allyShip.addBuff(this.netId, SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost, shipAbilityData);
-                              break;
+            if (shipAbilityData.isBuffRadiusDependent) {
+               switch (shipAbilityData.selectedAttackType) {
+                  case Attack.Type.SpeedBoost:
+                     StartCoroutine(CO_TriggerActiveAOEBuff(shipAbilityData, shipAbilityData.statusDuration));
+                     break;
+               }
+            } else {
+               if (allyEntities.Count > 0) {
+                  foreach (NetEntity allyEntity in allyEntities) {
+                     float distanceBetweenAlly = Vector2.Distance(transform.position, allyEntity.transform.position);
+                     if (allyEntity is PlayerShipEntity && userId != allyEntity.userId) {
+                        if (distanceBetweenAlly < shipAbilityData.buffRadius) {
+                           PlayerShipEntity allyShip = (PlayerShipEntity) allyEntity;
+                           switch (shipAbilityData.selectedAttackType) {
+                              case Attack.Type.Heal:
+                                 StartCoroutine(CO_TriggerOneShotBuff(allyShip, shipAbilityData, Attack.Type.Heal, allyShip.netId, false));
+                                 break;
+                              case Attack.Type.SpeedBoost:
+                                 allyShip.addBuff(this.netId, SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost, shipAbilityData);
+                                 break;
+                           }
+                        } else {
+                           // TODO: If ally is out of bounds, add logic here if needed
                         }
-                     } else {
-                        // TODO: If ally is out of bounds, add logic here if needed
                      }
                   }
                }
@@ -348,7 +388,7 @@ public class ShipEntity : SeaEntity
       if (clip != null) {
          //SoundManager.playClipAtPoint(clip, Camera.main.transform.position);
       } else {
-         playAttackSound();
+         //playAttackSound();
       }
 
       if (showValue) {
@@ -501,10 +541,12 @@ public class ShipEntity : SeaEntity
       }
    }
 
-   public void applyBonusHealth (float healthBonusAdditive) {
+   public void applyBonusHealth (float healthBonusAdditive, bool applyToCurrentHealth = true) {
       int bonusHealth = (int) (_baseHealth * healthBonusAdditive);
       maxHealth += bonusHealth;
-      currentHealth += bonusHealth;
+      if (applyToCurrentHealth) {
+         currentHealth += bonusHealth;
+      }
    }
 
    #region Private Variables

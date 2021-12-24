@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 212913361955536660}
   - component: {fileID: 114392012664655394}
   - component: {fileID: 6411829894089007786}
+  - component: {fileID: 5963030407822777665}
   m_Layer: 9
   m_Name: Eyes
   m_TagString: Untagged
@@ -131,6 +132,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   newTexture: {fileID: 0}
+--- !u!114 &5963030407822777665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1075075660441748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f8db3c2ee32074193f440ab81fb530, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _index: 0
 --- !u!1 &1194882064055010
 GameObject:
   m_ObjectHideFlags: 0
@@ -400,6 +414,7 @@ GameObject:
   - component: {fileID: 212922552416507748}
   - component: {fileID: 114032170512146500}
   - component: {fileID: 8465923078169423105}
+  - component: {fileID: 7278704326142667036}
   m_Layer: 9
   m_Name: Weapon Back
   m_TagString: Untagged
@@ -519,6 +534,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   newTexture: {fileID: 0}
+--- !u!114 &7278704326142667036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1301615659563050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f8db3c2ee32074193f440ab81fb530, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _index: 0
 --- !u!1 &1315479068665272
 GameObject:
   m_ObjectHideFlags: 0
@@ -532,6 +560,7 @@ GameObject:
   - component: {fileID: 212095496176821092}
   - component: {fileID: 114229520969820300}
   - component: {fileID: 4799414012765415894}
+  - component: {fileID: 4862687878712617703}
   m_Layer: 9
   m_Name: Hair Front
   m_TagString: Untagged
@@ -653,6 +682,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   newTexture: {fileID: 0}
+--- !u!114 &4862687878712617703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1315479068665272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f8db3c2ee32074193f440ab81fb530, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _index: 0
 --- !u!1 &1316063719556658
 GameObject:
   m_ObjectHideFlags: 0
@@ -988,6 +1030,7 @@ GameObject:
   - component: {fileID: 212757530221421376}
   - component: {fileID: 114332439241962226}
   - component: {fileID: 653023293699102750}
+  - component: {fileID: 6734817855271954233}
   m_Layer: 9
   m_Name: Hair Back
   m_TagString: Untagged
@@ -1108,6 +1151,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   newTexture: {fileID: 0}
+--- !u!114 &6734817855271954233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1513150390263812}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f8db3c2ee32074193f440ab81fb530, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _index: 0
 --- !u!1 &1516138301880864
 GameObject:
   m_ObjectHideFlags: 0
@@ -1329,6 +1385,7 @@ GameObject:
   - component: {fileID: 212334774137464658}
   - component: {fileID: 114441244542323092}
   - component: {fileID: 6307793882743100680}
+  - component: {fileID: 533173181757420054}
   m_Layer: 9
   m_Name: Armor
   m_TagString: Untagged
@@ -1448,6 +1505,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   newTexture: {fileID: 0}
+--- !u!114 &533173181757420054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1621334340421282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f8db3c2ee32074193f440ab81fb530, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _index: 0
 --- !u!1 &1625978681302130
 GameObject:
   m_ObjectHideFlags: 0
@@ -1461,6 +1531,7 @@ GameObject:
   - component: {fileID: 212600738642236412}
   - component: {fileID: 114719990212973416}
   - component: {fileID: 6427430478580924236}
+  - component: {fileID: 6745851752213465451}
   m_Layer: 9
   m_Name: Weapon Front
   m_TagString: Untagged
@@ -1580,6 +1651,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   newTexture: {fileID: 0}
+--- !u!114 &6745851752213465451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1625978681302130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f8db3c2ee32074193f440ab81fb530, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _index: 0
 --- !u!1 &1631448374051184
 GameObject:
   m_ObjectHideFlags: 0
@@ -1742,6 +1826,7 @@ MonoBehaviour:
   isSpeedingUp: 0
   passedOnTemporaryControl: 0
   ignoredRenderers: []
+  shouldAlignRenderersToFacingDirection: 1
   _ignoredAnimators:
   - {fileID: 0}
   - {fileID: 0}
@@ -1792,7 +1877,11 @@ MonoBehaviour:
   followJumpHeight: {fileID: 7748199939710571711}
   levelTag: {fileID: 6747293067536991787}
   levelUpEffect: {fileID: 8553150314754777727}
-  effectorCollisionEnabled: 1
+  stairEffectorCollisionEnabled: 1
+  emoteType: 0
+  isSitting: 0
+  positionBeforeSitting: {x: 0, y: 0, z: 0}
+  chairPosition: {x: 0, y: 0, z: 0}
 --- !u!58 &58574232978621698
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1871,8 +1960,6 @@ MonoBehaviour:
     palettes: 
     setAllColors: 0
     rarity: 1
-    canBeSoulBonded: 0
-    soulBindingType: 0
     armorType: 0
     armorBaseDefense: 0
     fireResist: 0
@@ -1916,8 +2003,6 @@ MonoBehaviour:
     palettes: 
     setAllColors: 0
     rarity: 1
-    canBeSoulBonded: 0
-    soulBindingType: 0
     weaponType: 0
     weaponClass: 0
     projectileSprite: 
@@ -2101,8 +2186,6 @@ MonoBehaviour:
     palettes: 
     setAllColors: 0
     rarity: 1
-    canBeSoulBonded: 0
-    soulBindingType: 0
     hatType: 0
     hatBaseDefense: 0
     fireResist: 0
@@ -2422,6 +2505,7 @@ GameObject:
   - component: {fileID: 212650187686467114}
   - component: {fileID: 114534913220400350}
   - component: {fileID: 7134036831248214437}
+  - component: {fileID: 2360788764176707627}
   m_Layer: 9
   m_Name: Body
   m_TagString: Untagged
@@ -2541,6 +2625,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   newTexture: {fileID: 0}
+--- !u!114 &2360788764176707627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1972619128998838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f8db3c2ee32074193f440ab81fb530, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _index: 0
 --- !u!1 &552798949345120264
 GameObject:
   m_ObjectHideFlags: 0
@@ -18323,6 +18420,7 @@ GameObject:
   - component: {fileID: 793720829138034202}
   - component: {fileID: 1319876026774409502}
   - component: {fileID: 7860016345186855112}
+  - component: {fileID: 761649377892237607}
   m_Layer: 9
   m_Name: Headgear
   m_TagString: Untagged
@@ -18443,6 +18541,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   equipmentId: 0
+--- !u!114 &761649377892237607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5351409806282604604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f8db3c2ee32074193f440ab81fb530, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _index: 0
 --- !u!1 &5436578864175175978
 GameObject:
   m_ObjectHideFlags: 0
@@ -24844,12 +24955,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c20705c7cd1fef48a41c790991d9d6b, type: 3}
---- !u!224 &5648042423969164330 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 5153975776215992002, guid: 5c20705c7cd1fef48a41c790991d9d6b,
-    type: 3}
-  m_PrefabInstance: {fileID: 713672114105101032}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &300871365343114926 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 994048568535473222, guid: 5c20705c7cd1fef48a41c790991d9d6b,
@@ -24862,3 +24967,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d57bd3865ece73142a8e669afaf93059, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &5648042423969164330 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 5153975776215992002, guid: 5c20705c7cd1fef48a41c790991d9d6b,
+    type: 3}
+  m_PrefabInstance: {fileID: 713672114105101032}
+  m_PrefabAsset: {fileID: 0}

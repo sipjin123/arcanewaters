@@ -80,17 +80,17 @@ public class AutoCompletePanel : MonoBehaviour {
       if (!inputFieldFocused && _anyButtonSelected) {
          string autoComplete = _autoCompleteOptions[_selectedAutoComplete].getText();
          ChatPanel.self.focusInputField();
-         ChatPanel.self.inputField.text = autoComplete;
+         ChatPanel.self.inputField.setText(autoComplete);
       }
    }
 
    private void updateSelectedButton () {
       if (_selectedAutoComplete >= getNumAutoCompletes()) {
-         ChatPanel.self.inputField.Select();
+         ChatPanel.self.inputField.select();
          StartCoroutine(ChatPanel.self.CO_MoveCaretToEnd(ChatPanel.self.inputField));
          _anyButtonSelected = false;
       } else if (_selectedAutoComplete < 0) {
-         ChatPanel.self.inputField.Select();
+         ChatPanel.self.inputField.select();
          StartCoroutine(ChatPanel.self.CO_MoveCaretToEnd(ChatPanel.self.inputField));
          _anyButtonSelected = false;
       } else {
@@ -244,7 +244,7 @@ public class AutoCompletePanel : MonoBehaviour {
       }
 
       AutoCompleteOption option = _autoCompleteOptions[indexInList];
-      ChatPanel.self.inputField.text = option.getText();
+      ChatPanel.self.inputField.setText(option.getText());
       ChatPanel.self.focusInputField();
    }
 

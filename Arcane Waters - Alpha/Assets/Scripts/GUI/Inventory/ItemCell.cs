@@ -372,7 +372,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             // Determine if two clicks where close enough in time to be considered a double click
             if (Time.time - _lastClickTime < DOUBLE_CLICK_DELAY) {
                doubleClickEvent.Invoke();
-            } else if (InputManager.self.inputMaster.Land.Sprint.IsPressed()) {
+            } else if (InputManager.self.inputMaster.Land.Sprint.IsPressed() || InputManager.self.inputMaster.Sea.Dash.IsPressed()) {
                shiftClickEvent.Invoke();
             } else {
                leftClickEvent.Invoke();

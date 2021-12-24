@@ -259,7 +259,7 @@ public class PowerupManager : MonoBehaviour {
             PlayerShipEntity playerShip = player.getPlayerShipEntity();
             if (playerShip) {
                float boostFactorAdditive = getBoostFactor(newPowerup.powerupType, newPowerup.powerupRarity) - 1.0f;
-               playerShip.applyBonusHealth(- boostFactorAdditive);
+               playerShip.applyBonusHealth(- boostFactorAdditive, false);
                playerShip.shipBars.initializeHealthBar();
             }
          }

@@ -291,20 +291,64 @@ public class RPCManager : NetworkBehaviour
 
       PlayerBodyEntity playerBody = _player.getPlayerBodyEntity();
       if (playerBody) {
-         if (!isLocalPlayer) {
-            // Legacy support for previous implementation
-            //SoundEffectManager.self.playLegacyInteractionOneShot(playerBody.weaponManager.equipmentDataId, playerBody.transform);
-            // Playing FMOD SFX for interaction
-            WeaponStatData weaponData = playerBody.weaponManager.cachedWeaponData;
-            SoundEffectManager.self.playInteractionSfx(weaponData.actionType, weaponData.weaponClass, weaponData.sfxType, playerBody.transform.position);
-
-            playerBody.playInteractParticles();
-         }
-
          if (playerBody.isJumpGrounded() && !playerBody.isJumping()) {
             _player.requestAnimationPlay(animType);
+
+            WeaponStatData weaponData = playerBody.weaponManager.cachedWeaponData;
+            if (weaponData != null) {
+               // Legacy support for previous implementation
+               //SoundEffectManager.self.playLegacyInteractionOneShot(playerBody.weaponManager.equipmentDataId, playerBody.transform);
+               // Playing FMOD SFX for interaction
+               SoundEffectManager.self.playInteractionSfx(weaponData.actionType, weaponData.weaponClass, weaponData.sfxType, playerBody.transform.position);
+            }
+            playerBody.playInteractParticles();
          }
       }
+   }
+
+   [Command]
+   public void Cmd_PlantTree (Vector2 position) {
+      PlantableTreeManager.self.plantTree(_player as BodyEntity, _player.areaKey, position);
+   }
+
+   [Command]
+   public void Cmd_TetherUntetherTree (int treeId) {
+      PlantableTreeManager.self.tetherUntetherTree(_player as BodyEntity, treeId);
+   }
+
+   [Command]
+   public void Cmd_WaterTree (int treeId) {
+      PlantableTreeManager.self.waterTree(_player as BodyEntity, treeId);
+   }
+
+   [Command]
+   public void Cmd_ChopTree (int treeId) {
+      PlantableTreeManager.self.chopTree(_player as BodyEntity, treeId);
+   }
+
+   [ClientRpc]
+   public void Rpc_ReceiveChopTreeVisual (int treeId) {
+      if (MapManager.self.tryGetPlantableTree(treeId, out PlantableTree tree)) {
+         tree.receiveChop();
+      }
+   }
+
+   [ClientRpc]
+   public void Rpc_UpdatePlantableTrees (int id, string areaKey, PlantableTreeInstanceData data) {
+      Area area = AreaManager.self.getArea(areaKey);
+      if (area != null) {
+         PlantableTreeManager.self.updatePlantableTrees(id, area, data);
+      }
+   }
+
+   [TargetRpc]
+   public void Target_UpdatePlantableTrees (NetworkConnection connection, string areaKey, PlantableTreeInstanceData[] data, PlantableTreeDefinition[] def) {
+      // --------
+      // TEMP
+      PlantableTreeManager.self.applyTreeDefinitions(def);
+      //--------
+
+      PlantableTreeManager.self.updatePlantableTrees(areaKey, data);
    }
 
    [ClientRpc]
@@ -843,13 +887,13 @@ public class RPCManager : NetworkBehaviour
       // Play some sounds
       switch (chest.chestType) {
          case ChestSpawnType.Sea:
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.COLLECT_LOOT_SEA);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.COLLECT_LOOT_SEA, chest.transform.position);
             break;
          case ChestSpawnType.Land:
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.COLLECT_LOOT_LAND);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.COLLECT_LOOT_LAND, chest.transform.position);
             break;
          case ChestSpawnType.Site:
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.OPEN_CHEST);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.OPEN_CHEST, chest.transform.position);
             break;
       }
 
@@ -6011,11 +6055,14 @@ public class RPCManager : NetworkBehaviour
       }
 
       // If the area is a PvP area, a Voyage or a TreasureSite, add the player to the GameStats System
-      if (_player.tryGetVoyage(out Voyage v) || VoyageManager.isAnyLeagueArea(_player.areaKey) || VoyageManager.isPvpArenaArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey) || _player.areaKey.Contains(Area.TUTORIAL_AREA)) {
+      if (_player.tryGetVoyage(out Voyage v) || VoyageManager.isAnyLeagueArea(_player.areaKey) || VoyageManager.isPvpArenaArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)) {
          GameStatsManager.self.registerUser(_player.userId);
       } else {
          PvpAnnouncementHolder.self.clearAnnouncements();
-         GameStatsManager.self.unregisterUser(_player.userId);
+
+         if (!_player.areaKey.Contains(Area.TUTORIAL_AREA)) {
+            GameStatsManager.self.unregisterUser(_player.userId);
+         }
       }
 
       Target_ResetPvpSilverPanel(_player.connectionToClient, GameStatsManager.self.getSilverAmount(_player.userId));
@@ -9469,6 +9516,56 @@ public class RPCManager : NetworkBehaviour
             counter++;
          }
       }
+   }
+
+   #endregion
+
+   #region Voyage Rating
+
+   [Command]
+   public void Cmd_RequestResetVoyageRatingPoints () {
+      int points = VoyageRatingManager.getPointsMax();
+
+      if (GameStatsManager.self.isUserRegistered(_player.userId)) {
+         GameStats stats = GameStatsManager.self.getStatsForUser(_player.userId);
+         points = stats.voyageRatingPoints;
+      }
+
+      Target_OnRequestResetVoyageRatingPoints(_player.connectionToClient, points);
+   }
+
+   [TargetRpc]
+   public void Target_OnRequestResetVoyageRatingPoints (NetworkConnection connection, int points) {
+      VoyageRatingIndicator.self.setRatingPoints(points);
+   }
+
+   [Server]
+   public void assignVoyageRatingPoints (int points) {
+      if (!GameStatsManager.self.isUserRegistered(_player.userId)) {
+         return;
+      }
+
+      GameStats prevStats = GameStatsManager.self.getStatsForUser(_player.userId);
+      int prevRatingPoints = prevStats.voyageRatingPoints;
+
+      GameStatsManager.self.addVoyageRatingPoints(_player.userId, points);
+
+      GameStats newStats = GameStatsManager.self.getStatsForUser(_player.userId);
+      int newRatingPoints = newStats.voyageRatingPoints;
+
+      if (newRatingPoints == prevRatingPoints) {
+         return;
+      }
+
+      Target_OnVoyageRatingPointsAssigned(_player.connectionToClient, points, newRatingPoints, prevRatingPoints);
+   }
+
+   [TargetRpc]
+   private void Target_OnVoyageRatingPointsAssigned (NetworkConnection connection, int pointsAssigned, int newRatingPoints, int prevRatingPoints) {
+      VoyageRatingIndicator.self.setRatingPoints(newRatingPoints);
+      int newRatingLevel = VoyageRatingManager.computeRatingLevelFromPoints(newRatingPoints);
+      int prevRatingLevel = VoyageRatingManager.computeRatingLevelFromPoints(prevRatingPoints);
+      D.debug($"VoyageRatingManager: new rating state for player {Global.player.userId}. earned points:{pointsAssigned}, current points:{newRatingPoints}, current rating: {newRatingLevel}, prev rating:{prevRatingLevel}");
    }
 
    #endregion

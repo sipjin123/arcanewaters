@@ -894,7 +894,8 @@ public class MyNetworkManager : NetworkManager
       }
    }
    
-   private void OnApplicationQuit () {
+   public override void OnApplicationQuit () {
+      base.OnApplicationQuit();
       DB_Main.serverStatStopped(System.Environment.MachineName, MyNetworkManager.getCurrentPort());
    }
 

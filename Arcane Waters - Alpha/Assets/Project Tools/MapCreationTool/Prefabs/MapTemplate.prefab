@@ -895,6 +895,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 150844233957524581}
+  - component: {fileID: 6806750301373817138}
   - component: {fileID: 5006032918482514862}
   m_Layer: 0
   m_Name: CameraBounds
@@ -917,6 +918,19 @@ Transform:
   m_Father: {fileID: 9161421361191220153}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6806750301373817138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3086804078487849058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa34d2117450627499b37904c17cc8ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  confiner: {fileID: 816953405780111430}
 --- !u!60 &5006032918482514862
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -1358,6 +1372,7 @@ Transform:
   - {fileID: 7758793860600656536}
   - {fileID: 1653473025005386994}
   - {fileID: 3066818021137116344}
+  - {fileID: 6200275072450121505}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1379,8 +1394,8 @@ MonoBehaviour:
   prefabParent: {fileID: 5468073751298558255}
   npcParent: {fileID: 2242570168550347574}
   effectorContainer: {fileID: 3974773017725054852}
-  camBounds: {fileID: 5006032918482514862}
   confiner: {fileID: 816953405780111430}
+  mapCameraBounds: {fileID: 6806750301373817138}
   rugMarkerParent: {fileID: 8269701891779436707}
   flockManager: {fileID: 2126564388526801667}
   rightBorder: {fileID: 8158358869198702953}
@@ -1409,6 +1424,7 @@ MonoBehaviour:
   townAreaKey: 
   cameraBounds: {fileID: 5006032918482514862}
   vcam: {fileID: 817877264993902990}
+  biome: 0
   isSea: 0
   waterZ: 0
   isInterior: 0
@@ -1430,6 +1446,7 @@ MonoBehaviour:
   pvpLootSpawners: []
   pvpCaptureTargetHolders: []
   prefabParent: {fileID: 5468073751298558255}
+  plantableTreeParent: {fileID: 6200275072450121505}
   npcParent: {fileID: 2242570168550347574}
   enemyParent: {fileID: 3900406199228979487}
   oreNodeParent: {fileID: 6629125543444801599}
@@ -1789,6 +1806,36 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!1 &8702773247410550719
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6200275072450121505}
+  m_Layer: 0
+  m_Name: Plantable Trees
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6200275072450121505
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8702773247410550719}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 9161421361191220153}
+  m_RootOrder: 19
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9013936246366509387
 GameObject:
   m_ObjectHideFlags: 0
@@ -1908,6 +1955,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cdd2555a7603dac41bb7e6d15bda9f23, type: 3}
+--- !u!114 &817877264993902990 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1344972326079107038, guid: cdd2555a7603dac41bb7e6d15bda9f23,
+    type: 3}
+  m_PrefabInstance: {fileID: 1870087027974303312}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &816953405780111430 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1343626252261056022, guid: cdd2555a7603dac41bb7e6d15bda9f23,
@@ -1926,15 +1985,3 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1870087027974303312}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &817877264993902990 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1344972326079107038, guid: cdd2555a7603dac41bb7e6d15bda9f23,
-    type: 3}
-  m_PrefabInstance: {fileID: 1870087027974303312}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

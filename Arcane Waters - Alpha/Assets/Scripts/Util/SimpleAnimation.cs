@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 
-public class SimpleAnimation : ClientMonoBehaviour {
+public class SimpleAnimation : ClientMonoBehaviour
+{
    #region Public Variables
 
    // The default time per frame
@@ -52,49 +53,53 @@ public class SimpleAnimation : ClientMonoBehaviour {
    protected override void Awake () {
       base.Awake();
 
-      // Look up components
-      _renderer = GetComponent<SpriteRenderer>();
       _image = GetComponent<Image>();
-   }
+      _renderer = GetComponent<SpriteRenderer>();
 
-   public void modifyAnimSpeed (float speed) {
-      CancelInvoke();
-      frameLengthOverride = speed;
-      Start();
-   }
-
-   public void resetAnimation () {
-      CancelInvoke();
-      Start();
+      // Note if we are controlling a UI image or a SpriteRenderer
+      _isControllingUI = GetComponent<RectTransform>() != null;
    }
 
    private void Start () {
-      if (!Util.isBatch()) {
-         // Load our sprites
-         reloadSprites(getCurrentTexture());
+      resetAnimation();
+   }
 
-         // Routinely change our sprite
-         float delay = this.delayStart ? (getTimePerFrame() * _sprites.Length / 2f) : initialDelay;
-         InvokeRepeating(nameof(changeSprite), delay, getTimePerFrame());
-      }
+   public void modifyAnimSpeed (float speed) {
+      frameLengthOverride = speed;
+      resetAnimation();
+   }
+
+   public void resetAnimation () {
+      // Load our sprites
+      reloadSprites(getCurrentTexture());
+
+      // Figure out the initial delay
+      float delay = delayStart ? (getTimePerFrame() * _sprites.Length / 2f) : initialDelay;
+
+      // Set the target time for the first frame
+      _nextFrameTime = Time.time + delay;
+   }
+
+   private void stopAnimation () {
+      _nextFrameTime = float.MaxValue;
    }
 
    private void Update () {
-      if (!Util.isBatch()) {
-         Texture2D currentTexture = getCurrentTexture();
+      Texture2D currentTexture = getCurrentTexture();
 
-         // If the Texture associated with our sprites has changed, we need to reload
-         if (_lastLoadedTexture != currentTexture) {
-            setNewTexture(currentTexture);
-         }
+      // Control the animation loop
+      if (Time.time > _nextFrameTime) {
+         _nextFrameTime = Time.time + getTimePerFrame();
+         changeSprite(currentTexture);
+      }
+
+      // If the Texture associated with our sprites has changed, we need to reload
+      if (_lastLoadedTexture != currentTexture) {
+         setNewTexture(currentTexture);
       }
    }
 
    public bool isWaitingForLoop () {
-      if (_sprites == null) {
-         return false;
-      }
-
       float timeSinceLastFrameChange = Time.time - _lastFrameChangeTime;
       if (_index == (_sprites.Length - 1) && timeSinceLastFrameChange < loopDelay) {
          return true;
@@ -181,18 +186,21 @@ public class SimpleAnimation : ClientMonoBehaviour {
 
       _index = minIndex;
 
-      // Change the sprite
-      if (_sprites != null) {
-         if (_index > _sprites.Length) {
-            // Don't print the warning if the layer isn't using a valid texture
-            if (getCurrentTexture() != null && getCurrentTexture() != ImageManager.self.blankTexture) {
-               D.debug("Index out of range for object: " + _index + " / " + _sprites.Length + " : " + gameObject.name);
-            }
-            return;
-         }
-
-         setSprite(_sprites[_index]);
+      if (Util.isBatch()) {
+         // Don't do any changes on the server-only
+         return;
       }
+
+      // Change the sprite
+      if (_index >= _sprites.Length) {
+         // Don't print the warning if the layer isn't using a valid texture
+         if (getCurrentTexture() != null && getCurrentTexture() != ImageManager.self.blankTexture) {
+            //D.debug("Index out of range for object: " + _index + " / " + _sprites.Length + " : " + gameObject.name);
+         }
+         return;
+      }
+
+      setSprite(_sprites[_index]);
 
       // Make note of the time
       _lastFrameChangeTime = Time.time;
@@ -212,21 +220,10 @@ public class SimpleAnimation : ClientMonoBehaviour {
       _sprites = ImageManager.getSprites(newTexture);
    }
 
-   protected void changeSprite () {
+   protected void changeSprite (Texture2D currentTexture) {
       // If we've been temporarily paused, don't do anything
-      if (isPaused || !enabled || _sprites == null || getCurrentTexture() == null || getCurrentTexture() == ImageManager.self.blankTexture) {
+      if (isPaused || !enabled || currentTexture == null || currentTexture == ImageManager.self.blankTexture) {
          return;
-      }
-
-      // Check how long it's been since we last updated the frame
-      float timeSinceLastFrameChange = Time.time - _lastFrameChangeTime;
-
-      // If we hit the end, check if we need to pause for a bit
-      if (_index == (_sprites.Length - 1) && timeSinceLastFrameChange < loopDelay) {
-         setVisible(false);
-         return;
-      } else {
-         setVisible(true);
       }
 
       // Update the index
@@ -269,9 +266,19 @@ public class SimpleAnimation : ClientMonoBehaviour {
          this.isPaused = true;
       }
 
+      // If we hit the end, check if we need to pause for a bit
+      if (_index == (_sprites.Length - 1) && loopDelay > 0) {
+         _nextFrameTime = Time.time + getTimePerFrame() + loopDelay;
+         setVisible(false);
+         _wasMadeInvisible = true;
+      } else if (_wasMadeInvisible) {
+         _wasMadeInvisible = false;
+         setVisible(true);
+      }
+
       // If we reached the last frame, we might be finished
       if (stayAtLastFrame && _index == _sprites.Length - 1) {
-         CancelInvoke();
+         stopAnimation();
       }
    }
 
@@ -291,29 +298,23 @@ public class SimpleAnimation : ClientMonoBehaviour {
    }
 
    protected void setSprite (Sprite sprite) {
-      if (getRenderer() != null) {
-         _renderer.sprite = sprite;
+      if (_isControllingUI) {
+         if (_image == null) {
+            _image = GetComponent<Image>();
+         }
+
+         if (_image != null) {
+            _image.sprite = sprite;
+         }
+      } else {
+         if (_renderer == null) {
+            _renderer = GetComponent<SpriteRenderer>();
+         }
+
+         if (_renderer != null) {
+            _renderer.sprite = sprite;
+         }
       }
-
-      if (getImage() != null) {
-         _image.sprite = sprite;
-      }
-   }
-
-   protected Image getImage () {
-      if (_image == null) {
-         _image = GetComponent<Image>();
-      }
-
-      return _image;
-   }
-
-   protected SpriteRenderer getRenderer () {
-      if (_renderer == null) {
-         _renderer = GetComponent<SpriteRenderer>();
-      }
-
-      return _renderer;
    }
 
    protected float getTimePerFrame () {
@@ -325,23 +326,17 @@ public class SimpleAnimation : ClientMonoBehaviour {
    }
 
    protected Texture2D getCurrentTexture () {
-      if (_image != null && _image.sprite != null) {
-         return _image.sprite.texture;
-      }
-
-      if (_renderer != null && _renderer.sprite != null) {
-         return _renderer.sprite.texture;        
+      if (_isControllingUI) {
+         if (_image != null && _image.sprite != null) {
+            return _image.sprite.texture;
+         }
+      } else {
+         if (_renderer != null && _renderer.sprite != null) {
+            return _renderer.sprite.texture;
+         }
       }
 
       return ImageManager.self.blankTexture;
-   }
-
-   private void OnBecameInvisible () {
-      // Add freeze logic here (Notse: 'IsPaused' is causing bugs repeating death animations of land enemies)
-   }
-
-   private void OnBecameVisible () {
-      // Add freeze logic here (Notse: 'IsPaused' is causing bugs repeating death animations of land enemies)
    }
 
    #region Private Variables
@@ -356,14 +351,23 @@ public class SimpleAnimation : ClientMonoBehaviour {
    protected Image _image;
 
    // Our set of sprites
-   protected Sprite[] _sprites;
+   protected Sprite[] _sprites = new Sprite[0];
 
    // Our current sprite index
    [SerializeField]
    protected int _index;
 
+   // Time when the next frame will take place
+   protected float _nextFrameTime = 0;
+
    // The time at which we last changed frames
-   protected float _lastFrameChangeTime;
+   protected float _lastFrameChangeTime = float.MaxValue;
+
+   // Did we make the object invisible
+   protected bool _wasMadeInvisible = false;
+
+   // If true, we are controlling an Image component, if false, we are controlling a SpriteRenderer
+   protected bool _isControllingUI = false;
 
    #endregion
 }

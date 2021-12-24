@@ -506,19 +506,30 @@ public class BattleUIManager : MonoBehaviour {
 
    private IEnumerator CO_FadeInBattleUI () {
       // Disable input
-      InputManager.self.inputMaster.LandBattle.Enable();
+      if (!Util.isBatch()) {
+         InputManager.self.inputMaster.LandBattle.Enable();
+      }
 
       abilitiesCG.alpha = 0.0f;
       abilitiesCG.gameObject.SetActive(true);
 
-      float waitDuration = CameraManager.defaultCamera.getPixelFadeEffect().getFadeOutDuration();
-      yield return new WaitForSeconds(waitDuration);
+      if (CameraManager.defaultCamera == null) {
+         D.debug("Error! Failed to Fade In due to default camera missing!");
+      } else {
+         float waitDuration = CameraManager.defaultCamera.getPixelFadeEffect().getFadeOutDuration();
+         yield return new WaitForSeconds(waitDuration);
+      }
 
       playerBattleCG.interactable = true;
       playerBattleCG.blocksRaycasts = true;
-      float fadeDuration = CameraManager.battleCamera.getPixelFadeEffect().getFadeInDuration();
-      playerBattleCG.DOFade(1.0f, fadeDuration);
-      abilitiesCG.DOFade(1.0f, fadeDuration);
+
+      if (CameraManager.defaultCamera == null) {
+         D.debug("Error! Failed to Fade Out due to default camera missing!");
+      } else {
+         float fadeDuration = CameraManager.battleCamera.getPixelFadeEffect().getFadeInDuration();
+         playerBattleCG.DOFade(1.0f, fadeDuration);
+         abilitiesCG.DOFade(1.0f, fadeDuration);
+      }
    }
 
    public void disableBattleUI () {
@@ -526,20 +537,26 @@ public class BattleUIManager : MonoBehaviour {
    }
 
    private IEnumerator CO_FadeOutBattleUI () {
-      float fadeDuration = CameraManager.battleCamera.getPixelFadeEffect().getFadeOutDuration();
-      playerBattleCG.DOFade(0.0f, fadeDuration);
+      if (CameraManager.defaultCamera == null) {
+         D.debug("Error! Failed to Fade Out due to default camera missing!");
+      } else {
+         float fadeDuration = CameraManager.battleCamera.getPixelFadeEffect().getFadeOutDuration();
+         playerBattleCG.DOFade(0.0f, fadeDuration);
 
-      mainPlayerRectCG.interactable = false;
-      mainPlayerRectCG.blocksRaycasts = false;
-      mainPlayerRectCG.DOFade(0.0f, fadeDuration);
+         mainPlayerRectCG.interactable = false;
+         mainPlayerRectCG.blocksRaycasts = false;
+         mainPlayerRectCG.DOFade(0.0f, fadeDuration);
 
-      abilitiesCG.DOFade(0.0f, fadeDuration);
-      yield return new WaitForSeconds(fadeDuration);
+         abilitiesCG.DOFade(0.0f, fadeDuration);
+         yield return new WaitForSeconds(fadeDuration);
+      }
       abilitiesCG.gameObject.SetActive(false);
 
       // Enable input
       yield return new WaitForSeconds(PAUSE_AFTER_BATTLE);
-      InputManager.self.inputMaster.LandBattle.Disable();
+      if (!Util.isBatch()) {
+         InputManager.self.inputMaster.LandBattle.Disable();
+      }
    }
 
    // Changes the icon that is at the right side of the player battle ring UI

@@ -238,6 +238,8 @@ MonoBehaviour:
   editorType: 0
   isPermanent: 0
   propDefinitionId: 9
+  propIcon: {fileID: 3878843655227802070, guid: 20847479c992f5947ab53416641e75c2,
+    type: 3}
   mapEditorState:
     id: 0
     localPosition: {x: 0, y: 0}
@@ -256,3 +258,4 @@ MonoBehaviour:
     created: 0
     deleted: 0
     serializationId: 0
+  _ignoredColliders: []

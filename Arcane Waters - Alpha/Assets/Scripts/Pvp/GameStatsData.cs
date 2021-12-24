@@ -52,6 +52,9 @@ public class GameStats {
    // The total flags captured by this user
    public int flagCount;
 
+   // The current rating points for the player's voyage
+   public int voyageRatingPoints;
+
    public GameStats () {
 
    }

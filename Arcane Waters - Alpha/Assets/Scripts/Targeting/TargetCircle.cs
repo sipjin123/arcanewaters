@@ -28,14 +28,14 @@ public class TargetCircle : MonoBehaviour {
       if (updateInputs) {
          
          if (maxRange > 0.0f) {
-            Vector2 toMousePos = Util.getMousePos() - getGlobalPlayerShip().transform.position;
+            Vector2 toMousePos = Util.getMousePos(transform.position, 0.1f) - getGlobalPlayerShip().transform.position;
             if (toMousePos.sqrMagnitude > maxRange * maxRange) {
                toMousePos = toMousePos.normalized * maxRange;
             }
 
             transform.position = (Vector2)getGlobalPlayerShip().transform.position + toMousePos;
          } else {
-            transform.position = Util.getMousePos();
+            transform.position = Util.getMousePos(transform.position, 0.1f);
          }
       }
       

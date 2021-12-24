@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class FarmingTrigger : MonoBehaviour {
+public class FarmingTrigger : MonoBehaviour
+{
    #region Public Variables
 
    // Reference to the player body
@@ -92,13 +93,23 @@ public class FarmingTrigger : MonoBehaviour {
                }
             }
 
+            if (hit.collider != null && hit.collider.GetComponentInParent<PlantableTree>()) {
+               PlantableTreeManager.self.playerSwungAtTree(Global.player, hit.collider.GetComponentInParent<PlantableTree>());
+            }
+
             //if (currentActionType == Weapon.ActionType.HarvestCrop) {
             //   if (!anyCropHarvested) {
             //      SoundManager.play2DClip(SoundManager.Type.Harvesting_Pitchfork_Miss);
             //   }
             //}
          }
+
+         // Player might be trying to plant trees
+         PlantableTreeManager.self.playerTriesPlanting(
+            bodyEntity,
+            (Vector2) bodyEntity.transform.position + Util.getDirectionFromFacing(bodyEntity.facing) * 0.48f);
       }
+
       _isFarming = false;
    }
 

@@ -249,6 +249,8 @@ MonoBehaviour:
   editorType: 0
   isPermanent: 0
   propDefinitionId: 8
+  propIcon: {fileID: -2865108748160704870, guid: 20847479c992f5947ab53416641e75c2,
+    type: 3}
   mapEditorState:
     id: 0
     localPosition: {x: 0, y: 0}

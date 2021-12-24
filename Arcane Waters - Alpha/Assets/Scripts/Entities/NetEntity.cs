@@ -283,6 +283,9 @@ public class NetEntity : NetworkBehaviour
    // Renderers added to this list will not be added to the _renderers list, and therefore not be modified by the NetEntity
    public List<SpriteRenderer> ignoredRenderers;
 
+   // Should the renderers align with the direction faced by the current entity?
+   public bool shouldAlignRenderersToFacingDirection = true;
+
    #endregion
 
    protected virtual void Awake () {
@@ -491,8 +494,10 @@ public class NetEntity : NetworkBehaviour
       bool isFacingWest = this.facing == Direction.West || this.facing == Direction.NorthWest || this.facing == Direction.SouthWest;
 
       // Flip our sprite renderer if we're going west
-      foreach (SpriteRenderer renderer in _renderers) {
-         renderer.flipX = isFacingWest;
+      if (shouldAlignRenderersToFacingDirection) {
+         foreach (SpriteRenderer renderer in _renderers) {
+            renderer.flipX = isFacingWest;
+         }
       }
 
       // If we changed areas, update our Camera
@@ -2007,8 +2012,13 @@ public class NetEntity : NetworkBehaviour
             ((PlayerShipEntity) this).storeCurrentShipHealth();
          } else {
             // When leaving leagues or respawning, the hp is restored
-            ((PlayerShipEntity) this).restoreMaxShipHealth();
+            restoreMaxShipHealth();
          }
+      }
+
+      // If the player just entered an open world area, restore the health of the ships
+      if (VoyageManager.isOpenWorld(newArea) && !VoyageManager.isOpenWorld(areaKey)) {
+         restoreMaxShipHealth();
       }
 
       // Release any claim on the user
@@ -2207,6 +2217,11 @@ public class NetEntity : NetworkBehaviour
    }
 
    protected NetEntity getClickedBody () {
+      // Don't allow to click on body if any panel is active
+      if (Util.isAnyUiPanelActive()) {
+         return null;
+      }
+      
       NetEntity entityHovered = null;
       foreach (NetEntity entity in EntityManager.self.getAllEntities()) {
          if (entity.isMouseOver()) {
@@ -2452,7 +2467,7 @@ public class NetEntity : NetworkBehaviour
             int randomAngle = UnityEngine.Random.Range(0, 360);
             float x = Mathf.Cos(Mathf.Deg2Rad * randomAngle) * radius;
             float y = Mathf.Sin(Mathf.Deg2Rad * randomAngle) * radius;
-            float z = y;
+            float z = 0;
             Vector3 pos = new Vector3(position.x + x, position.y + y, position.z + z);
             GameObject burstEffectGameObject = Instantiate(PrefabsManager.self.silverBurstEffectPrefab);
 
@@ -2516,6 +2531,17 @@ public class NetEntity : NetworkBehaviour
       Vector2 dir = (cropSpot.transform.position - transform.position).normalized;
       cropProjectile.setSprite(harvestedCrop.cropType);
       cropProjectile.init(cropSpot.transform.position, dir, cropSpot);
+   }
+
+   [Server]
+   public void restoreMaxShipHealth () {
+      Util.tryToRunInServerBackground(() => {
+         ShipInfo shipInfo = DB_Main.getShipInfoForUser(userId);
+
+         if (shipInfo != null) {
+            DB_Main.restoreShipMaxHealth(shipInfo.shipId);
+         }
+      });
    }
 
    #region Private Variables

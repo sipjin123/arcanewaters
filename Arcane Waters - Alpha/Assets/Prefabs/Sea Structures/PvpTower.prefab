@@ -1082,6 +1082,7 @@ MonoBehaviour:
   shipHealthBlockPrefab: {fileID: 210412077248137537, guid: 1af460cda2e441d4aa4f2c9dab03d4a8,
     type: 3}
   healthBlockContainer: {fileID: 5174380363968771206}
+  targetAlpha: 1
 --- !u!1 &5174380363968771206
 GameObject:
   m_ObjectHideFlags: 0
@@ -1324,7 +1325,7 @@ SpriteRenderer:
   m_Size: {x: 0.48, y: 0.8}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &4945122250826375736
@@ -1339,7 +1340,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!114 &6585226388060644827
 MonoBehaviour:
@@ -2237,6 +2238,7 @@ MonoBehaviour:
   XP: 0
   desiredAngle: 0
   isStealthMuted: 0
+  muteExpirationDate: 0
   gender: 1
   bodyType: 0
   eyesType: 0
@@ -2271,7 +2273,9 @@ MonoBehaviour:
   isUnderExternalControl: 0
   lastNPCTalkTime: -30
   pvpTeam: 0
+  faction: 0
   guildId: 0
+  guildName: 
   guildPermissions: 0
   guildRankPriority: 0
   guildIconBorder: 
@@ -2284,23 +2288,10 @@ MonoBehaviour:
   isAboutToWarpOnClient: 0
   interactingAnimation: 0
   isSpeedingUp: 0
+  passedOnTemporaryControl: 0
+  ignoredRenderers: []
   _ignoredAnimators: []
   _animators: []
-  debugCanvas: {fileID: 0}
-  lastFuncToCallPathfind: 
-  pathFindingMessage: 
-  vicinityFindMessage: 
-  pathFindTimer: 0
-  totalAttackers: 0
-  totalPaths: 0
-  currPathIndex: 0
-  lastPathValue: 
-  hasReachedPvpTarget: 0
-  arriveDst: 
-  hasStructTarget: 
-  dynamicMsg: 
-  prevDynamicMsg: 
-  structLoc: {x: 0, y: 0}
   debugImageHolder: {fileID: 0}
   onScreenGUI: {fileID: 0}
   statTextDisplay: {fileID: 0}
@@ -2313,12 +2304,12 @@ MonoBehaviour:
   defaultAttackCirclePrefab: {fileID: 0}
   leftSideTarget: {fileID: 0}
   rightSideTarget: {fileID: 0}
-  invulnerable: 0
   projectileSpawnLocations: []
   colliderList: []
   currentImpactMagnitude: 0
   combatCollider: {fileID: 0}
   totalDamageDealt: 0
+  sinkOnDeath: 1
   currentSecondsPatrolingTerritory: 0
   initialPosition: {x: 0, y: 0, z: 0}
   distanceFromInitialPosition: 0
@@ -2331,8 +2322,12 @@ MonoBehaviour:
   newWaypointsRadius: 10
   secondsPatrolingUntilChoosingNewTreasureSite: 30
   patrolingWaypointsRadius: 1
+  dataXmlId: 0
   spritesContainer: {fileID: 1280497203638424072}
   ripplesContainer: {fileID: 0}
+  seaEntityShadowContainer: {fileID: 0}
+  orbHolder: {fileID: 0}
+  residueHolder: {fileID: 0}
   _currentPath: []
   _currentPathIndex: 0
   _isChasingEnemy: 0
@@ -2347,18 +2342,6 @@ MonoBehaviour:
   indexInLane: 0
   mainRenderer: {fileID: 3628177332408212898}
   islandRenderer: {fileID: 3171062125425670708}
-  spritesByTeam:
-  - {fileID: 8618589896317335672, guid: 52876b1ef2ebc5f43a6a680b8151993f, type: 3}
-  - {fileID: 9027895606600482161, guid: 52876b1ef2ebc5f43a6a680b8151993f, type: 3}
-  - {fileID: 5201341848024425666, guid: acca99df1c4b1704d9a41a8961e24b70, type: 3}
-  damagedSpritesByTeam:
-  - {fileID: -4652996553564661801, guid: 52876b1ef2ebc5f43a6a680b8151993f, type: 3}
-  - {fileID: -4874634481219518766, guid: 52876b1ef2ebc5f43a6a680b8151993f, type: 3}
-  - {fileID: 5296073529733998722, guid: acca99df1c4b1704d9a41a8961e24b70, type: 3}
-  destroyedSpritesByTeam:
-  - {fileID: 8418597436420062707, guid: 52876b1ef2ebc5f43a6a680b8151993f, type: 3}
-  - {fileID: -5132956563514898567, guid: 52876b1ef2ebc5f43a6a680b8151993f, type: 3}
-  - {fileID: -2259161765631763961, guid: acca99df1c4b1704d9a41a8961e24b70, type: 3}
   disableOnDeath:
   - {fileID: 3964564112698603265}
   - {fileID: 4678403388049555012}
@@ -2495,7 +2478,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: -0.04}
   serializedVersion: 2
-  m_Radius: 0.13
+  m_Radius: 0.19
 --- !u!1001 &578247586987025702
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -23,7 +23,7 @@ public class SpeakChatLine : ChatLine, IScrollHandler
          _textMesh = GetComponent<TextMeshProUGUI>();
       }
 
-      _textMesh.text = ChatManager.injectItemSnippetLinks(text);
+      _textMesh.text = ChatManager.injectItemSnippetLinks(text, out int itemTagCount);
 
       if (gameObject.activeInHierarchy) {
          StartCoroutine(CO_AddItemSnippetsAfterDelay());

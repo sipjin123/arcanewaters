@@ -29,58 +29,58 @@ public class LandPowerupManager : MonoBehaviour {
 
       // TODO: Setup web tool to have a way to register information for powerups, hard code for now
       landPowerupInfo.Add(LandPowerupType.DamageBoost, new LandPowerupInfo {
-         powerupInfo = "Increases damage by 20% for land combat",
-         powerupName = "Damage Boost",
+         powerupInfo = "+20% melee, ranged, and rum damage to attacks in land combat.",
+         powerupName = "Arcane Power",
          powerupType = LandPowerupType.DamageBoost,
          spriteRef = getLandPowerupSprite(LandPowerupType.DamageBoost)
       });
       landPowerupInfo.Add(LandPowerupType.DefenseBoost, new LandPowerupInfo {
-         powerupInfo = "Increases defense by 20% for land combat",
+         powerupInfo = "Take 20% less damage in land combat.",
          powerupName = "Defense Boost",
          powerupType = LandPowerupType.DefenseBoost,
          spriteRef = getLandPowerupSprite(LandPowerupType.DefenseBoost)
       });
       landPowerupInfo.Add(LandPowerupType.SpeedBoost, new LandPowerupInfo {
-         powerupInfo = "Increases speed of the user by 20% when traveling in land",
-         powerupName = "Speed Boost",
+         powerupInfo = "20% run speed increase.",
+         powerupName = "Brisk Boots",
          powerupType = LandPowerupType.SpeedBoost,
          spriteRef = getLandPowerupSprite(LandPowerupType.SpeedBoost)
       });
 
       landPowerupInfo.Add(LandPowerupType.LootDropBoost, new LandPowerupInfo {
-         powerupInfo = "Increases the loots drop by 100% for 5 mins",
-         powerupName = "Loot Drop Boost",
+         powerupInfo = "Double loot drops for 5 minutes.",
+         powerupName = "Loot Luck",
          powerupType = LandPowerupType.LootDropBoost,
          spriteRef = getLandPowerupSprite(LandPowerupType.LootDropBoost)
       });
       landPowerupInfo.Add(LandPowerupType.ExperienceBoost, new LandPowerupInfo {
-         powerupInfo = "Increases experience gained by 10%",
-         powerupName = "Experience Boost",
+         powerupInfo = "Increases experience gained by 10%.",
+         powerupName = "Quick Learner",
          powerupType = LandPowerupType.ExperienceBoost,
          spriteRef = getLandPowerupSprite(LandPowerupType.ExperienceBoost)
       });
       landPowerupInfo.Add(LandPowerupType.RangeDamageBoost, new LandPowerupInfo {
-         powerupInfo = "Increases damage of ranged attacks by 20%",
-         powerupName = "Range Damage Boost",
+         powerupInfo = "+20% ranged attack damage in land combat.",
+         powerupName = "Bullseye",
          powerupType = LandPowerupType.RangeDamageBoost,
          spriteRef = getLandPowerupSprite(LandPowerupType.RangeDamageBoost)
       });
       landPowerupInfo.Add(LandPowerupType.MeleeDamageBoost, new LandPowerupInfo {
-         powerupInfo = "Increases damage of melee attacks by 20%",
-         powerupName = "Melee Damage Boost",
+         powerupInfo = "+20% melee attack damage in land combat.",
+         powerupName = "Enrage",
          powerupType = LandPowerupType.MeleeDamageBoost,
          spriteRef = getLandPowerupSprite(LandPowerupType.MeleeDamageBoost)
       });
 
       landPowerupInfo.Add(LandPowerupType.ClimbSpeedBoost, new LandPowerupInfo {
-         powerupInfo = "Increases climbing speed",
-         powerupName = "Climb Speed Boost",
+         powerupInfo = "Increases vine climbing speed.",
+         powerupName = "Skilled Climber",
          powerupType = LandPowerupType.ClimbSpeedBoost,
          spriteRef = getLandPowerupSprite(LandPowerupType.ClimbSpeedBoost)
       });
       landPowerupInfo.Add(LandPowerupType.MiningBoost, new LandPowerupInfo {
-         powerupInfo = "Increases total mine drops by 1",
-         powerupName = "Mining Boost",
+         powerupInfo = "Gain one extra ore when mining.",
+         powerupName = "Expert Excavator",
          powerupType = LandPowerupType.MiningBoost,
          spriteRef = getLandPowerupSprite(LandPowerupType.MiningBoost)
       });

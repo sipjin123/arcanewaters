@@ -648,6 +648,13 @@ public class PvpGame : MonoBehaviour {
          }
       }
 
+      Instance instance = InstanceManager.self.getInstance(instanceId);
+      foreach (NetworkBehaviour entity in instance.entities) {
+         if (entity is SeaMonsterEntity) {
+            NetworkServer.Destroy(entity.gameObject);
+         }
+      }
+
       int gameGemRewards = getGameGemRewards();
 
       foreach (int userId in _usersInGame) {

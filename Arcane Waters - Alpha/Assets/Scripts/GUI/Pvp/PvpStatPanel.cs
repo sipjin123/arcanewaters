@@ -66,6 +66,9 @@ public class PvpStatPanel : Panel {
    // The nameplate color of each team in the pvp score panel
    public Color aTeamColor, bTeamColor, cTeamColor, dTeamColor;
 
+   // Whether the current pvp game has ended
+   public bool isGameEnded = false;
+
    #endregion
 
    public override void Awake () {
@@ -183,6 +186,8 @@ public class PvpStatPanel : Panel {
       if (_requestTeamFactions != null) {
          PvpManager.self.StopCoroutine(_requestTeamFactions);
       }
+
+      this.isGameEnded = isGameEnded;
 
       _requestTeamFactions = PvpManager.self.StartCoroutine(CO_RequestTeamFactions());
 

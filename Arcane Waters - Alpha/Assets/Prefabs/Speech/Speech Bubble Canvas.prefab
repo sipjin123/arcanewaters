@@ -228,10 +228,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fadeDelay: 3
   speechText: {fileID: 3238773682490697082}
+  fakeSpeechText: {fileID: 0}
   canvasGroup: {fileID: 22551356}
   speechBubbleContainer: {fileID: 186264}
   speechBubbleBackground: {fileID: 136848}
   speechBubbleText: {fileID: 5401062099250080700}
+  itemIconPrefab: {fileID: 1120437365050249705, guid: a901348a9b6228f439264e6ce47120c0,
+    type: 3}
 --- !u!1 &186264
 GameObject:
   m_ObjectHideFlags: 0
@@ -395,7 +398,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: How's it going everyone?!
+  m_text: 'How''s it going everyone?! asfga ga sgasg '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f05e9c7d6fe58044a84b191658c875d5, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 4a3264cde141f2d44bf7be340594c46b, type: 2}

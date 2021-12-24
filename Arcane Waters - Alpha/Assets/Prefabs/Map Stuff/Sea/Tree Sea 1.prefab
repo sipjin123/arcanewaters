@@ -9,10 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3641539771008850093}
+  - component: {fileID: 6975363247967131764}
   - component: {fileID: 8801449858567135731}
   - component: {fileID: 2777266733271807375}
-  - component: {fileID: 1214264175068122787}
-  - component: {fileID: 7659919567556052353}
   m_Layer: 0
   m_Name: Tree Sea 1
   m_TagString: Untagged
@@ -35,6 +34,26 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6975363247967131764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3838061031866456344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: beb64114fa3ad4a42a028108ef014eb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprites:
+  - {fileID: -1541016302245568062, guid: 949809689bfe7204bb43870a93c64314, type: 3}
+  - {fileID: -7691419644996217524, guid: 949809689bfe7204bb43870a93c64314, type: 3}
+  - {fileID: 2105196447357822533, guid: 949809689bfe7204bb43870a93c64314, type: 3}
+  - {fileID: 6932647753076200513, guid: 949809689bfe7204bb43870a93c64314, type: 3}
+  timePerFrame: 0.25
+  reactToBiomeChanges: 1
+  currentBiome: 1
 --- !u!212 &8801449858567135731
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -102,43 +121,6 @@ MonoBehaviour:
   inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 9033887326062638202}
---- !u!114 &1214264175068122787
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3838061031866456344}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialDelay: 0
-  frameLengthOverride: 0.25
-  delayStart: 0
-  destroyAtEnd: 0
-  stayAtLastFrame: 0
-  loopDelay: 0
-  isPaused: 0
-  minIndex: 0
-  maxIndex: 3
-  currentAnimation: 0
-  group: 0
---- !u!114 &7659919567556052353
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3838061031866456344}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97263249dbb00f4408910244944e4000, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  includeChildren: 0
-  currentBiome: 1
 --- !u!1 &9033887326062638202
 GameObject:
   m_ObjectHideFlags: 0

@@ -67,11 +67,20 @@ public class ShortcutPanel : ClientMonoBehaviour {
    }
 
    public void activateShortcut (int slotNumber) {
+      _currentSlotNumber = slotNumber;
       ShortcutBox box = _boxes.Find(b => b.slotNumber == slotNumber);
       if (box != null) {
          box.onShortcutPress();
       }
    }
+   
+   public void nextShortcut () {
+      activateShortcut(Mathf.Clamp(_currentSlotNumber + 1, 1, 5));
+   }
+
+   public void prevShortcut () {
+      activateShortcut(Mathf.Clamp(_currentSlotNumber - 1, 1, 5));
+   }   
 
    public ShortcutBox getShortcutBoxAtPosition (Vector2 screenPoint) {
       foreach (ShortcutBox box in _boxes) {
@@ -110,6 +119,9 @@ public class ShortcutPanel : ClientMonoBehaviour {
 
    // Gets set to true when the shortcuts can be used
    protected bool _areShortcutsEnabled = true;
+
+   // Current slot number
+   private int _currentSlotNumber = 0;
 
    #endregion
 }

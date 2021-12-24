@@ -373,9 +373,9 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 25
+  m_AdditionalShaderChannelsFlag: -1
   m_SortingLayerID: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &5327274902259864287
 MonoBehaviour:
@@ -693,10 +693,10 @@ MonoBehaviour:
   mapSignIcon: {fileID: 1124799214278713093}
   directionLabelUI: {fileID: 8807663530018389721}
   signLabel: {fileID: 2130088790159291227}
+  toolTipRectTransform: {fileID: 8313633960108970675}
   isEditorMode: 0
   distanceToPlayer: 0.3
   pointerIsHovering: 0
-  toolTipRectTransform: {fileID: 8313633960108970675}
 --- !u!1 &7099649131010224874
 GameObject:
   m_ObjectHideFlags: 0
@@ -793,25 +793,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 1
-  blurSize: 0
-  color: {r: 1, g: 1, b: 1, a: 1}
-  blurAlphaMultiplier: 0.7
-  blurAlphaChoke: 1
-  invertBlur: 0
-  alphaThreshold: 0.05
-  buffer: 0
-  includeChildren: 0
-  childLayers:
-    serializedVersion: 2
-    m_Bits: 1
-  ignoreChildNames: []
-  sortMethod: 1
-  isAnimated: 0
-  useExportedFrame: 0
-  customFrameName: 
-  generatesOnStart: 0
-  generatesOnValidate: 1
+  ignoredRenderers: []
+  _renderers: []
 --- !u!1 &8807663530018389721
 GameObject:
   m_ObjectHideFlags: 0

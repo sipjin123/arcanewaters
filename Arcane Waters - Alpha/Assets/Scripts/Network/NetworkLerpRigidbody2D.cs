@@ -36,6 +36,7 @@ public class NetworkLerpRigidbody2D : NetworkBehaviour
    // The time at which we last had any sort of rigidbody velocity
    public double lastVelocityTime;
 
+   [ExecuteInEditMode]
    void OnValidate () {
       if (target == null) {
          target = GetComponent<Rigidbody2D>();

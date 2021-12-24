@@ -16,8 +16,9 @@ public class KeybindingsEntry : ClientMonoBehaviour
 
    #endregion
 
-   public KeybindingsEntry initialize (KeyBindingsPanel owner, KeyBindingsPanel.RebindAction action) {
+   public KeybindingsEntry initialize (KeyBindingsPanel owner, KeyBindingsPanel.RebindAction action, bool isKeyboard) {
       _owner = owner;
+      _isKeyboard = isKeyboard;
       this.action = action;
 
       _primaryText = primaryButton.GetComponentInChildren<Text>();
@@ -26,8 +27,14 @@ public class KeybindingsEntry : ClientMonoBehaviour
       actionLabel.text = action.name;
       refreshTexts();
       
-      primaryButton.onClick.AddListener(() => rebind(InputManager.BindingType.Keyboard, InputManager.BindingId.KeyboardPrimary));
-      secondaryButton.onClick.AddListener(() => rebind(InputManager.BindingType.Keyboard, InputManager.BindingId.KeyboardSecondary));
+      primaryButton.onClick.AddListener(() => rebind(
+         _isKeyboard ? InputManager.BindingType.Keyboard : InputManager.BindingType.Gamepad, 
+         _isKeyboard ? InputManager.BindingId.KeyboardPrimary : InputManager.BindingId.GamepadPrimary
+      ));
+      secondaryButton.onClick.AddListener(() => rebind(
+         _isKeyboard ? InputManager.BindingType.Keyboard : InputManager.BindingType.Gamepad, 
+         _isKeyboard ? InputManager.BindingId.KeyboardSecondary : InputManager.BindingId.GamepadSecondary
+      ));
 
       return this;
    }
@@ -45,14 +52,17 @@ public class KeybindingsEntry : ClientMonoBehaviour
    }
 
    public void refreshTexts () {
-      _primaryText.text = action.inputAction.bindings[(int)InputManager.BindingId.KeyboardPrimary].effectivePath.Replace("<Keyboard>/", "");
-      _secondaryText.text = action.inputAction.bindings[(int)InputManager.BindingId.KeyboardSecondary].effectivePath.Replace("<Keyboard>/", "");
+      _primaryText.text = action.inputAction.bindings[(int)(_isKeyboard ? InputManager.BindingId.KeyboardPrimary : InputManager.BindingId.GamepadPrimary)].effectivePath;
+      _primaryText.text = _primaryText.text.Replace("<Keyboard>/", "").Replace("<Gamepad>/", "");
+      _secondaryText.text = action.inputAction.bindings[(int)(_isKeyboard ? InputManager.BindingId.KeyboardSecondary : InputManager.BindingId.GamepadSecondary)].effectivePath;
+      _secondaryText.text = _secondaryText.text.Replace("<Keyboard>/", "").Replace("<Gamepad>/", "");
    }
 
    #region Private Variables
 
    // Panel this entry belongs to
    private KeyBindingsPanel _owner;
+   private bool _isKeyboard;
 
    // Labels in buttons for key bindings
    private Text _primaryText;

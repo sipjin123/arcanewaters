@@ -2747,7 +2747,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new MapVersion createNewMapVersion (MapVersion mapVersion) {
+   public static new MapVersion createNewMapVersion (MapVersion mapVersion, Biome.Type biome) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
@@ -2759,7 +2759,7 @@ public class DB_Main : DB_MainStub
          try {
             // Update biome of map entry
             cmd.Parameters.AddWithValue("@mapId", mapVersion.mapId);
-            cmd.Parameters.AddWithValue("@biome", (int) Overlord.instance.editorBiome);
+            cmd.Parameters.AddWithValue("@biome", (int) biome);
             cmd.CommandText = "UPDATE global.maps_v2 SET biome = @biome WHERE id = @mapId;";
             DebugQuery(cmd);
             cmd.ExecuteNonQuery();
@@ -2823,7 +2823,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void updateMapVersion (MapVersion mapVersion, bool infiniteCommandTimeout = false) {
+   public static new void updateMapVersion (MapVersion mapVersion, Biome.Type biomeType, EditorType editorType, bool infiniteCommandTimeout = false) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          if (infiniteCommandTimeout) {
@@ -2838,8 +2838,8 @@ public class DB_Main : DB_MainStub
          try {
             // Update editor type and biome
             cmd.Parameters.AddWithValue("@mapId", mapVersion.mapId);
-            cmd.Parameters.AddWithValue("@editorType", (int) mapVersion.map.editorType);
-            cmd.Parameters.AddWithValue("@biome", (int) Overlord.instance.editorBiome);
+            cmd.Parameters.AddWithValue("@editorType", (int) editorType);
+            cmd.Parameters.AddWithValue("@biome", (int) biomeType);
             cmd.CommandText = "UPDATE global.maps_v2 SET editorType = @editorType, biome = @biome WHERE id = @mapId;";
             DebugQuery(cmd);
             cmd.ExecuteNonQuery();
@@ -5265,6 +5265,114 @@ public class DB_Main : DB_MainStub
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
+   #region Plantable Trees
+
+   public static new List<PlantableTreeDefinition> getPlantableTreeDefinitions (object command) {
+      MySqlCommand cmd = command as MySqlCommand;
+      cmd.CommandText = "SELECT * FROM global.plantable_tree_definitions";
+      DebugQuery(cmd);
+
+      List<PlantableTreeDefinition> result = new List<PlantableTreeDefinition>();
+      using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+         while (dataReader.Read()) {
+            result.Add(new PlantableTreeDefinition(dataReader));
+         }
+      }
+
+      return result;
+   }
+
+   public static new List<PlantableTreeInstanceData> getPlantableTreeInstances (object command, string areaKey) {
+      MySqlCommand cmd = command as MySqlCommand;
+      cmd.CommandText = "SELECT * FROM plantable_tree_instances WHERE areaKey = @areaKey;";
+      cmd.Parameters.AddWithValue("@areaKey", areaKey);
+      DebugQuery(cmd);
+
+      List<PlantableTreeInstanceData> result = new List<PlantableTreeInstanceData>();
+      using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+         while (dataReader.Read()) {
+            result.Add(new PlantableTreeInstanceData(dataReader));
+         }
+      }
+
+      return result;
+   }
+
+   public static new PlantableTreeInstanceData getPlantableTreeInstance (object command, int id) {
+      MySqlCommand cmd = command as MySqlCommand;
+      cmd.CommandText = "SELECT * FROM plantable_tree_instances WHERE id = @id;";
+      cmd.Parameters.AddWithValue("@id", id);
+      DebugQuery(cmd);
+
+      using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+         if (dataReader.Read()) {
+            return new PlantableTreeInstanceData(dataReader);
+         }
+      }
+      return null;
+   }
+
+   public static new void createPlantableTreeInstance (object command, PlantableTreeInstanceData instance) {
+      MySqlCommand cmd = command as MySqlCommand;
+      cmd.CommandText = "INSERT INTO plantable_tree_instances " +
+         "(treeDefinitionId, areaKey, planterUserId, position_x, position_y, state, lastUpdateTime) " +
+         "VALUES(@treeDefinitionId, @areaKey, @planterUserId, @position_x, @position_y, @state, @lastUpdateTime);";
+      cmd.Parameters.AddWithValue("@treeDefinitionId", instance.treeDefinitionId);
+      cmd.Parameters.AddWithValue("@areaKey", instance.areaKey);
+      cmd.Parameters.AddWithValue("@planterUserId", instance.planterUserId);
+      cmd.Parameters.AddWithValue("@position_x", instance.position.x);
+      cmd.Parameters.AddWithValue("@position_y", instance.position.y);
+      cmd.Parameters.AddWithValue("@state", (int) instance.state);
+      cmd.Parameters.AddWithValue("@lastUpdateTime", instance.lastUpdateTime);
+      DebugQuery(cmd);
+      cmd.ExecuteNonQuery();
+
+      // Set the ID that was created for the instance
+      instance.id = (int) cmd.LastInsertedId;
+   }
+
+   public static new void updatePlantableTreeInstance (object command, PlantableTreeInstanceData instance) {
+      MySqlCommand cmd = command as MySqlCommand;
+      cmd.CommandText = "UPDATE plantable_tree_instances SET " +
+         "treeDefinitionId = @treeDefinitionId, " +
+         "areaKey = @areaKey, " +
+         "planterUserId = @planterUserId, " +
+         "position_x = @position_x, " +
+         "position_y = @position_y, " +
+         "state = @state, " +
+         "lastUpdateTime = @lastUpdateTime " +
+         "WHERE id=@id;";
+
+      cmd.Parameters.AddWithValue("@treeDefinitionId", instance.treeDefinitionId);
+      cmd.Parameters.AddWithValue("@areaKey", instance.areaKey);
+      cmd.Parameters.AddWithValue("@planterUserId", instance.planterUserId);
+      cmd.Parameters.AddWithValue("@position_x", instance.position.x);
+      cmd.Parameters.AddWithValue("@position_y", instance.position.y);
+      cmd.Parameters.AddWithValue("@state", (int) instance.state);
+      cmd.Parameters.AddWithValue("@lastUpdateTime", instance.lastUpdateTime);
+      cmd.Parameters.AddWithValue("@id", instance.id);
+      DebugQuery(cmd);
+      cmd.ExecuteNonQuery();
+   }
+
+   public static new void deletePlantableTreeInstance (object command, int id) {
+      MySqlCommand cmd = command as MySqlCommand;
+      cmd.Transaction = cmd.Connection.BeginTransaction();
+      try {
+         cmd.CommandText = "DELETE FROM plantable_tree_instances WHERE id = @id;";
+
+         cmd.Parameters.AddWithValue("@id", id);
+         DebugQuery(cmd);
+         cmd.ExecuteNonQuery();
+         cmd.Transaction.Commit();
+      } catch (Exception ex) {
+         cmd.Transaction.Rollback();
+         throw ex;
       }
    }
 

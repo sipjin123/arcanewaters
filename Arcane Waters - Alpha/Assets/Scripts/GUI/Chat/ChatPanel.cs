@@ -10,7 +10,8 @@ using UnityEngine.InputSystem;
 using Crosstales.BWF.Manager;
 using TMPro;
 
-public class ChatPanel : MonoBehaviour {
+public class ChatPanel : MonoBehaviour
+{
    #region Public Variables
 
    // The height of 1 chat line
@@ -84,7 +85,7 @@ public class ChatPanel : MonoBehaviour {
    public Image messageBackgroundImage;
    public RectTransform toolbarRect;
    public CanvasGroup toolbarCanvas;
-   public TMP_InputField inputField;
+   public ChatInputField inputField;
    public GameObject scrollBarContainer;
    public GameObject resizeHandle;
    public Text chatModeText;
@@ -129,9 +130,6 @@ public class ChatPanel : MonoBehaviour {
 
    // A reference to the whisper auto-complete panel
    public WhisperAutoCompletePanel whisperAutoCompletePanel;
-
-   // Font that is being used for local chat in the form of bubble
-   public TMPro.TMP_FontAsset chatBubbleFont;
 
    // The rect transform of the input field zone
    public RectTransform inputFieldZoneRect;
@@ -198,7 +196,7 @@ public class ChatPanel : MonoBehaviour {
       if (KeyUtils.GetKeyUp(Key.Slash)) {
          if (MailPanel.self == null || !MailPanel.self.isWritingMail()) {
             if (!wasJustFocused() && !nameInputField.isFocused) {
-               inputField.text = "/";
+               inputField.setText("/");
 
                // Activate the input field in the next frame to avoid weird interactions
                StartCoroutine(CO_FocusAfterDelay(inputField));
@@ -208,15 +206,6 @@ public class ChatPanel : MonoBehaviour {
 
       // Modify the chat mode button based on our current selection
       chatModeText.text = getChatModeString();
-
-      // Remove ASCII characters which aren't present in TMP font
-      for (int i = inputField.text.Length - 1; i >= 0; i--) {
-         char c = inputField.text[i];
-
-         if (!chatBubbleFont.HasCharacter(c)) {
-            inputField.text = inputField.text.Remove(i, 1);
-         }
-      }
 
       // Any time the mouse button is released, reset the scroll click boolean
       if (KeyUtils.GetButtonUp(MouseButton.Left)) {
@@ -387,9 +376,9 @@ public class ChatPanel : MonoBehaviour {
 
       // Submit the field when enter is pressed and the field was already focused
       if (wasInputFocused && KeyUtils.GetEnterKeyDown()) {
-         if (inputField.text != "") {
+         if (!inputField.isEmpty()) {
             // Send the message off to the server for processing
-            string message = inputField.text;
+            string message = inputField.getTextData();
             if (currentChatType == ChatInfo.Type.Whisper) {
                message = WHISPER_PREFIX + nameInputField.text + " " + message;
             }
@@ -397,11 +386,11 @@ public class ChatPanel : MonoBehaviour {
             ChatManager.self.processChatInput(message);
 
             // Clear out the text now that it's been used
-            inputField.text = "";
+            inputField.setText("");
          }
 
          // Deselect the input field
-         inputField.DeactivateInputField();
+         inputField.deactivateInputField();
 
          // Unselect the input field UI from the event system so ChatManager.isTyping() will be set to false
          GameObject currentSelection = EventSystem.current.currentSelectedGameObject;
@@ -413,14 +402,14 @@ public class ChatPanel : MonoBehaviour {
       }
 
       if (nameInputField.isFocused && InputManager.self.inputMaster.Chat.SelectChat.WasPerformedThisFrame()) {
-         inputField.Select();
+         inputField.select();
       }
 
       // If we press TAB while the autocomplete panel displays a single value, apply it
       if (
-         inputField.isFocused && 
+         inputField.isFocused &&
          InputManager.self.inputMaster.Chat.Autocomplete.WasPressedThisFrame() &&
-         ChatManager.self.autoCompletePanel.isActive() && 
+         ChatManager.self.autoCompletePanel.isActive() &&
          ChatManager.self.autoCompletePanel.getNumAutoCompletes() == 1
       ) {
          ChatManager.self.autoCompletePanel.performOptionClicked(0);
@@ -453,14 +442,20 @@ public class ChatPanel : MonoBehaviour {
          return;
       }
 
+      if (inputField.getItemTagCount() >= ChatManager.MAX_ITEM_TAGS_IN_MESSAGE) {
+         // Too many tags
+         return;
+      }
+
       string toAdd = "[itemid=" + item.id + "]";
 
-      if (inputField.text.Length + toAdd.Length > inputField.characterLimit) {
+      if (inputField.getTextData().Length + toAdd.Length > inputField.characterLimit) {
          // Too long
          return;
       }
 
-      inputField.text += toAdd;
+      inputField.setText(inputField.getTextData() + toAdd);
+      StartCoroutine(CO_MoveCaretToEnd(inputField));
    }
 
    private float computeTargetHeight (int visibleLinesCount) {
@@ -587,15 +582,15 @@ public class ChatPanel : MonoBehaviour {
             }
          }
       }
-	  
-	  // Highlight the message if directed at the local player
+
+      // Highlight the message if directed at the local player
       if (Global.player != null) {
          bool shouldHighlight = chatLine.getFormattedText().ToLower().Contains("@" + Global.player.entityName.ToLower());
          chatRowComponent.toggleHighlight(shouldHighlight);
       }
    }
 
-   private void setChatLineText(SpeakChatLine chatLine) {
+   private void setChatLineText (SpeakChatLine chatLine) {
       ChatInfo chatInfo = chatLine.chatInfo;
 
       if (chatInfo == null) {
@@ -619,7 +614,7 @@ public class ChatPanel : MonoBehaviour {
       chatLine.setFormattedText(getFormattedChatLine(chatInfo, chatInfo.text));
    }
 
-   public void refreshChatLines() {
+   public void refreshChatLines () {
       SpeakChatLine[] chatLines = messagesContainer.GetComponentsInChildren<SpeakChatLine>();
 
       if (chatLines == null || chatLines.Length == 0) {
@@ -907,7 +902,7 @@ public class ChatPanel : MonoBehaviour {
       }
    }
 
-   protected bool shouldShowChat () {
+   public bool shouldShowChat () {
       if (Global.player == null && !Global.isRedirecting) {
          return false;
       }
@@ -964,7 +959,7 @@ public class ChatPanel : MonoBehaviour {
    public void clearChat () {
       messagesContainer.DestroyChildren();
       nameInputField.text = "";
-      inputField.SetTextWithoutNotify("");
+      inputField.setTextWithoutNotify("");
    }
 
    protected bool isChatLineVisibleInTab (ChatInfo chatInfo) {
@@ -1034,6 +1029,32 @@ public class ChatPanel : MonoBehaviour {
 
    public void focusWhisperInputField () {
       StartCoroutine(CO_FocusAfterDelay(nameInputField));
+   }
+
+   protected IEnumerator CO_FocusAfterDelay (ChatInputField field) {
+      // Wait a frame
+      yield return null;
+
+      // Now we can activate
+      field.activateInputField();
+
+      // Have to do this in a separate Coroutine, it's ridiculous
+      StartCoroutine(CO_MoveCaretToEnd(field));
+   }
+
+   public IEnumerator CO_MoveCaretToEnd (ChatInputField field) {
+      // Hide the text selection
+      Color selectionColor = inputField.selectionColor;
+      inputField.selectionColor = new Color(selectionColor.r, selectionColor.g, selectionColor.b, 0f);
+
+      // Wait a frame
+      yield return null;
+
+      // Don't select the text, that's annoying
+      field.moveTextEnd(false);
+
+      // Restore the text selection color
+      inputField.selectionColor = selectionColor;
    }
 
    protected IEnumerator CO_FocusAfterDelay (TMP_InputField field) {

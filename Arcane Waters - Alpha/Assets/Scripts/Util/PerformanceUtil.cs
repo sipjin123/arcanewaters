@@ -33,7 +33,7 @@ public class PerformanceUtil : MonoBehaviour {
       public float averageFps;
 
       public string getResultString () {
-         return "CPU - Min: " + minCpu + ", Max: " + maxCpu + ", Avg: " + averageCpu + ". RAM - Min: " + minRam + ", Max: " + maxRam + ", Avg: " + averageRam + 
+         return "CPU - Min: " + minCpu + "ms, Max: " + maxCpu + "ms, Avg: " + averageCpu + "ms. RAM - Min: " + minRam + ", Max: " + maxRam + ", Avg: " + averageRam + 
             ". FPS - Min: " + minFps + ", Max: " + maxFps + ", Avg: " + averageFps + ".";
       }
    }
@@ -53,7 +53,7 @@ public class PerformanceUtil : MonoBehaviour {
       TimeSpan newCpuTime = cpuTime - _lastCpuTime;
 
       _lastCpuTime = cpuTime;
-      _cpuUsage = 100.0f * (float) newCpuTime.TotalSeconds / Time.deltaTime / _processorCount;
+      _cpuUsage = 1000.0f * (float) newCpuTime.TotalSeconds;
    }
 
    public static IEnumerator CO_PerformanceTest (float duration, PerformanceTestResult result) {

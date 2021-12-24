@@ -237,6 +237,8 @@ public class SeaEntity : NetEntity
          onDeath();
       }
 
+      onDamage(amount);
+
       // Return the final amount of damage dealt
       return amount;
    }
@@ -244,6 +246,8 @@ public class SeaEntity : NetEntity
    [Server]
    protected virtual void customRegisterDamageReceived (int userId, int amount) {
    }
+
+   protected virtual void onDamage(int damage) { }
 
    public virtual void onDeath () {
       if (_hasRunOnDeath) {
@@ -273,6 +277,8 @@ public class SeaEntity : NetEntity
                   int silverPenalty = SilverManager.computeSilverPenalty(this);
                   gameStatsManager.addSilverAmount(this.userId, -silverPenalty);
                   Target_ReceiveSilverCurrency(this.connectionToClient, -silverPenalty, SilverManager.SilverRewardReason.Death);
+
+                  rpc.assignVoyageRatingPoints(VoyageRatingManager.computeVoyageRatingPointsReward(VoyageRatingManager.RewardReason.DeathAtSea));
 
                   PvpGame pvpGame = PvpManager.self.getGameWithPlayer(this.userId);
 
@@ -1104,6 +1110,12 @@ public class SeaEntity : NetEntity
    protected void Rpc_SpawnProjectileIndicator (Vector2 spawnPosition, float lifetime, float scaleModifier) {
       ProjectileTargetingIndicator targetingIndicator = Instantiate(PrefabsManager.self.projectileTargetingIndicatorPrefab, spawnPosition, Quaternion.identity);
       targetingIndicator.init(lifetime, scaleModifier);
+
+      // Play SFX for Sea Monsters abilities
+      if (this.isSeaMonster()) {
+         SeaMonsterEntity seaMonsterEntity = GetComponent<SeaMonsterEntity>();
+         SoundEffectManager.self.playSeaAbilitySfx(seaMonsterEntity.monsterType, spawnPosition);
+      }
    }
 
    [Server]

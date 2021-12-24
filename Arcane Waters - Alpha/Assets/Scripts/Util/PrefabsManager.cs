@@ -68,6 +68,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use to spawn sea projectiles
    public SeaProjectile seaProjectilePrefab;
 
+   // The prefab we use to spawn harpoon projectiles
+   public SeaHarpoon seaHarpoonPrefab;
+
    // The prefab we use to spawn projectile targeting indicators
    public ProjectileTargetingIndicator projectileTargetingIndicatorPrefab;
 

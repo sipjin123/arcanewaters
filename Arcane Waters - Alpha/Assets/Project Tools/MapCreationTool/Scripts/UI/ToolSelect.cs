@@ -32,6 +32,7 @@ namespace MapCreationTool
          }
       }
 
+      [ExecuteInEditMode]
       private void OnValidate () {
          updateButtonDictionary();
          foreach (ToolTypeButton entry in buttons) {

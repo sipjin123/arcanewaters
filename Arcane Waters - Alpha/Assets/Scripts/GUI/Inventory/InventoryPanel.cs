@@ -248,6 +248,8 @@ public class InventoryPanel : Panel {
          PanelManager.self.contextMenuPanel.addButton("Trash", () => InventoryManager.trashItem(castedItem));
       }
 
+      PanelManager.self.contextMenuPanel.addButton("Link In Chat", () => ChatPanel.self.addItemInsertToInput(castedItem));
+
       PanelManager.self.contextMenuPanel.show("");
    }
 

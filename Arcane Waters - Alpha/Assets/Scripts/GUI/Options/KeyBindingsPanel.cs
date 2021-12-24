@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using SubjectNerd.Utilities;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 public class KeyBindingsPanel : Panel
 {
@@ -16,9 +17,11 @@ public class KeyBindingsPanel : Panel
    // Keybindings list entry
    public KeybindingsEntry entryPref;
 
-   // Parent for list entries
-   public Transform entryParent;
-
+   // Parent for keyboard list entries
+   public Transform entryKeyboardParent;
+   // Parent for gamepad list entries
+   public Transform entryGamepadParent;
+   
    #endregion
 
    public override void show () {
@@ -45,21 +48,31 @@ public class KeyBindingsPanel : Panel
 
    private void initialize () {
       // Destroy any existing sections and entries 
-      foreach (var entry in entryParent.GetComponentsInChildren<KeybindingsSection>()) {
+      // Keyboard
+      foreach (var entry in entryKeyboardParent.GetComponentsInChildren<KeybindingsSection>()) {
          Destroy(entry.gameObject);
       }
-      foreach (var entry in entryParent.GetComponentsInChildren<KeybindingsEntry>()) {
+      foreach (var entry in entryKeyboardParent.GetComponentsInChildren<KeybindingsEntry>()) {
+         Destroy(entry.gameObject);
+      }
+      // Gamepad
+      foreach (var entry in entryGamepadParent.GetComponentsInChildren<KeybindingsSection>()) {
+         Destroy(entry.gameObject);
+      }
+      foreach (var entry in entryGamepadParent.GetComponentsInChildren<KeybindingsEntry>()) {
          Destroy(entry.gameObject);
       }
 
       // Create all entries for every defined action
       _keybindingsEntries = new List<KeybindingsEntry>();
       foreach (var rebindActionMap in _rebindActionMaps) {
-         Instantiate(keybindingsSectionPref, entryParent).initialize(rebindActionMap.name);
+         Instantiate(keybindingsSectionPref, entryKeyboardParent).initialize(rebindActionMap.name);
+         Instantiate(keybindingsSectionPref, entryGamepadParent).initialize(rebindActionMap.name);
          rebindActionMap.Init();
          
          foreach (var rebindAction in rebindActionMap.rebindActions) {
-            _keybindingsEntries.Add(Instantiate(entryPref, entryParent).initialize(this, rebindAction));
+            _keybindingsEntries.Add(Instantiate(entryPref, entryKeyboardParent).initialize(this, rebindAction, true));
+            _keybindingsEntries.Add(Instantiate(entryPref, entryGamepadParent).initialize(this, rebindAction, false));
          }
       }
 

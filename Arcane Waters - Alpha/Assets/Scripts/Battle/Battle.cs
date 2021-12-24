@@ -64,7 +64,7 @@ public class Battle : NetworkBehaviour {
    public const float POISON_DAMAGE_PER_TICK_PERCENTAGE = .025f;
 
    // Completes the opposing team, by filling the empty battle spots
-   public const bool FORCE_COMPLETE_DEFENDING_TEAM = false;
+   public static bool FORCE_COMPLETE_DEFENDING_TEAM = false;
 
    #endregion
 

@@ -173,6 +173,7 @@ public class MapManager : MonoBehaviour
          area.areaKey = areaKey;
          area.baseAreaKey = mapInfo.mapName;
          area.version = mapInfo.version;
+         area.biome = biome;
 
          area.cloudManager.enabled = false;
          area.cloudShadowManager.enabled = false;
@@ -254,6 +255,9 @@ public class MapManager : MonoBehaviour
          Material backgroundMaterial = result.backgroundRenderer.material;
          backgroundMaterial.SetVector("_Center", result.backgroundRenderer.transform.position);
          backgroundMaterial.SetVector("_Size", bounds.size * 0.16f);
+         
+         // Reset the depth of the background
+         result.backgroundRenderer.gameObject.transform.SetLocalZ(10);
 
          yield return null;
 
@@ -320,6 +324,9 @@ public class MapManager : MonoBehaviour
          PostSpotFader.self.recalibrateSpotPosition();
       }
 
+      // Notify plantable tree manager that we have a new area
+      PlantableTreeManager.self.areaCreationFinished(area.areaKey);
+
       // Wait for server to finish deploying entities before requesting npc quests in area from the server
       StartCoroutine(CO_ProcessNpcQuestInArea());
 
@@ -342,7 +349,7 @@ public class MapManager : MonoBehaviour
       if (Util.isBatch()) {
          foreach (var obj in FindObjectsOfType<Canvas>()) {
             // Disable main canvas game object
-            obj.gameObject.SetActive(false); 
+            obj.gameObject.SetActive(false);
          }
       }
    }
@@ -447,6 +454,79 @@ public class MapManager : MonoBehaviour
       //}
    }
 
+   public bool tryGetPlantableTree (int id, out PlantableTreeInstanceData data) {
+      data = null;
+
+      if (tryGetPlantableTree(id, out PlantableTree tree)) {
+         if (tree.data == null) {
+            D.warning("Data is null for tree " + id);
+            return false;
+         }
+
+         data = tree.data;
+         return true;
+      }
+
+      return false;
+   }
+
+   public bool tryGetPlantableTree (int id, out PlantableTree tree) {
+      tree = null;
+
+      if (_plantableTrees.TryGetValue(id, out PlantableTree d)) {
+         // Tree is null, perhaps area got destroyed
+         if (d == null) {
+            _plantableTrees.Remove(id);
+            return false;
+         }
+
+         tree = d;
+         return true;
+      }
+
+      return false;
+   }
+
+   public void updatePlantableTree (int id, Area area, PlantableTreeInstanceData data, PlantableTreeDefinition treeDefinition) {
+      PlantableTree tree = null;
+
+      if (data == null) {
+         // Tree got deleted, destroy it
+         if (_plantableTrees.ContainsKey(id)) {
+            tree = _plantableTrees[id];
+            if (tree != null) {
+               Destroy(tree.gameObject);
+            }
+            _plantableTrees.Remove(id);
+         }
+
+         return;
+      }
+
+      // Check if we have an entry in our dictionary
+      if (_plantableTrees.ContainsKey(id)) {
+         tree = _plantableTrees[id];
+      }
+
+      // It may still be null, create a new one in that case
+      bool justCreated = false;
+      if (tree == null) {
+         GameObject prefGO = AssetSerializationMaps.getPrefab(treeDefinition.prefabId, area.biome, false);
+         PlantableTree pref = prefGO?.GetComponent<PlantableTree>();
+
+         if (pref == null) {
+            D.error("Missing plantable tree for " + treeDefinition.id);
+            return;
+         }
+         tree = Instantiate(pref, area.plantableTreeParent);
+         _plantableTrees[id] = tree;
+         justCreated = true;
+      }
+
+      // Apply any changes that were made to the tree
+      tree.applyState(justCreated, data, treeDefinition);
+   }
+
    public CustomizablePrefab createPrefab (Area area, Biome.Type biome, PrefabState state, bool confirmedState) {
       GameObject prefGO = AssetSerializationMaps.getPrefab(state.serializationId, biome, false);
       CustomizablePrefab pref = prefGO?.GetComponent<CustomizablePrefab>();
@@ -520,9 +600,9 @@ public class MapManager : MonoBehaviour
       }
    }
 
-   public static Vector2Int getOpenWorldMapCoords(string areaKey) {
+   public static Vector2Int getOpenWorldMapCoords (string areaKey) {
       if (Util.isEmpty(areaKey) || areaKey.Length < 2 || !areaKey.StartsWith(OPEN_WORLD_MAP_PREFIX)) {
-         return new Vector2Int(-1,-1);
+         return new Vector2Int(-1, -1);
       }
 
       char cx = areaKey[areaKey.Length - 2];
@@ -577,7 +657,7 @@ public class MapManager : MonoBehaviour
       return true;
    }
 
-   private static bool areValidOpenWorldMapCoords(Vector2Int mapCoords) {
+   private static bool areValidOpenWorldMapCoords (Vector2Int mapCoords) {
       if (mapCoords.x < 0 || mapCoords.x >= OPEN_WORLD_MAP_COORDS_X.Length || mapCoords.y < 0 || mapCoords.y >= OPEN_WORLD_MAP_COORDS_Y.Length) {
          return false;
       }
@@ -602,6 +682,9 @@ public class MapManager : MonoBehaviour
 
    // The list of areas under creation and their position
    private Dictionary<string, Vector2> _areasUnderCreation = new Dictionary<string, Vector2>();
+
+   // List of plantable trees we are managing
+   private Dictionary<int, PlantableTree> _plantableTrees = new Dictionary<int, PlantableTree>();
 
    #endregion
 }

@@ -254,6 +254,14 @@ public class AreaManager : MonoBehaviour
       EnemyManager.self.removeSpawners(areaKey);
    }
 
+   public void destroyArea (string areaKey) {
+      if (_areas.ContainsKey(areaKey)) {
+         Area areaToDestroy = _areas[areaKey];
+         removeArea(areaKey);
+         Destroy(areaToDestroy.gameObject);
+      }
+   }
+
    public bool tryGetCustomMapManager (string areaKey, out CustomMapManager manager) {
       foreach (CustomMapManager cmm in _customMapManagers) {
          if (cmm.associatedWithAreaKey(areaKey)) {

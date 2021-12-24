@@ -133,6 +133,26 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // Whether the collision with effectors is currently enabled for this player
    public bool stairEffectorCollisionEnabled = true;
 
+   [Header("Emoting")]
+
+   [SyncVar]
+   // The type of the emote
+   public EmoteManager.EmoteTypes emoteType = EmoteManager.EmoteTypes.None;
+
+   [Header("Sitting")]
+
+   [SyncVar]
+   // Is the player sitting down?
+   public bool isSitting = false;
+
+   [SyncVar]
+   // Stores the position where the player stood before sitting down
+   public Vector3 positionBeforeSitting = Vector3.zero;
+
+   [SyncVar]
+   // The position of the chair the player is sitting on
+   public Vector3 chairPosition = Vector3.zero;
+
    #endregion
 
    protected override void Awake () {
@@ -155,10 +175,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       // If we are the local player, assign us the audio listener
       if (isLocalPlayer && AudioListenerManager.self) {
          _audioListener = GetComponent<AudioListener>();
-         _fmodListener = GetComponent<FMODUnity.StudioListener>();
-
          AudioListenerManager.self.setActiveListener(_audioListener);
-         AudioListenerManager.self.setActiveFmodListener(_fmodListener);
       }
 
       // Retrieve the current sprites for the guild icon
@@ -215,6 +232,10 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    private void OnDestroy () {
       InputManager.self.inputMaster.Land.Action.performed -= OnActionPerformed;
       InputManager.self.inputMaster.Land.Jump.performed -= OnJumpPerformed;
+
+      if (isLocalPlayer && GenericActionPromptScreen.self != null) {
+         GenericActionPromptScreen.self.hide();
+      }
    }
 
    public void npcCheck () {
@@ -260,8 +281,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          }
 
          if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getAudioListener() != null) {
-            AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener());
-            AudioListenerManager.self.setActiveFmodListener(CameraManager.defaultCamera.getFmodListener());
+            AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener(), CameraManager.defaultCamera.getFmodListener());
          } else {
             D.error("Couldn't switch audio listener back to main camera");
          }
@@ -280,6 +300,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
       updateJumpHeight();
       updateSprintParticles();
+
+      processSitting();
+      processEmoting();
 
       if (!isLocalPlayer || !Util.isGeneralInputAllowed()) {
          webBounceUpdate();
@@ -306,6 +329,108 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          if (OptionsPanel.onlyShowGuildIconsOnMouseover) {
             showGuildIcon();
          }
+      }
+   }
+
+   private void processSitting () {
+      if (isSitting != _prevIsSitting) {
+         if (isSitting) {
+            getMainCollider().isTrigger = true;
+            toggleWeaponVisibility(show: false);
+            applySittingEmoteMask(show: true);
+            setSpritesDepth(-0.005f);
+
+            if (facing == Direction.North) {
+               setSpritesDepth(+0.005f);
+               playCompositeAnimation(CompositeAnimationManager.self.KneelingN);
+            } else if (facing == Direction.South) {
+               playCompositeAnimation(CompositeAnimationManager.self.KneelingS);
+            } else if (facing == Direction.West) {
+               transform.position = chairPosition + new Vector3(-0.08f, 0, 0);
+               playCompositeAnimation(CompositeAnimationManager.self.KneelingWE);
+            } else if (facing == Direction.East) {
+               transform.position = chairPosition + new Vector3(+0.08f, 0, 0);
+               playCompositeAnimation(CompositeAnimationManager.self.KneelingWE);
+            }
+
+            if (isLocalPlayer) {
+               InputManager.toggleInput(enable: false);
+               GenericActionPromptScreen promptScreen = PanelManager.self.genericPromptScreen;
+
+               if (promptScreen != null) {
+                  promptScreen.text = "Get Up";
+                  promptScreen.button.onClick.RemoveAllListeners();
+                  promptScreen.button.onClick.AddListener(() => {
+                     Cmd_ExitChair();
+                  });
+                  promptScreen.show();
+               }
+            }
+         } else {
+            transform.position = positionBeforeSitting;
+            applySittingEmoteMask(show: false);
+            toggleWeaponVisibility(show: true);
+            getMainCollider().isTrigger = false;
+            setSpritesDepth(0.0f);
+            stopCompositeAnimation();
+
+            if (isLocalPlayer) {
+               InputManager.toggleInput(enable: true);
+               GenericActionPromptScreen.self.hide();
+            }
+         }
+
+         _prevIsSitting = isSitting;
+      }
+   }
+
+   private void processEmoting () {
+      if (emoteType != _prevEmoteType) {
+         if (emoteType != EmoteManager.EmoteTypes.None) {
+            shouldAlignRenderersToFacingDirection = false;
+            toggleWeaponVisibility(show: false);
+
+            // Greeting
+            if (emoteType == EmoteManager.EmoteTypes.Greet) {
+               if (facing == Direction.North) {
+                  playCompositeAnimation(CompositeAnimationManager.self.WavingN);
+               } else if (facing == Direction.South) {
+                  playCompositeAnimation(CompositeAnimationManager.self.WavingS);
+               } else if (facing == Direction.West || facing == Direction.East) {
+                  playCompositeAnimation(CompositeAnimationManager.self.WavingWE);
+               }
+            }
+
+            // Dancing
+            if (emoteType == EmoteManager.EmoteTypes.Dance) {
+               playCompositeAnimation(CompositeAnimationManager.self.Dancing);
+            }
+
+            // Kneeling
+            if (emoteType == EmoteManager.EmoteTypes.Kneel) {
+               if (facing == Direction.North) {
+                  playCompositeAnimation(CompositeAnimationManager.self.KneelingN);
+               } else if (facing == Direction.South) {
+                  playCompositeAnimation(CompositeAnimationManager.self.KneelingS);
+               } else if (facing == Direction.West || facing == Direction.East) {
+                  playCompositeAnimation(CompositeAnimationManager.self.KneelingWE);
+               }
+            }
+
+            if (isLocalPlayer) {
+               InputManager.toggleInput(enable: false);
+            }
+         } else {
+            shouldAlignRenderersToFacingDirection = true;
+            toggleWeaponVisibility(show: true);
+            stopCompositeAnimation();
+
+            if (isLocalPlayer) {
+               InputManager.toggleInput(enable: true);
+            }
+         }
+
+         _prevEmoteType = emoteType;
       }
    }
 
@@ -342,6 +467,12 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          PanelManager.self.itemShortcutPanel.activateShortcut(4);
       } else if (InputManager.self.inputMaster.Hud.Shortcut5.WasPerformedThisFrame()) {
          PanelManager.self.itemShortcutPanel.activateShortcut(5);
+      }
+
+      if (InputManager.self.inputMaster.Hud.NextShortcut.WasPerformedThisFrame()) {
+         PanelManager.self.itemShortcutPanel.nextShortcut();
+      } else if (InputManager.self.inputMaster.Hud.PrevShortcut.WasPerformedThisFrame()) {
+         PanelManager.self.itemShortcutPanel.prevShortcut();
       }
    }
 
@@ -942,19 +1073,16 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       if (CameraManager.battleCamera.getCamera().isActiveAndEnabled) {
          // If the listener hasn't been switched, switch it
          if (CameraManager.battleCamera.getAudioListener() != AudioListenerManager.self.getActiveListener()) {
-            AudioListenerManager.self.setActiveListener(CameraManager.battleCamera.getAudioListener());
-            AudioListenerManager.self.setActiveFmodListener(CameraManager.battleCamera.getFmodListener());
+            AudioListenerManager.self.setActiveListener(CameraManager.battleCamera.getAudioListener(), CameraManager.battleCamera.getFmodListener());
          }
          // If the player isn't in battle
       } else if (_audioListener != null) {
          // Make sure the game is using the player's audio listener
          if (_audioListener != AudioListenerManager.self.getActiveListener()) {
             AudioListenerManager.self.setActiveListener(_audioListener);
-            AudioListenerManager.self.setActiveFmodListener(_fmodListener);
          }
       } else if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getAudioListener() != null) {
-         AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener());
-         AudioListenerManager.self.setActiveFmodListener(CameraManager.defaultCamera.getFmodListener());
+         AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener(), CameraManager.defaultCamera.getFmodListener());
       } else {
          D.error("Couldn't find an audio listener to assign");
       }
@@ -1038,6 +1166,118 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       stairEffectorCollisionEnabled = collisionsEnabled;
    }
 
+   public void toggleWeaponVisibility (bool show) {
+      foreach (WeaponLayer layer in weaponManager.weaponsLayers) {
+         if (layer != null) {
+            layer.getRenderer().enabled = show;
+         }
+      }
+   }
+
+   public void applySittingEmoteMask (bool show) {
+      if (_armorLayer != null) {
+         _armorLayer.toggleClipmask(show);
+      }
+
+      if (_bodyLayer != null) {
+         _bodyLayer.toggleClipmask(show);
+      }
+   }
+
+   public void setSpritesDepth (float offset) {
+      spritesTransform.SetLocalZ(offset);
+   }
+
+   #region Composite Animations
+
+   public void playCompositeAnimation (CompositeAnimation animation) {
+      if (animation == null) {
+         return;
+      }
+
+      // Pause all the normal animations
+      SimpleAnimation[] simpleAnims = GetComponentsInChildren<SimpleAnimation>();
+      foreach (SimpleAnimation anim in simpleAnims) {
+         anim.isPaused = true;
+      }
+
+      // Pause all the normal animations
+      Animator[] animators = GetComponentsInChildren<Animator>();
+      foreach (Animator animator in animators) {
+         animator.enabled = false;
+      }
+
+      CompositeAnimationPlayer[] compositeAnims = GetComponentsInChildren<CompositeAnimationPlayer>();
+      foreach (CompositeAnimationPlayer anim in compositeAnims) {
+         anim.play(animation);
+      }
+   }
+
+   public void stopCompositeAnimation () {
+      // Pause all the normal animations
+      SimpleAnimation[] simpleAnims = GetComponentsInChildren<SimpleAnimation>();
+      foreach (SimpleAnimation anim in simpleAnims) {
+         anim.isPaused = false;
+      }
+
+      // Pause all the normal animations
+      Animator[] animators = GetComponentsInChildren<Animator>();
+      foreach (Animator animator in animators) {
+         animator.enabled = true;
+      }
+
+      CompositeAnimationPlayer[] compositeAnims = GetComponentsInChildren<CompositeAnimationPlayer>();
+      foreach (CompositeAnimationPlayer anim in compositeAnims) {
+         anim.stop();
+      }
+   }
+
+   #endregion
+
+   #region Sitting
+
+   [Command]
+   public void Cmd_EnterChair (Vector3 chairPosition, Direction direction) {
+      if (!isSitting) {
+         isSitting = true;
+         facing = direction;
+         positionBeforeSitting = transform.position;
+         this.chairPosition = chairPosition;
+      }
+   }
+
+   [Command]
+   public void Cmd_ExitChair () {
+      if (isSitting) {
+         isSitting = false;
+      }
+   }
+
+   #endregion
+
+   #region Emoting
+
+   public bool isEmoting () {
+      return emoteType != EmoteManager.EmoteTypes.None;
+   }
+
+   [Command]
+   public void Cmd_PlayEmote (EmoteManager.EmoteTypes emoteType, Direction direction) {
+      if (this.emoteType != emoteType && this.emoteType == EmoteManager.EmoteTypes.None) {
+         facing = direction;
+         this.emoteType = emoteType;
+      }
+   }
+
+   [Command]
+   public void Cmd_StopEmote () {
+      if (emoteType != EmoteManager.EmoteTypes.None) {
+         emoteType = EmoteManager.EmoteTypes.None;
+      }
+   }
+
+   #endregion
+
    #region Private Variables
 
    // The player the mouseover occurs on
@@ -1049,9 +1289,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    // A reference to the audiolistener attached to the player
    private AudioListener _audioListener;
-
-   // A reference to the FMOD Listener attached to the player
-   private FMODUnity.StudioListener _fmodListener;
 
    // The 'startSizeMultiplier' of the dust trail particle
    private float _dustStartSizeMultiplier;
@@ -1070,6 +1307,12 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    // The rate over distance variable for the sprint wind particles
    private const float SPRINT_WIND_PARTICLES_RATE_OVER_DISTANCE = 2.0f;
+
+   // The previous sitting state
+   private bool _prevIsSitting = false;
+
+   // The previous emoting state
+   private EmoteManager.EmoteTypes _prevEmoteType = EmoteManager.EmoteTypes.None;
 
    #endregion
 }

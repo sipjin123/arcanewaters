@@ -56,6 +56,9 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    // The ping
    public TextMeshProUGUI pingText;
 
+   // The fps
+   public TextMeshProUGUI fpsText;
+
    // The image of the expand button
    public Image expandButtonImage;
 
@@ -139,11 +142,16 @@ public class VoyageStatusPanel : ClientMonoBehaviour
          
          if (_highPingMessageCooldown <= 0) {
             D.debug($"Ping to the server is critically low: {ping}");
-            _highPingMessageCooldown = 5; // Add log message once per 5 seconds
+            _highPingMessageCooldown = 60; // Add log message once per 60 seconds
          }
       }
       pingText.text = ping.ToString();
-      
+
+      if (Time.time - _lastFPSUpdate > 0.1f) {
+         _lastFPSUpdate = Time.time;
+         fpsText.text = ((int) (1f / Time.deltaTime)).ToString();
+      }
+
       // Track low fps
       if (_lowFpsMessageCooldown > 0) {
          _lowFpsMessageCooldown -= Time.deltaTime;
@@ -152,8 +160,8 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       if (_lowFpsMessageCooldown <= 0) {
          int fps = (int) (1f / Time.deltaTime);
          if (fps <= 15) {
-            D.debug($"Client fps is critically low: {fps}");
-            _lowFpsMessageCooldown = 5; // Add log message once per 5 seconds
+            //D.debug($"Client fps is critically low: {fps}");
+            _lowFpsMessageCooldown = 60; // Add log message once per 60 seconds
          }
       }
 
@@ -276,6 +284,9 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    // Low fps last message time cool down
    private float _lowFpsMessageCooldown;
    private float _highPingMessageCooldown;
+
+   // Last time we updated FPS counter
+   private float _lastFPSUpdate = 0;
 
    #endregion
 }

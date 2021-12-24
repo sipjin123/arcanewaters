@@ -28,6 +28,7 @@ public class PanelManager : GenericGameManager {
    public ShortcutPanel itemShortcutPanel;
    public NotificationPanel notificationPanel;
    public AdminGameSettingsPanel adminGameSettingsPanel;
+   public GenericActionPromptScreen genericPromptScreen;
 
    // Reference to the main Canvas - GUI in the scene
    public Canvas mainCanvasRef;
@@ -71,7 +72,7 @@ public class PanelManager : GenericGameManager {
       if (Util.isBatch()) {
          return;
       }
-      
+
       // Skip if the game window is not in focus
       if (!Application.isFocused) {
          return;
@@ -84,7 +85,7 @@ public class PanelManager : GenericGameManager {
 
       // Let us easily close panels with the Escape key
       if (
-         InputManager.self.inputMaster?.UIControl.Close.WasPerformedThisFrame() == true 
+         InputManager.self.inputMaster?.UIControl.Close.WasPerformedThisFrame() == true
       ) {
          onEscapeKeyPressed();
       }
@@ -130,7 +131,7 @@ public class PanelManager : GenericGameManager {
          adminGameSettingsPanel.togglePanel();
       } else if (KeyUtils.GetKeyDown(Key.V)) {
          if (Global.isLoggedInAsAdmin()) {
-               AdminPanel.self.show();
+            AdminPanel.self.show();
          }
       }
 

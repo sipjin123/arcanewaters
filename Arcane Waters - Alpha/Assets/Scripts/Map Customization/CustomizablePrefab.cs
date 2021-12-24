@@ -26,6 +26,9 @@ namespace MapCustomization
       // ID of the prop item definition that corresponds to this prefab
       public int propDefinitionId;
 
+      // The icon of the prop
+      public Sprite propIcon = null;
+
       // State of the prefab that is set in map editor
       public PrefabState mapEditorState;
 
@@ -43,7 +46,14 @@ namespace MapCustomization
 
       public void setOutline (bool ready, bool hovered, bool selected, bool valid) {
          if (_spriteOutline == null) {
-            _spriteOutline = gameObject.AddComponent<SpriteOutline>();
+            // Try to see if there is an outline that we can reuse
+            SpriteOutline spriteOutline = gameObject.GetComponent<SpriteOutline>();
+
+            if (spriteOutline == null) {
+               _spriteOutline = gameObject.AddComponent<SpriteOutline>();
+            } else {
+               _spriteOutline = spriteOutline;
+            }
          }
 
          _spriteOutline.setNewColor(getOutlineColor(ready, hovered, selected, valid));

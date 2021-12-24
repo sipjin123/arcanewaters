@@ -75,21 +75,18 @@ public class ZSnap : MonoBehaviour {
    }
 
    public void snapZ () {
-      transform.position = new Vector3(
-          transform.position.x,
-          transform.position.y,
-          getZ(true)
-      );
+      Vector3 pos = transform.position;
+      pos.z = getZ(pos.y, true);
+      transform.position = pos;
    }
 
-   public float getZ (bool useInheritance) {
+   private float getZ (float y, bool useInheritance) {
       // Initialize  Z position to a truncated version of the Y position
-      float newZ = transform.position.y;
-      newZ = Util.TruncateTo100ths(newZ);
+      float newZ = Util.TruncateTo100ths(y);
 
       // Adjust Z position based on our collider's Y position
       float inherited = useInheritance ? inheritedOffsetZ : 0;
-      return (newZ + _colliderY + offsetZ + inherited) / 100f;
+      return (newZ + _colliderY + offsetZ + inherited) * 0.01f;
    }
 
    public static int getZ (Vector3Int transformReference) {

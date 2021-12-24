@@ -46,7 +46,9 @@ public class GameStatsManager : MonoBehaviour
 
    public void registerUser (int userId, string userName, PvpTeamType teamType) {
       if (!isUserRegistered(userId)) {
-         gameStatsData.stats.Add(new GameStats(userId, userName, (int) teamType));
+         GameStats stats = new GameStats(userId, userName, (int) teamType);
+         stats.voyageRatingPoints = VoyageRatingManager.getPointsMax();
+         gameStatsData.stats.Add(stats);
       }
    }
 
@@ -206,6 +208,21 @@ public class GameStatsManager : MonoBehaviour
       // Stat Increase
       playerStat.PvpPlayerDeaths++;
       D.adminLog("Added death count for: " + userId + " Total of: " + playerStat.PvpPlayerDeaths, D.ADMIN_LOG_TYPE.Pvp);
+   }
+
+   public void addVoyageRatingPoints (int userId, int gain) {
+      GameStats playerStat = gameStatsData.stats.Find(_ => _.userId == userId);
+      if (playerStat == null) {
+         return;
+      }
+
+      // TODO: Implement visual indication here that will notify player of this specific stat gain
+
+      // Stat Increase
+      playerStat.voyageRatingPoints += gain;
+      playerStat.voyageRatingPoints = Mathf.Max(playerStat.voyageRatingPoints, VoyageRatingManager.getPointsMin());
+      playerStat.voyageRatingPoints = Mathf.Min(playerStat.voyageRatingPoints, VoyageRatingManager.getPointsMax());
+      D.adminLog("Adjusted voyage rating points for: " + userId + " Total of: " + playerStat.voyageRatingPoints, D.ADMIN_LOG_TYPE.Pvp);
    }
 
    public List<GameStats> getStatsForInstance (int instanceId) {

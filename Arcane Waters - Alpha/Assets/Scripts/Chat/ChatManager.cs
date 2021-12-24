@@ -15,10 +15,13 @@ public class ChatManager : GenericGameManager
    #region Public Variables
 
    // When we add a <link> tag to the text to mark item insert position, we use this transparent text
-   public const string ITEM_INSERT_TEXT_PLACEHOLDER = "|||";
+   public const string ITEM_INSERT_TEXT_PLACEHOLDER = "XX";
 
    // Item insert id prefix we use in texh mesh pro <link> tag
    public const string ITEM_INSERT_ID_PREFIX = "iteminsertid";
+
+   // Maximum number of item tags that a message can contain
+   public const int MAX_ITEM_TAGS_IN_MESSAGE = 5;
 
    // The Chat Panel, need to have direct reference in case something gets logged during Awake()
    public ChatPanel chatPanel;
@@ -47,7 +50,7 @@ public class ChatManager : GenericGameManager
    private void Start () {
       // Add the various chat commands that we're going to allow
       _commandData.Add(new CommandData("/bug", "Sends a bug report to the server", BugReportManager.self.sendBugReport, parameterNames: new List<string>() { "bugInformation" }));
-      _commandData.Add(new CommandData("/emote", "Performs an emote", sendEmoteMessageToServer, parameterNames: new List<string>() { "emoteDescription" }));
+      _commandData.Add(new CommandData("/emote", "Sends a chat emote", sendEmoteMessageToServer, parameterNames: new List<string>() { "emoteDescription" }));
       _commandData.Add(new CommandData("/invite", "Invites a user to your group", VoyageGroupManager.self.handleInviteCommand, parameterNames: new List<string>() { "userName" }));
       _commandData.Add(new CommandData("/global", "Send a message to all users", sendGlobalMessageToServer, parameterNames: new List<string>() { "message" }));
       _commandData.Add(new CommandData("/group", "Send a message to your group", sendGroupMessageToServer, parameterNames: new List<string>() { "message" }));
@@ -59,6 +62,7 @@ public class ChatManager : GenericGameManager
       _commandData.Add(new CommandData("/w", "Sends a private message to a user", sendWhisperMessageToServer, parameterNames: new List<string>() { "userName", "message" }));
       _commandData.Add(new CommandData("/r", "Sends a private message to the last user that whispered to you", tryReply, parameterNames: new List<string>() { "message" }));
       _commandData.Add(new CommandData("/who", "Search users", searchUsers, parameterNames: new List<string>() { "filter ('is','in','level')", "username, area or level" }));
+      _commandData.Add(new CommandData("/e", "Play an emote", requestPlayEmote, parameterNames: new List<string>() { "emoteType" }, parameterAutocompletes: new List<string>() { "dance", "kneel", "greet", "off" }));
    }
 
    private void Update () {
@@ -66,14 +70,14 @@ public class ChatManager : GenericGameManager
       if (Util.isBatch()) {
          return;
       }
-   
+
       if (
-         InputManager.self.inputMaster.UIShotcuts.ChatReply.WasPressedThisFrame() == true && 
-         !chatPanel.inputField.isFocused && 
-         !chatPanel.nameInputField.isFocused && 
+         InputManager.self.inputMaster.UIShotcuts.ChatReply.WasPressedThisFrame() == true &&
+         !chatPanel.inputField.isFocused &&
+         !chatPanel.nameInputField.isFocused &&
          !string.IsNullOrEmpty(_lastWhisperSender)
       ) {
-         chatPanel.inputField.text = "/whisper " + _lastWhisperSender + " ";
+         chatPanel.inputField.setText("/whisper " + _lastWhisperSender + " ");
          chatPanel.focusInputField();
       }
 
@@ -207,6 +211,29 @@ public class ChatManager : GenericGameManager
 
    public void sendEmoteMessageToServer (string message) {
       sendMessageToServer(message, ChatInfo.Type.Emote);
+   }
+
+   public void requestPlayEmote (string parameters) {
+      if (Global.player == null || Global.player.getPlayerBodyEntity() == null || Global.player.getPlayerBodyEntity().isSitting || Global.player.isInBattle()) {
+         this.addChat("Can't emote now...", ChatInfo.Type.System);
+         return;
+      }
+
+      PlayerBodyEntity body = Global.player.getPlayerBodyEntity();
+
+      if (Util.areStringsEqual(parameters, "off")) {
+         if (body.isEmoting()) {
+            body.Cmd_StopEmote();
+         } else {
+            this.addChat("You are not emoting yet...", ChatInfo.Type.System);
+         }
+      } else {
+         if (body.isEmoting()) {
+            this.addChat("You are already emoting! use '/e off' to stop", ChatInfo.Type.System);
+         } else {
+            body.Cmd_PlayEmote(EmoteManager.parse(parameters), body.facing);
+         }
+      }
    }
 
    public void sendGlobalMessageToServer (string message) {
@@ -405,9 +432,16 @@ public class ChatManager : GenericGameManager
       }
    }
 
-   public static string injectItemSnippetLinks (string text) {
+   public static string injectItemSnippetLinks (string text, out int itemTagCount) {
+      itemTagCount = 0;
+
       // Split everything by the beginning of the tag
       string[] values = text.Split(new string[] { "[itemid=" }, StringSplitOptions.RemoveEmptyEntries);
+
+      // If nothing was split, just return it
+      if (values.Length == 0) {
+         return text;
+      }
 
       // Starting with the second entry, the beginning should attempt to close out the tag
       // Unless it begins with the tag itself
@@ -419,7 +453,7 @@ public class ChatManager : GenericGameManager
          start = 0;
          result = "";
       }
-      
+
       for (int i = start; i < values.Length; i++) {
          string id = "";
          bool found = false;
@@ -441,11 +475,86 @@ public class ChatManager : GenericGameManager
 
          // Check if we found the valid tag, insert link if so, otherwise recreate whatever was there
          if (id.Length > 0 && found) {
-            result += "<link=\"" + ChatManager.ITEM_INSERT_ID_PREFIX + id + "\"><nobr><color=#00000000>" +
-               ChatManager.ITEM_INSERT_TEXT_PLACEHOLDER + "</color></nobr></link>" + frag.Substring(1 + id.Length);
+            itemTagCount++;
+            result += "<link=\"" + ITEM_INSERT_ID_PREFIX + id + "\"><nobr><color=#00000000>" +
+               ITEM_INSERT_TEXT_PLACEHOLDER + "</color></nobr></link>" + frag.Substring(1 + id.Length);
          } else {
             result += "[itemid=" + frag;
          }
+      }
+
+      return result;
+   }
+
+   public static string turnItemSnippetLinksToItemTags (string text, out int itemTagCount, out bool takenTextOutOfLinks) {
+      itemTagCount = 0;
+      takenTextOutOfLinks = false;
+
+      // Split everything by the ending of the insert
+      string[] noEnds = text.Split(new string[] { "</color></nobr></link>" }, StringSplitOptions.RemoveEmptyEntries);
+
+      int l = text.EndsWith("</color></nobr></link>") ? noEnds.Length : noEnds.Length - 1;
+
+      // If nothing was split, just return it
+      if (noEnds.Length == 0) {
+         return text;
+      }
+
+      // Otherwise begin making a new string
+      string result = "";
+
+      // Go over all the beginnings
+      for (int i = 0; i < l; i++) {
+         // Try to find the start of the insert
+         int insertStartIndex = noEnds[i].IndexOf("<link=\"" + ITEM_INSERT_ID_PREFIX);
+         int idEndIndex = noEnds[i].IndexOf("\"><nobr><color=#00000000>");
+         if (insertStartIndex == -1 || idEndIndex == -1) {
+            result += noEnds[i] + "</color></nobr></link>";
+            continue;
+         }
+
+         // We have something that resembles a tag, add text that came before it
+         if (insertStartIndex > 0) {
+            result += noEnds[i].Substring(0, insertStartIndex);
+         }
+
+         // Try to extract the item id
+         int idStartIndex = insertStartIndex + ("<link=\"" + ITEM_INSERT_ID_PREFIX).Length;
+         string itemId = "";
+         for (int j = idStartIndex; j < idEndIndex; j++) {
+            char c = noEnds[i][j];
+            if (char.IsNumber(c)) {
+               itemId += c;
+            } else {
+               itemId = "";
+               break;
+            }
+         }
+
+         // Try to get the placeholder characters
+         string placeholder = noEnds[i].Substring(idEndIndex + ("\"><nobr><color=#00000000>").Length);
+
+         // Check if insert isn't broken, we can turn it into item tag, otherwise discard
+         if (itemId.Length > 0) {
+            if (placeholder.Contains(ITEM_INSERT_TEXT_PLACEHOLDER)) {
+               // If user wrote something in the beginning or end of placeholder, take it out of the tag
+               int phStart = placeholder.IndexOf(ITEM_INSERT_TEXT_PLACEHOLDER);
+               if (phStart > 0) {
+                  result += placeholder.Substring(0, phStart);
+                  takenTextOutOfLinks = true;
+               }
+               result += "[itemid=" + itemId + "]";
+               if (phStart + ITEM_INSERT_TEXT_PLACEHOLDER.Length < placeholder.Length) {
+                  result += placeholder.Substring(phStart + ITEM_INSERT_TEXT_PLACEHOLDER.Length);
+                  takenTextOutOfLinks = true;
+               }
+               itemTagCount++;
+            }
+         }
+      }
+
+      if (l == noEnds.Length - 1) {
+         result += noEnds[l];
       }
 
       return result;
@@ -530,10 +639,11 @@ public class ChatManager : GenericGameManager
    }
 
    public void tryAutoCompleteChatCommand () {
-      string inputString = chatPanel.inputField.text;
+      string inputString = chatPanel.inputField.getTextData();
 
+      // Lets just not deal with it if there are item tags
       // Remove autocompletes when we are typing a bug report
-      if (inputString.StartsWith("/bug ")) {
+      if (inputString.StartsWith("/bug ") || chatPanel.inputField.hasItemTags()) {
          autoCompletePanel.setUserSuggestions(null);
          autoCompletePanel.setAutoCompletes(null);
          autoCompletePanel.setAutoCompletesWithParameters(null);
@@ -626,8 +736,8 @@ public class ChatManager : GenericGameManager
       }
 
       int indexInList = _sentMessageHistory.Count - _numMessagesAgo;
-      chatPanel.inputField.text = _sentMessageHistory[indexInList];
-      chatPanel.inputField.MoveTextEnd(false);
+      chatPanel.inputField.setText(_sentMessageHistory[indexInList]);
+      chatPanel.inputField.moveTextEnd(false);
    }
 
    public void tryAutoCompleteWhisperName () {
@@ -745,8 +855,8 @@ public class ChatManager : GenericGameManager
                self.addChat($"Search failed: The biome '{input}' doesn't exist!", ChatInfo.Type.System);
                return;
             }
-         } 
-         
+         }
+
          if (filter == UserSearchInfo.FilteringMode.Level) {
             if (int.TryParse(input, out int inputLevel)) {
                if (inputLevel < 1) {

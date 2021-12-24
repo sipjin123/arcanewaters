@@ -408,11 +408,6 @@ namespace MapCreationTool
                   }
                }
 
-               foreach (SimpleAnimation anims in pref.GetComponentsInChildren<SimpleAnimation>()) {
-                  // Start paused
-                  anims.isPaused = true;
-               }
-
                CustomizablePrefab customizablePrefab = pref.GetComponent<CustomizablePrefab>();
                if (customizablePrefab != null) {
                   customizablePrefab.isPermanent = true;

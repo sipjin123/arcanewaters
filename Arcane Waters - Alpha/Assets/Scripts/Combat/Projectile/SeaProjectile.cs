@@ -39,6 +39,9 @@ public class SeaProjectile : NetworkBehaviour
    // Reference to the gameobject that holds the visuals for the static projectile
    public GameObject staticGO;
 
+   // A reference to the particle system that represents the trail for this sea projectile
+   public ParticleSystem trailParticles;
+
    #endregion
 
    protected virtual void Awake () {
@@ -50,6 +53,11 @@ public class SeaProjectile : NetworkBehaviour
       if (!Util.isBatch()) {
          updateVisuals();
          updateAnimatedVisuals();
+
+         // Play an appropriate sound
+         //if (_playFiringSound) {
+            //FMODUnity.RuntimeManager.PlayOneShotAttached(SoundEffectManager.SHIP_CANNON, this.gameObject);
+         //}
       }
    }
 
@@ -118,6 +126,10 @@ public class SeaProjectile : NetworkBehaviour
          if (projectileData != null) {
             //_rigidbody.velocity *= (_abilityData == null ? 1 : projectileData.animationSpeed);
             //_rigidbody.mass = projectileData.projectileMass;
+
+            // Play SFX
+            SoundEffectManager.self.playSeaProjectileSfx(_abilityData.projectileId, this.gameObject);
+
             transform.localScale = new Vector3(projectileData.projectileScale, projectileData.projectileScale, projectileData.projectileScale);
          }
       }
@@ -178,7 +190,7 @@ public class SeaProjectile : NetworkBehaviour
       } else {
          return;
       }
-      
+
       if (!projectileData.isAnimating) {
          return;
       }
@@ -230,6 +242,12 @@ public class SeaProjectile : NetworkBehaviour
       float t = (_distance / _lifetime) * timeAlive;
       float projectileHeight = Util.getPointOnParabola(_lobHeight, _distance, t);
       Vector3 projectilePos = _circleCollider.transform.localPosition;
+
+      if (shadowRenderer != null) {
+         float shadowScale = (_lobHeight == 0.0f) ? 1.0f : (1.0f - (projectileHeight / _lobHeight));
+         shadowScale = shadowScale * 0.25f + 0.75f;
+         shadowRenderer.transform.localScale = Vector3.one * shadowScale;
+      }
 
       projectilePos.y = projectileHeight;
       _circleCollider.transform.localPosition = projectilePos;
@@ -333,26 +351,31 @@ public class SeaProjectile : NetworkBehaviour
          _cancelDestruction = false;
          return;
       }
-      
+
       SeaEntity sourceEntity = SeaManager.self.getEntity(_creatorNetId);
       bool hitSeaTile = !Util.hasLandTile(transform.position);
 
       // If this is a tentacle / poison circle attack, spawn venom
-      if ((_attackType == Attack.Type.Tentacle || _attackType == Attack.Type.Poison_Circle)) {         
+      if ((_attackType == Attack.Type.Tentacle || _attackType == Attack.Type.Poison_Circle)) {
          // Only spawn residue if we hit a sea tile
          if (hitSeaTile) {
             VenomResidue venomResidue = Instantiate(PrefabsManager.self.bossVenomResiduePrefab, transform.position, Quaternion.identity);
             venomResidue.creatorNetId = sourceEntity.netId;
             venomResidue.instanceId = _instanceId;
          }
-         
+
          sourceEntity.Rpc_SpawnBossVenomResidue(sourceEntity.netId, _instanceId, transform.position, hitSeaTile);
-      
-      // If this is a mine attack, spawn a mine
+
+         // If this is a mine attack, spawn a mine
       } else if (_attackType == Attack.Type.Mine) {
          if (hitSeaTile) {
             SeaMine seaMine = Instantiate(PrefabsManager.self.seaMinePrefab, transform.position, Quaternion.identity);
             seaMine.init(_instanceId, _creatorNetId, 0.6f, 20.0f);
+
+            PlayerShipEntity playerShip = sourceEntity.getPlayerShipEntity();
+            if (playerShip != null) {
+               playerShip.trackSeaMine(seaMine);
+            }
 
             NetworkServer.Spawn(seaMine.gameObject);
          }
@@ -433,7 +456,11 @@ public class SeaProjectile : NetworkBehaviour
       }
    }
 
-   protected virtual void OnDestroy () {}
+   public void setPlayFiringSound (bool value) {
+      _playFiringSound = value;
+   }
+
+   protected virtual void OnDestroy () { }
 
    #region Private Variables
 
@@ -470,7 +497,7 @@ public class SeaProjectile : NetworkBehaviour
    protected const float DEFAULT_LIFETIME = 1.25f;
 
    // A reference to the circle collider for this projectile
-   private CircleCollider2D _circleCollider;
+   protected CircleCollider2D _circleCollider;
 
    // How high this projectile was lobbed
    [SyncVar]
@@ -508,6 +535,9 @@ public class SeaProjectile : NetworkBehaviour
 
    // Controls how the explosive force of a projectile drops off as you reach the edge of its range
    private const float EXPLOSIVE_FORCE_DROPOFF = 0.25f;
+
+   // Whether this will play a firing sound effect
+   protected bool _playFiringSound = true;
 
    #endregion
 }

@@ -23,7 +23,8 @@ public class AdminManager : NetworkBehaviour
    // The key for where we store the message of the day value in PlayerPrefs
    public static readonly string MOTD_KEY = "messageOfTheDay";
 
-   public struct PerformanceInfo {
+   public struct PerformanceInfo
+   {
       public float cpuUsage;
       public float ramUsage;
       public int fps;
@@ -127,6 +128,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("add_gems", "Gives an amount of gems to a user", requestAddGems, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "gemsAmount" }));
       cm.addCommand(new CommandData("add_silver", "Gives an amount of silver to a user, during a pvp game.", requestAddSilver, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "silverAmount" }));
       cm.addCommand(new CommandData("create_open_world", "Creates many open world areas at once, measures their performance, and then reports the results.", requestCreateOpenWorld, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "numAreas (30)", "testDuration (30)", "delayBetweenAreas (1)" }));
+      cm.addCommand(new CommandData("log_request", "Creates server inquiries.", requestServerLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType" }));
 
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
@@ -213,7 +215,7 @@ public class AdminManager : NetworkBehaviour
 
    [Command]
    private void Cmd_CreateOpenWorld (string parameters) {
-      
+
       // Default values
       int numAreas = 30;
       int duration = 30;
@@ -249,22 +251,29 @@ public class AdminManager : NetworkBehaviour
       while (!baselineTestResult.isDone) {
          yield return null;
       }
-      
+
       List<int> areaOrder = Enumerable.Range(0, numAreas).ToList();
       areaOrder.OrderBy(x => Util.r.Next());
 
       D.debug("Creating open world areas.");
-      List<Instance> createdInstances = new List<Instance>();
+      string finalAreaName = "";
 
       // Create 'numAreas' open world maps, with 'delayBetweenAreas' delay between creating areas
       for (int i = 0; i < numAreas; i++) {
          int areaIndex = areaOrder[i];
          string areaName = getOpenWorldMapName(areaIndex);
-         Instance newInstance = InstanceManager.self.createNewInstance(areaName, _player.isSinglePlayer);
-         createdInstances.Add(newInstance);
+         MapManager.self.createLiveMap(areaName);
          D.debug("Creating instance for area: " + areaName);
+         finalAreaName = areaName;
 
          yield return new WaitForSeconds(delayBetweenCreatingAreas);
+      }
+
+      D.debug("Waiting for areas to finish creation.");
+
+      // Wait for all areas to be created before beginning performance test
+      while (MapManager.self.isAreaUnderCreation(finalAreaName)) {
+         yield return null;
       }
 
       D.debug("Beginning performance test.");
@@ -280,10 +289,11 @@ public class AdminManager : NetworkBehaviour
       D.debug("Performance test is complete. Destroying open world instances and reporting results.");
 
       // Destroy all created open world maps
-      foreach (Instance instance in createdInstances) {
-         InstanceManager.self.removeEmptyInstance(instance);
+      for (int i = 0; i < numAreas; i++) {
+         int areaIndex = areaOrder[i];
+         string areaName = getOpenWorldMapName(areaIndex);
+         AreaManager.self.destroyArea(areaName);
       }
-      createdInstances.Clear();
 
       // After 'duration' has elapsed, report results to the user who ran this command
       Target_ReportOpenWorldTestResults(_player.connectionToClient, baselineTestResult, testResult);
@@ -554,11 +564,55 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestLogs (string parameters) {
-      Cmd_SetServerLog(parameters);
+      Cmd_RequestServerLog(parameters);
+   }
+
+   private void requestServerLogs (string parameters) {
+      Cmd_ProcessServerLogs(parameters);
    }
 
    [Command]
-   protected void Cmd_SetServerLog (string parameters) {
+   protected void Cmd_ProcessServerLogs (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+      string message = "";
+      if (list.Length > 0) {
+         string logType = "";
+
+         try {
+            logType = list[0].ToLower();
+         } catch {
+            D.debug("Invalid Parameters");
+         }
+
+         switch (logType) {
+            case "break":
+               message = "=================================================================\n\n";
+               break;
+            case "instances":
+               Instance instInfo = InstanceManager.self.getInstance(_player.instanceId);
+               message += "->>> User: {" + _player.entityName + ":" + _player.userId + "} Instance: {" + (instInfo == null ? "NULL" : (instInfo.id + ":" + instInfo.areaKey + ":" + instInfo.privateAreaUserId)) + "}";
+               foreach (Instance inst in InstanceManager.self.getAllInstances()) {
+                  message += "-> Instance: {" + inst.id + ":" + inst.areaKey + ":" + inst.privateAreaUserId + "}\n";
+               }
+               break;
+         }
+         D.debug(message);
+         Target_ReceiveServerLogs(message);
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveServerLogs (string message) {
+      ChatManager.self.addChat(message, ChatInfo.Type.Global);
+      D.debug(message);
+   }
+
+   [Command]
+   protected void Cmd_RequestServerLog (string parameters) {
       if (!_player.isAdmin()) {
          return;
       }
@@ -1835,9 +1889,9 @@ public class AdminManager : NetworkBehaviour
 
       // If the index is -1, we just clear out the input
       if (_historyIndex == -1) {
-         ChatPanel.self.inputField.text = "";
+         ChatPanel.self.inputField.setText("");
       } else {
-         ChatPanel.self.inputField.text = history[_historyIndex];
+         ChatPanel.self.inputField.setText(history[_historyIndex]);
       }
 
       // Move the input caret to the end
@@ -1846,6 +1900,11 @@ public class AdminManager : NetworkBehaviour
 
    public void tryAutoCompleteForGetItemCommand (string inputString) {
       if (!_player.isAdmin()) {
+         return;
+      }
+
+      // Don't deal with item tags
+      if (ChatPanel.self.inputField.hasItemTags()) {
          return;
       }
 
@@ -1925,11 +1984,11 @@ public class AdminManager : NetworkBehaviour
             string autoComplete = foundItemName.Substring(inputItemName.Length);
 
             // Add the auto complete to the input field text
-            ChatPanel.self.inputField.SetTextWithoutNotify(ChatPanel.self.inputField.text + autoComplete);
+            ChatPanel.self.inputField.setTextWithoutNotify(ChatPanel.self.inputField.getTextData() + autoComplete);
 
             // Select the auto complete part
-            ChatPanel.self.inputField.selectionAnchorPosition = ChatPanel.self.inputField.text.Length;
-            ChatPanel.self.inputField.selectionFocusPosition = ChatPanel.self.inputField.text.Length - autoComplete.Length;
+            ChatPanel.self.inputField.selectionAnchorPosition = ChatPanel.self.inputField.getTextData().Length;
+            ChatPanel.self.inputField.selectionFocusPosition = ChatPanel.self.inputField.getTextData().Length - autoComplete.Length;
          }
       }
    }

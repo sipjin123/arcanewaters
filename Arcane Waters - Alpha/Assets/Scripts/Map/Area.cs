@@ -71,6 +71,9 @@ public class Area : MonoBehaviour
    // The Virtual Camera for this Area
    public Cinemachine.CinemachineVirtualCamera vcam;
 
+   // The biome of this area
+   public Biome.Type biome;
+
    // Whether this area is a sea area
    public bool isSea = false;
 
@@ -135,6 +138,9 @@ public class Area : MonoBehaviour
    // Parent of generic prefabs
    public Transform prefabParent;
 
+   // Parent of plantable trees
+   public Transform plantableTreeParent;
+
    // Networked entity parents
    public Transform npcParent, enemyParent, oreNodeParent, secretsParent, treasureSiteParent, seaMonsterParent, botShipParent, userParent;
 
@@ -160,9 +166,9 @@ public class Area : MonoBehaviour
 
    public void registerNetworkPrefabData (List<ExportedPrefab001> npcDatafields, List<ExportedPrefab001> enemyDatafields,
       List<ExportedPrefab001> oreDataFields, List<ExportedPrefab001> treasureSiteDataFields,
-      List<ExportedPrefab001> shipDataFields, List<ExportedPrefab001> seaMonsterDataFields, List<ExportedPrefab001> bossSpawnerDataFields, 
-      List<ExportedPrefab001> pvpTowerDataFields, List<ExportedPrefab001> pvpBaseDataFields, List<ExportedPrefab001> pvpShipyardDataFields, 
-      List<ExportedPrefab001> pvpWaypoints, List<ExportedPrefab001> pvpMonsterSpawnerFields, List<ExportedPrefab001> pvpLootSpawners, 
+      List<ExportedPrefab001> shipDataFields, List<ExportedPrefab001> seaMonsterDataFields, List<ExportedPrefab001> bossSpawnerDataFields,
+      List<ExportedPrefab001> pvpTowerDataFields, List<ExportedPrefab001> pvpBaseDataFields, List<ExportedPrefab001> pvpShipyardDataFields,
+      List<ExportedPrefab001> pvpWaypoints, List<ExportedPrefab001> pvpMonsterSpawnerFields, List<ExportedPrefab001> pvpLootSpawners,
       List<ExportedPrefab001> pvpCaptureTargetHolders, OreNodeMapController oreNodeController) {
       this.npcDatafields = npcDatafields;
       this.enemyDatafields = enemyDatafields;
@@ -351,7 +357,7 @@ public class Area : MonoBehaviour
       return false;
    }
 
-   public bool isOpenWaterTile(Vector3 worldPos) {
+   public bool isOpenWaterTile (Vector3 worldPos) {
       return !hasLandTile(worldPos) && hasWaterTile(worldPos);
    }
 
@@ -422,6 +428,9 @@ public class Area : MonoBehaviour
             return "Leagues";
          } else if (map.specialType == SpecialType.LeagueLobby) {
             return "League Lobby";
+         } else if (map.displayName.ToLower().StartsWith("world_map_")) {
+            // Change name of open world maps if it hasn't been changed explicitly
+            return "High Seas (" + map.biome.ToString() + ")";
          } else if (map.displayName != null) {
             return Util.toTitleCase(map.displayName);
          }
@@ -440,7 +449,7 @@ public class Area : MonoBehaviour
 
       if (AreaManager.self.isInteriorArea(areaKey)) {
          return SoundManager.Type.Interior;
-      } else if (VoyageManager.isLeagueArea(areaKey)) {
+      } else if (VoyageManager.isLeagueArea(areaKey) || VoyageManager.isPvpArenaArea(areaKey)) {
          return SoundManager.Type.Sea_League;
       } else if (VoyageManager.isLeagueSeaBossArea(areaKey)) {
          return SoundManager.Type.Sea_Lava;
@@ -528,7 +537,7 @@ public class Area : MonoBehaviour
       // Some pvp arenas have a playable area that is smaller than the total area size, so we have to calculate it with the 'arena size'
       if (VoyageManager.isPvpArenaArea(areaKey)) {
          PvpArenaSize arenaSize = AreaManager.self.getAreaPvpArenaSize(areaKey);
-         int tileWidth = (int)AreaManager.getWidthForPvpArenaSize(arenaSize);
+         int tileWidth = (int) AreaManager.getWidthForPvpArenaSize(arenaSize);
          tileSize = new Vector2Int(tileWidth, tileWidth);
       }
 

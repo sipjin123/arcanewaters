@@ -293,7 +293,9 @@ MonoBehaviour:
   actionLabel: {fileID: 1886124460544809549}
   primaryButton: {fileID: 4632470774298131669}
   secondaryButton: {fileID: 1151830402625921894}
-  action: 0
+  action:
+    key: 
+    name: 
 --- !u!1 &5889760893089496342
 GameObject:
   m_ObjectHideFlags: 0

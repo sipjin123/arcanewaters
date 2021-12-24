@@ -200,6 +200,10 @@ public class InstanceManager : MonoBehaviour
       return null;
    }
 
+   public List<Instance> getAllInstances () {
+      return _instances.Values.ToList();
+   }
+
    public Instance createNewInstance (string areaKey, bool isSinglePlayer) {
       return createNewInstance(areaKey, isSinglePlayer, -1);
    }

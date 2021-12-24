@@ -106,7 +106,7 @@ public class SpeechBubble : MonoBehaviour
 
    public void sayText (string textToSay) {
       // Insert item <links> into text before typing it
-      textToSay = ChatManager.injectItemSnippetLinks(textToSay);
+      textToSay = ChatManager.injectItemSnippetLinks(textToSay, out int itemTagCount);
 
       // Destroy any previous item inserts
       foreach (HoverableItemIcon icon in _itemIcons) {

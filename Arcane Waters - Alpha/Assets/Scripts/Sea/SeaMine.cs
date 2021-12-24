@@ -65,6 +65,7 @@ public class SeaMine : NetworkBehaviour, IObserver
       explosionEffector.forceMagnitude = explosionForce;
 
       StartCoroutine(CO_ArmAfterDelay(ARMING_DELAY));
+      StartCoroutine(CO_DestroyAtEndOfLifetime());
    }
 
    private void Update () {
@@ -157,6 +158,14 @@ public class SeaMine : NetworkBehaviour, IObserver
       explode();
    }
 
+   private IEnumerator CO_DestroyAtEndOfLifetime () {
+      yield return new WaitForSeconds(LIFETIME);
+
+      if (_state == MineState.None || _state == MineState.Armed) {
+         NetworkServer.Destroy(gameObject);
+      }
+   }
+
    private void explode () {
       // We need information from the source entity to interact with other entities, so if they don't exist, this mine will be destroyed
       SeaEntity sourceEntity = SeaManager.self.getEntity(sourceEntityNetId);
@@ -176,6 +185,18 @@ public class SeaMine : NetworkBehaviour, IObserver
          enemyHit.Rpc_ShowDamageTaken(finalDamage, false);
       }
 
+      // If our explosion hits another sea mine, detonate it
+      Collider2D[] entitiesHit = Physics2D.OverlapCircleAll(transform.position, _explosionRadius, LayerMask.GetMask(LayerUtil.SHIPS));
+      foreach (Collider2D hit in entitiesHit) { 
+         if (hit.attachedRigidbody != null) {
+            SeaMine hitSeaMine = hit.attachedRigidbody.GetComponent<SeaMine>();
+            if (hitSeaMine != null) {
+               hitSeaMine.StartCoroutine(hitSeaMine.CO_TriggerExplosionAfterDelay(EXPLOSION_DELAY));
+            }
+         }
+      }
+
+      _state = MineState.Exploded;
       explosionEffector.gameObject.SetActive(true);
       Rpc_ShowExplosion();
       StartCoroutine(CO_DestroyDelayed());
@@ -209,6 +230,10 @@ public class SeaMine : NetworkBehaviour, IObserver
       return _globalPlayerShip;
    }
 
+   public MineState getMineState () {
+      return _state;
+   }
+
    public int getInstanceId () {
       return instanceId;
    }
@@ -234,6 +259,9 @@ public class SeaMine : NetworkBehaviour, IObserver
 
    // How long the mine takes to explode, after being triggered
    protected const float EXPLOSION_DELAY = 0.6f;
+
+   // How long the mine will last for, before being destroyed
+   protected const float LIFETIME = 30.0f;
 
    // A timestamp indicating when this mine was triggered to explode
    protected float _timeTriggered = 0.0f;

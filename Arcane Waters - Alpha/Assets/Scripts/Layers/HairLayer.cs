@@ -100,7 +100,7 @@ public class HairLayer : SpriteLayer {
          return;
       }
 
-      mat.SetFloat("_ShowHatClipping", show ? 1.0f : 0.0f);
+      mat.SetFloat("_EnableClipping", show ? 1.0f : 0.0f);
       _isHairClipped = show;
    }
 

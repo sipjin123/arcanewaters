@@ -34,6 +34,8 @@ namespace MapCreationTool
       [SerializeField]
       private Dropdown selectionTargetDropdown = null;
       [SerializeField]
+      private GameObject eraserSizeSlider = null;
+      [SerializeField]
       private Button saveButton = null;
       [SerializeField]
       private Text loadedMapText = null;
@@ -172,6 +174,8 @@ namespace MapCreationTool
              Tools.toolType == ToolType.Brush &&
              Tools.tileGroup != null &&
              (Tools.tileGroup.type == TileGroupType.Mountain || Tools.tileGroup.type == TileGroupType.SeaMountain));
+
+         eraserSizeSlider.gameObject.SetActive(Tools.toolType == ToolType.Eraser);
 
          burrowedTreesToggle.gameObject.SetActive(
              Tools.toolType == ToolType.Brush &&
@@ -356,7 +360,7 @@ namespace MapCreationTool
                UnityThreading.Task dbTask = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                   string dbError = null;
                   try {
-                     DB_Main.updateMapVersion(mapVersion, true);
+                     DB_Main.updateMapVersion(mapVersion, Tools.biome, Tools.editorType, true);
                   } catch (Exception ex) {
                      dbError = ex.Message;
                   }
@@ -428,7 +432,7 @@ namespace MapCreationTool
                string dbError = null;
                MapVersion createdVersion = null;
                try {
-                  createdVersion = DB_Main.createNewMapVersion(mapVersion);
+                  createdVersion = DB_Main.createNewMapVersion(mapVersion, Tools.biome);
                } catch (Exception ex) {
                   dbError = ex.Message;
                }

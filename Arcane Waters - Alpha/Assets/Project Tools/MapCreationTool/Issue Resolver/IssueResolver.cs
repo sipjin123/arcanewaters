@@ -125,12 +125,15 @@ namespace MapCreationTool.IssueResolving
                doIOAction(() => File.WriteAllText(mapDirectory + @"\" + "after misused tiles.txt", getMisusedTilesReport(tileDataDictionary, out misusedAfterCount)));
                doIOAction(() => File.WriteAllText(mapDirectory + @"\" + "removed data fields.txt", getRemovedDataFieldsReport(resolvingResult)));
 
+               Biome.Type biome = Tools.biome;
+               EditorType editorType = Tools.editorType;
+
                if (config.saveMaps && resolvingResult?.exception == null) {
                   MapVersion newVersion = serializeVersion();
                   if (config.createNewVersion) {
                      bool wasLatestVersion = DrawBoard.loadedVersion.map.publishedVersion == DrawBoard.loadedVersion.version;
                      Action uploadAction = () => {
-                        MapVersion uploadedVersion = DB_Main.createNewMapVersion(newVersion);
+                        MapVersion uploadedVersion = DB_Main.createNewMapVersion(newVersion, biome);
 
                         // Publish the uploaded version if configured and the previous version was the latest one before
                         if (config.publishMapIfLatest) {
@@ -146,7 +149,7 @@ namespace MapCreationTool.IssueResolving
                   } else {
                      newVersion.version = DrawBoard.loadedVersion.version;
                      newVersion.createdAt = DrawBoard.loadedVersion.createdAt;
-                     scheduledUpload.Enqueue((() => DB_Main.updateMapVersion(newVersion, false), newVersion.map.name));
+                     scheduledUpload.Enqueue((() => DB_Main.updateMapVersion(newVersion, biome, editorType, false), newVersion.map.name));
                   }
                }
 

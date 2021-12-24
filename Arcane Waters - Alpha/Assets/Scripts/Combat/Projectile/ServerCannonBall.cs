@@ -11,9 +11,6 @@ public class ServerCannonBall : SeaProjectile
 {
    #region Public Variables
 
-   // A reference to the particle system that represents the trail for this cannonball
-   public ParticleSystem trailParticles;
-
    #endregion
 
    protected override void Awake () {
@@ -26,11 +23,6 @@ public class ServerCannonBall : SeaProjectile
       base.Start();
 
       if (!Util.isBatch()) {
-         // Play an appropriate sound
-         if (_playFiringSound) {
-            FMODUnity.RuntimeManager.PlayOneShotAttached(SoundEffectManager.SHIP_CANNON, this.gameObject);
-         }
-
          Instantiate(PrefabsManager.self.poofPrefab, transform.position, Quaternion.identity);
 
          initTrail();
@@ -304,14 +296,7 @@ public class ServerCannonBall : SeaProjectile
       _hasCollided = false;
    }
 
-   public void setPlayFiringSound (bool value) {
-      _playFiringSound = value;
-   }
-
    #region Private Variables
-
-   // Whether this will play a firing sound effect
-   private bool _playFiringSound = true;
 
    // All effectors that will apply effects to this cannonball
    private List<CannonballEffector> _effectors = new List<CannonballEffector>();

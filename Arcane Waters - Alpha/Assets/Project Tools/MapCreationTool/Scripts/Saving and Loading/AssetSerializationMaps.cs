@@ -26,6 +26,7 @@ namespace MapCreationTool
       public GameObject _currentEffector;
       public GameObject _deletedPrefabMarker;
 
+      [ExecuteInEditMode]
       private void OnValidate () {
          loadLocal();
       }

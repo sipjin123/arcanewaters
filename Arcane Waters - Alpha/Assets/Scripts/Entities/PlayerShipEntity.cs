@@ -9,6 +9,7 @@ using TMPro;
 using DG.Tweening;
 using UnityEngine.InputSystem;
 using Assets.Scripts.Map;
+using TMPro.Examples;
 
 public class PlayerShipEntity : ShipEntity
 {
@@ -148,8 +149,7 @@ public class PlayerShipEntity : ShipEntity
    public int selectedShipAbilityIndex = 0;
 
    // The different flags the ship can display
-   public enum Flag
-   {
+   public enum Flag {
       None = 0,
       White = 1,
       Group = 2,
@@ -224,6 +224,7 @@ public class PlayerShipEntity : ShipEntity
 
          // Creating the FMOD event Instance
          _boostState = FMODUnity.RuntimeManager.CreateInstance(SoundEffectManager.SHIP_LAUNCH_CHARGE);
+         _boostState.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(this.transform));
       } else if (isServer) {
          _movementInputDirection = Vector2.zero;
       } else {
@@ -322,12 +323,12 @@ public class PlayerShipEntity : ShipEntity
          pressBoost();
          gamePadDashPressed = true;
       }
-   }
+   }   
    private void OnSeaDashCanceled (InputAction.CallbackContext ctx) {
       if (gamePadDashPressed != false) {
          releaseBoost();
          gamePadDashPressed = false;
-      }
+      }      
    }
 
    private void initHealth (bool skipCurrentHealth = false) {
@@ -349,7 +350,16 @@ public class PlayerShipEntity : ShipEntity
    }
 
    private void selectAbility (int abilitySlotIndex) {
+      _currentAbilitySlotIndex = abilitySlotIndex;
       Cmd_ChangeAttackOption(abilitySlotIndex);
+   }
+
+   private void nextAbility () {
+      selectAbility(Mathf.Clamp(_currentAbilitySlotIndex + 1, 0, 4));
+   }
+
+   private void prevAbility () {
+      selectAbility(Mathf.Clamp(_currentAbilitySlotIndex - 1, 0, 4));
    }
 
    protected override void Update () {
@@ -405,6 +415,12 @@ public class PlayerShipEntity : ShipEntity
             } else if (InputManager.self.inputMaster.Hud.Shortcut5.WasPerformedThisFrame()) {
                selectAbility(4);
             }
+
+            if (InputManager.self.inputMaster.Hud.NextShortcut.WasPerformedThisFrame()) {
+               nextAbility();
+            } else if (InputManager.self.inputMaster.Hud.PrevShortcut.WasPerformedThisFrame()) {
+               prevAbility();
+            }
          }
       }
 
@@ -458,11 +474,13 @@ public class PlayerShipEntity : ShipEntity
             cannonAttackReleased();
          }
       } else {
+         // TODO: Enable this for ability cast debugging
+         /*
          if (InputManager.self.inputMaster.Sea.FireCannon.WasPressedThisFrame()) {
             if (isPerformingAttack()) {
                D.debug("Cannot cast, this user is still performing an attack!");
             }
-         }
+         }*/
       }
 
       boostUpdate();
@@ -678,7 +696,7 @@ public class PlayerShipEntity : ShipEntity
                   Vector2 targetPosition;
 
                   if (_chargingWithMouse) {
-                     targetPosition = Util.getMousePos();
+                     targetPosition = Util.getMousePos(transform.position);
                   } else {
                      targetPosition = _targetSelector.getTarget().transform.position;
                   }
@@ -693,7 +711,7 @@ public class PlayerShipEntity : ShipEntity
                if (abilityData.splitsAfterAttackCap) {
                   splitAttackCap(abilityData);
                } else {
-                  Vector2 toMouse = Util.getMousePos() - transform.position;
+                  Vector2 toMouse = Util.getMousePos(transform.position) - transform.position;
                   Vector2 pos = transform.position;
 
                   float cannonballLifetime = getCannonballLifetime();
@@ -701,7 +719,7 @@ public class PlayerShipEntity : ShipEntity
 
                   // Fire cone of cannonballs
                   Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, rotAngle), false, true);
-                  Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, Util.getMousePos(), false, false);
+                  Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, Util.getMousePos(transform.position), false, false);
                   Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, -rotAngle), false, false);
                   _shouldUpdateTargeting = false;
                   _targetCone.targetingConfirmed(() => enableTargeting());
@@ -738,7 +756,7 @@ public class PlayerShipEntity : ShipEntity
    }
 
    private void splitAttackCap (ShipAbilityData abilityData) {
-      Vector2 toMouse = Util.getMousePos() - transform.position;
+      Vector2 toMouse = Util.getMousePos(transform.position) - transform.position;
       Vector2 pos = transform.position;
 
       float rotAngle = (45.0f - (getCannonChargeAmount() * 25.0f)) / 1.25f;
@@ -748,7 +766,7 @@ public class PlayerShipEntity : ShipEntity
       for (int i = 1; i < (abilityData.splitAttackCap / 2) + 1; i++) {
          Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, rotAngleDivider * i), false, false);
       }
-      Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, Util.getMousePos(), false, true);
+      Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, Util.getMousePos(transform.position), false, true);
 
       for (int i = 1; i < (abilityData.splitAttackCap / 2) + 1; i++) {
          Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, -rotAngleDivider * i), false, false);
@@ -786,7 +804,7 @@ public class PlayerShipEntity : ShipEntity
 
             // If firing with the mouse, aim using the mouse
             if (_chargingWithMouse) {
-               fireDir = Util.getMousePos() - transform.position;
+               fireDir = Util.getMousePos(transform.position) - transform.position;
             } else {
                // If we don't have a target to aim at, cancel attack
                if (_targetSelector.getTarget() == null) {
@@ -822,7 +840,7 @@ public class PlayerShipEntity : ShipEntity
             // Check for enemies inside cone
             Collider2D[] coneHits = Physics2D.OverlapCircleAll(transform.position, _targetCone.coneOuterRadius, LayerMask.GetMask(LayerUtil.SHIPS));
             bool enemyInCone = false;
-            float middleAngle = Util.angle(Util.getMousePos() - transform.position);
+            float middleAngle = Util.angle(Util.getMousePos(transform.position) - transform.position);
 
             foreach (Collider2D hit in coneHits) {
                if (hit.GetComponent<SeaEntity>() && !hit.GetComponent<PlayerShipEntity>()) {
@@ -843,7 +861,7 @@ public class PlayerShipEntity : ShipEntity
             _targetCircle.updateCircle(true);
 
             // Check for enemies inside circle
-            Collider2D[] circleHits = Physics2D.OverlapCircleAll(Util.getMousePos(), circleRadius, LayerMask.GetMask(LayerUtil.SHIPS));
+            Collider2D[] circleHits = Physics2D.OverlapCircleAll(Util.getMousePos(transform.position), circleRadius, LayerMask.GetMask(LayerUtil.SHIPS));
             bool enemyInCircle = false;
             foreach (Collider2D hit in circleHits) {
                if (hit.GetComponent<BotShipEntity>()) {
@@ -873,7 +891,7 @@ public class PlayerShipEntity : ShipEntity
          float dist = toEndPos.magnitude;
          lifetime = Mathf.Lerp(2.0f, 3.0f, dist / 5.0f);
 
-         Cmd_FireSpecialCannonAtTarget(null, endPos, lifetime, false, true, abilityId, disableColliderFor: 0.9f);
+         Cmd_FireSpecialCannonAtTarget(null, endPos, lifetime, false, true, abilityId, disableColliderFor: 0.9f, false);
          yield return new WaitForSeconds(0.2f);
       }
 
@@ -953,8 +971,8 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Command]
-   protected void Cmd_FireSpecialCannonAtTarget (GameObject target, Vector2 requestedTargetPoint, float lifetime, bool checkReload, bool playSound, int abilityId, float disableColliderFor) {
-      if (isDead() || (checkReload && !hasReloaded()) || isAbilityOnCooldown(selectedShipAbilityIndex)) {
+   protected void Cmd_FireSpecialCannonAtTarget (GameObject target, Vector2 requestedTargetPoint, float lifetime, bool checkReload, bool playSound, int abilityId, float disableColliderFor, bool checkCooldown) {
+      if (isDead() || (checkReload && !hasReloaded()) || (checkCooldown && isAbilityOnCooldown(selectedShipAbilityIndex))) {
          return;
       }
 
@@ -1065,8 +1083,10 @@ public class PlayerShipEntity : ShipEntity
       }
 
       // Unsubscribe from input events
-      InputManager.self.inputMaster.Sea.Dash.performed -= OnSeaDashPerformed;
-      InputManager.self.inputMaster.Sea.Dash.canceled -= OnSeaDashCanceled;
+      if (!Util.isBatch()) {
+         InputManager.self.inputMaster.Sea.Dash.performed -= OnSeaDashPerformed;
+         InputManager.self.inputMaster.Sea.Dash.canceled -= OnSeaDashCanceled;
+      }
 
       // Handle OnDestroy logic in a separate method so it can be correctly stripped
       onBeingDestroyedServer();
@@ -1098,7 +1118,7 @@ public class PlayerShipEntity : ShipEntity
    [Server]
    public void fireCannonBallAtTarget (Vector3 spawnPosition, Vector2 fireDirection, float chargeAmount, bool playSound = true) {
       // Create the cannon ball object from the prefab
-      ServerCannonBall netBall = Instantiate(PrefabsManager.self.serverCannonBallPrefab, spawnPosition, Quaternion.identity);
+      SeaProjectile newProjectile;
 
       int abilityId = -1;
       float statusDuration = 3;
@@ -1114,6 +1134,12 @@ public class PlayerShipEntity : ShipEntity
          }
       }
 
+      if (attackType == Attack.Type.Harpoon) {
+         newProjectile = Instantiate(PrefabsManager.self.seaHarpoonPrefab, spawnPosition, Quaternion.identity);
+      } else {
+         newProjectile = Instantiate(PrefabsManager.self.serverCannonBallPrefab, spawnPosition, Quaternion.identity);
+      }
+
       bool isCritical = (chargeAmount >= 0.8f && chargeAmount <= 0.99f);
       float critModifier = (isCritical) ? 1.5f : 1.0f;
 
@@ -1123,13 +1149,16 @@ public class PlayerShipEntity : ShipEntity
       float lifetime = getCannonballLifetime(chargeAmount) / critModifier;
 
       // Setup cannonball
-      netBall.initAbilityProjectile(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, statusType: abilityStatus, statusDuration, lifetime: lifetime, isCrit: isCritical, attackType: attackType);
-      netBall.setPlayFiringSound(playSound);
+      newProjectile.initAbilityProjectile(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, statusType: abilityStatus, statusDuration, lifetime: lifetime, isCrit: isCritical, attackType: attackType);
+      newProjectile.setPlayFiringSound(playSound);
 
-      // Add effectors to cannonball
-      netBall.addEffectors(PowerupManager.self.getEffectors(userId));
+      ServerCannonBall cannonball = newProjectile as ServerCannonBall;
+      if (cannonball != null) {
+         // Add effectors to cannonball
+         cannonball.addEffectors(PowerupManager.self.getEffectors(userId));
+      }
 
-      NetworkServer.Spawn(netBall.gameObject);
+      NetworkServer.Spawn(newProjectile.gameObject);
    }
 
    [Server]
@@ -1481,6 +1510,10 @@ public class PlayerShipEntity : ShipEntity
       target.noteAttacker(source);
    }
 
+   protected override void onDamage (int damage) {
+      rpc.assignVoyageRatingPoints(VoyageRatingManager.computeVoyageRatingPointsReward(VoyageRatingManager.RewardReason.DamageReceived));
+   }
+
    public override void noteAttacker (NetEntity entity) {
       base.noteAttacker(entity);
 
@@ -1599,11 +1632,6 @@ public class PlayerShipEntity : ShipEntity
       Util.tryToRunInServerBackground(() => DB_Main.storeShipHealth(this.shipId, Mathf.Min(this.currentHealth, this.maxHealth)));
    }
 
-   [Server]
-   public void restoreMaxShipHealth () {
-      Util.tryToRunInServerBackground(() => DB_Main.restoreShipMaxHealth(this.shipId));
-   }
-
    [Command]
    public void Cmd_SetLifeboatVisibility (bool shouldShow) {
       Rpc_SetLifeboatVisibility(shouldShow);
@@ -1654,7 +1682,6 @@ public class PlayerShipEntity : ShipEntity
    private void checkAudioListener () {
       if (AudioListenerManager.self.getActiveListener() != _audioListener) {
          AudioListenerManager.self.setActiveListener(_audioListener);
-         AudioListenerManager.self.setActiveFmodListener(_fmodListener);
       }
    }
 
@@ -1710,10 +1737,9 @@ public class PlayerShipEntity : ShipEntity
          // Play the ship boost release SFX
          FMOD.Studio.EventInstance boostEvent = FMODUnity.RuntimeManager.CreateInstance(SoundEffectManager.SHIP_LAUNCH_CHARGE);
          boostEvent.setParameterByName(SoundEffectManager.SHIP_CHARGE_RELEASE_PARAM, 2);
-         boostEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(gameObject));
+         FMODUnity.RuntimeManager.AttachInstanceToGameObject(boostEvent, this.transform, this._body);
          boostEvent.start();
          boostEvent.release();
-
          _lastBoostTime = NetworkTime.time;
       }
    }
@@ -1726,8 +1752,7 @@ public class PlayerShipEntity : ShipEntity
          }
 
          if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getAudioListener() != null) {
-            AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener());
-            AudioListenerManager.self.setActiveFmodListener(CameraManager.defaultCamera.getFmodListener());
+            AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener(), CameraManager.defaultCamera.getFmodListener());
          } else {
             D.error("Couldn't switch audio listener back to main camera");
          }
@@ -2120,6 +2145,32 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
+   public void trackSeaMine (SeaMine newSeaMine) {
+      // First, check if any sea mines in our list have been destroyed
+      for (int i = _seaMines.Count - 1; i >= 0; i--) {
+         if (_seaMines[i] == null) {
+            _seaMines.RemoveAt(i);
+         }
+      }
+
+      _seaMines.Add(newSeaMine);
+
+      int numExtraSeaMines = _seaMines.Count - SEA_MINE_LIMIT;
+
+      // Destroy any sea mines over the limit, starting with the oldest ones (front of the list)
+      for (int i = 0; i < numExtraSeaMines; i++) {
+         SeaMine mine = _seaMines[i];
+
+         // If the mine is exploding / exploded, don't count this one towards the limit
+         if (mine.getMineState() == SeaMine.MineState.Triggered || mine.getMineState() == SeaMine.MineState.Exploded) {
+            continue;
+         // Otherwise, destroy the extra mine
+         } else {
+            NetworkServer.Destroy(mine.gameObject);
+         }
+      }
+   }
+
    #region Private Variables
 
    // Our ship movement sound
@@ -2217,6 +2268,15 @@ public class PlayerShipEntity : ShipEntity
 
    // The maximum number of seconds player ships are invulnerable after spawning
    private const float SPAWN_INVULNERABILITY_DURATION = 5;
+
+   // Current ability index
+   private int _currentAbilitySlotIndex = 0;
+
+   // A list of references to any active sea mines
+   public List<SeaMine> _seaMines = new List<SeaMine>();
+
+   // The maximum number of active sea mines the player can have at a time
+   private const int SEA_MINE_LIMIT = 4;
 
    #endregion
 }

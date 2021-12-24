@@ -643,12 +643,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    private void handleAttackIndicators () {
       if (_targetedBattler != null) {
-         bool shouldShowIndicators = !_targetedBattler.isDead() && !isDead() && _targetedBattler.isTargetedBy(this) && (_targetedBattler.isTargetedByLocalBattler() || _targetedBattler == BattleSelectionManager.self.selectedBattler);
+         bool shouldShowIndicators = !_targetedBattler.isDead() && !isDead() && _targetedBattler.isTargetedBy(this) && (_targetedBattler.isTargetedByLocalBattler() || _targetedBattler == BattleSelectionManager.self.selectedBattler) && !_targetedBattler.isJumping;
          _targetedBattler.toggleAttackIndicator(boardPosition - 1, shouldShowIndicators);
       }
 
       if (_attackIndicators != null) {
-         toggleAttackIndicator(boardPosition - 1, show: !isDead());
+         toggleAttackIndicator(boardPosition - 1, show: !isDead() && !isJumping && isMouseHovering());
       }
    }
 
@@ -1050,7 +1050,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       //}
 
       //SoundEffectManager.self.playSoundEffect(jumpSoundEffect.id, transform);
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.MOVEMENT_WHOOSH, transform);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.MOVEMENT_WHOOSH, transform.position);
    }
 
    public void playAnim (Anim.Type animationType, float customSpeed = -1) {
@@ -1504,6 +1504,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                if (!abilityDataReference.useSpecialAnimation) {
                   sourceBattler.playAnim(Anim.Type.Finish_Attack);
                }
+            }
+
+            // Play SFX for boss ability
+            if (sourceBattler.isBossType) {
+               SoundEffectManager.self.playBossAbilitySfx(sourceBattler.enemyType, abilityDataReference.itemID, sourceBattler.transform.position);
             }
 
             // Adjust the hit animation effects depending if this attack is the finishing blow, if yes prevent battle stance return, if not then return animation state to battle stance
@@ -2131,6 +2136,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       if (!isLastHit) {
          playAnim(Anim.Type.Hurt_East);
       }
+
+      // Play the hurt SFX
+      SoundEffectManager.self.playLandEnemyHitSfx(this.enemyType, this.transform.position);
 
       // Play the ability hit SFX after the hurt animation frame
       ability.playHitSfxAtTarget(transform);

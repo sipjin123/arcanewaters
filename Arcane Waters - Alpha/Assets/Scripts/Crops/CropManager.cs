@@ -277,16 +277,6 @@ public class CropManager : NetworkBehaviour {
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Store the updated list
-            _crops.Remove(cropToWater);
-            cropToWater.growthLevel++;
-            cropToWater.lastWaterTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            _crops.Add(cropToWater);
-
-            if (_cropsProcessing.Contains(cropNumber)) {
-               _cropsProcessing.Remove(cropNumber);
-            }
-
             // Registers the watering action to the achievement database for recording
             AchievementManager.registerUserAchievement(_player, ActionType.WaterCrop);
 
@@ -304,6 +294,28 @@ public class CropManager : NetworkBehaviour {
                cropToWater.waterInterval = 3;
             }
 
+            // Store the updated list
+            CropInfo updatedCropToWater = increaseCropGrowthLevel(cropToWater);
+
+            // Update the CropManagers of any other players currently in the instance
+            if (_player != null) {
+               Instance playerInstance = InstanceManager.self.getInstance(_player.instanceId);
+               if (playerInstance != null) {
+                  List<PlayerBodyEntity> players = playerInstance.getPlayerBodyEntities();
+                  foreach (PlayerBodyEntity player in players) {
+                     if (player.userId == _player.userId) {
+                        continue;
+                     }
+
+                     player.cropManager.increaseCropGrowthLevel(cropToWater);
+                  }
+               }
+            }
+
+            if (_cropsProcessing.Contains(cropNumber)) {
+               _cropsProcessing.Remove(cropNumber);
+            }
+
             D.adminLog("Sending water crop for player {"
                + _player.userId
                + "} StartTime:{" + startWaterTime.ToString("f1")
@@ -313,9 +325,17 @@ public class CropManager : NetworkBehaviour {
             // Let them know they gained experience
             _player.Target_GainedFarmXp(_player.connectionToClient, xp, newJobXP);
 
-            sendCropToPlayers(cropToWater, true, quickGrow);
+            sendCropToPlayers(updatedCropToWater, true, quickGrow);
          });
       });
+   }
+
+   private CropInfo increaseCropGrowthLevel (CropInfo cropToWater) {
+      _crops.Remove(cropToWater);
+      cropToWater.growthLevel++;
+      cropToWater.lastWaterTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+      _crops.Add(cropToWater);
+      return cropToWater;
    }
 
    [Server]

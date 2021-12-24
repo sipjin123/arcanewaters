@@ -142,6 +142,7 @@ public class PvpStatusPanel : ClientMonoBehaviour
       canvasGroup.alpha = 0;
       if (Global.player != null) {
          Global.player.rpc.Cmd_RequestResetPvpSilverPanel();
+         Global.player.rpc.Cmd_RequestResetVoyageRatingPoints();
       }
    }
 

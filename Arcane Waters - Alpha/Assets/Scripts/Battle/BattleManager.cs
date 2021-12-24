@@ -225,7 +225,9 @@ public class BattleManager : MonoBehaviour {
    }
 
    public void endBattle (Battle battle, Battle.TeamType winningTeam) {
-      BattleUIManager.self.disableBattleUI();
+      if (!Util.isBatch()) {
+         BattleUIManager.self.disableBattleUI();
+      }
       BattleUIManager.self.isInitialEnemySelected = false;
 
       if (battle == null) {
@@ -1331,7 +1333,8 @@ public class BattleManager : MonoBehaviour {
          Vector3 silverBurstEffectOffsetWhenFacingWest = silverBurstEffectOffsetWhenFacingEast;
          silverBurstEffectOffsetWhenFacingWest.Scale(new Vector3(-1.0f, 1.0f, 1.0f));
          Vector3 spotPosition = battler.battleSpot.transform.position;
-         Vector3 shiftedSpotPosition = new Vector3(spotPosition.x, spotPosition.y, 0);
+         float battlerZ = battler.transform.position.z;
+         Vector3 shiftedSpotPosition = new Vector3(spotPosition.x, spotPosition.y, battlerZ);
          shiftedSpotPosition += ((battler.teamType == Battle.TeamType.Defenders) ? silverBurstEffectOffsetWhenFacingWest : silverBurstEffectOffsetWhenFacingEast);
 
          foreach (Battler otherBattler in otherBattlers) {
@@ -1344,6 +1347,7 @@ public class BattleManager : MonoBehaviour {
          }
       } else if (battler.battlerType == BattlerType.PlayerControlled) {
          if (GameStatsManager.self.isUserRegistered(battler.userId)) {
+            battler.player.rpc.assignVoyageRatingPoints(VoyageRatingManager.computeVoyageRatingPointsReward(VoyageRatingManager.RewardReason.DeathOnLand));
             D.debug($"Battler '{battler.userId}' died in battle.");
             int penalty = SilverManager.computeSilverPenalty(battler.player);
             D.debug($"Battler '{battler.userId}' received a penalty of {penalty} silver.");

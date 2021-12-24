@@ -35,7 +35,7 @@ public class TargetCone : MonoBehaviour {
 
    public void updateCone (bool updateInputs) {
       if (updateInputs) {
-         _toMouse = Util.getMousePos() - transform.position;
+         _toMouse = Util.getMousePos(transform.position) - transform.position;
          _toMouse = _toMouse.normalized;
       }
 

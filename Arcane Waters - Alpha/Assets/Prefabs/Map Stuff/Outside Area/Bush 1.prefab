@@ -181,6 +181,8 @@ MonoBehaviour:
   editorType: 0
   isPermanent: 0
   propDefinitionId: 9
+  propIcon: {fileID: -6283007611845213404, guid: 20847479c992f5947ab53416641e75c2,
+    type: 3}
   mapEditorState:
     id: 0
     localPosition: {x: 0, y: 0}
@@ -199,6 +201,7 @@ MonoBehaviour:
     created: 0
     deleted: 0
     serializationId: 0
+  _ignoredColliders: []
 --- !u!1 &7479242532694440031
 GameObject:
   m_ObjectHideFlags: 0

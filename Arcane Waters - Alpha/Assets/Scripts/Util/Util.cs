@@ -238,12 +238,20 @@ public class Util : MonoBehaviour
       return (str == null || str.Equals(""));
    }
 
-   public static Vector3 getMousePos () {
+   public static Vector3 getMousePos (Vector3 target = default, float stickScale=10f) {
+      
       // Cache a reference to the main camera if it doesn't exist
       if (_mainCamera == null) {
          _mainCamera = Camera.main;
       }
+      
+      // If gamepad stick value is detected
+      var gamepadStickDirection = InputManager.self.inputMaster.Sea.FireDirection.ReadValue<Vector2>();
+      if (gamepadStickDirection != Vector2.zero) {
+         return (Vector2)target + gamepadStickDirection*stickScale;
+      }
 
+      // otherwise, get mouse position
       Vector3 worldPos = _mainCamera.ScreenToWorldPoint(MouseUtils.mousePosition);
       worldPos.z = 0f;
       return worldPos;
@@ -692,6 +700,23 @@ public class Util : MonoBehaviour
          });
 
       #endif
+   }
+
+   public static void dbBackgroundExec (Action<object> commandAction) {
+#if IS_SERVER_BUILD
+
+      // If Unity is shutting down, we can't create new background threads
+      if (ClientManager.isApplicationQuitting) {
+         DB_Main.exec(cmd => commandAction(cmd));
+         return;
+      }
+
+      // Otherwise, go ahead and run it in the background
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.exec(cmd => commandAction(cmd));
+      });
+
+#endif
    }
 
    public static string removeNumbers (string input) {
@@ -1501,6 +1526,20 @@ public class Util : MonoBehaviour
       return points.ToArray();
    }
 
+   public static bool distanceLessThan2D (Vector2 p1, Vector3 p2, float range) => distanceLessThan2D(p2, p1, range);
+
+   public static bool distanceLessThan2D (Vector3 p1, Vector2 p2, float range) {
+      return Mathf.Pow(p1.x - p2.x, 2) + Mathf.Pow(p1.y - p2.y, 2) < range * range;
+   }
+
+   public static bool distanceLessThan2D (Vector3 p1, Vector3 p2, float range) {
+      return Mathf.Pow(p1.x - p2.x, 2) + Mathf.Pow(p1.y - p2.y, 2) < range * range;
+   }
+
+   public static bool distanceLessThan2D (Vector2 p1, Vector2 p2, float range) {
+      return Mathf.Pow(p1.x - p2.x, 2) + Mathf.Pow(p1.y - p2.y, 2) < range * range;
+   }
+
    public static Vector3 getNearestPoint(Vector3 target, Vector3[] points) {
       float distanceSquared = float.NaN;
       Vector3 nearestPoint = target;
@@ -1534,6 +1573,22 @@ public class Util : MonoBehaviour
       return Vector2.Distance(point, projection);
    }
 
+   public static bool AreVectorsAlmostTheSame(Vector3 a, Vector3 b) {
+      return (Mathf.Abs(a.x - b.x) < Mathf.Epsilon && Mathf.Abs(a.y - b.y) < Mathf.Epsilon && Mathf.Abs(a.z - b.z) < Mathf.Epsilon);
+   }
+
    // A cached reference to the main camera
    private static Camera _mainCamera;
+
+   public static bool isAnyUiPanelActive () {
+      if (PanelManager.self.currentPanel()) {
+         return true;
+      }
+
+      if (PvpShopPanel.self.entirePanel.activeSelf) {
+         return true;
+      }
+
+      return false;
+   }
 }

@@ -84,7 +84,7 @@ namespace MapCustomization
             AreaManager.self.getArea(Global.player.areaKey) != null && // Check that the area is already created
             (currentArea == null || currentArea.areaKey == Global.player.areaKey) && // Check that the area hasn't changed to a different customizable area
             (Global.player as PlayerBodyEntity).weaponManager.actionType == Weapon.ActionType.CustomizeMap && // Check that customization action weapon is equipped
-            (Global.player as PlayerBodyEntity).weaponManager.weaponType > 0 && 
+            (Global.player as PlayerBodyEntity).weaponManager.weaponType > 0 &&
             (CustomMapManager.isUserSpecificAreaKey(Global.player.areaKey) && CustomMapManager.getUserId(Global.player.areaKey) == Global.player.userId); // Make sure that the user can only edit on their own map
 
          if (!isCustomizing && shouldBeCustomizing) {
@@ -584,9 +584,20 @@ namespace MapCustomization
             // Check if prefab is not too close to a player
             float minDist = isServer ? MIN_PREFAB_DISTANCE_FROM_PLAYER_SERVER : MIN_PREFAB_DISTANCE_FROM_PLAYER_CLIENT;
 
-            bool overlapsAny = EntityManager.self.getAllEntities()
-               .Where(e => e.areaKey.Equals(area.areaKey))
-               .Any(e => prefab.interactionOverlaps(area.prefabParent.transform.TransformPoint(changes.localPosition), e.sortPoint.transform.position, minDist));
+            bool overlapsAny = false;
+            foreach (NetEntity entity in EntityManager.self.getAllEntities()) {
+               if (entity == null) {
+                  D.error("Entity in entity manager is null!");
+                  continue;
+               }
+               if (entity.areaKey == area.areaKey) {
+                  Vector2 prefWorldPos = area.prefabParent.transform.TransformPoint(changes.localPosition);
+                  if (prefab.interactionOverlaps(prefWorldPos, entity.sortPoint.transform.position, minDist)) {
+                     overlapsAny = true;
+                     break;
+                  }
+               }
+            }
 
             if (overlapsAny) {
                errorMessage = "Object is too close to a player";
@@ -760,11 +771,15 @@ namespace MapCustomization
             // Only prefabs with CustomizablePrefab component can be placed
             CustomizablePrefab cPref = indexPref.Value.GetComponent<CustomizablePrefab>();
             if (cPref != null && areaType.Value == cPref.editorType) {
-               _placeablePrefabData.Add(new PlaceablePrefabData {
+               PlaceablePrefabData d = new PlaceablePrefabData {
                   serializationId = indexPref.Key,
                   prefab = cPref,
-                  displaySprite = self._propIconCamera.getIcon(indexPref.Key)
-               });
+                  displaySprite = cPref.propIcon
+               };
+               if (d.displaySprite == null) {
+                  d.displaySprite = self._propIconCamera.getIcon(indexPref.Key);
+               }
+               _placeablePrefabData.Add(d);
             }
          }
       }

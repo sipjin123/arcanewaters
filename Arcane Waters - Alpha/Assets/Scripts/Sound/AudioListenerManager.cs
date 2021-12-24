@@ -24,33 +24,41 @@ public class AudioListenerManager : GenericGameManager
    private void Start () {
       AudioListener startingListener = FindObjectOfType<AudioListener>();
       FMODUnity.StudioListener startingFmodListener = FindObjectOfType<FMODUnity.StudioListener>();
+      setActiveListener(startingListener, startingFmodListener);
 
-      setActiveListener(startingListener);
-      setActiveFmodListener(startingFmodListener);
+      // Player FMOD Listener (Body / Ship)
+      GameObject fmodStudioListenerGo = new GameObject();
+      fmodStudioListenerGo.name = "FMOD Studio Listener - Player";
+      fmodStudioListenerGo.transform.SetParent(this.transform);
+      _playerFmodListener = fmodStudioListenerGo.AddComponent<FMODUnity.StudioListener>();
+      _playerFmodListener.enabled = false;
    }
 
-   public void setActiveListener (AudioListener newListener) {
+   private void Update () {
+      if (Global.player != null) {
+         this._playerFmodListener.transform.position = new Vector3(Global.player.transform.position.x, Global.player.transform.position.y, CameraManager.getCurrentCamera().transform.position.z);
+      }
+   }
+
+   public void setActiveListener (AudioListener newListener, FMODUnity.StudioListener newFmodListener = null) {
       if (_activeListener) {
          _activeListener.enabled = false;
       }
 
-      _activeListener = newListener;
-      _activeListener.enabled = true;
-      onListenerChanged?.Invoke();
-   }
-
-   public void setActiveFmodListener (FMODUnity.StudioListener newListener) {
-      if (newListener == null) {
-         newListener = _playerFmodListener;
+      if (newFmodListener == null) {
+         newFmodListener = _playerFmodListener;
       }
 
       if (_activeFmodListener) {
          _activeFmodListener.enabled = false;
       }
 
-      _activeFmodListener = newListener;
-      _activeFmodListener.enabled = true;
+      _activeListener = newListener;
+      _activeListener.enabled = true;
       onListenerChanged?.Invoke();
+
+      _activeFmodListener = newFmodListener;
+      _activeFmodListener.enabled = true;
    }
 
    public AudioListener getActiveListener () {

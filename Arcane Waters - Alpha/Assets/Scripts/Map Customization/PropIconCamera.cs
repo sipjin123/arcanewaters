@@ -27,7 +27,10 @@ namespace MapCustomization
             // Only prefabs with CustomizablePrefab component can be placed
             CustomizablePrefab cPref = indexPref.Value.GetComponent<CustomizablePrefab>();
             if (cPref != null) {
-               yield return CO_RenderPrefab(indexPref.Key, cPref);
+               if (cPref.propIcon == null) {
+                  D.warning("Prop icon null for " + cPref.name + ". Rendering...");
+                  yield return CO_RenderPrefab(indexPref.Key, cPref);
+               }
             }
          }
 

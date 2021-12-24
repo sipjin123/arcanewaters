@@ -124,7 +124,7 @@ public class BottomBar : MonoBehaviour {
    public void disablePvpStatPanel () {
       // Get the panel
       PvpStatPanel panel = (PvpStatPanel) PanelManager.self.get(Panel.Type.PvpScoreBoard);
-      if (panel.isShowing()) {
+      if (panel.isShowing() && !panel.isGameEnded) {
          PanelManager.self.togglePanel(Panel.Type.PvpScoreBoard);
       }
    }

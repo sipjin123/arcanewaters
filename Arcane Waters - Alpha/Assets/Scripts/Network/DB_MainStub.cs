@@ -549,11 +549,11 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static MapVersion createNewMapVersion (MapVersion mapVersion) {
+   public static MapVersion createNewMapVersion (MapVersion mapVersion, Biome.Type biome) {
       return null;
    }
 
-   public static void updateMapVersion (MapVersion mapVersion, bool infiniteCommandTimeout = false) {
+   public static void updateMapVersion (MapVersion mapVersion, Biome.Type biomeType, MapCreationTool.EditorType editorType, bool infiniteCommandTimeout = false) {
 
    }
 
@@ -788,6 +788,30 @@ public class DB_MainStub : MonoBehaviour
 
    public static List<UserInfo> getUsersForAccount (int accId, int userId = 0) {
       return new List<UserInfo>();
+   }
+
+   public static List<PlantableTreeDefinition> getPlantableTreeDefinitions (object command) {
+      return new List<PlantableTreeDefinition>();
+   }
+
+   public static List<PlantableTreeInstanceData> getPlantableTreeInstances (object command, string areaKey) {
+      return new List<PlantableTreeInstanceData>();
+   }
+
+   public static PlantableTreeInstanceData getPlantableTreeInstance (object command, int id) {
+      return null;
+   }
+
+   public static void createPlantableTreeInstance (object command, PlantableTreeInstanceData instance) {
+
+   }
+
+   public static void updatePlantableTreeInstance (object command, PlantableTreeInstanceData instance) {
+
+   }
+
+   public static void deletePlantableTreeInstance (object command, int id) {
+
    }
 
    public static List<Armor> getArmorForAccount (int accId, int userId = 0) {

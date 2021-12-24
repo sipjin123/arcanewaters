@@ -338,7 +338,7 @@ public class NetworkedServer : NetworkedBehaviour
          D.adminLog("Could not find the target Entity to grant the visit command to! {" + visitorUserId + "} {" + location.userId + "} {" + location.areaKey + "}", D.ADMIN_LOG_TYPE.Visit);
       }
    }
-
+   
    [ServerRPC]
    public void MasterServer_DenyUserVisit (int visitorUserId) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(visitorUserId);

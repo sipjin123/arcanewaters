@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7883194355004409134}
   - component: {fileID: 4075698009836953576}
   m_Layer: 0
-  m_Name: AbilityOrb
+  m_Name: BuffOrb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -67,8 +67,8 @@ MonoBehaviour:
   targetEntity: {fileID: 0}
   snapTimer: 0
   localOrbRotator: {fileID: 7763317885854874720}
-  targetUserId: 0
-  ownerId: 0
+  targetNetId: 0
+  ownerNetId: 0
   isSnapping: 0
   attachedToTarget: 0
 --- !u!1 &4749831508429226238
@@ -1000,7 +1000,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0
+      scalar: 5
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -1053,7 +1053,7 @@ ParticleSystem:
     rateOverDistance:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 8
+      scalar: 0
       minScalar: 0
       maxCurve:
         serializedVersion: 2

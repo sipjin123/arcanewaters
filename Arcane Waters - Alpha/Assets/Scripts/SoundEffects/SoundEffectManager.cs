@@ -147,6 +147,7 @@ public class SoundEffectManager : GenericGameManager
 
    #region Enemy
 
+   public const string FISHMAN_ATTACK = "event:/SFX/NPC/Enemy/Fishman_Seamonster/Fishman_Throw_Attack";
    public const string FISHMAN_HURT = "event:/SFX/NPC/Enemy/Fishman_Seamonster/Seamonster_Hurt";
 
    #endregion
@@ -521,8 +522,8 @@ public class SoundEffectManager : GenericGameManager
 
    public void playEnemyHitSfx (bool isShip, SeaMonsterEntity.Type seaMonsterType, bool isCrit, CannonballEffector.Type effectorType, Vector3 position) {
       FMOD.ATTRIBUTES_3D attributes = FMODUnity.RuntimeUtils.To3DAttributes(position);
-      FMOD.Studio.EventInstance impactEvent = FMODUnity.RuntimeManager.CreateInstance(ENEMY_SHIP_IMPACT);
 
+      FMOD.Studio.EventInstance impactEvent = FMODUnity.RuntimeManager.CreateInstance(ENEMY_SHIP_IMPACT);
       impactEvent.setParameterByName(AUDIO_SWITCH_PARAM, isShip ? 0 : 1);
       impactEvent.setParameterByName(APPLY_CRIT_PARAM, isCrit ? 1 : 0);
 
@@ -532,18 +533,22 @@ public class SoundEffectManager : GenericGameManager
             break;
       }
 
-      impactEvent.set3DAttributes(attributes);
-      impactEvent.start();
-      impactEvent.release();
+      string hurtPath = string.Empty;
 
       switch (seaMonsterType) {
          case SeaMonsterEntity.Type.Fishman:
-            FMOD.Studio.EventInstance hurtEvent;
-            hurtEvent = FMODUnity.RuntimeManager.CreateInstance(FISHMAN_HURT);
-            hurtEvent.set3DAttributes(attributes);
-            hurtEvent.start();
-            hurtEvent.release();
+            hurtPath = FISHMAN_HURT;
             break;
+      }
+
+      impactEvent.set3DAttributes(attributes);
+      impactEvent.start();
+      impactEvent.release();
+      if (!string.IsNullOrEmpty(hurtPath)) {
+         FMOD.Studio.EventInstance hurtInstance = FMODUnity.RuntimeManager.CreateInstance(FISHMAN_HURT);
+         hurtInstance.set3DAttributes(attributes);
+         hurtInstance.start();
+         hurtInstance.release();
       }
    }
 
@@ -587,6 +592,37 @@ public class SoundEffectManager : GenericGameManager
          content += sfx.id + "[space]" + xmlValue + "[next]\n";
       }
       return content;
+   }
+
+   // Sea Abilities SFX
+   public void playSeaAbilitySfx (SeaMonsterEntity.Type seaMonsterType, Vector3 position) {
+      switch (seaMonsterType) {
+         case SeaMonsterEntity.Type.Fishman:
+            playFmodSfx(FISHMAN_ATTACK, position);
+            break;
+      }
+   }
+
+   // Sea Projectiles SFX
+   public void playSeaProjectileSfx (int projectileId, GameObject sourceGo) {
+      // Cannonball projectiles ids
+      switch (projectileId) {
+         case 1:
+         case 2:
+         case 3:
+         case 7:
+         case 24:
+         case 25:
+         case 30:
+         case 31:
+         case 32:
+         case 34:
+         case 36:
+         case 37:
+         case 38:
+            FMODUnity.RuntimeManager.PlayOneShotAttached(SHIP_CANNON, sourceGo);
+            break;
+      }
    }
 
    #region Private Variables

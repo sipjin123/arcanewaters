@@ -70,6 +70,10 @@ public class HoverableItemIcon : MonoBehaviour
       return _item;
    }
 
+   public int getItemId () {
+      return _itemId;
+   }
+
    #region Private Variables
 
    // The item this icon is representing

@@ -12696,11 +12696,11 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 1
-    - layer: prop
+    - layer: vine
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: prop
+    - layer: vine
       sublayer: 0
       cluster: 0
       collisionType: 0
@@ -20891,7 +20891,7 @@ Tilemap:
       - {fileID: 21300512, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300518, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300524, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 19, y: 8, z: 0}
