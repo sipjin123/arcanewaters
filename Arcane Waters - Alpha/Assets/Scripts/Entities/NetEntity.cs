@@ -1946,6 +1946,26 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Server]
+   public void visitUserToPrivateLocation (int requesterUserId, int visitedUserId, UserLocationBundle targetLocation) {
+      // If our player is in the same instance than the target, simply teleport
+      if (ServerNetworkingManager.self.server.networkedPort.Value == targetLocation.serverPort && areaKey == targetLocation.areaKey && instanceId == targetLocation.instanceId) {
+         D.adminLog("visitUserToLocation: Failed to warp to area {" + targetLocation.areaKey + "}, move instead", D.ADMIN_LOG_TYPE.Visit);
+         moveToPosition(targetLocation.getLocalPosition());
+         return;
+      }
+
+      if (CustomMapManager.isUserSpecificAreaKey(targetLocation.areaKey) && targetLocation.serverPort > 0) {
+         // If instance id exists, select that server
+         D.adminLog("visitUserToLocation: Visit Area: {" + targetLocation.areaKey + "} : {" + targetLocation.instanceId + "} : {" + targetLocation.serverPort + "}", D.ADMIN_LOG_TYPE.Visit);
+         findBestServerAndWarp(targetLocation.areaKey, targetLocation.getLocalPosition(), -1, Direction.South, targetLocation.instanceId > 1 ? targetLocation.instanceId : -1, targetLocation.serverPort);
+      } else {
+         // Select next convenient server
+         D.adminLog("visitUserToLocation: Failed to visit Area:{" + targetLocation.areaKey + "}, warp to town, InstanceId:{" + targetLocation.instanceId + "} Port:{" + targetLocation.serverPort + "}", D.ADMIN_LOG_TYPE.Visit);
+         findBestServerAndWarp(targetLocation.areaKey, targetLocation.getLocalPosition(), -1, Direction.South, -1, -1);
+      }
+   }
+
+   [Server]
    public void visitUserToLocation (int requesterUserId, UserLocationBundle targetLocation) {
       // If our player is in the same instance than the target, simply teleport
       if (ServerNetworkingManager.self.server.networkedPort.Value == targetLocation.serverPort && areaKey == targetLocation.areaKey && instanceId == targetLocation.instanceId) {
@@ -2087,6 +2107,7 @@ public class NetEntity : NetworkBehaviour
          if (VoyageManager.isAnyLeagueArea(this.areaKey)) {
             LocationBanner.self.setText("League " + Voyage.getLeagueAreaName(getInstance().leagueIndex));
          } else {
+            D.adminLog("User {" + entityName + " " + userId + "} Is Now in Area: {" + areaKey + "}!", D.ADMIN_LOG_TYPE.Visit);
             LocationBanner.self.setText(Area.getName(this.areaKey));
          }
 
@@ -2115,66 +2136,112 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
+   #region NEWVISIT
+
    [Command]
-   public void Cmd_PlayerVisit (string targetPlayerName, string areaKeyOverride) {
-      D.debug(this.userId + ": Adding user to visit! " + targetPlayerName);
-      playerVisit(targetPlayerName, areaKeyOverride);
+   public void Cmd_VisitPrivateInstanceFarmById (int targetPlayerId, string areaKeyOverride) {
+      visitPrivateInstanceFarmById(targetPlayerId, areaKeyOverride);
+   }
+
+   [Command]
+   public void Cmd_VisitPrivateInstanceHouseById (int targetPlayerId, string areaKeyOverride) {
+      visitPrivateInstanceHouseById(targetPlayerId, areaKeyOverride);
+   }
+
+   [Command]
+   public void Cmd_PlayerVisitPrivateInstanceFarm (string targetPlayerName, string areaKeyOverride) {
+      visitPrivateInstanceFarm(targetPlayerName, areaKeyOverride);
+   }
+
+   [Command]
+   public void Cmd_PlayerVisitPrivateInstanceHouse (string targetPlayerName, string areaKeyOverride) {
+      visitPrivateInstanceHouse(targetPlayerName, areaKeyOverride);
    }
 
    [Server]
-   public void playerVisit (string targetPlayerName, string areaKeyOverride, string spawnTarget = "", Direction facing = Direction.South) {
+   public void visitPrivateInstanceFarmById (int visitedUserId, string areaKeyOverride, string spawnTarget = "", Direction facing = Direction.South) {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Try to retrieve the target info
-         UserInfo targetUserInfo = DB_Main.getUserInfo(targetPlayerName);
+         UserInfo visitedUserInfo = DB_Main.getUserInfoById(visitedUserId);
+         string visitAreaKey = CustomFarmManager.GROUP_AREA_KEY + "_user" + visitedUserInfo.userId;
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            processPlayerVisit(targetUserInfo, targetUserInfo.userId, areaKeyOverride, spawnTarget, facing);
+            finalizeVisitParameters(visitedUserInfo, visitAreaKey, spawnTarget);
          });
       });
    }
 
    [Server]
-   public void playerVisit (int targetPlayerId, string areaKeyOverride, string spawnTarget = "", Direction facing = Direction.South) {
+   public void visitPrivateInstanceHouseById (int visitedUserId, string areaKeyOverride, string spawnTarget = "", Direction facing = Direction.South) {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Try to retrieve the target info
-         UserInfo targetUserInfo = DB_Main.getUserInfoById(targetPlayerId);
+         UserInfo visitedUserInfo = DB_Main.getUserInfoById(visitedUserId);
+         string visitAreaKey = CustomHouseManager.GROUP_AREA_KEY + "_user" + visitedUserInfo.userId;
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            processPlayerVisit(targetUserInfo, targetUserInfo.userId, areaKeyOverride, spawnTarget, facing);
+            finalizeVisitParameters(visitedUserInfo, visitAreaKey, spawnTarget);
          });
       });
    }
 
-   private void processPlayerVisit (UserInfo targetUserInfo, int targetPlayerId, string areaKeyOverride, string spawnTarget = "", Direction facing = Direction.South) {
-      if (targetUserInfo == null) {
-         D.adminLog("Null Player: {" + targetPlayerId + "}", D.ADMIN_LOG_TYPE.Visit);
+   [Server]
+   public void visitPrivateInstanceFarm (string visitedUserName, string areaKeyOverride, string spawnTarget = "", Direction facing = Direction.South) {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Try to retrieve the target info
+         UserInfo visitedUserInfo = DB_Main.getUserInfo(visitedUserName);
+         string visitAreaKey = CustomFarmManager.GROUP_AREA_KEY + "_user" + visitedUserInfo.userId;
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            finalizeVisitParameters(visitedUserInfo, visitAreaKey, spawnTarget);
+         });
+      });
+   }
+
+   [Server]
+   public void visitPrivateInstanceHouse (string visitedUserName, string areaKeyOverride, string spawnTarget = "", Direction facing = Direction.South) {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Try to retrieve the target info
+         UserInfo visitedUserInfo = DB_Main.getUserInfo(visitedUserName);
+         string visitAreaKey = CustomHouseManager.GROUP_AREA_KEY + "_user" + visitedUserInfo.userId;
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            finalizeVisitParameters(visitedUserInfo, visitAreaKey, spawnTarget);
+         });
+      });
+   }
+
+   [Server]
+   public void finalizeVisitParameters (UserInfo visitedUserInfo, string areaKey, string spawnTarget) {
+      if (visitedUserInfo == null) {
+         D.adminLog("Null Player: {" + visitedUserInfo.username + "}", D.ADMIN_LOG_TYPE.Visit);
          cancelUserVisit();
-         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, this, "The player " + targetPlayerId + " doesn't exist!");
+         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, this, "The player " + visitedUserInfo.username + " doesn't exist!");
          return;
       }
 
-      D.adminLog(this.userId + ": Will now searching for user to visit! {" + targetUserInfo.userId + ":" + targetUserInfo.username + "} To: {" + areaKeyOverride + "}", D.ADMIN_LOG_TYPE.Visit);
-      if (targetUserInfo.customFarmBaseId < 1 || targetUserInfo.customHouseBaseId < 1) {
-         D.adminLog("Null Map Id: {" + targetUserInfo.username + "}", D.ADMIN_LOG_TYPE.Visit);
-         cancelUserVisit();
-         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GeneralPopup, this, targetUserInfo.username + " has not selected a house yet, so they can not receive visitors!");
-         return;
-      }
+      D.adminLog(this.userId + ": Will now searching for user to visit! {" + visitedUserInfo.userId + ":" + visitedUserInfo.username + "} To: {" + areaKey + "}", D.ADMIN_LOG_TYPE.Visit);
 
-      if (!ServerNetworkingManager.self.isUserOnline(targetUserInfo.userId)) {
-         D.adminLog("Null User {" + targetUserInfo.username + "} Online", D.ADMIN_LOG_TYPE.Visit);
-         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, this, "The player " + targetUserInfo.username + " is offline!");
+      // Make sure the visited user already selected their own farm and house
+      if (visitedUserInfo.customFarmBaseId < 1 || visitedUserInfo.customHouseBaseId < 1) {
+         D.adminLog("Null Map Id: {" + visitedUserInfo.username + "}", D.ADMIN_LOG_TYPE.Visit);
          cancelUserVisit();
+         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GeneralPopup, this, visitedUserInfo.username + " has not selected a house yet, so they can not receive visitors!");
          return;
       }
 
       // Redirect to the master server to find the location of the target user
-      ServerNetworkingManager.self.findUserLocationToVisit(this.userId, targetUserInfo.userId, areaKeyOverride, spawnTarget, facing);
+      ServerNetworkingManager.self.findUserPrivateAreaToVisit(this.userId, visitedUserInfo.userId, areaKey, spawnTarget, facing);
    }
+
+   #endregion
 
    [Server]
    public void denyUserVisit (int userId) {
@@ -2184,11 +2251,23 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Server]
+   public void privateInstanceDoestNotExist (int visitorUserId, string areaKey, Vector2 localPosition) {
+      D.adminLog("Server User {" + visitorUserId + "} Visit Denied!", D.ADMIN_LOG_TYPE.Visit);
+      privateInstanceDoesntExist(areaKey, localPosition);
+   }
+
+   [Server]
    public void cancelUserVisit () {
-      D.adminLog("User {" + userId + "} Visit Cancelled as Server! ", D.ADMIN_LOG_TYPE.Visit);
+      D.adminLog("User {" + entityName + ":" + userId + "} Visit Cancelled as Server! Spawning in Starting Town", D.ADMIN_LOG_TYPE.Visit);
       spawnInNewMap(Area.STARTING_TOWN);
    }
 
+   [Server]
+   public void privateInstanceDoesntExist (string areaKey, Vector2 localPosition) {
+      D.adminLog("User {" + entityName + ":" + userId + " : " + areaKey + "} Visit Cancelled as Server! Finding best server to warp into", D.ADMIN_LOG_TYPE.Visit);
+      findBestServerAndWarp(areaKey, localPosition, -1, Direction.South, -1, -1);
+   }
+   
    [TargetRpc]
    public void Target_ReceiveCancelUserVisit () {
       D.adminLog("User Visit Cancelled as Client! " + PanelManager.self.loadingScreen.isShowing(), D.ADMIN_LOG_TYPE.Visit);

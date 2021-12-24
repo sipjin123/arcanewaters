@@ -178,29 +178,39 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             }
          }
       } else {
-         D.adminLog("1. Checking to see if user {" + player.userId + ":" + player.areaKey + ":" + areaTarget + "} is in custom area in warp script", D.ADMIN_LOG_TYPE.Visit);
-         bool isInSpecificArea = CustomMapManager.isUserSpecificAreaKey(player.areaKey);
-         bool isUserInVisitedArea = isInSpecificArea;
-         bool isWarpingToCustomArea = areaTarget.Contains(CustomHouseManager.GROUP_AREA_KEY) || areaTarget.Contains(CustomFarmManager.GROUP_AREA_KEY);
+         bool isWarpingToCustomArea = CustomMapManager.isPrivateCustomArea(areaTarget);
+         bool doesUserOwnPrivateArea = false;
+         bool isUserInPrivateArea = CustomMapManager.isUserSpecificAreaKey(player.areaKey);
+         if (isUserInPrivateArea) {
+            int userIdOfMapOwner = CustomMapManager.getUserId(player.areaKey);
+            doesUserOwnPrivateArea = userIdOfMapOwner == player.userId;
+         }
 
-         if (isUserInVisitedArea && isWarpingToCustomArea && isInSpecificArea) {
-            NetEntity visitedUser = EntityManager.self.getEntity(CustomMapManager.getUserId(player.areaKey));
-            if (visitedUser != null) {
-               string visitedArea = areaTarget + "_user" + CustomMapManager.getUserId(player.areaKey);
-
-               D.adminLog("2. "+player.userId + " is now visiting {" + visitedArea + "} of {" + visitedUser.userId + " : " + visitedUser.entityName + "} " +
-                  "Visited by user data: {" + CustomMapManager.getUserId(player.areaKey) + "} Spawn Target: {" + spawnTarget + "}", D.ADMIN_LOG_TYPE.Visit);
-               player.playerVisit(visitedUser.entityName, visitedArea, spawnTarget, newFacingDirection);
+         string visitedArea = areaTarget + "_user";
+         if (isWarpingToCustomArea && isUserInPrivateArea) {
+            int ownerIdOfNextMap = -1;
+            if (doesUserOwnPrivateArea) {
+               visitedArea += player.userId;
+               ownerIdOfNextMap = player.userId;
             } else {
-               int mapOwnerId = CustomMapManager.getUserId(player.areaKey);
-               AreaManager.self.tryGetCustomMapManager(areaTarget, out CustomMapManager customMapManager);
-               if (mapOwnerId == player.userId) {
-                  D.adminLog("3a. User owns this map! User:{" + player.userId + "} Owner:{" + mapOwnerId + "} Areas: {" + player.areaKey + " " + areaTarget + "} SpawnTarget: {" + spawnTarget + "}", D.ADMIN_LOG_TYPE.Visit);
-                  player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
-               } else {
-                  D.adminLog("3b. ser {" + player.userId + "} does NOT own this map {" + player.areaKey + ":" + areaTarget + "} AND failed to find netEntity of Owner:{" + mapOwnerId + "}! SpawnTarget: {" + spawnTarget + "}", D.ADMIN_LOG_TYPE.Visit);
-                  player.playerVisit(mapOwnerId, areaTarget, spawnTarget, newFacingDirection);
-               }
+               visitedArea += CustomMapManager.getUserId(player.areaKey);
+               ownerIdOfNextMap = CustomMapManager.getUserId(player.areaKey);
+            }
+
+            if (areaTarget == CustomHouseManager.GROUP_AREA_KEY) {
+               player.visitPrivateInstanceHouseById(ownerIdOfNextMap, "");
+            } else if (areaTarget == CustomFarmManager.GROUP_AREA_KEY) {
+               player.visitPrivateInstanceFarmById(ownerIdOfNextMap, "");
+            }
+
+            D.adminLog("VISIT NULL {" + areaTarget + "} VISITOR IS {" + player.userId + "}", D.ADMIN_LOG_TYPE.Visit);
+         } else if (isWarpingToCustomArea && !isUserInPrivateArea) {
+            if (areaTarget == CustomHouseManager.GROUP_AREA_KEY) {
+               player.visitPrivateInstanceHouseById(player.userId, "");
+            } else if (areaTarget == CustomFarmManager.GROUP_AREA_KEY) {
+               player.visitPrivateInstanceFarmById(player.userId, "");
+            } else {
+               D.adminLog("VISIT NULL {" + areaTarget + "}", D.ADMIN_LOG_TYPE.Visit);
             }
          } else {
             player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);

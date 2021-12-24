@@ -49,8 +49,8 @@ public class VisitListTemplate : MonoBehaviour {
          offlineIcon.SetActive(true);
       }
 
-      visitButtonObj.SetActive(isCustomMapSet && entry.isOnline);
-      disabledVisitButtonObj.SetActive(!isCustomMapSet || !entry.isOnline);
+      visitButtonObj.SetActive(isCustomMapSet);
+      disabledVisitButtonObj.SetActive(!isCustomMapSet);
 
       level.text = LevelUtil.levelForXp(entry.friendXP).ToString();
       if (entry.friendGuildId > 0) {
@@ -64,10 +64,8 @@ public class VisitListTemplate : MonoBehaviour {
    }
 
    public void visitUser () {
-      if (isOnline) {
-         Global.player.Cmd_PlayerVisit(friendName.text, "");
-         VisitListPanel.self.close();
-      }
+      Global.player.Cmd_PlayerVisitPrivateInstanceFarm(friendName.text, "");
+      VisitListPanel.self.close();
    }
 
    public void onChatButtonPress () {
