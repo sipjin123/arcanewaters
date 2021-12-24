@@ -40,7 +40,7 @@ public class ShipyardRow : MonoBehaviour {
 
    #endregion
 
-   public void setRowForItem (ShipInfo shipInfo) {
+   public void setRowForItem (ShipInfo shipInfo, ShipData shipData) {
       this.shipInfo = shipInfo;
       
       Sprite[] shipSprites = ImageManager.getSprites(Ship.getSkinPath(shipInfo.shipType, shipInfo.skinType));
@@ -57,7 +57,7 @@ public class ShipyardRow : MonoBehaviour {
          ripplesImage.sprite = rippleSprites[10];
       }
 
-      itemName.text = shipInfo.shipName;
+      itemName.text = shipData.shipName;
       float perkMultiplier = 1.0f - PerkManager.self.getPerkMultiplierAdditive(Perk.Category.ShopPriceReduction);
       goldAmount.text = ((int)(shipInfo.price * perkMultiplier)) + "";
 

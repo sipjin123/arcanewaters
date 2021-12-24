@@ -113,7 +113,7 @@ public class ShipyardScreen : Panel {
                string iconPath = ShipAbilityManager.self.getAbility(abilityId).skillIconPath;
                template.skillIcon.sprite = ImageManager.getSprite(iconPath);
             }
-            row.setRowForItem(shipInfo);
+            row.setRowForItem(shipInfo, shipData);
          } else {
             D.debug("Cannot create shop entry Ship: " + shipInfo.shipType + " not existing in data file");
          }
