@@ -28,6 +28,13 @@ public class InstanceManager : MonoBehaviour
       // Fetch the instance declared by server if there is any
       if (instanceToVisit > 0 && getInstance(instanceToVisit) != null) {
          instance = getInstance(instanceToVisit);
+         if (instance != null) {
+            D.adminLog("User {" + player.entityName + ":" + player.userId + "} " +
+               "successfully fetched visit instance {" + instanceToVisit + ":" + areaKey + "} {" + instance.privateAreaUserId + "}", D.ADMIN_LOG_TYPE.Visit);
+         } else {
+            D.adminLog("User {" + player.entityName + ":" + player.userId + "} " +
+               "Failed fetched visit instance {" + instanceToVisit + ":" + areaKey + "}", D.ADMIN_LOG_TYPE.Visit);
+         }
       }
 
       // If the player is warping to a voyage instance, search for it
@@ -75,12 +82,9 @@ public class InstanceManager : MonoBehaviour
          instance = getPlayerPrivateOpenInstance(areaKey, player.userId);
          if (instance == null) {
             instance = createNewInstance(areaKey, player.isSinglePlayer);
-            D.adminLog("Created New Instance for Private Area", D.ADMIN_LOG_TYPE.InstanceProcess);
-
+            
             // Register the user id as the privateAreaUserId
             instance.privateAreaUserId = player.userId;
-         } else {
-            D.adminLog("Fetched private open instance", D.ADMIN_LOG_TYPE.InstanceProcess);
          }
       }
 
@@ -93,21 +97,18 @@ public class InstanceManager : MonoBehaviour
       }
 
       // Fetch existing visitable custom map here if the target area is a custom map, for visit feature
-      if (instance == null && CustomMapManager.isUserSpecificAreaKey(areaKey)) {
+      if (instance == null && CustomMapManager.isPrivateCustomArea(areaKey)) {
          Instance openInst = getVisitablePrivateOpenInstance(areaKey);
          if (openInst) {
-            D.adminLog("Found Visitable Area: {" + openInst.areaKey + "} {" + openInst.id + "}", D.ADMIN_LOG_TYPE.Visit);
             instance = openInst;
-         } else {
-            D.adminLog("Failed to Visit Area: {" + areaKey + "} No private instance Open!", D.ADMIN_LOG_TYPE.Visit);
          }
       }
 
       // If there isn't one, we'll have to make it
       if (instance == null) {
          instance = createNewInstance(areaKey, player.isSinglePlayer);
-         if (CustomMapManager.isUserSpecificAreaKey(areaKey) && instance != null) {
-            D.adminLog("Created new Visit Area: {" + areaKey + "}", D.ADMIN_LOG_TYPE.Visit);
+         if (CustomMapManager.isPrivateCustomArea(areaKey)) {
+            instance.privateAreaUserId = player.userId;
          }
       }
 
@@ -116,6 +117,13 @@ public class InstanceManager : MonoBehaviour
 
       // Add the player to the list
       instance.entities.Add(player);
+
+      // If player is entering a farm, we need to load plantable trees for him
+      if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager cmm)) {
+         if (cmm is CustomFarmManager) {
+            PlantableTreeManager.self.playerEnteredFarm(player, areaKey);
+         }
+      }
 
       // If they're entering their farm, send them their crops
       if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
@@ -238,6 +246,18 @@ public class InstanceManager : MonoBehaviour
       instance.difficulty = difficulty;
 
       instance.updateMaxPlayerCount(isSinglePlayer);
+
+      if (CustomMapManager.isPrivateCustomArea(areaKey)) {
+         int ownerUserId = CustomMapManager.getUserId(areaKey);
+
+         if (instance.areaKey.Contains(CustomFarmManager.GROUP_AREA_KEY)) {
+            ServerNetworkingManager.self.addPrivateFarmInstance(ownerUserId);
+         } else if (instance.areaKey.Contains(CustomHouseManager.GROUP_AREA_KEY)) {
+            ServerNetworkingManager.self.addPrivateHouseInstance(ownerUserId);
+         }
+
+         D.adminLog("Generated new instance: {" + areaKey + "} Owner:{" + ownerUserId + "} InstanceId:{" + instance.id + "}", D.ADMIN_LOG_TYPE.Visit);
+      }
 
       // Keep track of it
       _instances.Add(instance.id, instance);
@@ -487,6 +507,13 @@ public class InstanceManager : MonoBehaviour
       }
 
       // Remove it from our internal mapping
+      if (CustomMapManager.isPrivateCustomArea(instance.areaKey)) {
+         if (instance.areaKey.Contains(CustomFarmManager.GROUP_AREA_KEY)) {
+            ServerNetworkingManager.self.releasePrivateFarmInstance(CustomMapManager.getUserId(instance.areaKey));
+         } else if (instance.areaKey.Contains(CustomHouseManager.GROUP_AREA_KEY)) {
+            ServerNetworkingManager.self.releasePrivateHouseInstance(CustomMapManager.getUserId(instance.areaKey));
+         }
+      }
       _instances.Remove(instance.id);
 
       // Remove the instance from the server network if it is a voyage

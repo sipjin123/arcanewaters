@@ -384,8 +384,7 @@ public class MyNetworkManager : NetworkManager
                if (AreaManager.self.tryGetCustomMapManager(previousAreaKey, out CustomMapManager customMapManager)) {
                   baseMapAreaKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(ownerInfo));
 
-                  D.adminLog("Successfully {User: " + userObjects.userInfo.userId + "} fetched custom map: " +
-                     "Connecting User: {" + userObjects.userInfo.username + " " + userObjects.userInfo.accountName + "} " +
+                  D.adminLog("Successfully Added User: {" + userObjects.userInfo.userId + ":" + userObjects.userInfo.username + "} fetched custom map: " +
                      "ID:{" + customMapManager.getBaseMapId(ownerInfo) + "} " +
                      "Base:{" + baseMapAreaKey + "} " +
                      "Prev:{" + previousAreaKey + "} " +
@@ -399,7 +398,7 @@ public class MyNetworkManager : NetworkManager
 
             // If the area is invalid, warp the player to the starting town as a fallback mechanism
             if (!AreaManager.self.doesAreaExists(baseMapAreaKey)) {
-               D.debug($"OnServerAddPlayer The user '{userInfo.username}' claims to be in the '{baseMapAreaKey}' area, but this area is not valid - Redirecting.");
+               D.debug($"OnServerAddPlayer The user '{userInfo.username}' claims to be in the '{baseMapAreaKey}':'{previousAreaKey}' area, but this area is not valid - Redirecting.");
 
                UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                   DB_Main.setNewLocalPosition(userInfo.userId, Vector2.zero, Direction.South, Area.STARTING_TOWN);
@@ -482,12 +481,19 @@ public class MyNetworkManager : NetworkManager
                AssignedUserInfo serverInfo = ServerNetworkingManager.self.server.assignedUserIds[player.userId];
                if (serverInfo != null && serverInfo.instanceId > 0) {
                   player.instanceId = serverInfo.instanceId;
-                  D.adminLog("Adding user {" + player.userId + "} to instance {" + serverInfo.instanceId + "} to visit! ", D.ADMIN_LOG_TYPE.Visit);
+                  D.adminLog("Adding user {" + player.entityName + ":" + player.userId + "} to instance {" + serverInfo.instanceId + "} to VISIT! ", D.ADMIN_LOG_TYPE.Visit);
                   InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId, serverInfo.instanceId);
                } else {
+                  if (player.entityName.ToLower().Contains("bur")) {
+                     D.adminLog("User Failed to join because {" + (serverInfo == null ? "NullServer" : "") + "} or {" + (serverInfo == null ? "" : serverInfo.instanceId.ToString()) + "} " +
+                        "{" + player.entityName + ":" + player.userId + "} to instance {" + serverInfo.instanceId + "} to VISIT! {"+ previousAreaKey + "}", D.ADMIN_LOG_TYPE.Visit);
+                  }
                   InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);
                }
             } else {
+               if (player.entityName.ToLower().Contains("bur")) {
+                  D.adminLog("User Failed to join because Assigned users does not contain user : {" + player.entityName + ":" + player.userId + "} to instance {" + previousAreaKey + "} to VISIT! ", D.ADMIN_LOG_TYPE.Visit);
+               }
                InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);
             }
 
@@ -754,6 +760,7 @@ public class MyNetworkManager : NetworkManager
       // If the destination server is this same server, we don't disconnect the client
       if (bestServerPort.Value == getCurrentPort()) {
          conn.Send(redirectMessage);
+         D.debug("A. Redirecting to: {" + userName + "} {" + bestServerPort.Value + "} {" + destinationAreaKey + "}");
          yield break;
       }
 

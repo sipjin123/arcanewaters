@@ -40,7 +40,15 @@ public abstract class CustomMapManager
 
    // Extracts user id from a user specific area key
    public static int getUserId (string userSpecificAreaKey) {
-      return int.Parse(userSpecificAreaKey.Split(new string[] { "_user" }, StringSplitOptions.RemoveEmptyEntries)[1]);
+      if (userSpecificAreaKey.Contains("_user")) {
+         return int.Parse(userSpecificAreaKey.Split(new string[] { "_user" }, StringSplitOptions.RemoveEmptyEntries)[1]);
+      } else {
+         return -1;
+      }
+   }
+
+   public static bool isPrivateCustomArea (string areaKey) {
+      return areaKey.Contains(CustomHouseManager.GROUP_AREA_KEY) || areaKey.Contains(CustomFarmManager.GROUP_AREA_KEY) || isUserSpecificAreaKey(areaKey);
    }
 
    // Gets the main placeholder map and the base maps for this type of custom map

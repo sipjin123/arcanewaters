@@ -257,26 +257,73 @@ public class NetworkedServer : NetworkedBehaviour
    #region Visit System
 
    [ServerRPC]
-   public void MasterServer_FindUserLocationToVisit (int visitorUserId, int visitedUserId, string areaKeyOverride, string spawnTarget, Direction facing) {
-      D.debug("2> Now processing to see if user can be visited! {" + visitedUserId + "} for area {" + areaKeyOverride + "} SpawnTarget: {" + spawnTarget + "}");
-      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(visitedUserId);
-      if (targetServer != null) {
-         D.debug("2> Successfully found server containing user {" + visitedUserId + "} for area {" + areaKeyOverride + "}");
-         targetServer.InvokeClientRpcOnOwner(Server_FindUserLocationToVisit, visitorUserId, visitedUserId, areaKeyOverride, spawnTarget, facing);
+   public void MasterServer_FindUserPrivateAreaVisit (int visitorUserId, int visitedUserId, string areaKeyOverride, string spawnTarget, Direction facing) {
+      // This function is in charge of determining if there is a server that contains the private instance being visited
+      NetworkedServer targetServer = ServerNetworkingManager.self.server;
+
+      if (areaKeyOverride.Contains(CustomFarmManager.GROUP_AREA_KEY)) {
+         targetServer = ServerNetworkingManager.self.getServerContainingPrivateFarmInstance(visitedUserId);
+      } else if (areaKeyOverride.Contains(CustomHouseManager.GROUP_AREA_KEY)) {
+         targetServer = ServerNetworkingManager.self.getServerContainingPrivateHouseInstance(visitedUserId);
       } else {
-         D.debug("2> Could not find server container user {" + visitedUserId + "} for area {" + areaKeyOverride + "}");
+         targetServer = null;
+      }
+      
+      if (targetServer != null) {
+         // Find the server that has the private instance of an existing user
+         targetServer.InvokeClientRpcOnOwner(Server_FindUserPrivateLocationToVisit, visitorUserId, visitedUserId, areaKeyOverride, spawnTarget, facing);
+      } else {
+         // Find the server where the visitor is in, then send the deny notification to that server
          NetworkedServer sourceServer = ServerNetworkingManager.self.getServerContainingUser(visitorUserId);
          if (sourceServer != null) {
-            sourceServer.InvokeClientRpcOnOwner(Server_ReturnUserDenyVisit, visitorUserId);
+            sourceServer.InvokeClientRpcOnOwner(Server_PrivateInstanceDoestNotExist, visitorUserId, visitedUserId, areaKeyOverride, Vector2.zero);
          } else {
-            D.debug("2b> Failed to find Source Server {" + visitedUserId + "} for area {" + areaKeyOverride + "}");
+            D.debug("Failed to find Source Server {" + visitedUserId + "} for area {" + areaKeyOverride + "}");
          }
       }
    }
 
    [ClientRPC]
+   public void Server_FindUserPrivateLocationToVisit (int visitorUserId, int visitedUserId, string privateInstanceAreakey, string spawnTarget, Direction facing) {
+      // This function is in charge of preparing the data to send out to the source server to determine the target server containing the private instance
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         UserInfo ownerUserInfo = DB_Main.getUserInfoById(visitedUserId);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (ownerUserInfo == null) {
+               D.adminLog("Could not find player {" + visitedUserId + "} Failed to visit {" + privateInstanceAreakey + "}!", D.ADMIN_LOG_TYPE.Visit);
+               InvokeServerRpc(MasterServer_DenyUserVisit, visitorUserId);
+               return;
+            }
+
+            // Assign location bundle data
+            bool hasAreaKeyOverride = privateInstanceAreakey.Length > 0;
+            UserLocationBundle location = new UserLocationBundle();
+            location.userId = ownerUserInfo.userId;
+            location.serverPort = ServerNetworkingManager.self.server.networkedPort.Value;
+            location.areaKey = privateInstanceAreakey;
+            location.instanceId = -1;
+            location.voyageGroupId = -1;
+            location.localPositionX = ownerUserInfo.localPos.x;
+            location.localPositionY = ownerUserInfo.localPos.y;
+
+            // Override local position if the spawn location is found
+            if (location.areaKey.Length > 0) {
+               AreaManager.self.tryGetCustomMapManager(location.areaKey, out CustomMapManager customMapManager);
+               if (customMapManager != null) {
+                  string baseMapKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(ownerUserInfo));
+                  Vector2 newArea2 = SpawnManager.self.getLocalPosition(baseMapKey, spawnTarget, true);
+                  location.localPositionX = newArea2.x;
+                  location.localPositionY = newArea2.y;
+               }
+            }
+
+            InvokeServerRpc(MasterServer_ReturnUserPrivateLocationToVisit, visitorUserId, visitedUserId, location);
+         });
+      });
+   }
+
+   [ClientRPC]
    public void Server_FindUserLocationToVisit (int visitorUserId, int visitedUserId, string areaKeyOverride, string spawnTarget, Direction facing) {
-      D.adminLog("3a> Now processing to see if user can be found! {" + visitedUserId + "} Failed to visit {" + areaKeyOverride + "}! Spawn Target: {" + spawnTarget + "}", D.ADMIN_LOG_TYPE.Visit);
       NetEntity ownerEntity = EntityManager.self.getEntity(visitedUserId);
 
       if (ownerEntity == null) {
@@ -315,10 +362,32 @@ public class NetworkedServer : NetworkedBehaviour
       }
 
       if (location.areaKey.Length > 0 && location.areaKey != CustomHouseManager.GROUP_AREA_KEY && location.areaKey != CustomFarmManager.GROUP_AREA_KEY) {
-         D.adminLog("3b> Override Location Bundle: {" + (hasAreaKeyOverride ? "AreaOverride: " + areaKeyOverride : "False:None") + ")} : {" + location.areaKey + "} {" + ownerEntity.instanceId + "}", D.ADMIN_LOG_TYPE.Visit);
+         D.adminLog("Override Location Bundle: {" + (hasAreaKeyOverride ? "AreaOverride: " + areaKeyOverride : "False:None") + ")} : {" + location.areaKey + "} {" + ownerEntity.instanceId + "}", D.ADMIN_LOG_TYPE.Visit);
          InvokeServerRpc(MasterServer_ReturnUserLocationToVisit, visitorUserId, location);
       } else {
-         D.adminLog("3c> Could not find valid location key for {" + visitedUserId + "} Failed to visit {" + location.userId + "} Area Key or instance id is INVALID {" + location.areaKey + "}{" + location.instanceId + "}!", D.ADMIN_LOG_TYPE.Visit);
+         D.adminLog("Could not find valid location key for {" + visitedUserId + "} Failed to visit {" + location.userId + "} Area Key or instance id is INVALID {" + location.areaKey + "}{" + location.instanceId + "}!", D.ADMIN_LOG_TYPE.Visit);
+         InvokeServerRpc(MasterServer_DenyUserVisit, visitorUserId);
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_ReturnUserPrivateLocationToVisit (int visitorUserId, int visitedUserId, UserLocationBundle location) {
+      NetworkedServer visitorsServer = ServerNetworkingManager.self.getServerContainingUser(visitorUserId);
+      NetworkedServer targetServer = ServerNetworkingManager.self.server;
+
+      if (location.areaKey.Contains(CustomFarmManager.GROUP_AREA_KEY)) {
+         targetServer = ServerNetworkingManager.self.getServerContainingPrivateFarmInstance(visitedUserId);
+      } else if (location.areaKey.Contains(CustomHouseManager.GROUP_AREA_KEY)) {
+         targetServer = ServerNetworkingManager.self.getServerContainingPrivateHouseInstance(visitedUserId);
+      } else {
+         targetServer = null;
+      }
+
+      if (targetServer != null && visitorsServer != null) {
+         D.adminLog("Found the target server to grant the visit command to! {" + visitorUserId + "} {" + location.userId + "} {" + location.areaKey + "}", D.ADMIN_LOG_TYPE.Visit);
+         visitorsServer.InvokeClientRpcOnOwner(Server_ReturnUserPrivateLocationToVisit, visitorUserId, visitedUserId, location);
+      } else {
+         D.adminLog("Could not find the target server to grant the visit command to! {" + visitorUserId + "} {" + location.userId + "} {" + location.areaKey + "}", D.ADMIN_LOG_TYPE.Visit);
          InvokeServerRpc(MasterServer_DenyUserVisit, visitorUserId);
       }
    }
@@ -331,6 +400,17 @@ public class NetworkedServer : NetworkedBehaviour
          targetServer.InvokeClientRpcOnOwner(Server_ReturnUserLocationToVisit, visitorUserId, location);
       } else {
          D.adminLog("Could not find the target server to grant the visit command to! {" + visitorUserId + "} {" + location.userId + "} {" + location.areaKey + "}", D.ADMIN_LOG_TYPE.Visit);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_ReturnUserPrivateLocationToVisit (int visitorUserId, int visitedUserId, UserLocationBundle location) {
+      NetEntity visitedUserEnitity = EntityManager.self.getEntity(visitorUserId);
+      if (visitedUserEnitity != null) {
+         D.adminLog("{" + visitedUserEnitity.entityName + " : " + visitorUserId + "} Found the target Entity to grant the visit command to for {" + location.userId + "} {" + location.areaKey + "}", D.ADMIN_LOG_TYPE.Visit);
+         visitedUserEnitity.visitUserToPrivateLocation(visitorUserId, visitedUserId, location);
+      } else {
+         D.adminLog("Could not find the target Entity to grant the visit command to! {" + visitorUserId + "} {" + location.userId + "} {" + location.areaKey + "}", D.ADMIN_LOG_TYPE.Visit);
       }
    }
 
@@ -356,6 +436,17 @@ public class NetworkedServer : NetworkedBehaviour
       }
    }
 
+   [ServerRPC]
+   public void MasterServer_PrivateInstanceDoestNotExist (int visitorUserId, int visitedUserId, string visitedPrivateAreaKey, Vector2 localPosition) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(visitorUserId);
+      if (targetServer != null) {
+         D.debug("Deny visit, Found the server containing {" + visitorUserId + "}");
+         targetServer.InvokeClientRpcOnOwner(Server_PrivateInstanceDoestNotExist, visitorUserId, visitedUserId, visitedPrivateAreaKey, localPosition);
+      } else {
+         D.debug("Failed to deny visit, can no longer find the server containing {" + visitorUserId + "}");
+      }
+   }
+
    [ClientRPC]
    public void Server_ReturnUserDenyVisit (int visitorUserId) {
       NetEntity adminEntity = EntityManager.self.getEntity(visitorUserId);
@@ -367,6 +458,17 @@ public class NetworkedServer : NetworkedBehaviour
       }
    }
 
+   [ClientRPC]
+   public void Server_PrivateInstanceDoestNotExist (int visitorUserId, int visitedUserId, string visitedPrivateAreakey, Vector2 localPosition) {
+      NetEntity adminEntity = EntityManager.self.getEntity(visitorUserId);
+      if (adminEntity != null) {
+         D.adminLog("Deny visit, Cannot find Instance! Generating new one. Found entity {" + visitorUserId + "}", D.ADMIN_LOG_TYPE.Visit);
+         adminEntity.privateInstanceDoestNotExist(visitorUserId, visitedPrivateAreakey, localPosition);
+      } else {
+         D.adminLog("Cant deny visit, cant find entity any more {" + visitorUserId + "}", D.ADMIN_LOG_TYPE.Visit);
+      }
+   }
+   
    #endregion
 
    [ServerRPC]
