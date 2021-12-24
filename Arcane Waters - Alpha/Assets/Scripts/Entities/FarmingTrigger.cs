@@ -61,12 +61,7 @@ public class FarmingTrigger : MonoBehaviour
          Weapon.ActionType currentActionType = weaponData.actionType;
 
          Collider2D currentCollider = coneCollider;
-
          updateTriggerDirection();
-
-         // Playing FMOD SFX for farming interactions
-         SoundEffectManager.self.playInteractionSfx(currentActionType, weaponData.weaponClass, weaponData.sfxType, transform.position);
-         playFarmingParticles(currentActionType);
 
          // Using pitch fork uses a different collider since it requires a closer range contact
          if (currentActionType == Weapon.ActionType.HarvestCrop) {

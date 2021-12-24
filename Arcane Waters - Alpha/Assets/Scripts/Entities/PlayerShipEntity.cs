@@ -262,8 +262,10 @@ public class PlayerShipEntity : ShipEntity
          }
       }
 
-      InputManager.self.inputMaster.Sea.Enable();
-      InputManager.self.inputMaster.Land.Disable();
+      if (!Util.isBatch()) {
+         InputManager.self.inputMaster.Sea.Enable();
+         InputManager.self.inputMaster.Land.Disable();
+      }
    }
 
    public void changeShipInfo (ShipInfo info) {

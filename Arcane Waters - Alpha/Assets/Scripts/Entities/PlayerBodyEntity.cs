@@ -215,8 +215,10 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          rpc.Target_UpdateLandPowerups(connectionToClient, LandPowerupManager.self.getPowerupsForUser(userId));
       }
 
-      InputManager.self.inputMaster.Land.Enable();
-      InputManager.self.inputMaster.Sea.Disable();
+      if (!Util.isBatch()) {
+         InputManager.self.inputMaster.Land.Enable();
+         InputManager.self.inputMaster.Sea.Disable();
+      }
    }
 
    private void OnActionPerformed (InputAction.CallbackContext ctx) {
@@ -229,9 +231,13 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
    }
 
-   private void OnDestroy () {
-      InputManager.self.inputMaster.Land.Action.performed -= OnActionPerformed;
-      InputManager.self.inputMaster.Land.Jump.performed -= OnJumpPerformed;
+   protected override void OnDestroy () {
+      base.OnDestroy();
+
+      if (!Util.isBatch()) {
+         InputManager.self.inputMaster.Land.Action.performed -= OnActionPerformed;
+         InputManager.self.inputMaster.Land.Jump.performed -= OnJumpPerformed;
+      }
 
       if (isLocalPlayer && GenericActionPromptScreen.self != null) {
          GenericActionPromptScreen.self.hide();
