@@ -504,6 +504,7 @@ public class SeaProjectile : NetworkBehaviour
    private float _lobHeight = 0.0f;
 
    // The status effect that this projectile will apply to a sea entity it hits
+   [SyncVar]
    protected Status.Type _statusType = Status.Type.None;
 
    // How long the status effect applied by this projectile will last for
@@ -516,6 +517,7 @@ public class SeaProjectile : NetworkBehaviour
    protected bool _isCrit = false;
 
    // What type of attack this is
+   [SyncVar]
    protected Attack.Type _attackType = Attack.Type.None;
 
    // A list of netIds of enemies that will be ignored by this projectile

@@ -42,6 +42,9 @@ public class WorldMapTranslator : MonoBehaviour {
    public const int COLUMN_COUNT = 9;
    public const string ALPHABET = "ABCDEFGHIJKLMNO";
 
+   // The game object holding the map generator ui
+   public GameObject mapGenObject;
+
    #endregion
 
    private void Awake () {
@@ -58,6 +61,10 @@ public class WorldMapTranslator : MonoBehaviour {
 
    public void triggerSettingsPanel (bool isActive) {
       settingsPanel.SetActive(isActive);
+   }
+
+   public void toggleMapGenerator () {
+      mapGenObject.SetActive(!mapGenObject.activeInHierarchy);
    }
 
    public void startMapSequence () {

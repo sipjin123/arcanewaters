@@ -149,11 +149,6 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       VoyageGroupMemberCell cell = Instantiate(memberCellPrefab, memberContainer.transform, false);
       cell.setCellForGroupMember(cellInfo);
       _memberCells.Add(cell);
-
-      // Instantiate the arrow
-      VoyageGroupMemberArrow arrow = Instantiate(groupMemberArrowPrefab, VoyageGroupManager.self.groupMemberArrowContainer.transform, false);
-      arrow.setTarget(cell, cellInfo.userId, cellInfo.userName);
-      _memberArrows.Add(arrow);
    }
 
    public void updateCellTooltip (int userId, string userName, int XP, string areaKey) {
