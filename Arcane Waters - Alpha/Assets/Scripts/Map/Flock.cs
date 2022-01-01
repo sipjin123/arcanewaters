@@ -31,6 +31,10 @@ public class Flock : ClientMonoBehaviour {
       foreach (SeaBird bird in _birds) {
          bird.height = randomHeight;
          bird.flock = this;
+
+         // Flip the sprites if the target is towards opposite direction
+         bird.birdSprite.flipX = transform.position.x > targetPos.x;
+         bird.shadowSprite.flipX = transform.position.x > targetPos.x;
       }
 
       // Move towards the target

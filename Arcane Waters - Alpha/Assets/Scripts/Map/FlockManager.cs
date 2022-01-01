@@ -37,11 +37,13 @@ public class FlockManager : ClientMonoBehaviour
          }
 
          // Pick a spawn pos
+         Vector3 spawnOffset = new Vector3(Random.Range(-minRandomVal, -maxRandomVal), 0f, 0f);
          Vector3 spawnPos = Util.RandomPointInBounds(spawnBox.bounds);
-         spawnPos = new Vector3(spawnBox.bounds.min.x, spawnPos.y, spawnPos.z) - new Vector3(Random.Range(-.5f, -1.5f), 0f, 0f);
-         
+         spawnPos = new Vector3(spawnBox.bounds.min.x, spawnPos.y, spawnPos.z) - spawnOffset;
+
          // Make the target on the other side
-         Vector2 targetPos = new Vector3(spawnBox.bounds.max.x, spawnPos.y, spawnPos.z) + new Vector3(Random.Range(.5f, 1.5f), 0f, 0f);
+         Vector3 targetOffset = new Vector3(Random.Range(minRandomVal, maxRandomVal), 0f, 0f);
+         Vector2 targetPos = new Vector3(spawnBox.bounds.max.x, spawnPos.y, spawnPos.z) + targetOffset;
 
          // Create the instance
          Flock flock = Instantiate(flockPrefabs.ChooseRandom(), spawnPos, Quaternion.identity);
@@ -56,6 +58,10 @@ public class FlockManager : ClientMonoBehaviour
    }
 
    #region Private Variables
+
+   // Random value parameters
+   private float minRandomVal = .5f; 
+   private float maxRandomVal = 1.5f;
 
    #endregion
 }
