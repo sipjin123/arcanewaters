@@ -980,7 +980,7 @@ public class NetEntity : NetworkBehaviour
       // Climb speed boost calculation based on land powerup
       if (_isClimbing) {
          if (PowerupPanel.self.hasLandPowerup(LandPowerupType.ClimbSpeedBoost)) {
-            moveSpeedModifier = (int) (moveSpeedModifier * 1.5f);
+            moveSpeedModifier = (int) (moveSpeedModifier * 2.5f);
          }
       }
 

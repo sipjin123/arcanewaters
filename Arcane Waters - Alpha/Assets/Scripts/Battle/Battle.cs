@@ -181,7 +181,9 @@ public class Battle : NetworkBehaviour {
                         }
                         break;
                      case Status.Type.Poisoned:
-                        damagePerTick = (int) (battler.health * POISON_DAMAGE_PER_TICK_PERCENTAGE);
+                        // Boss battlers are more resistant against poison damage ticks
+                        float bossDamageMultiplier = battler.isBossType ? .5f : 1f;
+                        damagePerTick = (int) (battler.health * (POISON_DAMAGE_PER_TICK_PERCENTAGE * bossDamageMultiplier));
                         battler.health -= damagePerTick;
                         battler.displayedHealth -= damagePerTick;
                         Rpc_DealDamagePerTick(battleId, battler.userId, damagePerTick, Element.Poison);
@@ -516,6 +518,10 @@ public class Battle : NetworkBehaviour {
          return;
       }
 
+      // Display 1 damage as minimum
+      if (damage < 1) {
+         damage = 1;
+      }
       BattleUIManager.self.showDamagePerTick(target, damage, element);
    }
 
