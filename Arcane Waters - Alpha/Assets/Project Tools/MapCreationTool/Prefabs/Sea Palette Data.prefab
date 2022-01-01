@@ -9178,7 +9178,7 @@ MonoBehaviour:
       cluster: 0
       collisionType: 0
     - layer: water
-      sublayer: 4
+      sublayer: 8
       cluster: 0
       collisionType: 1
     - layer: water
@@ -10410,7 +10410,7 @@ MonoBehaviour:
       cluster: 0
       collisionType: 0
     - layer: water
-      sublayer: 5
+      sublayer: 8
       cluster: 0
       collisionType: 1
     - layer: water
@@ -10529,15 +10529,15 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 0
       collisionType: 0
@@ -10586,7 +10586,7 @@ MonoBehaviour:
       cluster: 0
       collisionType: 0
     - layer: water
-      sublayer: 5
+      sublayer: 8
       cluster: 0
       collisionType: 1
     - layer: water
@@ -10705,15 +10705,15 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 0
       collisionType: 0
@@ -10762,7 +10762,7 @@ MonoBehaviour:
       cluster: 0
       collisionType: 0
     - layer: water
-      sublayer: 5
+      sublayer: 8
       cluster: 0
       collisionType: 1
     - layer: water
@@ -10881,191 +10881,15 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: river
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: water
-      sublayer: 5
-      cluster: 0
-      collisionType: 1
-    - layer: water
-      sublayer: 5
-      cluster: 0
-      collisionType: 1
-    - layer: water
-      sublayer: 4
-      cluster: 0
-      collisionType: 1
-    - layer: water
-      sublayer: 4
-      cluster: 0
-      collisionType: 1
-    - layer: river
-      sublayer: 0
-      cluster: 2
-      collisionType: 0
-    - layer: river
-      sublayer: 0
-      cluster: 2
-      collisionType: 0
-    - layer: river
-      sublayer: 0
-      cluster: 2
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 3
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 3
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 3
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: mountain-top
-      sublayer: 2
-      cluster: 0
-      collisionType: 0
-    - layer: mountain-top
-      sublayer: 2
-      cluster: 0
-      collisionType: 0
-    - layer: mountain-top
-      sublayer: 2
-      cluster: 0
-      collisionType: 0
-    - layer: mountain-top
-      sublayer: 2
-      cluster: 0
-      collisionType: 0
-    - layer: mountain-top
-      sublayer: 2
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: detail
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: detail
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: detail
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: river
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: river
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 0
       collisionType: 0
@@ -11114,7 +10938,7 @@ MonoBehaviour:
       cluster: 0
       collisionType: 0
     - layer: water
-      sublayer: 5
+      sublayer: 8
       cluster: 0
       collisionType: 1
     - layer: water
@@ -11131,15 +10955,15 @@ MonoBehaviour:
       collisionType: 1
     - layer: river
       sublayer: 0
-      cluster: 1
+      cluster: 2
       collisionType: 0
     - layer: river
       sublayer: 0
-      cluster: 1
+      cluster: 2
       collisionType: 0
     - layer: river
       sublayer: 0
-      cluster: 1
+      cluster: 2
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -11233,15 +11057,15 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 0
       collisionType: 0
@@ -11290,7 +11114,183 @@ MonoBehaviour:
       cluster: 0
       collisionType: 0
     - layer: water
+      sublayer: 8
+      cluster: 0
+      collisionType: 1
+    - layer: water
       sublayer: 5
+      cluster: 0
+      collisionType: 1
+    - layer: water
+      sublayer: 4
+      cluster: 0
+      collisionType: 1
+    - layer: water
+      sublayer: 4
+      cluster: 0
+      collisionType: 1
+    - layer: pathway
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: pathway
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: pathway
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: mountain-top
+      sublayer: 2
+      cluster: 0
+      collisionType: 0
+    - layer: mountain-top
+      sublayer: 2
+      cluster: 0
+      collisionType: 0
+    - layer: mountain-top
+      sublayer: 2
+      cluster: 0
+      collisionType: 0
+    - layer: mountain-top
+      sublayer: 2
+      cluster: 0
+      collisionType: 0
+    - layer: mountain-top
+      sublayer: 2
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: detail
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: detail
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: detail
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: pathway
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: pathway
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: pathway
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: water
+      sublayer: 8
       cluster: 0
       collisionType: 1
     - layer: water
@@ -11305,15 +11305,15 @@ MonoBehaviour:
       sublayer: 3
       cluster: 0
       collisionType: 1
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 1
       collisionType: 0
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 1
       collisionType: 0
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 1
       collisionType: 0
@@ -11409,15 +11409,15 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 0
       collisionType: 0
@@ -11466,7 +11466,7 @@ MonoBehaviour:
       cluster: 0
       collisionType: 0
     - layer: water
-      sublayer: 5
+      sublayer: 8
       cluster: 0
       collisionType: 1
     - layer: water
@@ -11481,15 +11481,15 @@ MonoBehaviour:
       sublayer: 5
       cluster: 0
       collisionType: 1
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 1
       collisionType: 0
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 1
       collisionType: 0
-    - layer: river
+    - layer: pathway
       sublayer: 0
       cluster: 1
       collisionType: 0
@@ -11642,7 +11642,7 @@ MonoBehaviour:
       cluster: 0
       collisionType: 0
     - layer: water
-      sublayer: 5
+      sublayer: 8
       cluster: 0
       collisionType: 1
     - layer: water

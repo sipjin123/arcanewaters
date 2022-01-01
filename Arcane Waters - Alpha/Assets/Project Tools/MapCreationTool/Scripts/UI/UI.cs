@@ -36,6 +36,8 @@ namespace MapCreationTool
       [SerializeField]
       private GameObject eraserSizeSlider = null;
       [SerializeField]
+      private GameObject brushSizeSlider = null;
+      [SerializeField]
       private Button saveButton = null;
       [SerializeField]
       private Text loadedMapText = null;
@@ -176,6 +178,7 @@ namespace MapCreationTool
              (Tools.tileGroup.type == TileGroupType.Mountain || Tools.tileGroup.type == TileGroupType.SeaMountain));
 
          eraserSizeSlider.gameObject.SetActive(Tools.toolType == ToolType.Eraser);
+         brushSizeSlider.gameObject.SetActive(Tools.toolType == ToolType.Brush);
 
          burrowedTreesToggle.gameObject.SetActive(
              Tools.toolType == ToolType.Brush &&

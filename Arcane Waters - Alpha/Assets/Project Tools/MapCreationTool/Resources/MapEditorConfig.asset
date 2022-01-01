@@ -155,6 +155,10 @@ MonoBehaviour:
     index: 100
     zOffset: -101
     layerType: 0
+  - layer: pathway
+    index: 26
+    zOffset: 0
+    layerType: 0
   interiorLayerIndexes:
   - layer: ground
     index: 0

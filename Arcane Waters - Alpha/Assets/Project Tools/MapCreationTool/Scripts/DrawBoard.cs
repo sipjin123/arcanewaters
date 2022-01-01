@@ -449,7 +449,7 @@ namespace MapCreationTool
       }
 
       public List<MapSpawn> formSpawnList (int? mapId, int mapVersion) {
-         return GetComponentsInChildren<SpawnMapEditor>().Select(s => new MapSpawn {
+         List<MapSpawn> formList = GetComponentsInChildren<SpawnMapEditor> ().Select(s => new MapSpawn {
             mapId = mapId ?? -1,
             mapVersion = mapVersion,
             name = s.spawnName,
@@ -458,7 +458,8 @@ namespace MapCreationTool
             spawnId = s.spawnId,
             facingDirection = (int) s.arriveFacing
          }
-         ).ToList();
+          ).ToList();
+         return formList;
       }
 
       public static T[] getPrefabComponents<T> () where T : MonoBehaviour {
@@ -623,6 +624,10 @@ namespace MapCreationTool
                    Tools.tileGroup.brushSize.x % 2 == 0 ? -0.5f : 0,
                    Tools.tileGroup.brushSize.y % 2 == 0 ? -0.5f : 0,
                    0);
+            }
+
+            if (Tools.toolType == ToolType.Brush && BrushTool.size > 1) {
+               brushOutline.size = new Vector2(BrushTool.size, BrushTool.size);
             }
 
             brushOutline.color = Color.green;
