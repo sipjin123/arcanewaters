@@ -462,7 +462,7 @@ public class NetworkedServer : NetworkedBehaviour
    public void Server_PrivateInstanceDoestNotExist (int visitorUserId, int visitedUserId, string visitedPrivateAreakey, Vector2 localPosition) {
       NetEntity adminEntity = EntityManager.self.getEntity(visitorUserId);
       if (adminEntity != null) {
-         D.adminLog("Deny visit, Cannot find Instance! Generating new one. Found entity {" + visitorUserId + "}", D.ADMIN_LOG_TYPE.Visit);
+         D.adminLog("Cannot visit, Cannot find Instance! Generating new one. Found entity {" + visitorUserId + "}", D.ADMIN_LOG_TYPE.Visit);
          adminEntity.privateInstanceDoestNotExist(visitorUserId, visitedPrivateAreakey, localPosition);
       } else {
          D.adminLog("Cant deny visit, cant find entity any more {" + visitorUserId + "}", D.ADMIN_LOG_TYPE.Visit);

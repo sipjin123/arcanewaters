@@ -2227,18 +2227,61 @@ public class NetEntity : NetworkBehaviour
          return;
       }
 
-      D.adminLog(this.userId + ": Will now searching for user to visit! {" + visitedUserInfo.userId + ":" + visitedUserInfo.username + "} To: {" + areaKey + "}", D.ADMIN_LOG_TYPE.Visit);
+      D.adminLog("Visitor: {" + this.userId + "} Will now searching for user to visit! " +
+         "Visited: {" + visitedUserInfo.userId + ":" + visitedUserInfo.username + "} " +
+         "From: {" + this.areaKey + "} To: {" + areaKey + "}", D.ADMIN_LOG_TYPE.Visit);
 
       // Make sure the visited user already selected their own farm and house
-      if (visitedUserInfo.customFarmBaseId < 1 || visitedUserInfo.customHouseBaseId < 1) {
-         D.adminLog("Null Map Id: {" + visitedUserInfo.username + "}", D.ADMIN_LOG_TYPE.Visit);
+      if ((visitedUserInfo.customFarmBaseId < 1 && areaKey.Contains(CustomFarmManager.GROUP_AREA_KEY))
+         || (visitedUserInfo.customHouseBaseId < 1 && areaKey.Contains(CustomHouseManager.GROUP_AREA_KEY))) {
+         D.adminLog("Null Map Id: {" + visitedUserInfo.username + "} {" + areaKey + "}", D.ADMIN_LOG_TYPE.Visit);
          cancelUserVisit();
          ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GeneralPopup, this, visitedUserInfo.username + " has not selected a house yet, so they can not receive visitors!");
          return;
       }
 
-      // Redirect to the master server to find the location of the target user
-      ServerNetworkingManager.self.findUserPrivateAreaToVisit(this.userId, visitedUserInfo.userId, areaKey, spawnTarget, facing);
+      string spawnTargetOverride = spawnTarget;
+      D.debug("fetch now: " + visitedUserInfo.customHouseBaseId + " " + visitedUserInfo.customFarmBaseId + " target area: " + areaKey + " sourceArea: " + this.areaKey);
+      List<MapCreationTool.Serialization.MapSpawn> spawnIds = new List<MapCreationTool.Serialization.MapSpawn>();
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // If target area is house, fetch all 
+         if (areaKey.Contains(CustomHouseManager.GROUP_AREA_KEY)) {
+            spawnIds = DB_Main.getMapSpawnsById(visitedUserInfo.customHouseBaseId);
+         } else if (areaKey.Contains(CustomFarmManager.GROUP_AREA_KEY)) {
+            spawnIds = DB_Main.getMapSpawnsById(visitedUserInfo.customFarmBaseId);
+         } else {
+            D.debug("Fetched No Spawn ids for area! " + areaKey);
+         }
+         
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (spawnIds.Count < 1 || (!CustomMapManager.isPrivateCustomArea(areaKey))) {
+               // Redirect to the master server to find the location of the target user
+               ServerNetworkingManager.self.findUserPrivateAreaToVisit(this.userId, visitedUserInfo.userId, areaKey, spawnTargetOverride, facing);
+            } else {
+               if (this.areaKey.Contains(CustomHouseManager.GROUP_AREA_KEY)) {
+                  List<MapCreationTool.Serialization.MapSpawn> newList = spawnIds.FindAll(_ => _.name != "main");
+                  if (newList.Count < 1) {
+                     spawnTargetOverride = "main";
+                  } else {
+                     spawnTargetOverride = newList.ChooseRandom().name;
+                  }
+               } else if (this.areaKey.Contains(CustomFarmManager.GROUP_AREA_KEY)) {
+                  spawnTargetOverride = "main";
+               } else {
+                  spawnTargetOverride = "main";
+               }
+
+               if (spawnTargetOverride.Length < 1) {
+                  spawnTargetOverride = spawnTarget;
+               }
+
+               // Redirect to the master server to find the location of the target user
+               ServerNetworkingManager.self.findUserPrivateAreaToVisit(this.userId, visitedUserInfo.userId, areaKey, spawnTargetOverride, facing);
+            }
+         });
+      });
    }
 
    #endregion
@@ -2252,7 +2295,7 @@ public class NetEntity : NetworkBehaviour
 
    [Server]
    public void privateInstanceDoestNotExist (int visitorUserId, string areaKey, Vector2 localPosition) {
-      D.adminLog("Server User {" + visitorUserId + "} Visit Denied!", D.ADMIN_LOG_TYPE.Visit);
+      D.adminLog("Server User {" + visitorUserId + "} Visit Does not exist! Try to generate new one {" + areaKey + "}", D.ADMIN_LOG_TYPE.Visit);
       privateInstanceDoesntExist(areaKey, localPosition);
    }
 
