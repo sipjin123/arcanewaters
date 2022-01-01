@@ -38,6 +38,7 @@ public class CompositeAnimationPlayer : ClientMonoBehaviour
       advanceTime();
       CompositeAnimationFrame frame = computeFrameByTime(_time);
       applyFrame(frame);
+      checkStatus(frame);
    }
 
    #region Animation Controls
@@ -59,6 +60,7 @@ public class CompositeAnimationPlayer : ClientMonoBehaviour
       }
 
       _currentAnimation = animation;
+      _lastFrame = null;
       _time = 0;
       _status = CompositeAnimationStatus.Running;
       enabled = true;
@@ -71,7 +73,6 @@ public class CompositeAnimationPlayer : ClientMonoBehaviour
       }
 
       _status = CompositeAnimationStatus.Stopped;
-      _lastFrame = null;
       enabled = false;
    }
 
@@ -160,6 +161,16 @@ public class CompositeAnimationPlayer : ClientMonoBehaviour
       }
 
       _lastFrame = frame;
+   }
+
+   private void checkStatus (CompositeAnimationFrame frame) {
+      if (frame == null || _currentAnimation == null || _currentAnimation.isLooping) {
+         return;
+      }
+
+      if (frame == _currentAnimation.frames.Last()) {
+         _status = CompositeAnimationStatus.Stopped;
+      }
    }
 
    private bool isValidFrame (CompositeAnimationFrame frame) {

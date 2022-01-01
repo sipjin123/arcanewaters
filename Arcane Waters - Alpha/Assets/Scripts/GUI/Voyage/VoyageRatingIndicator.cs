@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using DG.Tweening;
+using System.Text;
 
 public class VoyageRatingIndicator : MonoBehaviour
 {
@@ -21,6 +22,9 @@ public class VoyageRatingIndicator : MonoBehaviour
    // The set of colors assigned to each rating level
    public Color[] ratingColors;
 
+   // The tooltip component
+   public ToolTipComponent toolTipComponent;
+
    // Self reference
    public static VoyageRatingIndicator self;
 
@@ -37,6 +41,7 @@ public class VoyageRatingIndicator : MonoBehaviour
          progressView.fillAmount = computeNormalizedRatingPoints();
          changeRatingSprite();
          animate();
+         updateTooltip();
       }
    }
 
@@ -84,6 +89,24 @@ public class VoyageRatingIndicator : MonoBehaviour
       this.gameObject.SetActive(isPlayerInVoyage);
    }
 
+   public void updateTooltip () {
+      if (toolTipComponent == null) {
+         return;
+      }
+
+      toolTipComponent.message = serialize();
+   }
+
+   private string serialize () {
+      _stringBuilder = _stringBuilder == null ? new StringBuilder() : _stringBuilder;
+      _stringBuilder.Clear();
+      _stringBuilder.Append($"Rating: {VoyageRatingManager.computeDisplayStringForRating(_ratingPoints)}\n");
+      _stringBuilder.Append($"Points: {_ratingPoints}\n\n");
+      _stringBuilder.Append("Improve your rating to get better loot!\n");
+      _stringBuilder.Append("Damage and death lead to lower ratings.");
+      return _stringBuilder.ToString();
+   }
+
    #region Private Variables
 
    // The points for the current level. When the points go down to zero, a new level is reached.
@@ -91,6 +114,9 @@ public class VoyageRatingIndicator : MonoBehaviour
 
    // Is the indicator animating?
    private bool _isAnimating = false;
+
+   // Reference to local StringBuilder object
+   private StringBuilder _stringBuilder;
 
    #endregion
 }

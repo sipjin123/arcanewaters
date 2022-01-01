@@ -999,6 +999,7 @@ MonoBehaviour:
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 1, g: 1, b: 1, a: 1}
+  toolTipComponent: {fileID: 3010927462537534481}
 --- !u!114 &2566618792207361833
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1223,6 +1224,8 @@ GameObject:
   - component: {fileID: 8131615237293453853}
   - component: {fileID: 542490176204883756}
   - component: {fileID: 6688093437064849238}
+  - component: {fileID: 5293702422303692661}
+  - component: {fileID: 3010927462537534481}
   m_Layer: 5
   m_Name: Container
   m_TagString: Untagged
@@ -1323,8 +1326,8 @@ CanvasGroup:
   m_GameObject: {fileID: 6603285410814351086}
   m_Enabled: 1
   m_Alpha: 1
-  m_Interactable: 0
-  m_BlocksRaycasts: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
 --- !u!114 &6688093437064849238
 MonoBehaviour:
@@ -1346,6 +1349,37 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &5293702422303692661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6603285410814351086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+--- !u!114 &3010927462537534481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6603285410814351086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipPlacement: 0
+  tooltipType: 6
+  message: 
+  maxWidth: 250
+  nudgeAwayFromBorder: 0
+  isKeyDerivedFromChildObject: 0
 --- !u!1 &7742350951697791476
 GameObject:
   m_ObjectHideFlags: 0

@@ -42,6 +42,9 @@ public class ProjectileStatData  {
    // The status type that will take effect after collision
    public Status.Type statusType;
 
+   // The Projectile's SFX Type
+   public SoundEffectManager.ProjectileType sfxType = SoundEffectManager.ProjectileType.None;
+
    #endregion
 }
 

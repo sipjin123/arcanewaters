@@ -372,10 +372,6 @@ public class InputManager : GenericGameManager {
          return false;
       }
 
-      if (!self._isInputEnabled) {
-         return false;
-      }
-
       switch (direction) {
          case Direction.North:
             return self.inputMaster.General.MoveUp.IsPressed() || self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.North);

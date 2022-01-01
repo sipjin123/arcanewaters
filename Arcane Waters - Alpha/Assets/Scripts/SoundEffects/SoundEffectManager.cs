@@ -21,9 +21,6 @@ public class SoundEffectManager : GenericGameManager
    // Sound effects
    #region Sound Effects
 
-   public const int HARVESTING_PITCHFORK_HIT = 43;
-   public const int HARVESTING_FLYING = 44;
-
    public const int ORE_DROP = 53;
    public const int ORE_PICKUP = 55;
    public const int NEXT_PREFAB_SELECTION = 58;
@@ -96,7 +93,7 @@ public class SoundEffectManager : GenericGameManager
    #region GAME
 
    public const string BGM_MASTER = "event:/Music/BGM_Master";
-   public const string COLLECT_SILVER = "event:/SFX/Game/Collect_Silver";
+   //public const string COLLECT_SILVER = "event:/SFX/Game/Collect_Silver";
    public const string DIALOGUE_TEXT = "event:/SFX/Game/UI/NPC_Dialogue_Text";
    public const string TRANSITION_IN = "event:/SFX/Game/Screen_Transition_In";
    public const string TRANSITION_OUT = "event:/SFX/Game/Screen_Transition_Out";
@@ -128,13 +125,17 @@ public class SoundEffectManager : GenericGameManager
    public const string THROW_SEEDS = "event:/SFX/Player/Interactions/Diegetic/Throw_Seeds";
    public const string WATERING_PLANTS = "event:/SFX/Player/Interactions/Diegetic/Watering_Plants";
    public const string FOOTSTEP = "event:/SFX/Player/Interactions/Diegetic/Footstep";
-   public const string PICKUP_CROP = "event:/SFX/Player/Interactions/Non_Diegetic/Pickup_Crop";
+   //public const string PICKUP_CROP = "event:/SFX/Player/Interactions/Non_Diegetic/Pickup_Crop";
    public const string DOOR_OPEN = "event:/SFX/Player/Interactions/Diegetic/Door_Open";
    public const string PICKUP_POWERUP = "event:/SFX/Player/Interactions/Non_Diegetic/Pickup_Powerup_Generic";
-   public const string COLLECT_LOOT_SEA = "event:/SFX/Player/Interactions/Diegetic/Collect_Loot_Sea";
+   //public const string COLLECT_LOOT_SEA = "event:/SFX/Player/Interactions/Diegetic/Collect_Loot_Sea";
    public const string COLLECT_LOOT_LAND = "event:/SFX/Player/Interactions/Diegetic/Collect_Loot_Land";
    public const string OPEN_CHEST = "event:/SFX/Player/Interactions/Diegetic/Open_Treasure_Site_Chest";
    public const string WEAPON_SWING = "event:/SFX/Player/Interactions/Diegetic/Weapons/Swings";
+   public const string TRIUMPH_HARVEST = "event:/SFX/Player/Interactions/Non_Diegetic/Triumph_Harvest";
+   public const string LOOT_BAG = "event:/SFX/Player/Interactions/Diegetic/Loot_Bag";
+   public const string GAIN_SILVER = "event:/SFX/Player/Interactions/Non_Diegetic/Gain_Silver";
+   public const string HARVESTING_HIT = "event:/SFX/Player/Interactions/Diegetic/Harvesting_Hit";
 
    #endregion
 
@@ -300,7 +301,7 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   public void playCannonballImpact (CannonballSfxType impactType, Vector3 position) {
+   public void playCannonballImpact (Cannonball impactType, Vector3 position) {
       FMOD.Studio.EventInstance impactEvent = FMODUnity.RuntimeManager.CreateInstance(CANNONBALL_IMPACT);
       impactEvent.setParameterByName(AUDIO_SWITCH_PARAM, ((int) impactType) - 1);
       impactEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
@@ -393,11 +394,32 @@ public class SoundEffectManager : GenericGameManager
          case SoundManager.Type.Interior:
             param = 8;
             break;
+         case SoundManager.Type.Sea_PvP:
+            param = 10;
+            break;
+         case SoundManager.Type.Sea_Forest:
+            param = 11;
+            break;
+         case SoundManager.Type.Sea_Desert:
+            param = 12;
+            break;
+         case SoundManager.Type.Sea_Lava:
+            param = 13;
+            break;
+         case SoundManager.Type.Sea_Mushroom:
+            param = 14;
+            break;
+         case SoundManager.Type.Sea_Pine:
+            param = 15;
+            break;
+         case SoundManager.Type.Sea_Snow:
+            param = 16;
+            break;
          case SoundManager.Type.Sea_League:
-            param = 9;
+            param = 17;
             break;
          case SoundManager.Type.Battle_Music:
-            param = 10;
+            param = 19;
             break;
       }
 
@@ -495,7 +517,7 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   public void playInteractionSfx (Weapon.ActionType weaponAction, Weapon.Class weaponClass, WeaponSfxType sfxType, Vector3 position) {
+   public void playInteractionSfx (Weapon.ActionType weaponAction, Weapon.Class weaponClass, WeaponType sfxType, Vector3 position) {
       switch (weaponAction) {
          case Weapon.ActionType.PlantCrop:
             playFmodSfx(THROW_SEEDS, position);
@@ -509,8 +531,8 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   public void playWeaponSfx (WeaponSfxType sfxType, Weapon.Class weaponClass, Vector3 position) {
-      if (sfxType != WeaponSfxType.None) {
+   public void playWeaponSfx (WeaponType sfxType, Weapon.Class weaponClass, Vector3 position) {
+      if (sfxType != WeaponType.None) {
          FMOD.Studio.EventInstance eventInstance = FMODUnity.RuntimeManager.CreateInstance(WEAPON_SWING);
          eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, ((int) sfxType) - 1);
          eventInstance.setParameterByName(APPLY_MAGIC, weaponClass == Weapon.Class.Magic ? 1 : 0);
@@ -521,8 +543,6 @@ public class SoundEffectManager : GenericGameManager
    }
 
    public void playEnemyHitSfx (bool isShip, SeaMonsterEntity.Type seaMonsterType, bool isCrit, CannonballEffector.Type effectorType, Vector3 position) {
-      FMOD.ATTRIBUTES_3D attributes = FMODUnity.RuntimeUtils.To3DAttributes(position);
-
       FMOD.Studio.EventInstance impactEvent = FMODUnity.RuntimeManager.CreateInstance(ENEMY_SHIP_IMPACT);
       impactEvent.setParameterByName(AUDIO_SWITCH_PARAM, isShip ? 0 : 1);
       impactEvent.setParameterByName(APPLY_CRIT_PARAM, isCrit ? 1 : 0);
@@ -541,14 +561,12 @@ public class SoundEffectManager : GenericGameManager
             break;
       }
 
-      impactEvent.set3DAttributes(attributes);
+      impactEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
       impactEvent.start();
       impactEvent.release();
+
       if (!string.IsNullOrEmpty(hurtPath)) {
-         FMOD.Studio.EventInstance hurtInstance = FMODUnity.RuntimeManager.CreateInstance(FISHMAN_HURT);
-         hurtInstance.set3DAttributes(attributes);
-         hurtInstance.start();
-         hurtInstance.release();
+         playFmodSfx(hurtPath, position);
       }
    }
 
@@ -603,25 +621,17 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   // Sea Projectiles SFX
-   public void playSeaProjectileSfx (int projectileId, GameObject sourceGo) {
-      // Cannonball projectiles ids
-      switch (projectileId) {
-         case 1:
-         case 2:
-         case 3:
-         case 7:
-         case 24:
-         case 25:
-         case 30:
-         case 31:
-         case 32:
-         case 34:
-         case 36:
-         case 37:
-         case 38:
-            FMODUnity.RuntimeManager.PlayOneShotAttached(SHIP_CANNON, sourceGo);
+   // Sea Projectile SFX
+   public void playSeaProjectileSfx (ProjectileType projectileType, GameObject projectileGo) {
+      string path = string.Empty;
+      switch (projectileType) {
+         case ProjectileType.Cannonball:
+            path = SHIP_CANNON;
             break;
+      }
+
+      if (!string.IsNullOrEmpty(path)) {
+         FMODUnity.RuntimeManager.PlayOneShotAttached(path, projectileGo);
       }
    }
 
@@ -673,30 +683,38 @@ public class SoundEffectManager : GenericGameManager
       SeaMap = 9
    }
 
+   // SFX related enums
+   public enum WeaponType
+   {
+      None = 0,
+      Blunt_Metallic = 1,
+      Metallic_Thin = 2,
+      Metallic_Heavy = 3,
+      Wooden_Thin = 4,
+      Wooden_Thick_Heavy = 5,
+      Flammables_Swigs_Swishes = 6,
+      Clunky_Mechanical = 7
+   }
+
+   public enum SeaAbility
+   {
+      None = 0,
+      Horror_Poison = 1
+   }
+
+   public enum Cannonball
+   {
+      None = 0,
+      Water_Impact = 1
+   }
+
+   public enum ProjectileType
+   {
+      None = 0,
+      Cannonball = 1,
+      Fishman_Attack = 2
+   }
+
    #endregion
 }
 
-// SFX related enums
-public enum WeaponSfxType
-{
-   None = 0,
-   Blunt_Metallic = 1,
-   Metallic_Thin = 2,
-   Metallic_Heavy = 3,
-   Wooden_Thin = 4,
-   Wooden_Thick_Heavy = 5,
-   Flammables_Swigs_Swishes = 6,
-   Clunky_Mechanical = 7
-}
-
-public enum SeaAbilitySfxType
-{
-   None = 0,
-   Horror_Poison = 1
-}
-
-public enum CannonballSfxType
-{
-   None = 0,
-   Water_Impact = 1
-}

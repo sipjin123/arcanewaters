@@ -25,7 +25,7 @@ public class WeaponStatData : EquipmentStatData
    public string actionSfxDirectory = "";
 
    // SFX category for FMOD implementation
-   public WeaponSfxType sfxType;
+   public SoundEffectManager.WeaponType sfxType;
 
    // The damage of the weapon
    public int weaponBaseDamage = 0;

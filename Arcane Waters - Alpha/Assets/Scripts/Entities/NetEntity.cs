@@ -2530,7 +2530,7 @@ public class NetEntity : NetworkBehaviour
       gainItemCanvas.GetComponentInChildren<Image>().SetNativeSize();
 
       // Play SFX
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.COLLECT_SILVER, position: targetPos);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.GAIN_SILVER, targetPos);
 
       // Update the Silver indicator
       PvpStatusPanel.self.addSilver(silverCount);

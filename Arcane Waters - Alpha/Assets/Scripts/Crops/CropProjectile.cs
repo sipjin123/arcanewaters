@@ -129,7 +129,7 @@ public class CropProjectile : MonoBehaviour {
          cropPickup.shadow.transform.localScale = newShadowSize;
       }
 
-      SoundManager.playClipAtPoint(SoundManager.Type.Harvesting_Hit, transform.position);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.HARVESTING_HIT, transform.position);
 
       Destroy(this.gameObject);
    }

@@ -56,6 +56,12 @@ public class TooltipHandler : MonoBehaviour
    }
 
    public void callToolTip (Rarity.Type itemRarityType, GameObject tooltipOwner, ToolTipComponent.Type type, string msg, ToolTipComponent.TooltipPlacement placement, Vector3 elementPosition, GameObject panelRoot, float width) {
+      // Don't display empty tooltip
+      if (msg == "") {
+         D.warning("Empty tooltip for " + tooltipOwner.name);
+         return;
+      }
+
       // Choose the inventory style panel for the tooltip display
       toolTipType = type;
       if (toolTipType == ToolTipComponent.Type.ItemCellInventory) {

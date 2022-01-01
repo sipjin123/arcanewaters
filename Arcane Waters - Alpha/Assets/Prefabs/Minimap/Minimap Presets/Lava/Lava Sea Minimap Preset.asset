@@ -20,10 +20,8 @@ MonoBehaviour:
   backgroundColor: {r: 0, g: 0, b: 0, a: 0}
   useOutline: 0
   outlineColor: {r: 0, g: 0, b: 0, a: 0}
-  mapTypeNames:
-  - Sea
-  mapKeys: []
-  biome: lava
+  specialType: 0
+  specialTypeAreaKey: 
   _tileLayer:
   - Name: water
     color: {r: 0, g: 0, b: 0, a: 0}
@@ -95,7 +93,7 @@ MonoBehaviour:
     color: {r: 0.16470589, g: 0.427451, b: 0.8588236, a: 1}
     description: 
     isOnlyBorder: 0
-    useFullName: 1
+    useFullName: 0
     isSubLayer: 0
     subLayerSpriteSuffixNames: []
     sprites: []
@@ -125,7 +123,7 @@ MonoBehaviour:
     useOutline: 0
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
   - Name: ground
-    color: {r: 0.42352945, g: 0.4901961, b: 0.5058824, a: 1}
+    color: {r: 0.654902, g: 0.627451, b: 0.38823533, a: 1}
     description: 
     isOnlyBorder: 0
     useFullName: 0
@@ -138,7 +136,7 @@ MonoBehaviour:
     topBorderColor: {r: 0, g: 0, b: 0, a: 0}
     topPixelCount: 0
     useDownBorder: 0
-    downBorderColor: {r: 0.2509804, g: 0.3019608, b: 0.43921572, a: 1}
+    downBorderColor: {r: 0.32156864, g: 0.21176472, b: 0.29411766, a: 1}
     downPixelCount: 0
     useAnotherDownBorder: 0
     anotherDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
@@ -158,10 +156,8 @@ MonoBehaviour:
     useOutline: 0
     outlineColor: {r: 0.19607845, g: 0.45882356, b: 0.89019614, a: 1}
   - Name: mountain
-    color: {r: 0.42352945, g: 0.4901961, b: 0.5058824, a: 1}
-    description: '
-
-'
+    color: {r: 0.654902, g: 0.627451, b: 0.38823533, a: 1}
+    description: 
     isOnlyBorder: 0
     useFullName: 0
     isSubLayer: 0
@@ -170,18 +166,18 @@ MonoBehaviour:
     useRandomColor: 0
     randomColor: {r: 0, g: 0, b: 0, a: 0}
     useTopBorder: 1
-    topBorderColor: {r: 0.2509804, g: 0.3019608, b: 0.43921572, a: 1}
+    topBorderColor: {r: 0.5176471, g: 0.38823533, b: 0.37254903, a: 1}
     topPixelCount: 1
     useDownBorder: 1
-    downBorderColor: {r: 0.2509804, g: 0.3019608, b: 0.43921572, a: 1}
+    downBorderColor: {r: 0.5176471, g: 0.38823533, b: 0.37254903, a: 1}
     downPixelCount: 3
     useAnotherDownBorder: 1
-    anotherDownBorderColor: {r: 0.35686275, g: 0.427451, b: 0.43921572, a: 1}
+    anotherDownBorderColor: {r: 0.6156863, g: 0.4431373, b: 0.3803922, a: 1}
     anotherDownPixelCount: 1
     useTopDownBorder: 0
     topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
     useLateralBorder: 1
-    lateralColor: {r: 0.2509804, g: 0.3019608, b: 0.43921572, a: 1}
+    lateralColor: {r: 0.5176471, g: 0.38823533, b: 0.37254903, a: 1}
     useBorder: 0
     borderColor: {r: 0, g: 0, b: 0, a: 0}
     useAlternatingColor: 0
@@ -193,10 +189,8 @@ MonoBehaviour:
     useOutline: 0
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
   - Name: mountain
-    color: {r: 0.42352945, g: 0.4901961, b: 0.5058824, a: 1}
-    description: '
-
-'
+    color: {r: 0.654902, g: 0.627451, b: 0.38823533, a: 1}
+    description: 
     isOnlyBorder: 1
     useFullName: 0
     isSubLayer: 0
@@ -205,18 +199,18 @@ MonoBehaviour:
     useRandomColor: 0
     randomColor: {r: 0, g: 0, b: 0, a: 0}
     useTopBorder: 1
-    topBorderColor: {r: 0.2509804, g: 0.3019608, b: 0.43921572, a: 1}
+    topBorderColor: {r: 0.5176471, g: 0.38823533, b: 0.37254903, a: 1}
     topPixelCount: 1
     useDownBorder: 1
-    downBorderColor: {r: 0.2509804, g: 0.3019608, b: 0.43921572, a: 1}
+    downBorderColor: {r: 0.5176471, g: 0.38823533, b: 0.37254903, a: 1}
     downPixelCount: 3
     useAnotherDownBorder: 1
-    anotherDownBorderColor: {r: 0.35686275, g: 0.427451, b: 0.43921572, a: 1}
+    anotherDownBorderColor: {r: 0.6156863, g: 0.4431373, b: 0.3803922, a: 1}
     anotherDownPixelCount: 1
     useTopDownBorder: 0
     topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
     useLateralBorder: 1
-    lateralColor: {r: 0.2509804, g: 0.3019608, b: 0.43921572, a: 1}
+    lateralColor: {r: 0.5176471, g: 0.38823533, b: 0.37254903, a: 1}
     useBorder: 0
     borderColor: {r: 0, g: 0, b: 0, a: 0}
     useAlternatingColor: 0
@@ -228,45 +222,8 @@ MonoBehaviour:
     useOutline: 0
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
   - Name: dock
-    color: {r: 0.4716981, g: 0.25121096, b: 0.011124954, a: 1}
-    description: '
-
-'
-    isOnlyBorder: 0
-    useFullName: 0
-    isSubLayer: 0
-    subLayerSpriteSuffixNames: []
-    sprites: []
-    useRandomColor: 0
-    randomColor: {r: 0, g: 0, b: 0, a: 0}
-    useTopBorder: 0
-    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
-    topPixelCount: 0
-    useDownBorder: 0
-    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
-    downPixelCount: 0
-    useAnotherDownBorder: 0
-    anotherDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
-    anotherDownPixelCount: 0
-    useTopDownBorder: 0
-    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
-    useLateralBorder: 0
-    lateralColor: {r: 0, g: 0, b: 0, a: 0}
-    useBorder: 0
-    borderColor: {r: 0, g: 0, b: 0, a: 0}
-    useAlternatingColor: 0
-    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
-    useVerticalAlternatingColor: 0
-    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
-    useHorizontalAlternatingColor: 0
-    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
-    useOutline: 0
-    outlineColor: {r: 0, g: 0, b: 0, a: 0}
-  - Name: grass
-    color: {r: 0, g: 0, b: 0, a: 0}
-    description: '
-
-'
+    color: {r: 0.4245283, g: 0.22129667, b: 0, a: 1}
+    description: 
     isOnlyBorder: 0
     useFullName: 0
     isSubLayer: 0
@@ -299,44 +256,7 @@ MonoBehaviour:
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
   - Name: mountain-top
     color: {r: 0, g: 0, b: 0, a: 0}
-    description: '
-
-'
-    isOnlyBorder: 0
-    useFullName: 0
-    isSubLayer: 0
-    subLayerSpriteSuffixNames: []
-    sprites: []
-    useRandomColor: 0
-    randomColor: {r: 0, g: 0, b: 0, a: 0}
-    useTopBorder: 0
-    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
-    topPixelCount: 0
-    useDownBorder: 0
-    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
-    downPixelCount: 0
-    useAnotherDownBorder: 0
-    anotherDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
-    anotherDownPixelCount: 0
-    useTopDownBorder: 0
-    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
-    useLateralBorder: 0
-    lateralColor: {r: 0, g: 0, b: 0, a: 0}
-    useBorder: 0
-    borderColor: {r: 0, g: 0, b: 0, a: 0}
-    useAlternatingColor: 0
-    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
-    useVerticalAlternatingColor: 0
-    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
-    useHorizontalAlternatingColor: 0
-    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
-    useOutline: 0
-    outlineColor: {r: 0, g: 0, b: 0, a: 0}
-  - Name: river
-    color: {r: 0, g: 0, b: 0, a: 0}
-    description: '
-
-'
+    description: 
     isOnlyBorder: 0
     useFullName: 0
     isSubLayer: 0
@@ -369,9 +289,40 @@ MonoBehaviour:
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
   - Name: bulding
     color: {r: 0, g: 0, b: 0, a: 0}
-    description: '
-
-'
+    description: 
+    isOnlyBorder: 0
+    useFullName: 0
+    isSubLayer: 0
+    subLayerSpriteSuffixNames: []
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    topPixelCount: 0
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    downPixelCount: 0
+    useAnotherDownBorder: 0
+    anotherDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    anotherDownPixelCount: 0
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: river
+    color: {r: 0, g: 0, b: 0, a: 0}
+    description: 
     isOnlyBorder: 0
     useFullName: 0
     isSubLayer: 0
@@ -404,9 +355,7 @@ MonoBehaviour:
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
   - Name: detail
     color: {r: 0, g: 0, b: 0, a: 0}
-    description: '
-
-'
+    description: 
     isOnlyBorder: 0
     useFullName: 0
     isSubLayer: 0
@@ -439,9 +388,40 @@ MonoBehaviour:
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
   - Name: tree
     color: {r: 0, g: 0, b: 0, a: 0}
-    description: '
-
-'
+    description: 
+    isOnlyBorder: 0
+    useFullName: 0
+    isSubLayer: 0
+    subLayerSpriteSuffixNames: []
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    topPixelCount: 0
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    downPixelCount: 0
+    useAnotherDownBorder: 0
+    anotherDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    anotherDownPixelCount: 0
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: grass
+    color: {r: 0, g: 0, b: 0, a: 0}
+    description: 
     isOnlyBorder: 0
     useFullName: 0
     isSubLayer: 0
@@ -474,9 +454,40 @@ MonoBehaviour:
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
   - Name: absolute-top
     color: {r: 0, g: 0, b: 0, a: 0}
-    description: '
-
-'
+    description: 
+    isOnlyBorder: 0
+    useFullName: 0
+    isSubLayer: 0
+    subLayerSpriteSuffixNames: []
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    topPixelCount: 0
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    downPixelCount: 0
+    useAnotherDownBorder: 0
+    anotherDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    anotherDownPixelCount: 0
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: pathway
+    color: {r: 0, g: 0, b: 0, a: 0}
+    description: 
     isOnlyBorder: 0
     useFullName: 0
     isSubLayer: 0
@@ -532,3 +543,13 @@ MonoBehaviour:
     limitSpawnCount: 0
     spawnGridSize: {x: 0, y: 0}
     minDistanceManhattan: 0
+  baseLandColor: {r: 0, g: 0, b: 0, a: 0}
+  landBorderColor: {r: 0, g: 0, b: 0, a: 0}
+  landOutlineColor: {r: 0, g: 0, b: 0, a: 0}
+  landCliffLowerColor: {r: 0, g: 0, b: 0, a: 0}
+  landCliffUpperColor: {r: 0, g: 0, b: 0, a: 0}
+  waterColor: {r: 0, g: 0, b: 0, a: 0}
+  waterBorderColor: {r: 0, g: 0, b: 0, a: 0}
+  deeper1WaterColor: {r: 0, g: 0, b: 0, a: 0}
+  deeper2WaterColor: {r: 0, g: 0, b: 0, a: 0}
+  waterfallColor: {r: 0, g: 0, b: 0, a: 0}

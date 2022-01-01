@@ -795,7 +795,7 @@ public class SeaEntity : NetEntity
          Instantiate(PrefabsManager.self.requestCannonSplashPrefab(impactMagnitude), pos + new Vector3(0f, -.1f), Quaternion.identity);
 
          // FMOD sfx for water
-         SoundEffectManager.self.playCannonballImpact(CannonballSfxType.Water_Impact, pos);
+         SoundEffectManager.self.playCannonballImpact(SoundEffectManager.Cannonball.Water_Impact, pos);
          //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, pos);
       }
    }
@@ -1413,8 +1413,8 @@ public class SeaEntity : NetEntity
    }
 
    [ClientRpc]
-   public void Rpc_PlayHitSfx (bool isShip, SeaMonsterEntity.Type seaMonsterType, bool isCrit, CannonballEffector.Type effectorType, Vector3 position) {
-      SoundEffectManager.self.playEnemyHitSfx(isShip, seaMonsterType, isCrit, effectorType, position);
+   public void Rpc_PlayHitSfx (bool isShip, SeaMonsterEntity.Type seaMonsterType, bool isCrit, CannonballEffector.Type effectorType) {
+      SoundEffectManager.self.playEnemyHitSfx(isShip, seaMonsterType, isCrit, effectorType, this.transform.position);
    }
 
    #region Enemy AI

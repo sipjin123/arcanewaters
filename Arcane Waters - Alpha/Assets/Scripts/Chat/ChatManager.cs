@@ -62,7 +62,7 @@ public class ChatManager : GenericGameManager
       _commandData.Add(new CommandData("/w", "Sends a private message to a user", sendWhisperMessageToServer, parameterNames: new List<string>() { "userName", "message" }));
       _commandData.Add(new CommandData("/r", "Sends a private message to the last user that whispered to you", tryReply, parameterNames: new List<string>() { "message" }));
       _commandData.Add(new CommandData("/who", "Search users", searchUsers, parameterNames: new List<string>() { "filter ('is','in','level')", "username, area or level" }));
-      _commandData.Add(new CommandData("/e", "Play an emote", requestPlayEmote, parameterNames: new List<string>() { "emoteType" }, parameterAutocompletes: new List<string>() { "dance", "kneel", "greet", "off" }));
+      _commandData.Add(new CommandData("/e", "Play an emote", requestPlayEmote, parameterNames: new List<string>() { "emoteType" }, parameterAutocompletes: new List<string>() { "dance", "kneel", "greet" }));
    }
 
    private void Update () {
@@ -215,25 +215,25 @@ public class ChatManager : GenericGameManager
 
    public void requestPlayEmote (string parameters) {
       if (Global.player == null || Global.player.getPlayerBodyEntity() == null || Global.player.getPlayerBodyEntity().isSitting || Global.player.isInBattle()) {
-         this.addChat("Can't emote now...", ChatInfo.Type.System);
+         addChat("Can't emote now...", ChatInfo.Type.System);
          return;
       }
 
       PlayerBodyEntity body = Global.player.getPlayerBodyEntity();
 
-      if (Util.areStringsEqual(parameters, "off")) {
-         if (body.isEmoting()) {
-            body.Cmd_StopEmote();
-         } else {
-            this.addChat("You are not emoting yet...", ChatInfo.Type.System);
-         }
-      } else {
-         if (body.isEmoting()) {
-            this.addChat("You are already emoting! use '/e off' to stop", ChatInfo.Type.System);
-         } else {
-            body.Cmd_PlayEmote(EmoteManager.parse(parameters), body.facing);
-         }
+      if (body.isEmoting()) {
+         addChat("You are already emoting!", ChatInfo.Type.System);
+         return;
       }
+
+      EmoteManager.EmoteTypes parsedEmote = EmoteManager.parse(parameters);
+
+      if (parsedEmote == EmoteManager.EmoteTypes.None) {
+         addChat($"Unrecognized emote '{parameters}'", ChatInfo.Type.System);
+         return;
+      }
+
+      body.Cmd_PlayEmote(parsedEmote, body.facing);
    }
 
    public void sendGlobalMessageToServer (string message) {

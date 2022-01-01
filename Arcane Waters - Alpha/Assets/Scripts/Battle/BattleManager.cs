@@ -1333,7 +1333,7 @@ public class BattleManager : MonoBehaviour {
          Vector3 silverBurstEffectOffsetWhenFacingWest = silverBurstEffectOffsetWhenFacingEast;
          silverBurstEffectOffsetWhenFacingWest.Scale(new Vector3(-1.0f, 1.0f, 1.0f));
          Vector3 spotPosition = battler.battleSpot.transform.position;
-         float battlerZ = battler.transform.position.z;
+         float battlerZ = battler.spriteContainers.transform.position.z;
          Vector3 shiftedSpotPosition = new Vector3(spotPosition.x, spotPosition.y, battlerZ);
          shiftedSpotPosition += ((battler.teamType == Battle.TeamType.Defenders) ? silverBurstEffectOffsetWhenFacingWest : silverBurstEffectOffsetWhenFacingEast);
 

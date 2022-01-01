@@ -299,6 +299,20 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       if (!isWithinEnemyRadius) {
          base.FixedUpdate();
       }
+
+      // If the player is sitting down and tries to move or jump, get up
+      if (isSitting) {
+         if (InputManager.isPressingDirection(facing) || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
+            Cmd_ExitChair();
+         }
+      }
+      
+      // If the player is emoting down and tries to move or jump, stop
+      if (isEmoting()) {
+         if (!Util.AreVectorsAlmostTheSame(InputManager.getMovementInput(), Vector2.zero) || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
+            Cmd_StopEmote();
+         }
+      }
    }
 
    protected override void Update () {
@@ -345,6 +359,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             toggleWeaponVisibility(show: false);
             applySittingEmoteMask(show: true);
             setSpritesDepth(-0.005f);
+            transform.position = chairPosition;
 
             if (facing == Direction.North) {
                setSpritesDepth(+0.005f);
@@ -361,16 +376,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
             if (isLocalPlayer) {
                InputManager.toggleInput(enable: false);
-               GenericActionPromptScreen promptScreen = PanelManager.self.genericPromptScreen;
-
-               if (promptScreen != null) {
-                  promptScreen.text = "Get Up";
-                  promptScreen.button.onClick.RemoveAllListeners();
-                  promptScreen.button.onClick.AddListener(() => {
-                     Cmd_ExitChair();
-                  });
-                  promptScreen.show();
-               }
             }
          } else {
             transform.position = positionBeforeSitting;
@@ -437,6 +442,12 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          }
 
          _prevEmoteType = emoteType;
+      }
+
+      if (emoteType != EmoteManager.EmoteTypes.None) {
+         if (areCompositeAnimationsStopped()) {
+            Cmd_StopEmote();
+         }
       }
    }
 
@@ -657,6 +668,11 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    private void triggerJumpAction () {
       // Can't jump while interacting
       if (interactingAnimation) {
+         return;
+      }
+
+      // Can't jump if Input is disabled
+      if (!InputManager.isActionInputEnabled()) {
          return;
       }
 
@@ -1213,10 +1229,24 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          animator.enabled = false;
       }
 
-      CompositeAnimationPlayer[] compositeAnims = GetComponentsInChildren<CompositeAnimationPlayer>();
-      foreach (CompositeAnimationPlayer anim in compositeAnims) {
+      _compositeAnimationPlayersCache = GetComponentsInChildren<CompositeAnimationPlayer>();
+      foreach (CompositeAnimationPlayer anim in _compositeAnimationPlayersCache) {
          anim.play(animation);
       }
+   }
+
+   private bool areCompositeAnimationsStopped () {
+      if (_compositeAnimationPlayersCache == null) {
+         return true;
+      }
+
+      foreach (CompositeAnimationPlayer anim in _compositeAnimationPlayersCache) {
+         if (anim.getStatus() != CompositeAnimationPlayer.CompositeAnimationStatus.Stopped) {
+            return false;
+         }
+      }
+
+      return true;
    }
 
    public void stopCompositeAnimation () {
@@ -1232,9 +1262,10 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          animator.enabled = true;
       }
 
-      CompositeAnimationPlayer[] compositeAnims = GetComponentsInChildren<CompositeAnimationPlayer>();
-      foreach (CompositeAnimationPlayer anim in compositeAnims) {
-         anim.stop();
+      if (_compositeAnimationPlayersCache != null) {
+         foreach (CompositeAnimationPlayer anim in _compositeAnimationPlayersCache) {
+            anim.stop();
+         }
       }
    }
 
@@ -1249,6 +1280,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          facing = direction;
          positionBeforeSitting = transform.position;
          this.chairPosition = chairPosition;
+         this.transform.position = chairPosition;
       }
    }
 
@@ -1319,6 +1351,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    // The previous emoting state
    private EmoteManager.EmoteTypes _prevEmoteType = EmoteManager.EmoteTypes.None;
+
+   // Cache for the composite animation players
+   CompositeAnimationPlayer[] _compositeAnimationPlayersCache;
 
    #endregion
 }

@@ -60,15 +60,15 @@ public class NetworkedProjectile : MonoBehaviour {
 
       if (!Util.isBatch()) {
          // Play a sound effect
-         AudioClipManager.AudioClipData audioClipData = AudioClipManager.self.getAudioClipData(abilityData.castSFXPath);
-         if (audioClipData.audioPath.Length > 1) {
-            AudioClip clip = audioClipData.audioClip;
-            if (clip != null) {
-               SoundManager.playClipAtPoint(clip, Camera.main.transform.position);
-            }
-         } else {
-            SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Attack_Fire, this.transform.position);
-         }
+         //AudioClipManager.AudioClipData audioClipData = AudioClipManager.self.getAudioClipData(abilityData.castSFXPath);
+         //if (audioClipData.audioPath.Length > 1) {
+         //   AudioClip clip = audioClipData.audioClip;
+         //   if (clip != null) {
+         //      SoundManager.playClipAtPoint(clip, Camera.main.transform.position);
+         //   }
+         //} else {
+         //   SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Attack_Fire, this.transform.position);
+         //}
       }
 
       if (attackType == Attack.Type.Cannon) {
@@ -165,7 +165,7 @@ public class NetworkedProjectile : MonoBehaviour {
                Instantiate(PrefabsManager.self.requestCannonSplashPrefab(_impactMagnitude), this.transform.position + new Vector3(0f, -.1f), Quaternion.identity);
 
                // FMOD sfx for water
-               SoundEffectManager.self.playCannonballImpact(CannonballSfxType.Water_Impact, this.transform.position);
+               SoundEffectManager.self.playCannonballImpact(SoundEffectManager.Cannonball.Water_Impact, this.transform.position);
 
                //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position);
             }

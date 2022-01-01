@@ -67,7 +67,7 @@ public class SoundManager : GenericGameManager
       None = 0, Silence = 1, Intro_Music = 2,
 
       // Sea Music
-      Sea_Forest = 100, Sea_Desert = 101, Sea_Pine = 102, Sea_Snow = 103, Sea_Mushroom = 104, Sea_Lava = 105, Sea_League = 106,
+      Sea_Forest = 100, Sea_Desert = 101, Sea_Pine = 102, Sea_Snow = 103, Sea_Mushroom = 104, Sea_Lava = 105, Sea_League = 106, Sea_PvP = 107,
 
       // Town Music
       Town_Forest = 150, Town_Pine = 151, Town_Desert = 152, Town_Mushroom = 153, Town_Snow = 154, Town_Lava = 155, Interior = 156,
@@ -519,12 +519,12 @@ public class SoundManager : GenericGameManager
       SoundEffectManager.self.playBackgroundMusic(type);
 
       // Smoothly transition to the new music using a coroutine, only if it's normal Sea Music
-      if (type == Type.Sea_Forest || type == Type.Sea_Desert || type == Type.Sea_Snow ||
-         type == Type.Sea_Pine || type == Type.Sea_Lava || type == Type.Sea_Mushroom) {
-         self.StartCoroutine(self.transitionBackgroundMusic(type));
-      } else {
-         self.StartCoroutine(self.transitionBackgroundMusic(Type.None));
-      }
+      //if (type == Type.Sea_Forest || type == Type.Sea_Desert || type == Type.Sea_Snow ||
+      //   type == Type.Sea_Pine || type == Type.Sea_Lava || type == Type.Sea_Mushroom) {
+      //   self.StartCoroutine(self.transitionBackgroundMusic(type));
+      //} else {
+      //   self.StartCoroutine(self.transitionBackgroundMusic(Type.None));
+      //}
    }
 
    public static void create3dSound (string audioClipName, Vector3 position, int countToChooseFrom = 0) {

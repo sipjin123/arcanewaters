@@ -54,9 +54,14 @@ public class SeaProjectile : NetworkBehaviour
          updateVisuals();
          updateAnimatedVisuals();
 
+         // Play FMOD sfx
+         ProjectileStatData projectileStatData = ProjectileStatManager.self.getProjectileData(projectileTypeId);
+         if (projectileStatData != null) {
+            SoundEffectManager.self.playSeaProjectileSfx(projectileStatData.sfxType, this.gameObject);
+         }
          // Play an appropriate sound
          //if (_playFiringSound) {
-            //FMODUnity.RuntimeManager.PlayOneShotAttached(SoundEffectManager.SHIP_CANNON, this.gameObject);
+         //FMODUnity.RuntimeManager.PlayOneShotAttached(SoundEffectManager.SHIP_CANNON, this.gameObject);
          //}
       }
    }
@@ -126,10 +131,6 @@ public class SeaProjectile : NetworkBehaviour
          if (projectileData != null) {
             //_rigidbody.velocity *= (_abilityData == null ? 1 : projectileData.animationSpeed);
             //_rigidbody.mass = projectileData.projectileMass;
-
-            // Play SFX
-            SoundEffectManager.self.playSeaProjectileSfx(_abilityData.projectileId, this.gameObject);
-
             transform.localScale = new Vector3(projectileData.projectileScale, projectileData.projectileScale, projectileData.projectileScale);
          }
       }

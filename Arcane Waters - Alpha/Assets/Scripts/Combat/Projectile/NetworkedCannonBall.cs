@@ -76,7 +76,7 @@ public class NetworkedCannonBall : NetworkedProjectile
             Instantiate(PrefabsManager.self.requestCannonSplashPrefab(_impactMagnitude), circleCollider.transform.position + new Vector3(0f, -.1f), Quaternion.identity);
 
             // FMOD sfx for water
-            SoundEffectManager.self.playCannonballImpact(CannonballSfxType.Water_Impact, this.transform.position);
+            SoundEffectManager.self.playCannonballImpact(SoundEffectManager.Cannonball.Water_Impact, this.transform.position);
             //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position);
          }
       }

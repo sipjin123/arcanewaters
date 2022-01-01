@@ -430,7 +430,7 @@ public class Area : MonoBehaviour
             return "League Lobby";
          } else if (map.displayName.ToLower().StartsWith("world_map_")) {
             // Change name of open world maps if it hasn't been changed explicitly
-            return "High Seas (" + map.biome.ToString() + ")";
+            return "High Seas: " + Biome.getName(map.biome);
          } else if (map.displayName != null) {
             return Util.toTitleCase(map.displayName);
          }
@@ -449,7 +449,9 @@ public class Area : MonoBehaviour
 
       if (AreaManager.self.isInteriorArea(areaKey)) {
          return SoundManager.Type.Interior;
-      } else if (VoyageManager.isLeagueArea(areaKey) || VoyageManager.isPvpArenaArea(areaKey)) {
+      } else if (VoyageManager.isPvpArenaArea(areaKey)) {
+         return SoundManager.Type.Sea_PvP;
+      } else if (VoyageManager.isLeagueArea(areaKey)) {
          return SoundManager.Type.Sea_League;
       } else if (VoyageManager.isLeagueSeaBossArea(areaKey)) {
          return SoundManager.Type.Sea_Lava;

@@ -26,6 +26,24 @@ public class VoyageRatingManager : MonoBehaviour {
       10
    };
 
+   // The display string for each level
+   public static readonly string[] levelDisplayStringCollection = {
+      // Level 0 
+      "Low",
+
+      // Level 1
+      "Average",
+
+      // Level 2
+      "High",
+
+      // Level 3 
+      "Super",
+
+      // Level 4
+      "Ultra"
+   };
+
    // Rating Points awarded when receiving damage
    private const int RATING_POINTS_DAMAGE_RECEIVED_REWARD = -10;
 
@@ -138,6 +156,16 @@ public class VoyageRatingManager : MonoBehaviour {
 
    public static int getPointsMin () {
       return 0;
+   }
+
+   public static string computeDisplayStringForRating (int ratingPoints) {
+      int computedLevel = computeRatingLevelFromPoints(ratingPoints);
+      
+      if (computedLevel < 0 || computedLevel >= levelDisplayStringCollection.Length) {
+         return string.Empty;
+      }
+
+      return levelDisplayStringCollection[computedLevel];
    }
 
    #region Private Variables

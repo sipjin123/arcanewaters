@@ -66,7 +66,7 @@ public class ChairClickable : MonoBehaviour
    }
 
    public void handleSpriteOutline () {
-      if (_outline == null || _clickableBox == null) {
+      if (_outline == null || _clickableBox == null || MouseManager.self == null) {
          return;
       }
 

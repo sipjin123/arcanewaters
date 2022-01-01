@@ -140,7 +140,7 @@ public class ServerCannonBall : SeaProjectile
          }
       } else if (!hitEnemy) {
          // FMOD sfx for water
-         SoundEffectManager.self.playCannonballImpact(CannonballSfxType.Water_Impact, this.transform.position);
+         SoundEffectManager.self.playCannonballImpact(SoundEffectManager.Cannonball.Water_Impact, this.transform.position);
 
          //if (playDefaultSFX) {
          //   SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position, true);
@@ -204,10 +204,10 @@ public class ServerCannonBall : SeaProjectile
 
       // If the cannonball doesn't have effectors applied
       if (_effectors.Count == 0) {
-         hitEntity.Rpc_PlayHitSfx(isShip, seaMonsterType, isCrit, CannonballEffector.Type.None, transform.position);
+         hitEntity.Rpc_PlayHitSfx(isShip, seaMonsterType, isCrit, CannonballEffector.Type.None);
       } else if (_effectors.Any(e => e.effectorType == CannonballEffector.Type.Explosion)) {
          // Play SFX for explosion effector
-         hitEntity.Rpc_PlayHitSfx(isShip, seaMonsterType, isCrit, CannonballEffector.Type.Explosion, transform.position);
+         hitEntity.Rpc_PlayHitSfx(isShip, seaMonsterType, isCrit, CannonballEffector.Type.Explosion);
       }
    }
 
