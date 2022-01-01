@@ -557,57 +557,63 @@ public class SeaEntity : NetEntity
       ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(abilityData.projectileId);
       int damage = (int) (projectileData.projectileDamage * Attack.getDamageModifier(Attack.Type.Shock_Ball));
 
-      List<Vector2> lightningPositions = new List<Vector2>();
+      List<uint> lightningTargets = new List<uint>();
       foreach (Collider2D collidedEntity in hits) {
          if (collidedEntity != null) {
             if (collidedEntity.GetComponent<SeaEntity>() != null) {
                SeaEntity seaEntity = collidedEntity.GetComponent<SeaEntity>();
+               if (primaryTargetNetID == seaEntity.netId) {
+                  continue;
+               }
                if (this.isEnemyOf(seaEntity) && !collidedEntities.ContainsKey(seaEntity) && !seaEntity.isDead() && seaEntity.instanceId == this.instanceId) {
-                  int finalDamage = seaEntity.applyDamage(damage, attackerNetId);
-                  seaEntity.Rpc_ShowExplosion(attackerNetId, collidedEntity.transform.position, finalDamage, Attack.Type.None, false);
+                  if (seaEntity.spritesContainer == null) {
+                     D.debug("Sprite container for chain lighting is missing!");
+                  }
+                  Vector3 newPosition = seaEntity.spritesContainer == null ? seaEntity.transform.position : seaEntity.spritesContainer.transform.position;
+                  float distanceToTarget = Vector2.Distance(sourcePos, newPosition);
+                  if (distanceToTarget <= 1) {
+                     lightningTargets.Add(seaEntity.netId);
+                     int finalDamage = seaEntity.applyDamage(damage, attackerNetId);
+                     seaEntity.Rpc_ShowExplosion(attackerNetId, collidedEntity.transform.position, finalDamage, Attack.Type.None, false);
 
-                  // Registers the action electrocuted to the userID to the achievement database for recording
-                  AchievementManager.registerUserAchievement(seaEntity, ActionType.Electrocuted);
+                     // Registers the action electrocuted to the userID to the achievement database for recording
+                     AchievementManager.registerUserAchievement(seaEntity, ActionType.Electrocuted);
 
-                  lightningPositions.Add(seaEntity.spritesContainer.transform.position);
-
-                  collidedEntities.Add(seaEntity, collidedEntity.transform);
-                  targetIDList.Add(seaEntity.netId);
+                     collidedEntities.Add(seaEntity, collidedEntity.transform);
+                     targetIDList.Add(seaEntity.netId);
+                  } else {
+                     D.debug("Chain lightning error! Distance is too far! {" + distanceToTarget + "}");
+                  }
                }
             }
          }
       }
 
-      Rpc_ChainLightning(lightningPositions.ToArray(), primaryTargetNetID, sourcePos);
+      Rpc_ChainLightning(lightningTargets, primaryTargetNetID, sourcePos);
    }
 
    [Server]
    public void cannonballChainLightning (uint attackerNetId, Vector2 sourcePos, uint primaryTargetNetID, float chainRadius, float damage) {
-      Collider2D[] hits = Physics2D.OverlapCircleAll(sourcePos, chainRadius);
+      List<SeaEntity> enemiesInRange = Util.getEnemiesInCircle(this, sourcePos, chainRadius);
       Dictionary<NetEntity, Transform> collidedEntities = new Dictionary<NetEntity, Transform>();
       List<uint> targetNetIdList = new List<uint>();
       int damageInt = (int) damage;
 
-      List<Vector2> lightningPositions = new List<Vector2>();
-      foreach (Collider2D hit in hits) {
-         if (hit != null) {
-            if (hit.GetComponent<SeaEntity>() != null) {
-               SeaEntity hitEntity = hit.GetComponent<SeaEntity>();
-               if (this.isEnemyOf(hitEntity) && !collidedEntities.ContainsKey(hitEntity) && !hitEntity.isDead() && hitEntity.instanceId == this.instanceId && hitEntity.netId != primaryTargetNetID) {
-                  int finalDamage = hitEntity.applyDamage(damageInt, attackerNetId);
-                  hitEntity.Rpc_ShowDamage(Attack.Type.None, hitEntity.transform.position, finalDamage);
-                  if (hitEntity.spritesContainer == null) {
-                     D.debug("Sprite container for chain lighting is missing!");
-                  }
-                  lightningPositions.Add(hitEntity.spritesContainer == null ? hitEntity.transform.position : hitEntity.spritesContainer.transform.position);
-                  collidedEntities.Add(hitEntity, hit.transform);
-                  targetNetIdList.Add(hitEntity.netId);
-               }
+      List<uint> lightningTargets = new List<uint>();
+      foreach (SeaEntity enemy in enemiesInRange) {
+         if (this.isEnemyOf(enemy) && !collidedEntities.ContainsKey(enemy) && !enemy.isDead() && enemy.instanceId == this.instanceId && enemy.netId != primaryTargetNetID) {
+            int finalDamage = enemy.applyDamage(damageInt, attackerNetId);
+            enemy.Rpc_ShowDamage(Attack.Type.None, enemy.transform.position, finalDamage);
+            if (enemy.spritesContainer == null) {
+               D.debug("Sprite container for chain lighting is missing!");
             }
+            lightningTargets.Add(enemy.netId);
+            collidedEntities.Add(enemy, enemy.transform);
+            targetNetIdList.Add(enemy.netId);
          }
       }
 
-      Rpc_ChainLightning(lightningPositions.ToArray(), primaryTargetNetID, sourcePos);
+      Rpc_ChainLightning(lightningTargets, primaryTargetNetID, sourcePos);
    }
 
    [ClientRpc]
@@ -632,34 +638,67 @@ public class SeaEntity : NetEntity
    }
 
    [ClientRpc]
-   private void Rpc_ChainLightning (Vector2[] targetPosGround, uint primaryTargetNetID, Vector2 sourcePos) {
-      SeaEntity parentEntity = SeaManager.self.getEntity(primaryTargetNetID);
-      if (parentEntity == null) {
-         D.debug("Sea manager does not contain Entity! " + primaryTargetNetID);
+   private void Rpc_ChainLightning (List<uint> targetPosGround, uint primaryTargetNetID, Vector2 sourcePos) {
+      SeaEntity targetEntity = SeaManager.self.getEntity(primaryTargetNetID);
+      if (targetEntity == null) {
+         D.debug("Sea manager does not contain Target Entity! " + primaryTargetNetID);
          return;
       }
 
-      if (parentEntity.spritesContainer == null) {
+      if (targetEntity.spritesContainer == null) {
          D.debug("Entity {" + primaryTargetNetID + "} has no sprite container");
          return;
       }
 
-      Transform parentTransform = parentEntity.spritesContainer.transform;
+      Transform targetTransform = targetEntity.spritesContainer.transform;
       EffectManager.self.create(Effect.Type.Shock_Collision, sourcePos);
-
-      foreach (Vector2 targetPos in targetPosGround) {
-         // Setup lightning chain
-         LightningBoltScript lightning = Instantiate(PrefabsManager.self.lightningChainPrefab);
-         lightning.transform.SetParent(parentTransform, false);
-         lightning.StartObject.transform.position = lightning.transform.position;
-         lightning.EndObject.transform.position = targetPos;
-         if (lightning.GetComponent<LineRenderer>() != null) {
-            lightning.GetComponent<LineRenderer>().enabled = true;
-         } else {
-            D.debug("Lightning has no Line Renderer!!");
+      foreach (uint targetNetId in targetPosGround) {
+         if (targetNetId == primaryTargetNetID) {
+            continue;
          }
 
-         EffectManager.self.create(Effect.Type.Shock_Collision, targetPos);
+         SeaEntity chainedEntity = SeaManager.self.getEntity(targetNetId);
+         if (chainedEntity == null) {
+            D.debug("Sea manager does not contain Chained Entity! " + targetNetId);
+            continue;
+         }
+
+         Vector2 targetPos = chainedEntity.spritesContainer.transform.position;
+         float distanceBetweenChain = Vector2.Distance(targetTransform.position, targetPos);
+         if (distanceBetweenChain <= 1.25f) {
+            // Setup lightning chain
+            LightningBoltScript lightning = Instantiate(PrefabsManager.self.lightningChainPrefab);
+            lightning.transform.position = new Vector3(sourcePos.x, sourcePos.y, lightning.transform.position.z);
+
+            // Set the chain links
+            lightning.StartObject.transform.SetParent(targetEntity.transform);
+            lightning.EndObject.transform.SetParent(chainedEntity.transform);
+            Destroy(lightning.StartObject, 2);
+            Destroy(lightning.EndObject, 2);
+
+            // Update chain links to their designated coordinates
+            lightning.StartObject.transform.position = new Vector3(sourcePos.x, sourcePos.y, lightning.transform.position.z);//new Vector3(sourcePos.x, sourcePos.y, lightning.transform.position.z);//new Vector3(lightning.transform.position.x, lightning.transform.position.y, lightning.transform.position.z);
+            lightning.EndObject.transform.position = new Vector3(targetPos.x, targetPos.y, lightning.transform.position.z);
+            lightning.hasActivated = true;
+
+            // Make sure the attached lightning keeps track of the entity position to prevent the lightning to latch across the entire screen during respawn
+            AttachedLightning attachedLightning = lightning.GetComponent<AttachedLightning>();
+            if (attachedLightning != null) {
+               attachedLightning.startPoint = lightning.StartObject.transform;
+               attachedLightning.endPoint = lightning.EndObject.transform;
+               attachedLightning.hasActivated = true;
+            }
+
+            if (lightning.GetComponent<LineRenderer>() != null) {
+               lightning.GetComponent<LineRenderer>().enabled = true;
+            } else {
+               D.debug("Lightning has no Line Renderer!!");
+            }
+
+            EffectManager.self.create(Effect.Type.Shock_Collision, targetPos);
+         } else {
+            D.debug("Chain was too far {"+ distanceBetweenChain + "}");
+         }
       }
    }
 
