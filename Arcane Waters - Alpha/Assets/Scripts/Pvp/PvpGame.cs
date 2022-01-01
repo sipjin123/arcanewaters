@@ -876,17 +876,25 @@ public class PvpGame : MonoBehaviour {
 
       // Choose an area around the spawn position
       Vector2 spawnPositionOffset = (teamType == PvpTeamType.A) ? Vector2.one : -Vector2.one;
+      int maxTeamMembers = 6;
 
       // Find random position around the spawn point to prevent ships from spawning above each other
-      float offsetRadiusMultiplier = .25f;
-
-      spawnPositionOffset *= offsetRadiusMultiplier;
+      float offsetRadiusMultiplier = .75f;//.25f
+      float maxOffsetPerPlayer = offsetRadiusMultiplier / maxTeamMembers;
       int numTeamSpawns = (teamType == PvpTeamType.A) ? _teamASpawns++ : _teamBSpawns++;
-      numTeamSpawns = numTeamSpawns % 6;
-      float rotationAngle = numTeamSpawns * 60.0f;
-      spawnPositionOffset = spawnPositionOffset.Rotate(rotationAngle);
-      spawnPosition += (Vector3)spawnPositionOffset;
+      numTeamSpawns = numTeamSpawns % maxTeamMembers;
 
+      // Set the random parameters
+      float minVal = .25f;
+      float maxVal = numTeamSpawns * maxOffsetPerPlayer;
+      maxVal = Mathf.Clamp(maxVal, minVal, offsetRadiusMultiplier);
+
+      // Generate the offset values
+      float randomX = UnityEngine.Random.Range(minVal, maxVal);
+      float randomY = UnityEngine.Random.Range(minVal, maxVal);
+      spawnPositionOffset *= new Vector2(randomX, randomY);
+      spawnPosition += (Vector3) spawnPositionOffset;
+      
       return spawnPosition;
    }
 
