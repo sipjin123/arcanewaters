@@ -533,6 +533,10 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static List<MapSpawn> getMapSpawnsById (int mapId) {
+      return new List<MapSpawn>();
+   }
+
    public static List<MapSpawn> getMapSpawns () {
       return new List<MapSpawn>();
    }

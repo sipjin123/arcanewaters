@@ -2538,6 +2538,38 @@ public class DB_Main : DB_MainStub
 
    #region MAP TOOL
 
+   public static new List<MapSpawn> getMapSpawnsById (int mapId) {
+      List<MapSpawn> result = new List<MapSpawn>();
+
+      string cmdText = "SELECT mapid, mapSpawnId, arriveFacing, maps_v2.name as mapName, map_spawns_v2.name as spawnName, mapVersion, posX, posY " +
+         "FROM global.map_spawns_v2 " +
+         "JOIN global.maps_v2 ON maps_v2.id = map_spawns_v2.mapid " +
+         "WHERE mapid = " + mapId + " AND mapVersion = publishedVersion;";
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         conn.Open();
+         cmd.Prepare();
+         DebugQuery(cmd);
+
+         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+            while (dataReader.Read()) {
+               result.Add(new MapSpawn {
+                  mapId = dataReader.GetInt32("mapid"),
+                  mapName = dataReader.GetString("mapName"),
+                  mapVersion = dataReader.GetInt32("mapVersion"),
+                  name = dataReader.GetString("spawnName"),
+                  posX = dataReader.GetFloat("posX"),
+                  posY = dataReader.GetFloat("posY"),
+                  spawnId = dataReader.GetInt32("mapSpawnId"),
+                  facingDirection = dataReader.GetInt32("arriveFacing"),
+               });
+            }
+         }
+      }
+
+      return result;
+   }
+
    public static new List<MapSpawn> getMapSpawns () {
       List<MapSpawn> result = new List<MapSpawn>();
 
