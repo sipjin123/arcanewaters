@@ -40,7 +40,8 @@ public class D : MonoBehaviour {
       CombatStatus = 27,
       PvpAnnouncement = 28,
       SeaAbility = 29,
-      Visit = 30
+      Visit = 30,
+      EnemyWaterSpawn = 31
    }
 
    // Any log files older than this will be deleted

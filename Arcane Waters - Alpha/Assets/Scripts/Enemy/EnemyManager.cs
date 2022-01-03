@@ -6,6 +6,7 @@ using Mirror;
 using System;
 using Random = UnityEngine.Random;
 using Pathfinding;
+using UnityEngine.Tilemaps;
 
 public class EnemyManager : MonoBehaviour {
    #region Public Variables
@@ -40,6 +41,98 @@ public class EnemyManager : MonoBehaviour {
       if (_spawners.TryGetValue(areaKey, out list)) {
          list.Clear();
          _spawners[areaKey] = list;
+      }
+   }
+
+   private void TestUpdate () {
+      if (KeyUtils.GetKeyDown(UnityEngine.InputSystem.Key.Digit1)) {
+         Instance instance = InstanceManager.self.getInstance(Global.player.instanceId);
+         spawnOpenWorldEnemies(instance, Global.player.areaKey);
+      }
+   }
+
+   public void spawnOpenWorldEnemies (Instance instance, string areaKey) {
+      int targetSpawns = 15;
+      StartCoroutine(CO_ProcessSpawnOpenWorldEnemies(instance, areaKey, targetSpawns));
+   }
+
+   private IEnumerator CO_ProcessSpawnOpenWorldEnemies (Instance instance, string areaKey, int targetSpawns) {
+      int maxAttempts = 100;
+      int successfulSpawns = 0;
+      yield return new WaitForSeconds(1);
+
+      Area areaTarget = AreaManager.self.getArea(areaKey);
+      if (areaTarget == null) {
+         D.adminLog("NULL Area {"+areaKey+"}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
+      } else {
+         List<TilemapLayer> totalWaterLayers = areaTarget.getWaterLayer();
+         foreach (TilemapLayer layer in totalWaterLayers) {
+            // Extract all available tiles in this layer
+            BoundsInt.PositionEnumerator allTilesInLayer = layer.tilemap.cellBounds.allPositionsWithin;
+            List<Vector3Int> availableTiles = new List<Vector3Int>();
+            foreach (Vector3Int currentTile in allTilesInLayer) {
+               availableTiles.Add(currentTile);
+            }
+
+            bool enableSpawner = true;
+            if (enableSpawner) {
+               List<Vector3Int> occupiedTiles = new List<Vector3Int>();
+               while (successfulSpawns < targetSpawns && maxAttempts > 0) {
+                  maxAttempts--;
+                  if (maxAttempts < 1) {
+                     D.adminLog("Last attempt! Breaking cycle due to limitations {" + successfulSpawns + "}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
+                     break;
+                  }
+                  // Old Approach, random value across entire tilemap
+                  // int randomHorizontal = Random.Range(layer.tilemap.cellBounds.xMin, layer.tilemap.cellBounds.xMax);
+                  // int randomVertical = Random.Range(layer.tilemap.cellBounds.yMin, layer.tilemap.cellBounds.yMax);
+
+                  // Find a random value within the available list
+                  Vector3Int randomSelectedTile = availableTiles.ChooseRandom();
+                  if (!occupiedTiles.Contains(randomSelectedTile)) {
+                     // Mark occupied tiles and count the successful spawns 
+                     occupiedTiles.Add(randomSelectedTile);
+
+                     // Fetch the tile information
+                     Vector3Int newVector = randomSelectedTile;
+                     TileBase newTile = layer.tilemap.GetTile(newVector);
+                     if (newTile != null) {
+                        // Make sure tile is a water tile
+                        if (areaTarget.hasWaterTile(layer.tilemap.CellToWorld(newVector)) && !areaTarget.hasLandTile(layer.tilemap.CellToWorld(newVector))) {
+                           successfulSpawns++;
+
+                           // Initialize spawn values
+                           float spawnShipChance = 60;
+                           int randomEnemyTypeVal = Random.Range(0, 100);
+                           int guildId = BotShipEntity.PIRATES_GUILD_ID;
+
+                           // Override random value to fix ship spawning only if the map does not allow seamonsters
+                           MapCreationTool.Serialization.Map mapInfo = AreaManager.self.getMapInfo(areaKey);
+                           if (mapInfo != null) {
+                              if (!mapInfo.spawnsSeaMonsters && randomEnemyTypeVal >= spawnShipChance) {
+                                 D.debug("Map Data override! This map {" + areaKey + "} does not allow spawning of SeaMonsters!");
+                                 randomEnemyTypeVal = 0;
+                              }
+                           }
+
+                           // Spawning ships has a 60% chance
+                           Vector3 newSpawnPost = layer.tilemap.CellToWorld(newVector);
+                           if (randomEnemyTypeVal < spawnShipChance) {
+                              spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true);
+                           } else {
+                              if (mapInfo.spawnsSeaMonsters) {
+                                 spawnSeaMonster(instance, areaTarget, newSpawnPost, false, true);
+                              } else {
+                                 spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true);
+                              }
+                           }
+                           D.adminLog("Found tile: " + newTile.name + " at " + newVector, D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
+                        }
+                     }
+                  }
+               }
+            }
+         }
       }
    }
 
@@ -141,7 +234,7 @@ public class EnemyManager : MonoBehaviour {
       }
    }
 
-   private void spawnBotShip (Instance instance, Area area, Vector2 localPosition, int guildId, bool isPositionRandomized = false) {
+   private void spawnBotShip (Instance instance, Area area, Vector2 localPosition, int guildId, bool isPositionRandomized, bool useWorldPosition = false) {
       Ship.Type shipType = randomizeShipType(instance.biome);
 
       SeaMonsterEntityData seaEnemyData = SeaMonsterManager.self.getAllSeaMonsterData().Find(ent => ent.subVarietyTypeId == (int)shipType);
@@ -150,16 +243,20 @@ public class EnemyManager : MonoBehaviour {
          return;
       }
 
-      if (isPositionRandomized) {
+      if (isPositionRandomized && !useWorldPosition) {
          localPosition = getRandomWalkableLocalPositionAround(localPosition, area);
       }
 
       BotShipEntity botShip = Instantiate(PrefabsManager.self.botShipPrefab);
       botShip.areaKey = instance.areaKey;
       botShip.facing = Direction.South;
-      botShip.setAreaParent(area, false);
-      botShip.transform.localPosition = localPosition;
-
+      if (useWorldPosition) {
+         botShip.transform.position = localPosition;
+         botShip.setAreaParent(area, true);
+      } else {
+         botShip.setAreaParent(area, false);
+         botShip.transform.localPosition = localPosition;
+      }
       botShip.seaEntityData = seaEnemyData;
       botShip.maxHealth = seaEnemyData.maxHealth;
       botShip.currentHealth = seaEnemyData.maxHealth;
@@ -175,7 +272,7 @@ public class EnemyManager : MonoBehaviour {
       NetworkServer.Spawn(botShip.gameObject);
    }
 
-   private void spawnSeaMonster (Instance instance, Area area, Vector2 localPosition, bool isPositionRandomized = false) {
+   private void spawnSeaMonster (Instance instance, Area area, Vector2 localPosition, bool isPositionRandomized, bool useWorldPosition = false) {
       // Spawn sea monster type based on biome
       SeaMonsterEntity.Type seaMonsterType = SeaMonsterEntity.Type.None;
       switch (instance.biome) {
@@ -195,7 +292,7 @@ public class EnemyManager : MonoBehaviour {
             break;
       }
 
-      if (isPositionRandomized) {
+      if (isPositionRandomized && !useWorldPosition) {
          localPosition = getRandomWalkableLocalPositionAround(localPosition, area);
       }
 
@@ -206,10 +303,14 @@ public class EnemyManager : MonoBehaviour {
       seaEntity.monsterType = data.seaMonsterType;
       seaEntity.areaKey = instance.areaKey;
       seaEntity.facing = Direction.South;
+      seaEntity.setAreaParent(area, true);
 
       // Transform setup
-      seaEntity.setAreaParent(area, true);
-      seaEntity.transform.localPosition = localPosition;
+      if (useWorldPosition) {
+         seaEntity.transform.position = localPosition;
+      } else {
+         seaEntity.transform.localPosition = localPosition;
+      }
 
       // Network Setup
       InstanceManager.self.addSeaMonsterToInstance(seaEntity, instance);

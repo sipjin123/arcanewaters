@@ -590,6 +590,10 @@ public class Area : MonoBehaviour
       }
    }
 
+   public List<TilemapLayer> getWaterLayer () {
+      return _waterTilemapLayers;
+   }
+
    #region Private Variables
 
    // Stores the Tilemaps for this area
