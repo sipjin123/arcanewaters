@@ -136,7 +136,11 @@ public class MapManager : MonoBehaviour
 
       // Request the map from Nubis Cloud
       string mapData = await NubisClient.call<string>(nameof(DB_Main.getMapInfo), areaKey);
-      D.editorLog("Done fetching Nubis data: " + mapData.Length, Color.green);
+      if (mapData != null) {
+         D.editorLog("Done fetching Nubis data: " + mapData.Length, Color.green);
+      } else {
+         D.debug("Nubis Failed for area {" + areaKey + "}");
+      }
       if (string.IsNullOrWhiteSpace(mapData) && mapData.Length < 10) {
          D.debug("Error in retrieving map data from NUBIS: (" + areaKey + ")");
       } else {
