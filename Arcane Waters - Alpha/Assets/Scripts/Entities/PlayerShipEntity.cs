@@ -426,6 +426,19 @@ public class PlayerShipEntity : ShipEntity
          }
       }
 
+      if (NetworkServer.active) {
+         // Add heal per second
+         SeaBuffData healData = getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal);
+         if (healData != null) {
+            if ((NetworkTime.time - healData.lastBuffTick) > 1) {
+               healData.lastBuffTick = NetworkTime.time;
+               int healValue = (int) (healData.buffMagnitude * maxHealth);
+               currentHealth += healValue;
+               Rpc_CastSkill(healData.buffAbilityIdReference, null, transform.position, healValue, true, true, false);
+            }
+         }
+      }
+
       // Adjust the volume on our movement audio source
       adjustMovementAudio();
 

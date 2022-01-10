@@ -354,6 +354,12 @@ public class SeaEntity : NetEntity
       foreach (KeyValuePair<int, int> KV in _damageReceivedPerAttacker) {
          int targetUserId = KV.Key;
          int xp = Mathf.RoundToInt(((float) KV.Value / totalDamage) * rewardedXP);
+         
+         // Trap for cases when xp is calculated as negative
+         if (xp < 0) {
+            D.error("Negative Sailor XP is detected! KV.Key = " + KV.Key.ToString() + ", KV.Value = " + KV.Value.ToString() + ", totalDamage = " + totalDamage.ToString() + ", rewardedXP = " + rewardedXP.ToString());
+            xp = 10;
+         }
 
          // Background thread
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -2154,23 +2160,23 @@ public class SeaEntity : NetEntity
    }
 
    [Server]
-   public void addBuff (uint buffSourceNetId, SeaBuff.Category buffCategory, SeaBuff.Type buffType, float buffMagnitude, float buffDuration) {
+   public void addBuff (uint buffSourceNetId, SeaBuff.Category buffCategory, SeaBuff.Type buffType, float buffMagnitude, float buffDuration, int abilityXmlId) {
       double buffStartTime = NetworkTime.time;
       double buffEndTime = buffStartTime + buffDuration;
       SyncList<SeaBuffData> buffList = getBuffList(buffCategory);
       if (buffList != null) {
-         buffList.Add(new SeaBuffData(buffStartTime, buffEndTime, buffType, buffMagnitude));
+         buffList.Add(new SeaBuffData(buffStartTime, buffEndTime, buffType, buffMagnitude, abilityXmlId));
       }
    }
 
    [Server]
-   public void addBuff (uint buffSourceNetId, SeaBuff.Category buffCategory, SeaBuff.Type buffType, ShipAbilityData shipAbilityData) {
+   public void addBuff (uint buffSourceNetId, SeaBuff.Category buffCategory, SeaBuff.Type buffType, ShipAbilityData shipAbilityData, double newEndTime = -1) {
       double buffStartTime = NetworkTime.time;
-      double buffEndTime = buffStartTime + shipAbilityData.statusDuration;
+      double buffEndTime = newEndTime > 0 ? newEndTime : buffStartTime + shipAbilityData.statusDuration;
 
       SyncList<SeaBuffData> buffList = getBuffList(buffCategory);
       if (buffList != null) {
-         buffList.Add(new SeaBuffData(buffStartTime, buffEndTime, buffType, shipAbilityData.damageModifier * 100.0f));
+         buffList.Add(new SeaBuffData(buffStartTime, buffEndTime, buffType, shipAbilityData.damageModifier, shipAbilityData.abilityId));
       }
 
       Rpc_ShowReceivedAbilityBuff(buffSourceNetId, shipAbilityData);
@@ -2197,6 +2203,19 @@ public class SeaEntity : NetEntity
       }
 
       return 0.0f;
+   }
+
+   [Server]
+   public SeaBuffData getBuffData (SeaBuff.Category buffCategory, SeaBuff.Type buffType) {
+      // Returns the magnitude of the powerup of the specified type and category, with the highest value.
+      SyncList<SeaBuffData> buffList = getBuffList(buffCategory);
+      if (buffList != null) {
+         if (buffList.FindAll(_ => _.buffType == buffType).Count > 0) {
+            return buffList.FindAll(_ => _.buffType == buffType)[0];
+         }
+      }
+
+      return null;
    }
 
    [Server]
@@ -2315,6 +2334,7 @@ public class SeaEntity : NetEntity
    }
 
    protected SyncList<SeaBuffData> getBuffList (SeaBuff.Category category) {
+      // Returns the list of buff type to be altered by the fetcher
       switch (category) {
          case SeaBuff.Category.Buff:
             return _buffs;

@@ -198,7 +198,7 @@ public class ShipEntity : SeaEntity
       }
 
       // Don't apply any speed buff if this entity is holding the capture target
-      float speedBuff = (hasPvpCaptureTarget) ? 0.0f : ((getBuffValue(SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost)));
+      float speedBuff = (hasPvpCaptureTarget) ? 0.0f : ((getBuffValue(SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost) * 100));
 
       // Increase or decrease our speed based on the settings for this ship
       float calculatedSpeed = baseSpeed * ((this.speed + speedBuff) / 100.0f);
@@ -292,13 +292,18 @@ public class ShipEntity : SeaEntity
             case Attack.Type.Heal:
                hasUsedBuff = true;
                int healValue = (int) (shipAbilityData.damageModifier * 100);
-               currentHealth += healValue;
-               Rpc_CastSkill(shipAbilityId, shipAbilityData, transform.position, healValue, true, true);
+               if (shipAbilityData.buffRadius > 0) {
+                  addBuff(this.netId, SeaBuff.Category.Buff, SeaBuff.Type.Heal, shipAbilityData);
+                  Rpc_CastSkill(shipAbilityId, shipAbilityData, transform.position, healValue, true, false, true);
+               } else {
+                  currentHealth += healValue;
+                  Rpc_CastSkill(shipAbilityId, shipAbilityData, transform.position, healValue, true, true, true);
+               }
                break;
             case Attack.Type.SpeedBoost:
                hasUsedBuff = true;
                addBuff(this.netId, SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost, shipAbilityData);
-               Rpc_CastSkill(shipAbilityId, shipAbilityData, transform.position, 0, true, false);
+               Rpc_CastSkill(shipAbilityId, shipAbilityData, transform.position, 0, true, false, true);
                break;
          }
 
@@ -308,6 +313,10 @@ public class ShipEntity : SeaEntity
 
             if (shipAbilityData.isBuffRadiusDependent) {
                switch (shipAbilityData.selectedAttackType) {
+                  case Attack.Type.Heal:
+                     // TODO: Do heal stuff logic here
+                     StartCoroutine(CO_TriggerActiveAOEBuff(shipAbilityData, shipAbilityData.statusDuration));
+                     break;
                   case Attack.Type.SpeedBoost:
                      StartCoroutine(CO_TriggerActiveAOEBuff(shipAbilityData, shipAbilityData.statusDuration));
                      break;
@@ -349,15 +358,21 @@ public class ShipEntity : SeaEntity
       Rpc_ShowBuffAlly(targetNetId, attackType);
 
       yield return new WaitForSeconds(1 / BuffOrb.SNAP_SPEED_MULTIPLIER);
-      int healValue = (int) (shipAbilityData.damageModifier * 100);
+
+      targetEntity.addBuff(targetEntity.netId, SeaBuff.Category.Buff, SeaBuff.Type.Heal, shipAbilityData);
+      targetEntity.Rpc_CastSkill(shipAbilityData.abilityId, shipAbilityData, transform.position, 0, true, false, true);
+      // Old one shot aoe heal
+      /*
+      int healValue = (int) shipAbilityData.damageModifier;
       targetEntity.currentHealth += healValue;
       targetEntity.Rpc_CastSkill(shipAbilityData.abilityId, shipAbilityData, targetEntity.transform.position, healValue, true, true);
+      */
    }
 
    private IEnumerator CO_TriggerActiveAOEBuff (ShipAbilityData shipAbilityData, float statusDuration) {
       double endTimeVal = NetworkTime.time + statusDuration;
       List<NetEntity> allyEntities = EntityManager.self.getEntitiesWithVoyageId(voyageGroupId);
-      int value = (int) (shipAbilityData.damageModifier * 100);
+      float value = shipAbilityData.damageModifier;
       float refreshDuration = 0.5f;
       while (NetworkTime.time < endTimeVal) {
          yield return new WaitForSeconds(refreshDuration);
@@ -370,21 +385,49 @@ public class ShipEntity : SeaEntity
             PlayerShipEntity allyShip = (PlayerShipEntity) allyEntity;
             float distanceToTarget = Vector2.Distance(transform.position, allyShip.transform.position);
             if (distanceToTarget < shipAbilityData.buffRadius) {
-               allyShip.addBuff(this.netId, SeaBuff.Category.Buff, SeaBuffData.getBuffType(shipAbilityData.selectedAttackType), value, refreshDuration);
+               switch (shipAbilityData.selectedAttackType) {
+                  case Attack.Type.Heal:
+                     if (allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal) == null) {
+                        allyShip.addBuff(allyShip.netId, SeaBuff.Category.Buff, SeaBuff.Type.Heal, shipAbilityData, endTimeVal);
+                     }
+                     break;
+                  case Attack.Type.SpeedBoost:
+                     break;
+               }
+            } else {
+               switch (shipAbilityData.selectedAttackType) {
+                  case Attack.Type.Heal:
+                     if (allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal) != null) {
+                        SeaBuffData healBuff = allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal);
+                        allyShip._buffs.Remove(healBuff);
+                     }
+                     break;
+                  case Attack.Type.SpeedBoost:
+                     break;
+               }
             }
          }
       }
    }
 
    [ClientRpc]
-   public void Rpc_CastSkill (int abilityId, ShipAbilityData shipData, Vector2 pos, int displayValue, bool showCastVfx, bool showValue) {
+   public void Rpc_CastSkill (int abilityId, ShipAbilityData shipAbilityData, Vector2 pos, int displayValue, bool showCastVfx, bool showValue, bool showIcon) {
+      if (shipAbilityData == null) {
+         shipAbilityData = ShipAbilityManager.self.getAbility(abilityId);
+      }
+
+      if (shipAbilityData == null) {
+         D.debug("Missing Ability! {" + abilityId + "}");
+         return;
+      }
+
       // Play The effect of the buff
       if (showCastVfx) {
-         EffectManager.createDynamicEffect(shipData.castSpritePath, Vector2.zero, shipData.abilitySpriteFXPerFrame, abilityEffectHolder, true);
+         EffectManager.createDynamicEffect(shipAbilityData.castSpritePath, Vector2.zero, shipAbilityData.abilitySpriteFXPerFrame, abilityEffectHolder, true);
       }
 
       // Play an appropriate sound
-      AudioClip clip = AudioClipManager.self.getAudioClipData(shipData.castSFXPath).audioClip;
+      AudioClip clip = AudioClipManager.self.getAudioClipData(shipAbilityData.castSFXPath).audioClip;
       if (clip != null) {
          //SoundManager.playClipAtPoint(clip, Camera.main.transform.position);
       } else {
@@ -393,12 +436,17 @@ public class ShipEntity : SeaEntity
 
       if (showValue) {
          // Show the damage text
-         ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(shipData.selectedAttackType, displayValue < 1), pos, Quaternion.identity);
-         damageText.setIcon(shipData.skillIconPath);
+         ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(shipAbilityData.selectedAttackType, displayValue < 1), pos, Quaternion.identity);
+         if (showIcon) {
+            damageText.setIcon(shipAbilityData.skillIconPath);
+         } else {
+            damageText.icon.gameObject.SetActive(false);
+            damageText.text.text = "";
+         }
          damageText.negativeEffect = displayValue < 1;
          damageText.setDamage(displayValue);
          if (damageText.notificationText != null) {
-            damageText.notificationText.text = shipData.abilityName;
+            damageText.notificationText.text = shipAbilityData.abilityName;
          }
       }
    }
