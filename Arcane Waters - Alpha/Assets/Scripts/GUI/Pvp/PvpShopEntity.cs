@@ -61,7 +61,10 @@ public class PvpShopEntity : MonoBehaviour, IMapEditorDataReceiver
 
    public void clickOnShop () {
       if (isWithinRange) {
+         D.adminLog("Shop is now pressed, requesting shop info from server", D.ADMIN_LOG_TYPE.PvpShop);
          PvpShopPanel.self.onShopButtonPressed(true, shopId);
+      } else {
+         D.adminLog("Shop is out of range!", D.ADMIN_LOG_TYPE.PvpShop);
       }
    }
 

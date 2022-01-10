@@ -4292,12 +4292,14 @@ public class RPCManager : NetworkBehaviour
       PvpShopItem.PvpShopItemType itemType = (PvpShopItem.PvpShopItemType) itemCategoryType;
       PvpShopData shopData = PvpShopManager.self.getShopData(shopId);
       if (shopData == null) {
-         D.debug("Invalid Shop Data! " + shopId);
+         D.adminLog("Invalid Shop Data! " + shopId, D.ADMIN_LOG_TYPE.PvpShop);
          return;
       }
+      D.adminLog("User {" + _player.userId + ":" + _player.entityName + "} is requesting shop interaction from shop {" + shopData.shopName + "} Category {" + itemType + "}", D.ADMIN_LOG_TYPE.PvpShop);
 
-      // Register the user to the stats manager if spawned in tutorial bay
-      if (_player.areaKey.ToLower().Contains(Area.STARTING_TOWN_SEA.ToLower()) && !GameStatsManager.self.isUserRegistered(_player.userId)) {
+      // Register the user to the stats manager if spawned in tutorial bay or the tutorial cemetery
+      if ((_player.areaKey.ToLower().Contains(Area.STARTING_TOWN_SEA.ToLower()) || _player.areaKey.ToLower().Contains(Area.TUTORIAL_AREA.ToLower())) 
+         && !GameStatsManager.self.isUserRegistered(_player.userId)) {
          GameStatsManager.self.registerUser(_player.userId);
       }
 
@@ -6055,7 +6057,8 @@ public class RPCManager : NetworkBehaviour
       }
 
       // If the area is a PvP area, a Voyage or a TreasureSite, add the player to the GameStats System
-      if (_player.tryGetVoyage(out Voyage v) || VoyageManager.isAnyLeagueArea(_player.areaKey) || VoyageManager.isPvpArenaArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)) {
+      if (_player.tryGetVoyage(out Voyage v) || VoyageManager.isAnyLeagueArea(_player.areaKey) || VoyageManager.isPvpArenaArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey) 
+         || _player.areaKey.Contains(Area.TUTORIAL_AREA) || _player.areaKey.Contains(Area.STARTING_TOWN_SEA)) {
          GameStatsManager.self.registerUser(_player.userId);
       } else {
          PvpAnnouncementHolder.self.clearAnnouncements();

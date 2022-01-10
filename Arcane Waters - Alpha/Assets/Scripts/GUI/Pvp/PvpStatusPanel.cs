@@ -68,7 +68,7 @@ public class PvpStatusPanel : ClientMonoBehaviour
          return;
       }
 
-      if (!isInstanceValid(Global.player.getInstance()) && !Global.player.areaKey.Contains(Area.TUTORIAL_AREA)) {
+      if (!isValid()) {
          hide();
          return;
       }
@@ -89,12 +89,20 @@ public class PvpStatusPanel : ClientMonoBehaviour
       }
    }
 
+   private bool isValid () {
+      if (!isInstanceValid(Global.player.getInstance()) && !Global.player.areaKey.Contains(Area.TUTORIAL_AREA) && !Global.player.areaKey.Contains(Area.STARTING_TOWN_SEA)) {
+         return false;
+      }
+
+      return true;
+   }
+
    public void addSilver (int gain) {
       if (Global.player == null) {
          return;
       }
 
-      if (!isInstanceValid(Global.player.getInstance()) && !Global.player.areaKey.Contains(Area.TUTORIAL_AREA)) {
+      if (!isValid()) {
          return;
       }
 
