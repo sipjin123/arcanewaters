@@ -7,6 +7,7 @@ using System;
 using Random = UnityEngine.Random;
 using Pathfinding;
 using UnityEngine.Tilemaps;
+using System.Linq;
 
 public class EnemyManager : MonoBehaviour {
    #region Public Variables
@@ -44,29 +45,31 @@ public class EnemyManager : MonoBehaviour {
       }
    }
 
-   private void TestUpdate () {
-      if (KeyUtils.GetKeyDown(UnityEngine.InputSystem.Key.Digit1)) {
-         Instance instance = InstanceManager.self.getInstance(Global.player.instanceId);
-         spawnOpenWorldEnemies(instance, Global.player.areaKey);
-      }
-   }
-
-   public void spawnOpenWorldEnemies (Instance instance, string areaKey) {
-      int targetSpawns = 15;
+   public void spawnOpenWorldEnemies (Instance instance, string areaKey, int targetSpawns) {
       StartCoroutine(CO_ProcessSpawnOpenWorldEnemies(instance, areaKey, targetSpawns));
    }
 
    private IEnumerator CO_ProcessSpawnOpenWorldEnemies (Instance instance, string areaKey, int targetSpawns) {
       int maxAttempts = 100;
-      int successfulSpawns = 0;
       yield return new WaitForSeconds(1);
 
       Area areaTarget = AreaManager.self.getArea(areaKey);
       if (areaTarget == null) {
          D.adminLog("NULL Area {"+areaKey+"}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
       } else {
-         List<TilemapLayer> totalWaterLayers = areaTarget.getWaterLayer();
-         foreach (TilemapLayer layer in totalWaterLayers) {
+         List<TilemapLayer> waterLayers = areaTarget.getWaterLayer();
+
+         // Reverse the layers so that deepest layer is processed first and is set as hardest difficulty
+         waterLayers.Reverse();
+         Voyage.Difficulty difficulty = Voyage.Difficulty.Hard;
+
+         int indexCount = 0;
+         int spawnsPerLayer = (int) (targetSpawns / waterLayers.Count);
+
+         foreach (TilemapLayer layer in waterLayers) {
+            indexCount++;
+            int successfulSpawns = 0;
+
             // Extract all available tiles in this layer
             BoundsInt.PositionEnumerator allTilesInLayer = layer.tilemap.cellBounds.allPositionsWithin;
             List<Vector3Int> availableTiles = new List<Vector3Int>();
@@ -74,64 +77,66 @@ public class EnemyManager : MonoBehaviour {
                availableTiles.Add(currentTile);
             }
 
-            bool enableSpawner = true;
-            if (enableSpawner) {
-               List<Vector3Int> occupiedTiles = new List<Vector3Int>();
-               while (successfulSpawns < targetSpawns && maxAttempts > 0) {
-                  maxAttempts--;
-                  if (maxAttempts < 1) {
-                     D.adminLog("Last attempt! Breaking cycle due to limitations {" + successfulSpawns + "}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
-                     break;
-                  }
-                  // Old Approach, random value across entire tilemap
-                  // int randomHorizontal = Random.Range(layer.tilemap.cellBounds.xMin, layer.tilemap.cellBounds.xMax);
-                  // int randomVertical = Random.Range(layer.tilemap.cellBounds.yMin, layer.tilemap.cellBounds.yMax);
+            List<Vector3Int> occupiedTiles = new List<Vector3Int>();
+            while (successfulSpawns < spawnsPerLayer && maxAttempts > 0) {
+               maxAttempts--;
+               if (maxAttempts < 1) {
+                  D.adminLog("Last attempt! Breaking cycle due to limitations {" + successfulSpawns + "}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
+                  break;
+               }
+               // Old Approach, random value across entire tilemap
+               // int randomHorizontal = Random.Range(layer.tilemap.cellBounds.xMin, layer.tilemap.cellBounds.xMax);
+               // int randomVertical = Random.Range(layer.tilemap.cellBounds.yMin, layer.tilemap.cellBounds.yMax);
 
-                  // Find a random value within the available list
-                  Vector3Int randomSelectedTile = availableTiles.ChooseRandom();
-                  if (!occupiedTiles.Contains(randomSelectedTile)) {
-                     // Mark occupied tiles and count the successful spawns 
-                     occupiedTiles.Add(randomSelectedTile);
+               // Find a random value within the available list
+               Vector3Int randomSelectedTile = availableTiles.ChooseRandom();
+               if (!occupiedTiles.Contains(randomSelectedTile)) {
+                  // Mark occupied tiles and count the successful spawns 
+                  occupiedTiles.Add(randomSelectedTile);
 
-                     // Fetch the tile information
-                     Vector3Int newVector = randomSelectedTile;
-                     TileBase newTile = layer.tilemap.GetTile(newVector);
-                     if (newTile != null) {
-                        // Make sure tile is a water tile
-                        if (areaTarget.hasWaterTile(layer.tilemap.CellToWorld(newVector)) && !areaTarget.hasLandTile(layer.tilemap.CellToWorld(newVector))) {
-                           successfulSpawns++;
+                  // Fetch the tile information
+                  Vector3Int newVector = randomSelectedTile;
+                  TileBase newTile = layer.tilemap.GetTile(newVector);
+                  if (newTile != null) {
+                     // Make sure tile is a water tile
+                     if (areaTarget.hasWaterTile(layer.tilemap.CellToWorld(newVector)) && !areaTarget.hasLandTile(layer.tilemap.CellToWorld(newVector))) {
+                        successfulSpawns++;
 
-                           // Initialize spawn values
-                           float spawnShipChance = 60;
-                           int randomEnemyTypeVal = Random.Range(0, 100);
-                           int guildId = BotShipEntity.PIRATES_GUILD_ID;
+                        // Initialize spawn values
+                        float spawnShipChance = 60;
+                        int randomEnemyTypeVal = Random.Range(0, 100);
+                        int guildId = BotShipEntity.PIRATES_GUILD_ID;
 
-                           // Override random value to fix ship spawning only if the map does not allow seamonsters
-                           MapCreationTool.Serialization.Map mapInfo = AreaManager.self.getMapInfo(areaKey);
-                           if (mapInfo != null) {
-                              if (!mapInfo.spawnsSeaMonsters && randomEnemyTypeVal >= spawnShipChance) {
-                                 D.debug("Map Data override! This map {" + areaKey + "} does not allow spawning of SeaMonsters!");
-                                 randomEnemyTypeVal = 0;
-                              }
+                        // Override random value to fix ship spawning only if the map does not allow seamonsters
+                        MapCreationTool.Serialization.Map mapInfo = AreaManager.self.getMapInfo(areaKey);
+                        if (mapInfo != null) {
+                           if (!mapInfo.spawnsSeaMonsters && randomEnemyTypeVal >= spawnShipChance) {
+                              D.debug("Map Data override! This map {" + areaKey + "} does not allow spawning of SeaMonsters!");
+                              randomEnemyTypeVal = 0;
                            }
-
-                           // Spawning ships has a 60% chance
-                           Vector3 newSpawnPost = layer.tilemap.CellToWorld(newVector);
-                           if (randomEnemyTypeVal < spawnShipChance) {
-                              spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true);
-                           } else {
-                              if (mapInfo.spawnsSeaMonsters) {
-                                 spawnSeaMonster(instance, areaTarget, newSpawnPost, false, true);
-                              } else {
-                                 spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true);
-                              }
-                           }
-                           D.adminLog("Found tile: " + newTile.name + " at " + newVector, D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
                         }
+
+                        // Spawning ships has a 60% chance
+                        Vector3 newSpawnPost = layer.tilemap.CellToWorld(newVector);
+                        if (randomEnemyTypeVal < spawnShipChance) {
+                           spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true, difficulty);
+                        } else {
+                           if (mapInfo.spawnsSeaMonsters) {
+                              spawnSeaMonster(instance, areaTarget, newSpawnPost, false, true, difficulty);
+                           } else {
+                              spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true, difficulty);
+                           }
+                        }
+
+                        D.adminLog("Found tile: " + newTile.name + " at " + newVector + "__" + difficulty, D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
                      }
                   }
                }
             }
+
+            int difficultyValue = ((int) difficulty) - 1;
+            difficultyValue = Mathf.Clamp(difficultyValue, (int) Voyage.Difficulty.Easy, (int) Voyage.Difficulty.Hard);
+            difficulty = (Voyage.Difficulty) difficultyValue;
          }
       }
    }
@@ -220,22 +225,33 @@ public class EnemyManager : MonoBehaviour {
          // Spawning ships has a 60% chance
          if (randomEnemyTypeVal < spawnShipChance) {
             for (int i = 0; i < spawnsPerSpot; i++) {
-               spawnBotShip(instance, area, spawner.transform.localPosition, guildId, i!=0);
+               spawnBotShip(instance, area, spawner.transform.localPosition, guildId, i!=0, false);
             }
          } else {
             for (int i = 0; i < spawnsPerSpot; i++) {
                if (mapInfo.spawnsSeaMonsters) {
-                  spawnSeaMonster(instance, area, spawner.transform.localPosition, i != 0);
+                  spawnSeaMonster(instance, area, spawner.transform.localPosition, i != 0, false);
                } else {
-                  spawnBotShip(instance, area, spawner.transform.localPosition, guildId, i != 0);
+                  spawnBotShip(instance, area, spawner.transform.localPosition, guildId, i != 0, false);
                }
             }
          }
       }
    }
 
-   private void spawnBotShip (Instance instance, Area area, Vector2 localPosition, int guildId, bool isPositionRandomized, bool useWorldPosition = false) {
-      Ship.Type shipType = randomizeShipType(instance.biome);
+   private void spawnBotShip (Instance instance, Area area, Vector2 localPosition, int guildId, bool isPositionRandomized, bool useWorldPosition, Voyage.Difficulty difficulty = Voyage.Difficulty.None) {
+      Ship.Type shipType = Ship.Type.Type_1;
+
+      if (difficulty == Voyage.Difficulty.None) {
+         shipType = randomizeShipType(instance.biome);
+      } else {
+         SeaMonsterEntityData randomShipByDifficulty = randomizeShipByDifficulty(difficulty);
+         if (randomShipByDifficulty != null) {
+            shipType = (Ship.Type) randomShipByDifficulty.subVarietyTypeId;
+         } else {
+            shipType = randomizeShipType(instance.biome);
+         }
+      }
 
       SeaMonsterEntityData seaEnemyData = SeaMonsterManager.self.getAllSeaMonsterData().Find(ent => ent.subVarietyTypeId == (int)shipType);
       if (seaEnemyData == null) {
@@ -272,24 +288,34 @@ public class EnemyManager : MonoBehaviour {
       NetworkServer.Spawn(botShip.gameObject);
    }
 
-   private void spawnSeaMonster (Instance instance, Area area, Vector2 localPosition, bool isPositionRandomized, bool useWorldPosition = false) {
+   private void spawnSeaMonster (Instance instance, Area area, Vector2 localPosition, bool isPositionRandomized, bool useWorldPosition, Voyage.Difficulty difficulty = Voyage.Difficulty.None) {
       // Spawn sea monster type based on biome
       SeaMonsterEntity.Type seaMonsterType = SeaMonsterEntity.Type.None;
-      switch (instance.biome) {
-         case Biome.Type.Forest:
-         case Biome.Type.Pine:
-            seaMonsterType = SeaMonsterEntity.Type.Fishman;
-            break;
-         case Biome.Type.Lava:
-            seaMonsterType = SeaMonsterEntity.Type.Reef_Giant;
-            break;
-         case Biome.Type.Desert:
+
+      if (difficulty == Voyage.Difficulty.None) {
+         switch (instance.biome) {
+            case Biome.Type.Forest:
+            case Biome.Type.Pine:
+               seaMonsterType = SeaMonsterEntity.Type.Fishman;
+               break;
+            case Biome.Type.Lava:
+               seaMonsterType = SeaMonsterEntity.Type.Reef_Giant;
+               break;
+            case Biome.Type.Desert:
+               seaMonsterType = SeaMonsterEntity.Type.Worm;
+               break;
+            default:
+               D.debug("No specific monster for biome: {" + instance.biome + "} Spawning default Fishman");
+               seaMonsterType = SeaMonsterEntity.Type.Fishman;
+               break;
+         }
+      } else {
+         SeaMonsterEntityData randomShipByDifficulty = randomizeMonsterByDifficulty(difficulty);
+         if (randomShipByDifficulty != null) {
+            seaMonsterType = randomShipByDifficulty.seaMonsterType;
+         } else {
             seaMonsterType = SeaMonsterEntity.Type.Worm;
-            break;
-         default:
-            D.debug("No specific monster for biome: {" + instance.biome + "} Spawning default Fishman");
-            seaMonsterType = SeaMonsterEntity.Type.Fishman;
-            break;
+         }
       }
 
       if (isPositionRandomized && !useWorldPosition) {
@@ -325,6 +351,24 @@ public class EnemyManager : MonoBehaviour {
       } else {
          return localPosition;
       }
+   }
+
+   private SeaMonsterEntityData randomizeShipByDifficulty (Voyage.Difficulty difficulty) {
+      List<SeaMonsterEntityData> seaMonsterList = SeaMonsterManager.self.getAllSeaMonsterData().FindAll(_ => _.difficultyLevel == difficulty && _.subVarietyTypeId > 0);
+      if (seaMonsterList.Count > 0) {
+         return seaMonsterList.ChooseRandom();
+      }
+
+      return null;
+   }
+
+   private SeaMonsterEntityData randomizeMonsterByDifficulty (Voyage.Difficulty difficulty) {
+      List<SeaMonsterEntityData> seaMonsterList = SeaMonsterManager.self.getAllSeaMonsterData().FindAll(_ => _.difficultyLevel == difficulty && _.subVarietyTypeId < 1);
+      if (seaMonsterList.Count > 0) {
+         return seaMonsterList.ChooseRandom();
+      }
+
+      return null;
    }
 
    private Ship.Type randomizeShipType (Biome.Type biome) {
