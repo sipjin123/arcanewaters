@@ -107,6 +107,9 @@ public class PrefabsManager : MonoBehaviour {
    // The Prefab we use for creating Air Damage text
    public ShipDamageText shipDamageTextAirPrefab;
 
+   // The Prefab we use for creating Poison Damage text
+   public ShipDamageText shipDamageTextPoisonPrefab;
+
    // The Prefab we use for creating generic Effects
    public GameObject genericEffectPrefab;
 
@@ -286,6 +289,8 @@ public class PrefabsManager : MonoBehaviour {
       switch (attackType) {
          case Attack.Type.Ice:
             return shipDamageTextIcePrefab;
+         case Attack.Type.Poison:
+            return shipDamageTextPoisonPrefab;
          case Attack.Type.Air:
             return shipDamageTextAirPrefab;
          case Attack.Type.Heal:
