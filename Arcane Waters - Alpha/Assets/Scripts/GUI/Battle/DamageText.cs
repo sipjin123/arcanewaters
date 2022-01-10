@@ -106,6 +106,10 @@ public class DamageText : MonoBehaviour {
       string fontString = "PhysicalDamage";
 
       switch (element) {
+         case Element.Poison:
+            // gradient.vertex2 = Color.magenta;
+            fontString = wasCritical ? "PoisonCrit" : "PoisonDamage";
+            break;
          case Element.Air:
             // gradient.vertex2 = Color.magenta;
             fontString = wasCritical ? "AirCrit" : "AirDamage";
