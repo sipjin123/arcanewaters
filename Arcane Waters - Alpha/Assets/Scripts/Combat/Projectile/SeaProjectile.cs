@@ -308,7 +308,7 @@ public class SeaProjectile : NetworkBehaviour
 
          ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(projectileTypeId);
          int projectileBaseDamage = (int) projectileData.projectileDamage;
-         int shipDamage = (int) (sourceEntity.damage * projectileBaseDamage * (sourceEntity.getBuffValue(SeaBuff.Category.Buff, SeaBuff.Type.DamageAmplify) / 100.0f));
+         int shipDamage = (int) (sourceEntity.damage * projectileBaseDamage * ((sourceEntity.getBuffValue(SeaBuff.Category.Buff, SeaBuff.Type.DamageAmplify) * 100) / 100.0f));
          int abilityDamage = 0;
          if (_abilityData != null) {
             abilityDamage = (int) (_abilityData.damageModifier * projectileBaseDamage);

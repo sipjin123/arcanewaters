@@ -20,6 +20,10 @@ public class SeaMonsterEntityData
    [XmlElement(Namespace = "AttackType")]
    public Attack.Type attackType;
 
+   // The level of difficulty this unit is categorized as
+   [XmlElement(Namespace = "DifficultyLevel")]
+   public Voyage.Difficulty difficultyLevel;
+
    // The xml id
    public int xmlId;
 
