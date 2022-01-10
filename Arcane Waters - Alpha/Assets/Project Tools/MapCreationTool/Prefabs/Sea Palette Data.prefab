@@ -404,6 +404,50 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 939827310229271155, guid: 857026db557087e449e9c9f01f21b0bb, type: 3}
+--- !u!1 &2106301040505199902
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1228457740679380943}
+  - component: {fileID: 3717267052744026161}
+  m_Layer: 0
+  m_Name: open world controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1228457740679380943
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2106301040505199902}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1, y: 41, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3719976920741877196}
+  m_RootOrder: 23
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3717267052744026161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2106301040505199902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d14a3bae45cba31478d29685e1dea398, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 6928936740555346515, guid: 755fbd51acd1c9e458e2e89472a600bc, type: 3}
 --- !u!1 &2384699191539974878
 GameObject:
   m_ObjectHideFlags: 0
@@ -498,6 +542,7 @@ Transform:
   - {fileID: 6010959059927457077}
   - {fileID: 5398444821190406554}
   - {fileID: 4458965587867258505}
+  - {fileID: 1228457740679380943}
   m_Father: {fileID: 6003827098852396580}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7991,11 +8036,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 1
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 1
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -8167,11 +8212,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 1
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 1
       collisionType: 0
     - layer: 
       sublayer: 0

@@ -147,6 +147,9 @@ public class Area : MonoBehaviour
    // The ore node controller reference
    public OreNodeMapController oreNodeController;
 
+   // The open world controller reference
+   public OpenWorldController openWorldController;
+
    // The cloud manager
    public CloudManager cloudManager;
 
@@ -169,7 +172,7 @@ public class Area : MonoBehaviour
       List<ExportedPrefab001> shipDataFields, List<ExportedPrefab001> seaMonsterDataFields, List<ExportedPrefab001> bossSpawnerDataFields,
       List<ExportedPrefab001> pvpTowerDataFields, List<ExportedPrefab001> pvpBaseDataFields, List<ExportedPrefab001> pvpShipyardDataFields,
       List<ExportedPrefab001> pvpWaypoints, List<ExportedPrefab001> pvpMonsterSpawnerFields, List<ExportedPrefab001> pvpLootSpawners,
-      List<ExportedPrefab001> pvpCaptureTargetHolders, OreNodeMapController oreNodeController) {
+      List<ExportedPrefab001> pvpCaptureTargetHolders, OreNodeMapController oreNodeController, OpenWorldController openWorldController) {
       this.npcDatafields = npcDatafields;
       this.enemyDatafields = enemyDatafields;
       this.oreDataFields = oreDataFields;
@@ -185,6 +188,7 @@ public class Area : MonoBehaviour
       this.pvpLootSpawners = pvpLootSpawners;
       this.pvpCaptureTargetHolders = pvpCaptureTargetHolders;
       this.oreNodeController = oreNodeController;
+      this.openWorldController = openWorldController;
 
       if (CommandCodes.get(CommandCodes.Type.NPC_DISABLE) || Util.isForceServerLocalWithAutoDbconfig()) {
          this.npcDatafields.Clear();
@@ -405,6 +409,10 @@ public class Area : MonoBehaviour
 
    public static bool isHouse (string areaKey) {
       return areaKey.ToLower().Contains("house");
+   }
+
+   public static bool isWorldMap (string areaKey) {
+      return areaKey.ToLower().Contains("world_map");
    }
 
    public static string getName (string areaKey) {
