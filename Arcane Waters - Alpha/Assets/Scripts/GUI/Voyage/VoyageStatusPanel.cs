@@ -123,7 +123,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
          return;
       }
 
-      playerCountTownText.text = EntityManager.self.getEntityCount() + "/" + instance.getMaxPlayers();
+      playerCountTownText.text = EntityManager.self.getEntityCount() + (CustomMapManager.isPrivateCustomArea(instance.areaKey) ? "" : "/" + instance.getMaxPlayers());
       playerCountPvpText.text = EntityManager.self.getEntityCount().ToString();
       
       // Update the color of the ping image based on the current ping
