@@ -86,7 +86,7 @@ public class TreasureManager : MonoBehaviour {
       return chest;
    }
 
-   public TreasureChest createSeaMonsterChest (Instance instance, Vector3 spot, int enemyXmlId, int userId, uint[] attackers) {
+   public TreasureChest createSeaMonsterChest (Instance instance, Vector3 spot, int enemyXmlId, int userId, uint[] attackers, List<int> combatParticipants) {
       // Instantiate a new Treasure Chest
       TreasureChest chest = Instantiate(seaChestPrefab, spot, Quaternion.identity);
 
@@ -120,6 +120,7 @@ public class TreasureManager : MonoBehaviour {
 
       List<PlayerShipEntity> instancePlayerEntities = instance.getPlayerShipEntities();
       int playerVoyageGroupId = instancePlayerEntities.Find(_ => _.userId == userId).voyageGroupId;
+      List<int> validUserIds = new List<int>();
 
       // If this is a voyage, reward entire voyage party
       if ((playerVoyageGroupId > 0 && !instance.isPvP) || instance.isPvP) {
@@ -127,18 +128,34 @@ public class TreasureManager : MonoBehaviour {
          foreach (uint attacker in attackers) {
             NetEntity entity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attacker);
             if (entity != null && playerVoyageGroupId == entity.voyageGroupId) {
-               if (!chest.allowedUserIds.Contains(entity.userId)) {
-                  chest.allowedUserIds.Add(entity.userId);
+               if (!validUserIds.Contains(entity.userId)) {
+                  validUserIds.Add(entity.userId);
                }
+            } else {
+               D.debug("Null net entity for user: " + attacker);
+            }
+         }
+
+         // If the net entity was not found using their netId, use the combat participant list and add them to reward list
+         foreach (int combatant in combatParticipants) {
+            if (!validUserIds.Contains(combatant)) {
+               validUserIds.Add(combatant);
+            }
+         }
+
+         // Process chest spawning and perks/powerup bonus chest spawn
+         foreach (int validUserId in validUserIds) {
+            if (!chest.allowedUserIds.Contains(validUserId)) {
+               chest.allowedUserIds.Add(validUserId);
 
                int bonusChests = 0;
-               if (PerkManager.self.perkActivationRoll(entity.userId, Perk.Category.ItemDropChances)) {
-                  D.debug("User {" + entity.userId + "} Received a Bonus loot using Perks");
+               if (PerkManager.self.perkActivationRoll(validUserId, Perk.Category.ItemDropChances)) {
+                  D.debug("User {" + validUserId + "} Received a Bonus loot using Perks");
                   bonusChests++;
                }
 
-               if (PowerupManager.self.powerupActivationRoll(entity.userId, Powerup.Type.TreasureDropUp)) {
-                  D.debug("User {" + entity.userId + "} Received a Bonus loot using Powerup");
+               if (PowerupManager.self.powerupActivationRoll(validUserId, Powerup.Type.TreasureDropUp)) {
+                  D.debug("User {" + validUserId + "} Received a Bonus loot using Powerup");
                   bonusChests++;
                }
 
@@ -150,7 +167,7 @@ public class TreasureManager : MonoBehaviour {
                   initEnemyDropChest(bonusChest, (int) enemyXmlId, instance, true);
 
                   // Only the player who got the extra drop is allowed to open it (or see it)
-                  bonusChest.allowedUserIds.Add(entity.userId);
+                  bonusChest.allowedUserIds.Add(validUserId);
 
                   NetworkServer.Spawn(bonusChest.gameObject);
                }

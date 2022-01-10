@@ -121,7 +121,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    public void spawnChest (int killerUserId) {
       if (seaEntityData.shouldDropTreasure && killerUserId > 0) {
          Instance currentInstance = InstanceManager.self.getInstance(this.instanceId);
-         TreasureManager.self.createSeaMonsterChest(currentInstance, sortPoint.transform.position, dataXmlId, killerUserId, _attackers.Keys.ToArray());
+         TreasureManager.self.createSeaMonsterChest(currentInstance, sortPoint.transform.position, dataXmlId, killerUserId, _attackers.Keys.ToArray(), new List<int>());
       }
    }
 

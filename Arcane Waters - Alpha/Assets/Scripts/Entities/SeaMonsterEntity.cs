@@ -65,6 +65,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    // Holds the info of the seamonster health Bars
    public SeaMonsterBars seaMonsterBars;
 
+   // List of participants in this boss fight
+   public List<int> bossCombatParticipants = new List<int>();
+
    // The time an attack animation plays
    // TODO: Confirm if this needs to be in the web tool, this variable will result in the enemy holding its last animation frame after attack before moving again
    public const float ATTACK_DURATION = .65f;// Old Value = .3f;
@@ -412,6 +415,19 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       base.noteAttacker(netId);
       if (seaMonsterParentEntity != null) {
          seaMonsterParentEntity.noteAttacker(netId);
+
+         // Register participants in boss fight for reward purposes
+         if (monsterType == Type.Horror || seaMonsterParentEntity.monsterType == Type.Horror) {
+            NetEntity currEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(netId);
+            if (currEntity != null) {
+               if (!bossCombatParticipants.Contains(currEntity.userId)) {
+                  bossCombatParticipants.Add(currEntity.userId);
+               }
+               if (!seaMonsterParentEntity.bossCombatParticipants.Contains(currEntity.userId)) {
+                  seaMonsterParentEntity.bossCombatParticipants.Add(currEntity.userId);
+               }
+            }
+         }
       }
    }
 
@@ -644,7 +660,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
                offset += Random.insideUnitCircle * 0.3f;
             }
 
-            TreasureManager.self.createSeaMonsterChest(currentInstance, transform.position + (Vector3) offset, seaMonsterData.xmlId, killerUserId, _attackers.Keys.ToArray());
+            TreasureManager.self.createSeaMonsterChest(currentInstance, transform.position + (Vector3) offset, seaMonsterData.xmlId, killerUserId, _attackers.Keys.ToArray(), bossCombatParticipants);
          }
       }
    }
