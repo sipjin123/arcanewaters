@@ -917,7 +917,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    public void playInteractParticles () {
       Weapon.ActionType currentActionType = weaponManager.actionType;
-      farmingTrigger.updateTriggerDirection();
+      farmingTrigger.updateTriggerDirection(facing);
       farmingTrigger.playFarmingParticles(currentActionType);
    }
 
@@ -941,7 +941,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
    }
 
-   private Direction forceLookAt (Vector2 targetPosition) {
+   public Direction forceLookAt (Vector2 targetPosition) {
       // Get horizontal axis difference
       float xAxisDifference = targetPosition.x - transform.position.x;
       xAxisDifference = Mathf.Abs(xAxisDifference);

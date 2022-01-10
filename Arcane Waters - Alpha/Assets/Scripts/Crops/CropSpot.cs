@@ -24,6 +24,9 @@ public class CropSpot : MonoBehaviour {
    // The area key
    public string areaKey;
 
+   // Obj indicating the interaction of the crop spot
+   public GameObject indicatorObj;
+
    #endregion
 
    private void Start () {
