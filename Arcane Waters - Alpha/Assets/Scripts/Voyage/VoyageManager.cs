@@ -31,14 +31,14 @@ public class VoyageManager : GenericGameManager {
    /// Note that only the Master server can launch voyage instance creations. Use requestVoyageInstanceCreation() to ensure the Master server handles it.
    /// </summary>
    [Server]
-   public void createVoyageInstance (int voyageId, string areaKey, bool isPvP, bool isLeague, int leagueIndex, int leagueRandomSeed, Biome.Type biome, int difficulty) {
+   public void createVoyageInstance (int voyageId, Voyage parameters) {
       // Check if the area is defined
-      if (string.IsNullOrEmpty(areaKey)) {
+      if (string.IsNullOrEmpty(parameters.areaKey)) {
          // Get the list of sea maps area keys
          List<string> seaMaps;
-         if (isLeague) {
+         if (parameters.isLeague) {
             seaMaps = getLeagueAreaKeys();
-         } else if (isPvP) {
+         } else if (parameters.isPvP) {
             seaMaps = getPvpArenaAreaKeys();
          } else {
             seaMaps = getVoyageAreaKeys();
@@ -50,21 +50,21 @@ public class VoyageManager : GenericGameManager {
          }
 
          // Randomly choose an area
-         areaKey = seaMaps[UnityEngine.Random.Range(0, seaMaps.Count)];
+         parameters.areaKey = seaMaps[UnityEngine.Random.Range(0, seaMaps.Count)];
       }
 
       // Randomize the biome if it is not defined
-      if (biome == Biome.Type.None) {
-         biome = Util.randomEnumStartAt<Biome.Type>(1);
+      if (parameters.biome == Biome.Type.None) {
+         parameters.biome = Util.randomEnumStartAt<Biome.Type>(1);
       }
 
       // Randomize the difficulty if it is not defined
-      if (difficulty == 0) {
-         difficulty = UnityEngine.Random.Range(1, Voyage.getMaxDifficulty() + 1);
+      if (parameters.difficulty == 0) {
+         parameters.difficulty = UnityEngine.Random.Range(1, Voyage.getMaxDifficulty() + 1);
       }
 
       // Create the area instance
-      Instance instance = InstanceManager.self.createNewInstance(areaKey, false, true, voyageId, isPvP, isLeague, leagueIndex, leagueRandomSeed, difficulty, biome);
+      Instance instance = InstanceManager.self.createNewInstance(parameters.areaKey, false, true, voyageId, parameters.isPvP, parameters.isLeague, parameters.leagueIndex, parameters.leagueRandomSeed, parameters.leagueExitAreaKey, parameters.leagueExitSpawnKey, parameters.leagueExitFacingDirection, parameters.difficulty, parameters.biome);
 
       // Immediately make the new voyage info accessible to other servers
       if (ServerNetworkingManager.self != null && ServerNetworkingManager.self.server != null) {
@@ -72,7 +72,7 @@ public class VoyageManager : GenericGameManager {
       }
 
       // For pvp instances, create the associated pvp game
-      if (isPvP) {
+      if (parameters.isPvP) {
          PvpManager.self.createNewGameForPvpInstance(instance);
       }
    }
@@ -390,7 +390,16 @@ public class VoyageManager : GenericGameManager {
       }
 
       // Launch the creation of a random sea map instance, to be the parent of the treasure site instance
-      requestVoyageInstanceCreation(voyageId, "", false, true, Voyage.MAPS_PER_LEAGUE - 1, -1, biome, difficulty);
+      Voyage parameters = new Voyage {
+         areaKey = "",
+         isPvP = false,
+         isLeague = true,
+         leagueIndex = Voyage.MAPS_PER_LEAGUE - 1,
+         biome = biome,
+         difficulty = difficulty
+      };
+
+      requestVoyageInstanceCreation(voyageId, parameters);
 
       // Wait until the voyage instance has been created
       while (!tryGetVoyage(voyageId, out Voyage voyage)) {
@@ -402,29 +411,29 @@ public class VoyageManager : GenericGameManager {
    }
 
    [Server]
-   public void requestVoyageInstanceCreation (string areaKey = "", bool isPvP = false, bool isLeague = false, int leagueIndex = 0, int leagueRandomSeed = -1, Biome.Type biome = Biome.Type.None, int difficulty = 0) {
+   public void requestVoyageInstanceCreation (Voyage parameters) {
       // Only the master server can generate new voyage ids
       if (!ServerNetworkingManager.self.server.isMasterServer()) {
-         ServerNetworkingManager.self.requestVoyageInstanceCreation(areaKey, isPvP, isLeague, leagueIndex, leagueRandomSeed, biome, difficulty);
+         ServerNetworkingManager.self.requestVoyageInstanceCreation(parameters);
          return;
       }
 
       int voyageId = getNewVoyageId();
-      requestVoyageInstanceCreation(voyageId, areaKey, isPvP, isLeague, leagueIndex, leagueRandomSeed, biome, difficulty);
+      requestVoyageInstanceCreation(voyageId, parameters);
    }
 
    [Server]
-   public void requestVoyageInstanceCreation (int voyageId, string areaKey = "", bool isPvP = false, bool isLeague = false, int leagueIndex = 0, int leagueRandomSeed = -1, Biome.Type biome = Biome.Type.None, int difficulty = 0) {
+   public void requestVoyageInstanceCreation (int voyageId, Voyage parameters) {
       // Find the server with the least people
       NetworkedServer bestServer = ServerNetworkingManager.self.getRandomServerWithLeastAssignedPlayers();
 
       if (bestServer != null) {
-         ServerNetworkingManager.self.createVoyageInstanceInServer(bestServer.networkedPort.Value, voyageId, areaKey, isPvP, isLeague, leagueIndex, leagueRandomSeed, biome, difficulty);
+         ServerNetworkingManager.self.createVoyageInstanceInServer(bestServer.networkedPort.Value, voyageId, parameters);
       }
    }
 
    [Server]
-   public void createLeagueInstanceAndWarpPlayer (NetEntity player, int leagueIndex, Biome.Type biome, int randomSeed = -1, string areaKey = "") {
+   public void createLeagueInstanceAndWarpPlayer (NetEntity player, int leagueIndex, Biome.Type biome, int randomSeed = -1, string areaKey = "", string exitAreaKey = "", string exitSpawnKey = "", Direction exitFacingDirection = Direction.South) {
       // Determine the league difficulty and hosting server
       int difficulty = 1;
       int serverPort = ServerNetworkingManager.self.server.networkedPort.Value;
@@ -442,7 +451,7 @@ public class VoyageManager : GenericGameManager {
          }
       }
 
-      StartCoroutine(CO_CreateLeagueInstance(leagueIndex, biome, difficulty, serverPort, () => player.rpc.Target_OnWarpFailed("No league maps available"), (voyage) => warpPlayerToLeagueInstance(player, voyage), randomSeed, areaKey));
+      StartCoroutine(CO_CreateLeagueInstance(leagueIndex, biome, difficulty, serverPort, () => player.rpc.Target_OnWarpFailed("No league maps available"), (voyage) => warpPlayerToLeagueInstance(player, voyage), randomSeed, areaKey, exitAreaKey, exitSpawnKey, exitFacingDirection));
    }
 
    [Server]
@@ -545,7 +554,7 @@ public class VoyageManager : GenericGameManager {
          foreach (TreasureSite site in oldInstance.treasureSites) {
             Instance oldTreasureSiteInstance = InstanceManager.self.getInstance(site.destinationInstanceId);
             if (oldTreasureSiteInstance != null) {
-               Instance newTreasureSiteInstance = InstanceManager.self.createNewInstance(oldTreasureSiteInstance.areaKey, false, oldTreasureSiteInstance.voyageId, voyageGroup.members.Count + 1);
+               Instance newTreasureSiteInstance = InstanceManager.self.createNewInstance(oldTreasureSiteInstance.areaKey, false, oldTreasureSiteInstance.voyageId, voyageGroup.members.Count + 1, oldTreasureSiteInstance.leagueExitAreaKey, oldTreasureSiteInstance.leagueExitSpawnKey, oldTreasureSiteInstance.leagueExitFacingDirection);
                InstanceManager.self.removeEmptyInstance(oldTreasureSiteInstance);
                site.destinationInstanceId = newTreasureSiteInstance.id;
             }
@@ -558,7 +567,7 @@ public class VoyageManager : GenericGameManager {
       }
       
       // Create the new league instance
-      StartCoroutine(CO_CreateLeagueInstance(oldVoyage.leagueIndex, oldVoyage.biome, voyageGroup.members.Count + 1, ServerNetworkingManager.self.server.networkedPort.Value, null, (newVoyage) => onRecreateLeagueInstanceSuccess(newVoyage, oldInstance, groupId, userId, userName), oldVoyage.leagueRandomSeed, oldVoyage.areaKey));
+      StartCoroutine(CO_CreateLeagueInstance(oldVoyage.leagueIndex, oldVoyage.biome, voyageGroup.members.Count + 1, ServerNetworkingManager.self.server.networkedPort.Value, null, (newVoyage) => onRecreateLeagueInstanceSuccess(newVoyage, oldInstance, groupId, userId, userName), oldVoyage.leagueRandomSeed, oldVoyage.areaKey, oldVoyage.leagueExitAreaKey, oldVoyage.leagueExitSpawnKey, oldVoyage.leagueExitFacingDirection));
    }
 
    [Server]
@@ -586,7 +595,7 @@ public class VoyageManager : GenericGameManager {
    }
    
    [Server]
-   private IEnumerator CO_CreateLeagueInstance (int leagueIndex, Biome.Type biome, int difficulty, int serverPort, Action onFailureAction, Action<Voyage> onSuccessAction, int randomSeed = -1, string areaKey = "") {
+   private IEnumerator CO_CreateLeagueInstance (int leagueIndex, Biome.Type biome, int difficulty, int serverPort, Action onFailureAction, Action<Voyage> onSuccessAction, int randomSeed = -1, string areaKey = "", string exitAreaKey = "", string exitSpawnKey = "", Direction exitFacingDirection = Direction.South) {
       // Get a new voyage id from the master server
       RpcResponse<int> response = ServerNetworkingManager.self.getNewVoyageId();
       while (!response.IsDone) {
@@ -632,13 +641,26 @@ public class VoyageManager : GenericGameManager {
          }
       }
 
+      Voyage parameters = new Voyage {
+         areaKey = areaKey,
+         isPvP = false,
+         isLeague = true,
+         leagueIndex = leagueIndex,
+         leagueRandomSeed = randomSeed,
+         leagueExitAreaKey = exitAreaKey,
+         leagueExitSpawnKey = exitSpawnKey,
+         leagueExitFacingDirection = exitFacingDirection,
+         biome = biome,
+         difficulty = difficulty
+      };
+
       // Launch the creation of the new voyage instance
       if (leagueIndex == 0) {
          // The first instance is created in the best available server
-         requestVoyageInstanceCreation(voyageId, areaKey, false, true, leagueIndex, randomSeed, biome, difficulty);
+         requestVoyageInstanceCreation(voyageId, parameters);
       } else {
          // Keep all instances of the same league in the same server
-         ServerNetworkingManager.self.createVoyageInstanceInServer(serverPort, voyageId, areaKey, false, true, leagueIndex, randomSeed, biome, difficulty);
+         ServerNetworkingManager.self.createVoyageInstanceInServer(serverPort, voyageId, parameters);
       }
 
       // Wait until the voyage instance has been created
@@ -668,6 +690,14 @@ public class VoyageManager : GenericGameManager {
 
       NotificationManager.self.removeAllTypes(Notification.Type.VoyageCompleted);
       NotificationManager.self.removeAllTypes(Notification.Type.NewLocationUnlocked);
+   }
+
+   public void requestExitCompletedLeague () {
+      if (Global.player == null) {
+         return;
+      }
+
+      Global.player.rpc.Cmd_RequestExitCompletedLeague();
    }
 
    [Server]

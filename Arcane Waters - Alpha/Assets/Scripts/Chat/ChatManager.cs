@@ -214,7 +214,7 @@ public class ChatManager : GenericGameManager
    }
 
    public void requestPlayEmote (string parameters) {
-      if (Global.player == null || Global.player.getPlayerBodyEntity() == null || Global.player.getPlayerBodyEntity().isSitting || Global.player.isInBattle()) {
+      if (Global.player == null || Global.player.getPlayerBodyEntity() == null || Global.player.getPlayerBodyEntity().isSitting() || Global.player.isInBattle()) {
          addChat("Can't emote now...", ChatInfo.Type.System);
          return;
       }

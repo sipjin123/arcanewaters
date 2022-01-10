@@ -161,6 +161,7 @@ public class TutorialPanel3 : MonoBehaviour
          if (_timeSinceWarp > DELAY_AFTER_WARP) {
             canvasGroup.Show();
             AutoTyper.SlowlyRevealText(npcSpeechText, _npcSpeech);
+            AutoTyper.FinishText(npcSpeechText);
          }
       } else {
          // Fade in or out some sections

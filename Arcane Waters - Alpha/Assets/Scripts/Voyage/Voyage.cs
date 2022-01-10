@@ -33,6 +33,9 @@ public class Voyage
    // The maximum distance apart the group members can be when starting a league
    public static int LEAGUE_START_MEMBERS_MAX_DISTANCE = 3;
 
+   // The radius around the league entrance where the exit spawn is searched
+   public static float LEAGUE_EXIT_SPAWN_SEARCH_RADIUS = 2f;
+
    // The voyage difficulty as enum, mostly used for the UI
    public enum Difficulty { None = 0, Easy = 1, Medium = 2, Hard = 3 }
 
@@ -62,6 +65,15 @@ public class Voyage
 
    // The random seed used to create the league map series
    public int leagueRandomSeed = -1;
+
+   // The area key where users are warped to when exiting a league
+   public string leagueExitAreaKey = "";
+
+   // The spawn key where users are warped to when exiting a league
+   public string leagueExitSpawnKey = "";
+
+   // The facing direction when exiting a league
+   public Direction leagueExitFacingDirection = Direction.South;
 
    // The creation time of the voyage instance
    public long creationDate;
@@ -105,9 +117,7 @@ public class Voyage
 
    }
 
-   public Voyage (int voyageId, int instanceId, string areaKey, string areaName, int difficulty, Biome.Type biome, bool isPvP,
-      bool isLeague, int leagueIndex, int leagueRandomSeed, long creationDate, int treasureSiteCount, int capturedTreasureSiteCount, int aliveNPCEnemyCount, 
-      int totalNPCEnemyCount, int groupCount, int playerCount, int playerCountTeamA, int playerCountTeamB, int pvpGameMaxPlayerCount, PvpGame.State pvpGameState) {
+   public Voyage (int voyageId, int instanceId, string areaKey, string areaName, int difficulty, Biome.Type biome, bool isPvP, bool isLeague, int leagueIndex, int leagueRandomSeed, string leagueExitAreaKey, string leagueExitSpawnKey, Direction leagueExitFacingDirection, long creationDate, int treasureSiteCount, int capturedTreasureSiteCount, int aliveNPCEnemyCount, int totalNPCEnemyCount, int groupCount, int playerCount, int playerCountTeamA, int playerCountTeamB, int pvpGameMaxPlayerCount, PvpGame.State pvpGameState) {
       this.voyageId = voyageId;
       this.instanceId = instanceId;
       this.areaKey = areaKey;
@@ -118,6 +128,9 @@ public class Voyage
       this.isLeague = isLeague;
       this.leagueIndex = leagueIndex;
       this.leagueRandomSeed = leagueRandomSeed;
+      this.leagueExitAreaKey = leagueExitAreaKey;
+      this.leagueExitSpawnKey = leagueExitSpawnKey;
+      this.leagueExitFacingDirection = leagueExitFacingDirection;
       this.creationDate = creationDate;
       this.treasureSiteCount = treasureSiteCount;
       this.capturedTreasureSiteCount = capturedTreasureSiteCount;

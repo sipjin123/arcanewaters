@@ -43,5 +43,35 @@ namespace MinimapGeneration
       [Reorderable]
       public TileIcon[] _tileIconLayers = new TileIcon[0];
 
+
+      [Space(10)]
+      [Header("V2 Sea Minimap Generation properties")]
+
+      [Tooltip("Color of generic land that has nothing else on it")]
+      public Color baseLandColor;
+      [Tooltip("Color of generic land on the border of something")]
+      public Color landBorderColor;
+      [Tooltip("Color of outline around land mass")]
+      public Color landOutlineColor;
+      [Tooltip("Color off the lower pixel of cliffs")]
+      public Color landCliffLowerColor;
+      [Tooltip("Color of the upper pixel of cliffs")]
+      public Color landCliffUpperColor;
+      [Space(5)]
+      [Tooltip("Color of the base water")]
+      public Color waterColor;
+      [Tooltip("Color of the border of water where it touches land")]
+      public Color waterBorderColor;
+      [Tooltip("Color of the deeper water")]
+      public Color deeper1WaterColor;
+      [Tooltip("Color of the even deeper water")]
+      public Color deeper2WaterColor;
+      [Tooltip("Color of the even waterfalls")]
+      public Color waterfallColor;
+      [Space(5)]
+      [Tooltip("Color of pathways")]
+      public Color pathwayColor;
+      [Tooltip("Color of pathway borders")]
+      public Color pathwayBorderColor;
    }
 }

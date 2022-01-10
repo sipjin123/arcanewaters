@@ -41,7 +41,7 @@ public class CraftingAnvil : MonoBehaviour
       handleSpriteOutline();
 
       // Allow pressing keyboard to open the crafting panel
-      if (InputManager.self.inputMaster.UIControl.Equip.WasPressedThisFrame() && _isGlobalPlayerNearby) {
+      if (_isGlobalPlayerNearby && InputManager.self.inputMaster.UIControl.Equip.WasPressedThisFrame()) {
          openCraftingPanel();
       }
    }

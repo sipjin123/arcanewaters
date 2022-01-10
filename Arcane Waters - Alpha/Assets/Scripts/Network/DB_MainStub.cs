@@ -1672,6 +1672,10 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
+   public static List<XMLPair> getLandPowerupXML () {
+      return new List<XMLPair>();
+   }
+
    #region Soul Binding
 
    public static Item.SoulBindingType getSoulBindingType (Item.Category itemCategory, int itemTypeId) {

@@ -30,100 +30,6 @@ Transform:
   m_Father: {fileID: 1486277318641558357}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1027772159497809575
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5113882934300017752}
-  - component: {fileID: 4340909259420701390}
-  m_Layer: 0
-  m_Name: weed
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5113882934300017752
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1027772159497809575}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.39, y: 1.41, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 7021788139521928208}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4340909259420701390
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1027772159497809575}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ace37959c99e22141b801bd6aec62d7f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  layer: detail
-  sublayer: 0
-  prefab: {fileID: 5428246170776587207, guid: a7c4e895097b7db47828102a969b4cee, type: 3}
-  prefabOffset: {x: 0, y: 0}
---- !u!1 &1044321282490371936
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8342736650975593964}
-  - component: {fileID: 4029625509591466399}
-  m_Layer: 0
-  m_Name: weed
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8342736650975593964
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1044321282490371936}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.52, y: 1.52, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 7021788139521928208}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4029625509591466399
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1044321282490371936}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ace37959c99e22141b801bd6aec62d7f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  layer: detail
-  sublayer: 0
-  prefab: {fileID: 7971549388885396501, guid: b5951761fee69b8418ab8bfc97ef2bdb, type: 3}
-  prefabOffset: {x: 0, y: 0}
 --- !u!1 &4520964703727258032
 GameObject:
   m_ObjectHideFlags: 0
@@ -289,9 +195,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 5113882934300017752}
-  - {fileID: 8342736650975593964}
+  m_Children: []
   m_Father: {fileID: 1486277318641558357}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -340,7 +244,142 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af74a023d1451a84da513d7166d2d90b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wrongLayerIssues: []
+  wrongLayerIssues:
+  - tileBase: {fileID: 11400000, guid: 2e0ad402a102e0f48b64e970f723557a, type: 2}
+    fromLayer: river
+    toLayer: pathway
+    fromSublayer: 0
+    toSublayer: 0
+  - tileBase: {fileID: 11400000, guid: aed0ba3f84613934d9a4869845f166a1, type: 2}
+    fromLayer: river
+    toLayer: pathway
+    fromSublayer: 0
+    toSublayer: 0
+  - tileBase: {fileID: 11400000, guid: 762785aedecd78442ba282837a5b9052, type: 2}
+    fromLayer: river
+    toLayer: pathway
+    fromSublayer: 0
+    toSublayer: 0
+  - tileBase: {fileID: 11400000, guid: 4d11d58533e95ba438706de8669563e1, type: 2}
+    fromLayer: river
+    toLayer: pathway
+    fromSublayer: 0
+    toSublayer: 0
+  - tileBase: {fileID: 11400000, guid: b14f61f5737163e43aa7bba7c8309434, type: 2}
+    fromLayer: river
+    toLayer: pathway
+    fromSublayer: 0
+    toSublayer: 0
+  - tileBase: {fileID: 11400000, guid: a8dce71fba666264b9d81ab9e3891517, type: 2}
+    fromLayer: river
+    toLayer: pathway
+    fromSublayer: 0
+    toSublayer: 0
+  - tileBase: {fileID: 11400000, guid: ac50fa68655de1544b03d8ece1c29349, type: 2}
+    fromLayer: river
+    toLayer: pathway
+    fromSublayer: 0
+    toSublayer: 0
+  - tileBase: {fileID: 11400000, guid: 35949d75c202bce4ea5ea7492c346556, type: 2}
+    fromLayer: river
+    toLayer: pathway
+    fromSublayer: 0
+    toSublayer: 0
+  - tileBase: {fileID: 11400000, guid: 90c6e3c1f76a36f418a6264d7aac3822, type: 2}
+    fromLayer: river
+    toLayer: pathway
+    fromSublayer: 0
+    toSublayer: 0
+  - tileBase: {fileID: 11400000, guid: 7cf4ba676c7b3774398386dc2ccd8e29, type: 2}
+    fromLayer: river
+    toLayer: pathway
+    fromSublayer: 0
+    toSublayer: 0
+  - tileBase: {fileID: 11400000, guid: 764650b6595934c4b940866cfab41f25, type: 2}
+    fromLayer: river
+    toLayer: pathway
+    fromSublayer: 0
+    toSublayer: 0
+  - tileBase: {fileID: 11400000, guid: d212ad7736970af48ba6ea72e1b16221, type: 2}
+    fromLayer: river
+    toLayer: pathway
+    fromSublayer: 0
+    toSublayer: 0
+  - tileBase: {fileID: 11400000, guid: 207b52ec9d4b13247867c52b20e3f444, type: 2}
+    fromLayer: river
+    toLayer: pathway
+    fromSublayer: 0
+    toSublayer: 0
+  - tileBase: {fileID: 11400000, guid: 6c0c13281c9b0b9479ab8e228dee2238, type: 2}
+    fromLayer: river
+    toLayer: pathway
+    fromSublayer: 0
+    toSublayer: 0
+  - tileBase: {fileID: 11400000, guid: 9f1b665ea0f7ec04e92abdce632d2f5d, type: 2}
+    fromLayer: river
+    toLayer: pathway
+    fromSublayer: 0
+    toSublayer: 0
+  - tileBase: {fileID: 11400000, guid: 3927a3f9835f8014689db317e0772a11, type: 2}
+    fromLayer: river
+    toLayer: pathway
+    fromSublayer: 0
+    toSublayer: 0
+  - tileBase: {fileID: 11400000, guid: ed748c84ccd82f240a705f45ab155910, type: 2}
+    fromLayer: river
+    toLayer: pathway
+    fromSublayer: 0
+    toSublayer: 0
+  - tileBase: {fileID: 11400000, guid: 60168509193e31a47b9f8b5914252f06, type: 2}
+    fromLayer: river
+    toLayer: pathway
+    fromSublayer: 0
+    toSublayer: 0
+  - tileBase: {fileID: 11400000, guid: 1898e2925840bba4a8e0cd9b0f256f69, type: 2}
+    fromLayer: water
+    toLayer: water
+    fromSublayer: 4
+    toSublayer: 8
+  - tileBase: {fileID: 11400000, guid: 7abfd32003bee694eba87757ae33849f, type: 2}
+    fromLayer: water
+    toLayer: water
+    fromSublayer: 5
+    toSublayer: 8
+  - tileBase: {fileID: 11400000, guid: da375aee36dae584fb68edd5d7e5a769, type: 2}
+    fromLayer: water
+    toLayer: water
+    fromSublayer: 5
+    toSublayer: 8
+  - tileBase: {fileID: 11400000, guid: 4b923ad73c804444bbcb30583af4c815, type: 2}
+    fromLayer: water
+    toLayer: water
+    fromSublayer: 5
+    toSublayer: 8
+  - tileBase: {fileID: 11400000, guid: c3ac547f3f6a37947b34e352c16d03b0, type: 2}
+    fromLayer: water
+    toLayer: water
+    fromSublayer: 5
+    toSublayer: 8
+  - tileBase: {fileID: 11400000, guid: 8bc1df8451d55604899f6f86f972fd3b, type: 2}
+    fromLayer: water
+    toLayer: water
+    fromSublayer: 5
+    toSublayer: 8
+  - tileBase: {fileID: 11400000, guid: 7a5b97403e50e554aad56b45bdc26c79, type: 2}
+    fromLayer: water
+    toLayer: water
+    fromSublayer: 5
+    toSublayer: 8
+  - tileBase: {fileID: 11400000, guid: 380f34db863dec248b72476dd599c762, type: 2}
+    fromLayer: water
+    toLayer: water
+    fromSublayer: 5
+    toSublayer: 8
+  - tileBase: {fileID: 11400000, guid: 789e25aea6036de48b115b68688c8afd, type: 2}
+    fromLayer: water
+    toLayer: water
+    fromSublayer: 5
+    toSublayer: 8
   tilesSharedBetweenPrefabs: []
   unnecessaryTileIssues: []
   removedDataFieldIssues: []

@@ -12095,6 +12095,38 @@ public class DB_Main : DB_MainStub
    }
    #endregion
 
+   #region LandPowerup XML Data
+
+   public static new List<XMLPair> getLandPowerupXML () {
+      List<XMLPair> rawDataList = new List<XMLPair>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.land_powerup_xml_v1", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  XMLPair newXMLPair = new XMLPair {
+                     xmlId = dataReader.GetInt32("xml_id"),
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     isEnabled = dataReader.GetInt32("isActive") == 0 ? false : true
+                  };
+
+                  rawDataList.Add(newXMLPair);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<XMLPair>(rawDataList);
+   }
+
+   #endregion   
    /*
    public static new void deleteAccount (int accountId) {
       try {

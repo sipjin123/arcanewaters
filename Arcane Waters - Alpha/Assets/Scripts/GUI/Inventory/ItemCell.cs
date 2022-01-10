@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
+using static PaletteToolManager;
 
 public class ItemCell : MonoBehaviour, IPointerClickHandler
 {
@@ -260,7 +261,20 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                break;
             }
 
-            icon.sprite = ImageManager.getSprites(item.getIconPath())[1];
+            PaletteImageType dyeType = DyeXMLManager.self.getDyeType(item.itemTypeId);
+            Sprite chosenSprite = ImageManager.self.blankSprite;
+
+            if (dyeType == PaletteImageType.Armor) {
+               chosenSprite = ImageManager.getSprites(item.getIconPath())[0];
+            } else if (dyeType == PaletteImageType.Weapon) {
+               chosenSprite = ImageManager.getSprites(item.getIconPath())[1];
+            } else if (dyeType == PaletteImageType.Hair) {
+               chosenSprite = ImageManager.getSprites(item.getIconPath())[2];
+            } else if (dyeType == PaletteImageType.Hat) {
+               chosenSprite = ImageManager.getSprites(item.getIconPath())[3];
+            }
+
+            icon.sprite = chosenSprite;
             break;
 
          case Item.Category.ShipSkin:

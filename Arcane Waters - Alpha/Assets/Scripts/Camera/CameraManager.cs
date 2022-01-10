@@ -198,9 +198,13 @@ public class CameraManager : ClientMonoBehaviour {
    public static BaseCamera getBaseCameraForCurrentVirtualCamera () {
       // Try to find the active virtual camera in the list of registered BaseCameras
       ICinemachineCamera activeVCam = self.cinemachineBrain.ActiveVirtualCamera;
-      foreach (BaseCamera camera in self._baseCameras) {
-         if (camera.getVirtualCamera() != null && camera.getVirtualCamera().gameObject == activeVCam.VirtualCameraGameObject) {
-            return camera;
+      if (activeVCam != null) {
+         foreach (BaseCamera camera in self._baseCameras) {
+            if (camera != null) {
+               if (camera.getVirtualCamera() != null && camera.getVirtualCamera().gameObject == activeVCam.VirtualCameraGameObject) {
+                  return camera;
+               }
+            }
          }
       }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml.Serialization;
 using UnityEngine;
 
 public enum LandPowerupType {
@@ -67,7 +68,16 @@ public class LandPowerupInfo {
    public int baseCounter = 1;
 
    // The sprite reference
+   [XmlIgnore]
    public Sprite spriteRef;
+   
+   // The xml id
+   [XmlIgnore]
+   public int xmlId;
+
+   // If this unit is enabled in the database
+   [XmlIgnore]
+   public bool isXmlEnabled;
 }
 
 [Serializable]

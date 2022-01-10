@@ -207,7 +207,16 @@ public class PvpManager : MonoBehaviour {
          List<string> pvpArenaMaps = VoyageManager.self.getPvpArenaAreaKeys();
          foreach (string areaKey in pvpArenaMaps) {
             Map areaData = AreaManager.self.getMapInfo(areaKey);
-            VoyageManager.self.requestVoyageInstanceCreation(areaKey, true, difficulty: 2, biome: areaData == null ? Biome.Type.Forest : areaData.biome);
+
+            Voyage parameters = new Voyage {
+               areaKey = areaKey,
+               isPvP = true,
+               isLeague = false,
+               biome = areaData == null ? Biome.Type.Forest : areaData.biome,
+               difficulty = 2
+            };
+
+            VoyageManager.self.requestVoyageInstanceCreation(parameters);
          }
       }
    }
@@ -244,7 +253,16 @@ public class PvpManager : MonoBehaviour {
          }
          string areaKey = pvpArenaAreaKeys[lastPvpArenaAreaIndex];
          Map areaData = AreaManager.self.getMapInfo(areaKey);
-         VoyageManager.self.requestVoyageInstanceCreation(areaKey, true, difficulty: 2, biome: areaData == null ? Biome.Type.Forest : areaData.biome);
+
+         Voyage parameters = new Voyage {
+            areaKey = areaKey,
+            isPvP = true,
+            isLeague = false,
+            biome = areaData == null ? Biome.Type.Forest : areaData.biome,
+            difficulty = 2
+         };
+
+         VoyageManager.self.requestVoyageInstanceCreation(parameters);
       }
    }
 
@@ -266,7 +284,14 @@ public class PvpManager : MonoBehaviour {
    [Server]
    private IEnumerator CO_CreateNewGameAndJoin (NetEntity player) {
       // Create a random voyage instance biome
-      VoyageManager.self.requestVoyageInstanceCreation(isPvP: true, difficulty: 2, biome: (Biome.Type) UnityEngine.Random.Range(1, 6));
+      Voyage parameters = new Voyage {
+         isPvP = true,
+         isLeague = false,
+         biome = (Biome.Type) UnityEngine.Random.Range(1, 6),
+         difficulty = 2
+      };
+
+      VoyageManager.self.requestVoyageInstanceCreation(parameters);
 
       // The voyage instance creation always takes at least two frames
       yield return null;

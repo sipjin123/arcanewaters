@@ -1313,6 +1313,11 @@ public class NetEntity : NetworkBehaviour
    }
 
    protected virtual void handleInstantMoveMode (bool updatingEveryFrame) {
+      // Skip if Input is disabled
+      if (!InputManager.isInputEnabled()) {
+         return;
+      }
+
       // Calculate by how much to reduce the movement speed due to differing update steps
       float frameRateMultiplier = updatingEveryFrame ? 1 / Mathf.Ceil(MOVE_CHANGE_INTERVAL / Time.deltaTime) : 1f;
 
@@ -2511,15 +2516,10 @@ public class NetEntity : NetworkBehaviour
       }
 
       Vector3 pos = bodyTx.position;
-      Target_ReceiveSilverCurrencyImpl(silverCount, rewardReason, pos);
+      ReceiveSilverCurrencyImpl(silverCount, rewardReason, pos);
    }
 
-   [TargetRpc]
-   public void Target_ReceiveSilverCurrencyWithEffect (NetworkConnection connection, int silverCount, SilverManager.SilverRewardReason rewardReason, Vector3 floatingCanvasSpawnPosition) {
-      Target_ReceiveSilverCurrencyImpl(silverCount, rewardReason, floatingCanvasSpawnPosition);
-   }
-
-   public void Target_ReceiveSilverCurrencyImpl (int silverCount, SilverManager.SilverRewardReason rewardReason, Vector3 targetPos) {
+   public void ReceiveSilverCurrencyImpl (int silverCount, SilverManager.SilverRewardReason rewardReason, Vector3 targetPos) {
       Vector3 pos = targetPos;
 
       if (silverCount > 0) {
@@ -2577,36 +2577,6 @@ public class NetEntity : NetworkBehaviour
 
       // Update the Silver indicator
       PvpStatusPanel.self.addSilver(silverCount);
-   }
-
-   [TargetRpc]
-   public void Target_ShowSilverBurstEffect (NetworkConnection connection, int silverReward, Vector3 position) {
-      try {
-         float radius = 0.2f;
-         int numCoins = 10;
-
-         for (int i = 0; i < numCoins; i++) {
-            int randomAngle = UnityEngine.Random.Range(0, 360);
-            float x = Mathf.Cos(Mathf.Deg2Rad * randomAngle) * radius;
-            float y = Mathf.Sin(Mathf.Deg2Rad * randomAngle) * radius;
-            float z = 0;
-            Vector3 pos = new Vector3(position.x + x, position.y + y, position.z + z);
-            GameObject burstEffectGameObject = Instantiate(PrefabsManager.self.silverBurstEffectPrefab);
-
-            if (burstEffectGameObject == null) {
-               D.warning("Couldn't find the prefab for the Silver Burst Effect.");
-               return;
-            }
-
-            burstEffectGameObject.transform.position = pos;
-            GenericSpriteEffect effect = burstEffectGameObject.GetComponent<GenericSpriteEffect>();
-            effect.startDelay /= 2;
-            effect.secondsPerFrame /= 2;
-            effect.play();
-         }
-      } catch (Exception ex) {
-         D.error(ex.Message);
-      }
    }
 
    [ClientRpc]

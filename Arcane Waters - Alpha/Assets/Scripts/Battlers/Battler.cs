@@ -2925,6 +2925,53 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       isAttacking = false;
    }
 
+   public static HashSet<Battler> getHoveredBattlers () {
+      return _hoveredBattlers;
+   }
+
+   [ClientRpc]
+   public void Rpc_ReceiveSilverCurrencyWithEffect (int silverCount, SilverManager.SilverRewardReason rewardReason, Vector3 floatingCanvasSpawnPosition) {
+      if (player == null) {
+         return;
+      }
+
+      player.ReceiveSilverCurrencyImpl(silverCount, rewardReason, floatingCanvasSpawnPosition);
+   }
+
+   [ClientRpc]
+   public void Rpc_ShowSilverBurstEffect () {
+      try {
+         float xRadius = 0.2f;
+         float yRadius = 0.1f;
+         int numCoins = 15;
+
+         for (int i = 0; i < numCoins; i++) {
+            GameObject burstEffectGameObject = Instantiate(PrefabsManager.self.silverBurstEffectPrefab, this.transform);
+
+            if (burstEffectGameObject == null) {
+               D.warning("Couldn't find the prefab for the Silver Burst Effect.");
+               return;
+            }
+
+            int randomAngle = Random.Range(0, 360);
+            float x = Mathf.Cos(Mathf.Deg2Rad * randomAngle) * xRadius;
+            float y = Mathf.Sin(Mathf.Deg2Rad * randomAngle) * yRadius;
+
+            float xShift = Random.Range(-0.2f, 0.2f);
+            float yShift = -0.15f;
+
+            Transform battleSpotTransform = this.battleSpot.transform;
+            burstEffectGameObject.transform.position = new Vector3(battleSpotTransform.position.x + x + xShift, battleSpotTransform.position.y + y + yShift, this.spriteContainers.transform.position.z);
+            GenericSpriteEffect effect = burstEffectGameObject.GetComponent<GenericSpriteEffect>();
+            effect.startDelay /= 2;
+            effect.secondsPerFrame /= 2;
+            effect.play();
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+   }
+
    #region Private Variables
 
    [Header("PvtVariables")]

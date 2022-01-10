@@ -10,6 +10,9 @@ public class LandPowerupManager : MonoBehaviour {
    // Self
    public static LandPowerupManager self;
 
+   // Determines if the list is generated already
+   public bool hasInitialized;
+   
    // The data collection containing info about users land powerups
    public Dictionary<int, List<LandPowerupData>> landPowerupDataSet = new Dictionary<int, List<LandPowerupData>>();
 
@@ -26,66 +29,40 @@ public class LandPowerupManager : MonoBehaviour {
 
    public void Awake () {
       self = this;
-
-      // TODO: Setup web tool to have a way to register information for powerups, hard code for now
-      landPowerupInfo.Add(LandPowerupType.DamageBoost, new LandPowerupInfo {
-         powerupInfo = "+20% melee, ranged, and rum damage to attacks in land combat.",
-         powerupName = "Arcane Power",
-         powerupType = LandPowerupType.DamageBoost,
-         spriteRef = getLandPowerupSprite(LandPowerupType.DamageBoost)
-      });
-      landPowerupInfo.Add(LandPowerupType.DefenseBoost, new LandPowerupInfo {
-         powerupInfo = "Take 20% less damage in land combat.",
-         powerupName = "Defense Boost",
-         powerupType = LandPowerupType.DefenseBoost,
-         spriteRef = getLandPowerupSprite(LandPowerupType.DefenseBoost)
-      });
-      landPowerupInfo.Add(LandPowerupType.SpeedBoost, new LandPowerupInfo {
-         powerupInfo = "20% run speed increase.",
-         powerupName = "Brisk Boots",
-         powerupType = LandPowerupType.SpeedBoost,
-         spriteRef = getLandPowerupSprite(LandPowerupType.SpeedBoost)
-      });
-
-      landPowerupInfo.Add(LandPowerupType.LootDropBoost, new LandPowerupInfo {
-         powerupInfo = "Double loot drops for 5 minutes.",
-         powerupName = "Loot Luck",
-         powerupType = LandPowerupType.LootDropBoost,
-         spriteRef = getLandPowerupSprite(LandPowerupType.LootDropBoost)
-      });
-      landPowerupInfo.Add(LandPowerupType.ExperienceBoost, new LandPowerupInfo {
-         powerupInfo = "Increases experience gained by 10%.",
-         powerupName = "Quick Learner",
-         powerupType = LandPowerupType.ExperienceBoost,
-         spriteRef = getLandPowerupSprite(LandPowerupType.ExperienceBoost)
-      });
-      landPowerupInfo.Add(LandPowerupType.RangeDamageBoost, new LandPowerupInfo {
-         powerupInfo = "+20% ranged attack damage in land combat.",
-         powerupName = "Bullseye",
-         powerupType = LandPowerupType.RangeDamageBoost,
-         spriteRef = getLandPowerupSprite(LandPowerupType.RangeDamageBoost)
-      });
-      landPowerupInfo.Add(LandPowerupType.MeleeDamageBoost, new LandPowerupInfo {
-         powerupInfo = "+20% melee attack damage in land combat.",
-         powerupName = "Enrage",
-         powerupType = LandPowerupType.MeleeDamageBoost,
-         spriteRef = getLandPowerupSprite(LandPowerupType.MeleeDamageBoost)
-      });
-
-      landPowerupInfo.Add(LandPowerupType.ClimbSpeedBoost, new LandPowerupInfo {
-         powerupInfo = "Increases vine climbing speed.",
-         powerupName = "Skilled Climber",
-         powerupType = LandPowerupType.ClimbSpeedBoost,
-         spriteRef = getLandPowerupSprite(LandPowerupType.ClimbSpeedBoost)
-      });
-      landPowerupInfo.Add(LandPowerupType.MiningBoost, new LandPowerupInfo {
-         powerupInfo = "Gain one extra ore when mining.",
-         powerupName = "Expert Excavator",
-         powerupType = LandPowerupType.MiningBoost,
-         spriteRef = getLandPowerupSprite(LandPowerupType.MiningBoost)
-      });
    }
 
+   #region XML Features
+   public void initializeDataCache () {
+      if (hasInitialized) {
+         return;
+      }
+
+      hasInitialized = true;
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<XMLPair> rawXMLData = DB_Main.getLandPowerupXML();
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (XMLPair xmlPair in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
+               try {
+                  LandPowerupInfo newInfo = Util.xmlLoad<LandPowerupInfo>(newTextAsset);
+
+                  if (!landPowerupInfo.ContainsKey(newInfo.powerupType) && xmlPair.isEnabled) {
+                     newInfo.xmlId = xmlPair.xmlId;
+                     // TODO: Replace getting sprite path from xml data 
+                     newInfo.spriteRef = getLandPowerupSprite(newInfo.powerupType);
+                     landPowerupInfo.Add(newInfo.powerupType, newInfo);
+                  }
+               } catch {
+                  D.debug("Failed to load land power ups: " + xmlPair.xmlId);
+               }
+            }
+         });
+      });
+   }
+   #endregion
+   
    public Sprite getLandPowerupSprite (LandPowerupType type) {
       if (landPowerupSprite.Exists(_ => _.type == type)) {
          return landPowerupSprite.Find(_ => _.type == type).sprite;
@@ -224,6 +201,5 @@ public class LandPowerupManager : MonoBehaviour {
    }
 
    #region Private Variables
-
    #endregion
 }

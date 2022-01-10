@@ -402,8 +402,10 @@ public class Battle : NetworkBehaviour {
             if (winningTeam == TeamType.Defenders || participant.player is PlayerBodyEntity || (winningTeam == TeamType.Attackers && participant.isAttacker())) {
                participant.player.battleId = 0;
                if (participant.enemyType == Enemy.Type.PlayerBattler) {
-                  // Allow refresh movement only when the winning battler is a player
-                  if (participant.teamType == winningTeam && participant.enemyType == Enemy.Type.PlayerBattler) {
+                  bool isVoyageTreasureSite = participant.player.isInGroup() && VoyageManager.isTreasureSiteArea(participant.player.areaKey);
+
+                  if (isVoyageTreasureSite || (participant.teamType == winningTeam && participant.enemyType == Enemy.Type.PlayerBattler)) {
+                     // Allow refresh movement when the winning battler is a player or when respawning in a voyage treasure site
                      playerIds += ": " + participant.player.userId;
                      participant.player.rpc.Target_ResetMoveDisable(participant.player.connectionToClient, participant.battleId.ToString());
                   }

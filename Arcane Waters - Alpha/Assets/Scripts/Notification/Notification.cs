@@ -42,7 +42,7 @@ public class Notification
          case Type.NewLocationUnlocked:
             return "A new locale is accessible!";
          case Type.VoyageCompleted:
-            return "Voyage complete!";
+            return "You are victorious!";
          default:
             return "";
       }
@@ -51,8 +51,9 @@ public class Notification
    public string getButtonText () {
       switch (type) {
          case Type.NewLocationUnlocked:
-         case Type.VoyageCompleted:
             return "View Map";
+         case Type.VoyageCompleted:
+            return "Leave Area";
          default:
             return "Got it!";
       }

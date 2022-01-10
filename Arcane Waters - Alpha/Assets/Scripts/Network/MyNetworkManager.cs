@@ -303,6 +303,8 @@ public class MyNetworkManager : NetworkManager
       GemsXMLManager.self.initializeDataCache();
       ShipSkinXMLManager.self.initializeDataCache();
       ConsumableXMLManager.self.initializeDataCache();
+      
+      LandPowerupManager.self.initializeDataCache();
    }
 
    public override void OnStopServer () {

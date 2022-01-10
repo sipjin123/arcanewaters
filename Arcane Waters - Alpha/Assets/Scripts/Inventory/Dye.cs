@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using static PaletteToolManager;
 
 [Serializable]
 public class Dye : Item
@@ -27,9 +28,9 @@ public class Dye : Item
          return null;
       }
 
-      Dye hairDye = new Dye(-1, data.itemID, "", "", 100);
-      hairDye.setBasicInfo(data.itemName, data.itemDescription, data.itemIconPath);
-      return hairDye;
+      Dye dye = new Dye(-1, data.itemID, "", "", 100);
+      dye.setBasicInfo(data.itemName, data.itemDescription, data.itemIconPath);
+      return dye;
    }
 
    public override bool canBeUsed () {
@@ -49,7 +50,13 @@ public class Dye : Item
    }
 
    public override string getIconPath () {
-      return "Icons/Inventory/usables_icons";
+      PaletteImageType dyeType = DyeXMLManager.self.getDyeType(itemTypeId);
+
+      if (dyeType == PaletteImageType.Armor || dyeType == PaletteImageType.Weapon || dyeType == PaletteImageType.Hair || dyeType == PaletteImageType.Hat) {
+         return "Icons/Inventory/DyeIcons";
+      }
+
+      return "";
    }
 
    public override string getName () {

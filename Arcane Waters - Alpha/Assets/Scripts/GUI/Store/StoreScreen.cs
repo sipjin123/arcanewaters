@@ -60,6 +60,9 @@ public class StoreScreen : Panel
    // The reference to the store filter
    public StoreFilter storeFilter;
 
+   // The reference to the Help Button
+   public GameObject helpButton;
+
    // Self
    public static StoreScreen self;
 
@@ -263,6 +266,16 @@ public class StoreScreen : Panel
             if (hatData != null) {
                characterStack.updateHats(Global.player.gender, hatData.hatType, mergedPalette);
             }
+         } else if (itemBox is StoreHatBox hatBox) {
+            HatStatData hatData = EquipmentXMLManager.self.getHatData(hatBox.hat.sqlId);
+
+            if (hatData == null) {
+               hatData = EquipmentXMLManager.self.hatStatList.First();
+            }
+
+            if (hatData != null) {
+               characterStack.updateHats(Global.player.gender, hatData.hatType, string.Empty);
+            }
          }
 
          itemBox.select();
@@ -350,17 +363,17 @@ public class StoreScreen : Panel
       }
 
       if (tabType == StoreTab.StoreTabType.ShipSkins) {
-         gridLayout.cellSize = new Vector2(148, 200);
-         gridLayout.spacing = new Vector2(16, 16);
-         gridLayout.constraintCount = 3;
+         gridLayout.cellSize = new Vector2(140, 200);
+         gridLayout.spacing = new Vector2(8, 8);
+         gridLayout.constraintCount = 4;
       } else if (tabType == StoreTab.StoreTabType.Gems) {
          gridLayout.cellSize = new Vector2(130, 180);
          gridLayout.spacing = new Vector2(0, 0);
          gridLayout.constraintCount = 4;
       } else {
          gridLayout.cellSize = new Vector2(100, 150);
-         gridLayout.spacing = new Vector2(24, 16);
-         gridLayout.constraintCount = 4;
+         gridLayout.spacing = new Vector2(20, 16);
+         gridLayout.constraintCount = 5;
       }
    }
 
@@ -382,6 +395,7 @@ public class StoreScreen : Panel
       regenerateStoreFilter();
       updateStoreFilter();
       filterItems();
+      updateHelp();
    }
 
    private void updateTabTitle () {
@@ -413,6 +427,9 @@ public class StoreScreen : Panel
             break;
          case StoreTab.StoreTabType.ShipSkins:
             title = "Ship Skins";
+            break;
+         case StoreTab.StoreTabType.Hats:
+            title = "Hats";
             break;
       }
 
@@ -503,41 +520,15 @@ public class StoreScreen : Panel
    }
 
    protected StoreItemBox createDyeBox (StoreItem storeItem) {
-      DyeData dyeData = DyeXMLManager.self.getDyeData(storeItem.itemId);
-
-      if (dyeData == null) {
-         return null;
-      }
-
-      PaletteToolData palette = PaletteSwapManager.self.getPalette(dyeData.paletteId);
-
-      if (palette == null) {
-         return null;
-      }
-
-      if (palette.paletteType == (int) PaletteImageType.Hair) {
-         if (palette.isPrimary()) {
-            return createHairDyeBox(storeItem);
-         }
-      }
-
-      if (palette.paletteType == (int) PaletteImageType.Armor) {
-
-         bool isActuallyHat = false;
-
-         if (palette.paletteName.ToLower().StartsWith("hat")) {
-            isActuallyHat = true;
-         }
-
-         if (isActuallyHat) {
-            return createHatDyeBox(storeItem);
-         } else {
+      switch (DyeXMLManager.self.getDyeType(storeItem.itemId)) {
+         case PaletteImageType.Armor:
             return createArmorDyeBox(storeItem);
-         }
-      }
-
-      if (palette.paletteType == (int) PaletteImageType.Weapon) {
-         return createWeaponDyeBox(storeItem);
+         case PaletteImageType.Hair:
+            return createHairDyeBox(storeItem);
+         case PaletteImageType.Hat:
+            return createHatDyeBox(storeItem);
+         case PaletteImageType.Weapon:
+            return createWeaponDyeBox(storeItem);
       }
 
       return null;
@@ -638,6 +629,21 @@ public class StoreScreen : Panel
       return box;
    }
 
+   protected StoreHatBox createHatBox(StoreItem storeItem) {
+      HatStatData hatStatData = EquipmentXMLManager.self.getHatData(storeItem.itemId);
+
+      if (hatStatData == null) {
+         return null;
+      }
+
+      StoreHatBox box = Instantiate(PrefabsManager.self.hatBoxPrefab);
+      prepareStoreItemBox(storeItem, box);
+      box.hat = hatStatData;
+      tryOverrideNameAndDescription(storeItem, box);
+      box.initialize();
+      return box;
+   }
+
    private void destroyStoreBoxes () {
       if (itemsContainer == null) {
          return;
@@ -675,14 +681,14 @@ public class StoreScreen : Panel
             case Item.Category.Dye:
                createdBox = createDyeBox(item);
                break;
-            case Item.Category.Hats:
-               createdBox = createHatDyeBox(item);
-               break;
             case Item.Category.Pet:
                createdBox = createPetBox(item);
                break;
             case Item.Category.Consumable:
                createdBox = createConsumableBox(item);
+               break;
+            case Item.Category.Hats:
+               createdBox = createHatBox(item);
                break;
          }
 
@@ -720,7 +726,7 @@ public class StoreScreen : Panel
         _currentStoreTabType == StoreTab.StoreTabType.ShipSkins);
    }
 
-   public void regenerateStoreFilter () {
+   private void regenerateStoreFilter () {
       this.storeFilter.clearOptions();
       List<string> options = new List<string>();
 
@@ -745,7 +751,7 @@ public class StoreScreen : Panel
       }
    }
 
-   public void updateStoreFilter () {
+   private void updateStoreFilter () {
       if (this.storeFilter == null) {
          return;
       }
@@ -759,6 +765,37 @@ public class StoreScreen : Panel
 
       if (this.storeFilter.getOptionsCount() > 0) {
          this.storeFilter.activateFirstOption();
+      }
+   }
+
+   #endregion
+
+   #region Help
+
+   private bool shouldShowHelp () {
+      return _currentStoreTabType == StoreTab.StoreTabType.Hats;
+   }
+
+   private string computeHelpTooltip () {
+      if (_currentStoreTabType == StoreTab.StoreTabType.Hats) {
+         return "These hats can be painted with dyes!\n" +
+            "Each colored area requires a different type of dye.\n\n" +
+            "On light blue areas use Primary dyes.\n" +
+            "On deep blue areas use Secondary dyes.\n" +
+            "On red areas use Accent dyes.";
+      }
+
+      return "";
+   }
+
+   private void updateHelp () {
+      if (helpButton == null) {
+         return;
+      }
+
+      helpButton.SetActive(shouldShowHelp());
+      if (helpButton.TryGetComponent(out ToolTipComponent tooltip)) {
+         tooltip.message = computeHelpTooltip();
       }
    }
 

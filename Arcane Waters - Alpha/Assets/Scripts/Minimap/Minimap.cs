@@ -828,6 +828,19 @@ public class Minimap : ClientMonoBehaviour {
          MinimapGeneratorPreset preset = chooseBaseMapPreset(area, biome);
 
          if (preset) {
+            // If this is a sea map, overwrite everything with a new system
+            if (false && area.isSea) {
+               Texture2D tex = SeaMinimapGenerator.generateMinimap(area, preset);
+               if (saveMap) {
+                  ExportTexture(tex, preset.imagePrefixName + area.GetComponent<Area>().areaKey + preset.imageSuffixName);
+               } else {
+                  // Use scale based on real texture size
+                  TextureScale.Point(tex, tex.width, tex.height);
+                  PresentMap(tex);
+               }
+               return;
+            }
+
             _tileLayer = preset._tileLayer;
             _tileIconLayers = preset._tileIconLayers;
             _textureSize = preset._textureSize;

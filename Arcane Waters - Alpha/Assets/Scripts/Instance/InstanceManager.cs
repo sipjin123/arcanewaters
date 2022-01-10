@@ -56,7 +56,7 @@ public class InstanceManager : MonoBehaviour
                      } else {
                         D.adminLog("Created New Instance for Non-Treasure Site", D.ADMIN_LOG_TYPE.InstanceProcess);
                         // If the treasure site instance doesn't exist yet, create it
-                        instance = createNewInstance(areaKey, false, voyageId);
+                        instance = createNewInstance(areaKey, false, voyageId, seaVoyageInstance.leagueExitAreaKey, seaVoyageInstance.leagueExitSpawnKey, seaVoyageInstance.leagueExitFacingDirection);
                         treasureSite.destinationInstanceId = instance.id;
                      }
                      break;
@@ -70,7 +70,7 @@ public class InstanceManager : MonoBehaviour
 
                // If all else fails, create a new instance (useful for /admin warp commands)
                if (instance == null) {
-                  instance = createNewInstance(areaKey, false, voyageId);
+                  instance = createNewInstance(areaKey, false, voyageId, "", "", Direction.South);
                   D.adminLog("Created New Instance for Voyage", D.ADMIN_LOG_TYPE.InstanceProcess);
                }
             }
@@ -213,21 +213,20 @@ public class InstanceManager : MonoBehaviour
    }
 
    public Instance createNewInstance (string areaKey, bool isSinglePlayer) {
-      return createNewInstance(areaKey, isSinglePlayer, -1);
+      return createNewInstance(areaKey, isSinglePlayer, -1, "", "", Direction.South);
    }
 
-   public Instance createNewInstance (string areaKey, bool isSinglePlayer, int voyageId) {
+   public Instance createNewInstance (string areaKey, bool isSinglePlayer, int voyageId, string leagueExitAreaKey, string leagueExitSpawnKey, Direction leagueExitFacingDirection) {
       int difficulty = getDifficultyForInstance(voyageId);
-      return createNewInstance(areaKey, isSinglePlayer, voyageId, difficulty);
+      return createNewInstance(areaKey, isSinglePlayer, voyageId, difficulty, leagueExitAreaKey, leagueExitSpawnKey, leagueExitFacingDirection);
    }
 
-   public Instance createNewInstance (string areaKey, bool isSinglePlayer, int voyageId, int difficulty) {
+   public Instance createNewInstance (string areaKey, bool isSinglePlayer, int voyageId, int difficulty, string leagueExitAreaKey, string leagueExitSpawnKey, Direction leagueExitFacingDirection) {
       Biome.Type biome = getBiomeForInstance(areaKey, voyageId);
-      return createNewInstance(areaKey, isSinglePlayer, false, voyageId, false, false, 0, -1, difficulty, biome);
+      return createNewInstance(areaKey, isSinglePlayer, false, voyageId, false, false, 0, -1, leagueExitAreaKey, leagueExitSpawnKey, leagueExitFacingDirection, difficulty, biome);
    }
 
-   public Instance createNewInstance (string areaKey, bool isSinglePlayer, bool isVoyage, int voyageId, bool isPvP,
-      bool isLeague, int leagueIndex, int leagueRandomSeed, int difficulty, Biome.Type biome) {
+   public Instance createNewInstance (string areaKey, bool isSinglePlayer, bool isVoyage, int voyageId, bool isPvP, bool isLeague, int leagueIndex, int leagueRandomSeed, string leagueExitAreaKey, string leagueExitSpawnKey, Direction leagueExitFacingDirection, int difficulty, Biome.Type biome) {
       Instance instance = Instantiate(instancePrefab, this.transform);
       instance.id = _id++;
       instance.areaKey = areaKey;
@@ -240,6 +239,9 @@ public class InstanceManager : MonoBehaviour
       instance.isLeague = isLeague;
       instance.leagueIndex = leagueIndex;
       instance.leagueRandomSeed = leagueRandomSeed;
+      instance.leagueExitAreaKey = leagueExitAreaKey;
+      instance.leagueExitSpawnKey = leagueExitSpawnKey;
+      instance.leagueExitFacingDirection = leagueExitFacingDirection;
       instance.voyageId = voyageId;
       instance.biome = biome == Biome.Type.None ? AreaManager.self.getDefaultBiome(areaKey) : biome;
       instance.isPvP = isPvP;

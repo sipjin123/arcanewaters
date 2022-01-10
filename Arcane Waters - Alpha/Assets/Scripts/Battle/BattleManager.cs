@@ -1205,12 +1205,15 @@ public class BattleManager : MonoBehaviour {
 
                   // TODO: Implement logic here that either warps the player to a different place or give invulnerability time so they can move away from previous enemy, otherwise its an unlimited battle until the player wins
                   if (battler.player != null) {
-                     // When dying in a voyage treasure site, send a tip to the user explaining how to return
                      if (battler.player.isInGroup() && VoyageManager.isTreasureSiteArea(battler.player.areaKey)) {
-                        battler.player.rpc.sendNotification(Notification.Type.ReturnToVoyage);
-                     }
+                        // When dying in a voyage treasure site, respawn at its entrance
+                        Vector2 spawnLocalPosition = SpawnManager.self.getDefaultLocalPosition(battler.player.areaKey);
 
-                     battler.player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);
+                        battler.player.transform.localPosition = spawnLocalPosition;
+                        battler.player.rpc.Target_RespawnAtTreasureSiteEntrance(battler.player.connectionToClient, spawnLocalPosition);
+                     } else {
+                        battler.player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);
+                     }
                   }
                } else {
                   battler.player.rpc.Target_DisplayServerMessage("You have been defeated by " + winningBattlers[0].player.entityName + " in a duel!");
@@ -1315,7 +1318,7 @@ public class BattleManager : MonoBehaviour {
       return 0.25f;
    }
 
-   public void onBattlerDeath(Battler battler) {
+   public void onBattlerDeath (Battler battler) {
       if (!NetworkServer.active) {
          return;
       }
@@ -1333,35 +1336,32 @@ public class BattleManager : MonoBehaviour {
          Vector3 silverBurstEffectOffsetWhenFacingWest = silverBurstEffectOffsetWhenFacingEast;
          silverBurstEffectOffsetWhenFacingWest.Scale(new Vector3(-1.0f, 1.0f, 1.0f));
          Vector3 spotPosition = battler.battleSpot.transform.position;
-         float battlerZ = battler.spriteContainers.transform.position.z;
-         Vector3 shiftedSpotPosition = new Vector3(spotPosition.x, spotPosition.y, battlerZ);
+         Vector3 shiftedSpotPosition = new Vector3(spotPosition.x, spotPosition.y, 0);
          shiftedSpotPosition += ((battler.teamType == Battle.TeamType.Defenders) ? silverBurstEffectOffsetWhenFacingWest : silverBurstEffectOffsetWhenFacingEast);
+         StartCoroutine(CO_ProcessSilverAfterBattlerDeath(shiftedSpotPosition, otherBattlers, battler, silverReward, 1.5f));
 
-         foreach (Battler otherBattler in otherBattlers) {
-            NetEntity otherPlayer = otherBattler.player;
-
-            if (GameStatsManager.self.isUserRegistered(otherPlayer.userId)) {
-               // Assign silver to all the players on the attacking team
-               StartCoroutine(CO_ProcessSilverAfterBattlerDeath(otherPlayer, shiftedSpotPosition, silverReward, 1.5f));
-            }
-         }
-      } else if (battler.battlerType == BattlerType.PlayerControlled) {
-         if (GameStatsManager.self.isUserRegistered(battler.userId)) {
-            battler.player.rpc.assignVoyageRatingPoints(VoyageRatingManager.computeVoyageRatingPointsReward(VoyageRatingManager.RewardReason.DeathOnLand));
-            D.debug($"Battler '{battler.userId}' died in battle.");
-            int penalty = SilverManager.computeSilverPenalty(battler.player);
-            D.debug($"Battler '{battler.userId}' received a penalty of {penalty} silver.");
-            GameStatsManager.self.addSilverAmount(battler.userId, -penalty);
-            battler.player.Target_ReceiveSilverCurrency(battler.player.connectionToClient, -penalty, SilverManager.SilverRewardReason.Death);
-         }
+      } else if (battler.battlerType == BattlerType.PlayerControlled && GameStatsManager.self.isUserRegistered(battler.userId)) {
+         battler.player.rpc.assignVoyageRatingPoints(VoyageRatingManager.computeVoyageRatingPointsReward(VoyageRatingManager.RewardReason.DeathOnLand));
+         D.debug($"Battler '{battler.userId}' died in battle.");
+         int penalty = SilverManager.computeSilverPenalty(battler.player);
+         D.debug($"Battler '{battler.userId}' received a penalty of {penalty} silver.");
+         GameStatsManager.self.addSilverAmount(battler.userId, -penalty);
+         battler.player.Target_ReceiveSilverCurrency(battler.player.connectionToClient, -penalty, SilverManager.SilverRewardReason.Death);
       }
    }
 
-   private IEnumerator CO_ProcessSilverAfterBattlerDeath (NetEntity otherPlayer, Vector3 position, int silverReward, float delay) {
+   private IEnumerator CO_ProcessSilverAfterBattlerDeath (Vector3 position, List<Battler> opposingBattlers, Battler deadBattler, int silverReward, float delay) {
       yield return new WaitForSeconds(delay);
-      GameStatsManager.self.addSilverAmount(otherPlayer.userId, silverReward);
-      otherPlayer.Target_ShowSilverBurstEffect(otherPlayer.connectionToClient, silverReward, position);
-      otherPlayer.Target_ReceiveSilverCurrencyWithEffect(otherPlayer.connectionToClient, silverReward, SilverManager.SilverRewardReason.Kill, position);
+      bool shouldRewardSilver = opposingBattlers.Any(_ => GameStatsManager.self.isUserRegistered(_.userId));
+
+      if (shouldRewardSilver) {
+         deadBattler.Rpc_ShowSilverBurstEffect();
+         deadBattler.Rpc_ReceiveSilverCurrencyWithEffect(silverReward, SilverManager.SilverRewardReason.Kill, position);
+
+         foreach (Battler opposingBattler in opposingBattlers) {
+            GameStatsManager.self.addSilverAmount(opposingBattler.player.userId, silverReward);
+         }
+      }
    }
 
    #region Private Variables

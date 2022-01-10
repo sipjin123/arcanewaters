@@ -118,6 +118,15 @@ public class Instance : NetworkBehaviour
    [SyncVar]
    public int leagueRandomSeed = -1;
 
+   // The area key where users are warped to when exiting a league
+   public string leagueExitAreaKey = "";
+
+   // The spawn key where users are warped to when exiting a league
+   public string leagueExitSpawnKey = "";
+
+   // The facing direction when exiting a league
+   public Direction leagueExitFacingDirection = Direction.South;
+
    // The unique identifier of the voyage
    [SyncVar]
    public int voyageId = 0;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine.Events;
 using System.Linq;
+using static PaletteToolManager;
 
 public class DyeXMLManager : MonoBehaviour
 {
@@ -86,6 +87,31 @@ public class DyeXMLManager : MonoBehaviour
 
       _dyeDataRegistry.Clear();
       _dyeStatList.Clear();
+   }
+
+   public PaletteImageType getDyeType (int dyeId) {
+      DyeData dyeData = getDyeData(dyeId);
+
+      if (dyeData != null) {
+         PaletteToolData palette = PaletteSwapManager.self.getPalette(dyeData.paletteId);
+
+         if (palette != null) {
+            if (palette.paletteType == (int) PaletteImageType.Hair && palette.isPrimary()) {
+               return PaletteImageType.Hair;
+            }
+
+            if (palette.paletteType == (int) PaletteImageType.Armor) {
+               bool isActuallyHat = palette.paletteName.ToLower().StartsWith("hat");
+               return isActuallyHat ? PaletteImageType.Hat : PaletteImageType.Armor;
+            }
+
+            if (palette.paletteType == (int) PaletteImageType.Weapon) {
+               return PaletteImageType.Weapon;
+            }
+         }
+      }
+
+      return PaletteImageType.None;
    }
 
    #region Private Variables

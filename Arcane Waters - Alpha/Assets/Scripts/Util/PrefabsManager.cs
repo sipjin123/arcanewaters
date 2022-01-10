@@ -218,18 +218,6 @@ public class PrefabsManager : MonoBehaviour {
    // A reference to the powerup pickup effect prefab
    public GameObject powerupPickupEffect;
 
-   // The prefab we use for creating hat dyes
-   public StoreHatDyeBox hatDyeBoxPrefab;
-
-   // The prefab we use for creating hair dyes
-   public StoreHairDyeBox hairDyeBoxPrefab;
-
-   // The prefab we use for creating armor dyes
-   public StoreArmorDyeBox armorDyeBoxPrefab;
-
-   // The prefab we use for creating weapon dyes
-   public StoreWeaponDyeBox weaponDyeBoxPrefab;
-
    // The prefab we use for creating ability orbs
    public BuffOrb buffOrbPrefab;
 
@@ -246,6 +234,18 @@ public class PrefabsManager : MonoBehaviour {
    public static PrefabsManager self;
 
    [Header("Gem Store prefabs")]
+   // The prefab we use for creating hat dyes
+   public StoreHatDyeBox hatDyeBoxPrefab;
+
+   // The prefab we use for creating hair dyes
+   public StoreHairDyeBox hairDyeBoxPrefab;
+
+   // The prefab we use for creating armor dyes
+   public StoreArmorDyeBox armorDyeBoxPrefab;
+
+   // The prefab we use for creating weapon dyes
+   public StoreWeaponDyeBox weaponDyeBoxPrefab;
+
    // The prefab we use for creating haircuts
    public StoreHaircutBox haircutBoxPrefab;
 
@@ -257,6 +257,9 @@ public class PrefabsManager : MonoBehaviour {
 
    // The prefab we use for consumables
    public StoreConsumableBox consumableBoxPrefab;
+
+   // The prefab we use for hats
+   public StoreHatBox hatBoxPrefab;
 
    [Header("Silver")]
    // The reference to the Silver Burst Effect

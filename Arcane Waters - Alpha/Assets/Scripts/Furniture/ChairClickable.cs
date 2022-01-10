@@ -35,7 +35,7 @@ public class ChairClickable : MonoBehaviour
 
       foreach (NetEntity entity in entities) {
          if (entity is PlayerBodyEntity body) {
-            if (body.isSitting && Util.AreVectorsAlmostTheSame(transform.position, body.chairPosition)) {
+            if (body.isSitting() && Util.AreVectorsAlmostTheSame(transform.position, body.sittingInfo.chairPosition)) {
                return true;
             }
          }
@@ -45,7 +45,13 @@ public class ChairClickable : MonoBehaviour
    }
 
    public void onClick () {
-      if (Global.player == null || Global.player.getPlayerBodyEntity() == null || Global.player.getPlayerBodyEntity().isSitting) {
+      if (Global.player == null || Global.player.getPlayerBodyEntity() == null) {
+         return;
+      }
+
+      PlayerBodyEntity body = Global.player.getPlayerBodyEntity();
+      
+      if (body.isJumping() || body.isEmoting() || body.isSitting()) {
          return;
       }
 

@@ -37,6 +37,9 @@ public class StoreTab : ClickableTab {
 
       // Consumables
       Consumables = 8,
+
+      // Hats
+      Hats = 9
    }
 
    #endregion

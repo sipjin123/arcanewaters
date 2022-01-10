@@ -2588,7 +2588,15 @@ public class AdminManager : NetworkBehaviour
          areaKey = getClosestAreaKey(voyageSeaMaps, areaKey);
       }
 
-      VoyageManager.self.requestVoyageInstanceCreation(areaKey, isPvP, false, 0, -1, biome, difficulty);
+      Voyage parameters = new Voyage {
+         areaKey = areaKey,
+         isPvP = isPvP,
+         isLeague = false,
+         biome = biome,
+         difficulty = difficulty
+      };
+
+      VoyageManager.self.requestVoyageInstanceCreation(parameters);
    }
 
    [Command]
@@ -3620,8 +3628,16 @@ public class AdminManager : NetworkBehaviour
       NetEntity entity = EntityManager.self.getEntity(userId);
 
       if (entity != null) {
-         entity.nameText.text = newName;
-         entity.nameTextOutline.text = newName;
+         if (entity is PlayerBodyEntity) {
+            entity.nameText.text = newName;
+            entity.nameTextOutline.text = newName;
+         }
+         if (entity is PlayerShipEntity) {
+            entity.nameText.text = newName;
+            PlayerShipEntity ship = (PlayerShipEntity) entity;
+            ship.shipBars.nameTextInside.text = newName;
+            ship.shipBars.nameTextOutside.text = newName;
+         }
 
          // Update the name in chat
          if (ChatManager.self != null) {
