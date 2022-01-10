@@ -20,15 +20,22 @@ public class SeaBuffData {
    // How strong this buff is
    public float buffMagnitude;
 
+   // The last time the buff took effect
+   public double lastBuffTick;
+
+   // The xml id reference
+   public int buffAbilityIdReference;
+
    #endregion
 
    public SeaBuffData () { }
 
-   public SeaBuffData (double buffStartTime, double buffEndTime, SeaBuff.Type buffType, float buffMagnitude) {
+   public SeaBuffData (double buffStartTime, double buffEndTime, SeaBuff.Type buffType, float buffMagnitude, int buffAbilityXmlId) {
       this.buffStartTime = buffStartTime;
       this.buffEndTime = buffEndTime;
       this.buffType = buffType;
       this.buffMagnitude = buffMagnitude;
+      this.buffAbilityIdReference = buffAbilityXmlId;
    }
 
    public static Attack.Type getAttackType (SeaBuff.Type buffType) {
@@ -65,6 +72,7 @@ namespace SeaBuff
       None = 0,
       SpeedBoost = 1,
       DamageAmplify = 2,
+      Heal = 3
    }
 
    public enum Category

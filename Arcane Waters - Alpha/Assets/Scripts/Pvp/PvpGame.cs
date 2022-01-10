@@ -1120,6 +1120,10 @@ public class PvpGame : MonoBehaviour {
    }
 
    public Faction.Type getFactionForTeam (PvpTeamType teamType) {
+      if (_teamFactions == null || !_teamFactions.ContainsKey(teamType)) {
+         D.debug("Error here! No factions for team {" + teamType + "}");
+         return Faction.Type.None;
+      }
       return _teamFactions[teamType];
    }
 
