@@ -175,6 +175,9 @@ public class CharacterScreen : GenericGameManager {
    }
 
    private void setupCharacterSpots (UserInfo[] userArray, bool[] deletionStatusArray, Item[] armorArray, Item[] weaponArray, Item[] hatArray, string[] armorPalettes) {
+      foreach (KeyValuePair<int, CharacterSpot> spot in _spots) {
+         spot.Value.rotationButtons.SetActive(false);
+      }
       for (int i = 0; i < 3; i++) {
          // If they don't have a character in that spot, move on
          if (i > userArray.Length - 1 || userArray[i] == null) {
@@ -190,6 +193,7 @@ public class CharacterScreen : GenericGameManager {
             OfflineCharacter offlineChar = Instantiate(offlineCharacterPrefab, spot.transform.position, Quaternion.identity);
             Global.lastUserGold = userArray[i].gold;
             Global.lastUserGems = userArray[i].gems;
+            spot.rotationButtons.SetActive(true);
 
             try {
                offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], hatArray[i], armorPalettes[i]);

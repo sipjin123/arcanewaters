@@ -823,8 +823,11 @@ public class SeaEntity : NetEntity
    [ClientRpc]
    public void Rpc_ShowDamageTaken (int damage, bool shakeCamera) {
       // Show the damage text
-      ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(Attack.Type.None), transform.position, Quaternion.identity);
-      damageText.setDamage(damage);
+      ShipDamageText textPrefab = PrefabsManager.self.getTextPrefab(Attack.Type.None);
+      if (textPrefab) {
+         ShipDamageText damageText = Instantiate(textPrefab, transform.position, Quaternion.identity);
+         damageText.setDamage(damage);
+      }
 
       if (shakeCamera && isLocalPlayer) {
          CameraManager.shakeCamera();

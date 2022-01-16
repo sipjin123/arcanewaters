@@ -924,8 +924,11 @@ public class NetEntity : NetworkBehaviour
 
    [ClientRpc]
    public void Rpc_ShowDamage (Attack.Type attackType, Vector2 pos, int damage) {
-      ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(attackType), pos, Quaternion.identity);
-      damageText.setDamage(damage);
+      ShipDamageText attackText = PrefabsManager.self.getTextPrefab(attackType);
+      if (attackText != null) {
+         ShipDamageText damageText = Instantiate(attackText, pos, Quaternion.identity);
+         damageText.setDamage(damage);
+      }
    }
 
    protected virtual float getBaseMoveSpeed () {
