@@ -42,7 +42,7 @@ public class Minimap : ClientMonoBehaviour {
    public MM_LandMonsterIcon landMonsterIconPrefab;
 
    // The prefab we use for showing ship entity icon
-   public MM_ShipEntityIcon shipIconPrefab;
+   public MM_ShipEntityIcon shipIconPrefab, openWorldShipIconPrefab;
 
    // The prefab we use for showing player icons in our voyage group (only in town)
    public MM_GroupPlayerIcon groupPlayerIconPrefab;
@@ -534,7 +534,7 @@ public class Minimap : ClientMonoBehaviour {
                continue;
             }
             // Spawn ship prefab
-            icon = Instantiate(shipIconPrefab, this.playerShipIconContainer.transform);
+            icon = Instantiate(VoyageManager.isOpenWorld(area.areaKey) ? openWorldShipIconPrefab : shipIconPrefab, this.playerShipIconContainer.transform);
             icon.shipEntity = ship;
             icon.currentArea = area;
             icon.setCorrectPosition();
@@ -546,7 +546,9 @@ public class Minimap : ClientMonoBehaviour {
          }
          // Friendly ship
          else if (ship.isAllyOf(Global.player)) {
-            icon.GetComponent<Image>().sprite = friendlyShipSprite;
+            if (!VoyageManager.isOpenWorld(area.areaKey)) {
+               icon.GetComponent<Image>().sprite = friendlyShipSprite;
+            }
          }
          // Neutral ship
          else {

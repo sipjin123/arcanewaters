@@ -135,6 +135,9 @@ public class Area : MonoBehaviour
    // The list of pvp capture target holders to be loaded by the server
    public List<ExportedPrefab001> pvpCaptureTargetHolders = new List<ExportedPrefab001>();
 
+   // The open world spawn blockers
+   public List<OpenWorldSpawnBlocker> openWorldSpawnBlockers = new List<OpenWorldSpawnBlocker>();
+
    // Parent of generic prefabs
    public Transform prefabParent;
 

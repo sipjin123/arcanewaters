@@ -60,7 +60,6 @@ public class Panel : MonoBehaviour, IPointerClickHandler
          return;
       }
       
-      InputManager.self.inputMaster.UIShotcuts.Disable();
       InputManager.self.inputMaster.UIControl.Enable();
 
       // Start invisible initially
