@@ -1849,6 +1849,14 @@ public class RPCManager : NetworkBehaviour
             }
          }
 
+         // Clear old item from shortcut
+         if (oldShortcutList.Exists(_ => _.itemId == itemId)) {
+            List<ItemShortcutInfo> oldItems = oldShortcutList.FindAll(_ => _.itemId == itemId);
+            foreach (ItemShortcutInfo oldItem in oldItems) {
+               DB_Main.deleteItemShortcut(_player.userId, oldItem.slotNumber);
+            }
+         }
+
          // Get updated list of shortcuts
          DB_Main.updateItemShortcut(_player.userId, slotNumber, itemId);
          List<ItemShortcutInfo> shortcutList = DB_Main.getItemShortcutList(_player.userId);
