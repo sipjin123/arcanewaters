@@ -66,6 +66,21 @@ public class FarmingTrigger : MonoBehaviour
       Direction newDirection = ((PlayerBodyEntity) bodyEntity).forceLookAt(Camera.main.ScreenToWorldPoint(MouseUtils.mousePosition));
       updateTriggerDirection(newDirection);
 
+      // Unmark crop spots that already has crops
+      if (cachedCropSpots.Count > 0) {
+         List<CropSpot> cropsToClear = new List<CropSpot>();
+         foreach (CropSpot cachedCrop in cachedCropSpots) {
+            if (cachedCrop.crop != null) {
+               cropsToClear.Add(cachedCrop);
+               cachedCrop.indicatorObj.SetActive(false);
+            }
+         }
+
+         foreach (CropSpot cropToClear in cropsToClear) {
+            cachedCropSpots.Remove(cropToClear);
+         }
+      }
+
       WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(bodyEntity.weaponManager.equipmentDataId);
       if (weaponData != null) {
          if (weaponData.actionType != Weapon.ActionType.PlantCrop) {
