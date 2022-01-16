@@ -26,6 +26,19 @@ public class RPCManager : NetworkBehaviour
    // Called when the client receives data about an item from the server
    public static event Action<Item> itemDataReceived;
 
+   // Item class for queue
+   public class ItemQueue
+   {
+      public int userId;
+      public Item item;
+   }
+
+   // List of items being created
+   public List<ItemQueue> itemCreationList = new List<ItemQueue>();
+
+   // Determines if the process is on going
+   public bool isProcessing = false;
+
    #endregion
 
    private void Awake () {
@@ -2025,7 +2038,10 @@ public class RPCManager : NetworkBehaviour
             return;
          }
 
-         Item updatedItem = DB_Main.createItemOrUpdateItemCount(_player.userId, storeReferencedItem);
+         // New Method, needs observation
+         //Item updatedItem = DB_Main.createItemOrUpdateItemCount(_player.userId, storeReferencedItem);
+         processItemCreation(_player.userId, storeReferencedItem);
+         Item updatedItem = storeReferencedItem;
 
          // If the purchase was not successful
          if (updatedItem == null) {
@@ -4612,7 +4628,11 @@ public class RPCManager : NetworkBehaviour
             }
 
             // Create a new instance of the item
-            newItem = DB_Main.createItemOrUpdateItemCount(_player.userId, shopItemCopy);
+            // New Method, needs observation
+            //newItem = DB_Main.createItemOrUpdateItemCount(_player.userId, shopItemCopy);
+            processItemCreation(_player.userId, shopItemCopy);
+            newItem = shopItemCopy;
+
             if (newItem.category == Item.Category.None) {
                D.debug("Error Here! Category Cant be none for Shop Item");
             }
@@ -5395,7 +5415,10 @@ public class RPCManager : NetworkBehaviour
          }
 
          // Add the result item to the user inventory
-         Item craftedItem = DB_Main.createItemOrUpdateItemCount(_player.userId, resultItem);
+         // New Method, needs observation
+         //Item craftedItem = DB_Main.createItemOrUpdateItemCount(_player.userId, resultItem);
+         Item craftedItem = resultItem;
+         processItemCreation(_player.userId, resultItem);
 
          if (craftedItem.category == Item.Category.None) {
             D.debug("Error Here! Category Cant be none for Crafting Rewards");
@@ -6312,6 +6335,43 @@ public class RPCManager : NetworkBehaviour
       Target_MineOre(_player.connectionToClient, oreId, startingPosition, endPosition);
    }
 
+   public void processItemCreation (int userId, Item baseItem) {
+      itemCreationList.Add(new ItemQueue {
+         item = baseItem,
+         userId = userId
+      });
+      checkItemQueue();
+   }
+
+   private void checkItemQueue () {
+      if (itemCreationList.Count > 0) {
+         if (!isProcessing) {
+            isProcessing = true;
+            ItemQueue itemCache = null;
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               foreach (ItemQueue itemInfo in itemCreationList) {
+                  itemCache = itemInfo;
+                  break;
+               }
+               if (itemCache != null) {
+                  Item itemBeingProcessed = DB_Main.createItemOrUpdateItemCount(itemCache.userId, itemCache.item);
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     itemCreationList.Remove(itemCache);
+                     StopCoroutine(nameof(CO_ResetItemQueue));
+                     StartCoroutine(nameof(CO_ResetItemQueue));
+                  });
+               }
+            });
+         }
+      }
+   }
+
+   private IEnumerator CO_ResetItemQueue () {
+      yield return new WaitForSeconds(.01f);
+      isProcessing = false;
+      checkItemQueue();
+   }
+
    public void processClientMineEffect (int oreId, Vector3 position, Direction direction, float angleOffset, float randomSpeed, int effectId, int ownerId, int voyageGroupId) {
       // Create object
       OreNode oreNode = OreManager.self.getOreNode(oreId);
@@ -6511,7 +6571,10 @@ public class RPCManager : NetworkBehaviour
             if (newDatabaseItem.category == Item.Category.None) {
                D.debug("Error Here! Category Cant be none for Group Item Rewards");
             }
-            DB_Main.createItemOrUpdateItemCount(userID, newDatabaseItem);
+
+            // New Method, needs observation
+            //DB_Main.createItemOrUpdateItemCount(userID, newDatabaseItem);
+            processItemCreation(userID, newDatabaseItem);
 
             // Update soul binding
             if (Bkg_ShouldBeSoulBound(newDatabaseItem, isBeingEquipped: false)) {
@@ -6614,10 +6677,15 @@ public class RPCManager : NetworkBehaviour
                   data = item.data,
                };
                itemCopy.itemTypeId = craftingData.resultItem.itemTypeId;
-               itemCopy = DB_Main.createItemOrUpdateItemCount(_player.userId, itemCopy);
+               
+               // New Method, needs observation
+               //itemCopy = DB_Main.createItemOrUpdateItemCount(_player.userId, itemCopy);
+               processItemCreation(_player.userId, itemCopy);
             }
          } else {
-            item = DB_Main.createItemOrUpdateItemCount(_player.userId, item);
+            // New Method, needs observation
+            //item = DB_Main.createItemOrUpdateItemCount(_player.userId, item);
+            processItemCreation(_player.userId, item);
          }
 
          // Update Soul Binding
