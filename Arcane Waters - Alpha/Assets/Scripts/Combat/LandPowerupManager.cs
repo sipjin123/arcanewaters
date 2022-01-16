@@ -61,8 +61,20 @@ public class LandPowerupManager : MonoBehaviour {
          });
       });
    }
+
+   public void receiveListFromZipData (LandPowerupInfo[] landPowerups) {
+      if (!hasInitialized) {
+         foreach (LandPowerupInfo powerupData in landPowerups) {
+            if (!landPowerupInfo.ContainsKey(powerupData.powerupType) && powerupData.isXmlEnabled) {
+               powerupData.spriteRef = getLandPowerupSprite(powerupData.powerupType);
+               landPowerupInfo.Add(powerupData.powerupType, powerupData);
+            }
+         }
+      }
+   }
+
    #endregion
-   
+
    public Sprite getLandPowerupSprite (LandPowerupType type) {
       if (landPowerupSprite.Exists(_ => _.type == type)) {
          return landPowerupSprite.Find(_ => _.type == type).sprite;

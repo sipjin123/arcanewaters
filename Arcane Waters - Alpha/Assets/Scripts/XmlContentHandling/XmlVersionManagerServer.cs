@@ -61,7 +61,8 @@ public class XmlVersionManagerServer : GenericGameManager {
    public static string SHIP_SKINS_TABLE = "ship_skins_v2";
    public static string CONSUMABLES_TABLE = "consumables_v1";
    public static string DYES_TABLE = "dyes_v1";
-
+   public static string LAND_POWERUP_TABLE = "land_powerup_xml_v1";
+   
    // TEXT FILE NAMES (Do not Modify)
    public static string CROPS_FILE = "crops";
    public static string ABILITIES_FILE = "abilities";
@@ -95,6 +96,7 @@ public class XmlVersionManagerServer : GenericGameManager {
    public static string SHIP_SKINS_FILE = "ship_skins";
    public static string CONSUMABLES_FILE = "consumables";
    public static string DYES_FILE = "dyes";
+   public static string LAND_POWERUPS_FILE = "land_powerups";
 
    // Progress indicators
    public int targetProgress;
@@ -146,6 +148,7 @@ public class XmlVersionManagerServer : GenericGameManager {
       confirmTextFile(SEA_MONSTER_FILE);
 
       confirmTextFile(SHIP_FILE);
+      confirmTextFile(LAND_POWERUPS_FILE);
       confirmTextFile(SHOP_FILE);
       confirmTextFile(SHIP_ABILITY_FILE);
       confirmTextFile(BACKGROUND_DATA_FILE);
@@ -189,6 +192,7 @@ public class XmlVersionManagerServer : GenericGameManager {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          compiledData += DB_Main.getLastUpdate(EditorToolType.BattlerAbility);
          compiledData += DB_Main.getLastUpdate(EditorToolType.LandMonster);
+         compiledData += DB_Main.getLastUpdate(EditorToolType.LandPowerups);
          compiledData += DB_Main.getLastUpdate(EditorToolType.SeaMonster);
          compiledData += DB_Main.getLastUpdate(EditorToolType.NPC);
          compiledData += DB_Main.getLastUpdate(EditorToolType.Crafting);
@@ -308,6 +312,7 @@ public class XmlVersionManagerServer : GenericGameManager {
          string npcData = DB_Main.getXmlContent(NPC_TABLE);
          string cropsData = DB_Main.getXmlContent(CROPS_TABLE);
          string abilityData = DB_Main.getXmlContent(ABILITY_TABLE);
+         string landPowerupData = DB_Main.getXmlContent(LAND_POWERUP_TABLE, EditorToolType.LandPowerups);
 
          string armorData = DB_Main.getXmlContent(ARMOR_TABLE, EditorToolType.Equipment_Armor);
          string weaponData = DB_Main.getXmlContent(WEAPON_TABLE, EditorToolType.Equipment_Weapon);
@@ -352,6 +357,7 @@ public class XmlVersionManagerServer : GenericGameManager {
          writeAndCache(xmlTextDirectory + "/" + HAT_FILE + ".txt", hatData);
 
          writeAndCache(xmlTextDirectory + "/" + SHOP_FILE + ".txt", shopData);
+         writeAndCache(xmlTextDirectory + "/" + LAND_POWERUPS_FILE + ".txt", landPowerupData);
          writeAndCache(xmlTextDirectory + "/" + SHIP_FILE + ".txt", shipData);
          writeAndCache(xmlTextDirectory + "/" + SHIP_ABILITY_FILE + ".txt", shipAbilityData);
          writeAndCache(xmlTextDirectory + "/" + BACKGROUND_DATA_FILE + ".txt", battleBGData);

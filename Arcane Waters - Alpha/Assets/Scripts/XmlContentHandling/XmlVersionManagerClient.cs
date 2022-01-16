@@ -186,6 +186,7 @@ public class XmlVersionManagerClient : GenericGameManager {
       checkStreamingAssetFile(XmlVersionManagerServer.SHOP_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.SHIP_ABILITY_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.BACKGROUND_DATA_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.LAND_POWERUPS_FILE);
 
       checkStreamingAssetFile(XmlVersionManagerServer.PERKS_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.TREASURE_DROPS_FILE);
@@ -277,6 +278,7 @@ public class XmlVersionManagerClient : GenericGameManager {
       extractXmlType(EditorToolType.Crafting);
 
       extractXmlType(EditorToolType.LandMonster);
+      extractXmlType(EditorToolType.LandPowerups);
       extractXmlType(EditorToolType.SeaMonster);
       extractXmlType(EditorToolType.NPC);
 
@@ -347,6 +349,9 @@ public class XmlVersionManagerClient : GenericGameManager {
 
          case EditorToolType.Ship:
             path = TEXT_PATH + XmlVersionManagerServer.SHIP_FILE + ".txt";
+            break;
+         case EditorToolType.LandPowerups:
+            path = TEXT_PATH + XmlVersionManagerServer.LAND_POWERUPS_FILE + ".txt";
             break;
          case EditorToolType.ShipAbility:
             path = TEXT_PATH + XmlVersionManagerServer.SHIP_ABILITY_FILE + ".txt";
@@ -985,6 +990,23 @@ public class XmlVersionManagerClient : GenericGameManager {
             }
 
             ConsumableXMLManager.self.receiveConsumableDataFromZipData(consumableDataList);
+            break;
+
+         case EditorToolType.LandPowerups:
+            List<LandPowerupInfo> landPowerupList = new List<LandPowerupInfo>();
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+
+               // Extract the segregated data and assign to the xml manager
+               if (xmlSubGroup.Length >= 2) {
+                  LandPowerupInfo powerupData = Util.xmlLoad<LandPowerupInfo>(xmlSubGroup[1]);
+                  powerupData.xmlId = int.Parse(xmlSubGroup[0]);
+                  powerupData.isXmlEnabled = int.Parse(xmlSubGroup[2]) == 1 ? true : false;
+                  landPowerupList.Add(powerupData);
+                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+               }
+            }
+            LandPowerupManager.self.receiveListFromZipData(landPowerupList.ToArray());
             break;
 
          case EditorToolType.Map_Keys:

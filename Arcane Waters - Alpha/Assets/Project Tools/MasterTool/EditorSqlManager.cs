@@ -45,7 +45,8 @@ public class EditorSQLManager {
       Gems = 36,
       ShipSkins = 37,
       Consumables = 38,
-      Dyes = 39
+      Dyes = 39,
+      LandPowerups = 40
    }
 
    public static string getSqlTable (EditorToolType editorType) {
@@ -115,6 +116,8 @@ public class EditorSQLManager {
             return "crafting_xml_v2";
          case EditorToolType.LandMonster:
             return "land_monster_xml_v3";
+         case EditorToolType.LandPowerups:
+            return "land_powerup_xml_v1";
          case EditorToolType.NPC:
             return "npc_xml_v2";
          case EditorToolType.SeaMonster:

@@ -547,7 +547,7 @@ public class DB_Main : DB_MainStub
       } else if (toolType == EditorSQLManager.EditorToolType.ItemDefinitions) {
          contentToFetch = "id, serializedData ";
          addedFields = ", category";
-      } else if (toolType == EditorSQLManager.EditorToolType.Shop) {
+      } else if (toolType == EditorSQLManager.EditorToolType.Shop || toolType == EditorSQLManager.EditorToolType.LandPowerups) {
          contentToFetch = "xml_id, xmlContent, isActive ";
       }
 
@@ -605,6 +605,11 @@ public class DB_Main : DB_MainStub
                      } catch {
                         D.debug("Failed to fetch column: isActive");
                      }
+                  }
+
+                  if (toolType == EditorSQLManager.EditorToolType.LandPowerups) {
+                     content += xmlId + "[space]" + xmlContent + "[space]" + dataReader.GetInt32("isActive") + "[next]\n";
+                     continue;
                   }
 
                   if (tableName == XmlVersionManagerServer.WEAPON_TABLE) {
