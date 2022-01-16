@@ -1912,7 +1912,7 @@ public class NetEntity : NetworkBehaviour
          // Get the base map
          string baseMapKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(owner));
 
-         D.adminLog("{" + entityName + ":" + userId + "} Spawning in new map finish! {" + newArea + ":" + baseMapKey + "} of user {" + owner == null? "Null" : owner.userId + "}", D.ADMIN_LOG_TYPE.Visit);
+         D.adminLog("{" + entityName + ":" + userId + "} Spawning in new map finish! {" + newArea + ":" + baseMapKey + "} of user {" + owner == null ? "Null" : owner.userId + "}", D.ADMIN_LOG_TYPE.Visit);
          targetLocalPos = spawn == null
             ? SpawnManager.self.getDefaultLocalPosition(baseMapKey, true)
             : SpawnManager.self.getLocalPosition(baseMapKey, spawn, true);
@@ -2313,9 +2313,30 @@ public class NetEntity : NetworkBehaviour
    [Server]
    public void privateInstanceDoesntExist (string areaKey, Vector2 localPosition) {
       D.adminLog("User {" + entityName + ":" + userId + " : " + areaKey + "} Visit Cancelled as Server! Finding best server to warp into", D.ADMIN_LOG_TYPE.Visit);
-      findBestServerAndWarp(areaKey, localPosition, -1, Direction.South, -1, -1);
+      int visitedUserId = CustomMapManager.getUserId(areaKey);
+      List<MapCreationTool.Serialization.MapSpawn> spawnIds = new List<MapCreationTool.Serialization.MapSpawn>();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         if (CustomMapManager.isUserSpecificAreaKey(areaKey)) {
+            UserInfo visitedUserInfo = DB_Main.getUserInfoById(visitedUserId);
+            if (areaKey.Contains(CustomHouseManager.GROUP_AREA_KEY)) {
+               spawnIds = DB_Main.getMapSpawnsById(visitedUserInfo.customHouseBaseId);
+            } else if (areaKey.Contains(CustomFarmManager.GROUP_AREA_KEY)) {
+               spawnIds = DB_Main.getMapSpawnsById(visitedUserInfo.customFarmBaseId);
+            } else {
+               D.debug("Fetched No Spawn ids for area! " + areaKey);
+            }
+
+            if (spawnIds.Find(_ => _.name == "main") != null) {
+               MapCreationTool.Serialization.MapSpawn selectedSpawn = spawnIds.Find(_ => _.name == "main");
+               localPosition = new Vector2(selectedSpawn.posX, selectedSpawn.posY);
+            }
+         }
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            findBestServerAndWarp(areaKey, localPosition, -1, Direction.South, -1, -1);
+         });
+      });
    }
-   
+
    [TargetRpc]
    public void Target_ReceiveCancelUserVisit () {
       D.adminLog("User Visit Cancelled as Client! " + PanelManager.self.loadingScreen.isShowing(), D.ADMIN_LOG_TYPE.Visit);
