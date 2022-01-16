@@ -3230,7 +3230,15 @@ public class RPCManager : NetworkBehaviour
 
                if (questDialogue.itemRewards != null) {
                   if (questDialogue.itemRewards.Length > 0) {
-                     giveItemRewardsToPlayer(_player.userId, new List<Item>(questDialogue.itemRewards), true);
+                     int validItemCount = 0;
+                     foreach (Item item in questDialogue.itemRewards) {
+                        if (Item.isValidItem(item)) {
+                           validItemCount++;
+                        }
+                     }
+                     if (validItemCount > 0) {
+                        giveItemRewardsToPlayer(_player.userId, new List<Item>(questDialogue.itemRewards), true);
+                     }
                   }
                }
                if (questDialogue.abilityIdReward > 0) {
