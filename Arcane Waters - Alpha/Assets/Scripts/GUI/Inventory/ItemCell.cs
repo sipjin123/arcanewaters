@@ -108,9 +108,8 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       enablePointerEvents();
 
       itemCache = item;
-      setCellForItem(item, item.count);
+      setCellForItem(item, item == null ? 0 : item.count);
       itemRarityType = Item.getRarity(item);
-
    }
 
    public void setCellForItem (Item item, int count) {

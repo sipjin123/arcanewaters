@@ -58,6 +58,7 @@ public class AdventureItemRow : MonoBehaviour {
    public void setRowForItem (Item item) {
       string rawItemData = item.data;
       this.item = item;
+      bool displayStars = true;
 
       string path = ""; 
       if (item.category == Item.Category.CraftingIngredients) {
@@ -82,6 +83,11 @@ public class AdventureItemRow : MonoBehaviour {
                   newWeapon.count = item.count;
                   item = newWeapon;
                   item.data = rawItemData;
+               }
+
+               // Disable rarity display for seeds
+               if (newWeaponData.actionType == Weapon.ActionType.PlantCrop) {
+                  displayStars = false;
                }
                break;
             case Item.Category.Armor:
@@ -185,9 +191,15 @@ public class AdventureItemRow : MonoBehaviour {
 
       // Rarity stars
       Sprite[] rarityStars = Rarity.getRarityStars(item.getRarity());
-      star1Image.sprite = rarityStars[0];
-      star2Image.sprite = rarityStars[1];
-      star3Image.sprite = rarityStars[2];
+      if (displayStars) {
+         star1Image.sprite = rarityStars[0];
+         star2Image.sprite = rarityStars[1];
+         star3Image.sprite = rarityStars[2];
+      } else {
+         star1Image.sprite = ImageManager.self.blankSprite;
+         star2Image.sprite = ImageManager.self.blankSprite;
+         star3Image.sprite = ImageManager.self.blankSprite;
+      }
 
       // Recolor
       recoloredSprite.recolor(item.paletteNames);

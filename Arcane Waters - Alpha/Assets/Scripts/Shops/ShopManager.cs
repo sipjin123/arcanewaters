@@ -134,6 +134,14 @@ public class ShopManager : MonoBehaviour {
                   };
 
                   Rarity.Type rarity = Rarity.getRandom();
+
+                  WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(rawItemData.shopItemTypeIndex);
+                  if (weaponData != null) {
+                     if (weaponData.actionType == Weapon.ActionType.PlantCrop) {
+                        rarity = Rarity.Type.Common;
+                     }
+                  }
+
                   int randomizedPrice = rawItemData.shopItemCostMax;
                   string data = "";
                   if ((Item.Category) rawItemData.shopItemCategoryIndex == Item.Category.Weapon) {
