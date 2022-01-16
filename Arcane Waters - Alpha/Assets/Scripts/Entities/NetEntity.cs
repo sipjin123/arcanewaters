@@ -2258,7 +2258,7 @@ public class NetEntity : NetworkBehaviour
          } else {
             D.debug("Fetched No Spawn ids for area! " + areaKey);
          }
-         
+
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (spawnIds.Count < 1 || (!CustomMapManager.isPrivateCustomArea(areaKey))) {
@@ -2348,7 +2348,7 @@ public class NetEntity : NetworkBehaviour
       if (Util.isAnyUiPanelActive()) {
          return null;
       }
-      
+
       NetEntity entityHovered = null;
       foreach (NetEntity entity in EntityManager.self.getAllEntities()) {
          if (entity.isMouseOver()) {

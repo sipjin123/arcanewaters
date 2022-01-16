@@ -61,7 +61,7 @@ public class ChatManager : GenericGameManager
       _commandData.Add(new CommandData("/whisper", "Sends a private message to a user", sendWhisperMessageToServer, parameterNames: new List<string>() { "userName", "message" }));
       _commandData.Add(new CommandData("/w", "Sends a private message to a user", sendWhisperMessageToServer, parameterNames: new List<string>() { "userName", "message" }));
       _commandData.Add(new CommandData("/r", "Sends a private message to the last user that whispered to you", tryReply, parameterNames: new List<string>() { "message" }));
-      _commandData.Add(new CommandData("/who", "Search users", searchUsers, parameterNames: new List<string>() { "filter ('is','in','level')", "username, area or level" }));
+      _commandData.Add(new CommandData("/who", "Search users", searchUsers, parameterNames: new List<string>() { "[is, in, level, help]", "username, area or level" }));
       _commandData.Add(new CommandData("/e", "Play an emote", requestPlayEmote, parameterNames: new List<string>() { "emoteType" }, parameterAutocompletes: new List<string>() { "dance", "kneel", "greet" }));
    }
 
@@ -835,14 +835,21 @@ public class ChatManager : GenericGameManager
 
    private void searchUsers (string parameters) {
       if (Util.isEmpty(parameters)) {
-         self.addChat("Search failed: Invalid parameters", ChatInfo.Type.System);
+         self.addChat("Search failed: Invalid parameters. Type '/who help' to learn more about this command.", ChatInfo.Type.System);
          return;
       }
 
       string[] inputs = parameters.Split(' ');
       if (inputs.Length < 2) {
-         self.addChat("Search failed: The command requires at least two parameters!", ChatInfo.Type.System);
-         return;
+         if (inputs.Length == 1) {
+            if (Util.areStringsEqual(inputs[0], "help")) {
+               showSearchHelpMessage();
+               return;
+            }
+         } else {
+            self.addChat("Search failed: The command requires at least two parameters! Type '/who help' to learn more about this command.", ChatInfo.Type.System);
+            return;
+         }
       }
 
       if (UserSearchInfo.tryParseFilteringMode(inputs[0], out UserSearchInfo.FilteringMode filter)) {
@@ -852,7 +859,7 @@ public class ChatManager : GenericGameManager
             // Biome names could be space separated. Thus, capture all the string tokens, and compute a single string for the biome name
             input = string.Join(" ", inputs.Skip(1));
             if (Biome.fromName(input) == Biome.Type.None) {
-               self.addChat($"Search failed: The biome '{input}' doesn't exist!", ChatInfo.Type.System);
+               self.addChat($"Search failed: The biome '{input}' doesn't exist! Type '/who help' to learn more about this command.", ChatInfo.Type.System);
                return;
             }
          }
@@ -860,11 +867,11 @@ public class ChatManager : GenericGameManager
          if (filter == UserSearchInfo.FilteringMode.Level) {
             if (int.TryParse(input, out int inputLevel)) {
                if (inputLevel < 1) {
-                  self.addChat("Search failed: The level should be greater than 0!", ChatInfo.Type.System);
+                  self.addChat("Search failed: The level should be greater than 0! Type '/who help' to learn more about this command.", ChatInfo.Type.System);
                   return;
                }
             } else {
-               self.addChat("Search failed: Invalid Level!", ChatInfo.Type.System);
+               self.addChat("Search failed: Invalid Level! Type '/who help' to learn more about this command.", ChatInfo.Type.System);
                return;
             }
          }
@@ -877,8 +884,19 @@ public class ChatManager : GenericGameManager
          self.addChat($"Search started! keyword: '{searchInfo.input}'", ChatInfo.Type.System);
          Global.player.rpc.Cmd_SearchUser(searchInfo);
       } else {
-         self.addChat($"Search failed: The filter must be one of: 'is', 'in', 'level'. Example: /who is {Global.player.entityName}", ChatInfo.Type.System);
+         self.addChat($"Search failed: The filter must be one of: 'is', 'in', 'level'. Type '/who help' to learn more about this command.", ChatInfo.Type.System);
       }
+   }
+
+   private void showSearchHelpMessage () {
+      string msg = "Help for the /who command:\n" +
+         "The /who command must be in the form '/who [filter] [parameter]'.\n" +
+         "[filter] must be one of: 'is', 'in', 'level'.\n" +
+         "[parameter] depends on the value of [filter].\n" +
+         $"If [filter] is 'is', then the command allows you to get detailed information about a specific user. In this case, [parameter] must be the name of the user to look up. Example: /who is { Global.player.entityName }\n" +
+         "If [filter] is 'in', the command allows to list the players who are currently in a specific biome or area. In this case, [parameter] must be the name of the biome. The available biomes are: 'Forest', 'Desert', 'Pine', 'Snow', 'Lava' and 'Mushroom'. Example: /who in Forest\n" +
+         "If [filter] is 'level', the command allows to list the online players who are at a specific level. In this case, [parameter] must be the required level. Example: /who level 10\n";
+      self.addChat(msg, ChatInfo.Type.System);
    }
 
    #region Private Variables

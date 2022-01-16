@@ -354,7 +354,7 @@ public class SeaProjectile : NetworkBehaviour
       }
 
       SeaEntity sourceEntity = SeaManager.self.getEntity(_creatorNetId);
-      bool hitSeaTile = !Util.hasLandTile(transform.position);
+      bool hitSeaTile = !Util.hasLandTile(transform.position, _circleCollider.radius, sourceEntity.areaKey);
 
       // If this is a tentacle / poison circle attack, spawn venom
       if ((_attackType == Attack.Type.Tentacle || _attackType == Attack.Type.Poison_Circle)) {

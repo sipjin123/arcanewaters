@@ -43,6 +43,7 @@ public class MessageManager : MonoBehaviour {
       NetworkServer.RegisterHandler<LogInUserMessage>(ServerMessageManager.On_LogInUserMessage);
       NetworkServer.RegisterHandler<CreateUserMessage>(ServerMessageManager.On_CreateUserMessage);
       NetworkServer.RegisterHandler<DeleteUserMessage>(ServerMessageManager.On_DeleteUserMessage);
+      NetworkServer.RegisterHandler<RestoreUserMessage>(ServerMessageManager.On_RestoreUserMessage);
    }
 
    public static void unregisterServerHandlers () {
@@ -50,6 +51,7 @@ public class MessageManager : MonoBehaviour {
       NetworkServer.UnregisterHandler<LogInUserMessage>();
       NetworkServer.UnregisterHandler<CreateUserMessage>();
       NetworkServer.UnregisterHandler<DeleteUserMessage>();
+      NetworkServer.UnregisterHandler<RestoreUserMessage>();
    }
 
    #region Private Variables

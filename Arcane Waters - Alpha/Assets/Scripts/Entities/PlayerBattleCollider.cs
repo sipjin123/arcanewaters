@@ -25,7 +25,7 @@ public class PlayerBattleCollider : MonoBehaviour {
                   D.adminLog("Engaging combat:: EnemyType: {" + enemy.enemyType + "}" + " NetID: {" + enemy.netId + "}", D.ADMIN_LOG_TYPE.Combat);
                   combatInitCollider.enabled = false;
                   playerBody.isWithinEnemyRadius = true;
-                  Global.player.rpc.Cmd_StartNewBattle(enemy.netId, Battle.TeamType.Attackers, Global.forceJoin);
+                  Global.player.rpc.Cmd_StartNewBattle(enemy.netId, Battle.TeamType.Attackers, Global.forceJoin, isShipBattle: false);
                   TutorialManager3.self.tryCompletingStep(TutorialTrigger.EnterBattle);
                   TutorialManager3.self.onEnterBattle();
                } else {

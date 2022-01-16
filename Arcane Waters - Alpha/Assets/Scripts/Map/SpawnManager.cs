@@ -146,6 +146,18 @@ public partial class SpawnManager : MonoBehaviour
       return new List<SpawnData>();
    }
 
+   public Spawn getFirstSpawnAround (string areaKey, Vector2 localCenterPosition, float radius) {
+      if (instantiatedMapSpawns.TryGetValue(areaKey, out List<Spawn> mapSpawnList)) {
+         foreach (Spawn spawn in mapSpawnList) {
+            if (Vector2.Distance(localCenterPosition, spawn.transform.localPosition) < radius) {
+               return spawn;
+            }
+         }
+      }
+
+      return null;
+   }
+
    #region Private Variables
 
    // On server, track all the spawns from the database

@@ -110,6 +110,9 @@ public class PlayerShipEntity : ShipEntity
    // A reference to the rect transform for the boost bar's parent
    public RectTransform boostBarParent;
 
+   // A reference to the player dash effect behavior
+   public SeaPlayerDashEffect seaDashEffect;
+
    // Portrait game object
    public GameObject playerPortrait;
 
@@ -551,13 +554,15 @@ public class PlayerShipEntity : ShipEntity
          releaseBoost();
       }
 
+      seaDashEffect.setChargeEffectActive(_isChargingBoost);
+
       if (!isBoostCoolingDown() && _isChargingBoost) {
          // Update the boost-timing circle
-         boostFillCircleParent.localScale = (Vector3.one * 0.5f) + (Vector3.one * 0.5f * getBoostChargeAmount());
-         boostFillCircle.color = ColorCurveReferences.self.shipBoostCircleColor.Evaluate(getBoostChargeAmount());
-
-         boostCircleFillAnimator.SetInteger("facing", (int) facing);
-         boostCircleOutlineAnimator.SetInteger("facing", (int) facing);
+         //boostFillCircleParent.localScale = (Vector3.one * 0.5f) + (Vector3.one * 0.5f * getBoostChargeAmount());
+         //boostFillCircle.color = ColorCurveReferences.self.shipBoostCircleColor.Evaluate(getBoostChargeAmount());
+         //
+         //boostCircleFillAnimator.SetInteger("facing", (int) facing);
+         //boostCircleOutlineAnimator.SetInteger("facing", (int) facing);
 
          // FMOD SFX
          if (getBoostChargeAmount() == 1) {
@@ -569,7 +574,7 @@ public class PlayerShipEntity : ShipEntity
    private void pressBoost () {
       if (!isBoostCoolingDown()) {
          _boostChargeStartTime = NetworkTime.time;
-         boostTimingSprites.alpha = 1.0f;
+         //boostTimingSprites.alpha = 1.0f;
          _isChargingBoost = true;
 
          FMODUnity.RuntimeManager.AttachInstanceToGameObject(this._boostState, this.transform, this._body);
@@ -592,8 +597,8 @@ public class PlayerShipEntity : ShipEntity
          Cmd_RequestServerAddBoostForce(boostDirection, getBoostChargeAmount());
          _lastBoostTime = NetworkTime.time;
 
-         _boostCircleTween?.Rewind();
-         _boostCircleTween = DOTween.To(() => boostTimingSprites.alpha, (x) => boostTimingSprites.alpha = x, 0.0f, 0.25f);
+         //_boostCircleTween?.Rewind();
+         //_boostCircleTween = DOTween.To(() => boostTimingSprites.alpha, (x) => boostTimingSprites.alpha = x, 0.0f, 0.25f);
          _isChargingBoost = false;
 
          // Trigger the tutorial
@@ -1076,6 +1081,7 @@ public class PlayerShipEntity : ShipEntity
       // Disable pvp shop panel if its open
       if (isLocalPlayer && PvpShopPanel.self.isActive()) {
          PvpShopPanel.self.clearPanel();
+         PvpShopPanel.self.hideEntirePanel();
       }
 
       if (_targetCone != null && _targetCone.gameObject != null) {
@@ -1137,6 +1143,7 @@ public class PlayerShipEntity : ShipEntity
 
       int abilityId = -1;
       float statusDuration = 3;
+      float projectileSpeed = 1.0f;
       Status.Type abilityStatus = Status.Type.None;
       Attack.Type attackType = Attack.Type.None;
       if (shipAbilities.Count > 0) {
@@ -1146,11 +1153,14 @@ public class PlayerShipEntity : ShipEntity
             abilityStatus = (Status.Type) shipAbilityData.statusType;
             statusDuration = shipAbilityData.statusDuration;
             attackType = shipAbilityData.selectedAttackType;
+            projectileSpeed = shipAbilityData.projectileSpeed;
          }
       }
 
       if (attackType == Attack.Type.Harpoon) {
          newProjectile = Instantiate(PrefabsManager.self.seaHarpoonPrefab, spawnPosition, Quaternion.identity);
+      } else if (cannonAttackType == CannonAttackType.AbilityProjectile) {
+         newProjectile = Instantiate(PrefabsManager.self.seaProjectilePrefab, spawnPosition, Quaternion.identity);
       } else {
          newProjectile = Instantiate(PrefabsManager.self.serverCannonBallPrefab, spawnPosition, Quaternion.identity);
       }
@@ -1159,9 +1169,9 @@ public class PlayerShipEntity : ShipEntity
       float critModifier = (isCritical) ? 1.5f : 1.0f;
 
       // Calculate cannonball variables
-      Vector2 velocity = fireDirection * Attack.getSpeedModifier(Attack.Type.Cannon) * critModifier;
+      Vector2 velocity = fireDirection * Attack.getSpeedModifier(Attack.Type.Cannon) * critModifier * projectileSpeed;
       float lobHeight = getCannonballApex(chargeAmount);
-      float lifetime = getCannonballLifetime(chargeAmount) / critModifier;
+      float lifetime = getCannonballLifetime(chargeAmount) / (critModifier * projectileSpeed);
 
       // Setup cannonball
       newProjectile.initAbilityProjectile(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, velocity, lobHeight, statusType: abilityStatus, statusDuration, lifetime: lifetime, isCrit: isCritical, attackType: attackType);

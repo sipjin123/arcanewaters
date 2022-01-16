@@ -602,6 +602,11 @@ public class StoreScreen : Panel
       box.playerHat = Global.userObjects.hat;
       tryOverrideNameAndDescription(storeItem, box);
       box.initialize();
+
+      if (!box.isDyeApplicable()) {
+         return null;
+      }
+
       return box;
    }
 

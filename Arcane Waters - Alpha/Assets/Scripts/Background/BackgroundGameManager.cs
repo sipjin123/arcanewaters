@@ -67,11 +67,12 @@ public class BackgroundGameManager : MonoBehaviour {
       }
    }
 
-   public void activateBgContent (int bgXmlId) {
+   public void activateBgContent (int bgXmlId, bool isShipBattle) {
       BattleManager.self.initializeBattleBoards();
       BattleBoard board = BattleManager.self.battleBoard;
       setSpritesToClientBoard(bgXmlId, board);
       board.gameObject.SetActive(true);
+      board.toggleShipBattleBackgroundElements(show: isShipBattle);
    }
 
    private void resetBackgroundList () {

@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 using TMPro;
 
-public class FloatingCanvas : MonoBehaviour {
+public class FloatingCanvas : MonoBehaviour
+{
    #region Public Variables
 
    // How long this should live
@@ -89,6 +90,14 @@ public class FloatingCanvas : MonoBehaviour {
    public FloatingCanvas asEnemiesAround () {
       if (text != null) {
          text.text = "There are enemies around...";
+      }
+
+      return this;
+   }
+
+   public FloatingCanvas asPickedUpItem (Item castItem) {
+      if (text != null && castItem != null) {
+         text.text = $"+{ castItem.count } { castItem.getName() }";
       }
 
       return this;

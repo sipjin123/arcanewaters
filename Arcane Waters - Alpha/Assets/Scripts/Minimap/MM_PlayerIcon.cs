@@ -59,7 +59,9 @@ public class MM_PlayerIcon : ClientMonoBehaviour {
          if (minimapTranslationScale < 0.0f) {
             Minimap.self.backgroundImage.rectTransform.localPosition = Vector2.zero;
          } else {
-            Minimap.self.backgroundImage.rectTransform.localPosition = new Vector2(-relativePosition.x * minimapTranslationScale, -relativePosition.y * minimapTranslationScale);
+            Minimap.self.backgroundImage.rectTransform.localPosition = new Vector2(
+               Mathf.Clamp(-relativePosition.x * minimapTranslationScale, -64f * minimapTranslationScale, 64f * minimapTranslationScale),
+               Mathf.Clamp(-relativePosition.y * minimapTranslationScale, -64f * minimapTranslationScale, 64f * minimapTranslationScale));
          }
          Util.setLocalXY(this.transform, relativePosition);
 

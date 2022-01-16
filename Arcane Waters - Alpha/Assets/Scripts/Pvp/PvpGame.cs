@@ -143,6 +143,7 @@ public class PvpGame : MonoBehaviour {
       } else if (_gameState == State.InGame) {
          GameStatsManager.self.registerUser(userId, userName, assignedTeam.teamType);
          StartCoroutine(CO_AddPlayerToOngoingGame(userId, userName, assignedTeam));
+         player.rpc.Target_SetGameStartTime(player.connectionToClient, _startTime);
       }
    }
 
@@ -259,6 +260,8 @@ public class PvpGame : MonoBehaviour {
       assignFactionsToStructures();
       setStructuresActivated(true);
 
+      _startTime = (float) NetworkTime.time;
+
       for (int i = 0; i < _usersInGame.Count; i++) {
          NetEntity player = EntityManager.self.getEntity(_usersInGame[i]);
 
@@ -313,6 +316,7 @@ public class PvpGame : MonoBehaviour {
 
          // Hide pvp instructions panel
          player.rpc.Target_SetPvpInstructionsPanelVisibility(player.connectionToClient, false);
+         player.rpc.Target_SetGameStartTime(player.connectionToClient, _startTime);
 
          // Move the player to their spawn position, with a small offset so players aren't stacked on eachother.
          Vector2 spawnPosition = getSpawnPositionForTeam(team.teamType);
@@ -326,8 +330,6 @@ public class PvpGame : MonoBehaviour {
       StartCoroutine(CO_SpawnSeamonsters());
       StartCoroutine(CO_SpawnWaves());
       StartCoroutine(CO_SpawnPvpLootSpawners());
-
-      _startTime = Time.realtimeSinceStartup;
    }
 
    private IEnumerator CO_SpawnSeamonsters () {
@@ -431,6 +433,8 @@ public class PvpGame : MonoBehaviour {
          }
          Vector2 spawnPosition = getSpawnPositionForTeam(bestTeam);
          Util.setLocalXY(player.transform, spawnPosition);
+
+         player.rpc.Target_SetGameStartTime(player.connectionToClient, _startTime);
 
          _latePlayers.Remove(player.userId);
       }
@@ -707,7 +711,7 @@ public class PvpGame : MonoBehaviour {
 
    private int getGameGemRewards () {
 
-      float timeSinceGameStart = Time.realtimeSinceStartup - _startTime;
+      float timeSinceGameStart = (float)NetworkTime.time - _startTime;
       PvpArenaSize arenaSize = AreaManager.self.getAreaPvpArenaSize(areaKey);
 
       // Check that the teams have enough stats to count as a valid game
@@ -875,24 +879,15 @@ public class PvpGame : MonoBehaviour {
       }
 
       // Choose an area around the spawn position
+      float offsetRadius = 0.4f;
+      float spawnRotationSpacing = 45.0f;
+
+      // Rotate the spawn position around the base by 45 degrees every time a player is spawned
       Vector2 spawnPositionOffset = (teamType == PvpTeamType.A) ? Vector2.one : -Vector2.one;
-      int maxTeamMembers = 6;
-
-      // Find random position around the spawn point to prevent ships from spawning above each other
-      float offsetRadiusMultiplier = .75f;//.25f
-      float maxOffsetPerPlayer = offsetRadiusMultiplier / maxTeamMembers;
+      spawnPositionOffset *= offsetRadius;
       int numTeamSpawns = (teamType == PvpTeamType.A) ? _teamASpawns++ : _teamBSpawns++;
-      numTeamSpawns = numTeamSpawns % maxTeamMembers;
 
-      // Set the random parameters
-      float minVal = .25f;
-      float maxVal = numTeamSpawns * maxOffsetPerPlayer;
-      maxVal = Mathf.Clamp(maxVal, minVal, offsetRadiusMultiplier);
-
-      // Generate the offset values
-      float randomX = UnityEngine.Random.Range(minVal, maxVal);
-      float randomY = UnityEngine.Random.Range(minVal, maxVal);
-      spawnPositionOffset *= new Vector2(randomX, randomY);
+      spawnPositionOffset = Quaternion.Euler(0.0f, 0.0f, numTeamSpawns * spawnRotationSpacing) * spawnPositionOffset;
       spawnPosition += (Vector3) spawnPositionOffset;
       
       return spawnPosition;
@@ -1088,7 +1083,7 @@ public class PvpGame : MonoBehaviour {
          return timeout;
       }
 
-      float gameSecondsSoFar = Time.realtimeSinceStartup - _startTime;
+      float gameSecondsSoFar = (float)NetworkTime.time - _startTime;
       float minutesSoFar = gameSecondsSoFar / 60.0f;
       float timeUnits = Mathf.Ceil(minutesSoFar / RESPAWN_TIMEOUT_TIME_UNIT);
 
@@ -1191,6 +1186,16 @@ public class PvpGame : MonoBehaviour {
             playerEntity.rpc.Target_UpdatePvpInstructionsPanelGameStatusMessage(playerEntity.connectionToClient, newMessage);
          }
       }
+   }
+
+   private void updateStatPanelTimer () {
+      float timeSinceGameStart = Time.realtimeSinceStartup - _startTime;
+      int secondsSinceGameStart = Mathf.RoundToInt(timeSinceGameStart);
+      string minutes = Mathf.Floor(secondsSinceGameStart / 60).ToString("00");
+      string seconds = Mathf.Floor(secondsSinceGameStart % 60).ToString("00");
+      string timerText = minutes + ":" + seconds;
+
+      PvpStatPanel.self.setTimerText(timerText);
    }
 
    #endregion

@@ -12,6 +12,9 @@ public class Biome
    // The Type of Biome
    public enum Type { None = 0, Forest = 1, Desert = 2, Pine = 3, Snow = 4, Lava = 5, Mushroom = 6 }
 
+   // All the valid biomes in the game
+   public static Type[] gameBiomes = new Type[] { Type.Forest, Type.Desert, Type.Pine, Type.Snow, Type.Lava, Type.Mushroom };
+
    // Default Biome Names
    public const string FOREST = "Tropical Shores";
    public const string DESERT = "Desert Isles";

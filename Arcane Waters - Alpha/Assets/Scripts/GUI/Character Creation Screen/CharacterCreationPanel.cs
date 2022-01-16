@@ -279,7 +279,13 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       CharacterCreationSpotFader.self.fadeOutColor();
       hideWithTransition();
       CharacterScreen.self.myCamera.setDefaultSettings(.1f);
-      CharacterSpot.lastInteractedSpot.setButtonVisiblity(true);
+
+      // Show loader
+      CameraFader.self.fadeIn(0.5f);
+      CameraFader.self.setLoadingIndicatorVisibility(true);
+
+      // Request a new character list
+      ClientManager.sendAccountNameAndUserId();
    }
 
    #region Character Appearance Customization
@@ -467,7 +473,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       currentIndex = (currentIndex + previousGenderEyeList.Count) % previousGenderEyeList.Count;
 
       // Get a list of eye types of current gender
-      List<EyesLayer.Type>  listCurrentGenderEyes = getEyeList(getGender());
+      List<EyesLayer.Type> listCurrentGenderEyes = getEyeList(getGender());
 
       // Update the new eyes and apply it to the character
       UserInfo info = _char.getUserInfo();
@@ -489,7 +495,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       // Update the Info and apply it to the character
       UserInfo info = _char.getUserInfo();
-      
+
       info.bodyType = cachedIndex;
       _char.setBodyLayers(info);
    }

@@ -45,6 +45,9 @@ public class BattleBoard : MonoBehaviour {
    // The z axis position where the player battler should snap in order to render between key battle positions
    public static float PLAYER_BATTLE_Z_POS = -.12f;
 
+   // Reference to the ship battle background elements holder
+   public Transform shipBattleBackgoundHolder;
+
    #endregion
 
    public void Start () {
@@ -156,6 +159,20 @@ public class BattleBoard : MonoBehaviour {
       }
 
       return null;
+   }
+
+   public void toggleShipBattleBackgroundElements(bool show) {
+      if (shipBattleBackgoundHolder == null) {
+         return;
+      }
+
+      shipBattleBackgoundHolder.gameObject.SetActive(show);
+
+      if (centerPoint == null) {
+         return;
+      }
+
+      centerPoint.gameObject.SetActive(!show);
    }
 
    #region Private Variables

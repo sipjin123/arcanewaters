@@ -94,20 +94,25 @@ public class DyeXMLManager : MonoBehaviour
 
       if (dyeData != null) {
          PaletteToolData palette = PaletteSwapManager.self.getPalette(dyeData.paletteId);
+         return getAdjustedPaletteType(palette);
+      }
 
-         if (palette != null) {
-            if (palette.paletteType == (int) PaletteImageType.Hair && palette.isPrimary()) {
-               return PaletteImageType.Hair;
-            }
+      return PaletteImageType.None;
+   }
 
-            if (palette.paletteType == (int) PaletteImageType.Armor) {
-               bool isActuallyHat = palette.paletteName.ToLower().StartsWith("hat");
-               return isActuallyHat ? PaletteImageType.Hat : PaletteImageType.Armor;
-            }
+   public PaletteImageType getAdjustedPaletteType (PaletteToolData palette) {
+      if (palette != null) {
+         if (palette.paletteType == (int) PaletteImageType.Hair && palette.isPrimary()) {
+            return PaletteImageType.Hair;
+         }
 
-            if (palette.paletteType == (int) PaletteImageType.Weapon) {
-               return PaletteImageType.Weapon;
-            }
+         if (palette.paletteType == (int) PaletteImageType.Armor) {
+            bool isActuallyHat = palette.paletteName.ToLower().StartsWith("hat");
+            return isActuallyHat ? PaletteImageType.Hat : PaletteImageType.Armor;
+         }
+
+         if (palette.paletteType == (int) PaletteImageType.Weapon) {
+            return PaletteImageType.Weapon;
          }
       }
 

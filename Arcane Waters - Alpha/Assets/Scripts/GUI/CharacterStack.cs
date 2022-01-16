@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class CharacterStack : MonoBehaviour {
+public class CharacterStack : MonoBehaviour
+{
    #region Public Variables
 
    // Our layers
@@ -81,7 +82,7 @@ public class CharacterStack : MonoBehaviour {
       synchronizeAnimationIndexes();
    }
 
-   public void synchronizeAnimationIndexes () {      
+   public void synchronizeAnimationIndexes () {
       if (bodyLayer == null || bodyLayer.getSimpleAnimation() == null) {
          return;
       }
@@ -112,7 +113,7 @@ public class CharacterStack : MonoBehaviour {
          weaponFrontLayer.getSimpleAnimation().setIndex(index);
       }
 
-      if (hatLayer != null && hatLayer.getSimpleAnimation() != null) {       
+      if (hatLayer != null && hatLayer.getSimpleAnimation() != null) {
          hatLayer.getSimpleAnimation().setIndex(index);
       }
    }
@@ -159,28 +160,28 @@ public class CharacterStack : MonoBehaviour {
 
       // Set the direction for offline character
       if (GetComponentInParent<OfflineCharacter>()) {
-            if (_direction == Direction.South) {
-               foreach (Animator anim in animList) {
+         if (_direction == Direction.South) {
+            foreach (Animator anim in animList) {
                anim.SetInteger("facing", 7);
             }
             setDirection(Direction.West);
-            } else if (_direction == Direction.West) {
-               foreach (Animator anim in animList) {
-                  anim.SetInteger("facing", 1);
-               }
-            setDirection(Direction.North);
-            } else if (_direction == Direction.North) {
-               foreach (Animator anim in animList) {
-                  anim.SetInteger("facing", 3);
-               }
-            setDirection(Direction.East);
-            } else if (_direction == Direction.East) {
-               foreach (Animator anim in animList) {
-                  anim.SetInteger("facing", 5);
-               }
-            setDirection(Direction.South);
+         } else if (_direction == Direction.West) {
+            foreach (Animator anim in animList) {
+               anim.SetInteger("facing", 1);
             }
-      }  else {
+            setDirection(Direction.North);
+         } else if (_direction == Direction.North) {
+            foreach (Animator anim in animList) {
+               anim.SetInteger("facing", 3);
+            }
+            setDirection(Direction.East);
+         } else if (_direction == Direction.East) {
+            foreach (Animator anim in animList) {
+               anim.SetInteger("facing", 5);
+            }
+            setDirection(Direction.South);
+         }
+      } else {
          // Set the direction for online character
          if (_direction == Direction.South) {
             setDirection(Direction.West);
@@ -288,6 +289,17 @@ public class CharacterStack : MonoBehaviour {
       }
 
       return 0;
+   }
+
+   public void setGlobalTint (Color color) {
+      hairBackLayer.getRenderer().color = color;
+      weaponBackLayer.getRenderer().color = color;
+      bodyLayer.getRenderer().color = color;
+      eyesLayer.getRenderer().color = color;
+      armorLayer.getRenderer().color = color;
+      hairFrontLayer.getRenderer().color = color;
+      weaponFrontLayer.getRenderer().color = color;
+      hatLayer.getRenderer().color = color;
    }
 
    #region Private Variables

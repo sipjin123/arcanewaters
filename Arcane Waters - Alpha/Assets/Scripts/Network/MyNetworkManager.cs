@@ -531,7 +531,7 @@ public class MyNetworkManager : NetworkManager
                      BattleManager.self.rebuildObservers(activeBattlerObj, activeBattle);
 
                      // Send player the data of the background and their abilities
-                     player.rpc.Target_ReceiveBackgroundInfo(player.connectionToClient, activeBattle.battleBoard.xmlID);
+                     player.rpc.Target_ReceiveBackgroundInfo(player.connectionToClient, activeBattle.battleBoard.xmlID, activeBattle.isShipBattle);
                      player.rpc.processPlayerAbilities((PlayerBodyEntity) player, new List<PlayerBodyEntity> { (PlayerBodyEntity) player });
                   }
                }

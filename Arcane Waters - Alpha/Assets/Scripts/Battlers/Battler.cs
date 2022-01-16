@@ -549,6 +549,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          if (battlerType == BattlerType.PlayerControlled) {
             handleAttackIndicators();
          }
+
+         if (isMouseHovering()) {
+            getHoveredBattlers().Add(this);
+         } else {
+            getHoveredBattlers().Remove(this);
+         }
       }
 
       // If the battler is dead, clear the attack indicators
@@ -2914,6 +2920,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          // Destroy the attack indicators
          tryDetachAttackIndicators();
       }
+
+      _hoveredBattlers.Remove(this);
    }
 
    public bool canCastAbility () {
@@ -3018,6 +3026,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    // The set of battlers targeting the current battler
    private List<Battler> _targetingBattlers = new List<Battler>();
+
+   // The currently hovered battlers
+   private static HashSet<Battler> _hoveredBattlers = new HashSet<Battler>();
 
    #endregion
 }

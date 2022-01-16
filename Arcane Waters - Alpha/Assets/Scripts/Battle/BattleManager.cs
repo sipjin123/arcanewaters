@@ -65,7 +65,7 @@ public class BattleManager : MonoBehaviour {
       InvokeRepeating(nameof(tickBattles), 0f, TICK_INTERVAL);
    }
 
-   public Battle createTeamBattle (Area area, Instance instance, Enemy enemy, BattlerInfo[] attackersData, PlayerBodyEntity playerBody, BattlerInfo[] defendersData) {
+   public Battle createTeamBattle (Area area, Instance instance, Enemy enemy, BattlerInfo[] attackersData, PlayerBodyEntity playerBody, BattlerInfo[] defendersData, bool isShipBattle = false) {
       // We need to make a new one
       Battle battle = Instantiate(battlePrefab);
 
@@ -77,6 +77,7 @@ public class BattleManager : MonoBehaviour {
       Biome.Type biomeType = instance.biome;
       battleBoard.biomeType = biomeType;
       BackgroundGameManager.self.setSpritesToRandomBoard(battleBoard);
+
       battleBoard.gameObject.SetActive(true);
 
       // Set up our initial data and position
@@ -125,6 +126,8 @@ public class BattleManager : MonoBehaviour {
             }
          }
       }
+
+      battle.isShipBattle = isShipBattle;
 
       return battle;
    }
@@ -633,7 +636,7 @@ public class BattleManager : MonoBehaviour {
 
             float sourceDamageElement = source.getDamage(element);
             float damage = sourceDamageElement + attackAbilityData.baseDamage * attackAbilityData.getModifier;
-            
+
             // Add powerup damage
             if (source.userId > 0) {
                int allDamageBoost = 0;
@@ -1146,7 +1149,7 @@ public class BattleManager : MonoBehaviour {
             Enemy enemy = (Enemy) defeatedBattlers[0].player;
             List<Transform> spawnNodeTarget = enemy.lootSpawnPositions.ToList();
             Vector3 targetSpawnPos = filteredNodeTarget.Count > 0 ? filteredNodeTarget.ChooseRandom().position : spawnNodeTarget.ChooseRandom().position;
-            
+
             // Offset spawn position of the loot spawn for boss monsters, due to their huge corpse sprite
             if (enemy.isBossType) {
                targetSpawnPos += new Vector3(0, .95f, 0);

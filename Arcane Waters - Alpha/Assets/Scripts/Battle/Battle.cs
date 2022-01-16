@@ -66,6 +66,9 @@ public class Battle : NetworkBehaviour {
    // Completes the opposing team, by filling the empty battle spots
    public static bool FORCE_COMPLETE_DEFENDING_TEAM = false;
 
+   // Is the battle happening on a ship deck?
+   public bool isShipBattle = false;
+
    #endregion
 
    public void Start () {

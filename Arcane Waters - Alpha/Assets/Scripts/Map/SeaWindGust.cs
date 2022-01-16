@@ -52,6 +52,9 @@ public class SeaWindGust : MonoBehaviour, IMapEditorDataReceiver
       }
 
       windGustVFX.setSize(size);
+
+      // Retract the collider a bit to make the visual slighty larger than the collider
+      size = new Vector2(Mathf.Clamp(size.x - 1f, 1f, 1000000f), Mathf.Clamp(size.y - 1f, 1f, 1000000f));
       effectorCollider.size = size;
    }
 

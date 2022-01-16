@@ -66,6 +66,12 @@ public class OfflineCharacter : ClientMonoBehaviour {
    // The right rotate button
    public Button rightRotateButton;
 
+   // The shadow of the character
+   public Transform shadow;
+
+   // Reference to the Character stack
+   public CharacterStack characterStack;
+
    #endregion
 
    protected override void Awake () {

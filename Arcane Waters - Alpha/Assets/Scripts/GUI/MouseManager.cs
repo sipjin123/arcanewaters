@@ -68,23 +68,23 @@ public class MouseManager : ClientMonoBehaviour
    // Is the trail enabled?
    public bool isTrailEnabled = true;
 
-   // Trail sprites
-   public Sprite[] trailSprites;
-
-   // Reference to the image control that will display the trail
-   public Image trailImage;
-
-   // Trail delay
-   public float trailDelaySeconds = .01f;
-
-   // Trail frame duration
-   public float trailFrameDurationSeconds = .16f;
-
    // Trail particle speed
    public float trailParticleSpeed = 5.0f;
 
    // Trail offset
    public Vector2 trailOffset = new Vector2(.0f, .0f);
+
+   // Reference to the canvas to draw the particles to
+   public Canvas trailCanvas;
+
+   // The prefab used to instantiate particles
+   public GameObject trailParticlePrefab;
+
+   // The time between particle spawn events when the cursor is moving fast
+   public float fastParticleSpawnIntervalSeconds;
+
+   // The time between particle spawn events when the cursor is moving slow
+   public float slowParticleSpawnIntervalSeconds;
 
    [Header("Click Effect")]
    // Is the click effect enabled?
@@ -286,11 +286,11 @@ public class MouseManager : ClientMonoBehaviour
 
       if (_isMouseMovingThisFrame) {
          if (mouseDirection.HasValue && (mouseDirection.Value == Direction.NorthEast)) {
-            setArrowRightCursor(isFast: _movingFrames >= accelThresholdFramesCount);
+            setArrowRightCursor(isFast: isMovingFast());
          }
 
          if (mouseDirection.HasValue && (mouseDirection.Value == Direction.SouthWest)) {
-            setArrowLeftCursor(isFast: _movingFrames >= accelThresholdFramesCount);
+            setArrowLeftCursor(isFast: isMovingFast());
          }
       } else {
          if (_idleFrames <= accelThresholdFramesCount) {
@@ -305,6 +305,10 @@ public class MouseManager : ClientMonoBehaviour
             setArrowCursor(_isPressing);
          }
       }
+   }
+
+   private bool isMovingFast () {
+      return _movingFrames >= accelThresholdFramesCount;
    }
 
    private void updateMovementInfo () {
@@ -374,30 +378,18 @@ public class MouseManager : ClientMonoBehaviour
    }
 
    public void processMouseTrail () {
-      if (trailSprites == null || trailSprites.Length == 0 || (!_isTrailing && !isTrailEnabled)) {
-         _isTrailing = false;
+      if (!isTrailEnabled || cursorType != CursorTypes.Arrow || _isPressing || !isMouseMoving()) {
          return;
       }
 
       _trailCurrentTime += Time.deltaTime;
+      float particleInterval = isMovingFast() ? fastParticleSpawnIntervalSeconds : slowParticleSpawnIntervalSeconds;
 
-      if (!_isTrailing) {
-         // Only the arrow cursor shows the trail. The cursor also needs to be in the unpressed state
-         if (cursorType == CursorTypes.Arrow && !_isPressing) {
-            _isTrailing = true;
-            _trailCurrentTime = 0;
-         } else {
-            return;
-         }
-      }
-
-      if (_trailCurrentTime >= trailDelaySeconds) {
-         float time = _trailCurrentTime - trailDelaySeconds;
-         int frameIndex = computeAnimationFrame(trailSprites, time, trailFrameDurationSeconds);
-         trailImage.rectTransform.anchoredPosition = (frameIndex == 0 ? (MouseUtils.mousePosition + trailOffset) / OptionsManager.self.mainGameCanvas.scaleFactor : trailImage.rectTransform.anchoredPosition);
-         trailImage.sprite = trailSprites[frameIndex];
-         trailImage.rectTransform.Translate(.0f, -trailParticleSpeed, .0f, Space.Self);
-         _isTrailing = time < computeTotalAnimationDurationSeconds(trailSprites.Length, trailFrameDurationSeconds);
+      if (_trailCurrentTime > particleInterval) {
+         Vector2 spawnPosition = (MouseUtils.mousePosition + trailOffset) / OptionsManager.self.mainGameCanvas.scaleFactor;
+         spawnTrailParticle(spawnPosition, -trailParticleSpeed);
+         _lastParticleSpawnTime = Time.realtimeSinceStartup;
+         _trailCurrentTime = 0;
       }
    }
 
@@ -451,7 +443,7 @@ public class MouseManager : ClientMonoBehaviour
       _isOverTextInput = false;
       _isOverTouchable = false;
 
-      if (isHoveredObjectOfType<ChairClickable>() && Global.player != null){
+      if (isHoveredObjectOfType<ChairClickable>() && Global.player != null) {
          PlayerBodyEntity body = Global.player.getPlayerBodyEntity();
 
          if (body != null && (body.isJumping() || body.isEmoting() || body.isSitting())) {
@@ -463,7 +455,7 @@ public class MouseManager : ClientMonoBehaviour
          _isOverNPC = !Global.player.isInBattle();
       }
 
-      if (Battler.getHoveredBattlers().Count > 0) {
+      if (Battler.getHoveredBattlers().Count > 0 && Global.player.isInBattle()) {
          _isOverTouchable = true;
       }
 
@@ -523,6 +515,27 @@ public class MouseManager : ClientMonoBehaviour
       }
 
       return _graphicsRaycasters[canvas];
+   }
+
+   public MouseTrailParticle spawnTrailParticle (Vector2 position, float speed) {
+      // Reuse particles
+      foreach (MouseTrailParticle p in _particlePool) {
+         if (p.hasReachedEnd()) {
+            p.setPosition(position);
+            p.setSpeed(speed);
+            p.restart();
+            return p;
+         }
+      }
+
+      GameObject particle = Instantiate(trailParticlePrefab);
+      particle.transform.SetParent(trailCanvas.transform);
+      MouseTrailParticle particleComponent = particle.GetComponent<MouseTrailParticle>();
+      particleComponent.setPosition(position);
+      particleComponent.setSpeed(speed);
+      _particlePool.Add(particleComponent);
+
+      return particleComponent;
    }
 
    #region Cursor setters
@@ -604,10 +617,10 @@ public class MouseManager : ClientMonoBehaviour
    // Shimmer current time
    private float _shimmerCurrentTime = 0;
 
-   // Is the cursor currently emitting a trail?
-   private bool _isTrailing = false;
+   // The spawn time of the last particle
+   private float _lastParticleSpawnTime = 0;
 
-   // Trail accumulator
+   // The current time of the trail
    private float _trailCurrentTime = 0;
 
    // Is the cursor currently displaying a click effect?
@@ -636,6 +649,9 @@ public class MouseManager : ClientMonoBehaviour
 
    // Raycast results cache
    private List<RaycastResult> _raycastResults = new List<RaycastResult>();
+
+   // Pool of particles
+   private List<MouseTrailParticle> _particlePool = new List<MouseTrailParticle>();
 
    #endregion
 }

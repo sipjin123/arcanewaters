@@ -80,6 +80,7 @@ namespace MinimapGeneration
       [Header("Base")]
       public string iconLayerName;
       public Sprite spriteIcon;
+      public Sprite[] altIcons;
 
       public Vector2Int offset;
       [Tooltip("Uses only gameobjects from prefab hierarchy")]
@@ -99,5 +100,6 @@ namespace MinimapGeneration
       public bool limitSpawnCount;
       public Vector2Int spawnGridSize;
       public int minDistanceManhattan;
+      public int minGlobalDistanceManhattan;
    }
 }

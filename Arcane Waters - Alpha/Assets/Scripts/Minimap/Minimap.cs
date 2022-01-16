@@ -768,7 +768,7 @@ public class Minimap : ClientMonoBehaviour {
       }
    }
 
-   Color AlphaBlend (Color destination, Color source) {
+   public static Color AlphaBlend (Color destination, Color source) {
       float sourceF = source.a;
       float destinationF = 1f - source.a;
       float alpha = sourceF + destinationF * destination.a;
@@ -829,7 +829,7 @@ public class Minimap : ClientMonoBehaviour {
 
          if (preset) {
             // If this is a sea map, overwrite everything with a new system
-            if (false && area.isSea) {
+            if (area.isSea) {
                Texture2D tex = SeaMinimapGenerator.generateMinimap(area, preset);
                if (saveMap) {
                   ExportTexture(tex, preset.imagePrefixName + area.GetComponent<Area>().areaKey + preset.imageSuffixName);
@@ -1692,7 +1692,7 @@ public class Minimap : ClientMonoBehaviour {
       }
    }
 
-   private Sprite getTownWarpSprite (Biome.Type biome) {
+   public Sprite getTownWarpSprite (Biome.Type biome) {
       switch (biome) {
          case Biome.Type.Desert:
             return townDesertSprite;

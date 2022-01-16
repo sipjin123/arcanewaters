@@ -291,11 +291,11 @@ public class Instance : NetworkBehaviour
       if (isSinglePlayer || AreaManager.self.isPrivateArea(areaKey)) {
          return 1;
       }
-      
+
       if (VoyageManager.isAnyLeagueArea(areaKey) || VoyageManager.isPvpArenaArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey)) {
          return Voyage.MAX_PLAYERS_PER_INSTANCE;
       }
-      
+
       // Check if we've specified a max player count on the command line
       if (CommandCodes.get(CommandCodes.Type.MAX_INSTANCE_PLAYERS)) {
          return Util.getCommandLineInt(CommandCodes.Type.MAX_INSTANCE_PLAYERS + "");
@@ -474,7 +474,7 @@ public class Instance : NetworkBehaviour
                bossToSpawn = Enemy.Type.Golem_Boss;
                break;
             default:
-               bossToSpawn = UnityEngine.Random.Range(0,2) == 0 ? Enemy.Type.Golem_Boss : Enemy.Type.Lizard_King;
+               bossToSpawn = UnityEngine.Random.Range(0, 2) == 0 ? Enemy.Type.Golem_Boss : Enemy.Type.Lizard_King;
                break;
          }
 
@@ -668,7 +668,6 @@ public class Instance : NetworkBehaviour
             D.adminLog("Failed Because map {" + area.areaKey + "} is not valid!", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
          }
       } else {
-         D.adminLog("Sea Spawning Cancel! {" + area.areaKey + "} Not a Sea", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
          EnemyManager.self.spawnEnemiesOnServerForInstance(this);
       }
 
@@ -821,7 +820,7 @@ public class Instance : NetworkBehaviour
       int xmlId = SeaMonsterEntityData.DEFAULT_SHIP_ID;
       int guildId = 1;
       bool randomizeShip = true;
-      
+
       // Randomize xml id of ships by biome as default
       xmlId = EnemyManager.self.randomizeShipXmlId(biome);
       int xmlIdOverride = 0;
@@ -940,6 +939,40 @@ public class Instance : NetworkBehaviour
       NetworkServer.Spawn(seaEntity.gameObject);
 
       return seaEntity;
+   }
+
+   /// <summary>
+   /// Drops a new item in the instance. It will be created in the database on pick up.
+   /// If not picked up, the item will cease to exist when the instance is destroyed.
+   /// </summary>
+   /// <param name="newItem">The item to create</param>
+   /// <param name="localPosition">At what position to drop item in relation to the instance</param>
+   /// <param name="appearDirection">Direction of travel when the item spawns</param>
+   /// <param name="limitToUserId">If not 0, this item will only be able to be picked up by this user</param>
+   /// <param name="lifetimeSeconds">After what time in seconds will this item despawn. 0 If no time limit</param>
+   /// <param name="spinWhileDropping">Should the item spin when it's dropping to the ground</param>
+   [Server]
+   public void dropNewItem (Item newItem, Vector3 localPosition, Vector2 appearDirection, bool spinWhileDropping = true, int limitToUserId = 0, float lifetimeSeconds = 600) {
+      // Get area
+      Area area = AreaManager.self.getArea(areaKey);
+      if (area == null) {
+         return;
+      }
+
+      DroppedItem droppedItem = Instantiate(PrefabsManager.self.droppedItemPrefab);
+      droppedItem.transform.position = area.transform.TransformPoint(localPosition);
+
+      droppedItem.instanceId = id;
+      droppedItem.limitToUserId = limitToUserId;
+      droppedItem.lifetimeSeconds = lifetimeSeconds;
+      droppedItem.targetItem = newItem;
+      droppedItem.appearDirection = appearDirection;
+
+      if (!spinWhileDropping) {
+         droppedItem.setNoRotationsDuringAppearance();
+      }
+
+      NetworkServer.Spawn(droppedItem.gameObject);
    }
 
    #region Private Variables

@@ -142,16 +142,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    [Header("Sitting")]
 
    [SyncVar]
-   // Is the player sitting down?
-   public bool isSitting = false;
-
-   [SyncVar]
-   // Stores the position where the player stood before sitting down
-   public Vector3 positionBeforeSitting = Vector3.zero;
-
-   [SyncVar]
-   // The position of the chair the player is sitting on
-   public Vector3 chairPosition = Vector3.zero;
+   // Stores information about the sitting behaviour
+   public SittingInfo sittingInfo;
 
    #endregion
 
@@ -301,12 +293,12 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       // If the player is sitting down and tries to move or jump, get up
-      if (isSitting) {
-         if (InputManager.isPressingDirection(facing) || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
+      if (sittingInfo.isSitting) {
+         if (!Util.AreVectorsAlmostTheSame(InputManager.getMovementInput(), Vector2.zero) || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
             Cmd_ExitChair();
          }
       }
-      
+
       // If the player is emoting down and tries to move or jump, stop
       if (isEmoting()) {
          if (!Util.AreVectorsAlmostTheSame(InputManager.getMovementInput(), Vector2.zero) || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
@@ -353,24 +345,23 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private void processSitting () {
-      if (isSitting != _prevIsSitting) {
-         if (isSitting) {
+      if (sittingInfo.isSitting != _prevIsSitting) {
+         if (sittingInfo.isSitting) {
             getMainCollider().isTrigger = true;
             toggleWeaponVisibility(show: false);
             applySittingEmoteMask(show: true);
-            setSpritesDepth(-0.005f);
-            transform.position = chairPosition;
+            transform.position = sittingInfo.chairPosition;
 
-            if (facing == Direction.North) {
-               setSpritesDepth(+0.005f);
+            if (sittingInfo.sittingDirection == Direction.North) {
                playCompositeAnimation(CompositeAnimationManager.self.KneelingN);
-            } else if (facing == Direction.South) {
+            } else if (sittingInfo.sittingDirection == Direction.South) {
+               transform.position = sittingInfo.chairPosition + new Vector3(0, -0.02f, 0);
                playCompositeAnimation(CompositeAnimationManager.self.KneelingS);
-            } else if (facing == Direction.West) {
-               transform.position = chairPosition + new Vector3(-0.08f, 0, 0);
+            } else if (sittingInfo.sittingDirection == Direction.West) {
+               transform.position = sittingInfo.chairPosition + new Vector3(-0.08f, -0.02f, 0);
                playCompositeAnimation(CompositeAnimationManager.self.KneelingWE);
-            } else if (facing == Direction.East) {
-               transform.position = chairPosition + new Vector3(+0.08f, 0, 0);
+            } else if (sittingInfo.sittingDirection == Direction.East) {
+               transform.position = sittingInfo.chairPosition + new Vector3(+0.08f, -0.02f, 0);
                playCompositeAnimation(CompositeAnimationManager.self.KneelingWE);
             }
 
@@ -378,11 +369,10 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
                InputManager.toggleInput(enable: false);
             }
          } else {
-            transform.position = positionBeforeSitting;
+            transform.position = sittingInfo.positionBeforeSitting;
             applySittingEmoteMask(show: false);
             toggleWeaponVisibility(show: true);
             getMainCollider().isTrigger = false;
-            setSpritesDepth(0.0f);
             stopCompositeAnimation();
 
             if (isLocalPlayer) {
@@ -391,7 +381,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             }
          }
 
-         _prevIsSitting = isSitting;
+         _prevIsSitting = sittingInfo.isSitting;
       }
    }
 
@@ -1206,10 +1196,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
    }
 
-   public void setSpritesDepth (float offset) {
-      spritesTransform.SetLocalZ(offset);
-   }
-
    #region Composite Animations
 
    public void playCompositeAnimation (CompositeAnimation animation) {
@@ -1273,21 +1259,34 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    #region Sitting
 
+   public bool isSitting () {
+      return sittingInfo.isSitting;
+   }
+
    [Command]
    public void Cmd_EnterChair (Vector3 chairPosition, Direction direction) {
-      if (!isSitting) {
-         isSitting = true;
-         facing = direction;
-         positionBeforeSitting = transform.position;
-         this.chairPosition = chairPosition;
+      if (!sittingInfo.isSitting) {
+         sittingInfo = new SittingInfo {
+            isSitting = true,
+            sittingDirection = direction,
+            chairPosition = chairPosition,
+            positionBeforeSitting = transform.position
+         };
+
+         this.facing = direction;
          this.transform.position = chairPosition;
       }
    }
 
    [Command]
    public void Cmd_ExitChair () {
-      if (isSitting) {
-         isSitting = false;
+      if (sittingInfo.isSitting) {
+         sittingInfo = new SittingInfo {
+            isSitting = false,
+            sittingDirection = sittingInfo.sittingDirection,
+            chairPosition = sittingInfo.chairPosition,
+            positionBeforeSitting = sittingInfo.positionBeforeSitting
+         };
       }
    }
 

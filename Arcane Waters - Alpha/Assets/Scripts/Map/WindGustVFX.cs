@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class WindGustVFX : MonoBehaviour
 {
@@ -41,11 +42,14 @@ public class WindGustVFX : MonoBehaviour
       strength = Mathf.Clamp(strength, 0.1f, 1f);
       _strength = strength;
 
-      foreach (ParticleSystem ps in _particleSystems) {
+      for (int i = 0; i < _particleSystems.Length; i++) {
+         ParticleSystem ps = _particleSystems[i];
+
          ps.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
 
+         float rot = _size.x * _size.y * particlesOverArea.Evaluate(strength);
          ParticleSystem.EmissionModule emission = ps.emission;
-         emission.rateOverTime = _size.x * _size.y * particlesOverArea.Evaluate(strength);
+         emission.rateOverTime = rot;
 
          ParticleSystem.ForceOverLifetimeModule force = ps.forceOverLifetime;
          ParticleSystem.MinMaxCurve forceCurve = force.x;
@@ -59,6 +63,19 @@ public class WindGustVFX : MonoBehaviour
          lifetimeCurve.constant = dur;
          main.startLifetime = lifetimeCurve;
 
+         if (rot > 0) {
+            // Start particle systems at different times so they don't animate in bursts
+            if (enabled && gameObject.activeSelf) {
+               StartCoroutine(playAfterDelay(ps, ((1 / rot) / _particleSystems.Length) * i));
+            }
+         }
+      }
+   }
+
+   private IEnumerator playAfterDelay (ParticleSystem ps, float delay) {
+      yield return new WaitForSeconds(delay);
+
+      if (ps != null) {
          ps.Play();
       }
    }

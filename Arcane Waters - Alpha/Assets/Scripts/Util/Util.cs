@@ -234,6 +234,14 @@ public class Util : MonoBehaviour
       }
    }
 
+   public static bool isDevelopmentBuild () {
+      return getJenkinsBuildTitle().StartsWith(DEVELOPMENT_BUILD);
+   }
+
+   public static bool isProductionBuild () {
+      return getJenkinsBuildTitle().StartsWith(PRODUCTION_BUILD);
+   }
+
    public static bool isEmpty (String str) {
       return (str == null || str.Equals(""));
    }
@@ -521,17 +529,48 @@ public class Util : MonoBehaviour
       return sinOfAngle;
    }
 
-   public static bool hasLandTile (Vector3 pos) {
-      if (Global.player == null) {
+   public static bool hasLandTile (Vector3 pos, string areaKey = "") {
+      if (Global.player == null && String.IsNullOrEmpty(areaKey)) {
          return false;
       }
 
-      Area area = AreaManager.self.getArea(Global.player.areaKey);
+      Area area = (Global.player == null) ? AreaManager.self.getArea(areaKey) : AreaManager.self.getArea(Global.player.areaKey);
       if (area == null) {
          return false;
       }
 
       return area.hasLandTile(pos);
+   }
+
+   public static bool hasLandTile (Vector3 pos, float radius, string areaKey = "") {
+      if (Global.player == null && String.IsNullOrEmpty(areaKey)) {
+         return false;
+      }
+
+      Area area = (Global.player == null) ? AreaManager.self.getArea(areaKey) : AreaManager.self.getArea(Global.player.areaKey);
+      if (area == null) {
+         return false;
+      }
+
+      // If the center has a land tile, exit early
+      if (area.hasLandTile(pos)) {
+         return true;
+      }
+
+      const int pointsToCheck = 8;
+      const float totalAngle = 360.0f;
+      const float anglePerPoint = totalAngle / pointsToCheck;
+
+      // Check a number of points in a circle around the point
+      for (int i = 0; i < pointsToCheck; i++) {
+         Vector3 pointToCheck = pos + Quaternion.Euler(0.0f, 0.0f, i * anglePerPoint) * (Vector3.up * radius);
+         
+         if (area.hasLandTile(pointToCheck)) {
+            return true;
+         }
+      }
+
+      return false;
    }
 
    public static Color getColor (int r, int g, int b) {

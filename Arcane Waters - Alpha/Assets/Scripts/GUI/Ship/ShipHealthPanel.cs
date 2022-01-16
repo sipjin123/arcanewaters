@@ -109,6 +109,11 @@ public class ShipHealthPanel : ClientMonoBehaviour
       if (canvasGroup.IsShowing()) {
          _lastHealth = 0;
          canvasGroup.alpha = 0;
+
+         // Deactivate all sailors so the layout group can shrink
+         for (int i = 0; i < _sailors.Count; i++) {
+            _sailors[i].setStatus(SailorHP.Status.Hidden);
+         }
       }
    }
 

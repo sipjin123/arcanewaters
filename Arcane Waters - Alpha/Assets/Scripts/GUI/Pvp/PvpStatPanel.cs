@@ -57,6 +57,9 @@ public class PvpStatPanel : Panel {
    // The labels for each pvp team's score, indexed by PvpTeamType
    public List<TextMeshProUGUI> teamScoreLabels;
 
+   // A reference to the text component displaying the timer for the game
+   public TextMeshProUGUI timerText;
+
    // References to the layout groups containing the portraits for each team
    public GridLayoutGroup teamAPortraits, teamBPortraits;
 
@@ -239,7 +242,19 @@ public class PvpStatPanel : Panel {
 
          bannerToEnable.SetActive(true);
          bannerToDisable.SetActive(false);
+
+         CancelInvoke(nameof(updateTimerText));
       }
+   }
+
+   public void setGameStartTime (float gameStartTime) {
+      _gameStartTime = gameStartTime;
+      CancelInvoke(nameof(updateTimerText));
+
+      // Make the timer update on the second
+      float timeSinceGameStart = (float) NetworkTime.time - gameStartTime;
+      float remainder = timeSinceGameStart % 1.0f;
+      InvokeRepeating(nameof(updateTimerText), remainder, 1.0f);
    }
 
    private IEnumerator CO_RequestTeamFactions () {
@@ -344,6 +359,8 @@ public class PvpStatPanel : Panel {
             RespawnScreen.self.respawnPlayerShipInTown(playerShip);
          }
       }
+
+      CancelInvoke(nameof(updateTimerText));
    }
 
    public void onPlayerJoinedPvpGame () {
@@ -352,10 +369,25 @@ public class PvpStatPanel : Panel {
 
    public void onPlayerLeftPvpGame () {
       close();
+      CancelInvoke(nameof(updateTimerText));
    }
 
    public void updateScoreForTeam (int newScoreValue, PvpTeamType teamType) {
       teamScoreLabels[(int) teamType].text = newScoreValue.ToString();
+   }
+
+   public void setTimerText (string newTimerText) {
+      timerText.text = newTimerText;
+   }
+
+   private void updateTimerText () {
+      float timeSinceGameStart = (float)NetworkTime.time - _gameStartTime;
+      int secondsSinceGameStart = Mathf.RoundToInt(timeSinceGameStart);
+      string minutes = Mathf.Floor(secondsSinceGameStart / 60).ToString("00");
+      string seconds = Mathf.Floor(secondsSinceGameStart % 60).ToString("00");
+      string newTimerText = minutes + ":" + seconds;
+
+      timerText.text = newTimerText;
    }
 
    public override void OnPointerClick (PointerEventData eventData) {
@@ -384,6 +416,9 @@ public class PvpStatPanel : Panel {
 
    // The path to the sprites used to show the quality of reward for each team
    private const string REWARD_ICON_SPRITE_PATH = "Sprites/GUI/Scoreboard/pvp_scoreboard_chest_icon";
+
+   // The time at which the game the player is in started
+   private float _gameStartTime;
 
    #endregion
 }

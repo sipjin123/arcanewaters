@@ -94,6 +94,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for sea mines
    public SeaMine seaMinePrefab;
 
+   // The prefab we use for dropped items
+   public DroppedItem droppedItemPrefab;
+
    [Header("Text Prefabs")]
    // The Prefab we use for creating Damage text
    public ShipDamageText shipDamageTextPrefab;

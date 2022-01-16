@@ -141,7 +141,7 @@ public class MapManager : MonoBehaviour
       } else {
          D.debug("Nubis Failed for area {" + areaKey + "}");
       }
-      if (string.IsNullOrWhiteSpace(mapData) && mapData.Length < 10) {
+      if (mapData == null || (string.IsNullOrWhiteSpace(mapData) && mapData.Length < 10)) {
          D.debug("Error in retrieving map data from NUBIS: (" + areaKey + ")");
       } else {
          MapInfo mapInfo = JsonUtility.FromJson<MapInfo>(mapData);
@@ -259,9 +259,6 @@ public class MapManager : MonoBehaviour
          Material backgroundMaterial = result.backgroundRenderer.material;
          backgroundMaterial.SetVector("_Center", result.backgroundRenderer.transform.position);
          backgroundMaterial.SetVector("_Size", bounds.size * 0.16f);
-         
-         // Reset the depth of the background
-         result.backgroundRenderer.gameObject.transform.SetLocalZ(10);
 
          yield return null;
 

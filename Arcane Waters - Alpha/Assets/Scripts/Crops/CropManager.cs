@@ -207,6 +207,11 @@ public class CropManager : NetworkBehaviour {
       _crops.Add(cropInfo);
    }
 
+   [Server]
+   public void removeCropInfo (CropInfo cropInfo) {
+      _crops.Remove(cropInfo);
+   }
+
    private void onPlantCropEnd (int cropNumber) {
       if (_cropsProcessing.Contains(cropNumber)) {
          _cropsProcessing.Remove(cropNumber);
@@ -384,6 +389,21 @@ public class CropManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Store the updated list
             _crops.Remove(cropToHarvest);
+
+            // Remove the crop from the crop manager of any other players in the instance
+            if (_player != null) {
+               Instance playerInstance = InstanceManager.self.getInstance(_player.instanceId);
+               if (playerInstance != null) {
+                  List<PlayerBodyEntity> players = playerInstance.getPlayerBodyEntities();
+                  foreach (PlayerBodyEntity player in players) {
+                     if (player.userId == _player.userId) {
+                        continue;
+                     }
+
+                     player.cropManager.removeCropInfo(cropToHarvest);
+                  }
+               }
+            }
 
             // Registers the harvesting action to the achievement database for recording
             AchievementManager.registerUserAchievement(_player, ActionType.HarvestCrop);

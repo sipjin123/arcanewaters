@@ -84,6 +84,7 @@ public class ServerMessageManager : MonoBehaviour
       // Grab the user info from the database for the relevant account ID
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<UserInfo> users = new List<UserInfo>();
+         List<bool> userDeletionStatuses = new List<bool>();
          List<Armor> armorList = new List<Armor>();
          List<Weapon> weaponList = new List<Weapon>();
          List<Hat> hatList = new List<Hat>();
@@ -230,9 +231,26 @@ public class ServerMessageManager : MonoBehaviour
 
          if (accountId > 0) {
             users = DB_Main.getUsersForAccount(accountId, selectedUserId);
-            armorList = DB_Main.getArmorForAccount(accountId, selectedUserId);
-            weaponList = DB_Main.getWeaponsForAccount(accountId, selectedUserId);
-            hatList = DB_Main.getHatsForAccount(accountId, selectedUserId);
+            userDeletionStatuses.AddRange(users.Select(_ => false));
+
+            foreach (UserInfo u in users) {
+               UserObjects uObjects = DB_Main.getUserObjects(u.userId);
+               armorList.Add((Armor)uObjects.armor);
+               weaponList.Add((Weapon)uObjects.weapon);
+               hatList.Add((Hat)uObjects.hat);
+            }
+
+            List<UserInfo> deletedUsers = DB_Main.getDeletedUsersForAccount(accountId, selectedUserId);
+            userDeletionStatuses.AddRange(deletedUsers.Select(_ => true));
+
+            foreach (UserInfo u in deletedUsers) {
+               UserObjects uObjects = DB_Main.getUserObjectsForDeletedUser(u.userId);
+               armorList.Add((Armor) uObjects.armor);
+               weaponList.Add((Weapon) uObjects.weapon);
+               hatList.Add((Hat) uObjects.hat);
+            }
+
+            users.AddRange(deletedUsers);
             DB_Main.updateAccountMode(accountId, logInUserMessage.isSinglePlayer);
          } else {
             // Create an account for this new steam user after it is authorized
@@ -268,7 +286,7 @@ public class ServerMessageManager : MonoBehaviour
          Perk removedPerk = perks.Find((x) => PerkManager.removedPerkIds.Contains(x.perkId));
          if (removedPerk != null) {
             int totalPerkPoints = 0;
-            
+
             foreach (Perk perk in perks) {
                totalPerkPoints += perk.points;
             }
@@ -372,7 +390,7 @@ public class ServerMessageManager : MonoBehaviour
                D.adminLog("Account Log: Login Complete with No Characters! {" + logInUserMessage.accountName + "}" + " : {" + accountId + "}", D.ADMIN_LOG_TYPE.Server_AccountLogin);
 
                // If there was an account ID but not user ID, send the info on all of their characters for display on the Character screen
-               CharacterListMessage msg = new CharacterListMessage(users.ToArray(), armorItemList.ToArray(), weaponItemList.ToArray(), hatItemList.ToArray(), armorPalettes, startingEquipmentIds.ToArray(), startingSpriteIds.ToArray());
+               CharacterListMessage msg = new CharacterListMessage(users.ToArray(), userDeletionStatuses.ToArray(), armorItemList.ToArray(), weaponItemList.ToArray(), hatItemList.ToArray(), armorPalettes, startingEquipmentIds.ToArray(), startingSpriteIds.ToArray());
                conn.Send(msg);
 
                // Note how long it took us to finish the authentication process
@@ -535,24 +553,36 @@ public class ServerMessageManager : MonoBehaviour
          return;
       }*/
 
-      // Do the deletion on the DB thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         int userGuildId = DB_Main.getUserGuildId(msg.userId);
-
-         DB_Main.deleteAllFromTable(accountId, msg.userId, "ships");
-         DB_Main.deleteAllFromTable(accountId, msg.userId, "items");
-         DB_Main.deleteAllFromTable(accountId, msg.userId, "crops");
-         DB_Main.deleteAllFromTable(accountId, msg.userId, "silo");
-         DB_Main.deleteAllFromTable(accountId, msg.userId, "perks");
-
-         DB_Main.deleteUser(accountId, msg.userId);
+         if (DB_Main.doesUserExists(msg.userId)) {
+            DB_Main.deleteUserSoft(accountId, msg.userId);
+         }
 
          // Send confirmation to the client, so that they can request their user list again
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Delete the user's guild if it has no more members
-            GuildManager.self.deleteGuildIfEmpty(userGuildId);
-
             sendConfirmation(ConfirmMessage.Type.DeletedUser, conn.connectionId);
+         });
+      });
+   }
+
+   [ServerOnly]
+   public static void On_RestoreUserMessage (NetworkConnection conn, RestoreUserMessage msg) {
+      int accountId = MyNetworkManager.getAccountId(conn);
+
+      // Make sure the connection owns the account
+      if (msg.userId <= 0 || accountId <= 0) {
+         D.warning(string.Format("Invalid account id {0} or user id {1} to restore.", accountId, msg.userId));
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         if (!DB_Main.doesUserExists(msg.userId)) {
+            DB_Main.restoreUser(accountId, msg.userId);
+         }
+
+         // Send confirmation to the client, so that they can request their user list again
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            sendConfirmation(ConfirmMessage.Type.RestoredUser, conn.connectionId);
          });
       });
    }

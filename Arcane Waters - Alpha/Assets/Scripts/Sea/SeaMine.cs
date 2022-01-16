@@ -3,6 +3,7 @@ using Mirror;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 
 public class SeaMine : NetworkBehaviour, IObserver
 {
@@ -30,14 +31,20 @@ public class SeaMine : NetworkBehaviour, IObserver
    // A reference to the sprite renderer for this mine
    public SpriteRenderer spriteRenderer;
 
-   // References to colors indicating the various states of the mine (temporary)
-   public Color unarmedColor, armedColor, triggeredColor, explodingColor;
-
    // The color of the detection range indicator circle
    public Color detectionRangeColor;
 
    // A reference to the mesh renderer that displays our explosion range
    public MeshRenderer detectionRangeRenderer;
+
+   // A reference to the animator for this sea mine
+   public Animator animator;
+
+   // A reference to the game object that will display the explosion visual effect
+   public GameObject explosionVisualEffect;
+
+   // A reference to the sprite group controlling the alpha value of the explosion sprites
+   public SpriteGroup explosionSpriteGroup;
 
    public enum MineState { None = 0, Armed = 1, Triggered = 2, Exploded = 3 }
 
@@ -45,7 +52,7 @@ public class SeaMine : NetworkBehaviour, IObserver
 
    private void Awake () {
       _collider = GetComponent<CircleCollider2D>();
-      updateColorForState(_state);
+      updateVisualsForState(_state);
 
       detectionRangeRenderer.material.SetFloat("_Radius", _explosionRadius);
       detectionRangeRenderer.material.SetFloat("_FillAmount", 1.0f);
@@ -70,7 +77,7 @@ public class SeaMine : NetworkBehaviour, IObserver
 
    private void Update () {
       if (_previousState != _state) {
-         updateColorForState(_state);
+         updateVisualsForState(_state);
       }
 
       float lerpTargetAlpha = 0.0f;
@@ -91,24 +98,12 @@ public class SeaMine : NetworkBehaviour, IObserver
       detectionRangeColor.a = _detectionRangeCircleAlpha;
       detectionRangeRenderer.material.SetColor("_Color", detectionRangeColor);
 
-      if (_state == MineState.Triggered) {
-         float timeSinceTriggered = (float)NetworkTime.time - _timeTriggered;
-         float explosionProgression = Mathf.Clamp01(timeSinceTriggered / EXPLOSION_DELAY);
-         spriteRenderer.color = Color.Lerp(triggeredColor, explodingColor, explosionProgression);
-      }
-
       _previousState = _state;
    }
 
-   private void updateColorForState (MineState newState) {
-      switch (newState) {
-         case MineState.Armed:
-            spriteRenderer.color = armedColor;
-            break;
-         case MineState.None:
-         default:
-            spriteRenderer.color = unarmedColor;
-            break;
+   private void updateVisualsForState (MineState newState) {
+      if (newState == MineState.Triggered) {
+         animator.SetTrigger("Trigger");
       }
    }
 
@@ -150,6 +145,11 @@ public class SeaMine : NetworkBehaviour, IObserver
    }
 
    private IEnumerator CO_TriggerExplosionAfterDelay (float delay) {
+      // We can only trigger explosions on armed mines
+      if (_state != MineState.Armed) {
+         yield break;
+      }
+      
       _state = MineState.Triggered;
       Rpc_NotifyTriggered();
 
@@ -203,14 +203,19 @@ public class SeaMine : NetworkBehaviour, IObserver
    }
 
    private IEnumerator CO_DestroyDelayed () {
-      yield return new WaitForSeconds(0.5f);
+      yield return new WaitForSeconds(1.5f);
       NetworkServer.Destroy(gameObject);
    }
 
    [ClientRpc]
    private void Rpc_ShowExplosion () {
-      GameObject explosionEffect = PrefabsManager.self.requestCannonExplosionPrefab(Attack.ImpactMagnitude.Strong);
-      explosionEffect.transform.position = transform.position;
+      explosionVisualEffect.transform.localScale = Vector3.one * _explosionRadius;
+      explosionVisualEffect.SetActive(true);
+
+      Sequence fadeSequence = DOTween.Sequence();
+      fadeSequence.AppendInterval(0.2f);
+      fadeSequence.Append(DOTween.To(() => explosionSpriteGroup.alpha, (x) => explosionSpriteGroup.alpha = x, 0.0f, 0.75f));
+      fadeSequence.AppendCallback(() => Destroy(explosionVisualEffect.gameObject));
 
       SoundEffectManager.self.playFmodSfx(SoundEffectManager.SHIP_CANNON, this.transform.position);
 

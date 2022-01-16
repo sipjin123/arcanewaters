@@ -420,6 +420,13 @@ public class ClientMessageManager : MonoBehaviour {
                PanelManager.self.noticeScreen.show(msg.customMessage);
             }
             return;
+         case ConfirmMessage.Type.RestoredUser:
+            // Hide the confirm panel
+            PanelManager.self.confirmScreen.hide();
+
+            // Request a new character list
+            ClientManager.sendAccountNameAndUserId();
+            return;
             /*case ConfirmMessage.Type.SeaWarp:
                // Pixelate the screen
                // PixelFadeEffect.self.fadeOut();
@@ -476,7 +483,7 @@ public class ClientMessageManager : MonoBehaviour {
       Util.activateVirtualCamera(CharacterScreen.self.virtualCam);
 
       // Pass the info along to the Character screen
-      CharacterScreen.self.initializeScreen(msg.userArray, msg.armorArray, msg.weaponArray, msg.hatArray, msg.armorPalettes, msg.equipmentIds, msg.spriteIds);
+      CharacterScreen.self.initializeScreen(msg.userArray, msg.deletionStatusArray, msg.armorArray, msg.weaponArray, msg.hatArray, msg.armorPalettes, msg.equipmentIds, msg.spriteIds);
    }
 
    public static void On_LoginIsComplete (NetworkConnection conn, LogInCompleteMessage msg) {

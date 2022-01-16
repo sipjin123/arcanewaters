@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 using System.Diagnostics;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 public class PerformanceUtil : MonoBehaviour {
    #region Public Variables
@@ -41,10 +43,49 @@ public class PerformanceUtil : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      // Only measure performance on the server
+      if (!NetworkServer.active) {
+         this.enabled = false;
+         return;
+      }
+      
       self = this;
       _processorCount = SystemInfo.processorCount / 2;
       _lastCpuTime = new TimeSpan(0);
       _currentProcess = Process.GetCurrentProcess();
+
+      // Only measure performance using zabbix on a production or dev server
+      if (!Util.isProductionBuild() || !Util.isDevelopmentBuild()) {
+         D.debug("Not a production or development build, not trying to fetch zabbix performance result.");
+         return;
+      }
+
+      getZabbixPerformanceResult();
+   }
+
+   private async void getZabbixPerformanceResult () {
+      for (int i = 0; i < 60; i++) {
+         D.debug("Starting to get zabbix performance result.");
+
+         Stopwatch stopwatch = Stopwatch.StartNew();
+         string processArguments = (Util.isProductionBuild()) ? $"cd C:/integrations/zabbix; ./GetHistory.ps1 -ItemID 34410 -Mode 1 -DataTable 0 -Limit 1" : $"cd C:/integrations/zabbix; ./GetHistory.ps1 -ItemID 34411 -Mode 1 -DataTable 0 -Limit 1";
+
+         ProcessStartInfo startInfo = new ProcessStartInfo() {
+            FileName = "powershell.exe",
+            Arguments = processArguments,
+            UseShellExecute = false,
+            RedirectStandardOutput = true
+         };
+
+         Process test = Process.Start(startInfo);
+
+         await Task.Run(() => {
+            test.WaitForExit();
+         });
+
+         string result = test.StandardOutput.ReadToEnd();
+         D.debug(result + ", Getting result from zabbix took: " + stopwatch.Elapsed.TotalSeconds + " seconds.");
+      }
    }
 
    private void Update () {

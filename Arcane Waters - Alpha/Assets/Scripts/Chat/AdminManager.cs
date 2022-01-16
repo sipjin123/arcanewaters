@@ -3079,7 +3079,7 @@ public class AdminManager : NetworkBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Create the item object
-         Item item = ItemGenerator.generate(category, itemTypeId);
+         Item item = ItemGenerator.generate(category, itemTypeId, count);
 
          // Write the item in the DB
          Item databaseItem = DB_Main.createItemOrUpdateItemCount(_player.userId, item);
@@ -3090,6 +3090,9 @@ public class AdminManager : NetworkBehaviour
             int createdItemCount = databaseItem.count < count ? databaseItem.count : count;
             string message = string.Format("Added {0} {1} to the inventory.", createdItemCount, EquipmentXMLManager.self.getItemName(databaseItem));
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ItemsAddedToInventory, _player, message);
+
+            // Update the player item shortcuts
+            _player.rpc.sendItemShortcutList();
          });
       });
    }

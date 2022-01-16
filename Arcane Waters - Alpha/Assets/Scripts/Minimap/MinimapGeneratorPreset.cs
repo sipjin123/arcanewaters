@@ -73,5 +73,22 @@ namespace MinimapGeneration
       public Color pathwayColor;
       [Tooltip("Color of pathway borders")]
       public Color pathwayBorderColor;
+      [Space(5)]
+      [Tooltip("Icon of mountains")]
+      public TileIcon mountainIcon;
+      [Tooltip("Icon of dock, which is facing north")]
+      public TileIcon dockNorthIcon;
+      [Tooltip("Icon of dock, which is facing south")]
+      public TileIcon dockSouthIcon;
+      [Tooltip("Icon of dock, which is facing east")]
+      public TileIcon dockEastIcon;
+      [Tooltip("Icon of dock, which is facing west")]
+      public TileIcon dockWestIcon;
+      [Tooltip("Icon of houses")]
+      public TileIcon houseIcon;
+      [Tooltip("Icon of trees")]
+      public TileIcon tree1Icon;
+      [Tooltip("Icon of trees")]
+      public TileIcon tree2Icon;
    }
 }

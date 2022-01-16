@@ -43,7 +43,8 @@ public class CharacterScreen : GenericGameManager {
    // The list of starting armors
    public static List<int> STARTING_ARMOR_ID_LIST = new List<int>() { 40, 41, 42 };
 
-   public class StartingArmorData {
+   public class StartingArmorData
+   {
       // The sql id 
       public int equipmentId;
 
@@ -51,11 +52,17 @@ public class CharacterScreen : GenericGameManager {
       public int spriteId;
    }
 
+   // Reference to the ship animation component
+   public ShipRollingAnimation shipRollingAnimation;
+
    #endregion
 
    protected override void Awake () {
       base.Awake();
       self = this;
+      this.canvasGroup = null;
+      _spots.Clear();
+      myCamera = null;
 
       // Look up components
       this.canvasGroup = GetComponent<CanvasGroup>();
@@ -91,7 +98,7 @@ public class CharacterScreen : GenericGameManager {
       return false;
    }
 
-   public void initializeScreen (UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, Item[] hatArray, string[] armorPalettes, int[] equipmentIds, int[] spriteIds) {
+   public void initializeScreen (UserInfo[] userArray, bool[] deletionStatusArray, Item[] armorArray, Item[] weaponArray, Item[] hatArray, string[] armorPalettes, int[] equipmentIds, int[] spriteIds) {
       // Cache the starting armor info
       startingArmorData = new List<StartingArmorData>();
 
@@ -105,6 +112,7 @@ public class CharacterScreen : GenericGameManager {
 
       // Store the data we receive for later reference
       _userArray = userArray;
+      _deletionStatusArray = deletionStatusArray;
 
       // Armor Setup
       _armorArray = new Armor[armorArray.Length];
@@ -158,30 +166,39 @@ public class CharacterScreen : GenericGameManager {
 
       // Make sure that the palette swap manager is setup before revealing the character in the scene to prevent rendering a blank or incomplete character sprite
       if (PaletteSwapManager.self.hasInitialized) {
-         setupCharacterSpots(userArray, armorArray, weaponArray, hatArray, armorPalettes);
+         setupCharacterSpots(userArray, deletionStatusArray, armorArray, weaponArray, hatArray, armorPalettes);
       } else {
          PaletteSwapManager.self.paletteCompleteEvent.AddListener(() => {
-            setupCharacterSpots(userArray, armorArray, weaponArray, hatArray, armorPalettes);
+            setupCharacterSpots(userArray, deletionStatusArray, armorArray, weaponArray, hatArray, armorPalettes);
          });
       }
    }
 
-   private void setupCharacterSpots (UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, Item[] hatArray, string[] armorPalettes) {
+   private void setupCharacterSpots (UserInfo[] userArray, bool[] deletionStatusArray, Item[] armorArray, Item[] weaponArray, Item[] hatArray, string[] armorPalettes) {
       for (int i = 0; i < 3; i++) {
          // If they don't have a character in that spot, move on
          if (i > userArray.Length - 1 || userArray[i] == null) {
             continue;
          }
-
+         
+         _deletionStatusArray = deletionStatusArray;
          int charSpotNumber = userArray[i].charSpot;
+
          // Create the offline character object
          if (_spots.ContainsKey(charSpotNumber)) {
             CharacterSpot spot = _spots[charSpotNumber];
             OfflineCharacter offlineChar = Instantiate(offlineCharacterPrefab, spot.transform.position, Quaternion.identity);
             Global.lastUserGold = userArray[i].gold;
             Global.lastUserGems = userArray[i].gems;
+
             try {
                offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], hatArray[i], armorPalettes[i]);
+
+               // Set up the character for the ship rolling animation
+               if (shipRollingAnimation != null) {
+                  shipRollingAnimation.registerAnimatedObject(offlineChar.characterStack.transform);
+                  shipRollingAnimation.registerAnimatedObject(offlineChar.shadow.transform);
+               }
             } catch {
                D.debug("Investigate Here! Failed to assign data to offline character and character spot! " +
                   "Weapon Count: {" + weaponArray.Length + "/3} " +
@@ -191,16 +208,36 @@ public class CharacterScreen : GenericGameManager {
 
                offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], hatArray[i], armorPalettes[i]);
             }
+
             spot.assignCharacter(offlineChar);
+            spot.isDeletedCharacter = _deletionStatusArray[i];
+
+            if (spot.isDeletedCharacter) {
+               Color deletedUserColor = Color.gray;
+               deletedUserColor.a = 0.3f;
+               offlineChar.characterStack.setGlobalTint(deletedUserColor);
+            }
+         } else {
+            _spots[charSpotNumber].rotationButtons.SetActive(false);
          }
       }
 
       // Sometimes we just want to auto-select a character when debugging
       if (Util.isAutoStarting()) {
-         _spots[1].selectButtonWasPressed();
+         if (spotHasValidAndLiveCharacter(1)) {
+            _spots[1].selectButtonWasPressed();
+         } else {
+            getFirstValidSpot().selectButtonWasPressed();
+         }
       } else if (Global.isFastLogin && Global.fastLoginCharacterSpotIndex != -1) {
-         _spots[Global.fastLoginCharacterSpotIndex].selectButtonWasPressed();
+         if (spotHasValidAndLiveCharacter(Global.fastLoginCharacterSpotIndex)) {
+            _spots[Global.fastLoginCharacterSpotIndex].selectButtonWasPressed();
+         } else {
+            getFirstValidSpot().selectButtonWasPressed();
+         }
       }
+
+      toggleCharacters(show: true);
 
       // Enable character buttons
       Util.fadeCanvasGroup(canvasGroup, true, CharacterSpot.FADE_TIME);
@@ -209,14 +246,54 @@ public class CharacterScreen : GenericGameManager {
       PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login);
    }
 
+   private CharacterSpot getFirstValidSpot () {
+      // Returns the first spot that has been assigned a valid and live (not deleted) character
+      if (_spots == null || _spots.Count == 0) {
+         return null;
+      }
+
+      if (spotHasValidAndLiveCharacter(1)) {
+         return _spots[1];
+      } else {
+         return _spots.Values.FirstOrDefault(_ => spotHasValidAndLiveCharacter(_.number));
+      }
+   }
+
+   private bool spotHasValidAndLiveCharacter (int spotNumber) {
+      UserInfo user = null;
+      foreach (UserInfo userInfo in _userArray) {
+         if (userInfo.charSpot == spotNumber) {
+            user = userInfo;
+         }
+      }
+
+      if (user == null) {
+         return false;
+      }
+
+      int userIndex = System.Array.IndexOf(_userArray, user);
+      return _spots.ContainsKey(spotNumber) && _spots[spotNumber].character != null && _deletionStatusArray.Length > userIndex && _deletionStatusArray[userIndex] == false;
+   }
+
    public List<CharacterSpot> getCharacterSpots () {
       return _spots.Values.ToList();
+   }
+
+   public void toggleCharacters (bool show) {
+      foreach (CharacterSpot spot in _spots.Values) {
+         if (spot.character != null) {
+            spot.character.gameObject.SetActive(show);
+         }
+      }
    }
 
    #region Private Variables
 
    // The array of UserInfo we received
    protected UserInfo[] _userArray;
+
+   // The array of deletion statuses we received
+   protected bool[] _deletionStatusArray;
 
    // The array of Armor we received
    protected Armor[] _armorArray;

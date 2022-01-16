@@ -31,11 +31,23 @@ public class CharacterSpot : ClientMonoBehaviour {
    // Last CharacterSpot that the user interacted with
    public static CharacterSpot lastInteractedSpot;
 
+   // Buttons for rotating character
+   public GameObject rotationButtons;
+
    // A reference to the canvas group containing the buttons for this character spot
    public CanvasGroup buttonsCanvasGroup;
 
    // The duration of the fading of UI elements for character spots
    public static float FADE_TIME = 0.5f;
+
+   // Is the character displaying a deleted character?
+   public bool isDeletedCharacter = false;
+
+   // Reference to the button that restores characters
+   public Button charRestoreButton;
+
+   // Reference to the container of the restore button
+   public RectTransform charRestoreButtonContainer;
 
    #endregion
 
@@ -44,9 +56,12 @@ public class CharacterSpot : ClientMonoBehaviour {
    }
 
    void Update () {
-      charCreateButton.transform.parent.gameObject.SetActive(character == null);
-      charDeleteButton.transform.parent.gameObject.SetActive(character != null && !character.creationMode);
-      charSelectButton.transform.parent.gameObject.SetActive(character != null && !CharacterScreen.self.isCreatingCharacter());
+      charCreateButton.transform.parent.gameObject.SetActive(character == null || isDeletedCharacter);
+      charDeleteButton.transform.parent.gameObject.SetActive(character != null && !character.creationMode && !isDeletedCharacter);
+      charSelectButton.transform.parent.gameObject.SetActive(character != null && !CharacterScreen.self.isCreatingCharacter() && !isDeletedCharacter);
+
+      charRestoreButton.gameObject.SetActive(isDeletedCharacter);
+      charRestoreButtonContainer.sizeDelta = new Vector2(charRestoreButtonContainer.sizeDelta.x, isDeletedCharacter ? 0.65f : 0.4f);
    }
 
    public void assignCharacter (OfflineCharacter character) {
@@ -109,6 +124,21 @@ public class CharacterSpot : ClientMonoBehaviour {
       PanelManager.self.showConfirmationPanel("Are you sure you want to delete " + character.nameText.text + "?", () => sendDeleteUserRequest(character.userId), () => CharacterScreen.self.canvasGroup.interactable = true);
    }
 
+   public void restoreButtonWasPressed () {
+      lastInteractedSpot = this;
+
+      // Turn off buttons until we receive a response from the server
+      CharacterScreen.self.canvasGroup.interactable = false;
+
+      PanelManager.self.confirmScreen.hideEvent.RemoveAllListeners();
+      PanelManager.self.confirmScreen.hideEvent.AddListener(() => {
+         CharacterScreen.self.canvasGroup.interactable = true;
+      });
+
+      // Ask the player for confirmation. Reenable the canvas group if cancelled deletion.
+      PanelManager.self.showConfirmationPanel("Are you sure you want to restore " + character.nameText.text + "?", () => sendRestoreUserRequest(character.userId), () => CharacterScreen.self.canvasGroup.interactable = true);
+   }
+
    public void startNewCharacterButtonWasPressed () {
       lastInteractedSpot = this;
 
@@ -126,6 +156,8 @@ public class CharacterSpot : ClientMonoBehaviour {
       // Fade to loading overlay
       CameraFader.self.fadeIn(0.5f);
       CameraFader.self.setLoadingIndicatorVisibility(true);
+      CharacterScreen.self.toggleCharacters(show: false);
+      Util.fadeCanvasGroup(CharacterScreen.self.canvasGroup, false, FADE_TIME);
 
       yield return new WaitForSeconds(FADE_TIME);
 
@@ -185,7 +217,7 @@ public class CharacterSpot : ClientMonoBehaviour {
       // Fade and show a loading indicator
       CameraFader.self.fadeIn(0.5f);
       CameraFader.self.setLoadingIndicatorVisibility(true);
-      character.gameObject.SetActive(false);
+      CharacterScreen.self.toggleCharacters(show: false);
 
       // Disable the canvas group
       Util.fadeCanvasGroup(CharacterScreen.self.canvasGroup, false, FADE_TIME);
@@ -195,6 +227,23 @@ public class CharacterSpot : ClientMonoBehaviour {
 
       // Send off the request
       NetworkClient.Send(new DeleteUserMessage(userId));
+   }
+
+   protected void sendRestoreUserRequest (int userId) {
+
+      // Fade and show a loading indicator
+      CameraFader.self.fadeIn(0.5f);
+      CameraFader.self.setLoadingIndicatorVisibility(true);
+      CharacterScreen.self.toggleCharacters(show: false);
+
+      // Disable the canvas group
+      Util.fadeCanvasGroup(CharacterScreen.self.canvasGroup, false, FADE_TIME);
+
+      // Disable the buttons on the confirmation panel while we're doing stuff
+      Util.fadeCanvasGroup(PanelManager.self.confirmScreen.canvasGroup, false, FADE_TIME);
+
+      // Send off the request
+      NetworkClient.Send(new RestoreUserMessage(userId));
    }
 
    public void setButtonVisiblity (bool isVisible) {
