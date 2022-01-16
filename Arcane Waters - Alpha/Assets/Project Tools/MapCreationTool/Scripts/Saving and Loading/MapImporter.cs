@@ -247,12 +247,13 @@ namespace MapCreationTool
          List<ExportedPrefab001> pvpMonsterSpawnerData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> pvpLootSpawnData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> pvpCaptureTargetHolderData = new List<ExportedPrefab001>();
+         OpenWorldController openWorldController = null;
+         OreNodeMapController oreController = null;
 
          int unrecognizedPrefabs = 0;
          int cropSpotCounter = 0;
          int spawnIdCounter = 0;
 
-         OreNodeMapController oreController = null;
          foreach (var prefab in project.prefabs) {
             GameObject original = AssetSerializationMaps.tryGetPrefabGame(prefab.i, project.biome);
             if (original == null) {
@@ -384,6 +385,11 @@ namespace MapCreationTool
                   pref.GetComponent<SpiderWeb>().initializeBiome(project.biome);
                } else if (original.GetComponent<OreNodeMapController>() != null) {
                   oreController = pref.GetComponent<OreNodeMapController>();
+               } else if (original.GetComponent<OpenWorldController>() != null) {
+                  openWorldController = pref.GetComponent<OpenWorldController>();
+               } else if (original.GetComponent<OpenWorldSpawnBlocker>() != null) {
+                  OpenWorldSpawnBlocker openWorldBlocker = pref.GetComponent<OpenWorldSpawnBlocker>();
+                  area.openWorldSpawnBlockers.Add(openWorldBlocker);
                } else if (original.GetComponent<PvpShopEntity>()) {
                   PvpShopEntity shopEntity = pref.GetComponent<PvpShopEntity>();
                   if (area.isSea && VoyageManager.isAnyLeagueArea(area.areaKey) && !VoyageManager.isPvpArenaArea(area.areaKey)) {
@@ -437,7 +443,7 @@ namespace MapCreationTool
          area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData,
             shipData, seaMonstersData, bossSpawnerData, pvpTowerData,
             pvpBaseData, pvpShipyardTowerData, pvpWaypointsData, pvpMonsterSpawnerData,
-            pvpLootSpawnData, pvpCaptureTargetHolderData, oreController);
+            pvpLootSpawnData, pvpCaptureTargetHolderData, oreController, openWorldController);
       }
    }
 }

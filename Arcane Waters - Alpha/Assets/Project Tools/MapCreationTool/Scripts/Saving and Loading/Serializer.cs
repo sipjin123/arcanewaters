@@ -392,6 +392,11 @@ namespace MapCreationTool.Serialization
       public const string WIND_GUST_ROTATION_KEY = "rotation";
       public const string WIND_GUST_STRENGTH_KEY = "strength";
 
+      public const string OPEN_WORLD_ENEMY_COUNT = "max enemy count";
+
+      public const string SPAWN_BLOCK_SIZE_X_KEY = "size_x";
+      public const string SPAWN_BLOCK_SIZE_Y_KEY = "size_y";
+
       public string k; // Key
       public string v; // Value
 
