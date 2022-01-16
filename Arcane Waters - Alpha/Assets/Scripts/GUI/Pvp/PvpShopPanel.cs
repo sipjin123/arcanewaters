@@ -26,6 +26,9 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
    // The current silver of the user
    public int userSilver;
 
+   // The text display of the shop
+   public GameObject seaShopLabel, landShopLabel;
+
    // Text displaying the users silver
    public TextMeshProUGUI userSilverText;
 
@@ -373,6 +376,8 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       this.shopId = shopId;
       this.isSeaShop = isSeaShop;
 
+      landShopLabel.SetActive(!isSeaShop);
+      seaShopLabel.SetActive(isSeaShop);
       if (isSeaShop) {
          onSelectShipCategory();
       } else {

@@ -32,6 +32,9 @@ public class PvpMonsterSpawner : NetworkBehaviour, IMapEditorDataReceiver {
    [SyncVar]
    public int lootGroupId = 0;
 
+   // Radius that determines if the spawn is valid
+   public const float radiusCheck = 1.15f;
+
    #endregion
 
    public void initializeSpawner () {
@@ -47,6 +50,24 @@ public class PvpMonsterSpawner : NetworkBehaviour, IMapEditorDataReceiver {
    }
 
    private void spawnMonster () {
+      Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, radiusCheck);
+      bool isSpawnBlocked = false;
+      foreach (Collider2D collidedEntity in hits) {
+         if (collidedEntity != null) {
+            PlayerShipEntity shipEntity = collidedEntity.GetComponent<PlayerShipEntity>();
+            if (shipEntity != null) {
+               isSpawnBlocked = true;
+               D.editorLog("Distance to the target {" + shipEntity.userId + "} {" + Vector2.Distance(shipEntity.transform.position, transform.position) + "}", Color.magenta);
+            }
+         }
+      }
+
+      // If a ship is in the spawn box, cancel spawn and reset timer
+      if (isSpawnBlocked) {
+         Invoke(nameof(spawnMonster), RESPAWN_DELAY);
+         return;
+      }
+
       SeaMonsterEntity seaEntity = Instantiate(PrefabsManager.self.seaMonsterPrefab);
       SeaMonsterEntityData data = SeaMonsterManager.self.getMonster(seaMonsterType);
       Instance instance = InstanceManager.self.getInstance(instanceId);
