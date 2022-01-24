@@ -312,6 +312,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          isAttacking = true;
          _hasAttackAnimTriggered = true;
          _attackEndAnimateTime = NetworkTime.time + getAttackDuration();
+         forceStop();
       } else {
          if (isAttacking && (NetworkTime.time > _attackEndAnimateTime)) {
             modifyAnimationSpeed(cachedAnimSpeed);
@@ -703,6 +704,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       // Set attack animation trigger values on server side
       isAttacking = true;
+      forceStop();
       _attackStartAnimateTime = NetworkTime.time;
       _attackEndAnimateTime = NetworkTime.time + getAttackDuration();
 
@@ -833,6 +835,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
             // TODO: Confirm later on if this needs to be dynamic
             float launchDelay = .4f;
             float projectileDelay = seaMonsterData.projectileDelay;
+            D.adminLog("{" + monsterType + "} Launch delay: {" + launchDelay + "} ProjectileDelay: {" + projectileDelay + "}", D.ADMIN_LOG_TYPE.SeaAbility);
             launchProjectile(targetEntity.transform.position, targetEntity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
 
             if (monsterType == Type.Horror_Tentacle) {

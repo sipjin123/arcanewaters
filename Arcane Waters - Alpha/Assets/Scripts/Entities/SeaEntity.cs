@@ -151,6 +151,9 @@ public class SeaEntity : NetEntity
    // The container for the residue effects
    public Transform residueHolder;
 
+   // The pause delay in seconds after attacking
+   public const float AFTER_ATTACK_PAUSE = 1;
+
    #endregion
 
    protected virtual bool isBot () { return true; }
@@ -1650,6 +1653,11 @@ public class SeaEntity : NetEntity
 
    [Server]
    private void moveAlongCurrentPath () {
+      // While after attack is cooling down, prevent this unit from facing direction
+      if (attackCoolingDown() && this is SeaMonsterEntity) {
+         return;
+      }
+
       if (Global.freezeShips) {
          return;
       }
@@ -1691,8 +1699,24 @@ public class SeaEntity : NetEntity
       }
    }
 
+   protected void forceStop () {
+      _body.velocity = Vector3.zero;
+      _body.angularVelocity = 0;
+      _body.Sleep();
+   }
+
+   protected bool attackCoolingDown () {
+      return NetworkTime.time - _lastAttackTime < AFTER_ATTACK_PAUSE;
+   }
+
    [Server]
    private void checkForPathUpdate () {
+      // While after attack is cooling down, stop path finding
+      if (attackCoolingDown() && this is SeaMonsterEntity) {
+         forceStop();
+         return;
+      }
+
       // Check if there are attackers to chase
       if (_attackers != null && _attackers.Count > 0) {
 

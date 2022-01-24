@@ -315,7 +315,7 @@ public class AnimUtil : MonoBehaviour {
                case Anim.Type.Death_East:
                   return new AnimInfo(animType, 15, 32);
                case Anim.Type.Hurt_East:
-                  return new AnimInfo(animType, 25, 27);
+                  return new AnimInfo(animType, 15, 17);
                case Anim.Type.SpecialAnimation:
                   return new AnimInfo(animType, 46, 60);
                case Anim.Type.SpecialAnimationReady:
