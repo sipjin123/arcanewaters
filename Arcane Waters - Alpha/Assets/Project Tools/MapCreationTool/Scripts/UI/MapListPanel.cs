@@ -27,10 +27,20 @@ namespace MapCreationTool
       private Text creatorLabel = null;
 
       private List<UserMapsEntry> entries = new List<UserMapsEntry>();
-      private List<Map> loadedMaps;
+      private List<Map> loadedMaps = new List<Map>();
 
-      [SerializeField]
-      private GameObject focusBlocker;
+      public GameObject focusBlocker = default;
+
+      // If the windows is focused
+      public bool isFocused = true;
+
+      // Reference to self
+      public static MapListPanel self;
+
+      protected override void Awake () {
+         base.Awake();
+         self = this;
+      }
 
       private void clearEverything () {
          foreach (UserMapsEntry entry in entries) {
@@ -142,6 +152,16 @@ namespace MapCreationTool
 
       void OnApplicationFocus (bool hasFocus) {
          focusBlocker.SetActive(!hasFocus);
+         StartCoroutine(CO_ResetFocus(hasFocus));
+      }
+
+      private IEnumerator CO_ResetFocus (bool hasFocus) {
+         if (hasFocus) {
+            yield return new WaitForSeconds(.5f);
+            isFocused = true;
+         } else {
+            isFocused = false;        
+         }
       }
 
       public void openLatestVersionConfirm (Map map) {

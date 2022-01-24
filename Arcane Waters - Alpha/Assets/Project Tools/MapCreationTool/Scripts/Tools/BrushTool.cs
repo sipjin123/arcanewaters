@@ -73,6 +73,9 @@ namespace MapCreationTool
       }
 
       public void pointerDown (Vector3 position) {
+         if (!MapListPanel.self.isFocused) {
+            return;
+         }
          float offsetValue = 1f;
          List<Vector3> strokePositions = new List<Vector3>();
          strokePositions.Add(position);
@@ -107,6 +110,9 @@ namespace MapCreationTool
       }
 
       public void pointerUp (Vector3 position) {
+         if (!MapListPanel.self.isFocused) {
+            return;
+         }
          DrawBoard.instance.changeBoard(stroke.calculateTileChange());
          newStroke(position);
          if (stroke.tileGroup != null) {
@@ -122,6 +128,9 @@ namespace MapCreationTool
       }
 
       private void dragCell (Vector3Int from, Vector3Int to) {
+         if (!MapListPanel.self.isFocused) {
+            return;
+         }
          if (stroke.tileGroup != null) {
             if (KeyUtils.GetKey(Key.LeftShift)) {
                if (!hasPaintStarted) {
