@@ -296,7 +296,8 @@ public class TreasureChest : NetworkBehaviour {
       Instance instance = InstanceManager.self.getInstance(instanceId);
       Biome.Type biome = instance.biome;
       List<TreasureDropsData> treasureDropsList = lootGroupId > 0 ? TreasureDropsDataManager.self.getTreasureDropsById(lootGroupId, rarity) : TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome, rarity).ToList();
-
+      D.adminLog("Processing Chest Contents {" + lootGroupId + "} found a total of {" + treasureDropsList.Count + "} items", D.ADMIN_LOG_TYPE.Treasure);
+      
       if (treasureDropsList.Count < 1) {
          D.error("There are no treasure drops generated for user {" + userId + "} Biome:{" + biome + "} Checking alternative item: G:{" + lootGroupId + "} R:{" + rarity + "}");
          Item nextAvailableItem = getNextAvailableItemByRarity(rarity);
