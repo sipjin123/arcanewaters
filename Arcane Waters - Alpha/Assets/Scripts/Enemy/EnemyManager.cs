@@ -50,7 +50,7 @@ public class EnemyManager : MonoBehaviour {
    }
 
    private IEnumerator CO_ProcessSpawnOpenWorldEnemies (Instance instance, string areaKey, int targetSpawns) {
-      int maxAttempts = 100;
+      int maxAttempts = 200;
       yield return new WaitForSeconds(1);
 
       Area areaTarget = AreaManager.self.getArea(areaKey);
@@ -65,7 +65,7 @@ public class EnemyManager : MonoBehaviour {
 
          int indexCount = 0;
          int spawnsPerLayer = (int) (targetSpawns / waterLayers.Count);
-
+         int totalSuccessfulSpawns = 0;
          foreach (TilemapLayer layer in waterLayers) {
             indexCount++;
             int successfulSpawns = 0;
@@ -81,7 +81,7 @@ public class EnemyManager : MonoBehaviour {
             while (successfulSpawns < spawnsPerLayer && maxAttempts > 0) {
                maxAttempts--;
                if (maxAttempts < 1) {
-                  D.adminLog("Last attempt! Breaking cycle due to limitations {" + successfulSpawns + "}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
+                  D.adminLog("Last attempt! Layer {" + layer.fullName + " / " + waterLayers.Count + "} {" + indexCount + "} Breaking cycle due to limitations {" + successfulSpawns + "} {" + totalSuccessfulSpawns + "}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
                   break;
                }
                // Old Approach, random value across entire tilemap
@@ -112,6 +112,7 @@ public class EnemyManager : MonoBehaviour {
 
                         if (!spawnsInBlocker) {
                            successfulSpawns++;
+                           totalSuccessfulSpawns++;
 
                            // Initialize spawn values
                            float spawnShipChance = 60;

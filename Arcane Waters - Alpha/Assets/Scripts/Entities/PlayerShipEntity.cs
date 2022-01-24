@@ -253,6 +253,8 @@ public class PlayerShipEntity : ShipEntity
 
       if (isServer) {
          List<Powerup> userPowerups = PowerupManager.self.getPowerupsForUser(userId);
+         userPowerups = getFilteredPowerup(userPowerups);
+
          setPowerups(userPowerups, true);
 
          // When we enter a new scene, update powerups on the client
@@ -269,6 +271,24 @@ public class PlayerShipEntity : ShipEntity
          InputManager.self.inputMaster.Sea.Enable();
          InputManager.self.inputMaster.Land.Disable();
       }
+   }
+
+   public List<Powerup> getFilteredPowerup (List<Powerup> userPowerups) {
+      List<Powerup> tempPowerups = new List<Powerup>();
+
+      // Cache temporary powerups
+      foreach (Powerup currPowerup in userPowerups) {
+         if (currPowerup.expiry == Powerup.Expiry.Timed) {
+            tempPowerups.Add(currPowerup);
+         }
+      }
+
+      // Clear temporary powerups on spawn
+      foreach (Powerup currPowerup in tempPowerups) {
+         userPowerups.Remove(currPowerup);
+      }
+
+      return userPowerups;
    }
 
    public void changeShipInfo (ShipInfo info) {
@@ -572,7 +592,7 @@ public class PlayerShipEntity : ShipEntity
    }
 
    private void pressBoost () {
-      if (!isBoostCoolingDown()) {
+      if (!isBoostCoolingDown() && !isDead()) {
          _boostChargeStartTime = NetworkTime.time;
          //boostTimingSprites.alpha = 1.0f;
          _isChargingBoost = true;
@@ -1961,6 +1981,16 @@ public class PlayerShipEntity : ShipEntity
 
    public override void onDeath () {
       base.onDeath();
+
+      if (NetworkServer.active) {
+         // Process powerup expiry on death
+         List<Powerup> userPowerups = PowerupManager.self.getPowerupsForUser(userId);
+         userPowerups = getFilteredPowerup(userPowerups);
+         setPowerups(userPowerups, true);
+
+         // When user dies, update powerups on the client
+         rpc.Target_UpdatePowerups(connectionToClient, userPowerups);
+      }
 
       heldPvpCaptureTarget?.onPlayerDied(this);
    }
