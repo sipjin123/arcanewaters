@@ -4385,12 +4385,15 @@ public class RPCManager : NetworkBehaviour
                if ((PvpConsumableItem) shopItem.itemId == PvpConsumableItem.RepairTool) {
                   // Weakest ship max is 10, strongest ship max is 52
                   // Increase item cost in percentage depending on sailor count
-                  int newItemCost = shopItem.itemCost + (int) (shopItem.itemCost * (float) (playerShip.sailors / 100f));
+                  int roundDownVal = playerShip.sailors % 5;
+                  int newItemCost = shopItem.itemCost + (int) (playerShip.sailors - roundDownVal);
                   shopItem.itemCost = newItemCost;
                }
             }
          }
 
+         D.adminLog("Note: User {" + _player.userId + ":" + _player.entityName + "} " +
+            "Successfully fetched shop info of shop {" + shopData.shopName + "} with total {" + shopItemList.Count + "} items", D.ADMIN_LOG_TYPE.PvpShop);
          int userSilver = GameStatsManager.self.getSilverAmount(_player.userId);
          Target_ProcessShopData(_player.connectionToClient, shopData.shopId, userSilver, shopData.shopName, shopData.shopDescription, Util.serialize(shopItemList), shopItemTypeList.ToArray());
       } else {
