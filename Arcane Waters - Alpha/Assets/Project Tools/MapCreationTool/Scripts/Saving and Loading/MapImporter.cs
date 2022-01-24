@@ -68,7 +68,7 @@ namespace MapCreationTool
          });
       }
 
-      public static MapChunk instantiateTilemapColliderChunk (ExportedProject001 exportedProject,
+      public static MapChunk instantiateTilemapColliderChunk (string areaKey, ExportedProject001 exportedProject,
          Transform collisionTilemapChunkParent, Biome.Type biome, RectInt bounds) {
          // Instantiate the grid chunk
          var chunk = UnityEngine.Object.Instantiate(AssetSerializationMaps.collisionTilemapChunkTemplate, collisionTilemapChunkParent);
@@ -241,6 +241,7 @@ namespace MapCreationTool
          List<ExportedPrefab001> shipData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> bossSpawnerData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> pvpTowerData = new List<ExportedPrefab001>();
+         List<ExportedPrefab001> windowInteractData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> pvpBaseData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> pvpShipyardTowerData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> pvpWaypointsData = new List<ExportedPrefab001>();
@@ -302,6 +303,10 @@ namespace MapCreationTool
             } else if (original.GetComponent<BossSpawner>() != null) {
                if (prefab.d != null) {
                   bossSpawnerData.Add(prefab);
+               }
+            } else if (original.GetComponent<WindowInteractable>() != null) {
+               if (prefab.d != null) {
+                  windowInteractData.Add(prefab);
                }
             } else if (original.GetComponent<NPC>() != null) {
                if (prefab.d != null) {
@@ -443,7 +448,8 @@ namespace MapCreationTool
          area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData,
             shipData, seaMonstersData, bossSpawnerData, pvpTowerData,
             pvpBaseData, pvpShipyardTowerData, pvpWaypointsData, pvpMonsterSpawnerData,
-            pvpLootSpawnData, pvpCaptureTargetHolderData, oreController, openWorldController);
+            pvpLootSpawnData, pvpCaptureTargetHolderData, oreController, openWorldController,
+            windowInteractData);
       }
    }
 }

@@ -61,8 +61,8 @@ public class PlayerObserverManager : NetworkVisibility
          _instanceId = ((TreasureChest) _entity).instanceId;
       } else if (_entity is OreNode) {
          _instanceId = ((OreNode) _entity).instanceId;
-      } else if (_entity is Discovery) {
-         _instanceId = ((Discovery) _entity).instanceId;
+      } else if (_entity is WindowInteractable) {
+         _instanceId = ((WindowInteractable) _entity).instanceId;
       } else if (_entity is PvpLootSpawn) {
          _instanceId = ((PvpLootSpawn) _entity).instanceId;
       }

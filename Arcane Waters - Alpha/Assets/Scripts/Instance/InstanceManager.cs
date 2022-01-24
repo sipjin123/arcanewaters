@@ -198,6 +198,11 @@ public class InstanceManager : MonoBehaviour
       monsterSpawner.instanceId = instance.id;
    }
 
+   public void addWindowToInstance (WindowInteractable windowInteractable, Instance instance) {
+      instance.entities.Add(windowInteractable);
+      windowInteractable.instanceId = instance.id;
+   }
+
    public void addPvpWaypointToInstance (PvpWaypoint waypoint, Instance instance) {
       instance.pvpWaypoints.Add(waypoint);
    }

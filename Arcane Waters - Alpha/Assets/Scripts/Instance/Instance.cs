@@ -591,6 +591,24 @@ public class Instance : NetworkBehaviour
          }
       }
 
+      if (area.windowDataFields.Count > 0) {
+         int indexId = 0;
+         foreach (ExportedPrefab001 dataField in area.windowDataFields) {
+            WindowInteractable windowInteractable = Instantiate(PrefabsManager.self.WindowInteractable);
+            windowInteractable.instanceId = this.id;
+            windowInteractable.areaKey = areaKey;
+            windowInteractable.id = indexId;
+            indexId++;
+
+            windowInteractable.transform.SetParent(area.transform, false);
+            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 5) * 0.16f + Vector3.forward * 10;
+            windowInteractable.transform.localPosition = targetLocalPos;
+
+            InstanceManager.self.addWindowToInstance(windowInteractable, this);
+            NetworkServer.Spawn(windowInteractable.gameObject);
+         }
+      }
+
       if (area.waypointsDataFields.Count > 0) {
          foreach (ExportedPrefab001 dataField in area.waypointsDataFields) {
             // TODO: Process waypoint info here

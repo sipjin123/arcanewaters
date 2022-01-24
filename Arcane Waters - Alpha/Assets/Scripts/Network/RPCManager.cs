@@ -4398,6 +4398,34 @@ public class RPCManager : NetworkBehaviour
       }
    }
 
+   [Command]
+   public void Cmd_InteractWindow (int windowId) {
+      Area area = AreaManager.self.getArea(_player.areaKey);
+      if (area != null) {
+         WindowInteractable window = area.interactableWindows.Find(_ => _.id == windowId);
+         if (window != null) {
+            bool openState = window.isOpen;
+            Rpc_InteractWindow(openState, _player.areaKey, windowId);
+            window.isOpen = !openState;
+         }
+      }
+   }
+
+   [ClientRpc]
+   protected void Rpc_InteractWindow (bool isOpen, string areaKey, int windowId) {
+      Area area = AreaManager.self.getArea(areaKey);
+      if (area != null) {
+         WindowInteractable window = area.interactableWindows.Find(_ => _.id == windowId);
+         if (window != null) {
+            if (isOpen) {
+               window.closeWindow();
+            } else {
+               window.openWindow();
+            }
+         }
+      }
+   }
+
    [TargetRpc]
    public void Target_ProcessShopData (NetworkConnection conn, int shopId, int userSilver, string shopName, string shopInfo, string[] serializedShopItems, PvpShopItem.PvpShopItemType[] shopItemTypes) {
       List<PvpShopItem> pvpShopList = Util.unserialize<PvpShopItem>(serializedShopItems);

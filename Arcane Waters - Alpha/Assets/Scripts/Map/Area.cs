@@ -101,6 +101,9 @@ public class Area : MonoBehaviour
    // Ore spots to be loaded by the server
    public List<ExportedPrefab001> oreDataFields = new List<ExportedPrefab001>();
 
+   // Window spots to be loaded by the server
+   public List<ExportedPrefab001> windowDataFields = new List<ExportedPrefab001>();
+
    // Ships to be loaded by the server
    public List<ExportedPrefab001> shipDataFields = new List<ExportedPrefab001>();
 
@@ -168,6 +171,9 @@ public class Area : MonoBehaviour
    // The build layer TODO: (NOTE: The current layer being imported is actually a typo, not sure yet where to update the layer name to correct this)
    public const string BUILDING_LAYER = "bulding";
 
+   // List of windows
+   public List<WindowInteractable> interactableWindows = new List<WindowInteractable>();
+
    #endregion
 
    public void registerNetworkPrefabData (List<ExportedPrefab001> npcDatafields, List<ExportedPrefab001> enemyDatafields,
@@ -175,7 +181,8 @@ public class Area : MonoBehaviour
       List<ExportedPrefab001> shipDataFields, List<ExportedPrefab001> seaMonsterDataFields, List<ExportedPrefab001> bossSpawnerDataFields,
       List<ExportedPrefab001> pvpTowerDataFields, List<ExportedPrefab001> pvpBaseDataFields, List<ExportedPrefab001> pvpShipyardDataFields,
       List<ExportedPrefab001> pvpWaypoints, List<ExportedPrefab001> pvpMonsterSpawnerFields, List<ExportedPrefab001> pvpLootSpawners,
-      List<ExportedPrefab001> pvpCaptureTargetHolders, OreNodeMapController oreNodeController, OpenWorldController openWorldController) {
+      List<ExportedPrefab001> pvpCaptureTargetHolders, OreNodeMapController oreNodeController, OpenWorldController openWorldController,
+      List<ExportedPrefab001> windowDataFields) {
       this.npcDatafields = npcDatafields;
       this.enemyDatafields = enemyDatafields;
       this.oreDataFields = oreDataFields;
@@ -192,6 +199,7 @@ public class Area : MonoBehaviour
       this.pvpCaptureTargetHolders = pvpCaptureTargetHolders;
       this.oreNodeController = oreNodeController;
       this.openWorldController = openWorldController;
+      this.windowDataFields = windowDataFields;
 
       if (CommandCodes.get(CommandCodes.Type.NPC_DISABLE) || Util.isForceServerLocalWithAutoDbconfig()) {
          this.npcDatafields.Clear();

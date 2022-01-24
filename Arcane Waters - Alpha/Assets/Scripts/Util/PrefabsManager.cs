@@ -150,6 +150,9 @@ public class PrefabsManager : MonoBehaviour {
    // A prefab we use for creating a figure eight route
    public Route figureEightRoutePrefab;
 
+   // Interactable window prefab
+   public WindowInteractable WindowInteractable;
+
    // A prefab we use for creating waypoints
    public Waypoint waypointPrefab;
 
