@@ -198,12 +198,14 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
    }
 
    public void showEntirePanel () {
+      InputManager.self.inputMaster?.UIControl.Enable();
       popUpResult.SetActive(false);
       loadingPanel.SetActive(false);
       entirePanel.SetActive(true);
    }
 
    public void hideEntirePanel () {
+      InputManager.self.inputMaster?.UIControl.Disable();
       entirePanel.SetActive(false);
    }
 
@@ -351,7 +353,7 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
             case PvpShopItemType.Item:
                switch ((PvpConsumableItem) itemData.itemId) {
                   case PvpConsumableItem.RepairTool:
-                     newItemInfo.name = "Repair Tool";
+                     newItemInfo.name = "Repair Rush";
                      newItemInfo.description = "Repairs 40% of ship health.";
                      newItemInfo.sprite = ImageManager.getSprite(itemData.spritePath);
                      break;

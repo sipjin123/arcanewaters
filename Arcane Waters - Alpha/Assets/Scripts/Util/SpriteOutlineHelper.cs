@@ -115,19 +115,19 @@ public class SpriteOutlineHelper : MonoBehaviour
    #region Private Variables
 
    // References to the renderers of this gameObject and its children
-   private SpriteRenderer[] _renderers;
+   private SpriteRenderer[] _renderers = new SpriteRenderer[0];
 
    // References to the materials of every SpriteRenderer in renderers[]
-   private Material[] _materials;
+   private Material[] _materials = new Material[0];
 
    // The outline color (internal use only)
    private Color _color = new Color(1, 1, 1, 1);
 
    // For testing purposes only. Enable/Disable outline.
-   [SerializeField] private bool _isVisible;
+   [SerializeField] private bool _isVisible = default;
 
    // Was the outline enabled in the previous frame?
-   private bool _wasVisible;
+   private bool _wasVisible = default;
 
    // The default shader to use if the one currently in use doesn't support outlining and no other shader was supplied in the inspector
    private const string DEFAULT_SHADER = "Arcane Waters/Single Sprite Outlined";

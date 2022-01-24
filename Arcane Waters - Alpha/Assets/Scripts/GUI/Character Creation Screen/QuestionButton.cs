@@ -17,15 +17,15 @@ public class QuestionButton : MonoBehaviour {
    #region Private Variables
 
    // The original question
-   private string _question;
+   private string _question = default;
 
    // The text component for the question
    [SerializeField]
-   private TextMeshProUGUI _questionText;
+   private TextMeshProUGUI _questionText = default;
 
    // The background image
    [SerializeField]
-   private Image _backgroundImage;
+   private Image _backgroundImage = default;
 
    #endregion
 }

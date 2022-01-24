@@ -115,31 +115,31 @@ public class PerkToolDataPanel : MonoBehaviour
 
    // The field for the name of the perk
    [SerializeField]
-   private InputField _perkName;
+   private InputField _perkName = default;
 
    // The field for the description of the perk
    [SerializeField]
-   private TMP_InputField _perkDescription;
+   private TMP_InputField _perkDescription = default;
 
    // The dropdown to choose the perk type
    [SerializeField]
-   private TMP_Dropdown _perkTypeIdDropdown;
+   private TMP_Dropdown _perkTypeIdDropdown = default;
 
    // The boost factor of the perk
    [SerializeField]
-   private InputField _boostFactor;
+   private InputField _boostFactor = default;
 
    // The text for the icon path
    [SerializeField]
-   private Text _iconPath;
+   private Text _iconPath = default;
 
    // The icon of this perk
    [SerializeField]
-   private Image _iconImage;
+   private Image _iconImage = default;
 
    // The button to change the perk icon
    [SerializeField]
-   private Button _changeIconButton;
+   private Button _changeIconButton = default;
 
    // The id of the current perk in the DB
    private int _currentPerkId;

@@ -63,33 +63,7 @@ public class PlantableTree : MonoBehaviour
 
    private Sprite pickSprite (PlantableTreeInstanceData instanceData, PlantableTreeDefinition definitionData, long currentTimestamp) {
       // We are hard picking indexes here, not ideal
-      if (instanceData.state == PlantableTreeInstanceData.StateType.Planted) {
-         return sprites[0];
-      }
-
-      if (instanceData.state == PlantableTreeInstanceData.StateType.Watered) {
-         return sprites[0];
-      }
-
-      if (instanceData.state == PlantableTreeInstanceData.StateType.Tethered) {
-         if (definitionData.amountGrownFromLastAction(instanceData, currentTimestamp) == 1) {
-            return sprites[2];
-         } else {
-            return sprites[1];
-         }
-      }
-
-      if (instanceData.state == PlantableTreeInstanceData.StateType.Untethered) {
-         if (definitionData.amountGrownFromLastAction(instanceData, currentTimestamp) == 2) {
-            return sprites[5];
-         } else if (definitionData.amountGrownFromLastAction(instanceData, currentTimestamp) == 1) {
-            return sprites[4];
-         } else {
-            return sprites[3];
-         }
-      }
-
-      return sprites[0];
+      return sprites[Mathf.Clamp(instanceData.growthStagesCompleted + (definitionData.isFullyGrown(instanceData, currentTimestamp) ? 1 : 0), 0, sprites.Count - 1)];
    }
 
    private void Update () {
@@ -98,9 +72,9 @@ public class PlantableTree : MonoBehaviour
       }
 
       // Shader controls whether the tree shakes or not
-      float shakeStrength = Time.time - lastChopTime > 0.5f ? 0 : 1f;
+      float shakeStrength = Time.time - lastChopTime > 0.5f ? 0 : currentChopCount / 3f;
       spriteRenderer.GetPropertyBlock(_propertyBlock);
-      _propertyBlock.SetFloat("_ShakeStrength", shakeStrength);
+      _propertyBlock.SetFloat("_ChopAmount", shakeStrength);
       spriteRenderer.SetPropertyBlock(_propertyBlock);
 
       if (_hovered) {
@@ -130,7 +104,8 @@ public class PlantableTree : MonoBehaviour
       spriteRenderer.sprite = pickSprite(data, _treeDefinition, currentTimestamp);
 
       waterNeededIcon.SetActive(_treeDefinition.needsWatering(data, currentTimestamp));
-      interactionNeededIcon.SetActive(_treeDefinition.canTetherUntether(data, currentTimestamp));
+      interactionNeededIcon.SetActive(false);
+      //interactionNeededIcon.SetActive(_treeDefinition.canTetherUntether(data, currentTimestamp));
    }
 
    [Client]
@@ -148,9 +123,9 @@ public class PlantableTree : MonoBehaviour
 
    [Client]
    public void click (BaseEventData eventData) {
-      if (Global.player == null) return;
+      //if (Global.player == null) return;
 
-      PlantableTreeManager.self.playerClickedTree(data.id);
+      //PlantableTreeManager.self.playerClickedTree(data.id);
    }
 
    #region Private Variables

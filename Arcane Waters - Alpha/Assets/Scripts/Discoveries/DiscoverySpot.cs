@@ -10,25 +10,20 @@ public class DiscoverySpot : MonoBehaviour, IMapEditorDataReceiver
 {
    #region Public Variables
 
-   // The chances of spawning this discovery
-   public float spawnChance;
+   // The ID of the discovery this spot if populated by
+   public int targetDiscoveryID = 0;
 
-   // The list of IDs for all the possible discoveries
-   public List<int> possibleDiscoveryIds = new List<int>();
+   // The object id assigned in the map editor
+   public int placedDiscoveryId = 0;
 
    #endregion
 
    public void receiveData (DataField[] dataFields) {
       foreach (DataField field in dataFields) {
-         if (field.k == DataField.DISCOVERY_SPAWN_CHANCE) {
-            spawnChance = field.floatValue;
-         } else if (field.k.Contains(DataField.POSSIBLE_DISCOVERY)) {
-            int id = field.intValue;
-
-            // When ID is 0, it's because it wasn't assigned in the MapEditor
-            if (id > 0) {
-               possibleDiscoveryIds.Add(id);
-            }
+         if (field.k.Contains(DataField.DISCOVERY_TYPE_ID)) {
+            targetDiscoveryID = field.intValue;
+         } else if (field.k.Contains(DataField.PLACED_PREFAB_ID)) {
+            placedDiscoveryId = field.intValue;
          }
       }
    }

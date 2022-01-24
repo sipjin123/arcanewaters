@@ -17,6 +17,9 @@ namespace MapCreationTool
 
       public const int TILE_PIXEL_WIDTH = 16;
 
+      // How many open world maps are in the world
+      public static Vector2Int openWorldMapCount = new Vector2Int(15, 9);
+
       public static Overlord instance { get; private set; }
 
       [Header("Accounts")]
@@ -38,6 +41,8 @@ namespace MapCreationTool
       private DrawBoard drawBoard = null;
       [SerializeField]
       private GameObject loadCover = null;
+      [SerializeField, Tooltip("Renderers for displaying adjacent map images. Order: top, right, bottom, left")]
+      private SpriteRenderer[] adjacentMapRenderers = new SpriteRenderer[0];
 
       [Space(5)]
       [SerializeField]
@@ -51,6 +56,9 @@ namespace MapCreationTool
          CultureInfo.CurrentCulture = new CultureInfo("en-US", false);
 
          instance = this;
+
+         // Make editor pause when you minimize it
+         Application.runInBackground = false;
 
          initializeRemoteDatas();
 
@@ -97,6 +105,7 @@ namespace MapCreationTool
          ShopManager.OnLoaded += onRemoteDataLoaded;
          NPCManager.OnLoaded += onRemoteDataLoaded;
          MonsterManager.OnLoaded += onRemoteDataLoaded;
+         MapEditorDiscoveriesManager.OnLoaded += onRemoteDataLoaded;
       }
 
       private void OnDisable () {
@@ -111,6 +120,7 @@ namespace MapCreationTool
          ShopManager.OnLoaded -= onRemoteDataLoaded;
          NPCManager.OnLoaded -= onRemoteDataLoaded;
          MonsterManager.OnLoaded -= onRemoteDataLoaded;
+         MapEditorDiscoveriesManager.OnLoaded -= onRemoteDataLoaded;
       }
 
       private Keybindings.Keybinding[] formDefaultKeybindings (Keybindings.Keybinding[] defined) {
@@ -138,8 +148,15 @@ namespace MapCreationTool
       public static bool validateMap (out string errors) {
          errors = "";
 
-         // Make sure all spawns have unique names
+         // Make sure there's at least 1 spawn
          List<MapSpawn> mapSpawns = DrawBoard.instance.formSpawnList(null, -1);
+         if (mapSpawns.Count == 0) {
+            errors += "There must be at least 1 spawn in a map. Even if your map doesn't naturally require any spawns, " +
+               "it may still need to be used for testing. You can place it in a convenient place and title it 'default'."
+               + Environment.NewLine;
+         }
+
+         // Make sure all spawns have unique names
          if (mapSpawns.Count > 0 && mapSpawns.GroupBy(s => s.name).Max(g => g.Count()) > 1) {
             errors += "All spawn names in a map must be unique" + Environment.NewLine;
          }
@@ -186,7 +203,13 @@ namespace MapCreationTool
       {
          get
          {
-            return ShopManager.instance.loaded && NPCManager.instance.loaded && MonsterManager.instance.loaded && remoteMaps.loaded && remoteSpawns.loaded;
+            return
+               ShopManager.instance.loaded &&
+               NPCManager.instance.loaded &&
+               MonsterManager.instance.loaded &&
+               remoteMaps.loaded &&
+               remoteSpawns.loaded &&
+               MapEditorDiscoveriesManager.instance.loaded;
          }
       }
 
@@ -257,6 +280,18 @@ namespace MapCreationTool
       }
 
       public void applyData (MapVersion mapVersion) {
+         // Destroy adjacent map images
+         foreach (SpriteRenderer ren in adjacentMapRenderers) {
+            if (ren.sprite != null) {
+               if (ren.sprite.texture != null) {
+                  Destroy(ren.sprite.texture);
+               }
+               Destroy(ren.sprite);
+            }
+            ren.sprite = null;
+         }
+
+
          var dt = Serializer.deserializeForEditor(mapVersion.editorData);
 
          Tools.changeBiome(dt.biome);
@@ -269,6 +304,17 @@ namespace MapCreationTool
          drawBoard.applyDeserializedData(dt, mapVersion);
 
          Undo.clear();
+      }
+
+      public void setAdjacentMapImages ((string areaKey, Map map, Texture2D screenshot)[] adjacent) {
+         for (int i = 0; i < adjacent.Length; i++) {
+            if (adjacent[i].screenshot != null) {
+               adjacentMapRenderers[i].sprite = Sprite.Create(
+                  adjacent[i].screenshot,
+                  new Rect(0, 0, adjacent[i].screenshot.width, adjacent[i].screenshot.height),
+                  Vector2.one * 0.5f);
+            }
+         }
       }
 
       public void applyFileData (string data) {
@@ -332,6 +378,60 @@ namespace MapCreationTool
                   throw new Exception($"Unrecognized editor type {Tools.editorType.ToString()}");
             }
          }
+      }
+
+      public static bool isOpenWorldMapKey (string key, out int mapX, out int mapY) {
+         mapX = -1;
+         mapY = -1;
+
+         if (!key.StartsWith("world_map_")) {
+            return false;
+         }
+
+         string[] parts = key.Split(new string[] { "_" }, StringSplitOptions.RemoveEmptyEntries);
+         if (parts.Length != 3) {
+            return false;
+         }
+
+         if (parts[2].Length != 2) {
+            return false;
+         }
+
+         // Convert the ending of ex. 'world_map_A0' to coordinates
+         int x = Convert.ToInt32(parts[2][0]) - 65;
+         int y = Convert.ToInt32(parts[2][1]) - 48;
+
+         if (x < 0 || y < 00 || x >= openWorldMapCount.x || y >= openWorldMapCount.y) {
+            return false;
+         }
+
+         mapX = x;
+         mapY = y;
+
+         return true;
+      }
+
+      // Creates an array, which shows what maps are adjacent to given map (open world)
+      // Only fills in the area key portion
+      // top, right, bottom, left
+      // null if nothing is at that position
+      public static (string areaKey, Map map, Texture2D screenshot)[] createAdjacentMapsArray (int mapX, int mapY) {
+         (string areaKey, Map map, Texture2D screenshot)[] result = new (string areaKey, Map map, Texture2D screenshot)[4];
+
+         if (mapY < openWorldMapCount.y - 1) {
+            result[0].areaKey = "world_map_" + Convert.ToChar((mapX + 65)) + (mapY + 1).ToString();
+         }
+         if (mapX < openWorldMapCount.x - 1) {
+            result[1].areaKey = "world_map_" + Convert.ToChar((mapX + 65 + 1)) + (mapY).ToString();
+         }
+         if (mapY > 0) {
+            result[2].areaKey = "world_map_" + Convert.ToChar((mapX + 65)) + (mapY - 1).ToString();
+         }
+         if (mapX > 0) {
+            result[3].areaKey = "world_map_" + Convert.ToChar((mapX + 65 - 1)) + (mapY).ToString();
+         }
+
+         return result;
       }
    }
 }

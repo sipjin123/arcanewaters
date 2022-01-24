@@ -103,6 +103,14 @@ public class FloatingCanvas : MonoBehaviour
       return this;
    }
 
+   public FloatingCanvas asCustomMessage (string customMessage) {
+      if (text != null) {
+         text.text = customMessage;
+      }
+
+      return this;
+   }
+
    #region Private Variables
 
    // The time at which we were created

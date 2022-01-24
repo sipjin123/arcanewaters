@@ -420,6 +420,15 @@ namespace MapCreationTool.Serialization
                      }
                   }
 
+                  if (Layer.isWater(columns[i, j].tiles[z].layer) && editorType == EditorType.Sea) {
+                     foreach (EditorConfig.TileDirectionPair pair in editorConfig.seaCurrentTiles) {
+                        if (pair.tile == columns[i, j].tiles[z].tileBase) {
+                           columns[i, j].hasSeaCurrents = true;
+                           columns[i, j].currentDirection = pair.direction;
+                        }
+                     }
+                  }
+
                   if (Layer.isRug(columns[i, j].tiles[z].layer)) {
                      columns[i, j].hasRug = true;
                   }
@@ -548,7 +557,7 @@ namespace MapCreationTool.Serialization
             currents = currents.Union(formWaterCurrentChunk((cell) => cell.hasWater4 || cell.hasWater5, Direction.South));
          } else if (editorType == EditorType.Sea) {
             foreach (Direction dir in Enum.GetValues(typeof(Direction))) {
-               currents = currents.Union(formWaterCurrentChunk((cell) => cell.hasWater5 && cell.currentDirection == dir, dir));
+               currents = currents.Union(formWaterCurrentChunk((cell) => cell.hasSeaCurrents && cell.currentDirection == dir, dir));
             }
          }
 
@@ -782,6 +791,7 @@ namespace MapCreationTool.Serialization
          public bool hasWater4 { get; set; }
          public bool hasWater5 { get; set; }
          public bool waterIsTop { get; set; }
+         public bool hasSeaCurrents { get; set; }
          public Direction currentDirection { get; set; }
 
          public TileInLayer getTileFromTop (string layer) {

@@ -57,7 +57,7 @@ namespace MinimapGeneration
          Vector2Int mapSize = getSize(area.getTilemapLayers());
 
          // Create our resulting texture
-         Texture2D result = new Texture2D(mapSize.x, mapSize.x);
+         Texture2D result = new Texture2D(mapSize.x, mapSize.x, TextureFormat.RGBA32, false);
 
          // Fill the texture with plain land color as a fallback
          fill(result, preset.baseLandColor);

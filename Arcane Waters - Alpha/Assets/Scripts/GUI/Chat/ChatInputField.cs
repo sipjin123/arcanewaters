@@ -136,7 +136,11 @@ public class ChatInputField : MonoBehaviour
 
    private IEnumerator CO_MoveCaretAfterFrame (int caretPos) {
       yield return null;
+      int fromSelection = _inputField.selectionAnchorPosition;
+      int toSelection = _inputField.selectionFocusPosition;
+
       _inputField.caretPosition = caretPos;
+      selectTextPart(fromSelection, toSelection);
       _inputField.readOnly = false;
       _inputField.ForceLabelUpdate();
    }
@@ -213,16 +217,12 @@ public class ChatInputField : MonoBehaviour
    public bool isFocused => _inputField.isFocused;
    public int caretPosition => _inputField.caretPosition;
 
-   public int selectionFocusPosition
-   {
-      get { return _inputField.selectionFocusPosition; }
-      set { _inputField.selectionFocusPosition = value; }
-   }
+   public void selectTextPart (int from, int to) {
+      _inputField.selectionAnchorPosition = from;
+      _inputField.selectionStringAnchorPosition = from;
 
-   public int selectionAnchorPosition
-   {
-      get { return _inputField.selectionAnchorPosition; }
-      set { _inputField.selectionAnchorPosition = value; }
+      _inputField.selectionFocusPosition = to;
+      _inputField.selectionStringFocusPosition = to;
    }
 
    public Color selectionColor

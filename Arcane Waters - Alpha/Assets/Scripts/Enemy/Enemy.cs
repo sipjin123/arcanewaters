@@ -502,13 +502,13 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    #region Private Variables
 
    // Our zSnap component
-   protected ZSnap _zSnap;
+   protected ZSnap _zSnap = default;
 
    // The position we were created at
    protected Vector2 _startPos = Vector2.negativeInfinity;
 
    // The Seeker that handles Pathfinding
-   protected Seeker _seeker;
+   protected Seeker _seeker = default;
 
    // The current waypoint List
    protected List<Vector3> _currentPath = new List<Vector3>();

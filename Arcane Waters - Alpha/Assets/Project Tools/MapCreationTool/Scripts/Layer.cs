@@ -10,10 +10,14 @@ namespace MapCreationTool
       public const string PATH_KEY = "path";
       public const string WATER_KEY = "water";
       public const string MOUNTAIN_KEY = "mountain";
+      public const string BUILDING_KEY = "bulding";
+      public const string GRASS_KEY = "grass";
       public const string VINE_KEY = "vine";
       public const string STAIR_KEY = "stair";
       public const string RUG_KEY = "rug";
       public const string DOCK_KEY = "dock";
+      public const string RIVER_KEY = "river";
+      public const string PATHWAY_KEY = "pathway";
       public const string CEILING_KEY = "ceiling";
       public const string WALL_KEY = "wall";
       public const string DOORFRAME_KEY = "door-frame";
@@ -25,8 +29,10 @@ namespace MapCreationTool
       public Vector3Int origin { get; private set; }
       public Vector3Int size { get; private set; }
 
+      // Matrixes for specifying what is in every cell
       private TileBase[,] tileMatrix = new TileBase[0, 0];
       private TileBase[,] previewTileMatrix = new TileBase[0, 0];
+      private bool[,] previewTileMatrixOccupied = new bool[0, 0];
 
       public Layer (Tilemap tilemap) {
          this.tilemap = tilemap;
@@ -176,15 +182,18 @@ namespace MapCreationTool
       }
 
       public void clearAllPreviewTiles () {
-         for (int i = 0; i < previewTileMatrix.GetLength(0); i++) {
-            for (int j = 0; j < previewTileMatrix.GetLength(1); j++) {
-               if (previewTileMatrix[i, j] != null) {
+         (int x, int y) size = (this.size.x, this.size.y);
+         for (int i = 0; i < size.x; i++) {
+            for (int j = 0; j < size.y; j++) {
+               if (previewTileMatrixOccupied[i, j]) {
                   setTilemapTile(new Vector3Int(i, j, 0) + origin, getTile(new Vector3Int(i, j, 0) + origin));
+                  previewTileMatrix[i, j] = null;
+                  previewTileMatrixOccupied[i, j] = false;
                }
-               previewTileMatrix[i, j] = null;
             }
          }
       }
+
       public void setPreviewTile (Vector3Int position, TileBase tile) {
          if (tilemap == null)
             throw new System.InvalidOperationException("Layer is defined as a container, but is used as a tilemap!");
@@ -192,10 +201,13 @@ namespace MapCreationTool
          encapsulate(position);
          Vector3Int index = position - origin;
          previewTileMatrix[index.x, index.y] = tile;
-         if (tile != null)
+         if (tile != null) {
             setTilemapTile(position, tile);
-         else
+            previewTileMatrixOccupied[index.x, index.y] = true;
+         } else {
             setTilemapTile(position, tileMatrix[index.x, index.y]);
+            previewTileMatrixOccupied[index.x, index.y] = false;
+         }
       }
 
       private void setTilemapTile (Vector3Int position, TileBase tile) {
@@ -255,6 +267,7 @@ namespace MapCreationTool
 
             tileMatrix = expandLeft(tileMatrix, missing, size_x, size_y);
             previewTileMatrix = expandLeft(previewTileMatrix, missing, size_x, size_y);
+            previewTileMatrixOccupied = expandLeft(previewTileMatrixOccupied, missing, size_x, size_y);
 
             size_x += missing;
             origin = new Vector3Int(origin.x - missing, origin.y, 0);
@@ -263,6 +276,7 @@ namespace MapCreationTool
 
             tileMatrix = expandRight(tileMatrix, missing, size_x, size_y);
             previewTileMatrix = expandRight(previewTileMatrix, missing, size_x, size_y);
+            previewTileMatrixOccupied = expandRight(previewTileMatrixOccupied, missing, size_x, size_y);
 
             size_x += missing;
          }
@@ -272,6 +286,7 @@ namespace MapCreationTool
 
             tileMatrix = expandDown(tileMatrix, missing, size_x, size_y);
             previewTileMatrix = expandDown(previewTileMatrix, missing, size_x, size_y);
+            previewTileMatrixOccupied = expandDown(previewTileMatrixOccupied, missing, size_x, size_y);
 
             size_y += missing;
             origin = new Vector3Int(origin.x, origin.y - missing, 0);
@@ -280,6 +295,7 @@ namespace MapCreationTool
 
             tileMatrix = expandUp(tileMatrix, missing, size_x, size_y);
             previewTileMatrix = expandUp(previewTileMatrix, missing, size_x, size_y);
+            previewTileMatrixOccupied = expandUp(previewTileMatrixOccupied, missing, size_x, size_y);
 
             size_y += missing;
          }

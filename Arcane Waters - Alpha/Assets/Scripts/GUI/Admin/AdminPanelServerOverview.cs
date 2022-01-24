@@ -47,6 +47,9 @@ public class AdminPanelServerOverview : MonoBehaviour
    // Server overview we are responsible for
    public ServerOverview data = null;
 
+   // Reference to the control that displays the server's uptime
+   public Text uptimeText = null;
+
    #endregion
 
    private void Awake () {
@@ -63,6 +66,7 @@ public class AdminPanelServerOverview : MonoBehaviour
       fpsText.text = "FPS: " + overview.fps;
       rttText.text = "RTT to Master: " + overview.toMasterRTT;
       playerCountText.text = "Players: " + overview.instances.Sum(i => i.count);
+      uptimeText.text = "Uptime: " + TimeSpan.FromSeconds(overview.uptime).ToString(@"dd\.hh\:mm\:ss");
 
       foreach (AdminPanelInstanceOverview i in instanceParent.GetComponentsInChildren<AdminPanelInstanceOverview>()) {
          Destroy(i.gameObject);

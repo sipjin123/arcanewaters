@@ -43,24 +43,33 @@ public class PerformanceUtil : MonoBehaviour {
    #endregion
 
    private void Awake () {
-      // Only measure performance on the server
-      if (!NetworkServer.active) {
-         this.enabled = false;
-         return;
-      }
-      
       self = this;
       _processorCount = SystemInfo.processorCount / 2;
       _lastCpuTime = new TimeSpan(0);
       _currentProcess = Process.GetCurrentProcess();
 
-      // Only measure performance using zabbix on a production or dev server
-      if (!Util.isProductionBuild() || !Util.isDevelopmentBuild()) {
-         D.debug("Not a production or development build, not trying to fetch zabbix performance result.");
-         return;
+      D.debug("Starting up PerformanceUtil.");
+
+      StartCoroutine(CO_Initialise());
+   }
+
+   private IEnumerator CO_Initialise () {
+      // Wait for server to start up
+      yield return new WaitForSeconds(60.0f);
+
+      // Only measure performance on the server
+      if (!NetworkServer.active) {
+         D.debug("Disabling PerformanceUtil as this isn't a server.");
+         this.enabled = false;
+         yield break;
       }
 
-      getZabbixPerformanceResult();
+      // Only measure performance using zabbix on the remote servers
+      if (!Util.isBatchServer()) {
+         yield break;
+      } else {
+         getZabbixPerformanceResult();
+      }
    }
 
    private async void getZabbixPerformanceResult () {
@@ -94,7 +103,7 @@ public class PerformanceUtil : MonoBehaviour {
       TimeSpan newCpuTime = cpuTime - _lastCpuTime;
 
       _lastCpuTime = cpuTime;
-      _cpuUsage = 1000.0f * (float) newCpuTime.TotalSeconds;
+      _cpuUsage = (float)newCpuTime.TotalMilliseconds;
    }
 
    public static IEnumerator CO_PerformanceTest (float duration, PerformanceTestResult result) {

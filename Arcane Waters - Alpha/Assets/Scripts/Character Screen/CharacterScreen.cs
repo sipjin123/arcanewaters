@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using Cinemachine;
 using System.Linq;
+using UnityEngine.InputSystem;
 
 public class CharacterScreen : GenericGameManager {
    #region Public Variables
@@ -77,6 +78,12 @@ public class CharacterScreen : GenericGameManager {
 
    private void Start () {
       battleBoard.setWeather(WeatherEffectType.Cloud, battleBoard.biomeType);
+      InputManager.self.inputMaster.General.Continue.performed += continuePressed;
+   }
+
+   void continuePressed(InputAction.CallbackContext ctx) {
+      if (!isShowing()) return;
+      getFirstValidSpot()?.selectButtonWasPressed();
    }
 
    public StartingArmorData getStartingArmor (int index) {
@@ -248,6 +255,9 @@ public class CharacterScreen : GenericGameManager {
 
       // Hide loading screen
       PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login);
+      
+      // Hide login panels
+      TitleScreen.self.hideLoginPanels();
    }
 
    private CharacterSpot getFirstValidSpot () {

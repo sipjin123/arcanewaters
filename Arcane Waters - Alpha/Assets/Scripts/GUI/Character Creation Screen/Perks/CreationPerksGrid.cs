@@ -128,15 +128,15 @@ public class CreationPerksGrid : MonoBehaviour {
 
    // The perk icon sprite borders
    [SerializeField]
-   private List<Sprite> _perkIconBorders;
+   private List<Sprite> _perkIconBorders = new List<Sprite>();
 
    // The perk icons
    [SerializeField]
-   private List<CreationPerkIcon> _icons;
+   private List<CreationPerkIcon> _icons = new List<CreationPerkIcon>();
 
    // The available points text
    [SerializeField]
-   private Text _availablePointsText;
+   private Text _availablePointsText = default;
 
    // The available points   
    private int _availablePoints = 3;

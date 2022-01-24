@@ -10,9 +10,23 @@ namespace MapCreationTool
    [CreateAssetMenu(fileName = "New config", menuName = "Data/Editor config")]
    public class EditorConfig : ScriptableObject
    {
+      // Direction and tile pair
+      [Serializable]
+      public class TileDirectionPair
+      {
+         // The direction
+         public Direction direction;
+
+         // The tile
+         public TileBase tile;
+      }
+
       public Tile[] layerTiles;
       public Tile[] clusterTiles;
       public TileBase transparentTile;
+
+      [Tooltip("Sea current tiles for creating effectors")]
+      public TileDirectionPair[] seaCurrentTiles = new TileDirectionPair[0];
 
       public LayerConfig[] areaLayerIndexes;
       public LayerConfig[] seaLayerIndexes;
@@ -160,7 +174,6 @@ namespace MapCreationTool
 
       private void testMissingLayersInPresets () {
          testMissingLayersInPresets(areaPresets, areaLayerIndexes);
-         testMissingLayersInPresets(seaPresets, seaLayerIndexes);
          testMissingLayersInPresets(interiorPreset, interiorLayerIndexes);
 
          foreach (var preset in specialPresets) {

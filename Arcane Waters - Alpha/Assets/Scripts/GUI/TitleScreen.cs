@@ -69,9 +69,6 @@ public class TitleScreen : MonoBehaviour {
    void Start () {
       _canvasGroup = GetComponent<CanvasGroup>();
 
-      defaultLoginPanel.SetActive(!SteamManager.Initialized);
-      steamLoginPanel.SetActive(SteamManager.Initialized);
-
       setToMaxScreenWindows.onClick.AddListener(() => {
          ScreenSettingsManager.setToResolutionFullscreenWindowed();
       });
@@ -81,11 +78,14 @@ public class TitleScreen : MonoBehaviour {
 
       CameraManager.self.resolutionChanged += onResolutionChanged;
       battleBoardReference.setWeather(WeatherEffectType.Cloud, battleBoardReference.biomeType);
+      
+      showLoginPanels();
    }
 
    private void OnDestroy () {
       CameraManager.self.resolutionChanged -= onResolutionChanged;
    }
+   
 
    private void onResolutionChanged () {
       windowResolutionText.text = "Your Window is: W: " + Screen.width + " H: " + Screen.height;
@@ -109,19 +109,23 @@ public class TitleScreen : MonoBehaviour {
       float currentAlpha = _canvasGroup.alpha;
 
       if (isActive || !_hasClientVersionBeenApproved) {
+         if (Global.isPlayerLoggedOut) {
+            PanelManager.self.loadingScreen.setAlpha(1.0f);
+         }
+
          // Check for an assortment of keys
-         bool moveToNextField = KeyUtils.GetKeyDown(Key.Tab) || KeyUtils.GetEnterKeyDown() || KeyUtils.GetKeyDown(Key.DownArrow);
-         bool tryToLogin = KeyUtils.GetKeyDown(Key.Enter) || KeyUtils.GetKeyDown(Key.NumpadEnter);
+         // bool moveToNextField = KeyUtils.GetKeyDown(Key.Tab) || KeyUtils.GetEnterKeyDown() || KeyUtils.GetKeyDown(Key.DownArrow);
+         // bool tryToLogin = KeyUtils.GetKeyDown(Key.Enter) || KeyUtils.GetKeyDown(Key.NumpadEnter);
 
          // If we're in the account field, let us move to the password field
-         if (moveToNextField && Util.isSelected(accountInputField)) {
-            Util.select(passwordInputField);
-         }
+         // if (moveToNextField && Util.isSelected(accountInputField)) {
+         //    Util.select(passwordInputField);
+         // }
 
          // If user pressed login keyboard button and login/password fields are not empty, send login signal
-         if (tryToLogin && accountInputField.text != "" && passwordInputField.text != "") {
-            onLoginButtonPressed(true);
-         }
+         // if (tryToLogin && accountInputField.text != "" && passwordInputField.text != "") {
+         //    onLoginButtonPressed(true);
+         // }
 
          // Make sure the canvas group is visible if the screen is active
          if (_canvasGroup.alpha < 1) {
@@ -135,6 +139,17 @@ public class TitleScreen : MonoBehaviour {
          if (!virtualCamera.gameObject.activeInHierarchy) {
             Util.activateVirtualCamera(virtualCamera);
          }
+
+         if (
+            InputManager.self.inputMaster.UIShotcuts.Options.WasPressedThisFrame() && 
+            !Util.isSelected(accountInputField) && 
+            !Util.isSelected(passwordInputField) &&
+            !PanelManager.self.noticeScreen.isActive &&
+            !termsOfServicePanel.activeSelf
+         ) {
+            PanelManager.self.togglePanel(Panel.Type.Options);
+         }
+         
       } else {
          // Slowly fade out the canvas group if the screen isn't active
          if (_canvasGroup.alpha > 0) {
@@ -147,13 +162,23 @@ public class TitleScreen : MonoBehaviour {
       }
    }
 
+   public void showLoginPanels() {
+      defaultLoginPanel.SetActive(!SteamManager.Initialized);
+      steamLoginPanel.SetActive(SteamManager.Initialized);
+   }
+
+   public void hideLoginPanels() {
+      defaultLoginPanel.SetActive(false);
+      steamLoginPanel.SetActive(false);
+   }
+
    public void onLoginButtonPressed (bool isSteam) {
       if (!isTermsOfServiceAccepted()) {
          // Show ToS that user has to accept to continue
          showTermsOfService();
          return;
       }
-
+      
       if (ServerHistoryManager.self.isServerHistoryActive()) {
          // Check if the server is online by looking at the boot history using Nubis
          NubisDataFetcher.self.getOnlineServersListForClientLogin(isSteam);
@@ -192,10 +217,6 @@ public class TitleScreen : MonoBehaviour {
 
    public void usedQuickLaunchPanel () {
       _hasClientVersionBeenApproved = true;
-   }
-
-   public void openOptionsPanel () {
-      PanelManager.self.linkIfNotShowing(Panel.Type.Options);
    }
 
    public bool isShowing () {

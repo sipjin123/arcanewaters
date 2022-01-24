@@ -915,7 +915,7 @@ public class NetEntity : NetworkBehaviour
          case Anim.Type.NC_Jump_North:
          case Anim.Type.NC_Jump_South:
             shadow.transform.localScale = _shadowInitialScale;
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.LAND, this.transform.position);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.JUMP_LAND, this.transform.position);
             break;
       }
 
@@ -2597,7 +2597,9 @@ public class NetEntity : NetworkBehaviour
       gainItemCanvas.GetComponentInChildren<Image>().SetNativeSize();
 
       // Play SFX
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.GAIN_SILVER, targetPos);
+      if (silverCount > 0) {
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.GAIN_SILVER, targetPos);
+      }
 
       // Update the Silver indicator
       PvpStatusPanel.self.addSilver(silverCount);

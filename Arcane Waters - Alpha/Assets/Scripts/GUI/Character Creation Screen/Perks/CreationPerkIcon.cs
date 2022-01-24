@@ -107,29 +107,29 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
    // The icon image
    [SerializeField]
-   private Image _iconImage;
+   private Image _iconImage = default;
 
    // The border image
    [SerializeField]
-   private Image _borderImage;
+   private Image _borderImage = default;
 
    // The upper-left number displaying the assigned points
    [SerializeField]
-   private GameObject _assignedPointsIndicator;
+   private GameObject _assignedPointsIndicator = default;
 
    // The text displaying the number of assigned points
    [SerializeField]
-   private TextMeshProUGUI _assignedPointsText;
+   private TextMeshProUGUI _assignedPointsText = default;
 
    // The growth factor of the icon when hovering over
    [SerializeField]
    private float _iconScaleOnHover = 1.25f;
 
    // Whether this is the chosen icon for its group
-   private bool _hasAssignedPoints;
+   private bool _hasAssignedPoints = default;
 
    // The original scale of the icon
-   private Vector3 _originalScale;
+   private Vector3 _originalScale = default;
 
    // The ID of the grayscale intensity property
    private static int _grayscaleIntensityID = -1;

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -36,10 +37,19 @@ public class NoticeScreen : FullScreenSeparatePanel {
       this.canvasGroup.alpha = 0f;
       this.canvasGroup.blocksRaycasts = false;
       this.canvasGroup.interactable = false;
+      this.gameObject.SetActive(false);
    }
 
    public void disableButtons () {
       canvasGroup.interactable = false;
+   }
+
+   public bool isActive { get { return canvasGroup.alpha != 0; } }
+
+   private void Update () {
+      if (InputManager.self.inputMaster.UIControl.Close.WasPressedThisFrame()) {
+         hide();
+      }
    }
 
    #region Private Variables

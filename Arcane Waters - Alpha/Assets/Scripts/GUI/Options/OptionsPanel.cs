@@ -601,9 +601,8 @@ public class OptionsPanel : Panel
          PanelManager.self.unlinkPanel();
       }
 
-      // Return to the title screen
-      Util.stopHostAndReturnToTitleScreen();
-
+      // Return to the character selection screen
+      Util.stopHostAndReturnToCharacterSelectionScreen();
    }
 
    public void enableAdminButtons (bool isEnabled) {

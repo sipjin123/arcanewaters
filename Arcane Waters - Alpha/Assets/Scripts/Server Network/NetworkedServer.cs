@@ -1138,6 +1138,7 @@ public class NetworkedServer : NetworkedBehaviour
          processName = System.Diagnostics.Process.GetCurrentProcess()?.ProcessName,
          fps = ServerNetworkingManager.self.server.getAverageFPS(),
          instances = InstanceManager.self.createOverviewForAllInstances(),
+         uptime = NetworkTime.time
       };
 
       return ow;

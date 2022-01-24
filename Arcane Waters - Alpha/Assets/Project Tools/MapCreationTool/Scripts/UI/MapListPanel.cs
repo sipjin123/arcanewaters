@@ -4,10 +4,12 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using MapCreationTool.Serialization;
+using System.Collections;
 
 namespace MapCreationTool
 {
-   public class MapListPanel : UIPanel {
+   public class MapListPanel : UIPanel
+   {
       public enum OrderingType { None = 0, NameAsc = 1, NameDesc = 2, DateAsc = 3, DateDesc = 4, CreatorAsc = 5, CreatorDesc = 6 }
 
       [SerializeField]
@@ -143,6 +145,96 @@ namespace MapCreationTool
       }
 
       public void openLatestVersionConfirm (Map map) {
+         if (Overlord.isOpenWorldMapKey(map.name, out int mapX, out int mapY)) {
+            UI.yesNoDialog.display(
+                        "Adjacent maps",
+                        $"Would you like to open reference images for adjacent open world maps? This process would take a while.",
+                         () => StartCoroutine(openLatestVersionConfirmWithAdjacent(map, mapX, mapY)),
+                         () => openLatestVersionConfirmRegular(map));
+         } else {
+            openLatestVersionConfirmRegular(map);
+         }
+      }
+
+      private IEnumerator openLatestVersionConfirmWithAdjacent (Map map, int mapX, int mapY) {
+         clearEverything();
+         UI.loadingPanel.display("Fetching adjacency info");
+         yield return new WaitForEndOfFrame();
+
+         // Find info about adjacent maps
+         (string areaKey, Map map, Texture2D screenshot)[] adjacent = null;
+         try {
+            adjacent = Overlord.createAdjacentMapsArray(mapX, mapY);
+            for (int i = 0; i < adjacent.Length; i++) {
+               if (adjacent[i].areaKey == null) {
+                  continue;
+               }
+
+               foreach (Map m in loadedMaps) {
+                  if (adjacent[i].areaKey.Equals(m.name)) {
+                     adjacent[i].map = m;
+                     break;
+                  }
+               }
+
+               if (adjacent[i].map == null) {
+                  throw new Exception("Could not find information about adjacent map " + adjacent[i].areaKey);
+               }
+            }
+         } catch (Exception ex) {
+            UI.loadingPanel.close();
+            UI.messagePanel.displayError(ex.ToString());
+            close();
+            yield break;
+         }
+
+         // Load maps 1 by 1 and render their screen shot
+         for (int i = 0; i < adjacent.Length; i++) {
+            if (adjacent[i].map == null) {
+               continue;
+            }
+
+            // Download the map data
+            UI.loadingPanel.display($"Downloading and rendering the latest version for adjacent map {adjacent[i].map.name}");
+            string error = null;
+            MapVersion version = null;
+            UnityThreading.Task task = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               try {
+                  version = DB_Main.getLatestMapVersionEditor(adjacent[i].map);
+               } catch (Exception ex) {
+                  error = ex.Message;
+               }
+            });
+
+            // Wait for download to complete
+            while (!task.HasEnded) {
+               yield return new WaitForEndOfFrame();
+            }
+
+            if (error != null) {
+               UI.loadingPanel.close();
+               UI.messagePanel.displayError(error);
+               close();
+               yield break;
+            } else if (version == null) {
+               UI.loadingPanel.close();
+               UI.messagePanel.displayError($"Could not find map { name } in the database");
+               close();
+               yield break;
+            }
+
+            // Apply map data and render
+            Overlord.instance.applyData(version);
+            yield return new WaitForEndOfFrame();
+            adjacent[i].screenshot = ScreenRecorder.recordTexture();
+            yield return new WaitForEndOfFrame();
+         }
+
+         // We should now have all adjacent screen shots, load the target map itself
+         openLatestVersionConfirmRegular(map, adjacent);
+      }
+
+      private void openLatestVersionConfirmRegular (Map map, (string areaKey, Map map, Texture2D screenshot)[] adjacent = null) {
          clearEverything();
 
          UnityThreading.Task task = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -163,6 +255,12 @@ namespace MapCreationTool
                   try {
                      Overlord.instance.applyData(version);
                      Overlord.loadAllRemoteData();
+
+                     // Set adjacent map images if we have such a thing
+                     if (adjacent != null) {
+                        Overlord.instance.setAdjacentMapImages(adjacent);
+                     }
+
                      hide();
                      UI.mapList.close();
                   } catch (Exception ex) {

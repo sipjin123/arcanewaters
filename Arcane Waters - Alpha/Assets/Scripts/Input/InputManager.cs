@@ -319,39 +319,39 @@ public class InputManager : GenericGameManager {
 
    public struct ActionMapStates {
       public void Save() {
-         _general = InputManager.self.inputMaster.General.enabled;
-         _land = InputManager.self.inputMaster.Land.enabled;
-         _landBattle = InputManager.self.inputMaster.LandBattle.enabled;
-         _sea = InputManager.self.inputMaster.Sea.enabled;
-         _pvp = InputManager.self.inputMaster.Pvp.enabled;
-         _hud = InputManager.self.inputMaster.Hud.enabled;
-         _uiShotcuts = InputManager.self.inputMaster.UIShotcuts.enabled;
-         _uiControl = InputManager.self.inputMaster.UIControl.enabled;
-         _chat = InputManager.self.inputMaster.Chat.enabled;
+         _general = self.inputMaster.General.enabled;
+         _land = self.inputMaster.Land.enabled;
+         _landBattle = self.inputMaster.LandBattle.enabled;
+         _sea = self.inputMaster.Sea.enabled;
+         _pvp = self.inputMaster.Pvp.enabled;
+         _hud = self.inputMaster.Hud.enabled;
+         _uiShotcuts = self.inputMaster.UIShotcuts.enabled;
+         _uiControl = self.inputMaster.UIControl.enabled;
+         _chat = self.inputMaster.Chat.enabled;
       }
 
       public void Restore() {
-         if (_general) InputManager.self.inputMaster.General.Enable(); else InputManager.self.inputMaster.General.Disable();
-         if (_land) InputManager.self.inputMaster.Land.Enable(); else InputManager.self.inputMaster.Land.Disable();
-         if (_landBattle) InputManager.self.inputMaster.LandBattle.Enable(); else InputManager.self.inputMaster.LandBattle.Disable();
-         if (_sea) InputManager.self.inputMaster.Sea.Enable(); else InputManager.self.inputMaster.Sea.Disable();
-         if (_pvp) InputManager.self.inputMaster.Pvp.Enable(); else InputManager.self.inputMaster.Pvp.Disable();
-         if (_hud) InputManager.self.inputMaster.Hud.Enable(); else InputManager.self.inputMaster.Hud.Disable();
-         if (_uiShotcuts) InputManager.self.inputMaster.UIShotcuts.Enable(); else InputManager.self.inputMaster.UIShotcuts.Disable();
-         if (_uiControl) InputManager.self.inputMaster.UIControl.Enable(); else InputManager.self.inputMaster.UIControl.Disable();
-         if (_chat) InputManager.self.inputMaster.Chat.Enable(); else InputManager.self.inputMaster.Chat.Disable();
+         if (_general) self.inputMaster.General.Enable(); else self.inputMaster.General.Disable();
+         if (_land) self.inputMaster.Land.Enable(); else self.inputMaster.Land.Disable();
+         if (_landBattle) self.inputMaster.LandBattle.Enable(); else self.inputMaster.LandBattle.Disable();
+         if (_sea) self.inputMaster.Sea.Enable(); else self.inputMaster.Sea.Disable();
+         if (_pvp) self.inputMaster.Pvp.Enable(); else self.inputMaster.Pvp.Disable();
+         if (_hud) self.inputMaster.Hud.Enable(); else self.inputMaster.Hud.Disable();
+         if (_uiShotcuts) self.inputMaster.UIShotcuts.Enable(); else self.inputMaster.UIShotcuts.Disable();
+         if (_uiControl) self.inputMaster.UIControl.Enable(); else self.inputMaster.UIControl.Disable();
+         if (_chat) self.inputMaster.Chat.Enable(); else self.inputMaster.Chat.Disable();
       }
 
       public void DisableAll() {
-         InputManager.self.inputMaster.General.Disable();
-         InputManager.self.inputMaster.Land.Disable();
-         InputManager.self.inputMaster.LandBattle.Disable();
-         InputManager.self.inputMaster.Sea.Disable();
-         InputManager.self.inputMaster.Pvp.Disable();
-         InputManager.self.inputMaster.Hud.Disable();
-         InputManager.self.inputMaster.UIShotcuts.Disable();
-         InputManager.self.inputMaster.UIControl.Disable();
-         InputManager.self.inputMaster.Chat.Disable();         
+         self.inputMaster.General.Disable();
+         self.inputMaster.Land.Disable();
+         self.inputMaster.LandBattle.Disable();
+         self.inputMaster.Sea.Disable();
+         self.inputMaster.Pvp.Disable();
+         self.inputMaster.Hud.Disable();
+         self.inputMaster.UIShotcuts.Disable();
+         self.inputMaster.UIControl.Disable();
+         self.inputMaster.Chat.Disable();         
       }
 
       #region Private Variables

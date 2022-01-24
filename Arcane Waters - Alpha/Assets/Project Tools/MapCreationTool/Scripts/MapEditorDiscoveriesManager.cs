@@ -11,6 +11,9 @@ namespace MapCreationTool
    {
       #region Public Variables
 
+      // Action which is called when discoveries manager finished loading
+      public static System.Action OnLoaded;
+
       // The singleton instance
       public static MapEditorDiscoveriesManager instance;
 
@@ -19,6 +22,9 @@ namespace MapCreationTool
 
       // The number of discoveries that exist in the DB
       public int discoveriesCount { get { return _discoveries.Count; } }
+
+      // Has this manager finished loading
+      public bool loaded = false;
 
       #endregion
 
@@ -38,6 +44,10 @@ namespace MapCreationTool
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             _discoveries = DB_Main.getDiscoveriesList();
             idToDiscovery = _discoveries.ToDictionary(d => d.discoveryId, d => d);
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               loaded = true;
+               OnLoaded?.Invoke();
+            });
          });
       }
 

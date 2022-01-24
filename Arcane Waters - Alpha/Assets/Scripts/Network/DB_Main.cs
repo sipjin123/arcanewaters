@@ -3842,6 +3842,80 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new List<UserDiscovery> getUserDiscoveries (int userId) {
+      List<UserDiscovery> result = new List<UserDiscovery>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM user_discoveries WHERE userId = @userId;", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userId", userId);
+
+            DebugQuery(cmd);
+
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  result.Add(new UserDiscovery(dataReader));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return result;
+   }
+
+   public static new UserDiscovery getUserDiscovery (int userId, int placedDiscoveryId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM user_discoveries WHERE userId = @userId AND placedDiscoveryId = @placedDiscoveryId;", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@placedDiscoveryId", placedDiscoveryId);
+            DebugQuery(cmd);
+
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  return new UserDiscovery(dataReader);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return null;
+   }
+
+   public static new void setUserDiscovery (UserDiscovery discovery) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO user_discoveries (userId, placedDiscoveryId, discovered) " +
+            "VALUES(@userId, @placedDiscoveryId, @discovered) " +
+            "ON DUPLICATE KEY UPDATE discovered = @discovered", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@userId", discovery.userId);
+            cmd.Parameters.AddWithValue("@placedDiscoveryId", discovery.placedDiscoveryId);
+            cmd.Parameters.AddWithValue("@discovered", discovery.discovered);
+            DebugQuery(cmd);
+
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
    #endregion
 
    #region Palette XML Data
@@ -5357,14 +5431,14 @@ public class DB_Main : DB_MainStub
    public static new void createPlantableTreeInstance (object command, PlantableTreeInstanceData instance) {
       MySqlCommand cmd = command as MySqlCommand;
       cmd.CommandText = "INSERT INTO plantable_tree_instances " +
-         "(treeDefinitionId, areaKey, planterUserId, position_x, position_y, state, lastUpdateTime) " +
-         "VALUES(@treeDefinitionId, @areaKey, @planterUserId, @position_x, @position_y, @state, @lastUpdateTime);";
+         "(treeDefinitionId, areaKey, planterUserId, position_x, position_y, growthStagesCompleted, lastUpdateTime) " +
+         "VALUES(@treeDefinitionId, @areaKey, @planterUserId, @position_x, @position_y, @growthStagesCompleted, @lastUpdateTime);";
       cmd.Parameters.AddWithValue("@treeDefinitionId", instance.treeDefinitionId);
       cmd.Parameters.AddWithValue("@areaKey", instance.areaKey);
       cmd.Parameters.AddWithValue("@planterUserId", instance.planterUserId);
       cmd.Parameters.AddWithValue("@position_x", instance.position.x);
       cmd.Parameters.AddWithValue("@position_y", instance.position.y);
-      cmd.Parameters.AddWithValue("@state", (int) instance.state);
+      cmd.Parameters.AddWithValue("@growthStagesCompleted", instance.growthStagesCompleted);
       cmd.Parameters.AddWithValue("@lastUpdateTime", instance.lastUpdateTime);
       DebugQuery(cmd);
       cmd.ExecuteNonQuery();
@@ -5381,7 +5455,7 @@ public class DB_Main : DB_MainStub
          "planterUserId = @planterUserId, " +
          "position_x = @position_x, " +
          "position_y = @position_y, " +
-         "state = @state, " +
+         "growthStagesCompleted = @growthStagesCompleted, " +
          "lastUpdateTime = @lastUpdateTime " +
          "WHERE id=@id;";
 
@@ -5390,7 +5464,7 @@ public class DB_Main : DB_MainStub
       cmd.Parameters.AddWithValue("@planterUserId", instance.planterUserId);
       cmd.Parameters.AddWithValue("@position_x", instance.position.x);
       cmd.Parameters.AddWithValue("@position_y", instance.position.y);
-      cmd.Parameters.AddWithValue("@state", (int) instance.state);
+      cmd.Parameters.AddWithValue("@growthStagesCompleted", instance.growthStagesCompleted);
       cmd.Parameters.AddWithValue("@lastUpdateTime", instance.lastUpdateTime);
       cmd.Parameters.AddWithValue("@id", instance.id);
       DebugQuery(cmd);
@@ -5551,6 +5625,32 @@ public class DB_Main : DB_MainStub
       }
 
       return armorList;
+   }
+
+   public static new List<Hat> getHatsForUser (int userId) {
+      List<Hat> hatList = new List<Hat>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId AND items.itmCategory=3 ORDER BY items.itmId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  Hat hat = new Hat(dataReader);
+                  hatList.Add(hat);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return hatList;
    }
 
    public static new void setWeaponId (int userId, int newWeaponId) {
@@ -6699,6 +6799,38 @@ public class DB_Main : DB_MainStub
       return userList;
    }
 
+   public static new List<UserInfo> getDeletedUsersForAccount (int accId, int userId = 0) {
+      List<UserInfo> userList = new List<UserInfo>();
+      string userClause = (userId == 0) ? " AND users_deleted.usrId != @usrId" : " AND users_deleted.usrId = @usrId";
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM users_deleted JOIN global.accounts USING (accId) " +
+            "LEFT JOIN guilds ON (users_deleted.gldId = guilds.gldId) " +
+            "WHERE accId=@accId " + userClause + " ORDER BY users_deleted.usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accId", accId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  UserInfo info = new UserInfo(dataReader);
+                  userList.Add(info);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return userList;
+   }
+
+
    public static new int getAccountStatus (int accountId) {
       int accountStatus = 0;
 
@@ -6842,6 +6974,98 @@ public class DB_Main : DB_MainStub
             "LEFT JOIN items AS weapon ON(users.wpnId = weapon.itmId) " +
             "LEFT JOIN items AS hat ON(users.hatId = hat.itmId) " +
             "WHERE users.usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  // There might not be any rows returned if an invalid user ID was provided
+                  userObjects.accountId = DataUtil.getInt(dataReader, "accId");
+
+                  // If we found a valid account ID, we can go ahead and read in the other various objects
+                  if (userObjects.accountId != 0) {
+                     userObjects.accountEmail = DataUtil.getString(dataReader, "accEmail");
+                     userObjects.accountCreationTime = dataReader.GetDateTime("accCreationTime").ToBinary();
+                     userObjects.userInfo = new UserInfo(dataReader);
+                     userObjects.shipInfo = new ShipInfo(dataReader);
+                     userObjects.guildInfo = new GuildInfo(dataReader);
+
+                     // This user would be in single player mode if the player has toggled on the option or has been forced to it
+                     bool isSinglePlayer = DataUtil.getInt(dataReader, "isSinglePlayer") == 1;
+                     bool forceSinglePlayer = DataUtil.getInt(dataReader, "forceSinglePlayer") == 1;
+                     userObjects.isSinglePlayer = isSinglePlayer || forceSinglePlayer;
+
+                     // If the user has a guildId
+                     if (userObjects.guildInfo.guildId != 0) {
+                        try {
+                           // We get the current user gldRankId
+                           int guildRankId = dataReader.GetInt32("gldRankId");
+
+                           // Getting the user's guild rank info, only if guildRankId is not for leader (0)
+                           if (guildRankId > 0) {
+                              try {
+                                 userObjects.guildRankInfo = new GuildRankInfo(dataReader);
+                              } catch {
+                                 D.error("Needs Investigation! Failed to process Guild Rank Info!");
+                                 userObjects.guildRankInfo = new GuildRankInfo {
+                                    guildId = -1,
+                                    id = -1,
+                                    permissions = -1,
+                                    rankId = -1,
+                                    rankName = "",
+                                    rankPriority = -1
+                                 };
+                              }
+                           }
+                           // If leader - just indicate that user has all permissions
+                           else if (guildRankId == 0) {
+                              userObjects.guildRankInfo = new GuildRankInfo();
+                              userObjects.guildRankInfo.permissions = int.MaxValue;
+                           }
+                        } catch {
+                           D.error("The player is in a guild, but doesn't have a rank");
+                        }
+                     }
+                     userObjects.armor = getArmor(dataReader);
+                     userObjects.weapon = getWeapon(dataReader);
+                     userObjects.hat = getHat(dataReader);
+                     userObjects.armorPalettes = userObjects.armor.paletteNames;
+                     userObjects.weaponPalettes = userObjects.weapon.paletteNames;
+
+                     // These aren't working as expected, so we just get the info from the objects
+                     // userObjects.weaponInfo = new WeaponInfo(dataReader);
+                     // userObjects.armorInfo = new ArmorInfo(dataReader);
+                  }
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return userObjects;
+   }
+
+   public static new UserObjects getUserObjectsForDeletedUser (int userId) {
+      UserObjects userObjects = new UserObjects();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT *, " +
+            "armor.itmId AS armorId, armor.durability AS armorDurability, armor.itmType AS armorType, armor.itmPalettes AS armorPalettes, armor.itmData AS armorData, " +
+            "weapon.itmId AS weaponId, weapon.durability AS weaponDurability, weapon.itmType AS weaponType, weapon.itmPalettes AS weaponPalettes, weapon.itmData AS weaponData, weapon.itmCount AS weaponCount, " +
+            "hat.itmId AS hatId, hat.itmType AS hatType, hat.itmPalettes AS hatPalettes, hat.itmData AS hatData " +
+            "FROM users_deleted JOIN global.accounts USING(accId) LEFT JOIN ships USING(shpId) " +
+            "LEFT JOIN guilds ON(users_deleted.gldId = guilds.gldId)" +
+            "LEFT JOIN guild_ranks ON(users_deleted.gldRankId = guild_ranks.id)" +
+            "LEFT JOIN items AS armor ON(users_deleted.armId = armor.itmId) " +
+            "LEFT JOIN items AS weapon ON(users_deleted.wpnId = weapon.itmId) " +
+            "LEFT JOIN items AS hat ON(users_deleted.hatId = hat.itmId) " +
+            "WHERE users_deleted.usrId=@usrId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
@@ -7361,6 +7585,65 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new void deleteUserSoft (int accountId, int userId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO users_deleted SELECT * FROM users WHERE accId=@accId AND usrId=@usrId; DELETE FROM users WHERE accId=@accId AND usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accId", accountId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void restoreUser (int accountId, int userId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO users (SELECT * FROM users_deleted WHERE accId=@accId AND usrId=@usrId); DELETE FROM users_deleted WHERE accId=@accId AND usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accId", accountId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new bool doesUserExists (int userId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users WHERE usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               if (dataReader.Read()) {
+                  return true;
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return false;
+   }
+
    #endregion
 
    #region RemoteSettings
@@ -7634,8 +7917,10 @@ public class DB_Main : DB_MainStub
    public static new bool decreaseQuantityOrDeleteItem (int userId, int itemId, int deductedValue) {
       // First query deletes the entry which has only 1 of item left
       // Second query decreases the count by deductedValue if the item wasn't deleted (had more than deductedValue left)
-      string cmdText = "DELETE FROM items WHERE usrId=@usrId AND itmId=@itmId AND itmCount<=@deductBy; " +
-         "UPDATE items SET itmCount = itmCount - @deductBy WHERE usrId=@usrId AND itmId=@itmId;";
+      string cmdText = "BEGIN;" +
+         "DELETE FROM items WHERE usrId=@usrId AND itmId=@itmId AND itmCount<=@deductBy; " +
+         "UPDATE items SET itmCount = itmCount - @deductBy WHERE usrId=@usrId AND itmId=@itmId;" +
+         "COMMIT;";
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
@@ -7660,28 +7945,55 @@ public class DB_Main : DB_MainStub
       // Make sure that we have the right class
       Item castedItem = baseItem.getCastItem();
 
-      // Verify if the item can be stacked
-      if (castedItem.canBeStacked() || castedItem.category == Item.Category.CraftingIngredients) {
-         // Retrieve the item from the database, if it exists
-         Item databaseItem = getFirstItem(userId, castedItem.category, castedItem.itemTypeId);
-
-         // If the item exist, update its count
-         if (databaseItem != null) {
-            databaseItem.count += castedItem.count;
-            updateItemQuantity(userId, databaseItem.id, databaseItem.count);
-            // Return the updated item
-            return databaseItem;
-         } else {
-            // Otherwise, create a new stack
-            return createNewItem(userId, castedItem).getCastItem();
-         }
-      } else {
+      if (!castedItem.canBeStacked() && castedItem.category != Item.Category.CraftingIngredients) {
          // Since the item cannot be stacked, set its count to 1
          castedItem.count = 1;
 
          // Create the item
          return createNewItem(userId, castedItem).getCastItem();
       }
+
+      // Start a transaction to lock the table
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = conn.CreateCommand()) {
+            conn.Open();
+            MySqlTransaction transaction = conn.BeginTransaction();
+            cmd.Transaction = transaction;
+            cmd.Connection = conn;
+
+            try {
+               // Try updating the item count if it exists
+               cmd.CommandText = "UPDATE items SET itmCount=itmCount+@increaseBy WHERE usrId=@usrId AND itmCategory=@itmCategory AND itmType=@itmType";
+               cmd.Parameters.AddWithValue("@usrId", userId);
+               cmd.Parameters.AddWithValue("@itmCategory", (int) castedItem.category);
+               cmd.Parameters.AddWithValue("@itmType", castedItem.itemTypeId);
+               cmd.Parameters.AddWithValue("@increaseBy", castedItem.count);
+               int affectedRows = cmd.ExecuteNonQuery();
+
+               if (affectedRows <= 0) {
+                  // If the item doesn't exist, create a new one
+                  cmd.CommandText = "INSERT INTO items (usrId, itmCategory, itmType, itmPalettes, itmData, itmCount) " +
+                  "VALUES(@usrId, @itmCategory, @itmType, @itmPalettes, @itmData, @itmCount) ";
+                  cmd.Parameters.AddWithValue("@itmPalettes", castedItem.paletteNames);
+                  cmd.Parameters.AddWithValue("@itmData", castedItem.data);
+                  cmd.Parameters.AddWithValue("@itmCount", castedItem.count);
+                  cmd.ExecuteNonQuery();
+               }
+
+               transaction.Commit();
+            } catch (Exception e) {
+               transaction.Rollback();
+               throw e;
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      // Retrieve the item from the database
+      Item databaseItem = getFirstItem(userId, castedItem.category, castedItem.itemTypeId);
+      return databaseItem;
    }
 
    public static new void transferItem (Item item, int fromUserId, int toUserId, int amount) {

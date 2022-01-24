@@ -14,6 +14,9 @@ public class DiscoveryManager : MonoBehaviour
    // Self
    public static DiscoveryManager self;
 
+   // Which discoveries has this client revealed (client-only)
+   public HashSet<(int instanceId, int placedDiscoveryId)> revealedDiscoveriesClient = new HashSet<(int instanceId, int placedDiscoveryId)>();
+
    #endregion
 
    private void Awake () {
@@ -23,23 +26,14 @@ public class DiscoveryManager : MonoBehaviour
    public void createDiscoveriesForInstance (Instance instance) {
       // Look up the Area associated with this intance
       Area area = AreaManager.self.getArea(instance.areaKey);
-      List<Discovery> spawnedDiscoveries = new List<Discovery>();
 
       // Find all of the possible discoveries in this Area
       foreach (DiscoverySpot spot in area.GetComponentsInChildren<DiscoverySpot>()) {
-         // Have a random chance of spawning a discovery only if the list of possible discoveries isn't empty
-         if (spot.possibleDiscoveryIds.Count > 0 && Random.value <= spot.spawnChance) {
-            Discovery discovery = createDiscoveryOnServer(instance, spot);
-
-            if (discovery != null) {
-               // Keep track of the discoveries that we've created
-               _discoveries.Add(discovery.id, discovery);
-               spawnedDiscoveries.Add(discovery);
-            }
-         }
+         createDiscoveryOnServer(instance, spot);
       }
    }
 
+   [Server]
    public void fetchDiscoveriesOnServer () {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<DiscoveryData> dataList = DB_Main.getDiscoveriesList();
@@ -59,13 +53,30 @@ public class DiscoveryManager : MonoBehaviour
       });
    }
 
+   [Server]
+   public void userEntersInstance (NetEntity player) {
+      // Fetch all discoveries by this user
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<UserDiscovery> discoveries = DB_Main.getUserDiscoveries(player.userId);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Notify the user which discoveries he has uncovered
+            player.rpc.Target_ReceiveFoundDiscoveryList(discoveries);
+         });
+      });
+   }
+
    private Discovery createDiscoveryOnServer (Instance instance, DiscoverySpot spot) {
-      // Get a random discovery from the list of valid discoveries
-      int randomIdIndex = Random.Range(0, spot.possibleDiscoveryIds.Count);
-      int discoveryId = spot.possibleDiscoveryIds[randomIdIndex];
+      int discoveryId = spot.targetDiscoveryID;
 
       if (!_discoveryDatas.ContainsKey(discoveryId)) {
          D.error("Discovery spot contains invalid discovery ID=" + discoveryId);
+         return null;
+      }
+
+      // Check that map editor assigned some id to this discovery spot
+      if (spot.placedDiscoveryId == 0) {
+         D.error("Discovery spot " + spot.targetDiscoveryID + " missing placed prefab id in " + instance.areaKey);
          return null;
       }
 
@@ -73,7 +84,7 @@ public class DiscoveryManager : MonoBehaviour
       Discovery discovery = Instantiate(discoveryPrefab, spot.transform.position, Quaternion.identity, spot.transform);
 
       // Assign a unique ID
-      discovery.id = _lastUsedId++;
+      discovery.placedDiscoveryId = spot.placedDiscoveryId;
 
       // Initialize the discovery
       discovery.assignDiscoveryAndPosition(_discoveryDatas[discoveryId], spot.transform.position);
@@ -84,20 +95,24 @@ public class DiscoveryManager : MonoBehaviour
       // Spawn the network object on the Clients
       NetworkServer.Spawn(discovery.gameObject);
 
+      // Keep track of the discoveries that we've created
+      _discoveries.Add((instance.id, spot.placedDiscoveryId), discovery);
+
       return discovery;
    }
 
-   public Discovery getSpawnedDiscoveryById (int id) {
-      return _discoveries[id];
+   [Server]
+   public bool tryGetSpawnedDiscoveryById (int instanceId, int placedDiscoveryId, out Discovery discovery) {
+      if (_discoveries.TryGetValue((instanceId, placedDiscoveryId), out discovery)) {
+         return true;
+      }
+      return false;
    }
 
    #region Private Variables
 
-   // Stores the spawned discoveries
-   private Dictionary<int, Discovery> _discoveries = new Dictionary<int, Discovery>();
-
-   // The last unique ID we used
-   private int _lastUsedId = 1;
+   // Stores the spawned discoveries, index by instance and map editor assigned ID
+   private Dictionary<(int instanceId, int placedDiscoveryId), Discovery> _discoveries = new Dictionary<(int, int), Discovery>();
 
    // The cached discoveries in the database
    private Dictionary<int, DiscoveryData> _discoveryDatas = new Dictionary<int, DiscoveryData>();

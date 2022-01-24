@@ -327,13 +327,13 @@ public class PrefabsManager : MonoBehaviour {
 
    [Header("VFX Prefabs")]
    // The Prefab we use for creating cannon splashes
-   [SerializeField] private GameObject cannonSplashPrefab;
+   [SerializeField] private GameObject cannonSplashPrefab = default;
 
    // The Prefab we use for creating explosions
-   [SerializeField] private GameObject explosionPrefab;
+   [SerializeField] private GameObject explosionPrefab = default;
 
    // The Prefab we use for creating cannon smoke
-   [SerializeField] private GameObject cannonSmokePrefab;
+   [SerializeField] private GameObject cannonSmokePrefab = default;
 
    #endregion
 }

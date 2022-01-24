@@ -50,8 +50,7 @@ public class LandPowerupManager : MonoBehaviour {
 
                   if (!landPowerupInfo.ContainsKey(newInfo.powerupType) && xmlPair.isEnabled) {
                      newInfo.xmlId = xmlPair.xmlId;
-                     // TODO: Replace getting sprite path from xml data 
-                     newInfo.spriteRef = getLandPowerupSprite(newInfo.powerupType);
+                     newInfo.spriteRef = ImageManager.getSprite(newInfo.iconPath);
                      landPowerupInfo.Add(newInfo.powerupType, newInfo);
                   }
                } catch {

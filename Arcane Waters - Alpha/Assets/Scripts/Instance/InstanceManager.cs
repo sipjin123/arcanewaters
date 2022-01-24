@@ -125,6 +125,9 @@ public class InstanceManager : MonoBehaviour
          }
       }
 
+      // Allow discovery manager to react
+      DiscoveryManager.self.userEntersInstance(player);
+
       // If they're entering their farm, send them their crops
       if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
          CustomFarmManager farmManager = customMapManager as CustomFarmManager;
@@ -140,6 +143,11 @@ public class InstanceManager : MonoBehaviour
       }
 
       return instance;
+   }
+
+   public void addDroppedItemToInstance (DroppedItem item, Instance instance) {
+      instance.entities.Add(item);
+      item.instanceId = instance.id;
    }
 
    public void addDiscoveryToInstance (Discovery discovery, Instance instance) {
@@ -206,6 +214,14 @@ public class InstanceManager : MonoBehaviour
       }
 
       return null;
+   }
+
+   public bool tryGetInstance (int instanceId, out Instance instance) {
+      if (_instances.TryGetValue(instanceId, out instance)) {
+         return true;
+      }
+
+      return false;
    }
 
    public List<Instance> getAllInstances () {

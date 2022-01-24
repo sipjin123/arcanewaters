@@ -82,11 +82,11 @@ public class KeyBindingsPanel : Panel
    [Serializable]
    private class RebindActionMap {
       // Action map key
-      public string key;
+      public string key = default;
       // Display name of the action map
-      public string name;
+      public string name = default;
       // Rebind actions
-      public RebindAction[] rebindActions;
+      public RebindAction[] rebindActions = new RebindAction[0];
       
       public void Init () {
          foreach (var rebindAction in rebindActions) {
@@ -112,11 +112,11 @@ public class KeyBindingsPanel : Panel
    
    #region Private Variables
    // Has the panel been initialized yet
-   private bool _initialized;
+   private bool _initialized = default;
 
    [SerializeField, Reorderable] 
-   private RebindActionMap[] _rebindActionMaps;
+   private RebindActionMap[] _rebindActionMaps = new RebindActionMap[0];
 
-   private List<KeybindingsEntry> _keybindingsEntries;
+   private List<KeybindingsEntry> _keybindingsEntries = new List<KeybindingsEntry>();
    #endregion
 }

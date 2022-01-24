@@ -46,11 +46,11 @@ public class QuestionPanel : MonoBehaviour
 
    // The question text
    [SerializeField]
-   private TextMeshProUGUI _questionText;
+   private TextMeshProUGUI _questionText = default;
 
    // The current option templates
    [SerializeField]
-   private List<QuestionOptionTemplate> _optionButtons;
+   private List<QuestionOptionTemplate> _optionButtons = new List<QuestionOptionTemplate>();
 
    #endregion
 }

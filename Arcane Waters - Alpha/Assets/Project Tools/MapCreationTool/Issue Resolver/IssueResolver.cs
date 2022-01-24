@@ -69,7 +69,7 @@ namespace MapCreationTool.IssueResolving
 
          try {
             maps = (await DB_Main.execAsync(DB_Main.getMaps))
-               .Where(m => m.editorType == EditorType.Sea)
+               .Where(m => true)
                .ToList();
             receivedMaps();
          } catch (Exception ex) {
@@ -92,6 +92,12 @@ namespace MapCreationTool.IssueResolving
       private IEnumerator resolveMapsRoutine () {
          while (resolvedMaps < maps.Count) {
             UI.loadingPanel.display($"Resolving Issues ({ resolvedMaps }/{ maps.Count })");
+
+            // If we have a lot of upload tasks lined up, probably best to not rush resolving, so the memory doesn't build up
+            if (scheduledUpload.Count > 10) {
+               yield return new WaitForEndOfFrame();
+               continue;
+            }
 
             if (scheduledForResolve.TryDequeue(out MapVersion version)) {
                // Create directory for individual map
@@ -163,22 +169,30 @@ namespace MapCreationTool.IssueResolving
                });
             }
             yield return new WaitForEndOfFrame();
+
+            // Force GC
+            GC.Collect();
+            GC.Collect();
+            GC.Collect();
          }
 
          doIOAction(() => File.WriteAllText(rootReportFolder + @"\" + "short summary.txt", formShortSummary(mapSummaries)));
          doIOAction(() => File.WriteAllText(rootReportFolder + @"\" + "long summary.txt", formLongSummary(mapSummaries)));
-         doIOAction(() => File.WriteAllText(rootReportFolder + @"\" + "unresolved short summary.txt", formShortSummary(mapSummaries.Where(ms => ms.misuedTilesAfterResolving != 0))));
+         doIOAction(() => File.WriteAllText(rootReportFolder + @"\" + "unresolved short summary.txt", formShortSummary(mapSummaries.Where(
+            ms => ms.misuedTilesAfterResolving != 0 || !string.IsNullOrEmpty(ms.issueResolvingResult?.validationErrors)))));
 
          StartCoroutine(waitForEndOfUpload());
       }
 
       private static IssueResolvingResult resolveMap () {
          try {
+            Overlord.validateMap(out string valError);
             IssueResolvingResult result = new IssueResolvingResult {
                layerChanges = replaceTileLayers(),
                tilesToPrefabChanges = replaceTilesWithPrefabs(),
                removedUnnecessaryTiles = removeUnnecessaryTiles(),
-               removedDataFields = removeMissingDataFields()
+               removedDataFields = removeMissingDataFields(),
+               validationErrors = valError
             };
 
             return result;
@@ -499,6 +513,7 @@ namespace MapCreationTool.IssueResolving
          public List<TilesToPrefabChangeResult> tilesToPrefabChanges { get; set; }
          public List<PlacedTile> removedUnnecessaryTiles { get; set; }
          public List<string> removedDataFields { get; set; }
+         public string validationErrors { get; set; }
 
          public string formReport () {
             if (exception != null) {
@@ -507,7 +522,8 @@ namespace MapCreationTool.IssueResolving
                return
                   toStringLines(layerChanges.Select(l => l.ToString()), "Layer change - ") +
                   toStringLines(tilesToPrefabChanges.Select(t => t.ToString()), "Tiles to prefab - ") +
-                  toStringLines(removedUnnecessaryTiles.Select(t => t.ToString()), "Removed =");
+                  toStringLines(removedUnnecessaryTiles.Select(t => t.ToString()), "Removed =") +
+                  "Validation errors: " + validationErrors + Environment.NewLine;
             }
          }
       }
@@ -556,13 +572,15 @@ namespace MapCreationTool.IssueResolving
                "Added " + resolvedPrefabsFromTiles + " prefabs instead of " + removedTilesForPrefabs + " tiles" + Environment.NewLine +
                "Removed " + removedUnnecessaryTiles + " unnecessary tiles" + Environment.NewLine +
                "Removed " + removedDataFields + " missing data fields" + Environment.NewLine +
+               "Validation errors: " + (string.IsNullOrEmpty(issueResolvingResult?.validationErrors) ? "no" : "yes") + Environment.NewLine +
                new string('=', 100) + Environment.NewLine;
          }
 
          public string toShortSummary () {
             int resolvedIssues = resolvedTileWrongLayers + resolvedPrefabsFromTiles + removedUnnecessaryTiles + removedDataFields;
             return mapName + " - " + misuedTilesBeforeResolving + "->" + misuedTilesAfterResolving +
-               " misusedTiles. Resolver: " + issueResolverStatus() + ", detected " + resolvedIssues + " issues";
+               " misusedTiles. Resolver: " + issueResolverStatus() + ", detected " + resolvedIssues + " issues, " +
+               "validation errors: " + (string.IsNullOrEmpty(issueResolvingResult?.validationErrors) ? "no" : "yes");
          }
 
          public int resolvedTileWrongLayers

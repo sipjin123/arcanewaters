@@ -106,51 +106,51 @@ public class BooksToolbar : MonoBehaviour {
 
    // The book content input field
    [SerializeField]
-   private TMP_InputField _contentInputField;
+   private TMP_InputField _contentInputField = default;
 
    // The book content input field
    [SerializeField]
-   private InputField _colorPickerHexField;
+   private InputField _colorPickerHexField = default;
 
    // The color picker
    [SerializeField]
-   private ColorPicker _colorPicker;
+   private ColorPicker _colorPicker = default;
 
    // The button to add a bold tag
    [SerializeField]
-   private Button _boldButton;
+   private Button _boldButton = default;
 
    // The button to add an italics tag
    [SerializeField]
-   private Button _italicsButton;
+   private Button _italicsButton = default;
 
    // The button to toggle the color picker
    [SerializeField]
-   private Button _colorPickerButton;
+   private Button _colorPickerButton = default;
    
    // The button to add the color tag
    [SerializeField]
-   private Button _colorPickerAddTagButton;
+   private Button _colorPickerAddTagButton = default;
 
    // The align left button
    [SerializeField]
-   private Button _alignLeftButton;
+   private Button _alignLeftButton = default;
 
    // The align center button
    [SerializeField]
-   private Button _alignCenterButton;
+   private Button _alignCenterButton = default;
 
    // The align right button
    [SerializeField]
-   private Button _alignRightButton;
+   private Button _alignRightButton = default;
 
    // The size button
    [SerializeField]
-   private Button _sizeButton;
+   private Button _sizeButton = default;
 
    // The size slider
    [SerializeField]
-   private BookFontSizeSlider _fontSizeSlider;
+   private BookFontSizeSlider _fontSizeSlider = default;
 
    // The bold tag
    private const string BOLD_TAG = "<b></b>";

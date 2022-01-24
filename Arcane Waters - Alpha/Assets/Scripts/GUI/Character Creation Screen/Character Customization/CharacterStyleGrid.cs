@@ -277,20 +277,20 @@ public class CharacterStyleGrid : MonoBehaviour
 
    // The element prefab
    [SerializeField]
-   private CharacterPortrait _elementPrefab;
+   private CharacterPortrait _elementPrefab = default;
 
    // The sprite layer of the elements this grid should show
    [SerializeField]
-   private Layer _spriteLayer;
+   private Layer _spriteLayer = default;
 
    // The instantiated portraits
-   private List<CharacterPortrait> _portraits;
+   private List<CharacterPortrait> _portraits = default;
 
    // The gender of the icons we're currently showing
-   private Gender.Type _currentGender;
+   private Gender.Type _currentGender = default;
 
    // The layout group
-   private LayoutGroup _layoutGroup;
+   private LayoutGroup _layoutGroup = default;
 
    // Bool to track if the hairstyle was changed
    private bool _isHairstyleChanged = false;

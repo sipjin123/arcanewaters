@@ -353,8 +353,7 @@ namespace MapCreationTool.Serialization
       public const string LEDGE_WIDTH_KEY = "width";
       public const string LEDGE_HEIGHT_KEY = "height";
 
-      public const string DISCOVERY_SPAWN_CHANCE = "spawn chance";
-      public const string POSSIBLE_DISCOVERY = "possible discovery";
+      public const string DISCOVERY_TYPE_ID = "discovery type id";
 
       public const string SHIP_DATA_KEY = "ship data";
       public const string RANDOMIZE_SHIP = "randomize ship";

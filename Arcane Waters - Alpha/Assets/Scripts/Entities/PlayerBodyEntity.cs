@@ -352,6 +352,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             applySittingEmoteMask(show: true);
             transform.position = sittingInfo.chairPosition;
 
+            // Force the facing direction on the client while waiting for the server to send over the actual value
+            facing = sittingInfo.sittingDirection;
+
             if (sittingInfo.sittingDirection == Direction.North) {
                playCompositeAnimation(CompositeAnimationManager.self.KneelingN);
             } else if (sittingInfo.sittingDirection == Direction.South) {

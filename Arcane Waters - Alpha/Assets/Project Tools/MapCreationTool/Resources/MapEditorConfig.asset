@@ -37,6 +37,23 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 15551267f8d51dc46be8ee806e5162d5, type: 2}
   - {fileID: 11400000, guid: 288b8229d1866244594e56f28b688e89, type: 2}
   transparentTile: {fileID: 11400000, guid: 6770d82dbc34c894eb30ee1fd5b3b937, type: 2}
+  seaCurrentTiles:
+  - direction: 3
+    tile: {fileID: 11400000, guid: 7abfd32003bee694eba87757ae33849f, type: 2}
+  - direction: 1
+    tile: {fileID: 11400000, guid: da375aee36dae584fb68edd5d7e5a769, type: 2}
+  - direction: 2
+    tile: {fileID: 11400000, guid: 4b923ad73c804444bbcb30583af4c815, type: 2}
+  - direction: 8
+    tile: {fileID: 11400000, guid: c3ac547f3f6a37947b34e352c16d03b0, type: 2}
+  - direction: 5
+    tile: {fileID: 11400000, guid: 8bc1df8451d55604899f6f86f972fd3b, type: 2}
+  - direction: 4
+    tile: {fileID: 11400000, guid: 7a5b97403e50e554aad56b45bdc26c79, type: 2}
+  - direction: 6
+    tile: {fileID: 11400000, guid: 380f34db863dec248b72476dd599c762, type: 2}
+  - direction: 7
+    tile: {fileID: 11400000, guid: 789e25aea6036de48b115b68688c8afd, type: 2}
   areaLayerIndexes:
   - layer: ground
     index: 0

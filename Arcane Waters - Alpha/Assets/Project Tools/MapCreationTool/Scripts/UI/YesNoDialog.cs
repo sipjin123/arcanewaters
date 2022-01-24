@@ -34,13 +34,13 @@ namespace MapCreationTool
       }
 
       public void yesButton_Click () {
-         onYes?.Invoke();
          hide();
+         onYes?.Invoke();
       }
 
       public void noButton_Click () {
-         onNo?.Invoke();
          hide();
+         onNo?.Invoke();
       }
    }
 }

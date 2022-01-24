@@ -1388,7 +1388,7 @@ public class BattleManager : MonoBehaviour {
    protected int _enemyId = -1;
 
    // All battlers in the game
-   [SerializeField] private List<BattlerData> _allBattlersData;
+   [SerializeField] private List<BattlerData> _allBattlersData = new List<BattlerData>();
 
    #endregion
 }

@@ -39,7 +39,7 @@ public class QuestionOptionTemplate : MonoBehaviour {
 
    // The question text
    [SerializeField] 
-   private TextMeshProUGUI _questionText;
+   private TextMeshProUGUI _questionText = default;
 
    #endregion
 }

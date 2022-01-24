@@ -155,13 +155,15 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                newArmor.durability = item.durability;
                item = newArmor;
                item.data = rawItemData;
-               Sprite newSprite = ImageManager.getSprite(armorData.equipmentIconPath + (Global.player.gender == Gender.Type.Female ? "_female" : ""));
+               if (Global.player != null) {
+                  Sprite newSprite = ImageManager.getSprite(armorData.equipmentIconPath + (Global.player.gender == Gender.Type.Female ? "_female" : ""));
 
-               if (newSprite == null || newSprite == ImageManager.self.blankSprite) {
-                  newSprite = ImageManager.getSprite(armorData.equipmentIconPath);
+                  if (newSprite == null || newSprite == ImageManager.self.blankSprite) {
+                     newSprite = ImageManager.getSprite(armorData.equipmentIconPath);
+                  }
+
+                  icon.sprite = newSprite;
                }
-
-               icon.sprite = newSprite;
                itemSpriteId = armorData.armorType;
                itemTypeId = item.itemTypeId;
             }

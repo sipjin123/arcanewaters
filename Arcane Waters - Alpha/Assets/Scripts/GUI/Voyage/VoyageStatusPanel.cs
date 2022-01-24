@@ -141,7 +141,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
          }
          
          if (_highPingMessageCooldown <= 0) {
-            D.debug($"Ping to the server is critically low: {ping}");
+            D.debug($"Ping to the server is critically high: {ping}");
             _highPingMessageCooldown = 60; // Add log message once per 60 seconds
          }
       }

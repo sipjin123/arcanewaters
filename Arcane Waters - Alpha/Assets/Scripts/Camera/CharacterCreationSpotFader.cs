@@ -132,22 +132,22 @@ public class CharacterCreationSpotFader : ClientMonoBehaviour
    private float _totalEffectTime = 0.5f;
 
    // The world position we're currently focusing on
-   private Vector3 _currentFocusPosition;
+   private Vector3 _currentFocusPosition = default;
 
    // The tween that's changing the spot size
-   private Tween _currentSizeTween;
+   private Tween _currentSizeTween = default;
 
    // The tween that's changing the color of the background
-   private Tween _currentBackgroundColorTween;
+   private Tween _currentBackgroundColorTween = default;
 
    // The tween that's changing the color of the spot
-   private Tween _currentSpotColorTween;
+   private Tween _currentSpotColorTween = default;
 
    // The canvas group
-   private CanvasGroup _canvasGroup;
+   private CanvasGroup _canvasGroup = default;
 
    // The max spot size, enough to go become invisible 
-   private static Vector2 MAX_SPOT_SIZE;
+   private static Vector2 MAX_SPOT_SIZE = default;
 
    // The max size multiplier 
    private const float MAX_SIZE_MULTIPLIER = 3.0f;

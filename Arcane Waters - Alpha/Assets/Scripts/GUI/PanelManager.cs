@@ -84,9 +84,7 @@ public class PanelManager : GenericGameManager {
       }
 
       // Let us easily close panels with the Escape key
-      if (
-         InputManager.self.inputMaster?.UIControl.Close.WasPerformedThisFrame() == true
-      ) {
+      if (InputManager.self.inputMaster?.UIControl.Close.WasPerformedThisFrame() == true) {
          onEscapeKeyPressed();
       }
 
@@ -109,7 +107,15 @@ public class PanelManager : GenericGameManager {
          BottomBar.self.toggleGuildPanel();
       } else if (InputManager.self.inputMaster?.UIShotcuts.ShipList.WasPressedThisFrame() == true) {
          BottomBar.self.toggleShipsPanel();
-      } else if (InputManager.self.inputMaster?.UIShotcuts.Options.WasPressedThisFrame() == true) {
+      } else if (
+         !TitleScreen.self.isShowing() &&
+         !PvpShopPanel.self.isActive() &&
+         InputManager.self.inputMaster?.UIControl.Close.WasPerformedThisFrame() != true &&
+         (
+            InputManager.self.inputMaster?.UIShotcuts.Options.WasPressedThisFrame() == true ||
+            Keyboard.current.escapeKey.wasPressedThisFrame
+         )
+      ) {
          BottomBar.self.toggleOptionsPanel();
       } else if (InputManager.self.inputMaster?.UIShotcuts.Map.WasPressedThisFrame() == true) {
          BottomBar.self.toggleMapPanel();
@@ -161,7 +167,12 @@ public class PanelManager : GenericGameManager {
          AuctionPanel.self.auctionInfoPanel.hide();
       } else if (hasPanelInLinkedList() && !get<PvpStatPanel>(Panel.Type.PvpScoreBoard).isShowing()) {
          unlinkPanel();
-      } else if (!((OptionsPanel) get(Panel.Type.Options)).isShowing()) {
+      } else if (PvpShopPanel.self.isActive()) {
+         PvpShopPanel.self.hideEntirePanel();
+      } else if (
+         !((OptionsPanel) get(Panel.Type.Options)).isShowing() &&
+         !TitleScreen.self.termsOfServicePanel.activeSelf
+      ) {
          // Play SFX
          SoundEffectManager.self.playGuiMenuOpenSfx();
 

@@ -45,7 +45,7 @@ namespace MapCreationTool
 
       // The object showing the size of the eraser based on scale
       [SerializeField]
-      private GameObject eraserOutline;
+      private GameObject eraserOutline = default;
 
       private Preview preview = new Preview();
 
@@ -807,6 +807,15 @@ namespace MapCreationTool
       public int right;
       public int top;
       public int bot;
+
+      public int min () {
+         return Mathf.Min(left, right, top, bot);
+      }
+
+      public int max () {
+         return Mathf.Max(left, right, top, bot);
+      }
+
       public static SidesInt fromOffset (Vector2Int offsetMin, Vector2Int offsetMax) {
          return new SidesInt {
             left = offsetMin.x,

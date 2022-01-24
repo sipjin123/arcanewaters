@@ -198,7 +198,7 @@ public class FarmingTrigger : MonoBehaviour
          // Player might be trying to plant trees
          PlantableTreeManager.self.playerTriesPlanting(
             bodyEntity,
-            (Vector2) bodyEntity.transform.position + Util.getDirectionFromFacing(bodyEntity.facing) * 0.48f);
+            (Vector2) bodyEntity.transform.position + Util.getDirectionFromFacing(bodyEntity.facing) * 0.64f + Vector2.up * 0.3f);
       }
 
       _isFarming = false;

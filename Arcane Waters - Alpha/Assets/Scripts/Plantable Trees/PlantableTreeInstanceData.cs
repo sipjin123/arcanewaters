@@ -4,16 +4,6 @@ public class PlantableTreeInstanceData
 {
    #region Public Variables
 
-   // The types of state the tree can be in
-   public enum StateType
-   {
-      None = 0,
-      Planted = 1,
-      Watered = 2,
-      Tethered = 3,
-      Untethered = 4
-   }
-
    // Unique identifier
    public int id;
 
@@ -29,14 +19,16 @@ public class PlantableTreeInstanceData
    // The position this tree is placed at
    public Vector2 position;
 
-   // The state this tree is at
-   public StateType state;
+   // How many growth stages has this tree completed
+   public int growthStagesCompleted;
 
    // When was the last time we made an update to this tree
    public long lastUpdateTime;
 
    // Marks if this instance has been deleted, not stored in DB
    public bool deleted = false;
+
+
 
    #endregion
 
@@ -52,7 +44,7 @@ public class PlantableTreeInstanceData
       areaKey = DataUtil.getString(dataReader, "areaKey");
       planterUserId = DataUtil.getInt(dataReader, "planterUserId");
       position = new Vector2(DataUtil.getFloat(dataReader, "position_x"), DataUtil.getFloat(dataReader, "position_y"));
-      state = (StateType) DataUtil.getInt(dataReader, "state");
+      growthStagesCompleted = DataUtil.getInt(dataReader, "growthStagesCompleted");
       lastUpdateTime = DataUtil.getLong(dataReader, "lastUpdateTime");
    }
 

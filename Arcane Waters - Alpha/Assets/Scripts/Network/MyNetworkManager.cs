@@ -251,6 +251,9 @@ public class MyNetworkManager : NetworkManager
       // Fetch discovery data from DB
       DiscoveryManager.self.fetchDiscoveriesOnServer();
 
+      // Download plantable trees from DB
+      PlantableTreeManager.self.cachePlantableTreeDefinitions();
+
       // Download all palette configurations from DB
       PaletteSwapManager.self.fetchPaletteData();
 
@@ -379,7 +382,7 @@ public class MyNetworkManager : NetworkManager
                StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, previousAreaKey, "", -1, -1));
                return;
             }
-            D.debug($"OnServerAddPlayer The user {userInfo.username} is assigned to this server.");
+            D.adminLog($"OnServerAddPlayer The user {userInfo.username} is assigned to this server.", D.ADMIN_LOG_TYPE.InstanceProcess);
 
             // If this is a custom map, get the base key
             if (ownerInfo != null) {
@@ -726,7 +729,7 @@ public class MyNetworkManager : NetworkManager
          if (disconnectionReason != DisconnectionReason.Redirection) {
             RPCManager.notifyOnlineStatusToFriends(player.userId, false, "");
          } else {
-            D.debug($"[disconnectClient] Player {player.userId} is redirecting. Friends were not notified.");
+            D.adminLog($"[disconnectClient] Player {player.userId} is redirecting. Friends were not notified.", D.ADMIN_LOG_TYPE.Redirecting);
          }
       }
 

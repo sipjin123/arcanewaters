@@ -281,7 +281,7 @@ public class Weapon : EquippableItem {
 
    // Cached weapon data from xml data variable
    [XmlIgnore]
-   private WeaponStatData _weaponStatData;
+   private WeaponStatData _weaponStatData = default;
 
    #endregion
 }

@@ -144,6 +144,7 @@ public class PvpGame : MonoBehaviour {
          GameStatsManager.self.registerUser(userId, userName, assignedTeam.teamType);
          StartCoroutine(CO_AddPlayerToOngoingGame(userId, userName, assignedTeam));
          player.rpc.Target_SetGameStartTime(player.connectionToClient, _startTime);
+         player.rpc.Target_ResetPvpScoreIndicator(player.connectionToClient, show: this.gameMode == PvpGameMode.CaptureTheFlag);
       }
    }
 
@@ -273,6 +274,7 @@ public class PvpGame : MonoBehaviour {
 
          GameStatsManager.self.unregisterUser(player.userId);
          player.rpc.ResetPvpSilverPanel();
+         player.rpc.Target_ResetPvpScoreIndicator(player.connectionToClient, show: this.gameMode == PvpGameMode.CaptureTheFlag);
 
          PlayerShipEntity playerShip = player.getPlayerShipEntity();
 
@@ -435,6 +437,7 @@ public class PvpGame : MonoBehaviour {
          Util.setLocalXY(player.transform, spawnPosition);
 
          player.rpc.Target_SetGameStartTime(player.connectionToClient, _startTime);
+         player.rpc.Target_ResetPvpScoreIndicator(player.connectionToClient, show: this.gameMode == PvpGameMode.CaptureTheFlag);
 
          _latePlayers.Remove(player.userId);
       }
@@ -666,6 +669,7 @@ public class PvpGame : MonoBehaviour {
          if (player) {
             bool playerWon = (player.pvpTeam == winningTeam);
             player.rpc.Target_ShowPvpPostGameScreen(player.connectionToClient, playerWon, winningTeam, gameGemRewards);
+            player.rpc.Target_ResetPvpScoreIndicator(player.connectionToClient, show: false);
 
             int goldAwarded = (playerWon) ? WINNER_GOLD : LOSER_GOLD;
             int xpAwarded = (playerWon) ? WINNER_XP : LOSER_XP;

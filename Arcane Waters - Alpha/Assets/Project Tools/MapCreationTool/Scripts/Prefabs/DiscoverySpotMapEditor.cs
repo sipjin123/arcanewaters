@@ -11,49 +11,40 @@ namespace MapCreationTool
    {
       #region Public Variables
 
-      // The world space canvas for this discovery
-      public Canvas canvas;
-
       #endregion
 
       private void Awake () {
          _renderer = GetComponent<SpriteRenderer>();
       }
 
-      public override void setSelected (bool selected) {
-         base.setSelected(selected);
-         canvas.gameObject.SetActive(selected || selected);
-      }
-
-      public override void setHovered (bool hovered) {
-         base.setHovered(hovered);
-         canvas.gameObject.SetActive(hovered || selected);
-      }
-
-      public override void placedInEditor () {
-         canvas.gameObject.SetActive(false);
-      }
-
       public override void createdInPalette () {
-         canvas.gameObject.SetActive(false);
+         base.createdInPalette();
+         // Make it smaller in the palette
+         transform.localScale = new Vector3(2, 2, 2);
       }
 
       public void dataFieldChanged (DataField field) {
          string key = field.k.ToLower();
 
-         if (key == DataField.DISCOVERY_SPAWN_CHANCE) {
-            _chanceText.text = $"{Mathf.RoundToInt(field.floatValue * 100)}%";
+         if (key.Contains(DataField.DISCOVERY_TYPE_ID)) {
+            int id = field.intValue;
+
+            if (MapEditorDiscoveriesManager.instance.idToDiscovery.TryGetValue(id, out DiscoveryData d)) {
+               _renderer.sprite = ImageManager.getSprite(d.spriteUrl);
+            } else {
+               _renderer.sprite = _undefinedDiscoverySprite;
+            }
          }
       }
 
       #region Private Variables
 
       // The sprite renderer component
-      private SpriteRenderer _renderer;
+      private SpriteRenderer _renderer = default;
 
-      // The text showing the chances as a 0-100 number
+      // Sprite to use when an undefined discovery is selected
       [SerializeField]
-      private Text _chanceText;
+      Sprite _undefinedDiscoverySprite = default;
 
       #endregion
    }

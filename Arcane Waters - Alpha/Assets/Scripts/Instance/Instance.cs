@@ -951,8 +951,9 @@ public class Instance : NetworkBehaviour
    /// <param name="limitToUserId">If not 0, this item will only be able to be picked up by this user</param>
    /// <param name="lifetimeSeconds">After what time in seconds will this item despawn. 0 If no time limit</param>
    /// <param name="spinWhileDropping">Should the item spin when it's dropping to the ground</param>
+   /// <param name="configureBeforeSpawn">Action that's called on the item before it's spawned to the network, can be used to fine configure the item</param>
    [Server]
-   public void dropNewItem (Item newItem, Vector3 localPosition, Vector2 appearDirection, bool spinWhileDropping = true, int limitToUserId = 0, float lifetimeSeconds = 600) {
+   public void dropNewItem (Item newItem, Vector3 localPosition, Vector2 appearDirection, bool spinWhileDropping = true, int limitToUserId = 0, Action<DroppedItem> configureBeforeSpawn = null, float lifetimeSeconds = 600) {
       // Get area
       Area area = AreaManager.self.getArea(areaKey);
       if (area == null) {
@@ -962,7 +963,6 @@ public class Instance : NetworkBehaviour
       DroppedItem droppedItem = Instantiate(PrefabsManager.self.droppedItemPrefab);
       droppedItem.transform.position = area.transform.TransformPoint(localPosition);
 
-      droppedItem.instanceId = id;
       droppedItem.limitToUserId = limitToUserId;
       droppedItem.lifetimeSeconds = lifetimeSeconds;
       droppedItem.targetItem = newItem;

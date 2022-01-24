@@ -34,7 +34,7 @@ public class ClockTimeTooltip : ClientMonoBehaviour {
 
       // Use Time.fixedDeltaTime to ensure that sound will be played only once
       if (time.Millisecond < Time.fixedDeltaTime * 1000 && time.Second == 0 && time.Minute == 0) {
-         SoundManager.playClipAtPoint(SoundManager.Type.Clock_Chime, transform.position);
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.ON_THE_HOUR_CHIME, transform.position);
       }
    }
 

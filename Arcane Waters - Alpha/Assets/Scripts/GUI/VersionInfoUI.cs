@@ -24,7 +24,7 @@ public class VersionInfoUI : MonoBehaviour {
 
    // The text that will display version information
    [SerializeField]
-   private TMPro.TextMeshProUGUI _text;
+   private TMPro.TextMeshProUGUI _text = default;
 
    #endregion
 }

@@ -193,7 +193,10 @@ public class ChatPanel : MonoBehaviour
       choosingChatType.GetComponent<RectTransform>().position = toolbarRect.position;
 
       // Focus the chat window if the forward slash key is released
-      if (KeyUtils.GetKeyUp(Key.Slash)) {
+      if (
+         !PanelManager.self.hasPanelInLinkedList() &&
+         InputManager.self.inputMaster.UIShotcuts.Chat.WasPressedThisFrame() 
+      ) {
          if (MailPanel.self == null || !MailPanel.self.isWritingMail()) {
             if (!wasJustFocused() && !nameInputField.isFocused) {
                inputField.setText("/");

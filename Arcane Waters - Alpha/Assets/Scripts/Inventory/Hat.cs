@@ -259,7 +259,7 @@ public class Hat : EquippableItem
 
    // Cached Hat data from xml data variable
    [XmlIgnore]
-   private HatStatData _hatStatData;
+   private HatStatData _hatStatData = default;
 
    #endregion
 }

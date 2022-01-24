@@ -41,6 +41,20 @@ namespace MapCreationTool
          hide();
       }
 
+      protected override void hide () {
+         base.hide();
+
+         // Return to the default behaviour of pausing while in background
+         Application.runInBackground = false;
+      }
+
+      protected override void show () {
+         base.show();
+
+         // While we are loading something, make it the application run in the background
+         Application.runInBackground = true;
+      }
+
       // Task, for which we are showing loading panel
       private Task targetTask = null;
    }

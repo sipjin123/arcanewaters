@@ -137,7 +137,7 @@ public class SpriteOutlineRenderer : MonoBehaviour
 
    // The quad we use for displaying the outline
    [SerializeField]
-   private MeshRenderer _quadRenderer;
+   private MeshRenderer _quadRenderer = default;
 
    // The texture to which we draw
    private RenderTexture _renderTexture = null;

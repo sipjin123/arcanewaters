@@ -81,23 +81,23 @@ public class DiscoveriesToolPanel : MonoBehaviour
 
    // UI for Icon 
    [SerializeField]
-   private Button _changeIconButton;
+   private Button _changeIconButton = default;
    [SerializeField]
-   private Image _discoverySourceImage;
+   private Image _discoverySourceImage = default;
    [SerializeField]
-   private Text _sourceImagePath;
+   private Text _sourceImagePath = default;
 
    // Name of the achievement
    [SerializeField]
-   private InputField _discoveryName;
+   private InputField _discoveryName = default;
 
    // The dropdown for rarity selection
    [SerializeField]
-   private TMP_Dropdown _rarityDropdown;
+   private TMP_Dropdown _rarityDropdown = default;
 
    // Description of the achievement
    [SerializeField]
-   private InputField _discoveryDescription;
+   private InputField _discoveryDescription = default;
 
    // The unique ID of this discovery
    private string _discoveryId;

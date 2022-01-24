@@ -92,10 +92,10 @@ public class CharacterCreationQuestionsScreen : MonoBehaviour
 
    // The question panel
    [SerializeField]
-   private QuestionPanel _questionPanel;
+   private QuestionPanel _questionPanel = default;
 
    [SerializeField]
-   private List<QuestionButton> _questionButtons;
+   private List<QuestionButton> _questionButtons = new List<QuestionButton>();
 
    #endregion
 }

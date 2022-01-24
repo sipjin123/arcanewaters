@@ -7,7 +7,8 @@ using UnityEngine.EventSystems;
 using System.Linq;
 using System.Text;
 
-public class AbilityPanel : Panel {
+public class AbilityPanel : Panel
+{
    #region Public Variables
 
    // The container for the ability rows
@@ -118,7 +119,7 @@ public class AbilityPanel : Panel {
          blocker.SetActive(isActive);
       }
    }
-   
+
    public void receiveDataFromServer (AbilitySQLData[] abilityList) {
       toggleBlockers(false);
       scroller.enabled = true;
@@ -162,7 +163,7 @@ public class AbilityPanel : Panel {
                abilityRow.setRowForAbilityData(basicAbilityData, description);
             }
             cachedAbilityList.Add(basicAbilityData);
-         } 
+         }
       }
 
       emptyHandSkillHolder.DestroyChildren();
@@ -176,7 +177,7 @@ public class AbilityPanel : Panel {
       skillInfoHolder.SetActive(true);
    }
 
-   public void displayDescription(Sprite iconSprite, string name, string description, int abilityLevel, int abilityAPCost) {
+   public void displayDescription (Sprite iconSprite, string name, string description, int abilityLevel, int abilityAPCost) {
       descriptionIcon.sprite = iconSprite;
       descriptionName.text = name;
       descriptionText.text = description;
@@ -186,7 +187,7 @@ public class AbilityPanel : Panel {
 
    #region Equip Feature
 
-   private void tryEquipAbility(int abilityId, int slotID) {
+   private void tryEquipAbility (int abilityId, int slotID) {
       if (_equippedAbilitySlots[slotID].isFree()) {
          // Equip a vacant ability slot
          Global.player.rpc.Cmd_UpdateAbility(abilityId, _equippedAbilitySlots[slotID].abilitySlotId);
@@ -284,7 +285,7 @@ public class AbilityPanel : Panel {
             stopGrabbingAbility();
          }
       }
-      
+
       if (_sourceAbilitySlot != null) {
          // Determine which action was performed
          bool droppedInInventory = inventoryDropZone.isInZone(screenPosition);
@@ -330,18 +331,20 @@ public class AbilityPanel : Panel {
    private List<AbilitySlot> _equippedAbilitySlots = new List<AbilitySlot>();
 
    // The data of the ability being dragged
-   private BasicAbilityData _cachedAbility;
+   private BasicAbilityData _cachedAbility = default;
 
    // The cell from which an ability was grabbed
    [SerializeField]
-   private AbilityRow _sourceAbilityCell, _draggedAbilityCell;
+   private AbilityRow _sourceAbilityCell = default;
+   [SerializeField]
+   private AbilityRow _draggedAbilityCell = default;
 
    // The current slot being updated
-   private AbilitySlot _sourceAbilitySlot;
+   private AbilitySlot _sourceAbilitySlot = default;
 
    // The grabbed ability UI that can be dragged
    [SerializeField]
-   private GrabbedAbility _draggableAbility;
+   private GrabbedAbility _draggableAbility = default;
 
    #endregion
 }

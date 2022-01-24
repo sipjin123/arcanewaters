@@ -26,6 +26,9 @@ public class ServerOverview
    // Information about all instances
    public List<InstanceOverview> instances = new List<InstanceOverview>();
 
+   // Uptime in seconds
+   public double uptime;
+
    #endregion
 
    #region Private Variables

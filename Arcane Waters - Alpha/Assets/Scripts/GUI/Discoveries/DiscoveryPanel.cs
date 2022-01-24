@@ -35,7 +35,7 @@ public class DiscoveryPanel : Panel {
       discoveryDescriptionText.SetText(data.description);
       discoveryImage.sprite = ImageManager.getSprite(data.spriteUrl);
       setupRarityStars(data.rarity);
-      base.show();
+      PanelManager.self.linkIfNotShowing(Type.Discovery);
    }
 
    private void setupRarityStars (Rarity.Type rarity) {

@@ -28,8 +28,8 @@ public class SeaMine : NetworkBehaviour, IObserver
    // A reference to the collider for the explosion effector
    public CircleCollider2D explosionEffectorCollider;
 
-   // A reference to the sprite renderer for this mine
-   public SpriteRenderer spriteRenderer;
+   // References to the sprite renderers for this mine
+   public SpriteRenderer barrelSpriteRenderer, waterSpriteRenderer;
 
    // The color of the detection range indicator circle
    public Color detectionRangeColor;
@@ -37,14 +37,17 @@ public class SeaMine : NetworkBehaviour, IObserver
    // A reference to the mesh renderer that displays our explosion range
    public MeshRenderer detectionRangeRenderer;
 
-   // A reference to the animator for this sea mine
-   public Animator animator;
+   // References to the animators for this sea mine
+   public Animator barrelAnimator, waterAnimator;
 
    // A reference to the game object that will display the explosion visual effect
    public GameObject explosionVisualEffect;
 
    // A reference to the sprite group controlling the alpha value of the explosion sprites
    public SpriteGroup explosionSpriteGroup;
+
+   // A reference to the sprite outline for this mine
+   public SpriteOutline spriteOutline;
 
    public enum MineState { None = 0, Armed = 1, Triggered = 2, Exploded = 3 }
 
@@ -60,6 +63,16 @@ public class SeaMine : NetworkBehaviour, IObserver
       circleStartColor.a = 0.0f;
       detectionRangeRenderer.material.SetColor("_Color", circleStartColor);
       detectionRangeRenderer.material.SetVector("_Position", transform.position);
+   }
+
+   private void Start () {
+      PlayerShipEntity globalPlayerShip = getGlobalPlayerShip();
+      SeaEntity sourceEntity = SeaManager.self.getEntity(sourceEntityNetId);
+      
+      if (globalPlayerShip != null && sourceEntity != null) {
+         Color outlineColor = (sourceEntity.isEnemyOf(globalPlayerShip)) ? Color.red : Color.green;
+         spriteOutline.setNewColor(outlineColor);
+      }
    }
 
    public void init (int instanceId, uint sourceEntityNetId, float explosionRadius, float explosionForce) {
@@ -92,6 +105,12 @@ public class SeaMine : NetworkBehaviour, IObserver
             bool shouldShowRadius = (distanceFromMine <= _explosionRadius * 1.5f);
             lerpTargetAlpha = (shouldShowRadius) ? 0.5f : 0.0f;
          }
+      } else if (_state == MineState.Triggered) {
+         // Update material flash
+         float timeSinceTriggered = (float)(NetworkTime.time - _timeTriggered);
+         int frameConversion = Mathf.Clamp(Mathf.FloorToInt((timeSinceTriggered / EXPLOSION_DELAY) * _mineFlashAmount.Length), 0, _mineFlashAmount.Length - 1);
+         float flashAmount = _mineFlashAmount[frameConversion];
+         barrelSpriteRenderer.material.SetFloat("_FlashAmount", flashAmount);
       }
 
       _detectionRangeCircleAlpha = Mathf.Lerp(_detectionRangeCircleAlpha, lerpTargetAlpha, Time.deltaTime * 1.5f);
@@ -102,8 +121,15 @@ public class SeaMine : NetworkBehaviour, IObserver
    }
 
    private void updateVisualsForState (MineState newState) {
+      if (Util.isBatch()) {
+         return;
+      }
+      
       if (newState == MineState.Triggered) {
-         animator.SetTrigger("Trigger");
+         barrelAnimator.SetTrigger("Trigger");
+         waterAnimator.SetTrigger("Trigger");
+      } else if (newState == MineState.Armed) {
+         spriteOutline.setVisibility(true);
       }
    }
 
@@ -203,7 +229,10 @@ public class SeaMine : NetworkBehaviour, IObserver
    }
 
    private IEnumerator CO_DestroyDelayed () {
-      yield return new WaitForSeconds(1.5f);
+      yield return new WaitForSeconds(0.5f);
+      explosionEffector.gameObject.SetActive(false);
+
+      yield return new WaitForSeconds(1.0f);
       NetworkServer.Destroy(gameObject);
    }
 
@@ -217,9 +246,10 @@ public class SeaMine : NetworkBehaviour, IObserver
       fadeSequence.Append(DOTween.To(() => explosionSpriteGroup.alpha, (x) => explosionSpriteGroup.alpha = x, 0.0f, 0.75f));
       fadeSequence.AppendCallback(() => Destroy(explosionVisualEffect.gameObject));
 
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.SHIP_CANNON, this.transform.position);
+      //SoundEffectManager.self.playFmodSfx(SoundEffectManager.SHIP_CANNON, this.transform.position);
 
-      spriteRenderer.enabled = false;
+      barrelSpriteRenderer.enabled = false;
+      waterSpriteRenderer.enabled = false;
       _collider.enabled = false;
    }
 
@@ -276,6 +306,9 @@ public class SeaMine : NetworkBehaviour, IObserver
 
    // A reference to the global player's ship
    private PlayerShipEntity _globalPlayerShip = null;
+
+   // The 'FlashAmount' value we will pass to the sea mine shader over time, while it is counting down to detonate
+   private readonly float[] _mineFlashAmount = { 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0,0f, 1.0f, 1.0f };
 
    #endregion
 }

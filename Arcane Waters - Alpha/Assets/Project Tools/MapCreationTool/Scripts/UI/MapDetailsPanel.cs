@@ -30,14 +30,14 @@ namespace MapCreationTool
       [SerializeField]
       private Dropdown pvpArenaSizeDropdown = null;
       [SerializeField]
-      private Toggle spawnsSeaMonsterToggle;
+      private Toggle spawnsSeaMonsterToggle = default;
 
-      private Map targetMap;
-      private (int id, string displayText)[] sourceOptions;
-      private List<(Area.SpecialType type, string displayText)> typeOptions;
-      private List<(WeatherEffectType type, string displayText)> weatherOptions;
-      private List<(PvpGameMode type, string displayText)> pvpGameModeOptions;
-      private List<(PvpArenaSize type, string displayText)> pvpArenaSizeOptions;
+      private Map targetMap = default;
+      private (int id, string displayText)[] sourceOptions = new (int id, string displayText)[0];
+      private List<(Area.SpecialType type, string displayText)> typeOptions = new List<(Area.SpecialType type, string displayText)>();
+      private List<(WeatherEffectType type, string displayText)> weatherOptions = new List<(WeatherEffectType type, string displayText)>();
+      private List<(PvpGameMode type, string displayText)> pvpGameModeOptions = new List<(PvpGameMode type, string displayText)>();
+      private List<(PvpArenaSize type, string displayText)> pvpArenaSizeOptions = new List<(PvpArenaSize type, string displayText)>();
 
       private void OnEnable () {
          // Set the type options and their values in the dropdown

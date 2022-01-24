@@ -5,11 +5,11 @@ using UnityEngine.Networking;
 
 public class SteamUserTest : MonoBehaviour
 {
-   private Vector2 m_ScrollPos;
-   private byte[] m_Ticket;
-   private uint m_pcbTicket;
-   private HAuthTicket m_HAuthTicket;
-   private GameObject m_VoiceLoopback;
+   private Vector2 m_ScrollPos = default;
+   private byte[] m_Ticket = default;
+   private uint m_pcbTicket = default;
+   private HAuthTicket m_HAuthTicket = default;
+   private GameObject m_VoiceLoopback = default;
 
    protected Callback<SteamServersConnected_t> m_SteamServersConnected;
    protected Callback<SteamServerConnectFailure_t> m_SteamServerConnectFailure;
@@ -25,7 +25,7 @@ public class SteamUserTest : MonoBehaviour
    private CallResult<EncryptedAppTicketResponse_t> OnEncryptedAppTicketResponseCallResult;
    private CallResult<StoreAuthURLResponse_t> OnStoreAuthURLResponseCallResult;
    private CallResult<MarketEligibilityResponse_t> OnMarketEligibilityResponseCallResult;
-   private CallResult<DurationControl_t> OnDurationControlCallResult;
+   private CallResult<DurationControl_t> OnDurationControlCallResult = default;
 
    public void OnEnable () {
       m_SteamServersConnected = Callback<SteamServersConnected_t>.Create(OnSteamServersConnected);

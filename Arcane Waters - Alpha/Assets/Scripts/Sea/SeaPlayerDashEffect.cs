@@ -9,58 +9,56 @@ public class SeaPlayerDashEffect : ClientMonoBehaviour
    #region Public Variables
 
    // Possible particles that can be used by effects
-   public Sprite[] possibleParticles = new Sprite[0];
+   public Texture2D[] possibleParticles = new Texture2D[0];
 
    // Parent transform that holds the charge effect
    public Transform chargeEffectParent;
-
-   // How many particles are in the charge animation
-   public int chargeParticleCount = 5;
-
-   // Charge animation interval
-   public float chargeAnimationInterval = 1f;
 
    // Range of charge particles in an interval
    public int minChargeParticles = 5;
    public int maxChargeParticles = 10;
 
+   // Range of alpha of charge particles
+   public float minChargeParticlesScale = 1f;
+   public float maxChargeParticlesScale = 1.25f;
+
+   // Range of charge particles in an interval
+   public float minChargeParticlesAlpha = 0.25f;
+   public float maxChargeParticlesAlpha = 1f;
+
    // Distance of charge particles from the center of the ship
-   public float chargeParticleDistance = 0.15f;
+   public float chargeParticleDistance = 0.0f;
 
    // Template of the charge particle
-   public SimpleAnimation chargeParticleTemplate;
+   public SpriteRenderer chargeParticleTemplate;
 
    #endregion
 
    private void Start () {
-      _chargeEffectActive = false;
       chargeEffectParent.gameObject.SetActive(false);
 
       chargeParticleTemplate.gameObject.SetActive(false);
       // Create a bunch of charge particles
       for (int i = 0; i < maxChargeParticles; i++) {
-         SimpleAnimation chargeParticle = Instantiate(chargeParticleTemplate, chargeEffectParent);
+         SpriteRenderer chargeParticle = Instantiate(chargeParticleTemplate, chargeEffectParent);
          chargeParticle.gameObject.SetActive(true);
          _chargeParticles.Add(chargeParticle);
+         _particleTextureIndexes.Add(0);
+      }
+
+      // Cache particle frames
+      foreach (Texture2D t in possibleParticles) {
+         _possibleParticlesAnims.Add(ImageManager.getSprites(t));
       }
    }
 
-   private void Update () {
-      if (_chargeEffectActive) {
-         if (Time.time - _lastChargeAnimationInterval > chargeAnimationInterval) {
-            playChargeAnimationInterval();
+   private void playChargeAnimation (float time) {
+      for (int i = 0; i < _chargeParticles.Count; i++) {
+         if (_chargeParticles[i].gameObject.activeSelf) {
+            Sprite[] frames = _possibleParticlesAnims[_particleTextureIndexes[i]];
+            _chargeParticles[i].sprite = frames[Mathf.Clamp((int) (time * frames.Length), 0, frames.Length - 1)];
          }
       }
-   }
-
-   private void playChargeAnimationInterval () {
-      randomizeChargeParticles();
-
-      foreach (SimpleAnimation a in _chargeParticles) {
-         a.resetAnimation();
-      }
-
-      _lastChargeAnimationInterval = Time.time;
    }
 
    private void randomizeChargeParticles () {
@@ -77,41 +75,51 @@ public class SeaPlayerDashEffect : ClientMonoBehaviour
          if (i < count) {
             float angle = initialOffset + i * angleDelta + Random.Range(angleDelta * 0.1f, angleDelta * 0.9f);
             _chargeParticles[i].transform.rotation = Quaternion.Euler(0, 0, angle);
+            _chargeParticles[i].enabled = true;
 
             // For each particle, assign a random sprite
             SpriteRenderer sr = _chargeParticles[i].GetComponent<SpriteRenderer>();
-            sr.sprite = possibleParticles[Random.Range(0, possibleParticles.Length)];
+            _particleTextureIndexes[i] = Random.Range(0, possibleParticles.Length);
             sr.flipX = Random.value > 0.5f;
 
             // Pull it away from the center
             _chargeParticles[i].transform.localPosition = _chargeParticles[i].transform.up.normalized * chargeParticleDistance;
+
+            _chargeParticles[i].transform.localScale = Vector3.one * Random.Range(minChargeParticlesScale, maxChargeParticlesScale);
+            Util.setAlpha(_chargeParticles[i], Random.Range(minChargeParticlesAlpha, maxChargeParticlesAlpha));
          }
       }
    }
 
-   public void setChargeEffectActive (bool active) {
-      if (active == _chargeEffectActive) {
-         return;
+   public void setChargeEffect (float amount) {
+      if (amount >= 1f || amount <= 0f) {
+         chargeEffectParent.gameObject.SetActive(false);
+         randomizeChargeParticles();
+      } else {
+         chargeEffectParent.gameObject.SetActive(true);
+         playChargeAnimation(amount);
       }
+   }
 
-      _chargeEffectActive = active;
-      chargeEffectParent.gameObject.SetActive(active);
-
-      if (active) {
-         playChargeAnimationInterval();
-      }
+   public void playDashEffect (Vector2 boostDirection) {
+      _dashEffect.transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(boostDirection.y, boostDirection.x) * Mathf.Rad2Deg);
+      _dashEffect.Play();
    }
 
    #region Private Variables
 
-   // Is the charge effect active
-   private bool _chargeEffectActive = false;
-
-   // When was the last time we played charge animation interval
-   private float _lastChargeAnimationInterval;
-
    // All the charge particles
-   private List<SimpleAnimation> _chargeParticles = new List<SimpleAnimation>();
+   private List<SpriteRenderer> _chargeParticles = new List<SpriteRenderer>();
+
+   // Index of texture we are using for the corresponding charge particle
+   private List<int> _particleTextureIndexes = new List<int>();
+
+   // Particles with all their frames
+   private List<Sprite[]> _possibleParticlesAnims = new List<Sprite[]>();
+
+   // Reference to the dash wind gust effect
+   [SerializeField]
+   private ParticleSystem _dashEffect = default;
 
    #endregion
 }

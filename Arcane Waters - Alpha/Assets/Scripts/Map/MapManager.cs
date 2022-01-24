@@ -223,7 +223,7 @@ public class MapManager : MonoBehaviour
                RectInt rect = new RectInt(i, j, TILEMAP_COLLIDERS_CHUNK_SIZE, TILEMAP_COLLIDERS_CHUNK_SIZE);
 
                // Instantiate the colliders
-               mapColliderChunks.Add(MapImporter.instantiateTilemapColliderChunk(exportedProject, result.collisionTilemapParent,
+               mapColliderChunks.Add(MapImporter.instantiateTilemapColliderChunk(result.area.areaKey, exportedProject, result.collisionTilemapParent,
                   exportedProject.biome, rect));
 
                PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.MapCreation, 0.1f + (0.8f / chunkCount) * mapColliderChunks.Count);

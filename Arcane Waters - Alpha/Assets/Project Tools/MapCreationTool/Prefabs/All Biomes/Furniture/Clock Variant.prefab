@@ -112,25 +112,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 1
-  blurSize: 0
-  color: {r: 1, g: 1, b: 1, a: 1}
-  blurAlphaMultiplier: 0.7
-  blurAlphaChoke: 1
-  invertBlur: 0
-  alphaThreshold: 0.05
-  buffer: 0
-  includeChildren: 0
-  childLayers:
-    serializedVersion: 2
-    m_Bits: 1
-  ignoreChildNames: []
-  sortMethod: 1
-  isAnimated: 1
-  useExportedFrame: 0
-  customFrameName: 
-  generatesOnStart: 0
-  generatesOnValidate: 1
+  ignoredRenderers: []
+  _renderers: []
 --- !u!1001 &9182118040492055470
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -237,6 +220,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RootOrder
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4931598266498720653, guid: de332937a01ace3448613aa9f39ca474,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.1
       objectReference: {fileID: 0}
     - target: {fileID: 5597599835543672081, guid: de332937a01ace3448613aa9f39ca474,
         type: 3}

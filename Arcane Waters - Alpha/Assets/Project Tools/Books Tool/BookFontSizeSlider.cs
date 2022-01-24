@@ -30,15 +30,15 @@ public class BookFontSizeSlider : MonoBehaviour {
 
    // The slider
    [SerializeField]
-   private Slider _slider;
+   private Slider _slider = default;
 
    // The label showing the percent
    [SerializeField]
-   private Text _sizeLabel;
+   private Text _sizeLabel = default;
 
    // The apply button
    [SerializeField]
-   private Button _applyButton;
+   private Button _applyButton = default;
 
    #endregion
 }

@@ -188,6 +188,10 @@ public class LoadingScreen : FullScreenSeparatePanel
       errorSection.SetActive(false);
    }
 
+   public void setAlpha (float f) {
+      mainCanvasGroup.alpha = f;
+   }
+
    #region Private Variables
 
    // List of processes that require the loading screen at a given point of time

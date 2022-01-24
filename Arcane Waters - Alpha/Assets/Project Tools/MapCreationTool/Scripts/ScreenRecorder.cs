@@ -91,6 +91,10 @@ namespace MapCreationTool
          return bytes;
       }
 
+      public static Texture2D recordTexture () {
+         return instance.recordScreen();
+      }
+
       private Texture2D recordScreen () {
          RenderTexture renTex = new RenderTexture(recordingPixelSize.x, recordingPixelSize.y, COLOR_DEPTH);
          cam.targetTexture = renTex;

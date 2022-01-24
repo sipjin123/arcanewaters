@@ -131,8 +131,6 @@ public class TreasureManager : MonoBehaviour {
                if (!validUserIds.Contains(entity.userId)) {
                   validUserIds.Add(entity.userId);
                }
-            } else {
-               D.debug("Null net entity for user: " + attacker);
             }
          }
 

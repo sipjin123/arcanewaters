@@ -171,11 +171,11 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
    // The perk icon
    [Header("References")]
    [SerializeField]
-   private Image _icon;
+   private Image _icon = default;
 
    // The perk border image
    [SerializeField]
-   private Image _perkBorder;
+   private Image _perkBorder = default;
 
    // The duration of the fade in of the info when hovering over the icon
    [Header("Animation")]
@@ -188,28 +188,28 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
    private float _iconMoveUpOnHoverAmount = 0.25f;
 
    // The Sequence controlling the fade in/out of info
-   private Sequence _fadeInfoSequence;
+   private Sequence _fadeInfoSequence = default;
 
    // The original scale of the icon
-   private float _originalPivotY;
+   private float _originalPivotY = default;
 
    // The transform as rect transform
-   private RectTransform _rectTransform;
+   private RectTransform _rectTransform = default;
 
    // The perk data 
-   private PerkData _perkData;
+   private PerkData _perkData = default;
 
    // The tooltip text
-   private string _tooltipText;
+   private string _tooltipText = default;
 
    // The assigned points tooltip text
-   private string _tooltipAssignedPointsText;
+   private string _tooltipAssignedPointsText = default;
 
    // The material of the border and icon
-   private Material _iconMaterial;
+   private Material _iconMaterial = default;
 
    // The ID for the grayscale property in the shader
-   private int _grayscaleIntensityPropertyId;
+   private int _grayscaleIntensityPropertyId = default;
 
    #endregion
 }

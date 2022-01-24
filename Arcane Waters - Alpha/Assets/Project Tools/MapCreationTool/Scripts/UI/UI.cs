@@ -53,10 +53,6 @@ namespace MapCreationTool
 
       [SerializeField]
       private DrawBoard drawBoard = null;
-      [SerializeField]
-      private Overlord overlord = null;
-
-      private CanvasScaler canvasScaler = null;
 
       private int[] boardSizes = { 64, 128, 256 };
 
@@ -136,7 +132,6 @@ namespace MapCreationTool
 
       private void Awake () {
          self = this;
-         canvasScaler = GetComponent<CanvasScaler>();
          yesNoDialog = GetComponentInChildren<YesNoDialog>();
          mapList = GetComponentInChildren<MapListPanel>();
          saveAsPanel = GetComponentInChildren<SaveAsPanel>();

@@ -161,7 +161,7 @@ public class ShipEntity : SeaEntity
 
    public override void playAttackSound () {
       // Play a sound effect
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.SHIP_CANNON, this.transform.position);
+      //SoundEffectManager.self.playFmodSfx(SoundEffectManager.SHIP_CANNON, this.transform.position);
    }
 
    public void updateSkin (Ship.SkinType newSkinType) {

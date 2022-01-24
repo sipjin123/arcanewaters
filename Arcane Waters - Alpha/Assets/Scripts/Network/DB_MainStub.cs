@@ -455,6 +455,17 @@ public class DB_MainStub : MonoBehaviour
       return new List<DiscoveryData>();
    }
 
+   public static UserDiscovery getUserDiscovery (int userId, int placedDiscoveryId) {
+      return null;
+   }
+
+   public static List<UserDiscovery> getUserDiscoveries (int userId) {
+      return new List<UserDiscovery>();
+   }
+
+   public static void setUserDiscovery (UserDiscovery discovery) {
+   }
+
    public static void completeStepForUser (int userId, int stepId) {
    }
 
@@ -794,6 +805,10 @@ public class DB_MainStub : MonoBehaviour
       return new List<UserInfo>();
    }
 
+   public static List<UserInfo> getDeletedUsersForAccount (int accId, int userId = 0) {
+      return new List<UserInfo>();
+   }
+
    public static List<PlantableTreeDefinition> getPlantableTreeDefinitions (object command) {
       return new List<PlantableTreeDefinition>();
    }
@@ -835,6 +850,10 @@ public class DB_MainStub : MonoBehaviour
    }
 
    public static List<Armor> getArmorForUser (int userId) {
+      return null;
+   }
+
+   public static List<Hat> getHatsForUser (int userId) {
       return null;
    }
 
@@ -929,7 +948,7 @@ public class DB_MainStub : MonoBehaviour
    public static Dictionary<int, UserInfo> getUserInfosByIds (IEnumerable<int> userIds) {
       return new Dictionary<int, UserInfo>();
    }
-   
+
    public static UserInfo getUserInfo (string userName) {
       return null;
    }
@@ -994,6 +1013,10 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static UserObjects getUserObjectsForDeletedUser (int userId) {
+      return null;
+   }
+
    public static string getUserName (int userId) {
       return "";
    }
@@ -1028,6 +1051,18 @@ public class DB_MainStub : MonoBehaviour
 
    public static void deleteUser (int accountId, int userId) {
 
+   }
+
+   public static void deleteUserSoft (int accountId, int userId) {
+
+   }
+
+   public static void restoreUser (int accountId, int userId) {
+
+   }
+
+   public static bool doesUserExists (int userId) {
+      return false;
    }
 
    public static RemoteSetting getRemoteSetting (string settingName) {

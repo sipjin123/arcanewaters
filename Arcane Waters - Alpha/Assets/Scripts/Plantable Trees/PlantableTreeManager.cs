@@ -17,21 +17,32 @@ public class PlantableTreeManager : MonoBehaviour
 
    private void Awake () {
       self = this;
+
+      _overlapCheckPoints.Add(Vector2.zero);
+      for (int i = 0; i < 16; i++) {
+         float a = i * (360f / 16f);
+         _overlapCheckPoints.Add(new Vector2(
+            0.16f * Mathf.Cos(i * a * Mathf.Deg2Rad),
+            0.16f * Mathf.Sin(i * a * Mathf.Deg2Rad)
+            ));
+      }
    }
 
    [Client]
    public void applyTreeDefinitions (PlantableTreeDefinition[] def) {
-      D.log("Using database to fetch tree definition! Refactor to XML workflow later.");
       _treeDefinitions = def.ToDictionary(d => d.id, d => d);
+   }
+
+   [Server]
+   public void cachePlantableTreeDefinitions () {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         _treeDefinitions = DB_Main.exec(cmd => DB_Main.getPlantableTreeDefinitions(cmd)).ToDictionary(d => d.id, d => d);
+      });
    }
 
    [Server]
    public void playerEnteredFarm (NetEntity player, string areaKey) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-
-         D.log("Using database to fetch tree definition! Refactor to XML workflow later.");
-         _treeDefinitions = DB_Main.exec(cmd => DB_Main.getPlantableTreeDefinitions(cmd)).ToDictionary(d => d.id, d => d);
-
          PlantableTreeInstanceData[] instances = DB_Main.exec(cmd => DB_Main.getPlantableTreeInstances(cmd, areaKey)).ToArray();
 
          // Back to the Unity thread
@@ -128,6 +139,11 @@ public class PlantableTreeManager : MonoBehaviour
          return false;
       }
 
+      // Check that we are not processing another plant at the moment
+      if (_plantingIn.Contains(areaKey)) {
+         return false;
+      }
+
       // Check that we can assosiate a tree definition with this seedbag
       int seedBagId = equipedData.sqlId;
       PlantableTreeDefinition treeDefinition = null;
@@ -147,16 +163,17 @@ public class PlantableTreeManager : MonoBehaviour
       }
 
       // Make sure exact spot is not occupied and that there is a bit of space around it
-      int count = Physics2D.OverlapCircle(
-         area.transform.TransformPoint(position),
-         0.16f,
-         new ContactFilter2D { layerMask = LayerMask.NameToLayer("PlayerBipeds") },
-         _colliderBuffer);
-
-      for (int i = 0; i < count; i++) {
-         if (!_colliderBuffer[i].isTrigger) {
+      var cf = new ContactFilter2D().NoFilter();
+      cf.layerMask = Physics2D.AllLayers;
+      cf.useTriggers = false;
+      foreach (Vector2 p in _overlapCheckPoints) {
+         Debug.Log(position + p);
+         int count = Physics2D.OverlapPoint(area.transform.TransformPoint(position + p), cf, _colliderBuffer);
+         if (count > 0) {
+            Debug.Log(_colliderBuffer[0].name);
             return false;
          }
+
       }
 
       return true;
@@ -188,9 +205,13 @@ public class PlantableTreeManager : MonoBehaviour
          position = position,
          treeDefinitionId = treeDefinition.id,
          planterUserId = planter.userId,
-         state = PlantableTreeInstanceData.StateType.Planted,
+         growthStagesCompleted = 0,
          lastUpdateTime = TimeManager.self.getLastServerUnixTimestamp()
       };
+
+      if (!_plantingIn.Contains(areaKey)) {
+         _plantingIn.Add(areaKey);
+      }
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Remove a seed from the bag
@@ -198,6 +219,9 @@ public class PlantableTreeManager : MonoBehaviour
 
          // Stop the process if there were not enough seeds
          if (!success) {
+            if (_plantingIn.Contains(areaKey)) {
+               _plantingIn.Remove(areaKey);
+            }
             return;
          }
 
@@ -211,6 +235,9 @@ public class PlantableTreeManager : MonoBehaviour
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (_plantingIn.Contains(areaKey)) {
+               _plantingIn.Remove(areaKey);
+            }
             // Check that area still exists (might be destroyed, that's fine, changes are stored in the database)
             if (area != null) {
                // Notify clients to update their trees
@@ -222,73 +249,11 @@ public class PlantableTreeManager : MonoBehaviour
    }
 
    [Client]
-   public void playerClickedTree (int treeId) {
-      if (canPlayerTetherUntether(Global.player, treeId, true)) {
-         Global.player.rpc.Cmd_TetherUntetherTree(treeId);
-      }
-   }
-
-   private bool canPlayerTetherUntether (NetEntity player, int treeId, bool showCantEffects) {
-      // Get the tree
-      if (!MapManager.self.tryGetPlantableTree(treeId, out PlantableTree tree)) {
-         return false;
-      }
-      if (!_treeDefinitions.TryGetValue(tree.data.treeDefinitionId, out PlantableTreeDefinition treeDef)) {
-         return false;
-      }
-
-      // Get the area
-      Area area = AreaManager.self.getArea(tree.data.areaKey);
-      if (area == null) {
-         return false;
-      }
-
-      // Make sure tree is in a state where it can be tethered/untethered
-      if (!treeDef.canTetherUntether(tree.data, TimeManager.self.getLastServerUnixTimestamp())) {
-         return false;
-      }
-
-      // Make sure player is in range
-      if (!Util.distanceLessThan2D(player.sortPoint.transform.position, tree.transform.position, TETHER_DISTANCE)) {
-         if (showCantEffects) {
-            FloatingCanvas.instantiateAt(tree.transform.position).asTooFar();
-         }
-         return false;
-      }
-
-      return true;
-   }
-
-   [Server]
-   public void tetherUntetherTree (BodyEntity player, int treeId) {
-      if (!canPlayerTetherUntether(player, treeId, false)) {
-         return;
-      }
-
-      MapManager.self.tryGetPlantableTree(treeId, out PlantableTreeInstanceData treeData);
-      _treeDefinitions.TryGetValue(treeData.treeDefinitionId, out PlantableTreeDefinition treeDef);
-      Area area = AreaManager.self.getArea(treeData.areaKey);
-
-      // Tether untether tree
-      treeDef.tetherUntetherTree(treeData, TimeManager.self.getLastServerUnixTimestamp());
-
-      // Shove the update to the database in the background
-      Util.dbBackgroundExec((cmd) => DB_Main.updatePlantableTreeInstance(cmd, treeData));
-
-      // Update the tree and notify user of it
-      player.rpc.Rpc_UpdatePlantableTrees(treeId, treeData.areaKey, treeData);
-      updatePlantableTrees(treeId, area, treeData);
-   }
-
-
-   [Client]
    public void playerSwungAtTree (NetEntity player, PlantableTree tree) {
       // Called when player wings any item while being close to a tree
       if (canPlayerWater(player, tree)) {
          Global.player.rpc.Cmd_WaterTree(tree.data.id);
-      }
-
-      if (canPlayerChop(player, tree)) {
+      } else if (canPlayerChop(player, tree)) {
          Global.player.rpc.Cmd_ChopTree(tree.data.id);
          if (!Util.isHost()) {
             tree.receiveChop();
@@ -347,6 +312,7 @@ public class PlantableTreeManager : MonoBehaviour
 
       // Apply a chop to the tree
       tree.receiveChop();
+      player.rpc.Rpc_ReceiveChopTreeVisual(treeId, player.userId);
 
       // Check if the tree has been chopped, destroy if so
       if (tree.currentChopCount >= 3) {
@@ -358,9 +324,18 @@ public class PlantableTreeManager : MonoBehaviour
          updatePlantableTrees(treeId, area, null);
 
          // Drop resources
-         // TODO
-      } else {
-         player.rpc.Rpc_ReceiveChopTreeVisual(treeId);
+         if (InstanceManager.self.tryGetInstance(player.instanceId, out Instance instance)) {
+            instance.dropNewItem(
+               treeDef.getHarvestLoot(),
+               treeData.position,
+               new Vector2(0.7f * (Random.value > 0.5f ? 1f : -1f), 0.7f).normalized,
+               false,
+               player.userId,
+               (droppedItem) => {
+                  droppedItem.appearDistanceMin = 0.16f;
+                  droppedItem.appearDistanceMax = 0.32f;
+               });
+         }
       }
    }
 
@@ -421,7 +396,13 @@ public class PlantableTreeManager : MonoBehaviour
    private LinkedList<PlantableTreeInstanceData> _queuedTreeData = new LinkedList<PlantableTreeInstanceData>();
 
    // Buffer for checking collider overlap
-   private Collider2D[] _colliderBuffer = new Collider2D[20];
+   private Collider2D[] _colliderBuffer = new Collider2D[4];
+
+   // Points which we will check to determine if a position of a tree is occupied by other colliders
+   private List<Vector2> _overlapCheckPoints = new List<Vector2>();
+
+   // Stores which areas are processing a planting action right now
+   private HashSet<string> _plantingIn = new HashSet<string>();
 
    #endregion
 }

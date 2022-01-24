@@ -78,7 +78,6 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("shutdown", "Shuts down the server (Not implemented yet)", requestShutdown, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("enemy", "Spawns a lizard enemy", requestSpawnEnemy, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("spawn", "Spawns a custom enemy type", spawnCustomEnemy, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "enemyType" }));
-      cm.addCommand(new CommandData("server_info", "Displays the current server info", requestServerInfo, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("create_shop_ships", "Creates shop ships (Not implemented yet)", requestCreateShopShips, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("create_shop_items", "Creates shop items (Not implemented yet)", requestCreateShopItems, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("pgo", "Warps you to a user", requestPlayerGo, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username" }));
@@ -1816,10 +1815,6 @@ public class AdminManager : NetworkBehaviour
       Cmd_SpawnEnemy();
    }
 
-   private void requestServerInfo () {
-      Cmd_ServerInfo();
-   }
-
    private void requestCreateShopShips () {
       Cmd_CreateShopShips();
    }
@@ -1987,8 +1982,7 @@ public class AdminManager : NetworkBehaviour
             ChatPanel.self.inputField.setTextWithoutNotify(ChatPanel.self.inputField.getTextData() + autoComplete);
 
             // Select the auto complete part
-            ChatPanel.self.inputField.selectionAnchorPosition = ChatPanel.self.inputField.getTextData().Length;
-            ChatPanel.self.inputField.selectionFocusPosition = ChatPanel.self.inputField.getTextData().Length - autoComplete.Length;
+            ChatPanel.self.inputField.selectTextPart(ChatPanel.self.inputField.getTextData().Length - autoComplete.Length, ChatPanel.self.inputField.getTextData().Length);
          }
       }
    }
@@ -2650,11 +2644,6 @@ public class AdminManager : NetworkBehaviour
 
    [Command]
    protected void Cmd_SpawnShips (int count, Ship.Type shipType) {
-
-   }
-
-   [Command]
-   protected void Cmd_ServerInfo () {
 
    }
 

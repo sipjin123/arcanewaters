@@ -103,7 +103,7 @@ public class Ledge : TemporaryController, IMapEditorDataReceiver
    #region Private Variables
 
    [SerializeField, Tooltip("Collider, which triggers the ledge to start falling the player")]
-   private BoxCollider2D _fallStartCollider;
+   private BoxCollider2D _fallStartCollider = default;
 
    #endregion
 }

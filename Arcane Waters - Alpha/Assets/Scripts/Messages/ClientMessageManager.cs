@@ -513,6 +513,7 @@ public class ClientMessageManager : MonoBehaviour {
       Global.currentlySelectedUserId = msg.userId;
       // We have already logged in successfully for the first time
       Global.isFirstLogin = false;
+      Global.isPlayerLoggedOut = false;
 
       if (msg.loginMessage != "") {
          ChatPanel.self.addChatInfo(new ChatInfo(0, msg.loginMessage, System.DateTime.Now, ChatInfo.Type.System));
@@ -531,6 +532,7 @@ public class ClientMessageManager : MonoBehaviour {
 
       ClientScene.AddPlayer(conn);
 
+      TitleScreen.self.hideLoginPanels();
       PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login);
    }
 
@@ -546,6 +548,7 @@ public class ClientMessageManager : MonoBehaviour {
       PanelManager.self.noticeScreen.show("Could not connect to server.");
       Util.stopHostAndReturnToTitleScreen();
       PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login);
+      TitleScreen.self.showLoginPanels();
    }
 
    public static void On_Store (NetworkConnection conn, StoreMessage msg) {
@@ -566,6 +569,7 @@ public class ClientMessageManager : MonoBehaviour {
       PanelManager.self.noticeScreen.show("Could not connect to server.");
       Util.stopHostAndReturnToTitleScreen();
       PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login);
+      TitleScreen.self.showLoginPanels();
    }
 
    #region Private Variables

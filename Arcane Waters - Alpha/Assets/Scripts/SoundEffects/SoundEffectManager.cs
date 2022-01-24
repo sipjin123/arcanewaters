@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using System.Text;
@@ -77,6 +76,8 @@ public class SoundEffectManager : GenericGameManager
    public const string LIZARD_KING_HURT = "event:/SFX/NPC/Enemy/Lizard King/Lizard_Pain_Hit";
    public const string GOLEM_FOOT_IMPACT = "event:/SFX/NPC/Boss/Rock Golem/Foot_Impact";
    public const string GOLEM_SCREAM_ATTACK = "event:/SFX/NPC/Boss/Rock Golem/Scream_Attack";
+   public const string GOLEM_HURT = "event:/SFX/NPC/Boss/Rock Golem/Golem_Pain";
+   public const string TRIUMPH_DEFEATED_BOSS = "event:/SFX/Game/Triumph_Defeated_Boss_Stinger";
 
    #endregion
 
@@ -85,21 +86,27 @@ public class SoundEffectManager : GenericGameManager
    public const string PLAYER_SHIP_DESTROYED = "event:/SFX/Game/Sea_Battle/Player_Ship_Destroyed";
    public const string ENEMY_SHIP_IMPACT = "event:/SFX/Game/Sea_Battle/Enemy_Ship_Impact";
    public const string ENEMY_SHIP_DESTROYED = "event:/SFX/Game/Sea_Battle/Enemy_Ship_Destroyed";
-   public const string HORROR_DEATH = "event:/SFX/Game/Sea_Battle/Horror/Death";
+
+   public const string HORROR_TENTACLE_HURT = "event:/SFX/NPC/Boss/Tentacle_Horror_Boss/Hurt";
+   public const string HORROR_TENTACLE_DEATH = "event:/SFX/NPC/Boss/Tentacle_Horror_Boss/Tentacle Death";
+   public const string HORROR_DEATH = "event:/SFX/NPC/Boss/Tentacle_Horror_Boss/Death";
    public const string HORROR_POISON_BOMB = "event:/SFX/Game/Sea_Battle/Horror/Poison_Bomb";
+
+   public const string FISHMAN_ATTACK = "event:/SFX/NPC/Enemy/Fishman_Seamonster/Fishman_Throw_Attack";
+   public const string FISHMAN_HURT = "event:/SFX/NPC/Enemy/Fishman_Seamonster/Seamonster_Hurt";
 
    #endregion
 
    #region GAME
 
    public const string BGM_MASTER = "event:/Music/BGM_Master";
-   //public const string COLLECT_SILVER = "event:/SFX/Game/Collect_Silver";
    public const string DIALOGUE_TEXT = "event:/SFX/Game/UI/NPC_Dialogue_Text";
    public const string TRANSITION_IN = "event:/SFX/Game/Screen_Transition_In";
    public const string TRANSITION_OUT = "event:/SFX/Game/Screen_Transition_Out";
    public const string PLACE_EDITABLE_OBJECT = "event:/SFX/Game/Place_Editable_Object";
    public const string PICKUP_EDITABLE_OBJECT = "event:/SFX/Game/Pickup_Editable_Object";
    public const string CRAFT_SUCCESS = "event:/SFX/Game/UI/Craft_Success";
+   public const string ON_THE_HOUR_CHIME = "event:/SFX/Ambience/Emitters/On_the_hour_Chime";
 
    #endregion
 
@@ -116,7 +123,7 @@ public class SoundEffectManager : GenericGameManager
    #region PLAYER INTERACTIONS
 
    public const string JUMP = "event:/SFX/Player/Interactions/Diegetic/Jump";
-   public const string LAND = "event:/SFX/Player/Interactions/Diegetic/Land";
+   public const string JUMP_LAND = "event:/SFX/Player/Interactions/Diegetic/Land";
    public const string CRITTER_PET = "event:/SFX/Player/Interactions/Diegetic/Critter_Pet";
    public const string SHIP_CANNON = "event:/SFX/Player/Interactions/Diegetic/Ship_Cannon_Fire";
    public const string CANNONBALL_IMPACT = "event:/SFX/Player/Interactions/Diegetic/Cannonball_Impact";
@@ -125,10 +132,8 @@ public class SoundEffectManager : GenericGameManager
    public const string THROW_SEEDS = "event:/SFX/Player/Interactions/Diegetic/Throw_Seeds";
    public const string WATERING_PLANTS = "event:/SFX/Player/Interactions/Diegetic/Watering_Plants";
    public const string FOOTSTEP = "event:/SFX/Player/Interactions/Diegetic/Footstep";
-   //public const string PICKUP_CROP = "event:/SFX/Player/Interactions/Non_Diegetic/Pickup_Crop";
    public const string DOOR_OPEN = "event:/SFX/Player/Interactions/Diegetic/Door_Open";
    public const string PICKUP_POWERUP = "event:/SFX/Player/Interactions/Non_Diegetic/Pickup_Powerup_Generic";
-   //public const string COLLECT_LOOT_SEA = "event:/SFX/Player/Interactions/Diegetic/Collect_Loot_Sea";
    public const string COLLECT_LOOT_LAND = "event:/SFX/Player/Interactions/Diegetic/Collect_Loot_Land";
    public const string OPEN_CHEST = "event:/SFX/Player/Interactions/Diegetic/Open_Treasure_Site_Chest";
    public const string WEAPON_SWING = "event:/SFX/Player/Interactions/Diegetic/Weapons/Swings";
@@ -145,13 +150,6 @@ public class SoundEffectManager : GenericGameManager
    public const string ANGER_EMOTE = "event:/SFX/NPC/Critter/Anger_Emote";
    public const string QUESTION_EMOTE = "event:/SFX/NPC/Critter/Question_Emote";
    public const string AFFECTION_EMOTE = "event:/SFX/NPC/Critter/Affection_Emote";
-
-   #region Enemy
-
-   public const string FISHMAN_ATTACK = "event:/SFX/NPC/Enemy/Fishman_Seamonster/Fishman_Throw_Attack";
-   public const string FISHMAN_HURT = "event:/SFX/NPC/Enemy/Fishman_Seamonster/Seamonster_Hurt";
-
-   #endregion
 
    #endregion
 
@@ -278,6 +276,9 @@ public class SoundEffectManager : GenericGameManager
       switch (enemyType) {
          case Enemy.Type.Lizard_King:
             playFmodSfx(LIZARD_KING_HURT, position);
+            break;
+         case Enemy.Type.Golem_Boss:
+            playFmodSfx(GOLEM_HURT, position);
             break;
       }
    }
@@ -490,6 +491,9 @@ public class SoundEffectManager : GenericGameManager
          case SeaMonsterEntity.Type.Horror:
             playFmodSfx(HORROR_DEATH, position);
             break;
+         case SeaMonsterEntity.Type.Horror_Tentacle:
+            playFmodSfx(HORROR_TENTACLE_DEATH, position);
+            break;
       }
    }
 
@@ -542,7 +546,7 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   public void playEnemyHitSfx (bool isShip, SeaMonsterEntity.Type seaMonsterType, bool isCrit, CannonballEffector.Type effectorType, Vector3 position) {
+   public void playSeaEnemyHurtSfx (bool isShip, SeaMonsterEntity.Type seaMonsterType, bool isCrit, CannonballEffector.Type effectorType, Vector3 position) {
       FMOD.Studio.EventInstance impactEvent = FMODUnity.RuntimeManager.CreateInstance(ENEMY_SHIP_IMPACT);
       impactEvent.setParameterByName(AUDIO_SWITCH_PARAM, isShip ? 0 : 1);
       impactEvent.setParameterByName(APPLY_CRIT_PARAM, isCrit ? 1 : 0);
@@ -558,6 +562,9 @@ public class SoundEffectManager : GenericGameManager
       switch (seaMonsterType) {
          case SeaMonsterEntity.Type.Fishman:
             hurtPath = FISHMAN_HURT;
+            break;
+         case SeaMonsterEntity.Type.Horror_Tentacle:
+            hurtPath = HORROR_TENTACLE_HURT;
             break;
       }
 
@@ -622,16 +629,21 @@ public class SoundEffectManager : GenericGameManager
    }
 
    // Sea Projectile SFX
-   public void playSeaProjectileSfx (ProjectileType projectileType, GameObject projectileGo) {
-      string path = string.Empty;
-      switch (projectileType) {
-         case ProjectileType.Cannonball:
-            path = SHIP_CANNON;
-            break;
-      }
-
-      if (!string.IsNullOrEmpty(path)) {
-         FMODUnity.RuntimeManager.PlayOneShotAttached(path, projectileGo);
+   public void playSeaProjectileSfx (ProjectileType projectileType, Transform projectileTransform, Rigidbody2D projectileBody) {
+      if (projectileType == ProjectileType.Cannonball || projectileType == ProjectileType.Cannonball_Ice || projectileType == ProjectileType.Cannonball_Fire) {
+         FMOD.Studio.EventInstance shipCannonEvent = FMODUnity.RuntimeManager.CreateInstance(SHIP_CANNON);
+         int audioParam = 0;
+         if (projectileType == ProjectileType.Cannonball_Ice) {
+            audioParam = 1;
+         } else if (projectileType == ProjectileType.Cannonball_Fire) {
+            audioParam = 2;
+         }
+         shipCannonEvent.setParameterByName(AUDIO_SWITCH_PARAM, audioParam);
+         FMODUnity.RuntimeManager.AttachInstanceToGameObject(shipCannonEvent, projectileTransform, projectileBody);
+         shipCannonEvent.start();
+         shipCannonEvent.release();
+      } else {
+         // Other projectile types
       }
    }
 
@@ -711,8 +723,8 @@ public class SoundEffectManager : GenericGameManager
    public enum ProjectileType
    {
       None = 0,
-      Cannonball = 1,
-      Fishman_Attack = 2
+      Cannonball = 1, Cannonball_Ice = 2, Cannonball_Fire = 3,
+      Fishman_Attack = 6
    }
 
    #endregion

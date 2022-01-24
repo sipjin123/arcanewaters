@@ -260,7 +260,7 @@ public class Armor : EquippableItem {
 
    // Cached armor data from xml data variable
    [XmlIgnore]
-   private ArmorStatData _armorStatData;
+   private ArmorStatData _armorStatData = default;
 
    #endregion
 }
