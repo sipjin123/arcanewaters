@@ -120,6 +120,9 @@ public class Global
    // The default settings for networked vars in the server network
    public static NetworkedVarSettings defaultNetworkedVarSettings = new NetworkedVarSettings { WritePermission = NetworkedVarPermission.OwnerOnly, SendChannel = "Fragmented" };
 
+   // Has the player just logged out?
+   public static bool isPlayerLoggedOut = false;
+
    #endregion
 
    public static void setUserEquipment (Item weapon, Item armor, Item hat) {

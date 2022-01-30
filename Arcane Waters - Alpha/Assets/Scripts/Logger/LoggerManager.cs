@@ -8,6 +8,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using MiniJSON;
 
 public class LoggerManager : MonoBehaviour {
@@ -26,7 +27,6 @@ public class LoggerManager : MonoBehaviour {
       self = this;
       Init();
       D.adminLog("LoggerManager.Awake: OK", D.ADMIN_LOG_TYPE.Initialization);
-      // AddMessage("message text test", "stack trace", LogType.Error);
       // AddMessage("message text test", "stack trace 2", LogType.Error);
    }
    
@@ -37,11 +37,16 @@ public class LoggerManager : MonoBehaviour {
    void OnDisable() {
       Application.logMessageReceived -= AddMessage;
    }
+
+   // void Update () {
+   //    // Test only
+   //    AddMessage("message text test" + DateTime.Now.Millisecond, "stack trace", LogType.Error);
+   // }
    
    void Init() {
-      // deployment id
+      // Reading deploymentConfig data
       var deploymentConfigAsset = Resources.Load<TextAsset>("config");
-      Dictionary<string,object> deploymentConfig = Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string,object>;
+      var deploymentConfig = Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string,object>;
       deploymentId = "0";
       buildId = "0";
       
@@ -52,85 +57,226 @@ public class LoggerManager : MonoBehaviour {
          buildId = deploymentConfig["buildId"].ToString();
       }
 
+      // Init
       messagesDirPath = $"{Application.persistentDataPath}/{"messages"}";
-      currentSendDelay = 0;
-
-      messagesAreSending = false;
       messagesToSend = "";
-      messagesToSendDate = "";
-      messagesIds = new List<string>();
+      messageIdFilePath = new Dictionary<string, string>();
 
+      WWWForm form = new WWWForm();
+      headers = form.headers;
+      headers["Content-Type"] = "application/json";
+      
       InitMessagesFolder();
-      SendMessages();
-   }
-
-   void Update() {
-      currentSendDelay += Time.deltaTime;
-      if (currentSendDelay > SEND_INTERVAL) {
-         currentSendDelay = 0;
-         SendMessages();
-      }
+      
+      // Starting send messages in the thread
+      UnityThreading.ActionThread sendDataThread = UnityThreadHelper.CreateThread(SendMessagesLoop);
    }
    
    void InitMessagesFolder () {
       if (Directory.Exists(messagesDirPath)) return;
       // Debug.Log ("Creating messages folder: " + messagesDirPath);
       Directory.CreateDirectory(messagesDirPath);
-   }
+   }   
 
+   
+   #region Caching messages logic
    public void AddMessage(string logString, string stackTrace, LogType type) {
-      // skip default log messages if no include patters found
+      // Skip default log messages if no include patters found
       if (type == LogType.Log && !IsPatternPresent(includePatterns, logString)) return;
-      // don't catch editor logs if not enabled
+      
+      // Don't catch editor logs if not enabled
       if (Application.isEditor && !catchEditorLogs) return;
-      // skip all LoggerManager messages to avoid recursion
+      
+      // Skip all LoggerManager messages to avoid recursion
       if (stackTrace.Contains("LoggerManager.cs")) return;
-      // skip messages with exclude patterns
+      
+      // Skip messages with exclude patterns
       if (IsPatternPresent(excludePatterns, logString)) return;
 
-      try
-      {
-         Dictionary<string, string> messageData = new Dictionary<string, string>();
+      try {
+         var messageData = new Dictionary<string, string> {
+            { "deploymentId", deploymentId }, { "buildId", buildId },
+            { "message", logString },
+            { "stackTrace", stackTrace },
+            { "messageType", type.ToString() },
+            { "systemInfo", SystemInfo.operatingSystem },
+            { "host", Dns.GetHostName() },
+            { "datetime", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") },
+            { "milliseconds", DateTime.UtcNow.Millisecond.ToString() },
+            { "version", VERSION }
+         };
 
-         messageData.Add("deploymentId", deploymentId);
-         messageData.Add("buildId", buildId);
-         messageData.Add("message", logString);
-         messageData.Add("stackTrace", stackTrace);
-         messageData.Add("messageType", type.ToString());
-
-#if IS_SERVER_BUILD
+         #if IS_SERVER_BUILD
          messageData.Add("appType" , "server");
-#else
+         #else
          messageData.Add("appType", "client");
-#endif
-#if IS_MASTER_TOOL
-      messageData.Add("appType" , "mastertool");
-#endif
-#if NUBIS
+         #endif
+         
+         #if IS_MASTER_TOOL
+         messageData.Add("appType" , "mastertool");
+         #endif
+
+         #if NUBIS
          messageData.Add("appType" , "nubis");
-#endif
-#if ARCANE_WATERS_WEBSITE
-      messageData.Add("appType" , "website");
-#endif
+         #endif
 
-         messageData.Add("systemInfo", SystemInfo.operatingSystem);
-         messageData.Add("host", Dns.GetHostName());
-
-         messageData.Add("datetime", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"));
-         messageData.Add("milliseconds", DateTime.UtcNow.Millisecond.ToString());
-         messageData.Add("version", VERSION);
-
-         // add to event queue
-         StoreMessage(messageData);
+         #if ARCANE_WATERS_WEBSITE
+         messageData.Add("appType" , "website");
+         #endif
+         
+         // Add to the cache
+         CacheMessage(messageData);
       }
-      catch (Exception ex)
-      {
+      catch (Exception ex)  {
          // WARNING: Never use D.warning or D.error! It will cause recursion!
-         D.debug(ex.Message);
-         D.debug(ex.StackTrace);
+         // D.debug(ex.Message);
+         // D.debug(ex.StackTrace);
       }
    }
 
+   void CacheMessage(IReadOnlyDictionary<string, string> messageData) {
+      string messageDataString = Json.Serialize(messageData);
+      // Debug.Log("StoreEventData: " + messageDataString);
+
+      string messageDir = GetMessageDir(DateTime.Parse(messageData["datetime"]));
+      if (!Directory.Exists(messageDir)) Directory.CreateDirectory(messageDir);
+
+      string messageFileName = CalculateMD5Hash(messageDataString);
+      if (File.Exists(messageFileName)) return;
+      File.WriteAllText(messageDir + messageFileName, messageDataString);
+   }
+   #endregion
+
+
+   #region Processing cached messages
+   void SendMessagesLoop (UnityThreading.ActionThread thread) {
+      while (!thread.ShouldStop) {
+         SendMessages();
+         Thread.Sleep(SEND_INTERVAL * 1000);
+      }
+   }
+
+   void SendMessages() {
+      try {
+         ReadCachedMessages();
+         if (messagesToSend != "" && messagesToSend != "{}") {
+            var sendMessagesTask = UnityThreadHelper.UnityDispatcher.Dispatch(() => { SendMessagesAsync(); });
+            sendMessagesTask.Wait();
+
+            // Process response
+            if (!string.IsNullOrEmpty(lastResponse)) {
+               var responseDict = Json.Deserialize(lastResponse) as Dictionary<string, object>;
+
+               // Checking each key and removing cached data
+               foreach (var id in messageIdFilePath.Keys) {
+                  if (responseDict.ContainsKey(id) && responseDict[id].ToString() != "0") {
+                     string messageFileName = messageIdFilePath[id] + "/" + id;
+                     try {
+                        File.Delete(messageFileName);
+                     } catch {
+                        Debug.Log("Error deleting cached log file: " + messageFileName);
+                     }
+                  }
+               }
+            }
+         }
+      } catch (SystemException obj) {
+         if (Util.isCloudBuild()) {
+            Debug.Log("Some errors on sending messages: " + obj.Message);
+         }
+      }
+   }
+
+   void ReadCachedMessages() {
+      Hashtable data = new Hashtable();
+      messagesToSend = "";
+      messageIdFilePath.Clear();
+
+      // Days folders "messages/yyyy-MM-dd"
+      string[] messagesDailyDirs = Directory.GetDirectories(messagesDirPath);
+      for (int d=0; d<messagesDailyDirs.Length; d++) {
+
+         var messagesDailyDir = messagesDailyDirs[d];
+         DirectoryInfo messagesDailyDirInfo = new DirectoryInfo(messagesDailyDir);
+
+         // Minutes folders "messages/yyyy-MM-dd/HH-mm"
+         string[] messagesMinuteDirs = Directory.GetDirectories(messagesDailyDir);
+         // Remove empty directory
+         if (messagesMinuteDirs.Length == 0) {
+            Directory.Delete(messagesDailyDir);
+            continue;
+         }
+         
+         // Cycle minutes folders
+         for (int dm = 0; dm < messagesMinuteDirs.Length; dm++) {
+
+            // Get messages
+            string[] messagesFiles = Directory.GetFiles(messagesMinuteDirs[dm]);
+            // Remove empty directory
+            if (messagesFiles.Length == 0) {
+               Directory.Delete(messagesMinuteDirs[dm]); 
+               continue;
+            }
+            
+            // Limit count to MESSAGES_LIMIT
+            int messagesCount = messagesFiles.Length;
+            if (messagesCount > MESSAGES_LIMIT - data.Keys.Count) {
+               messagesCount = MESSAGES_LIMIT - data.Keys.Count;
+            }
+            
+            // Add messages
+            for (int f=0; f<messagesCount; f++) {
+               FileInfo file = new FileInfo(messagesFiles[f]);
+               string id = file.Name;
+               data[id] = File.ReadAllText(messagesFiles[f]);
+               messageIdFilePath.Add(id, messagesMinuteDirs[dm]);
+            }
+
+            // Limit to send MESSAGES_LIMIT statistic at once
+            if (data.Keys.Count >= MESSAGES_LIMIT) {
+               // Add check sums
+               data["sum2"] = CalculateMD5Hash(string.Join("",messageIdFilePath.Keys));
+               data["sum"] = CalculateMD5Hash(API_SALT + data["sum2"]);
+               messagesToSend = Json.Serialize(data);
+               return;
+            }
+         }
+      }
+
+      // Add sums if messages count less than MESSAGES_LIMIT
+      if (data.Keys.Count > 0 ) {
+         // Add check sums
+         data["sum2"] = CalculateMD5Hash(string.Join("",messageIdFilePath.Keys));
+         data["sum"] = CalculateMD5Hash(API_SALT + data["sum2"]);
+         messagesToSend = Json.Serialize(data);
+      }
+   }
+   #endregion
+
+   
+   #region Unity web request functions
+   void SendMessagesAsync () {
+      byte[] bytes = Encoding.UTF8.GetBytes(messagesToSend);
+      WWW www = new WWW(API_MESSAGES_URL, bytes, headers);
+      StartCoroutine(WaitForRequest(www));
+   }
+
+   IEnumerator WaitForRequest(WWW www) {
+      yield return www;
+
+      if (www.error == null) {
+         // Debug.Log("WWW Ok!: " + www.text);
+         lastResponse = www.text;
+      }
+      else {
+         lastResponse = "";
+         Debug.Log("Logger manager - send data api error: " + www.error);
+      }
+   }
+   #endregion
+
+   
+   #region Utils functions
    bool IsPatternPresent(string[] patterns, string message) {
       foreach (string pattern in patterns) {
          Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
@@ -140,114 +286,12 @@ public class LoggerManager : MonoBehaviour {
       return false;
    }
 
-   void StoreMessage(Dictionary <string, string> messageData) {
-      string messageDataString = Json.Serialize(messageData);
-      // Debug.Log("StoreEventData: " + messageDataString);
-
-      string messageDir = messagesDirPath + "/" + DateTime.Parse(messageData["datetime"]).ToString("yyyy-MM-dd") + "/";
-
-      if (!Directory.Exists(messageDir)) Directory.CreateDirectory(messageDir);
-
-      string messageFileName = CalculateMD5Hash(messageDataString);
-      File.WriteAllText(messageDir + messageFileName, messageDataString);
-   }
-
-   void SendMessages () {
-      if (messagesAreSending) return;
-
-      // Debug.Log("Time to send messages");
-
-      try {
-         messagesAreSending = true;
-         GetMessagesData();
-         if (messagesToSend != "" && messagesToSend != "{}")
-            SendMessagesAsync();
-         else
-            messagesAreSending = false;
-      }
-      catch (SystemException obj) {
-         Debug.Log("Some errors on sending messages: " + obj.Message);
-         messagesAreSending = false;
-      }
-   }
-
-   void GetMessagesData () {
-      messagesToSend = "";
-      messagesToSendDate = "";
-
-      // check all messages folders
-      string[] messagesDirs = Directory.GetDirectories(messagesDirPath);
-      for (int d=0; d<messagesDirs.Length; d++) {
-
-         messagesIds.Clear();
-
-         DirectoryInfo messagesDailyDir = new DirectoryInfo(messagesDirs[d]);
-         messagesToSendDate = messagesDailyDir.Name;
-
-         Hashtable data = new Hashtable(); 
-
-         // get messages files lists, check and process
-         string[] messagesFiles = Directory.GetFiles(messagesDirs[d]);
-         int messagesCount = messagesFiles.Length;
-         if (messagesCount > MESSAGES_LIMIT) {
-            messagesCount = MESSAGES_LIMIT;
-         }
-         for (int f=0; f<messagesCount; f++) {
-            FileInfo file = new FileInfo(messagesFiles[f]);
-            string id = file.Name;
-            data[id] = File.ReadAllText(messagesFiles[f]);
-            messagesIds.Add(id);
-         }
-
-         // limit to send one day statistic at once
-         if (data.Keys.Count > 0) {
-            // add control sum
-            data["sum2"] = CalculateMD5Hash(string.Join("",messagesIds.ToArray()));
-            data["sum"] = CalculateMD5Hash(API_SALT + data["sum2"]);
-            messagesToSend = Json.Serialize(data);
-            return; 
-         }
-         
-         Directory.Delete(messagesDirs[d]); // no messages to send, remove empty directory
-      }
-   }
-
-   void SendMessagesAsync () {
-      WWWForm form = new WWWForm();
-      Dictionary<string,string> headers = form.headers;
-      headers["Content-Type"] = "application/json";
-      byte[] bytes = Encoding.UTF8.GetBytes(messagesToSend);
-      
-      WWW www = new WWW(API_MESSAGES_URL, bytes, headers);
-      StartCoroutine(WaitForRequest(www));
-   }
-
-   IEnumerator WaitForRequest(WWW www) {
-      yield return www;
-
-      // check for errors
-      if (www.error == null) {
-         // Debug.Log("WWW Ok!: " + www.text);
-         
-         Dictionary<string, object> response = Json.Deserialize(www.text) as Dictionary<string, object>;
-         for (int i=0; i<messagesIds.Count; i++) {
-            if (response != null && response.ContainsKey(messagesIds[i]) && response[messagesIds[i]].ToString() != "0") {
-               string messageFileName = messagesDirPath + "/" + messagesToSendDate + "/" + messagesIds[i];
-               try {
-                  File.Delete(messageFileName);
-               }
-               catch {
-                  Debug.Log("Error deleting: " + messageFileName);
-               }
-            }
-         }
-      }
-      else {
-         Debug.Log("WWW Error: " + www.error);
-      }
-
-      messagesAreSending = false;
-   }
+   string GetMessageDir(DateTime datetime) {
+      return messagesDirPath + "/" + 
+             datetime.ToString("yyyy-MM-dd") + "/" +
+             datetime.ToString("HH-mm") + "/"
+         ;
+   }   
 
    string CalculateMD5Hash (string input) {
       // step 1, calculate MD5 hash from input
@@ -263,24 +307,29 @@ public class LoggerManager : MonoBehaviour {
       
       return sb.ToString();
    }
+   #endregion
+
    
    #region Private Variables
+   // Log manager parameters
    const string VERSION = "4";
    // const string SERVER_URL = "https://localhost:5001/";
    const string SERVER_URL = "https://tools.arcanewaters.com/";
    const string API_MESSAGES_URL = SERVER_URL + "api/logger/add";
    const string API_SALT = "as5HU5_YhkPaRWpr+dxmBMq#eTWAx98fu8XJF-b2Rg@AWtgF*8EqaEvLedMexk";
-   const int SEND_INTERVAL = 20; // seconds
-   const int MESSAGES_LIMIT = 1000;
+   const int SEND_INTERVAL = 20; // seconds 
+   const int MESSAGES_LIMIT = 1000; // messages limit to send
    
+   // Send data
    string messagesDirPath;
-   float currentSendDelay = 0;
-
-   bool messagesAreSending;
    string messagesToSend;
-   string messagesToSendDate;
-   List <string> messagesIds;
+   Dictionary <string, string> messageIdFilePath;
 
+   // Deployment config data
    string deploymentId, buildId;
+   
+   // Unity web request 
+   Dictionary<string, string> headers;
+   string lastResponse;
    #endregion
 }

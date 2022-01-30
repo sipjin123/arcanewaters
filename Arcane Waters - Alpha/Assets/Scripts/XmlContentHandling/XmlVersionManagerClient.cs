@@ -875,20 +875,20 @@ public class XmlVersionManagerClient : GenericGameManager {
             break;
 
          case EditorToolType.SFX:
-            List<SoundEffect> sfxDataList = new List<SoundEffect>();
-            foreach (string subGroup in xmlGroup) {
-               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+            //List<SoundEffect> sfxDataList = new List<SoundEffect>();
+            //foreach (string subGroup in xmlGroup) {
+            //   string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
 
-               // Extract the segregated data and assign to the xml manager
-               if (xmlSubGroup.Length == 2) {
-                  int dataId = int.Parse(xmlSubGroup[0]);
-                  SoundEffect actualData = Util.xmlLoad<SoundEffect>(xmlSubGroup[1]);
-                  actualData.id = dataId;
-                  sfxDataList.Add(actualData);
-                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
-               }
-            }
-            SoundEffectManager.self.receiveListFromServer(sfxDataList.ToArray());
+            //   // Extract the segregated data and assign to the xml manager
+            //   if (xmlSubGroup.Length == 2) {
+            //      int dataId = int.Parse(xmlSubGroup[0]);
+            //      SoundEffect actualData = Util.xmlLoad<SoundEffect>(xmlSubGroup[1]);
+            //      actualData.id = dataId;
+            //      sfxDataList.Add(actualData);
+            //      message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+            //   }
+            //}
+            //SoundEffectManager.self.receiveListFromServer(sfxDataList.ToArray());
             break;
 
          case EditorToolType.Haircuts:

@@ -82,7 +82,7 @@ public class HatManager : EquipmentManager {
       updateSprites(newHatType, palettes);
 
       // Play a sound
-      SoundManager.create3dSound("equip_", this.transform.position, 2);
+      //SoundManager.create3dSound("equip_", this.transform.position, 2);
 
       Global.getUserObjects().hat = new Hat {
          id = newHatId,

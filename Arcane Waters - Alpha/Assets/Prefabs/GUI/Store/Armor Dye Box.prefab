@@ -1035,6 +1035,9 @@ GameObject:
   - component: {fileID: 4854303515993930069}
   - component: {fileID: 9064874685621452904}
   - component: {fileID: 6341475080585516149}
+  - component: {fileID: 6991570558626046399}
+  - component: {fileID: 7243758585953988494}
+  - component: {fileID: 6000007073637887146}
   m_Layer: 5
   m_Name: Armor Dye Box
   m_TagString: Untagged
@@ -1145,9 +1148,8 @@ MonoBehaviour:
   imageIcon: {fileID: 0}
   hoverBorder: {fileID: 153979773060014014}
   selectionBorder: {fileID: 4234280945365512885}
-  bodyImage: {fileID: 1432167515186665943}
-  armorImage: {fileID: 1724690342422712425}
-  armorDye:
+  storeTabCategory: 0
+  dye:
     itemID: 0
     itemName: 
     itemDescription: 
@@ -1160,7 +1162,100 @@ MonoBehaviour:
     paletteType: 0
     subcategory: 
     tagId: 0
+  bodyImage: {fileID: 1432167515186665943}
+  armorImage: {fileID: 1724690342422712425}
   armorSprite: {fileID: 1836668341778087791}
+  playerArmor:
+    category: 0
+    id: 0
+    itemTypeId: 0
+    paletteNames: 
+    data: 
+    count: 1
+    itemName: 
+    itemDescription: 
+    iconPath: 
+    durability: 100
+--- !u!114 &6991570558626046399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8334634055610859796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 6000007073637887146}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!222 &7243758585953988494
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8334634055610859796}
+  m_CullTransparentMesh: 0
+--- !u!114 &6000007073637887146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8334634055610859796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 1
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &8406372791036644156
 GameObject:
   m_ObjectHideFlags: 0

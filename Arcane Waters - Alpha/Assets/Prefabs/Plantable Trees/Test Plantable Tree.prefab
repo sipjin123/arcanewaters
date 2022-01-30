@@ -684,7 +684,7 @@ SpriteRenderer:
   m_Size: {x: 4, y: 4}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &7030018983647798537
@@ -759,12 +759,12 @@ MonoBehaviour:
   - {fileID: -2798839234230303537, guid: 882c9346990e5494e9ff1c6c58fd2466, type: 3}
   - {fileID: -91715382376450031, guid: 882c9346990e5494e9ff1c6c58fd2466, type: 3}
   - {fileID: -1984000715714866594, guid: 882c9346990e5494e9ff1c6c58fd2466, type: 3}
-  - {fileID: 1867936814592465548, guid: 882c9346990e5494e9ff1c6c58fd2466, type: 3}
   spriteRenderer: {fileID: 8140772018612621839}
   statusText: {fileID: 816877650762469690}
   waterNeededIcon: {fileID: 5372885590816171758}
   interactionNeededIcon: {fileID: 4894563587722808867}
-  currentChopMeter: 1
+  currentChopCount: 0
+  lastChopTime: 0
 --- !u!1 &9130160514569900135
 GameObject:
   m_ObjectHideFlags: 0

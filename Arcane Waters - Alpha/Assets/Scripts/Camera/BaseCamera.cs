@@ -37,7 +37,7 @@ public class BaseCamera : MonoBehaviour {
       _cam = GetComponent<Camera>();
       _vcam = GetComponent<CinemachineVirtualCamera>();
       _pixelFadeEffect = GetComponent<PixelFadeEffect>();
-      _audioListener = GetComponent<AudioListener>();
+      //_audioListener = GetComponent<AudioListener>();
       _fmodListener = GetComponent<FMODUnity.StudioListener>();
    }
 
@@ -125,9 +125,9 @@ public class BaseCamera : MonoBehaviour {
       return _framingTransposer;
    }
 
-   public AudioListener getAudioListener () {
-      return _audioListener;
-   }
+   //public AudioListener getAudioListener () {
+   //   return _audioListener;
+   //}
 
    public FMODUnity.StudioListener getFmodListener () {
       return _fmodListener;
@@ -149,7 +149,7 @@ public class BaseCamera : MonoBehaviour {
    protected CinemachineFramingTransposer _framingTransposer;
 
    // The audio listener attached to this camera
-   private AudioListener _audioListener = null;
+   //private AudioListener _audioListener = null;
 
    // The FMOD listener attached to this camera
    private FMODUnity.StudioListener _fmodListener = null;

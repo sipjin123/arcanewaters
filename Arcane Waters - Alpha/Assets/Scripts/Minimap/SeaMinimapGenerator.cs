@@ -415,6 +415,14 @@ namespace MinimapGeneration
          }
 
          int dist = 0;
+
+         // If we have no land in this map, we still want water coloring to trigger,
+         // So add middle of the map tile and set distance to a lot, as if we are farm from land
+         if (_raQueue.Count == 0) {
+            _raQueue.Enqueue((mapSize.x / 2, mapSize.y / 2));
+            dist = 64;
+         }
+
          int remaining = _raQueue.Count;
 
          while (_raQueue.Count > 0) {

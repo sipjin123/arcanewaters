@@ -284,36 +284,36 @@ public class MonsterDataPanel : MonoBehaviour
       selectionPanel.SetActive(true);
       monsterTypeParent.DestroyChildren();
 
-      foreach (SoundEffect effect in SoundEffectManager.self.getAllSoundEffects()) {
-         GameObject iconTempObj = Instantiate(monsterTypeTemplate.gameObject, monsterTypeParent.transform);
-         ItemTypeTemplate iconTemp = iconTempObj.GetComponent<ItemTypeTemplate>();
-         iconTemp.itemTypeText.text = effect.name;
+      //foreach (SoundEffect effect in SoundEffectManager.self.getAllSoundEffects()) {
+      //   GameObject iconTempObj = Instantiate(monsterTypeTemplate.gameObject, monsterTypeParent.transform);
+      //   ItemTypeTemplate iconTemp = iconTempObj.GetComponent<ItemTypeTemplate>();
+      //   iconTemp.itemTypeText.text = effect.name;
 
-         iconTemp.previewButton.onClick.AddListener(() => {
-            audioSource.clip = effect.clip;
-            effect.calibrateSource(audioSource);
-            audioSource.loop = false;
-            audioSource.Play();
-         });
+      //   iconTemp.previewButton.onClick.AddListener(() => {
+      //      audioSource.clip = effect.clip;
+      //      effect.calibrateSource(audioSource);
+      //      audioSource.loop = false;
+      //      audioSource.Play();
+      //   });
 
-         iconTemp.selectButton.onClick.AddListener(() => {
-            switch (pathType) {
-               case PathType.DeathSfx:
-                  deathSoundEffect = effect;
-                  if (deathSoundEffect != null) {
-                     deathSoundEffectName.text = effect.name;
-                  }
-                  break;
-               case PathType.JumpSfx:
-                  jumpSoundEffect = effect;
-                  if (jumpSoundEffect != null) {
-                     jumpSoundEffectName.text = effect.name;
-                  }
-                  break;
-            }
-            closeAvatarSelectionButton.onClick.Invoke();
-         });
-      }
+      //   iconTemp.selectButton.onClick.AddListener(() => {
+      //      switch (pathType) {
+      //         case PathType.DeathSfx:
+      //            deathSoundEffect = effect;
+      //            if (deathSoundEffect != null) {
+      //               deathSoundEffectName.text = effect.name;
+      //            }
+      //            break;
+      //         case PathType.JumpSfx:
+      //            jumpSoundEffect = effect;
+      //            if (jumpSoundEffect != null) {
+      //               jumpSoundEffectName.text = effect.name;
+      //            }
+      //            break;
+      //      }
+      //      closeAvatarSelectionButton.onClick.Invoke();
+      //   });
+      //}
    }
 
    #region Save and Load Data
@@ -381,8 +381,8 @@ public class MonsterDataPanel : MonoBehaviour
       _preContactLength.text = newBattleData.preContactLength.ToString();
       _preMagicLength.text = newBattleData.preMagicLength.ToString();
 
-      deathSoundEffect = SoundEffectManager.self.getSoundEffect(newBattleData.deathSoundEffectId);
-      jumpSoundEffect = SoundEffectManager.self.getSoundEffect(newBattleData.jumpSoundEffectId);
+      //deathSoundEffect = SoundEffectManager.self.getSoundEffect(newBattleData.deathSoundEffectId);
+      //jumpSoundEffect = SoundEffectManager.self.getSoundEffect(newBattleData.jumpSoundEffectId);
 
       lootGroupIdSelected = newBattleData.lootGroupId;
       if (lootGroupIdSelected > 0) {

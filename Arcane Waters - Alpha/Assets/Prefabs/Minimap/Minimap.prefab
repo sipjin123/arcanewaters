@@ -349,6 +349,7 @@ MonoBehaviour:
     type: 3}
   treasureChestIconPrefab: {fileID: 8302690848615257654, guid: 7dba8666a90998546952270901fdd8d7,
     type: 3}
+  pvpTreasureChestIconPrefab: {fileID: 0}
   discoveryIconPrefab: {fileID: 8302690848615257654, guid: 0b6031f4b4ddd8749bf48bb454e615ec,
     type: 3}
   seaMonsterIconPrefab: {fileID: 6111735922204089349, guid: d645510006e4c4b43a1a7f0bbc152c4b,
@@ -356,6 +357,10 @@ MonoBehaviour:
   landMonsterIconPrefab: {fileID: 4101201130097864717, guid: fc7cd02545332924a83e94a682c9b17b,
     type: 3}
   shipIconPrefab: {fileID: 616261354442640693, guid: e13deab1f8582d8408d909ac60879fd2,
+    type: 3}
+  openWorldAlliedShipIconPrefab: {fileID: 616261354442640693, guid: 1b7e09f0239e31a4e9d047fab35bee05,
+    type: 3}
+  openWorldOtherShipIconPrefab: {fileID: 616261354442640693, guid: 629cf2f97418457409db945177608549,
     type: 3}
   groupPlayerIconPrefab: {fileID: 3107215380669459270, guid: b235076111b61fe438e03506ae58c562,
     type: 3}

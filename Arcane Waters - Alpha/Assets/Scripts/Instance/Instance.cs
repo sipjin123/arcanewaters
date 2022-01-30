@@ -682,8 +682,6 @@ public class Instance : NetworkBehaviour
          if (Area.isWorldMap(area.areaKey) && area.openWorldController != null) {
             D.adminLog("Generating open world enemies at area {" + area.areaKey + "}, max of {" + area.openWorldController.maxEnemyCount + "}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
             EnemyManager.self.spawnOpenWorldEnemies(this, area.areaKey, area.openWorldController.maxEnemyCount);
-         } else {
-            D.adminLog("Failed Because map {" + area.areaKey + "} is not valid!", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
          }
       } else {
          EnemyManager.self.spawnEnemiesOnServerForInstance(this);
@@ -985,6 +983,8 @@ public class Instance : NetworkBehaviour
       droppedItem.lifetimeSeconds = lifetimeSeconds;
       droppedItem.targetItem = newItem;
       droppedItem.appearDirection = appearDirection;
+
+      InstanceManager.self.addDroppedItemToInstance(droppedItem, this);
 
       if (!spinWhileDropping) {
          droppedItem.setNoRotationsDuringAppearance();

@@ -17,7 +17,7 @@ public class Critter : ClientMonoBehaviour {
       // If we just started, play the gopher sound
       if (_simpleAnim.getIndex() == 1 && _previousIndex == 0) {
          int num = Random.Range(1, 4);
-         SoundManager.create3dSound("gopher_" + num, this.transform.position);
+         //SoundManager.create3dSound("gopher_" + num, this.transform.position);
       }
 
       // Keep track for next frame

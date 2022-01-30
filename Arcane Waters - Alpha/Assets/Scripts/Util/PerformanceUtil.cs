@@ -48,8 +48,6 @@ public class PerformanceUtil : MonoBehaviour {
       _lastCpuTime = new TimeSpan(0);
       _currentProcess = Process.GetCurrentProcess();
 
-      D.debug("Starting up PerformanceUtil.");
-
       StartCoroutine(CO_Initialise());
    }
 
@@ -59,23 +57,13 @@ public class PerformanceUtil : MonoBehaviour {
 
       // Only measure performance on the server
       if (!NetworkServer.active) {
-         D.debug("Disabling PerformanceUtil as this isn't a server.");
          this.enabled = false;
          yield break;
-      }
-
-      // Only measure performance using zabbix on the remote servers
-      if (!Util.isBatchServer()) {
-         yield break;
-      } else {
-         getZabbixPerformanceResult();
       }
    }
 
    private async void getZabbixPerformanceResult () {
       for (int i = 0; i < 60; i++) {
-         D.debug("Starting to get zabbix performance result.");
-
          Stopwatch stopwatch = Stopwatch.StartNew();
          string processArguments = (Util.isProductionBuild()) ? $"cd C:/integrations/zabbix; ./GetHistory.ps1 -ItemID 34410 -Mode 1 -DataTable 0 -Limit 1" : $"cd C:/integrations/zabbix; ./GetHistory.ps1 -ItemID 34411 -Mode 1 -DataTable 0 -Limit 1";
 
@@ -93,7 +81,6 @@ public class PerformanceUtil : MonoBehaviour {
          });
 
          string result = test.StandardOutput.ReadToEnd();
-         D.debug(result + ", Getting result from zabbix took: " + stopwatch.Elapsed.TotalSeconds + " seconds.");
       }
    }
 

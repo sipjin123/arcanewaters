@@ -187,7 +187,7 @@ public class NetworkedProjectile : MonoBehaviour {
       // Plays SFX and VFX for land collision
       if (hitLand) {
          Instantiate(PrefabsManager.self.requestCannonSmokePrefab(_impactMagnitude), location, Quaternion.identity);
-         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
+         //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
       }
    }
 

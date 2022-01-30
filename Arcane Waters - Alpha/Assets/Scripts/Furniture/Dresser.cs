@@ -54,7 +54,7 @@ public class Dresser : ClientMonoBehaviour, IBiomable
       isOpen = true;
 
       // Play a sound
-      SoundManager.create3dSound("door_open_", this.transform.position, 3);
+      //SoundManager.create3dSound("door_open_", this.transform.position, 3);
    }
 
    void OnTriggerExit2D (Collider2D other) {
@@ -67,7 +67,7 @@ public class Dresser : ClientMonoBehaviour, IBiomable
       isOpen = false;
 
       // Play a sound
-      SoundManager.create3dSound("door_close_", this.transform.position, 3);
+      //SoundManager.create3dSound("door_close_", this.transform.position, 3);
    }
 
    public void setBiome (Biome.Type biomeType) {

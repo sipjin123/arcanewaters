@@ -302,7 +302,7 @@ public class CameraManager : ClientMonoBehaviour {
       defaultCamera.getPixelFadeEffect().fadeOut();
 
       // Play a sound effect
-      SoundManager.play2DClip(SoundManager.Type.Haste, 0f);
+      //SoundManager.play2DClip(SoundManager.Type.Haste, 0f);
 
       // Wait for it to finish
       yield return new WaitForSeconds(1f);

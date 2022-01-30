@@ -71,7 +71,7 @@ public class NetworkedCannonBall : NetworkedProjectile
          // Was there a Land collider where the cannonball hit?
          if (Util.hasLandTile(this.transform.position)) {
             Instantiate(PrefabsManager.self.requestCannonSmokePrefab(_impactMagnitude), circleCollider.transform.position, Quaternion.identity);
-            SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
+            //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
          } else {
             Instantiate(PrefabsManager.self.requestCannonSplashPrefab(_impactMagnitude), circleCollider.transform.position + new Vector3(0f, -.1f), Quaternion.identity);
 

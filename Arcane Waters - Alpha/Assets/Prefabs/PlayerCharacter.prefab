@@ -915,7 +915,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1365030027064402}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24319308, guid: ba5a630d0442d66419d62c78f3a2fdaf,
     type: 2}
@@ -1879,9 +1879,6 @@ MonoBehaviour:
   levelUpEffect: {fileID: 8553150314754777727}
   stairEffectorCollisionEnabled: 1
   emoteType: 0
-  isSitting: 0
-  positionBeforeSitting: {x: 0, y: 0, z: 0}
-  chairPosition: {x: 0, y: 0, z: 0}
 --- !u!58 &58574232978621698
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -2034,7 +2031,6 @@ MonoBehaviour:
   waterRippleBack: {fileID: 1194882064055010}
   waterRippleFront: {fileID: 1316063719556658}
   lastWaterTime: -3.4028235e+38
-  waterWadingSound: {fileID: 82102829024873760}
   shadowObj: {fileID: 3722542199485167435}
   fullWaterHeight: 0.48
   waterHeight: 0.42
@@ -2052,6 +2048,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  isProcessing: 0
 --- !u!114 &114043305298273174
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13003,6 +13000,7 @@ MonoBehaviour:
   - {fileID: 3200402320543922611}
   animator: {fileID: 95463498748125442}
   cropSpawnEffectDirection: 0
+  cachedCropSpots: []
 --- !u!114 &541427491548626559
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24578,7 +24576,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8683828607774954370}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.015, y: 0.23, z: 0}
+  m_LocalPosition: {x: 0.015, y: 0.23, z: -0.02}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4953967745697658}
@@ -24645,13 +24643,13 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
-  m_Sprite: {fileID: 3875409535639540146, guid: 856af04275a0de945a7721b703e0237d,
+  m_SortingOrder: 0
+  m_Sprite: {fileID: -4766295860920375582, guid: e1798e8b0e0314548bb43787f5ed8f24,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 1
+  m_DrawMode: 0
   m_Size: {x: 0.64, y: 0.96}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0

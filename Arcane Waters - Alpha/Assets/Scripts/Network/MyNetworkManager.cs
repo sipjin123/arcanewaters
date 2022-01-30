@@ -294,7 +294,9 @@ public class MyNetworkManager : NetworkManager
       AbilityManager.self.initializeAbilities();
       BackgroundGameManager.self.initializeDataCache();
       EquipmentXMLManager.self.initializeDataCache();
-      SoundEffectManager.self.initializeDataCache();
+
+      //SoundEffectManager.self.initializeDataCache();
+      
       XmlVersionManagerServer.self.initializeServerData();
       TreasureDropsDataManager.self.initializeServerDataCache();
       NPCQuestManager.self.initializeServerDataCache();

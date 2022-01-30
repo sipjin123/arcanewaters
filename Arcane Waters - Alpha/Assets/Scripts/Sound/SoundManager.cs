@@ -48,7 +48,7 @@ public class SoundManager : GenericGameManager
    public Button musicButton;
 
    // The Audio Source for our background music
-   public AudioSource backgroundMusicAudioSource;
+   //public AudioSource backgroundMusicAudioSource;
 
    // The master volume controls of FMOD
    //public FMOD.Studio.Bus masterBus;
@@ -172,17 +172,17 @@ public class SoundManager : GenericGameManager
 
    void Update () {
       // Mute or unmute when the sound is toggled
-      self.musicParentGroup.audioMixer.SetFloat("MusicParentVolume", musicOn ? VOLUME_UNCHANGED : VOLUME_OFF);
-      self.effectsParentGroup.audioMixer.SetFloat("EffectsParentVolume", effectsOn ? VOLUME_UNCHANGED : VOLUME_OFF);
+      //self.musicParentGroup.audioMixer.SetFloat("MusicParentVolume", musicOn ? VOLUME_UNCHANGED : VOLUME_OFF);
+      //self.effectsParentGroup.audioMixer.SetFloat("EffectsParentVolume", effectsOn ? VOLUME_UNCHANGED : VOLUME_OFF);
 
       // Consider SFX_MIN_DB as the lowest practical audible volume. If effectsVolume is 0, set the volume to VOLUME_OFF to ensure silence
-      float sfxVolume = effectsVolume > 0 ? (1f - effectsVolume) * SFX_MIN_DB : VOLUME_OFF;
+      //float sfxVolume = effectsVolume > 0 ? (1f - effectsVolume) * SFX_MIN_DB : VOLUME_OFF;
 
       // Make the audio mixer volume match the current volume settings
-      self.effectsChildGroup.audioMixer.SetFloat("EffectsChildVolume", sfxVolume);
+      //self.effectsChildGroup.audioMixer.SetFloat("EffectsChildVolume", sfxVolume);
 
       // Set the music volume on the AudioSource
-      backgroundMusicAudioSource.volume = musicVolume;
+      //backgroundMusicAudioSource.volume = musicVolume;
    }
 
    void OnDestroy () {
@@ -293,6 +293,9 @@ public class SoundManager : GenericGameManager
       return float.MinValue;
    }
 
+   #region Old Audio Implementation
+
+   /*
    public static AudioSource createLoopedAudio (Type type, Transform creator) {
       if (Util.isBatch()) {
          return null;
@@ -493,6 +496,10 @@ public class SoundManager : GenericGameManager
       return false;
    }
 
+   */
+
+   #endregion
+
    public static void setBackgroundMusic (string areaKey, Biome.Type biome) {
       Type areaMusic = Area.getBackgroundMusic(areaKey, biome);
       if (areaMusic != Type.None) {
@@ -527,58 +534,63 @@ public class SoundManager : GenericGameManager
       //}
    }
 
-   public static void create3dSound (string audioClipName, Vector3 position, int countToChooseFrom = 0) {
-      if (Util.isBatch()) {
-         return;
-      }
 
-      string path = "Sound/Effects/" + audioClipName;
-      if (countToChooseFrom > 1) {
-         path += Random.Range(1, countToChooseFrom + 1);
-      }
-      create3dSoundWithPath(path, position);
-   }
+   #region Old Audio Implementation
 
-   public static void create3dSoundWithPath (string audioClipName, Vector3 position, float volume = -1) {
-      if (Util.isBatch()) {
-         return;
-      }
-      string path = audioClipName.Replace(".ogg", "");
+   //public static void create3dSound (string audioClipName, Vector3 position, int countToChooseFrom = 0) {
+   //   if (Util.isBatch()) {
+   //      return;
+   //   }
 
-      AudioSource audioSource = Instantiate(PrefabsManager.self.sound3dPrefab, position, Quaternion.identity);
-      audioSource.transform.SetParent(self.transform, true);
-      audioSource.clip = Resources.Load<AudioClip>(path);
-      if (volume > 0) {
-         audioSource.volume = volume;
-      }
+   //   string path = "Sound/Effects/" + audioClipName;
+   //   if (countToChooseFrom > 1) {
+   //      path += Random.Range(1, countToChooseFrom + 1);
+   //   }
+   //   create3dSoundWithPath(path, position);
+   //}
 
-      // Play the clip
-      audioSource.Play();
+   //public static void create3dSoundWithPath (string audioClipName, Vector3 position, float volume = -1) {
+   //   if (Util.isBatch()) {
+   //      return;
+   //   }
+   //   string path = audioClipName.Replace(".ogg", "");
 
-      // Destroy after the clip finishes
-      if (audioSource && audioSource.gameObject && audioSource.clip) {
-         Destroy(audioSource.gameObject, audioSource.clip.length);
-      }
-   }
+   //   AudioSource audioSource = Instantiate(PrefabsManager.self.sound3dPrefab, position, Quaternion.identity);
+   //   audioSource.transform.SetParent(self.transform, true);
+   //   audioSource.clip = Resources.Load<AudioClip>(path);
+   //   if (volume > 0) {
+   //      audioSource.volume = volume;
+   //   }
 
-   protected IEnumerator transitionBackgroundMusic (Type type) {
-      // Slowly fade the current music out
-      musicGrandchildGroup.audioMixer.FindSnapshot(MUTED_MUSIC_GRANDCHILD).TransitionTo(FADE_DURATION);
-      yield return new WaitForSeconds(FADE_DURATION);
+   //   // Play the clip
+   //   audioSource.Play();
 
-      // Stop the previous music, if any was playing
-      backgroundMusicAudioSource.Stop();
+   //   // Destroy after the clip finishes
+   //   if (audioSource && audioSource.gameObject && audioSource.clip) {
+   //      Destroy(audioSource.gameObject, audioSource.clip.length);
+   //   }
+   //}
 
-      // Assign the new music
-      backgroundMusicAudioSource.clip = Resources.Load<AudioClip>("Sound/" + type);
+   //protected IEnumerator transitionBackgroundMusic (Type type) {
+   //   // Slowly fade the current music out
+   //   musicGrandchildGroup.audioMixer.FindSnapshot(MUTED_MUSIC_GRANDCHILD).TransitionTo(FADE_DURATION);
+   //   yield return new WaitForSeconds(FADE_DURATION);
 
-      // And now we can play it
-      backgroundMusicAudioSource.Play();
+   //   // Stop the previous music, if any was playing
+   //   backgroundMusicAudioSource.Stop();
 
-      // Slowly fade the new music in
-      musicGrandchildGroup.audioMixer.FindSnapshot(DEFAULT_SNAPSHOT).TransitionTo(FADE_DURATION);
-      yield return new WaitForSeconds(FADE_DURATION);
-   }
+   //   // Assign the new music
+   //   backgroundMusicAudioSource.clip = Resources.Load<AudioClip>("Sound/" + type);
+
+   //   // And now we can play it
+   //   backgroundMusicAudioSource.Play();
+
+   //   // Slowly fade the new music in
+   //   musicGrandchildGroup.audioMixer.FindSnapshot(DEFAULT_SNAPSHOT).TransitionTo(FADE_DURATION);
+   //   yield return new WaitForSeconds(FADE_DURATION);
+   //}
+
+   #endregion
 
    #region Private Variables
 

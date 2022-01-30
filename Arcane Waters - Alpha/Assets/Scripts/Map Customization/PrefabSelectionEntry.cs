@@ -49,7 +49,8 @@ namespace MapCustomization {
       private void selectIndex (int index) {
          _selectedIndex = index;
          iconImage.sprite = _prefabs[index].displaySprite;
-         SoundEffectManager.self.playSoundEffect(SoundEffectManager.NEXT_PREFAB_SELECTION, SoundEffectManager.self.transform);
+
+         //SoundEffectManager.self.playSoundEffect(SoundEffectManager.NEXT_PREFAB_SELECTION, SoundEffectManager.self.transform);
       }
 
       public void setSelected (bool selected) {

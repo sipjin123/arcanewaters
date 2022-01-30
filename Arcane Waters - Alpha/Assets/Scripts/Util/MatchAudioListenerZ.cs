@@ -18,7 +18,7 @@ public class MatchAudioListenerZ : MonoBehaviour {
    }
 
    private void setZ () {
-      Util.setZ(transform, AudioListenerManager.self.getActiveListenerZ());
+      //Util.setZ(transform, AudioListenerManager.self.getActiveListenerZ());
    }
 
    #region Private Variables

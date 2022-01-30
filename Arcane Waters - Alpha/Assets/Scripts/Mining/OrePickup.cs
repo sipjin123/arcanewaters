@@ -74,7 +74,7 @@ public class OrePickup : MonoBehaviour {
          EffectManager.self.create(Effect.Type.Crop_Dirt_Large, transform.position);
 
          // Sound effect triggered for collecting the ores
-         SoundEffectManager.self.playSoundEffect(SoundEffectManager.ORE_PICKUP, transform);
+         //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ORE_PICKUP, transform);
 
          Global.player.rpc.Cmd_PickupOre(oreNode.id, oreEffectId, ownerId, voyageGroupId);
          GetComponent<BoxCollider2D>().enabled = false;

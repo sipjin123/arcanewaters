@@ -19,5 +19,8 @@ public struct SittingInfo
    // The position of the chair the player is sitting on
    public Vector3 chairPosition;
 
+   // The type of the chair
+   public ChairClickable.ChairType chairType;
+
    #endregion
 }

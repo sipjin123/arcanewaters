@@ -22,15 +22,15 @@ public class AudioListenerManager : GenericGameManager
    }
 
    private void Start () {
-      AudioListener startingListener = FindObjectOfType<AudioListener>();
-      FMODUnity.StudioListener startingFmodListener = FindObjectOfType<FMODUnity.StudioListener>();
-      setActiveListener(startingListener, startingFmodListener);
+      FMODUnity.StudioListener fmodListener = FindObjectOfType<FMODUnity.StudioListener>();
+      setActiveListener(fmodListener);
 
       // Player FMOD Listener (Body / Ship)
-      GameObject fmodStudioListenerGo = new GameObject();
-      fmodStudioListenerGo.name = "FMOD Studio Listener - Player";
-      fmodStudioListenerGo.transform.SetParent(this.transform);
-      _playerFmodListener = fmodStudioListenerGo.AddComponent<FMODUnity.StudioListener>();
+      GameObject playerFmodListener = new GameObject();
+      playerFmodListener.name = "FMOD Studio Listener - Player";
+      playerFmodListener.transform.SetParent(this.transform);
+
+      _playerFmodListener = playerFmodListener.AddComponent<FMODUnity.StudioListener>();
       _playerFmodListener.enabled = false;
    }
 
@@ -40,10 +40,11 @@ public class AudioListenerManager : GenericGameManager
       }
    }
 
-   public void setActiveListener (AudioListener newListener, FMODUnity.StudioListener newFmodListener = null) {
-      if (_activeListener) {
-         _activeListener.enabled = false;
-      }
+   // We use null for switching to _playerFmodListener
+   public void setActiveListener (FMODUnity.StudioListener newFmodListener = null) {
+      //if (_activeListener) {
+      //   _activeListener.enabled = false;
+      //}
 
       if (newFmodListener == null) {
          newFmodListener = _playerFmodListener;
@@ -53,30 +54,34 @@ public class AudioListenerManager : GenericGameManager
          _activeFmodListener.enabled = false;
       }
 
-      _activeListener = newListener;
-      _activeListener.enabled = true;
+      //_activeListener = newListener;
+      //_activeListener.enabled = true;
       onListenerChanged?.Invoke();
 
       _activeFmodListener = newFmodListener;
       _activeFmodListener.enabled = true;
    }
 
-   public AudioListener getActiveListener () {
-      return _activeListener;
-   }
+   //public AudioListener getActiveListener () {
+   //   return _activeListener;
+   //}
 
    public FMODUnity.StudioListener getActiveFmodListener () {
       return _activeFmodListener;
    }
 
-   public float getActiveListenerZ () {
-      return _activeListener.transform.position.z;
+   public bool isPlayerFmodListenerActive () {
+      return _activeFmodListener == _playerFmodListener;
    }
+
+   //public float getActiveListenerZ () {
+   //   return _activeListener.transform.position.z;
+   //}
 
    #region Private Variables
 
    // A reference to the AudioListener that is being used
-   private AudioListener _activeListener;
+   //private AudioListener _activeListener;
 
    // A reference to the FMOD Studio Listener that is being used
    private FMODUnity.StudioListener _activeFmodListener;

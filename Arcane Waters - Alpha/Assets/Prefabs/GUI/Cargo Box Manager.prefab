@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 2454574467387966284}
   - component: {fileID: 2454574467387966287}
   - component: {fileID: 6309004589585509828}
-  - component: {fileID: 5990181199101981929}
-  - component: {fileID: 1669326032320913282}
+  - component: {fileID: 7453209921462151563}
+  - component: {fileID: 9194577961157748093}
   m_Layer: 5
   m_Name: Cargo Box Manager
   m_TagString: Untagged
@@ -59,6 +59,7 @@ MonoBehaviour:
     type: 3}
   listBottomPrefab: {fileID: 4026619642716840182, guid: 240a1f6358ecab545a44b51bca79816a,
     type: 3}
+  boxesCount: 0
 --- !u!225 &2454574467387966287
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -91,12 +92,12 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_Spacing: 0
   m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
+  m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
---- !u!222 &5990181199101981929
+  m_ChildScaleHeight: 1
+--- !u!222 &7453209921462151563
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -104,7 +105,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2454574467387966275}
   m_CullTransparentMesh: 0
---- !u!114 &1669326032320913282
+--- !u!114 &9194577961157748093
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -125,7 +126,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 8df8d48aa59d3a34f95e7c505a44b9c1, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1

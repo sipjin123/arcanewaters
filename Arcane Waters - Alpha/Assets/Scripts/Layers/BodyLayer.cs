@@ -60,24 +60,25 @@ public class BodyLayer : SpriteLayer {
 
    #region Clipmask
 
-   private Texture2D getDefaultClipmask () {
-      return ImageManager.getTexture($"Masks/Sitting/sitting_clipmask");
+   private Texture2D getClipmaskAt (string clipmaskPath) {
+      return ImageManager.getTexture(clipmaskPath);
    }
 
-   public void toggleClipmask (bool enable = true) {
+   public void toggleClipmask (string clipmaskPath, bool enable = true) {
       // Skip update for server in batch mode, or if the state of the clipmask hasn't changed
       if (Util.isBatch() || getMaterial() == null || _isClipmaskEnabled == enable) {
          return;
       }
 
-      if (_lastClipTexture == null) {
-         Texture2D defaultClipmask = getDefaultClipmask();
+      if (_lastClipTexture == null || !Util.areStringsEqual(clipmaskPath, _clipmaskPath)) {
+         Texture2D clipmask = getClipmaskAt(clipmaskPath);
 
-         if (defaultClipmask == null || defaultClipmask == ImageManager.self.blankTexture) {
+         if (clipmask == null || clipmask == ImageManager.self.blankTexture) {
             return;
          }
 
-         overrideClipmask(defaultClipmask);
+         _clipmaskPath = clipmaskPath;
+         overrideClipmask(clipmask);
       }
 
       getMaterial().SetFloat("_EnableClipping", enable ? 1.0f : 0.0f);
@@ -113,6 +114,9 @@ public class BodyLayer : SpriteLayer {
 
    // Reference to the current clip texture
    private Texture2D _lastClipTexture;
+
+   // The path to last clipmask used
+   private string _clipmaskPath;
 
    #endregion
 }

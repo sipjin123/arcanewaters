@@ -10,10 +10,33 @@ public class ChairClickable : MonoBehaviour
    public static float SIT_DISTANCE = .32f;
 
    // The direction of the chair (only cardinal direction are supported)
+   [Tooltip("Ignored by Stools.")]
    public Direction direction = Direction.North;
 
-   // The collider used to check for obstructions
-   public Collider2D obstructionsCollider;
+   // The type of chair
+   public ChairType chairType = ChairType.Chair;
+
+   // The collider used to check for obstacles on the right side of the chair
+   public Collider2D eastObstructionCollider;
+
+   // The collider used to check for obstacles on the left side of the chair
+   public Collider2D westObstructionCollider;
+
+   // The collider used to check for possible objects on the chair
+   public Collider2D occupiedCollider;
+
+   // The types of chair
+   public enum ChairType
+   {
+      // None
+      None = 0,
+
+      // Chair
+      Chair = 1,
+
+      // Stool
+      Stool = 2
+   }
 
    #endregion
 
@@ -23,6 +46,12 @@ public class ChairClickable : MonoBehaviour
       _clickableBox = GetComponentInChildren<ClickableBox>();
    }
 
+   private void Start () {
+      if (_clickableBox != null) {
+         _clickableBox.mouseButtonUp += onClickableBoxMouseButtonUp;
+      }
+   }
+
    public void Update () {
       if (Util.isBatch()) {
          return;
@@ -30,6 +59,10 @@ public class ChairClickable : MonoBehaviour
 
       // Figure out whether our outline should be showing
       handleSpriteOutline();
+   }
+
+   private void onClickableBoxMouseButtonUp (MouseButton button) {
+      onClick();
    }
 
    public void onClick () {
@@ -48,7 +81,13 @@ public class ChairClickable : MonoBehaviour
          return;
       }
 
-      if (isObstructed()) {
+      Direction[] obstructedDirections = getObstructedDirections();
+      if (chairType == ChairType.Chair && obstructedDirections.Contains(direction)) {
+         FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, 0f)).asCustomMessage("No Space!");
+         return;
+      }
+
+      if (chairType == ChairType.Stool && isHoldingSomething()) {
          FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, 0f)).asCustomMessage("No Space!");
          return;
       }
@@ -57,35 +96,76 @@ public class ChairClickable : MonoBehaviour
          return;
       }
 
-      Global.player.getPlayerBodyEntity().Cmd_EnterChair(transform.position, direction);
+      if (chairType == ChairType.Chair) {
+         Global.player.getPlayerBodyEntity().Cmd_EnterChair(transform.position, direction, chairType);
+      } else if (chairType == ChairType.Stool) {
+         Vector2 playerPos = new Vector2(Global.player.transform.position.x, Global.player.transform.position.y);
+         Vector2 chairPos = new Vector2(transform.position.x, transform.position.y);
+         Direction? computedDirection = Util.getMajorDirectionFromVector(playerPos - chairPos);
+         Global.player.getPlayerBodyEntity().Cmd_EnterChair(transform.position, computedDirection.HasValue ? computedDirection.Value : Direction.East, chairType);
+      }
    }
 
    private bool isTooFarFromPlayer () {
       return Vector2.Distance(transform.position, Global.player.transform.position) > SIT_DISTANCE;
    }
 
-   private bool isObstructed () {
-      if (obstructionsCollider == null) {
-         return false;
-      }
+   private Direction[] getObstructedDirections () {
+      List<Direction> obstructedDirections = new List<Direction>();
+      Collider2D[] obstructors = new[] { eastObstructionCollider, westObstructionCollider };
 
-      Collider2D[] colliders = new Collider2D[10];
-      int collidersCount = Physics2D.OverlapCollider(obstructionsCollider, new ContactFilter2D(), colliders);
+      foreach (Collider2D obsCollider in obstructors) {
+         if (obsCollider == null) {
+            continue;
+         }
 
-      foreach (Collider2D collider in colliders) {
-         if (collider != null) {
-            // Ignore the chair itself
-            if (collider.gameObject == this.gameObject) {
-               collidersCount -= 1;
+         Collider2D[] colliders = new Collider2D[10];
+         int collidersCount = Physics2D.OverlapCollider(obsCollider, new ContactFilter2D(), colliders);
+
+         // Filter the result
+         foreach (Collider2D collider in colliders) {
+            if (collider != null) {
+               // Ignore the chair itself, players
+               if (collider.gameObject == this.gameObject ||
+                  collider.GetComponentInParent<PlayerBodyEntity>() != null) {
+                  collidersCount -= 1;
+               }
             }
+         }
 
-            // Ignore players
-            if (collider.GetComponentInParent<PlayerBodyEntity>() != null) {
-               collidersCount -= 1;
+         // If possible obstacles are found, add the corresponding direction to the list
+         if (collidersCount > 0) {
+            if (obsCollider == eastObstructionCollider) {
+               obstructedDirections.Add(Direction.East);
+            } else if (obsCollider == westObstructionCollider) {
+               obstructedDirections.Add(Direction.West);
             }
          }
       }
 
+      return obstructedDirections.ToArray();
+   }
+
+   private bool isHoldingSomething () {
+      if (occupiedCollider == null) {
+         return false;
+      }
+
+      Collider2D[] colliders = new Collider2D[10];
+      int collidersCount = Physics2D.OverlapCollider(occupiedCollider, new ContactFilter2D { useTriggers = true }, colliders);
+
+      foreach (Collider2D collider in colliders) {
+         if (collider == null) {
+            continue;
+         }
+
+         // Ignore the chair itself, players and the camera bounds
+         if (collider.gameObject == this.gameObject ||
+            collider.GetComponentInParent<PlayerBodyEntity>() != null ||
+            collider.TryGetComponent(out MapCameraBounds bounds)) {
+            collidersCount -= 1;
+         }
+      }
 
       return collidersCount > 0;
    }
@@ -113,6 +193,12 @@ public class ChairClickable : MonoBehaviour
       // Only show our outline when the mouse is over us
       bool isHovering = MouseManager.self.isHoveringOver(_clickableBox);
       _outline.setVisibility(isHovering);
+   }
+
+   private void OnDestroy () {
+      if (_clickableBox != null) {
+         _clickableBox.mouseButtonUp -= onClickableBoxMouseButtonUp;
+      }
    }
 
    #region Private Variables

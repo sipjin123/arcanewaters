@@ -146,18 +146,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8762095671859466994}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8653485824776828945}
-        m_MethodName: onClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &8762095671859466994
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -398,6 +387,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   direction: 5
+  chairType: 1
+  eastObstructionCollider: {fileID: 0}
+  westObstructionCollider: {fileID: 0}
+  occupiedCollider: {fileID: 0}
 --- !u!114 &8418814855564596661
 MonoBehaviour:
   m_ObjectHideFlags: 0

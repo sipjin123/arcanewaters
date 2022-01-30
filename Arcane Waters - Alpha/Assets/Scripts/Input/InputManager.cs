@@ -146,6 +146,9 @@ public class InputManager : GenericGameManager {
    // Action map states bulk control
    public ActionMapStates actionMapStates;
    
+   // Is movement simulated for stress testing
+   public bool IsMoveSimulated { get { return _isMoveSimulated; } }
+   
    #endregion
 
    protected override void Awake () {
@@ -368,19 +371,35 @@ public class InputManager : GenericGameManager {
    }
    
    public static bool isPressingDirection (Direction direction) {
+      #region Perf tests automove simulation
+      if (_isMoveSimulated) {
+         switch (direction) {
+            case Direction.North:
+               return _moveDirectionSimulated == Direction.North;
+            case Direction.East:
+               return _moveDirectionSimulated == Direction.East;
+            case Direction.South:
+               return _moveDirectionSimulated == Direction.South;
+            case Direction.West:
+               return _moveDirectionSimulated == Direction.West; 
+         }
+      }
+      #endregion
+      
+      // Skip main logic for batch mode 
       if (Util.isBatch()) {
          return false;
       }
 
       switch (direction) {
          case Direction.North:
-            return self.inputMaster.General.MoveUp.IsPressed() || self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.North);
+            return self.inputMaster.General.MoveUp.IsPressed() || self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE;
          case Direction.East:
-            return self.inputMaster.General.MoveRight.IsPressed() || self.joystickNavigation.x > JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.East);
+            return self.inputMaster.General.MoveRight.IsPressed() || self.joystickNavigation.x > JOYSTICK_ACTIVE_VALUE;
          case Direction.South:
-            return self.inputMaster.General.MoveDown.IsPressed() || self.joystickNavigation.y < -JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.South);
+            return self.inputMaster.General.MoveDown.IsPressed() || self.joystickNavigation.y < -JOYSTICK_ACTIVE_VALUE;
          case Direction.West:
-            return self.inputMaster.General.MoveLeft.IsPressed() || self.joystickNavigation.x < -JOYSTICK_ACTIVE_VALUE || (_isMoveSimulated && _moveDirectionSimulated == Direction.West);
+            return self.inputMaster.General.MoveLeft.IsPressed() || self.joystickNavigation.x < -JOYSTICK_ACTIVE_VALUE;
          case Direction.NorthEast:
             return (self.joystickNavigation.y > JOYSTICK_ACTIVE_VALUE && self.joystickNavigation.x > JOYSTICK_ACTIVE_VALUE) 
                || (isPressingDirection(Direction.North) && isPressingDirection(Direction.East));

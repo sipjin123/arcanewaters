@@ -516,7 +516,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &3889245599123706461
 Rigidbody2D:
@@ -724,7 +724,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &210473432257755217
 GameObject:
@@ -870,7 +870,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &5446091751335107125
 Rigidbody2D:
@@ -1294,7 +1294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &3799244721267097533
 Rigidbody2D:
@@ -1502,7 +1502,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &292031948591415654
 GameObject:
@@ -1551,7 +1551,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!212 &7814574119328221946
 SpriteRenderer:
@@ -1824,7 +1824,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!95 &4777816824368807444
 Animator:
@@ -1983,7 +1983,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &332192641607260849
 GameObject:
@@ -2208,7 +2208,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &8818509465375884756
 Rigidbody2D:
@@ -2416,7 +2416,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &424910456174374347
 GameObject:
@@ -2737,7 +2737,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &4384947582830114303
 Rigidbody2D:
@@ -2854,7 +2854,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!212 &5414591648195313360
 SpriteRenderer:
@@ -3190,7 +3190,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &649754164123880786
 GameObject:
@@ -3334,7 +3334,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &4804417859614252785
 Rigidbody2D:
@@ -3546,7 +3546,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &1858715404559328463
 Rigidbody2D:
@@ -3758,7 +3758,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &8449411025606001819
 Rigidbody2D:
@@ -4325,7 +4325,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &791337504214666945
 GameObject:
@@ -4465,7 +4465,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &816753998871190059
 GameObject:
@@ -5029,7 +5029,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &2226447769544696649
 Rigidbody2D:
@@ -5322,7 +5322,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &4785783950699277778
 Rigidbody2D:
@@ -5530,7 +5530,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &1109876589030316308
 GameObject:
@@ -5674,7 +5674,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &7718366690676332536
 Rigidbody2D:
@@ -5888,7 +5888,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &8279247348624230804
 Rigidbody2D:
@@ -6150,7 +6150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &5807372836597789419
 Rigidbody2D:
@@ -6362,7 +6362,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &8844837749460015685
 Rigidbody2D:
@@ -6570,7 +6570,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &1257847565764046007
 GameObject:
@@ -6873,7 +6873,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &1449185726287741888
 GameObject:
@@ -7408,7 +7408,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!212 &1835686020166008292
 SpriteRenderer:
@@ -7759,7 +7759,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &2008657041648748542
 GameObject:
@@ -7980,7 +7980,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &2079981300067151470
 GameObject:
@@ -8286,7 +8286,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &3558272700182273487
 Rigidbody2D:
@@ -8579,7 +8579,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &8870917039504606367
 Rigidbody2D:
@@ -8921,7 +8921,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &829477220672667417
 Rigidbody2D:
@@ -9129,7 +9129,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &2299567334423343271
 GameObject:
@@ -9350,7 +9350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &2432395196662529575
 GameObject:
@@ -9494,7 +9494,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &8342329452952726512
 Rigidbody2D:
@@ -9783,7 +9783,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &2467367189866666360
 GameObject:
@@ -10343,7 +10343,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &2826436436305393756
 GameObject:
@@ -10483,7 +10483,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &2848783889381164872
 GameObject:
@@ -10623,7 +10623,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &2852324026271440456
 GameObject:
@@ -10767,7 +10767,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &4142114171618181058
 Rigidbody2D:
@@ -10975,7 +10975,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &2944418469059868904
 GameObject:
@@ -11217,7 +11217,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &6116937585731517872
 Rigidbody2D:
@@ -11562,7 +11562,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &8546502591176231926
 Rigidbody2D:
@@ -11820,7 +11820,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &3084197665220178040
 GameObject:
@@ -11960,7 +11960,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &3118569868766523626
 GameObject:
@@ -12181,7 +12181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &3175453823472241448
 GameObject:
@@ -12957,7 +12957,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!212 &1216688883299903100
 SpriteRenderer:
@@ -13147,7 +13147,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &3382836687301771597
 GameObject:
@@ -13368,7 +13368,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &3460783233245484640
 GameObject:
@@ -13417,7 +13417,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!212 &357035196288298
 SpriteRenderer:
@@ -13611,7 +13611,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &120406115142928697
 Rigidbody2D:
@@ -13996,7 +13996,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &3614988244628991919
 GameObject:
@@ -14140,7 +14140,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &9179209568124778549
 Rigidbody2D:
@@ -14429,7 +14429,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &3680511640932634091
 GameObject:
@@ -14650,7 +14650,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &3713542158486321717
 GameObject:
@@ -14790,7 +14790,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &3768625696264725850
 GameObject:
@@ -14930,7 +14930,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &3780959895051504330
 GameObject:
@@ -15234,7 +15234,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &3866860980082935976
 GameObject:
@@ -15378,7 +15378,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &6972994153925953696
 Rigidbody2D:
@@ -15586,7 +15586,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &4027941634401856773
 GameObject:
@@ -15730,7 +15730,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &3402276241785201532
 Rigidbody2D:
@@ -16100,7 +16100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!114 &6858638049499276724
 MonoBehaviour:
@@ -16289,7 +16289,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &4234922609016457984
 GameObject:
@@ -16429,7 +16429,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &4287719205922162287
 GameObject:
@@ -16573,7 +16573,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &7266936572099847295
 Rigidbody2D:
@@ -16785,7 +16785,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &7662630124018995848
 Rigidbody2D:
@@ -16884,7 +16884,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4358518332857897639}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3, y: 0.44999146, z: -0.02}
+  m_LocalPosition: {x: 3, y: 0.4499915, z: -0.02}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7651603325650927130}
@@ -16994,7 +16994,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!95 &6243101083930785826
 Animator:
@@ -17006,7 +17006,7 @@ Animator:
   m_GameObject: {fileID: 4358518332857897639}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 54e259b86d66cce4db42a826d6e17702, type: 2}
+  m_Controller: {fileID: 9100000, guid: bbb65af37a7f26145bc8a55d6d37c619, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -17157,7 +17157,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &5267954646128603193
 Rigidbody2D:
@@ -17365,7 +17365,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &4452240773346343226
 GameObject:
@@ -17509,7 +17509,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &6822322650466932505
 Rigidbody2D:
@@ -17717,7 +17717,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &4483151908358933910
 GameObject:
@@ -17857,7 +17857,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &4514004234456904081
 GameObject:
@@ -18001,7 +18001,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &5861320794638013583
 Rigidbody2D:
@@ -18294,7 +18294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &2284487785986654940
 Rigidbody2D:
@@ -18506,7 +18506,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &7842827425220934971
 Rigidbody2D:
@@ -18714,7 +18714,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &4730594370780060472
 GameObject:
@@ -18854,7 +18854,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &4739831826498802092
 GameObject:
@@ -19156,7 +19156,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &4841724730751891975
 GameObject:
@@ -19300,7 +19300,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &337900695013701290
 Rigidbody2D:
@@ -19593,7 +19593,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &244490439391018003
 Rigidbody2D:
@@ -19881,7 +19881,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &4933206683449261448
 GameObject:
@@ -20106,7 +20106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &8124041293353109782
 Rigidbody2D:
@@ -20557,7 +20557,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &5130092935873572665
 GameObject:
@@ -20701,7 +20701,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &2958567013200759429
 Rigidbody2D:
@@ -21238,7 +21238,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &4110002455262545216
 Rigidbody2D:
@@ -21500,7 +21500,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &4864771292190558463
 Rigidbody2D:
@@ -22143,7 +22143,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &5580689774977357234
 GameObject:
@@ -22287,7 +22287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &2715066668507855363
 Rigidbody2D:
@@ -23227,7 +23227,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &5894567654931336064
 GameObject:
@@ -23368,7 +23368,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!95 &7413434118122943312
 Animator:
@@ -23527,7 +23527,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &5911527577460427615
 GameObject:
@@ -23748,7 +23748,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &5943241732172156105
 GameObject:
@@ -24050,7 +24050,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &6041314841550138288
 GameObject:
@@ -24710,7 +24710,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &6174494486823389215
 GameObject:
@@ -24946,7 +24946,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &6229485824775601636
 GameObject:
@@ -25252,7 +25252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &7533583148550854087
 Rigidbody2D:
@@ -25466,7 +25466,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &2532239738716769327
 Rigidbody2D:
@@ -25809,7 +25809,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &7048650071931193165
 Rigidbody2D:
@@ -26019,7 +26019,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!95 &5478578057799946448
 Animator:
@@ -26694,7 +26694,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &6716365234766937741
 GameObject:
@@ -26915,7 +26915,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &6787637462648612077
 GameObject:
@@ -27059,7 +27059,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &455831578246746593
 Rigidbody2D:
@@ -27267,7 +27267,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &6866623083876158183
 GameObject:
@@ -27503,7 +27503,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &6948332962424522443
 GameObject:
@@ -27647,7 +27647,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &8563567676938260555
 Rigidbody2D:
@@ -28259,7 +28259,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &7130694806021009725
 GameObject:
@@ -28533,7 +28533,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &6220651622832667332
 Rigidbody2D:
@@ -28747,7 +28747,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &7941232973294230735
 Rigidbody2D:
@@ -29171,7 +29171,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &5657524889652314180
 Rigidbody2D:
@@ -29383,7 +29383,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &605649588828773985
 Rigidbody2D:
@@ -29759,7 +29759,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &7646692147456688373
 Rigidbody2D:
@@ -30454,7 +30454,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &7702493405508236852
 GameObject:
@@ -30594,7 +30594,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &7702717510292686761
 GameObject:
@@ -30895,7 +30895,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &7757927899231378620
 GameObject:
@@ -31197,7 +31197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &7831506109528693506
 GameObject:
@@ -31341,7 +31341,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &4492444070748402387
 Rigidbody2D:
@@ -31553,7 +31553,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &8177717200961668111
 Rigidbody2D:
@@ -31930,7 +31930,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &7928994770072399174
 GameObject:
@@ -32070,7 +32070,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &7944532516794169760
 GameObject:
@@ -32295,7 +32295,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &6051775745585128288
 Rigidbody2D:
@@ -32908,7 +32908,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &8182907353902357240
 GameObject:
@@ -33048,7 +33048,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &8188693399936990440
 GameObject:
@@ -33259,7 +33259,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!212 &4714171963292977877
 SpriteRenderer:
@@ -33617,7 +33617,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &8029162806800222416
 Rigidbody2D:
@@ -34137,7 +34137,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &2280384417246480280
 Rigidbody2D:
@@ -34603,7 +34603,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &8546170143073101435
 GameObject:
@@ -35003,7 +35003,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!95 &2620513635484242480
 Animator:
@@ -35166,7 +35166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &7937130385357472001
 Rigidbody2D:
@@ -35374,7 +35374,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &8774710136053471153
 GameObject:
@@ -35515,7 +35515,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &8799720262703244791
 GameObject:
@@ -36543,7 +36543,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &9072062199647345345
 GameObject:
@@ -36849,7 +36849,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!50 &9158145363850274848
 Rigidbody2D:
@@ -37057,7 +37057,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &9187735633332301585
 GameObject:
@@ -37278,7 +37278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1001 &349541282760512446
 PrefabInstance:

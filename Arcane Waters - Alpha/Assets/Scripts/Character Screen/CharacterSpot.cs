@@ -62,6 +62,9 @@ public class CharacterSpot : ClientMonoBehaviour {
 
       charRestoreButton.gameObject.SetActive(isDeletedCharacter);
       charRestoreButtonContainer.sizeDelta = new Vector2(charRestoreButtonContainer.sizeDelta.x, isDeletedCharacter ? 0.65f : 0.4f);
+
+      // Sync canvas visibility with canvas group interactable flag. UINavigation requirement.
+      buttonsCanvasGroup.gameObject.SetActive(CharacterScreen.self.canvasGroup.interactable);
    }
 
    public void assignCharacter (OfflineCharacter character) {

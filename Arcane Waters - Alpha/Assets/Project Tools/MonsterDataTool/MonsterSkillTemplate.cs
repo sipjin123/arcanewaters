@@ -390,8 +390,8 @@ public class MonsterSkillTemplate : MonoBehaviour
          itemIcon.sprite = ImageManager.getSprite(abilityData.itemIconPath);
       }
 
-      hitSoundEffect = SoundEffectManager.self.getSoundEffect(abilityData.hitSoundEffectId);
-      castSoundEffect = SoundEffectManager.self.getSoundEffect(abilityData.castSoundEffectId);
+      //hitSoundEffect = SoundEffectManager.self.getSoundEffect(abilityData.hitSoundEffectId);
+      //castSoundEffect = SoundEffectManager.self.getSoundEffect(abilityData.castSoundEffectId);
 
       hitSoundEffectName.text = "";
       castSoundEffectName.text = "";
@@ -585,36 +585,36 @@ public class MonsterSkillTemplate : MonoBehaviour
       spriteSelectionPanel.SetActive(true);
       spriteSelectionParent.DestroyChildren();
 
-      foreach (SoundEffect effect in SoundEffectManager.self.getAllSoundEffects()) {
-         GameObject iconTempObj = Instantiate(spriteTemplate.gameObject, spriteSelectionParent.transform);
-         ItemTypeTemplate iconTemp = iconTempObj.GetComponent<ItemTypeTemplate>();
-         iconTemp.itemTypeText.text = effect.name;
+      //foreach (SoundEffect effect in SoundEffectManager.self.getAllSoundEffects()) {
+      //   GameObject iconTempObj = Instantiate(spriteTemplate.gameObject, spriteSelectionParent.transform);
+      //   ItemTypeTemplate iconTemp = iconTempObj.GetComponent<ItemTypeTemplate>();
+      //   iconTemp.itemTypeText.text = effect.name;
 
-         iconTemp.previewButton.onClick.AddListener(() => {
-            audioSource.clip = effect.clip;
-            audioSource.volume = effect.calculateValue(SoundEffect.ValueType.VOLUME);
-            audioSource.pitch = effect.calculateValue(SoundEffect.ValueType.PITCH);
-            audioSource.Play();
-         });
+      //   iconTemp.previewButton.onClick.AddListener(() => {
+      //      audioSource.clip = effect.clip;
+      //      audioSource.volume = effect.calculateValue(SoundEffect.ValueType.VOLUME);
+      //      audioSource.pitch = effect.calculateValue(SoundEffect.ValueType.PITCH);
+      //      audioSource.Play();
+      //   });
 
-         iconTemp.selectButton.onClick.AddListener(() => {
-            switch (pathType) {
-               case PathType.CastSprite:
-                  castSoundEffect = effect;
-                  if (castSoundEffect != null) {
-                     castSoundEffectName.text = castSoundEffect.name;
-                  }
-                  break;
-               case PathType.HitSprite:
-                  hitSoundEffect = effect;
-                  if (hitSoundEffect != null) {
-                     hitSoundEffectName.text = hitSoundEffect.name;
-                  }
-                  break;
-            }
-            closeSpriteSelectionButton.onClick.Invoke();
-         });
-      }
+      //   iconTemp.selectButton.onClick.AddListener(() => {
+      //      switch (pathType) {
+      //         case PathType.CastSprite:
+      //            castSoundEffect = effect;
+      //            if (castSoundEffect != null) {
+      //               castSoundEffectName.text = castSoundEffect.name;
+      //            }
+      //            break;
+      //         case PathType.HitSprite:
+      //            hitSoundEffect = effect;
+      //            if (hitSoundEffect != null) {
+      //               hitSoundEffectName.text = hitSoundEffect.name;
+      //            }
+      //            break;
+      //      }
+      //      closeSpriteSelectionButton.onClick.Invoke();
+      //   });
+      //}
    }
 
    private void closeIconSelection () {

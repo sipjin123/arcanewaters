@@ -56,7 +56,7 @@ public class BedSheets : ClientMonoBehaviour
       sheetsAreLowered = false;
 
       // Play a sound
-      SoundManager.create3dSound("door_cloth_close", this.transform.position);
+      //SoundManager.create3dSound("door_cloth_close", this.transform.position);
    }
 
    void OnTriggerExit2D (Collider2D other) {
@@ -69,7 +69,7 @@ public class BedSheets : ClientMonoBehaviour
       sheetsAreLowered = true;
 
       // Play a sound
-      SoundManager.create3dSound("door_cloth_open", this.transform.position);
+      //SoundManager.create3dSound("door_cloth_open", this.transform.position);
    }
 
    #region Private Variables

@@ -51,28 +51,28 @@ public class AmbienceManager : ClientMonoBehaviour
       }
 
       Biome.Type biomeType = AreaManager.self.getDefaultBiome(newAreaKey);
-      bool isSea = AreaManager.self.isSeaArea(newAreaKey);
-      bool isInterior = AreaManager.self.isInteriorArea(newAreaKey);
+      //bool isSea = AreaManager.self.isSeaArea(newAreaKey);
+      //bool isInterior = AreaManager.self.isInteriorArea(newAreaKey);
 
-      SoundEffectManager.self.playAmbienceMusic(isSea, isInterior, biomeType);
+      SoundEffectManager.self.playAmbienceMusic(Area.getBackgroundMusic(newAreaKey, biomeType));
    }
 
-   public void setAmbienceWeatherEffect (WeatherEffectType weatherEffect) {
-      if (_ambienceEvent.isValid()) {
-         int weatherValue = 0;
+   //public void setAmbienceWeatherEffect (WeatherEffectType weatherEffect) {
+   //   if (_ambienceEvent.isValid()) {
+   //      int weatherValue = 0;
 
-         switch (weatherEffect) {
-            case WeatherEffectType.None:
-               weatherValue = 0;
-               break;
-            case WeatherEffectType.Rain:
-               weatherValue = 1;
-               break;
-         }
+   //      switch (weatherEffect) {
+   //         case WeatherEffectType.None:
+   //            weatherValue = 0;
+   //            break;
+   //         case WeatherEffectType.Rain:
+   //            weatherValue = 1;
+   //            break;
+   //      }
 
-         _ambienceEvent.setParameterByName(SoundEffectManager.WEATHER_PARAM, weatherValue);
-      }
-   }
+   //      _ambienceEvent.setParameterByName(SoundEffectManager.WEATHER_PARAM, weatherValue);
+   //   }
+   //}
 
    protected List<SoundManager.Type> getAmbienceTypeForArea (string areaKey) {
       if (AreaManager.self.getArea(areaKey)?.isSea == true) {
@@ -101,7 +101,7 @@ public class AmbienceManager : ClientMonoBehaviour
    protected string _lastArea = "";
 
    // FMOD event instance
-   FMOD.Studio.EventInstance _ambienceEvent;
+   //FMOD.Studio.EventInstance _ambienceEvent;
 
    #endregion
 }

@@ -9,6 +9,7 @@ using MapCreationTool.Serialization;
 using System.Linq;
 using Pathfinding;
 using Cinemachine;
+using MapCreationTool;
 
 public class Area : MonoBehaviour
 {
@@ -88,6 +89,9 @@ public class Area : MonoBehaviour
 
    // The Version number of this Area, as determined by the Map Editor tool
    public int version;
+
+   // Size in tiles of this area as defined in the map editor
+   public Vector2Int mapTileSize;
 
    // NPC Data fields to be loaded by the server
    public List<ExportedPrefab001> npcDatafields = new List<ExportedPrefab001>();
@@ -569,6 +573,49 @@ public class Area : MonoBehaviour
       return getAreaSizeWorld() * 0.5f;
    }
 
+   public void fillTileAttributesMatrix (ExportedLayer001 exportedLayer001) {
+      foreach (ExportedTile001 tile in exportedLayer001.tiles) {
+         TileAttributes attributes = AssetSerializationMaps.tileAttributeMatrix.getTileAttributesMatrixElement(new Vector2Int(tile.i, tile.j));
+         if (attributes != null) {
+            _tileAttributesMatrix.addAttributes(new Vector2Int(tile.x + mapTileSize.x / 2, tile.y + mapTileSize.y / 2), attributes);
+         }
+      }
+   }
+
+   public bool hasTileAttribute (TileAttributes.Type attribute, Vector3 worldPosition) {
+      // Get cell position
+      Vector2Int cellPos = (Vector2Int) worldToCell(worldPosition);
+
+      // Rebase coordinates to corner of map
+      cellPos += mapTileSize / 2;
+
+      // If position is out of bounds, return default
+      if (cellPos.x < 0 || cellPos.y < 0 || cellPos.x >= mapTileSize.x || cellPos.y >= mapTileSize.y) {
+         return false;
+      }
+
+      return _tileAttributesMatrix.hasAttribute(cellPos, attribute);
+   }
+
+   /// <summary>
+   /// Gets all attributes at a given index, fills them in the provided array. Discards anything that does not fit in the array.
+   /// </summary>
+   /// <returns>The amount of attributes that are returned</returns>
+   public int getTileAttributes (Vector3 worldPosition, TileAttributes.Type[] attributeBuffer) {
+      // Get cell position
+      Vector2Int cellPos = (Vector2Int) worldToCell(worldPosition);
+
+      // Rebase coordinates to corner of map
+      cellPos += mapTileSize / 2;
+
+      // If position is out of bounds, return default
+      if (cellPos.x < 0 || cellPos.y < 0 || cellPos.x >= mapTileSize.x || cellPos.y >= mapTileSize.y) {
+         return 0;
+      }
+
+      return _tileAttributesMatrix.getAttributes(cellPos, attributeBuffer);
+   }
+
    private void configurePathfindingGraph () {
       _graph = AstarPath.active.data.AddGraph(typeof(GridGraph)) as GridGraph;
       _graph.center = transform.position;
@@ -648,6 +695,9 @@ public class Area : MonoBehaviour
 
    // The list of temporary controllers in this rea
    protected List<TemporaryController> _tempControllers = new List<TemporaryController>();
+
+   // Tile attributes mask for this area
+   protected TileAttributesMatrix _tileAttributesMatrix = new TileAttributesMatrix();
 
    #endregion
 }

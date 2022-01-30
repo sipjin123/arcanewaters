@@ -1014,14 +1014,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    #region Battle Callers
 
    public void playDeathSound () {
-      SoundEffect deathSoundEffect = SoundEffectManager.self.getSoundEffect(getBattlerData().deathSoundEffectId);
+      //SoundEffect deathSoundEffect = SoundEffectManager.self.getSoundEffect(getBattlerData().deathSoundEffectId);
 
-      if (deathSoundEffect == null) {
-         Debug.LogWarning("Battler does not have a death sound effect");
-         return;
-      }
+      //if (deathSoundEffect == null) {
+      //   Debug.LogWarning("Battler does not have a death sound effect");
+      //   return;
+      //}
 
-      SoundEffectManager.self.playSoundEffect(deathSoundEffect.id, transform);
+      //SoundEffectManager.self.playSoundEffect(deathSoundEffect.id, transform);
    }
 
    public void handleEndOfBattle (Battle.TeamType winningTeam) {
@@ -1143,6 +1143,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          // Play a "Poof" effect on our head
          EffectManager.playPoofEffect(this);
+
+         // Play death SFX
+         SoundEffectManager.self.playLandEnemyDeathSfx(this.enemyType, this.transform.position);
+
+         // Play Triumph SFX if we defeat a boss
+         if (this.isBossType) {
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.TRIUMPH_DEFEATED_BOSS);
+         }
       }
    }
 

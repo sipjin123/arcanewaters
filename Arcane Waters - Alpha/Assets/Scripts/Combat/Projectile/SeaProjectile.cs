@@ -57,7 +57,7 @@ public class SeaProjectile : NetworkBehaviour
          // Play FMOD sfx
          ProjectileStatData projectileStatData = ProjectileStatManager.self.getProjectileData(projectileTypeId);
          if (projectileStatData != null) {
-            SoundEffectManager.self.playSeaProjectileSfx(projectileStatData.sfxType, this.gameObject);
+            SoundEffectManager.self.playSeaProjectileSfx(projectileStatData.sfxType, this.transform, this._rigidbody);
          }
          // Play an appropriate sound
          //if (_playFiringSound) {
@@ -167,6 +167,7 @@ public class SeaProjectile : NetworkBehaviour
          yield return null;
       }
    }
+
    protected void updateVisuals () {
       ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(projectileTypeId);
       if (projectileData != null) {
@@ -244,10 +245,24 @@ public class SeaProjectile : NetworkBehaviour
       float projectileHeight = Util.getPointOnParabola(_lobHeight, _distance, t);
       Vector3 projectilePos = _circleCollider.transform.localPosition;
 
+      // Update dropshadow scale
       if (shadowRenderer != null) {
          float shadowScale = (_lobHeight == 0.0f) ? 1.0f : (1.0f - (projectileHeight / _lobHeight));
          shadowScale = shadowScale * 0.25f + 0.75f;
          shadowRenderer.transform.localScale = Vector3.one * shadowScale;
+      }
+
+      // Align sprite direction with velocity
+      if (_alignDirectionWithVelocity) {
+         float deltaHeight = projectileHeight - _circleCollider.transform.localPosition.y;
+         float verticalSpeed = deltaHeight * 1.0f / Time.deltaTime;
+         Vector2 verticalVelocity = Mathf.Abs(Vector2.Dot(_rigidbody.velocity.normalized, Vector2.right)) * Vector2.up * verticalSpeed;
+         Vector2 perceivedVelocity = _rigidbody.velocity + verticalVelocity;
+         SpriteRenderer mainRenderer = spriteRenderers[0];
+
+         if (mainRenderer != null) {
+            mainRenderer.transform.rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2(perceivedVelocity.y, perceivedVelocity.x) * Mathf.Rad2Deg);
+         }
       }
 
       projectilePos.y = projectileHeight;
@@ -475,6 +490,7 @@ public class SeaProjectile : NetworkBehaviour
    protected bool _hasCollided;
 
    // The netId of the entity that created this projectile
+   [SyncVar]
    protected uint _creatorNetId;
 
    // The id of the instance that this projectile is in
@@ -541,6 +557,9 @@ public class SeaProjectile : NetworkBehaviour
 
    // Whether this will play a firing sound effect
    protected bool _playFiringSound = true;
+
+   // Whether the sprite for this projectile will be rotated to align with its velocity
+   protected bool _alignDirectionWithVelocity = false;
 
    #endregion
 }

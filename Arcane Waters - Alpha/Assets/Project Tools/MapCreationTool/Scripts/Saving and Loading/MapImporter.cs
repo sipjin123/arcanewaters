@@ -414,7 +414,7 @@ namespace MapCreationTool
                   // Remove colliders if the prefab is placed on something
                   if (snap.inheritedOffsetZ != 0) {
                      foreach (Collider2D col in pref.GetComponents<Collider2D>()) {
-                        UnityEngine.Object.Destroy(col);
+                        col.isTrigger = true;
                      }
                   }
                }

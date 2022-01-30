@@ -60,6 +60,10 @@ public class BottomBar : MonoBehaviour {
    public void setFriendshipRequestNotificationStatus (bool active) {
       pendingFriendListPanelButton.SetActive(active);
       normalFriendListPanelButton.SetActive(!active);
+
+      if (PanelManager.self != null && PanelManager.self.friendInvitePromptScreen != null) {
+         PanelManager.self.friendInvitePromptScreen.toggle(active);
+      }
    }
 
    public void toggleInventoryPanel () {
@@ -79,7 +83,7 @@ public class BottomBar : MonoBehaviour {
 
    public void toggleMapPanel () {
       WorldMapPanel panel = (WorldMapPanel) PanelManager.self.get(Panel.Type.WorldMap);
-      
+
       // If the panel is not showing, send a request to the server to get our exploration data
       if (!panel.isShowing()) {
          if (Global.player != null) {
@@ -118,7 +122,7 @@ public class BottomBar : MonoBehaviour {
       PvpStatPanel panel = (PvpStatPanel) PanelManager.self.get(Panel.Type.PvpScoreBoard);
       if (!panel.isShowing()) {
          Global.player.rpc.Cmd_RequestPvpStatPanel();
-      } 
+      }
    }
 
    public void disablePvpStatPanel () {
@@ -206,7 +210,7 @@ public class BottomBar : MonoBehaviour {
          PanelManager.self.togglePanel(Panel.Type.LeaderBoards);
       }
    }
-   
+
    public void toggleFriendVisitPanel () {
       VisitListPanel panel = (VisitListPanel) PanelManager.self.get(Panel.Type.VisitPanel);
 
@@ -222,13 +226,17 @@ public class BottomBar : MonoBehaviour {
    }
 
    public void toggleFriendListPanel () {
+      toggleFriendListPanelAtTab(FriendListPanel.FriendshipPanelTabs.Friends);
+   }
+
+   public void toggleFriendListPanelAtTab (FriendListPanel.FriendshipPanelTabs desiredTab) {
       FriendListPanel panel = (FriendListPanel) PanelManager.self.get(Panel.Type.FriendList);
 
       if (!panel.isShowing()) {
          if (Global.player != null) {
             SoundEffectManager.self.playGuiMenuOpenSfx();
-
-            panel.refreshPanel(true);
+            PanelManager.self.linkPanel(panel.type);
+            panel.refreshPanel(true, desiredTab);
          }
       } else {
          PanelManager.self.togglePanel(Panel.Type.FriendList);

@@ -46,7 +46,8 @@ public class CritterController : MonoBehaviour, IMapEditorDataReceiver
       _renderer.enabled = true;
 
       // Play a sound
-      SoundManager.create3dSound("gopher_" + Random.Range(1, 4), this.transform.position);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.SNEAKY_GOPHER, this.transform.position);
+      //SoundManager.create3dSound("gopher_" + Random.Range(1, 4), this.transform.position);
 
       // Wait for our appear animation to finish
       yield return new WaitForSeconds(1.25f);

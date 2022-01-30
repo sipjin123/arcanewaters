@@ -25,16 +25,13 @@ public class SeaHarpoon : SeaProjectile {
       base.Start();
 
       if (!Util.isBatch()) {
-         if (_attackType == Attack.Type.Harpoon) {
-            harpoonRope.enabled = true;
-         }
+         harpoonRope.enabled = true;
 
          _alignDirectionWithVelocity = true;
       }
 
-      if (isServer) {
-         _sourceEntity = MyNetworkManager.fetchEntityFromNetId<SeaEntity>(_creatorNetId);
-      }
+      // _sourceEntity = MyNetworkManager.fetchEntityFromNetId<SeaEntity>(_creatorNetId);
+      _sourceEntity = SeaManager.self.getEntity(_creatorNetId);
    }
 
    protected override void Update () {
@@ -103,7 +100,7 @@ public class SeaHarpoon : SeaProjectile {
    }
 
    private void updateHarpoon () {
-      if (!(_attackType == Attack.Type.Harpoon) || _sourceEntity == null) {
+      if (_sourceEntity == null || Util.isBatch()) {
          return;
       }
 
@@ -132,14 +129,14 @@ public class SeaHarpoon : SeaProjectile {
       transform.localPosition = Vector3.zero;
 
       _attachedEntity = entity;
-      Rpc_OnAttachToEntity();
+      Rpc_OnAttachToEntity(entity.netId);
 
       Vector2 toHitEntity = _attachedEntity.transform.position - _sourceEntity.transform.position;
       _lineMaxLength = toHitEntity.magnitude;
    }
 
    [ClientRpc]
-   private void Rpc_OnAttachToEntity () {
+   private void Rpc_OnAttachToEntity (uint entityNetId) {
       _circleCollider.enabled = false;
       if (trailParticles != null) {
          trailParticles.Stop();
@@ -147,6 +144,13 @@ public class SeaHarpoon : SeaProjectile {
 
       _circleCollider.transform.localPosition = Vector3.zero;
       shadowRenderer.enabled = false;
+
+      _attachedEntity = SeaManager.self.getEntity(entityNetId);
+      transform.SetParent(_attachedEntity.transform, true);
+      transform.localPosition = Vector3.zero;
+
+      _rigidbody.velocity = Vector2.zero;
+      _rigidbody.isKinematic = true;
 
       SpriteRenderer mainRenderer = spriteRenderers[0];
 
@@ -160,7 +164,12 @@ public class SeaHarpoon : SeaProjectile {
    }
 
    private Vector3 getRopeEndPos () {
-      return ropeAttachPoint.position;
+      if (_attachedEntity == null) {
+         return ropeAttachPoint.position;
+      } else {
+         return _attachedEntity.transform.position;
+      }
+      
    }
 
    #region Private Variables

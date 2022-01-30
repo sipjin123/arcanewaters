@@ -22,6 +22,7 @@ public class PanelManager : GenericGameManager {
    public TradeConfirmScreen tradeConfirmScreen;
    public ItemSelectionScreen itemSelectionScreen;
    public VoyageInviteScreen voyageInviteScreen;
+   public FriendInvitePromptScreen friendInvitePromptScreen;
    public LoadingScreen loadingScreen;
    public CountdownScreen countdownScreen;
    public ContextMenuPanel contextMenuPanel;

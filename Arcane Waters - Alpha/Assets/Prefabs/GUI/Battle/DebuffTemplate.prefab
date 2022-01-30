@@ -109,6 +109,9 @@ MonoBehaviour:
     statusSprite: {fileID: 21300000, guid: d10a7e5d04966874db14ccc6c5a7fb07, type: 3}
   - statusType: 9
     statusSprite: {fileID: 21300000, guid: cc3e29523c210584c84958a923f36d0f, type: 3}
+  - statusType: 10
+    statusSprite: {fileID: -8560101685863213436, guid: dd01a56055feb0a439e6ffba4e92fa20,
+      type: 3}
   statusType: 0
   simpleAnim: {fileID: 1401380022676523380}
 --- !u!1 &7314403363517792499

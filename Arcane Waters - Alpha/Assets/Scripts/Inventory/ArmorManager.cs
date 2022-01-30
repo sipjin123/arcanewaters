@@ -97,7 +97,8 @@ public class ArmorManager : EquipmentManager {
       updateSprites(newArmorType, palettes);
 
       // Play a sound
-      SoundManager.create3dSound("equip_", this.transform.position, 2);
+      //SoundManager.create3dSound("equip_", this.transform.position, 2);
+
       D.adminLog("Equipped armor" + " SQL: {" + armorData.sqlId +
          "} Name: {" + armorData.equipmentName +
          "} Class: {" + armorData.armorType + "}", D.ADMIN_LOG_TYPE.Equipment);

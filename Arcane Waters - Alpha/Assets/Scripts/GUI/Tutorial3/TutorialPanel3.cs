@@ -266,7 +266,8 @@ public class TutorialPanel3 : MonoBehaviour
    }
 
    public void openPanel () {
-      SoundManager.play2DClip(SoundManager.Type.Tutorial_Pop_Up);
+      //SoundManager.play2DClip(SoundManager.Type.Tutorial_Pop_Up);
+
       _mode = Mode.NPCSpeech;
       refreshPanelConfig();
       TutorialManager3.self.updateArrow();

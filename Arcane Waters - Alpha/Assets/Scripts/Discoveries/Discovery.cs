@@ -6,6 +6,7 @@ using Mirror;
 using MapCreationTool.Serialization;
 using System;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 public class Discovery : NetworkBehaviour, IObserver
 {
@@ -65,29 +66,49 @@ public class Discovery : NetworkBehaviour, IObserver
          return;
       }
 
-      if (!_isRevealed && _isLocalPlayerInside) {
-         _currentProgress += Time.deltaTime;
+      if (!_isRevealed && _isLocalPlayerInside && !_isWaitingForRequestResponse) {
+         if (_hovered && _pointerHeld) {
+            _currentProgress += Time.deltaTime;
+
+            if (_currentProgress >= EXPLORE_DISCOVERY_TIME && !_isWaitingForRequestResponse) {
+               _isWaitingForRequestResponse = true;
+               Global.player.rpc.Cmd_FoundDiscovery(placedDiscoveryId);
+               Minimap.self.deleteDiscoveryIcon(this);
+               _currentProgress = 0;
+            }
+         } else {
+            _currentProgress = Mathf.Max(_currentProgress - Time.deltaTime * 2f, 0);
+         }
+
+         _progressBarSlider.gameObject.SetActive(_currentProgress > 0);
+         spinningIconAnimator.SetBool("PlayerInside", _hovered);
 
          // Get a normalized (0-1) value of the time the player spent in the trigger
          _progressBarSlider.value = Mathf.InverseLerp(0, EXPLORE_DISCOVERY_TIME, _currentProgress);
-
-         if (_currentProgress >= EXPLORE_DISCOVERY_TIME && !_isWaitingForRequestResponse) {
-            _isWaitingForRequestResponse = true;
-            Global.player.rpc.Cmd_FoundDiscovery(placedDiscoveryId);
-            Minimap.self.deleteDiscoveryIcon(this);
-         }
       }
-
-      bool isMouseOver = MouseManager.self.isHoveringOver(_clickableBox);
 
       // Show the outline if the player is in the trigger area or the mouse is over
-      _outline.setVisibility((_isLocalPlayerInside || isMouseOver) && _isRevealed);
+      _outline.setVisibility(_hovered && _isRevealed);
+   }
 
-      if ((_isLocalPlayerInside || isMouseOver) && _isRevealed) {
-         if (InputManager.self.inputMaster.UIControl.Equip.WasPressedThisFrame() || (KeyUtils.GetButtonUp(MouseButton.Left) && isMouseOver)) {
-            openDiscoveryPanel();
-         }
+   public void onPointerDown () {
+      _pointerHeld = true;
+
+      if (_isRevealed) {
+         openDiscoveryPanel();
       }
+   }
+
+   public void onPointerUp () {
+      _pointerHeld = false;
+   }
+
+   public void onPointerEnter () {
+      _hovered = true;
+   }
+
+   public void onPointerExit () {
+      _hovered = false;
    }
 
    private void openDiscoveryPanel () {
@@ -115,10 +136,6 @@ public class Discovery : NetworkBehaviour, IObserver
       _spriteRenderer.enabled = false;
       _outline.setVisibility(false);
 
-      // Adjust the size of the trigger
-      _triggerCollider.offset = Vector2.zero;
-      _triggerCollider.radius = Mathf.Max(_spriteRenderer.size.x, _spriteRenderer.size.y) / 2 + _triggerExtraRadius;
-
       _progressBarSlider.value = 0;
       _canvas.worldCamera = Camera.main;
       _progressBarSlider.gameObject.SetActive(false);
@@ -127,23 +144,12 @@ public class Discovery : NetworkBehaviour, IObserver
    private void OnTriggerEnter2D (Collider2D collision) {
       if (Global.player != null && collision.GetComponent<NetEntity>() == Global.player) {
          _isLocalPlayerInside = true;
-         if (!_isRevealed) {
-            spinningIconAnimator.SetBool("PlayerInside", true);
-            _progressBarSlider.value = 0;
-            _currentProgress = 0;
-            _progressBarSlider.gameObject.SetActive(true);
-         }
       }
    }
 
    private void OnTriggerExit2D (Collider2D collision) {
       if (_isLocalPlayerInside && Global.player != null && collision.GetComponent<NetEntity>() == Global.player) {
          _isLocalPlayerInside = false;
-         _progressBarSlider.gameObject.SetActive(false);
-
-         if (!_isRevealed) {
-            spinningIconAnimator.SetBool("PlayerInside", false);
-         }
       }
    }
 
@@ -206,23 +212,17 @@ public class Discovery : NetworkBehaviour, IObserver
    [SerializeField]
    private Slider _progressBarSlider = default;
 
-   // The trigger collider
-   [SerializeField]
-   private CircleCollider2D _triggerCollider = default;
-
-   // The clickable box
-   [SerializeField]
-   private ClickableBox _clickableBox = default;
-
-   // How bigger than the sprite is the collider
-   [SerializeField]
-   private float _triggerExtraRadius = 0.1f;
-
    // True when the discovery is explored by the local player
    private bool _isRevealed = false;
 
    // True when we're waiting for the server to reply to our reveal request
    private bool _isWaitingForRequestResponse = false;
+
+   // Is user hovering over this discovery with the mouse
+   private bool _hovered = false;
+
+   // Is user holding the mouse over currently
+   private bool _pointerHeld = false;
 
    // The position of this discovery
    [SyncVar]

@@ -326,7 +326,7 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_TetherUntetherTree (int treeId) {
-      PlantableTreeManager.self.tetherUntetherTree(_player as BodyEntity, treeId);
+      //PlantableTreeManager.self.tetherUntetherTree(_player as BodyEntity, treeId);
    }
 
    [Command]
@@ -340,7 +340,12 @@ public class RPCManager : NetworkBehaviour
    }
 
    [ClientRpc]
-   public void Rpc_ReceiveChopTreeVisual (int treeId) {
+   public void Rpc_ReceiveChopTreeVisual (int treeId, int excludeUserId) {
+      // Don't apply for the user that made the chop, he did it himself
+      if (Global.player != null && Global.player.userId == excludeUserId) {
+         return;
+      }
+
       if (MapManager.self.tryGetPlantableTree(treeId, out PlantableTree tree)) {
          tree.receiveChop();
       }
@@ -356,11 +361,7 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_UpdatePlantableTrees (NetworkConnection connection, string areaKey, PlantableTreeInstanceData[] data, PlantableTreeDefinition[] def) {
-      // --------
-      // TEMP
       PlantableTreeManager.self.applyTreeDefinitions(def);
-      //--------
-
       PlantableTreeManager.self.updatePlantableTrees(areaKey, data);
    }
 
@@ -900,7 +901,7 @@ public class RPCManager : NetworkBehaviour
       // Play some sounds
       switch (chest.chestType) {
          case ChestSpawnType.Sea:
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.COLLECT_LOOT_SEA, chest.transform.position);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.LOOT_BAG, chest.transform.position);
             break;
          case ChestSpawnType.Land:
             SoundEffectManager.self.playFmodSfx(SoundEffectManager.COLLECT_LOOT_LAND, chest.transform.position);
@@ -964,6 +965,12 @@ public class RPCManager : NetworkBehaviour
       InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
       if (panel.isShowing()) {
          panel.refreshPanel();
+      }
+
+      // Refresh the store panel if it's showing too
+      StoreScreen storePanel = (StoreScreen) PanelManager.self.get(Panel.Type.Store);
+      if (storePanel.isShowing()) {
+         storePanel.refreshPanel();
       }
 
       // Trigger the tutorial
@@ -1269,8 +1276,17 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Pass this message along to the relevant people
-      if (chatType == ChatInfo.Type.Local || chatType == ChatInfo.Type.Emote) {
+      if (chatType == ChatInfo.Type.Local) {
          _player.Rpc_ChatWasSent(chatInfo.chatId, message, chatInfo.chatTime.ToBinary(), chatType, guildIconDataString, guildName, stealthMuted, _player.isAdmin());
+      } else if (chatType == ChatInfo.Type.Emote) {
+         // Send the message to all the players in the current area
+         List<NetEntity> entities = EntityManager.self.getAllEntities();
+
+         foreach (NetEntity entity in entities) {
+            if (entity.areaKey == _player.areaKey && entity.isPlayerEntity()) {
+               entity.rpc.Target_ReceiveEmoteMessage(chatInfo);
+            }
+         }
       } else if (chatType == ChatInfo.Type.Global) {
          ServerNetworkingManager.self.sendGlobalChatMessage(chatInfo);
       } else if (chatType == ChatInfo.Type.Whisper) {
@@ -1533,7 +1549,7 @@ public class RPCManager : NetworkBehaviour
                      receiver: friend.friendName);
 
                   ServerNetworkingManager.self.sendSpecialChatMessage(friendUserInfo.userId, chatInfo);
-                  D.debug($"Player {userName} changed online status. Friend '{friend.friendName}' ({friendUserInfo.userId}) has been notified!");
+                  //D.debug($"Player {userName} changed online status. Friend '{friend.friendName}' ({friendUserInfo.userId}) has been notified!");
                });
             });
          }
@@ -2040,6 +2056,18 @@ public class RPCManager : NetworkBehaviour
             storeReferencedItem = Consumable.createFromData(consumableData);
          }
 
+         if (storeItem.category == Item.Category.Hats) {
+            HatStatData hatStatData = EquipmentXMLManager.self.getHatData(storeItem.itemId);
+
+            if (hatStatData == null) {
+               D.error($"Store Purchase failed for user '{_player.userId}' trying to purchase the Store Item '{storeItem.id}'. Couldn't find the consumable data.");
+               reportStorePurchaseFailed();
+               return;
+            }
+
+            storeReferencedItem = HatStatData.translateDataToHat(hatStatData);
+         }
+
          if (storeReferencedItem == null) {
             D.error($"Store Purchase failed for user '{_player.userId}' trying to purchase the Store Item '{storeItem.id}'.");
             reportStorePurchaseFailed();
@@ -2312,7 +2340,9 @@ public class RPCManager : NetworkBehaviour
       // Play the SFX for purchasing an item
       SoundEffectManager.self.playFmodSfx(SoundEffectManager.PURCHASE_ITEM);
 
-      if (Item.isUsable(itemCategory)) {
+      bool canUseImmediately = Item.isUsable(itemCategory) || itemCategory == Item.Category.Hats;
+
+      if (canUseImmediately) {
          string itemCategoryDisplayName = "item";
 
          if (itemCategory == Item.Category.ShipSkin) {
@@ -2321,6 +2351,8 @@ public class RPCManager : NetworkBehaviour
             itemCategoryDisplayName = "haircut";
          } else if (itemCategory == Item.Category.Dye) {
             itemCategoryDisplayName = "dye";
+         } else if (itemCategory == Item.Category.Hats) {
+            itemCategoryDisplayName = "hat";
          }
 
          if (!string.IsNullOrWhiteSpace(itemName)) {
@@ -2330,14 +2362,21 @@ public class RPCManager : NetworkBehaviour
          }
 
          feedback += " You can find it in your inventory.\n\nDo you want to use it now?";
+      }
 
-         // Show the confirmation message in the notice screen
-         PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
-         PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => {
+      PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
+      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => {
+         if (canUseImmediately) {
             PanelManager.self.confirmScreen.hide();
             _player.rpc.Cmd_RequestUseItem(itemId, confirmed: false);
-         });
+         } else {
+            if (StoreScreen.self.isShowing()) {
+               StoreScreen.self.refreshPanel();
+            }
+         }
+      });
 
+      if (canUseImmediately) {
          PanelManager.self.confirmScreen.cancelButton.onClick.RemoveAllListeners();
          PanelManager.self.confirmScreen.cancelButton.onClick.AddListener(() => {
             if (StoreScreen.self.isShowing()) {
@@ -2351,13 +2390,7 @@ public class RPCManager : NetworkBehaviour
 
          PanelManager.self.confirmScreen.showYesNo(feedback);
       } else {
-         PanelManager.self.noticeScreen.confirmButton.onClick.RemoveAllListeners();
-         PanelManager.self.noticeScreen.confirmButton.onClick.AddListener(() => {
-            if (StoreScreen.self.isShowing()) {
-               StoreScreen.self.refreshPanel();
-            }
-         });
-         PanelManager.self.noticeScreen.show(feedback);
+         PanelManager.self.confirmScreen.show(feedback);
       }
    }
 
@@ -2424,6 +2457,8 @@ public class RPCManager : NetworkBehaviour
             useHaircut(item);
          } else if (item.category == Item.Category.Consumable) {
             useConsumable(item);
+         } else if (item.category == Item.Category.Hats) {
+            requestSetHatId(item.id);
          }
       });
    }
@@ -4330,7 +4365,7 @@ public class RPCManager : NetworkBehaviour
       D.adminLog("User {" + _player.userId + ":" + _player.entityName + "} is requesting shop interaction from shop {" + shopData.shopName + "} Category {" + itemType + "}", D.ADMIN_LOG_TYPE.PvpShop);
 
       // Register the user to the stats manager if spawned in tutorial bay or the tutorial cemetery
-      if ((_player.areaKey.ToLower().Contains(Area.STARTING_TOWN_SEA.ToLower()) || _player.areaKey.ToLower().Contains(Area.TUTORIAL_AREA.ToLower())) 
+      if ((_player.areaKey.ToLower().Contains(Area.STARTING_TOWN_SEA.ToLower()) || _player.areaKey.ToLower().Contains(Area.TUTORIAL_AREA.ToLower()))
          && !GameStatsManager.self.isUserRegistered(_player.userId)) {
          GameStatsManager.self.registerUser(_player.userId);
       }
@@ -5384,7 +5419,8 @@ public class RPCManager : NetworkBehaviour
          }
       });
       panel.refreshRefinementList();
-      SoundEffectManager.self.playFmod2dSfxWithId(SoundEffectManager.REFINE_COMPLETE);
+
+      //SoundEffectManager.self.playFmod2dSfxWithId(SoundEffectManager.REFINE_COMPLETE);
    }
 
    [Command]
@@ -5775,9 +5811,19 @@ public class RPCManager : NetworkBehaviour
       // Get the current instance
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
 
+      // Get a spawn close to the player and define it as the exit spawn
+      Spawn exitSpawn = SpawnManager.self.getFirstSpawnAround(_player.areaKey, _player.transform.localPosition, Voyage.LEAGUE_EXIT_SPAWN_SEARCH_RADIUS);
+      if (exitSpawn == null) {
+         D.error($"Could not find an exit spawn next to the voyage entrance in area {_player.areaKey}");
+      }
+
       if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
          // Create a new league with the same biome than the player's current instance
-         VoyageManager.self.createLeagueInstanceAndWarpPlayer(_player, 0, instance.biome);
+         if (exitSpawn == null) {
+            VoyageManager.self.createLeagueInstanceAndWarpPlayer(_player, 0, instance.biome, -1, "", _player.areaKey);
+         } else {
+            VoyageManager.self.createLeagueInstanceAndWarpPlayer(_player, 0, instance.biome, -1, "", exitSpawn.AreaKey, exitSpawn.spawnKey, exitSpawn.arriveFacing);
+         }
          return;
       }
 
@@ -5825,7 +5871,11 @@ public class RPCManager : NetworkBehaviour
                }
 
                // Create the first league map and warp the player to it
-               VoyageManager.self.createLeagueInstanceAndWarpPlayer(_player, 0, instance.biome);
+               if (exitSpawn == null) {
+                  VoyageManager.self.createLeagueInstanceAndWarpPlayer(_player, 0, instance.biome, -1, "", _player.areaKey);
+               } else {
+                  VoyageManager.self.createLeagueInstanceAndWarpPlayer(_player, 0, instance.biome, -1, "", exitSpawn.AreaKey, exitSpawn.spawnKey, exitSpawn.arriveFacing);
+               }
             });
          });
       }
@@ -5839,6 +5889,47 @@ public class RPCManager : NetworkBehaviour
       }
 
       _player.spawnInBiomeHomeTown();
+   }
+
+   [Command]
+   public void Cmd_RequestExitCompletedLeague () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      if (!_player.isInGroup()) {
+         sendError("Could not find the voyage group");
+         return;
+      }
+
+      Instance instance = _player.getInstance();
+
+      // The instance must be a voyage
+      if (instance.voyageId <= 0) {
+         D.error($"User {_player.userId} is attempting to exit a non-voyage instance");
+         return;
+      }
+
+      // There cannot be enemies in the player's current instance
+      if (instance == null) {
+         D.error($"Error when getting the current instance for user {_player.userId} in area {_player.areaKey}");
+         return;
+      }
+
+      if (instance.aliveNPCEnemiesCount > 0) {
+         sendError("You must defeat all the enemies before exiting the voyage");
+         return;
+      }
+
+      if (string.IsNullOrEmpty(instance.leagueExitAreaKey)) {
+         _player.spawnInBiomeHomeTown();
+      } else if (string.IsNullOrEmpty(instance.leagueExitSpawnKey)) {
+         D.error($"The voyage exit spawn was not defined for area {instance.leagueExitAreaKey}. Check that there is a spawn next to the voyage entrance in that map.");
+         _player.spawnInNewMap(instance.leagueExitAreaKey);
+      } else {
+         _player.spawnInNewMap(instance.leagueExitAreaKey, instance.leagueExitSpawnKey, instance.leagueExitFacingDirection);
+      }
    }
 
    [Command]
@@ -6127,7 +6218,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // If the area is a PvP area, a Voyage or a TreasureSite, add the player to the GameStats System
-      if (_player.tryGetVoyage(out Voyage v) || VoyageManager.isAnyLeagueArea(_player.areaKey) || VoyageManager.isPvpArenaArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey) 
+      if (_player.tryGetVoyage(out Voyage v) || VoyageManager.isAnyLeagueArea(_player.areaKey) || VoyageManager.isPvpArenaArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)
          || _player.areaKey.Contains(Area.TUTORIAL_AREA) || _player.areaKey.Contains(Area.STARTING_TOWN_SEA)) {
          GameStatsManager.self.registerUser(_player.userId);
       } else {
@@ -6139,6 +6230,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       Target_ResetPvpSilverPanel(_player.connectionToClient, GameStatsManager.self.getSilverAmount(_player.userId));
+      Target_ResetPvpScoreIndicator(_player.connectionToClient, show: false);
 
       // Verify the voyage consistency only if the user is in a voyage group or voyage area
       if (!VoyageManager.isAnyLeagueArea(_player.areaKey) && !VoyageManager.isPvpArenaArea(_player.areaKey) && !VoyageManager.isTreasureSiteArea(_player.areaKey)) {
@@ -6682,8 +6774,10 @@ public class RPCManager : NetworkBehaviour
                // Check if the chest should reward a map fragment and unlock a new location
                Instance instance = InstanceManager.self.getInstance(_player.instanceId);
                if (VoyageManager.isTreasureSiteArea(instance.areaKey) && instance.voyageId > 0) {
-                  processMapFragmentReward(chest);
+                  D.adminLog("Player {" + _player.userId + "} is Receiving Treasure Chest rewards from Treasure site {" + _player.areaKey + "}", D.ADMIN_LOG_TYPE.Treasure);
+                  processTreasureSiteChestReward(chest);
                } else {
+                  D.adminLog("Player {" + _player.userId + "} is Receiving Treasure Chest rewards from NON Treasure site {" + _player.areaKey + "}", D.ADMIN_LOG_TYPE.Treasure);
                   processChestRewards(chest);
                }
 
@@ -6724,7 +6818,7 @@ public class RPCManager : NetworkBehaviour
                   data = item.data,
                };
                itemCopy.itemTypeId = craftingData.resultItem.itemTypeId;
-               
+
                // New Method, needs observation
                //itemCopy = DB_Main.createItemOrUpdateItemCount(_player.userId, itemCopy);
                processItemCreation(_player.userId, itemCopy);
@@ -6769,7 +6863,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Server]
-   private void processMapFragmentReward (TreasureChest chest) {
+   private void processTreasureSiteChestReward (TreasureChest chest) {
       // All enemies must be defeated before opening the chest
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
       if (instance.aliveNPCEnemiesCount > 0) {
@@ -6777,53 +6871,17 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
-      // Only the last chest in the instance rewards the map fragment, otherwise it is a normal chest
-      if (!TreasureManager.self.isLastUnopenedChestInInstanceForUser(chest.id, chest.instanceId, _player.userId)) {
-         processChestRewards(chest);
-         return;
+      processChestRewards(chest);
+
+      // Notify the client that the voyage is complete
+      Target_DisplayNotificationForVoyageCompleted(_player.connectionToClient, Notification.Type.VoyageCompleted);
+
+      // Check if the voyage group has opened all the chests in the treasure site
+      if (_player.tryGetGroup(out VoyageGroupInfo groupInfo) && TreasureManager.self.areAllChestsOpenedForGroup(instance.id, groupInfo.members)) {
+         // Unlink the group from this instance so that another voyage can be started without disbanding
+         groupInfo.voyageId = -1;
+         VoyageGroupManager.self.updateGroup(groupInfo);
       }
-
-      // Get the biome that will be unlocked
-      Biome.Type nextBiome = Biome.getNextBiome(instance.biome);
-
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Check if the user has already unlocked the biome
-         bool isNextBiomeAlreadyUnlocked = DB_Main.isBiomeUnlockedForUser(_player.userId, nextBiome);
-
-         if (!isNextBiomeAlreadyUnlocked) {
-            // Add the unlocked biome for the user
-            DB_Main.addUnlockedBiome(_player.userId, nextBiome);
-         }
-
-         // Back to the Unity thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Add the user ID to the list
-            chest.userIds.Add(_player.userId);
-
-            // Registers the interaction of treasure chests to the achievement database for recording
-            AchievementManager.registerUserAchievement(_player, ActionType.OpenTreasureChest);
-            AchievementManager.registerUserAchievement(_player, ActionType.LootGainTotal);
-
-            // Send it to the specific player that opened it
-            Target_OpenMapFragmentChest(_player.connectionToClient, chest.id);
-
-            if (isNextBiomeAlreadyUnlocked) {
-               // Notify the client that the voyage is complete
-               Target_DisplayNotificationForVoyageCompleted(_player.connectionToClient, Notification.Type.VoyageCompleted, Biome.Type.None);
-            } else {
-               // Notify the client that a new location has been unlocked
-               Target_DisplayNotificationForVoyageCompleted(_player.connectionToClient, Notification.Type.NewLocationUnlocked, nextBiome);
-            }
-
-            // Check if the voyage group has opened all the chests in the treasure site
-            if (_player.tryGetGroup(out VoyageGroupInfo groupInfo) && TreasureManager.self.areAllChestsOpenedForGroup(instance.id, groupInfo.members)) {
-               // Unlink the group from this instance so that another voyage can be started without disbanding
-               groupInfo.voyageId = -1;
-               VoyageGroupManager.self.updateGroup(groupInfo);
-            }
-         });
-      });
    }
 
    #region Spawn Sea Entities
@@ -7036,7 +7094,7 @@ public class RPCManager : NetworkBehaviour
       processTeamBattle(defenders, attackers, 0, true);
    }
 
-   private void processTeamBattle (BattlerInfo[] defenders, BattlerInfo[] attackers, uint netId, bool isGroupBattle, bool createNewEnemy = false) {
+   private void processTeamBattle (BattlerInfo[] defenders, BattlerInfo[] attackers, uint netId, bool isGroupBattle, bool createNewEnemy = false, bool isShipBattle = false) {
       bool isPvpBattle = true;
 
       foreach (BattlerInfo defenderInfo in defenders) {
@@ -7218,7 +7276,7 @@ public class RPCManager : NetworkBehaviour
       bool isExistingBattle = (enemy.battleId > 0);
 
       // Get or create the Battle instance
-      Battle battle = isExistingBattle && !enemy.isDefeated ? (BattleManager.self.getBattle(enemy.battleId)) : BattleManager.self.createTeamBattle(area, instance, enemy, attackers, localBattler, modifiedDefenderList.ToArray());
+      Battle battle = isExistingBattle && !enemy.isDefeated ? (BattleManager.self.getBattle(enemy.battleId)) : BattleManager.self.createTeamBattle(area, instance, enemy, attackers, localBattler, modifiedDefenderList.ToArray(), isShipBattle);
 
       if (battle == null) {
          D.debug("Error here! Trying to engage battle but the Battle is NULL!! Battle id {" + enemy.battleId + "} is probably finished");
@@ -7248,7 +7306,7 @@ public class RPCManager : NetworkBehaviour
 
          // Send Battle Bg data
          int bgXmlID = battle.battleBoard.xmlID;
-         Target_ReceiveBackgroundInfo(_player.connectionToClient, bgXmlID);
+         Target_ReceiveBackgroundInfo(_player.connectionToClient, bgXmlID, battle.isShipBattle);
       }
    }
 
@@ -7564,7 +7622,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_StartNewBattle (uint enemyNetId, Battle.TeamType teamType, bool isGroupBattle) {
+   public void Cmd_StartNewBattle (uint enemyNetId, Battle.TeamType teamType, bool isGroupBattle, bool isShipBattle) {
       D.adminLog("Player is starting new battle, IsLeagueArea:{" + VoyageManager.isAnyLeagueArea(_player.areaKey) + "} IsPvpArena :{" + VoyageManager.isPvpArenaArea(_player.areaKey)
          + "} IsTreasureSite:{" + VoyageManager.isTreasureSiteArea(_player.areaKey) + "} CanPlayerStay{" + canPlayerStayInVoyage() + "}"
          + " SpecialType: {" + AreaManager.self.getAreaSpecialType(_player.areaKey) + "}", D.ADMIN_LOG_TYPE.Combat);
@@ -7608,7 +7666,7 @@ public class RPCManager : NetworkBehaviour
       });
 
       if (!_player.isSinglePlayer) {
-         processTeamBattle(battlerInfoList.ToArray(), new BattlerInfo[0], enemyNetId, isGroupBattle);
+         processTeamBattle(battlerInfoList.ToArray(), new BattlerInfo[0], enemyNetId, isGroupBattle, isShipBattle: isShipBattle);
       } else {
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             // Fetch the list of companions
@@ -7629,7 +7687,7 @@ public class RPCManager : NetworkBehaviour
                }
 
                // Continue to process team battle
-               processTeamBattle(battlerInfoList.ToArray(), allyInfoList.ToArray(), enemyNetId, false);
+               processTeamBattle(battlerInfoList.ToArray(), allyInfoList.ToArray(), enemyNetId, false, isShipBattle: isShipBattle);
             });
          });
       }
@@ -7649,6 +7707,20 @@ public class RPCManager : NetworkBehaviour
       } else {
          D.debug("Failed to restore player movement! Battle ID: " + battleId);
       }
+   }
+
+   [TargetRpc]
+   public void Target_RespawnAtTreasureSiteEntrance (NetworkConnection connection, Vector2 spawnLocalPosition) {
+      if (Global.player == null) {
+         return;
+      }
+
+      PlayerBodyEntity playerBody = Global.player.getPlayerBodyEntity();
+      if (playerBody == null) {
+         return;
+      }
+
+      playerBody.transform.localPosition = spawnLocalPosition;
    }
 
    [TargetRpc]

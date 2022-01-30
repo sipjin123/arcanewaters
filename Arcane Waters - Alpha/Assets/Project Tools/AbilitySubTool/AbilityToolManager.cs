@@ -37,7 +37,7 @@ public class AbilityToolManager : XmlDataToolManager
    private void Start () {
       Invoke("loadXML", MasterToolScene.loadDelay);
 
-      SoundEffectManager.self.initializeDataCache();
+      //SoundEffectManager.self.initializeDataCache();
    }
 
    public void loadXML () {

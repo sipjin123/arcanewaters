@@ -58,7 +58,8 @@ public class ShortcutBox : MonoBehaviour, IPointerClickHandler
 
    public void onShortcutPress () {
       if (_itemCell != null && button.interactable) {
-         SoundEffectManager.self.playSoundEffect(SoundEffectManager.SHORTCUT_SELECTION, transform);
+         //SoundEffectManager.self.playSoundEffect(SoundEffectManager.SHORTCUT_SELECTION, transform);
+
          InventoryManager.tryEquipOrUseItem(_itemCell.getItem());
       }
    }

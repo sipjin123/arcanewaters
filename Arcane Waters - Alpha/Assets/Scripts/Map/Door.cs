@@ -81,7 +81,7 @@ public class Door : ClientMonoBehaviour {
 
       // Different sounds based on the area type
       if (biome == Biome.Type.Desert) {
-         SoundManager.create3dSound("door_cloth_open", this.transform.position);
+         //SoundManager.create3dSound("door_cloth_open", this.transform.position);
       } else {
          SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_OPEN, this.transform.position);
          //SoundManager.create3dSound("door_open_", this.transform.position, 3);
@@ -97,9 +97,9 @@ public class Door : ClientMonoBehaviour {
 
       // Different sounds based on the area type
       if (biome == Biome.Type.Desert) {
-         SoundManager.create3dSound("door_cloth_close", this.transform.position);
+         //SoundManager.create3dSound("door_cloth_close", this.transform.position);
       } else {
-         SoundManager.create3dSound("door_close_", this.transform.position, 3);
+         //SoundManager.create3dSound("door_close_", this.transform.position, 3);
       }
    }
 

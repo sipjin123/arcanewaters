@@ -43,7 +43,8 @@ public class OreMineEffect : MonoBehaviour {
       this.oreEffectId = oreEffectId;
       this.oreNode = oreNode;
       animator.speed = randomSpeed;
-      SoundEffectManager.self.playSoundEffect(SoundEffectManager.ORE_DROP, transform);
+
+      //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ORE_DROP, transform);
    }
 
    private void LateUpdate () {

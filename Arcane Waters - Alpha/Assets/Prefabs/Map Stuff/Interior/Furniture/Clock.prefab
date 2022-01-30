@@ -91,13 +91,13 @@ GameObject:
   m_Component:
   - component: {fileID: 1587068049791990231}
   - component: {fileID: 1505018600768777791}
-  - component: {fileID: 1697448446967937901}
   - component: {fileID: 1643214899717405095}
   - component: {fileID: 6255790322949146146}
   - component: {fileID: 2482271965635932700}
   - component: {fileID: -9044325572988965749}
   - component: {fileID: 5145709707604732519}
   - component: {fileID: 3835844261790558088}
+  - component: {fileID: 1710576461740329284}
   m_Layer: 15
   m_Name: Clock
   m_TagString: Untagged
@@ -174,19 +174,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &1697448446967937901
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1589897520664339773}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b55fee7791a0ed4ea630416c3c7e974, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  soundType: 337
 --- !u!61 &1643214899717405095
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -242,7 +229,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialDelay: 0
-  frameLengthOverride: 0.3333
+  frameLengthOverride: 0.5
   delayStart: 0
   destroyAtEnd: 0
   stayAtLastFrame: 0
@@ -280,25 +267,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 1
-  blurSize: 0
-  color: {r: 1, g: 1, b: 1, a: 1}
-  blurAlphaMultiplier: 0.7
-  blurAlphaChoke: 1
-  invertBlur: 0
-  alphaThreshold: 0.05
-  buffer: 0
-  includeChildren: 0
-  childLayers:
-    serializedVersion: 2
-    m_Bits: 1
-  ignoreChildNames: []
-  sortMethod: 1
-  isAnimated: 0
-  useExportedFrame: 0
-  customFrameName: 
-  generatesOnStart: 1
-  generatesOnValidate: 1
+  ignoredRenderers: []
+  _renderers: []
 --- !u!114 &3835844261790558088
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -313,6 +283,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   labelUI: {fileID: 5715990231978960680}
   timeText: {fileID: 5882850593804844630}
+--- !u!114 &1710576461740329284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1589897520664339773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  Event: event:/SFX/Ambience/Emitters/Clock_Pendulum
+  PlayEvent: 1
+  StopEvent: 2
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 3.9
+  OverrideMaxDistance: 11
 --- !u!1 &2114118273529905336
 GameObject:
   m_ObjectHideFlags: 0
@@ -546,7 +539,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6269476364402454733}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -9}
   m_LocalScale: {x: 0.007848691, y: 0.007848691, z: 0.007848691}
   m_Children:
   - {fileID: 5597599835543672081}
@@ -577,7 +570,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &7893161596023564309
 MonoBehaviour:

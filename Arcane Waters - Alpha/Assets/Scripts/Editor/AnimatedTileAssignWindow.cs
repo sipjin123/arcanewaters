@@ -28,7 +28,7 @@ public class AnimatedTileAssignWindow : EditorWindow
 
       if (GUILayout.Button("Assign")) {
          Sprite[] sprites = AssetDatabase.LoadAllAssetsAtPath(texturePath)
-            .OfType<Sprite>().ToArray();
+            .OfType<Sprite>().OrderBy(s => s.rect.x - s.rect.y * 10000).ToArray();
 
          Debug.Log("found " + sprites.Length + " sprites");
 

@@ -125,11 +125,27 @@ public class FriendListPanel : Panel
       self = this;
    }
 
-   public void refreshPanel (bool clearInputFields = false) {
+   public void refreshPanel (bool clearInputFields = false, FriendshipPanelTabs? desiredTab = null) {
       toggleBlocker();
 
       if (clearInputFields) {
          inviteInputField.text = "";
+      }
+
+      if (desiredTab != null && desiredTab.HasValue) {
+         this._currentTab = desiredTab.Value;
+
+         switch (desiredTab.Value) {
+            case FriendshipPanelTabs.Friends:
+               _friendshipStatusFilter = Friendship.Status.Friends;
+               break;
+            case FriendshipPanelTabs.InvitesSent:
+               _friendshipStatusFilter = Friendship.Status.InviteSent;
+               break;
+            case FriendshipPanelTabs.InvitesReceived:
+               _friendshipStatusFilter = Friendship.Status.InviteReceived;
+               break;
+         }
       }
 
       Global.player.rpc.Cmd_RequestFriendshipInfoFromServer(_currentPage, _rowsPerPage, _friendshipStatusFilter);
@@ -202,7 +218,7 @@ public class FriendListPanel : Panel
             break;
          case FriendshipPanelTabs.InvitesSent:
             requestSentTabCanvasGroup.alpha = 1f;
-            friendList.SetActive(true);
+            requestList.SetActive(true);
             break;
          case FriendshipPanelTabs.Search:
             searchResultsTabCanvasGroup.alpha = 1f;
@@ -236,9 +252,13 @@ public class FriendListPanel : Panel
          }
       }
 
+      // Show the Search Tab only if search results are being displayed
+      searchResultsTabButton.gameObject.SetActive(_currentTab == FriendshipPanelTabs.Search);
+
       // Update the pending friendship request notification
       BottomBar.self.setFriendshipRequestNotificationStatus(pendingRequestCount > 0);
       sendInvitesSection.SetActive(_currentTab != FriendshipPanelTabs.Search);
+      PanelManager.self.friendInvitePromptScreen.toggle(show: false);
       toggleBlocker(show: false);
    }
 

@@ -63,13 +63,14 @@ public class CropSpotManager : MonoBehaviour {
                   EffectManager.self.create(Effect.Type.Crop_Water, cropSpot.transform.position);
 
                   // Play a sound
-                  SoundManager.create3dSound("crop_water_", cropSpot.transform.position, 5);
+                  //SoundManager.create3dSound("crop_water_", cropSpot.transform.position, 5);
                } else {
                   EffectManager.self.create(Effect.Type.Crop_Harvest, cropSpot.transform.position);
                   EffectManager.self.create(Effect.Type.Crop_Dirt_Large, cropSpot.transform.position);
 
                   // Play a sound
-                  SoundManager.create3dSound("crop_plant_", cropSpot.transform.position, 5);
+                  //SoundManager.create3dSound("crop_plant_", cropSpot.transform.position, 5);
+                  SoundEffectManager.self.playFmodSfx(SoundEffectManager.CROP_PLANT, transform.position);
                }
             }
          }

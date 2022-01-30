@@ -43,7 +43,7 @@ public class AdminManager : NetworkBehaviour
 
                System.Random rand = new System.Random(testerNumber);
 
-               int randTime = rand.Next(8, 13);
+               int randTime = rand.Next(15, 20);
 
                InvokeRepeating(nameof(warpRandomly), randTime, randTime);
             }
@@ -2866,11 +2866,13 @@ public class AdminManager : NetworkBehaviour
 
       // For owned maps, the base map key
       string baseMapAreaKey = null;
-
+      
       // If no partialAreaKey passed as parameter, then choosing random area to warp
       if (string.IsNullOrEmpty(partialAreaKey)) {
          // string[] testAreaKeys = { "Pineward_Shipyard", "Far Sands", "Snow Weapon Shop 1", "Andriusti", "Starting Sea Map", "Starting Treasure Site", "Andrius Ledge" };
-         string[] testAreaKeys = { "bot_test" };
+         // string[] testAreaKeys = { "bot_test" };
+         string[] testAreaKeys = { "Tutorial Town", "Tutorial Town General Shop", "Tutorial Town Cemetery v2", "Sea Voyage 1", "Sea Voyage 2", "Sea Voyage 3" };
+         // string[] testAreaKeys = { "Sea Voyage 2", "Sea Voyage 3" };
          closestAreaKey = testAreaKeys[UnityEngine.Random.Range(0, testAreaKeys.Count())];
       } else {
          // Try to find a custom map of this key

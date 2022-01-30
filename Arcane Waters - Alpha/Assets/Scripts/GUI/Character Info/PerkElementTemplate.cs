@@ -160,7 +160,8 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
       // Disable the grayscale
       _icon.materialForRendering.SetFloat(_grayscaleIntensityPropertyId, 0);
 
-      SoundManager.play2DClip(SoundManager.Type.Perk_Point_Assigned);
+      //SoundManager.play2DClip(SoundManager.Type.Perk_Point_Assigned);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.ASSIGN_PERK_POINT);
 
       Global.player.rpc.Cmd_AssignPerkPoint(_perkData.perkId);
       PerksPanel.self.isAssigningPerkPoint = true;

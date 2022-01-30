@@ -155,7 +155,7 @@ public class BodyEntity : NetEntity
          EffectManager.self.create(Effect.Type.Crop_Water, this.sortPoint.transform.position);
       } else {
          Instantiate(PrefabsManager.self.poofPrefab, this.sortPoint.transform.position, Quaternion.identity);
-         SoundManager.create3dSound("ledge", this.sortPoint.transform.position);
+         //SoundManager.create3dSound("ledge", this.sortPoint.transform.position);
 
          // Shake the camera
          if (isLocalPlayer) {

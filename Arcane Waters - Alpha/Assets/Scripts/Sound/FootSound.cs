@@ -14,7 +14,7 @@ public class FootSound : ClientMonoBehaviour {
    public AudioGroupData currentFootStepAudioGroup;
 
    // Our associated Audio Source
-   public AudioSource audioSource;
+   //public AudioSource audioSource;
 
    // Used to find the Grass footstep object type and return its audio data
    public const string GRASS_FOOTSTEP = "Grass FootStep";
@@ -36,22 +36,22 @@ public class FootSound : ClientMonoBehaviour {
       setupFootStepAudioClip ();
 
       // If we assigned a clip, then play it
-      if (audioSource.clip != null) {
-         // We want to treat multiple versions of the same sound effect as one, so strip out any numbers from the name
-         string clipName = Util.removeNumbers(audioSource.clip.name);
+      //if (audioSource.clip != null) {
+      //   // We want to treat multiple versions of the same sound effect as one, so strip out any numbers from the name
+      //   string clipName = Util.removeNumbers(audioSource.clip.name);
 
-         // Make sure enough time has passed
-         if (!_lastSoundTime.ContainsKey(clipName) || Time.time - _lastSoundTime[clipName] > .25f) {
+      //   // Make sure enough time has passed
+      //   if (!_lastSoundTime.ContainsKey(clipName) || Time.time - _lastSoundTime[clipName] > .25f) {
 
-            // Check the footstepAudioGroupData for a possibly randomized pitch
-            audioSource.pitch = currentFootStepAudioGroup.getPitch();
+      //      // Check the footstepAudioGroupData for a possibly randomized pitch
+      //      audioSource.pitch = currentFootStepAudioGroup.getPitch();
 
-            audioSource.Play();
+      //      audioSource.Play();
 
-            // Note the time
-            _lastSoundTime[clipName] = Time.time;
-         }
-      }
+      //      // Note the time
+      //      _lastSoundTime[clipName] = Time.time;
+      //   }
+      //}
 
       // Destroy this object after 1 second
       Destroy(this.gameObject, 1f);
@@ -79,7 +79,7 @@ public class FootSound : ClientMonoBehaviour {
             currentFootStepAudioGroup = findFootStepData(GRASS_FOOTSTEP);
          } else if (Global.player.groundChecker.isOnBridge) {
             if (!_lastSoundTime.ContainsKey(BRIDGE_KEY) || _lastSoundTime[BRIDGE_KEY] + _minTimeBetweenBridgeSound < Time.time) {
-               SoundManager.playClipAtPoint(SoundManager.Type.Bridge_Crunching_Wood, Global.player.transform.position);
+               //SoundManager.playClipAtPoint(SoundManager.Type.Bridge_Crunching_Wood, Global.player.transform.position);
 
                if (!_lastSoundTime.ContainsKey(BRIDGE_KEY)) {
                   _lastSoundTime.Add(BRIDGE_KEY, Time.time);
@@ -91,7 +91,7 @@ public class FootSound : ClientMonoBehaviour {
       }
 
       if (currentFootStepAudioGroup) {
-         audioSource.clip = currentFootStepAudioGroup.sounds.ChooseRandom();
+         //audioSource.clip = currentFootStepAudioGroup.sounds.ChooseRandom();
       }
    }
 

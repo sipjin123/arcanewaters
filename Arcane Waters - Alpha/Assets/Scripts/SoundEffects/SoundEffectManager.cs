@@ -12,24 +12,24 @@ public class SoundEffectManager : GenericGameManager
    public static SoundEffectManager self;
 
    // The AudioSource used to play the SoundEffects
-   public AudioSource source;
+   //public AudioSource source;
 
    // The AudioSource used to play 3D SoundEffects
-   public AudioSource source3D;
+   //public AudioSource source3D;
 
    // Sound effects
    #region Sound Effects
 
-   public const int ORE_DROP = 53;
-   public const int ORE_PICKUP = 55;
-   public const int NEXT_PREFAB_SELECTION = 58;
+   //public const int ORE_DROP = 53;
+   //public const int ORE_PICKUP = 55;
+   //public const int NEXT_PREFAB_SELECTION = 58;
 
-   public const int SHORTCUT_SELECTION = 60;
-   public const int ABILITY_SELECTION = 61;
-   public const int INVENTORY_DRAG_START = 64;
-   public const int INVENTORY_DROP = 65;
-   public const int NPC_PANEL_POPUP = 66;
-   public const int REFINE_COMPLETE = 69;
+   //public const int SHORTCUT_SELECTION = 60;
+   //public const int ABILITY_SELECTION = 61;
+   //public const int INVENTORY_DRAG_START = 64;
+   //public const int INVENTORY_DROP = 65;
+   //public const int NPC_PANEL_POPUP = 66;
+   //public const int REFINE_COMPLETE = 69;
 
    #endregion
 
@@ -74,10 +74,14 @@ public class SoundEffectManager : GenericGameManager
    public const string STANCE_CHANGE = "event:/SFX/Game/Land_Battle/Stance_Change_Generic";
    public const string LIZARD_KING_ATTACK = "event:/SFX/Game/Land_Battle/Lizard_King/Swipe_Attack";
    public const string LIZARD_KING_HURT = "event:/SFX/NPC/Enemy/Lizard King/Lizard_Pain_Hit";
+
    public const string GOLEM_FOOT_IMPACT = "event:/SFX/NPC/Boss/Rock Golem/Foot_Impact";
    public const string GOLEM_SCREAM_ATTACK = "event:/SFX/NPC/Boss/Rock Golem/Scream_Attack";
    public const string GOLEM_HURT = "event:/SFX/NPC/Boss/Rock Golem/Golem_Pain";
+   public const string GOLEM_DEATH = "event:/SFX/NPC/Boss/Rock Golem/Golem_Death";
+
    public const string TRIUMPH_DEFEATED_BOSS = "event:/SFX/Game/Triumph_Defeated_Boss_Stinger";
+   public const string DEATH_POOF = "event:/SFX/Player/Interactions/Diegetic/GenericDeath";
 
    #endregion
 
@@ -125,6 +129,7 @@ public class SoundEffectManager : GenericGameManager
    public const string JUMP = "event:/SFX/Player/Interactions/Diegetic/Jump";
    public const string JUMP_LAND = "event:/SFX/Player/Interactions/Diegetic/Land";
    public const string CRITTER_PET = "event:/SFX/Player/Interactions/Diegetic/Critter_Pet";
+   public const string SNEAKY_GOPHER = "event:/SFX/NPC/Critter/Sneaky_Gopher";
    public const string SHIP_CANNON = "event:/SFX/Player/Interactions/Diegetic/Ship_Cannon_Fire";
    public const string CANNONBALL_IMPACT = "event:/SFX/Player/Interactions/Diegetic/Cannonball_Impact";
    public const string MINING_ROCKS = "event:/SFX/Player/Interactions/Diegetic/Mine_Rocks";
@@ -141,6 +146,7 @@ public class SoundEffectManager : GenericGameManager
    public const string LOOT_BAG = "event:/SFX/Player/Interactions/Diegetic/Loot_Bag";
    public const string GAIN_SILVER = "event:/SFX/Player/Interactions/Non_Diegetic/Gain_Silver";
    public const string HARVESTING_HIT = "event:/SFX/Player/Interactions/Diegetic/Harvesting_Hit";
+   public const string CROP_PLANT = "event:/SFX/Player/Interactions/Diegetic/Crop_Plant";
 
    #endregion
 
@@ -150,6 +156,7 @@ public class SoundEffectManager : GenericGameManager
    public const string ANGER_EMOTE = "event:/SFX/NPC/Critter/Anger_Emote";
    public const string QUESTION_EMOTE = "event:/SFX/NPC/Critter/Question_Emote";
    public const string AFFECTION_EMOTE = "event:/SFX/NPC/Critter/Affection_Emote";
+   public const string SKELETON_WALK = "event:/SFX/Ambience/Emitters/Skeleton_Walks";
 
    #endregion
 
@@ -161,73 +168,73 @@ public class SoundEffectManager : GenericGameManager
       self = this;
    }
 
-   private void Start () {
-      _projectAudioClips = new List<AudioClip>(Resources.LoadAll<AudioClip>(RESOURCE_FOLDER_PATH));
-   }
+   //private void Start () {
+   //   _projectAudioClips = new List<AudioClip>(Resources.LoadAll<AudioClip>(RESOURCE_FOLDER_PATH));
+   //}
 
-   public void initializeDataCache () {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<SoundEffect> fetchedSoundEffects = DB_Main.getSoundEffects();
+   //public void initializeDataCache () {
+   //   UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+   //      List<SoundEffect> fetchedSoundEffects = DB_Main.getSoundEffects();
 
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (SoundEffect effect in fetchedSoundEffects) {
-               if (!_soundEffects.ContainsKey(effect.id)) {
-                  findAndAssignAudioClip(effect);
-                  _soundEffects.Add(effect.id, effect);
-               }
-            }
-            _hasInitialized = true;
-         });
-      });
-   }
+   //      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+   //         foreach (SoundEffect effect in fetchedSoundEffects) {
+   //            if (!_soundEffects.ContainsKey(effect.id)) {
+   //               findAndAssignAudioClip(effect);
+   //               _soundEffects.Add(effect.id, effect);
+   //            }
+   //         }
+   //         _hasInitialized = true;
+   //      });
+   //   });
+   //}
 
-   public void receiveListFromServer (SoundEffect[] effects) {
-      if (!_hasInitialized) {
-         foreach (SoundEffect effect in effects) {
-            findAndAssignAudioClip(effect);
-            _soundEffects.Add(effect.id, effect);
-         }
+   //public void receiveListFromServer (SoundEffect[] effects) {
+   //   if (!_hasInitialized) {
+   //      foreach (SoundEffect effect in effects) {
+   //         findAndAssignAudioClip(effect);
+   //         _soundEffects.Add(effect.id, effect);
+   //      }
 
-         _hasInitialized = true;
-      }
-   }
+   //      _hasInitialized = true;
+   //   }
+   //}
 
-   public SoundEffect getSoundEffect (int id) {
-      SoundEffect data;
-      _soundEffects.TryGetValue(id, out data);
-      return data;
-   }
+   //public SoundEffect getSoundEffect (int id) {
+   //   SoundEffect data;
+   //   _soundEffects.TryGetValue(id, out data);
+   //   return data;
+   //}
 
-   public List<SoundEffect> getAllSoundEffects () {
-      return new List<SoundEffect>(_soundEffects.Values);
-   }
+   //public List<SoundEffect> getAllSoundEffects () {
+   //   return new List<SoundEffect>(_soundEffects.Values);
+   //}
 
-   public bool isValidSoundEffect (int id) {
-      return _soundEffects.ContainsKey(id);
-   }
+   //public bool isValidSoundEffect (int id) {
+   //   return _soundEffects.ContainsKey(id);
+   //}
 
-   public void playSoundEffect (int id, Transform target) {
-      SoundEffect effect;
+   //public void playSoundEffect (int id, Transform target) {
+   //   SoundEffect effect;
 
-      if (_soundEffects.TryGetValue(id, out effect)) {
-         if (effect.is3D) {
-            playSoundEffect3D(effect, target);
-         } else {
-            source.clip = effect.clip;
-            if (effect.clip == null) {
-               D.debug("Missing Sound Effect ID: " + id);
-               return;
-            }
-            effect.calibrateSource(source);
-            source.volume = effect.minVolume;
-            source.loop = false;
-            source.Play();
-         }
+   //   if (_soundEffects.TryGetValue(id, out effect)) {
+   //      if (effect.is3D) {
+   //         playSoundEffect3D(effect, target);
+   //      } else {
+   //         source.clip = effect.clip;
+   //         if (effect.clip == null) {
+   //            D.debug("Missing Sound Effect ID: " + id);
+   //            return;
+   //         }
+   //         effect.calibrateSource(source);
+   //         source.volume = effect.minVolume;
+   //         source.loop = false;
+   //         source.Play();
+   //      }
 
-      } else if (id >= 0) {
-         D.debug("Could not find SoundEffect with 'id' : '" + id + "'");
-      }
-   }
+   //   } else if (id >= 0) {
+   //      D.debug("Could not find SoundEffect with 'id' : '" + id + "'");
+   //   }
+   //}
 
    public void playFmodSfx (string path, Vector3 position = default) {
       if (Util.isBatch()) {
@@ -238,6 +245,7 @@ public class SoundEffectManager : GenericGameManager
       if (position == default) {
          position = AudioListenerManager.self.getActiveFmodListener().gameObject.transform.position;
       }
+
       FMODUnity.RuntimeManager.PlayOneShot(path, position);
       //FMOD.Studio.EventInstance eventInstance = FMODUnity.RuntimeManager.CreateInstance(path);
       //if (eventInstance.isValid()) {
@@ -283,24 +291,24 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   public void playFmod2dSfxWithId (int id) {
-      if (Util.isBatch()) {
-         return;
-      }
-      playFmodOneShot(id, CameraManager.getCurrentCamera().transform);
-   }
+   //public void playFmod2dSfxWithId (int id) {
+   //   if (Util.isBatch()) {
+   //      return;
+   //   }
+   //   playFmodOneShot(id, CameraManager.getCurrentCamera().transform);
+   //}
 
-   public void playFmodOneShot (int id, Transform target) {
-      if (Util.isBatch()) {
-         return;
-      }
-      SoundEffect effect = getSoundEffect(id);
-      if (effect != null) {
-         if (effect.fmodId.Length > 0) {
-            FMODUnity.RuntimeManager.PlayOneShot(effect.fmodId, target.position);
-         }
-      }
-   }
+   //public void playFmodOneShot (int id, Transform target) {
+   //   if (Util.isBatch()) {
+   //      return;
+   //   }
+   //   SoundEffect effect = getSoundEffect(id);
+   //   if (effect != null) {
+   //      if (effect.fmodId.Length > 0) {
+   //         FMODUnity.RuntimeManager.PlayOneShot(effect.fmodId, target.position);
+   //      }
+   //   }
+   //}
 
    public void playCannonballImpact (Cannonball impactType, Vector3 position) {
       FMOD.Studio.EventInstance impactEvent = FMODUnity.RuntimeManager.CreateInstance(CANNONBALL_IMPACT);
@@ -310,56 +318,112 @@ public class SoundEffectManager : GenericGameManager
       impactEvent.release();
    }
 
-   public void playAmbienceMusic (bool isSea, bool isInterior, Biome.Type biomeType) {
-      if (!_ambienceMusicEvent.isValid()) {
-         _ambienceMusicEvent = FMODUnity.RuntimeManager.CreateInstance(AMBIENCE_BED_MASTER);
-      }
-
-      int param = (int) AmbienceType.None;
-
-      if (isSea) {
-         param = (int) AmbienceType.SeaMap;
-      } else if (isInterior) {
-         param = (int) AmbienceType.Interior;
-      } else {
-         switch (biomeType) {
-            case Biome.Type.Forest:
-               param = (int) AmbienceType.Forest;
-               break;
-            case Biome.Type.Desert:
-               param = (int) AmbienceType.Desert;
-               break;
-            case Biome.Type.Snow:
-               param = (int) AmbienceType.Snow;
-               break;
-            case Biome.Type.Lava:
-               param = (int) AmbienceType.Lava;
-               break;
-            case Biome.Type.Pine:
-               param = (int) AmbienceType.Pine;
-               break;
-            case Biome.Type.Mushroom:
-               param = (int) AmbienceType.Shroom;
-               break;
-         }
-      }
-
-      _ambienceMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, param);
-      _ambienceMusicEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE amState);
-      if (amState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
-         _ambienceMusicEvent.start();
-      }
-   }
-
    public void playBackgroundMusic (SoundManager.Type musicType) {
       if (!_backgroundMusicEvent.isValid()) {
          _backgroundMusicEvent = FMODUnity.RuntimeManager.CreateInstance(BGM_MASTER);
       }
+
       if (!_titleScreenAmbienceEvent.isValid()) {
          _titleScreenAmbienceEvent = FMODUnity.RuntimeManager.CreateInstance(TITLE_SCREEN_AMBIENCE);
       }
+
       _titleScreenAmbienceEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE titleAmbienceState);
       _backgroundMusicEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE backgroundMusicState);
+
+      int backgroundMusicParam = -1;
+
+      switch (musicType) {
+         case SoundManager.Type.Town_Forest:
+            backgroundMusicParam = 0;
+            break;
+         case SoundManager.Type.Town_Desert:
+            backgroundMusicParam = 1;
+            break;
+         case SoundManager.Type.Town_Snow:
+            backgroundMusicParam = 2;
+            break;
+         case SoundManager.Type.Town_Lava:
+            backgroundMusicParam = 3;
+            break;
+         case SoundManager.Type.Town_Pine:
+            backgroundMusicParam = 4;
+            break;
+         case SoundManager.Type.Town_Mushroom:
+            backgroundMusicParam = 5;
+            break;
+         case SoundManager.Type.Intro_Music:
+            // Here we play the ambience event for the Title Screen
+            if (titleAmbienceState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
+               _titleScreenAmbienceEvent.start();
+            }
+            backgroundMusicParam = 6;
+            break;
+         case SoundManager.Type.Farm_Music:
+            backgroundMusicParam = 7;
+            break;
+         case SoundManager.Type.Interior:
+            backgroundMusicParam = 8;
+            break;
+         case SoundManager.Type.Sea_PvP:
+            backgroundMusicParam = 10;
+            break;
+         case SoundManager.Type.Sea_Forest:
+            backgroundMusicParam = 11;
+            break;
+         case SoundManager.Type.Sea_Desert:
+            backgroundMusicParam = 12;
+            break;
+         case SoundManager.Type.Sea_Lava:
+            backgroundMusicParam = 13;
+            break;
+         case SoundManager.Type.Sea_Mushroom:
+            backgroundMusicParam = 14;
+            break;
+         case SoundManager.Type.Sea_Pine:
+            backgroundMusicParam = 15;
+            break;
+         case SoundManager.Type.Sea_Snow:
+            backgroundMusicParam = 16;
+            break;
+         case SoundManager.Type.Sea_League:
+            backgroundMusicParam = 17;
+            break;
+         case SoundManager.Type.Battle_Music:
+            backgroundMusicParam = 19;
+            break;
+      }
+
+      if (musicType != SoundManager.Type.Intro_Music) {
+         _titleScreenAmbienceEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+      }
+
+      _backgroundMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, backgroundMusicParam);
+
+      if (backgroundMusicState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
+         _backgroundMusicEvent.start();
+      }
+
+      // If the type of music is "None"
+      if (backgroundMusicParam == -1) {
+         _backgroundMusicEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+      }
+   }
+
+   private void checkAmbienceEvent () {
+      if (!_ambienceMusicEvent.isValid()) {
+         _ambienceMusicEvent = FMODUnity.RuntimeManager.CreateInstance(AMBIENCE_BED_MASTER);
+      }
+   }
+
+   private void playAmbienceEvent () {
+      _ambienceMusicEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE playbackState);
+      if (playbackState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
+         _ambienceMusicEvent.start();
+      }
+   }
+
+   public void playAmbienceMusic (SoundManager.Type musicType) {
+      checkAmbienceEvent();
 
       int param = -1;
 
@@ -382,61 +446,47 @@ public class SoundEffectManager : GenericGameManager
          case SoundManager.Type.Town_Mushroom:
             param = 5;
             break;
-         case SoundManager.Type.Intro_Music:
-            // Here we play the ambience event for the Title Screen
-            if (titleAmbienceState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
-               _titleScreenAmbienceEvent.start();
-            }
-            param = 6;
-            break;
          case SoundManager.Type.Farm_Music:
             param = 7;
             break;
          case SoundManager.Type.Interior:
             param = 8;
             break;
-         case SoundManager.Type.Sea_PvP:
-            param = 10;
-            break;
          case SoundManager.Type.Sea_Forest:
-            param = 11;
-            break;
          case SoundManager.Type.Sea_Desert:
-            param = 12;
-            break;
-         case SoundManager.Type.Sea_Lava:
-            param = 13;
-            break;
-         case SoundManager.Type.Sea_Mushroom:
-            param = 14;
-            break;
-         case SoundManager.Type.Sea_Pine:
-            param = 15;
-            break;
          case SoundManager.Type.Sea_Snow:
-            param = 16;
-            break;
+         case SoundManager.Type.Sea_Lava:
+         case SoundManager.Type.Sea_Pine:
+         case SoundManager.Type.Sea_Mushroom:
+         case SoundManager.Type.Sea_PvP:
          case SoundManager.Type.Sea_League:
-            param = 17;
-            break;
-         case SoundManager.Type.Battle_Music:
-            param = 19;
+            param = 9;
             break;
       }
 
-      if (musicType != SoundManager.Type.Intro_Music) {
-         _titleScreenAmbienceEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-      }
+      _ambienceMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, param);
 
-      _backgroundMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, param);
-      if (backgroundMusicState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
-         _backgroundMusicEvent.start();
-      }
-
-      // If the type of music is "None"
       if (param == -1) {
-         _backgroundMusicEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+         _ambienceMusicEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
       }
+
+      playAmbienceEvent();
+   }
+
+   public void setAmbienceWeather (WeatherEffectType weatherEffect) {
+      checkAmbienceEvent();
+
+      int param = 0;
+
+      switch (weatherEffect) {
+         case WeatherEffectType.Rain:
+            param = 1;
+            break;
+      }
+
+      _ambienceMusicEvent.setParameterByName(WEATHER_PARAM, param);
+
+      playAmbienceEvent();
    }
 
    public void playAnimalCry (string path, Transform target) {
@@ -486,14 +536,34 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
+   public void playLandEnemyDeathSfx (Enemy.Type enemyType, Vector3 position) {
+      string deathPath = "";
+
+      switch (enemyType) {
+         case Enemy.Type.Golem_Boss:
+            deathPath = GOLEM_DEATH;
+            break;
+      }
+
+      if (!string.IsNullOrEmpty(deathPath)) {
+         playFmodSfx(deathPath, position);
+      }
+   }
+
    public void playSeaBossDeathSfx (SeaMonsterEntity.Type monsterType, Vector3 position) {
+      string deathPath = "";
+
       switch (monsterType) {
          case SeaMonsterEntity.Type.Horror:
-            playFmodSfx(HORROR_DEATH, position);
+            deathPath = HORROR_DEATH;
             break;
          case SeaMonsterEntity.Type.Horror_Tentacle:
-            playFmodSfx(HORROR_TENTACLE_DEATH, position);
+            deathPath = HORROR_TENTACLE_DEATH;
             break;
+      }
+
+      if (!string.IsNullOrEmpty(deathPath)) {
+         playFmodSfx(deathPath, position);
       }
    }
 
@@ -514,12 +584,12 @@ public class SoundEffectManager : GenericGameManager
       playFmodSfx(path);
    }
 
-   public void playLegacyInteractionOneShot (int equipmentDataId, Transform target) {
-      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(equipmentDataId);
-      if (weaponData != null && weaponData.actionSfxDirectory.Length > 1) {
-         SoundManager.create3dSoundWithPath(weaponData.actionSfxDirectory, target.position);
-      }
-   }
+   //public void playLegacyInteractionOneShot (int equipmentDataId, Transform target) {
+   //   WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(equipmentDataId);
+   //   if (weaponData != null && weaponData.actionSfxDirectory.Length > 1) {
+   //      SoundManager.create3dSoundWithPath(weaponData.actionSfxDirectory, target.position);
+   //   }
+   //}
 
    public void playInteractionSfx (Weapon.ActionType weaponAction, Weapon.Class weaponClass, WeaponType sfxType, Vector3 position) {
       switch (weaponAction) {
@@ -577,17 +647,17 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   private void playSoundEffect3D (SoundEffect effect, Transform target) {
-      // Setup audio player
-      AudioSource audioSource = Instantiate(PrefabsManager.self.sound3dPrefab, target.position, Quaternion.identity);
-      audioSource.transform.SetParent(target, true);
-      audioSource.clip = effect.clip;
-      audioSource.volume = effect.minVolume;
-      audioSource.Play();
+   //private void playSoundEffect3D (SoundEffect effect, Transform target) {
+   //   // Setup audio player
+   //   AudioSource audioSource = Instantiate(PrefabsManager.self.sound3dPrefab, target.position, Quaternion.identity);
+   //   audioSource.transform.SetParent(target, true);
+   //   audioSource.clip = effect.clip;
+   //   audioSource.volume = effect.minVolume;
+   //   audioSource.Play();
 
-      // Destroy object after clip finishes playing
-      Destroy(audioSource.gameObject, audioSource.clip.length);
-   }
+   //   // Destroy object after clip finishes playing
+   //   Destroy(audioSource.gameObject, audioSource.clip.length);
+   //}
 
    public void playNotificationPanelSfx () {
       if (CameraManager.defaultCamera.getPixelFadeEffect().isFadingIn) {
@@ -647,6 +717,21 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
+   // Play attached SFX
+   public void playAttached (SoundManager.Type soundType, GameObject target) {
+      string path = "";
+
+      switch (soundType) {
+         case SoundManager.Type.Skeleton_Walk:
+            path = SKELETON_WALK;
+            break;
+      }
+
+      if (!string.IsNullOrEmpty(path)) {
+         FMODUnity.RuntimeManager.PlayOneShotAttached(path, target);
+      }
+   }
+
    #region Private Variables
 
    // Holds the path of the folder containing Sound Effects (with the Resource folder as a base)
@@ -678,21 +763,6 @@ public class SoundEffectManager : GenericGameManager
       None = 0,
       BoneBreaker = 11,
       GolemShout = 90
-   }
-
-   private enum AmbienceType
-   {
-      None = -1,
-      Forest = 0,
-      Desert = 1,
-      Snow = 2,
-      Lava = 3,
-      Pine = 4,
-      Shroom = 5,
-      TreasureSite = 6,
-      Farm = 7,
-      Interior = 8,
-      SeaMap = 9
    }
 
    // SFX related enums

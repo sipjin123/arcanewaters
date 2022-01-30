@@ -72,6 +72,10 @@ public class TargetCone : MonoBehaviour {
 
    // Provides visual feedback to indicate that this target has been confirmed
    public void targetingConfirmed (Action onTargetingComplete) {
+      if (!gameObject.activeInHierarchy) {
+         gameObject.SetActive(true);
+      }
+
       StartCoroutine(CO_OnTargetingConfirmed(onTargetingComplete));
    }
 

@@ -176,6 +176,14 @@ MonoBehaviour:
     index: 26
     zOffset: 0
     layerType: 0
+  - layer: bay-water
+    index: 6
+    zOffset: 0
+    layerType: 1
+  - layer: bay-grass
+    index: 7
+    zOffset: 0
+    layerType: 0
   interiorLayerIndexes:
   - layer: ground
     index: 0

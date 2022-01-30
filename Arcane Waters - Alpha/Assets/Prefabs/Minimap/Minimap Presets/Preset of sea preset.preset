@@ -1,0 +1,955 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!181963792 &2655988077585873504
+Preset:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Preset of sea preset
+  m_TargetType:
+    m_NativeTypeID: 114
+    m_ManagedTypePPtr: {fileID: 11500000, guid: 0886f0a5f4d4ac646b12c0bb78a3f62a,
+      type: 3}
+    m_ManagedTypeFallback: 
+  m_Properties:
+  - target: {fileID: 0}
+    propertyPath: m_Enabled
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorHideFlags
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorClassIdentifier
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _minimapsPath
+    value: /Sprites/Minimaps/
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: imagePrefixName
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: imageSuffixName
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _textureSize.x
+    value: 64
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _textureSize.y
+    value: 64
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: useBackground
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: backgroundColor.r
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: backgroundColor.g
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: backgroundColor.b
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: backgroundColor.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: useOutline
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: outlineColor.r
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: outlineColor.g
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: outlineColor.b
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: outlineColor.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: specialType
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: specialTypeAreaKey
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileLayer.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.size
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[0].iconLayerName
+    value: TreasureSite
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[0].spriteIcon
+    value: 
+    objectReference: {fileID: 21300000, guid: 1ec5e23a10db6ec4f9dfa6b3f9a89d5b, type: 3}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[0].offset.x
+    value: -3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[0].offset.y
+    value: -2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[0].usePrefab
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[0].useAreaEffector2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[0].useCollider2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[0].isSubLayer
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[0].subLayerSpriteSuffixNames.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[0].subLayerSprites.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[0].limitSpawnCount
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[0].spawnGridSize.x
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[0].spawnGridSize.y
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[0].minDistanceManhattan
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[0].minGlobalDistanceManhattan
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[1].iconLayerName
+    value: Warp
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[1].spriteIcon
+    value: 
+    objectReference: {fileID: 21300000, guid: 65542fb74953e324dbbb76af955a4b17, type: 3}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[1].offset.x
+    value: -4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[1].offset.y
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[1].usePrefab
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[1].useAreaEffector2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[1].useCollider2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[1].isSubLayer
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[1].subLayerSpriteSuffixNames.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[1].subLayerSprites.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[1].limitSpawnCount
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[1].spawnGridSize.x
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[1].spawnGridSize.y
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[1].minDistanceManhattan
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _tileIconLayers.Array.data[1].minGlobalDistanceManhattan
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: baseLandColor.r
+    value: 0.35686275
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: baseLandColor.g
+    value: 0.6627451
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: baseLandColor.b
+    value: 0.4039216
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: baseLandColor.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: landBorderColor.r
+    value: 0.43921572
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: landBorderColor.g
+    value: 0.7137255
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: landBorderColor.b
+    value: 0.3803922
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: landBorderColor.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: landOutlineColor.r
+    value: 0.35686275
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: landOutlineColor.g
+    value: 0.20000002
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: landOutlineColor.b
+    value: 0.29411766
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: landOutlineColor.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: landCliffLowerColor.r
+    value: 0.48627454
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: landCliffLowerColor.g
+    value: 0.2509804
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: landCliffLowerColor.b
+    value: 0.3137255
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: landCliffLowerColor.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: landCliffUpperColor.r
+    value: 0.5647059
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: landCliffUpperColor.g
+    value: 0.31764707
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: landCliffUpperColor.b
+    value: 0.33333334
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: landCliffUpperColor.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: waterColor.r
+    value: 0.23529413
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: waterColor.g
+    value: 0.43137258
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: waterColor.b
+    value: 0.7568628
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: waterColor.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: waterBorderColor.r
+    value: 0.2392157
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: waterBorderColor.g
+    value: 0.54509807
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: waterBorderColor.b
+    value: 0.8431373
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: waterBorderColor.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: deeper1WaterColor.r
+    value: 0.24313727
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: deeper1WaterColor.g
+    value: 0.38823533
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: deeper1WaterColor.b
+    value: 0.62352943
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: deeper1WaterColor.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: deeper2WaterColor.r
+    value: 0.20422502
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: deeper2WaterColor.g
+    value: 0.2747062
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: deeper2WaterColor.b
+    value: 0.38900003
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: deeper2WaterColor.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: waterfallColor.r
+    value: 0.37254903
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: waterfallColor.g
+    value: 0.67058825
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: waterfallColor.b
+    value: 0.89019614
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: waterfallColor.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: pathwayColor.r
+    value: 0.7176471
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: pathwayColor.g
+    value: 0.6627451
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: pathwayColor.b
+    value: 0.6039216
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: pathwayColor.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: pathwayBorderColor.r
+    value: 0.48235297
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: pathwayBorderColor.g
+    value: 0.47058827
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: pathwayBorderColor.b
+    value: 0.49803925
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: pathwayBorderColor.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: mountainIcon.iconLayerName
+    value: Mountain
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: mountainIcon.spriteIcon
+    value: 
+    objectReference: {fileID: 21300000, guid: e65c6cf1a4f75e64988bff6c22b86ae0, type: 3}
+  - target: {fileID: 0}
+    propertyPath: mountainIcon.offset.x
+    value: -3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: mountainIcon.offset.y
+    value: -1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: mountainIcon.usePrefab
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: mountainIcon.useAreaEffector2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: mountainIcon.useCollider2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: mountainIcon.isSubLayer
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: mountainIcon.subLayerSpriteSuffixNames.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: mountainIcon.subLayerSprites.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: mountainIcon.limitSpawnCount
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: mountainIcon.spawnGridSize.x
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: mountainIcon.spawnGridSize.y
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: mountainIcon.minDistanceManhattan
+    value: 12
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: mountainIcon.minGlobalDistanceManhattan
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockNorthIcon.iconLayerName
+    value: port
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockNorthIcon.spriteIcon
+    value: 
+    objectReference: {fileID: 21300000, guid: 31f9901688909ac4a95555cb2a72b7f4, type: 3}
+  - target: {fileID: 0}
+    propertyPath: dockNorthIcon.offset.x
+    value: -2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockNorthIcon.offset.y
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockNorthIcon.usePrefab
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockNorthIcon.useAreaEffector2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockNorthIcon.useCollider2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockNorthIcon.isSubLayer
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockNorthIcon.subLayerSpriteSuffixNames.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockNorthIcon.subLayerSprites.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockNorthIcon.limitSpawnCount
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockNorthIcon.spawnGridSize.x
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockNorthIcon.spawnGridSize.y
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockNorthIcon.minDistanceManhattan
+    value: 12
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockNorthIcon.minGlobalDistanceManhattan
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockSouthIcon.iconLayerName
+    value: port
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockSouthIcon.spriteIcon
+    value: 
+    objectReference: {fileID: 21300000, guid: 119e35a71fd727f40bbaf8babfc94b68, type: 3}
+  - target: {fileID: 0}
+    propertyPath: dockSouthIcon.offset.x
+    value: -2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockSouthIcon.offset.y
+    value: -4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockSouthIcon.usePrefab
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockSouthIcon.useAreaEffector2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockSouthIcon.useCollider2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockSouthIcon.isSubLayer
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockSouthIcon.subLayerSpriteSuffixNames.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockSouthIcon.subLayerSprites.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockSouthIcon.limitSpawnCount
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockSouthIcon.spawnGridSize.x
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockSouthIcon.spawnGridSize.y
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockSouthIcon.minDistanceManhattan
+    value: 12
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockSouthIcon.minGlobalDistanceManhattan
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockEastIcon.iconLayerName
+    value: port
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockEastIcon.spriteIcon
+    value: 
+    objectReference: {fileID: 21300000, guid: e363d135dd68ae940bc0b5ba4cc52d98, type: 3}
+  - target: {fileID: 0}
+    propertyPath: dockEastIcon.offset.x
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockEastIcon.offset.y
+    value: -1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockEastIcon.usePrefab
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockEastIcon.useAreaEffector2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockEastIcon.useCollider2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockEastIcon.isSubLayer
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockEastIcon.subLayerSpriteSuffixNames.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockEastIcon.subLayerSprites.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockEastIcon.limitSpawnCount
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockEastIcon.spawnGridSize.x
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockEastIcon.spawnGridSize.y
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockEastIcon.minDistanceManhattan
+    value: 12
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockEastIcon.minGlobalDistanceManhattan
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockWestIcon.iconLayerName
+    value: port
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockWestIcon.spriteIcon
+    value: 
+    objectReference: {fileID: 21300000, guid: 67aa5e44546a51144b877a7b94d67333, type: 3}
+  - target: {fileID: 0}
+    propertyPath: dockWestIcon.offset.x
+    value: -4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockWestIcon.offset.y
+    value: -1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockWestIcon.usePrefab
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockWestIcon.useAreaEffector2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockWestIcon.useCollider2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockWestIcon.isSubLayer
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockWestIcon.subLayerSpriteSuffixNames.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockWestIcon.subLayerSprites.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockWestIcon.limitSpawnCount
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockWestIcon.spawnGridSize.x
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockWestIcon.spawnGridSize.y
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockWestIcon.minDistanceManhattan
+    value: 12
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: dockWestIcon.minGlobalDistanceManhattan
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house1Icon.iconLayerName
+    value: bulding
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house1Icon.spriteIcon
+    value: 
+    objectReference: {fileID: 21300000, guid: b7f06e8e0acbac745ac8b22d336e1df0, type: 3}
+  - target: {fileID: 0}
+    propertyPath: house1Icon.offset.x
+    value: -2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house1Icon.offset.y
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house1Icon.usePrefab
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house1Icon.useAreaEffector2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house1Icon.useCollider2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house1Icon.isSubLayer
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house1Icon.subLayerSpriteSuffixNames.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house1Icon.subLayerSprites.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house1Icon.limitSpawnCount
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house1Icon.spawnGridSize.x
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house1Icon.spawnGridSize.y
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house1Icon.minDistanceManhattan
+    value: 12
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house1Icon.minGlobalDistanceManhattan
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house2Icon.iconLayerName
+    value: bulding
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house2Icon.spriteIcon
+    value: 
+    objectReference: {fileID: 21300000, guid: 3b79b9e77efdca449bac9df5f8a469fc, type: 3}
+  - target: {fileID: 0}
+    propertyPath: house2Icon.offset.x
+    value: -2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house2Icon.offset.y
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house2Icon.usePrefab
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house2Icon.useAreaEffector2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house2Icon.useCollider2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house2Icon.isSubLayer
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house2Icon.subLayerSpriteSuffixNames.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house2Icon.subLayerSprites.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house2Icon.limitSpawnCount
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house2Icon.spawnGridSize.x
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house2Icon.spawnGridSize.y
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house2Icon.minDistanceManhattan
+    value: 12
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: house2Icon.minGlobalDistanceManhattan
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree1Icon.iconLayerName
+    value: Tree Sea 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree1Icon.spriteIcon
+    value: 
+    objectReference: {fileID: 21300000, guid: f9b01194aa3421a40a90bd63ebf01a80, type: 3}
+  - target: {fileID: 0}
+    propertyPath: tree1Icon.offset.x
+    value: -3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree1Icon.offset.y
+    value: -1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree1Icon.usePrefab
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree1Icon.useAreaEffector2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree1Icon.useCollider2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree1Icon.isSubLayer
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree1Icon.subLayerSpriteSuffixNames.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree1Icon.subLayerSprites.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree1Icon.limitSpawnCount
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree1Icon.spawnGridSize.x
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree1Icon.spawnGridSize.y
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree1Icon.minDistanceManhattan
+    value: 12
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree1Icon.minGlobalDistanceManhattan
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree2Icon.iconLayerName
+    value: Tree Sea 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree2Icon.spriteIcon
+    value: 
+    objectReference: {fileID: 21300000, guid: f15c94c83e56de1468684ca5978c2d41, type: 3}
+  - target: {fileID: 0}
+    propertyPath: tree2Icon.offset.x
+    value: -3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree2Icon.offset.y
+    value: -1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree2Icon.usePrefab
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree2Icon.useAreaEffector2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree2Icon.useCollider2D
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree2Icon.isSubLayer
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree2Icon.subLayerSpriteSuffixNames.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree2Icon.subLayerSprites.Array.size
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree2Icon.limitSpawnCount
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree2Icon.spawnGridSize.x
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree2Icon.spawnGridSize.y
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree2Icon.minDistanceManhattan
+    value: 12
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: tree2Icon.minGlobalDistanceManhattan
+    value: 4
+    objectReference: {fileID: 0}

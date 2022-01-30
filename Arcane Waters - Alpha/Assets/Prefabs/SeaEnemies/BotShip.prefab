@@ -309,6 +309,7 @@ MonoBehaviour:
   passedOnTemporaryControl: 0
   ignoredRenderers:
   - {fileID: 958050535380161597}
+  shouldAlignRenderersToFacingDirection: 1
   _ignoredAnimators: []
   _animators: []
   debugImageHolder: {fileID: 5496365473809493967}
@@ -353,6 +354,7 @@ MonoBehaviour:
   seaEntityShadowContainer: {fileID: 0}
   orbHolder: {fileID: 8305972367148596338}
   residueHolder: {fileID: 0}
+  movementForce: {x: 0, y: 0}
   _currentPath: []
   _currentPathIndex: 0
   _isChasingEnemy: 0
@@ -409,6 +411,7 @@ MonoBehaviour:
     monsterName: 
     seaMonsterType: 0
     attackType: 0
+    difficultyLevel: 0
     xmlId: 0
     isXmlEnabled: 0
     subVarietyTypeId: -1
@@ -486,7 +489,7 @@ Rigidbody2D:
   m_GravityScale: 0
   m_Material: {fileID: 6200000, guid: 85d5d0a47c772d24ca0b79efe93fa021, type: 2}
   m_Interpolate: 1
-  m_SleepingMode: 1
+  m_SleepingMode: 0
   m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &114073007438733822
@@ -563,6 +566,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  isProcessing: 0
 --- !u!114 &114914189812209088
 MonoBehaviour:
   m_ObjectHideFlags: 0

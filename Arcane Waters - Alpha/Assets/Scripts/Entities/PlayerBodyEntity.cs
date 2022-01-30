@@ -274,16 +274,24 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    private void OnDisable () {
       // If we are the local player, activate the camera's audio listener
       if (isLocalPlayer && !ClientManager.isApplicationQuitting) {
-         if (!_audioListener) {
-            _audioListener = GetComponent<AudioListener>();
-         }
-
-         if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getAudioListener() != null) {
-            AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener(), CameraManager.defaultCamera.getFmodListener());
+         if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getFmodListener() != null) {
+            AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getFmodListener());
          } else {
-            D.error("Couldn't switch audio listener back to main camera");
+            D.error("Couldn't switch FMOD Studio Listener back to main camera");
          }
       }
+
+      //if (isLocalPlayer && !ClientManager.isApplicationQuitting) {
+      //   if (!_audioListener) {
+      //      _audioListener = GetComponent<AudioListener>();
+      //   }
+
+      //   if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getAudioListener() != null) {
+      //      AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener(), CameraManager.defaultCamera.getFmodListener());
+      //   } else {
+      //      D.error("Couldn't switch audio listener back to main camera");
+      //   }
+      //}
    }
 
    protected override void FixedUpdate () {

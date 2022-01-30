@@ -26,6 +26,15 @@ namespace MapCreationTool
       public GameObject _currentEffector;
       public GameObject _deletedPrefabMarker;
 
+      // The tile attribute matrix
+      [SerializeField, HideInInspector]
+      public TileAttributesMatrix _tileAttributeMatrix = new TileAttributesMatrix();
+
+      public TileAttributesMatrix tileAttributeMatrixEditor
+      {
+         get { return _tileAttributeMatrix; }
+      }
+
       [ExecuteInEditMode]
       private void OnValidate () {
          loadLocal();
@@ -34,6 +43,7 @@ namespace MapCreationTool
       private void loadLocal () {
          try {
             biomeSpecific = new Dictionary<Biome.Type, BiomeMaps>();
+            tileAttributeMatrix = _tileAttributeMatrix;
             transparentTileBase = transparentTile;
             layerZMultip = layerZMultiplier;
             sublayerZMultip = sublayerZMultiplier;
@@ -189,6 +199,7 @@ namespace MapCreationTool
 
       public static Dictionary<Biome.Type, BiomeMaps> biomeSpecific { get; set; }
       public static BiomeMaps allBiomes { get; set; }
+      public static TileAttributesMatrix tileAttributeMatrix { get; set; }
       public static TileBase transparentTileBase { get; set; }
       public static float layerZMultip { get; set; }
       public static float sublayerZMultip { get; set; }

@@ -21,17 +21,17 @@ public class LoopedSound : MonoBehaviour {
 
    public void startPlaying () {
       // Tell the Sound Manager to create an audio source for us
-      _source = SoundManager.createLoopedAudio(soundType, this.transform);
+      //_source = SoundManager.createLoopedAudio(soundType, this.transform);
    }
 
-   public AudioSource getSource () {
-      return _source;
-   }
+   //public AudioSource getSource () {
+   //   return _source;
+   //}
 
    #region Private Variables
 
    // Our Audio Source
-   protected AudioSource _source;
+   //protected AudioSource _source;
 
    #endregion
 }

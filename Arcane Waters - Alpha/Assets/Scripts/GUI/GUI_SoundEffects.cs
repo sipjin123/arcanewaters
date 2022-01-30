@@ -13,9 +13,9 @@ public class GUI_SoundEffects : MonoBehaviour, IPointerEnterHandler, IPointerCli
 
    void Start () {
       // Look up the audio source
-      if (_audioSource == null) {
-         _audioSource = GameObject.FindGameObjectWithTag("GUI Audio Source").GetComponent<AudioSource>();
-      }
+      //if (_audioSource == null) {
+      //   _audioSource = GameObject.FindGameObjectWithTag("GUI Audio Source").GetComponent<AudioSource>();
+      //}
       _button = GetComponent<Button>();
    }
 
@@ -47,7 +47,7 @@ public class GUI_SoundEffects : MonoBehaviour, IPointerEnterHandler, IPointerCli
    protected Button _button;
 
    // Our Audio Source
-   protected static AudioSource _audioSource;
+   //protected static AudioSource _audioSource;
 
    // The time at which we last played a specified clip
    protected static Dictionary<string, float> _lastPlayTime = new Dictionary<string, float>();

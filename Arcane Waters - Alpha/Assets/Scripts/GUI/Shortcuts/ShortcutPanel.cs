@@ -52,6 +52,9 @@ public class ShortcutPanel : ClientMonoBehaviour {
    }
 
    public void updatePanelWithShortcuts (ItemShortcutInfo[] shortcuts) {
+      // Skip for batch mode
+      if (Util.isBatch()) return;      
+      
       // Clear the boxes
       foreach (ShortcutBox box in _boxes) {
          box.clear();
@@ -59,7 +62,7 @@ public class ShortcutPanel : ClientMonoBehaviour {
 
       // Set the items in the corresponding boxes
       foreach (ItemShortcutInfo shortcut in shortcuts) {
-         ShortcutBox box = _boxes.Find(b => b.slotNumber == shortcut.slotNumber);
+         ShortcutBox box = _boxes?.Find(b => b.slotNumber == shortcut.slotNumber);
          if (box != null) {
             box.setItem(shortcut.item);
          }
@@ -68,7 +71,7 @@ public class ShortcutPanel : ClientMonoBehaviour {
 
    public void activateShortcut (int slotNumber) {
       _currentSlotNumber = slotNumber;
-      ShortcutBox box = _boxes.Find(b => b.slotNumber == slotNumber);
+      ShortcutBox box = _boxes?.Find(b => b.slotNumber == slotNumber);
       if (box != null) {
          box.onShortcutPress();
       }

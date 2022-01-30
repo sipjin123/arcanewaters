@@ -364,6 +364,7 @@ GameObject:
   - component: {fileID: 4201488314933380675}
   - component: {fileID: 4837312698485865229}
   - component: {fileID: 1512698306578539576}
+  - component: {fileID: 2344374767372009721}
   m_Layer: 5
   m_Name: Item Cell Ingredient
   m_TagString: Untagged
@@ -453,7 +454,9 @@ MonoBehaviour:
   recoloredSprite: {fileID: 2809272574783685270}
   foodIcon: {fileID: 21300000, guid: 75f6c2ad27552444f85d01591789c053, type: 3}
   defaultItemIcon: {fileID: 21300000, guid: f048dd06213522f4a9db2e98f670e6cb, type: 3}
+  disabledItemIcon: {fileID: 0}
   backgroundImage: {fileID: 4201488314933380675}
+  itemRarityType: 0
   leftClickEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -461,6 +464,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   doubleClickEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  shiftClickEvent:
     m_PersistentCalls:
       m_Calls: []
   onPointerEnter:
@@ -484,6 +490,7 @@ MonoBehaviour:
     itemName: 
     itemDescription: 
     iconPath: 
+    durability: 100
   targetItem:
     id: 0
     itemDefinitionId: 0
@@ -492,6 +499,11 @@ MonoBehaviour:
     palettes: 
     rarity: 0
   blueprintIcon: {fileID: 0}
+  isDisabledItem: 0
+  midDurabilityColor: {r: 0, g: 0, b: 0, a: 0}
+  lowDurabilityColor: {r: 0, g: 0, b: 0, a: 0}
+  highDurabilityColor: {r: 0, g: 0, b: 0, a: 0}
+  itemCellImage: {fileID: 0}
   enoughColor: {r: 0, g: 1, b: 0.09174347, a: 1}
   notEnoughColor: {r: 1, g: 0.047946326, b: 0, a: 1}
 --- !u!114 &4201488314933380675
@@ -552,7 +564,51 @@ MonoBehaviour:
   tooltipType: 2
   message: 
   maxWidth: 0
-  forceFitOnScreen: 0
+  nudgeAwayFromBorder: 0
+  isKeyDerivedFromChildObject: 0
+--- !u!114 &2344374767372009721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7259451091447283177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 4201488314933380675}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8390356884135558968
 GameObject:
   m_ObjectHideFlags: 0

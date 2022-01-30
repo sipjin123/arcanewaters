@@ -53,6 +53,9 @@ public class FarmingTrigger : MonoBehaviour
    }
 
    private void checkForCropInteractions () {
+      // Skip for batch mode
+      if (Util.isBatch()) return;
+      
       if (Global.player == null) {
          return;
       }

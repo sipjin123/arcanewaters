@@ -301,7 +301,7 @@ public class InventoryPanel : Panel {
          if ((equipped && droppedInInventory) ||
             (!equipped && droppedInEquipmentSlots)) {
 
-            SoundEffectManager.self.playSoundEffect(SoundEffectManager.INVENTORY_DROP, transform);
+            //SoundEffectManager.self.playSoundEffect(SoundEffectManager.INVENTORY_DROP, transform);
 
             // Equip or unequip the item
             InventoryManager.equipOrUnequipItem(_grabbedItemCell.getItem());

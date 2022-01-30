@@ -117,7 +117,7 @@ public class PrefabsManager : MonoBehaviour {
    public GameObject genericEffectPrefab;
 
    // The prefab we use for creating 3d sounds
-   public AudioSource sound3dPrefab;
+   //public AudioSource sound3dPrefab;
 
    // The prefab we use for creating 3d sounds FMOD version
    public FMODUnity.StudioEventEmitter fMod3dPrefab;

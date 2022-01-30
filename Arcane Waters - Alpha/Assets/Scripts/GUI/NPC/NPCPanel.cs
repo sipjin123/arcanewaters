@@ -118,7 +118,7 @@ public class NPCPanel : Panel
       setCommonPanelContent(greetingText, friendshipLevel);
       isHireableNotification.SetActive(false);
 
-      SoundEffectManager.self.playSoundEffect(SoundEffectManager.NPC_PANEL_POPUP, transform);
+      //SoundEffectManager.self.playSoundEffect(SoundEffectManager.NPC_PANEL_POPUP, transform);
 
       if (questDataArray.Length > 0) {
          foreach (QuestDataNode questNode in questDataArray) {

@@ -42,6 +42,7 @@ GameObject:
   - component: {fileID: 5388900019625670753}
   - component: {fileID: 2160378983139190535}
   - component: {fileID: 3256441026006886187}
+  - component: {fileID: 4689341598355782586}
   m_Layer: 0
   m_Name: Plate Empty
   m_TagString: Untagged
@@ -78,6 +79,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -144,3 +146,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   includeChildren: 0
   currentBiome: 1
+--- !u!58 &4689341598355782586
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7559004475940001651}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.06

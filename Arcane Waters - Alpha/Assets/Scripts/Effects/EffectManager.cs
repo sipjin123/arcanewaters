@@ -182,7 +182,10 @@ public class EffectManager : MonoBehaviour {
    }
 
    public static void playPoofEffect (Battler deadBattler) {
-      SoundManager.playClipAtPoint(SoundManager.Type.Death_Poof, deadBattler.transform.position);
+      //SoundManager.playClipAtPoint(SoundManager.Type.Death_Poof, deadBattler.transform.position);
+      if (!deadBattler.isBossType) {
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.DEATH_POOF, deadBattler.transform.position);
+      }
 
       // Play a "Poof" effect on our head
       Effect poof = self.create(Effect.Type.Poof, deadBattler.transform.position);

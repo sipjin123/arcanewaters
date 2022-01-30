@@ -215,7 +215,9 @@ public class AbilityPanel : Panel
       _draggableAbility.activate();
 
       scroller.enabled = false;
-      SoundManager.play2DClip(SoundManager.Type.GUI_Press);
+
+      //SoundManager.play2DClip(SoundManager.Type.GUI_Press);
+      SoundEffectManager.self.playGuiButtonConfirmSfx();
    }
 
    public void tryGrabEquippedAbility (AbilitySlot abilitySlot) {
@@ -229,7 +231,9 @@ public class AbilityPanel : Panel
       // Initialize the common grabbed object
       _draggedAbilityCell.setRowForAbilityData(castedAbility, castedAbility.itemDescription);
       _draggableAbility.activate();
-      SoundManager.play2DClip(SoundManager.Type.GUI_Press);
+
+      //SoundManager.play2DClip(SoundManager.Type.GUI_Press);
+      SoundEffectManager.self.playGuiButtonConfirmSfx();
    }
 
    public void stopGrabbingAbility () {
@@ -278,7 +282,10 @@ public class AbilityPanel : Panel
             int abilityIDCache = _cachedAbility.itemID;
             tryEquipAbility(abilityIDCache, droppedSlot.abilitySlotId);
             droppedSlot?.setSlotForAbilityData(_cachedAbility.itemID, _cachedAbility, _cachedAbility.itemDescription);
-            SoundManager.play2DClip(SoundManager.Type.GUI_Press);
+
+            //SoundManager.play2DClip(SoundManager.Type.GUI_Press);
+            SoundEffectManager.self.playGuiButtonConfirmSfx();
+
             _draggableAbility.deactivate();
          } else {
             // Otherwise, simply stop grabbing
@@ -305,14 +312,19 @@ public class AbilityPanel : Panel
 
             int abilityIDCache = _cachedAbility.itemID;
             unequipAbility(abilityIDCache);
-            SoundManager.play2DClip(SoundManager.Type.GUI_Press);
+
+            //SoundManager.play2DClip(SoundManager.Type.GUI_Press);
+            SoundEffectManager.self.playGuiButtonConfirmSfx();
 
             _draggableAbility.deactivate();
          } else if (droppedInEquipmentSlots && droppedSlot != _sourceAbilitySlot) {
             toggleBlockers(true);
 
             int abilityIDCache = _cachedAbility.itemID;
-            SoundManager.play2DClip(SoundManager.Type.GUI_Press);
+
+            //SoundManager.play2DClip(SoundManager.Type.GUI_Press);
+            SoundEffectManager.self.playGuiButtonConfirmSfx();
+
             tryEquipAbility(abilityIDCache, droppedSlot.abilitySlotId);
             droppedSlot?.setSlotForAbilityData(_cachedAbility.itemID, _cachedAbility, _cachedAbility.itemDescription);
             _draggableAbility.deactivate();

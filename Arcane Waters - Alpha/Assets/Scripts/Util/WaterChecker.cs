@@ -26,7 +26,7 @@ public class WaterChecker : ClientMonoBehaviour
    public float lastWaterTime = float.MinValue;
 
    // The Sound we use when wading in water
-   public AudioSource waterWadingSound;
+   //public AudioSource waterWadingSound;
 
    // The shadow obj
    public GameObject shadowObj;
@@ -97,7 +97,7 @@ public class WaterChecker : ClientMonoBehaviour
       }
 
       // Adjust the water ading sound depending on if we're in water
-      waterWadingSound.volume = inWater() && isMoving ? 1f : 0f;
+      //waterWadingSound.volume = inWater() && isMoving ? 1f : 0f;
    }
 
    protected void checkForWater () {

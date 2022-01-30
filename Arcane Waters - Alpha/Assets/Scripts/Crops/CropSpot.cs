@@ -55,7 +55,8 @@ public class CropSpot : MonoBehaviour {
          EffectManager.self.create(Effect.Type.Crop_Dirt_Large, transform.position);
 
          // Play a sound
-         SoundManager.create3dSound("crop_plant_", transform.position, 5);
+         //SoundManager.create3dSound("crop_plant_", transform.position, 5);
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.CROP_PLANT, transform.position);
       }
 
       // If the player tried to water this spot holding the watering pot, water the crop
@@ -95,7 +96,8 @@ public class CropSpot : MonoBehaviour {
             EffectManager.self.create(Effect.Type.Crop_Dirt_Large, transform.position);
 
             // Play a sound
-            SoundManager.create3dSound("crop_plant_", transform.position, 5);
+            //SoundManager.create3dSound("crop_plant_", transform.position, 5);
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.CROP_PLANT, transform.position);
 
             triggeredAction = true;
          }

@@ -178,6 +178,7 @@ public class MapManager : MonoBehaviour
          area.baseAreaKey = mapInfo.mapName;
          area.version = mapInfo.version;
          area.biome = biome;
+         area.mapTileSize = exportedProject.size;
 
          area.cloudManager.enabled = false;
          area.cloudShadowManager.enabled = false;
@@ -199,6 +200,8 @@ public class MapManager : MonoBehaviour
          foreach (ExportedLayer001 layer in exportedProject.layers.OrderByDescending(layer => layer.z)) {
             MapImporter.instantiateTilemapLayer(tilemaps, mapInfo, layer, result.tilemapParent,
                result.collisionTilemapParent, exportedProject.biome, ref unrecognizedTiles);
+
+            area.fillTileAttributesMatrix(layer);
 
             PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.MapCreation, (0.1f / exportedProject.layers.Length) * tilemaps.Count);
             yield return null;

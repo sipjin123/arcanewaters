@@ -22,6 +22,7 @@ using MapCustomization;
 using System.Net;
 using UnityEngine.InputSystem;
 using DG.Tweening;
+using MiniJSON;
 
 public class Util : MonoBehaviour
 {
@@ -235,11 +236,27 @@ public class Util : MonoBehaviour
    }
 
    public static bool isDevelopmentBuild () {
-      return getJenkinsBuildTitle().StartsWith(DEVELOPMENT_BUILD);
+      TextAsset deploymentConfigAsset = Resources.Load<TextAsset>("config");
+      Dictionary<string, object> deploymentConfig = Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string, object>;
+      string buildType = "";
+
+      if (deploymentConfig != null && deploymentConfig.ContainsKey("branch")) {
+         buildType = deploymentConfig["branch"].ToString();
+      }
+
+      return (buildType == "Development");
    }
 
    public static bool isProductionBuild () {
-      return getJenkinsBuildTitle().StartsWith(PRODUCTION_BUILD);
+      TextAsset deploymentConfigAsset = Resources.Load<TextAsset>("config");
+      Dictionary<string, object> deploymentConfig = Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string, object>;
+      string buildType = "";
+
+      if (deploymentConfig != null && deploymentConfig.ContainsKey("branch")) {
+         buildType = deploymentConfig["branch"].ToString();
+      }
+
+      return (buildType == "Production");
    }
 
    public static bool isEmpty (String str) {
@@ -247,6 +264,10 @@ public class Util : MonoBehaviour
    }
 
    public static Vector3 getMousePos (Vector3 target = default, float stickScale=10f) {
+      // Skip for batch mode
+      if (isBatch()) {
+         return Vector3.zero;
+      }
       
       // Cache a reference to the main camera if it doesn't exist
       if (_mainCamera == null) {
@@ -609,8 +630,12 @@ public class Util : MonoBehaviour
       return false;
    }
 
+   public static bool forceBatch = false;
    public static bool isBatch () {
       // return true; // Debug usage only to simulate batch mode logic
+      if (forceBatch) {
+         return true;
+      }
       return Application.isBatchMode;
    }
 
@@ -1354,6 +1379,64 @@ public class Util : MonoBehaviour
       AmbienceManager.self.setTitleScreenAmbience();
    }
 
+   public static void stopHostAndReturnToCharacterSelectionScreen () {
+      D.debug($"Util.stopHostAndReturnToCharacterScreen() was called.");
+
+      // Stop any client or server that may have been running
+      MyNetworkManager.self.StopHost();
+
+      // Close any visible panel
+      if (PanelManager.self != null) {
+         PanelManager.self.unlinkPanel();
+      }
+
+      // Activate the Title Screen camera
+      //Util.activateVirtualCamera(TitleScreen.self.virtualCamera);
+      ServerStatusPanel.self.refreshPanel();
+
+      // Clear out our saved data
+      Global.lastUsedAccountName = "";
+      Global.lastUserAccountPassword = "";
+      Global.currentlySelectedUserId = 0;
+      Global.isFirstLogin = true;
+      Global.isFirstSpawn = true;
+      Global.isRedirecting = false;
+      TitleScreen.self.passwordInputField.text = "";
+
+      // Clear the current area - if we reconnect to another server, the area position could be different
+      MapManager.self.destroyLastMap();
+
+      // Notice the tutorial
+      TutorialManager3.self.onUserLogOut();
+
+      // Discard any pending notifications
+      NotificationManager.self.onUserLogOut();
+
+      // Close the admin settings panel
+      PanelManager.self.adminGameSettingsPanel.onUserLogOut();
+
+      // Clear any input text field
+      PanelManager.self.get<MailPanel>(Panel.Type.Mail).clearWriteMailSection();
+      PanelManager.self.get<MailPanel>(Panel.Type.Mail).clearSelectedMail();
+      if (ChatPanel.self != null) {
+         ChatPanel.self.clearChat();
+      }
+
+      // Look up the background music for the Title Screen, if we have any
+      SoundManager.setBackgroundMusic(SoundManager.Type.Intro_Music);
+
+      // Reset ambience
+      AmbienceManager.self.setTitleScreenAmbience();
+
+      Global.isPlayerLoggedOut = true;
+
+      if (Util.isServerBuild()) {
+         QuickLaunchPanel.self.launch();
+      } else {
+         TitleScreen.self.onLoginButtonPressed(SteamManager.Initialized);
+      }
+   }
+
    public static bool isWithinCone (Vector2 coneStart, Vector2 target, float coneMiddleAngle, float coneHalfAngle, float coneRadius = -1.0f) {
       // Checks if a target is within the range of a cone, defined by a middle angle and a half angle (Both in degrees), and an optional radius check
 
@@ -1629,5 +1712,42 @@ public class Util : MonoBehaviour
       }
 
       return false;
+   }
+
+   public static Direction getOppositeDirection (Direction direction) {
+      switch (direction) {
+         case Direction.North:
+            return Direction.South;
+         case Direction.NorthEast:
+            return Direction.SouthWest;
+         case Direction.East:
+            return Direction.West;
+         case Direction.SouthEast:
+            return Direction.NorthWest;
+         case Direction.South:
+            return Direction.North;
+         case Direction.SouthWest:
+            return Direction.NorthEast;
+         case Direction.West:
+            return Direction.East;
+         case Direction.NorthWest:
+            return Direction.SouthEast;
+      }
+
+      return Direction.North;
+   }
+
+   public static Direction? getMajorDirectionFromVector (Vector2 vector) {
+      if (AreVectorsAlmostTheSame(Vector2.zero, vector)) {
+         return null;
+      }
+
+      bool isMovingMostlyHorizontally = Mathf.Abs(vector.x) > Mathf.Abs(vector.y);
+
+      if (isMovingMostlyHorizontally) {
+         return (vector.x > 0) ? Direction.East : Direction.West;
+      } else {
+         return (vector.y > 0) ? Direction.North : Direction.South;
+      }
    }
 }

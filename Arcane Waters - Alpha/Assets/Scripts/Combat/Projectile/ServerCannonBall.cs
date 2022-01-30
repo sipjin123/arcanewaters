@@ -134,9 +134,9 @@ public class ServerCannonBall : SeaProjectile
 
       if (hitLand) {
          if (playDefaultSFX) {
-            SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position, true);
+            //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position, true);
          } else {
-            SoundManager.create3dSoundWithPath(projectileData.landHitSFX, transform.position, projectileData.landHitVol);
+            //SoundManager.create3dSoundWithPath(projectileData.landHitSFX, transform.position, projectileData.landHitVol);
          }
       } else if (!hitEnemy) {
          // FMOD sfx for water

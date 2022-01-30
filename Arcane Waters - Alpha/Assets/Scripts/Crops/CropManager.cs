@@ -71,7 +71,7 @@ public class CropManager : NetworkBehaviour {
                EffectManager.self.create(Effect.Type.Crop_Water, cropSpot.transform.position);
 
                // Play a sound
-               SoundManager.create3dSound("crop_water_", cropSpot.transform.position, 5);
+               //SoundManager.create3dSound("crop_water_", cropSpot.transform.position, 5);
             }
          }
       }
@@ -675,7 +675,7 @@ public class CropManager : NetworkBehaviour {
       PanelManager.self.noticeScreen.show("You just sold your crops for " + totalGold + " gold!");
 
       // Play a sound
-      SoundManager.create3dSound("ui_buy_sell", Global.player.transform.position);
+      //SoundManager.create3dSound("ui_buy_sell", Global.player.transform.position);
 
       // Updates the offers in the merchant panel
       Global.player.rpc.Cmd_GetCropOffersForShop(MerchantScreen.self.shopId);

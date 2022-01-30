@@ -204,7 +204,7 @@ public class VoyageMapCell : MonoBehaviour {
          buttonClickEvent.Invoke();
 
          // Play sound
-         SoundManager.play2DClip(SoundManager.Type.Layouts_Destinations);
+         //SoundManager.play2DClip(SoundManager.Type.Layouts_Destinations);
       }
    }
 

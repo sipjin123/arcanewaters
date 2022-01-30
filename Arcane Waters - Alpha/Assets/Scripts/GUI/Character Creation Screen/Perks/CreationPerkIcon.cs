@@ -76,7 +76,8 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
       CharacterCreationPanel.self.perkAssignedPoints.enabled = true;
       CharacterCreationPanel.self.perkAssignedPoints.text = $"Assigned Points: " + _assignedPointsText.text;
 
-      SoundManager.play2DClip(SoundManager.Type.GUI_Hover);
+      //SoundManager.play2DClip(SoundManager.Type.GUI_Hover);
+      SoundEffectManager.self.playFmodGuiHover(SoundEffectManager.HOVER_CURSOR_GENERIC);
    }
 
    public void OnPointerExit (PointerEventData eventData) {
