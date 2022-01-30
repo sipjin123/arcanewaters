@@ -590,7 +590,7 @@ public class ShipEntity : SeaEntity
    }
 
    public void applyBonusHealth (float healthBonusAdditive, bool applyToCurrentHealth = true) {
-      int bonusHealth = (int) (_baseHealth * healthBonusAdditive);
+      int bonusHealth = (int) healthBonusAdditive;
       maxHealth += bonusHealth;
       if (applyToCurrentHealth) {
          currentHealth += bonusHealth;

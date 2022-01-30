@@ -258,8 +258,10 @@ public class PowerupManager : MonoBehaviour {
          if (player) {
             PlayerShipEntity playerShip = player.getPlayerShipEntity();
             if (playerShip) {
-               float boostFactorAdditive = getBoostFactor(newPowerup.powerupType, newPowerup.powerupRarity) - 1.0f;
-               playerShip.applyBonusHealth(- boostFactorAdditive, false);
+               Rarity.Type rarity = newPowerup.powerupRarity;
+               int healthBlockTier = playerShip.shipBars.getHealthBlockTier();
+               int hpPerBlock = ShipHealthBlock.HP_PER_BLOCK[healthBlockTier];
+               playerShip.applyBonusHealth(- ShipBars.getHealthBlockPerRarity(rarity, hpPerBlock), false);
                playerShip.shipBars.initializeHealthBar();
             }
          }
@@ -297,8 +299,10 @@ public class PowerupManager : MonoBehaviour {
          if (player) {
             PlayerShipEntity playerShip = player.getPlayerShipEntity();
             if (playerShip) {
-               float boostFactorAdditive = getBoostFactor(newPowerup.powerupType, newPowerup.powerupRarity) - 1.0f;
-               playerShip.applyBonusHealth(boostFactorAdditive);
+               Rarity.Type rarity = newPowerup.powerupRarity;
+               int healthBlockTier = playerShip.shipBars.getHealthBlockTier();
+               int hpPerBlock = ShipHealthBlock.HP_PER_BLOCK[healthBlockTier];
+               playerShip.applyBonusHealth(ShipBars.getHealthBlockPerRarity(rarity, hpPerBlock), ShipBars.ifRarityAddsCurrentHealth(rarity));
                playerShip.shipBars.initializeHealthBar();
             }
          }

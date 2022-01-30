@@ -171,7 +171,7 @@ public class ShipBars : MonoBehaviour {
       }
    }
 
-   protected int getHealthBlockTier () {
+   public int getHealthBlockTier () {
       // Get the lowest hp block tier that can display the full entity max hp
       int tier = ShipHealthBlock.HP_PER_BLOCK.Length - 1;
       for (int i = 0; i < ShipHealthBlock.HP_PER_BLOCK.Length; i++) {
@@ -181,6 +181,27 @@ public class ShipBars : MonoBehaviour {
          }
       }
       return tier;
+   }
+
+   public static float getHealthBlockPerRarity (Rarity.Type rarity, int health) {
+      switch (rarity) {
+         case Rarity.Type.Common:
+            return health;
+         case Rarity.Type.Uncommon:
+            return health;
+         case Rarity.Type.Rare:
+            return health * 1.5f;
+         case Rarity.Type.Epic:
+            return health * 1.5f;
+         case Rarity.Type.Legendary:
+            return health * 2;
+         default:
+            return health;
+      }
+   }
+
+   public static bool ifRarityAddsCurrentHealth (Rarity.Type rarity) {
+      return rarity == Rarity.Type.Uncommon || rarity == Rarity.Type.Epic || rarity == Rarity.Type.Legendary;
    }
 
    public float getAlpha () {
