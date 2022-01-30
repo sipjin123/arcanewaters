@@ -303,15 +303,17 @@ public class SeaEntity : NetEntity
                }
 
                // Add assist points to the non last attacker user
-               foreach (KeyValuePair<uint, double> attacker in _attackers) {
-                  NetEntity attackerEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attacker.Key);
-                  if (attackerEntity != null && attackerEntity.userId != lastAttacker.userId) {
-                     gameStatsManager.addAssistCount(attackerEntity.userId);
+               if (this is PlayerShipEntity) {
+                  foreach (KeyValuePair<uint, double> attacker in _attackers) {
+                     NetEntity attackerEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attacker.Key);
+                     if (attackerEntity != null && attackerEntity.userId != lastAttacker.userId) {
+                        gameStatsManager.addAssistCount(attackerEntity.userId);
 
-                     if (attackerEntity.isPlayerShip()) {
-                        int assistReward = SilverManager.computeAssistReward(this);
-                        gameStatsManager.addSilverAmount(attackerEntity.userId, assistReward);
-                        Target_ReceiveSilverCurrency(attackerEntity.getPlayerShipEntity().connectionToClient, assistReward, SilverManager.SilverRewardReason.Assist);
+                        if (attackerEntity.isPlayerShip()) {
+                           int assistReward = SilverManager.computeAssistReward(this);
+                           gameStatsManager.addSilverAmount(attackerEntity.userId, assistReward);
+                           Target_ReceiveSilverCurrency(attackerEntity.getPlayerShipEntity().connectionToClient, assistReward, SilverManager.SilverRewardReason.Assist);
+                        }
                      }
                   }
                }
@@ -2219,7 +2221,6 @@ public class SeaEntity : NetEntity
       EffectManager.createBuffEffect(shipAbilityData.skillIconPath, new Vector2(0.0f, 0.025f), transform, true);
    }
 
-   [Server]
    public float getBuffValue (SeaBuff.Category buffCategory, SeaBuff.Type buffType) {
       // Returns the magnitude of the powerup of the specified type and category, with the highest value.
       SyncList<SeaBuffData> buffList = getBuffList(buffCategory);

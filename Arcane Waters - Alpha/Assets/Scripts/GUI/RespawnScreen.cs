@@ -60,15 +60,23 @@ public class RespawnScreen : MonoBehaviour {
       if (Global.player != null) {
          PlayerShipEntity playerShip = Global.player.getPlayerShipEntity();
 
-         // If the player dies in a pvp or league area, respawn them in the same map
-         if (VoyageManager.isPvpArenaArea(playerShip.areaKey) || VoyageManager.isAnyLeagueArea(playerShip.areaKey)) {
-            setLifeboatVisibility(false);
-            playerShip.Cmd_RespawnPlayerInInstance();
-
-            // Otherwise, return them to town
+         if (playerShip != null) {         
+            // If the player dies in a pvp or league area, respawn them in the same map
+            if (VoyageManager.isPvpArenaArea(playerShip.areaKey) || VoyageManager.isAnyLeagueArea(playerShip.areaKey)) {
+               D.adminLog("Player Ship Sending Request for Instance Respawn to server", D.ADMIN_LOG_TYPE.Respawn);
+               setLifeboatVisibility(false);
+               playerShip.Cmd_RespawnPlayerInInstance();
+            } else {
+               D.adminLog("Force Player Ship back to town", D.ADMIN_LOG_TYPE.Respawn);
+               // Otherwise, return them to town
+               respawnPlayerShipInTown(playerShip);
+            }
          } else {
-            respawnPlayerShipInTown(playerShip);
+            D.adminLog("Warning! Respawning a Player Ship that does not exist!", D.ADMIN_LOG_TYPE.Respawn);
+            Global.player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);
          }
+      } else {
+         D.adminLog("Warning! Global player is Null!", D.ADMIN_LOG_TYPE.Respawn);
       }
 
       _deadTime = 0;
@@ -175,7 +183,7 @@ public class RespawnScreen : MonoBehaviour {
       if (PanelManager.self.countdownScreen.isShowing()) {
          return;
       }
-
+      D.adminLog("Respawn Countdown is finished! Triggering Respawn now", D.ADMIN_LOG_TYPE.Respawn);
       CancelInvoke(nameof(checkCountdown));
       onRespawnButtonPress();
    }

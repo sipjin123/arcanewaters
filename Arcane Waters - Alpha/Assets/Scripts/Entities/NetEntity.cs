@@ -1317,7 +1317,7 @@ public class NetEntity : NetworkBehaviour
 
    protected virtual void handleInstantMoveMode (bool updatingEveryFrame) {
       // Skip if Input is disabled
-      if (!InputManager.isInputEnabled()) {
+      if (!InputManager.isInputEnabled() && !InputManager.self.IsMoveSimulated) {
          return;
       }
 
