@@ -66,22 +66,34 @@ public class EnemyManager : MonoBehaviour {
          int indexCount = 0;
          int spawnsPerLayer = (int) (targetSpawns / waterLayers.Count);
          int totalSuccessfulSpawns = 0;
+         List<Vector3Int> occupiedTile = new List<Vector3Int>();
+
+         D.adminLog("Generating Layers: {" + waterLayers.Count + "} water layers for area {" + areaKey + "} TargetSpwns: {" + targetSpawns + "}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
          foreach (TilemapLayer layer in waterLayers) {
             indexCount++;
             int successfulSpawns = 0;
 
             // Extract all available tiles in this layer
             BoundsInt.PositionEnumerator allTilesInLayer = layer.tilemap.cellBounds.allPositionsWithin;
+
+            // Make sure that the generated deeper water layer is cached so it does not check again on shallow tiles, this prevents
             List<Vector3Int> availableTiles = new List<Vector3Int>();
             foreach (Vector3Int currentTile in allTilesInLayer) {
-               availableTiles.Add(currentTile);
+               if (!occupiedTile.Contains(currentTile)) {
+                  TileBase newTile = layer.tilemap.GetTile(currentTile);
+                  if (newTile != null) {
+                     availableTiles.Add(currentTile);
+                     occupiedTile.Add(currentTile);
+                  }
+               }
             }
 
             List<Vector3Int> occupiedTiles = new List<Vector3Int>();
             while (successfulSpawns < spawnsPerLayer && maxAttempts > 0) {
                maxAttempts--;
                if (maxAttempts < 1) {
-                  D.adminLog("Last attempt! Layer {" + layer.fullName + " / " + waterLayers.Count + "} {" + indexCount + "} Breaking cycle due to limitations {" + successfulSpawns + "} {" + totalSuccessfulSpawns + "}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
+                  D.adminLog("Last attempt! Layer {" + layer.fullName + "} Cycles: {" + indexCount + "/" + maxAttempts + "} " +
+                     "Breaking cycle due to limitations Spawned: {" + successfulSpawns + "} out of: {" + totalSuccessfulSpawns + "}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
                   break;
                }
                // Old Approach, random value across entire tilemap
@@ -140,7 +152,7 @@ public class EnemyManager : MonoBehaviour {
                               }
                            }
 
-                           D.adminLog("Found tile: " + newTile.name + " at " + newVector + "__" + difficulty, D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
+                           D.adminLog("Spawned and Found tile: " + newTile.name + " at " + newVector + "__" + difficulty, D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
                         }
                      }
                   }
