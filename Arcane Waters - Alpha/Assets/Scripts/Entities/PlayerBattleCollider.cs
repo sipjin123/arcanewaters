@@ -14,11 +14,21 @@ public class PlayerBattleCollider : MonoBehaviour {
    // A reference to our combat collider
    public CircleCollider2D combatInitCollider;
 
+   // The warning cooldown to prevent message spam
+   public const float WARNING_COOLDOWN = 3;
+
+   // The last time the warning was called
+   double lastWarningTrigger;
+
    #endregion
 
-   private void OnTriggerEnter2D (Collider2D collision) {
+   private void tryTriggerBattle (Collider2D collision) {
+      if (playerBody.isInBattle()) {
+         return;
+      }
+
       if (!playerBody.isInvisible && playerBody.isLocalPlayer && collision.GetComponent<EnemyBattleCollider>() != null) {
-         if (!playerBody.isInBattle() && combatInitCollider.enabled && !playerBody.isWithinEnemyRadius) {
+         if (combatInitCollider.enabled && !playerBody.isWithinEnemyRadius) {
             Enemy enemy = collision.GetComponent<EnemyBattleCollider>().enemy;
             if (playerBody.instanceId == enemy.instanceId && !enemy.isDefeated && !playerBody.isBouncingOnWeb()) {
                if (playerBody.voyageGroupId == enemy.voyageGroupId || enemy.voyageGroupId == -1) {
@@ -29,14 +39,25 @@ public class PlayerBattleCollider : MonoBehaviour {
                   TutorialManager3.self.tryCompletingStep(TutorialTrigger.EnterBattle);
                   TutorialManager3.self.onEnterBattle();
                } else {
-                  Vector3 pos = this.transform.position + new Vector3(0f, .32f);
-                  GameObject messageCanvas = Instantiate(PrefabsManager.self.warningTextPrefab);
-                  messageCanvas.transform.position = pos;
-                  messageCanvas.GetComponentInChildren<TextMeshProUGUI>().text = "Cannot join battle of different voyage group";
+                  if ((NetworkTime.time - lastWarningTrigger) > WARNING_COOLDOWN) {
+                     lastWarningTrigger = NetworkTime.time;
+                     Vector3 pos = this.transform.position + new Vector3(0f, .32f);
+                     GameObject messageCanvas = Instantiate(PrefabsManager.self.warningTextPrefab);
+                     messageCanvas.transform.position = pos;
+                     messageCanvas.GetComponentInChildren<TextMeshProUGUI>().text = "Cannot join battle of different voyage group";
+                  }
                }
-            } 
+            }
          }
       }
+   }
+
+   private void OnTriggerEnter2D (Collider2D collision) {
+      tryTriggerBattle(collision);
+   }
+
+   private void OnTriggerStay2D (Collider2D collision) {
+      tryTriggerBattle(collision);
    }
 
    #region Private Variables
