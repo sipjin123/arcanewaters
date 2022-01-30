@@ -17,6 +17,12 @@ public class OptionsPanel : Panel
    // The zone Text
    public Text zoneText;
 
+   // The size of the chat
+   public Text chatSizeText;
+
+   // The chat size slider
+   public Slider chatSizeSlider;
+
    // The music slider
    public Slider musicSlider;
 
@@ -127,6 +133,12 @@ public class OptionsPanel : Panel
 
       musicSlider.value = SoundManager.musicVolume;
       effectsSlider.value = SoundManager.effectsVolume;
+      chatSizeSlider.value = ChatManager.self.chatFontSize;
+      chatSizeText.text = ChatManager.self.chatFontSize.ToString();
+      chatSizeSlider.onValueChanged.AddListener(_ => {
+         ChatManager.self.updateChatFontSize(_);
+         chatSizeText.text = _.ToString();
+      });
 
       // Loads the saved gui scale
       float guiScaleValue = OptionsManager.GUIScale;

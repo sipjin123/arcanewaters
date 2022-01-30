@@ -11,10 +11,19 @@ public class SpeakChatLine : ChatLine, IScrollHandler
    // The category of fragment 
    public enum LineFragmentType { None = 0, Text = 1, ItemInsert = 2 };
 
+   // The reference to the text mesh
+   public TextMeshProUGUI textMeshReference;
+
    // The prefabfor displaying item inserts
    public HoverableItemIcon itemInsertPrefab = null;
 
    #endregion
+
+   private void Start () {
+      if (textMeshReference) {
+         textMeshReference.fontSize = ChatManager.self.chatFontSize;
+      }
+   }
 
    public void setFormattedText (string text) {
       _formattedText = text;

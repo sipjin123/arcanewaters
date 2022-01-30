@@ -36,6 +36,12 @@ public class ChatManager : GenericGameManager
    // Self
    public static ChatManager self;
 
+   // The font size of the chat
+   public float chatFontSize = 20;
+
+   // Player pref key for the chat font size
+   public const string CHAT_FONT_SIZE_PREF = "chatFontSizePref";
+
    #endregion
 
    protected override void Awake () {
@@ -45,6 +51,8 @@ public class ChatManager : GenericGameManager
       // Setup auto-complete panel
       GameObject optionsPanel = Instantiate(Resources.Load<GameObject>("Prefabs/Auto-completes/Auto-complete Section"), chatPanel.inputField.transform.parent.parent);
       autoCompletePanel = optionsPanel.GetComponentInChildren<AutoCompletePanel>();
+
+      updateChatFontSize(PlayerPrefs.GetFloat(CHAT_FONT_SIZE_PREF, 20));
    }
 
    private void Start () {
@@ -63,6 +71,20 @@ public class ChatManager : GenericGameManager
       _commandData.Add(new CommandData("/r", "Sends a private message to the last user that whispered to you", tryReply, parameterNames: new List<string>() { "message" }));
       _commandData.Add(new CommandData("/who", "Search users", searchUsers, parameterNames: new List<string>() { "[is, in, level, help]", "username, area or level" }));
       _commandData.Add(new CommandData("/e", "Play an emote", requestPlayEmote, parameterNames: new List<string>() { "emoteType" }, parameterAutocompletes: new List<string>() { "dance", "kneel", "greet" }));
+   }
+
+   public void updateChatFontSize (float size) {
+      size = Mathf.Clamp(size, 5, 20);
+      chatFontSize = size;
+      PlayerPrefs.SetFloat(CHAT_FONT_SIZE_PREF, size);
+      foreach (Transform childObj in chatPanel.messagesContainer.transform) {
+         SpeakChatLine speakChatLine = childObj.GetComponentInChildren<SpeakChatLine>();
+         if (speakChatLine) {
+            if (speakChatLine.textMeshReference != null) {
+               speakChatLine.textMeshReference.fontSize = chatFontSize;
+            }
+         }
+      }
    }
 
    private void Update () {
