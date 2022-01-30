@@ -597,18 +597,23 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    }
 
    private void startAnimalPetting (Vector2 distToMoveAnimal, float distanceToAnimal) {
-      // Set correct NPC state
-      isInteractingAnimal = true;
-      interactingAnimation = true;
-      canMove = false;
+      if (Global.player != null) {
+         float currentDistance = Vector2.Distance((Vector2) transform.position, Global.player.transform.position);
+         bool isWithinStationaryBounds = isStationary && currentDistance < NpcControlOverride.STATIONARY_PET_DISTANCE;
+         if (!isStationary || isWithinStationaryBounds) {
+            // Set correct NPC state
+            isInteractingAnimal = true;
+            interactingAnimation = true;
+            canMove = false;
 
-      Vector2 animalEndPos = new Vector2(transform.position.x, transform.position.y) + distToMoveAnimal;
-      float maxTime = Mathf.Lerp(0.0f, 0.75f, distanceToAnimal / ANIMAL_PET_DISTANCE);
+            Vector2 animalEndPos = new Vector2(transform.position.x, transform.position.y) + distToMoveAnimal;
+            float maxTime = Mathf.Lerp(0.0f, 0.75f, distanceToAnimal / ANIMAL_PET_DISTANCE);
+            Global.player.rpc.Cmd_StartPettingAnimal(this.netIdentity.netId, (int) Global.player.facing);
 
-      Global.player.rpc.Cmd_StartPettingAnimal(this.netIdentity.netId, (int) Global.player.facing);
-
-      // Take control over player to ensure that character stays in place
-      gameObject.AddComponent<AnimalPettingPuppetController>().startControlOverPlayer(Global.player);
+            // Take control over player to ensure that character stays in place
+            gameObject.AddComponent<AnimalPettingPuppetController>().startControlOverPlayer(Global.player);
+         }
+      }
    }
 
    public void triggerPetAnimation (uint playerEntityId, Vector2 animalEndPos, float maxTime) {
