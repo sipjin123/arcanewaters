@@ -2915,20 +2915,29 @@ public class RPCManager : NetworkBehaviour
                      // Remove the quest that requires a certain level requirement
                      if (xmlQuestNode.questNodeLevelRequirement > highestQuestNodeValue.questNodeId) {
                         removeNodeList.Add(xmlQuestNode);
+                        D.adminLog("Removed quest node {" + xmlQuestNode.questDataNodeId + "} due to status being null", D.ADMIN_LOG_TYPE.Quest);
                      }
                   } else {
                      // If the quest requires a different quest to be unlocked first, remove it from the list to be provided to the player
                      bool hasQuestNodeRequirement = xmlQuestNode.questNodeLevelRequirement > -1;
-                     if (hasQuestNodeRequirement) {
+                  if (hasQuestNodeRequirement) {
                         QuestStatusInfo requiredNodeStatus = databaseQuestStatusList.Find(_ => _.questNodeId == xmlQuestNode.questNodeLevelRequirement);
-                        if (requiredNodeStatus.questDialogueId < xmlQuestNode.questDialogueNodes.Length) {
-                           removeNodeList.Add(xmlQuestNode);
+                        QuestDataNode requiredQuestNode = xmlQuestNodeList.Find(_ => _.questDataNodeId == xmlQuestNode.questNodeLevelRequirement);
+                        if (requiredQuestNode != null) {
+                           D.adminLog("Found the right quest node: " + requiredQuestNode.questNodeTitle + " " + requiredQuestNode.questDataNodeId + " " + requiredQuestNode.questDialogueNodes.Length, D.ADMIN_LOG_TYPE.Quest);
+                           if (requiredNodeStatus.questDialogueId < requiredQuestNode.questDialogueNodes.Length) {
+                              removeNodeList.Add(xmlQuestNode);
+                              D.adminLog("Removed quest node {" + xmlQuestNode.questDataNodeId + "} due to dialogue requirement not met " +
+                                 "{" + requiredNodeStatus.questDialogueId + "/ " + xmlQuestNode.questDialogueNodes.Length + " (" + xmlQuestNode.questNodeTitle + ")}", D.ADMIN_LOG_TYPE.Quest);
+                           }
                         }
                      }
 
                      // Remove the quest that has a dialogue id greater than the dialogue length, meaning the quest is completed
                      if (databaseQuestStatus.questDialogueId >= xmlQuestNode.questDialogueNodes.Length) {
                         removeNodeList.Add(xmlQuestNode);
+                        D.adminLog("Removed quest node {" + xmlQuestNode.questDataNodeId + "} due to quest already completed " +
+                           "{" + databaseQuestStatus.questDialogueId + "/ " + xmlQuestNode.questDialogueNodes.Length + "}", D.ADMIN_LOG_TYPE.Quest);
                      }
 
                      // Remove the quest that requires a certain level requirement
@@ -3161,6 +3170,8 @@ public class RPCManager : NetworkBehaviour
 
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             // Update the quest status of the npc
+            D.adminLog("1. Updating quest status into: " +
+               questId + ":: " + newQuestNodeId + ": " + newDialogueId + "/" + questDataNode.questDialogueNodes.Length, D.ADMIN_LOG_TYPE.Quest);
             DB_Main.updateQuestStatus(npcId, _player.userId, questId, newQuestNodeId, newDialogueId);
             int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
             Jobs newJobXP = DB_Main.getJobXP(_player.userId);
@@ -3206,6 +3217,8 @@ public class RPCManager : NetworkBehaviour
          newDialogueId++;
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             // Update the quest status of the npc
+            D.adminLog("2. Updating quest status into: " + 
+               questId + ":: " + questNodeId + ": " + newDialogueId+ "/" + questDataNode.questDialogueNodes.Length, D.ADMIN_LOG_TYPE.Quest);
             DB_Main.updateQuestStatus(npcId, _player.userId, questId, newQuestNodeId, newDialogueId);
 
             int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
