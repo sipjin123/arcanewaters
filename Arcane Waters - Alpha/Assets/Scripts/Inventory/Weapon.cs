@@ -65,6 +65,19 @@ public class Weapon : EquippableItem {
 
    #endif
 
+   public static WeaponCategory GetWeaponCategoryByClass (Class weaponClass) {
+      switch (weaponClass) {
+         case Weapon.Class.Melee:
+            return WeaponCategory.Blade;
+         case Weapon.Class.Ranged:
+            return WeaponCategory.Gun;
+         case Weapon.Class.Rum:
+            return WeaponCategory.Rum;
+         default:
+            return WeaponCategory.None;
+      }
+   }
+
    public Weapon (int id, int weaponType, string paletteNames) {
       this.category = Category.Weapon;
       this.id = id;

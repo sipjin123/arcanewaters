@@ -1284,10 +1284,12 @@ public class BattleManager : MonoBehaviour {
 
    public void onPlayerEquipItem (PlayerBodyEntity playerBody) {
       Battler battler = getBattler(playerBody.userId);
-      if (battler != null) {
+      if (battler != null && playerBody != null) {
          D.adminLog("Player {" + battler.userId + "} has equipped item", D.ADMIN_LOG_TYPE.Equipment);
          assignBattlerSyncData(battler, playerBody, false);
          playerBody.rpc.processPlayerAbilities(playerBody, new List<PlayerBodyEntity>() { playerBody });
+      } else {
+         D.debug("Error! Failed to process player ability! Missing Battler/PlayerBody");
       }
    }
 

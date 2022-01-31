@@ -221,6 +221,13 @@ public class BattleUIManager : MonoBehaviour {
 
       List<BasicAbilityData> abilityDataList = _playerLocalBattler.getBasicAbilities();
       _lastAbilityList = _playerLocalBattler.basicAbilityIDList.ToList();
+      string abilityString = "";
+      foreach (BasicAbilityData ability in abilityDataList) {
+         abilityString += ability.itemName + "/";
+      }
+      D.debug("Client is now processing ability UI Display! " +
+         "Weapon: {" + (weaponData == null ? "Fists" : weaponData.equipmentName) + "} " +
+         "Total Abilities: {" + abilityDataList.Count + "} {" + (abilityString.Length > 0 ? abilityString.Remove(abilityString.Length - 1) : "") + "}");
 
       foreach (AbilityButton abilityButton in abilityTargetButtons) {
          if (indexCounter < abilityDataList.Count) {

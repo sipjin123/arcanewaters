@@ -7416,6 +7416,11 @@ public class RPCManager : NetworkBehaviour
 
    [Server]
    public void processPlayerAbilities (PlayerBodyEntity localBattler, List<PlayerBodyEntity> bodyEntities) {
+      if (localBattler == null || bodyEntities.Count < 1) {
+         D.debug("Error here! Battler or body entities are insufficient!");
+         return;
+      }
+
       // Enter the background thread to determine if the user has at least one ability equipped
       bool hasAbilityEquipped = false;
 
@@ -7431,198 +7436,218 @@ public class RPCManager : NetworkBehaviour
             DB_Main.updateAbilitySlot(_player.userId, Global.BASIC_ATTACK_ID, 0);
          }
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Set user to only use skill if no weapon is equipped
-            if (localBattler.weaponManager.equipmentDataId == 0) {
-               abilityDataList = modifiedUnarmedAbilityList();
-            }
-
-            // Provides the client with the info of the Equipped Abilities
-            int weaponId = localBattler.weaponManager.equipmentDataId;
-            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponId);
-            Weapon.Class weaponClass = weaponData == null ? Weapon.Class.Melee : weaponData.weaponClass;
-            WeaponCategory weaponCategory = WeaponCategory.None;
-
-            int sqlId = weaponData == null ? 0 : weaponData.sqlId;
-            string weaponName = weaponData == null ? "none" : weaponData.equipmentName;
-            D.adminLog("Player {" + _player.userId + "} weapon is" +
-               " Sql: " + sqlId +
-               " Name: " + weaponName +
-               " Class: " + weaponClass, D.ADMIN_LOG_TYPE.Ability);
-
-            // Determine if the abilities match the current weapon type
-            int validOffenseAbilities = 0;
-            int validBuffAbilities = 0;
-            const int MAX_ABILITIES = 5;
-            List<int> invalidSlot = new List<int> { 0, 1, 2, 3, 4, 5 };
-            List<AbilitySQLData> equippedAbilityList = abilityDataList.FindAll(_ => _.equipSlotIndex >= 0);
-            foreach (AbilitySQLData abilitySql in equippedAbilityList) {
-               BasicAbilityData basicAbilityData = AbilityManager.self.allGameAbilities.Find(_ => _.itemID == abilitySql.abilityID);
-
-               // Overwrite the ability type of the fetched ability sql
-               abilitySql.abilityType = basicAbilityData.abilityType;
-               if (basicAbilityData.abilityType == AbilityType.Standard) {
-                  AttackAbilityData attackAbilityData = AbilityManager.self.allAttackbilities.Find(_ => _.itemID == abilitySql.abilityID);
-                  if ((weaponClass == Weapon.Class.Melee && attackAbilityData.isMelee())
-                  || (weaponClass == Weapon.Class.Ranged && attackAbilityData.isProjectile())
-                  || (weaponClass == Weapon.Class.Rum && attackAbilityData.isRum())) {
-                     validOffenseAbilities++;
-                     D.adminLog("Valid Attack Ability:: " +
-                        " Name: {" + basicAbilityData.itemName +
-                        "} ID: {" + basicAbilityData.itemID +
-                        "} Type: {" + basicAbilityData.abilityType +
-                        "} Slot: {" + abilitySql.equipSlotIndex +
-                        "} Class: {" + basicAbilityData.classRequirement + "}", D.ADMIN_LOG_TYPE.Ability);
-                     invalidSlot.Remove(abilitySql.equipSlotIndex);
-                  }
-               } else if (basicAbilityData.abilityType == AbilityType.BuffDebuff) {
-                  BuffAbilityData buffAbilityData = AbilityManager.self.allBuffAbilities.Find(_ => _.itemID == abilitySql.abilityID);
-                  if (weaponClass == Weapon.Class.Rum && buffAbilityData.isRum()) {
-                     validBuffAbilities++;
-                     D.adminLog("Valid Buff Ability:: " +
-                        " Name: {" + basicAbilityData.itemName +
-                        "} ID: {" + basicAbilityData.itemID +
-                        "} Type: {" + basicAbilityData.abilityType +
-                        "} Slot: {" + abilitySql.equipSlotIndex +
-                        "} Class: {" + basicAbilityData.classRequirement + "}", D.ADMIN_LOG_TYPE.Ability);
-                     invalidSlot.Remove(abilitySql.equipSlotIndex);
-                  }
-               }
-            }
-
-            if (validOffenseAbilities < 1) {
-               D.adminLog("No valid Attack ability assigned to player" + " : " + _player.userId, D.ADMIN_LOG_TYPE.Ability);
-            }
-
-            if (validBuffAbilities < 1) {
-               D.adminLog("No valid Buff ability assigned to player" + " : " + _player.userId, D.ADMIN_LOG_TYPE.Ability);
-            }
-
-            // If no abilities were fetched, create a clean new entry that will be overridden based on the user equipped weapon
-            if (equippedAbilityList.Count < 1) {
-               validOffenseAbilities = 0;
-               equippedAbilityList = new List<AbilitySQLData>();
-               equippedAbilityList.Add(new AbilitySQLData {
-                  abilityID = -1,
-                  name = "",
-               });
-            }
-            bool overrideFirstAbility = validOffenseAbilities < 1;
-
-            // Override ability if no ability matches the weapon type ex:{all melee abilities but user has gun weapon}
-            if (weaponId < 1 && overrideFirstAbility) {
-               D.adminLog("Overriding first ability slot as Punch Ability, No weapon equipped", D.ADMIN_LOG_TYPE.Ability);
-               weaponCategory = WeaponCategory.None;
-               equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getPunchAbility());
-            } else {
-               AbilitySQLData cachedAbility = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getPunchAbility());
-               if (weaponData != null) {
-                  switch (weaponClass) {
-                     case Weapon.Class.Melee:
-                        weaponCategory = WeaponCategory.Blade;
-                        if (overrideFirstAbility) {
-                           D.adminLog("Overriding first ability slot as Slash Ability", D.ADMIN_LOG_TYPE.Ability);
-                           cachedAbility = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getSlashAbility());
-                           equippedAbilityList[0] = cachedAbility;
-                        }
-                        break;
-                     case Weapon.Class.Ranged:
-                        weaponCategory = WeaponCategory.Gun;
-                        if (overrideFirstAbility) {
-                           D.adminLog("Overriding first ability slot as Shoot Ability", D.ADMIN_LOG_TYPE.Ability);
-                           cachedAbility = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getShootAbility());
-                           equippedAbilityList[0] = cachedAbility;
-                        }
-                        break;
-                     case Weapon.Class.Rum:
-                        weaponCategory = WeaponCategory.Rum;
-                        if (overrideFirstAbility) {
-                           if (equippedAbilityList.Count < MAX_ABILITIES) {
-                              D.adminLog("Adding new ability slot, Rum Ability", D.ADMIN_LOG_TYPE.Ability);
-                              cachedAbility = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getThrowRumAbility());
-                              equippedAbilityList.Add(cachedAbility);
-                           } else {
-                              D.adminLog("Overriding first ability slot as Rum Ability", D.ADMIN_LOG_TYPE.Ability);
-                              cachedAbility = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getThrowRumAbility());
-                              equippedAbilityList[0] = cachedAbility;
-                           }
-                        }
-                        break;
-                     default:
-                        weaponCategory = WeaponCategory.None;
-                        if (overrideFirstAbility) {
-                           D.adminLog("Overriding first ability slot as Punch Ability, Unrecognized category", D.ADMIN_LOG_TYPE.Ability);
-                           cachedAbility = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getPunchAbility());
-                           equippedAbilityList[0] = cachedAbility;
-                        } else {
-                           D.adminLog("Setup ability as Punch, weapon class unrecognized! {" + weaponClass + "}", D.ADMIN_LOG_TYPE.Ability);
-                        }
-                        break;
-                  }
-               } else {
-                  D.adminLog("Overriding first ability slot as Punch Ability, Missing weapon data for {" + weaponId + "}", D.ADMIN_LOG_TYPE.Ability);
-                  weaponCategory = WeaponCategory.None;
-                  cachedAbility = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getPunchAbility());
-                  equippedAbilityList[0] = cachedAbility;
-               }
-
-               if (overrideFirstAbility) {
-                  D.adminLog("New ability assigned to player: "
-                     + " Name: " + cachedAbility.name
-                     + " ID: " + cachedAbility.abilityID
-                     + " WepClass: " + weaponClass
-                     + " WepCateg: " + weaponCategory, D.ADMIN_LOG_TYPE.Ability);
-               }
-            }
-            D.adminLog("ValidBuffs: {" + validBuffAbilities + "} ValidAttacks: {" + validOffenseAbilities + "} WeaponCategory: {" + weaponCategory + "}", D.ADMIN_LOG_TYPE.Ability);
-
-            // Make sure that if the user is equipping a Rum weapon, assign both buff and attack ability
-            if (validBuffAbilities < 1 && weaponClass == Weapon.Class.Rum) {
-               int firstInvalidSlot = invalidSlot[0];
-               string slots = "";
-               foreach (int abilitySlot in invalidSlot) {
-                  slots += " : " + abilitySlot;
-               }
-               D.adminLog("Ability slots:: " + slots, D.ADMIN_LOG_TYPE.Ability);
-
-               if (equippedAbilityList.Count < MAX_ABILITIES) {
-                  D.adminLog("Added Buff Ability in slots:: " + slots, D.ADMIN_LOG_TYPE.Ability);
-                  equippedAbilityList.Add(AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getHealingRumAbility()));
-               } else {
-                  D.adminLog("Override Buff Ability in index {" + firstInvalidSlot + "} in slots:: " + slots, D.ADMIN_LOG_TYPE.Ability);
-                  AbilitySQLData abilityToOverride = equippedAbilityList.Find(_ => _.equipSlotIndex == firstInvalidSlot);
-                  int slotToOverride = equippedAbilityList.IndexOf(abilityToOverride);
-                  equippedAbilityList[slotToOverride] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getHealingRumAbility());
-               }
-            }
-
-            // Make sure no invalid abilities are part of the ability list to be sent
-            foreach (AbilitySQLData ability in equippedAbilityList.FindAll(_ => _.abilityID < 1)) {
-               D.adminLog("Removing Ability due to invaid slot id :: Name: " + ability.name
-                  + " ID: " + ability.abilityID
-                  + " Type: " + ability.abilityType, D.ADMIN_LOG_TYPE.Ability);
-            }
-            equippedAbilityList.RemoveAll(_ => _.abilityID < 1);
-
-            // Cache the invalid abilities that will be discarded
-            List<int> discardedAbilities = new List<int>();
-            int equipmentCount = equippedAbilityList.Count;
-            for (int i = 0; i < equipmentCount; i++) {
-               int currEquipSlot = equippedAbilityList[i].equipSlotIndex;
-               if (invalidSlot.Contains(currEquipSlot)) {
-                  discardedAbilities.Add(currEquipSlot);
-               }
-            }
-
-            for (int i = 0; i < discardedAbilities.Count; i++) {
-               AbilitySQLData invalidAbility = equippedAbilityList.Find(_ => _.equipSlotIndex == discardedAbilities[i]);
-               D.adminLog("This is an invalid ability, removing now {" + invalidAbility.equipSlotIndex + "}", D.ADMIN_LOG_TYPE.Ability);
-               equippedAbilityList.Remove(invalidAbility);
-            }
-
-            // Provides all the abilities for the players in the party
-            setupAbilitiesForPlayers(bodyEntities, equippedAbilityList, weaponClass, validOffenseAbilities, validOffenseAbilities > 0, weaponCategory);
+            finalizePlayerAbilityProcess(localBattler, bodyEntities, abilityDataList);
          });
       });
+   }
+
+   private void finalizePlayerAbilityProcess (PlayerBodyEntity localBattler, List<PlayerBodyEntity> bodyEntities, List<AbilitySQLData> abilityDataList) {
+      // Set user to only use skill if no weapon is equipped
+      if (localBattler.weaponManager.equipmentDataId == 0) {
+         abilityDataList = modifiedUnarmedAbilityList();
+      }
+
+      // Provides the client with the info of the Equipped Abilities
+      int weaponId = localBattler.weaponManager.equipmentDataId;
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponId);
+      Weapon.Class weaponClass = weaponData == null ? Weapon.Class.Melee : weaponData.weaponClass;
+      WeaponCategory weaponCategory = WeaponCategory.None;
+
+      int sqlId = weaponData == null ? 0 : weaponData.sqlId;
+      string weaponName = weaponData == null ? "none" : weaponData.equipmentName;
+      D.adminLog("Player {" + _player.userId + "} weapon is" +
+         " Sql: " + sqlId +
+         " Name: " + weaponName +
+         " Class: " + weaponClass, D.ADMIN_LOG_TYPE.Ability);
+
+      // Determine if the abilities match the current weapon type
+      int validOffenseAbilities = 0;
+      int validBuffAbilities = 0;
+      const int MAX_ABILITIES = 5;
+      List<int> invalidSlot = new List<int> { 0, 1, 2, 3, 4, 5 };
+      List<AbilitySQLData> equippedAbilityList = abilityDataList.FindAll(_ => _.equipSlotIndex >= 0);
+      foreach (AbilitySQLData abilitySql in equippedAbilityList) {
+         BasicAbilityData basicAbilityData = AbilityManager.self.allGameAbilities.Find(_ => _.itemID == abilitySql.abilityID);
+
+         // Overwrite the ability type of the fetched ability sql
+         abilitySql.abilityType = basicAbilityData.abilityType;
+         if (basicAbilityData.abilityType == AbilityType.Standard) {
+            AttackAbilityData attackAbilityData = AbilityManager.self.allAttackbilities.Find(_ => _.itemID == abilitySql.abilityID);
+            if ((weaponClass == Weapon.Class.Melee && attackAbilityData.isMelee())
+            || (weaponClass == Weapon.Class.Ranged && attackAbilityData.isProjectile())
+            || (weaponClass == Weapon.Class.Rum && attackAbilityData.isRum())) {
+               validOffenseAbilities++;
+               D.adminLog("Valid Attack Ability:: " +
+                  " Name: {" + basicAbilityData.itemName +
+                  "} ID: {" + basicAbilityData.itemID +
+                  "} Type: {" + basicAbilityData.abilityType +
+                  "} Slot: {" + abilitySql.equipSlotIndex +
+                  "} Class: {" + basicAbilityData.classRequirement + "}", D.ADMIN_LOG_TYPE.Ability);
+               invalidSlot.Remove(abilitySql.equipSlotIndex);
+            }
+         } else if (basicAbilityData.abilityType == AbilityType.BuffDebuff) {
+            BuffAbilityData buffAbilityData = AbilityManager.self.allBuffAbilities.Find(_ => _.itemID == abilitySql.abilityID);
+            if (weaponClass == Weapon.Class.Rum && buffAbilityData.isRum()) {
+               validBuffAbilities++;
+               D.adminLog("Valid Buff Ability:: " +
+                  " Name: {" + basicAbilityData.itemName +
+                  "} ID: {" + basicAbilityData.itemID +
+                  "} Type: {" + basicAbilityData.abilityType +
+                  "} Slot: {" + abilitySql.equipSlotIndex +
+                  "} Class: {" + basicAbilityData.classRequirement + "}", D.ADMIN_LOG_TYPE.Ability);
+               invalidSlot.Remove(abilitySql.equipSlotIndex);
+            }
+         }
+      }
+
+      if (validOffenseAbilities < 1) {
+         D.debug("No valid Attack ability assigned to player" + " : " + _player.userId);
+      }
+
+      if (validBuffAbilities < 1) {
+         D.adminLog("No valid Buff ability assigned to player" + " : " + _player.userId, D.ADMIN_LOG_TYPE.Ability);
+      }
+
+      // If no abilities were fetched, create a clean new entry that will be overridden based on the user equipped weapon
+      if (equippedAbilityList.Count < 1) {
+         validOffenseAbilities = 0;
+         equippedAbilityList = new List<AbilitySQLData>();
+         equippedAbilityList.Add(new AbilitySQLData {
+            abilityID = -1,
+            name = "",
+         });
+      }
+      bool overrideFirstAbility = validOffenseAbilities < 1;
+
+      // Override ability if no ability matches the weapon type ex:{all melee abilities but user has gun weapon}
+      if (weaponId < 1 && overrideFirstAbility) {
+         D.adminLog("Overriding first ability slot as Punch Ability, No weapon equipped", D.ADMIN_LOG_TYPE.Ability);
+         weaponCategory = WeaponCategory.None;
+         equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getPunchAbility());
+      } else {
+         AbilitySQLData cachedAbility = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getPunchAbility());
+         if (weaponData != null) {
+            AbilitySQLData defaultAbilityCheck = getDefaultAbility(weaponClass, overrideFirstAbility, equippedAbilityList.Count < MAX_ABILITIES);
+            if (defaultAbilityCheck != null) {
+               cachedAbility = defaultAbilityCheck;
+               equippedAbilityList[0] = cachedAbility;
+            }
+            weaponCategory = Weapon.GetWeaponCategoryByClass(weaponClass);
+         } else {
+            D.adminLog("Overriding first ability slot as Punch Ability, Missing weapon data for {" + weaponId + "}", D.ADMIN_LOG_TYPE.Ability);
+            weaponCategory = WeaponCategory.None;
+            cachedAbility = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getPunchAbility());
+            equippedAbilityList[0] = cachedAbility;
+         }
+
+         if (overrideFirstAbility) {
+            D.adminLog("New ability assigned to player: "
+               + " Name: " + cachedAbility.name
+               + " ID: " + cachedAbility.abilityID
+               + " WepClass: " + weaponClass
+               + " WepCateg: " + weaponCategory, D.ADMIN_LOG_TYPE.Ability);
+         }
+      }
+      D.adminLog("ValidBuffs: {" + validBuffAbilities + "} ValidAttacks: {" + validOffenseAbilities + "} WeaponCategory: {" + weaponCategory + "}", D.ADMIN_LOG_TYPE.Ability);
+
+      // Make sure that if the user is equipping a Rum weapon, assign both buff and attack ability
+      if (validBuffAbilities < 1 && weaponClass == Weapon.Class.Rum) {
+         int firstInvalidSlot = invalidSlot[0];
+         string slots = "";
+         foreach (int abilitySlot in invalidSlot) {
+            slots += " : " + abilitySlot;
+         }
+         D.adminLog("Ability slots:: " + slots, D.ADMIN_LOG_TYPE.Ability);
+
+         if (equippedAbilityList.Count < MAX_ABILITIES) {
+            D.adminLog("Added Buff Ability in slots:: " + slots, D.ADMIN_LOG_TYPE.Ability);
+            equippedAbilityList.Add(AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getHealingRumAbility()));
+         } else {
+            D.adminLog("Override Buff Ability in index {" + firstInvalidSlot + "} in slots:: " + slots, D.ADMIN_LOG_TYPE.Ability);
+            AbilitySQLData abilityToOverride = equippedAbilityList.Find(_ => _.equipSlotIndex == firstInvalidSlot);
+            int slotToOverride = equippedAbilityList.IndexOf(abilityToOverride);
+            equippedAbilityList[slotToOverride] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getHealingRumAbility());
+         }
+      }
+
+      // Make sure no invalid abilities are part of the ability list to be sent
+      foreach (AbilitySQLData ability in equippedAbilityList.FindAll(_ => _.abilityID < 1)) {
+         D.adminLog("Removing Ability due to invaid slot id :: Name: " + ability.name
+            + " ID: " + ability.abilityID
+            + " Type: " + ability.abilityType, D.ADMIN_LOG_TYPE.Ability);
+      }
+      equippedAbilityList.RemoveAll(_ => _.abilityID < 1);
+
+      // Cache the invalid abilities that will be discarded
+      List<int> discardedAbilities = new List<int>();
+      int equipmentCount = equippedAbilityList.Count;
+      for (int i = 0; i < equipmentCount; i++) {
+         try {
+            int currEquipSlot = equippedAbilityList[i].equipSlotIndex;
+            if (invalidSlot.Contains(currEquipSlot)) {
+               discardedAbilities.Add(currEquipSlot);
+            }
+         } catch {
+            // TODO: Remove after playtest
+            D.debug("Problem with processing discarded abilities!");
+         }
+      }
+
+      for (int i = 0; i < discardedAbilities.Count; i++) {
+         try {
+            AbilitySQLData invalidAbility = equippedAbilityList.Find(_ => _.equipSlotIndex == discardedAbilities[i]);
+            if (invalidAbility != null) {
+               D.adminLog("This is an invalid ability, removing now {" + invalidAbility.equipSlotIndex + "}", D.ADMIN_LOG_TYPE.Ability);
+               equippedAbilityList.Remove(invalidAbility);
+            } else {
+               D.debug("Error here! Attempted to fetch discarded ability but none was found! {" + discardedAbilities[i] + "}");
+            }
+         } catch {
+            // TODO: Remove after playtest
+            D.debug("Problem with processing invalid abilities!");
+         }
+      }
+
+      // Provides all the abilities for the players in the party
+      setupAbilitiesForPlayers(bodyEntities, equippedAbilityList, weaponClass, validOffenseAbilities, validOffenseAbilities > 0, weaponCategory);
+   }
+
+   private AbilitySQLData getDefaultAbility (Weapon.Class weaponClass, bool overrideFirstAbility, bool isSufficientAbilityCount) {
+      AbilitySQLData cachedAbility = null;
+      switch (weaponClass) {
+         case Weapon.Class.Melee:
+            if (overrideFirstAbility) {
+               D.adminLog("Overriding first ability slot as Slash Ability", D.ADMIN_LOG_TYPE.Ability);
+               cachedAbility = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getSlashAbility());
+            }
+            break;
+         case Weapon.Class.Ranged:
+            if (overrideFirstAbility) {
+               D.adminLog("Overriding first ability slot as Shoot Ability", D.ADMIN_LOG_TYPE.Ability);
+               cachedAbility = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getShootAbility());
+            }
+            break;
+         case Weapon.Class.Rum:
+            if (overrideFirstAbility) {
+               if (isSufficientAbilityCount) {
+                  D.adminLog("Adding new ability slot, Rum Ability", D.ADMIN_LOG_TYPE.Ability);
+                  cachedAbility = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getThrowRumAbility());
+               } else {
+                  D.adminLog("Overriding first ability slot as Rum Ability", D.ADMIN_LOG_TYPE.Ability);
+                  cachedAbility = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getThrowRumAbility());
+               }
+            }
+            break;
+         default:
+            if (overrideFirstAbility) {
+               D.adminLog("Overriding first ability slot as Punch Ability, Unrecognized category", D.ADMIN_LOG_TYPE.Ability);
+               cachedAbility = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.getPunchAbility());
+            } else {
+               D.adminLog("Setup ability as Punch, weapon class unrecognized! {" + weaponClass + "}", D.ADMIN_LOG_TYPE.Ability);
+            }
+            break;
+      }
+      return cachedAbility;
    }
 
    private List<AbilitySQLData> modifiedUnarmedAbilityList () {
@@ -7799,6 +7824,11 @@ public class RPCManager : NetworkBehaviour
    public void setupAbilitiesForPlayers (List<PlayerBodyEntity> playerEntities, List<AbilitySQLData> equippedAbilityList, Weapon.Class weaponClass, int validAbilities, bool playerHasValidAbilities = true, WeaponCategory weaponCategory = WeaponCategory.None) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          foreach (PlayerBodyEntity entity in playerEntities) {
+            if (entity == null) {
+               D.debug("Error here! Entity reference was severed!");
+               continue;
+            }
+            
             // Retrieves skill list from database
             List<AbilitySQLData> abilityDataList = DB_Main.userAbilities(entity.userId, AbilityEquipStatus.ALL);
             //string rawAbilityData = DB_Main.userAbilities(entity.userId.ToString(), ((int) AbilityEquipStatus.ALL).ToString());
@@ -7814,15 +7844,23 @@ public class RPCManager : NetworkBehaviour
                Battler battler = BattleManager.self.getBattler(entity.userId);
 
                List<int> basicAbilityIds = new List<int>();
-               foreach (AbilitySQLData temp in equippedAbilityList) {
-                  basicAbilityIds.Add(temp.abilityID);
+               foreach (AbilitySQLData ability in equippedAbilityList) {
+                  if (ability != null) {
+                     basicAbilityIds.Add(ability.abilityID);
+                  } else {
+                     D.debug("Error here! Missing ability SQL Data reference!");
+                  }
                }
 
                if (battler != null) {
                   string abilityStrList = "";
                   foreach (int abilityId in basicAbilityIds) {
                      BasicAbilityData abilityInfo = AbilityManager.self.allGameAbilities.Find(_ => _.itemID == abilityId);
-                     abilityStrList += " : {ID: {" + abilityId + "} :: Name: {" + (abilityInfo == null ? "Null" : abilityInfo.itemName) + "}";
+                     if (abilityInfo != null) {
+                        abilityStrList += " : {ID: {" + abilityId + "} :: Name: {" + (abilityInfo == null ? "Null" : abilityInfo.itemName) + "}";
+                     } else {
+                        D.debug("Error here! Basic ability {" + abilityId + "} failed to fetch!");
+                     }
                   }
                   D.adminLog("Sending Overridden Ability Data to Player: " + battler.userId + " :: " + abilityStrList, D.ADMIN_LOG_TYPE.Ability);
                   battler.setBattlerAbilities(basicAbilityIds, BattlerType.PlayerControlled);
