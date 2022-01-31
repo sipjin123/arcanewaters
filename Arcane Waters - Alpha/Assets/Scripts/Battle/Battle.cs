@@ -180,6 +180,10 @@ public class Battle : NetworkBehaviour {
                         battler.displayedHealth -= damagePerTick;
                         Rpc_DealDamagePerTick(battleId, battler.userId, damagePerTick, Element.Fire);
                         if (battler.health < 1) {
+                           // Register burn achievement
+                           if (debuffData.Value.casterId > 0) {
+                              AchievementManager.registerUserAchievement(debuffData.Value.casterId, ActionType.BurnEnemy);
+                           }
                            battler.isAlreadyDead = true;
                         }
                         break;
@@ -191,6 +195,10 @@ public class Battle : NetworkBehaviour {
                         battler.displayedHealth -= damagePerTick;
                         Rpc_DealDamagePerTick(battleId, battler.userId, damagePerTick, Element.Poison);
                         if (battler.health < 1) {
+                           // Register poison achievement
+                           if (debuffData.Value.casterId > 0) {
+                              AchievementManager.registerUserAchievement(debuffData.Value.casterId, ActionType.Poisoned);
+                           }
                            battler.isAlreadyDead = true;
                         }
                         break;
@@ -202,7 +210,8 @@ public class Battle : NetworkBehaviour {
                   // Add debuff to the new list that will override the synclist
                   newDebuffData.Add(currentStatusType, new StatusData {
                      abilityIdReference = debuffData.Value.abilityIdReference,
-                     statusDuration = newValue
+                     statusDuration = newValue,
+                     casterId = debuffData.Value.casterId
                   });
                } 
             }
@@ -215,7 +224,8 @@ public class Battle : NetworkBehaviour {
                   // D.debug("Updated value of {" + debuffData.Key + "} to {" + debuffData.Value + "}");
                   battler.debuffList.Add(debuffData.Key, new StatusData {
                      abilityIdReference = debuffData.Value.abilityIdReference,
-                     statusDuration = debuffData.Value.statusDuration
+                     statusDuration = debuffData.Value.statusDuration,
+                     casterId = debuffData.Value.casterId
                   });
                }
             } else {

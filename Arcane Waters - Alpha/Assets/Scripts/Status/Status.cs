@@ -41,4 +41,7 @@ public class StatusData {
 
    // Determines the duration of the status
    public float statusDuration;
+
+   // The user who casted the ability status
+   public int casterId;
 }

@@ -1012,7 +1012,7 @@ public class BattleManager : MonoBehaviour {
                   if (canBeDisabled) {
                      float randomizedChance = Random.Range(1, 100);
                      if (randomizedChance < abilityDataReference.statusChance) {
-                        StartCoroutine(CO_UpdateStatusAfterCollision(target, abilityDataReference.statusType, abilityDataReference.statusDuration, action.actionEndTime, abilityDataReference.itemID));
+                        StartCoroutine(CO_UpdateStatusAfterCollision(target, abilityDataReference.statusType, abilityDataReference.statusDuration, action.actionEndTime, abilityDataReference.itemID, source.userId));
                      }
                   }
                }
@@ -1045,13 +1045,13 @@ public class BattleManager : MonoBehaviour {
       }
    }
 
-   protected IEnumerator CO_UpdateStatusAfterCollision (Battler battlerReference, Status.Type statusType, float statusDuration, double endTime, int abilityId) {
+   protected IEnumerator CO_UpdateStatusAfterCollision (Battler battlerReference, Status.Type statusType, float statusDuration, double endTime, int abilityId, int casterId) {
       // Wait for client side attack to finish before applying the status effect
       while (NetworkTime.time < endTime) {
          yield return 0;
       }
 
-      battlerReference.applyStatusEffect(statusType, statusDuration, abilityId);
+      battlerReference.applyStatusEffect(statusType, statusDuration, abilityId, casterId);
    }
 
    protected IEnumerator CO_KillBattlerAtEndTime (AttackAction attackAction) {
