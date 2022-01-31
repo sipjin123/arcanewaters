@@ -35,7 +35,12 @@ public abstract class CustomMapManager
 
    // Extracts map type area key from a user specific area key
    public static string getMapTypeAreaKey (string userSpecificAreaKey) {
-      return userSpecificAreaKey.Split(new string[] { "_user" }, StringSplitOptions.RemoveEmptyEntries)[0];
+      try {
+         return userSpecificAreaKey.Split(new string[] { "_user" }, StringSplitOptions.RemoveEmptyEntries)[0];
+      } catch {
+         D.debug("{getMapTypeAreaKey} This area {" + userSpecificAreaKey + "} does not have the keyword {USER} returning default");
+         return string.Empty;
+      }
    }
 
    // Extracts user id from a user specific area key

@@ -43,7 +43,8 @@ public class D : MonoBehaviour {
       Visit = 30,
       EnemyWaterSpawn = 31,
       PvpShop = 32,
-      Redirecting = 33
+      Redirecting = 33,
+      Respawn = 34
    }
 
    // Any log files older than this will be deleted

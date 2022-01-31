@@ -6,13 +6,19 @@
       if (Item.isRecolorable(category)) {
          if (EquipmentXMLManager.self != null) {
             if (category == Item.Category.Weapon) {
-               itemTemplatePalette = EquipmentXMLManager.self.getWeaponData(itemTypeId).palettes;
+               if (EquipmentXMLManager.self.getWeaponData(itemTypeId) != null) {
+                  itemTemplatePalette = EquipmentXMLManager.self.getWeaponData(itemTypeId).palettes;
+               }
             }
             if (category == Item.Category.Armor) {
-               itemTemplatePalette = EquipmentXMLManager.self.getArmorDataBySqlId(itemTypeId).palettes;
+               if (EquipmentXMLManager.self.getArmorDataBySqlId(itemTypeId) != null) {
+                  itemTemplatePalette = EquipmentXMLManager.self.getArmorDataBySqlId(itemTypeId).palettes;
+               }
             }
             if (category == Item.Category.Hats) {
-               itemTemplatePalette = EquipmentXMLManager.self.getHatData(itemTypeId).palettes;
+               if (EquipmentXMLManager.self.getHatData(itemTypeId) != null) {
+                  itemTemplatePalette = EquipmentXMLManager.self.getHatData(itemTypeId).palettes;
+               }
             }
          }
       }

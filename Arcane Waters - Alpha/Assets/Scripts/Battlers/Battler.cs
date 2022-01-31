@@ -69,6 +69,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // The anim group
    public Anim.Group animGroup;
 
+   // Captures the death log reference when eliminating unit
+   public bool captureDeathLog, deathAnimPlayed;
+
    [Header("Network References")]
 
    // The Network Player associated with this Battler, if any
@@ -524,7 +527,16 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          StopAllCoroutines();
 
          // Trigger the death animation coroutine
+         if (enemyType != Enemy.Type.PlayerBattler) {
+            D.adminLog("Battle Log: This unit {" + enemyType + "} is now playing Death Animation! Animation Frames Should not be stuck!", D.ADMIN_LOG_TYPE.AnimationFreeze);
+         }
          StartCoroutine(animateDeath());
+         deathAnimPlayed = true;
+      }
+
+      if (isAlreadyDead && hasPlayedDeathAnim && !captureDeathLog && isLocalBattler()) {
+         captureDeathLog = true;
+         D.adminLog("Battle Log: This unit is already dead! Should have played death animation! {" + deathAnimPlayed + "}", D.ADMIN_LOG_TYPE.AnimationFreeze);
       }
 
       // This block is only enabled upon admin command and is double checked by the server if the user is an admin
