@@ -2141,14 +2141,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       playAnim(Anim.Type.Battle_East);
    }
 
-   public void applyStatusEffect (Status.Type statusType, float duration, int abilityId) {
+   public void applyStatusEffect (Status.Type statusType, float duration, int abilityId, int casterId) {
       float durationModifier = duration / BattleManager.TICK_INTERVAL;
 
       // Register debuff list if it does not exist yet
       if (!debuffList.ContainsKey(statusType)) {
          debuffList.Add(statusType, new StatusData {
             statusDuration = durationModifier,
-            abilityIdReference = abilityId
+            abilityIdReference = abilityId,
+            casterId = casterId
          });
       }
    }
