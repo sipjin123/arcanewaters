@@ -204,7 +204,14 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
       if (isServer) {
          // When we enter a new scene, update powerups on the client
-         rpc.Target_UpdateLandPowerups(connectionToClient, LandPowerupManager.self.getPowerupsForUser(userId));
+         if (VoyageManager.isTreasureSiteArea(areaKey) || areaKey.Contains(Area.TUTORIAL_AREA)) {
+            rpc.Target_UpdateLandPowerups(connectionToClient, LandPowerupManager.self.getPowerupsForUser(userId));
+         } else {
+            if (LandPowerupManager.self.getPowerupsForUser(userId).Count > 0) {
+               D.debug("Should display NO powerups in this area, current powerup count is (" + LandPowerupManager.self.getPowerupsForUser(userId).Count + ")");
+            }
+            rpc.Target_UpdateLandPowerups(connectionToClient, new List<LandPowerupData>());
+         }
       }
 
       if (!Util.isBatch()) {
