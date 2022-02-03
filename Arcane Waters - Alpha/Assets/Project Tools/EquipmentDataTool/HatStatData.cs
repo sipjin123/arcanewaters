@@ -31,6 +31,7 @@ public class HatStatData : EquipmentStatData
          itemDescription = hatStatData.equipmentDescription,
          category = Item.Category.Hats,
          iconPath = hatStatData.equipmentIconPath,
+         paletteNames = hatStatData.palettes,
          data = serializeHatStatData(hatStatData)
       };
       return newHat;

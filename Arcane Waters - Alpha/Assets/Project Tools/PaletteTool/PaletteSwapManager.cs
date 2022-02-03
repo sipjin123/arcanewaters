@@ -52,6 +52,15 @@ public class PaletteSwapManager : GenericGameManager {
       }
    }
 
+   public static string extractPalettes (List<int> paletteIds) {
+      string newPalette = "";
+      foreach (int paletteEntry in paletteIds) {
+         PaletteToolData paletteInfo = self.getPalette(paletteEntry);
+         newPalette += paletteInfo.paletteName + ", ";
+      }
+      return newPalette;
+   }
+
    public PaletteToolData getPalette (int id) {
       if (_paletteDataRegistry == null || !_paletteDataRegistry.ContainsKey(id)) {
          return null;

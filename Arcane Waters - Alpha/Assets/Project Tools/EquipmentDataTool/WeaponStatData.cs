@@ -55,6 +55,7 @@ public class WeaponStatData : EquipmentStatData
          category = Item.Category.Weapon,
          iconPath = weaponData.equipmentIconPath,
          actionTypeValue = weaponData.actionTypeValue,
+         paletteNames = weaponData.palettes,
          data = serializeWeaponStatData(weaponData)
       };
       return newWeapon;

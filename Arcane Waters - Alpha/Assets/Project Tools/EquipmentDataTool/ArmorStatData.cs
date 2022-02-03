@@ -30,6 +30,7 @@ public class ArmorStatData : EquipmentStatData
          itemDescription = armorData.equipmentDescription,
          category = Item.Category.Armor,
          iconPath = armorData.equipmentIconPath,
+         paletteNames = armorData.palettes,
          data = serializeArmorStatData(armorData)
       };
       return newArmor;
