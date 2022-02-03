@@ -55,14 +55,20 @@ public class BlueprintRow : MonoBehaviour
          WeaponStatData weaponData = WeaponStatData.getStatData(resultItem.data, resultItem.itemTypeId);
          itemNameText.text = weaponData.equipmentName;
          icon.sprite = ImageManager.getSprite(weaponData.equipmentIconPath);
+
+         resultItem.paletteNames = PaletteSwapManager.extractPalettes(weaponData.defaultPalettes);
       } else if (resultItem.category == Item.Category.Armor) {
          ArmorStatData armorData = ArmorStatData.getStatData(resultItem.data, resultItem.itemTypeId);
          itemNameText.text = armorData.equipmentName;
          icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
+
+         resultItem.paletteNames = PaletteSwapManager.extractPalettes(armorData.defaultPalettes);
       } else if (resultItem.category == Item.Category.Hats) {
          HatStatData hatData = HatStatData.getStatData(resultItem.data, resultItem.itemTypeId);
          itemNameText.text = hatData.equipmentName;
          icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
+
+         resultItem.paletteNames = PaletteSwapManager.extractPalettes(hatData.defaultPalettes);
       } else {
          icon.sprite = null;
       }

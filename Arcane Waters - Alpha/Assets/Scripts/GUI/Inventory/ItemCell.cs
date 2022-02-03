@@ -130,6 +130,13 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                Weapon newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
                newWeapon.id = item.id;
                newWeapon.paletteNames = item.paletteNames;
+
+               // If there are no palette assignments during translation, fetch the default palettes from the equipment tool xml
+               string paletteDataCount = item.paletteNames.Replace(" ", "").Replace(",", "");
+               if (paletteDataCount.Length < 1) {
+                  newWeapon.paletteNames = PaletteSwapManager.extractPalettes(weaponData.defaultPalettes);
+               }
+
                newWeapon.durability = item.durability;
                item = newWeapon;
                item.data = rawItemData;
@@ -152,6 +159,13 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                Armor newArmor = ArmorStatData.translateDataToArmor(armorData);
                newArmor.id = item.id;
                newArmor.paletteNames = item.paletteNames;
+
+               // If there are no palette assignments during translation, fetch the default palettes from the equipment tool xml
+               string paletteDataCount = item.paletteNames.Replace(" ", "").Replace(",", "");
+               if (paletteDataCount.Length < 1) {
+                  newArmor.paletteNames = PaletteSwapManager.extractPalettes(armorData.defaultPalettes);
+               }
+
                newArmor.durability = item.durability;
                item = newArmor;
                item.data = rawItemData;
@@ -181,6 +195,13 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                Hat newHat = HatStatData.translateDataToHat(hatData);
                newHat.id = item.id;
                newHat.paletteNames = item.paletteNames;
+
+               // If there are no palette assignments during translation, fetch the default palettes from the equipment tool xml
+               string paletteDataCount = item.paletteNames.Replace(" ", "").Replace(",", "");
+               if (paletteDataCount.Length < 1) {
+                  newHat.paletteNames = PaletteSwapManager.extractPalettes(hatData.defaultPalettes);
+               }
+
                newHat.durability = item.durability;
                item = newHat;
                item.data = rawItemData;

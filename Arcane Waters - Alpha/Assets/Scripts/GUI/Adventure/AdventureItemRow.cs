@@ -79,6 +79,13 @@ public class AdventureItemRow : MonoBehaviour {
                   Weapon newWeapon = WeaponStatData.translateDataToWeapon(newWeaponData);
                   newWeapon.id = item.id;
                   newWeapon.paletteNames = item.paletteNames;
+
+                  // If there are no palette assignments during translation, fetch the default palettes from the equipment tool xml
+                  string paletteDataCount = item.paletteNames.Replace(" ", "").Replace(",", "");
+                  if (paletteDataCount.Length < 1) {
+                     newWeapon.paletteNames = PaletteSwapManager.extractPalettes(newWeaponData.defaultPalettes);
+                  }
+
                   newWeapon.durability = item.durability;
                   newWeapon.count = item.count;
                   item = newWeapon;
@@ -97,11 +104,18 @@ public class AdventureItemRow : MonoBehaviour {
                   Destroy(gameObject);
                   return;
                } else {
-                  Armor newWeapon = ArmorStatData.translateDataToArmor(newArmorData);
-                  newWeapon.id = item.id;
-                  newWeapon.paletteNames = item.paletteNames;
-                  newWeapon.durability = item.durability;
-                  item = newWeapon;
+                  Armor newArmor = ArmorStatData.translateDataToArmor(newArmorData);
+                  newArmor.id = item.id;
+                  newArmor.paletteNames = item.paletteNames;
+
+                  // If there are no palette assignments during translation, fetch the default palettes from the equipment tool xml
+                  string paletteDataCount = item.paletteNames.Replace(" ", "").Replace(",", "");
+                  if (paletteDataCount.Length < 1) {
+                     newArmor.paletteNames = PaletteSwapManager.extractPalettes(newArmorData.defaultPalettes);
+                  }
+
+                  newArmor.durability = item.durability;
+                  item = newArmor;
                   item.data = rawItemData;
                }
                break;
@@ -115,6 +129,13 @@ public class AdventureItemRow : MonoBehaviour {
                   Hat newHat = HatStatData.translateDataToHat(newHatData);
                   newHat.id = item.id;
                   newHat.paletteNames = item.paletteNames;
+
+                  // If there are no palette assignments during translation, fetch the default palettes from the equipment tool xml
+                  string paletteDataCount = item.paletteNames.Replace(" ", "").Replace(",", "");
+                  if (paletteDataCount.Length < 1) {
+                     newHat.paletteNames = PaletteSwapManager.extractPalettes(newHatData.defaultPalettes);
+                  }
+
                   newHat.durability = item.durability;
                   item = newHat;
                   item.data = rawItemData;
