@@ -355,6 +355,7 @@ public class TreasureSite : NetworkBehaviour
 
       // Get all the nearby colliders
       Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, 0.8f);
+      D.adminLog("This Treasure Site: Area:{" + areaKey + "} IID:{" + instanceId + "} VID:{" + voyageGroupId + "} is Gathering warps: {" + nearbyColliders.Length + "}", D.ADMIN_LOG_TYPE.POI_WARP);
 
       // Find the warp associated with this treasure site
       bool found = false;
@@ -362,6 +363,7 @@ public class TreasureSite : NetworkBehaviour
          Warp warp = c.gameObject.GetComponent<Warp>();
          if (warp != null) {
             // Set this treasure site as controller of the warp
+            D.adminLog("This treasure site: Area:{" + areaKey + "} IID:{" + instanceId + "} VID:{" + voyageGroupId + "} is overriding Warp:{" + warp.areaTarget + "}", D.ADMIN_LOG_TYPE.POI_WARP);
             warp.setTreasureSite(instanceId, this);
             _warp = warp;
             found = true;

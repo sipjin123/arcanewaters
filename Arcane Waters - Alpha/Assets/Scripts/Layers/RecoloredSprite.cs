@@ -21,7 +21,7 @@ public class RecoloredSprite : MonoBehaviour {
       }
    }
 
-   public void recolor (string paletteNames, int slot = 0) {
+   public void recolor (string paletteNames, int slot = 0, bool logData = false) {
       if (paletteNames == null) {
          return;
       }
@@ -31,6 +31,9 @@ public class RecoloredSprite : MonoBehaviour {
       for (int i = 0; i < paletteNamesArray.Length; i++) {
          paletteNamesArray[i] = paletteNamesArray[i].Trim();
          if (paletteNamesArray[i] != "") {
+            if (logData) {
+               D.editorLog("-> Palette Name Added: {" + paletteNamesArray[i] + "}", Color.yellow);
+            }
             palettesToUse.Add(paletteNamesArray[i]);
          }
       }
