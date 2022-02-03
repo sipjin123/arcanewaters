@@ -163,9 +163,11 @@ namespace MapCreationTool
                throw new ArgumentException("Only sea maps can be league boss maps");
             }
 
+            // Interior POI now acts as treasure site
+            /*
             if (newMap.specialType == Area.SpecialType.TreasureSite && targetMap.editorType != EditorType.Area) {
                throw new ArgumentException("Only outside area maps can be treasure site maps");
-            }
+            }*/
 
             if (newMap.specialType == Area.SpecialType.Town && targetMap.editorType != EditorType.Area) {
                throw new ArgumentException("Only outside area maps can be town maps");

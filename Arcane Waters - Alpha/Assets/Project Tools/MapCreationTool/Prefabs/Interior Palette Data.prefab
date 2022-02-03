@@ -1247,6 +1247,7 @@ Transform:
   - {fileID: 5566625156990769780}
   - {fileID: 605717561812372758}
   - {fileID: 3761852245999266337}
+  - {fileID: 3363854663627442971}
   m_Father: {fileID: 6003827098852396580}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1636,6 +1637,50 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 4973132754821558883, guid: 17d742065044ea24aa3f37d16536ef81, type: 3}
+--- !u!1 &3609357548177656603
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3363854663627442971}
+  - component: {fileID: 8579221710400688281}
+  m_Layer: 0
+  m_Name: Treasure Site
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3363854663627442971
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3609357548177656603}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 14, y: 31, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3719976920741877196}
+  m_RootOrder: 70
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8579221710400688281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3609357548177656603}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d14a3bae45cba31478d29685e1dea398, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 939827310229271155, guid: 857026db557087e449e9c9f01f21b0bb, type: 3}
 --- !u!1 &3674033306499825192
 GameObject:
   m_ObjectHideFlags: 0
@@ -6632,126 +6677,6 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: rug
-      sublayer: 0
-      cluster: 0
-      collisionType: 1
-    - layer: rug
-      sublayer: 0
-      cluster: 0
-      collisionType: 1
-    - layer: rug
-      sublayer: 0
-      cluster: 0
-      collisionType: 1
-    - layer: wall
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: wall
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: ceiling
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: wall
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: wall
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: wall
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: floor
-      sublayer: 2
-      cluster: 0
-      collisionType: 1
-    - layer: rug
-      sublayer: 0
-      cluster: 0
-      collisionType: 1
-    - layer: floor
-      sublayer: 2
-      cluster: 0
-      collisionType: 1
-    - layer: rug
-      sublayer: 0
-      cluster: 0
-      collisionType: 1
-    - layer: rug
-      sublayer: 0
-      cluster: 1
-      collisionType: 1
-    - layer: rug
-      sublayer: 0
-      cluster: 1
-      collisionType: 1
-    - layer: rug
-      sublayer: 0
-      cluster: 1
-      collisionType: 1
-    - layer: wall
-      sublayer: 0
-      cluster: 4
-      collisionType: 0
-    - layer: wall
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: wall
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 2
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 2
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 2
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 3
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 3
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
     - layer: 
       sublayer: 0
       cluster: 0
@@ -6796,8 +6721,8 @@ MonoBehaviour:
       sublayer: 2
       cluster: 0
       collisionType: 1
-    - layer: floor
-      sublayer: 2
+    - layer: rug
+      sublayer: 0
       cluster: 0
       collisionType: 1
     - layer: floor
@@ -6821,36 +6746,36 @@ MonoBehaviour:
       cluster: 1
       collisionType: 1
     - layer: wall
+      sublayer: 0
+      cluster: 4
+      collisionType: 0
+    - layer: wall
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: wall
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: 
       sublayer: 0
       cluster: 2
       collisionType: 0
-    - layer: wall
+    - layer: 
       sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: wall
-      sublayer: 0
-      cluster: 1
+      cluster: 2
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 1
+      cluster: 2
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -6862,19 +6787,23 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 4
+      cluster: 1
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 4
+      cluster: 1
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 2
+      cluster: 1
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 2
+      cluster: 1
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -6925,6 +6854,134 @@ MonoBehaviour:
       cluster: 0
       collisionType: 1
     - layer: floor
+      sublayer: 2
+      cluster: 0
+      collisionType: 1
+    - layer: rug
+      sublayer: 0
+      cluster: 0
+      collisionType: 1
+    - layer: rug
+      sublayer: 0
+      cluster: 1
+      collisionType: 1
+    - layer: rug
+      sublayer: 0
+      cluster: 1
+      collisionType: 1
+    - layer: rug
+      sublayer: 0
+      cluster: 1
+      collisionType: 1
+    - layer: wall
+      sublayer: 0
+      cluster: 2
+      collisionType: 0
+    - layer: wall
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: wall
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 4
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 4
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 2
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 2
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: rug
+      sublayer: 0
+      cluster: 0
+      collisionType: 1
+    - layer: rug
+      sublayer: 0
+      cluster: 0
+      collisionType: 1
+    - layer: rug
+      sublayer: 0
+      cluster: 0
+      collisionType: 1
+    - layer: wall
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: wall
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: ceiling
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: wall
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: wall
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: wall
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: floor
+      sublayer: 2
+      cluster: 0
+      collisionType: 1
+    - layer: floor
+      sublayer: 2
+      cluster: 0
+      collisionType: 1
+    - layer: floor
       sublayer: 0
       cluster: 0
       collisionType: 1
@@ -6999,6 +7056,10 @@ MonoBehaviour:
     - layer: 
       sublayer: 0
       cluster: 2
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -7128,6 +7189,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: rug
       sublayer: 0
       cluster: 0
@@ -7247,6 +7312,10 @@ MonoBehaviour:
     - layer: 
       sublayer: 0
       cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -7376,6 +7445,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: rug
       sublayer: 0
       cluster: 0
@@ -7500,6 +7573,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: rug
       sublayer: 0
       cluster: 0
@@ -7619,6 +7696,10 @@ MonoBehaviour:
     - layer: 
       sublayer: 0
       cluster: 2
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -7743,6 +7824,10 @@ MonoBehaviour:
     - layer: 
       sublayer: 0
       cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -7872,6 +7957,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: rug
       sublayer: 0
       cluster: 0
@@ -7996,6 +8085,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: furniture
       sublayer: 0
       cluster: 0
@@ -8115,6 +8208,10 @@ MonoBehaviour:
     - layer: 
       sublayer: 0
       cluster: 1
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -8242,7 +8339,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 2
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 2
       collisionType: 0
     - layer: furniture
       sublayer: 0
@@ -8366,7 +8467,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 2
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 2
       collisionType: 0
     - layer: furniture
       sublayer: 0
@@ -8492,6 +8597,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 3
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: furniture
       sublayer: 0
       cluster: 0
@@ -8615,6 +8724,10 @@ MonoBehaviour:
     - layer: 
       sublayer: 0
       cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
       collisionType: 0
     - layer: furniture
       sublayer: 0
@@ -8748,6 +8861,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: shadow
       sublayer: 0
       cluster: 0
@@ -8864,7 +8981,11 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    matrixHeight: 31
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    matrixHeight: 32
 --- !u!1 &6101146627576052564
 GameObject:
   m_ObjectHideFlags: 0

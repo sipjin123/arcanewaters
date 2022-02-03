@@ -985,6 +985,7 @@ Transform:
   - {fileID: 1859274531861103512}
   - {fileID: 8806036594251653408}
   - {fileID: 8414881306168434685}
+  - {fileID: 4392712057578432367}
   m_Father: {fileID: 6003827098852396580}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -14154,11 +14155,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 3
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 3
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -14414,11 +14415,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 3
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 3
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -17529,6 +17530,50 @@ Transform:
   m_Father: {fileID: 6003827098852396580}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6712947748387966807
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4392712057578432367}
+  - component: {fileID: 6072967144493115481}
+  m_Layer: 0
+  m_Name: treasure site
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4392712057578432367
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6712947748387966807}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 13, y: 57, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3719976920741877196}
+  m_RootOrder: 60
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6072967144493115481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6712947748387966807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d14a3bae45cba31478d29685e1dea398, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 939827310229271155, guid: 857026db557087e449e9c9f01f21b0bb, type: 3}
 --- !u!1 &6837920114826649258
 GameObject:
   m_ObjectHideFlags: 0
@@ -20891,7 +20936,7 @@ Tilemap:
       - {fileID: 21300512, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300518, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300524, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 19, y: 8, z: 0}
@@ -20961,7 +21006,7 @@ Tilemap:
       - {fileID: 21300486, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300492, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300498, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 18, y: 9, z: 0}
