@@ -108,9 +108,9 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       if (VoyageGroupManager.isInGroup(player) && VoyageManager.isTreasureSiteArea(player.areaKey)) {
          D.adminLog("Successfully warp process", D.ADMIN_LOG_TYPE.Warp);
 
-         if (isWarpToTreasureSite(player.instanceId)) {
+         TreasureSite treasureSite = getTreasureSite(player.instanceId);
+         if (isWarpToTreasureSite(player.instanceId) || (!isWarpToTreasureSite(player.instanceId) && treasureSite != null)) {
             // This block of code is specifically for POI system wherein the user can warp inside interior POI while being on an existing site POI
-            TreasureSite treasureSite = getTreasureSite(player.instanceId);
 
             // Register this user as being inside the site
             treasureSite.playerListInSite.Add(player.userId);
@@ -135,9 +135,9 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             }
 
             string spawnTarget = "";
-            foreach (TreasureSite treasureSite in seaVoyageInstance.treasureSites) {
-               if (treasureSite.playerListInSite.Contains(player.userId)) {
-                  spawnTarget = treasureSite.spawnTarget;
+            foreach (TreasureSite treasureSiteRef in seaVoyageInstance.treasureSites) {
+               if (treasureSiteRef.playerListInSite.Contains(player.userId)) {
+                  spawnTarget = treasureSiteRef.spawnTarget;
                   break;
                }
             }
