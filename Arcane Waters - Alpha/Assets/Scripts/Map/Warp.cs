@@ -108,31 +108,46 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       if (VoyageGroupManager.isInGroup(player) && VoyageManager.isTreasureSiteArea(player.areaKey)) {
          D.adminLog("Successfully warp process", D.ADMIN_LOG_TYPE.Warp);
 
-         // Try to find the treasure site entrance (spawn) where the user is registered
-         int voyageId = player.getInstance().voyageId;
+         if (isWarpToTreasureSite(player.instanceId)) {
+            // This block of code is specifically for POI system wherein the user can warp inside interior POI while being on an existing site POI
+            TreasureSite treasureSite = getTreasureSite(player.instanceId);
 
-         // If the voyage instance cannot be found, warp the player to the starting town
-         if (!InstanceManager.self.tryGetVoyageInstance(voyageId, out Instance seaVoyageInstance)) {
-            D.error(string.Format("Could not find the sea voyage instace when leaving a treasure site. userId: {0}, treasure site areaKey: {1}", player.userId, player.areaKey));
+            // Register this user as being inside the site
+            treasureSite.playerListInSite.Add(player.userId);
 
-            D.debug("This player {" + player.userId + " " + player.entityName + "} could not find sea voyage after treasure site, returning to Town");
-            player.spawnInNewMap(Area.STARTING_TOWN);
-            yield break;
-         }
+            int voyageId = player.getInstance().voyageId;
+            string targetArea = string.IsNullOrEmpty(treasureSite.destinationArea) ? areaTarget : treasureSite.destinationArea;
+            string targetSpawnPt = string.IsNullOrEmpty(treasureSite.destinationSpawn) ? spawnTarget : treasureSite.destinationSpawn;
 
-         string spawnTarget = "";
-         foreach (TreasureSite treasureSite in seaVoyageInstance.treasureSites) {
-            if (treasureSite.playerListInSite.Contains(player.userId)) {
-               spawnTarget = treasureSite.spawnTarget;
-               break;
+            D.debug("User {" + player.userId + "} is warping to another POI {" + targetArea + "}, VoyageID: {" + voyageId + "}");
+            player.spawnInNewMap(voyageId, targetArea, targetSpawnPt, newFacingDirection);
+         } else {
+            // Try to find the treasure site entrance (spawn) where the user is registered
+            int voyageId = player.getInstance().voyageId;
+
+            // If the voyage instance cannot be found, warp the player to the starting town
+            if (!InstanceManager.self.tryGetVoyageInstance(voyageId, out Instance seaVoyageInstance)) {
+               D.error(string.Format("Could not find the sea voyage instace when leaving a treasure site. userId: {0}, treasure site areaKey: {1}", player.userId, player.areaKey));
+
+               D.debug("This player {" + player.userId + " " + player.entityName + "} could not find sea voyage after treasure site, returning to Town");
+               player.spawnInNewMap(Area.STARTING_TOWN);
+               yield break;
             }
-         }
 
-         if ("".Equals(spawnTarget)) {
-            D.error(string.Format("Could not find the treasure site where the user is registered. userId: {0}, voyage areaKey: {1}, treasure site areaKey: {2}", player.userId, seaVoyageInstance.areaKey, player.areaKey));
-         }
+            string spawnTarget = "";
+            foreach (TreasureSite treasureSite in seaVoyageInstance.treasureSites) {
+               if (treasureSite.playerListInSite.Contains(player.userId)) {
+                  spawnTarget = treasureSite.spawnTarget;
+                  break;
+               }
+            }
 
-         player.spawnInNewMap(voyageId, seaVoyageInstance.areaKey, spawnTarget, newFacingDirection);
+            if ("".Equals(spawnTarget)) {
+               D.error(string.Format("Could not find the treasure site where the user is registered. userId: {0}, voyage areaKey: {1}, treasure site areaKey: {2}", player.userId, seaVoyageInstance.areaKey, player.areaKey));
+            }
+
+            player.spawnInNewMap(voyageId, seaVoyageInstance.areaKey, spawnTarget, newFacingDirection);
+         }
       }
       // Check if the destination is a treasure site
       else if (VoyageGroupManager.isInGroup(player) && isWarpToTreasureSite(player.instanceId)) {
