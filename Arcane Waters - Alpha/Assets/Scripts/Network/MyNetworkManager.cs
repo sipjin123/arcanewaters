@@ -483,24 +483,18 @@ public class MyNetworkManager : NetworkManager
             player.voyageGroupId = voyageGroupInfo != null ? voyageGroupInfo.groupId : -1;
             player.isGhost = voyageGroupInfo != null ? voyageGroupInfo.isGhost : false;
 
-            // If user has a declared instance to visit, add instance id by fetching from server assigned user ids
             if (ServerNetworkingManager.self.server.assignedUserIds.ContainsKey(player.userId)) {
+               // If user has a declared instance to visit, add instance id by fetching from server assigned user ids
                AssignedUserInfo serverInfo = ServerNetworkingManager.self.server.assignedUserIds[player.userId];
                if (serverInfo != null && serverInfo.instanceId > 0) {
                   player.instanceId = serverInfo.instanceId;
                   D.adminLog("Adding user {" + player.entityName + ":" + player.userId + "} to instance {" + serverInfo.instanceId + "} to VISIT! ", D.ADMIN_LOG_TYPE.Visit);
                   InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId, serverInfo.instanceId);
                } else {
-                  if (player.entityName.ToLower().Contains("bur")) {
-                     D.adminLog("User Failed to join because {" + (serverInfo == null ? "NullServer" : "") + "} or {" + (serverInfo == null ? "" : serverInfo.instanceId.ToString()) + "} " +
-                        "{" + player.entityName + ":" + player.userId + "} to instance {" + serverInfo.instanceId + "} to VISIT! {"+ previousAreaKey + "}", D.ADMIN_LOG_TYPE.Visit);
-                  }
                   InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);
                }
             } else {
-               if (player.entityName.ToLower().Contains("bur")) {
-                  D.adminLog("User Failed to join because Assigned users does not contain user : {" + player.entityName + ":" + player.userId + "} to instance {" + previousAreaKey + "} to VISIT! ", D.ADMIN_LOG_TYPE.Visit);
-               }
+               // Proceed to default player instance registry
                InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);
             }
 

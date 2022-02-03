@@ -33,7 +33,6 @@ public class ScreenLogger : GenericGameManager {
       isEnabled = false;
       canvasObj.SetActive(false);
 
-      Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
       Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.Respawn);
       D.debug("Screen Logger v5.0.4 {" + (Util.isProductionBuild() ? "Prod" : "Dev") + "}");
 
