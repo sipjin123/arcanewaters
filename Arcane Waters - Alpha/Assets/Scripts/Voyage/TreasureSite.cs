@@ -77,6 +77,9 @@ public class TreasureSite : NetworkBehaviour
    // Players currently in this treasure site
    public List<int> playerListInSite = new List<int>();
 
+   // The objects for display
+   public List<GameObject> displayObject;
+
    #endregion
 
    public void Awake () {
@@ -251,6 +254,15 @@ public class TreasureSite : NetworkBehaviour
 
          // Process downloaded data
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Area area = AreaManager.self.getArea(areaKey);
+            
+            // If site is in land, remove target destinations and refer to warp target for POI
+            if (area != null && !area.isSea) {
+               destinationArea = "";
+               spawnTarget = "";
+               return;
+            }
+
             while (_randomTreasureSites.Count > 0) {
                destinationArea = _randomTreasureSites.ChooseRandom();
                foreach (MapSpawn spawn in mapSpawns) {
@@ -315,9 +327,19 @@ public class TreasureSite : NetworkBehaviour
          yield return 0;
       }
 
-      // Set the site as a child of the area
       Area area = AreaManager.self.getArea(this.areaKey);
-      setBiome(instanceBiome);
+      if (area.isSea) {
+         // Set the site as a child of the area
+         setBiome(instanceBiome);
+      } else {
+         // Disable all visual objects when the site is set in land
+         _spriteRenderer.enabled = false;
+         _animator.enabled = false;
+
+         foreach (GameObject displayObj in displayObject) {
+            displayObj.SetActive(false);
+         }
+      }
       bool worldPositionStays = area.cameraBounds.bounds.Contains((Vector2) transform.position);
       setAreaParent(area, worldPositionStays);
 
