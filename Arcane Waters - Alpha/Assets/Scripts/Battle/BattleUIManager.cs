@@ -193,7 +193,9 @@ public class BattleUIManager : MonoBehaviour {
       if (selectedButton != null) {
          if (selectedButton.isEnabled && BattleSelectionManager.self.selectedBattler != null) {
             if (BattleManager.self.getPlayerBattler().canCastAbility() && selectedButton.cooldownValue >= selectedButton.cooldownTarget - .1f) {
-               SoundEffectManager.self.playSoundEffect(SoundEffectManager.ABILITY_SELECTION, transform);
+               //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ABILITY_SELECTION, transform);
+               SoundEffectManager.self.playGuiButtonConfirmSfx();
+
                triggerAbility(selectedButton, selectedButton.abilityType);
             }
          } else {

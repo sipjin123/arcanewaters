@@ -7585,7 +7585,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void deleteUserSoft (int accountId, int userId) {
+   public static new void deactivateUser (int accountId, int userId) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("INSERT INTO users_deleted SELECT * FROM users WHERE accId=@accId AND usrId=@usrId; DELETE FROM users WHERE accId=@accId AND usrId=@usrId", conn)) {
@@ -7603,7 +7603,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void restoreUser (int accountId, int userId) {
+   public static new void activateUser (int accountId, int userId) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("INSERT INTO users (SELECT * FROM users_deleted WHERE accId=@accId AND usrId=@usrId); DELETE FROM users_deleted WHERE accId=@accId AND usrId=@usrId", conn)) {
@@ -7642,6 +7642,44 @@ public class DB_Main : DB_MainStub
       }
 
       return false;
+   }
+
+   public static new void forgetUser (int accountId, int userId) {
+      // Permanently forgets a deactivated (deleted) user
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM users_deleted WHERE accId=@accId AND usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accId", accountId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void forgetUserBySpot (int accountId, int charSpot) {
+      // Permanently forgets a deactivated (deleted) user
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM users_deleted WHERE accId=@accId and charSpot=@charSpot", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accId", accountId);
+            cmd.Parameters.AddWithValue("@charSpot", charSpot);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
    }
 
    #endregion
@@ -10585,7 +10623,7 @@ public class DB_Main : DB_MainStub
             }
          }
       } catch (Exception ex) {
-         D.error(ex.Message);
+         D.error("getTotalPlayersCount:" + ex.Message);
       }
       return playersCount;
    }

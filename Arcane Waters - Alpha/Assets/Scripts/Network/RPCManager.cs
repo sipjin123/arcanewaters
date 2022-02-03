@@ -6798,6 +6798,7 @@ public class RPCManager : NetworkBehaviour
                chest.userIds.Add(_player.userId);
 
                // Display empty open chest
+               D.adminLog("Player {" + _player.userId + "} is has a NULL chest for area {" + _player.areaKey + "}", D.ADMIN_LOG_TYPE.Treasure);
                Target_OpenChest(_player.connectionToClient, new Item { category = Item.Category.None, itemTypeId = -1 }, chest.id);
             }
          });
@@ -7893,8 +7894,8 @@ public class RPCManager : NetworkBehaviour
    #region Basic Info Fetching
 
    [TargetRpc]
-   public void Target_ReceiveBackgroundInfo (NetworkConnection connection, int bgXmlId) {
-      BackgroundGameManager.self.activateBgContent(bgXmlId);
+   public void Target_ReceiveBackgroundInfo (NetworkConnection connection, int bgXmlId, bool isShipBattle) {
+      BackgroundGameManager.self.activateBgContent(bgXmlId, isShipBattle);
    }
 
    #endregion
@@ -8413,32 +8414,58 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_FoundDiscovery (int discoveryId) {
-      Discovery discovery = DiscoveryManager.self.getSpawnedDiscoveryById(discoveryId);
+   public void Cmd_FoundDiscovery (int placedDiscoveryId) {
+      if (_player == null) {
+         return;
+      }
 
-      if (isDiscoveryFindingValid(discovery) && discovery.instanceId == _player.instanceId) {
+      if (DiscoveryManager.self.tryGetSpawnedDiscoveryById(_player.instanceId, placedDiscoveryId, out Discovery discovery) && isDiscoveryFindingValid(discovery)) {
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            int gainedXP = discovery.getXPValue();
+            // Check if discovery is found in the database
+            UserDiscovery d = DB_Main.getUserDiscovery(_player.userId, placedDiscoveryId);
+            if (d == null || !d.discovered) {
+               int gainedXP = discovery.getXPValue();
 
-            // Add the experience to the player
-            DB_Main.addJobXP(_player.userId, Jobs.Type.Explorer, gainedXP);
+               // Add the experience to the player
+               DB_Main.addJobXP(_player.userId, Jobs.Type.Explorer, gainedXP);
 
-            Jobs newJobXP = DB_Main.getJobXP(_player.userId);
+               // Set the discovery as found
+               DB_Main.setUserDiscovery(new UserDiscovery { userId = _player.userId, placedDiscoveryId = placedDiscoveryId, discovered = true });
+
+               Jobs newJobXP = DB_Main.getJobXP(_player.userId);
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  _player.Target_GainedXP(netIdentity.connectionToClient, gainedXP, newJobXP, Jobs.Type.Explorer, 0, true);
+               });
+            }
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               _player.Target_GainedXP(netIdentity.connectionToClient, gainedXP, newJobXP, Jobs.Type.Explorer, 0, true);
                discovery.Target_RevealDiscovery(netIdentity.connectionToClient);
             });
          });
       } else {
-         D.log($"Player {_player.nameText.text} reported an invalid discovery.\nPlayer Instance ID: {_player.instanceId}\n" +
-            $"Discovery Instance ID: {discovery.instanceId}\nDistance from discovery: {getDistanceFromDiscovery(discovery)}\nDistance is valid: {isDiscoveryFindingValid(discovery)}");
+         D.log($"Player {_player.nameText.text} reported an invalid discovery. Player Instance ID: {_player.instanceId}");
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveFoundDiscoveryList (List<UserDiscovery> discoveries) {
+      if (_player == null) {
+         return;
+      }
+
+      foreach (UserDiscovery d in discoveries) {
+         if (d.discovered) {
+            if (!DiscoveryManager.self.revealedDiscoveriesClient.Contains((_player.instanceId, d.placedDiscoveryId))) {
+               DiscoveryManager.self.revealedDiscoveriesClient.Add((_player.instanceId, d.placedDiscoveryId));
+            }
+         }
       }
    }
 
    [Server]
    private bool isDiscoveryFindingValid (Discovery discovery) {
-      return getDistanceFromDiscovery(discovery) <= Discovery.MAX_VALID_DISTANCE;
+      return discovery != null && getDistanceFromDiscovery(discovery) <= Discovery.MAX_VALID_DISTANCE;
    }
 
    private float getDistanceFromDiscovery (Discovery discovery) {
@@ -8976,8 +9003,8 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_DisplayNotificationForVoyageCompleted (NetworkConnection connection, Notification.Type notificationType, Biome.Type newUnlockedBiome) {
-      NotificationManager.self.add(notificationType, () => ((WorldMapPanel) PanelManager.self.get(Panel.Type.WorldMap)).displayMap(newUnlockedBiome), false);
+   public void Target_DisplayNotificationForVoyageCompleted (NetworkConnection connection, Notification.Type notificationType) {
+      NotificationManager.self.add(notificationType, () => VoyageManager.self.requestExitCompletedLeague(), false);
       VoyageManager.self.closeVoyageCompleteNotificationWhenLeavingArea();
    }
 
@@ -9093,7 +9120,7 @@ public class RPCManager : NetworkBehaviour
 
    private IEnumerator CO_DelayJoinTeamCombat (uint enemyId, float delay) {
       yield return new WaitForSeconds(delay);
-      Global.player.rpc.Cmd_StartNewBattle(enemyId, Battle.TeamType.Attackers, false);
+      Global.player.rpc.Cmd_StartNewBattle(enemyId, Battle.TeamType.Attackers, false, false);
    }
 
    [TargetRpc]
@@ -9493,12 +9520,18 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    public void Target_UpdatePvpScore (NetworkConnection conn, int newScoreValue, PvpTeamType teamType) {
       PvpStatPanel.self.updateScoreForTeam(newScoreValue, teamType);
+      PvpScoreIndicator.self.updateScore(teamType, newScoreValue);
    }
 
    [TargetRpc]
    public void Target_ShowPvpPostGameScreen (NetworkConnection conn, bool wonGame, PvpTeamType winningTeam, int gemReward) {
       PvpStatPanel.self.updateDisplayMode(Global.player.areaKey, true, wonGame, winningTeam, gemReward);
       BottomBar.self.enablePvpStatPanel();
+   }
+
+   [TargetRpc]
+   public void Target_SetGameStartTime (NetworkConnection conn, float gameStartTime) {
+      PvpStatPanel.self.setGameStartTime(gameStartTime);
    }
 
    [Command]
@@ -9611,6 +9644,18 @@ public class RPCManager : NetworkBehaviour
       knockbackEffect.init(effectRadius);
    }
 
+   [TargetRpc]
+   public void Target_ResetPvpScoreIndicator (NetworkConnection conn, bool show) {
+      PvpScoreIndicator.self.reset();
+      PvpScoreIndicator.self.toggle(show);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveEmoteMessage(ChatInfo chatInfo) {
+      chatInfo.messageType = ChatInfo.Type.Emote;
+      ChatPanel.self.addChatInfo(chatInfo);
+   }
+
    #region User Search
 
    [Command]
@@ -9621,9 +9666,10 @@ public class RPCManager : NetworkBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          if (searchInfo.filter == UserSearchInfo.FilteringMode.Name) {
             UserInfo userInfo = DB_Main.getUserInfo(searchInfo.input);
-            bool isFriend = DB_Main.getFriendshipInfo(_player.userId, userInfo.userId) != null;
 
             if (userInfo != null) {
+               bool isFriend = DB_Main.getFriendshipInfo(_player.userId, userInfo.userId) != null;
+
                UserSearchResult result = new UserSearchResult {
                   name = userInfo.username,
                   level = LevelUtil.levelForXp(userInfo.XP),

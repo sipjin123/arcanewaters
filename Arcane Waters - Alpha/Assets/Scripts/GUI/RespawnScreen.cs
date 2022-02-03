@@ -38,6 +38,9 @@ public class RespawnScreen : MonoBehaviour {
    }
 
    public void Update () {
+      // Sync content visibility with canvas group interactable flag. UINavigation requirement.
+      content.gameObject.SetActive(canvasGroup.interactable);
+
       if (Global.player == null || !Global.player.isPlayerShip() || !Global.player.isDead()) {
          _deadTime = 0;
          hide();

@@ -555,7 +555,12 @@ public class ServerMessageManager : MonoBehaviour
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          if (DB_Main.doesUserExists(msg.userId)) {
-            DB_Main.deleteUserSoft(accountId, msg.userId);
+            // Delete any previously deleted user at the same spot
+            UserInfo userInfo = DB_Main.getUserInfoById(msg.userId);
+            DB_Main.forgetUserBySpot(accountId, userInfo.charSpot);
+
+            // Deactivate (Soft delete) the user
+            DB_Main.deactivateUser(accountId, msg.userId);
          }
 
          // Send confirmation to the client, so that they can request their user list again
@@ -577,7 +582,7 @@ public class ServerMessageManager : MonoBehaviour
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          if (!DB_Main.doesUserExists(msg.userId)) {
-            DB_Main.restoreUser(accountId, msg.userId);
+            DB_Main.activateUser(accountId, msg.userId);
          }
 
          // Send confirmation to the client, so that they can request their user list again
@@ -687,6 +692,9 @@ public class ServerMessageManager : MonoBehaviour
       }*/
 
       DB_Main.storeGameAccountLoginEvent(userId, accountId, userInfo.username, conn.address, msg.machineIdentifier, msg.deploymentId);
+
+      // Forget any user previously deleted at the same character spot
+      DB_Main.forgetUserBySpot(accountId, msg.characterSpot);
 
       // Switch back to the Unity Thread to let the client know the result
       UnityThreadHelper.UnityDispatcher.Dispatch(() => {

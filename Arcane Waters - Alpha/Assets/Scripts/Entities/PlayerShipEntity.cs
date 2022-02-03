@@ -83,9 +83,6 @@ public class PlayerShipEntity : ShipEntity
    // References to sprite swaps fo the player's boost effect sprites
    public SpriteSwap shipBoostSpriteSwapFront, shipBoostSpriteSwapBack;
 
-   // References to sprite swaps for the player's boost circle
-   public SpriteSwap boostCircleOutlineSpriteSwap, boostCircleFillSpriteSwap;
-
    // A reference to the player's lifeboat object
    public GameObject lifeboat;
 
@@ -95,17 +92,11 @@ public class PlayerShipEntity : ShipEntity
    // Canvas Group for ship display information
    public CanvasGroup shipInformationDisplay;
 
-   // A reference to the sprite group for the boost timing sprites
-   public SpriteGroup boostTimingSprites;
-
    // A reference to the transform containing the boost fill circle
    public Transform boostFillCircleParent;
 
    // A reference to the boost cooldown bar outline image
    public Image boostCooldownBarOutline;
-
-   // A reference to the sprite renderer for the boost fill circle
-   public SpriteRenderer boostFillCircle;
 
    // A reference to the rect transform for the boost bar's parent
    public RectTransform boostBarParent;
@@ -129,10 +120,10 @@ public class PlayerShipEntity : ShipEntity
    public System.Action<PlayerShipEntity, PvpTeamType> onDamagedPlayer;
 
    // Defines the possible attack types for the player's right-click attack
-   public enum CannonAttackType { Normal = 0, Cone = 1, Circle = 2, AbilityProjectile = 3, }
+   public enum CannonTargetingType { None = 0, Normal = 1, Cone = 2, Circle = 3, AbilityProjectile = 4, }
 
    // Determines what type of attack will trigger when right-clicking
-   public CannonAttackType cannonAttackType = CannonAttackType.Normal;
+   public CannonTargetingType cannonAttackType = CannonTargetingType.Normal;
 
    // What the max range of the cannon barrage attack is, compared to the player's normal attack
    public const float CANNON_BARRAGE_RANGE_MULTIPLIER = 0.9f;
@@ -152,7 +143,8 @@ public class PlayerShipEntity : ShipEntity
    public int selectedShipAbilityIndex = 0;
 
    // The different flags the ship can display
-   public enum Flag {
+   public enum Flag
+   {
       None = 0,
       White = 1,
       Group = 2,
@@ -191,17 +183,15 @@ public class PlayerShipEntity : ShipEntity
 
       if (isLocalPlayer) {
          // Create a ship movement sound for our own ship
-         _movementAudioSource = SoundManager.createLoopedAudio(SoundManager.Type.Ship_Movement, this.transform);
-         _movementAudioSource.gameObject.AddComponent<MatchCameraZ>();
-         _movementAudioSource.volume = 0f;
+         //_movementAudioSource = SoundManager.createLoopedAudio(SoundManager.Type.Ship_Movement, this.transform);
+         //_movementAudioSource.gameObject.AddComponent<MatchCameraZ>();
+         //_movementAudioSource.volume = 0f;
 
          // Get a reference to our audio listener
-         _audioListener = GetComponent<AudioListener>();
+         //_audioListener = GetComponent<AudioListener>();
          _fmodListener = GetComponent<FMODUnity.StudioListener>();
 
          _targetSelector = GetComponentInChildren<PlayerTargetSelector>();
-         boostTimingSprites.gameObject.SetActive(true);
-         boostTimingSprites.alpha = 0.0f;
 
          // Position the boost bar based on ship size
          Vector2 boostBarParentPos = boostBarParent.anchoredPosition;
@@ -348,12 +338,12 @@ public class PlayerShipEntity : ShipEntity
          pressBoost();
          gamePadDashPressed = true;
       }
-   }   
+   }
    private void OnSeaDashCanceled (InputAction.CallbackContext ctx) {
       if (gamePadDashPressed != false) {
          releaseBoost();
          gamePadDashPressed = false;
-      }      
+      }
    }
 
    private void initHealth (bool skipCurrentHealth = false) {
@@ -370,8 +360,6 @@ public class PlayerShipEntity : ShipEntity
 
       shipBoostSpriteSwapFront.newTexture = _shipBoostSpritesFront;
       shipBoostSpriteSwapBack.newTexture = _shipBoostSpritesBack;
-      boostCircleOutlineSpriteSwap.newTexture = _boostCircleOutline;
-      boostCircleFillSpriteSwap.newTexture = _boostCircleFill;
    }
 
    private void selectAbility (int abilitySlotIndex) {
@@ -409,7 +397,6 @@ public class PlayerShipEntity : ShipEntity
          _targetCone.gameObject.SetActive(false);
          _targetCircle.gameObject.SetActive(false);
          _cannonTargeter.gameObject.SetActive(false);
-         boostTimingSprites.gameObject.SetActive(false);
       }
 
       updateSpeedUpDisplay();
@@ -559,9 +546,12 @@ public class PlayerShipEntity : ShipEntity
 
             Vector2 targetVelocity = _movementInputDirection * targetSpeed * Time.fixedDeltaTime;
             _body.velocity = Vector2.SmoothDamp(_body.velocity, targetVelocity, ref _shipDampVelocity, 0.5f);
+            movementForce = _movementInputDirection * targetSpeed * _body.mass;
 
             // In ghost mode, clamp the position to the area bounds
             clampToMapBoundsInGhost();
+         } else {
+            movementForce = Vector2.zero;
          }
       }
    }
@@ -574,7 +564,7 @@ public class PlayerShipEntity : ShipEntity
          releaseBoost();
       }
 
-      seaDashEffect.setChargeEffectActive(_isChargingBoost);
+      seaDashEffect.setChargeEffect(getBoostChargeAmount());
 
       if (!isBoostCoolingDown() && _isChargingBoost) {
          // Update the boost-timing circle
@@ -616,9 +606,7 @@ public class PlayerShipEntity : ShipEntity
 
          Cmd_RequestServerAddBoostForce(boostDirection, getBoostChargeAmount());
          _lastBoostTime = NetworkTime.time;
-
-         //_boostCircleTween?.Rewind();
-         //_boostCircleTween = DOTween.To(() => boostTimingSprites.alpha, (x) => boostTimingSprites.alpha = x, 0.0f, 0.25f);
+         seaDashEffect.playDashEffect(boostDirection);
          _isChargingBoost = false;
 
          // Trigger the tutorial
@@ -626,8 +614,8 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
-   private void switchCannonTargetingMode (CannonAttackType newAttackType) {
-      CannonAttackType oldAttackType = cannonAttackType;
+   private void switchCannonTargetingMode (CannonTargetingType newAttackType) {
+      CannonTargetingType oldAttackType = cannonAttackType;
 
       // Don't do anything if our attack type hasn't changed
       if (oldAttackType == newAttackType) {
@@ -635,38 +623,38 @@ public class PlayerShipEntity : ShipEntity
       }
 
       // Disable game objects from the old targeting type
-      if (!isPerformingAttack()) {
-         switch (oldAttackType) {
-            case CannonAttackType.Cone:
-               _targetCone.gameObject.SetActive(false);
-               break;
-            case CannonAttackType.Circle:
-               _targetCircle.gameObject.SetActive(false);
-               break;
-            default:
-               _cannonTargeter.gameObject.SetActive(false);
-               break;
-         }
+      switch (oldAttackType) {
+         case CannonTargetingType.Cone:
+            _targetCone.gameObject.SetActive(false);
+            break;
+         case CannonTargetingType.Circle:
+            _targetCircle.gameObject.SetActive(false);
+            break;
+         default:
+            _cannonTargeter.gameObject.SetActive(false);
+            break;
       }
 
       cannonAttackType = newAttackType;
 
       // Enable game objects for the new targeting type
       switch (newAttackType) {
-         case CannonAttackType.Cone:
+         case CannonTargetingType.Cone:
             _targetCone.gameObject.SetActive(true);
             updateTargeting();
             _targetCone.updateCone(true);
             break;
-         case CannonAttackType.Circle:
+         case CannonTargetingType.Circle:
             _targetCircle.gameObject.SetActive(true);
             updateTargeting();
             _targetCircle.updateCircle(true);
             break;
-         default:
+         case CannonTargetingType.Normal:
             _cannonTargeter.gameObject.SetActive(true);
             updateTargeting();
             _cannonTargeter.updateTargeter();
+            break;
+         default:
             break;
       }
    }
@@ -688,18 +676,18 @@ public class PlayerShipEntity : ShipEntity
       }
 
       switch (cannonAttackType) {
-         case CannonAttackType.Normal:
-         case CannonAttackType.AbilityProjectile:
+         case CannonTargetingType.Normal:
+         case CannonTargetingType.AbilityProjectile:
             _cannonTargeter.gameObject.SetActive(true);
             updateTargeting();
             _cannonTargeter.updateTargeter();
             break;
-         case CannonAttackType.Cone:
+         case CannonTargetingType.Cone:
             _targetCone.gameObject.SetActive(true);
             updateTargeting();
             _targetCone.updateCone(true);
             break;
-         case CannonAttackType.Circle:
+         case CannonTargetingType.Circle:
             _targetCircle.gameObject.SetActive(true);
             updateTargeting();
             _targetCircle.updateCircle(true);
@@ -726,10 +714,12 @@ public class PlayerShipEntity : ShipEntity
          }
       }
 
+      CannonTargetingType abilityAttackType = getCannonTargetingTypeFromAttackType(abilityData.selectedAttackType);
+
       if (useCannonAttack) {
-         switch (cannonAttackType) {
-            case CannonAttackType.Normal:
-            case CannonAttackType.AbilityProjectile:
+         switch (abilityAttackType) {
+            case CannonTargetingType.Normal:
+            case CannonTargetingType.AbilityProjectile:
                if (abilityData.splitsAfterAttackCap) {
                   splitAttackCap(abilityData);
                } else {
@@ -747,7 +737,7 @@ public class PlayerShipEntity : ShipEntity
                   TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
                }
                break;
-            case CannonAttackType.Cone:
+            case CannonTargetingType.Cone:
                if (abilityData.splitsAfterAttackCap) {
                   splitAttackCap(abilityData);
                } else {
@@ -765,7 +755,7 @@ public class PlayerShipEntity : ShipEntity
                   _targetCone.targetingConfirmed(() => enableTargeting());
                }
                break;
-            case CannonAttackType.Circle:
+            case CannonTargetingType.Circle:
                if (_cannonBarrageCoroutine != null) {
                   StopCoroutine(_cannonBarrageCoroutine);
                }
@@ -813,16 +803,16 @@ public class PlayerShipEntity : ShipEntity
       }
 
       switch (cannonAttackType) {
-         case CannonAttackType.Normal:
-         case CannonAttackType.AbilityProjectile:
+         case CannonTargetingType.Normal:
+         case CannonTargetingType.AbilityProjectile:
             _shouldUpdateTargeting = false;
             _cannonTargeter.targetingConfirmed(() => enableTargeting());
             break;
-         case CannonAttackType.Cone:
+         case CannonTargetingType.Cone:
             _shouldUpdateTargeting = false;
             _targetCone.targetingConfirmed(() => enableTargeting());
             break;
-         case CannonAttackType.Circle:
+         case CannonTargetingType.Circle:
             _shouldUpdateTargeting = false;
             _targetCircle.targetingConfirmed(() => enableTargeting());
             break;
@@ -837,8 +827,8 @@ public class PlayerShipEntity : ShipEntity
       }
 
       switch (cannonAttackType) {
-         case CannonAttackType.Normal:
-         case CannonAttackType.AbilityProjectile:
+         case CannonTargetingType.Normal:
+         case CannonTargetingType.AbilityProjectile:
 
             Vector2 fireDir;
 
@@ -866,7 +856,7 @@ public class PlayerShipEntity : ShipEntity
             _cannonTargeter.updateTargeter();
 
             break;
-         case CannonAttackType.Cone:
+         case CannonTargetingType.Cone:
             // Update target cone parameters
             if (ShipAbilityManager.self.getAbility(getSelectedShipAbilityId()).splitsAfterAttackCap) {
                _targetCone.coneHalfAngle = (40.0f - (getCannonChargeAmount() * 25.0f)) / 1.25f;
@@ -894,7 +884,7 @@ public class PlayerShipEntity : ShipEntity
             Color coneColor = (enemyInCone) ? Color.yellow : Color.white;
             _targetCone.setConeColor(coneColor);
             break;
-         case CannonAttackType.Circle:
+         case CannonTargetingType.Circle:
             // Update target circle parameters
             float circleRadius = (0.625f - (getCannonChargeAmount() * 0.125f));
             _targetCircle.scaleCircle(circleRadius * 2.0f);
@@ -963,7 +953,7 @@ public class PlayerShipEntity : ShipEntity
          ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(shipAbilities[abilityIndex]);
 
          if (isServerOnly) {
-            cannonAttackType = getCannonAttackTypeFromAttackType(shipAbilityData.selectedAttackType);
+            cannonAttackType = getCannonTargetingTypeFromAttackType(shipAbilityData.selectedAttackType);
          }
 
          Target_ReceiveAttackOption(abilityIndex);
@@ -977,7 +967,7 @@ public class PlayerShipEntity : ShipEntity
       selectedShipAbilityIndex = abilityIndex;
       ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(shipAbilities[abilityIndex]);
       CannonPanel.self.cannonBoxList[abilityIndex].setCannons();
-      CannonAttackType newAttackType = getCannonAttackTypeFromAttackType(shipAbilityData.selectedAttackType);
+      CannonTargetingType newAttackType = getCannonTargetingTypeFromAttackType(shipAbilityData.selectedAttackType);
 
       // Enable / disable targeting elements if attack type has changed during charging
       if (_isChargingCannon) {
@@ -1141,7 +1131,7 @@ public class PlayerShipEntity : ShipEntity
    private void onBeingDestroyedServer () {
       // If the player is in a pvp game, remove them from the game
       PvpGame activeGame = PvpManager.self.getGameWithPlayer(this);
-      if (activeGame != null) {
+      if (activeGame != null && activeGame.areaKey == this.areaKey) {
          activeGame.removePlayerFromGame(this);
       }
 
@@ -1179,7 +1169,7 @@ public class PlayerShipEntity : ShipEntity
 
       if (attackType == Attack.Type.Harpoon) {
          newProjectile = Instantiate(PrefabsManager.self.seaHarpoonPrefab, spawnPosition, Quaternion.identity);
-      } else if (cannonAttackType == CannonAttackType.AbilityProjectile) {
+      } else if (cannonAttackType == CannonTargetingType.AbilityProjectile) {
          newProjectile = Instantiate(PrefabsManager.self.seaProjectilePrefab, spawnPosition, Quaternion.identity);
       } else {
          newProjectile = Instantiate(PrefabsManager.self.serverCannonBallPrefab, spawnPosition, Quaternion.identity);
@@ -1288,12 +1278,12 @@ public class PlayerShipEntity : ShipEntity
    }
 
    protected void adjustMovementAudio () {
-      if (isLocalPlayer) {
-         float volumeModifier = isMoving() ? Time.deltaTime * .5f : -Time.deltaTime * .5f;
-         if (_movementAudioSource != null) {
-            _movementAudioSource.volume += volumeModifier;
-         }
-      }
+      //if (isLocalPlayer) {
+      //   float volumeModifier = isMoving() ? Time.deltaTime * .5f : -Time.deltaTime * .5f;
+      //   if (_movementAudioSource != null) {
+      //      _movementAudioSource.volume += volumeModifier;
+      //   }
+      //}
    }
 
    public float getAngleChangeSpeed () {
@@ -1725,9 +1715,12 @@ public class PlayerShipEntity : ShipEntity
    }
 
    private void checkAudioListener () {
-      if (AudioListenerManager.self.getActiveListener() != _audioListener) {
-         AudioListenerManager.self.setActiveListener(_audioListener);
+      if (!AudioListenerManager.self.isPlayerFmodListenerActive()) {
+         AudioListenerManager.self.setActiveListener();
       }
+      //if (AudioListenerManager.self.getActiveListener() != _audioListener) {
+      //   AudioListenerManager.self.setActiveListener(_audioListener);
+      //}
    }
 
    private float getAttackDistance (float chargeAmount = -1.0f) {
@@ -1792,16 +1785,24 @@ public class PlayerShipEntity : ShipEntity
    private void OnDisable () {
       // If we are the local player, activate the camera's audio listener
       if (isLocalPlayer && !ClientManager.isApplicationQuitting) {
-         if (!_audioListener) {
-            _audioListener = GetComponent<AudioListener>();
-         }
-
-         if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getAudioListener() != null) {
-            AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener(), CameraManager.defaultCamera.getFmodListener());
+         if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getFmodListener() != null) {
+            AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getFmodListener());
          } else {
             D.error("Couldn't switch audio listener back to main camera");
          }
       }
+
+      //if (isLocalPlayer && !ClientManager.isApplicationQuitting) {
+      //   //if (!_audioListener) {
+      //   //   _audioListener = GetComponent<AudioListener>();
+      //   //}
+
+      //   if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getAudioListener() != null) {
+      //      AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener(), CameraManager.defaultCamera.getFmodListener());
+      //   } else {
+      //      D.error("Couldn't switch audio listener back to main camera");
+      //   }
+      //}
    }
 
    protected override void assignEntityName () {
@@ -1844,6 +1845,8 @@ public class PlayerShipEntity : ShipEntity
 
    [Server]
    private IEnumerator CO_RespawnPlayerInInstance () {
+      D.adminLog("Respawning User {" + userId + "} in instance!", D.ADMIN_LOG_TYPE.Respawn);
+
       setIsInvulnerable(true);
       hasPerformedFirstActionAfterSpawn = false;
       PowerupManager.self.clearPowerupsForUser(userId);
@@ -1915,10 +1918,6 @@ public class PlayerShipEntity : ShipEntity
       // Allow this ship to play the destroyed sound and visual effect again
       _playedDestroySound = false;
 
-      // Enable the boost timing circle
-      boostTimingSprites.gameObject.SetActive(true);
-      boostTimingSprites.alpha = 0.0f;
-      boostFillCircle.color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
       _isChargingBoost = false;
 
       // Reset this bool to ensure players can attack
@@ -2073,15 +2072,15 @@ public class PlayerShipEntity : ShipEntity
    [Command]
    public void Cmd_AbilityUsed (int abilityIndex) {
       // Don't update UI if the ability we're trying to use is on cooldown
-      if (isAbilityOnCooldown(selectedShipAbilityIndex)) {
+      if (isAbilityOnCooldown(abilityIndex)) {
          return;
       }
 
       Target_AbilityUsed(connectionToClient, abilityIndex);
 
       // Set cooldown for ability
-      if (_abilityCooldownDurations.ContainsKey(getSelectedShipAbilityId())) {
-         _currentAbilityCooldowns[selectedShipAbilityIndex] += _abilityCooldownDurations[getSelectedShipAbilityId()];
+      if (_abilityCooldownDurations.ContainsKey(shipAbilities[abilityIndex])) {
+         _currentAbilityCooldowns[abilityIndex] += _abilityCooldownDurations[shipAbilities[abilityIndex]];
       }
 
       changeAttackOption(0);
@@ -2138,17 +2137,30 @@ public class PlayerShipEntity : ShipEntity
       _powerups.AddRange(powerups);
    }
 
-   private static CannonAttackType getCannonAttackTypeFromAttackType (Attack.Type attackType) {
+   private static CannonTargetingType getCannonTargetingTypeFromAttackType (Attack.Type attackType) {
       switch (attackType) {
          case Attack.Type.Cone_NoEffect:
-            return CannonAttackType.Cone;
+            return CannonTargetingType.Cone;
          case Attack.Type.Circle_NoEffect:
-            return CannonAttackType.Circle;
+            return CannonTargetingType.Circle;
          case Attack.Type.Mine:
          case Attack.Type.Harpoon:
-            return CannonAttackType.AbilityProjectile;
+            return CannonTargetingType.AbilityProjectile;
+         case Attack.Type.Cannon:
+         case Attack.Type.Standard_NoEffect:
+         case Attack.Type.Standard_Slow:
+         case Attack.Type.Standard_Stunned:
+         case Attack.Type.Boulder:
+         case Attack.Type.Mini_Boulder:
+         case Attack.Type.Shock_Ball:
+         case Attack.Type.Fire:
+         case Attack.Type.Poison:
+         case Attack.Type.Ice:
+         case Attack.Type.Air:
+         case Attack.Type.Venom:
+            return CannonTargetingType.Normal;
          default:
-            return CannonAttackType.Normal;
+            return CannonTargetingType.None;
       }
    }
 
@@ -2219,7 +2231,7 @@ public class PlayerShipEntity : ShipEntity
          // If the mine is exploding / exploded, don't count this one towards the limit
          if (mine.getMineState() == SeaMine.MineState.Triggered || mine.getMineState() == SeaMine.MineState.Exploded) {
             continue;
-         // Otherwise, destroy the extra mine
+            // Otherwise, destroy the extra mine
          } else {
             NetworkServer.Destroy(mine.gameObject);
          }
@@ -2229,19 +2241,19 @@ public class PlayerShipEntity : ShipEntity
    #region Private Variables
 
    // Our ship movement sound
-   protected AudioSource _movementAudioSource;
+   //protected AudioSource _movementAudioSource = default;
 
    // Our target selector
-   protected PlayerTargetSelector _targetSelector;
+   protected PlayerTargetSelector _targetSelector = default;
 
    // The position the player is currently aiming at
-   private Vector2 _currentAimPosition;
+   private Vector2 _currentAimPosition = default;
 
    // The desired direction of the ship
-   private Vector2 _movementInputDirection;
+   private Vector2 _movementInputDirection = default;
 
    // The velocity at which we're currently damping the velocity of the ship
-   private Vector2 _shipDampVelocity;
+   private Vector2 _shipDampVelocity = default;
 
    // A multiplier for the force added locally in order to mask delay   
    private const float CLIENT_SIDE_FORCE = 0.1f;
@@ -2256,13 +2268,13 @@ public class PlayerShipEntity : ShipEntity
    private bool _shouldUpdateTargeting = true;
 
    // A reference to the object used to target circular player attacks
-   private TargetCircle _targetCircle;
+   private TargetCircle _targetCircle = default;
 
    // A reference to the object used to target conical player attacks
-   private TargetCone _targetCone;
+   private TargetCone _targetCone = default;
 
    // A reference to the object used to target the player's regular cannon attack
-   private CannonTargeter _cannonTargeter;
+   private CannonTargeter _cannonTargeter = default;
 
    // The current flag being displayed by the ship
    private Flag _currentFlag = Flag.None;
@@ -2277,10 +2289,10 @@ public class PlayerShipEntity : ShipEntity
    private bool _chargingWithMouse = false;
 
    // A reference to the audio listener that follows the ship
-   private AudioListener _audioListener;
+   //private AudioListener _audioListener = default;
 
    // A reference to the FMOD Studio Listener that follows the ship
-   private FMODUnity.StudioListener _fmodListener;
+   private FMODUnity.StudioListener _fmodListener = default;
 
    // How long it takes to charge up the ship's cannon
    private const float CANNON_CHARGE_TIME = 1.0f;
@@ -2291,9 +2303,6 @@ public class PlayerShipEntity : ShipEntity
    // How long the boost wake effects show for after boosting
    private const float BOOST_WAKE_TIME = 1.0f;
 
-   // A reference to the active tween for the boost circle
-   private Tween _boostCircleTween;
-
    // Set to true when the player is charging their boost
    private bool _isChargingBoost = false;
 
@@ -2301,7 +2310,7 @@ public class PlayerShipEntity : ShipEntity
    private Coroutine _respawningInInstanceCoroutine = null;
 
    // FMOD event instance for managing ship's boost SFX
-   FMOD.Studio.EventInstance _boostState;
+   FMOD.Studio.EventInstance _boostState = default;
 
    // How much lifeboat collider size should be increased for a short period of time to make sure that boat is not near shore
    private const float LIFEBOAT_COLLIDER_MULTIPLIER = 3.0f;

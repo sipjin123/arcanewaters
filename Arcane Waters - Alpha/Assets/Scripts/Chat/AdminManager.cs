@@ -127,6 +127,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("add_gems", "Gives an amount of gems to a user", requestAddGems, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "gemsAmount" }));
       cm.addCommand(new CommandData("add_silver", "Gives an amount of silver to a user, during a pvp game.", requestAddSilver, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "silverAmount" }));
       cm.addCommand(new CommandData("create_open_world", "Creates many open world areas at once, measures their performance, and then reports the results.", requestCreateOpenWorld, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "numAreas (30)", "testDuration (30)", "delayBetweenAreas (1)" }));
+      cm.addCommand(new CommandData("test_open_world", "Creates open world areas one at a time, until performance limits are hit.", requestTestOpenWorld, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "cpuCutoff (90)", "ramCutoff (90), numInitialAreas (5), delayBetweenNewAreas (10)" }));
       cm.addCommand(new CommandData("log_request", "Creates server inquiries.", requestServerLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType" }));
 
       // Used for combat simulation
@@ -208,6 +209,109 @@ public class AdminManager : NetworkBehaviour
       return true;
    }
 
+   private void requestTestOpenWorld (string parameters) {
+      Cmd_TestOpenWorld(parameters);
+   }
+
+   [Command]
+   private void Cmd_TestOpenWorld (string parameters) {
+      int cpuCutoff = 90;
+      int ramCutoff = 90;
+      int numInitialAreas = 5;
+      int delayBetweenNewAreas = 10;
+
+      string[] inputs = parameters.Split(' ');
+
+      if (inputs.Length > 0 && inputs[0] != "") {
+         cpuCutoff = int.Parse(inputs[0]);
+      }
+
+      if (inputs.Length > 1) {
+         ramCutoff = int.Parse(inputs[1]);
+      }
+
+      if (inputs.Length > 2) {
+         numInitialAreas = int.Parse(inputs[2]);
+      }
+
+      if (inputs.Length > 3) {
+         delayBetweenNewAreas = int.Parse(inputs[3]);
+      }
+
+      StartCoroutine(CO_TestOpenWorld(cpuCutoff, ramCutoff, numInitialAreas, delayBetweenNewAreas));
+   }
+
+   private IEnumerator CO_TestOpenWorld (int cpuCutoff, int ramCutoff, int numInitialAreas, int delayBetweenNewAreas) {
+
+      // Tell PerformanceUtil to start fetching data from zabbix
+      PerformanceUtil.self.updateZabbixData = true;
+
+      // Wait for first params to be fetched from zabbix
+      while (PerformanceUtil.getZabbixCpuUsage() <= Mathf.Epsilon) {
+         yield return null;
+      }
+
+      while (PerformanceUtil.getZabbixRamUsage() <= Mathf.Epsilon) {
+         yield return null;
+      }
+
+      // Measure initial values
+      float baselineCpuUsage = PerformanceUtil.getZabbixCpuUsage();
+      float baselineRamUsage = PerformanceUtil.getZabbixRamUsage();
+
+      float currentCpuUsage = baselineCpuUsage;
+      float currentRamUsage = baselineRamUsage;
+
+      int numAreasCreated = 0;
+      float testStartTime = (float)NetworkTime.time;
+
+      for (int i = 0; i < numInitialAreas; i++) {
+         string areaName = getOpenWorldMapName(i);
+         MapManager.self.createLiveMap(areaName);
+      }
+
+      numAreasCreated = numInitialAreas;
+
+      while ((int)currentCpuUsage < cpuCutoff && (int)currentRamUsage < ramCutoff) {
+         // Create an open world area
+         string areaName = getOpenWorldMapName(numAreasCreated);
+         D.debug("TestOpenWorld: Creating map for area: " + areaName + ", cpuUsage: " + currentCpuUsage + ", ramUsage: " + currentRamUsage);
+         MapManager.self.createLiveMap(areaName);
+         numAreasCreated++;
+
+         // Wait for map to begin creation
+         yield return new WaitForSeconds(1.0f);
+
+         // Wait for it to finish creation
+         while (MapManager.self.isAreaUnderCreation(areaName)) {
+            yield return null;
+         }
+
+         // Leave a delay between creating new areas
+         yield return new WaitForSeconds(delayBetweenNewAreas);
+
+         // Update performance parameters
+         currentCpuUsage = PerformanceUtil.getZabbixCpuUsage();
+         currentRamUsage = PerformanceUtil.getZabbixRamUsage();
+      }
+
+      float testDuration = (float) NetworkTime.time - testStartTime;
+      D.debug("Testing Open World complete - reporting results to the player.");
+      Target_ReportTestOpenWorldResults(_player.connectionToClient, numAreasCreated, testDuration, baselineCpuUsage, baselineRamUsage);
+
+      // Destroy all created open world maps
+      for (int i = 0; i < numAreasCreated; i++) {
+         string areaName = getOpenWorldMapName(i);
+         AreaManager.self.destroyArea(areaName);
+      }
+   }
+
+   private void Target_ReportTestOpenWorldResults (NetworkConnection connectionToClient, int numAreasCreated, float testDuration, float baselineCpuUsage, float baselineRamUsage) {
+      ChatPanel.self.addChatInfo(new ChatInfo(0, "[Test Open World Results] A performance limit was hit after creating " + numAreasCreated 
+         + ". The test took " + testDuration + " seconds.", DateTime.Now, ChatInfo.Type.System));
+      ChatPanel.self.addChatInfo(new ChatInfo(0, "[Test Open World Results] Baseline Cpu: " + baselineCpuUsage + ", Baseline Ram: " + baselineRamUsage, DateTime.Now, ChatInfo.Type.System));
+   }
+
    private void requestCreateOpenWorld (string parameters) {
       Cmd_CreateOpenWorld(parameters);
    }
@@ -255,7 +359,8 @@ public class AdminManager : NetworkBehaviour
       areaOrder.OrderBy(x => Util.r.Next());
 
       D.debug("Creating open world areas.");
-      string finalAreaName = "";
+      List<string> areasUnderCreation = new List<string>();
+      float creationStartTime = (float)NetworkTime.time;
 
       // Create 'numAreas' open world maps, with 'delayBetweenAreas' delay between creating areas
       for (int i = 0; i < numAreas; i++) {
@@ -263,17 +368,29 @@ public class AdminManager : NetworkBehaviour
          string areaName = getOpenWorldMapName(areaIndex);
          MapManager.self.createLiveMap(areaName);
          D.debug("Creating instance for area: " + areaName);
-         finalAreaName = areaName;
+         areasUnderCreation.Add(areaName);
 
          yield return new WaitForSeconds(delayBetweenCreatingAreas);
       }
 
       D.debug("Waiting for areas to finish creation.");
 
-      // Wait for all areas to be created before beginning performance test
-      while (MapManager.self.isAreaUnderCreation(finalAreaName)) {
-         yield return null;
+      // Areas won't finish creation immediately, so we can wait a delay before checking
+      yield return new WaitForSeconds(3.0f);
+
+      // Wait for all areas to be finished creating
+      while(areasUnderCreation.Count > 0) {
+         for (int i = areasUnderCreation.Count - 1; i >= 0; i--) {
+            if (!MapManager.self.isAreaUnderCreation(areasUnderCreation[i])) {
+               areasUnderCreation.RemoveAt(i);
+            }
+         }
+
+         yield return new WaitForSeconds(1.0f);
       }
+
+      float creationDuration = (float) NetworkTime.time - creationStartTime;
+      D.debug("Server took " + creationDuration + " seconds to create open world maps.");
 
       D.debug("Beginning performance test.");
       // Once the maps are all creating, start measuring performance
@@ -295,11 +412,12 @@ public class AdminManager : NetworkBehaviour
       }
 
       // After 'duration' has elapsed, report results to the user who ran this command
-      Target_ReportOpenWorldTestResults(_player.connectionToClient, baselineTestResult, testResult);
+      Target_ReportCreateOpenWorldResults(_player.connectionToClient, baselineTestResult, testResult, creationDuration);
    }
 
    [TargetRpc]
-   private void Target_ReportOpenWorldTestResults (NetworkConnection connectionToClient, PerformanceUtil.PerformanceTestResult baselineTestResult, PerformanceUtil.PerformanceTestResult testResult) {
+   private void Target_ReportCreateOpenWorldResults (NetworkConnection connectionToClient, PerformanceUtil.PerformanceTestResult baselineTestResult, PerformanceUtil.PerformanceTestResult testResult, float areaCreationDuration) {
+      ChatPanel.self.addChatInfo(new ChatInfo(0, "Open world areas took " + areaCreationDuration + " seconds to create.", DateTime.Now, ChatInfo.Type.System));
       ChatPanel.self.addChatInfo(new ChatInfo(0, "Baseline Test Results: " + baselineTestResult.getResultString(), DateTime.Now, ChatInfo.Type.System));
       ChatPanel.self.addChatInfo(new ChatInfo(0, "Test Results: " + testResult.getResultString(), DateTime.Now, ChatInfo.Type.System));
    }

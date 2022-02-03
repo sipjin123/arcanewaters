@@ -56,8 +56,6 @@ public class NPCManager : MonoBehaviour {
       if (_npcIDPerArea.ContainsKey(areaKey)) {
          if (!_npcIDPerArea[areaKey].Contains(npcId)) {
             _npcIDPerArea[areaKey].Add(npcId);
-         } else {
-            D.editorLog("Npc already Existing!", Color.cyan);
          }
       } else {
          _npcIDPerArea[areaKey] = new List<int>();

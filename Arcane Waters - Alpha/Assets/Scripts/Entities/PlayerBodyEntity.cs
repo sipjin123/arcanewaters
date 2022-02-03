@@ -166,8 +166,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
       // If we are the local player, assign us the audio listener
       if (isLocalPlayer && AudioListenerManager.self) {
-         _audioListener = GetComponent<AudioListener>();
-         AudioListenerManager.self.setActiveListener(_audioListener);
+         //_audioListener = GetComponent<AudioListener>();
+         AudioListenerManager.self.setActiveListener();
       }
 
       // Retrieve the current sprites for the guild icon
@@ -364,22 +364,26 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          if (sittingInfo.isSitting) {
             getMainCollider().isTrigger = true;
             toggleWeaponVisibility(show: false);
-            applySittingEmoteMask(show: true);
+            applySittingEmoteMask(show: true, chairType: sittingInfo.chairType);
             transform.position = sittingInfo.chairPosition;
 
             // Force the facing direction on the client while waiting for the server to send over the actual value
             facing = sittingInfo.sittingDirection;
 
             if (sittingInfo.sittingDirection == Direction.North) {
+               if (sittingInfo.chairType == ChairClickable.ChairType.Stool) {
+                  transform.position = sittingInfo.chairPosition + new Vector3(-0.02f, -0.021f, 0);
+               }
+
                playCompositeAnimation(CompositeAnimationManager.self.KneelingN);
             } else if (sittingInfo.sittingDirection == Direction.South) {
-               transform.position = sittingInfo.chairPosition + new Vector3(0, -0.02f, 0);
+               transform.position = sittingInfo.chairPosition + new Vector3(0, -0.022f, 0);
                playCompositeAnimation(CompositeAnimationManager.self.KneelingS);
             } else if (sittingInfo.sittingDirection == Direction.West) {
-               transform.position = sittingInfo.chairPosition + new Vector3(-0.08f, -0.02f, 0);
+               transform.position = sittingInfo.chairPosition + new Vector3(-0.09f, -0.022f, 0);
                playCompositeAnimation(CompositeAnimationManager.self.KneelingWE);
             } else if (sittingInfo.sittingDirection == Direction.East) {
-               transform.position = sittingInfo.chairPosition + new Vector3(+0.08f, -0.02f, 0);
+               transform.position = sittingInfo.chairPosition + new Vector3(+0.09f, -0.022f, 0);
                playCompositeAnimation(CompositeAnimationManager.self.KneelingWE);
             }
 
@@ -660,7 +664,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          // Stops the jumping and triggers a smoke effect with sound
          if (lerpValue >= 1) {
             Instantiate(PrefabsManager.self.poofPrefab, this.sortPoint.transform.position, Quaternion.identity);
-            SoundManager.create3dSound("ledge", this.sortPoint.transform.position);
+            //SoundManager.create3dSound("ledge", this.sortPoint.transform.position);
             isJumpingOver = false;
          }
          return;
@@ -907,8 +911,10 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private void tryInteractAnimation (bool faceMouseDirection = true) {
+      // Skip for batch mode
+      if (Util.isBatch()) return;
+
       if (isInBattle()) {
-         D.debug("Cannot Interact During Battle!");
          return;
       }
       Direction newDirection = forceLookAt(Camera.main.ScreenToWorldPoint(MouseUtils.mousePosition));
@@ -1101,21 +1107,29 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    private void checkAudioListener () {
       // If the player is in battle
       if (CameraManager.battleCamera.getCamera().isActiveAndEnabled) {
-         // If the listener hasn't been switched, switch it
-         if (CameraManager.battleCamera.getAudioListener() != AudioListenerManager.self.getActiveListener()) {
-            AudioListenerManager.self.setActiveListener(CameraManager.battleCamera.getAudioListener(), CameraManager.battleCamera.getFmodListener());
+         if (CameraManager.battleCamera.getFmodListener() != AudioListenerManager.self.getActiveFmodListener()) {
+            AudioListenerManager.self.setActiveListener(CameraManager.battleCamera.getFmodListener());
          }
-         // If the player isn't in battle
-      } else if (_audioListener != null) {
-         // Make sure the game is using the player's audio listener
-         if (_audioListener != AudioListenerManager.self.getActiveListener()) {
-            AudioListenerManager.self.setActiveListener(_audioListener);
-         }
-      } else if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getAudioListener() != null) {
-         AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener(), CameraManager.defaultCamera.getFmodListener());
-      } else {
-         D.error("Couldn't find an audio listener to assign");
+      } else if (!AudioListenerManager.self.isPlayerFmodListenerActive()) {
+         AudioListenerManager.self.setActiveListener();
       }
+
+      //if (CameraManager.battleCamera.getCamera().isActiveAndEnabled) {
+      //   // If the listener hasn't been switched, switch it
+      //   //if (CameraManager.battleCamera.getAudioListener() != AudioListenerManager.self.getActiveListener()) {
+      //   //   AudioListenerManager.self.setActiveListener(CameraManager.battleCamera.getAudioListener(), CameraManager.battleCamera.getFmodListener());
+      //   //}
+      //   // If the player isn't in battle
+      //} else if (_audioListener != null) {
+      //   // Make sure the game is using the player's audio listener
+      //   //if (_audioListener != AudioListenerManager.self.getActiveListener()) {
+      //   //   AudioListenerManager.self.setActiveListener(_audioListener);
+      //   //}
+      //} else if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getAudioListener() != null) {
+      //   AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener(), CameraManager.defaultCamera.getFmodListener());
+      //} else {
+      //   D.error("Couldn't find an audio listener to assign");
+      //}
    }
 
    public override void recolorNameText () {
@@ -1204,13 +1218,16 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
    }
 
-   public void applySittingEmoteMask (bool show) {
+   public void applySittingEmoteMask (bool show, ChairClickable.ChairType chairType = ChairClickable.ChairType.Chair) {
+      string defaultSittingClipmask = $"Masks/Sitting/sitting_clipmask";
+      string stoolSittingClipmask = $"Masks/Sitting/sitting_clipmask_stool";
+
       if (_armorLayer != null) {
-         _armorLayer.toggleClipmask(show);
+         _armorLayer.toggleClipmask(chairType == ChairClickable.ChairType.Stool ? stoolSittingClipmask : defaultSittingClipmask, show);
       }
 
       if (_bodyLayer != null) {
-         _bodyLayer.toggleClipmask(show);
+         _bodyLayer.toggleClipmask(chairType == ChairClickable.ChairType.Stool ? stoolSittingClipmask : defaultSittingClipmask, show);
       }
    }
 
@@ -1282,13 +1299,14 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    [Command]
-   public void Cmd_EnterChair (Vector3 chairPosition, Direction direction) {
+   public void Cmd_EnterChair (Vector3 chairPosition, Direction direction, ChairClickable.ChairType chairType) {
       if (!sittingInfo.isSitting) {
          sittingInfo = new SittingInfo {
             isSitting = true,
             sittingDirection = direction,
             chairPosition = chairPosition,
-            positionBeforeSitting = transform.position
+            positionBeforeSitting = transform.position,
+            chairType = chairType
          };
 
          this.facing = direction;
@@ -1303,7 +1321,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             isSitting = false,
             sittingDirection = sittingInfo.sittingDirection,
             chairPosition = sittingInfo.chairPosition,
-            positionBeforeSitting = sittingInfo.positionBeforeSitting
+            positionBeforeSitting = sittingInfo.positionBeforeSitting,
+            chairType = sittingInfo.chairType
          };
       }
    }
@@ -1343,7 +1362,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    private double _jumpStartTime = 0.0f;
 
    // A reference to the audiolistener attached to the player
-   private AudioListener _audioListener;
+   //private AudioListener _audioListener;
 
    // The 'startSizeMultiplier' of the dust trail particle
    private float _dustStartSizeMultiplier;

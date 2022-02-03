@@ -63,7 +63,7 @@ public class Weapon : EquippableItem {
       }
    }
 
-   #endif
+#endif
 
    public static WeaponCategory GetWeaponCategoryByClass (Class weaponClass) {
       switch (weaponClass) {

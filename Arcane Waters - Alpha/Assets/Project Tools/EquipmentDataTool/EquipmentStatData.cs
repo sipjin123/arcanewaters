@@ -45,6 +45,8 @@ public class EquipmentStatData
    // The current rarity of the equipment data
    public Rarity.Type rarity = Rarity.Type.Common;
 
+   // A list of default palettes ids. These palettes are from the Palettes Web Tool.
+   public List<int> defaultPalettes = new List<int>();
 }
 
 public class RarityModifier

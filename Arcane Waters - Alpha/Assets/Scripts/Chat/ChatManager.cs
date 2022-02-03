@@ -235,6 +235,20 @@ public class ChatManager : GenericGameManager
       sendMessageToServer(message, ChatInfo.Type.Emote);
    }
 
+   private string computeEmoteChatMessage(EmoteManager.EmoteTypes emoteType) {
+      switch (emoteType) {
+         case EmoteManager.EmoteTypes.Dance:
+            return $"dances";
+         case EmoteManager.EmoteTypes.Kneel:
+            return $"kneels";
+         case EmoteManager.EmoteTypes.Greet:
+            return $"greets";
+         case EmoteManager.EmoteTypes.None:
+         default:
+            return string.Empty;
+      }
+   }
+
    public void requestPlayEmote (string parameters) {
       if (Global.player == null || Global.player.getPlayerBodyEntity() == null || Global.player.getPlayerBodyEntity().isSitting() || Global.player.isInBattle()) {
          addChat("Can't emote now...", ChatInfo.Type.System);
@@ -256,6 +270,7 @@ public class ChatManager : GenericGameManager
       }
 
       body.Cmd_PlayEmote(parsedEmote, body.facing);
+      sendEmoteMessageToServer(computeEmoteChatMessage(parsedEmote));
    }
 
    public void sendGlobalMessageToServer (string message) {
@@ -646,6 +661,9 @@ public class ChatManager : GenericGameManager
    }
 
    public static bool isTyping () {
+      // Skip for batch mode
+      if (Util.isBatch()) return false;
+      
       GameObject currentSelection = EventSystem.current.currentSelectedGameObject;
 
       // Check if we're typing in an input field

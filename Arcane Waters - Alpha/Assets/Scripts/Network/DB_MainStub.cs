@@ -1053,11 +1053,19 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static void deleteUserSoft (int accountId, int userId) {
+   public static void deactivateUser (int accountId, int userId) {
 
    }
 
-   public static void restoreUser (int accountId, int userId) {
+   public static void activateUser (int accountId, int userId) {
+
+   }
+
+   public static void forgetUser (int accountId, int userId) {
+
+   }
+
+   public static void forgetUserBySpot (int accountId, int charSpot) {
 
    }
 

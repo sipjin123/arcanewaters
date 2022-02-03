@@ -318,78 +318,88 @@ public class SoundEffectManager : GenericGameManager
       impactEvent.release();
    }
 
-   public void playBackgroundMusic (SoundManager.Type musicType) {
+   private void checkBackgroundMusicEvent () {
       if (!_backgroundMusicEvent.isValid()) {
          _backgroundMusicEvent = FMODUnity.RuntimeManager.CreateInstance(BGM_MASTER);
       }
+   }
+
+   private void playBackgroundMusicEvent () {
+      _backgroundMusicEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE backgroundMusicState);
+      if (backgroundMusicState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
+         _backgroundMusicEvent.start();
+      }
+   }
+
+   public void playBackgroundMusic (SoundManager.Type musicType) {
+      checkBackgroundMusicEvent();
 
       if (!_titleScreenAmbienceEvent.isValid()) {
          _titleScreenAmbienceEvent = FMODUnity.RuntimeManager.CreateInstance(TITLE_SCREEN_AMBIENCE);
       }
 
       _titleScreenAmbienceEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE titleAmbienceState);
-      _backgroundMusicEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE backgroundMusicState);
 
-      int backgroundMusicParam = -1;
+      int param = -1;
 
       switch (musicType) {
          case SoundManager.Type.Town_Forest:
-            backgroundMusicParam = 0;
+            param = 0;
             break;
          case SoundManager.Type.Town_Desert:
-            backgroundMusicParam = 1;
+            param = 1;
             break;
          case SoundManager.Type.Town_Snow:
-            backgroundMusicParam = 2;
+            param = 2;
             break;
          case SoundManager.Type.Town_Lava:
-            backgroundMusicParam = 3;
+            param = 3;
             break;
          case SoundManager.Type.Town_Pine:
-            backgroundMusicParam = 4;
+            param = 4;
             break;
          case SoundManager.Type.Town_Mushroom:
-            backgroundMusicParam = 5;
+            param = 5;
             break;
          case SoundManager.Type.Intro_Music:
             // Here we play the ambience event for the Title Screen
             if (titleAmbienceState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
                _titleScreenAmbienceEvent.start();
             }
-            backgroundMusicParam = 6;
+            param = 6;
             break;
          case SoundManager.Type.Farm_Music:
-            backgroundMusicParam = 7;
+            param = 7;
             break;
          case SoundManager.Type.Interior:
-            backgroundMusicParam = 8;
+            param = 8;
             break;
          case SoundManager.Type.Sea_PvP:
-            backgroundMusicParam = 10;
+            param = 10;
             break;
          case SoundManager.Type.Sea_Forest:
-            backgroundMusicParam = 11;
+            param = 11;
             break;
          case SoundManager.Type.Sea_Desert:
-            backgroundMusicParam = 12;
+            param = 12;
             break;
          case SoundManager.Type.Sea_Lava:
-            backgroundMusicParam = 13;
+            param = 13;
             break;
          case SoundManager.Type.Sea_Mushroom:
-            backgroundMusicParam = 14;
+            param = 14;
             break;
          case SoundManager.Type.Sea_Pine:
-            backgroundMusicParam = 15;
+            param = 15;
             break;
          case SoundManager.Type.Sea_Snow:
-            backgroundMusicParam = 16;
+            param = 16;
             break;
          case SoundManager.Type.Sea_League:
-            backgroundMusicParam = 17;
+            param = 17;
             break;
          case SoundManager.Type.Battle_Music:
-            backgroundMusicParam = 19;
+            param = 19;
             break;
       }
 
@@ -397,16 +407,22 @@ public class SoundEffectManager : GenericGameManager
          _titleScreenAmbienceEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
       }
 
-      _backgroundMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, backgroundMusicParam);
+      _backgroundMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, param);
 
-      if (backgroundMusicState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
-         _backgroundMusicEvent.start();
-      }
+      playBackgroundMusicEvent();
 
       // If the type of music is "None"
-      if (backgroundMusicParam == -1) {
+      if (param == -1) {
          _backgroundMusicEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
       }
+   }
+
+   public void playBossDefeatTriumph () {
+      checkBackgroundMusicEvent();
+
+      _backgroundMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, 20);
+
+      playBackgroundMusicEvent();
    }
 
    private void checkAmbienceEvent () {

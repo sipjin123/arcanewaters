@@ -515,6 +515,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             BattleUIManager.self.highlightLocalBattler(false);
 
             if (BattleSelectionManager.self.selectedBattler != null) {
+               D.debug("Battler is already dead in update! Deselecting battler {" + BattleSelectionManager.self.selectedBattler.battlerType + "} now");
                BattleSelectionManager.self.selectedBattler.deselectThis();
             }
             BattleSelectionManager.self.selectedBattler = null;
@@ -720,7 +721,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       _attackIndicators.clear();
    }
 
-   public void registerTargetingBattler(Battler battler) {
+   public void registerTargetingBattler (Battler battler) {
       if (_targetingBattlers.Contains(battler)) {
          return;
       }
@@ -728,7 +729,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       _targetingBattlers.Add(battler);
    }
 
-   public void unregisterTargetingBattler(Battler battler) {
+   public void unregisterTargetingBattler (Battler battler) {
       if (!_targetingBattlers.Contains(battler)) {
          return;
       }
@@ -1161,7 +1162,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          // Play Triumph SFX if we defeat a boss
          if (this.isBossType) {
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.TRIUMPH_DEFEATED_BOSS);
+            SoundEffectManager.self.playBossDefeatTriumph();
          }
       }
    }

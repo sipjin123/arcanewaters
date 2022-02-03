@@ -355,7 +355,7 @@ public class NetEntity : NetworkBehaviour
          // Now that we have a player, we know that the redirection process is complete
          Global.isRedirecting = false;
 
-         D.debug($"Our local NetEntity has been created, so setting Global.isRedirecting to false.");
+         //D.debug($"Our local NetEntity has been created, so setting Global.isRedirecting to false.");
 
          // The fast login is completed
          Global.isFastLogin = false;

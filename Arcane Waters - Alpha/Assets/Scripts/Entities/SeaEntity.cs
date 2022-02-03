@@ -151,6 +151,9 @@ public class SeaEntity : NetEntity
    // The container for the residue effects
    public Transform residueHolder;
 
+   // The current force being applied to move this entity
+   public Vector2 movementForce;
+
    // The pause delay in seconds after attacking
    public const float AFTER_ATTACK_PAUSE = 1;
 
@@ -636,7 +639,8 @@ public class SeaEntity : NetEntity
       }
 
       ExplosionManager.createSlimeExplosion(location);
-      SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Coralbow_Attack, this.transform.position);
+
+      //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Coralbow_Attack, this.transform.position);
    }
 
    [ClientRpc]
@@ -645,7 +649,8 @@ public class SeaEntity : NetEntity
       venomResidue.creatorNetId = creatorNetId;
       venomResidue.instanceId = instanceId;
       ExplosionManager.createSlimeExplosion(location);
-      SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Coralbow_Attack, this.transform.position);
+
+      //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Coralbow_Attack, this.transform.position);
    }
 
    [ClientRpc]
@@ -783,7 +788,7 @@ public class SeaEntity : NetEntity
          EffectManager.show(effectTypes, pos);
 
          // Play the damage sound
-         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_1, pos);
+         //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_1, pos);
       } else {
          if (attackType == Attack.Type.Tentacle || attackType == Attack.Type.Poison_Circle) {
             // If tentacle attack, calls tentacle collision effect
@@ -843,7 +848,7 @@ public class SeaEntity : NetEntity
    public void Rpc_ShowTerrainHit (Vector3 pos, Attack.ImpactMagnitude impactMagnitude) {
       if (Util.hasLandTile(pos)) {
          Instantiate(PrefabsManager.self.requestCannonSmokePrefab(impactMagnitude), pos, Quaternion.identity);
-         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, pos);
+         //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, pos);
       } else {
          Instantiate(PrefabsManager.self.requestCannonSplashPrefab(impactMagnitude), pos + new Vector3(0f, -.1f), Quaternion.identity);
 
@@ -1467,7 +1472,7 @@ public class SeaEntity : NetEntity
 
    [ClientRpc]
    public void Rpc_PlayHitSfx (bool isShip, SeaMonsterEntity.Type seaMonsterType, bool isCrit, CannonballEffector.Type effectorType) {
-      SoundEffectManager.self.playEnemyHitSfx(isShip, seaMonsterType, isCrit, effectorType, this.transform.position);
+      SoundEffectManager.self.playSeaEnemyHurtSfx(isShip, seaMonsterType, isCrit, effectorType, this.transform.position);
    }
 
    #region Enemy AI
@@ -1676,7 +1681,10 @@ public class SeaEntity : NetEntity
                facing = newFacingDirection;
             }
 
-            _body.AddForce(direction.normalized * getMoveSpeed());
+            Vector3 moveAcceleration = direction.normalized * getMoveSpeed();
+            movementForce = moveAcceleration * _body.mass;
+
+            _body.AddForce(moveAcceleration);
             _lastMoveChangeTime = NetworkTime.time;
          }
 
@@ -2056,6 +2064,9 @@ public class SeaEntity : NetEntity
          Gizmos.color = new Color(1.0f, 0.0f, 0.0f, 0.5f);
          Gizmos.DrawMesh(_editorConeAggroGizmoMesh, 0, transform.position, Quaternion.Euler(0.0f, 0.0f, -Vector2.SignedAngle(Util.getDirectionFromFacing(facing), Vector2.right)), Vector3.one);
          Gizmos.color = Color.white;
+
+         Gizmos.color = Color.cyan;
+         Gizmos.DrawLine(transform.position, transform.position + (Vector3)movementForce * 0.001f);
       }
    }
 
@@ -2419,7 +2430,7 @@ public class SeaEntity : NetEntity
    #region Enemy AI
 
    // The Seeker that handles Pathfinding
-   protected Seeker _seeker;
+   protected Seeker _seeker = default;
 
    // The current path to the destination
    [SerializeField]
@@ -2427,13 +2438,13 @@ public class SeaEntity : NetEntity
 
    // The current Point Index of the path
    [SerializeField]
-   protected int _currentPathIndex;
+   protected int _currentPathIndex = default;
 
    // In case there are no TreasureSites to pursue, use this to patrol the vicinity
-   private Vector3 _originalPosition;
+   private Vector3 _originalPosition = default;
 
    // The generated mesh for showing the cone of aggro in the Editor
-   private Mesh _editorConeAggroGizmoMesh;
+   private Mesh _editorConeAggroGizmoMesh = default;
 
    // Spawn points placed in the area that sea enemies should avoid
    private List<Vector3> _playerSpawnPoints = new List<Vector3>();
@@ -2443,12 +2454,12 @@ public class SeaEntity : NetEntity
    private static float MIN_DISTANCE_TO_SPAWN_PATH_PERCENT = 0.4f;
 
    // Distance values that bot ship should keep from the spawn points, calculated for current area
-   private float _minDistanceToSpawn;
-   private float _minDistanceToSpawnPath;
+   private float _minDistanceToSpawn = default;
+   private float _minDistanceToSpawnPath = default;
 
    // Are we currently chasing an enemy
    [SerializeField]
-   private bool _isChasingEnemy;
+   private bool _isChasingEnemy = default;
 
    // The flag which temporarily disables avoiding spawn points
    private bool _disableSpawnDistanceTmp = false;
@@ -2461,7 +2472,7 @@ public class SeaEntity : NetEntity
 
    // How many seconds have passed since we last stopped on an attack route
    [SerializeField]
-   private float _currentSecondsBetweenAttackRoutes;
+   private float _currentSecondsBetweenAttackRoutes = default;
 
    private enum WaypointState
    {
@@ -2482,21 +2493,21 @@ public class SeaEntity : NetEntity
 
    // The first and closest attacker that we've aggroed
    [SerializeField]
-   private uint _currentAttacker;
+   private uint _currentAttacker = default;
 
    // How many seconds have passed since we last stopped on a patrol route
    [SerializeField]
-   private float _currentSecondsBetweenPatrolRoutes;
+   private float _currentSecondsBetweenPatrolRoutes = default;
 
    // How many seconds have passed since we've started patrolling the current TreasureSite
    [SerializeField]
-   private float _currentSecondsPatroling;
+   private float _currentSecondsPatroling = default;
 
    // If in a pvp game, this is the list of enemy structures we are trying to destroy, in priority order
-   private List<SeaStructure> _pvpTargetStructures;
+   private List<SeaStructure> _pvpTargetStructures = new List<SeaStructure>();
 
    // If in a pvp game, this is a target point in the middle of the lane, used to help the units follow the lane
-   private Transform _pvpLaneTarget;
+   private Transform _pvpLaneTarget = default;
 
    // When set to true, this sea entity won't take any damage
    [SyncVar]

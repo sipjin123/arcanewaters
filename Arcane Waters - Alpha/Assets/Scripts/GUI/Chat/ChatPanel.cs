@@ -10,8 +10,7 @@ using UnityEngine.InputSystem;
 using Crosstales.BWF.Manager;
 using TMPro;
 
-public class ChatPanel : MonoBehaviour
-{
+public class ChatPanel : MonoBehaviour {
    #region Public Variables
 
    // The height of 1 chat line
@@ -195,7 +194,7 @@ public class ChatPanel : MonoBehaviour
       // Focus the chat window if the forward slash key is released
       if (
          !PanelManager.self.hasPanelInLinkedList() &&
-         InputManager.self.inputMaster.UIShotcuts.Chat.WasPressedThisFrame() 
+         InputManager.self.inputMaster.UIShotcuts.ChatCommand.WasPressedThisFrame()
       ) {
          if (MailPanel.self == null || !MailPanel.self.isWritingMail()) {
             if (!wasJustFocused() && !nameInputField.isFocused) {
@@ -834,7 +833,15 @@ public class ChatPanel : MonoBehaviour
             List<ChatInfo.Type> types = ((ChatInfo.Type[]) Enum.GetValues(typeof(ChatInfo.Type))).ToList();
             foreach (ChatInfo.Type type in types) {
                if ((chatPrefs & (1 << ((int) type - 1))) != 0) {
-                  toggles.Find(x => x.type == type).GetComponentInChildren<Toggle>().isOn = true;
+                  ChatTypeToggle chatTypeToggle = toggles.Find(x => x.type == type);
+
+                  if (chatTypeToggle != null) {
+                     Toggle toggle = chatTypeToggle.GetComponentInChildren<Toggle>();
+
+                     if (toggle != null) {
+                        toggle.isOn = true;
+                     }
+                  }
                }
             }
 
