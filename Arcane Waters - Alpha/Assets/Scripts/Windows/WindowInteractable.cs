@@ -62,16 +62,18 @@ public class WindowInteractable : NetworkBehaviour {
    }
 
    private IEnumerator CO_SetAreaParent () {
-      // Wait until we have finished instantiating the area
-      while (AreaManager.self.getArea(areaKey) == null) {
-         yield return 0;
-      }
+      if (AreaManager.self != null) {
+         // Wait until we have finished instantiating the area
+         while (AreaManager.self.getArea(areaKey) == null) {
+            yield return 0;
+         }
 
-      // Set as a child of the area
-      Area area = AreaManager.self.getArea(this.areaKey);
-      bool worldPositionStays = area.cameraBounds.bounds.Contains((Vector2) transform.position);
-      setAreaParent(area, worldPositionStays);
-      area.interactableWindows.Add(this);
+         // Set as a child of the area
+         Area area = AreaManager.self.getArea(this.areaKey);
+         bool worldPositionStays = area.cameraBounds.bounds.Contains((Vector2) transform.position);
+         setAreaParent(area, worldPositionStays);
+         area.interactableWindows.Add(this);
+      }
    }
 
    public void setAreaParent (Area area, bool worldPositionStays) {

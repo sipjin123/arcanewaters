@@ -95,6 +95,7 @@ public class SpeechManager : MonoBehaviour {
          speechInstance.speechBubbleText.transform.SetParent(null);
          speechInstance.speechBubbleContainer.transform.localScale = new Vector3(-1, 1, 1);
          speechInstance.speechBubbleText.transform.SetParent(speechInstance.speechBubbleBackground.transform);
+         speechInstance.speechBubbleText.transform.localScale = new Vector3(-1, 1, 1); ;
       }
    }
 
