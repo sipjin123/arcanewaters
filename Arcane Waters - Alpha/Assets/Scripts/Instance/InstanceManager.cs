@@ -53,6 +53,22 @@ public class InstanceManager : MonoBehaviour
                      if (treasureSite.destinationInstanceId > 0) {
                         D.adminLog("Created New Instance for Treasure Site", D.ADMIN_LOG_TYPE.InstanceProcess);
                         instance = getInstance(treasureSite.destinationInstanceId);
+
+                        if (instance != null) {
+                           D.adminLog("TreasureSite instance being fetched here, " +
+                              "TreasureSite: {" +treasureSite.areaKey+ "} {"+treasureSite.instanceId+"} {" + treasureSite.destinationInstanceId + "} " +
+                              "PrevArea: {" + areaKey + " } {"+player.areaKey+ "}  {" + player.instanceId + "}" +
+                              "Instance: {"+instance.id+"}{"+instance.areaKey+"}{"+instance.voyageId+"}", D.ADMIN_LOG_TYPE.POI_WARP);
+
+                           if (areaKey != instance.areaKey) {
+                              D.adminLog("Created New Instance for POI, area keys did not match for " +
+                                 "InstanceId:{" + instance.id + "} InstanceArea:{" + instance.areaKey + "} TargetArea:{" + areaKey + "}", D.ADMIN_LOG_TYPE.POI_WARP);
+
+                              // If the treasure site instance doesn't exist yet, create it
+                              instance = createNewInstance(areaKey, false, voyageId, seaVoyageInstance.leagueExitAreaKey, seaVoyageInstance.leagueExitSpawnKey, seaVoyageInstance.leagueExitFacingDirection);
+                              treasureSite.destinationInstanceId = instance.id;
+                           }
+                        }
                      } else {
                         D.adminLog("Created New Instance for Non-Treasure Site", D.ADMIN_LOG_TYPE.InstanceProcess);
                         // If the treasure site instance doesn't exist yet, create it
