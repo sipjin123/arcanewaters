@@ -614,7 +614,7 @@ public class OptionsPanel : Panel
       }
 
       // Return to the character selection screen
-      Util.stopHostAndReturnToCharacterSelectionScreen();
+      Util.stopHostAndReturnToTitleScreen();
    }
 
    public void enableAdminButtons (bool isEnabled) {

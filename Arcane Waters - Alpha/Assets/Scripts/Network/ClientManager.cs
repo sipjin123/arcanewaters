@@ -118,6 +118,7 @@ public class ClientManager : GenericGameManager {
          // Trigger the fetching of the ownership info
          SteamLoginManager.self.getAuthenticationTicket();
       } else {
+         Global.lastSteamId = "";
          LogInUserMessage msg = new LogInUserMessage(Global.lastUsedAccountName, Global.lastUserAccountPassword, false, 
             Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, Global.isSinglePlayer, new byte[0], 0, machineIdentifier, Global.isFirstLogin, "0", "", Global.isRedirecting, deploymentId);
 

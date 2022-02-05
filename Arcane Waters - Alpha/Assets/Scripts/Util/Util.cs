@@ -1377,8 +1377,10 @@ public class Util : MonoBehaviour
 
       // Reset ambience
       AmbienceManager.self.setTitleScreenAmbience();
-   }
 
+      TitleScreen.self.showLoginPanels();
+   }
+   
    public static void stopHostAndReturnToCharacterSelectionScreen () {
       D.debug($"Util.stopHostAndReturnToCharacterScreen() was called.");
 
@@ -1422,18 +1424,26 @@ public class Util : MonoBehaviour
          ChatPanel.self.clearChat();
       }
 
+      TitleScreen.self.showLoginPanels();
+
       // Look up the background music for the Title Screen, if we have any
       SoundManager.setBackgroundMusic(SoundManager.Type.Intro_Music);
 
       // Reset ambience
       AmbienceManager.self.setTitleScreenAmbience();
 
-      Global.isPlayerLoggedOut = true;
+      bool hasValidSteamLogin = SteamManager.Initialized && Global.lastSteamId.Length > 10;
+      if (hasValidSteamLogin) {
+         Global.isPlayerLoggedOut = true;
+      }
 
-      if (Util.isServerBuild()) {
-         QuickLaunchPanel.self.launch();
+      bool hasValidQuickPanelContent = PlayerPrefs.GetString(QuickLaunchPanel.ACCOUNT_KEY).Length > 1 && PlayerPrefs.GetString(QuickLaunchPanel.PASSWORD_KEY).Length > 1;
+      if (!Util.isCloudBuild() && Util.isServerBuild() && hasValidQuickPanelContent) {
+          QuickLaunchPanel.self.launch();
       } else {
-         TitleScreen.self.onLoginButtonPressed(SteamManager.Initialized);
+         if (hasValidSteamLogin) {
+            TitleScreen.self.onLoginButtonPressed(SteamManager.Initialized);
+         }
       }
    }
 
