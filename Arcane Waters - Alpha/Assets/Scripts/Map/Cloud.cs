@@ -92,8 +92,11 @@ public class Cloud : ClientMonoBehaviour {
       Collider2D[] results = new Collider2D[1];
       int count = Physics2D.OverlapCircleNonAlloc(cloudSprite.transform.position, area.isSea ? 1.4f : .7f, results, LayerMask.GetMask(LayerUtil.SHIPS));
 
-      // If we found a ship, then there's something near us
-      hasSomethingNearby = count > 0;
+      Collider2D[] enemyResults = new Collider2D[1];
+      int enemyCount = Physics2D.OverlapCircleNonAlloc(cloudSprite.transform.position, area.isSea ? 1.4f : .7f, enemyResults, LayerMask.GetMask(LayerUtil.SEA_MONSTERS));
+
+      // If we found an entity, then there's something near us
+      hasSomethingNearby = count > 0 || enemyCount > 0;
    }
 
    #region Private Variables
