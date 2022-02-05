@@ -22,5 +22,6 @@ namespace MapCreationTool.Serialization
       public PvpArenaSize pvpArenaSize;
       public bool spawnsSeaMonsters = true;
       public string creatorName;
+      public int specialState = 0;
    }
 }

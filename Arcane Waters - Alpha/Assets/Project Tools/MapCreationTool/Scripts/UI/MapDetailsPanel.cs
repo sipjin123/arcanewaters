@@ -31,6 +31,10 @@ namespace MapCreationTool
       private Dropdown pvpArenaSizeDropdown = null;
       [SerializeField]
       private Toggle spawnsSeaMonsterToggle = default;
+      [SerializeField]
+      private Slider specialState = default;
+      [SerializeField]
+      private Text specialStateText = default;
 
       private Map targetMap = default;
       private (int id, string displayText)[] sourceOptions = new (int id, string displayText)[0];
@@ -90,6 +94,11 @@ namespace MapCreationTool
          maxPlayerCountInput.text = map.maxPlayerCount.ToString();
          sourceMapDropdown.options = sourceOptions.Select(o => new Dropdown.OptionData { text = o.displayText }).ToList();
          spawnsSeaMonsterToggle.isOn = map.spawnsSeaMonsters;
+         specialState.onValueChanged.AddListener(_ => {
+            specialStateText.text = _.ToString();
+         });
+         specialState.value = map.specialState;
+         specialStateText.text = map.specialState.ToString();
 
          sourceMapDropdown.value = 0;
          for (int i = 0; i < sourceOptions.Length; i++) {
@@ -144,7 +153,8 @@ namespace MapCreationTool
                maxPlayerCount = maxPlayerCount,
                pvpGameMode = pvpGameModeOptions[pvpGameModeDropdown.value].type,
                pvpArenaSize = pvpArenaSizeOptions[pvpArenaSizeDropdown.value].type,
-               spawnsSeaMonsters = spawnsSeaMonsterToggle.isOn
+               spawnsSeaMonsters = spawnsSeaMonsterToggle.isOn,
+               specialState = (int) specialState.value
             };
 
             if (string.IsNullOrWhiteSpace(newMap.name)) {
@@ -212,6 +222,7 @@ namespace MapCreationTool
                         version.map.pvpGameMode = newMap.pvpGameMode;
                         version.map.pvpArenaSize = newMap.pvpArenaSize;
                         version.map.spawnsSeaMonsters = newMap.spawnsSeaMonsters;
+                        version.map.specialState = newMap.specialState;
                         DrawBoard.changeLoadedVersion(version);
                      }
                      Overlord.loadAllRemoteData();

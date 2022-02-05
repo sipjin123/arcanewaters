@@ -2251,6 +2251,7 @@ public class DB_Main : DB_MainStub
                   int pvpGameMode = dataReader.GetInt32("pvpGameMode");
                   int pvpArenaSize = dataReader.GetInt32("pvpArenaSize");
                   int spawnSeaMonsters = dataReader.GetInt32("spawnSeaMonsters");
+                  int specialState = dataReader.GetInt32("specialState");
 
                   string newContent = id + "[space]" + // 0
                      name + "[space]" + // 1
@@ -2263,7 +2264,8 @@ public class DB_Main : DB_MainStub
                      maxPlayerCount + "[space]" + // 8
                      pvpGameMode + "[space]" + // 9
                      pvpArenaSize + "[space]" + // 10
-                     spawnSeaMonsters + "[next]\n"; // 11
+                     spawnSeaMonsters + "[space]" + // 11
+                     specialState + "[next]\n"; // 12
                   content += newContent;
                } catch {
                   D.debug("Skipping map data due to invalid entry");
@@ -2279,7 +2281,7 @@ public class DB_Main : DB_MainStub
 
       cmd.CommandText =
             "SELECT id, name, displayName, createdAt, creatorUserId, publishedVersion, sourceMapId, notes, " +
-               "editorType, biome, specialType, accName, weatherEffectType, maxPlayerCount, pvpGameMode, pvpArenaSize, spawnSeaMonsters " +
+               "editorType, biome, specialType, accName, weatherEffectType, maxPlayerCount, pvpGameMode, pvpArenaSize, spawnSeaMonsters, specialState " +
             "FROM global.maps_v2 " +
                "LEFT JOIN global.accounts ON maps_v2.creatorUserId = accId " +
             "ORDER BY name;";
@@ -2308,7 +2310,8 @@ public class DB_Main : DB_MainStub
                maxPlayerCount = dataReader.GetInt32("maxPlayerCount"),
                pvpGameMode = (PvpGameMode) dataReader.GetInt32("pvpGameMode"),
                pvpArenaSize = (PvpArenaSize) dataReader.GetInt32("pvpArenaSize"),
-               spawnsSeaMonsters = dataReader.GetInt32("spawnSeaMonsters") == 1 ? true : false
+               spawnsSeaMonsters = dataReader.GetInt32("spawnSeaMonsters") == 1 ? true : false,
+               specialState = dataReader.GetInt32("specialState")
             });
          }
       }
@@ -2321,7 +2324,7 @@ public class DB_Main : DB_MainStub
 
       string cmdText =
             "SELECT id, name, displayName, createdAt, creatorUserId, publishedVersion, sourceMapId, notes, " +
-               "editorType, biome, specialType, accName, weatherEffectType, maxPlayerCount, pvpGameMode, pvpArenaSize " +
+               "editorType, biome, specialType, accName, weatherEffectType, maxPlayerCount, pvpGameMode, pvpArenaSize, specialState, spawnSeaMonsters " +
             "FROM global.maps_v2 " +
                "LEFT JOIN global.accounts ON maps_v2.creatorUserId = accId " +
             "ORDER BY name;";
@@ -2353,6 +2356,7 @@ public class DB_Main : DB_MainStub
                      maxPlayerCount = dataReader.GetInt32("maxPlayerCount"),
                      pvpGameMode = (PvpGameMode) dataReader.GetInt32("pvpGameMode"),
                      pvpArenaSize = (PvpArenaSize) dataReader.GetInt32("pvpArenaSize"),
+                     specialState = dataReader.GetInt32("specialState"),
                      spawnsSeaMonsters = dataReader.GetInt32("spawnSeaMonsters") == 1 ? true : false
                   });
                }
@@ -2617,8 +2621,8 @@ public class DB_Main : DB_MainStub
 
          try {
             // Insert entry to maps
-            cmd.CommandText = "INSERT INTO global.maps_v2(name, createdAt, creatorUserId, publishedVersion, editorType, biome, displayName, spawnSeaMonsters) " +
-               "VALUES(@name, @createdAt, @creatorID, @publishedVersion, @editorType, @biome, @name, @spawnSeaMonsters);";
+            cmd.CommandText = "INSERT INTO global.maps_v2(name, createdAt, creatorUserId, publishedVersion, editorType, biome, displayName, spawnSeaMonsters, specialState) " +
+               "VALUES(@name, @createdAt, @creatorID, @publishedVersion, @editorType, @biome, @name, @spawnSeaMonsters, @specialState);";
             cmd.Parameters.AddWithValue("@name", mapVersion.map.name);
             cmd.Parameters.AddWithValue("@createdAt", mapVersion.map.createdAt);
             cmd.Parameters.AddWithValue("@creatorID", mapVersion.map.creatorID);
@@ -2626,6 +2630,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@editorType", (int) mapVersion.map.editorType);
             cmd.Parameters.AddWithValue("@biome", (int) mapVersion.map.biome);
             cmd.Parameters.AddWithValue("@spawnSeaMonsters", mapVersion.map.spawnsSeaMonsters ? 1 : 0);
+            cmd.Parameters.AddWithValue("@specialState", mapVersion.map.specialState);
             DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
@@ -2756,7 +2761,7 @@ public class DB_Main : DB_MainStub
    public static new void updateMapDetails (Map map) {
       string cmdText = "UPDATE global.maps_v2 " +
          "SET name = @name, sourceMapId = @sourceId, notes = @notes, specialType = @specialType, displayName = @displayName, biome=@biome, " +
-         "weatherEffectType = @weatherEffect, maxPlayerCount=@maxPlayerCount, pvpGameMode=@pvpGameMode, pvpArenaSize=@pvpArenaSize, spawnSeaMonsters=@spawnSeaMonsters " +
+         "weatherEffectType = @weatherEffect, maxPlayerCount=@maxPlayerCount, pvpGameMode=@pvpGameMode, pvpArenaSize=@pvpArenaSize, spawnSeaMonsters=@spawnSeaMonsters, specialState=@specialState " +
          "WHERE id = @mapId;";
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
@@ -2777,6 +2782,7 @@ public class DB_Main : DB_MainStub
          cmd.Parameters.AddWithValue("@pvpArenaSize", map.pvpArenaSize);
          cmd.Parameters.AddWithValue("@biome", map.biome);
          cmd.Parameters.AddWithValue("@spawnSeaMonsters", map.spawnsSeaMonsters ? 1 : 0);
+         cmd.Parameters.AddWithValue("@specialState", map.specialState);
          DebugQuery(cmd);
 
          // Execute the command

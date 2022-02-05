@@ -1028,6 +1028,7 @@ public class XmlVersionManagerClient : GenericGameManager {
                   int pvpGameMode = 0;
                   int pvpArenaSize = 0;
                   bool spawnSeaMonsters = false;
+                  int specialState = 0;
 
                   id = int.Parse(xmlSubGroup[0]);
                   name = xmlSubGroup[1];
@@ -1073,8 +1074,16 @@ public class XmlVersionManagerClient : GenericGameManager {
                         spawnSeaMonsters = false;
                      }
                      spawnSeaMonsters = int.Parse(xmlSubGroup[11]) == 1 ? true : false;
+
+                     try {
+                        int.TryParse(xmlSubGroup[12], out int retSpecialState);
+                        specialState = retSpecialState;
+                     } catch {
+                        specialState = 0;
+                     }
                   } else {
                      spawnSeaMonsters = false;
+                     specialState = 0;
                      D.debug("Xml subgroup has insufficient data! " + xmlSubGroup.Length);
                   }
 
@@ -1090,7 +1099,8 @@ public class XmlVersionManagerClient : GenericGameManager {
                      maxPlayerCount = maxPlayerCount,
                      pvpGameMode = (PvpGameMode) pvpGameMode,
                      pvpArenaSize = (PvpArenaSize) pvpArenaSize,
-                     spawnsSeaMonsters = spawnSeaMonsters
+                     spawnsSeaMonsters = spawnSeaMonsters,
+                     specialState = specialState
                   };
 
                   mapKeyDataList.Add(newMapEntry);
