@@ -50,9 +50,10 @@ public class EnemyManager : MonoBehaviour {
    }
 
    private IEnumerator CO_ProcessSpawnOpenWorldEnemies (Instance instance, string areaKey, int targetSpawns) {
-      int maxAttempts = 200;
-      yield return new WaitForSeconds(1);
+      int maxAttempts = 100;
+      yield return new WaitForSeconds(.1f);
 
+      double initialTime = NetworkTime.time;
       Area areaTarget = AreaManager.self.getArea(areaKey);
       if (areaTarget == null) {
          D.adminLog("NULL Area {"+areaKey+"}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
@@ -66,10 +67,13 @@ public class EnemyManager : MonoBehaviour {
          int indexCount = 0;
          int spawnsPerLayer = (int) (targetSpawns / waterLayers.Count);
          int totalSuccessfulSpawns = 0;
-         List<Vector3Int> occupiedTile = new List<Vector3Int>();
-
+         HashSet<Vector3Int> occupiedTileOverall = new HashSet<Vector3Int>();
          D.adminLog("Generating Layers: {" + waterLayers.Count + "} water layers for area {" + areaKey + "} TargetSpwns: {" + targetSpawns + "}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
          foreach (TilemapLayer layer in waterLayers) {
+            if (layer.fullName == "water 8") {
+               continue;
+            }
+
             indexCount++;
             int successfulSpawns = 0;
 
@@ -77,18 +81,18 @@ public class EnemyManager : MonoBehaviour {
             BoundsInt.PositionEnumerator allTilesInLayer = layer.tilemap.cellBounds.allPositionsWithin;
 
             // Make sure that the generated deeper water layer is cached so it does not check again on shallow tiles, this prevents
-            List<Vector3Int> availableTiles = new List<Vector3Int>();
+            HashSet<Vector3Int> availableTiles = new HashSet<Vector3Int>();
             foreach (Vector3Int currentTile in allTilesInLayer) {
-               if (!occupiedTile.Contains(currentTile)) {
+               if (!occupiedTileOverall.Contains(currentTile)) {
                   TileBase newTile = layer.tilemap.GetTile(currentTile);
                   if (newTile != null) {
                      availableTiles.Add(currentTile);
-                     occupiedTile.Add(currentTile);
+                     occupiedTileOverall.Add(currentTile);
                   }
                }
             }
 
-            List<Vector3Int> occupiedTiles = new List<Vector3Int>();
+            HashSet<Vector3Int> occupiedTilesThisLayer = new HashSet<Vector3Int>();
             while (successfulSpawns < spawnsPerLayer && maxAttempts > 0) {
                maxAttempts--;
                if (maxAttempts < 1) {
@@ -96,15 +100,12 @@ public class EnemyManager : MonoBehaviour {
                      "Breaking cycle due to limitations Spawned: {" + successfulSpawns + "} out of: {" + totalSuccessfulSpawns + "}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
                   break;
                }
-               // Old Approach, random value across entire tilemap
-               // int randomHorizontal = Random.Range(layer.tilemap.cellBounds.xMin, layer.tilemap.cellBounds.xMax);
-               // int randomVertical = Random.Range(layer.tilemap.cellBounds.yMin, layer.tilemap.cellBounds.yMax);
 
                // Find a random value within the available list
                Vector3Int randomSelectedTile = availableTiles.ChooseRandom();
-               if (!occupiedTiles.Contains(randomSelectedTile)) {
+               if (!occupiedTilesThisLayer.Contains(randomSelectedTile)) {
                   // Mark occupied tiles and count the successful spawns 
-                  occupiedTiles.Add(randomSelectedTile);
+                  occupiedTilesThisLayer.Add(randomSelectedTile);
 
                   // Fetch the tile information
                   Vector3Int newVector = randomSelectedTile;
@@ -163,6 +164,8 @@ public class EnemyManager : MonoBehaviour {
             difficultyValue = Mathf.Clamp(difficultyValue, (int) Voyage.Difficulty.Easy, (int) Voyage.Difficulty.Hard);
             difficulty = (Voyage.Difficulty) difficultyValue;
          }
+
+         D.debug("Open World Enemies Finished spawning: {" + (NetworkTime.time - initialTime).ToString("f1") + "}");
       }
    }
 
