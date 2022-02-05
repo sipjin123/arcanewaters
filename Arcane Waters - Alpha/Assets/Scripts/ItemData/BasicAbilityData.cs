@@ -188,9 +188,9 @@ public class BasicAbilityData : BattleItemData
       //}
 
       // The NON buff abilities should have a default Hit sfx
-      if (abilityType != AbilityType.BuffDebuff) {
-         SoundEffectManager.self.playFmodSfx(SoundEffectManager.GENERIC_HIT_LAND, targetTransform.position);
-      }
+      //if (abilityType != AbilityType.BuffDebuff) {
+      //   SoundEffectManager.self.playFmodSfx(SoundEffectManager.GENERIC_HIT_LAND, targetTransform.position);
+      //}
    }
 
    public bool isMelee () {

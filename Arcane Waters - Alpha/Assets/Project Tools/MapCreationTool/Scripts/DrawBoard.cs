@@ -38,8 +38,11 @@ namespace MapCreationTool
       private SpriteRenderer sizeCover = null;
       [SerializeField]
       private Tilemap tileSelectionTilemap = null;
+
+      // Array of tiles that we use to form the selection highlight
       [SerializeField]
-      private TileBase selectedTileHighlight = null;
+      private TileBase[] _selectionHighlightTiles = new TileBase[16];
+
       [SerializeField]
       private TileBase hoveredTileHighlight = null;
 
@@ -305,12 +308,18 @@ namespace MapCreationTool
             }
          }
 
+         // Set tiles with null or random tile, showing if tile is selected or not
          tileSelectionLayer.setTiles(
             change.selectionToRemove.tiles.ToArray(),
             Enumerable.Repeat<TileBase>(null, change.selectionToRemove.tiles.Count).ToArray());
          tileSelectionLayer.setTiles(
             change.selectionToAdd.tiles.ToArray(),
-            Enumerable.Repeat<TileBase>(selectedTileHighlight, change.selectionToAdd.tiles.Count).ToArray());
+            Enumerable.Repeat<TileBase>(_selectionHighlightTiles[0], change.selectionToAdd.tiles.Count).ToArray());
+
+         // Pick out correct tiles for selection layer so it looks nice visually
+         if (change.selectionToRemove.tiles.Count > 0 || change.selectionToAdd.tiles.Count > 0) {
+            arrangeSelectionHighlightTiles();
+         }
 
          recalculateInheritedSorting();
 
@@ -322,6 +331,49 @@ namespace MapCreationTool
 
          if (!change.selectionToAdd.empty || !change.selectionToRemove.empty) {
             SelectionChanged?.Invoke(currentSelection);
+         }
+      }
+
+      private void arrangeSelectionHighlightTiles () {
+         for (int i = origin.x; i < size.x + origin.x; i++) {
+            for (int j = origin.y; j < size.y + origin.y; j++) {
+               if (tileSelectionLayer.getTile(i, j) != null) {
+                  SidesInt sur = tileSelectionLayer.surroundingCountMaxOne(i, j);
+                  if (sur.right == 1 && sur.left == 1 && sur.top == 1 && sur.bot == 1) {
+                     tileSelectionLayer.setTile(i, j, _selectionHighlightTiles[4]);
+                  } else if (sur.right == 1 && sur.left == 1 && sur.bot == 1) {
+                     tileSelectionLayer.setTile(i, j, _selectionHighlightTiles[1]);
+                  } else if (sur.top == 1 && sur.bot == 1 && sur.left == 1) {
+                     tileSelectionLayer.setTile(i, j, _selectionHighlightTiles[5]);
+                  } else if (sur.right == 1 && sur.left == 1 && sur.top == 1) {
+                     tileSelectionLayer.setTile(i, j, _selectionHighlightTiles[7]);
+                  } else if (sur.top == 1 && sur.bot == 1 && sur.right == 1) {
+                     tileSelectionLayer.setTile(i, j, _selectionHighlightTiles[3]);
+                  } else if (sur.bot == 1 && sur.right == 1) {
+                     tileSelectionLayer.setTile(i, j, _selectionHighlightTiles[0]);
+                  } else if (sur.bot == 1 && sur.left == 1) {
+                     tileSelectionLayer.setTile(i, j, _selectionHighlightTiles[2]);
+                  } else if (sur.left == 1 && sur.top == 1) {
+                     tileSelectionLayer.setTile(i, j, _selectionHighlightTiles[8]);
+                  } else if (sur.right == 1 && sur.top == 1) {
+                     tileSelectionLayer.setTile(i, j, _selectionHighlightTiles[6]);
+                  } else if (sur.bot == 1 && sur.top == 1) {
+                     tileSelectionLayer.setTile(i, j, _selectionHighlightTiles[11]);
+                  } else if (sur.right == 1 && sur.left == 1) {
+                     tileSelectionLayer.setTile(i, j, _selectionHighlightTiles[14]);
+                  } else if (sur.top == 1) {
+                     tileSelectionLayer.setTile(i, j, _selectionHighlightTiles[9]);
+                  } else if (sur.bot == 1) {
+                     tileSelectionLayer.setTile(i, j, _selectionHighlightTiles[10]);
+                  } else if (sur.left == 1) {
+                     tileSelectionLayer.setTile(i, j, _selectionHighlightTiles[12]);
+                  } else if (sur.right == 1) {
+                     tileSelectionLayer.setTile(i, j, _selectionHighlightTiles[13]);
+                  } else {
+                     tileSelectionLayer.setTile(i, j, _selectionHighlightTiles[15]);
+                  }
+               }
+            }
          }
       }
 
@@ -449,7 +501,7 @@ namespace MapCreationTool
       }
 
       public List<MapSpawn> formSpawnList (int? mapId, int mapVersion) {
-         List<MapSpawn> formList = GetComponentsInChildren<SpawnMapEditor> ().Select(s => new MapSpawn {
+         List<MapSpawn> formList = GetComponentsInChildren<SpawnMapEditor>().Select(s => new MapSpawn {
             mapId = mapId ?? -1,
             mapVersion = mapVersion,
             name = s.spawnName,

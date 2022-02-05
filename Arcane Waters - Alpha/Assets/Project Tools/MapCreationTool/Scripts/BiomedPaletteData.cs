@@ -49,6 +49,12 @@ namespace MapCreationTool
             Transform[] prefCons = new Transform[] { biomePaletteResources.prefabsCon, sharedResources.prefabsCon };
             List<TileGroup> groups = formSpecialGroups(biomedGroups, tiles, specialCon, prefCons, biome);
 
+            // Allow tile groups to store their alternatives
+            // ex. sea mountains with and without water ripples
+            foreach (TileGroup g in groups) {
+               g.storeAlternativeGroups(groups);
+            }
+
             // All prefabs will be of the single defined biome, translate it
             foreach (TileGroup group in groups) {
                if (group is PrefabGroup) {
@@ -300,7 +306,8 @@ namespace MapCreationTool
          SeaMountainGroup newGroup = new SeaMountainGroup {
             tiles = extractBiome(from.tiles, biome),
             start = from.start,
-            allTiles = new TileBase[bounds.size.x, bounds.size.y]
+            allTiles = new TileBase[bounds.size.x, bounds.size.y],
+            allTilesToIndex = new Dictionary<TileBase, (int x, int y)>()
          };
 
          for (int i = 0; i < bounds.size.x; i++) {
@@ -308,6 +315,9 @@ namespace MapCreationTool
                Vector2Int index = new Vector2Int(bounds.position.x + i, bounds.position.y + j);
                if (tileMatrix[index.x, index.y] != null) {
                   newGroup.allTiles[i, j] = tileMatrix[index.x, index.y].tile[biome];
+                  if (!newGroup.allTilesToIndex.ContainsKey(newGroup.allTiles[i, j])) {
+                     newGroup.allTilesToIndex.Add(newGroup.allTiles[i, j], (i, j));
+                  }
                }
             }
          }

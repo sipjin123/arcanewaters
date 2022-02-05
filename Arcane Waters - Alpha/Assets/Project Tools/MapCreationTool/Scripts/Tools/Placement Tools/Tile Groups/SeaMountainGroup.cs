@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Tilemaps;
 
 namespace MapCreationTool
@@ -6,6 +7,7 @@ namespace MapCreationTool
    public class SeaMountainGroup : TileGroup
    {
       public TileBase[,] allTiles { get; set; }
+      public Dictionary<TileBase, (int x, int y)> allTilesToIndex = new Dictionary<TileBase, (int x, int y)>();
       public string layer { get; set; }
 
       public override Vector2Int brushSize => new Vector2Int(5, 5);
@@ -17,7 +19,7 @@ namespace MapCreationTool
          return TileGroup.contains(allTiles, tile);
       }
 
-      public TileBase pickTile (bool[,] adj, SidesInt sur, int x, int y) {
+      public Vector2Int pickTileIndex (bool[,] adj, SidesInt sur, int x, int y) {
          Vector2Int tileIndex = new Vector2Int(-1, -1);
 
          //------------------------------------------
@@ -184,7 +186,28 @@ namespace MapCreationTool
          // If no tile index was found, add an empty tile
          if (tileIndex.x == -1)
             tileIndex.Set(3, 9);
-         return allTiles[tileIndex.x, tileIndex.y];
+         return tileIndex;
+      }
+
+      public TileBase pickTile (bool[,] adj, SidesInt sur, int x, int y) {
+         Vector2Int index = pickTileIndex(adj, sur, x, y);
+         return allTiles[index.x, index.y];
+      }
+
+      public bool areAlternativeTiles (TileBase ourTile, TileBase otherTile) {
+         if (ourTile == null || otherTile == null) {
+            return false;
+         }
+
+         if (allTilesToIndex.TryGetValue(ourTile, out var index)) {
+            foreach (TileGroup g in alternativeGroups) {
+               if (g is SeaMountainGroup && (g as SeaMountainGroup).allTilesToIndex.TryGetValue(otherTile, out var otherIndex)) {
+                  return index == otherIndex;
+               }
+            }
+         }
+
+         return false;
       }
    }
 }

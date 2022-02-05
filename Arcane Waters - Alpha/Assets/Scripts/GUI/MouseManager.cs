@@ -333,7 +333,7 @@ public class MouseManager : ClientMonoBehaviour
    public Direction? getMouseMajorMovementDirection () {
       Vector2 mouseDelta = MouseUtils.mouseDelta;
 
-      if (Util.AreVectorsAlmostTheSame(Vector2.zero, mouseDelta)) {
+      if (Util.areVectorsAlmostTheSame(Vector2.zero, mouseDelta)) {
          return null;
       }
 

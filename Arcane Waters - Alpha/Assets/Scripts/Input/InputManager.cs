@@ -370,6 +370,18 @@ public class InputManager : GenericGameManager {
       #endregion      
    }
    
+   public static Direction? isPressingAnyDirection () {
+      var directions = Enum.GetValues(typeof(Direction));
+      
+      foreach (Direction direction in directions) {
+         if (isPressingDirection(direction)) {
+            return direction;
+         }
+      }
+
+      return null;
+   }
+
    public static bool isPressingDirection (Direction direction) {
       #region Perf tests automove simulation
       if (_isMoveSimulated) {

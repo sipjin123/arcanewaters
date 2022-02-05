@@ -217,6 +217,33 @@ namespace MapCreationTool
          tilemap.SetTile(position, tile);
       }
 
+      public SidesInt surroundingCountMaxOne (int x, int y) {
+         SidesInt result = new SidesInt {
+            left = 0,
+            right = 0,
+            bot = 0,
+            top = 0
+         };
+
+         if (x > origin.x && getTile(x - 1, y) != null) {
+            result.left = 1;
+         }
+
+         if (y > origin.y && getTile(x, y - 1) != null) {
+            result.bot = 1;
+         }
+
+         if (x < origin.x + size.x - 1 && getTile(x + 1, y) != null) {
+            result.right = 1;
+         }
+
+         if (y < origin.y + size.y - 1 && getTile(x, y + 1) != null) {
+            result.top = 1;
+         }
+
+         return result;
+      }
+
       public Layer defaultLayer
       {
          get

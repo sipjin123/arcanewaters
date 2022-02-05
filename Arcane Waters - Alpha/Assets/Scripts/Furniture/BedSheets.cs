@@ -56,7 +56,7 @@ public class BedSheets : ClientMonoBehaviour
       sheetsAreLowered = false;
 
       // Play a sound
-      //SoundManager.create3dSound("door_cloth_close", this.transform.position);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_CLOTH_CLOSE, this.transform.position);
    }
 
    void OnTriggerExit2D (Collider2D other) {

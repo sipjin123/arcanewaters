@@ -97,7 +97,7 @@ public class ArmorManager : EquipmentManager {
       updateSprites(newArmorType, palettes);
 
       // Play a sound
-      //SoundManager.create3dSound("equip_", this.transform.position, 2);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.EQUIP);
 
       D.adminLog("Equipped armor" + " SQL: {" + armorData.sqlId +
          "} Name: {" + armorData.equipmentName +

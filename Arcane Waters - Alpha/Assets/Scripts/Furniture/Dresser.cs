@@ -67,7 +67,7 @@ public class Dresser : ClientMonoBehaviour, IBiomable
       isOpen = false;
 
       // Play a sound
-      //SoundManager.create3dSound("door_close_", this.transform.position, 3);
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_CLOSE, this.transform.position);
    }
 
    public void setBiome (Biome.Type biomeType) {

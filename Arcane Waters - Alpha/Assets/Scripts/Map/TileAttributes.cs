@@ -16,7 +16,10 @@ public class TileAttributes
       WaterFull = 2,
       Grass = 3,
       Stone = 4,
-      Wood = 5
+      Wood = 5,
+      Wooden_Bridge = 6,
+      Vine = 7,
+      Generic = 8
    }
 
    // The attributes that are assigned to a tile

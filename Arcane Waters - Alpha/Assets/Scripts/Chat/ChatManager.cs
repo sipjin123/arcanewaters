@@ -71,6 +71,7 @@ public class ChatManager : GenericGameManager
       _commandData.Add(new CommandData("/r", "Sends a private message to the last user that whispered to you", tryReply, parameterNames: new List<string>() { "message" }));
       _commandData.Add(new CommandData("/who", "Search users", searchUsers, parameterNames: new List<string>() { "[is, in, level, help]", "username, area or level" }));
       _commandData.Add(new CommandData("/e", "Play an emote", requestPlayEmote, parameterNames: new List<string>() { "emoteType" }, parameterAutocompletes: new List<string>() { "dance", "kneel", "greet" }));
+      _commandData.Add(new CommandData("/stuck", "Are you stuck? Use this to free yourself", requestUnstuck));
    }
 
    public void updateChatFontSize (float size) {
@@ -937,6 +938,18 @@ public class ChatManager : GenericGameManager
          "If [filter] is 'in', the command allows to list the players who are currently in a specific biome or area. In this case, [parameter] must be the name of the biome. The available biomes are: 'Forest', 'Desert', 'Pine', 'Snow', 'Lava' and 'Mushroom'. Example: /who in Forest\n" +
          "If [filter] is 'level', the command allows to list the online players who are at a specific level. In this case, [parameter] must be the required level. Example: /who level 10\n";
       self.addChat(msg, ChatInfo.Type.System);
+   }
+
+   private void requestUnstuck () {
+      if (Global.player != null && Global.player.getPlayerBodyEntity() != null) {
+         PlayerBodyEntity bodyEntity = Global.player.getPlayerBodyEntity();
+
+         if (bodyEntity.isSitting() || bodyEntity.isEmoting()) {
+            return;
+         }
+
+         Global.player.rpc.Cmd_TeleportToCurrentAreaSpawnLocation();
+      }
    }
 
    #region Private Variables

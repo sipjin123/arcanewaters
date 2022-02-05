@@ -176,7 +176,7 @@ public class ChairClickable : MonoBehaviour
 
       foreach (NetEntity entity in entities) {
          if (entity is PlayerBodyEntity body) {
-            if (body.isSitting() && Util.AreVectorsAlmostTheSame(transform.position, body.sittingInfo.chairPosition)) {
+            if (body.isSitting() && Util.areVectorsAlmostTheSame(transform.position, body.sittingInfo.chairPosition)) {
                return true;
             }
          }

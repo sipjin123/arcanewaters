@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Tilemaps;
 
 namespace MapCreationTool
@@ -6,6 +7,7 @@ namespace MapCreationTool
    public class TileGroup
    {
       public PaletteTilesData.TileData[,] tiles { get; set; }
+      public List<TileGroup> alternativeGroups { get; set; } = new List<TileGroup>();
       public Vector3Int start { get; set; }
       public TileGroupType type { get; set; }
 
@@ -29,6 +31,15 @@ namespace MapCreationTool
          get { return new Vector2(start.x + size.x * 0.5f, start.y + size.y * 0.5f); }
       }
 
+      public void storeAlternativeGroups (IEnumerable<TileGroup> groups) {
+         alternativeGroups.Clear();
+         foreach (TileGroup g in groups) {
+            if (this is SeaMountainGroup && g is SeaMountainGroup && this != g) {
+               alternativeGroups.Add(g);
+            }
+         }
+      }
+
       public bool allInLayer (string layer) {
          for (int i = 0; i < tiles.GetLength(0); i++) {
             for (int j = 0; j < tiles.GetLength(1); j++) {
@@ -44,6 +55,16 @@ namespace MapCreationTool
             for (int j = 0; j < tiles.GetLength(1); j++) {
                if (tiles[i, j] != null && tiles[i, j].tile == tile)
                   return true;
+            }
+         }
+         return false;
+      }
+
+      // Ex. mountain tiles with and without water ripples could be considered 'alternative'
+      public virtual bool alternativeGroupsContain (TileBase tile) {
+         foreach (TileGroup g in alternativeGroups) {
+            if (g.contains(tile)) {
+               return true;
             }
          }
          return false;

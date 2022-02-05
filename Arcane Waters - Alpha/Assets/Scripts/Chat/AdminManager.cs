@@ -264,10 +264,26 @@ public class AdminManager : NetworkBehaviour
 
       int numAreasCreated = 0;
       float testStartTime = (float)NetworkTime.time;
+      List<string> initialAreas = new List<string>();
 
       for (int i = 0; i < numInitialAreas; i++) {
          string areaName = getOpenWorldMapName(i);
+         initialAreas.Add(areaName);
          MapManager.self.createLiveMap(areaName);
+      }
+
+      // New areas won't be completed straight away, so wait a small delay
+      yield return new WaitForSeconds(3.0f);
+
+      // Wait for all initial areas to be completed
+      while (initialAreas.Count > 0) {
+         for (int i = initialAreas.Count - 1; i >= 0; i--) {
+            if (!MapManager.self.isAreaUnderCreation(initialAreas[i])) {
+               initialAreas.RemoveAt(i);
+            }
+         }
+
+         yield return new WaitForSeconds(1.0f);
       }
 
       numAreasCreated = numInitialAreas;
@@ -287,6 +303,8 @@ public class AdminManager : NetworkBehaviour
             yield return null;
          }
 
+         D.debug("TestOpenWorld: Map " + areaName + " has finished creation, moving on to the next area after a delay.");
+
          // Leave a delay between creating new areas
          yield return new WaitForSeconds(delayBetweenNewAreas);
 
@@ -297,6 +315,9 @@ public class AdminManager : NetworkBehaviour
 
       float testDuration = (float) NetworkTime.time - testStartTime;
       D.debug("Testing Open World complete - reporting results to the player.");
+      D.debug("[Test Open World Results] A performance limit was hit after creating " + numAreasCreated + ". The test took " + testDuration + " seconds.");
+      D.debug("[Test Open World Results] Baseline Cpu: " + baselineCpuUsage + ", Baseline Ram: " + baselineRamUsage);
+
       Target_ReportTestOpenWorldResults(_player.connectionToClient, numAreasCreated, testDuration, baselineCpuUsage, baselineRamUsage);
 
       // Destroy all created open world maps

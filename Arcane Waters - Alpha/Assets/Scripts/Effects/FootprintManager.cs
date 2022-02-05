@@ -18,16 +18,10 @@ public class FootprintManager : ClientMonoBehaviour
 
    void Start () {
       _player = GetComponent<BodyEntity>();
-
-      // Fmod init event
-      _footstepEvent = FMODUnity.RuntimeManager.CreateInstance(SoundEffectManager.FOOTSTEP);
-      if (_footstepEvent.isValid()) {
-         _footstepEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(_player.transform));
-      }
    }
 
    private void Update () {
-      // If we're not moving or we're jumping, don't do anything
+      // If we're not moving or we're jumping, don't do anything.
       if (_player.getRigidbody().velocity.magnitude < MIN_VELOCITY || _player.getPlayerBodyEntity().isJumping()) {
          return;
       }
@@ -43,7 +37,7 @@ public class FootprintManager : ClientMonoBehaviour
       }
 
       // Treat this as the foot hitting the ground
-      footHitGround();
+      processFootstep();
 
       // Note the time and position
       _lastFootprintTime = Time.time;
@@ -51,46 +45,20 @@ public class FootprintManager : ClientMonoBehaviour
 
       // Toggle between left and right foot
       _isLeftFoot = !_isLeftFoot;
-
-      // Attach Fmod Event to player
-      FMODUnity.RuntimeManager.AttachInstanceToGameObject(_footstepEvent, _player.transform, _player.getRigidbody());
    }
 
-   protected void footHitGround () {
+   protected void processFootstep () {
       // Figure out what sound to play
       if (_player.isLocalPlayer) {
-         //FootSound footSound = Instantiate(footSoundPrefab, this.transform.position, Quaternion.identity);
-         //footSound.transform.SetParent(SoundManager.self.transform, true);
-
-         // New FMOD Sfx implementation, seems like we don't need FootSound.cs anymore
-         int audioParam = 0;
-
-         if (_player.waterChecker.inWater()) {
-            audioParam = 4;
-         } else if (_player.groundChecker.isOnWood) {
-            audioParam = 3;
-         } else if (_player.groundChecker.isOnStone) {
-            audioParam = 1;
-         } else if (_player.groundChecker.isOnGrass) {
-            audioParam = 0;
-         } else if (_player.groundChecker.isOnBridge) {
-            audioParam = 2;
-         }
-
-         if (!_lastSoundTime.ContainsKey(audioParam) || Time.time - _lastSoundTime[audioParam] > .25f) {
-            _footstepEvent.setParameterByName(SoundEffectManager.AUDIO_SWITCH_PARAM, audioParam);
-            _footstepEvent.start();
-
-            _lastSoundTime[audioParam] = Time.time;
-         }
+         SoundEffectManager.self.playFootstepSfx(_player.transform.position);
       }
 
       // If the player wasn't recently in water, don't do anything else
-      if (_player.waterChecker.inWater() || !_player.waterChecker.recentlyInWater()) {
+      if (_player.waterChecker.inWater() || !_player.waterChecker.recentlyInWater() || _player.isClimbing()) {
          return;
       }
 
-      // Figure out where to create the footprint
+      // Figure out where to create the footprint.
       Vector3 spawnPos = _player.sortPoint.transform.position;
       spawnPos -= (Vector3) _player.getRigidbody().velocity / 10f;
       spawnPos.z = 100.45f;
@@ -135,12 +103,6 @@ public class FootprintManager : ClientMonoBehaviour
 
    // Whether we should create the left foot or right foot
    protected bool _isLeftFoot = false;
-
-   // FMOD Event
-   protected FMOD.Studio.EventInstance _footstepEvent;
-
-   // Keeps track of when we last played sounds, key of audio switch param
-   protected static Dictionary<int, float> _lastSoundTime = new Dictionary<int, float>();
 
    #endregion
 }

@@ -158,7 +158,7 @@ public class SimpleAnimation : ClientMonoBehaviour
    }
 
    public Sprite getInitialSprite () {
-      if (_sprites == null) {
+      if (_sprites == null || _sprites.Length == 0) {
          return null;
       }
 

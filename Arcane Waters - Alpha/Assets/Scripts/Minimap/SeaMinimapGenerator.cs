@@ -401,6 +401,7 @@ namespace MinimapGeneration
 
       private static void paintWater (Texture2D target, bool[,] landMask, List<TilemapLayer> layers, Vector2Int mapSize, MinimapGeneratorPreset preset) {
          _raQueue.Clear();
+         Vector3Int offset = -(Vector3Int) mapSize / 2;
 
          // Use random access buffer for marking pixels as 'used'
          // Initially, add all the land tiles to the queue
@@ -432,10 +433,8 @@ namespace MinimapGeneration
             // Color based on distance
             if (dist == 1) {
                target.SetPixel(index.x, index.y, preset.waterBorderColor);
-            } else if (dist > 0 && dist < 5) {
+            } else {
                target.SetPixel(index.x, index.y, preset.waterColor);
-            } else if (dist > 4) {
-               target.SetPixel(index.x, index.y, preset.deeper1WaterColor);
             }
 
             // Add neighbouring elements
@@ -464,14 +463,23 @@ namespace MinimapGeneration
          }
 
          // Color deep water
-         Vector3Int offset = -(Vector3Int) mapSize / 2;
          foreach (TilemapLayer layer in layers) {
             string ln = layer.name.ToLower();
-            if (ln.Contains(MapCreationTool.Layer.WATER_KEY) && (layer.fullName.EndsWith("4") || layer.fullName.EndsWith("5"))) {
-               for (int i = 0; i < mapSize.x; i++) {
-                  for (int j = 0; j < mapSize.y; j++) {
-                     if (layer.tilemap.HasTile(new Vector3Int(i + offset.x, j + offset.y, 0))) {
-                        target.SetPixel(i, j, preset.deeper2WaterColor);
+            if (ln.Contains(MapCreationTool.Layer.WATER_KEY)) {
+               if (layer.fullName.EndsWith("2") || layer.fullName.EndsWith("3")) {
+                  for (int i = 0; i < mapSize.x; i++) {
+                     for (int j = 0; j < mapSize.y; j++) {
+                        if (layer.tilemap.HasTile(new Vector3Int(i + offset.x, j + offset.y, 0))) {
+                           target.SetPixel(i, j, preset.deeper1WaterColor);
+                        }
+                     }
+                  }
+               } else if (layer.fullName.EndsWith("4") || layer.fullName.EndsWith("5")) {
+                  for (int i = 0; i < mapSize.x; i++) {
+                     for (int j = 0; j < mapSize.y; j++) {
+                        if (layer.tilemap.HasTile(new Vector3Int(i + offset.x, j + offset.y, 0))) {
+                           target.SetPixel(i, j, preset.deeper2WaterColor);
+                        }
                      }
                   }
                }

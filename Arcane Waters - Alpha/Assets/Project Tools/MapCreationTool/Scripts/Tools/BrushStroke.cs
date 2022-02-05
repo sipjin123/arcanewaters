@@ -236,12 +236,13 @@ namespace MapCreationTool
             case TileGroupType.SeaMountain:
                SeaMountainGroup smg = tileGroup as SeaMountainGroup;
                HashSet<(int x, int y)> sTiles = getTilesToAdd(smg, index);
+               HashSet<(int x, int y)> brushTiles = new HashSet<(int x, int y)>(sTiles);
                setAdjacencyPositions(sTiles);
                addTilesToRemoveThinParts(sTiles, (5, 5), false);
                setAdjacencyPositions(sTiles);
                addTilesToRoundOutCorners(sTiles, false);
                setAdjacencyPositions(sTiles);
-               paintTiles((a, x, y) => smg.pickTile(a, surroundingCount(adj, (x, y), SidesInt.uniform(3)), x, y), sTiles, (3, 3));
+               paintSeaMountainTiles(smg, sTiles, brushTiles);
                break;
             case TileGroupType.River:
                RiverGroup rg = tileGroup as RiverGroup;
@@ -339,6 +340,32 @@ namespace MapCreationTool
             for (int j = bounds.from.y; j < bounds.to.y; j++) {
                if (adj[i, j]) {
                   modifiedTiles[i, j] = pickTile(adj, i, j);
+               }
+            }
+         }
+      }
+
+      private void paintSeaMountainTiles (SeaMountainGroup group, HashSet<(int x, int y)> tilesToPaint, HashSet<(int x, int y)> brushTilesToPaint) {
+         (int x, int y) margin = (3, 3);
+         var bounds = getTilePickBounds(tilesToPaint, margin);
+         Layer l = layer(Layer.MOUNTAIN_KEY, Tools.mountainLayer);
+
+
+         for (int i = bounds.from.x; i < bounds.to.x; i++) {
+            for (int j = bounds.from.y; j < bounds.to.y; j++) {
+               if (adj[i, j]) {
+                  // Pick out the target tile
+                  TileBase tile = group.pickTile(adj, surroundingCount(adj, (i, j), SidesInt.uniform(3)), i, j);
+
+                  // Get the existing tile
+                  TileBase existing = modifiedTiles[i, j];
+                  if (existing == null) {
+                     existing = l.getTile(i + matrixFrom.x, j + matrixFrom.y);
+                  }
+                  // If this tile is not part of the core brush size and is the same as the tile in an alternative group, don't paint
+                  if (brushTilesToPaint.Contains((i, j)) || !group.areAlternativeTiles(tile, existing)) {
+                     modifiedTiles[i, j] = tile;
+                  }
                }
             }
          }
@@ -521,7 +548,7 @@ namespace MapCreationTool
          for (int i = MATRIX_PADDING; i < matrixSize.x - MATRIX_PADDING; i++) {
             for (int j = MATRIX_PADDING; j < matrixSize.y - MATRIX_PADDING; j++) {
                TileBase tile = layer.getTile(i + matrixFrom.x, j + matrixFrom.y);
-               adj[i, j] = tile != null && group.contains(tile);
+               adj[i, j] = tile != null && (group.contains(tile) || group.alternativeGroupsContain(tile));
             }
          }
       }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using System.Text;
 using System.Xml;
+using System;
 
 public class SoundEffectManager : GenericGameManager
 {
@@ -10,28 +11,6 @@ public class SoundEffectManager : GenericGameManager
 
    // The self
    public static SoundEffectManager self;
-
-   // The AudioSource used to play the SoundEffects
-   //public AudioSource source;
-
-   // The AudioSource used to play 3D SoundEffects
-   //public AudioSource source3D;
-
-   // Sound effects
-   #region Sound Effects
-
-   //public const int ORE_DROP = 53;
-   //public const int ORE_PICKUP = 55;
-   //public const int NEXT_PREFAB_SELECTION = 58;
-
-   //public const int SHORTCUT_SELECTION = 60;
-   //public const int ABILITY_SELECTION = 61;
-   //public const int INVENTORY_DRAG_START = 64;
-   //public const int INVENTORY_DROP = 65;
-   //public const int NPC_PANEL_POPUP = 66;
-   //public const int REFINE_COMPLETE = 69;
-
-   #endregion
 
    // FMOD event paths
    #region FMOD EVENT PATHS
@@ -62,25 +41,33 @@ public class SoundEffectManager : GenericGameManager
    public const string TIP_FOLDOUT = "event:/SFX/Game/UI/Tip_Foldout";
    public const string MAIL_NOTIFICATION = "event:/SFX/Game/UI/Mail_Notification";
    public const string LOCALE_UNLOCK = "event:/SFX/Game/UI/Locale_Unlock";
+   public const string TURNING_PAGES_ON_BOOKS = "event:/SFX/Game/UI/Turning_Pages_on_Books";
+   public const string EQUIP = "event:/SFX/Game/UI/Equip";
+   public const string TUTORIAL_STEP = "event:/SFX/Game/UI/Tutorial_Step";
+   public const string TUTORIAL_POP_UP = "event:/SFX/Game/UI/Tutorial_Pop_Up";
+   public const string LAYOUTS_DESTINATIONS = "event:/SFX/Game/UI/Layouts_Destinations";
 
    #endregion
 
    #region LAND BATTLE
 
    public const string GENERIC_HIT_LAND = "event:/SFX/Game/Land_Battle/Generic_Hit_Land";
+   public const string GENERIC_GUN_SHOT = "event:/SFX/Player/Interactions/Diegetic/Weapons/Guns/Generic_Gun_Shot";
+
    public const string MOVEMENT_WHOOSH = "event:/SFX/Game/Land_Battle/Movement_Whoosh";
-   public const string NPC_STRIKE = "event:/SFX/Game/Land_Battle/NPC_Strike";
+   //public const string NPC_STRIKE = "event:/SFX/Game/Land_Battle/NPC_Strike";
    public const string BLOCK_ATTACK = "event:/SFX/Game/Land_Battle/Block_Attack";
    public const string STANCE_CHANGE = "event:/SFX/Game/Land_Battle/Stance_Change_Generic";
+
    public const string LIZARD_KING_ATTACK = "event:/SFX/Game/Land_Battle/Lizard_King/Swipe_Attack";
    public const string LIZARD_KING_HURT = "event:/SFX/NPC/Enemy/Lizard King/Lizard_Pain_Hit";
+   public const string LIZARD_KING_DEATH = "event:/SFX/NPC/Enemy/Lizard King/Lizard_Death";
 
    public const string GOLEM_FOOT_IMPACT = "event:/SFX/NPC/Boss/Rock Golem/Foot_Impact";
    public const string GOLEM_SCREAM_ATTACK = "event:/SFX/NPC/Boss/Rock Golem/Scream_Attack";
    public const string GOLEM_HURT = "event:/SFX/NPC/Boss/Rock Golem/Golem_Pain";
    public const string GOLEM_DEATH = "event:/SFX/NPC/Boss/Rock Golem/Golem_Death";
 
-   public const string TRIUMPH_DEFEATED_BOSS = "event:/SFX/Game/Triumph_Defeated_Boss_Stinger";
    public const string DEATH_POOF = "event:/SFX/Player/Interactions/Diegetic/GenericDeath";
 
    #endregion
@@ -95,9 +82,11 @@ public class SoundEffectManager : GenericGameManager
    public const string HORROR_TENTACLE_DEATH = "event:/SFX/NPC/Boss/Tentacle_Horror_Boss/Tentacle Death";
    public const string HORROR_DEATH = "event:/SFX/NPC/Boss/Tentacle_Horror_Boss/Death";
    public const string HORROR_POISON_BOMB = "event:/SFX/Game/Sea_Battle/Horror/Poison_Bomb";
+   public const string HORROR_BLOB_DAMAGE = "event:/SFX/NPC/Boss/Tentacle_Horror_Boss/Blob_Pylr_Damage";
 
    public const string FISHMAN_ATTACK = "event:/SFX/NPC/Enemy/Fishman_Seamonster/Fishman_Throw_Attack";
    public const string FISHMAN_HURT = "event:/SFX/NPC/Enemy/Fishman_Seamonster/Seamonster_Hurt";
+   public const string FISHMAN_DEATH = "event:/SFX/NPC/Enemy/Fishman_Seamonster/Fishman_Death";
 
    #endregion
 
@@ -137,7 +126,13 @@ public class SoundEffectManager : GenericGameManager
    public const string THROW_SEEDS = "event:/SFX/Player/Interactions/Diegetic/Throw_Seeds";
    public const string WATERING_PLANTS = "event:/SFX/Player/Interactions/Diegetic/Watering_Plants";
    public const string FOOTSTEP = "event:/SFX/Player/Interactions/Diegetic/Footstep";
+
    public const string DOOR_OPEN = "event:/SFX/Player/Interactions/Diegetic/Door_Open";
+   public const string DOOR_CLOSE = "event:/SFX/Player/Interactions/Diegetic/Door_Close";
+
+   public const string DOOR_CLOTH_OPEN = "";
+   public const string DOOR_CLOTH_CLOSE = "event:/SFX/Player/Interactions/Diegetic/Door_Cloth_Close";
+
    public const string PICKUP_POWERUP = "event:/SFX/Player/Interactions/Non_Diegetic/Pickup_Powerup_Generic";
    public const string COLLECT_LOOT_LAND = "event:/SFX/Player/Interactions/Diegetic/Collect_Loot_Land";
    public const string OPEN_CHEST = "event:/SFX/Player/Interactions/Diegetic/Open_Treasure_Site_Chest";
@@ -147,6 +142,7 @@ public class SoundEffectManager : GenericGameManager
    public const string GAIN_SILVER = "event:/SFX/Player/Interactions/Non_Diegetic/Gain_Silver";
    public const string HARVESTING_HIT = "event:/SFX/Player/Interactions/Diegetic/Harvesting_Hit";
    public const string CROP_PLANT = "event:/SFX/Player/Interactions/Diegetic/Crop_Plant";
+   public const string BUYSELL = "event:/SFX/Game/UI/Buy_Sell";
 
    #endregion
 
@@ -168,74 +164,6 @@ public class SoundEffectManager : GenericGameManager
       self = this;
    }
 
-   //private void Start () {
-   //   _projectAudioClips = new List<AudioClip>(Resources.LoadAll<AudioClip>(RESOURCE_FOLDER_PATH));
-   //}
-
-   //public void initializeDataCache () {
-   //   UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-   //      List<SoundEffect> fetchedSoundEffects = DB_Main.getSoundEffects();
-
-   //      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-   //         foreach (SoundEffect effect in fetchedSoundEffects) {
-   //            if (!_soundEffects.ContainsKey(effect.id)) {
-   //               findAndAssignAudioClip(effect);
-   //               _soundEffects.Add(effect.id, effect);
-   //            }
-   //         }
-   //         _hasInitialized = true;
-   //      });
-   //   });
-   //}
-
-   //public void receiveListFromServer (SoundEffect[] effects) {
-   //   if (!_hasInitialized) {
-   //      foreach (SoundEffect effect in effects) {
-   //         findAndAssignAudioClip(effect);
-   //         _soundEffects.Add(effect.id, effect);
-   //      }
-
-   //      _hasInitialized = true;
-   //   }
-   //}
-
-   //public SoundEffect getSoundEffect (int id) {
-   //   SoundEffect data;
-   //   _soundEffects.TryGetValue(id, out data);
-   //   return data;
-   //}
-
-   //public List<SoundEffect> getAllSoundEffects () {
-   //   return new List<SoundEffect>(_soundEffects.Values);
-   //}
-
-   //public bool isValidSoundEffect (int id) {
-   //   return _soundEffects.ContainsKey(id);
-   //}
-
-   //public void playSoundEffect (int id, Transform target) {
-   //   SoundEffect effect;
-
-   //   if (_soundEffects.TryGetValue(id, out effect)) {
-   //      if (effect.is3D) {
-   //         playSoundEffect3D(effect, target);
-   //      } else {
-   //         source.clip = effect.clip;
-   //         if (effect.clip == null) {
-   //            D.debug("Missing Sound Effect ID: " + id);
-   //            return;
-   //         }
-   //         effect.calibrateSource(source);
-   //         source.volume = effect.minVolume;
-   //         source.loop = false;
-   //         source.Play();
-   //      }
-
-   //   } else if (id >= 0) {
-   //      D.debug("Could not find SoundEffect with 'id' : '" + id + "'");
-   //   }
-   //}
-
    public void playFmodSfx (string path, Vector3 position = default) {
       if (Util.isBatch()) {
          return;
@@ -247,12 +175,6 @@ public class SoundEffectManager : GenericGameManager
       }
 
       FMODUnity.RuntimeManager.PlayOneShot(path, position);
-      //FMOD.Studio.EventInstance eventInstance = FMODUnity.RuntimeManager.CreateInstance(path);
-      //if (eventInstance.isValid()) {
-      //   eventInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
-      //   eventInstance.start();
-      //   eventInstance.release();
-      //}
    }
 
    public void playBossAbilitySfx (Enemy.Type enemyType, int abilityId, Vector3 position) {
@@ -280,35 +202,32 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   public void playLandEnemyHitSfx (Enemy.Type enemyType, Vector3 position) {
-      switch (enemyType) {
+   public void playLandBattleHitSfx (Battler source, Battler target, Vector3 position) {
+      Enemy.Type sourceType = source.enemyType;
+      Enemy.Type targetType = target.enemyType;
+
+      string hitPath = GENERIC_HIT_LAND;
+      string hurtPath = "";
+
+      // Hurt sfx
+      switch (targetType) {
          case Enemy.Type.Lizard_King:
-            playFmodSfx(LIZARD_KING_HURT, position);
+            hurtPath = LIZARD_KING_HURT;
             break;
          case Enemy.Type.Golem_Boss:
-            playFmodSfx(GOLEM_HURT, position);
+            hurtPath = GOLEM_HURT;
             break;
       }
+
+      // If the source is the Lizard King, then we don't play a hit sfx, since the swipe sfx is enough.
+      if (sourceType != Enemy.Type.Lizard_King) {
+         playFmodSfx(hitPath, position);
+      }
+
+      if (!string.IsNullOrEmpty(hurtPath)) {
+         playFmodSfx(hurtPath);
+      }
    }
-
-   //public void playFmod2dSfxWithId (int id) {
-   //   if (Util.isBatch()) {
-   //      return;
-   //   }
-   //   playFmodOneShot(id, CameraManager.getCurrentCamera().transform);
-   //}
-
-   //public void playFmodOneShot (int id, Transform target) {
-   //   if (Util.isBatch()) {
-   //      return;
-   //   }
-   //   SoundEffect effect = getSoundEffect(id);
-   //   if (effect != null) {
-   //      if (effect.fmodId.Length > 0) {
-   //         FMODUnity.RuntimeManager.PlayOneShot(effect.fmodId, target.position);
-   //      }
-   //   }
-   //}
 
    public void playCannonballImpact (Cannonball impactType, Vector3 position) {
       FMOD.Studio.EventInstance impactEvent = FMODUnity.RuntimeManager.CreateInstance(CANNONBALL_IMPACT);
@@ -417,7 +336,7 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   public void playBossDefeatTriumph () {
+   public void playTriumphSfx () {
       checkBackgroundMusicEvent();
 
       _backgroundMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, 20);
@@ -553,20 +472,23 @@ public class SoundEffectManager : GenericGameManager
    }
 
    public void playLandEnemyDeathSfx (Enemy.Type enemyType, Vector3 position) {
-      string deathPath = "";
+      string path = "";
 
       switch (enemyType) {
+         case Enemy.Type.Lizard_King:
+            path = LIZARD_KING_DEATH;
+            break;
          case Enemy.Type.Golem_Boss:
-            deathPath = GOLEM_DEATH;
+            path = GOLEM_DEATH;
             break;
       }
 
-      if (!string.IsNullOrEmpty(deathPath)) {
-         playFmodSfx(deathPath, position);
+      if (!string.IsNullOrEmpty(path)) {
+         playFmodSfx(path, position);
       }
    }
 
-   public void playSeaBossDeathSfx (SeaMonsterEntity.Type monsterType, Vector3 position) {
+   public void playSeaEnemyDeathSfx (SeaMonsterEntity.Type monsterType, Vector3 position) {
       string deathPath = "";
 
       switch (monsterType) {
@@ -575,6 +497,9 @@ public class SoundEffectManager : GenericGameManager
             break;
          case SeaMonsterEntity.Type.Horror_Tentacle:
             deathPath = HORROR_TENTACLE_DEATH;
+            break;
+         case SeaMonsterEntity.Type.Fishman:
+            deathPath = FISHMAN_DEATH;
             break;
       }
 
@@ -600,13 +525,6 @@ public class SoundEffectManager : GenericGameManager
       playFmodSfx(path);
    }
 
-   //public void playLegacyInteractionOneShot (int equipmentDataId, Transform target) {
-   //   WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(equipmentDataId);
-   //   if (weaponData != null && weaponData.actionSfxDirectory.Length > 1) {
-   //      SoundManager.create3dSoundWithPath(weaponData.actionSfxDirectory, target.position);
-   //   }
-   //}
-
    public void playInteractionSfx (Weapon.ActionType weaponAction, Weapon.Class weaponClass, WeaponType sfxType, Vector3 position) {
       switch (weaponAction) {
          case Weapon.ActionType.PlantCrop:
@@ -623,12 +541,15 @@ public class SoundEffectManager : GenericGameManager
 
    public void playWeaponSfx (WeaponType sfxType, Weapon.Class weaponClass, Vector3 position) {
       if (sfxType != WeaponType.None) {
-         FMOD.Studio.EventInstance eventInstance = FMODUnity.RuntimeManager.CreateInstance(WEAPON_SWING);
-         eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, ((int) sfxType) - 1);
-         eventInstance.setParameterByName(APPLY_MAGIC, weaponClass == Weapon.Class.Magic ? 1 : 0);
-         eventInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
-         eventInstance.start();
-         eventInstance.release();
+         FMOD.Studio.EventInstance weaponEvent = FMODUnity.RuntimeManager.CreateInstance(WEAPON_SWING);
+
+         //eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, ((int) sfxType) - 1);
+         weaponEvent.setParameterByName(AUDIO_SWITCH_PARAM, 3); // Using the same parameter, for now.
+
+         weaponEvent.setParameterByName(APPLY_MAGIC, weaponClass == Weapon.Class.Magic ? 1 : 0);
+         weaponEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
+         weaponEvent.start();
+         weaponEvent.release();
       }
    }
 
@@ -663,30 +584,9 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   //private void playSoundEffect3D (SoundEffect effect, Transform target) {
-   //   // Setup audio player
-   //   AudioSource audioSource = Instantiate(PrefabsManager.self.sound3dPrefab, target.position, Quaternion.identity);
-   //   audioSource.transform.SetParent(target, true);
-   //   audioSource.clip = effect.clip;
-   //   audioSource.volume = effect.minVolume;
-   //   audioSource.Play();
-
-   //   // Destroy object after clip finishes playing
-   //   Destroy(audioSource.gameObject, audioSource.clip.length);
-   //}
-
    public void playNotificationPanelSfx () {
       if (CameraManager.defaultCamera.getPixelFadeEffect().isFadingIn) {
          playFmodSfx(TIP_FOLDOUT);
-      }
-   }
-
-   private void findAndAssignAudioClip (SoundEffect effect) {
-      AudioClip foundClip = _projectAudioClips.Find(iClip => iClip.name.Equals(effect.clipName));
-      if (foundClip != null) {
-         effect.clip = foundClip;
-      } else if (!string.IsNullOrEmpty(effect.clipName)) {
-         D.debug("SoundEffect '" + effect.name + "' has an invalid AudioClip link: '" + effect.clipName + "'");
       }
    }
 
@@ -748,19 +648,80 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
+   public void playFootstepSfx (Vector3 playerPosition) {
+      Area area = AreaManager.self.getArea(Global.player.areaKey);
+      Biome.Type biomeType = AreaManager.self.getDefaultBiome(Global.player.areaKey);
+
+      // Footsteps in the farm area
+      if (AreaManager.self.tryGetCustomMapManager(Global.player.areaKey, out CustomMapManager customMapManager)) {
+         if (customMapManager is CustomMapManager) {
+            biomeType = Biome.Type.Forest;
+         }
+      }
+
+      TileAttributes.Type[] attributesBuffer = new TileAttributes.Type[16];
+
+      int count = area.getTileAttributes(playerPosition, attributesBuffer);
+      int audioParam = 7; // For generic footsteps, default
+
+      //Debug.Log(string.Join(", ", attributesBuffer));
+
+      if (count > 0 && !area.isInterior) {
+         TileAttributes.Type attribute = attributesBuffer[count - 1];
+
+         switch (attribute) {
+            case TileAttributes.Type.Generic:
+               switch (biomeType) {
+                  case Biome.Type.Forest:
+                  case Biome.Type.Mushroom:
+                  case Biome.Type.Pine:
+                     audioParam = 0; // Grass
+                     break;
+                  case Biome.Type.Desert:
+                  case Biome.Type.Snow:
+                     audioParam = 6; // Sand / Snow
+                     break;
+                  case Biome.Type.Lava:
+                     audioParam = 1; // Stone
+                     break;
+               }
+               break;
+            case TileAttributes.Type.Stone:
+               audioParam = 1;
+               break;
+            case TileAttributes.Type.Vine:
+               audioParam = 5;
+               break;
+            case TileAttributes.Type.WaterPartial:
+            case TileAttributes.Type.WaterFull:
+               audioParam = 4;
+               break;
+            case TileAttributes.Type.Wood:
+               audioParam = 3;
+               break;
+            case TileAttributes.Type.Wooden_Bridge:
+               audioParam = 2;
+               break;
+         }
+      }
+
+      if (!_footstepsLastSound.ContainsKey(audioParam) || Time.time - _footstepsLastSound[audioParam] > .25f) {
+         FMOD.Studio.EventInstance footstepEvent = FMODUnity.RuntimeManager.CreateInstance(FOOTSTEP);
+
+         footstepEvent.setParameterByName(AUDIO_SWITCH_PARAM, audioParam);
+         footstepEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(playerPosition));
+         footstepEvent.start();
+         footstepEvent.release();
+
+         _footstepsLastSound[audioParam] = Time.time;
+      }
+   }
+
+   public void playAttachedSfx (string path, GameObject target) {
+      FMODUnity.RuntimeManager.PlayOneShotAttached(path, target);
+   }
+
    #region Private Variables
-
-   // Holds the path of the folder containing Sound Effects (with the Resource folder as a base)
-   private const string RESOURCE_FOLDER_PATH = "Sound/Effects";
-
-   // The SoundEffects that has been stored on the DB
-   private Dictionary<int, SoundEffect> _soundEffects = new Dictionary<int, SoundEffect>();
-
-   // All the Audio Clips that are present in the Project
-   private List<AudioClip> _projectAudioClips;
-
-   // If xml data is initialized
-   private bool _hasInitialized;
 
    // The time at which we last player a specified clip
    private static Dictionary<string, float> _lastPlayTime = new Dictionary<string, float>();
@@ -773,6 +734,9 @@ public class SoundEffectManager : GenericGameManager
 
    // Event for title screen ambience music
    private FMOD.Studio.EventInstance _titleScreenAmbienceEvent;
+
+   // Footsteps dictionary
+   private Dictionary<int, float> _footstepsLastSound = new Dictionary<int, float>();
 
    private enum LandAbility
    {

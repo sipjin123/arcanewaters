@@ -8807,6 +8807,17 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
+   public void Cmd_TeleportToCurrentAreaSpawnLocation () {
+      Vector2 spawnLocalPos = SpawnManager.self.getDefaultLocalPosition(_player.areaKey);
+
+      if (spawnLocalPos == Vector2.zero) {
+         return;
+      }
+
+      _player.transform.localPosition = spawnLocalPos;
+   }
+
+   [Command]
    public void Cmd_StartPettingAnimal (uint netEntityId, int facing) {
       NPC npc = MyNetworkManager.fetchEntityFromNetId<NPC>(netEntityId);
 
@@ -9777,7 +9788,7 @@ public class RPCManager : NetworkBehaviour
       string itemsStr = resultCollection.results.Length == 1 ? "user" : "users";
       ChatManager.self.addChat($"Search complete! {resultCollection.results.Length} {itemsStr} found:", ChatInfo.Type.System);
 
-      if (resultCollection.results.Length > 1) {
+      if (resultCollection.results.Length >= 1) {
          FriendListPanel friendListPanel = PanelManager.self.get<FriendListPanel>(Panel.Type.FriendList);
 
          if (friendListPanel != null && !friendListPanel.isShowing()) {

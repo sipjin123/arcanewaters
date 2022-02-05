@@ -465,7 +465,7 @@ public class Area : MonoBehaviour
 
    public static SoundManager.Type getBackgroundMusic (string areaKey, Biome.Type biome) {
       if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
-         if (customMapManager is CustomFarmManager) {
+         if (customMapManager is CustomFarmManager || CustomMapManager.isPrivateCustomArea(areaKey)) {
             return SoundManager.Type.Farm_Music;
          }
       }
