@@ -707,6 +707,7 @@ public class ServerMessageManager : MonoBehaviour
                userObjects.accountEmail, userObjects.accountCreationTime);
             conn.Send(loginCompleteMsg);
          } else {
+            D.debug("ServerMessageManager: User or password is invalid");
             sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
             return;
          }

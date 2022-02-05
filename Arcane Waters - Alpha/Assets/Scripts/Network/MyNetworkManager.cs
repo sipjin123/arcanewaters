@@ -340,6 +340,7 @@ public class MyNetworkManager : NetworkManager
       }
 
       if (authenicatedAccountId <= 0 || authenticatedUserId <= 0) {
+         D.debug("Authenticated account or user id is not valid!");
          ServerMessageManager.sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
          return;
       }

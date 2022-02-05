@@ -143,7 +143,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             }
 
             if ("".Equals(spawnTarget)) {
-               D.error(string.Format("Could not find the treasure site where the user is registered. userId: {0}, voyage areaKey: {1}, treasure site areaKey: {2}", player.userId, seaVoyageInstance.areaKey, player.areaKey));
+               D.error(string.Format("Could not find the treasure site where the user is registered. userId: {0}, voyage areaKey: {1}, treasure site areaKey: {2}, isWarpingToTreasureSite: {3}, {4}", player.userId, seaVoyageInstance.areaKey, player.areaKey, isWarpToTreasureSite(player.instanceId), treasureSite == null ? "Null" : "TreasureSite"));
             }
 
             player.spawnInNewMap(voyageId, seaVoyageInstance.areaKey, spawnTarget, newFacingDirection);
