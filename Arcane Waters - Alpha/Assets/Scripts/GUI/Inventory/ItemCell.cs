@@ -234,6 +234,12 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                   return;
                } else {
                   icon.sprite = ImageManager.getSprite(fetchedArmorData.equipmentIconPath);
+
+                  // If there are no palette assignments during translation, fetch the default palettes from the equipment tool xml
+                  string paletteDataCount = item.paletteNames.Replace(" ", "").Replace(",", "");
+                  if (paletteDataCount.Length < 1) {
+                     item.paletteNames = PaletteSwapManager.extractPalettes(fetchedArmorData.defaultPalettes);
+                  }
                }
             } else if (item.data.Contains(Blueprint.WEAPON_DATA_PREFIX)) {
                WeaponStatData fetchedWeaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
@@ -243,6 +249,12 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                   return;
                } else {
                   icon.sprite = ImageManager.getSprite(fetchedWeaponData.equipmentIconPath);
+
+                  // If there are no palette assignments during translation, fetch the default palettes from the equipment tool xml
+                  string paletteDataCount = item.paletteNames.Replace(" ", "").Replace(",", "");
+                  if (paletteDataCount.Length < 1) {
+                     item.paletteNames = PaletteSwapManager.extractPalettes(fetchedWeaponData.defaultPalettes);
+                  }
                }
             } else if (item.data.Contains(Blueprint.HAT_DATA_PREFIX)) {
                HatStatData fetchedHatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
@@ -252,6 +264,12 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                   return;
                } else {
                   icon.sprite = ImageManager.getSprite(fetchedHatData.equipmentIconPath);
+
+                  // If there are no palette assignments during translation, fetch the default palettes from the equipment tool xml
+                  string paletteDataCount = item.paletteNames.Replace(" ", "").Replace(",", "");
+                  if (paletteDataCount.Length < 1) {
+                     item.paletteNames = PaletteSwapManager.extractPalettes(fetchedHatData.defaultPalettes);
+                  }
                }
             } else {
                D.debug("Unknown blueprint item! " + item.data);
