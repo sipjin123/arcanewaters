@@ -63,6 +63,17 @@ public class FarmingTrigger : MonoBehaviour
          return;
       }
 
+      // Only allow farming indicators in custom maps
+      bool isInCustomMap = CustomMapManager.isUserSpecificAreaKey(Global.player.areaKey);
+      if (!isInCustomMap) {
+         return;
+      }
+
+      // Check if this map belongs to the user
+      if (CustomMapManager.getUserId(Global.player.areaKey) != Global.player.userId) {
+         return;
+      }
+
       coneCollider.gameObject.SetActive(false);
       arcCollider.gameObject.SetActive(false);
 
