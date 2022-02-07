@@ -489,22 +489,22 @@ public class SoundEffectManager : GenericGameManager
    }
 
    public void playSeaEnemyDeathSfx (SeaMonsterEntity.Type monsterType, Vector3 position) {
-      string deathPath = "";
+      string path = "";
 
       switch (monsterType) {
          case SeaMonsterEntity.Type.Horror:
-            deathPath = HORROR_DEATH;
+            path = HORROR_DEATH;
             break;
          case SeaMonsterEntity.Type.Horror_Tentacle:
-            deathPath = HORROR_TENTACLE_DEATH;
+            path = HORROR_TENTACLE_DEATH;
             break;
          case SeaMonsterEntity.Type.Fishman:
-            deathPath = FISHMAN_DEATH;
+            path = FISHMAN_DEATH;
             break;
       }
 
-      if (!string.IsNullOrEmpty(deathPath)) {
-         playFmodSfx(deathPath, position);
+      if (!string.IsNullOrEmpty(path)) {
+         playFmodSfx(path, position);
       }
    }
 
@@ -719,6 +719,42 @@ public class SoundEffectManager : GenericGameManager
 
    public void playAttachedSfx (string path, GameObject target) {
       FMODUnity.RuntimeManager.PlayOneShotAttached(path, target);
+   }
+
+   public void playJumpLandSfx (Vector3 playerPosition) {
+      Area area = AreaManager.self.getArea(Global.player.areaKey);
+      Biome.Type biomeType = AreaManager.self.getDefaultBiome(Global.player.areaKey);
+
+      TileAttributes.Type[] attributesBuffer = new TileAttributes.Type[16];
+
+      int count = area.getTileAttributes(playerPosition, attributesBuffer);
+      int audioParam = 0; // Grass is default
+
+      if (count > 0 && !area.isInterior) {
+         TileAttributes.Type attribute = attributesBuffer[count - 1];
+
+         switch (attribute) {
+            case TileAttributes.Type.Generic:
+               switch (biomeType) {
+                  case Biome.Type.Desert:
+                  case Biome.Type.Snow:
+                     audioParam = 1; // Dirt / Sand / Snow
+                     break;
+               }
+               break;
+            case TileAttributes.Type.WaterPartial:
+            case TileAttributes.Type.WaterFull:
+               audioParam = 2;
+               break;
+         }
+      }
+
+      FMOD.Studio.EventInstance landEvent = FMODUnity.RuntimeManager.CreateInstance(JUMP_LAND);
+
+      landEvent.setParameterByName(AUDIO_SWITCH_PARAM, audioParam);
+      landEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(playerPosition));
+      landEvent.start();
+      landEvent.release();
    }
 
    #region Private Variables

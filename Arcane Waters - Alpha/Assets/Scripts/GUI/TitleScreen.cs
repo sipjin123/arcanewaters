@@ -60,6 +60,12 @@ public class TitleScreen : MonoBehaviour {
    // The terms of service website address
    public Text linkTextToS;
 
+   // Reference to the blocker
+   public CanvasGroup blocker;
+
+   // Did the player just log out?
+   public bool isPlayerLoggedOut;
+
    #endregion
 
    private void Awake () {
@@ -109,10 +115,6 @@ public class TitleScreen : MonoBehaviour {
       float currentAlpha = _canvasGroup.alpha;
 
       if (isActive || !_hasClientVersionBeenApproved) {
-         if (Global.isPlayerLoggedOut) {
-            PanelManager.self.loadingScreen.setAlpha(1.0f);
-         }
-
          // Check for an assortment of keys
          // bool moveToNextField = KeyUtils.GetKeyDown(Key.Tab) || KeyUtils.GetEnterKeyDown() || KeyUtils.GetKeyDown(Key.DownArrow);
          // bool tryToLogin = KeyUtils.GetKeyDown(Key.Enter) || KeyUtils.GetKeyDown(Key.NumpadEnter);
@@ -126,6 +128,23 @@ public class TitleScreen : MonoBehaviour {
          // if (tryToLogin && accountInputField.text != "" && passwordInputField.text != "") {
          //    onLoginButtonPressed(true);
          // }
+
+         if (isPlayerLoggedOut) {
+            self.toggleBlocker(show: true);
+
+            if (!NetworkClient.isConnected) {
+               isPlayerLoggedOut = false;
+
+               bool hasValidQuickPanelContent = PlayerPrefs.GetString(QuickLaunchPanel.ACCOUNT_KEY).Length > 1 && PlayerPrefs.GetString(QuickLaunchPanel.PASSWORD_KEY).Length > 1;
+               if (!Util.isCloudBuild() && Util.isServerBuild() && hasValidQuickPanelContent) {
+                  QuickLaunchPanel.self.launch();
+               } else {
+                  if (SteamManager.Initialized && Global.lastSteamId.Length > 10) {
+                     self.onLoginButtonPressed(SteamManager.Initialized);
+                  }
+               }
+            }
+         }
 
          // Make sure the canvas group is visible if the screen is active
          if (_canvasGroup.alpha < 1) {
@@ -141,9 +160,14 @@ public class TitleScreen : MonoBehaviour {
          }
 
          if (
-            InputManager.self.inputMaster.UIShotcuts.Options.WasPressedThisFrame() && 
-            !Util.isSelected(accountInputField) && 
-            !Util.isSelected(passwordInputField) &&
+            (
+               (
+                  InputManager.self.inputMaster.UIShotcuts.Options.WasPressedThisFrame() &&
+                  !Util.isSelected(accountInputField) && 
+                  !Util.isSelected(passwordInputField)        
+               ) ||
+               Keyboard.current.escapeKey.wasPressedThisFrame
+            ) && 
             !PanelManager.self.noticeScreen.isActive &&
             !termsOfServicePanel.activeSelf
          ) {
@@ -159,9 +183,11 @@ public class TitleScreen : MonoBehaviour {
          if (titleScreenReference.activeInHierarchy) {
             titleScreenReference.SetActive(false);
          }
+
+         self.toggleBlocker(show: false);
       }
    }
-
+   
    public void showLoginPanels() {
       defaultLoginPanel.SetActive(!SteamManager.Initialized);
       steamLoginPanel.SetActive(SteamManager.Initialized);
@@ -265,6 +291,10 @@ public class TitleScreen : MonoBehaviour {
       }
    }
 
+   public void openOptions () {
+      PanelManager.self.linkPanel(Panel.Type.Options);
+   }
+
    private string getTermsOfServiceKey () {
       if (SteamManager.Initialized) {
          ulong steamID = Steamworks.SteamUser.GetSteamID().m_SteamID;
@@ -309,6 +339,16 @@ public class TitleScreen : MonoBehaviour {
          link = "http://www." + link;
       }
       Application.OpenURL(link);
+   }
+
+   public void toggleBlocker(bool show) {
+      if (blocker == null) {
+         return;
+      }
+
+      blocker.alpha = show ? 1.0f : 0.0f;
+      blocker.interactable = show;
+      blocker.blocksRaycasts = show;
    }
 
    #region Private Variables

@@ -143,6 +143,10 @@ public class FarmingTrigger : MonoBehaviour
       }
    }
 
+   private void clearCache () {
+   
+   }
+
    private IEnumerator CO_ProcessInteraction () {
       _isFarming = true;
 

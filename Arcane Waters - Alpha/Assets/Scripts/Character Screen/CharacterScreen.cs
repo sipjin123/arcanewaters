@@ -256,8 +256,9 @@ public class CharacterScreen : GenericGameManager {
       // Hide loading screen
       PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login);
       
-      // Hide login panels
+      // Hide login panels and blocker
       TitleScreen.self.hideLoginPanels();
+      TitleScreen.self.toggleBlocker(show: false);
    }
 
    private CharacterSpot getFirstValidSpot () {

@@ -309,17 +309,19 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
       // If the player is sitting down and tries to move or jump, get up
       if (sittingInfo.isSitting) {
-         if (!Util.AreVectorsAlmostTheSame(InputManager.getMovementInput(), Vector2.zero) || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
+         if (!Util.areVectorsAlmostTheSame(InputManager.getMovementInput(), Vector2.zero) || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
             Cmd_ExitChair();
          }
       }
 
       // If the player is emoting down and tries to move or jump, stop
       if (isEmoting()) {
-         if (!Util.AreVectorsAlmostTheSame(InputManager.getMovementInput(), Vector2.zero) || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
+         if (!Util.areVectorsAlmostTheSame(InputManager.getMovementInput(), Vector2.zero) || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
             Cmd_StopEmote();
          }
       }
+
+      checkIfPlayerIsStuck();
    }
 
    protected override void Update () {
@@ -1352,6 +1354,70 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    #endregion
 
+   private void checkIfPlayerIsStuck () {
+      if (!canReceiveInput()) {
+         return;
+      }
+
+      Direction? inputDirection = InputManager.isPressingAnyDirection();
+
+      if (inputDirection == null|| !inputDirection.HasValue) {
+         return;
+      }
+
+      if (isSitting() || isEmoting()) {
+         return;
+      }
+
+      _prevPlayerBodyPosition = _currPlayerBodyPosition;
+      _currPlayerBodyPosition = getMainCollider().transform.position;
+
+      if (Util.areVectorsAlmostTheSame(_prevPlayerBodyPosition, _currPlayerBodyPosition, 0.01f)) {
+         if (!_stuckDirections.Contains(inputDirection.Value)) {
+            _stuckDirections.Add(inputDirection.Value);
+         }
+
+         // The player is trying to move, the player is not budging
+         _timeSpentNotMoving += Time.deltaTime;
+
+         if (_isPossiblyStuck) {
+            // The player is considered stuck, if the player attempts to move in more than two directions and fails
+            if (_stuckDirections.Count > 2) {
+               _isStuck = true;
+
+               if (!PanelManager.self.genericPromptScreen.isShowing()) {
+                  PanelManager.self.genericPromptScreen.text = "Free me!";
+                  PanelManager.self.genericPromptScreen.button.onClick.RemoveAllListeners();
+                  PanelManager.self.genericPromptScreen.button.onClick.AddListener(() => {
+                     rpc.Cmd_TeleportToCurrentAreaSpawnLocation();
+                     resetStuckCheck();
+                  });
+
+                  PanelManager.self.genericPromptScreen.show();
+               }
+            }
+         }
+
+         if (_timeSpentNotMoving >= _maxTimeSpentNotMoving) {
+            _isPossiblyStuck = true;
+            _timeSpentNotMoving = 0;
+         }
+      } else {
+         resetStuckCheck();
+      }
+   }
+
+   private void resetStuckCheck () {
+      _isPossiblyStuck = false;
+      _isStuck = false;
+      _timeSpentNotMoving = 0;
+      _stuckDirections.Clear();
+
+      if (PanelManager.self.genericPromptScreen.isShowing()) {
+         PanelManager.self.genericPromptScreen.hide();
+      }
+   }
+
    #region Private Variables
 
    // The player the mouseover occurs on
@@ -1390,6 +1456,27 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    // Cache for the composite animation players
    CompositeAnimationPlayer[] _compositeAnimationPlayersCache;
+
+   // Stores the position of the player in the previous frame
+   private Vector3 _prevPlayerBodyPosition;
+
+   // Stores the position of the player in the current frame
+   private Vector3 _currPlayerBodyPosition;
+
+   // The directions the player tried to move in while being potentially stuck
+   private List<Direction> _stuckDirections = new List<Direction>();
+
+   // Is the player possibly stuck?
+   private bool _isPossiblyStuck;
+
+   // The player is confirmed to be stuck
+   private bool _isStuck;
+
+   // Stores the amount of seconds the player has spent being still
+   private float _timeSpentNotMoving;
+
+   // If the player remains still for more than this number of seconds, we start checking if the player is stuck
+   private float _maxTimeSpentNotMoving = 3.0f;
 
    #endregion
 }

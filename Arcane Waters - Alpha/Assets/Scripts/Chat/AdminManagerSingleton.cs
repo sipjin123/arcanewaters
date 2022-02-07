@@ -129,7 +129,7 @@ public class AdminManagerSingleton : GenericGameManager
       networkProfiler.MaxTicks = int.MaxValue;
       networkProfiler.IsRecording = true;
 #endif
-      if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {
+      if (Util.isAutoTest()) {
          StartCoroutine(nameof(CO_RecordEndingTestNumbers));
       }
 

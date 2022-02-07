@@ -30,12 +30,23 @@ public class SeaHarpoon : SeaProjectile {
          _alignDirectionWithVelocity = true;
       }
 
-      // _sourceEntity = MyNetworkManager.fetchEntityFromNetId<SeaEntity>(_creatorNetId);
       _sourceEntity = SeaManager.self.getEntity(_creatorNetId);
+
+      if (isClient && _attachedEntityNetId != 0) {
+         onAttachToEntityClient(_attachedEntityNetId);
+      }
    }
 
    protected override void Update () {
       base.Update();
+
+      // Destroy the harpoon if either entity dies
+      if (isServer) {
+         if ((_sourceEntity && _sourceEntity.isDead()) || (_attachedEntity && _attachedEntity.isDead())) {
+            NetworkServer.Destroy(gameObject);
+            return;
+         }
+      }
 
       updateHarpoon();
    }
@@ -52,21 +63,6 @@ public class SeaHarpoon : SeaProjectile {
 
          // Don't apply a force if the rope's length isn't greater than the max length
          if (ropeLength <= _lineMaxLength) {
-            return;
-         }
-
-         float currentRopeStretch = ropeLength - _lineMaxLength;
-
-         // If the line is currently under stress, increment the stress timer
-         if (currentRopeStretch >= lineMaxStretch) {
-            _lineStressTime += Time.deltaTime;
-         } else {
-            _lineStressTime = 0.0f;
-         }
-
-         // If the line has been under stress for long enough, break it
-         if (_lineStressTime > lineStressBreakTime) {
-            NetworkServer.Destroy(this.gameObject);
             return;
          }
 
@@ -89,13 +85,6 @@ public class SeaHarpoon : SeaProjectile {
 
          _sourceEntity.getRigidbody().AddForce(forceOnSource);
          _attachedEntity.getRigidbody().AddForce(forceOnAttached);
-
-         float ropeAlpha = 1.0f - Mathf.Clamp01(_lineStressTime / lineStressBreakTime);
-
-         Gradient ropeGradient = harpoonRope.colorGradient;
-         ropeGradient.SetKeys(new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(Color.white, 0.0f) },
-            new GradientAlphaKey[] { new GradientAlphaKey(ropeAlpha, 0.0f), new GradientAlphaKey(ropeAlpha, 0.0f) });
-         harpoonRope.colorGradient = ropeGradient;
       }
    }
 
@@ -111,6 +100,37 @@ public class SeaHarpoon : SeaProjectile {
 
       harpoonRope.SetPosition(0, ropeStart);
       harpoonRope.SetPosition(1, ropeEnd);
+      
+      // Only check rope tension once we are attached to something
+      if (_attachedEntity == null) {
+         return;
+      }
+
+      // Update rope alpha based on stretch amount
+      Vector2 ropeVector = ropeEnd - ropeStart;
+      float ropeLength = ropeVector.magnitude;
+
+      float currentRopeStretch = ropeLength - _lineMaxLength;
+
+      // If the line is currently under stress, increment the stress timer
+      if (currentRopeStretch >= lineMaxStretch) {
+         _lineStressTime += Time.deltaTime;
+      } else {
+         _lineStressTime = 0.0f;
+      }
+
+      // If the line has been under stress for long enough, break it
+      if (isServer && _lineStressTime > lineStressBreakTime) {
+         NetworkServer.Destroy(this.gameObject);
+         return;
+      }
+
+      float ropeAlpha = 1.0f - Mathf.Clamp01(_lineStressTime / lineStressBreakTime);
+
+      Gradient ropeGradient = harpoonRope.colorGradient;
+      ropeGradient.SetKeys(new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(Color.white, 0.0f) },
+         new GradientAlphaKey[] { new GradientAlphaKey(ropeAlpha, 0.0f), new GradientAlphaKey(ropeAlpha, 0.0f) });
+      harpoonRope.colorGradient = ropeGradient;
    }
 
    protected override void onHitEnemy (SeaEntity hitEntity, SeaEntity sourceEntity, int finalDamage) {
@@ -129,7 +149,9 @@ public class SeaHarpoon : SeaProjectile {
       transform.localPosition = Vector3.zero;
 
       _attachedEntity = entity;
+      _attachedEntityNetId = entity.netId;
       Rpc_OnAttachToEntity(entity.netId);
+      _circleCollider.enabled = false;
 
       Vector2 toHitEntity = _attachedEntity.transform.position - _sourceEntity.transform.position;
       _lineMaxLength = toHitEntity.magnitude;
@@ -137,6 +159,10 @@ public class SeaHarpoon : SeaProjectile {
 
    [ClientRpc]
    private void Rpc_OnAttachToEntity (uint entityNetId) {
+      onAttachToEntityClient(entityNetId);
+   }
+
+   private void onAttachToEntityClient (uint entityNetId) {
       _circleCollider.enabled = false;
       if (trailParticles != null) {
          trailParticles.Stop();
@@ -152,10 +178,8 @@ public class SeaHarpoon : SeaProjectile {
       _rigidbody.velocity = Vector2.zero;
       _rigidbody.isKinematic = true;
 
-      SpriteRenderer mainRenderer = spriteRenderers[0];
-
-      if (mainRenderer != null) {
-         mainRenderer.enabled = false;
+      foreach (SpriteRenderer renderer in spriteRenderers) {
+         renderer.enabled = false;
       }
    }
 
@@ -180,7 +204,12 @@ public class SeaHarpoon : SeaProjectile {
    // A reference to the entity that we are attached to, if any
    protected SeaEntity _attachedEntity = null;
 
+   // The netid of the entity we are attached to
+   [SyncVar]
+   protected uint _attachedEntityNetId = 0;
+
    // The maximum length for the harpoon rope
+   [SyncVar]
    private float _lineMaxLength = 1.0f;
 
    // How long the harpoon line has been under stress for

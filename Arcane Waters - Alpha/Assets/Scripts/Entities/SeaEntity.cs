@@ -543,7 +543,7 @@ public class SeaEntity : NetEntity
    }
 
    [ClientRpc]
-   private void Rpc_TriggerAttackAnim (Anim.Type animType) {
+   protected void Rpc_TriggerAttackAnim (Anim.Type animType) {
       requestAnimationPlay(animType);
    }
 
@@ -796,6 +796,9 @@ public class SeaEntity : NetEntity
          } else if (attackType == Attack.Type.Venom) {
             // If worm attack, calls slime collision effect
             ExplosionManager.createSlimeExplosion(pos);
+
+            // Play attached SFX
+            SoundEffectManager.self.playAttachedSfx(SoundEffectManager.HORROR_BLOB_DAMAGE, this.gameObject);
          } else if (attackType == Attack.Type.Ice) {
             // TODO: Add ice effect logic here
          } else {
@@ -1018,18 +1021,6 @@ public class SeaEntity : NetEntity
          return;
       }
 
-      switch (this.facing) {
-         case Direction.North:
-            Rpc_TriggerAttackAnim(Anim.Type.Attack_North);
-            break;
-         case Direction.South:
-            Rpc_TriggerAttackAnim(Anim.Type.Attack_South);
-            break;
-         default:
-            Rpc_TriggerAttackAnim(Anim.Type.Attack_East);
-            break;
-      }
-
       switch (shipAbility.selectedAttackType) {
          case Attack.Type.Venom:
          case Attack.Type.Boulder:
@@ -1104,13 +1095,6 @@ public class SeaEntity : NetEntity
 
    [Server]
    private IEnumerator CO_FireAtSpot (Vector2 spot, int abilityId, Attack.Type attackType, float attackDelay, float launchDelay, Vector2 spawnPosition = new Vector2()) {
-      if (isDead()) {
-         yield break;
-      }
-
-      // Wait for the attack delay, if any
-      yield return new WaitForSeconds(attackDelay);
-
       if (isDead()) {
          yield break;
       }

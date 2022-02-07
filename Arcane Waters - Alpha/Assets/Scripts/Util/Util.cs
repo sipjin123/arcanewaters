@@ -630,12 +630,8 @@ public class Util : MonoBehaviour
       return false;
    }
 
-   public static bool forceBatch = false;
    public static bool isBatch () {
       // return true; // Debug usage only to simulate batch mode logic
-      if (forceBatch) {
-         return true;
-      }
       return Application.isBatchMode;
    }
 
@@ -953,15 +949,43 @@ public class Util : MonoBehaviour
    }
 
    public static bool isAutoStarting () {
-      if (CommandCodes.get(CommandCodes.Type.AUTO_HOST) || CommandCodes.get(CommandCodes.Type.AUTO_TEST) || Global.startAutoHost) {
+      if (CommandCodes.get(CommandCodes.Type.AUTO_HOST) || isAutoTest() || Global.startAutoHost) {
          return true;
       }
 
       return false;
    }
 
+   public static bool isAutoTest () {
+      #region Debug in editor
+      // return true;
+      #endregion
+      
+      return CommandCodes.get(CommandCodes.Type.AUTO_TEST);
+   }
+
+   public static int getAutoTesterNumber () {
+      #region Debug in editor
+      // return 100;
+      #endregion
+      
+      return Util.getCommandLineInt(CommandCodes.Type.AUTO_TEST + "");
+   }
+
    public static bool isAutoWarping () {
+      #region Debug in editor
+      // return true;
+      #endregion
+      
       return CommandCodes.get(CommandCodes.Type.AUTO_WARP);
+   }
+
+   public static bool isAutoMove () {
+      #region Debug in editor
+      // return true;
+      #endregion
+      
+      return CommandCodes.get(CommandCodes.Type.AUTO_MOVE);
    }
 
    public static bool isStressTesting () {
@@ -1328,7 +1352,7 @@ public class Util : MonoBehaviour
       // Capitalizes the first letter of each word
       return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s.ToLower());
    }
-
+   
    public static void stopHostAndReturnToTitleScreen () {
       D.debug($"Util.stopHostAndReturnToTitleScreen() was called.");
 
@@ -1432,19 +1456,7 @@ public class Util : MonoBehaviour
       // Reset ambience
       AmbienceManager.self.setTitleScreenAmbience();
 
-      bool hasValidSteamLogin = SteamManager.Initialized && Global.lastSteamId.Length > 10;
-      if (hasValidSteamLogin) {
-         Global.isPlayerLoggedOut = true;
-      }
-
-      bool hasValidQuickPanelContent = PlayerPrefs.GetString(QuickLaunchPanel.ACCOUNT_KEY).Length > 1 && PlayerPrefs.GetString(QuickLaunchPanel.PASSWORD_KEY).Length > 1;
-      if (!Util.isCloudBuild() && Util.isServerBuild() && hasValidQuickPanelContent) {
-          QuickLaunchPanel.self.launch();
-      } else {
-         if (hasValidSteamLogin) {
-            TitleScreen.self.onLoginButtonPressed(SteamManager.Initialized);
-         }
-      }
+      TitleScreen.self.isPlayerLoggedOut = true;
    }
 
    public static bool isWithinCone (Vector2 coneStart, Vector2 target, float coneMiddleAngle, float coneHalfAngle, float coneRadius = -1.0f) {
@@ -1705,8 +1717,12 @@ public class Util : MonoBehaviour
       return Vector2.Distance(point, projection);
    }
 
-   public static bool AreVectorsAlmostTheSame(Vector3 a, Vector3 b) {
-      return (Mathf.Abs(a.x - b.x) < Mathf.Epsilon && Mathf.Abs(a.y - b.y) < Mathf.Epsilon && Mathf.Abs(a.z - b.z) < Mathf.Epsilon);
+   public static bool areVectorsAlmostTheSame(Vector3 a, Vector3 b) {
+      return areVectorsAlmostTheSame(a, b, Mathf.Epsilon);
+   }
+
+   public static bool areVectorsAlmostTheSame (Vector3 a, Vector3 b, float sensibility) {
+      return (Mathf.Abs(a.x - b.x) < sensibility && Mathf.Abs(a.y - b.y) < sensibility && Mathf.Abs(a.z - b.z) < sensibility);
    }
 
    // A cached reference to the main camera
@@ -1748,7 +1764,7 @@ public class Util : MonoBehaviour
    }
 
    public static Direction? getMajorDirectionFromVector (Vector2 vector) {
-      if (AreVectorsAlmostTheSame(Vector2.zero, vector)) {
+      if (areVectorsAlmostTheSame(Vector2.zero, vector)) {
          return null;
       }
 

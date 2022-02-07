@@ -324,7 +324,7 @@ public class NetEntity : NetworkBehaviour
       updatePlayerCamera();
 
       // Check command line
-      _autoMove = CommandCodes.get(CommandCodes.Type.AUTO_MOVE);
+      _autoMove = Util.isAutoMove();
 
       if (shadow) {
          // Store the initial scale of the shadow
@@ -355,7 +355,7 @@ public class NetEntity : NetworkBehaviour
          // Now that we have a player, we know that the redirection process is complete
          Global.isRedirecting = false;
 
-         //D.debug($"Our local NetEntity has been created, so setting Global.isRedirecting to false.");
+         D.debug($"Our local NetEntity has been created, so setting Global.isRedirecting to false.");
 
          // The fast login is completed
          Global.isFastLogin = false;
@@ -519,7 +519,7 @@ public class NetEntity : NetworkBehaviour
       }
 
       // Disable movement control for our player under certain conditions
-      if (!isLocalPlayer || !Util.isGeneralInputAllowed() || isFalling() || isDead() || isAboutToWarpOnClient) {
+      if (!canReceiveInput()) {
          if (isLocalPlayer && !Util.isGeneralInputAllowed() && this is PlayerShipEntity) {
             PlayerShipEntity playerShip = (PlayerShipEntity) this;
             // Clears the server side movement input if general input was blocked but move direction still has value
@@ -592,6 +592,10 @@ public class NetEntity : NetworkBehaviour
       if (MyNetworkManager.wasServerStarted && !isAboutToWarpOnServer && AreaManager.self.getArea(this.areaKey) != null) {
          Util.tryToRunInServerBackground(() => DB_Main.setNewLocalPosition(this.userId, localPos, this.facing, this.areaKey));
       }
+   }
+
+   protected bool canReceiveInput () {
+      return isLocalPlayer && Util.isGeneralInputAllowed() && !isFalling() && !isDead() && !isAboutToWarpOnClient;
    }
 
    public bool isMuted () {
@@ -915,7 +919,7 @@ public class NetEntity : NetworkBehaviour
          case Anim.Type.NC_Jump_North:
          case Anim.Type.NC_Jump_South:
             shadow.transform.localScale = _shadowInitialScale;
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.JUMP_LAND, this.transform.position);
+            SoundEffectManager.self.playJumpLandSfx(this.transform.position);
             break;
       }
 
@@ -1204,6 +1208,10 @@ public class NetEntity : NetworkBehaviour
    public void setClimbing (bool isClimbing) {
       _isClimbing = isClimbing;
       shadow.enabled = !isClimbing;
+   }
+
+   public bool isClimbing () {
+      return _isClimbing;
    }
 
    public bool isMouseOver () {
@@ -1552,7 +1560,7 @@ public class NetEntity : NetworkBehaviour
          rpc.Cmd_ShowLevelUpEffect(jobType);
 
          // Play a sound
-         //SoundManager.create3dSound("tutorial_step", Global.player.transform.position);
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.TUTORIAL_STEP);
 
          // Show the level up in chat
          string levelsMsg = string.Format("You gained {0} {1} {2}! Current level: {3}", levelsGained, jobType, levelsGained > 1 ? "levels" : "level", newLevel);

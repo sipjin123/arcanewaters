@@ -62,9 +62,8 @@ public class ClientManager : GenericGameManager {
          QuickLaunchPanel.self.launch();
       }
 
-      if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {
-         int testerNumber = Util.getCommandLineInt(CommandCodes.Type.AUTO_TEST + "");
-         QuickLaunchPanel.self.accountInputField.text = "tester" + testerNumber;
+      if (Util.isAutoTest()) {
+         QuickLaunchPanel.self.accountInputField.text = "tester" + Util.getAutoTesterNumber();
          QuickLaunchPanel.self.passwordInputField.text = "test";
          QuickLaunchPanel.self.clientToggle.isOn = true;
          QuickLaunchPanel.self.serverToggle.isOn = false;

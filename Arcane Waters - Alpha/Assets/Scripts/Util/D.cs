@@ -115,9 +115,8 @@ public class D : MonoBehaviour {
          _serverLogFilePath = logsDirectoryPath + appName + " - SERVER LOG - " + DateTime.Now.ToString(@"yyyy-M-d HH-mm-ss tt fffffff") + ".log";
 
          // Log file name for AUTO_TEST
-         if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {
-            int testerNumber = Util.getCommandLineInt(CommandCodes.Type.AUTO_TEST + "");
-            _logFilePath = logsDirectoryPath + appName + " " + testerNumber.ToString() + ".log";
+         if (Util.isAutoTest()) {
+            _logFilePath = logsDirectoryPath + appName + " " + Util.getAutoTesterNumber().ToString() + ".log";
          }
          
          // Log file name for server

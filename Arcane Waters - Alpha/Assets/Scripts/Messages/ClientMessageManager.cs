@@ -513,7 +513,6 @@ public class ClientMessageManager : MonoBehaviour {
       Global.currentlySelectedUserId = msg.userId;
       // We have already logged in successfully for the first time
       Global.isFirstLogin = false;
-      Global.isPlayerLoggedOut = false;
 
       if (msg.loginMessage != "") {
          ChatPanel.self.addChatInfo(new ChatInfo(0, msg.loginMessage, System.DateTime.Now, ChatInfo.Type.System));

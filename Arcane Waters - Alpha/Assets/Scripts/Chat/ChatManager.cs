@@ -941,15 +941,12 @@ public class ChatManager : GenericGameManager
    }
 
    private void requestUnstuck () {
-      if (Global.player != null && Global.player.getPlayerBodyEntity() != null) {
-         PlayerBodyEntity bodyEntity = Global.player.getPlayerBodyEntity();
-
-         if (bodyEntity.isSitting() || bodyEntity.isEmoting()) {
-            return;
-         }
-
+      if (Global.player != null && Global.player.getPlayerBodyEntity() != null && !Global.player.getPlayerBodyEntity().isSitting() && !Global.player.getPlayerBodyEntity().isEmoting()) {
          Global.player.rpc.Cmd_TeleportToCurrentAreaSpawnLocation();
+         return;
       }
+      
+      addChat("Can't do that now...", ChatInfo.Type.System);
    }
 
    #region Private Variables

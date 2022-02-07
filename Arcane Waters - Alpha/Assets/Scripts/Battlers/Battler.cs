@@ -1143,8 +1143,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       playAnim(Anim.Type.Death_East, SimpleAnimation.DEFAULT_TIME_PER_FRAME / 2);
 
       if (battlerType == BattlerType.AIEnemyControlled) {
-         // Play our customized death sound
-         playDeathSound();
+         // Play death SFX
+         SoundEffectManager.self.playLandEnemyDeathSfx(this.enemyType, this.transform.position);
 
          // Wait a little bit for it to finish
          yield return new WaitForSeconds(.25f);
@@ -1157,13 +1157,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          // Play a "Poof" effect on our head
          EffectManager.playPoofEffect(this);
 
-         // Play death SFX
-         SoundEffectManager.self.playLandEnemyDeathSfx(this.enemyType, this.transform.position);
+         //yield return new WaitForSeconds(.65f);
 
-         // Play Triumph SFX if we defeat a boss
-         if (this.isBossType) {
-            SoundEffectManager.self.playBossDefeatTriumph();
-         }
+         //// Play Triumph SFX
+         //SoundEffectManager.self.playTriumphSfx();
       }
    }
 
@@ -1759,6 +1756,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                }
             }
 
+            // Play the generic gun shot sfx
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.GENERIC_GUN_SHOT, sourceBattler.transform.position);
+
             // Play 
             yield return new WaitForSeconds(getPostShootDelay());
 
@@ -2166,10 +2166,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
 
       // Play the hurt SFX
-      SoundEffectManager.self.playLandEnemyHitSfx(this.enemyType, this.transform.position);
+      SoundEffectManager.self.playLandBattleHitSfx(attacker, this, this.transform.position);
 
       // Play the ability hit SFX after the hurt animation frame
-      ability.playHitSfxAtTarget(transform);
+      //ability.playHitSfxAtTarget(transform);
 
       yield return new WaitForSeconds(getPostContactLength());
 

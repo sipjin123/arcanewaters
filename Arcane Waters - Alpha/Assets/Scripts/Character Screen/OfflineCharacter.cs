@@ -88,14 +88,16 @@ public class OfflineCharacter : ClientMonoBehaviour {
       }
 
       // Get a reference to the buttons that rotate the character
-      foreach (Button button in this.gameObject.transform.parent.GetComponentsInChildren<Button>()) {
+      foreach (Button button in this.gameObject.transform.parent.GetComponentsInChildren<Button>(true)) {
          if (button.name.ToLower().Contains("left")) {
             leftRotateButton = button;
-            leftRotateButton.onClick.AddListener(this.GetComponentInChildren<CharacterStack>().rotateDirectionClockWise);
+            leftRotateButton.onClick.RemoveAllListeners();
+            leftRotateButton.onClick.AddListener(() => this.GetComponentInChildren<CharacterStack>().rotateDirectionClockWise());
          } else {
             if (button.name.ToLower().Contains("right")) {
                rightRotateButton = button;
-               rightRotateButton.onClick.AddListener(this.GetComponentInChildren<CharacterStack>().rotateDirectionCounterClockWise);
+               rightRotateButton.onClick.RemoveAllListeners();
+               rightRotateButton.onClick.AddListener(() => this.GetComponentInChildren<CharacterStack>().rotateDirectionCounterClockWise());
             }
          }
       }

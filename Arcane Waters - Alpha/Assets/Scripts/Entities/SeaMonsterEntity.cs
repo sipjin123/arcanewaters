@@ -606,7 +606,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       // Play SFX
       if (monsterType == Type.Horror) {
-         SoundEffectManager.self.playSeaBossDeathSfx(monsterType, this.transform.position);
+         SoundEffectManager.self.playSeaEnemyDeathSfx(monsterType, this.transform.position);
       }
 
       if (!isSeaMonsterMinion() && monsterType != Type.Horror) {
@@ -677,15 +677,43 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    }
 
    [Server]
-   protected void launchProjectile (Vector2 spot, SeaEntity attacker, int abilityId, float attackDelay, float launchDelay) {
-      this.facing = (Direction) SeaMonsterUtility.getDirectionToFace(attacker, sortPoint.transform.position);
+   protected void launchProjectile (SeaEntity target, int abilityId, float attackDelay, float launchDelay) {
+      StartCoroutine(CO_LaunchProjectile(target, abilityId, attackDelay, launchDelay));
+   }
+
+   protected IEnumerator CO_LaunchProjectile (SeaEntity target, int abilityId, float attackDelay, float launchDelay) {
+      _isPerformingAttack = true;
+      
+      yield return new WaitForSeconds(attackDelay);
+      
+      this.facing = (Direction) SeaMonsterUtility.getDirectionToFace(target, sortPoint.transform.position);
+
+      // Set attack animation trigger values on server side
+      isAttacking = true;
+      forceStop();
+      _attackStartAnimateTime = NetworkTime.time;
+      _attackEndAnimateTime = NetworkTime.time + getAttackDuration();
+
+      switch (this.facing) {
+         case Direction.North:
+            Rpc_TriggerAttackAnim(Anim.Type.Attack_North);
+            break;
+         case Direction.South:
+            Rpc_TriggerAttackAnim(Anim.Type.Attack_South);
+            break;
+         default:
+            Rpc_TriggerAttackAnim(Anim.Type.Attack_East);
+            break;
+      }
+
+      yield return new WaitForSeconds(launchDelay);
 
       int accuracy = Random.Range(1, 4);
       Vector2 targetLoc = new Vector2(0, 0);
       if (accuracy == 1) {
-         targetLoc = spot + (attacker.getVelocity());
+         targetLoc = (Vector2)target.transform.position + (target.getVelocity());
       } else {
-         targetLoc = spot;
+         targetLoc = target.transform.position;
       }
 
       // Clamp the target to the monster's range radius
@@ -704,13 +732,8 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          }
       }
 
-      // Set attack animation trigger values on server side
-      isAttacking = true;
-      forceStop();
-      _attackStartAnimateTime = NetworkTime.time;
-      _attackEndAnimateTime = NetworkTime.time + getAttackDuration();
-
-      fireAtSpot(targetLoc, abilityId, attackDelay, launchDelay, spawnPosition);
+      fireAtSpot(targetLoc, abilityId, 0.0f, 0.0f, spawnPosition);
+      _isPerformingAttack = false;
    }
 
    public override void setAreaParent (Area area, bool worldPositionStays) {
@@ -799,7 +822,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       while (!isDead()) {
 
          // Wait for the reload to finish
-         while (!hasReloaded() || !canAttack() || shouldIgnoreAttackers()) {
+         while (!hasReloaded() || !canAttack() || shouldIgnoreAttackers() || _isPerformingAttack) {
             yield return null;
          }
 
@@ -835,10 +858,10 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
             }
 
             // TODO: Confirm later on if this needs to be dynamic
-            float launchDelay = .4f;
+            float launchDelay = getAttackDuration();
             float projectileDelay = seaMonsterData.projectileDelay;
             D.adminLog("{" + monsterType + "} Launch delay: {" + launchDelay + "} ProjectileDelay: {" + projectileDelay + "}", D.ADMIN_LOG_TYPE.SeaAbility);
-            launchProjectile(targetEntity.transform.position, targetEntity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
+            launchProjectile(targetEntity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
 
             if (monsterType == Type.Horror_Tentacle) {
                if (_isNextAttackSecondary) {
@@ -850,7 +873,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
                   foreach (KeyValuePair<uint, double> KV in _attackers) {
                      NetEntity entity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(KV.Key);
                      if (entity != null && entity != targetEntity && Random.value < TENTACLE_EXTRA_TARGET_CHANCE && isInRange(entity.transform.position)) {
-                        launchProjectile(entity.transform.position, entity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
+                        launchProjectile(entity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
                      }
                   }
                }
@@ -883,12 +906,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       // Pick a random attacker
       NetEntity targetEntity = attackersInRange.ChooseRandom();
 
-      // Try to predict the target position
-      Vector2 predictedTargetPos = (Vector2) targetEntity.transform.position + targetEntity.getVelocity() * 1.5f;
-
       float launchDelay = .4f;
       float projectileDelay = seaMonsterData.projectileDelay;
-      launchProjectile(predictedTargetPos, targetEntity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
+      launchProjectile(targetEntity.GetComponent<SeaEntity>(), abilityId, projectileDelay, launchDelay);
    }
 
    #endregion
@@ -1001,6 +1021,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    // Gets set to true when the next attack must be a secondary attack
    private bool _isNextAttackSecondary = false;
+
+   // Set to true when an attack is in the process of being performed, to prevent additional attacks from occurring
+   protected bool _isPerformingAttack = false;
 
    #endregion
 }

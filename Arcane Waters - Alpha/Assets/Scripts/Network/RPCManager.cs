@@ -8815,6 +8815,12 @@ public class RPCManager : NetworkBehaviour
       }
 
       _player.transform.localPosition = spawnLocalPos;
+      Target_ReceiveTeleportToCurrentAreaSpawnLocation(_player.connectionToClient, spawnLocalPos);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveTeleportToCurrentAreaSpawnLocation(NetworkConnection connection, Vector3 pos) {
+      Global.player.transform.localPosition = pos;
    }
 
    [Command]
@@ -9395,7 +9401,7 @@ public class RPCManager : NetworkBehaviour
 
    [TargetRpc]
    private void Target_ReceivePlayersCount (NetworkConnection conn, int playersCount) {
-      OptionsPanel.self.onPlayersCountReceived(playersCount);
+      OptionsPanel.self?.onPlayersCountReceived(playersCount);
    }
 
    [Command]

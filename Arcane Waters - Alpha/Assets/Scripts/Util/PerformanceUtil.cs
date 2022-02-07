@@ -230,6 +230,11 @@ public class PerformanceUtil : MonoBehaviour {
       return (100.0f * (self._zabbixRamUsage / self._zabbixTotalRam));
    }
 
+   public static void resetZabbixValues () {
+      self._zabbixCpuUsage = 0.0f;
+      self._zabbixRamUsage = 0.0f;
+   }
+
    #region Private Variables
 
    // A reference to the process running this server/client

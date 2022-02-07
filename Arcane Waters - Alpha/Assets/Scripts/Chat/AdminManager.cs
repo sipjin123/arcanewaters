@@ -23,8 +23,7 @@ public class AdminManager : NetworkBehaviour
    // The key for where we store the message of the day value in PlayerPrefs
    public static readonly string MOTD_KEY = "messageOfTheDay";
 
-   public struct PerformanceInfo
-   {
+   public struct PerformanceInfo {
       public float cpuUsage;
       public float ramUsage;
       public int fps;
@@ -38,10 +37,8 @@ public class AdminManager : NetworkBehaviour
       if (isLocalPlayer) {
          // If we're testing clients, have them warp around repeatedly
          if (Util.isAutoWarping()) {
-            if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {
-               int testerNumber = Util.getCommandLineInt(CommandCodes.Type.AUTO_TEST + "");
-
-               System.Random rand = new System.Random(testerNumber);
+            if (Util.isAutoTest()) {
+               System.Random rand = new System.Random(Util.getAutoTesterNumber());
 
                int randTime = rand.Next(15, 20);
 
@@ -263,7 +260,7 @@ public class AdminManager : NetworkBehaviour
       float currentRamUsage = baselineRamUsage;
 
       int numAreasCreated = 0;
-      float testStartTime = (float)NetworkTime.time;
+      float testStartTime = (float) NetworkTime.time;
       List<string> initialAreas = new List<string>();
 
       for (int i = 0; i < numInitialAreas; i++) {
@@ -288,12 +285,18 @@ public class AdminManager : NetworkBehaviour
 
       numAreasCreated = numInitialAreas;
 
-      while ((int)currentCpuUsage < cpuCutoff && (int)currentRamUsage < ramCutoff) {
+      // Update performance parameters
+      currentCpuUsage = PerformanceUtil.getZabbixCpuUsage();
+      currentRamUsage = PerformanceUtil.getZabbixRamUsage();
+
+      while ((int) currentCpuUsage < cpuCutoff && (int) currentRamUsage < ramCutoff) {
          // Create an open world area
          string areaName = getOpenWorldMapName(numAreasCreated);
          D.debug("TestOpenWorld: Creating map for area: " + areaName + ", cpuUsage: " + currentCpuUsage + ", ramUsage: " + currentRamUsage);
          MapManager.self.createLiveMap(areaName);
          numAreasCreated++;
+
+         float mapCreationStartTime = (float) NetworkTime.time;
 
          // Wait for map to begin creation
          yield return new WaitForSeconds(1.0f);
@@ -303,7 +306,8 @@ public class AdminManager : NetworkBehaviour
             yield return null;
          }
 
-         D.debug("TestOpenWorld: Map " + areaName + " has finished creation, moving on to the next area after a delay.");
+         float mapCreationTime = (float) NetworkTime.time - mapCreationStartTime;
+         D.debug("TestOpenWorld: Map " + areaName + " has finished creation, moving on to the next area after a delay. Map creation took " + mapCreationTime + " seconds.");
 
          // Leave a delay between creating new areas
          yield return new WaitForSeconds(delayBetweenNewAreas);
@@ -313,12 +317,16 @@ public class AdminManager : NetworkBehaviour
          currentRamUsage = PerformanceUtil.getZabbixRamUsage();
       }
 
+      PerformanceUtil.self.updateZabbixData = false;
+      PerformanceUtil.resetZabbixValues();
+
       float testDuration = (float) NetworkTime.time - testStartTime;
       D.debug("Testing Open World complete - reporting results to the player.");
       D.debug("[Test Open World Results] A performance limit was hit after creating " + numAreasCreated + ". The test took " + testDuration + " seconds.");
       D.debug("[Test Open World Results] Baseline Cpu: " + baselineCpuUsage + ", Baseline Ram: " + baselineRamUsage);
+      D.debug("[Test Open World Results] Final Cpu: " + currentCpuUsage + ", Final Ram: " + currentRamUsage);
 
-      Target_ReportTestOpenWorldResults(_player.connectionToClient, numAreasCreated, testDuration, baselineCpuUsage, baselineRamUsage);
+      Target_ReportTestOpenWorldResults(_player.connectionToClient, numAreasCreated, testDuration, baselineCpuUsage, baselineRamUsage, currentCpuUsage, currentRamUsage);
 
       // Destroy all created open world maps
       for (int i = 0; i < numAreasCreated; i++) {
@@ -327,9 +335,11 @@ public class AdminManager : NetworkBehaviour
       }
    }
 
-   private void Target_ReportTestOpenWorldResults (NetworkConnection connectionToClient, int numAreasCreated, float testDuration, float baselineCpuUsage, float baselineRamUsage) {
+   [TargetRpc]
+   private void Target_ReportTestOpenWorldResults (NetworkConnection connectionToClient, int numAreasCreated, float testDuration, float baselineCpuUsage, float baselineRamUsage, float finalCpuUsage, float finalRamUsage) {
       ChatPanel.self.addChatInfo(new ChatInfo(0, "[Test Open World Results] A performance limit was hit after creating " + numAreasCreated 
          + ". The test took " + testDuration + " seconds.", DateTime.Now, ChatInfo.Type.System));
+      ChatPanel.self.addChatInfo(new ChatInfo(0, "[Test Open World Results] Final Cpu: " + finalCpuUsage + ", Final Ram: " + finalRamUsage, DateTime.Now, ChatInfo.Type.System));
       ChatPanel.self.addChatInfo(new ChatInfo(0, "[Test Open World Results] Baseline Cpu: " + baselineCpuUsage + ", Baseline Ram: " + baselineRamUsage, DateTime.Now, ChatInfo.Type.System));
    }
 
@@ -3010,8 +3020,8 @@ public class AdminManager : NetworkBehaviour
       if (string.IsNullOrEmpty(partialAreaKey)) {
          // string[] testAreaKeys = { "Pineward_Shipyard", "Far Sands", "Snow Weapon Shop 1", "Andriusti", "Starting Sea Map", "Starting Treasure Site", "Andrius Ledge" };
          // string[] testAreaKeys = { "bot_test" };
-         string[] testAreaKeys = { "Tutorial Town", "Tutorial Town General Shop", "Tutorial Town Cemetery v2", "Sea Voyage 1", "Sea Voyage 2", "Sea Voyage 3" };
-         // string[] testAreaKeys = { "Sea Voyage 2", "Sea Voyage 3" };
+         // string[] testAreaKeys = { "Tutorial Town", "Tutorial Town General Shop", "Tutorial Town Cemetery v2", "Sea Voyage 1", "Sea Voyage 2", "Sea Voyage 3" };
+         string[] testAreaKeys = { "Sea Voyage 2", "Sea Voyage 3" };
          closestAreaKey = testAreaKeys[UnityEngine.Random.Range(0, testAreaKeys.Count())];
       } else {
          // Try to find a custom map of this key

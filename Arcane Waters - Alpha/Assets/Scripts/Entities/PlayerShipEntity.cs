@@ -650,6 +650,7 @@ public class PlayerShipEntity : ShipEntity
             _targetCircle.updateCircle(true);
             break;
          case CannonTargetingType.Normal:
+         case CannonTargetingType.AbilityProjectile:
             _cannonTargeter.gameObject.SetActive(true);
             updateTargeting();
             _cannonTargeter.updateTargeter();
@@ -1577,8 +1578,10 @@ public class PlayerShipEntity : ShipEntity
          renderer.enabled = false;
       }
 
-      while (isDisabled) {
-         yield return null;
+      if (!Util.isStressTesting()) {
+         while (isDisabled) {
+            yield return null;
+         }
       }
 
       _clickableBox.gameObject.SetActive(true);
