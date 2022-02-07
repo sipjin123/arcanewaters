@@ -62,7 +62,8 @@ public class XmlVersionManagerServer : GenericGameManager {
    public static string CONSUMABLES_TABLE = "consumables_v1";
    public static string DYES_TABLE = "dyes_v1";
    public static string LAND_POWERUP_TABLE = "land_powerup_xml_v1";
-   
+   public static string QUEST_ITEMS_TABLE = "quest_items_xml";
+
    // TEXT FILE NAMES (Do not Modify)
    public static string CROPS_FILE = "crops";
    public static string ABILITIES_FILE = "abilities";
@@ -97,6 +98,7 @@ public class XmlVersionManagerServer : GenericGameManager {
    public static string CONSUMABLES_FILE = "consumables";
    public static string DYES_FILE = "dyes";
    public static string LAND_POWERUPS_FILE = "land_powerups";
+   public static string QUEST_ITEMS_FILE = "quest_items";
 
    // Progress indicators
    public int targetProgress;
@@ -169,6 +171,7 @@ public class XmlVersionManagerServer : GenericGameManager {
       confirmTextFile(GEMS_FILE);
       confirmTextFile(SHIP_SKINS_FILE);
       confirmTextFile(CONSUMABLES_FILE);
+      confirmTextFile(QUEST_ITEMS_FILE);
    }
 
    private void confirmTextFile (string fileName) {
@@ -343,6 +346,8 @@ public class XmlVersionManagerServer : GenericGameManager {
          string shipSkinsData = DB_Main.getXmlContent(SHIP_SKINS_TABLE, EditorToolType.ShipSkins);
          string consumablesData = DB_Main.getXmlContent(CONSUMABLES_TABLE, EditorToolType.Consumables);
 
+         string questItemsData = DB_Main.getXmlContent(QUEST_ITEMS_TABLE, EditorToolType.QuestItems);
+
          // Write data to text files
          writeAndCache(xmlTextDirectory + "/" + LAND_MONSTER_FILE + ".txt", landMonsterData);
          writeAndCache(xmlTextDirectory + "/" + SEA_MONSTER_FILE + ".txt", seaMonsterData);
@@ -378,6 +383,7 @@ public class XmlVersionManagerServer : GenericGameManager {
          writeAndCache(xmlTextDirectory + "/" + GEMS_FILE + ".txt", gemsData);
          writeAndCache(xmlTextDirectory + "/" + SHIP_SKINS_FILE + ".txt", shipSkinsData);
          writeAndCache(xmlTextDirectory + "/" + CONSUMABLES_FILE + ".txt", consumablesData);
+         writeAndCache(xmlTextDirectory + "/" + QUEST_ITEMS_FILE + ".txt", questItemsData);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             string zipDirectory = serverZipDirectory + "/" + SERVER_ZIP_FILE;

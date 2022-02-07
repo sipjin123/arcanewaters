@@ -46,7 +46,8 @@ public class EditorSQLManager {
       ShipSkins = 37,
       Consumables = 38,
       Dyes = 39,
-      LandPowerups = 40
+      LandPowerups = 40,
+      QuestItems = 41
    }
 
    public static string getSqlTable (EditorToolType editorType) {

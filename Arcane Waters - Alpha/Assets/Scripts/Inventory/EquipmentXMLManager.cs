@@ -24,6 +24,9 @@ public class EquipmentXMLManager : MonoBehaviour {
    // References to all the hat data
    public List<HatStatData> hatStatList { get { return _hatStatRegistry.Values.ToList(); } }
 
+   // Reference to all the quest item data
+   public List<QuestItem> questItemList { get { return _questItemList.ToList(); } }
+
    // Determines how many equipment set has been loaded
    public int equipmentLoadCounter = 0;
 
@@ -165,6 +168,30 @@ public class EquipmentXMLManager : MonoBehaviour {
          }
       }
       equipmentLoadCounter = TOTAL_EQUIPMENT_TYPES;
+      finishedLoading();
+   }
+
+   public void receiveQuestDataFromZipData (List<Item> questData) {
+      foreach (QuestItem rawData in questData) {
+         // Save the data in the memory cache
+         if (!_questItemList.Exists(_=>_.itemTypeId == rawData.itemTypeId)) {
+            QuestItem newItem = new QuestItem {
+               category = Item.Category.Quest_Item,
+               itemTypeId = rawData.itemTypeId,
+               itemName = rawData.itemName,
+               itemDescription = rawData.itemDescription,
+               paletteNames = rawData.paletteNames,
+               durability = 100,
+               count = rawData.count,
+               data = rawData.data,
+               iconPath = rawData.iconPath,
+               id = -1
+            };
+            _questItemStatList.Add(newItem);
+            _questItemList.Add(newItem);
+         }
+      }
+      D.adminLog("EquipmentXML :: Received a total of {" + _weaponStatList.Count + "} weapon data from {" + questData.Count + "}", D.ADMIN_LOG_TYPE.Equipment);
       finishedLoading();
    }
 
@@ -540,6 +567,8 @@ public class EquipmentXMLManager : MonoBehaviour {
    private List<ArmorStatData> _armorStatList = new List<ArmorStatData>();
    [SerializeField]
    private List<HatStatData> _hatStatList = new List<HatStatData>();
+   [SerializeField]
+   private List<QuestItem> _questItemStatList = new List<QuestItem>();
 
    // Stores the list of all weapon data
    private Dictionary<int, WeaponStatData> _weaponStatRegistry = new Dictionary<int, WeaponStatData>();
@@ -549,6 +578,9 @@ public class EquipmentXMLManager : MonoBehaviour {
 
    // Stores the list of all hat data
    private Dictionary<int, HatStatData> _hatStatRegistry = new Dictionary<int, HatStatData>();
+
+   // Stores the list of all quest item data
+   public List<QuestItem> _questItemList = new List<QuestItem>();
 
    #endregion
 }

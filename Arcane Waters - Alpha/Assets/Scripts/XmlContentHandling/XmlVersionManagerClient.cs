@@ -204,6 +204,7 @@ public class XmlVersionManagerClient : GenericGameManager {
       checkStreamingAssetFile(XmlVersionManagerServer.GEMS_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.SHIP_SKINS_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.CONSUMABLES_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.QUEST_ITEMS_FILE);
    }
 
    private void checkStreamingAssetFile (string fileName, bool isLastEntry = false) {
@@ -303,6 +304,7 @@ public class XmlVersionManagerClient : GenericGameManager {
       extractXmlType(EditorToolType.Gems);
       extractXmlType(EditorToolType.ShipSkins);
       extractXmlType(EditorToolType.Consumables);
+      extractXmlType(EditorToolType.QuestItems);
 
       initializeLoadingXmlData.Invoke();
    }
@@ -410,6 +412,9 @@ public class XmlVersionManagerClient : GenericGameManager {
             break;
          case EditorToolType.Consumables:
             path = TEXT_PATH + XmlVersionManagerServer.CONSUMABLES_FILE + ".txt";
+            break;
+         case EditorToolType.QuestItems:
+            path = TEXT_PATH + XmlVersionManagerServer.QUEST_ITEMS_FILE + ".txt";
             break;
       }
 
@@ -1007,6 +1012,24 @@ public class XmlVersionManagerClient : GenericGameManager {
                }
             }
             LandPowerupManager.self.receiveListFromZipData(landPowerupList.ToArray());
+            break;
+
+         case EditorToolType.QuestItems:
+            List<Item> questItemList = new List<Item>();
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+
+               // Extract the segregated data and assign to the xml manager
+               if (xmlSubGroup.Length >= 2) {
+                  bool isEnabled = int.Parse(xmlSubGroup[2]) == 1 ? true : false;
+                  if (isEnabled) {
+                     Item itemData = Util.xmlLoad<Item>(xmlSubGroup[1]);
+                     questItemList.Add(itemData);
+                     message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+                  }
+               }
+            }
+            EquipmentXMLManager.self.receiveQuestDataFromZipData(questItemList);
             break;
 
          case EditorToolType.Map_Keys:

@@ -541,6 +541,7 @@ public class DB_Main : DB_MainStub
          addedFields = ", is_enabled";
       } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops
          || toolType == EditorSQLManager.EditorToolType.Quest
+         || toolType == EditorSQLManager.EditorToolType.QuestItems
          || toolType == EditorSQLManager.EditorToolType.Projectiles
          || toolType == EditorSQLManager.EditorToolType.Tutorial) {
          contentToFetch = "xmlId, xmlContent ";
@@ -578,6 +579,7 @@ public class DB_Main : DB_MainStub
                      addedContent = dataReader.GetInt32("isActive") + "[space]";
                   } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops
                      || toolType == EditorSQLManager.EditorToolType.Quest
+                     || toolType == EditorSQLManager.EditorToolType.QuestItems
                      || toolType == EditorSQLManager.EditorToolType.Projectiles
                      || toolType == EditorSQLManager.EditorToolType.Tutorial) {
                      xmlId = dataReader.GetInt32("xmlId");
