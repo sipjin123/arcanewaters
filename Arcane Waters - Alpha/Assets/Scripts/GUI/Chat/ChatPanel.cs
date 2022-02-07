@@ -536,6 +536,7 @@ public class ChatPanel : MonoBehaviour {
       setChatLineText(chatLine);
 
       if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
+         rowGuildIcon.gameObject.SetActive(false);
          return;
       }
 
