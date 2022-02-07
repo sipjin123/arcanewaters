@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.InputSystem;
+using System.Linq;
 
 public class VoyageGroupPanel : ClientMonoBehaviour
 {
@@ -81,11 +82,24 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
       int i = 0;
       Dictionary<string, VoyageMemberArrows> coordinateValue = new Dictionary<string, VoyageMemberArrows>();
+
+      int highestDamagerId = -1;
+      if (_memberCells.Count > 0) {
+         VoyageGroupMemberCell highestDamager = _memberCells.OrderByDescending(_ => _.totalDamage).ToList()[0];
+         highestDamagerId = highestDamager.getUserId();
+      }
+
       foreach (VoyageGroupMemberCell memberCell in _memberCells) {
          NetEntity entity = EntityManager.self.getEntity(memberCell.getUserId());
          if (entity != null) {
             if (entity is PlayerShipEntity) {
                memberCell.updateCellDamage(((PlayerShipEntity) entity).totalDamageDealt);
+
+               if (memberCell.getUserId() == highestDamagerId && memberCell.totalDamage > 0) {
+                  memberCell.highestDamageIndicator.SetActive(true);
+               } else {
+                  memberCell.highestDamageIndicator.SetActive(false);
+               }
             }
 
             if (i < directionalArrowList.Count) {

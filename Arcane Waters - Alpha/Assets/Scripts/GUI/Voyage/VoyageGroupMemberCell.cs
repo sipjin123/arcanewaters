@@ -38,6 +38,12 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
    // The total damage of the player during the voyage
    public Text playerDamageText;
 
+   // The indicator that this unit is the highest damager
+   public GameObject highestDamageIndicator;
+
+   // The total damage dealt
+   public int totalDamage;
+
    #endregion
 
    public void Awake () {
@@ -153,6 +159,7 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
    }
 
    public void updateCellDamage (int damage) {
+      totalDamage = damage;
       playerDamageText.text = damage.ToString();
    }
 
