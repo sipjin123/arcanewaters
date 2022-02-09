@@ -483,12 +483,28 @@ public class TreasureChest : NetworkBehaviour {
       if (item.category != Item.Category.Blueprint) {
          if (item.category == Item.Category.Weapon) {
             WeaponStatData weaponStatData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
-            image.sprite = ImageManager.getSprite(weaponStatData.equipmentIconPath);
-            itemName = weaponStatData.equipmentName;
+            if (weaponStatData != null) {
+               image.sprite = ImageManager.getSprite(weaponStatData.equipmentIconPath);
+               itemName = weaponStatData.equipmentName;
+            }
          } else if (item.category == Item.Category.Armor) {
             ArmorStatData armorStatData = EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId);
-            image.sprite = ImageManager.getSprite(armorStatData.equipmentIconPath);
-            itemName = armorStatData.equipmentName;
+            if (armorStatData != null) {
+               image.sprite = ImageManager.getSprite(armorStatData.equipmentIconPath);
+               itemName = armorStatData.equipmentName;
+            }
+         } else if (item.category == Item.Category.Hats) {
+            HatStatData hatStatData = EquipmentXMLManager.self.getHatDataByItemType(item.itemTypeId);
+            if (hatStatData != null) {
+               image.sprite = ImageManager.getSprite(hatStatData.equipmentIconPath);
+               itemName = hatStatData.equipmentName;
+            }
+         } else if (item.category == Item.Category.Quest_Item) {
+            QuestItem questItem = EquipmentXMLManager.self.getQuestItemById(item.itemTypeId);
+            if (questItem != null) {
+               image.sprite = ImageManager.getSprite(questItem.iconPath);
+               itemName = questItem.itemName;
+            }
          } else if (item.category == Item.Category.CraftingIngredients) {
             string iconPath = CraftingIngredients.getBorderlessIconPath((CraftingIngredients.Type) item.itemTypeId);
             image.sprite = ImageManager.getSprite(iconPath);

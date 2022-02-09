@@ -32,15 +32,27 @@ public class NPCPanelQuestObjectiveCell : MonoBehaviour
       switch (item.category) {
          case Item.Category.Armor:
             ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId);
-            icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
+            if (armorData != null) {
+               icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
+            }
             break;
          case Item.Category.Weapon:
             WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
-            icon.sprite = ImageManager.getSprite(weaponData.equipmentIconPath);
+            if (weaponData != null) {
+               icon.sprite = ImageManager.getSprite(weaponData.equipmentIconPath);
+            }
             break;
          case Item.Category.Hats:
             HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
-            icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
+            if (hatData != null) {
+               icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
+            }
+            break;
+         case Item.Category.Quest_Item:
+            QuestItem questItem = EquipmentXMLManager.self.getQuestItemById(item.itemTypeId);
+            if (questItem != null) {
+               icon.sprite = ImageManager.getSprite(questItem.iconPath);
+            }
             break;
          case Item.Category.CraftingIngredients:
             CraftingIngredients.Type categoryType = (CraftingIngredients.Type) item.itemTypeId;
