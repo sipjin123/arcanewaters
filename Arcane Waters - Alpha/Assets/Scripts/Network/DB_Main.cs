@@ -541,13 +541,14 @@ public class DB_Main : DB_MainStub
          addedFields = ", is_enabled";
       } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops
          || toolType == EditorSQLManager.EditorToolType.Quest
-         || toolType == EditorSQLManager.EditorToolType.QuestItems
          || toolType == EditorSQLManager.EditorToolType.Projectiles
          || toolType == EditorSQLManager.EditorToolType.Tutorial) {
          contentToFetch = "xmlId, xmlContent ";
       } else if (toolType == EditorSQLManager.EditorToolType.ItemDefinitions) {
          contentToFetch = "id, serializedData ";
          addedFields = ", category";
+      } else if (toolType == EditorSQLManager.EditorToolType.QuestItems) {
+         contentToFetch = "xmlId, xmlContent, isEnabled ";
       } else if (toolType == EditorSQLManager.EditorToolType.Shop || toolType == EditorSQLManager.EditorToolType.LandPowerups) {
          contentToFetch = "xml_id, xmlContent, isActive ";
       }
@@ -577,9 +578,12 @@ public class DB_Main : DB_MainStub
                      xmlId = dataReader.GetInt32("xml_id");
                      xmlContent = dataReader.GetString("xmlContent");
                      addedContent = dataReader.GetInt32("isActive") + "[space]";
+                  } else if (toolType == EditorSQLManager.EditorToolType.QuestItems) {
+                     xmlId = dataReader.GetInt32("xmlId");
+                     xmlContent = dataReader.GetString("xmlContent");
+                     addedContent = dataReader.GetInt32("isEnabled") + "[space]";
                   } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops
                      || toolType == EditorSQLManager.EditorToolType.Quest
-                     || toolType == EditorSQLManager.EditorToolType.QuestItems
                      || toolType == EditorSQLManager.EditorToolType.Projectiles
                      || toolType == EditorSQLManager.EditorToolType.Tutorial) {
                      xmlId = dataReader.GetInt32("xmlId");

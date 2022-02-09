@@ -103,6 +103,19 @@ public class EquipmentXMLManager : MonoBehaviour {
       return _hatStatRegistry.Values.FirstOrDefault(_ => _.hatType == hatType);
    }
 
+   public QuestItem getQuestItemById (int questItemId) {
+      QuestItem questItem = questItemList.Find(_ => _.itemTypeId == questItemId);
+      if (questItem != null) {
+
+         if (String.IsNullOrEmpty(questItem.iconPath)) {
+            D.debug("Null Icon for QuestItem!: {" + questItem.itemName + "} {" + questItem.iconPath + "} {" + questItem.itemTypeId + "}");
+         }
+         return questItem;
+      }
+
+      return null;
+   }
+
    private void finishedLoading () {
       equipmentLoadCounter++;
       if (equipmentLoadCounter >= TOTAL_EQUIPMENT_TYPES) {
@@ -172,7 +185,7 @@ public class EquipmentXMLManager : MonoBehaviour {
    }
 
    public void receiveQuestDataFromZipData (List<Item> questData) {
-      foreach (QuestItem rawData in questData) {
+      foreach (Item rawData in questData) {
          // Save the data in the memory cache
          if (!_questItemList.Exists(_=>_.itemTypeId == rawData.itemTypeId)) {
             QuestItem newItem = new QuestItem {
@@ -187,7 +200,6 @@ public class EquipmentXMLManager : MonoBehaviour {
                iconPath = rawData.iconPath,
                id = -1
             };
-            _questItemStatList.Add(newItem);
             _questItemList.Add(newItem);
          }
       }
@@ -365,6 +377,12 @@ public class EquipmentXMLManager : MonoBehaviour {
             CraftingIngredients.Type ingredientType = (CraftingIngredients.Type) item.itemTypeId;
             newName = CraftingIngredients.getName(ingredientType);
             break;
+         case Item.Category.Quest_Item:
+            QuestItem questItem = getQuestItemById(item.itemTypeId);
+            if (questItem != null) {
+               newName = questItem.itemName;
+            }
+            break;
          case Item.Category.Blueprint:
             CraftableItemRequirements craftingItem = getCraftingItem(item);
             if (craftingItem != null) {
@@ -417,6 +435,12 @@ public class EquipmentXMLManager : MonoBehaviour {
             newItem.itemTypeId = item.itemTypeId;
             newDescription = newItem.getCastItem().getDescription();
             break;
+         case Item.Category.Quest_Item:
+            QuestItem questItem = getQuestItemById(item.itemTypeId);
+            if (questItem != null) {
+               newDescription = questItem.itemDescription;
+            }
+            break;
          case Item.Category.Blueprint:
             CraftableItemRequirements craftingItem = getCraftingItem(item);
             if (craftingItem.resultItem.category == Item.Category.Weapon) {
@@ -456,6 +480,12 @@ public class EquipmentXMLManager : MonoBehaviour {
          case Item.Category.CraftingIngredients:
             CraftingIngredients.Type ingredientType = (CraftingIngredients.Type) item.itemTypeId;
             iconPath = CraftingIngredients.getIconPath(ingredientType);
+            break;
+         case Item.Category.Quest_Item:
+            QuestItem questItem = getQuestItemById(item.itemTypeId);
+            if (questItem != null) {
+               iconPath = questItem.iconPath;
+            }
             break;
          case Item.Category.Blueprint:
             CraftableItemRequirements craftingItem = getCraftingItem(item);
@@ -567,8 +597,6 @@ public class EquipmentXMLManager : MonoBehaviour {
    private List<ArmorStatData> _armorStatList = new List<ArmorStatData>();
    [SerializeField]
    private List<HatStatData> _hatStatList = new List<HatStatData>();
-   [SerializeField]
-   private List<QuestItem> _questItemStatList = new List<QuestItem>();
 
    // Stores the list of all weapon data
    private Dictionary<int, WeaponStatData> _weaponStatRegistry = new Dictionary<int, WeaponStatData>();

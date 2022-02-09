@@ -1019,13 +1019,16 @@ public class XmlVersionManagerClient : GenericGameManager {
             foreach (string subGroup in xmlGroup) {
                string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
 
-               // Extract the segregated data and assign to the xml manager
-               if (xmlSubGroup.Length >= 2) {
-                  bool isEnabled = int.Parse(xmlSubGroup[2]) == 1 ? true : false;
-                  if (isEnabled) {
-                     Item itemData = Util.xmlLoad<Item>(xmlSubGroup[1]);
-                     questItemList.Add(itemData);
-                     message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+               if (xmlSubGroup.Length >= 3) {
+                  int.TryParse(xmlSubGroup[1], out int isEnabled);
+                  if (isEnabled > 0) {
+                     if (xmlSubGroup[2].Length > 0 && xmlSubGroup[2].Contains(EquipmentXMLManager.VALID_XML_FORMAT)) {
+                        Item itemData = Util.xmlLoad<Item>(xmlSubGroup[2]);
+                        questItemList.Add(itemData);
+                        message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[2];
+                     } else {
+                        D.debug("Failed to deserialzie: " + xmlSubGroup[2]);
+                     }
                   }
                }
             }
