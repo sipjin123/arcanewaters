@@ -53,30 +53,24 @@ public class QuestItem : Item
       this.id = id;
       this.questItemType = (Type) recipeType;
       this.itemTypeId = (int) recipeType;
-      this.count = 1;
+      this.count = count;
       this.paletteNames = newPalettes;
       this.data = data;
    }
 
    public override string getDescription () {
-      return "Undefined";
+      return itemDescription;
    }
 
    public override string getTooltip () {
       Color color = Rarity.getColor(getRarity());
       string colorHex = ColorUtility.ToHtmlStringRGBA(color);
-
-      string palettes = Item.trimItmPalette(paletteNames);
-      if (palettes != "") {
-         palettes = "(" + palettes + ")";
-      }
-
-      return string.Format("<color={0}>{1}</color> " + palettes + "\n\n{4}",
+      return string.Format("<color={0}>{1}</color> \n\n{2}\n\n",
          "#" + colorHex, getName(), getDescription());
    }
 
    public override string getName () {
-      return questItemType.ToString();
+      return itemName.ToString();
    }
 
    public static string getName (int recipeTypeID) {
@@ -84,8 +78,6 @@ public class QuestItem : Item
    }
 
    public static Item getItemData (int questTypeID) {
-      string recipeString = questTypeID.ToString();
-
       QuestItem questItem = new QuestItem {
          questItemType = (Type) questTypeID,
          itemTypeId = questTypeID,
@@ -101,6 +93,10 @@ public class QuestItem : Item
 
    public override bool canBeTrashed () {
       return false;
+   }
+
+   public override bool canBeStacked () {
+      return true;
    }
 
    public override string getIconPath () {

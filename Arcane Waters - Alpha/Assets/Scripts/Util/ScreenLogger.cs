@@ -34,6 +34,7 @@ public class ScreenLogger : GenericGameManager {
       canvasObj.SetActive(false);
 
       Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.Respawn);
+      Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.Quest);
       Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.POI_WARP);
       D.debug("Screen Logger v5.0.4 {" + (Util.isProductionBuild() ? "Prod" : "Dev") + "}");
 
