@@ -81,7 +81,7 @@ public class EnemyManager : MonoBehaviour {
             BoundsInt.PositionEnumerator allTilesInLayer = layer.tilemap.cellBounds.allPositionsWithin;
 
             // Make sure that the generated deeper water layer is cached so it does not check again on shallow tiles, this prevents
-            HashSet<Vector3Int> availableTiles = new HashSet<Vector3Int>();
+            List<Vector3Int> availableTiles = new List<Vector3Int>();
             foreach (Vector3Int currentTile in allTilesInLayer) {
                if (!occupiedTileOverall.Contains(currentTile)) {
                   TileBase newTile = layer.tilemap.GetTile(currentTile);
@@ -102,58 +102,60 @@ public class EnemyManager : MonoBehaviour {
                }
 
                // Find a random value within the available list
-               Vector3Int randomSelectedTile = availableTiles.ChooseRandom();
-               if (!occupiedTilesThisLayer.Contains(randomSelectedTile)) {
-                  // Mark occupied tiles and count the successful spawns 
-                  occupiedTilesThisLayer.Add(randomSelectedTile);
+               if (availableTiles.Count > 0) {
+                  Vector3Int randomSelectedTile = availableTiles.ChooseRandom();
+                  if (!occupiedTilesThisLayer.Contains(randomSelectedTile)) {
+                     // Mark occupied tiles and count the successful spawns 
+                     occupiedTilesThisLayer.Add(randomSelectedTile);
 
-                  // Fetch the tile information
-                  Vector3Int newVector = randomSelectedTile;
-                  TileBase newTile = layer.tilemap.GetTile(newVector);
-                  if (newTile != null) {
-                     // Make sure tile is a water tile
-                     Vector3 worldCoord = layer.tilemap.CellToWorld(newVector);
-                     if (areaTarget.hasWaterTile(worldCoord) && !areaTarget.hasLandTile(worldCoord)) {
-                        // Make sure that the new coord selected does not spawn within spawn blocker bounds
-                        bool spawnsInBlocker = false;
-                        Area area = AreaManager.self.getArea(areaKey);
-                        foreach (OpenWorldSpawnBlocker spawnBlocker in area.openWorldSpawnBlockers) {
-                           if (spawnBlocker.isWithinBounds(worldCoord)) {
-                              spawnsInBlocker = true;
-                           }
-                        }
-
-                        if (!spawnsInBlocker) {
-                           successfulSpawns++;
-                           totalSuccessfulSpawns++;
-
-                           // Initialize spawn values
-                           float spawnShipChance = 60;
-                           int randomEnemyTypeVal = Random.Range(0, 100);
-                           int guildId = BotShipEntity.PIRATES_GUILD_ID;
-
-                           // Override random value to fix ship spawning only if the map does not allow seamonsters
-                           MapCreationTool.Serialization.Map mapInfo = AreaManager.self.getMapInfo(areaKey);
-                           if (mapInfo != null) {
-                              if (!mapInfo.spawnsSeaMonsters && randomEnemyTypeVal >= spawnShipChance) {
-                                 D.debug("Map Data override! This map {" + areaKey + "} does not allow spawning of SeaMonsters!");
-                                 randomEnemyTypeVal = 0;
+                     // Fetch the tile information
+                     Vector3Int newVector = randomSelectedTile;
+                     TileBase newTile = layer.tilemap.GetTile(newVector);
+                     if (newTile != null) {
+                        // Make sure tile is a water tile
+                        Vector3 worldCoord = layer.tilemap.CellToWorld(newVector);
+                        if (areaTarget.hasWaterTile(worldCoord) && !areaTarget.hasLandTile(worldCoord)) {
+                           // Make sure that the new coord selected does not spawn within spawn blocker bounds
+                           bool spawnsInBlocker = false;
+                           Area area = AreaManager.self.getArea(areaKey);
+                           foreach (OpenWorldSpawnBlocker spawnBlocker in area.openWorldSpawnBlockers) {
+                              if (spawnBlocker.isWithinBounds(worldCoord)) {
+                                 spawnsInBlocker = true;
                               }
                            }
 
-                           // Spawning ships has a 60% chance
-                           Vector3 newSpawnPost = layer.tilemap.CellToWorld(newVector);
-                           if (randomEnemyTypeVal < spawnShipChance) {
-                              spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true, difficulty);
-                           } else {
-                              if (mapInfo.spawnsSeaMonsters) {
-                                 spawnSeaMonster(instance, areaTarget, newSpawnPost, false, true, difficulty);
-                              } else {
+                           if (!spawnsInBlocker) {
+                              successfulSpawns++;
+                              totalSuccessfulSpawns++;
+
+                              // Initialize spawn values
+                              float spawnShipChance = 60;
+                              int randomEnemyTypeVal = Random.Range(0, 100);
+                              int guildId = BotShipEntity.PIRATES_GUILD_ID;
+
+                              // Override random value to fix ship spawning only if the map does not allow seamonsters
+                              MapCreationTool.Serialization.Map mapInfo = AreaManager.self.getMapInfo(areaKey);
+                              if (mapInfo != null) {
+                                 if (!mapInfo.spawnsSeaMonsters && randomEnemyTypeVal >= spawnShipChance) {
+                                    D.debug("Map Data override! This map {" + areaKey + "} does not allow spawning of SeaMonsters!");
+                                    randomEnemyTypeVal = 0;
+                                 }
+                              }
+
+                              // Spawning ships has a 60% chance
+                              Vector3 newSpawnPost = layer.tilemap.CellToWorld(newVector);
+                              if (randomEnemyTypeVal < spawnShipChance) {
                                  spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true, difficulty);
+                              } else {
+                                 if (mapInfo.spawnsSeaMonsters) {
+                                    spawnSeaMonster(instance, areaTarget, newSpawnPost, false, true, difficulty);
+                                 } else {
+                                    spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true, difficulty);
+                                 }
                               }
-                           }
 
-                           D.adminLog("Spawned and Found tile: " + newTile.name + " at " + newVector + "__" + difficulty, D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
+                              D.adminLog("Spawned and Found tile: " + newTile.name + " at " + newVector + "__" + difficulty, D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
+                           }
                         }
                      }
                   }
