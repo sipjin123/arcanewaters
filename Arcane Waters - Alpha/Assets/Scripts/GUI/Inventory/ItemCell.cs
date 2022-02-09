@@ -280,6 +280,21 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
                D.debug("Could not retrieve Blueprint: " + item.category + " : " + item.itemTypeId + " : " + item.data);
             }
             break;
+
+         case Item.Category.Quest_Item:
+            QuestItem questItem = EquipmentXMLManager.self.getQuestItemById(item.itemTypeId);
+            if (questItem == null) {
+               D.debug("Failed to fetch Quest Item Data for: " + item.itemTypeId);
+               Destroy(gameObject);
+               break;
+            }
+
+            item.itemName = questItem.itemName;
+            item.itemDescription = questItem.itemDescription;
+            item.iconPath = questItem.iconPath;
+            icon.sprite = ImageManager.getSprite(questItem.iconPath);
+            break;
+
          case Item.Category.Haircut:
             HaircutData haircutData = HaircutXMLManager.self.getHaircutData(item.itemTypeId);
 
@@ -353,7 +368,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       recoloredSprite.recolor(item.paletteNames);
 
       // Show the item count when relevant
-      if (count > 1 || item.category == Item.Category.CraftingIngredients) {
+      if (count > 1 || item.category == Item.Category.CraftingIngredients || item.category == Item.Category.Quest_Item) {
          itemCountText.SetText(count.ToString());
          itemCountText.gameObject.SetActive(true);
       } else {
