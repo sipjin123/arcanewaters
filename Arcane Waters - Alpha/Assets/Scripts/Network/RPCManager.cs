@@ -9555,12 +9555,17 @@ public class RPCManager : NetworkBehaviour
    public void Cmd_RequestPvpRespawnTimeout () {
       float timeout = PvpGame.RESPAWN_TIMEOUT;
 
-      try {
-         PvpGame pvpGame = PvpManager.self.getGameWithPlayer(_player);
-         timeout = pvpGame.computeRespawnTimeoutFor(_player.userId);
-      } catch {
-
+      if (PvpManager.self == null) {
+         return;
       }
+      
+      PvpGame pvpGame = PvpManager.self.getGameWithPlayer(_player);
+
+      if (pvpGame == null) {
+         return;
+      }
+      
+      timeout = pvpGame.computeRespawnTimeoutFor(_player.userId);
 
       Target_ReceivePvpRespawnTimeout(timeout);
    }

@@ -101,43 +101,33 @@ public class RespawnScreen : MonoBehaviour {
    }
 
    public void show () {
-      if (!this.canvasGroup.IsShowing()) {
+      if (!canvasGroup.IsShowing()) {
          // Hide tutorial panel so it doesn't block the respawn button
          if (TutorialManager3.self.panel.getMode() != TutorialPanel3.Mode.Closed) {
             TutorialManager3.self.panel.gameObject.SetActive(false);
          }
 
          updateButtonText();
-         content.gameObject.SetActive(true);
-         this.canvasGroup.Show();
+         canvasGroup.interactable = true;
+         canvasGroup.Show();
 
-         tryShowCountdown();
-      }
-   }
-
-   private void tryShowCountdown () {
-      if (Global.player != null && !PanelManager.self.countdownScreen.isShowing() && VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
-         // If the countdown should be displayed, hide the Respawn Screen's content
-         content.gameObject.SetActive(false);
-
-         try {
-            Global.player.rpc.Cmd_RequestPvpRespawnTimeout();
-         } catch {
-            content.gameObject.SetActive(true);
+         // Hide all the extra content when the countdown starts
+         if (tryShowCountdown()) {
+            canvasGroup.interactable = false;
          }
       }
    }
 
    public void hide () {
-      if (this.canvasGroup.IsShowing()) {
-         this.canvasGroup.Hide();
+      if (canvasGroup.IsShowing()) {
+         canvasGroup.Hide();
 
          setLifeboatVisibility(false);
       }
    }
 
    public bool isShowing () {
-      return this.canvasGroup.IsShowing();
+      return canvasGroup.IsShowing();
    }
 
    public void setLifeboatVisibility (bool shouldShow) {
@@ -172,23 +162,23 @@ public class RespawnScreen : MonoBehaviour {
       }
    }
 
+   private bool tryShowCountdown () {
+      if (Global.player != null && !PanelManager.self.countdownScreen.isShowing() && VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
+         // Since the introduction of the UINavigation, the content can be hidden by making it not interactable
+         Global.player.rpc.Cmd_RequestPvpRespawnTimeout();
+         return true;
+      }
+
+      return false;
+   }
+
    public void onRespawnTimeoutReceived (float timeout) {
       PanelManager.self.countdownScreen.customText.text = "Respawning in:";
       PanelManager.self.countdownScreen.onCountdownEndEvent.RemoveAllListeners();
       PanelManager.self.countdownScreen.seconds = timeout;
       PanelManager.self.countdownScreen.toggleCancelButton(false);
+      PanelManager.self.countdownScreen.onCountdownEndEvent.AddListener(onRespawnButtonPress);
       PanelManager.self.countdownScreen.show();
-
-      InvokeRepeating(nameof(checkCountdown), 0.0f, 1.0f);
-   }
-
-   private void checkCountdown () {
-      if (PanelManager.self.countdownScreen.isShowing()) {
-         return;
-      }
-      D.adminLog("Respawn Countdown is finished! Triggering Respawn now", D.ADMIN_LOG_TYPE.Respawn);
-      CancelInvoke(nameof(checkCountdown));
-      onRespawnButtonPress();
    }
 
    #region Private Variables

@@ -241,6 +241,7 @@ public class AdminManager : NetworkBehaviour
    private IEnumerator CO_TestOpenWorld (int cpuCutoff, int ramCutoff, int numInitialAreas, int delayBetweenNewAreas) {
 
       // Tell PerformanceUtil to start fetching data from zabbix
+      PerformanceUtil.resetZabbixValues();
       PerformanceUtil.self.updateZabbixData = true;
 
       // Wait for first params to be fetched from zabbix
@@ -318,11 +319,10 @@ public class AdminManager : NetworkBehaviour
       }
 
       PerformanceUtil.self.updateZabbixData = false;
-      PerformanceUtil.resetZabbixValues();
 
       float testDuration = (float) NetworkTime.time - testStartTime;
       D.debug("Testing Open World complete - reporting results to the player.");
-      D.debug("[Test Open World Results] A performance limit was hit after creating " + numAreasCreated + ". The test took " + testDuration + " seconds.");
+      D.debug("[Test Open World Results] A performance limit was hit after creating " + numAreasCreated + " areas. The test took " + testDuration + " seconds.");
       D.debug("[Test Open World Results] Baseline Cpu: " + baselineCpuUsage + ", Baseline Ram: " + baselineRamUsage);
       D.debug("[Test Open World Results] Final Cpu: " + currentCpuUsage + ", Final Ram: " + currentRamUsage);
 

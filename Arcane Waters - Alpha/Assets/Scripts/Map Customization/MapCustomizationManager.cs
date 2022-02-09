@@ -175,33 +175,34 @@ namespace MapCustomization
          }
       }
 
-      public static void keyDelete () {
-         if (_selectedPrefab == null) return;
+      public static void keyDeleteAt (Vector2 worldPos) {
+         CustomizablePrefab hoveredPrefab = getPrefabAtPosition(worldPos);
 
-         if (_selectedPrefab.unappliedChanges.created) {
-            _selectedPrefab.revertUnappliedChanges();
+         if (hoveredPrefab == null) return;
+
+         if (hoveredPrefab.unappliedChanges.created) {
+            hoveredPrefab.revertUnappliedChanges();
          } else {
-            _selectedPrefab.unappliedChanges.deleted = true;
-            _selectedPrefab.unappliedChanges.clearLocalPosition();
+            hoveredPrefab.unappliedChanges.deleted = true;
+            hoveredPrefab.unappliedChanges.clearLocalPosition();
          }
 
-         if (_selectedPrefab.anyUnappliedState()) {
-            if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _selectedPrefab.unappliedChanges, false, out string errorMessage)) {
-               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _selectedPrefab.unappliedChanges);
+         if (hoveredPrefab.anyUnappliedState()) {
+            if (validatePrefabChanges(currentArea, currentBiome, remainingProps, hoveredPrefab.unappliedChanges, false, out string errorMessage)) {
+               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, hoveredPrefab.unappliedChanges);
 
                // Increase remaining prop item that corresponds to this prefab if it was not placed in editor
-               if (!_selectedPrefab.mapEditorState.created) {
-                  incrementPropCount(_selectedPrefab.propDefinitionId);
+               if (!hoveredPrefab.mapEditorState.created) {
+                  incrementPropCount(hoveredPrefab.propDefinitionId);
                }
-               _selectedPrefab.submitUnappliedChanges();
+               hoveredPrefab.submitUnappliedChanges();
             } else {
-               _selectedPrefab.revertUnappliedChanges();
+               hoveredPrefab.revertUnappliedChanges();
             }
          }
 
-         hideSelectionArrows();
          _newPrefab = null;
-         _selectedPrefab = null;
+         selectPrefab(null);
          updatePrefabOutlines(null);
       }
 
@@ -240,16 +241,14 @@ namespace MapCustomization
             CustomizablePrefab hoveredPrefab = getPrefabAtPosition(worldPosition);
 
             if (hoveredPrefab != null) {
-               selectPrefab(hoveredPrefab);
-
                if (MouseUtils.mouseScrollY != 0) {
                   if (MouseUtils.mouseScrollY > 0) {
                      scrollWheelUp = true;
-                     selectPrefabVariation(_selectedPrefab, scrollWheelUp);
+                     selectPrefabVariation(hoveredPrefab, scrollWheelUp);
                   } else {
                      if (MouseUtils.mouseScrollY < 0) {
                         scrollWheelUp = false;
-                        selectPrefabVariation(_selectedPrefab, scrollWheelUp);
+                        selectPrefabVariation(hoveredPrefab, scrollWheelUp);
                      }
                   }
                   waitingForServer = true;
@@ -364,13 +363,11 @@ namespace MapCustomization
 
       // Right click will cancel the process of placing a new prefab
       public static void rightClick () {
-         _selectedPrefab = null;
-
-         foreach (KeyValuePair<int, CustomizablePrefab> entry in _customizablePrefabs) {
-            entry.Value.setOutline(false, false, false, false);
-            _selectedPrefab = null;
-            hideSelectionArrows();
+         if (_selectedPrefab != null) {
+            _selectedPrefab.revertUnappliedChanges();
          }
+
+         selectPrefab(null);
 
          if (_newPrefab != null) {
             _newPrefab.revertUnappliedChanges();
@@ -389,13 +386,11 @@ namespace MapCustomization
             //SoundEffectManager.self.playSoundEffect(SoundEffectManager.PICKUP_EDIT_OBJ, SoundEffectManager.self.transform);
          } else {
             _selectedPrefab = null;
-            hideSelectionArrows();
             if (CustomizationUI.getSelectedPrefabData() != null) {
                updateToBePlacedPrefab(worldPosition, CustomizationUI.getSelectedPrefabData().Value.serializationId);
-               _newPrefab.setGameInteractionsActive(true);
                _customizablePrefabs.Add(_newPrefab.unappliedChanges.id, _newPrefab);
-
                if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _newPrefab.unappliedChanges, false, out string errorMessage)) {
+                  _newPrefab.setGameInteractionsActive(true);
                   Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges);
                   SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLACE_EDITABLE_OBJECT, position: worldPosition);
                   selectPrefab(_newPrefab);
@@ -466,6 +461,7 @@ namespace MapCustomization
          // If the prefab is missing, create a new one and initialize it
          if (_newPrefab == null) {
             _newPrefab = MapManager.self.createPrefab(currentArea, currentBiome, newPrefabState(worldPosition, serializationId), false);
+            _newPrefab.name += " (being placed...)";
             _newPrefab.setGameInteractionsActive(false);
             soundHasBeenPlayed = false;
          }
@@ -473,8 +469,6 @@ namespace MapCustomization
          _newPrefab.unappliedChanges.localPosition = currentArea.prefabParent.transform.InverseTransformPoint(worldPosition);
          _newPrefab.transform.localPosition = _newPrefab.unappliedChanges.localPosition;
          _newPrefab.GetComponent<ZSnap>()?.snapZ();
-
-         _newPrefab.setOutline(false, false, false, false);
 
          if (!soundHasBeenPlayed) {
             SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLACE_EDITABLE_OBJECT, position: worldPosition);
@@ -497,18 +491,43 @@ namespace MapCustomization
          CustomizablePrefab hoveredPrefab = hoveredPosition == null ? null : getPrefabAtPosition(hoveredPosition.Value);
 
          foreach (CustomizablePrefab prefab in _customizablePrefabs.Values) {
-            if (prefab == _selectedPrefab) {
-               bool valid = validatePrefabChanges(currentArea, currentBiome, remainingProps, _selectedPrefab.unappliedChanges, false, out string errorMessage);
-               prefab.setOutline(true, prefab == hoveredPrefab, true, valid);
-            } else {
-               prefab.setOutline(true, prefab == hoveredPrefab, false, false);
-            }
+            prefab.setOutline(true, prefab == hoveredPrefab, false, false);
          }
 
          if (_newPrefab != null) {
             bool valid = validatePrefabChanges(currentArea, currentBiome, remainingProps, _newPrefab.unappliedChanges, false, out string errorMessage);
             _newPrefab.setOutline(true, true, true, valid);
+
+            showSelectionArrows();
+            self.selectionArrows.transform.position = _newPrefab.transform.position;
+            SelectionSpriteBuildMode.self.setDistances(_newPrefab);
+            SelectionSpriteBuildMode.self.setColors(CustomizablePrefab.getIndicatorColor(true, true, true, valid));
+
+            return;
          }
+
+         if (_selectedPrefab != null) {
+            bool valid = validatePrefabChanges(currentArea, currentBiome, remainingProps, _selectedPrefab.unappliedChanges, false, out string errorMessage);
+            _selectedPrefab.setOutline(true, _selectedPrefab == hoveredPrefab, true, valid);
+
+            showSelectionArrows();
+            self.selectionArrows.transform.position = _selectedPrefab.transform.position;
+            SelectionSpriteBuildMode.self.setDistances(_selectedPrefab);
+            SelectionSpriteBuildMode.self.setColors(CustomizablePrefab.getIndicatorColor(true, true, true, valid));
+
+            return;
+         }
+
+         if (hoveredPrefab != null) {
+            showSelectionArrows();
+            self.selectionArrows.transform.position = hoveredPrefab.transform.position;
+            SelectionSpriteBuildMode.self.setDistances(hoveredPrefab);
+            SelectionSpriteBuildMode.self.setColors(CustomizablePrefab.getIndicatorColor(true, true, false, false));
+
+            return;
+         }
+
+         hideSelectionArrows();
       }
 
       private static CustomizablePrefab getPrefabAtPosition (Vector2 position) {
@@ -530,7 +549,6 @@ namespace MapCustomization
          if (_selectedPrefab != null) {
             _selectedPrefab.setGameInteractionsActive(true);
             _selectedPrefab.setOutline(true, false, false, false);
-            hideSelectionArrows();
          }
 
          _selectedPrefab = prefab;
@@ -539,7 +557,6 @@ namespace MapCustomization
             _selectedPrefab.setGameInteractionsActive(false);
             CustomizationUI.selectEntry(null);
             self.selectionArrows.transform.position = _selectedPrefab.transform.position;
-            showSelectionArrows();
             SelectionSpriteBuildMode.self.setDistances(_selectedPrefab);
             showSelectionArrows();
          }
@@ -565,8 +582,13 @@ namespace MapCustomization
       }
 
       public static bool validatePrefabChanges (Area area, Biome.Type biome, List<ItemInstance> remainingItems, PrefabState changes, bool isServer, out string errorMessage) {
-         if (changes.isLocalPositionSet()) {
+         // If we are host, and this is was validated on the 'client' side, lets just assume it's valid
+         if (Util.isHost() && isServer) {
+            errorMessage = null;
+            return true;
+         }
 
+         if (changes.isLocalPositionSet()) {
             CustomizablePrefab prefab = AssetSerializationMaps.tryGetPrefabGame(changes.serializationId, biome)?.GetComponent<CustomizablePrefab>();
 
             // Check that the prefab area type matches area's type
@@ -630,15 +652,23 @@ namespace MapCustomization
                      }
                   }
                }
-            }
 
-            // Check that prefab is within the bounds of the map
-            // We are only checking the center of it to allow some of it to be sticking out
-            Vector2 areaHalfSize = area.getAreaHalfSizeWorld();
-            if (changes.localPosition.x < -areaHalfSize.x || changes.localPosition.x > areaHalfSize.x ||
-                  changes.localPosition.y < -areaHalfSize.y || changes.localPosition.y > areaHalfSize.y) {
-               errorMessage = "Object is outside of the bounds of the map.";
-               return false;
+               // Check that prefab is within the bounds of the map
+               // We are only checking the center of it to allow some of it to be sticking out
+               Vector2 areaHalfSize = area.getAreaHalfSizeWorld();
+               if (changes.localPosition.x < -areaHalfSize.x || changes.localPosition.x > areaHalfSize.x ||
+                     changes.localPosition.y < -areaHalfSize.y || changes.localPosition.y > areaHalfSize.y) {
+                  errorMessage = "Object is outside of the bounds of the map.";
+                  return false;
+               }
+
+               // Check if prefab requires space
+               SpaceRequirer req = prefab.GetComponentInChildren<SpaceRequirer>();
+               if (req != null && !req.wouldHaveSpace(worldPos)) {
+                  errorMessage = "No Space.";
+                  //FloatingCanvas.instantiateAt(worldPos).asCustomMessage("No Space.");
+                  return false;
+               }
             }
          }
 

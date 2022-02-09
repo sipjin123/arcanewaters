@@ -428,11 +428,12 @@ public class ShipEntity : SeaEntity
 
       // Play an appropriate sound
       AudioClip clip = AudioClipManager.self.getAudioClipData(shipAbilityData.castSFXPath).audioClip;
-      if (clip != null) {
-         //SoundManager.playClipAtPoint(clip, Camera.main.transform.position);
-      } else {
-         //playAttackSound();
-      }
+
+      //if (clip != null) {
+      //   //SoundManager.playClipAtPoint(clip, Camera.main.transform.position);
+      //} else {
+      //   //playAttackSound();
+      //}
 
       if (showValue) {
          // Show the damage text
@@ -489,6 +490,15 @@ public class ShipEntity : SeaEntity
    [ClientRpc]
    public void Rpc_CreateCannonBall (Vector2 startPos, Vector2 endPos, double startTime, double endTime, Attack.Type attackType, Color color, ShipAbilityData shipAbilityData, float normalizedDistance, double timeStamp) {
       StartCoroutine(CO_FireDelayedCannonBall(startPos, endPos, startTime, endTime, attackType, color, shipAbilityData, normalizedDistance, timeStamp));
+   }
+
+   [ClientRpc]
+   public void Rpc_PlayAbilitySfx (int abilityId, Vector3 position) {
+      ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(abilityId);
+
+      if (shipAbilityData != null) {
+         SoundEffectManager.self.playSeaAbilitySfx(shipAbilityData.sfxType, position);
+      }
    }
 
    protected IEnumerator CO_FireDelayedCannonBall (Vector2 startPos, Vector2 endPos, double startTime, double endTime, Attack.Type attackType, Color color, ShipAbilityData shipAbilityData, float normalizedDistance, double timeStamp) {

@@ -23,8 +23,8 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent-GUI"
 		_Palette2 ("Palette2", 2D) = "black" {}
 		_Threshold("Threshold", Float) = 0.05
 
-		[Toggle(SHOW_HAT_CLIPPING)]
-		_ShowHatClipping("Show Hat Clipping", Int) = 0
+		[Toggle(SHOW_CLIPPING)]
+		_EnableClipping("Enable Clipping", Int) = 0
 	}
 
 	SubShader
@@ -78,7 +78,7 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent-GUI"
 				fixed4 color : COLOR0;
 			};
 
-			int _ShowHatClipping;
+			int _EnableClipping;
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
 			float4 _MainTex_TexelSize;
@@ -119,7 +119,7 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent-GUI"
 				fixed4 clipmask_c = tex2D(_ClipTex, i.texcoord);
 				float originalPixelAlpha = c.a * i.color.a;
 				float clippedPixelAlpha = lerp(0, originalPixelAlpha, clipmask_c.r);
-				c.a = lerp(originalPixelAlpha, clippedPixelAlpha, _ShowHatClipping);
+				c.a = lerp(originalPixelAlpha, clippedPixelAlpha, _EnableClipping);
 
 				return c;
 			}

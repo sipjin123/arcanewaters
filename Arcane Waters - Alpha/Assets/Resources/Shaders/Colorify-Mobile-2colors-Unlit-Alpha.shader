@@ -22,8 +22,8 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent" {
 
 		[Enum(CompareFunction)] _StencilComp("Stencil Comp", Int) = 0
 
-		[Toggle(SHOW_HAT_CLIPPING)]
-		_ShowHatClipping("Show Hat Clipping", Int) = 0
+		[Toggle(SHOW_CLIPPING)]
+		_EnableClipping("Enable Clipping", Int) = 0
 
 		[Toggle(CLEAR_STENCIL)]
 		_UseHatStencil("Clear Stencil", Float) = 0
@@ -43,7 +43,7 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent" {
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
-			#pragma multi_compile _ SHOW_HAT_CLIPPING
+			#pragma multi_compile _ SHOW_CLIPPING
 
 			#include "UnityCG.cginc"
 			#include "Assets/Resources/Shaders/PaletteSwapPerSprite.cginc"
@@ -58,7 +58,7 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent" {
 				float2 texcoord : TEXCOORD0;
 			};
 
-			float _ShowHatClipping;
+			float _EnableClipping;
 
 			sampler2D _MainTex;
 			sampler2D _MainTex2;
@@ -119,7 +119,7 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent" {
 				fixed4 clipmask_c = tex2D(_ClipTex, i.texcoord);
 				float originalPixelAlpha = c.a;
 				float clippedPixelAlpha = lerp(0, c.a, clipmask_c.r);
-				c.a = lerp(originalPixelAlpha, clippedPixelAlpha, _ShowHatClipping);
+				c.a = lerp(originalPixelAlpha, clippedPixelAlpha, _EnableClipping);
 
 				return c;
 			}

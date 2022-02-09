@@ -56,32 +56,26 @@ namespace MapCustomization
             }
          }
 
-         _spriteOutline.setNewColor(getOutlineColor(ready, hovered, selected, valid));
+         Color outlineColor = ready ? MapCustomizationManager.self.prefabReadyColor : new Color(0, 0, 0, 0);
 
-         if (hovered || selected) {
-            // Visibility is set to false to permenantly disable outlines in the customization mode
-            _spriteOutline.setVisibility(false);
-            if (GetComponentInChildren<SelectionSpriteBuildMode>() != null) {
-               MapCustomizationManager.showSelectionArrows();
-            }
-         } else {
-            _spriteOutline.setVisibility(false);
-            if (GetComponentInChildren<SelectionSpriteBuildMode>() != null) {
-               MapCustomizationManager.hideSelectionArrows();
-            }
-         }
+         _spriteOutline.setNewColor(outlineColor);
+         _spriteOutline.setVisibility(outlineColor.a != 0);
       }
 
-      private Color getOutlineColor (bool ready, bool hovered, bool selected, bool valid) {
+      public static Color getIndicatorColor (bool ready, bool hovered, bool selected, bool valid) {
          if (!ready) {
             return new Color(0, 0, 0, 0f);
-         } else if (selected) {
+         }
+
+         if (selected) {
             if (valid) {
                return MapCustomizationManager.self.prefabValidColor;
             } else {
                return MapCustomizationManager.self.prefabInvalidColor;
             }
-         } else if (hovered) {
+         }
+
+         if (hovered) {
             return MapCustomizationManager.self.prefabHoveredColor;
          }
 
@@ -96,6 +90,11 @@ namespace MapCustomization
             _disabledInteractions.Clear();
          } else {
             _disabledInteractions = GetComponentsInChildren<Collider2D>().Where(c => !c.isTrigger).Select(c => c as Behaviour).ToList();
+            SpaceRequirer req = GetComponentInChildren<SpaceRequirer>(true);
+            if (req != null) {
+               _disabledInteractions.Add(req);
+            }
+
             foreach (Behaviour interaction in _disabledInteractions) {
                if (!_ignoredColliders.Contains(interaction)) {
                   interaction.enabled = false;

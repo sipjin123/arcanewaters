@@ -748,6 +748,8 @@ public class PlayerShipEntity : ShipEntity
                   float cannonballLifetime = getCannonballLifetime();
                   float rotAngle = (40.0f - (getCannonChargeAmount() * 25.0f)) / 2.0f;
 
+                  Rpc_PlayAbilitySfx(abilityData.abilityId, transform.position);
+
                   // Fire cone of cannonballs
                   Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, rotAngle), false, true);
                   Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, Util.getMousePos(transform.position), false, false);
@@ -764,6 +766,8 @@ public class PlayerShipEntity : ShipEntity
                float circleRadius = (0.625f - (getCannonChargeAmount() * 0.125f));
                _shouldUpdateTargeting = false;
                _targetCircle.targetingConfirmed(() => enableTargeting());
+
+               Rpc_PlayAbilitySfx(abilityData.abilityId, transform.position);
 
                _cannonBarrageCoroutine = StartCoroutine(CO_CannonBarrage(_targetCircle.transform.position, circleRadius));
                _targetCircle.setFillColor(Color.white);
@@ -792,6 +796,8 @@ public class PlayerShipEntity : ShipEntity
 
       float rotAngle = (45.0f - (getCannonChargeAmount() * 25.0f)) / 1.25f;
       float rotAngleDivider = rotAngle / abilityData.splitAttackCap;
+
+      Rpc_PlayAbilitySfx(abilityData.abilityId, transform.position);
 
       // Fire barrage of cannonballs
       for (int i = 1; i < (abilityData.splitAttackCap / 2) + 1; i++) {

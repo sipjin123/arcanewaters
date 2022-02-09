@@ -44,7 +44,7 @@ public class ServerNetworkingManager : MonoBehaviour
       RegisterSerializableClass<ServerOverview>();
 
       // Log the number of connected players
-      if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {
+      if (Util.isAutoTest()) {
          InvokeRepeating(nameof(logNumberOfConnectedClients), 0f, 5f);
       } else {
          InvokeRepeating(nameof(logNumberOfConnectedClients), 0f, 60f);

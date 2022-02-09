@@ -106,12 +106,23 @@ MonoBehaviour:
   syncInterval: 0.1
   instanceId: 0
   areaKey: 
+  instanceBiome: 0
+  spawnTarget: 
+  destinationArea: 
+  destinationInstanceId: -1
+  destinationSpawn: 
   voyageGroupId: -1
   inRangeVoyageGroupId: -1
   capturePoints: 0
+  isClearedOfEnemies: 0
   difficulty: 0
   status: 0
   captureCircle: {fileID: 6863462651662929163}
+  playerListInSite: 
+  displayObject:
+  - {fileID: 6060454478319393773}
+  - {fileID: 583524753854210202}
+  - {fileID: 2594201128669105212}
 --- !u!114 &8145010931150530488
 MonoBehaviour:
   m_ObjectHideFlags: 0

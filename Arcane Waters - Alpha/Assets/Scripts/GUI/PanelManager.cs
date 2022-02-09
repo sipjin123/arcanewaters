@@ -85,7 +85,10 @@ public class PanelManager : GenericGameManager {
       }
 
       // Let us easily close panels with the Escape key
-      if (InputManager.self.inputMaster?.UIControl.Close.WasPerformedThisFrame() == true) {
+      if (
+         !TitleScreen.self.isShowing() &&
+         InputManager.self.inputMaster?.UIControl.Close.WasPerformedThisFrame() == true
+      ) {
          onEscapeKeyPressed();
       }
 

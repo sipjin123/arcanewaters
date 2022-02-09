@@ -160,7 +160,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       if (_lowFpsMessageCooldown <= 0) {
          int fps = (int) (1f / Time.deltaTime);
          if (fps <= 15) {
-            //D.debug($"Client fps is critically low: {fps}");
+            D.debug($"Client fps is critically low: {fps}");
             _lowFpsMessageCooldown = 60; // Add log message once per 60 seconds
          }
       }

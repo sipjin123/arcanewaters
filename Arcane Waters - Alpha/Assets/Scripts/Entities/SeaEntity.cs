@@ -253,7 +253,7 @@ public class SeaEntity : NetEntity
    protected virtual void customRegisterDamageReceived (int userId, int amount) {
    }
 
-   protected virtual void onDamage(int damage) { }
+   protected virtual void onDamage (int damage) { }
 
    public virtual void onDeath () {
       if (_hasRunOnDeath) {
@@ -362,7 +362,7 @@ public class SeaEntity : NetEntity
       foreach (KeyValuePair<int, int> KV in _damageReceivedPerAttacker) {
          int targetUserId = KV.Key;
          int xp = Mathf.RoundToInt(((float) KV.Value / totalDamage) * rewardedXP);
-         
+
          // Trap for cases when xp is calculated as negative
          if (xp < 0) {
             D.error("Negative Sailor XP is detected! KV.Key = " + KV.Key.ToString() + ", KV.Value = " + KV.Value.ToString() + ", totalDamage = " + totalDamage.ToString() + ", rewardedXP = " + rewardedXP.ToString());
@@ -713,7 +713,7 @@ public class SeaEntity : NetEntity
 
             EffectManager.self.create(Effect.Type.Shock_Collision, targetPos);
          } else {
-            D.debug("Chain was too far {"+ distanceBetweenChain + "}");
+            D.debug("Chain was too far {" + distanceBetweenChain + "}");
          }
       }
    }
@@ -1114,11 +1114,14 @@ public class SeaEntity : NetEntity
       bool hasArch = true;
       float projectileSpeed = 1.0f;
 
+      SoundEffectManager.SeaAbilityType seaAbilityType = SoundEffectManager.SeaAbilityType.None;
+
       if (abilityData != null) {
          attackType = abilityData.selectedAttackType;
          attackMagnitude = abilityData.impactMagnitude;
          hasArch = abilityData.hasArch;
          projectileSpeed = abilityData.projectileSpeed;
+         seaAbilityType = abilityData.sfxType;
       }
 
       // Load projectile data
@@ -1145,19 +1148,16 @@ public class SeaEntity : NetEntity
       projectile.initAbilityProjectile(netId, instanceId, attackMagnitude, abilityId, projectileVelocity, lobHeight, lifetime: timeToReachTarget, attackType: attackType, disableColliderFor: disableColliderFor, minDropShadowScale: 0.5f);
       NetworkServer.Spawn(projectile.gameObject);
 
-      Rpc_SpawnProjectileIndicator(endPosition, timeToReachTarget, projectileData.projectileScale);
+      Rpc_SpawnProjectileIndicator(endPosition, timeToReachTarget, projectileData.projectileScale, abilityData.sfxType);
    }
 
    [ClientRpc]
-   protected void Rpc_SpawnProjectileIndicator (Vector2 spawnPosition, float lifetime, float scaleModifier) {
+   protected void Rpc_SpawnProjectileIndicator (Vector2 spawnPosition, float lifetime, float scaleModifier, SoundEffectManager.SeaAbilityType seaAbilityType) {
       ProjectileTargetingIndicator targetingIndicator = Instantiate(PrefabsManager.self.projectileTargetingIndicatorPrefab, spawnPosition, Quaternion.identity);
       targetingIndicator.init(lifetime, scaleModifier);
 
-      // Play SFX for Sea Monsters abilities
-      if (this.isSeaMonster()) {
-         SeaMonsterEntity seaMonsterEntity = GetComponent<SeaMonsterEntity>();
-         SoundEffectManager.self.playSeaAbilitySfx(seaMonsterEntity.monsterType, spawnPosition);
-      }
+      // Play SFX for sea abilities
+      SoundEffectManager.self.playSeaAbilitySfx(seaAbilityType, spawnPosition);
    }
 
    [Server]
@@ -2050,7 +2050,7 @@ public class SeaEntity : NetEntity
          Gizmos.color = Color.white;
 
          Gizmos.color = Color.cyan;
-         Gizmos.DrawLine(transform.position, transform.position + (Vector3)movementForce * 0.001f);
+         Gizmos.DrawLine(transform.position, transform.position + (Vector3) movementForce * 0.001f);
       }
    }
 

@@ -56,8 +56,8 @@ public class SeaProjectile : NetworkBehaviour
 
          // Play FMOD sfx
          ProjectileStatData projectileStatData = ProjectileStatManager.self.getProjectileData(projectileTypeId);
-         if (projectileStatData != null) {
-            SoundEffectManager.self.playSeaProjectileSfx(projectileStatData.sfxType, this.transform, this._rigidbody);
+         if (projectileStatData != null && _abilityData != null) {
+            SoundEffectManager.self.playSeaProjectileSfx(_abilityData.sfxType, projectileStatData.sfxType, this.transform, this._rigidbody);
          }
          // Play an appropriate sound
          //if (_playFiringSound) {

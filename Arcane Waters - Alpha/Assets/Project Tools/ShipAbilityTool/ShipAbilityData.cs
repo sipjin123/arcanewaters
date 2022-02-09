@@ -112,6 +112,9 @@ public class ShipAbilityData
    // When displaying a sprite to show we've casted this ability, this determines whether we should display a background for that sprite.
    public bool showCastSpriteBackground = true;
 
+   // The ability's SFX Type
+   public SoundEffectManager.SeaAbilityType sfxType = SoundEffectManager.SeaAbilityType.None;
+
    public static Attack.ImpactMagnitude getImpactType (float normalizedValue) {
       if (normalizedValue < .33f) {
          return Attack.ImpactMagnitude.Strong;

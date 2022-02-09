@@ -34,6 +34,9 @@ public class Util : MonoBehaviour
    // A Random instance we can use for generating random numbers
    public static System.Random r = new System.Random();
 
+   // Buffer used for physics queries (MAIN THREAD ONLY)
+   private static Collider2D[] _colliderBuffer = new Collider2D[16];
+
    public static Sprite getRawSpriteIcon (Item.Category category, int itemType) {
       if (category != Item.Category.None && itemType != 0) {
          string castItem = new Item { category = category, itemTypeId = itemType }.getCastItem().getIconPath();
@@ -101,11 +104,11 @@ public class Util : MonoBehaviour
    }
 
    public static Texture2D getScreenshot () {
-      #if UNITY_EDITOR
+#if UNITY_EDITOR
       if (!Application.isPlaying) {
          D.error("Screenshots can only be taken in playmode.");
       }
-      #endif
+#endif
 
       // Prepare data
       int width = Screen.width;
@@ -263,21 +266,21 @@ public class Util : MonoBehaviour
       return (str == null || str.Equals(""));
    }
 
-   public static Vector3 getMousePos (Vector3 target = default, float stickScale=10f) {
+   public static Vector3 getMousePos (Vector3 target = default, float stickScale = 10f) {
       // Skip for batch mode
       if (isBatch()) {
          return Vector3.zero;
       }
-      
+
       // Cache a reference to the main camera if it doesn't exist
       if (_mainCamera == null) {
          _mainCamera = Camera.main;
       }
-      
+
       // If gamepad stick value is detected
       var gamepadStickDirection = InputManager.self.inputMaster.Sea.FireDirection.ReadValue<Vector2>();
       if (gamepadStickDirection != Vector2.zero) {
-         return (Vector2)target + gamepadStickDirection*stickScale;
+         return (Vector2) target + gamepadStickDirection * stickScale;
       }
 
       // otherwise, get mouse position
@@ -585,7 +588,7 @@ public class Util : MonoBehaviour
       // Check a number of points in a circle around the point
       for (int i = 0; i < pointsToCheck; i++) {
          Vector3 pointToCheck = pos + Quaternion.Euler(0.0f, 0.0f, i * anglePerPoint) * (Vector3.up * radius);
-         
+
          if (area.hasLandTile(pointToCheck)) {
             return true;
          }
@@ -618,9 +621,9 @@ public class Util : MonoBehaviour
    public static bool isServerBuild () {
       bool isServerBuild = false;
 
-      #if IS_SERVER_BUILD
+#if IS_SERVER_BUILD
       isServerBuild = true;
-      #endif
+#endif
 
       return isServerBuild;
    }
@@ -660,9 +663,9 @@ public class Util : MonoBehaviour
    }
 
    public static bool isCloudBuild () {
-      #if CLOUD_BUILD
+#if CLOUD_BUILD
       return true;
-      #endif
+#endif
       return false;
    }
 
@@ -746,20 +749,20 @@ public class Util : MonoBehaviour
    }
 
    public static void tryToRunInServerBackground (Action action) {
-      #if IS_SERVER_BUILD
+#if IS_SERVER_BUILD
 
-         // If Unity is shutting down, we can't create new background threads
-         if (ClientManager.isApplicationQuitting) {
-            action();
-            return;
-         }
+      // If Unity is shutting down, we can't create new background threads
+      if (ClientManager.isApplicationQuitting) {
+         action();
+         return;
+      }
 
-         // Otherwise, go ahead and run it in the background
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            action();
-         });
+      // Otherwise, go ahead and run it in the background
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         action();
+      });
 
-      #endif
+#endif
    }
 
    public static void dbBackgroundExec (Action<object> commandAction) {
@@ -818,13 +821,13 @@ public class Util : MonoBehaviour
    }
 
    public static string createSalt (string UserName) {
-      #if IS_SERVER_BUILD
+#if IS_SERVER_BUILD
       Rfc2898DeriveBytes hasher = new Rfc2898DeriveBytes(UserName.ToLower(),
          System.Text.Encoding.Default.GetBytes("saltmZ8HxZEL7PTsalt"), 1000);
       return System.Convert.ToBase64String(hasher.GetBytes(25));
-      #else
+#else
          return "";
-      #endif
+#endif
    }
 
    public static string invertLetterCapitalization (string text) {
@@ -846,13 +849,13 @@ public class Util : MonoBehaviour
    }
 
    public static string hashPassword (string Salt, string Password) {
-      #if IS_SERVER_BUILD
+#if IS_SERVER_BUILD
       Rfc2898DeriveBytes Hasher = new Rfc2898DeriveBytes(Password,
                System.Text.Encoding.Default.GetBytes(Salt), 1000);
       return System.Convert.ToBase64String(Hasher.GetBytes(25));
-      #else
+#else
          return "";
-      #endif
+#endif
    }
 
    public static string UppercaseFirst (string s) {
@@ -1037,9 +1040,9 @@ public class Util : MonoBehaviour
                   // Database server - not mandatory
                   line = reader.ReadLine();
                   if (line != null) {
-                     #if IS_SERVER_BUILD
+#if IS_SERVER_BUILD
                      DB_Main.setServer(line);
-                     #endif
+#endif
                   }
                }
 
@@ -1137,7 +1140,7 @@ public class Util : MonoBehaviour
          ChatPanel.self.nameInputField.isFocused ||
          ((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail() ||
          Global.player == null ||
-         !AreaManager.self.hasArea(Global.player.areaKey) || 
+         !AreaManager.self.hasArea(Global.player.areaKey) ||
          PvpInstructionsPanel.isShowing);
    }
 
@@ -1245,8 +1248,7 @@ public class Util : MonoBehaviour
       if (finalAddress.StartsWith("::ffff:")) {
          string[] finalAddressArray = address.Split(':');
          finalAddress = finalAddressArray[finalAddressArray.Length - 1];
-      }
-      else if (finalAddress.Equals("::1")) {
+      } else if (finalAddress.Equals("::1")) {
          // If our address is ::1, it is localhost
          finalAddress = "localhost";
       }
@@ -1321,9 +1323,9 @@ public class Util : MonoBehaviour
          if (deploymentConfig != null && deploymentConfig.ContainsKey("buildId")) {
             jenkinsBuildIdNumber = deploymentConfig["buildId"].ToString();
          } else {
-            #if !UNITY_EDITOR
+#if !UNITY_EDITOR
             D.debug("Invalid naming convention! {" + deploymentConfigAsset.text + "}");
-            #endif
+#endif
          }
       } catch {
          D.debug("Failed to get jenkins build id number");
@@ -1503,12 +1505,12 @@ public class Util : MonoBehaviour
    public static float getPointOnParabola (float apex, float width, float t) {
       // Parabola formula:
       // y = kt(t - w) where k  = -4a / w^2     w = width, a = apex
-      
+
       // Avoid divide by 0 issues
       if (width < Mathf.Epsilon && width > -Mathf.Epsilon) {
          return 0.0f;
       }
-      
+
       float k = -4 * apex / (width * width);
       float y = k * t * (t - width);
       return y;
@@ -1599,7 +1601,56 @@ public class Util : MonoBehaviour
       return entities;
    }
 
-   public static bool areStringsEqual(string a, string b, bool ignoreCase = true) {
+   /// <summary>
+   /// Checks whether a given circle would overlap with some collider or be completely encapsulated by it
+   /// </summary>
+   /// <param name="collider"></param>
+   /// <param name="position"></param>
+   /// <param name="contactFilter"></param>
+   /// <param name="excludeChildrenOf">If the search is triggered by a child of this transform, it will be ignored</param>
+   /// <returns></returns>
+   public static bool overlapOrEncapsulateAny (CircleCollider2D collider, Vector2 position, ContactFilter2D contactFilter, Transform excludeChildrenOf) {
+      int count = Physics2D.OverlapCircle(
+         position + new Vector2(collider.offset.x * collider.transform.lossyScale.x, collider.offset.y * collider.transform.lossyScale.y),
+         Math.Max(collider.transform.lossyScale.x, collider.transform.lossyScale.y) * collider.radius,
+         contactFilter,
+         _colliderBuffer);
+
+      for (int i = 0; i < count; i++) {
+         if (!_colliderBuffer[i].transform.IsChildOf(excludeChildrenOf)) {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+   /// <summary>
+   /// Checks whether a given square would overlap with some collider or be completely encapsulated by it
+   /// </summary>
+   /// <param name="collider"></param>
+   /// <param name="position"></param>
+   /// <param name="contactFilter"></param>
+   /// <param name="excludeChildrenOf">If the search is triggered by a child of this transform, it will be ignored</param>
+   /// <returns></returns>
+   public static bool overlapOrEncapsulateAny (BoxCollider2D collider, Vector2 position, ContactFilter2D contactFilter, Transform excludeChildrenOf) {
+      int count = Physics2D.OverlapBox(
+         position + new Vector2(collider.offset.x * collider.transform.lossyScale.x, collider.offset.y * collider.transform.lossyScale.y),
+         new Vector2(collider.transform.lossyScale.x * collider.size.x, collider.transform.lossyScale.y * collider.size.y),
+         collider.transform.rotation.eulerAngles.z,
+         contactFilter,
+         _colliderBuffer);
+
+      for (int i = 0; i < count; i++) {
+         if (!_colliderBuffer[i].transform.IsChildOf(excludeChildrenOf)) {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+   public static bool areStringsEqual (string a, string b, bool ignoreCase = true) {
       if (string.IsNullOrWhiteSpace(a) || string.IsNullOrWhiteSpace(b)) {
          return false;
       }
@@ -1607,7 +1658,7 @@ public class Util : MonoBehaviour
       return a.Equals(b, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
    }
 
-   public static T[] getArraySlice<T>(IEnumerable<T> source, int sliceIndex, int sliceSize) {
+   public static T[] getArraySlice<T> (IEnumerable<T> source, int sliceIndex, int sliceSize) {
       if (source == null || sliceIndex < 0 || sliceSize == 0 || source.Count() == 0) {
          return Array.Empty<T>();
       }
@@ -1636,12 +1687,12 @@ public class Util : MonoBehaviour
       return resultList.ToArray();
    }
 
-   public static int getArraySlicesCount<T>(IEnumerable<T> source, int sliceSize) {
+   public static int getArraySlicesCount<T> (IEnumerable<T> source, int sliceSize) {
       if (source == null || sliceSize == 0) {
          return 0;
       }
 
-      return Mathf.CeilToInt((float)source.Count() / sliceSize);
+      return Mathf.CeilToInt((float) source.Count() / sliceSize);
    }
 
    public static Vector2 mirrorX (Vector2 vector) {
@@ -1652,7 +1703,7 @@ public class Util : MonoBehaviour
       return new Vector3(vector.x, -vector.y);
    }
 
-   public static Vector3[] createGridAroundPoint(Vector3 center, Vector3 spacing, Vector3 size) {
+   public static Vector3[] createGridAroundPoint (Vector3 center, Vector3 spacing, Vector3 size) {
       // Creates a set of points around the center
       List<Vector3> points = new List<Vector3>();
 
@@ -1684,7 +1735,7 @@ public class Util : MonoBehaviour
       return Mathf.Pow(p1.x - p2.x, 2) + Mathf.Pow(p1.y - p2.y, 2) < range * range;
    }
 
-   public static Vector3 getNearestPoint(Vector3 target, Vector3[] points) {
+   public static Vector3 getNearestPoint (Vector3 target, Vector3[] points) {
       float distanceSquared = float.NaN;
       Vector3 nearestPoint = target;
 
@@ -1717,7 +1768,7 @@ public class Util : MonoBehaviour
       return Vector2.Distance(point, projection);
    }
 
-   public static bool areVectorsAlmostTheSame(Vector3 a, Vector3 b) {
+   public static bool areVectorsAlmostTheSame (Vector3 a, Vector3 b) {
       return areVectorsAlmostTheSame(a, b, Mathf.Epsilon);
    }
 

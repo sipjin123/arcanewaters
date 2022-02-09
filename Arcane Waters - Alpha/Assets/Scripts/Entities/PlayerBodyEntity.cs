@@ -1386,7 +1386,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
                _isStuck = true;
 
                if (!PanelManager.self.genericPromptScreen.isShowing()) {
-                  PanelManager.self.genericPromptScreen.text = "Free me!";
+                  PanelManager.self.genericPromptScreen.text = "Stuck?";
                   PanelManager.self.genericPromptScreen.button.onClick.RemoveAllListeners();
                   PanelManager.self.genericPromptScreen.button.onClick.AddListener(() => {
                      rpc.Cmd_TeleportToCurrentAreaSpawnLocation();

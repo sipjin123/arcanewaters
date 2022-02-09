@@ -99,7 +99,7 @@ public class Door : ClientMonoBehaviour {
       if (biome == Biome.Type.Desert) {
          SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_CLOTH_CLOSE, this.transform.position);
       } else {
-         //SoundManager.create3dSound("door_close_", this.transform.position, 3);
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_CLOSE, this.transform.position);
       }
    }
 

@@ -540,7 +540,7 @@ public class SoundEffectManager : GenericGameManager
    }
 
    public void playWeaponSfx (WeaponType sfxType, Weapon.Class weaponClass, Vector3 position) {
-      if (sfxType != WeaponType.None) {
+      //if (sfxType != WeaponType.None) {
          FMOD.Studio.EventInstance weaponEvent = FMODUnity.RuntimeManager.CreateInstance(WEAPON_SWING);
 
          //eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, ((int) sfxType) - 1);
@@ -550,7 +550,7 @@ public class SoundEffectManager : GenericGameManager
          weaponEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
          weaponEvent.start();
          weaponEvent.release();
-      }
+      //}
    }
 
    public void playSeaEnemyHurtSfx (bool isShip, SeaMonsterEntity.Type seaMonsterType, bool isCrit, CannonballEffector.Type effectorType, Vector3 position) {
@@ -606,30 +606,66 @@ public class SoundEffectManager : GenericGameManager
    }
 
    // Sea Abilities SFX
-   public void playSeaAbilitySfx (SeaMonsterEntity.Type seaMonsterType, Vector3 position) {
-      switch (seaMonsterType) {
-         case SeaMonsterEntity.Type.Fishman:
+   public void playSeaAbilitySfx (SeaAbilityType seaAbilityType, Vector3 position) {
+      switch (seaAbilityType) {
+         case SeaAbilityType.Sail_Shredder:
+         case SeaAbilityType.Davy_Jones:
+            playShipCannonSfx(seaAbilityType, position: position);
+            break;
+         case SeaAbilityType.Fishman_Attack:
             playFmodSfx(FISHMAN_ATTACK, position);
             break;
       }
    }
 
-   // Sea Projectile SFX
-   public void playSeaProjectileSfx (ProjectileType projectileType, Transform projectileTransform, Rigidbody2D projectileBody) {
-      if (projectileType == ProjectileType.Cannonball || projectileType == ProjectileType.Cannonball_Ice || projectileType == ProjectileType.Cannonball_Fire) {
-         FMOD.Studio.EventInstance shipCannonEvent = FMODUnity.RuntimeManager.CreateInstance(SHIP_CANNON);
-         int audioParam = 0;
-         if (projectileType == ProjectileType.Cannonball_Ice) {
+   // Ship Cannon Ball SFX
+   public void playShipCannonSfx (SeaAbilityType seaAbilityType = SeaAbilityType.None, ProjectileType projectileType = ProjectileType.None, Vector3 position = default, Transform projectileTransform = null, Rigidbody2D projectileBody = null) {
+      FMOD.Studio.EventInstance shipCannonEvent = FMODUnity.RuntimeManager.CreateInstance(SHIP_CANNON);
+
+      int audioParam = 0;
+
+      switch (projectileType) {
+         case ProjectileType.Cannonball_Ice:
             audioParam = 1;
-         } else if (projectileType == ProjectileType.Cannonball_Fire) {
+            break;
+         case ProjectileType.Cannonball_Fire:
             audioParam = 2;
-         }
-         shipCannonEvent.setParameterByName(AUDIO_SWITCH_PARAM, audioParam);
+            break;
+      }
+
+      switch (seaAbilityType) {
+         case SeaAbilityType.Sail_Shredder:
+            audioParam = 3;
+            break;
+         case SeaAbilityType.Davy_Jones:
+            audioParam = 4;
+            break;
+      }
+
+      //Debug.Log(audioParam);
+
+      shipCannonEvent.setParameterByName(AUDIO_SWITCH_PARAM, audioParam);
+
+      if (projectileTransform != null && projectileBody != null) {
          FMODUnity.RuntimeManager.AttachInstanceToGameObject(shipCannonEvent, projectileTransform, projectileBody);
-         shipCannonEvent.start();
-         shipCannonEvent.release();
-      } else {
-         // Other projectile types
+      } else if (position != default) {
+         shipCannonEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
+      }
+
+      shipCannonEvent.start();
+      shipCannonEvent.release();
+   }
+
+   // Sea Projectile SFX
+   public void playSeaProjectileSfx (SeaAbilityType seaAbilityType, ProjectileType projectileType, Transform projectileTransform, Rigidbody2D projectileBody) {
+      switch (projectileType) {
+         case ProjectileType.Cannonball:
+         case ProjectileType.Cannonball_Ice:
+         case ProjectileType.Cannonball_Fire:
+            if (seaAbilityType != SeaAbilityType.Sail_Shredder && seaAbilityType != SeaAbilityType.Davy_Jones) {
+               playShipCannonSfx(seaAbilityType, projectileType, projectileTransform: projectileTransform, projectileBody: projectileBody);
+            }
+            break;
       }
    }
 
@@ -794,10 +830,13 @@ public class SoundEffectManager : GenericGameManager
       Clunky_Mechanical = 7
    }
 
-   public enum SeaAbility
+   public enum SeaAbilityType
    {
       None = 0,
-      Horror_Poison = 1
+      Horror_Poison = 1,
+      Sail_Shredder = 2,
+      Davy_Jones = 3,
+      Fishman_Attack = 4
    }
 
    public enum Cannonball

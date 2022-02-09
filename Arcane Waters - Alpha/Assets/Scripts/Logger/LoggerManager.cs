@@ -166,24 +166,24 @@ public class LoggerManager : MonoBehaviour {
             // Process response
             if (!string.IsNullOrEmpty(lastResponse)) {
                var responseDict = Json.Deserialize(lastResponse) as Dictionary<string, object>;
-
+            
                // Checking each key and removing cached data
                foreach (var id in messageIdFilePath.Keys) {
                   if (responseDict.ContainsKey(id) && responseDict[id].ToString() != "0") {
                      string messageFileName = messageIdFilePath[id] + "/" + id;
                      try {
                         File.Delete(messageFileName);
-                     } catch {
+                     }
+                     catch {
                         Debug.Log("Error deleting cached log file: " + messageFileName);
                      }
                   }
                }
             }
          }
-      } catch (SystemException obj) {
-         if (Util.isCloudBuild()) {
-            Debug.Log("Some errors on sending messages: " + obj.Message);
-         }
+      }
+      catch (SystemException obj) {
+         Debug.Log("Some errors on sending messages: " + obj.Message);
       }
    }
 

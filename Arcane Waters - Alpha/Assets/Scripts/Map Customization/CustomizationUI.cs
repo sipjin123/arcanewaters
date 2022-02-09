@@ -71,7 +71,7 @@ namespace MapCustomization
          }
 
          if (KeyUtils.GetKeyDown(Key.Delete)) {
-            MapCustomizationManager.keyDelete();
+            MapCustomizationManager.keyDeleteAt(pointerPos);
          }
       }
 
