@@ -75,19 +75,18 @@ public class StoreDBManager : GenericGameManager
       return fetchedPalettes;
    }
 
-   private Dictionary<int, DyeData> fetchAllDyes () {
-      Dictionary<int, DyeData> fetchedDyes = new Dictionary<int, DyeData>();
+   private Dictionary<XMLPair, DyeData> fetchAllDyes () {
+      Dictionary<XMLPair, DyeData> fetchedDyes = new Dictionary<XMLPair, DyeData>();
       List<XMLPair> dyesXML = DB_Main.getDyesXML();
 
       foreach (XMLPair xmlPair in dyesXML) {
          try {
-            TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
-            DyeData dyeData = Util.xmlLoad<DyeData>(newTextAsset);
+            DyeData dyeData = Util.xmlLoad<DyeData>(xmlPair.rawXmlData);
             dyeData.itemID = xmlPair.xmlId;
 
             // Save the data in the memory cache
-            if (!fetchedDyes.ContainsKey(xmlPair.xmlId)){
-               fetchedDyes.Add(xmlPair.xmlId, dyeData);
+            if (!fetchedDyes.ContainsKey(xmlPair)) {
+               fetchedDyes.Add(xmlPair, dyeData);
             }
          } catch {
          }
@@ -114,7 +113,7 @@ public class StoreDBManager : GenericGameManager
    private bool linkPalettes () {
       try {
          Dictionary<int, PaletteToolData> palettes = fetchAllPalettes();
-         Dictionary<int, DyeData> dyes = fetchAllDyes();
+         Dictionary<XMLPair, DyeData> dyes = fetchAllDyes();
 
          foreach (KeyValuePair<int, PaletteToolData> pair in palettes) {
             PaletteToolData palette = pair.Value;
@@ -148,18 +147,18 @@ public class StoreDBManager : GenericGameManager
    /// <returns></returns>
    private bool linkDyes () {
       try {
-         Dictionary<int, DyeData> dyes = fetchAllDyes();
+         Dictionary<XMLPair, DyeData> dyes = fetchAllDyes();
          Dictionary<ulong, StoreItem> storeItems = fetchAllStoreItems();
 
-         foreach (KeyValuePair<int, DyeData> pair in dyes) {
+         foreach (KeyValuePair<XMLPair, DyeData> pair in dyes) {
             DyeData dye = pair.Value;
-            int dyeId = pair.Key;
-            bool hasMatchingStoreItem = storeItems.Any(_ => _.Value.itemId == dyeId);
+            XMLPair dyeXml = pair.Key;
+            bool hasMatchingStoreItem = storeItems.Any(_ => _.Value.itemId == dyeXml.xmlId);
 
             if (!hasMatchingStoreItem) {
                // Create Store item for the Dye
                ulong newStoreItemId = DB_Main.createStoreItem();
-               DB_Main.updateStoreItem(newStoreItemId, Item.Category.Dye, dyeId, true, 50, dye.itemName, dye.itemDescription);
+               DB_Main.updateStoreItem(newStoreItemId, Item.Category.Dye, dyeXml.xmlId, true, 50, dye.itemName, dye.itemDescription);
             }
          }
 
@@ -178,17 +177,20 @@ public class StoreDBManager : GenericGameManager
    private bool toggleDyes () {
       try {
          Dictionary<int, PaletteToolData> palettes = fetchAllPalettes();
-         Dictionary<int, DyeData> dyes = fetchAllDyes();
+         Dictionary<XMLPair, DyeData> dyes = fetchAllDyes();
 
-         foreach (KeyValuePair<int, DyeData> pair in dyes) {
-            DyeData dye = pair.Value;
-            int dyeId = pair.Key;
-            PaletteToolData palette = palettes.ContainsKey(dye.paletteId) ? palettes[dye.paletteId] : null;
+         foreach (KeyValuePair<int, PaletteToolData> pair in palettes) {
+            PaletteToolData palette = pair.Value;
+            int paletteId = pair.Key;
             bool shouldEnable = (palette != null && palette.tagId == gemStoreTag);
-            bool updated = DB_Main.toggleDyeXML(dyeId, shouldEnable, 157658);
+            KeyValuePair<XMLPair, DyeData> matchingDyePair = dyes.FirstOrDefault(_ => _.Value.paletteId == paletteId);
 
-            if (!updated) {
-               D.warning($"StoreDBManager: Couldn't update dye {dyeId}");
+            if (matchingDyePair.Key == null || matchingDyePair.Key.xmlId == 0 || shouldEnable == matchingDyePair.Key.isEnabled) {
+               continue;
+            }
+
+            if (!DB_Main.toggleDyeXML(matchingDyePair.Key.xmlId, shouldEnable, 157658)) {
+               D.warning($"StoreDBManager: Couldn't update dye {matchingDyePair.Key.xmlId}");
             }
          }
 
@@ -279,7 +281,7 @@ public class StoreDBManager : GenericGameManager
       return Util.UppercaseFirst(desc);
    }
 
-   private string trimInside(string source) {
+   private string trimInside (string source) {
       string[] parts = source.Split(new[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
       string result = "";
 

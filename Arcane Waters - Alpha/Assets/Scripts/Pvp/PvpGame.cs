@@ -143,8 +143,11 @@ public class PvpGame : MonoBehaviour {
       } else if (_gameState == State.InGame) {
          GameStatsManager.self.registerUser(userId, userName, assignedTeam.teamType);
          StartCoroutine(CO_AddPlayerToOngoingGame(userId, userName, assignedTeam));
-         player.rpc.Target_SetGameStartTime(player.connectionToClient, _startTime);
-         player.rpc.Target_ResetPvpScoreIndicator(player.connectionToClient, show: this.gameMode == PvpGameMode.CaptureTheFlag);
+
+         if (player != null) {
+            player.rpc.Target_SetGameStartTime(player.connectionToClient, _startTime);
+            player.rpc.Target_ResetPvpScoreIndicator(player.connectionToClient, show: this.gameMode == PvpGameMode.CaptureTheFlag);
+         }
       }
    }
 

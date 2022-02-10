@@ -255,11 +255,18 @@ public class PlayerShipEntity : ShipEntity
          foreach (Powerup powerup in userPowerups) {
             powerupTypes.Add(powerup.powerupType);
          }
+
+         if (VoyageManager.isPvpArenaArea(areaKey)) {
+            shipType = Ship.Type.Type_1;
+            shipSize = ShipSize.Small;
+         }
       }
 
       if (!Util.isBatch()) {
          InputManager.self.inputMaster.Sea.Enable();
          InputManager.self.inputMaster.Land.Disable();
+         // Set our sprite sheets according to our types
+         StartCoroutine(CO_UpdateAllSprites());
       }
    }
 
@@ -476,6 +483,8 @@ public class PlayerShipEntity : ShipEntity
       if (InputManager.self.inputMaster.General.Interact.WasPerformedThisFrame() && !PanelManager.self.hasPanelInLinkedList()) {
          NetEntity ship = getClickedBody();
          if (ship != null && ship is PlayerShipEntity) {
+            D.adminLog("ContextMenu: Interact was performed via action key sea:" +
+            "{" + userId + ":" + entityName + "}{" + ship.userId + ":" + ship.entityName + "}", D.ADMIN_LOG_TYPE.Player_Menu);
             PanelManager.self.contextMenuPanel.showDefaultMenuForUser(ship.userId, ship.entityName);
          }
       }
@@ -919,6 +928,8 @@ public class PlayerShipEntity : ShipEntity
       // Store ability id, to ensure it doesn't change during the barrage
       int abilityId = getSelectedShipAbilityId();
 
+      bool playSound = false;
+
       for (int i = 0; i < 10; i++) {
          Vector3 endPos = targetPosition + Random.insideUnitSphere * radius;
 
@@ -928,7 +939,12 @@ public class PlayerShipEntity : ShipEntity
          float dist = toEndPos.magnitude;
          lifetime = Mathf.Lerp(2.0f, 3.0f, dist / 5.0f);
 
-         Cmd_FireSpecialCannonAtTarget(null, endPos, lifetime, false, true, abilityId, disableColliderFor: 0.9f, false);
+         // Start playing the projectile sound effect after the first one.
+         if (i > 0 && !playSound) {
+            playSound = true;
+         }
+
+         Cmd_FireSpecialCannonAtTarget(null, endPos, lifetime, false, playSound, abilityId, disableColliderFor: 0.9f, false);
          yield return new WaitForSeconds(0.2f);
       }
 

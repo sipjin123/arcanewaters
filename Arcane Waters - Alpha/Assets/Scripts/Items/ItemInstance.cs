@@ -71,7 +71,7 @@ public class ItemInstance
    }
 
    // Hardcoded item rewards for when player gets his first house/farm
-   // 2 Tables, 6 Chairs, 5 Trees, 1 Stumps, 2 Bushes
+   // 2 Tables, 6 Chairs, 2 Stools, 5 Trees, 1 Stumps, 2 Bushes
    public static List<ItemInstance> getFirstFarmRewards (int receiverUserId) {
       return new List<ItemInstance> {
          new ItemInstance(7, receiverUserId, 5),
@@ -83,7 +83,8 @@ public class ItemInstance
    public static List<ItemInstance> getFirstHouseRewards (int receiverUserId) {
       return new List<ItemInstance> {
          new ItemInstance(11, receiverUserId, 2),
-         new ItemInstance(10, receiverUserId, 6)
+         new ItemInstance(10, receiverUserId, 6),
+         new ItemInstance(16, receiverUserId, 2)
       };
    }
 

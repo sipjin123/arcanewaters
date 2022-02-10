@@ -30,12 +30,15 @@ namespace MapCustomization
       public Sprite propIcon = null;
 
       // State of the prefab that is set in map editor
+      [HideInInspector]
       public PrefabState mapEditorState;
 
       // State of the prefab after server-confirmed customizations are applied
+      [HideInInspector]
       public PrefabState customizedState;
 
       // Changes of state during user-end customization
+      [HideInInspector]
       public PrefabState unappliedChanges;
 
       #endregion
@@ -89,8 +92,8 @@ namespace MapCustomization
             }
             _disabledInteractions.Clear();
          } else {
-            _disabledInteractions = GetComponentsInChildren<Collider2D>().Where(c => !c.isTrigger).Select(c => c as Behaviour).ToList();
-            SpaceRequirer req = GetComponentInChildren<SpaceRequirer>(true);
+            _disabledInteractions = GetComponentsInChildren<Collider2D>().Select(c => c as Behaviour).ToList();
+            SpaceRequirer req = GetComponentInChildren<SpaceRequirer>();
             if (req != null) {
                _disabledInteractions.Add(req);
             }

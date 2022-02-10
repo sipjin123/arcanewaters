@@ -447,9 +447,9 @@ public class PvpManager : MonoBehaviour {
    public static string getShipPaletteForTeam (PvpTeamType teamType) {
       switch (teamType) {
          case PvpTeamType.A:
-            return "ship_flag_pvp_blue";
-         case PvpTeamType.B:
             return "ship_flag_pvp_orange";
+         case PvpTeamType.B:
+            return "ship_flag_pvp_blue";
          default:
             return "ship_flag_white";
       }

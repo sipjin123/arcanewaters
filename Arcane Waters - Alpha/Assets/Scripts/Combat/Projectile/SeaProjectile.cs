@@ -55,14 +55,12 @@ public class SeaProjectile : NetworkBehaviour
          updateAnimatedVisuals();
 
          // Play FMOD sfx
-         ProjectileStatData projectileStatData = ProjectileStatManager.self.getProjectileData(projectileTypeId);
-         if (projectileStatData != null && _abilityData != null) {
-            SoundEffectManager.self.playSeaProjectileSfx(_abilityData.sfxType, projectileStatData.sfxType, this.transform, this._rigidbody);
+         if (_playFiringSound) {
+            ProjectileStatData projectileStatData = ProjectileStatManager.self.getProjectileData(projectileTypeId);
+            if (projectileStatData != null && _abilityData != null) {
+               SoundEffectManager.self.playSeaProjectileSfx(_abilityData.sfxType, projectileStatData.sfxType, this.transform, this._rigidbody);
+            }
          }
-         // Play an appropriate sound
-         //if (_playFiringSound) {
-         //FMODUnity.RuntimeManager.PlayOneShotAttached(SoundEffectManager.SHIP_CANNON, this.gameObject);
-         //}
       }
    }
 

@@ -435,8 +435,7 @@ public class MapManager : MonoBehaviour
             pref.submitUnappliedChanges();
 
             if (!Mirror.NetworkServer.active && pref.customizedState.serializationId != changes.serializationId) {
-               // The prefab variant has changed - the old prefab must be destroyed and a new one created
-               MapCustomizationManager.replacePrefab(pref, changes.serializationId);
+               Debug.LogWarning("Different serialization ids for prefab " + pref.name);
             }
             break;
          }

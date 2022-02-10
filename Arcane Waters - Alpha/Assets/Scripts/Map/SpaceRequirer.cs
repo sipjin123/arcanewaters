@@ -7,6 +7,12 @@ public class SpaceRequirer : MonoBehaviour
    // The layer we use to determine if space is taken
    public const string REQUIRER_LAYER_NAME = "SpaceRequirer";
 
+   // Whether to use a custom mask for raycasts
+   public bool useCustomMask = false;
+   public LayerMask customMask;
+
+   // Whose child objects to ignore while checking collisions
+   public Transform ignoreChildrenOf;
    #endregion
 
    private void Start () {
@@ -66,13 +72,13 @@ public class SpaceRequirer : MonoBehaviour
       }
 
       foreach (BoxCollider2D col in _spaceBoxColliders) {
-         if (Util.overlapOrEncapsulateAny(col, position, getContactFilter(), transform)) {
+         if (Util.overlapOrEncapsulateAny(col, position, getContactFilter(), ignoreChildrenOf)) {
             return false;
          }
       }
 
       foreach (CircleCollider2D col in _spaceCircleColliders) {
-         if (Util.overlapOrEncapsulateAny(col, position, getContactFilter(), transform)) {
+         if (Util.overlapOrEncapsulateAny(col, position, getContactFilter(), ignoreChildrenOf)) {
             return false;
          }
       }
@@ -85,6 +91,14 @@ public class SpaceRequirer : MonoBehaviour
    }
 
    private ContactFilter2D getContactFilter () {
+      if (useCustomMask) {
+         return new ContactFilter2D {
+            useTriggers = true,
+            useLayerMask = true,
+            layerMask = customMask
+         };
+      }
+
       return new ContactFilter2D {
          useTriggers = true,
          useLayerMask = true,

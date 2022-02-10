@@ -464,6 +464,10 @@ public class Area : MonoBehaviour
    }
 
    public static SoundManager.Type getBackgroundMusic (string areaKey, Biome.Type biome) {
+      if(string.Equals(areaKey, "Tutorial Town Cemetery v2", StringComparison.InvariantCultureIgnoreCase)) {
+         return SoundManager.Type.Town_Forest_Cementery;
+      }
+
       if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
          if (customMapManager is CustomFarmManager || CustomMapManager.isPrivateCustomArea(areaKey)) {
             return SoundManager.Type.Farm_Music;

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
+using MapCustomization;
 
 public class ChairClickable : MonoBehaviour
 {
@@ -66,6 +67,11 @@ public class ChairClickable : MonoBehaviour
    }
 
    public void onClick () {
+      // Don't interact with chairs when we are customizing
+      if (MapCustomizationManager.isLocalPlayerCustomizing) {
+         return;
+      }
+
       if (Global.player == null || Global.player.getPlayerBodyEntity() == null) {
          return;
       }
@@ -126,7 +132,7 @@ public class ChairClickable : MonoBehaviour
          foreach (Collider2D collider in colliders) {
             if (collider != null) {
                // Ignore the chair itself, players
-               if (collider.gameObject == this.gameObject ||
+               if (collider.transform.IsChildOf(transform) ||
                   collider.GetComponentInParent<PlayerBodyEntity>() != null) {
                   collidersCount -= 1;
                }
@@ -160,7 +166,7 @@ public class ChairClickable : MonoBehaviour
          }
 
          // Ignore the chair itself, players and the camera bounds
-         if (collider.gameObject == this.gameObject ||
+         if (collider.transform.IsChildOf(transform) ||
             collider.GetComponentInParent<PlayerBodyEntity>() != null ||
             collider.TryGetComponent(out MapCameraBounds bounds)) {
             collidersCount -= 1;
@@ -186,12 +192,13 @@ public class ChairClickable : MonoBehaviour
    }
 
    private void handleSpriteOutline () {
-      if (_outline == null || _clickableBox == null || MouseManager.self == null) {
+      if (MapCustomizationManager.isLocalPlayerCustomizing || _outline == null || _clickableBox == null || MouseManager.self == null) {
          return;
       }
 
-      // Only show our outline when the mouse is over us
+      // Only show our outline when the mouse is over us and player isn't in customization mode
       bool isHovering = MouseManager.self.isHoveringOver(_clickableBox);
+      _outline.setNewColor(Color.white);
       _outline.setVisibility(isHovering);
    }
 

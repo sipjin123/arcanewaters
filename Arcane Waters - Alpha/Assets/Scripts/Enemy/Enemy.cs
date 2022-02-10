@@ -338,7 +338,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
             _isIdle = false;
             if (getWalkingSound() != SoundManager.Type.None) {
                //SoundManager.playAttachedClip(getWalkingSound(), transform);
-               SoundEffectManager.self.playAttached(getWalkingSound(), this.gameObject);
+               SoundEffectManager.self.playAttachedSfx(getWalkingSound(), this.gameObject);
             }
          }
       } else {

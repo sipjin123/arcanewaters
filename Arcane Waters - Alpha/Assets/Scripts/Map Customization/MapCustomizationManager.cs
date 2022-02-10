@@ -24,6 +24,9 @@ namespace MapCustomization
       // A reference to the Customization UI
       public CustomizationUI customizationUI;
 
+      // Is local player in customization mode right now
+      public static bool isLocalPlayerCustomizing { get; private set; }
+
       // Current area that is being customized, null if customization is not active currently
       public static Area currentArea { get; private set; }
 
@@ -62,9 +65,6 @@ namespace MapCustomization
 
       // Flag to keep track of when the dragging of a prefab is starting
       public static bool isBeginningOfDrag = true;
-
-      // Check if we are waiting for server to record the prefab changes
-      public static bool waitingForServer = false;
 
       #endregion
 
@@ -113,6 +113,7 @@ namespace MapCustomization
          currentArea = AreaManager.self.getArea(areaName);
          int userId = CustomMapManager.isUserSpecificAreaKey(areaName) ? CustomMapManager.getUserId(areaName) : Global.player.userId;
          NetEntity entity = EntityManager.self.getEntity(userId);
+         isLocalPlayerCustomizing = true;
 
          // Owner of the target map has to be in the server
          // TODO: remove this constraint
@@ -161,9 +162,10 @@ namespace MapCustomization
       public static void exitCustomization () {
          Global.player.rpc.Cmd_ExitMapCustomization(currentArea.areaKey);
 
+         isLocalPlayerCustomizing = false;
          currentArea = null;
          currentBiome = Biome.Type.None;
-         _selectedPrefab = null;
+         selectPrefab(null);
          hideSelectionArrows();
          CustomizationUI.ensureHidden();
 
@@ -235,102 +237,6 @@ namespace MapCustomization
             _newPrefab = null;
          }
          updatePrefabOutlines(worldPosition);
-
-         // If we hover over a prefab and we don't currently have a prefab in hand, turn on selection arrows and allow middle mouse to change variations
-         if ((CustomizationUI.getSelectedPrefabData() == null) && !waitingForServer) {
-            CustomizablePrefab hoveredPrefab = getPrefabAtPosition(worldPosition);
-
-            if (hoveredPrefab != null) {
-               if (MouseUtils.mouseScrollY != 0) {
-                  if (MouseUtils.mouseScrollY > 0) {
-                     scrollWheelUp = true;
-                     selectPrefabVariation(hoveredPrefab, scrollWheelUp);
-                  } else {
-                     if (MouseUtils.mouseScrollY < 0) {
-                        scrollWheelUp = false;
-                        selectPrefabVariation(hoveredPrefab, scrollWheelUp);
-                     }
-                  }
-                  waitingForServer = true;
-               }
-            } else {
-               selectPrefab(null);
-            }
-         }
-      }
-
-      public static void selectPrefabVariation (CustomizablePrefab prefab, bool scrollWheelUp) {
-         if (waitingForServer || prefab == null) {
-            return;
-         }
-
-         // Find the matching prefab in the array
-         PlaceablePrefabData[] prefabDataArray = null;
-         foreach (IGrouping<int, PlaceablePrefabData> itemPrefab in CustomizationUI.itemPrefabs) {
-            if (itemPrefab.Key == prefab.propDefinitionId) {
-               prefabDataArray = itemPrefab.ToArray();
-               break;
-            }
-         }
-
-         if (prefabDataArray == null) {
-            return;
-         }
-
-         string[] prefabNameSplit = prefab.name.Split('(');
-         for (int i = 0; i < prefabDataArray.Length; i++) {
-            if (prefabNameSplit[0] != prefabDataArray[i].prefab.name) {
-               continue;
-            }
-
-            int prefabSerializedID;
-            if (scrollWheelUp) {
-               // Wrap around the array if this prefab is at the last index;
-               if (i == prefabDataArray.Length - 1) {
-                  prefabSerializedID = prefabDataArray[0].serializationId;
-               } else {
-                  prefabSerializedID = prefabDataArray[i + 1].serializationId;
-               }
-            } else {
-               // Wrap around the array if this prefab is at index = 0;
-               if (i == 0) {
-                  prefabSerializedID = prefabDataArray[prefabDataArray.Length - 1].serializationId;
-               } else {
-                  prefabSerializedID = prefabDataArray[i - 1].serializationId;
-               }
-            }
-
-            // Replace the prefab locally right away
-            prefab = replacePrefab(prefab, prefabSerializedID);
-
-            // Request the change to the server
-            Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, prefab.unappliedChanges);
-
-            waitingForServer = true;
-
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLACE_EDITABLE_OBJECT, position: prefab.transform.position);
-            break;
-         }
-      }
-
-      public static CustomizablePrefab replacePrefab (CustomizablePrefab prefab, int newPrefabSerializedId) {
-         if (prefab == null) {
-            return null;
-         }
-
-         // Save the current prefab state
-         PrefabState prefabState = prefab.customizedState;
-
-         // Delete the old prefab
-         Destroy(prefab.gameObject);
-
-         // Create a new prefab with the same state, but with a different variation
-         prefabState.serializationId = newPrefabSerializedId;
-         prefab = MapManager.self.createPrefab(currentArea, currentBiome, prefabState, true);
-         _customizablePrefabs[prefab.customizedState.id] = prefab;
-         prefab.unappliedChanges.created = false;
-
-         return prefab;
       }
 
       /// <summary>
@@ -373,6 +279,8 @@ namespace MapCustomization
             _newPrefab.revertUnappliedChanges();
             _newPrefab = null;
          }
+
+         hideSelectionArrows();
       }
 
       public static void pointerDown (Vector2 worldPosition) {
@@ -385,7 +293,7 @@ namespace MapCustomization
             SoundEffectManager.self.playFmodSfx(SoundEffectManager.PICKUP_EDITABLE_OBJECT, position: worldPosition);
             //SoundEffectManager.self.playSoundEffect(SoundEffectManager.PICKUP_EDIT_OBJ, SoundEffectManager.self.transform);
          } else {
-            _selectedPrefab = null;
+            selectPrefab(null);
             if (CustomizationUI.getSelectedPrefabData() != null) {
                updateToBePlacedPrefab(worldPosition, CustomizationUI.getSelectedPrefabData().Value.serializationId);
                _customizablePrefabs.Add(_newPrefab.unappliedChanges.id, _newPrefab);
@@ -513,7 +421,7 @@ namespace MapCustomization
             showSelectionArrows();
             self.selectionArrows.transform.position = _selectedPrefab.transform.position;
             SelectionSpriteBuildMode.self.setDistances(_selectedPrefab);
-            SelectionSpriteBuildMode.self.setColors(CustomizablePrefab.getIndicatorColor(true, true, true, valid));
+            SelectionSpriteBuildMode.self.setColors(CustomizablePrefab.getIndicatorColor(true, true, _selectedPrefab == _draggedPrefab, valid));
 
             return;
          }
@@ -535,11 +443,18 @@ namespace MapCustomization
          float minZ = float.MaxValue;
 
          // Iterate over all prefabs that overlap given point
-         foreach (CustomizablePrefab prefab in _customizablePrefabs.Values.Where(p => p.interactionCollider.OverlapPoint(position))) {
-            if (prefab.transform.position.z < minZ) {
-               minZ = prefab.transform.position.z;
-               result = prefab;
+         foreach (CustomizablePrefab prefab in _customizablePrefabs.Values) {
+            bool enabled = prefab.interactionCollider.enabled;
+            prefab.interactionCollider.enabled = true;
+            if (prefab.interactionCollider.OverlapPoint(position)) {
+               if (prefab.transform.position.z < minZ) {
+                  minZ = prefab.transform.position.z;
+                  result = prefab;
+               }
             }
+
+            prefab.interactionCollider.enabled = enabled;
+
          }
 
          return result;
@@ -727,7 +642,6 @@ namespace MapCustomization
             } else {
                _serverApprovedState.Add(changes.id, changes);
             }
-            waitingForServer = false;
             return;
          }
 
@@ -771,8 +685,7 @@ namespace MapCustomization
                Destroy(changedPrefab.gameObject);
             } else if (_serverApprovedState.TryGetValue(changes.id, out PrefabState approvedState)) {
                if (approvedState.serializationId != changedPrefab.unappliedChanges.serializationId) {
-                  // If the variant was changed, replace again the new variant by the previous
-                  replacePrefab(changedPrefab, approvedState.serializationId);
+                  Debug.LogWarning("Different serialization id for prefab state " + approvedState);
                } else {
                   changedPrefab.unappliedChanges = approvedState;
                   changedPrefab.submitUnappliedChanges();
@@ -782,7 +695,6 @@ namespace MapCustomization
             CustomizablePrefab previouslyDeletedPrefab = MapManager.self.createPrefab(currentArea, currentBiome, approvedState, true);
             _customizablePrefabs.Add(previouslyDeletedPrefab.customizedState.id, previouslyDeletedPrefab);
          }
-         waitingForServer = false;
       }
 
       private static void updatePlaceablePrefabData () {

@@ -70,7 +70,7 @@ public class SoundManager : GenericGameManager
       Sea_Forest = 100, Sea_Desert = 101, Sea_Pine = 102, Sea_Snow = 103, Sea_Mushroom = 104, Sea_Lava = 105, Sea_League = 106, Sea_PvP = 107,
 
       // Town Music
-      Town_Forest = 150, Town_Pine = 151, Town_Desert = 152, Town_Mushroom = 153, Town_Snow = 154, Town_Lava = 155, Interior = 156,
+      Town_Forest = 150, Town_Pine = 151, Town_Desert = 152, Town_Mushroom = 153, Town_Snow = 154, Town_Lava = 155, Interior = 156, Town_Forest_Cementery = 157,
 
       // Battle Music
       Battle_Music = 200,

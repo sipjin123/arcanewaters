@@ -74,6 +74,8 @@ public class SoundEffectManager : GenericGameManager
 
    #region SEA BATTLE
 
+   public const string THROW_SEA_MINE = "event:/SFX/Player/Interactions/Diegetic/Sea_Mine";
+
    public const string PLAYER_SHIP_DESTROYED = "event:/SFX/Game/Sea_Battle/Player_Ship_Destroyed";
    public const string ENEMY_SHIP_IMPACT = "event:/SFX/Game/Sea_Battle/Enemy_Ship_Impact";
    public const string ENEMY_SHIP_DESTROYED = "event:/SFX/Game/Sea_Battle/Enemy_Ship_Destroyed";
@@ -397,6 +399,9 @@ public class SoundEffectManager : GenericGameManager
          case SoundManager.Type.Sea_League:
             param = 9;
             break;
+         case SoundManager.Type.Town_Forest_Cementery:
+            param = 10;
+            break;
       }
 
       _ambienceMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, param);
@@ -541,15 +546,15 @@ public class SoundEffectManager : GenericGameManager
 
    public void playWeaponSfx (WeaponType sfxType, Weapon.Class weaponClass, Vector3 position) {
       //if (sfxType != WeaponType.None) {
-         FMOD.Studio.EventInstance weaponEvent = FMODUnity.RuntimeManager.CreateInstance(WEAPON_SWING);
+      FMOD.Studio.EventInstance weaponEvent = FMODUnity.RuntimeManager.CreateInstance(WEAPON_SWING);
 
-         //eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, ((int) sfxType) - 1);
-         weaponEvent.setParameterByName(AUDIO_SWITCH_PARAM, 3); // Using the same parameter, for now.
+      //eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, ((int) sfxType) - 1);
+      weaponEvent.setParameterByName(AUDIO_SWITCH_PARAM, 3); // Using the same parameter, for now.
 
-         weaponEvent.setParameterByName(APPLY_MAGIC, weaponClass == Weapon.Class.Magic ? 1 : 0);
-         weaponEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
-         weaponEvent.start();
-         weaponEvent.release();
+      weaponEvent.setParameterByName(APPLY_MAGIC, weaponClass == Weapon.Class.Magic ? 1 : 0);
+      weaponEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
+      weaponEvent.start();
+      weaponEvent.release();
       //}
    }
 
@@ -642,8 +647,6 @@ public class SoundEffectManager : GenericGameManager
             break;
       }
 
-      //Debug.Log(audioParam);
-
       shipCannonEvent.setParameterByName(AUDIO_SWITCH_PARAM, audioParam);
 
       if (projectileTransform != null && projectileBody != null) {
@@ -662,15 +665,25 @@ public class SoundEffectManager : GenericGameManager
          case ProjectileType.Cannonball:
          case ProjectileType.Cannonball_Ice:
          case ProjectileType.Cannonball_Fire:
-            if (seaAbilityType != SeaAbilityType.Sail_Shredder && seaAbilityType != SeaAbilityType.Davy_Jones) {
-               playShipCannonSfx(seaAbilityType, projectileType, projectileTransform: projectileTransform, projectileBody: projectileBody);
+            switch (seaAbilityType) {
+               case SeaAbilityType.Davy_Jones:
+               case SeaAbilityType.None:
+                  playShipCannonSfx(projectileType: projectileType, projectileTransform: projectileTransform, projectileBody: projectileBody);
+                  break;
             }
+            break;
+         case ProjectileType.Sea_Mine:
+            playAttachedSfx(THROW_SEA_MINE, projectileTransform, projectileBody);
             break;
       }
    }
 
    // Play attached SFX
-   public void playAttached (SoundManager.Type soundType, GameObject target) {
+   public void playAttachedSfx (string path, GameObject target) {
+      FMODUnity.RuntimeManager.PlayOneShotAttached(path, target);
+   }
+
+   public void playAttachedSfx (SoundManager.Type soundType, GameObject target) {
       string path = "";
 
       switch (soundType) {
@@ -682,6 +695,13 @@ public class SoundEffectManager : GenericGameManager
       if (!string.IsNullOrEmpty(path)) {
          FMODUnity.RuntimeManager.PlayOneShotAttached(path, target);
       }
+   }
+
+   public void playAttachedSfx (string path, Transform targetTransform, Rigidbody2D targetBody) {
+      FMOD.Studio.EventInstance soundEvent = FMODUnity.RuntimeManager.CreateInstance(path);
+      FMODUnity.RuntimeManager.AttachInstanceToGameObject(soundEvent, targetTransform, targetBody);
+      soundEvent.start();
+      soundEvent.release();
    }
 
    public void playFootstepSfx (Vector3 playerPosition) {
@@ -751,10 +771,6 @@ public class SoundEffectManager : GenericGameManager
 
          _footstepsLastSound[audioParam] = Time.time;
       }
-   }
-
-   public void playAttachedSfx (string path, GameObject target) {
-      FMODUnity.RuntimeManager.PlayOneShotAttached(path, target);
    }
 
    public void playJumpLandSfx (Vector3 playerPosition) {
@@ -848,7 +864,10 @@ public class SoundEffectManager : GenericGameManager
    public enum ProjectileType
    {
       None = 0,
-      Cannonball = 1, Cannonball_Ice = 2, Cannonball_Fire = 3,
+      Cannonball = 1,
+      Cannonball_Ice = 2,
+      Cannonball_Fire = 3,
+      Sea_Mine = 4,
       Fishman_Attack = 6
    }
 
