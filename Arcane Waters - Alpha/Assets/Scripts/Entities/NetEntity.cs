@@ -1383,6 +1383,13 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
+   [TargetRpc]
+   public void Target_WinBattle () {
+      D.debug("Battle won");
+      SoundEffectManager.self.playShipCannonSfx();
+      SoundEffectManager.self.playTriumphSfx();
+   }
+
    protected virtual void handleDelayMoveMode () {
       // Check if enough time has passed for us to change our facing direction
       bool canChangeDirection = (NetworkTime.time - _lastFacingChangeTime > getTurnDelay());

@@ -1020,6 +1020,7 @@ public class BattleManager : MonoBehaviour {
                // Setup server to declare a battler is dead when the network time reaches the time action ends
                if (target.health <= 0) {
                   StartCoroutine(CO_KillBattlerAtEndTime(attackAction));
+                  StartCoroutine(CO_SendWinNoticeAfterEnd(attackAction));
                }
             } else if (action is BuffAction) {
                BuffAction buffAction = (BuffAction) action;
@@ -1052,6 +1053,40 @@ public class BattleManager : MonoBehaviour {
       }
 
       battlerReference.applyStatusEffect(statusType, statusDuration, abilityId, casterId);
+   }
+
+   protected IEnumerator CO_SendWinNoticeAfterEnd (AttackAction attackAction) {
+      // Wait for action end time
+      while (NetworkTime.time < attackAction.actionEndTime) {
+         yield return 0;
+      }
+
+      Battle battle = getBattle(attackAction.battleId);
+      if (battle == null) {
+         yield return null;
+      }
+      Battler target = battle.getBattler(attackAction.targetId);
+      if (target == null) {
+         yield return null;
+      }
+      Battler source = battle.getBattler(attackAction.sourceId);
+      if (source == null) {
+         yield return null;
+      }
+
+      bool battleEnds = true;
+      if (source.enemyType == Enemy.Type.PlayerBattler && source.isAttacker()) {
+         foreach (Battler currBattler in battle.getDefenders()) {
+            if (currBattler.health > 0) {
+               battleEnds = false;
+            }
+         }
+      }
+      if (battleEnds) {
+         foreach (Battler currBattler in battle.getAttackers()) {
+            currBattler.player.Target_WinBattle();
+         }
+      }
    }
 
    protected IEnumerator CO_KillBattlerAtEndTime (AttackAction attackAction) {
