@@ -897,7 +897,7 @@ GameObject:
   - component: {fileID: 150844233957524581}
   - component: {fileID: 6806750301373817138}
   - component: {fileID: 5006032918482514862}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: CameraBounds
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1429,10 +1429,12 @@ MonoBehaviour:
   waterZ: 0
   isInterior: 0
   version: 0
+  mapTileSize: {x: 0, y: 0}
   npcDatafields: []
   enemyDatafields: []
   treasureSiteDataFields: []
   oreDataFields: []
+  windowDataFields: []
   shipDataFields: []
   privateerShipDataFields: []
   pirateShipDataFields: []
@@ -1445,6 +1447,7 @@ MonoBehaviour:
   pvpMonsterSpawnerDataFields: []
   pvpLootSpawners: []
   pvpCaptureTargetHolders: []
+  openWorldSpawnBlockers: []
   prefabParent: {fileID: 5468073751298558255}
   plantableTreeParent: {fileID: 6200275072450121505}
   npcParent: {fileID: 2242570168550347574}
@@ -1456,8 +1459,10 @@ MonoBehaviour:
   botShipParent: {fileID: 1642774252992135975}
   userParent: {fileID: 7758793860600656536}
   oreNodeController: {fileID: 0}
+  openWorldController: {fileID: 0}
   cloudManager: {fileID: 5783109122311199641}
   cloudShadowManager: {fileID: 3446122932443558204}
+  interactableWindows: []
   _warps: []
 --- !u!1 &5890803340624794605
 GameObject:
