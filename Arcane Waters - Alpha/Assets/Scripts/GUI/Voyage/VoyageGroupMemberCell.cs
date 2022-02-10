@@ -41,6 +41,9 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
    // The indicator that this unit is the highest damager
    public GameObject highestDamageIndicator;
 
+   // Indicates that this user is the voyage leader
+   public GameObject teamLeaderIndicator;
+
    // The total damage dealt
    public int totalDamage;
 

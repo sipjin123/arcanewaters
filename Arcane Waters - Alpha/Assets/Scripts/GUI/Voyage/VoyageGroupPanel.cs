@@ -102,6 +102,12 @@ public class VoyageGroupPanel : ClientMonoBehaviour
                }
             }
 
+            if (i == 0) {
+               memberCell.teamLeaderIndicator.SetActive(true);
+            } else {
+               memberCell.teamLeaderIndicator.SetActive(false);
+            }
+
             if (i < directionalArrowList.Count) {
                VoyageMemberArrows voyageMemArrow = directionalArrowList[i];
                voyageMemArrow.setTarget(entity.gameObject);
