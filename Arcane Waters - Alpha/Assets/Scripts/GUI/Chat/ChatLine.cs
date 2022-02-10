@@ -23,6 +23,8 @@ public class ChatLine : MonoBehaviour, IPointerClickHandler
 
    public virtual void OnPointerClick (PointerEventData eventData) {
       if (chatInfo.senderId > 0 && eventData.button == PointerEventData.InputButton.Left) {
+         D.adminLog("ContextMenu: Interact was performed via Chat Line:" +
+            "{" + Global.player == null ? "" : (Global.player.userId + ":" + Global.player.entityName) + "}{" + chatInfo.senderId + ":" + chatInfo.sender + "}", D.ADMIN_LOG_TYPE.Player_Menu); ;
          PanelManager.self.contextMenuPanel.showDefaultMenuForUser(chatInfo.senderId, chatInfo.sender);
       }
    }

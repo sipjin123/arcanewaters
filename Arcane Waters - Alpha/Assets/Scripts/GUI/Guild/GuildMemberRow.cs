@@ -134,6 +134,8 @@ public class GuildMemberRow : MonoBehaviour, IPointerClickHandler
       }
 
       if (eventData.button == PointerEventData.InputButton.Right) {
+         D.adminLog("ContextMenu: Interact was performed via Guild Member:" +
+            "{" + Global.player == null ? "" : (Global.player.userId + ":" + Global.player.entityName) + "}{" + _userId + ":" + _userName + "}", D.ADMIN_LOG_TYPE.Player_Menu);
          PanelManager.self.contextMenuPanel.showDefaultMenuForUser(_userId, _userName);
       }
    }

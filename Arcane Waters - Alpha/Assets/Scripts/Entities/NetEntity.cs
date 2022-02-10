@@ -604,6 +604,7 @@ public class NetEntity : NetworkBehaviour
 
    [Command]
    public void Cmd_CheckContextMenuStatus (int senderId, string sender) {
+      D.adminLog("ContextMenu: Check ContextMenu Status Server", D.ADMIN_LOG_TYPE.Player_Menu);
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          FriendshipInfo friendInfo = DB_Main.getFriendshipInfo(this.userId, senderId);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -618,6 +619,8 @@ public class NetEntity : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveContextMenuStatus (int senderId, string sender, bool isFriend) {
+      D.adminLog("ContextMenu: Interact was performed via TargetRPC:" +
+            "{" + userId + ":" + entityName + "}{" + senderId + ":" + sender + "}", D.ADMIN_LOG_TYPE.Player_Menu);
       PanelManager.self.contextMenuPanel.showDefaultMenuForUser(senderId, sender, false, isFriend);
    }
 

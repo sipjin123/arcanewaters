@@ -779,6 +779,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       ) {
          NetEntity body = getClickedBody();
          if (body != null && body is PlayerBodyEntity && !Global.player.isInBattle()) {
+            D.adminLog("ContextMenu: Interact was performed via action logic:" +
+            "{" + userId + ":" + entityName + "}{" + body.userId + ":" + body.entityName + "}", D.ADMIN_LOG_TYPE.Player_Menu);
             PanelManager.self.contextMenuPanel.showDefaultMenuForUser(body.userId, body.entityName);
          }
       }

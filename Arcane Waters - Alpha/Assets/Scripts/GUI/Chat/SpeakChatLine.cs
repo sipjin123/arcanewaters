@@ -74,6 +74,8 @@ public class SpeakChatLine : ChatLine, IScrollHandler
          if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
             ((PvpArenaPanel) PanelManager.self.get(Panel.Type.PvpArena)).togglePanel();
          } else {
+            D.adminLog("ContextMenu: Interact was performed via speak line button CMD-1: " +
+               "{" + Global.player.userId + ":" + Global.player.entityName + "}{" + chatInfo.senderId + ":" + chatInfo.sender + "}", D.ADMIN_LOG_TYPE.Player_Menu);
             Global.player.Cmd_CheckContextMenuStatus(chatInfo.senderId, chatInfo.sender);
          }
       }
@@ -84,6 +86,8 @@ public class SpeakChatLine : ChatLine, IScrollHandler
          if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
             ((PvpArenaPanel) PanelManager.self.get(Panel.Type.PvpArena)).togglePanel();
          } else {
+            D.adminLog("ContextMenu: Interact was performed via chat line button CMD-2:" +
+            "{" + Global.player.userId + ":" + Global.player.entityName + "}{" + chatInfo.senderId + ":" + chatInfo.sender + "}", D.ADMIN_LOG_TYPE.Player_Menu);
             Global.player.Cmd_CheckContextMenuStatus(chatInfo.senderId, chatInfo.sender);
          }
       }
