@@ -603,7 +603,7 @@ public class SeaEntity : NetEntity
                   }
                   Vector3 newPosition = seaEntity.spritesContainer == null ? seaEntity.transform.position : seaEntity.spritesContainer.transform.position;
                   float distanceToTarget = Vector2.Distance(sourcePos, newPosition);
-                  if (distanceToTarget <= 1) {
+                  if (distanceToTarget <= 1.1f) {
                      lightningTargets.Add(seaEntity.netId);
                      int finalDamage = seaEntity.applyDamage(damage, attackerNetId);
                      seaEntity.Rpc_ShowExplosion(attackerNetId, collidedEntity.transform.position, finalDamage, Attack.Type.None, false);
@@ -613,8 +613,6 @@ public class SeaEntity : NetEntity
 
                      collidedEntities.Add(seaEntity, collidedEntity.transform);
                      targetIDList.Add(seaEntity.netId);
-                  } else {
-                     D.debug("Chain lightning error! Distance is too far! {" + distanceToTarget + "}");
                   }
                }
             }

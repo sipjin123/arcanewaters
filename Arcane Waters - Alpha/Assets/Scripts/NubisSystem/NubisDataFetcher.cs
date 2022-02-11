@@ -324,6 +324,7 @@ namespace NubisDataHandling {
 
          // Filter inventory items here
          itemList.RemoveAll(_ => _.category == Item.Category.Usable);
+         itemList.RemoveAll(_ => _.category == Item.Category.Quest_Item);
 
          PanelManager.self.itemSelectionScreen.receiveItemsFromServer(itemList, pageIndex, totalCount);
       }
