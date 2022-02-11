@@ -35,10 +35,6 @@ public class SeaEntity : NetEntity
    [SyncVar]
    public bool isPvpAI = false;
 
-   // If this entity should start regenerating health
-   [SyncVar]
-   public bool regenerateHealth;
-
    // The regeneration rate of the health
    public const float HEALTH_REGEN_RATE = 1f;
 
@@ -49,6 +45,9 @@ public class SeaEntity : NetEntity
    // Keeps track of the consecutive attack count
    [SyncVar]
    public float attackCounter = 0f;
+
+   // The buff content this user currently has
+   public SyncDictionary<SeaBuff.Type, SeaBuffData> buffContent = new SyncDictionary<SeaBuff.Type, SeaBuffData>();
 
    // The prefab we use for creating Attack Circles, for self shots
    public AttackCircle localAttackCirclePrefab;
@@ -408,8 +407,10 @@ public class SeaEntity : NetEntity
       base.Update();
 
       // Regenerate health
-      if (NetworkServer.active && isSeaMonsterPvp() && regenerateHealth && currentHealth < maxHealth && currentHealth > 0) {
-         currentHealth += (int) HEALTH_REGEN_RATE;
+      if (NetworkServer.active && isSeaMonsterPvp() && currentHealth < maxHealth && currentHealth > 0) {
+         if (hasRegenerationBuff()) {
+            currentHealth += (int) HEALTH_REGEN_RATE;
+         }
       }
 
       if (!isDead()) {
@@ -918,15 +919,15 @@ public class SeaEntity : NetEntity
             retreatToSpawn();
          } else {
             // Stop health regeneration when hit by player and combat begins
-            if (regenerateHealth) {
-               setHealthRegeneration(false);
+            if (hasRegenerationBuff()) {
+               setEnemyHealthRegeneration(false);
             }
          }
       }
    }
 
    protected void retreatToSpawn () {
-      setHealthRegeneration(true);
+      setEnemyHealthRegeneration(true);
       _attackers.Clear();
       _currentAttacker = 0;
       _attackingWaypointState = WaypointState.FINDING_PATH;
@@ -1889,11 +1890,11 @@ public class SeaEntity : NetEntity
                if (_currentPathIndex >= _currentPath.Count || currentSecondsPatrolingTerritory > PVP_MONSTER_IDLE_DURATION) {
                   // If this unit is retreating and is fully regenerated, disable regenerate health command
                   if (distanceFromInitialPosition > 1) {
-                     if (!regenerateHealth && currentHealth < maxHealth && !hasAnyCombat()) {
-                        setHealthRegeneration(true);
+                     if (!hasRegenerationBuff() && currentHealth < maxHealth && !hasAnyCombat()) {
+                        setEnemyHealthRegeneration(true);
                      }
-                  } else if (regenerateHealth && currentHealth >= maxHealth) {
-                     setHealthRegeneration(false);
+                  } else if (hasRegenerationBuff() && currentHealth >= maxHealth) {
+                     setEnemyHealthRegeneration(false);
                   }
 
                   currentSecondsPatrolingTerritory = 0.0f;
@@ -1952,8 +1953,8 @@ public class SeaEntity : NetEntity
                state = WaypointState.FINDING_PATH;
             }
 
-            if (isSeaMonsterPvp() && regenerateHealth && currentHealth >= maxHealth) {
-               setHealthRegeneration(false);
+            if (isSeaMonsterPvp() && hasRegenerationBuff() && currentHealth >= maxHealth) {
+               setEnemyHealthRegeneration(false);
             }
 
             break;
@@ -2054,13 +2055,20 @@ public class SeaEntity : NetEntity
       }
    }
 
-   public void setHealthRegeneration (bool isOn) {
+   public void setEnemyHealthRegeneration (bool isOn) {
       if (isSeaMonsterPvp()) {
          // Do not enable regeneration if this entity is already dead
          if (isOn && currentHealth < 1) {
             return;
          }
-         regenerateHealth = isOn;
+         if (!buffContent.ContainsKey(SeaBuff.Type.Heal)) {
+            buffContent.Add(SeaBuff.Type.Heal, new SeaBuffData {
+               buffType = SeaBuff.Type.Heal,
+               casterId = 0,
+               isActive = isOn
+            });
+         }
+         buffContent[SeaBuff.Type.Heal].isActive = isOn;
       }
    }
 
@@ -2239,6 +2247,14 @@ public class SeaEntity : NetEntity
       }
 
       return null;
+   }
+
+   public bool hasRegenerationBuff () {
+      if (buffContent.ContainsKey(SeaBuff.Type.Heal)) {
+         return buffContent[SeaBuff.Type.Heal].isActive;
+      }
+
+      return false;
    }
 
    [Server]

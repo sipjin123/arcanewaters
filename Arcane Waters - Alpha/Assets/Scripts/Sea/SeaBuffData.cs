@@ -26,16 +26,23 @@ public class SeaBuffData {
    // The xml id reference
    public int buffAbilityIdReference;
 
+   // The caster of the buff
+   public uint casterId;
+
+   // If the buff is active
+   public bool isActive;
+
    #endregion
 
    public SeaBuffData () { }
 
-   public SeaBuffData (double buffStartTime, double buffEndTime, SeaBuff.Type buffType, float buffMagnitude, int buffAbilityXmlId) {
+   public SeaBuffData (double buffStartTime, double buffEndTime, SeaBuff.Type buffType, float buffMagnitude, int buffAbilityXmlId, uint casterId) {
       this.buffStartTime = buffStartTime;
       this.buffEndTime = buffEndTime;
       this.buffType = buffType;
       this.buffMagnitude = buffMagnitude;
       this.buffAbilityIdReference = buffAbilityXmlId;
+      this.casterId = casterId;
    }
 
    public static Attack.Type getAttackType (SeaBuff.Type buffType) {
