@@ -35,17 +35,17 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
    // The area key where the user is located
    public Text playerAreaKeyText;
 
-   // The total damage of the player during the voyage
-   public Text playerDamageText;
+   // The total stat this unit has provided
+   public Text playerDamageText, playerTotalHealText, playerTotalBuffText, playerTotalTankedText;
 
-   // The indicator that this unit is the highest damager
-   public GameObject highestDamageIndicator;
+   // The party stat indicators
+   public GameObject highestDamageIndicator, highestTankIndicator, highestHealIndicator, highestBuffIndicator;
 
    // Indicates that this user is the voyage leader
    public GameObject teamLeaderIndicator;
 
-   // The total damage dealt
-   public int totalDamage;
+   // The total stat dealt
+   public int totalDamage, totalTanked, totalBuffed, totalHealed;
 
    #endregion
 
@@ -166,6 +166,21 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
    public void updateCellDamage (int damage) {
       totalDamage = damage;
       playerDamageText.text = damage.ToString();
+   }
+
+   public void updateCellTanked (int tanked) {
+      totalTanked = tanked;
+      playerTotalTankedText.text = tanked.ToString();
+   }
+
+   public void updateCellHealed (int healed) {
+      totalHealed = healed;
+      playerTotalHealText.text = healed.ToString();
+   }
+
+   public void updateCellBuffed (int buffed) {
+      totalBuffed = buffed;
+      playerTotalBuffText.text = buffed.ToString();
    }
 
    public void OnPointerEnter (PointerEventData eventData) {

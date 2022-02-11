@@ -28,6 +28,9 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    // The exit button
    public Button xButton;
 
+   // The user id of the group leader
+   public int groupLeader;
+
    // The prefab for the bottom of the group members column
    public GameObject columnBottomPrefab;
 
@@ -84,9 +87,21 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       Dictionary<string, VoyageMemberArrows> coordinateValue = new Dictionary<string, VoyageMemberArrows>();
 
       int highestDamagerId = -1;
+      int highestTankedId = -1;
+      int highestHealerId = -1;
+      int highestBuffedId = -1;
       if (_memberCells.Count > 0) {
          VoyageGroupMemberCell highestDamager = _memberCells.OrderByDescending(_ => _.totalDamage).ToList()[0];
          highestDamagerId = highestDamager.getUserId();
+
+         VoyageGroupMemberCell highestTanker = _memberCells.OrderByDescending(_ => _.totalTanked).ToList()[0];
+         highestTankedId = highestTanker.getUserId();
+
+         VoyageGroupMemberCell highestHealed = _memberCells.OrderByDescending(_ => _.totalHealed).ToList()[0];
+         highestHealerId = highestHealed.getUserId();
+
+         VoyageGroupMemberCell highestBuffed = _memberCells.OrderByDescending(_ => _.totalBuffed).ToList()[0];
+         highestBuffedId = highestBuffed.getUserId();
       }
 
       foreach (VoyageGroupMemberCell memberCell in _memberCells) {
@@ -94,11 +109,32 @@ public class VoyageGroupPanel : ClientMonoBehaviour
          if (entity != null) {
             if (entity is PlayerShipEntity) {
                memberCell.updateCellDamage(((PlayerShipEntity) entity).totalDamageDealt);
+               memberCell.updateCellTanked(((PlayerShipEntity) entity).totalDamageTaken);
+               memberCell.updateCellHealed(((PlayerShipEntity) entity).totalHeals);
+               memberCell.updateCellBuffed(((PlayerShipEntity) entity).totalBuffs);
 
                if (memberCell.getUserId() == highestDamagerId && memberCell.totalDamage > 0) {
                   memberCell.highestDamageIndicator.SetActive(true);
                } else {
                   memberCell.highestDamageIndicator.SetActive(false);
+               }
+
+               if (memberCell.getUserId() == highestTankedId && memberCell.totalTanked > 0) {
+                  memberCell.highestTankIndicator.SetActive(true);
+               } else {
+                  memberCell.highestTankIndicator.SetActive(false);
+               }
+
+               if (memberCell.getUserId() == highestHealerId && memberCell.totalHealed > 0) {
+                  memberCell.highestHealIndicator.SetActive(true);
+               } else {
+                  memberCell.highestHealIndicator.SetActive(false);
+               }
+
+               if (memberCell.getUserId() == highestBuffedId && memberCell.totalBuffed > 0) {
+                  memberCell.highestBuffIndicator.SetActive(true);
+               } else {
+                  memberCell.highestBuffIndicator.SetActive(false);
                }
             }
 
@@ -148,15 +184,22 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       VoyageGroupManager.self.groupMemberArrowContainer.DestroyChildren();
       _memberArrows.Clear();
 
+      groupLeader = -1;
       if (groupMembers.Length > MAX_MEMBER_CELLS) {
          // Large groups only display the local player portrait (temporary)
          foreach (VoyageGroupMemberCellInfo cellInfo in groupMembers) {
+            if (groupLeader < 1) {
+               groupLeader = cellInfo.userId;
+            }
             if (cellInfo.userId == Global.player.userId) {
                instantiatePortraitAndArrow(cellInfo);
             }
          }
       } else {
          foreach (VoyageGroupMemberCellInfo cellInfo in groupMembers) {
+            if (groupLeader < 1) {
+               groupLeader = cellInfo.userId;
+            }
             instantiatePortraitAndArrow(cellInfo);
          }
       }
