@@ -302,6 +302,7 @@ public class ShipEntity : SeaEntity
                break;
             case Attack.Type.SpeedBoost:
                hasUsedBuff = true;
+               totalBuffs++;
                addBuff(this.netId, SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost, shipAbilityData);
                Rpc_CastSkill(shipAbilityId, shipAbilityData, transform.position, 0, true, false, true);
                break;
@@ -318,6 +319,7 @@ public class ShipEntity : SeaEntity
                      StartCoroutine(CO_TriggerActiveAOEBuff(shipAbilityData, shipAbilityData.statusDuration));
                      break;
                   case Attack.Type.SpeedBoost:
+                     totalBuffs++;
                      StartCoroutine(CO_TriggerActiveAOEBuff(shipAbilityData, shipAbilityData.statusDuration));
                      break;
                }
@@ -333,6 +335,7 @@ public class ShipEntity : SeaEntity
                                  StartCoroutine(CO_TriggerOneShotBuff(allyShip, shipAbilityData, Attack.Type.Heal, allyShip.netId, false));
                                  break;
                               case Attack.Type.SpeedBoost:
+                                 totalBuffs++;
                                  allyShip.addBuff(this.netId, SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost, shipAbilityData);
                                  break;
                            }
@@ -359,7 +362,7 @@ public class ShipEntity : SeaEntity
 
       yield return new WaitForSeconds(1 / BuffOrb.SNAP_SPEED_MULTIPLIER);
 
-      targetEntity.addBuff(targetEntity.netId, SeaBuff.Category.Buff, SeaBuff.Type.Heal, shipAbilityData);
+      targetEntity.addBuff(netId, SeaBuff.Category.Buff, SeaBuff.Type.Heal, shipAbilityData);
       targetEntity.Rpc_CastSkill(shipAbilityData.abilityId, shipAbilityData, transform.position, 0, true, false, true);
       // Old one shot aoe heal
       /*
@@ -388,7 +391,7 @@ public class ShipEntity : SeaEntity
                switch (shipAbilityData.selectedAttackType) {
                   case Attack.Type.Heal:
                      if (allyShip.getBuffData(SeaBuff.Category.Buff, SeaBuff.Type.Heal) == null) {
-                        allyShip.addBuff(allyShip.netId, SeaBuff.Category.Buff, SeaBuff.Type.Heal, shipAbilityData, endTimeVal);
+                        allyShip.addBuff(netId, SeaBuff.Category.Buff, SeaBuff.Type.Heal, shipAbilityData, endTimeVal);
                      }
                      break;
                   case Attack.Type.SpeedBoost:

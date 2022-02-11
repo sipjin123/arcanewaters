@@ -75,6 +75,18 @@ public class SeaEntity : NetEntity
    [SyncVar]
    public int totalDamageDealt = 0;
 
+   // The total damage taken
+   [SyncVar]
+   public int totalDamageTaken = 0;
+
+   // The total heals given
+   [SyncVar]
+   public int totalHeals = 0;
+
+   // The total buffs provided
+   [SyncVar]
+   public int totalBuffs = 0;
+
    // When set to true, the sprites for this sea entity will 'sink' on death
    [SyncVar]
    public bool sinkOnDeath = true;
@@ -224,15 +236,15 @@ public class SeaEntity : NetEntity
       currentHealth -= amount;
 
       // Keep track of the damage each attacker has done on this entity
-      NetEntity entity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(damageSourceNetId);
-      if (entity != null && entity.userId > 0) {
-         if (_damageReceivedPerAttacker.ContainsKey(entity.userId)) {
-            _damageReceivedPerAttacker[entity.userId] += amount;
+      NetEntity sourceEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(damageSourceNetId);
+      if (sourceEntity != null && sourceEntity.userId > 0) {
+         if (_damageReceivedPerAttacker.ContainsKey(sourceEntity.userId)) {
+            _damageReceivedPerAttacker[sourceEntity.userId] += amount;
          } else {
-            _damageReceivedPerAttacker[entity.userId] = amount;
+            _damageReceivedPerAttacker[sourceEntity.userId] = amount;
          }
 
-         customRegisterDamageReceived(entity.userId, amount);
+         customRegisterDamageReceived(sourceEntity.userId, amount);
       }
 
       noteAttacker(damageSourceNetId);
@@ -243,6 +255,11 @@ public class SeaEntity : NetEntity
       }
 
       onDamage(amount);
+      if (sourceEntity != null && sourceEntity is SeaEntity) {
+         SeaEntity seaEntity = (SeaEntity) sourceEntity;
+         seaEntity.totalDamageDealt += amount;
+         totalDamageTaken += amount;
+      }
 
       // Return the final amount of damage dealt
       return amount;
@@ -2197,7 +2214,7 @@ public class SeaEntity : NetEntity
       double buffEndTime = buffStartTime + buffDuration;
       SyncList<SeaBuffData> buffList = getBuffList(buffCategory);
       if (buffList != null) {
-         buffList.Add(new SeaBuffData(buffStartTime, buffEndTime, buffType, buffMagnitude, abilityXmlId));
+         buffList.Add(new SeaBuffData(buffStartTime, buffEndTime, buffType, buffMagnitude, abilityXmlId, buffSourceNetId));
       }
    }
 
@@ -2208,7 +2225,7 @@ public class SeaEntity : NetEntity
 
       SyncList<SeaBuffData> buffList = getBuffList(buffCategory);
       if (buffList != null) {
-         buffList.Add(new SeaBuffData(buffStartTime, buffEndTime, buffType, shipAbilityData.damageModifier, shipAbilityData.abilityId));
+         buffList.Add(new SeaBuffData(buffStartTime, buffEndTime, buffType, shipAbilityData.damageModifier, shipAbilityData.abilityId, buffSourceNetId));
       }
 
       Rpc_ShowReceivedAbilityBuff(buffSourceNetId, shipAbilityData);

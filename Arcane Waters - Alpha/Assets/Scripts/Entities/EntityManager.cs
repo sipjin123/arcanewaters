@@ -36,6 +36,11 @@ public class EntityManager : MonoBehaviour
       return null;
    }
 
+   public NetEntity getEntityByNetId (uint userNetId) {
+      NetEntity searchedEntity = _entities.Values.ToList().Find(_ => _.netId == userNetId);
+      return searchedEntity;
+   }
+
    public List<NetEntity> getAllEntities () {
       List<NetEntity> allEntities = new List<NetEntity>(_entities.Values);
       return allEntities;

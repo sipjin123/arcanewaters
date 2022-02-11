@@ -71,7 +71,7 @@ public class ShipBars : MonoBehaviour {
       reloadBarImage.fillAmount = (float) (NetworkTime.time - _entity.getLastAttackTime()) / _entity.reloadDelay;
 
       // Hide our bars if we haven't had a combat action and if the player is not targetting this ship
-      barsContainer.SetActive(_entity.hasAnyCombat() || _entity.isAttackCursorOver() || _entity.regenerateHealth);
+      barsContainer.SetActive(_entity.hasAnyCombat() || _entity.isAttackCursorOver() || _entity.hasRegenerationBuff());
 
       // Hide and show our status icons accordingly
       handleStatusIcons();
@@ -110,7 +110,7 @@ public class ShipBars : MonoBehaviour {
       }
 
       if (_entity.isSeaMonsterPvp()) {
-         regenerateIcon.gameObject.SetActive(_entity.regenerateHealth);
+         regenerateIcon.gameObject.SetActive(_entity.hasRegenerationBuff());
       }
    }
 

@@ -451,6 +451,11 @@ public class PlayerShipEntity : ShipEntity
                healData.lastBuffTick = NetworkTime.time;
                int healValue = (int) (healData.buffMagnitude * maxHealth);
                currentHealth += healValue;
+
+               NetEntity casterEntity = EntityManager.self.getEntityByNetId(healData.casterId);
+               if (casterEntity != null && casterEntity is ShipEntity) {
+                  ((ShipEntity) casterEntity).totalHeals += (int) healValue;
+               }
                Rpc_CastSkill(healData.buffAbilityIdReference, null, transform.position, healValue, true, true, false);
             }
          }
