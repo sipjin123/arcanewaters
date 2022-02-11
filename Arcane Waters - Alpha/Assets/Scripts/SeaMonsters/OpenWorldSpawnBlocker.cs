@@ -5,8 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using MapCreationTool.Serialization;
 
-public class OpenWorldSpawnBlocker : MonoBehaviour, IMapEditorDataReceiver
-{
+public class OpenWorldSpawnBlocker : MonoBehaviour, IMapEditorDataReceiver {
    #region Public Variables
 
    // The object that will be adjusted to determine block proximity

@@ -605,9 +605,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
 
       // Play SFX
-      if (monsterType == Type.Horror) {
-         SoundEffectManager.self.playSeaEnemyDeathSfx(monsterType, this.transform.position);
-      }
+      SoundEffectManager.self.playSeaEnemyDeathSfx(monsterType, this.transform.position);
 
       if (!isSeaMonsterMinion() && monsterType != Type.Horror) {
          deathBubbleEffect.SetActive(true);

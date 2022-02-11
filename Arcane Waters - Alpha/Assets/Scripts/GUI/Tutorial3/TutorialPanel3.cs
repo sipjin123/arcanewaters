@@ -262,14 +262,18 @@ public class TutorialPanel3 : MonoBehaviour
 
    public void confirmClosePanel () {
       _mode = Mode.Closed;
+
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.TUTORIAL_POP_UP);
+
       refreshPanelConfig();
    }
 
    public void openPanel () {
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.TUTORIAL_POP_UP);
-
       _mode = Mode.NPCSpeech;
       refreshPanelConfig();
+
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.TUTORIAL_POP_UP);
+
       TutorialManager3.self.updateArrow();
       AutoTyper.SlowlyRevealText(npcSpeechText, _npcSpeech);
    }

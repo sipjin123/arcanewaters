@@ -31,6 +31,8 @@ public class RPCManager : NetworkBehaviour
    {
       public int userId;
       public Item item;
+      public bool wasPurchasedOnTheGemStore;
+      public StoreItem gemStoreItem;
    }
 
    // List of items being created
@@ -2076,39 +2078,7 @@ public class RPCManager : NetworkBehaviour
 
          // New Method, needs observation
          //Item updatedItem = DB_Main.createItemOrUpdateItemCount(_player.userId, storeReferencedItem);
-         processItemCreation(_player.userId, storeReferencedItem);
-         Item updatedItem = storeReferencedItem;
-
-         // If the purchase was not successful
-         if (updatedItem == null) {
-            D.error($"Store Purchase failed for user '{_player.userId}' trying to purchase the Store Item '{storeItem.id}'.");
-            reportStorePurchaseFailed();
-            return;
-         }
-
-         // Fetch the newly created item for display
-         string purchasedItemName = storeItem.overrideItemName ? storeItem.displayName : storeReferencedItem.itemName;
-         int purchasedItemId = updatedItem.id;
-
-         // Remove the gems
-         DB_Main.addGems(_player.accountId, -storeItem.price);
-
-         // Update soul binding
-         bool soulBound = false;
-
-         if (Bkg_ShouldBeSoulBound(updatedItem, isBeingEquipped: false)) {
-            soulBound = Bkg_IsItemSoulBound(updatedItem);
-
-            if (!soulBound) {
-               soulBound = DB_Main.updateItemSoulBinding(updatedItem.id, isBound: true);
-            }
-         }
-
-         // Back to Unity
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Let the player know that we gave them their item
-            Target_OnStorePurchaseCompleted(_player.connectionToClient, storeItem.category, purchasedItemName, purchasedItemId, soulBound);
-         });
+         processPurchasedItemCreation(_player.userId, storeReferencedItem, storeItem);
       });
    }
 
@@ -2141,11 +2111,11 @@ public class RPCManager : NetworkBehaviour
             }
 
             if (!isSteamIdValid) {
-#if UNITY_EDITOR
+               #if UNITY_EDITOR
                // Try to use the debug Steam Id instead
                steamId = SteamPurchaseManagerServer.self.debugSteamId;
                D.debug($"Purchase Warning: Couldn't get the steamId for user '{_player.userId}'. Using the debug Steam ID...");
-#endif
+               #endif
             }
 
             if (steamId == 0) {
@@ -6263,6 +6233,10 @@ public class RPCManager : NetworkBehaviour
             PvpManager.self.assignPvpTeam(playerShipEntity, voyage.instanceId);
             PvpManager.self.assignPvpFaction(playerShipEntity, voyage.instanceId);
             PvpManager.self.onPlayerLoadedGameArea(_player.userId);
+
+            if (AreaManager.self != null && AreaManager.self.getAreaPvpGameMode(_player.areaKey) == PvpGameMode.CaptureTheFlag) {
+               Target_ResetPvpScoreIndicator(_player.connectionToClient, show: true);
+            }
          } else {
             // Not a PvP Voyage
             Debug.LogWarning($"Player '{_player.entityName}' has entered a Voyage or League.");
@@ -6487,12 +6461,27 @@ public class RPCManager : NetworkBehaviour
       Target_MineOre(_player.connectionToClient, oreId, startingPosition, endPosition);
    }
 
-   public void processItemCreation (int userId, Item baseItem) {
-      itemCreationList.Add(new ItemQueue {
-         item = baseItem,
-         userId = userId
-      });
+   public void processItemCreation(int userId, ItemQueue itemQueue) {
+      itemCreationList.Add(itemQueue);
       checkItemQueue();
+   }
+
+   public void processItemCreation (int userId, Item baseItem) {
+      processItemCreation(userId, new ItemQueue {
+         item = baseItem,
+         userId = userId,
+         wasPurchasedOnTheGemStore = false,
+         gemStoreItem = null
+      });
+   }
+
+   public void processPurchasedItemCreation (int userId, Item baseItem, StoreItem storeItem) {
+      processItemCreation(userId, new ItemQueue {
+         item = baseItem,
+         userId = userId,
+         wasPurchasedOnTheGemStore = true,
+         gemStoreItem = storeItem
+      });
    }
 
    private void checkItemQueue () {
@@ -6507,6 +6496,8 @@ public class RPCManager : NetworkBehaviour
                }
                if (itemCache != null) {
                   Item itemBeingProcessed = DB_Main.createItemOrUpdateItemCount(itemCache.userId, itemCache.item);
+                  onItemQueueProcessed(itemCache, itemBeingProcessed);
+
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                      itemCreationList.Remove(itemCache);
                      StopCoroutine(nameof(CO_ResetItemQueue));
@@ -6515,6 +6506,44 @@ public class RPCManager : NetworkBehaviour
                }
             });
          }
+      }
+   }
+
+   [ServerOnly]
+   private void onItemQueueProcessed (ItemQueue itemQueue, Item item) {
+      if (itemQueue.wasPurchasedOnTheGemStore && itemQueue.gemStoreItem != null) {
+         StoreItem storeItem = itemQueue.gemStoreItem;
+
+         // If the purchase was not successful
+         if (item == null) {
+            D.error($"Store Purchase failed for user '{_player.userId}' trying to purchase the Store Item '{storeItem.id}'.");
+            reportStorePurchaseFailed();
+            return;
+         }
+
+         // Fetch the newly created item for display
+         string purchasedItemName = storeItem.overrideItemName ? storeItem.displayName : itemQueue.item.itemName;
+         int purchasedItemId = item.id;
+
+         // Remove the gems
+         DB_Main.addGems(_player.accountId, -storeItem.price);
+
+         // Update soul binding
+         bool soulBound = false;
+
+         if (Bkg_ShouldBeSoulBound(item, isBeingEquipped: false)) {
+            soulBound = Bkg_IsItemSoulBound(item);
+
+            if (!soulBound) {
+               soulBound = DB_Main.updateItemSoulBinding(item.id, isBound: true);
+            }
+         }
+
+         // Back to Unity
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Let the player know that we gave them their item
+            Target_OnStorePurchaseCompleted(_player.connectionToClient, storeItem.category, purchasedItemName, purchasedItemId, soulBound);
+         });
       }
    }
 

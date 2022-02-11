@@ -141,6 +141,12 @@ public class TitleScreen : MonoBehaviour {
                } else {
                   if (SteamManager.Initialized && Global.lastSteamId.Length > 10) {
                      self.onLoginButtonPressed(SteamManager.Initialized);
+                  } else {
+                     if (!Util.isEmpty(self.accountInputField.text) && !Util.isEmpty(self.passwordInputField.text)) {
+                        self.onLoginButtonPressed(isSteam: false);
+                     } else {
+                        D.debug("Couldn't log the player in because the UI was not set up.");
+                     }
                   }
                }
             }

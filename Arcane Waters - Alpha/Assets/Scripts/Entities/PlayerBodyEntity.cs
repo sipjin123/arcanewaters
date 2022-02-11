@@ -314,7 +314,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          }
       }
 
-      // If the player is emoting down and tries to move or jump, stop
+      // If the player is emoting and tries to move or jump, stop
       if (isEmoting()) {
          if (!Util.areVectorsAlmostTheSame(InputManager.getMovementInput(), Vector2.zero) || InputManager.self.inputMaster.Land.Jump.WasPerformedThisFrame()) {
             Cmd_StopEmote();
@@ -362,15 +362,16 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private void processSitting () {
+      if (sittingInfo.isSitting) {
+         facing = sittingInfo.sittingDirection;
+      }
+
       if (sittingInfo.isSitting != _prevIsSitting) {
          if (sittingInfo.isSitting) {
             getMainCollider().isTrigger = true;
             toggleWeaponVisibility(show: false);
             applySittingEmoteMask(show: true, chairType: sittingInfo.chairType);
             transform.position = sittingInfo.chairPosition;
-
-            // Force the facing direction on the client while waiting for the server to send over the actual value
-            facing = sittingInfo.sittingDirection;
 
             if (sittingInfo.sittingDirection == Direction.North) {
                if (sittingInfo.chairType == ChairClickable.ChairType.Stool) {
@@ -918,7 +919,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       // Skip for batch mode
       if (Util.isBatch()) return;
 
-      if (isInBattle()) {
+      if (isInBattle() || isEmoting() || isSitting()) {
          return;
       }
       Direction newDirection = forceLookAt(Camera.main.ScreenToWorldPoint(MouseUtils.mousePosition));

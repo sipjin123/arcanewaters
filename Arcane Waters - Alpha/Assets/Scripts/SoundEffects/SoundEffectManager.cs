@@ -265,6 +265,7 @@ public class SoundEffectManager : GenericGameManager
 
       switch (musicType) {
          case SoundManager.Type.Town_Forest:
+         case SoundManager.Type.Town_Forest_Cementery:
             param = 0;
             break;
          case SoundManager.Type.Town_Desert:
@@ -558,35 +559,36 @@ public class SoundEffectManager : GenericGameManager
       //}
    }
 
-   public void playSeaEnemyHurtSfx (bool isShip, SeaMonsterEntity.Type seaMonsterType, bool isCrit, CannonballEffector.Type effectorType, Vector3 position) {
-      FMOD.Studio.EventInstance impactEvent = FMODUnity.RuntimeManager.CreateInstance(ENEMY_SHIP_IMPACT);
-      impactEvent.setParameterByName(AUDIO_SWITCH_PARAM, isShip ? 0 : 1);
-      impactEvent.setParameterByName(APPLY_CRIT_PARAM, isCrit ? 1 : 0);
+   public void playSeaEnemyHitSfx (bool isShip, SeaMonsterEntity.Type seaMonsterType, bool isCrit, CannonballEffector.Type effectorType, GameObject source) {
+      FMOD.Studio.EventInstance hitEvent = FMODUnity.RuntimeManager.CreateInstance(ENEMY_SHIP_IMPACT);
+      
+      hitEvent.setParameterByName(AUDIO_SWITCH_PARAM, isShip ? 0 : 1);
+      hitEvent.setParameterByName(APPLY_CRIT_PARAM, isCrit ? 0 : 1);
 
       switch (effectorType) {
          case CannonballEffector.Type.Explosion:
-            impactEvent.setParameterByName(APPLY_PUP_PARAM, 1);
+            hitEvent.setParameterByName(APPLY_PUP_PARAM, 1);
             break;
       }
 
-      string hurtPath = string.Empty;
+      string path = string.Empty;
 
       switch (seaMonsterType) {
          case SeaMonsterEntity.Type.Fishman:
-            hurtPath = FISHMAN_HURT;
+            path = FISHMAN_HURT;
             break;
          case SeaMonsterEntity.Type.Horror_Tentacle:
-            hurtPath = HORROR_TENTACLE_HURT;
+            path = HORROR_TENTACLE_HURT;
             break;
       }
 
-      impactEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
-      impactEvent.start();
-      impactEvent.release();
+      // Hit Event
+      hitEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(source.transform.position));
+      hitEvent.start();
+      hitEvent.release();
 
-      if (!string.IsNullOrEmpty(hurtPath)) {
-         playFmodSfx(hurtPath, position);
-      }
+      // Hurt Event
+      playAttachedSfx(path, source);
    }
 
    public void playNotificationPanelSfx () {
@@ -680,7 +682,9 @@ public class SoundEffectManager : GenericGameManager
 
    // Play attached SFX
    public void playAttachedSfx (string path, GameObject target) {
-      FMODUnity.RuntimeManager.PlayOneShotAttached(path, target);
+      if (!string.IsNullOrEmpty(path)) {
+         FMODUnity.RuntimeManager.PlayOneShotAttached(path, target);
+      }
    }
 
    public void playAttachedSfx (SoundManager.Type soundType, GameObject target) {

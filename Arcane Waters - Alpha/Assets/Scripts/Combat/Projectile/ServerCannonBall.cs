@@ -202,13 +202,14 @@ public class ServerCannonBall : SeaProjectile
          Console.WriteLine(seaMonsterType);
       }
 
-      // If the cannonball doesn't have effectors applied
-      if (_effectors.Count == 0) {
-         hitEntity.Rpc_PlayHitSfx(isShip, seaMonsterType, isCrit, CannonballEffector.Type.None);
-      } else if (_effectors.Any(e => e.effectorType == CannonballEffector.Type.Explosion)) {
-         // Play SFX for explosion effector
-         hitEntity.Rpc_PlayHitSfx(isShip, seaMonsterType, isCrit, CannonballEffector.Type.Explosion);
+      // Play sfx
+      CannonballEffector.Type effectorType = CannonballEffector.Type.None;
+
+      if (_effectors.Any(e => e.effectorType == CannonballEffector.Type.Explosion)) {
+         effectorType = CannonballEffector.Type.Explosion;
       }
+
+      hitEntity.Rpc_PlayHitSfx(isShip, seaMonsterType, isCrit, effectorType);
    }
 
    private void createOnHitExplosion (CannonballEffector effector, SeaEntity hitEntity) {
