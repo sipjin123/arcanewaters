@@ -591,14 +591,31 @@ public class Instance : NetworkBehaviour
          }
       }
 
+      int windowId = 0;
       if (area.windowDataFields.Count > 0) {
-         int indexId = 0;
          foreach (ExportedPrefab001 dataField in area.windowDataFields) {
             WindowInteractable windowInteractable = Instantiate(PrefabsManager.self.WindowInteractable);
             windowInteractable.instanceId = this.id;
             windowInteractable.areaKey = areaKey;
-            windowInteractable.id = indexId;
-            indexId++;
+            windowInteractable.id = windowId;
+            windowId++;
+
+            windowInteractable.transform.SetParent(area.transform, false);
+            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 5) * 0.16f + Vector3.forward * 10;
+            windowInteractable.transform.localPosition = targetLocalPos;
+
+            InstanceManager.self.addWindowToInstance(windowInteractable, this);
+            NetworkServer.Spawn(windowInteractable.gameObject);
+         }
+      }
+
+      if (area.largeWindowDataFields.Count > 0) {
+         foreach (ExportedPrefab001 dataField in area.largeWindowDataFields) {
+            WindowInteractable windowInteractable = Instantiate(PrefabsManager.self.LargeWindowInteractable);
+            windowInteractable.instanceId = this.id;
+            windowInteractable.areaKey = areaKey;
+            windowInteractable.id = windowId;
+            windowId++;
 
             windowInteractable.transform.SetParent(area.transform, false);
             Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 5) * 0.16f + Vector3.forward * 10;

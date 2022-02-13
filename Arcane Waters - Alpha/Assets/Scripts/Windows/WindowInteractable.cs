@@ -25,6 +25,9 @@ public class WindowInteractable : NetworkBehaviour {
    [SyncVar]
    public bool isOpen;
 
+   // If this is a large window
+   public bool isLargeWindow;
+
    // The area key assigned to this ore
    [SyncVar]
    public string areaKey;
@@ -44,9 +47,17 @@ public class WindowInteractable : NetworkBehaviour {
    }
 
    public void interactWindow () {
-      if (Global.player != null) {
+      if (Global.player != null && isGlobalPlayerNearby()) {
          Global.player.rpc.Cmd_InteractWindow(id);
       }
+   }
+
+   public bool isGlobalPlayerNearby () {
+      if (Global.player == null) {
+         return false;
+      }
+
+      return (Vector2.Distance(Global.player.transform.position, this.transform.position) <= .45f);
    }
 
    public void openWindow () {

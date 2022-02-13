@@ -242,6 +242,7 @@ namespace MapCreationTool
          List<ExportedPrefab001> bossSpawnerData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> pvpTowerData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> windowInteractData = new List<ExportedPrefab001>();
+         List<ExportedPrefab001> largeWindowInteractData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> pvpBaseData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> pvpShipyardTowerData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> pvpWaypointsData = new List<ExportedPrefab001>();
@@ -306,7 +307,11 @@ namespace MapCreationTool
                }
             } else if (original.GetComponent<WindowInteractable>() != null) {
                if (prefab.d != null) {
-                  windowInteractData.Add(prefab);
+                  if (original.GetComponent<WindowInteractable>().isLargeWindow) {
+                     largeWindowInteractData.Add(prefab);
+                  } else {
+                     windowInteractData.Add(prefab);
+                  }
                }
             } else if (original.GetComponent<NPC>() != null) {
                if (prefab.d != null) {
@@ -449,7 +454,7 @@ namespace MapCreationTool
             shipData, seaMonstersData, bossSpawnerData, pvpTowerData,
             pvpBaseData, pvpShipyardTowerData, pvpWaypointsData, pvpMonsterSpawnerData,
             pvpLootSpawnData, pvpCaptureTargetHolderData, oreController, openWorldController,
-            windowInteractData);
+            windowInteractData, largeWindowInteractData);
       }
    }
 }
