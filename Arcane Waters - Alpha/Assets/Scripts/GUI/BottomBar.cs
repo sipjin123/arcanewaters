@@ -60,10 +60,6 @@ public class BottomBar : MonoBehaviour {
    public void setFriendshipRequestNotificationStatus (bool active) {
       pendingFriendListPanelButton.SetActive(active);
       normalFriendListPanelButton.SetActive(!active);
-
-      if (PanelManager.self != null && PanelManager.self.friendInvitePromptScreen != null) {
-         PanelManager.self.friendInvitePromptScreen.toggle(active);
-      }
    }
 
    public void toggleInventoryPanel () {

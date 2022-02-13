@@ -1472,7 +1472,7 @@ public class SeaEntity : NetEntity
 
    [ClientRpc]
    public void Rpc_PlayHitSfx (bool isShip, SeaMonsterEntity.Type seaMonsterType, bool isCrit, CannonballEffector.Type effectorType) {
-      SoundEffectManager.self.playSeaEnemyHurtSfx(isShip, seaMonsterType, isCrit, effectorType, this.transform.position);
+      SoundEffectManager.self.playSeaEnemyHitSfx(isShip, seaMonsterType, isCrit, effectorType, this.gameObject);
    }
 
    #region Enemy AI

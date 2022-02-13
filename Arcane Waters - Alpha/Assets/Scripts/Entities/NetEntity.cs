@@ -1749,6 +1749,7 @@ public class NetEntity : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceiveFriendshipRequestNotification (NetworkConnection conn) {
       BottomBar.self.setFriendshipRequestNotificationStatus(true);
+      ChatManager.self.addFriendRequestNotification();
    }
 
    [Command]

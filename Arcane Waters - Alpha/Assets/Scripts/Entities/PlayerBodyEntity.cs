@@ -443,6 +443,17 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
                }
             }
 
+            // Pointing
+            if (emoteType == EmoteManager.EmoteTypes.Point) {
+               if (facing == Direction.North) {
+                  playCompositeAnimation(CompositeAnimationManager.self.PointingN);
+               } else if (facing == Direction.South) {
+                  playCompositeAnimation(CompositeAnimationManager.self.PointingS);
+               } else if (facing == Direction.West || facing == Direction.East) {
+                  playCompositeAnimation(CompositeAnimationManager.self.PointingWE);
+               }
+            }
+
             if (isLocalPlayer) {
                InputManager.toggleInput(enable: false);
             }

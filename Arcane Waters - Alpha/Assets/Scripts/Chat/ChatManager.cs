@@ -70,7 +70,7 @@ public class ChatManager : GenericGameManager
       _commandData.Add(new CommandData("/w", "Sends a private message to a user", sendWhisperMessageToServer, parameterNames: new List<string>() { "userName", "message" }));
       _commandData.Add(new CommandData("/r", "Sends a private message to the last user that whispered to you", tryReply, parameterNames: new List<string>() { "message" }));
       _commandData.Add(new CommandData("/who", "Search users", searchUsers, parameterNames: new List<string>() { "[is, in, level, help]", "username, area or level" }));
-      _commandData.Add(new CommandData("/e", "Play an emote", requestPlayEmote, parameterNames: new List<string>() { "emoteType" }, parameterAutocompletes: new List<string>() { "dance", "kneel", "greet" }));
+      _commandData.Add(new CommandData("/e", "Play an emote", requestPlayEmote, parameterNames: new List<string>() { "emoteType" }, parameterAutocompletes: EmoteManager.getSupportedEmoteNames()));
       _commandData.Add(new CommandData("/stuck", "Are you stuck? Use this to free yourself", requestUnstuck));
    }
 
@@ -244,6 +244,8 @@ public class ChatManager : GenericGameManager
             return $"kneels";
          case EmoteManager.EmoteTypes.Greet:
             return $"greets";
+         case EmoteManager.EmoteTypes.Point:
+            return $"is pointing at something";
          case EmoteManager.EmoteTypes.None:
          default:
             return string.Empty;
@@ -251,15 +253,8 @@ public class ChatManager : GenericGameManager
    }
 
    public void requestPlayEmote (string parameters) {
-      if (Global.player == null || Global.player.getPlayerBodyEntity() == null || Global.player.getPlayerBodyEntity().isSitting() || Global.player.isInBattle()) {
-         addChat("Can't emote now...", ChatInfo.Type.System);
-         return;
-      }
-
-      PlayerBodyEntity body = Global.player.getPlayerBodyEntity();
-
-      if (body.isEmoting()) {
-         addChat("You are already emoting!", ChatInfo.Type.System);
+      if (Global.player == null || Global.player.getPlayerBodyEntity() == null || Global.player.getPlayerBodyEntity().isSitting() || Global.player.isInBattle()|| Global.player.getPlayerBodyEntity().isEmoting()) {
+         addChat("Can't do that now...", ChatInfo.Type.System);
          return;
       }
 
@@ -270,7 +265,8 @@ public class ChatManager : GenericGameManager
          return;
       }
 
-      body.Cmd_PlayEmote(parsedEmote, body.facing);
+      Direction playerFacingDirection = Global.player.getPlayerBodyEntity().facing;
+      Global.player.getPlayerBodyEntity().Cmd_PlayEmote(parsedEmote, playerFacingDirection);
       sendEmoteMessageToServer(computeEmoteChatMessage(parsedEmote));
    }
 
@@ -947,6 +943,17 @@ public class ChatManager : GenericGameManager
       }
       
       addChat("Can't do that now...", ChatInfo.Type.System);
+   }
+
+   public void addFriendRequestNotification () {
+      string message = "You have received new friend requests. Click here to check them!";
+
+      // Prevent spamming
+      if (_chats != null && _chats.Count > 0 && Util.areStringsEqual(message, _chats.Last().text)) {
+         return;
+      }
+      
+      addChat(message, ChatInfo.Type.PendingFriendRequestsNotification);
    }
 
    #region Private Variables

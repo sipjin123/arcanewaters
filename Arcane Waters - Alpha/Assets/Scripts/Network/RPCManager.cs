@@ -6212,6 +6212,11 @@ public class RPCManager : NetworkBehaviour
          }
       }
 
+      // Remove the player from the game stats manager, when navigating open areas
+      if (VoyageManager.isOpenWorld(_player.areaKey)) {
+         GameStatsManager.self.unregisterUser(_player.userId);
+      }
+
       Target_ResetPvpSilverPanel(_player.connectionToClient, GameStatsManager.self.getSilverAmount(_player.userId));
       Target_ResetPvpScoreIndicator(_player.connectionToClient, show: false);
 
@@ -9904,7 +9909,7 @@ public class RPCManager : NetworkBehaviour
       VoyageRatingIndicator.self.setRatingPoints(newRatingPoints);
       int newRatingLevel = VoyageRatingManager.computeRatingLevelFromPoints(newRatingPoints);
       int prevRatingLevel = VoyageRatingManager.computeRatingLevelFromPoints(prevRatingPoints);
-      D.debug($"VoyageRatingManager: new rating state for player {Global.player.userId}. earned points:{pointsAssigned}, current points:{newRatingPoints}, current rating: {newRatingLevel}, prev rating:{prevRatingLevel}");
+      //D.debug($"VoyageRatingManager: new rating state for player {Global.player.userId}. earned points:{pointsAssigned}, current points:{newRatingPoints}, current rating: {newRatingLevel}, prev rating:{prevRatingLevel}");
    }
 
    #endregion

@@ -23,6 +23,15 @@
    // The kneeling animation (South)
    public CompositeAnimation KneelingS;
 
+   // The pointing animation (West and East)
+   public CompositeAnimation PointingWE;
+
+   // The pointing animation (North)
+   public CompositeAnimation PointingN;
+
+   // The pointing animation (South)
+   public CompositeAnimation PointingS;
+
    // Reference to self
    public static CompositeAnimationManager self;
 

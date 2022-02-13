@@ -54,6 +54,10 @@ public class SoundEffectManager : GenericGameManager
    public const string GENERIC_HIT_LAND = "event:/SFX/Game/Land_Battle/Generic_Hit_Land";
    public const string GENERIC_GUN_SHOT = "event:/SFX/Player/Interactions/Diegetic/Weapons/Guns/Generic_Gun_Shot";
 
+   public const string TOAST_RUM = "event:/SFX/Player/Interactions/Diegetic/Weapons/Rum/Toast_Rum";
+   public const string THROW_RUM = "event:/SFX/Player/Interactions/Diegetic/Weapons/Rum/Throw_Rum";
+   public const string ATTACK_RUM = "event:/SFX/Player/Interactions/Diegetic/Weapons/Rum/Attack_Rum";
+
    public const string MOVEMENT_WHOOSH = "event:/SFX/Game/Land_Battle/Movement_Whoosh";
    //public const string NPC_STRIKE = "event:/SFX/Game/Land_Battle/NPC_Strike";
    public const string BLOCK_ATTACK = "event:/SFX/Game/Land_Battle/Block_Attack";
@@ -179,6 +183,23 @@ public class SoundEffectManager : GenericGameManager
       FMODUnity.RuntimeManager.PlayOneShot(path, position);
    }
 
+   public void playLandProjectileSfx (Weapon.Class weaponClass, Vector3 position) {
+      string path = string.Empty;
+
+      switch (weaponClass) {
+         case Weapon.Class.Ranged:
+            path = GENERIC_GUN_SHOT;
+            break;
+         case Weapon.Class.Rum:
+            path = THROW_RUM;
+            break;
+      }
+
+      if (!string.IsNullOrEmpty(path)) {
+         playFmodSfx(path, position);
+      }
+   }
+
    public void playBossAbilitySfx (Enemy.Type enemyType, int abilityId, Vector3 position) {
       switch (enemyType) {
          case Enemy.Type.Lizard_King:
@@ -204,12 +225,16 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   public void playLandBattleHitSfx (Battler source, Battler target, Vector3 position) {
-      Enemy.Type sourceType = source.enemyType;
-      Enemy.Type targetType = target.enemyType;
-
+   public void playLandBattleHitSfx (Enemy.Type sourceType, Enemy.Type targetType, AttackAbilityData ability, Vector3 position) {
       string hitPath = GENERIC_HIT_LAND;
       string hurtPath = "";
+
+      // Hit sfx
+      switch (ability.classRequirement) {
+         case Weapon.Class.Rum:
+            hitPath = ATTACK_RUM;
+            break;
+      }
 
       // Hurt sfx
       switch (targetType) {
@@ -227,7 +252,7 @@ public class SoundEffectManager : GenericGameManager
       }
 
       if (!string.IsNullOrEmpty(hurtPath)) {
-         playFmodSfx(hurtPath);
+         playFmodSfx(hurtPath, position);
       }
    }
 
@@ -561,7 +586,7 @@ public class SoundEffectManager : GenericGameManager
 
    public void playSeaEnemyHitSfx (bool isShip, SeaMonsterEntity.Type seaMonsterType, bool isCrit, CannonballEffector.Type effectorType, GameObject source) {
       FMOD.Studio.EventInstance hitEvent = FMODUnity.RuntimeManager.CreateInstance(ENEMY_SHIP_IMPACT);
-      
+
       hitEvent.setParameterByName(AUDIO_SWITCH_PARAM, isShip ? 0 : 1);
       hitEvent.setParameterByName(APPLY_CRIT_PARAM, isCrit ? 0 : 1);
 
@@ -578,6 +603,7 @@ public class SoundEffectManager : GenericGameManager
             path = FISHMAN_HURT;
             break;
          case SeaMonsterEntity.Type.Horror_Tentacle:
+         case SeaMonsterEntity.Type.Tentacle:
             path = HORROR_TENTACLE_HURT;
             break;
       }
@@ -726,7 +752,7 @@ public class SoundEffectManager : GenericGameManager
 
       //Debug.Log(string.Join(", ", attributesBuffer));
 
-      if (count > 0 && !area.isInterior) {
+      if (count > 0) {
          TileAttributes.Type attribute = attributesBuffer[count - 1];
 
          switch (attribute) {
@@ -786,21 +812,29 @@ public class SoundEffectManager : GenericGameManager
       int count = area.getTileAttributes(playerPosition, attributesBuffer);
       int audioParam = 0; // Grass is default
 
-      if (count > 0 && !area.isInterior) {
+      if (count > 0) {
          TileAttributes.Type attribute = attributesBuffer[count - 1];
 
          switch (attribute) {
             case TileAttributes.Type.Generic:
-               switch (biomeType) {
-                  case Biome.Type.Desert:
-                  case Biome.Type.Snow:
-                     audioParam = 1; // Dirt / Sand / Snow
-                     break;
+            case TileAttributes.Type.Dirt:
+               if (attribute == TileAttributes.Type.Dirt) {
+                  audioParam = 1;
+               } else {
+                  switch (biomeType) {
+                     case Biome.Type.Desert:
+                     case Biome.Type.Snow:
+                        audioParam = 1; // Sand / Snow
+                        break;
+                  }
                }
                break;
             case TileAttributes.Type.WaterPartial:
             case TileAttributes.Type.WaterFull:
                audioParam = 2;
+               break;
+            case TileAttributes.Type.Carpet:
+               audioParam = 3;
                break;
          }
       }

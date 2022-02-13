@@ -29,7 +29,8 @@ public class ChatInfo
       Officer = 14,
       PvpAnnouncement = 15,
       UserOnline = 16,
-      UserOffline = 17
+      UserOffline = 17,
+      PendingFriendRequestsNotification = 18
    };
 
    // The Chat ID from the database

@@ -73,6 +73,10 @@ public class SpeakChatLine : ChatLine, IScrollHandler
       if (isValidInteraction()) {
          if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
             ((PvpArenaPanel) PanelManager.self.get(Panel.Type.PvpArena)).togglePanel();
+         } else if (chatInfo.messageType == ChatInfo.Type.PendingFriendRequestsNotification) {
+            if (!PanelManager.self.get(Panel.Type.FriendList).isShowing()) {
+               BottomBar.self.toggleFriendListPanelAtTab(FriendListPanel.FriendshipPanelTabs.InvitesReceived);
+            }
          } else {
             D.adminLog("ContextMenu: Interact was performed via speak line button CMD-1: " +
                "{" + Global.player.userId + ":" + Global.player.entityName + "}{" + chatInfo.senderId + ":" + chatInfo.sender + "}", D.ADMIN_LOG_TYPE.Player_Menu);
@@ -85,6 +89,10 @@ public class SpeakChatLine : ChatLine, IScrollHandler
       if (isValidInteraction()) {
          if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
             ((PvpArenaPanel) PanelManager.self.get(Panel.Type.PvpArena)).togglePanel();
+         } else if (chatInfo.messageType == ChatInfo.Type.PendingFriendRequestsNotification) {
+            if (!PanelManager.self.get(Panel.Type.FriendList).isShowing()) {
+               BottomBar.self.toggleFriendListPanelAtTab(FriendListPanel.FriendshipPanelTabs.InvitesReceived);
+            }
          } else {
             D.adminLog("ContextMenu: Interact was performed via chat line button CMD-2:" +
             "{" + Global.player.userId + ":" + Global.player.entityName + "}{" + chatInfo.senderId + ":" + chatInfo.sender + "}", D.ADMIN_LOG_TYPE.Player_Menu);
@@ -110,7 +118,7 @@ public class SpeakChatLine : ChatLine, IScrollHandler
    }
 
    public bool isValidInteraction () {
-      if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement) {
+      if (chatInfo.messageType == ChatInfo.Type.PvpAnnouncement || chatInfo.messageType == ChatInfo.Type.PendingFriendRequestsNotification) {
          return true;
       }
 

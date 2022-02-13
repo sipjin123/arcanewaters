@@ -1026,17 +1026,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    #region Battle Callers
 
-   public void playDeathSound () {
-      //SoundEffect deathSoundEffect = SoundEffectManager.self.getSoundEffect(getBattlerData().deathSoundEffectId);
-
-      //if (deathSoundEffect == null) {
-      //   Debug.LogWarning("Battler does not have a death sound effect");
-      //   return;
-      //}
-
-      //SoundEffectManager.self.playSoundEffect(deathSoundEffect.id, transform);
-   }
-
    public void handleEndOfBattle (Battle.TeamType winningTeam) {
       // Turn off targeting arrows at the end of the battle
       BattleSelectionManager.self.selectedBattler = null;
@@ -1061,14 +1050,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public void playJumpSound () {
-      //SoundEffect jumpSoundEffect = SoundEffectManager.self.getSoundEffect(getBattlerData().jumpSoundEffectId);
-
-      //if (jumpSoundEffect == null) {
-      //   Debug.LogWarning("Battler does not have a jump sound effect");
-      //   return;
-      //}
-
-      //SoundEffectManager.self.playSoundEffect(jumpSoundEffect.id, transform);
       SoundEffectManager.self.playFmodSfx(SoundEffectManager.MOVEMENT_WHOOSH, transform.position);
    }
 
@@ -1156,11 +1137,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          // Play a "Poof" effect on our head
          EffectManager.playPoofEffect(this);
-
-         //yield return new WaitForSeconds(.65f);
-
-         //// Play Triumph SFX
-         //SoundEffectManager.self.playTriumphSfx();
       }
    }
 
@@ -1239,6 +1215,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Add the healing value
             targetBattler.displayedHealth += buffAction.buffValue;
             targetBattler.displayedHealth = Util.clamp<int>(targetBattler.displayedHealth, 0, targetBattler.getStartingHealth());
+
+            // Play sfx
+            SoundEffectManager.self.playFmodSfx(SoundEffectManager.TOAST_RUM, targetBattler.transform.position);
 
             yield return new WaitForSeconds(getPostContactLength());
 
@@ -1548,7 +1527,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
 
                // Make the target sprite display its "Hit" animation
-               targetBattler.StartCoroutine(targetBattler.CO_AnimateHit(sourceBattler, action, attackerAbility, isLastHit));
+               targetBattler.StartCoroutine(targetBattler.CO_AnimateHit(sourceBattler, attackerAbility, isLastHit));
             }
 
             // Simulate the collision effect of the attack towards the target battler
@@ -1756,8 +1735,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                }
             }
 
-            // Play the generic gun shot sfx
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.GENERIC_GUN_SHOT, sourceBattler.transform.position);
+            SoundEffectManager.self.playLandProjectileSfx(attackerAbility.classRequirement, sourceBattler.transform.position);
 
             // Play 
             yield return new WaitForSeconds(getPostShootDelay());
@@ -1785,7 +1763,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
 
                // Make the target sprite display its "Hit" animation
-               targetBattler.StartCoroutine(targetBattler.CO_AnimateHit(sourceBattler, action, attackerAbility, isLastHit));
+               targetBattler.StartCoroutine(targetBattler.CO_AnimateHit(sourceBattler, attackerAbility, isLastHit));
             }
 
             // Simulate the collision effect of the attack towards the target battler
@@ -1871,7 +1849,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                //yield return new WaitForSeconds(sourceBattler.getPreMagicLength());
 
                // Play any sounds that go along with the ability being cast
-               attackerAbility.playCastSfxAtTarget(targetBattler.transform);
+               //attackerAbility.playCastSfxAtTarget(targetBattler.transform);
 
                Vector3 castPosition = sourcePos;
                switch (abilityDataReference.abilityCastPosition) {
@@ -1887,6 +1865,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                }
                EffectManager.playCastAbilityVFX(sourceBattler, action, castPosition, BattleActionType.Attack);
             }
+
+            // Play sfx
+            SoundEffectManager.self.playLandProjectileSfx(attackerAbility.classRequirement, sourceBattler.transform.position);
+
             yield return new WaitForSeconds(getPreCastDelay());
 
             // Shoot the projectile after playing cast time
@@ -1904,6 +1886,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             } else {
                sourceBattler.playAnim(Anim.Type.Finish_Attack, castAnimSpeed);
             }
+
             yield return new WaitForSeconds(getPostCastDelay());
 
             // Return to battle stance
@@ -1931,7 +1914,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
 
                // Make the target sprite display its "Hit" animation
-               targetBattler.StartCoroutine(targetBattler.CO_AnimateHit(sourceBattler, action, attackerAbility, isLastHit));
+               targetBattler.StartCoroutine(targetBattler.CO_AnimateHit(sourceBattler, attackerAbility, isLastHit));
             }
 
             // Simulate the collision effect of the attack towards the target battler
@@ -2155,7 +2138,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
    }
 
-   private IEnumerator CO_AnimateHit (Battler attacker, AttackAction action, BasicAbilityData ability, bool isLastHit) {
+   private IEnumerator CO_AnimateHit (Battler attacker, AttackAbilityData ability, bool isLastHit) {
       if (hasDisplayedDeath()) {
          yield break;
       }
@@ -2166,15 +2149,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
 
       // Play the hurt SFX
-      SoundEffectManager.self.playLandBattleHitSfx(attacker, this, this.transform.position);
-
-      // Play the ability hit SFX after the hurt animation frame
-      //ability.playHitSfxAtTarget(transform);
+      SoundEffectManager.self.playLandBattleHitSfx(attacker.enemyType, this.enemyType, ability, this.transform.position);
 
       yield return new WaitForSeconds(getPostContactLength());
-
-      // Play the ability hit SFX after the hurt animation frame
-      //ability.playHitSfxAtTarget(transform);
 
       // Return to battle idle
       if (!ability.useSpecialAnimation && !isLastHit) {

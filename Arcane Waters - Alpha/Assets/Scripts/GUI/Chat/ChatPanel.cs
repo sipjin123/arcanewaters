@@ -794,6 +794,10 @@ public class ChatPanel : MonoBehaviour {
       toggleChatType(ChatInfo.Type.Officer);
    }
 
+   public void onFriendRequestNotificationChatPressed () {
+      toggleChatType(ChatInfo.Type.PendingFriendRequestsNotification);
+   }
+
    public void onAllChatPressed () {
       if (!_tabPressed) {
          choosingChatType.SetActive(false);

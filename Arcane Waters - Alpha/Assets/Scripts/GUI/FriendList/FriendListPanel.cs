@@ -258,7 +258,6 @@ public class FriendListPanel : Panel
       // Update the pending friendship request notification
       BottomBar.self.setFriendshipRequestNotificationStatus(pendingRequestCount > 0);
       sendInvitesSection.SetActive(_currentTab != FriendshipPanelTabs.Search);
-      PanelManager.self.friendInvitePromptScreen.toggle(show: false);
       toggleBlocker(show: false);
    }
 

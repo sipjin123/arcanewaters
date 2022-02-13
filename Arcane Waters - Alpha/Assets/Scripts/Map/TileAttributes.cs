@@ -19,7 +19,9 @@ public class TileAttributes
       Wood = 5,
       Wooden_Bridge = 6,
       Vine = 7,
-      Generic = 8
+      Generic = 8,
+      Carpet = 12,
+      Dirt = 13
    }
 
    // The attributes that are assigned to a tile
