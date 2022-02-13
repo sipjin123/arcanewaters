@@ -926,6 +926,7 @@ public class SeaEntity : NetEntity
       }
 
       _attackers[netId] = NetworkTime.time;
+      _totalAttackers[netId] = NetworkTime.time;
 
       // If this is a seamonster and is attacked by a tower, immediately retreat to spawn point
       if (isServer && isSeaMonsterPvp()) {

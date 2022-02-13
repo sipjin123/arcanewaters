@@ -93,34 +93,45 @@ public class PvpMonsterSpawner : NetworkBehaviour, IMapEditorDataReceiver {
          NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(lastAttackerId);
          if (lastAttacker != null) {
             if (lastAttacker.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
-               // Send the result to all group members
-               foreach (int userId in voyageGroup.members) {
-                  NetEntity memberEntity = EntityManager.self.getEntity(userId);
-                  if (memberEntity != null && memberEntity is PlayerShipEntity && seaEntity.wasAttackedBy(memberEntity.netId)) {
-                     // Assign default powerup as fall back option if there are no valid loot group powerup
-                     Powerup newPowerupData = new Powerup {
-                        powerupRarity = Rarity.Type.Common,
-                        powerupType = powerupType,
-                        expiry = Powerup.Expiry.None
-                     };
+               if (voyageGroup.members.Count > 0) {
+                  // Send the result to all group members
+                  foreach (int userId in voyageGroup.members) {
+                     NetEntity memberEntity = EntityManager.self.getEntity(userId);
+                     if (memberEntity != null && memberEntity is PlayerShipEntity && seaEntity.wasAttackedBy(memberEntity.netId)) {
+                        // Assign default powerup as fall back option if there are no valid loot group powerup
+                        Powerup newPowerupData = new Powerup {
+                           powerupRarity = Rarity.Type.Common,
+                           powerupType = powerupType,
+                           expiry = Powerup.Expiry.None
+                        };
 
-                     // Assign random powerup based on the loot group id set in map tool
-                     if (TreasureDropsDataManager.self.lootDropsCollection.ContainsKey(lootGroupId)) {
-                        LootGroupData lootData = TreasureDropsDataManager.self.lootDropsCollection[lootGroupId];
-                        List<TreasureDropsData> validPowerupLoots = lootData.treasureDropsCollection.FindAll(_ => _.powerUp != Powerup.Type.None && _.powerupChance > 0);
-                        if (validPowerupLoots.Count > 0) {
-                           TreasureDropsData randomLoot = validPowerupLoots.ChooseRandom();
-                           newPowerupData.powerupRarity = randomLoot.rarity;
-                           newPowerupData.powerupType = randomLoot.powerUp;
-                           newPowerupData.expiry = Powerup.Expiry.None;
+                        // Assign random powerup based on the loot group id set in map tool
+                        if (TreasureDropsDataManager.self.lootDropsCollection.ContainsKey(lootGroupId)) {
+                           LootGroupData lootData = TreasureDropsDataManager.self.lootDropsCollection[lootGroupId];
+                           List<TreasureDropsData> validPowerupLoots = lootData.treasureDropsCollection.FindAll(_ => _.powerUp != Powerup.Type.None && _.powerupChance > 0);
+                           if (validPowerupLoots.Count > 0) {
+                              TreasureDropsData randomLoot = validPowerupLoots.ChooseRandom();
+                              newPowerupData.powerupRarity = randomLoot.rarity;
+                              newPowerupData.powerupType = randomLoot.powerUp;
+                              newPowerupData.expiry = Powerup.Expiry.None;
+                           }
+                        } else {
+                           newPowerupData = new Powerup {
+                              powerupRarity = Rarity.Type.Common,
+                              powerupType = Powerup.Type.SpeedUp,
+                              expiry = Powerup.Expiry.Timed,
+                              powerupDuration = 10
+                           };
                         }
+
+                        PowerupManager.self.addPowerupServer(memberEntity.userId, newPowerupData);
+                        memberEntity.rpc.Target_ReceivePowerup(newPowerupData.powerupType, newPowerupData.powerupRarity, seaEntity.transform.position);
                      }
-                     
-                     PowerupManager.self.addPowerupServer(memberEntity.userId, newPowerupData);
-                     memberEntity.rpc.Target_ReceivePowerup(newPowerupData.powerupType, newPowerupData.powerupRarity, seaEntity.transform.position);
                   }
                }
             }
+         } else {
+            D.debug("Last attacker {" + lastAttackerId + "} does not exist!");
          }
          Invoke(nameof(spawnMonster), RESPAWN_DELAY);
          seaEntity.hasDiedEvent.RemoveAllListeners();

@@ -1226,7 +1226,13 @@ public class NetEntity : NetworkBehaviour
    }
 
    public bool wasAttackedBy (uint netId) {
-      return _attackers.ContainsKey(netId);
+      // Check if this net id participated in combat, and if the combat duration was within 10 seconds
+      if (_totalAttackers.ContainsKey(netId)) {
+         if (NetworkTime.time - _totalAttackers[netId] < 10) {
+            return true;
+         }
+      }
+      return false;
    }
 
    public bool hasAttackers () {
@@ -2722,6 +2728,9 @@ public class NetEntity : NetworkBehaviour
 
    // Entities that have attacked us and the time when they attacked
    protected Dictionary<uint, double> _attackers = new Dictionary<uint, double>();
+
+   // Entities that have attacked us and the time when they attacked (Does not Clear)
+   protected Dictionary<uint, double> _totalAttackers = new Dictionary<uint, double>();
 
    // The netId of the last entity that attacked us
    protected uint _lastAttackerNetId = 0;
