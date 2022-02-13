@@ -20,6 +20,9 @@ public class TileAttributes
       Wooden_Bridge = 6,
       Vine = 7,
       Generic = 8,
+      DeepWater = 9,
+      ShallowWater = 10,
+      MidWater = 11,
       Carpet = 12,
       Dirt = 13
    }

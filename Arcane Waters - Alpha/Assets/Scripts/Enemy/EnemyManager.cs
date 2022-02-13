@@ -46,13 +46,10 @@ public class EnemyManager : MonoBehaviour {
    }
 
    public void spawnOpenWorldEnemies (Instance instance, string areaKey, int targetSpawns) {
-      StartCoroutine(CO_ProcessSpawnOpenWorldEnemies(instance, areaKey, targetSpawns));
+      processSpawnOpenWorldEnemies(instance, areaKey, targetSpawns);
    }
 
-   private IEnumerator CO_ProcessSpawnOpenWorldEnemies (Instance instance, string areaKey, int targetSpawns) {
-      int maxAttempts = 100;
-      yield return new WaitForSeconds(.1f);
-
+   private void processSpawnOpenWorldEnemies (Instance instance, string areaKey, int targetSpawns) {
       double initialTime = NetworkTime.time;
       Area areaTarget = AreaManager.self.getArea(areaKey);
       if (areaTarget == null) {
@@ -62,113 +59,216 @@ public class EnemyManager : MonoBehaviour {
 
          // Reverse the layers so that deepest layer is processed first and is set as hardest difficulty
          waterLayers.Reverse();
-         Voyage.Difficulty difficulty = Voyage.Difficulty.Hard;
 
-         int indexCount = 0;
-         int spawnsPerLayer = (int) (targetSpawns / waterLayers.Count);
-         int totalSuccessfulSpawns = 0;
          HashSet<Vector3Int> occupiedTileOverall = new HashSet<Vector3Int>();
          D.adminLog("Generating Layers: {" + waterLayers.Count + "} water layers for area {" + areaKey + "} TargetSpwns: {" + targetSpawns + "}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
+
+         // Make sure that the generated deeper water layer is cached so it does not check again on shallow tiles, this prevents
+         List<Vector3Int> deepWaterTiles = new List<Vector3Int>();
+         List<Vector3Int> shallowWaterTiles = new List<Vector3Int>();
+         List<Vector3Int> midWaterTiles = new List<Vector3Int>();
+
+         Dictionary<TilemapLayer,int> deepWaterLayer = new Dictionary<TilemapLayer, int>();
+         Dictionary<TilemapLayer, int> midWaterLayer = new Dictionary<TilemapLayer, int>();
+         Dictionary<TilemapLayer, int> shallowWaterLayer = new Dictionary<TilemapLayer, int>();
          foreach (TilemapLayer layer in waterLayers) {
             if (layer.fullName == "water 8") {
                continue;
             }
 
-            indexCount++;
-            int successfulSpawns = 0;
-
             // Extract all available tiles in this layer
             BoundsInt.PositionEnumerator allTilesInLayer = layer.tilemap.cellBounds.allPositionsWithin;
 
-            // Make sure that the generated deeper water layer is cached so it does not check again on shallow tiles, this prevents
-            List<Vector3Int> availableTiles = new List<Vector3Int>();
             foreach (Vector3Int currentTile in allTilesInLayer) {
-               if (!occupiedTileOverall.Contains(currentTile)) {
-                  TileBase newTile = layer.tilemap.GetTile(currentTile);
+               Vector3 worldCoord = layer.tilemap.CellToWorld(currentTile);
+               if (!occupiedTileOverall.Contains(currentTile) && !Util.hasLandTile(worldCoord)) {
+                  TileBase newTile = layer.tilemap.GetTile(currentTile); 
+                  float scaler = .035f;
+                  bool createObjectMarkers = false;
                   if (newTile != null) {
-                     availableTiles.Add(currentTile);
-                     occupiedTileOverall.Add(currentTile);
-                  }
-               }
-            }
+                     if (areaTarget.hasTileAttribute(TileAttributes.Type.DeepWater, worldCoord)) {
+                        // Remove after enemy spawner is finalized
+                        if (createObjectMarkers) {
+                           GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                           obj.transform.localScale = new Vector3(scaler, scaler, scaler);
+                           obj.transform.position = worldCoord;
+                        }
 
-            HashSet<Vector3Int> occupiedTilesThisLayer = new HashSet<Vector3Int>();
-            while (successfulSpawns < spawnsPerLayer && maxAttempts > 0) {
-               maxAttempts--;
-               if (maxAttempts < 1) {
-                  D.adminLog("Last attempt! Layer {" + layer.fullName + "} Cycles: {" + indexCount + "/" + maxAttempts + "} " +
-                     "Breaking cycle due to limitations Spawned: {" + successfulSpawns + "} out of: {" + totalSuccessfulSpawns + "}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
-                  break;
-               }
+                        occupiedTileOverall.Add(currentTile);
+                        deepWaterTiles.Add(currentTile);
+                        if (deepWaterLayer.ContainsKey(layer)) {
+                           deepWaterLayer[layer]++;
+                        } else {
+                           deepWaterLayer.Add(layer, 1);
+                        }
+                     }
+                     else if (areaTarget.hasTileAttribute(TileAttributes.Type.MidWater, worldCoord)) {
+                        // Remove after enemy spawner is finalized
+                        if (createObjectMarkers) {
+                           GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                           obj.transform.localScale = new Vector3(scaler / 2, scaler, scaler);
+                           obj.transform.position = worldCoord;
+                           obj.transform.eulerAngles = new Vector3(45, 45, 45);
+                        }
 
-               // Find a random value within the available list
-               if (availableTiles.Count > 0) {
-                  Vector3Int randomSelectedTile = availableTiles.ChooseRandom();
-                  if (!occupiedTilesThisLayer.Contains(randomSelectedTile)) {
-                     // Mark occupied tiles and count the successful spawns 
-                     occupiedTilesThisLayer.Add(randomSelectedTile);
+                        occupiedTileOverall.Add(currentTile);
+                        midWaterTiles.Add(currentTile);
+                        if (midWaterLayer.ContainsKey(layer)) {
+                           midWaterLayer[layer]++;
+                        } else {
+                           midWaterLayer.Add(layer, 1);
+                        }
+                     }
+                     else if (areaTarget.hasTileAttribute(TileAttributes.Type.ShallowWater, worldCoord)) {
+                        // Remove after enemy spawner is finalized
+                        if (createObjectMarkers) {
+                           GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                           obj.transform.localScale = new Vector3(scaler, scaler, scaler);
+                           obj.transform.position = worldCoord;
+                        }
 
-                     // Fetch the tile information
-                     Vector3Int newVector = randomSelectedTile;
-                     TileBase newTile = layer.tilemap.GetTile(newVector);
-                     if (newTile != null) {
-                        // Make sure tile is a water tile
-                        Vector3 worldCoord = layer.tilemap.CellToWorld(newVector);
-                        if (areaTarget.hasWaterTile(worldCoord) && !areaTarget.hasLandTile(worldCoord)) {
-                           // Make sure that the new coord selected does not spawn within spawn blocker bounds
-                           bool spawnsInBlocker = false;
-                           Area area = AreaManager.self.getArea(areaKey);
-                           foreach (OpenWorldSpawnBlocker spawnBlocker in area.openWorldSpawnBlockers) {
-                              if (spawnBlocker.isWithinBounds(worldCoord)) {
-                                 spawnsInBlocker = true;
-                              }
-                           }
-
-                           if (!spawnsInBlocker) {
-                              successfulSpawns++;
-                              totalSuccessfulSpawns++;
-
-                              // Initialize spawn values
-                              float spawnShipChance = 60;
-                              int randomEnemyTypeVal = Random.Range(0, 100);
-                              int guildId = BotShipEntity.PIRATES_GUILD_ID;
-
-                              // Override random value to fix ship spawning only if the map does not allow seamonsters
-                              MapCreationTool.Serialization.Map mapInfo = AreaManager.self.getMapInfo(areaKey);
-                              if (mapInfo != null) {
-                                 if (!mapInfo.spawnsSeaMonsters && randomEnemyTypeVal >= spawnShipChance) {
-                                    D.debug("Map Data override! This map {" + areaKey + "} does not allow spawning of SeaMonsters!");
-                                    randomEnemyTypeVal = 0;
-                                 }
-                              }
-
-                              // Spawning ships has a 60% chance
-                              Vector3 newSpawnPost = layer.tilemap.CellToWorld(newVector);
-                              if (randomEnemyTypeVal < spawnShipChance) {
-                                 spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true, difficulty);
-                              } else {
-                                 if (mapInfo.spawnsSeaMonsters) {
-                                    spawnSeaMonster(instance, areaTarget, newSpawnPost, false, true, difficulty);
-                                 } else {
-                                    spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true, difficulty);
-                                 }
-                              }
-
-                              D.adminLog("Spawned and Found tile: " + newTile.name + " at " + newVector + "__" + difficulty, D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
-                           }
+                        occupiedTileOverall.Add(currentTile);
+                        shallowWaterTiles.Add(currentTile);
+                        if (shallowWaterLayer.ContainsKey(layer)) {
+                           shallowWaterLayer[layer]++;
+                        } else {
+                           shallowWaterLayer.Add(layer, 1);
                         }
                      }
                   }
                }
             }
-
-            int difficultyValue = ((int) difficulty) - 1;
-            difficultyValue = Mathf.Clamp(difficultyValue, (int) Voyage.Difficulty.Easy, (int) Voyage.Difficulty.Hard);
-            difficulty = (Voyage.Difficulty) difficultyValue;
          }
 
+         int spawnsPerLayer = (int) targetSpawns / 3;
+         if (deepWaterLayer.Count > 0 && deepWaterTiles.Count > 0) {
+            int maxTiles = 0;
+            TilemapLayer mostCompatibleLayer = null;
+            foreach (KeyValuePair<TilemapLayer, int> currLayer in deepWaterLayer) {
+               if (currLayer.Value > maxTiles) {
+                  mostCompatibleLayer = currLayer.Key;
+                  maxTiles = currLayer.Value;
+               }
+            }
+
+            if (mostCompatibleLayer != null) {
+               StartCoroutine(CO_OpenWorldSpawnByDifficulty(instance, areaTarget, Voyage.Difficulty.Hard, spawnsPerLayer, mostCompatibleLayer, deepWaterTiles));
+            } else {
+               D.debug("No compatible layer for Hard difficulty");
+            }
+         }
+         if (midWaterLayer.Count > 0 && midWaterTiles.Count > 0) {
+            int maxTiles = 0;
+            TilemapLayer mostCompatibleLayer = null;
+            foreach (KeyValuePair<TilemapLayer, int> currLayer in midWaterLayer) {
+               if (currLayer.Value > maxTiles) {
+                  mostCompatibleLayer = currLayer.Key;
+                  maxTiles = currLayer.Value;
+               }
+            }
+
+            if (mostCompatibleLayer != null) {
+               StartCoroutine(CO_OpenWorldSpawnByDifficulty(instance, areaTarget, Voyage.Difficulty.Medium, spawnsPerLayer, mostCompatibleLayer, midWaterTiles));
+            } else {
+               D.debug("No compatible layer for Medium difficulty");
+            }
+         }
+         if (shallowWaterLayer.Count > 0 && shallowWaterTiles.Count > 0) {
+            int maxTiles = 0;
+            TilemapLayer mostCompatibleLayer = null;
+            foreach (KeyValuePair<TilemapLayer, int> currLayer in shallowWaterLayer) {
+               if (currLayer.Value > maxTiles) {
+                  mostCompatibleLayer = currLayer.Key;
+                  maxTiles = currLayer.Value;
+               }
+            }
+
+            if (mostCompatibleLayer != null) {
+               StartCoroutine(CO_OpenWorldSpawnByDifficulty(instance, areaTarget, Voyage.Difficulty.Easy, spawnsPerLayer, mostCompatibleLayer, shallowWaterTiles));
+            } else {
+               D.debug("No compatible layer for Easy difficulty");
+            }
+         }
          D.debug("Open World Enemies Finished spawning: {" + (NetworkTime.time - initialTime).ToString("f1") + "}");
       }
+   }
+
+   private IEnumerator CO_OpenWorldSpawnByDifficulty (Instance instance, Area areaTarget, Voyage.Difficulty difficulty, int spawnsPerLayer, TilemapLayer layer, List<Vector3Int> availableTiles) {
+      yield return new WaitForSeconds(.1f);
+      int maxAttempts = 30;
+      int successfulSpawns = 0;
+      int indexCount = 0;
+      HashSet<Vector3Int> occupiedTilesThisLayer = new HashSet<Vector3Int>();
+      while (successfulSpawns < spawnsPerLayer && maxAttempts > 0) {
+         indexCount++;
+         maxAttempts--;
+         if (maxAttempts < 1) {
+            D.adminLog("Last attempt! Layer {" + layer.fullName + "} Cycles: {" + indexCount + "/" + maxAttempts + "} " +
+               "Breaking cycle due to limitations Spawned: {" + successfulSpawns + "}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
+            break;
+         }
+
+         // Find a random value within the available list
+         if (availableTiles.Count > 0) {
+            Vector3Int randomSelectedTile = availableTiles.ChooseRandom();
+            if (!occupiedTilesThisLayer.Contains(randomSelectedTile)) {
+               // Mark occupied tiles and count the successful spawns 
+               occupiedTilesThisLayer.Add(randomSelectedTile);
+
+               // Fetch the tile information
+               Vector3Int newVector = randomSelectedTile;
+               TileBase newTile = layer.tilemap.GetTile(newVector);
+               if (newTile != null) {
+                  // Make sure tile is a water tile
+                  Vector3 worldCoord = layer.tilemap.CellToWorld(newVector);
+                  if (areaTarget.hasWaterTile(worldCoord) && !areaTarget.hasLandTile(worldCoord)) {
+                     // Make sure that the new coord selected does not spawn within spawn blocker bounds
+                     bool spawnsInBlocker = false;
+                     foreach (OpenWorldSpawnBlocker spawnBlocker in areaTarget.openWorldSpawnBlockers) {
+                        if (spawnBlocker.isWithinBounds(worldCoord)) {
+                           spawnsInBlocker = true;
+                        }
+                     }
+
+                     if (!spawnsInBlocker) {
+                        successfulSpawns++;
+
+                        // Initialize spawn values
+                        float spawnShipChance = 60;
+                        int randomEnemyTypeVal = Random.Range(0, 100);
+                        int guildId = BotShipEntity.PIRATES_GUILD_ID;
+
+                        // Override random value to fix ship spawning only if the map does not allow seamonsters
+                        MapCreationTool.Serialization.Map mapInfo = AreaManager.self.getMapInfo(areaTarget.areaKey);
+                        if (mapInfo != null) {
+                           if (!mapInfo.spawnsSeaMonsters && randomEnemyTypeVal >= spawnShipChance) {
+                              D.debug("Map Data override! This map {" + areaTarget.areaKey + "} does not allow spawning of SeaMonsters!");
+                              randomEnemyTypeVal = 0;
+                           }
+                        }
+
+                        // Spawning ships has a 60% chance
+                        Vector3 newSpawnPost = layer.tilemap.CellToWorld(newVector);
+                        if (randomEnemyTypeVal < spawnShipChance) {
+                           spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true, difficulty);
+                        } else {
+                           if (mapInfo.spawnsSeaMonsters) {
+                              spawnSeaMonster(instance, areaTarget, newSpawnPost, false, true, difficulty);
+                           } else {
+                              spawnBotShip(instance, areaTarget, newSpawnPost, guildId, false, true, difficulty);
+                           }
+                        }
+
+                        D.adminLog("Spawned and Found tile: " + newTile.name + " at " + newVector + "__" + difficulty, D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
+                     }
+                  }
+               }
+            }
+         }
+      }
+
+      D.adminLog("Processing A:{"+areaTarget.areaKey+":"+instance.id+"} " +
+         "D:{" + difficulty + "} TCount:{" + availableTiles.Count + "} SCount:{"+successfulSpawns+"} Cycles:{"+indexCount+"}", D.ADMIN_LOG_TYPE.EnemyWaterSpawn);
    }
 
    public void spawnEnemyAtLocation(Enemy.Type enemyType, Instance instance, Vector2 location) {
