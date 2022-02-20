@@ -44,11 +44,21 @@ public class InstanceManager : MonoBehaviour
                D.error("Could not find the voyage instance for voyage id " + voyageId + " in area " + areaKey);
             }
 
+            // TODO: Generate a new voyage for user here
             int voyageInstanceId = VoyageManager.self.getPvpInstanceId(areaKey);
             if (voyageInstanceId > 0) {
                Instance inst = getInstance(voyageInstanceId);
                if (inst != null) {
                   instance = inst;
+               } else {
+                  D.debug("Failed to get voyage instance: " + voyageInstanceId);
+               }
+            } else {
+               Instance existingInstance = getOpenWorldInstanceByArea(areaKey);
+               if (existingInstance != null) {
+                  instance = existingInstance;
+               } else {
+                  D.debug("Error here, could not find the pvp instance id of area {" + areaKey + "}");
                }
             }
          } else if (VoyageManager.isTreasureSiteArea(areaKey)) {
@@ -64,9 +74,9 @@ public class InstanceManager : MonoBehaviour
 
                         if (instance != null) {
                            D.adminLog("TreasureSite instance being fetched here, " +
-                              "TreasureSite: {" +treasureSite.areaKey+ "} {"+treasureSite.instanceId+"} {" + treasureSite.destinationInstanceId + "} " +
-                              "PrevArea: {" + areaKey + " } {"+player.areaKey+ "}  {" + player.instanceId + "}" +
-                              "Instance: {"+instance.id+"}{"+instance.areaKey+"}{"+instance.voyageId+"}", D.ADMIN_LOG_TYPE.POI_WARP);
+                              "TreasureSite: {" + treasureSite.areaKey + "} {" + treasureSite.instanceId + "} {" + treasureSite.destinationInstanceId + "} " +
+                              "PrevArea: {" + areaKey + " } {" + player.areaKey + "}  {" + player.instanceId + "}" +
+                              "Instance: {" + instance.id + "}{" + instance.areaKey + "}{" + instance.voyageId + "}", D.ADMIN_LOG_TYPE.POI_WARP);
 
                            if (areaKey != instance.areaKey) {
                               D.adminLog("Created New Instance for POI, area keys did not match for " +
@@ -97,6 +107,30 @@ public class InstanceManager : MonoBehaviour
                   instance = createNewInstance(areaKey, false, voyageId, "", "", Direction.South);
                   D.adminLog("Created New Instance for Voyage", D.ADMIN_LOG_TYPE.InstanceProcess);
                }
+            }
+         }
+      } else {
+         if (VoyageManager.isAnyLeagueArea(areaKey) || VoyageManager.isPvpArenaArea(areaKey)) {
+            int voyageInstanceId = VoyageManager.self.getPvpInstanceId(areaKey);
+            if (voyageInstanceId > 0) {
+               Instance inst = getInstance(voyageInstanceId);
+               if (inst != null) {
+                  instance = inst;
+               }
+            } else {
+               Instance existingInstance = getOpenWorldInstanceByArea(areaKey);
+               if (existingInstance != null) {
+                  instance = existingInstance;
+               } else {
+                  D.debug("Error here, could not find the pvp instance id of area {" + areaKey + "}");
+               }
+            }
+         } else {
+            Instance existingInstance = getOpenWorldInstanceByArea(areaKey);
+            if (existingInstance != null) {
+               instance = existingInstance;
+            } else {
+               D.debug("Error here, could not find the pvp instance id of area {" + areaKey + "}");
             }
          }
       }
@@ -512,6 +546,16 @@ public class InstanceManager : MonoBehaviour
       }
 
       return count;
+   }
+
+   public Instance getOpenWorldInstanceByArea (string areaKey) {
+      List<Instance> fetchedInst = _instances.Values.ToList().FindAll(_ => _.areaKey == areaKey);
+      if (fetchedInst.Count > 0) {
+         fetchedInst.OrderByDescending(_ => _.id);
+         return fetchedInst[0];
+      }
+
+      return null;
    }
 
    public void reset () {
