@@ -189,7 +189,7 @@ public class EnemyManager : MonoBehaviour {
                D.debug("No compatible layer for Easy difficulty");
             }
          }
-         D.debug("Open World Enemies Finished spawning: {" + (NetworkTime.time - initialTime).ToString("f1") + "}");
+         D.debug("Open World {" + areaKey + "} Enemies Finished spawning: {" + (NetworkTime.time - initialTime).ToString("f1") + "}");
       }
    }
 

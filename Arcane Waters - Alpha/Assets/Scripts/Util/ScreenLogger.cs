@@ -36,6 +36,7 @@ public class ScreenLogger : GenericGameManager {
       Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.Quest);
       Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.POI_WARP);
       Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.Player_Menu);
+      Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.Pvp_Instance);
       D.debug("Screen Logger v5.0.4 {" + (Util.isProductionBuild() ? "Prod" : "Dev") + "}");
 
       if (!Util.isCloudBuild()) {

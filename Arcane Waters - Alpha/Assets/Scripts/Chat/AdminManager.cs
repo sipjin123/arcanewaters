@@ -747,6 +747,10 @@ public class AdminManager : NetworkBehaviour
                   message += "-> Instance: {" + inst.id + ":" + inst.areaKey + ":" + inst.privateAreaUserId + "}\n";
                }
                break;
+            case "user":
+               instInfo = InstanceManager.self.getInstance(_player.instanceId);
+               message += "->>> User: {" + _player.entityName + ":" + _player.userId + "} is in Instance: {" + (instInfo == null ? "NULL" : (instInfo.id + ":" + instInfo.areaKey + ":" + instInfo.isPvP)) + "}";
+               break;
          }
          D.debug(message);
          Target_ReceiveServerLogs(message);

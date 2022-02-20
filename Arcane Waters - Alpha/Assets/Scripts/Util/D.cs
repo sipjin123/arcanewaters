@@ -46,7 +46,8 @@ public class D : MonoBehaviour {
       Redirecting = 33,
       Respawn = 34,
       POI_WARP = 35,
-      Player_Menu = 36
+      Player_Menu = 36,
+      Pvp_Instance = 37
    }
 
    // Any log files older than this will be deleted

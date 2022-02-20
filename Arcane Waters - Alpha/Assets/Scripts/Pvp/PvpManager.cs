@@ -159,6 +159,7 @@ public class PvpManager : MonoBehaviour {
 
    [Server]
    public void joinBestPvpGameOrCreateNew (NetEntity player) {
+      D.adminLog("PVP: Join best game or create new game for pvp", D.ADMIN_LOG_TYPE.Pvp_Instance);
       Voyage bestGameInstance = getBestJoinableGameInstance();
 
       // If there are no active games, create a game
@@ -254,6 +255,7 @@ public class PvpManager : MonoBehaviour {
          string areaKey = pvpArenaAreaKeys[lastPvpArenaAreaIndex];
          Map areaData = AreaManager.self.getMapInfo(areaKey);
 
+         D.adminLog("Create new game for pvp if Needed {" + areaKey + "}", D.ADMIN_LOG_TYPE.Pvp_Instance);
          Voyage parameters = new Voyage {
             areaKey = areaKey,
             isPvP = true,
@@ -272,6 +274,7 @@ public class PvpManager : MonoBehaviour {
       PvpGame newGame = newGameObject.AddComponent<PvpGame>();
       newGame.init(instance.voyageId, instance.id, instance.areaKey);
       _activeGames[instance.id] = newGame;
+      D.adminLog("Create new game for pvp {" + instance.id + ":" + instance.areaKey + "}", D.ADMIN_LOG_TYPE.Pvp_Instance);
 
       pvpAnnouncementDataList.Add(new PvpAnnouncementClass {
          instanceId = instance.id,
@@ -283,6 +286,8 @@ public class PvpManager : MonoBehaviour {
 
    [Server]
    private IEnumerator CO_CreateNewGameAndJoin (NetEntity player) {
+      D.adminLog("PVP: Create new game and join", D.ADMIN_LOG_TYPE.Pvp_Instance);
+
       // Create a random voyage instance biome
       Voyage parameters = new Voyage {
          isPvP = true,

@@ -71,6 +71,9 @@ public class VoyageManager : GenericGameManager {
          ServerNetworkingManager.self.server.updateVoyageInstance(instance);
       }
 
+      D.adminLog("Create Voyage Instance with parameters: game for pvp if Needed " +
+         "{" + instance.id + ":" + instance.areaKey + "}", D.ADMIN_LOG_TYPE.Pvp_Instance);
+
       // For pvp instances, create the associated pvp game
       if (parameters.isPvP) {
          PvpManager.self.createNewGameForPvpInstance(instance);

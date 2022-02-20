@@ -87,6 +87,8 @@ public class PvpGame : MonoBehaviour {
          return;
       }
 
+      D.adminLog("Player {" + userId + ":" + userName + "} is being added to game {" + instanceId + ":" + areaKey + "}", D.ADMIN_LOG_TYPE.Pvp_Instance);
+
       // Check that there is still space in the game
       if (getAvailableSlots() <= 0) {
          D.warning("Failed to add player: " + userName + " to the game, it was full");
