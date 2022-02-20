@@ -65,6 +65,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // Size of the obstacle collider
    public float obstacleColliderScale = .15f;
 
+   // The last interact animation trigger
+   public double lastInteractAnimation;
+
    // Size of the jump end collider
    public float jumpEndColliderScale = .15f;
 
@@ -220,6 +223,26 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       if (!Util.isBatch()) {
          InputManager.self.inputMaster.Land.Enable();
          InputManager.self.inputMaster.Sea.Disable();
+      }
+   }
+
+   public void interactionTrigger () {
+      Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, .2f);
+      List<int> interactedObjects = new List<int>();
+      foreach (Collider2D collidedEntity in hits) {
+         if (collidedEntity != null) {
+            InteractableObjEntity interactedObj = collidedEntity.GetComponent<InteractableObjEntity>();
+            if (interactedObj != null && !interactedObjects.Contains(interactedObj.objectId)) {
+               interactedObjects.Add(interactedObj.objectId);
+               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponManager.equipmentDataId);
+               if (weaponData != null) {
+                  rpc.Cmd_InteractWithEntity(interactedObj.objectId, true);
+               }
+               else {
+                  rpc.Cmd_InteractWithEntity(interactedObj.objectId, false);
+               }
+            }
+         }
       }
    }
 
@@ -958,14 +981,17 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          return;
       }
       Direction newDirection = forceLookAt(Camera.main.ScreenToWorldPoint(MouseUtils.mousePosition));
+      if (NetworkTime.time - lastInteractAnimation > .2f) {
+         lastInteractAnimation = NetworkTime.time;
 
-      if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
-         || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {
-         rpc.Cmd_InteractAnimation(Anim.Type.Interact_East, newDirection);
-      } else if (newDirection == Direction.North) {
-         rpc.Cmd_InteractAnimation(Anim.Type.Interact_North, newDirection);
-      } else if (newDirection == Direction.South) {
-         rpc.Cmd_InteractAnimation(Anim.Type.Interact_South, newDirection);
+         if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
+            || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {
+            rpc.Cmd_InteractAnimation(Anim.Type.Interact_East, newDirection);
+         } else if (newDirection == Direction.North) {
+            rpc.Cmd_InteractAnimation(Anim.Type.Interact_North, newDirection);
+         } else if (newDirection == Direction.South) {
+            rpc.Cmd_InteractAnimation(Anim.Type.Interact_South, newDirection);
+         }
       }
    }
 

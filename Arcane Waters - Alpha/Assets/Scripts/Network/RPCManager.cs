@@ -294,6 +294,7 @@ public class RPCManager : NetworkBehaviour
       if (!_player.isInBattle()) {
          playerBody.farmingTrigger.interactFarming();
          playerBody.miningTrigger.interactOres();
+         playerBody.interactionTrigger();
       }
    }
 
@@ -6248,6 +6249,81 @@ public class RPCManager : NetworkBehaviour
             Debug.LogWarning($"Player '{_player.entityName}' has entered a Voyage or League.");
          }
       }
+   }
+
+   [Command]
+   public void Cmd_InteractWithEntity (int entityId, bool simulatePhysics) {
+      if (_player == null) {
+         return;
+      }
+
+      InteractableObjEntity interactableObject = InteractableObjManager.self.getObject(entityId);
+      if (interactableObject == null) {
+         return;
+      }
+
+      if (interactableObject.simulatePhysics) {
+         return;
+      }
+
+      float archHeight = Random.Range(interactableObject.archHeightMin, interactableObject.archHeightMax) * InteractableBall.TILE_SIZE;
+      float lifeTime = Random.Range(interactableObject.lifeTimeMin, interactableObject.lifeTimeMax);
+      float totalRotation = Random.Range(1, 3) * 360.0f;
+      double startTime = NetworkTime.time;
+
+      Vector2 dir = (interactableObject.transform.position - transform.position).normalized;
+      if (interactableObject is InteractableBox) {
+         InteractableBox box = (InteractableBox) interactableObject;
+         box.interactObject(dir);
+      }
+      if (interactableObject is InteractableBall) {
+         InteractableBall ball = (InteractableBall) interactableObject;
+         float distance = Random.Range(ball.distanceMin, ball.distanceMax) * InteractableBall.TILE_SIZE;
+
+         if (ball.usesNetworkRigidBody) {
+            ball.Rpc_BroadcastSimulationParameters(startTime, archHeight, lifeTime);
+            ball.interactObject(dir, startTime, archHeight, lifeTime);
+         } else {
+            ball.init(ball.transform.position, dir, startTime, archHeight, lifeTime, distance, totalRotation);
+            ball.Rpc_BroadInit(ball.transform.position, dir, startTime, archHeight, lifeTime, distance, totalRotation);
+         }
+      }
+   }
+
+   [Command]
+   public void Cmd_AdminSpawnBox () {
+      InteractableObjEntity spawnedBox = Instantiate(InteractableObjManager.self.interactableBox);
+      Instance currInstance = InstanceManager.self.getInstance(_player.instanceId);
+      InstanceManager.self.addInteractableToInstance(spawnedBox, currInstance);
+      spawnedBox.transform.position = _player.transform.position;
+
+      InteractableObjManager.self.registerObject(spawnedBox);
+      NetworkServer.Spawn(spawnedBox.gameObject);
+      _player.Target_ReceiveNormalChat("Spawned physics box", ChatInfo.Type.System);
+   }
+
+   [Command]
+   public void Cmd_AdminSpawnBall () {
+      InteractableObjEntity spawnedBall = Instantiate(InteractableObjManager.self.interactableBall);
+      Instance currInstance = InstanceManager.self.getInstance(_player.instanceId);
+      InstanceManager.self.addInteractableToInstance(spawnedBall, currInstance);
+      spawnedBall.transform.position = _player.transform.position;
+
+      InteractableObjManager.self.registerObject(spawnedBall);
+      NetworkServer.Spawn(spawnedBall.gameObject);
+      _player.Target_ReceiveNormalChat("Spawned simulated ball", ChatInfo.Type.System);
+   }
+
+   [Command]
+   public void Cmd_AdminSpawnBall2 () {
+      InteractableObjEntity spawnedBall = Instantiate(InteractableObjManager.self.interactableBallNetwork);
+      Instance currInstance = InstanceManager.self.getInstance(_player.instanceId);
+      InstanceManager.self.addInteractableToInstance(spawnedBall, currInstance);
+      spawnedBall.transform.position = _player.transform.position;
+
+      InteractableObjManager.self.registerObject(spawnedBall);
+      NetworkServer.Spawn(spawnedBall.gameObject);
+      _player.Target_ReceiveNormalChat("Spawned physics ball", ChatInfo.Type.System);
    }
 
    [Command]
