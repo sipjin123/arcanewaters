@@ -15,6 +15,10 @@ public class NetEntity : NetworkBehaviour
 
    [Header("UserData")]
 
+   // If this entity is participating in pvp
+   [SyncVar]
+   public bool enablePvp;
+
    // The account ID for this entity
    [SyncVar]
    public int accountId;
@@ -604,6 +608,13 @@ public class NetEntity : NetworkBehaviour
 
    public bool isMuted () {
       return DateTime.UtcNow.Ticks < this.muteExpirationDate;
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveOpenWorldStatus (PvpGameMode pvpMode, bool isOn) {
+      VoyageStatusPanel.self.refreshPvpStatDisplay();
+      VoyageStatusPanel.self.setUserPvpMode(pvpMode);
+      VoyageStatusPanel.self.togglePvpStatusInfo(isOn);
    }
 
    [Command]
@@ -1264,16 +1275,14 @@ public class NetEntity : NetworkBehaviour
          return false;
       }
 
-      if (openWorldGameMode == PvpGameMode.FreeForAll && otherEntity.openWorldGameMode == PvpGameMode.FreeForAll) {
-         return true;
-      }
-
-      if (openWorldGameMode == PvpGameMode.GuildWars && otherEntity.openWorldGameMode == PvpGameMode.GuildWars) {
-         return otherEntity.guildId != guildId;
-      }
-
-      if (openWorldGameMode == PvpGameMode.GroupWars && otherEntity.openWorldGameMode == PvpGameMode.GroupWars) {
-         return otherEntity.voyageGroupId != voyageGroupId;
+      if (enablePvp && otherEntity.enablePvp) {
+         if (openWorldGameMode == PvpGameMode.FreeForAll && otherEntity.openWorldGameMode == PvpGameMode.FreeForAll) {
+            return true;
+         } else if (openWorldGameMode == PvpGameMode.GuildWars && otherEntity.openWorldGameMode == PvpGameMode.GuildWars) {
+            return otherEntity.guildId != guildId;
+         } else if (openWorldGameMode == PvpGameMode.GroupWars && otherEntity.openWorldGameMode == PvpGameMode.GroupWars) {
+            return otherEntity.voyageGroupId != voyageGroupId;
+         }
       }
 
       // If both entities are on a pvp team, check if they're on our team
@@ -1306,6 +1315,9 @@ public class NetEntity : NetworkBehaviour
       }
 
       if (hasBeenAttackedBy(otherEntity) || otherEntity.hasBeenAttackedBy(this)) {
+         if (enablePvp != otherEntity.enablePvp || (!enablePvp && !otherEntity.enablePvp)) {
+            return false;
+         }
          return true;
       }
 

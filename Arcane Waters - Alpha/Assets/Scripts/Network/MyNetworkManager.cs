@@ -576,17 +576,24 @@ public class MyNetworkManager : NetworkManager
             player.rpc.sendVoyageGroupMembersInfo();
             player.rpc.setNextBiomeUnlocked();
             player.rpc.setAdminBattleParameters();
+            PvpGameMode pvpGameMode = AreaManager.self.getAreaPvpGameMode(player.areaKey);
+            player.Target_ReceiveOpenWorldStatus(PvpGameMode.None, false);
 
             // In sea voyages, if the player is spawning in a different position than the default spawn, we conclude he is returning from a treasure site and has already entered PvP
             if (instance.isVoyage && AreaManager.self.isSeaArea(player.areaKey)) {
                if (Vector3.Distance(userInfo.localPos, SpawnManager.self.getDefaultLocalPosition(player.areaKey)) > 2f) {
                   player.hasEnteredPvP = true;
                }
+            }
 
-               // Players in open world pvp can attack each other without waiting for triggers
-               if (instance.isPvP && VoyageManager.isOpenWorld(player.areaKey)) {
-                  player.hasEnteredPvP = true;
-                  player.openWorldGameMode = AreaManager.self.getAreaPvpGameMode(player.areaKey);
+            // Players in open world pvp can attack each other without waiting for triggers
+            if (pvpGameMode != PvpGameMode.None && VoyageManager.isOpenWorld(player.areaKey)) {
+               player.hasEnteredPvP = true;
+               player.openWorldGameMode = pvpGameMode;
+               if (player is PlayerShipEntity) {
+                  PlayerShipEntity playerShip = (PlayerShipEntity) player;
+                  D.adminLog("This user {" + player.userId + ":" + player.entityName + "} is in an open world pvp {" + pvpGameMode + ":" + player.areaKey + "}", D.ADMIN_LOG_TYPE.OpenWorldPvp);
+                  playerShip.Target_ReceiveOpenWorldStatus(pvpGameMode, false);
                }
             }
 

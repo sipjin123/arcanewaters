@@ -88,6 +88,21 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    public GameObject[] townStatuses = new GameObject[0];
    public GameObject[] treasureSiteStatuses = new GameObject[0];
 
+   // The objects that blocks the pvp button
+   public GameObject[] pvpStatBlockers;
+
+   // The togglers indicating this user can participate in pvp
+   public Toggle[] enablePvpTogglers;
+
+   // Object containing the info of the pvp state
+   public GameObject[] pvpStatTextDisplay;
+
+   // The pvp stat display that will always show on top of screen
+   public GameObject[] passivePvpStatDisplay;
+
+   // If the pvp mode is active
+   public bool isPvpActive;
+
    // Self
    public static VoyageStatusPanel self;
 
@@ -199,28 +214,70 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       voyageIdText.text = instance.voyageId.ToString();
    }
 
+   public void refreshPvpStatDisplay () {
+      if (Global.player == null) {
+         return;
+      }
+
+      foreach (GameObject obj in pvpStatBlockers) {
+         obj.SetActive(true);
+      }
+      Global.player.rpc.Cmd_RequestPvpToggle(isPvpActive);
+   }
+
+   public void enablePvpStatDisplay (bool isOn) {
+      foreach (GameObject obj in pvpStatTextDisplay) {
+         obj.gameObject.SetActive(isOn);
+      }
+      foreach (GameObject obj in passivePvpStatDisplay) {
+         obj.gameObject.SetActive(!isOn);
+      }
+   }
+
+   public void clickOnPvpToggle () {
+      if (Global.player == null) {
+         return;
+      }
+
+      foreach (GameObject obj in pvpStatBlockers) {
+         obj.SetActive(true);
+      }
+      Global.player.rpc.Cmd_RequestPvpToggle(!isPvpActive);
+   }
+
+   public void togglePvpStatusInfo (bool isOn) {
+      foreach (Toggle enablePvpToggler in enablePvpTogglers) {
+         enablePvpToggler.isOn = isOn;
+      }
+      isPvpActive = isOn;
+      foreach (GameObject obj in pvpStatBlockers) {
+         obj.SetActive(false);
+      }
+   }
+
+   public void setUserPvpMode (PvpGameMode gameMode) {
+      pvpOpenWorldRoyale.SetActive(false);
+      pvpOpenWorldGroup.SetActive(false);
+      pvpOpenWorldGuild.SetActive(false);
+      switch (gameMode) {
+         case PvpGameMode.FreeForAll:
+            pvpOpenWorldRoyale.SetActive(true);
+            break;
+         case PvpGameMode.GroupWars:
+            pvpOpenWorldGroup.SetActive(true);
+            break;
+         case PvpGameMode.GuildWars:
+            pvpOpenWorldGuild.SetActive(true);
+            break;
+      }
+      D.debug("-> {" + (Global.player == null ? "Null : " : (Global.player.userId + ": " + Global.player.entityName)) + "} PvpWorldMapMode: " + gameMode);
+   }
+
    public void onUserSpawn () {
       // Get the current instance
       Instance instance = Global.player.getInstance();
       if (instance == null) {
          return;
-      }
-
-      pvpOpenWorldRoyale.SetActive(false);
-      pvpOpenWorldGroup.SetActive(false);
-      pvpOpenWorldGuild.SetActive(false);
-      if (instance.isPvP && VoyageManager.isOpenWorld(instance.areaKey)) {
-         switch (AreaManager.self.getAreaPvpGameMode(instance.areaKey)) {
-            case PvpGameMode.FreeForAll:
-               pvpOpenWorldRoyale.SetActive(true);
-               break;
-            case PvpGameMode.GroupWars:
-               pvpOpenWorldGroup.SetActive(true);
-               break;
-            case PvpGameMode.GuildWars:
-               pvpOpenWorldGuild.SetActive(true);
-               break;
-         }
       }
 
       // Show different relevant statuses depending on the area type

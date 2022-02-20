@@ -6158,7 +6158,7 @@ public class RPCManager : NetworkBehaviour
          EntityManager.self.removeBypassForUser(_player.userId);
          return true;
       }
-      if (!VoyageManager.isPvpArenaArea(_player.areaKey)) {
+      if (!VoyageManager.isPvpArenaArea(_player.areaKey) && !VoyageManager.isOpenWorld(_player.areaKey)) {
          // If the player is not in a group, clear it from the netentity and redirect to the starting town
          if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
             _player.voyageGroupId = -1;
@@ -6324,6 +6324,17 @@ public class RPCManager : NetworkBehaviour
       InteractableObjManager.self.registerObject(spawnedBall);
       NetworkServer.Spawn(spawnedBall.gameObject);
       _player.Target_ReceiveNormalChat("Spawned physics ball", ChatInfo.Type.System);
+   }
+
+   [Command]
+   public void Cmd_RequestPvpToggle (bool isOn) {
+      _player.enablePvp = isOn;
+      Target_ReceivePvpToggle(_player.connectionToClient, isOn);
+   }
+
+   [TargetRpc]
+   public void Target_ReceivePvpToggle (NetworkConnection connection, bool isOn) {
+      VoyageStatusPanel.self.togglePvpStatusInfo(isOn);
    }
 
    [Command]
