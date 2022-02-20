@@ -34,6 +34,9 @@ public class Instance : NetworkBehaviour
    // The list of treasure sites in this instance (server only)
    public List<TreasureSite> treasureSites = new List<TreasureSite>();
 
+   // The list of interactable objects in this instance (server only)
+   public List<InteractableObjEntity> interactableObject = new List<InteractableObjEntity>();
+   
    // The list of sea structures in this instance (server only)
    public List<SeaStructure> seaStructures = new List<SeaStructure>();
 

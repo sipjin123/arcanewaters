@@ -204,6 +204,12 @@ public class InstanceManager : MonoBehaviour
       instance.treasureSiteCount++;
    }
 
+   public void addInteractableToInstance (InteractableObjEntity objEntity, Instance instance) {
+      instance.entities.Add(objEntity);
+      instance.interactableObject.Add(objEntity);
+      objEntity.instanceId = instance.id;
+   }
+
    public void addSeaStructureToInstance (SeaStructure seaStructure, Instance instance) {
       instance.entities.Add(seaStructure);
       instance.seaStructures.Add(seaStructure);
