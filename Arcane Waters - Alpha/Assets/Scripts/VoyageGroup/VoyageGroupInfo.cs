@@ -31,12 +31,95 @@ public class VoyageGroupInfo
    // The userId of the members
    public List<int> members = new List<int>();
 
+   // The current voyage group stats
+   public List<VoyageGroupStats> voyageGroupStats = new List<VoyageGroupStats>();
+
    // Where members of this group will be spawned in pvp
    public string pvpSpawn = "";
 
    #endregion
 
    public VoyageGroupInfo () { }
+
+   public int getTotalDamage (int userId) {
+      VoyageGroupStats voyageStat = voyageGroupStats.Find(_ => _.userId == userId);
+      if (voyageStat != null) {
+         return voyageStat.totalDamageDealt;
+      }
+      return 0;
+   }
+
+   public int getTotalTank (int userId) {
+      VoyageGroupStats voyageStat = voyageGroupStats.Find(_ => _.userId == userId);
+      if (voyageStat != null) {
+         return voyageStat.totalTankedDamage;
+      }
+      return 0;
+   }
+
+   public int getTotalBuffs (int userId) {
+      VoyageGroupStats voyageStat = voyageGroupStats.Find(_ => _.userId == userId);
+      if (voyageStat != null) {
+         return voyageStat.totalBuffs;
+      }
+      return 0;
+   }
+
+   public int getTotalHeals (int userId) {
+      VoyageGroupStats voyageStat = voyageGroupStats.Find(_ => _.userId == userId);
+      if (voyageStat != null) {
+         return voyageStat.totalHeals;
+      }
+      return 0;
+   }
+
+   public void addDamageStatsForUser (int userId, int stat) {
+      VoyageGroupStats voyageStat = voyageGroupStats.Find(_ => _.userId == userId);
+      if (voyageStat == null) {
+         voyageGroupStats.Add(new VoyageGroupStats {
+            userId = userId,
+            totalDamageDealt = stat
+         });
+      } else {
+         voyageStat.totalDamageDealt += stat;
+      }
+   }
+
+   public void addTankStatsForUser (int userId, int stat) {
+      VoyageGroupStats voyageStat = voyageGroupStats.Find(_ => _.userId == userId);
+      if (voyageStat == null) {
+         voyageGroupStats.Add(new VoyageGroupStats {
+            userId = userId,
+            totalTankedDamage = stat
+         });
+      } else {
+         voyageStat.totalTankedDamage += stat;
+      }
+   }
+
+   public void addHealStatsForUser (int userId, int stat) {
+      VoyageGroupStats voyageStat = voyageGroupStats.Find(_ => _.userId == userId);
+      if (voyageStat == null) {
+         voyageGroupStats.Add(new VoyageGroupStats {
+            userId = userId,
+            totalHeals = stat
+         });
+      } else {
+         voyageStat.totalHeals += stat;
+      }
+   }
+
+   public void addBuffStatsForUser (int userId, int stat) {
+      VoyageGroupStats voyageStat = voyageGroupStats.Find(_ => _.userId == userId);
+      if (voyageStat == null) {
+         voyageGroupStats.Add(new VoyageGroupStats {
+            userId = userId,
+            totalBuffs = stat
+         });
+      } else {
+         voyageStat.totalBuffs += stat;
+      }
+   }
 
    public VoyageGroupInfo (int groupId, int voyageId, DateTime creationDate, bool isQuickmatchEnabled, bool isPrivate, bool isGhost) {
       this.groupId = groupId;

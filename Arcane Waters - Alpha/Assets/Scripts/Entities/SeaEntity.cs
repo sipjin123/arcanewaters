@@ -202,6 +202,15 @@ public class SeaEntity : NetEntity
          GenericEffector.setEffectorCollisions(getMainCollider(), false, GenericEffector.Type.Current);
       }
 
+      if (isServer) {
+         if (VoyageGroupManager.self.tryGetGroupById(voyageGroupId, out VoyageGroupInfo voyageGroup)) {
+            totalDamageDealt = voyageGroup.getTotalDamage(userId);
+            totalDamageTaken = voyageGroup.getTotalTank(userId);
+            totalBuffs = voyageGroup.getTotalBuffs(userId);
+            totalHeals = voyageGroup.getTotalHeals(userId);
+         }
+      }
+
       editorGenerateAggroCone();
       initialPosition = transform.localPosition;
 
@@ -257,8 +266,15 @@ public class SeaEntity : NetEntity
       onDamage(amount);
       if (sourceEntity != null && sourceEntity is SeaEntity) {
          SeaEntity seaEntity = (SeaEntity) sourceEntity;
-         seaEntity.totalDamageDealt += amount;
-         totalDamageTaken += amount;
+
+         if (VoyageGroupManager.self.tryGetGroupById(voyageGroupId, out VoyageGroupInfo voyageGroup)) {
+            voyageGroup.addTankStatsForUser(userId, amount);
+            totalDamageTaken = voyageGroup.getTotalTank(userId);
+         }
+         if (VoyageGroupManager.self.tryGetGroupById(seaEntity.voyageGroupId, out VoyageGroupInfo targetVoyageGroup)) {
+            targetVoyageGroup.addDamageStatsForUser(seaEntity.userId, amount);
+            seaEntity.totalDamageDealt = targetVoyageGroup.getTotalDamage(seaEntity.userId);
+         }
       }
 
       // Return the final amount of damage dealt

@@ -302,7 +302,10 @@ public class ShipEntity : SeaEntity
                break;
             case Attack.Type.SpeedBoost:
                hasUsedBuff = true;
-               totalBuffs++;
+               if (VoyageGroupManager.self.tryGetGroupById(voyageGroupId, out VoyageGroupInfo targetVoyageGroup)) {
+                  targetVoyageGroup.addBuffStatsForUser(userId, 1);
+                  totalBuffs = targetVoyageGroup.getTotalBuffs(userId);
+               }
                addBuff(this.netId, SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost, shipAbilityData);
                Rpc_CastSkill(shipAbilityId, shipAbilityData, transform.position, 0, true, false, true);
                break;
@@ -319,7 +322,10 @@ public class ShipEntity : SeaEntity
                      StartCoroutine(CO_TriggerActiveAOEBuff(shipAbilityData, shipAbilityData.statusDuration));
                      break;
                   case Attack.Type.SpeedBoost:
-                     totalBuffs++;
+                     if (VoyageGroupManager.self.tryGetGroupById(voyageGroupId, out VoyageGroupInfo targetVoyageGroup)) {
+                        targetVoyageGroup.addBuffStatsForUser(userId, 1);
+                        totalBuffs = targetVoyageGroup.getTotalBuffs(userId);
+                     }
                      StartCoroutine(CO_TriggerActiveAOEBuff(shipAbilityData, shipAbilityData.statusDuration));
                      break;
                }
@@ -335,7 +341,10 @@ public class ShipEntity : SeaEntity
                                  StartCoroutine(CO_TriggerOneShotBuff(allyShip, shipAbilityData, Attack.Type.Heal, allyShip.netId, false));
                                  break;
                               case Attack.Type.SpeedBoost:
-                                 totalBuffs++;
+                                 if (VoyageGroupManager.self.tryGetGroupById(voyageGroupId, out VoyageGroupInfo targetVoyageGroup)) {
+                                    targetVoyageGroup.addBuffStatsForUser(userId, 1);
+                                    totalBuffs = targetVoyageGroup.getTotalBuffs(userId);
+                                 }
                                  allyShip.addBuff(this.netId, SeaBuff.Category.Buff, SeaBuff.Type.SpeedBoost, shipAbilityData);
                                  break;
                            }
