@@ -130,6 +130,7 @@ public class SeaProjectile : NetworkBehaviour
             //_rigidbody.velocity *= (_abilityData == null ? 1 : projectileData.animationSpeed);
             //_rigidbody.mass = projectileData.projectileMass;
             transform.localScale = new Vector3(projectileData.projectileScale, projectileData.projectileScale, projectileData.projectileScale);
+            _circleCollider.radius = projectileData.colliderRadius;
          }
       }
       _rigidbody.drag = linearDrag;

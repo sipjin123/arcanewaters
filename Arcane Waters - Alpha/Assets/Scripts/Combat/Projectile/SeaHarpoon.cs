@@ -30,7 +30,15 @@ public class SeaHarpoon : SeaProjectile {
          _alignDirectionWithVelocity = true;
       }
 
-      _sourceEntity = SeaManager.self.getEntity(_creatorNetId);
+      SeaEntity sourceEntity = SeaManager.self.getEntity(_creatorNetId);
+      if (sourceEntity == null) {
+         D.error("Harpoon couldn't find a reference to its source entity, netId: " + _creatorNetId);
+      } else {
+         _sourceEntity = sourceEntity as PlayerShipEntity;
+         if (_sourceEntity == null) {
+            D.error("Harpoon source entity isn't a player ship.");
+         }
+      }
 
       if (isClient && _attachedEntityNetId != 0) {
          onAttachToEntityClient(_attachedEntityNetId);
@@ -60,6 +68,14 @@ public class SeaHarpoon : SeaProjectile {
 
          Vector2 ropeVector = getRopeEndPos() - getRopeStartPos();
          float ropeLength = ropeVector.magnitude;
+
+         // Reduce the rope max length, if the source entity is reeling in
+         if (_sourceEntity.isReelingIn) {
+            float timeSpentReeling = (float) NetworkTime.time - _sourceEntity.reelInStartTime;
+            float reelSpeedMultiplier = Mathf.Clamp01(timeSpentReeling / REEL_IN_SPEED_RAMP_UP_TIME);
+
+            _lineMaxLength = Mathf.Clamp(_lineMaxLength - Time.deltaTime * REEL_IN_SPEED * reelSpeedMultiplier, ROPE_MIN_LENGTH, float.MaxValue);
+         }
 
          // Don't apply a force if the rope's length isn't greater than the max length
          if (ropeLength <= _lineMaxLength) {
@@ -152,9 +168,6 @@ public class SeaHarpoon : SeaProjectile {
       _attachedEntityNetId = entity.netId;
       Rpc_OnAttachToEntity(entity.netId);
       _circleCollider.enabled = false;
-
-      Vector2 toHitEntity = _attachedEntity.transform.position - _sourceEntity.transform.position;
-      _lineMaxLength = toHitEntity.magnitude;
    }
 
    [ClientRpc]
@@ -199,7 +212,7 @@ public class SeaHarpoon : SeaProjectile {
    #region Private Variables
 
    // A reference to the entity that created this projectile
-   protected SeaEntity _sourceEntity = null;
+   protected PlayerShipEntity _sourceEntity = null;
 
    // A reference to the entity that we are attached to, if any
    protected SeaEntity _attachedEntity = null;
@@ -210,10 +223,19 @@ public class SeaHarpoon : SeaProjectile {
 
    // The maximum length for the harpoon rope
    [SyncVar]
-   private float _lineMaxLength = 1.0f;
+   private float _lineMaxLength = 3.0f;
 
    // How long the harpoon line has been under stress for
    private float _lineStressTime = 0.0f;
+
+   // How fast the line will be reeled in
+   private const float REEL_IN_SPEED = 0.25f;
+
+   // How long the player needs to be reeling for, before the reeling reaches 'max speed'
+   private const float REEL_IN_SPEED_RAMP_UP_TIME = 1.0f;
+
+   // The minimum amount of length for the harpoon rope, when reeling in, it will stop reeling once it reaches this length
+   private const float ROPE_MIN_LENGTH = 0.5f;
 
    #endregion
 }

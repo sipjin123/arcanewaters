@@ -117,7 +117,8 @@ public class PerformanceUtil : MonoBehaviour {
          FileName = "powershell.exe",
          Arguments = processArguments,
          UseShellExecute = false,
-         RedirectStandardOutput = true
+         RedirectStandardOutput = true,
+         CreateNoWindow = true,
       };
 
       Process test = Process.Start(startInfo);

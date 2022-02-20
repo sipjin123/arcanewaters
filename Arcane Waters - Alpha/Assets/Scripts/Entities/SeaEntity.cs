@@ -283,22 +283,27 @@ public class SeaEntity : NetEntity
             GameStatsManager gameStatsManager = GameStatsManager.self;
 
             if (gameStatsManager != null) {
-               if (lastAttacker.isPlayerShip()) {
+               if (lastAttacker.isPlayerShip() && GameStatsManager.self.isUserRegistered(lastAttacker.userId)) {
                   int silverReward = SilverManager.computeSilverReward(this);
                   gameStatsManager.addSilverAmount(lastAttacker.userId, silverReward);
                   Target_ReceiveSilverCurrency(lastAttacker.getPlayerShipEntity().connectionToClient, silverReward, SilverManager.SilverRewardReason.Kill);
                }
 
                if (this.isPlayerShip()) {
-                  gameStatsManager.addSilverRank(lastAttacker.userId, 1);
                   gameStatsManager.addPlayerKillCount(lastAttacker.userId);
-                  gameStatsManager.resetSilverRank(this.userId);
                   gameStatsManager.addDeathCount(this.userId);
                   this.rpc.broadcastPvPKill(lastAttacker, this);
 
-                  int silverPenalty = SilverManager.computeSilverPenalty(this);
-                  gameStatsManager.addSilverAmount(this.userId, -silverPenalty);
-                  Target_ReceiveSilverCurrency(this.connectionToClient, -silverPenalty, SilverManager.SilverRewardReason.Death);
+                  if (GameStatsManager.self.isUserRegistered(lastAttacker.userId)) {
+                     gameStatsManager.addSilverRank(lastAttacker.userId, 1);
+                  }
+
+                  if (GameStatsManager.self.isUserRegistered(this.userId)) {
+                     gameStatsManager.resetSilverRank(this.userId);
+                     int silverPenalty = SilverManager.computeSilverPenalty(this);
+                     gameStatsManager.addSilverAmount(this.userId, -silverPenalty);
+                     Target_ReceiveSilverCurrency(this.connectionToClient, -silverPenalty, SilverManager.SilverRewardReason.Death);
+                  }
 
                   rpc.assignVoyageRatingPoints(VoyageRatingManager.computeVoyageRatingPointsReward(VoyageRatingManager.RewardReason.DeathAtSea));
 
@@ -328,7 +333,7 @@ public class SeaEntity : NetEntity
                      if (attackerEntity != null && attackerEntity.userId != lastAttacker.userId) {
                         gameStatsManager.addAssistCount(attackerEntity.userId);
 
-                        if (attackerEntity.isPlayerShip()) {
+                        if (attackerEntity.isPlayerShip() && GameStatsManager.self.isUserRegistered(attackerEntity.userId)) {
                            int assistReward = SilverManager.computeAssistReward(this);
                            gameStatsManager.addSilverAmount(attackerEntity.userId, assistReward);
                            Target_ReceiveSilverCurrency(attackerEntity.getPlayerShipEntity().connectionToClient, assistReward, SilverManager.SilverRewardReason.Assist);

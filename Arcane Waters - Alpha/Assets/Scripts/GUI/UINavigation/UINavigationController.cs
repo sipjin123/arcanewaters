@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 
 public class UINavigationController : MonoBehaviour {
+   public CanvasGroup parentCanvasGroup;
    public GameObject[] items;
    public Button actionButton;
 
@@ -12,16 +13,20 @@ public class UINavigationController : MonoBehaviour {
    #endregion
 
    private void Start () {
+      if (!parentCanvasGroup) {
+         parentCanvasGroup = GetComponent<CanvasGroup>();
+      }
+      
       ResetItems();
    }
 
    private void ResetItems() {
+      _currItemId = 0;
+      
       // Init items data
       _itemsData = new List<ItemData>();
       foreach (GameObject item in items) {
-         if (item.activeSelf && item.activeInHierarchy) {
-            _itemsData.Add(new ItemData(item));
-         }
+         _itemsData.Add(new ItemData(item));
       }
       
       // Reset items selection
@@ -30,19 +35,30 @@ public class UINavigationController : MonoBehaviour {
       }
       
       // Set default selection
-      // FIXME: Temporary disabling UI nav controller 
-      // updateSelection(true);
+      updateSelection(true);
    }
 
    private void Update () {
-      // FIXME: Temporary disabling UI nav controller 
-      return;
-   
       // Skip for batch mode
       if (Util.isBatch()) return;
       
-      // Don't tick update when disabled (controlled by UINavigationManager)
-      if (!enabled || isLocked) return;
+      // Check parentCanvasGroup status
+      if (parentCanvasGroup) {
+         if (parentCanvasGroup.interactable && !_canvasGroupInteractable) {
+            OnEnable();
+         }
+         if (!parentCanvasGroup.interactable && _canvasGroupInteractable) {
+            OnDisable();
+         }
+
+         _canvasGroupInteractable = parentCanvasGroup.interactable;
+      }
+      
+      // Don't tick update when disabled (controlled by UINavigationManager), or parentCanvasGroup is not interactable
+      if (!enabled || isLocked || (parentCanvasGroup && !parentCanvasGroup.interactable)) return;
+
+      // Skip tick update if InputManager is not initialized yet 
+      if (!InputManager.self) return;
       
       // Enable UIControl input group if its disabled
       if (!InputManager.self.inputMaster.UIControl.enabled) {
@@ -54,7 +70,7 @@ public class UINavigationController : MonoBehaviour {
          if (_itemsData[id].isInputField && _itemsData[id].inputField.isFocused) {
             changeSelection(id);
          }
-      }      
+      }
 
       // Enter
       if (
@@ -82,7 +98,7 @@ public class UINavigationController : MonoBehaviour {
             }
             // otherwise - select next item
             else {
-               changeSelection(_currItemId + 1);
+               changeSelection(_currItemId + 1, 1);
             }
          }
       }
@@ -98,7 +114,7 @@ public class UINavigationController : MonoBehaviour {
             }
             // otherwise - select prev item
             else {
-               changeSelection(_currItemId - 1);
+               changeSelection(_currItemId - 1, -1);
             }            
          }
       }
@@ -134,7 +150,26 @@ public class UINavigationController : MonoBehaviour {
       }
    }
 
-   private void changeSelection(int newItemId) {
+   private void changeSelection(int newItemId, int direction=1) {
+      // If new item is not active - find active one
+      if (!_itemsData[Mathf.Clamp(newItemId, 0, _itemsData.Count-1)].isActive) {
+         // If moving to the next item and new id is the last one - move to prev active item 
+         if (direction == 1 && newItemId >= _itemsData.Count - 1) {
+            changeSelection(newItemId-1, -1);
+            return;
+         }
+         // If moving to the prev item and new id is the first one - move fo next active item 
+         if (direction == -1 && newItemId <= 0) {
+            changeSelection(newItemId+1, 1);
+            return;
+         }
+         
+         // Otherwise - continue
+         changeSelection(newItemId + direction, direction);
+         return;
+      }
+      
+      // Process normal way
       _prevItemId = _currItemId;
       _currItemId = Mathf.Clamp(newItemId, 0, _itemsData.Count-1) ;
       updateSelection();
@@ -176,6 +211,7 @@ public class UINavigationController : MonoBehaviour {
       #endregion
 
       public ItemData(GameObject item) {
+         _item = item;
          inputField = item.GetComponent<InputField>();
          button = item.GetComponent<Button>();
          toggle = item.GetComponent<Toggle>();
@@ -185,6 +221,13 @@ public class UINavigationController : MonoBehaviour {
          isDropdownOpen = false;
       }
       
+      public bool isActive { get { 
+         return 
+            _item.activeSelf && 
+            _item.activeInHierarchy && 
+            (isButton && button.interactable || !isButton)
+            ; 
+      } }
       public bool isInputField { get { return inputField != null; } }
       public bool isButton { get { return button != null; } }
       public bool isToggle { get { return toggle != null; } }
@@ -271,6 +314,7 @@ public class UINavigationController : MonoBehaviour {
       }
       
       #region Private Variables
+      private GameObject _item;
       #endregion
    }
 
@@ -278,5 +322,6 @@ public class UINavigationController : MonoBehaviour {
    private List<ItemData> _itemsData;
    private int _prevItemId;
    private int _currItemId;
+   private bool _canvasGroupInteractable;
    #endregion
 }

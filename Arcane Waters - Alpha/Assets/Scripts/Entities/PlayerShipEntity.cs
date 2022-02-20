@@ -157,6 +157,14 @@ public class PlayerShipEntity : ShipEntity
    // Reference to the level up effect
    public LevelUpEffect levelUpEffect;
 
+   // Whether the player has the 'reeling in' key down.
+   [HideInInspector]
+   public bool isReelingIn = false;
+
+   // When the player last started reeling in
+   [HideInInspector]
+   public float reelInStartTime = 0.0f;
+
    #endregion
 
    protected override bool isBot () { return false; }
@@ -440,6 +448,12 @@ public class PlayerShipEntity : ShipEntity
             } else if (InputManager.self.inputMaster.Hud.PrevShortcut.WasPerformedThisFrame()) {
                prevAbility();
             }
+
+            if (InputManager.self.inputMaster.Sea.ReelIn.WasPerformedThisFrame()) {
+               Cmd_SetIsReelingIn(true);
+            } else if (InputManager.self.inputMaster.Sea.ReelIn.WasReleasedThisFrame()) {
+               Cmd_SetIsReelingIn(false);
+            }
          }
       }
 
@@ -454,7 +468,10 @@ public class PlayerShipEntity : ShipEntity
 
                NetEntity casterEntity = EntityManager.self.getEntityByNetId(healData.casterId);
                if (casterEntity != null && casterEntity is ShipEntity) {
-                  ((ShipEntity) casterEntity).totalHeals += (int) healValue;
+                  if (VoyageGroupManager.self.tryGetGroupById(casterEntity.voyageGroupId, out VoyageGroupInfo voyageGroup)) {
+                     voyageGroup.addHealStatsForUser(casterEntity.userId, healValue);
+                     ((ShipEntity) casterEntity).totalHeals = voyageGroup.getTotalHeals(casterEntity.userId);
+                  }
                }
                Rpc_CastSkill(healData.buffAbilityIdReference, null, transform.position, healValue, true, true, false);
             }
@@ -2268,6 +2285,15 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
+   [Command]
+   public void Cmd_SetIsReelingIn (bool newValue) {
+      isReelingIn = newValue;
+
+      if (newValue) {
+         reelInStartTime = (float)NetworkTime.time;
+      }
+   }
+
    #region Private Variables
 
    // Our ship movement sound
@@ -2367,7 +2393,7 @@ public class PlayerShipEntity : ShipEntity
    private int _currentAbilitySlotIndex = 0;
 
    // A list of references to any active sea mines
-   public List<SeaMine> _seaMines = new List<SeaMine>();
+   private List<SeaMine> _seaMines = new List<SeaMine>();
 
    // The maximum number of active sea mines the player can have at a time
    private const int SEA_MINE_LIMIT = 4;

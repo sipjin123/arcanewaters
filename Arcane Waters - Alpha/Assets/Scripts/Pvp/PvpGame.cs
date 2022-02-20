@@ -1219,6 +1219,7 @@ public class PvpGame : MonoBehaviour {
    private Dictionary<PvpTeamType, Faction.Type> _teamFactions = new Dictionary<PvpTeamType, Faction.Type>();
 
    // A list of all the users in this pvp game, by userId
+   [SerializeField]
    private List<int> _usersInGame = new List<int>();
 
    // How many teams are in this Pvp game

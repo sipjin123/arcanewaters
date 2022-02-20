@@ -9909,7 +9909,7 @@ public class RPCManager : NetworkBehaviour
       VoyageRatingIndicator.self.setRatingPoints(newRatingPoints);
       int newRatingLevel = VoyageRatingManager.computeRatingLevelFromPoints(newRatingPoints);
       int prevRatingLevel = VoyageRatingManager.computeRatingLevelFromPoints(prevRatingPoints);
-      //D.debug($"VoyageRatingManager: new rating state for player {Global.player.userId}. earned points:{pointsAssigned}, current points:{newRatingPoints}, current rating: {newRatingLevel}, prev rating:{prevRatingLevel}");
+      D.debug($"VoyageRatingManager: new rating state for player {Global.player.userId}. earned points:{pointsAssigned}, current points:{newRatingPoints}, current rating: {newRatingLevel}, prev rating:{prevRatingLevel}");
    }
 
    #endregion

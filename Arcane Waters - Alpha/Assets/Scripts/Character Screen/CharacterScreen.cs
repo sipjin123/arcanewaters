@@ -67,6 +67,9 @@ public class CharacterScreen : GenericGameManager {
 
       // Look up components
       this.canvasGroup = GetComponent<CanvasGroup>();
+      
+      // Disable canvas group until it initialized
+      Util.disableCanvasGroup(canvasGroup);      
 
       // Look up our Character Spots
       foreach (CharacterSpot spot in GetComponentsInChildren<CharacterSpot>()) {
@@ -78,12 +81,6 @@ public class CharacterScreen : GenericGameManager {
 
    private void Start () {
       battleBoard.setWeather(WeatherEffectType.Cloud, battleBoard.biomeType);
-      InputManager.self.inputMaster.General.Continue.performed += continuePressed;
-   }
-
-   void continuePressed(InputAction.CallbackContext ctx) {
-      if (!isShowing()) return;
-      getFirstValidSpot()?.selectButtonWasPressed();
    }
 
    public StartingArmorData getStartingArmor (int index) {

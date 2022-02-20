@@ -16,6 +16,9 @@ public class ProjectileStatData  {
    // The damage of the projectile
    public float projectileDamage = 25;
 
+   // The radius of the projectile's collider
+   public float colliderRadius = 0.04f;
+
    // The speed of the projectile animation
    public float animationSpeed = 1;
 
