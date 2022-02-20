@@ -23,6 +23,9 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    // The PvP-PvE mode image
    public Image pvpPveModeImage;
 
+   // The pvp open world icons
+   public GameObject pvpOpenWorldRoyale, pvpOpenWorldGuild, pvpOpenWorldGroup;
+
    // The PvP-PvE text
    public TextMeshProUGUI pvpPveText;
 
@@ -201,6 +204,23 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       Instance instance = Global.player.getInstance();
       if (instance == null) {
          return;
+      }
+
+      pvpOpenWorldRoyale.SetActive(false);
+      pvpOpenWorldGroup.SetActive(false);
+      pvpOpenWorldGuild.SetActive(false);
+      if (instance.isPvP && VoyageManager.isOpenWorld(instance.areaKey)) {
+         switch (AreaManager.self.getAreaPvpGameMode(instance.areaKey)) {
+            case PvpGameMode.FreeForAll:
+               pvpOpenWorldRoyale.SetActive(true);
+               break;
+            case PvpGameMode.GroupWars:
+               pvpOpenWorldGroup.SetActive(true);
+               break;
+            case PvpGameMode.GuildWars:
+               pvpOpenWorldGuild.SetActive(true);
+               break;
+         }
       }
 
       // Show different relevant statuses depending on the area type

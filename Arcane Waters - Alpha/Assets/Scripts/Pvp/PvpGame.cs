@@ -1323,6 +1323,9 @@ public enum PvpGameMode
    None = 0,
    BaseAssault = 1,
    CaptureTheFlag = 2,
+   GuildWars = 3,
+   FreeForAll = 4,
+   GroupWars = 5
 }
 
 public enum PvpArenaSize

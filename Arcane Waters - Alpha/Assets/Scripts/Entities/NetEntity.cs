@@ -63,6 +63,10 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public bool isStealthMuted;
 
+   // Determines the type of game mode this entity is in
+   [SyncVar]
+   public PvpGameMode openWorldGameMode = PvpGameMode.None;
+
    // The mute expiration date
    [SyncVar]
    public long muteExpirationDate;
@@ -1258,6 +1262,18 @@ public class NetEntity : NetworkBehaviour
 
       if (otherEntity == this) {
          return false;
+      }
+
+      if (openWorldGameMode == PvpGameMode.FreeForAll && otherEntity.openWorldGameMode == PvpGameMode.FreeForAll) {
+         return true;
+      }
+
+      if (openWorldGameMode == PvpGameMode.GuildWars && otherEntity.openWorldGameMode == PvpGameMode.GuildWars) {
+         return otherEntity.guildId != guildId;
+      }
+
+      if (openWorldGameMode == PvpGameMode.GroupWars && otherEntity.openWorldGameMode == PvpGameMode.GroupWars) {
+         return otherEntity.voyageGroupId != voyageGroupId;
       }
 
       // If both entities are on a pvp team, check if they're on our team

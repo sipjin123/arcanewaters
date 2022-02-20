@@ -578,9 +578,16 @@ public class MyNetworkManager : NetworkManager
             player.rpc.setAdminBattleParameters();
 
             // In sea voyages, if the player is spawning in a different position than the default spawn, we conclude he is returning from a treasure site and has already entered PvP
-            if (instance.isVoyage && AreaManager.self.isSeaArea(player.areaKey) &&
-               Vector3.Distance(userInfo.localPos, SpawnManager.self.getDefaultLocalPosition(player.areaKey)) > 2f) {
-               player.hasEnteredPvP = true;
+            if (instance.isVoyage && AreaManager.self.isSeaArea(player.areaKey)) {
+               if (Vector3.Distance(userInfo.localPos, SpawnManager.self.getDefaultLocalPosition(player.areaKey)) > 2f) {
+                  player.hasEnteredPvP = true;
+               }
+
+               // Players in open world pvp can attack each other without waiting for triggers
+               if (instance.isPvP && VoyageManager.isOpenWorld(player.areaKey)) {
+                  player.hasEnteredPvP = true;
+                  player.openWorldGameMode = AreaManager.self.getAreaPvpGameMode(player.areaKey);
+               }
             }
 
             // Gives the user admin features if it has an admin flag

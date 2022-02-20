@@ -157,6 +157,22 @@ public class VoyageManager : GenericGameManager {
    }
 
    [Server]
+   public int getPvpInstanceId (string areaKey) {
+      List<Voyage> voyages = new List<Voyage>();
+
+      // Get all the voyages we know about in all the servers we know about
+      foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
+         foreach (Voyage voyage in server.voyages.Values) {
+            if (voyage.isPvP && voyage.areaKey == areaKey) {
+               return voyage.instanceId;
+            }
+         }
+      }
+
+      return -1;
+   }
+
+   [Server]
    public List<Voyage> getAllTreasureSiteInstancesLinkedToVoyages () {
       List<Voyage> voyages = new List<Voyage>();
 

@@ -43,6 +43,14 @@ public class InstanceManager : MonoBehaviour
             if (!tryGetVoyageInstance(voyageId, out instance)) {
                D.error("Could not find the voyage instance for voyage id " + voyageId + " in area " + areaKey);
             }
+
+            int voyageInstanceId = VoyageManager.self.getPvpInstanceId(areaKey);
+            if (voyageInstanceId > 0) {
+               Instance inst = getInstance(voyageInstanceId);
+               if (inst != null) {
+                  instance = inst;
+               }
+            }
          } else if (VoyageManager.isTreasureSiteArea(areaKey)) {
             // Search for the parent sea instance
             if (tryGetVoyageInstance(voyageId, out Instance seaVoyageInstance)) {
