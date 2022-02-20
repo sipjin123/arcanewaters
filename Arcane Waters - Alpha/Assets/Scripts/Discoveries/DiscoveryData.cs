@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 
 #if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
@@ -18,9 +19,11 @@ public class DiscoveryData
    // The reference image url
    public string spriteUrl;
 
-   // The spawn chances of this discovery
-   [Range(0, 1)]
+   // The rarity of the discovery
    public Rarity.Type rarity = Rarity.Type.Common;
+
+   // The category of the discovery
+   public Discovery.Category category;
 
    // The unique ID of this discovery
    public int discoveryId = 0;
@@ -35,16 +38,18 @@ public class DiscoveryData
       this.discoveryId = reader.GetInt32("discoveryId");
       this.spriteUrl = reader.GetString("sourceImageUrl");
       this.rarity = (Rarity.Type)reader.GetInt32("rarity");
+      this.category = (Discovery.Category) reader.GetInt32("category");
    }
 
 #endif
 
-   public DiscoveryData (string name, string description, int discoveryId, string spriteUrl, Rarity.Type rarity) {
+   public DiscoveryData (string name, string description, int discoveryId, string spriteUrl, Rarity.Type rarity, Discovery.Category category) {
       this.name = name;
       this.description = description;
       this.discoveryId = discoveryId;
       this.spriteUrl = spriteUrl;
       this.rarity = rarity;
+      this.category = category;
    }
 
    public DiscoveryData () { }

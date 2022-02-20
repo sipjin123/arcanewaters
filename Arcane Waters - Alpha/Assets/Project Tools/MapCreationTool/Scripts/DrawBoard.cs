@@ -115,7 +115,7 @@ namespace MapCreationTool
 
       public static void changeLoadedVersion (MapVersion version) {
          if (version == null) {
-            PlacedPrefab.nextPrefabId = 0;
+            PlacedPrefab.nextPrefabId = 1;
          }
          loadedVersion = version;
          loadedVersionChanged?.Invoke(loadedVersion);
@@ -517,6 +517,8 @@ namespace MapCreationTool
       public static T[] getPrefabComponents<T> () where T : MonoBehaviour {
          return instance.prefabLayer.GetComponentsInChildren<T>();
       }
+
+      public List<PlacedPrefab> getPlacedPrefabs() => placedPrefabs;
 
       public void setTilesModifyPreview (BoardChange change) {
          foreach (Layer layer in getLayersEnumerator())

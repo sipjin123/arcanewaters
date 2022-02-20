@@ -15,6 +15,7 @@ MonoBehaviour:
   title: Stool
   canInheritPosition: 0
   canControlPosition: 1
+  positionStep: {x: 0, y: 0}
   dataFields: []
   selectDataFields: []
   customDataFields: []
@@ -30,25 +31,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 1
-  blurSize: 0
-  color: {r: 1, g: 1, b: 1, a: 1}
-  blurAlphaMultiplier: 0.7
-  blurAlphaChoke: 1
-  invertBlur: 0
-  alphaThreshold: 0.05
-  buffer: 0
-  includeChildren: 0
-  childLayers:
-    serializedVersion: 2
-    m_Bits: 1
-  ignoreChildNames: []
-  sortMethod: 1
-  isAnimated: 1
-  useExportedFrame: 0
-  customFrameName: 
-  generatesOnStart: 0
-  generatesOnValidate: 1
+  ignoredRenderers: []
+  _renderers: []
 --- !u!1 &8559633236296425487
 GameObject:
   m_ObjectHideFlags: 0
@@ -94,6 +78,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -136,10 +121,25 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3457884362103028045, guid: d615a891746b62b42a9178a520b88e6b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3519744276131446487, guid: d615a891746b62b42a9178a520b88e6b,
         type: 3}
       propertyPath: isActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4358903657637332627, guid: d615a891746b62b42a9178a520b88e6b,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4426072140627331789, guid: d615a891746b62b42a9178a520b88e6b,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4547367626372011125, guid: d615a891746b62b42a9178a520b88e6b,
         type: 3}
@@ -206,6 +206,16 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 6.25
       objectReference: {fileID: 0}
+    - target: {fileID: 4992341748007331803, guid: d615a891746b62b42a9178a520b88e6b,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5798292356434967289, guid: d615a891746b62b42a9178a520b88e6b,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 6540673050084384565, guid: d615a891746b62b42a9178a520b88e6b,
         type: 3}
       propertyPath: m_Enabled
@@ -221,10 +231,20 @@ PrefabInstance:
       propertyPath: m_Size.y
       value: 0.19119874
       objectReference: {fileID: 0}
+    - target: {fileID: 6950790548630928318, guid: d615a891746b62b42a9178a520b88e6b,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 7979087778729773755, guid: d615a891746b62b42a9178a520b88e6b,
         type: 3}
       propertyPath: m_Name
       value: Stool Square Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 8989545678868625880, guid: d615a891746b62b42a9178a520b88e6b,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d615a891746b62b42a9178a520b88e6b, type: 3}

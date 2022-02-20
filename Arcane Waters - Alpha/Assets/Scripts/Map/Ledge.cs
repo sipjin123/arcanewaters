@@ -32,6 +32,11 @@ public class Ledge : TemporaryController, IMapEditorDataReceiver
          return;
       }
 
+      // Disallow triggering ledges while mid-bounce
+      if (player.isBouncingOnWeb()) {
+         return;
+      }
+
       tryTriggerController(player);
    }
 

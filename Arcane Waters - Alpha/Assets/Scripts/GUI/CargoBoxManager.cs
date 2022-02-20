@@ -11,6 +11,9 @@ public class CargoBoxManager : MonoBehaviour
    // Our Canvas Group
    public CanvasGroup canvasGroup;
 
+   // The top visual of the list
+   public Image topVisual = null;
+
    // The prefab we use for creating cargo box GUI elements
    public CargoBox cargoBoxPrefab;
 
@@ -27,14 +30,11 @@ public class CargoBoxManager : MonoBehaviour
 
    void Awake () {
       self = this;
-
-      // We start out empty
-      this.gameObject.DestroyChildren();
    }
 
    private void Update () {
       // Hide this panel in certain situations
-      bool shouldHidePanel = TitleScreen.self.isShowing() || CharacterScreen.self.isShowing() || Global.isInBattle() || boxesCount < 1;
+      bool shouldHidePanel = TitleScreen.self.isShowing() || CharacterScreen.self.isShowing() || Global.isInBattle();
 
       // Hide this panel, if the player is in a PvpMatch
       if (Global.player != null) {
@@ -50,7 +50,12 @@ public class CargoBoxManager : MonoBehaviour
 
    public void updateCargoBoxes (List<SiloInfo> siloInfo) {
       // Clear out the old
-      this.gameObject.DestroyChildren();
+      foreach (GameObject go in _dynamicElements) {
+         if (go != null) {
+            Destroy(go);
+         }
+      }
+      _dynamicElements.Clear();
 
       boxesCount = 0;
 
@@ -61,6 +66,7 @@ public class CargoBoxManager : MonoBehaviour
          }
 
          CargoBox box = Instantiate(cargoBoxPrefab);
+         _dynamicElements.Add(box.gameObject);
          box.transform.SetParent(this.transform, false);
          box.updateBox(info);
 
@@ -68,8 +74,11 @@ public class CargoBoxManager : MonoBehaviour
       }
 
       if (boxesCount > 0) {
-         Instantiate(listBottomPrefab, transform, false);
+         Image bot = Instantiate(listBottomPrefab, transform, false);
+         _dynamicElements.Add(bot.gameObject);
       }
+
+      topVisual.gameObject.SetActive(boxesCount > 0);
    }
 
    public int getCargoCount (Crop.Type cropType) {
@@ -83,6 +92,10 @@ public class CargoBoxManager : MonoBehaviour
    }
 
    #region Private Variables
+
+   // List of elements we have instantiated
+   private List<GameObject> _dynamicElements = new List<GameObject>();
+
 
    #endregion
 }

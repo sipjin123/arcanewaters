@@ -35,6 +35,9 @@ public class PlantableTree : MonoBehaviour
    // Visual for showing interaction needed icon
    public GameObject interactionNeededIcon = null;
 
+   // Space requirer component of this tree
+   public SpaceRequirer spaceRequirer = null;
+
    // How many chops were applied recently
    public int currentChopCount = 0;
 

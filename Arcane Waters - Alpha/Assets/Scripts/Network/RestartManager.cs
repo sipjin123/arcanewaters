@@ -29,6 +29,11 @@ public class RestartManager : GenericGameManager
    }
 
    public void onScheduledServerRestart (DateTime dateTime) {
+      // Ignore restart logic for locally created server builds
+      if (Util.isLocalDevBuild()) {
+         return;
+      }
+   
       _timeOfNextServerRestart = dateTime;
       _isServerRestartScheduled = true;
       StopAllCoroutines();
@@ -37,6 +42,11 @@ public class RestartManager : GenericGameManager
    }
 
    public void onCanceledServerRestart () {
+      // Ignore restart cancel logic for locally created server builds
+      if (Util.isLocalDevBuild()) {
+         return;
+      }
+
       if (_isServerRestartScheduled) {
          // Check if the server restart event has already been logged
          float secondsRemaining = (float) (_timeOfNextServerRestart - DateTime.UtcNow).TotalSeconds;

@@ -13,11 +13,11 @@ namespace MapCreationTool
       private int maxErrorCharacters = 1000;
 
       [SerializeField, Space(5)]
-      private Color infoColor = new Color();
+      public Color infoColor = new Color();
       [SerializeField]
-      private Color warningColor = new Color();
+      public Color warningColor = new Color();
       [SerializeField]
-      private Color errorColor = new Color();
+      public Color errorColor = new Color();
 
       public void displayInfo (string title, string content) {
          titleText.color = infoColor;

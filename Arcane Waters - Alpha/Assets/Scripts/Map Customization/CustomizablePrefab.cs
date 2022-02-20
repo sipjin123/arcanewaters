@@ -29,6 +29,9 @@ namespace MapCustomization
       // The icon of the prop
       public Sprite propIcon = null;
 
+      // Can players place this prefab, or is it disabled
+      public bool availableForPlacing = true;
+
       // State of the prefab that is set in map editor
       [HideInInspector]
       public PrefabState mapEditorState;

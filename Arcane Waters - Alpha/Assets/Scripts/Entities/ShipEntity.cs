@@ -504,12 +504,19 @@ public class ShipEntity : SeaEntity
       StartCoroutine(CO_FireDelayedCannonBall(startPos, endPos, startTime, endTime, attackType, color, shipAbilityData, normalizedDistance, timeStamp));
    }
 
-   [ClientRpc]
-   public void Rpc_PlayAbilitySfx (int abilityId, Vector3 position) {
-      ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(abilityId);
+   [Command]
+   public void Cmd_PlaySeaAbilitySfx (int abilityId, Vector3 position) {
+      Rpc_PlaySeaAbilitySfx(abilityId, position);
+   }
 
-      if (shipAbilityData != null) {
-         SoundEffectManager.self.playSeaAbilitySfx(shipAbilityData.sfxType, position);
+   [ClientRpc]
+   public void Rpc_PlaySeaAbilitySfx (int abilityId, Vector3 position) {
+      if (!Util.isBatch() && isClient) {
+         ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(abilityId);
+
+         if (shipAbilityData != null) {
+            SoundEffectManager.self.playSeaAbilitySfx(shipAbilityData.sfxType, position);
+         }
       }
    }
 

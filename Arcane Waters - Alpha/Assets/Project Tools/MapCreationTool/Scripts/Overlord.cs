@@ -189,6 +189,24 @@ namespace MapCreationTool
          return string.IsNullOrEmpty(errors);
       }
 
+      public string getWarnings () {
+         string errors = "";
+
+         // Make sure space requirements are respected
+         foreach (PlacedPrefab pref in DrawBoard.instance.getPlacedPrefabs()) {
+            SpaceRequirer req = pref.placedInstance.GetComponentInChildren<SpaceRequirer>();
+            if (req != null && req.raiseWarningsInMapEditor) {
+               if (!req.hasSpace()) {
+                  PrefabDataDefinition dataDef = pref.placedInstance.GetComponent<PrefabDataDefinition>();
+                  string n = dataDef == null ? pref.placedInstance.gameObject.name : dataDef.title;
+                  errors += "Prefab " + n + " " + pref.getData(DataField.PLACED_PREFAB_ID) + " does not have enough space" + Environment.NewLine;
+               }
+            }
+         }
+
+         return errors;
+      }
+
       private void initializeRemoteDatas () {
          remoteMaps = new RemoteMaps { OnLoaded = onRemoteDataLoaded };
          remoteSpawns = new RemoteSpawns { OnLoaded = onRemoteDataLoaded };

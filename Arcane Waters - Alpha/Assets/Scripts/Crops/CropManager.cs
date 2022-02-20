@@ -674,8 +674,8 @@ public class CropManager : NetworkBehaviour {
       // Show a confirmation panel
       PanelManager.self.noticeScreen.show("You just sold your crops for " + totalGold + " gold!");
 
-      // Play a sound
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.BUYSELL);
+      // Play a sound (buy_sell was triggered here)
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.PURCHASE_ITEM);
 
       // Updates the offers in the merchant panel
       Global.player.rpc.Cmd_GetCropOffersForShop(MerchantScreen.self.shopId);

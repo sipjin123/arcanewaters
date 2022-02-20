@@ -261,6 +261,18 @@ public class Util : MonoBehaviour
 
       return (buildType == "Production");
    }
+   
+   public static bool isLocalDevBuild () {
+      TextAsset deploymentConfigAsset = Resources.Load<TextAsset>("config");
+      Dictionary<string, object> deploymentConfig = Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string, object>;
+      string buildId = "";
+
+      if (deploymentConfig != null && deploymentConfig.ContainsKey("branch")) {
+         buildId = deploymentConfig["buildId"].ToString();
+      }
+
+      return (buildId == "");
+   }   
 
    public static bool isEmpty (String str) {
       return (str == null || str.Equals(""));
@@ -963,7 +975,7 @@ public class Util : MonoBehaviour
       #region Debug in editor
       // return true;
       #endregion
-      
+
       return CommandCodes.get(CommandCodes.Type.AUTO_TEST);
    }
 
@@ -971,7 +983,7 @@ public class Util : MonoBehaviour
       #region Debug in editor
       // return 100;
       #endregion
-      
+
       return Util.getCommandLineInt(CommandCodes.Type.AUTO_TEST + "");
    }
 
@@ -979,7 +991,7 @@ public class Util : MonoBehaviour
       #region Debug in editor
       // return true;
       #endregion
-      
+
       return CommandCodes.get(CommandCodes.Type.AUTO_WARP);
    }
 
@@ -987,12 +999,20 @@ public class Util : MonoBehaviour
       #region Debug in editor
       // return true;
       #endregion
-      
+
       return CommandCodes.get(CommandCodes.Type.AUTO_MOVE);
    }
 
    public static bool isStressTesting () {
       return CommandCodes.get(CommandCodes.Type.IS_STRESS_TEST);
+   }
+
+   public static bool isForceServerLocal () {
+      #region Debug in editor
+      // return true;
+      #endregion
+
+      return false;
    }
 
    public static bool isNubisEnabled () {
@@ -1354,7 +1374,7 @@ public class Util : MonoBehaviour
       // Capitalizes the first letter of each word
       return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s.ToLower());
    }
-   
+
    public static void stopHostAndReturnToTitleScreen () {
       D.debug($"Util.stopHostAndReturnToTitleScreen() was called.");
 
@@ -1406,7 +1426,7 @@ public class Util : MonoBehaviour
 
       TitleScreen.self.showLoginPanels();
    }
-   
+
    public static void stopHostAndReturnToCharacterSelectionScreen () {
       D.debug($"Util.stopHostAndReturnToCharacterScreen() was called.");
 
@@ -1618,6 +1638,7 @@ public class Util : MonoBehaviour
 
       for (int i = 0; i < count; i++) {
          if (!_colliderBuffer[i].transform.IsChildOf(excludeChildrenOf)) {
+            //UnityEngine.Debug.Log("Collision - " + _colliderBuffer[i].gameObject.name);
             return true;
          }
       }
@@ -1643,6 +1664,7 @@ public class Util : MonoBehaviour
 
       for (int i = 0; i < count; i++) {
          if (!_colliderBuffer[i].transform.IsChildOf(excludeChildrenOf)) {
+            //UnityEngine.Debug.Log("Collision - " + _colliderBuffer[i].gameObject.name);
             return true;
          }
       }
@@ -1719,6 +1741,15 @@ public class Util : MonoBehaviour
       }
 
       return points.ToArray();
+   }
+
+   public static List<Transform> getParentsChain (Transform of) {
+      // Finds all parent of a parent of a parent... and puts them in a new list
+      List<Transform> result = new List<Transform>();
+      for (Transform p = of; p != null; p = p.parent) {
+         result.Add(p);
+      }
+      return result;
    }
 
    public static bool distanceLessThan2D (Vector2 p1, Vector3 p2, float range) => distanceLessThan2D(p2, p1, range);

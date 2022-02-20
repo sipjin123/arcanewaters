@@ -148,7 +148,9 @@ public class SoundEffectManager : GenericGameManager
    public const string GAIN_SILVER = "event:/SFX/Player/Interactions/Non_Diegetic/Gain_Silver";
    public const string HARVESTING_HIT = "event:/SFX/Player/Interactions/Diegetic/Harvesting_Hit";
    public const string CROP_PLANT = "event:/SFX/Player/Interactions/Diegetic/Crop_Plant";
-   public const string BUYSELL = "event:/SFX/Game/UI/Buy_Sell";
+   //public const string BUYSELL = "event:/SFX/Game/UI/Buy_Sell";
+
+   public const string SHIP_SAILING = "event:/SFX/Player/Interactions/Diegetic/Ship/Ship_Sailing";
 
    #endregion
 
@@ -455,6 +457,22 @@ public class SoundEffectManager : GenericGameManager
       playAmbienceEvent();
    }
 
+   public void playShipSailingSfx (ShipSailingType shipSailingType, Transform shipTransform, Rigidbody2D shipBody) {
+      if (!_shipSailingEvent.isValid()) {
+         _shipSailingEvent = FMODUnity.RuntimeManager.CreateInstance(SHIP_SAILING);
+      }
+
+      FMODUnity.RuntimeManager.AttachInstanceToGameObject(_shipSailingEvent, shipTransform, shipBody);
+
+      _shipSailingEvent.setParameterByName(AUDIO_SWITCH_PARAM, (int) shipSailingType);
+
+      _shipSailingEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE state);
+
+      if (state == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
+         _shipSailingEvent.start();
+      }
+   }
+
    public void playAnimalCry (string path, Transform target) {
       string[] splits = path.Split('/');
       if (splits.Length > 0) {
@@ -527,6 +545,7 @@ public class SoundEffectManager : GenericGameManager
             path = HORROR_DEATH;
             break;
          case SeaMonsterEntity.Type.Horror_Tentacle:
+         case SeaMonsterEntity.Type.Tentacle:
             path = HORROR_TENTACLE_DEATH;
             break;
          case SeaMonsterEntity.Type.Fishman:
@@ -864,6 +883,9 @@ public class SoundEffectManager : GenericGameManager
    // Footsteps dictionary
    private Dictionary<int, float> _footstepsLastSound = new Dictionary<int, float>();
 
+   // Ship Sailing event
+   private FMOD.Studio.EventInstance _shipSailingEvent;
+
    private enum LandAbility
    {
       None = 0,
@@ -907,6 +929,12 @@ public class SoundEffectManager : GenericGameManager
       Cannonball_Fire = 3,
       Sea_Mine = 4,
       Fishman_Attack = 6
+   }
+
+   public enum ShipSailingType
+   {
+      Movement = 0,
+      Stopped = 1
    }
 
    #endregion

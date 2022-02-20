@@ -18,7 +18,7 @@ using System.Linq;
 
 
 [RequireComponent(typeof(EventTrigger))]
-public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
 {
    #region Public Variables
 
@@ -42,7 +42,12 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
       RightSideOfPanel = 3,
       BelowUIElement = 4
    }
-
+   
+   public enum DisplayType {
+      OnPointerEnter = 0,
+      OnPointerDown = 1
+   }
+   
    // Stores the desired tooltip placement
    public TooltipPlacement tooltipPlacement;
 
@@ -62,6 +67,9 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
    // Identifies if the key is derived from a child object
    public bool isKeyDerivedFromChildObject = false;
 
+   // Tooltip display type
+   public DisplayType displayType; 
+
    #endregion
 
    public bool isActive () {
@@ -72,8 +80,20 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
       TooltipHandler.self.cancelToolTip();
       _isActive = false;
    }
+   
+   public void OnPointerEnter (PointerEventData eventData) {
+      if (displayType == DisplayType.OnPointerEnter) {
+         showTooltip();
+      }
+   }
 
-   public void OnPointerEnter (PointerEventData pointerEventData) {
+   public void OnPointerDown (PointerEventData eventData) {
+      if (displayType == DisplayType.OnPointerDown) {
+         showTooltip();
+      }
+   }
+
+   public void showTooltip () {
       // Variable to store the panel gameObject
       _panelRoot = this.gameObject;
       _tooltipOwner = this.gameObject;
@@ -85,6 +105,7 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
          if (currentParent.gameObject.GetComponent<Image>() != null) {
             if ((currentParent.gameObject.GetComponent<Image>().sprite.name == "panel_base_2x_nails") || (currentParent.gameObject.GetComponent<Image>().sprite.name == "panel_background") || (currentParent.gameObject.GetComponent<Image>().sprite.name == "panel_base_2x")) {
                _panelRoot = currentParent.gameObject;
+               break;
             }
          }
          currentParent = currentParent.parent;

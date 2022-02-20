@@ -133,6 +133,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // Whether the collision with effectors is currently enabled for this player
    public bool stairEffectorCollisionEnabled = true;
 
+   // Reference to the Warp Waiting Effect
+   public IndeterminateProgressBar warpInProgressEffect;
+
    [Header("Emoting")]
 
    [SyncVar]
@@ -357,6 +360,27 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          }
          if (OptionsPanel.onlyShowGuildIconsOnMouseover) {
             showGuildIcon();
+         }
+      }
+   }
+
+   public override void toggleWarpInProgressEffect (bool show) {
+      // Toggle only if the new state is different from the current state
+      if (warpInProgressEffect == null) {
+         return;
+      }
+
+      if (warpInProgressEffect.isShowing() != show) {
+         warpInProgressEffect.toggle(show);
+
+         if (show) {
+            if (!warpInProgressEffect.isPlaying()) {
+               warpInProgressEffect.play();
+            }
+         } else {
+            if (warpInProgressEffect.isPlaying()) {
+               warpInProgressEffect.stop();
+            }
          }
       }
    }
@@ -1375,7 +1399,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
       Direction? inputDirection = InputManager.isPressingAnyDirection();
 
-      if (inputDirection == null|| !inputDirection.HasValue) {
+      if (inputDirection == null || !inputDirection.HasValue) {
          return;
       }
 

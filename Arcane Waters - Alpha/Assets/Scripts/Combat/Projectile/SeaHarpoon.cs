@@ -68,13 +68,15 @@ public class SeaHarpoon : SeaProjectile {
 
          Vector2 ropeVector = getRopeEndPos() - getRopeStartPos();
          float ropeLength = ropeVector.magnitude;
+         float ropeLengthReduction = 0.0f;
 
          // Reduce the rope max length, if the source entity is reeling in
          if (_sourceEntity.isReelingIn) {
             float timeSpentReeling = (float) NetworkTime.time - _sourceEntity.reelInStartTime;
             float reelSpeedMultiplier = Mathf.Clamp01(timeSpentReeling / REEL_IN_SPEED_RAMP_UP_TIME);
+            ropeLengthReduction = Time.deltaTime * REEL_IN_SPEED * reelSpeedMultiplier;
 
-            _lineMaxLength = Mathf.Clamp(_lineMaxLength - Time.deltaTime * REEL_IN_SPEED * reelSpeedMultiplier, ROPE_MIN_LENGTH, float.MaxValue);
+            _lineMaxLength = Mathf.Clamp(_lineMaxLength - ropeLengthReduction, ROPE_MIN_LENGTH, float.MaxValue);
          }
 
          // Don't apply a force if the rope's length isn't greater than the max length
@@ -105,7 +107,7 @@ public class SeaHarpoon : SeaProjectile {
    }
 
    private void updateHarpoon () {
-      if (_sourceEntity == null || Util.isBatch()) {
+      if (_sourceEntity == null) {
          return;
       }
 
@@ -126,19 +128,27 @@ public class SeaHarpoon : SeaProjectile {
       Vector2 ropeVector = ropeEnd - ropeStart;
       float ropeLength = ropeVector.magnitude;
 
-      float currentRopeStretch = ropeLength - _lineMaxLength;
+      float deltaLineMaxLength = _lineMaxLength - _previousLineMaxLength;
 
-      // If the line is currently under stress, increment the stress timer
-      if (currentRopeStretch >= lineMaxStretch) {
-         _lineStressTime += Time.deltaTime;
-      } else {
-         _lineStressTime = 0.0f;
-      }
+      float reelingStretchModifier = -deltaLineMaxLength * 35.0f;
+      float currentRopeStretch = ropeLength - _lineMaxLength + reelingStretchModifier;
+      _previousLineMaxLength = _lineMaxLength;
 
-      // If the line has been under stress for long enough, break it
-      if (isServer && _lineStressTime > lineStressBreakTime) {
-         NetworkServer.Destroy(this.gameObject);
-         return;
+      if (isServer) {
+         // If the line is currently under stress, increment the stress timer
+         if (currentRopeStretch >= lineMaxStretch) {
+            _lineStressTime += Time.deltaTime;
+         } else {
+            _lineStressTime -= Time.deltaTime;
+         }
+
+         _lineStressTime = Mathf.Clamp(_lineStressTime, 0.0f, lineStressBreakTime * 2.0f);
+
+         // If the line has been under stress for long enough, break it
+         if (_lineStressTime >= lineStressBreakTime) {
+            NetworkServer.Destroy(this.gameObject);
+            return;
+         }
       }
 
       float ropeAlpha = 1.0f - Mathf.Clamp01(_lineStressTime / lineStressBreakTime);
@@ -226,7 +236,11 @@ public class SeaHarpoon : SeaProjectile {
    private float _lineMaxLength = 3.0f;
 
    // How long the harpoon line has been under stress for
+   [SyncVar]
    private float _lineStressTime = 0.0f;
+
+   // The length of the rope last frame
+   private float _previousLineMaxLength = 3.0f;
 
    // How fast the line will be reeled in
    private const float REEL_IN_SPEED = 0.25f;

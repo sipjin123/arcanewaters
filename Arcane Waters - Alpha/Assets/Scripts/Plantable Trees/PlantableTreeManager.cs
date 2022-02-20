@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Mirror;
 using System.Linq;
+using MapCreationTool;
 
 public class PlantableTreeManager : MonoBehaviour
 {
@@ -17,15 +18,6 @@ public class PlantableTreeManager : MonoBehaviour
 
    private void Awake () {
       self = this;
-
-      _overlapCheckPoints.Add(Vector2.zero);
-      for (int i = 0; i < 16; i++) {
-         float a = i * (360f / 16f);
-         _overlapCheckPoints.Add(new Vector2(
-            0.16f * Mathf.Cos(i * a * Mathf.Deg2Rad),
-            0.16f * Mathf.Sin(i * a * Mathf.Deg2Rad)
-            ));
-      }
    }
 
    [Client]
@@ -114,33 +106,27 @@ public class PlantableTreeManager : MonoBehaviour
 
       if (area != null) {
          Vector2 at = area.transform.InverseTransformPoint(worldPos);
-         if (canPlayerPlant(player, player.areaKey, at)) {
+         if (canPlayerPlant(player, player.areaKey, at, out string message)) {
             player.rpc.Cmd_PlantTree(at);
+         } else {
+            FloatingCanvas.instantiateAt(worldPos).asCustomMessage(message);
          }
       }
    }
 
-   private bool canPlayerPlant (BodyEntity player, string areaKey, Vector2 position) {
+   private bool canPlayerPlant (BodyEntity player, string areaKey, Vector2 position, out string message) {
       // Check that we have information about this area
       Area area = AreaManager.self.getArea(areaKey);
       if (area == null) {
          D.warning($"Can't plant tree in { areaKey} because missing area data!");
-         return false;
-      }
-
-      // Check that it is a farm and it belongs to this user
-      if (!AreaManager.self.isFarmOfUser(areaKey, player.userId)) {
+         message = null;
          return false;
       }
 
       // Check if player has a seedbag equiped
       WeaponStatData equipedData = EquipmentXMLManager.self.getWeaponData(player.weaponManager.equipmentDataId);
       if (equipedData == null || equipedData.actionType != Weapon.ActionType.PlantCrop) {
-         return false;
-      }
-
-      // Check that we are not processing another plant at the moment
-      if (_plantingIn.Contains(areaKey)) {
+         message = null;
          return false;
       }
 
@@ -154,34 +140,56 @@ public class PlantableTreeManager : MonoBehaviour
          }
       }
       if (treeDefinition == null) {
+         message = null;
          return false;
       }
 
-      // Make sure that it is a farm map and this particular farm belongs to the user
+      // Check that this is a farm
+      if (!AreaManager.isFarmingAllowed(areaKey)) {
+         message = null;
+         return false;
+      }
+
+      // Check that farm belongs to this user
       if (!AreaManager.self.isFarmOfUser(areaKey, player.userId)) {
+         message = "Not your farm";
+         return false;
+      }
+
+      // Check that we are not processing another plant at the moment
+      if (_plantingIn.Contains(areaKey)) {
+         message = "Please wait...";
+         return false;
+      }
+
+      // Get the prefab
+      SpaceRequirer req = null;
+      GameObject prefGO = AssetSerializationMaps.getPrefab(treeDefinition.prefabId, area.biome, false);
+
+      if (prefGO != null) {
+         if (prefGO.TryGetComponent(out PlantableTree tree)) {
+            req = tree.spaceRequirer;
+         }
+      }
+
+      if (req == null) {
+         message = "Error - missing tree config";
          return false;
       }
 
       // Make sure exact spot is not occupied and that there is a bit of space around it
-      var cf = new ContactFilter2D().NoFilter();
-      cf.layerMask = Physics2D.AllLayers;
-      cf.useTriggers = false;
-      foreach (Vector2 p in _overlapCheckPoints) {
-         Debug.Log(position + p);
-         int count = Physics2D.OverlapPoint(area.transform.TransformPoint(position + p), cf, _colliderBuffer);
-         if (count > 0) {
-            Debug.Log(_colliderBuffer[0].name);
-            return false;
-         }
-
+      if (!req.wouldHaveSpace(area.transform.TransformPoint(position))) {
+         message = "No Space";
+         return false;
       }
 
+      message = null;
       return true;
    }
 
    [Server]
    public void plantTree (BodyEntity planter, string areaKey, Vector2 position) {
-      if (!canPlayerPlant(planter, areaKey, position)) {
+      if (!canPlayerPlant(planter, areaKey, position, out string message)) {
          return;
       }
 
@@ -232,6 +240,9 @@ public class PlantableTreeManager : MonoBehaviour
          if (seedBag == null || seedBag.count == 0) {
             planter.rpc.Bkg_RequestSetWeaponId(0);
          }
+
+         // Send the updated shortcuts to the client
+         planter.rpc.sendItemShortcutList();
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -394,12 +405,6 @@ public class PlantableTreeManager : MonoBehaviour
 
    // In case we receive tree data before area is created, store it here and wait
    private LinkedList<PlantableTreeInstanceData> _queuedTreeData = new LinkedList<PlantableTreeInstanceData>();
-
-   // Buffer for checking collider overlap
-   private Collider2D[] _colliderBuffer = new Collider2D[4];
-
-   // Points which we will check to determine if a position of a tree is occupied by other colliders
-   private List<Vector2> _overlapCheckPoints = new List<Vector2>();
 
    // Stores which areas are processing a planting action right now
    private HashSet<string> _plantingIn = new HashSet<string>();

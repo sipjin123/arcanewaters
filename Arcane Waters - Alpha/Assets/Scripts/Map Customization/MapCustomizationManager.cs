@@ -284,56 +284,57 @@ namespace MapCustomization
       }
 
       public static void pointerDown (Vector2 worldPosition) {
-         // If something is hovered, select it and procceed to change it's position
-         CustomizablePrefab hoveredPrefab = getPrefabAtPosition(worldPosition);
-         if (hoveredPrefab != null) {
-            selectPrefab(hoveredPrefab);
-            _draggedPrefab = hoveredPrefab;
-            updatePrefabOutlines(worldPosition);
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.PICKUP_EDITABLE_OBJECT, position: worldPosition);
-            //SoundEffectManager.self.playSoundEffect(SoundEffectManager.PICKUP_EDIT_OBJ, SoundEffectManager.self.transform);
-         } else {
-            selectPrefab(null);
-            if (CustomizationUI.getSelectedPrefabData() != null) {
-               updateToBePlacedPrefab(worldPosition, CustomizationUI.getSelectedPrefabData().Value.serializationId);
-               _customizablePrefabs.Add(_newPrefab.unappliedChanges.id, _newPrefab);
-               if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _newPrefab.unappliedChanges, false, out string errorMessage)) {
-                  _newPrefab.setGameInteractionsActive(true);
-                  Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges);
-                  SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLACE_EDITABLE_OBJECT, position: worldPosition);
-                  selectPrefab(_newPrefab);
+         if (CustomizationUI.getSelectedPrefabData() != null) {
+            updateToBePlacedPrefab(worldPosition, CustomizationUI.getSelectedPrefabData().Value.serializationId);
+            _customizablePrefabs.Add(_newPrefab.unappliedChanges.id, _newPrefab);
+            if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _newPrefab.unappliedChanges, false, out string errorMessage)) {
+               _newPrefab.setGameInteractionsActive(true);
+               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges);
+               SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLACE_EDITABLE_OBJECT, position: worldPosition);
+               selectPrefab(_newPrefab);
 
-                  // Decrease remaining prop item that corresponds to this prefab
-                  foreach (ItemInstance item in remainingProps) {
-                     if (item.itemDefinitionId == _newPrefab.propDefinitionId) {
-                        item.count--;
-                        CustomizationUI.updatePropCount(item);
-                        if (item.count <= 0) {
-                           CustomizationUI.selectEntry(null);
-                        }
-                        break;
+               // Decrease remaining prop item that corresponds to this prefab
+               foreach (ItemInstance item in remainingProps) {
+                  if (item.itemDefinitionId == _newPrefab.propDefinitionId) {
+                     item.count--;
+                     CustomizationUI.updatePropCount(item);
+                     if (item.count <= 0) {
+                        CustomizationUI.selectEntry(null);
                      }
-                  }
-
-                  _newPrefab.submitUnappliedChanges();
-               } else {
-                  _newPrefab.revertUnappliedChanges();
-               }
-
-               // Turn on colliders for the prefab that was just placed
-               if (_newPrefab.GetComponent<Collider2D>() != null) {
-                  _newPrefab.GetComponent<Collider2D>().enabled = true;
-               } else if (_newPrefab.GetComponentsInChildren<Collider2D>() != null) {
-                  foreach (Collider2D col in _newPrefab.GetComponentsInChildren<Collider2D>()) {
-                     col.enabled = true;
+                     break;
                   }
                }
 
-               _newPrefab = null;
+               _newPrefab.submitUnappliedChanges();
+            } else {
+               _newPrefab.revertUnappliedChanges();
             }
 
-            updatePrefabOutlines(worldPosition);
+            // Turn on colliders for the prefab that was just placed
+            if (_newPrefab.GetComponent<Collider2D>() != null) {
+               _newPrefab.GetComponent<Collider2D>().enabled = true;
+            } else if (_newPrefab.GetComponentsInChildren<Collider2D>() != null) {
+               foreach (Collider2D col in _newPrefab.GetComponentsInChildren<Collider2D>()) {
+                  col.enabled = true;
+               }
+            }
+
+            _newPrefab = null;
+         } else {
+            // If something is hovered, select it and procceed to change it's position
+            CustomizablePrefab hoveredPrefab = getPrefabAtPosition(worldPosition);
+            if (hoveredPrefab != null) {
+               selectPrefab(hoveredPrefab);
+               _draggedPrefab = hoveredPrefab;
+               updatePrefabOutlines(worldPosition);
+               SoundEffectManager.self.playFmodSfx(SoundEffectManager.PICKUP_EDITABLE_OBJECT, position: worldPosition);
+               //SoundEffectManager.self.playSoundEffect(SoundEffectManager.PICKUP_EDIT_OBJ, SoundEffectManager.self.transform);
+            } else {
+               selectPrefab(null);
+            }
          }
+
+         updatePrefabOutlines(worldPosition);
       }
 
       public static void pointerUp (Vector2 worldPosition) {
@@ -712,7 +713,7 @@ namespace MapCustomization
          foreach (KeyValuePair<int, GameObject> indexPref in AssetSerializationMaps.allBiomes.indexToPrefab) {
             // Only prefabs with CustomizablePrefab component can be placed
             CustomizablePrefab cPref = indexPref.Value.GetComponent<CustomizablePrefab>();
-            if (cPref != null && areaType.Value == cPref.editorType) {
+            if (cPref != null && areaType.Value == cPref.editorType && cPref.availableForPlacing) {
                PlaceablePrefabData d = new PlaceablePrefabData {
                   serializationId = indexPref.Key,
                   prefab = cPref,

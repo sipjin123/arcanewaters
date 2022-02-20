@@ -2111,11 +2111,11 @@ public class RPCManager : NetworkBehaviour
             }
 
             if (!isSteamIdValid) {
-               #if UNITY_EDITOR
+#if UNITY_EDITOR
                // Try to use the debug Steam Id instead
                steamId = SteamPurchaseManagerServer.self.debugSteamId;
                D.debug($"Purchase Warning: Couldn't get the steamId for user '{_player.userId}'. Using the debug Steam ID...");
-               #endif
+#endif
             }
 
             if (steamId == 0) {
@@ -2890,7 +2890,7 @@ public class RPCManager : NetworkBehaviour
                   } else {
                      // If the quest requires a different quest to be unlocked first, remove it from the list to be provided to the player
                      bool hasQuestNodeRequirement = xmlQuestNode.questNodeLevelRequirement > -1;
-                  if (hasQuestNodeRequirement) {
+                     if (hasQuestNodeRequirement) {
                         QuestStatusInfo requiredNodeStatus = databaseQuestStatusList.Find(_ => _.questNodeId == xmlQuestNode.questNodeLevelRequirement);
                         QuestDataNode requiredQuestNode = xmlQuestNodeList.Find(_ => _.questDataNodeId == xmlQuestNode.questNodeLevelRequirement);
                         if (requiredQuestNode != null) {
@@ -3187,8 +3187,8 @@ public class RPCManager : NetworkBehaviour
          newDialogueId++;
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             // Update the quest status of the npc
-            D.adminLog("2. Updating quest status into: " + 
-               questId + ":: " + questNodeId + ": " + newDialogueId+ "/" + questDataNode.questDialogueNodes.Length, D.ADMIN_LOG_TYPE.Quest);
+            D.adminLog("2. Updating quest status into: " +
+               questId + ":: " + questNodeId + ": " + newDialogueId + "/" + questDataNode.questDialogueNodes.Length, D.ADMIN_LOG_TYPE.Quest);
             DB_Main.updateQuestStatus(npcId, _player.userId, questId, newQuestNodeId, newDialogueId);
 
             int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
@@ -6467,7 +6467,7 @@ public class RPCManager : NetworkBehaviour
       Target_MineOre(_player.connectionToClient, oreId, startingPosition, endPosition);
    }
 
-   public void processItemCreation(int userId, ItemQueue itemQueue) {
+   public void processItemCreation (int userId, ItemQueue itemQueue) {
       itemCreationList.Add(itemQueue);
       checkItemQueue();
    }
@@ -7864,7 +7864,7 @@ public class RPCManager : NetworkBehaviour
                D.debug("Error here! Entity reference was severed!");
                continue;
             }
-            
+
             // Retrieves skill list from database
             List<AbilitySQLData> abilityDataList = DB_Main.userAbilities(entity.userId, AbilityEquipStatus.ALL);
             //string rawAbilityData = DB_Main.userAbilities(entity.userId.ToString(), ((int) AbilityEquipStatus.ALL).ToString());
@@ -8449,15 +8449,15 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_FoundDiscovery (int placedDiscoveryId) {
+   public void Cmd_FoundDiscovery (int discoveryId) {
       if (_player == null) {
          return;
       }
 
-      if (DiscoveryManager.self.tryGetSpawnedDiscoveryById(_player.instanceId, placedDiscoveryId, out Discovery discovery) && isDiscoveryFindingValid(discovery)) {
+      if (DiscoveryManager.self.isDiscoveryFindingValid(discoveryId, _player, out Discovery discovery)) {
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             // Check if discovery is found in the database
-            UserDiscovery d = DB_Main.getUserDiscovery(_player.userId, placedDiscoveryId);
+            UserDiscovery d = DB_Main.getUserDiscovery(_player.userId, discoveryId);
             if (d == null || !d.discovered) {
                int gainedXP = discovery.getXPValue();
 
@@ -8465,7 +8465,7 @@ public class RPCManager : NetworkBehaviour
                DB_Main.addJobXP(_player.userId, Jobs.Type.Explorer, gainedXP);
 
                // Set the discovery as found
-               DB_Main.setUserDiscovery(new UserDiscovery { userId = _player.userId, placedDiscoveryId = placedDiscoveryId, discovered = true });
+               DB_Main.setUserDiscovery(new UserDiscovery { userId = _player.userId, discoveryId = discoveryId, discovered = true });
 
                Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
@@ -8491,20 +8491,11 @@ public class RPCManager : NetworkBehaviour
 
       foreach (UserDiscovery d in discoveries) {
          if (d.discovered) {
-            if (!DiscoveryManager.self.revealedDiscoveriesClient.Contains((_player.instanceId, d.placedDiscoveryId))) {
-               DiscoveryManager.self.revealedDiscoveriesClient.Add((_player.instanceId, d.placedDiscoveryId));
+            if (!DiscoveryManager.self.revealedDiscoveriesClient.Contains(d.discoveryId)) {
+               DiscoveryManager.self.revealedDiscoveriesClient.Add(d.discoveryId);
             }
          }
       }
-   }
-
-   [Server]
-   private bool isDiscoveryFindingValid (Discovery discovery) {
-      return discovery != null && getDistanceFromDiscovery(discovery) <= Discovery.MAX_VALID_DISTANCE;
-   }
-
-   private float getDistanceFromDiscovery (Discovery discovery) {
-      return Vector2.Distance(discovery.transform.position, _player.transform.position);
    }
 
    [Command]
@@ -8854,7 +8845,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveTeleportToCurrentAreaSpawnLocation(NetworkConnection connection, Vector3 pos) {
+   public void Target_ReceiveTeleportToCurrentAreaSpawnLocation (NetworkConnection connection, Vector3 pos) {
       Global.player.transform.localPosition = pos;
    }
 
@@ -9132,12 +9123,81 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Don't allow users to warp if they are in battle
-      if (_player.hasAttackers()) {
-         if (_player.isInCombat()) {
-            int timeUntilCanLeave = (int) (NetEntity.IN_COMBAT_STATUS_DURATION - _player.getTimeSinceAttacked());
-            ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "Cannot warp until out of combat for " + (int) NetEntity.IN_COMBAT_STATUS_DURATION + " seconds. \n(" + timeUntilCanLeave + " seconds left)");
-            return;
+      if (_player.hasAttackers() && _player.isInCombat()) {
+         int timeUntilCanLeave = (int) (NetEntity.IN_COMBAT_STATUS_DURATION - _player.getTimeSinceAttacked());
+         ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "Cannot warp until out of combat for " + (int) NetEntity.IN_COMBAT_STATUS_DURATION + " seconds. \n(" + timeUntilCanLeave + " seconds left)");
+         return;
+      }
+
+      // If
+      Rpc_ReceiveRequestWarpToBiomeHomeTown(biome);
+      return;
+   }
+
+   [ClientRpc]
+   private void Rpc_ReceiveRequestWarpToBiomeHomeTown (Biome.Type biome) {
+      if (isLocalPlayer) {
+         if (!PanelManager.self.countdownScreen.isShowing()) {
+            Area.homeTownForBiome.TryGetValue(biome, out string biomeHomeTownName);
+            bool isHomeTownNameValid = !Util.isEmpty(biomeHomeTownName) && !Util.isEmpty(Area.getName(biomeHomeTownName));
+
+            PanelManager.self.countdownScreen.customText.text = isHomeTownNameValid ? $"Warping to \"{Area.getName(biomeHomeTownName)}\" in:" : $"Warping in:";
+            PanelManager.self.countdownScreen.seconds = 10;
+
+            PanelManager.self.countdownScreen.onCountdownStep.RemoveAllListeners();
+            PanelManager.self.countdownScreen.onCountdownStep.AddListener(() => {
+               if (_player.hasAttackers() && _player.isInCombat()) {
+                  _player.rpc.Cmd_CancelWarpToBiomeHomeTown(biome);
+                  PanelManager.self.countdownScreen.hide();
+               }
+            });
+
+            PanelManager.self.countdownScreen.onCountdownEndEvent.RemoveAllListeners();
+            PanelManager.self.countdownScreen.onCountdownEndEvent.AddListener(() => {
+               _player.rpc.Cmd_ExecuteWarpToBiomeHomeTown(biome);
+               PanelManager.self.countdownScreen.hide();
+            });
+
+            PanelManager.self.countdownScreen.cancelButton.onClick.RemoveAllListeners();
+            PanelManager.self.countdownScreen.cancelButton.onClick.AddListener(() => {
+               _player.rpc.Cmd_CancelWarpToBiomeHomeTown(biome);
+               PanelManager.self.countdownScreen.hide();
+            });
+
+            PanelManager.self.countdownScreen.show();
          }
+      }
+
+      _player.toggleWarpInProgressEffect(show: true);
+   }
+
+   [Command]
+   public void Cmd_CancelWarpToBiomeHomeTown (Biome.Type biome) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      Rpc_ReceiveCancelWarpToBiomeHomeTown(biome);
+   }
+
+   [ClientRpc]
+   private void Rpc_ReceiveCancelWarpToBiomeHomeTown (Biome.Type biome) {
+      _player.toggleWarpInProgressEffect(show: false);
+   }
+
+   [Command]
+   public void Cmd_ExecuteWarpToBiomeHomeTown (Biome.Type biome) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Don't allow users to warp if they are in battle
+      if (_player.hasAttackers() && _player.isInCombat()) {
+         int timeUntilCanLeave = (int) (NetEntity.IN_COMBAT_STATUS_DURATION - _player.getTimeSinceAttacked());
+         ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "Cannot warp until out of combat for " + (int) NetEntity.IN_COMBAT_STATUS_DURATION + " seconds. \n(" + timeUntilCanLeave + " seconds left)");
+         return;
       }
 
       // Background thread
@@ -9593,13 +9653,13 @@ public class RPCManager : NetworkBehaviour
       if (PvpManager.self == null) {
          return;
       }
-      
+
       PvpGame pvpGame = PvpManager.self.getGameWithPlayer(_player);
 
       if (pvpGame == null) {
          return;
       }
-      
+
       timeout = pvpGame.computeRespawnTimeoutFor(_player.userId);
 
       Target_ReceivePvpRespawnTimeout(timeout);
@@ -9708,7 +9768,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveEmoteMessage(ChatInfo chatInfo) {
+   public void Target_ReceiveEmoteMessage (ChatInfo chatInfo) {
       chatInfo.messageType = ChatInfo.Type.Emote;
       ChatPanel.self.addChatInfo(chatInfo);
    }

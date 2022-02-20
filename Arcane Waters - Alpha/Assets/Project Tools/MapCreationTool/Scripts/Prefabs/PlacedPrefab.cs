@@ -14,7 +14,7 @@ namespace MapCreationTool
 
       public Dictionary<string, string> data { get; private set; }
 
-      public static int nextPrefabId { get; set; }
+      public static int nextPrefabId { get; set; } = 1;
 
       public PlacedPrefab () {
          data = new Dictionary<string, string>();
@@ -80,6 +80,9 @@ namespace MapCreationTool
       }
 
       public string getData (string key) {
+         if (key == null) {
+            return string.Empty;
+         }
          if (data.TryGetValue(key, out string value))
             return value;
          return string.Empty;

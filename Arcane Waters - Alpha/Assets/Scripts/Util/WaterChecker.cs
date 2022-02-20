@@ -105,11 +105,6 @@ public class WaterChecker : ClientMonoBehaviour
       isInFullWater = false;
       isInPartialWater = false;
 
-      // If we're falling, we're not in water
-      if (_player.fallDirection != 0) {
-         return;
-      }
-
       // Look up the Area and Grid that we're currently in
       Area area = AreaManager.self.getArea(_player.areaKey);
       if (area != null) {

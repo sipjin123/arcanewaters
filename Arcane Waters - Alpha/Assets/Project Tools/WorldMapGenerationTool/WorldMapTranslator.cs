@@ -112,7 +112,7 @@ public class WorldMapTranslator : MonoBehaviour {
       }
       UI.saveAsPanel.forceSaveName(saveName);
       yield return new WaitForSeconds(1);
-      UI.saveAsPanel.save();
+      UI.saveAsPanel.saveWarningsConfirm();
    }
 
    private void Update () {

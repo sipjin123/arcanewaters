@@ -15,7 +15,7 @@ public class DiscoveryManager : MonoBehaviour
    public static DiscoveryManager self;
 
    // Which discoveries has this client revealed (client-only)
-   public HashSet<(int instanceId, int placedDiscoveryId)> revealedDiscoveriesClient = new HashSet<(int instanceId, int placedDiscoveryId)>();
+   public HashSet<int> revealedDiscoveriesClient = new HashSet<int>();
 
    #endregion
 
@@ -74,17 +74,8 @@ public class DiscoveryManager : MonoBehaviour
          return null;
       }
 
-      // Check that map editor assigned some id to this discovery spot
-      if (spot.placedDiscoveryId == 0) {
-         D.error("Discovery spot " + spot.targetDiscoveryID + " missing placed prefab id in " + instance.areaKey);
-         return null;
-      }
-
       // Instantiate a new Discovery, keep it parented to its spot
       Discovery discovery = Instantiate(discoveryPrefab, spot.transform.position, Quaternion.identity, spot.transform);
-
-      // Assign a unique ID
-      discovery.placedDiscoveryId = spot.placedDiscoveryId;
 
       // Initialize the discovery
       discovery.assignDiscoveryAndPosition(_discoveryDatas[discoveryId], spot.transform.position);
@@ -96,23 +87,42 @@ public class DiscoveryManager : MonoBehaviour
       NetworkServer.Spawn(discovery.gameObject);
 
       // Keep track of the discoveries that we've created
-      _discoveries.Add((instance.id, spot.placedDiscoveryId), discovery);
+      _discoveries.Add(discovery);
 
       return discovery;
    }
 
    [Server]
-   public bool tryGetSpawnedDiscoveryById (int instanceId, int placedDiscoveryId, out Discovery discovery) {
-      if (_discoveries.TryGetValue((instanceId, placedDiscoveryId), out discovery)) {
-         return true;
+   public bool isDiscoveryFindingValid (int discoveryId, NetEntity byPlayer, out Discovery discovery) {
+      foreach (Discovery d in _discoveries) {
+         if (d != null && d.data.discoveryId == discoveryId && getDistanceFromDiscovery(d, byPlayer) <= Discovery.MAX_VALID_DISTANCE && d.instanceId == byPlayer.instanceId) {
+            discovery = d;
+            return true;
+         }
       }
+
+      discovery = null;
       return false;
+   }
+
+   private float getDistanceFromDiscovery (Discovery discovery, NetEntity from) {
+      return Vector2.Distance(discovery.transform.position, from.transform.position);
+   }
+
+   [Server]
+   public void onDiscoveryDestroyed (Discovery d) {
+      for (int i = 0; i < _discoveries.Count; i++) {
+         if (_discoveries[i] == null || _discoveries[i] == d) {
+            _discoveries.RemoveAt(i);
+            i--;
+         }
+      }
    }
 
    #region Private Variables
 
    // Stores the spawned discoveries, index by instance and map editor assigned ID
-   private Dictionary<(int instanceId, int placedDiscoveryId), Discovery> _discoveries = new Dictionary<(int, int), Discovery>();
+   private List<Discovery> _discoveries = new List<Discovery>();
 
    // The cached discoveries in the database
    private Dictionary<int, DiscoveryData> _discoveryDatas = new Dictionary<int, DiscoveryData>();

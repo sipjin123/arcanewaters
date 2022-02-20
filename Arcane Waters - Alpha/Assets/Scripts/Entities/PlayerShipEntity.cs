@@ -157,6 +157,9 @@ public class PlayerShipEntity : ShipEntity
    // Reference to the level up effect
    public LevelUpEffect levelUpEffect;
 
+   // Reference to the Warp Waiting Effect
+   public IndeterminateProgressBar warpInProgressEffect;
+
    // Whether the player has the 'reeling in' key down.
    [HideInInspector]
    public bool isReelingIn = false;
@@ -190,13 +193,7 @@ public class PlayerShipEntity : ShipEntity
       }
 
       if (isLocalPlayer) {
-         // Create a ship movement sound for our own ship
-         //_movementAudioSource = SoundManager.createLoopedAudio(SoundManager.Type.Ship_Movement, this.transform);
-         //_movementAudioSource.gameObject.AddComponent<MatchCameraZ>();
-         //_movementAudioSource.volume = 0f;
-
          // Get a reference to our audio listener
-         //_audioListener = GetComponent<AudioListener>();
          _fmodListener = GetComponent<FMODUnity.StudioListener>();
 
          _targetSelector = GetComponentInChildren<PlayerTargetSelector>();
@@ -479,7 +476,7 @@ public class PlayerShipEntity : ShipEntity
       }
 
       // Adjust the volume on our movement audio source
-      adjustMovementAudio();
+      processMovementAudio();
 
       // If the reload is finished and a shot was scheduled, fire it
       //if (isNextShotDefined && hasReloaded()) {
@@ -779,7 +776,7 @@ public class PlayerShipEntity : ShipEntity
                   float cannonballLifetime = getCannonballLifetime();
                   float rotAngle = (40.0f - (getCannonChargeAmount() * 25.0f)) / 2.0f;
 
-                  Rpc_PlayAbilitySfx(abilityData.abilityId, transform.position);
+                  Cmd_PlaySeaAbilitySfx(abilityData.abilityId, transform.position);
 
                   // Fire cone of cannonballs
                   Cmd_FireMainCannonAtTarget(null, getCannonChargeAmount(), transform.position, pos + ExtensionsUtil.Rotate(toMouse, rotAngle), false, true);
@@ -798,7 +795,7 @@ public class PlayerShipEntity : ShipEntity
                _shouldUpdateTargeting = false;
                _targetCircle.targetingConfirmed(() => enableTargeting());
 
-               Rpc_PlayAbilitySfx(abilityData.abilityId, transform.position);
+               Cmd_PlaySeaAbilitySfx(abilityData.abilityId, transform.position);
 
                _cannonBarrageCoroutine = StartCoroutine(CO_CannonBarrage(_targetCircle.transform.position, circleRadius));
                _targetCircle.setFillColor(Color.white);
@@ -828,7 +825,7 @@ public class PlayerShipEntity : ShipEntity
       float rotAngle = (45.0f - (getCannonChargeAmount() * 25.0f)) / 1.25f;
       float rotAngleDivider = rotAngle / abilityData.splitAttackCap;
 
-      Rpc_PlayAbilitySfx(abilityData.abilityId, transform.position);
+      Cmd_PlaySeaAbilitySfx(abilityData.abilityId, transform.position);
 
       // Fire barrage of cannonballs
       for (int i = 1; i < (abilityData.splitAttackCap / 2) + 1; i++) {
@@ -1322,13 +1319,16 @@ public class PlayerShipEntity : ShipEntity
       return new Hat(0, hatData.sqlId, hatColors);
    }
 
-   protected void adjustMovementAudio () {
-      //if (isLocalPlayer) {
-      //   float volumeModifier = isMoving() ? Time.deltaTime * .5f : -Time.deltaTime * .5f;
-      //   if (_movementAudioSource != null) {
-      //      _movementAudioSource.volume += volumeModifier;
-      //   }
-      //}
+   protected void processMovementAudio () {
+      if (!Util.isBatch() && isLocalPlayer && isClient) {
+         SoundEffectManager.ShipSailingType sailingType = SoundEffectManager.ShipSailingType.Stopped;
+
+         if (Mathf.Abs(_movementInputDirection.x) > 0.1f || Mathf.Abs(_movementInputDirection.y) > 0.1f) {
+            sailingType = SoundEffectManager.ShipSailingType.Movement;
+         }
+
+         SoundEffectManager.self.playShipSailingSfx(sailingType, this.transform, this._body);
+      }
    }
 
    public float getAngleChangeSpeed () {
@@ -2251,6 +2251,13 @@ public class PlayerShipEntity : ShipEntity
          return;
       }
 
+      // Can't warp if the player is in combat
+      if (Global.player.hasAttackers() && Global.player.isInCombat()) {
+         int timeUntilCanLeave = (int) (IN_COMBAT_STATUS_DURATION - Global.player.getTimeSinceAttacked());
+         ChatManager.self.addChat("Cannot warp until out of combat for " + (int) IN_COMBAT_STATUS_DURATION + " seconds. \n(" + timeUntilCanLeave + " seconds left)", ChatInfo.Type.System);
+         return;
+      }
+
       Direction direction = mapEdges.computeDirectionFromEdge(edge);
 
       if (MapManager.computeNextOpenWorldMap(areaKey, direction, out string nextAreaKey)) {
@@ -2285,12 +2292,33 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
+   public override void toggleWarpInProgressEffect (bool show) {
+      // Toggle only if the new state is different from the current state
+      if (warpInProgressEffect == null) {
+         return;
+      }
+
+      if (warpInProgressEffect.isShowing() != show) {
+         warpInProgressEffect.toggle(show);
+
+         if (show) {
+            if (!warpInProgressEffect.isPlaying()) {
+               warpInProgressEffect.play();
+            }
+         } else {
+            if (warpInProgressEffect.isPlaying()) {
+               warpInProgressEffect.stop();
+            }
+         }
+      }
+   }
+
    [Command]
    public void Cmd_SetIsReelingIn (bool newValue) {
       isReelingIn = newValue;
 
       if (newValue) {
-         reelInStartTime = (float)NetworkTime.time;
+         reelInStartTime = (float) NetworkTime.time;
       }
    }
 

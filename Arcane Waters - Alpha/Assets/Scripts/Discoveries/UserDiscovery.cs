@@ -10,7 +10,7 @@ public class UserDiscovery
    public int userId;
 
    // The id of the placed discovery, assigned from the map editor
-   public int placedDiscoveryId;
+   public int discoveryId;
 
    // Has this discovery been discovered by this user
    public bool discovered = false;
@@ -25,7 +25,7 @@ public class UserDiscovery
 
    public UserDiscovery (MySql.Data.MySqlClient.MySqlDataReader dataReader) {
       userId = DataUtil.getInt(dataReader, "userId");
-      placedDiscoveryId = DataUtil.getInt(dataReader, "placedDiscoveryId");
+      discoveryId = DataUtil.getInt(dataReader, "discoveryId");
       discovered = DataUtil.getInt(dataReader, "discovered") != 0;
    }
 

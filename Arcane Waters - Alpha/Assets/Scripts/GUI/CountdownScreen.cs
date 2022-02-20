@@ -19,6 +19,9 @@ public class CountdownScreen : MonoBehaviour
    // The action to perform when the countdown ends
    public UnityEvent onCountdownEndEvent;
 
+   // The action to perform every time the countdown goes down
+   public UnityEvent onCountdownStep;
+
    // The custom text displayed above the remaining seconds
    public Text customText;
 
@@ -39,6 +42,11 @@ public class CountdownScreen : MonoBehaviour
       // Check if the player is moving or in combat
       if (_timePassed > DELAY_BEFORE_INPUT_INTERRUPTION &&
          (Global.player.isMoving() || (!Global.player.isDead() && Global.player.hasAnyCombat()))) {
+         
+         if (isShowing()) {
+            cancelButton.onClick.Invoke();
+         }
+
          // Stop the countdown
          hide();
       }
@@ -48,6 +56,15 @@ public class CountdownScreen : MonoBehaviour
 
       // Update the displayed seconds
       secondsText.text = Mathf.CeilToInt(seconds - _timePassed).ToString();
+
+      if (_previousTime != _currentTime) {
+         if (onCountdownStep != null) {
+            onCountdownStep.Invoke();
+         }
+      }
+
+      _previousTime = _currentTime;
+      _currentTime = Mathf.CeilToInt(seconds - _timePassed);
 
       // Check if the end of the countdown has been reached
       if (_timePassed >= seconds) {
@@ -62,6 +79,8 @@ public class CountdownScreen : MonoBehaviour
       this.canvasGroup.blocksRaycasts = true;
       this.canvasGroup.interactable = true;
       _timePassed = 0f;
+      _currentTime = 0;
+      _previousTime = 0;
    }
 
    public void hide () {
@@ -73,6 +92,8 @@ public class CountdownScreen : MonoBehaviour
 
       // Reset the Cancel Button
       toggleCancelButton(true);
+
+      onCountdownEndEvent.RemoveAllListeners();
    }
 
    public bool isShowing () {
@@ -94,6 +115,12 @@ public class CountdownScreen : MonoBehaviour
 
    // The time since the countdown started
    private float _timePassed = 0f;
+
+   // The current time
+   private float _currentTime = 0;
+
+   // The previous time
+   private float _previousTime = 0;
 
    #endregion
 }

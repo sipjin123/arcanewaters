@@ -11,6 +11,12 @@ public class PaletteToolData
    // The name of the palette
    public string paletteName;
 
+   // The display name of the palette
+   public string paletteDisplayName;
+
+   // The description of this palette
+   public string paletteDescription;
+
    // Left side color - source colors
    public string[] srcColor;
 
@@ -25,6 +31,9 @@ public class PaletteToolData
 
    // The tag id for referencing
    public int tagId;
+
+   // The tags ids array, for referencing
+   public int[] tagsIds;
 
    #endregion
 

@@ -3738,8 +3738,8 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO global.discoveries_v2 (discoveryName, discoveryDescription, sourceImageUrl, rarity, creator_userID) " +
-            "VALUES(@discoveryName, @discoveryDescription, @sourceImageUrl, @rarity, @creator_userID) ", conn)) {
+            "INSERT INTO global.discoveries_v2 (discoveryName, discoveryDescription, sourceImageUrl, rarity, creator_userID, category) " +
+            "VALUES(@discoveryName, @discoveryDescription, @sourceImageUrl, @rarity, @creator_userID, @category) ", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -3749,6 +3749,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@sourceImageUrl", data.spriteUrl);
             cmd.Parameters.AddWithValue("@rarity", data.rarity);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+            cmd.Parameters.AddWithValue("@category", data.category);
             DebugQuery(cmd);
 
             // Execute the command
@@ -3764,9 +3765,9 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO global.discoveries_v2 (discoveryId, discoveryName, discoveryDescription, sourceImageUrl, rarity, creator_userID) " +
-            "VALUES(NULLIF(@discoveryId, 0), @discoveryName, @discoveryDescription, @sourceImageUrl, @rarity, @creator_userID) " +
-            "ON DUPLICATE KEY UPDATE discoveryName = @discoveryName, discoveryDescription = @discoveryDescription, sourceImageUrl = @sourceImageUrl, rarity = @rarity", conn)) {
+            "INSERT INTO global.discoveries_v2 (discoveryId, discoveryName, discoveryDescription, sourceImageUrl, rarity, creator_userID, category) " +
+            "VALUES(NULLIF(@discoveryId, 0), @discoveryName, @discoveryDescription, @sourceImageUrl, @rarity, @creator_userID, @category) " +
+            "ON DUPLICATE KEY UPDATE discoveryName = @discoveryName, discoveryDescription = @discoveryDescription, sourceImageUrl = @sourceImageUrl, rarity = @rarity, category = @category", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -3777,6 +3778,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@sourceImageUrl", data.spriteUrl);
             cmd.Parameters.AddWithValue("@rarity", data.rarity);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+            cmd.Parameters.AddWithValue("@category", data.category);
             DebugQuery(cmd);
 
             // Execute the command
@@ -3879,17 +3881,17 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
-   public static new UserDiscovery getUserDiscovery (int userId, int placedDiscoveryId) {
+   public static new UserDiscovery getUserDiscovery (int userId, int discoveryId) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM user_discoveries WHERE userId = @userId AND placedDiscoveryId = @placedDiscoveryId;", conn)) {
+            "SELECT * FROM user_discoveries WHERE userId = @userId AND discoveryId = @discoveryId;", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@userId", userId);
-            cmd.Parameters.AddWithValue("@placedDiscoveryId", placedDiscoveryId);
+            cmd.Parameters.AddWithValue("@discoveryId", discoveryId);
             DebugQuery(cmd);
 
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -3909,15 +3911,15 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO user_discoveries (userId, placedDiscoveryId, discovered) " +
-            "VALUES(@userId, @placedDiscoveryId, @discovered) " +
+            "INSERT INTO user_discoveries (userId, discoveryId, discovered) " +
+            "VALUES(@userId, @discoveryId, @discovered) " +
             "ON DUPLICATE KEY UPDATE discovered = @discovered", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@userId", discovery.userId);
-            cmd.Parameters.AddWithValue("@placedDiscoveryId", discovery.placedDiscoveryId);
+            cmd.Parameters.AddWithValue("@discoveryId", discovery.discoveryId);
             cmd.Parameters.AddWithValue("@discovered", discovery.discovered);
             DebugQuery(cmd);
 

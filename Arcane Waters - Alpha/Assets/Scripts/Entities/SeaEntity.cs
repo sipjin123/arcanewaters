@@ -1540,7 +1540,7 @@ public class SeaEntity : NetEntity
             continue;
          }
 
-         if (isSeaMonsterPvp() && iEntity is SeaStructure) {
+         if (isSeaMonsterPvp() && (iEntity is SeaStructure || iEntity is PvpCaptureTarget)) {
             continue;
          }
 

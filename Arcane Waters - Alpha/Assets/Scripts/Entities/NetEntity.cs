@@ -2701,6 +2701,10 @@ public class NetEntity : NetworkBehaviour
       });
    }
 
+   public virtual void toggleWarpInProgressEffect (bool show) {
+
+   }
+
    #region Private Variables
 
    // Whether we should automatically move around

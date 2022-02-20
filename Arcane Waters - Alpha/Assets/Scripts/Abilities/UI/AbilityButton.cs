@@ -63,6 +63,9 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
    // The transform that holds the visuals for the button border
    public Transform borderVisuals;
 
+   // Ability tooltip
+   public ToolTipComponent tooltip;
+   
    #endregion
 
    public void setAbility (AbilityType abilityType) {
@@ -200,6 +203,8 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
          image.raycastTarget = true;
       }
 
+      tooltip.GetComponent<Image>().raycastTarget = false;
+      
       abilityButton.interactable = true;
 
       abilityIcon.color = Color.white;
@@ -216,6 +221,9 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
          image.raycastTarget = false;
       }
 
+      tooltip.GetComponent<Image>().raycastTarget = true;
+      tooltip.message = "select an enemy";
+      
       abilityButton.interactable = false;
 
       abilityIcon.color = Color.gray;

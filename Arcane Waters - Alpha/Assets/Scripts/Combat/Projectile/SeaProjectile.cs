@@ -17,6 +17,10 @@ public class SeaProjectile : NetworkBehaviour
    [SyncVar]
    public int projectileTypeId;
 
+   // The id of the sea ability that spawns this projectile
+   [SyncVar]
+   public int shipAbilityId;
+
    // The amount of linear drag that will be applied to the rigidbody of this projectile
    [SyncVar]
    public float linearDrag = 0.0f;
@@ -56,10 +60,21 @@ public class SeaProjectile : NetworkBehaviour
 
          // Play FMOD sfx
          if (_playFiringSound) {
-            ProjectileStatData projectileStatData = ProjectileStatManager.self.getProjectileData(projectileTypeId);
-            if (projectileStatData != null && _abilityData != null) {
-               SoundEffectManager.self.playSeaProjectileSfx(_abilityData.sfxType, projectileStatData.sfxType, this.transform, this._rigidbody);
+            ShipAbilityData shipAbilityData = null;
+            ProjectileStatData projectileStatData = null;
+
+            if (shipAbilityId > 0) {
+               shipAbilityData = ShipAbilityManager.self.getAbility(shipAbilityId);
             }
+
+            if(projectileTypeId > 0) {
+               projectileStatData = ProjectileStatManager.self.getProjectileData(projectileTypeId);
+            }
+
+            SoundEffectManager.SeaAbilityType seaAbilityType = shipAbilityData != null ? shipAbilityData.sfxType : SoundEffectManager.SeaAbilityType.None;
+            SoundEffectManager.ProjectileType projectileType = projectileStatData != null ? projectileStatData.sfxType : SoundEffectManager.ProjectileType.None;
+
+            SoundEffectManager.self.playSeaProjectileSfx(seaAbilityType, projectileType, this.transform, this._rigidbody);
          }
       }
    }
@@ -106,6 +121,8 @@ public class SeaProjectile : NetworkBehaviour
       _isCrit = isCrit;
       _attackType = attackType;
       _minDropShadowScale = minDropShadowScale;
+
+      shipAbilityId = abilityId;
 
       // If an ability id was provided, get projectile data from that, otherwise use the provided projectile id
       if (abilityId > 0) {

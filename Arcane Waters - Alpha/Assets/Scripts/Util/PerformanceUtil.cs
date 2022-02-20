@@ -89,7 +89,6 @@ public class PerformanceUtil : MonoBehaviour {
    private async void updateRamResultZabbix () {
       while (this.enabled) {
          if (updateZabbixData) {
-            D.debug("[PerformanceUtil]: Fetching RAM data from zabbix.");
             string ramProcessArguments = (Util.isProductionBuild()) ? $"cd C:/integrations/zabbix; ./GetHistory.ps1 -ItemID 33623 -Mode 1 -DataTable 3 -Limit 1" 
                : $"cd C:/integrations/zabbix; ./GetHistory.ps1 -ItemID 33757 -Mode 1 -DataTable 3 -Limit 1";
             string result = await getZabbixPerformanceParameter(ramProcessArguments);

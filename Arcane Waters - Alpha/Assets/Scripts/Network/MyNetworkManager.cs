@@ -110,7 +110,7 @@ public class MyNetworkManager : NetworkManager
          }
       }
 
-      if (Util.isForceServerLocalWithAutoDbconfig()) {
+      if (Util.isForceServerLocalWithAutoDbconfig() || Util.isForceServerLocal()) {
          this.serverOverride = ServerType.Localhost;
       }
 

@@ -15,19 +15,24 @@ namespace MapCreationTool
       [SerializeField]
       private Text contentText = null;
 
-      public void display (string title, string content, Action onYes, Action onNo) {
+      public void display (string title, string content, Action onYes, Action onNo, Color titleColor) {
          this.onYes = onYes;
          this.onNo = onNo;
 
          titleText.text = title.ToUpper();
+         titleText.color = titleColor;
          contentText.text = content;
 
          show();
       }
 
+      public void display (string title, string content, Action onYes, Action onNo) {
+         display(title, content, onYes, onNo, UI.messagePanel.infoColor);
+      }
+
       public void displayIfMapStateModified (string title, string content, Action onYes, Action onNo) {
          if (Undo.anyModificationUndoEntries()) {
-            display(title, content, onYes, onNo);
+            display(title, content, onYes, onNo, UI.messagePanel.warningColor);
          } else {
             onYes?.Invoke();
          }

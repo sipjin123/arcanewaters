@@ -13,6 +13,10 @@ public class SpaceRequirer : MonoBehaviour
 
    // Whose child objects to ignore while checking collisions
    public Transform ignoreChildrenOf;
+
+   // Should this component not having enough space raise warnings in map editor
+   public bool raiseWarningsInMapEditor = false;
+
    #endregion
 
    private void Start () {
@@ -42,6 +46,10 @@ public class SpaceRequirer : MonoBehaviour
             D.error("Space Requirer " + name + " collider " + col.name + " has incorrect layer " + LayerMask.LayerToName(col.gameObject.layer) + ". Updating...");
             col.gameObject.layer = LayerMask.NameToLayer(REQUIRER_LAYER_NAME);
          }
+      }
+
+      if (ignoreChildrenOf == null) {
+         ignoreChildrenOf = transform;
       }
    }
 

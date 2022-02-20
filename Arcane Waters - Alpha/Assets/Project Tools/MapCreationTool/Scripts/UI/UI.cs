@@ -322,6 +322,15 @@ namespace MapCreationTool
       }
 
       public void saveButton_Click () {
+         string warnings = Overlord.instance.getWarnings();
+         if (string.IsNullOrEmpty(warnings)) {
+            saveWarningsConfirm();
+         } else {
+            yesNoDialog.display("Are you sure you want to save?", "Map has warnings:" + Environment.NewLine + warnings, saveWarningsConfirm, null, messagePanel.warningColor);
+         }
+      }
+
+      private void saveWarningsConfirm () {
          if (!MasterToolAccountManager.canAlterData()) {
             messagePanel.displayUnauthorized("Your account type has no permissions to alter data");
             return;
