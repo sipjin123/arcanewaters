@@ -611,12 +611,14 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          deathBubbleEffect.SetActive(true);
       }
 
-      if (seaMonsterData.shouldDropTreasure && !isPvpAI) {
-         NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(_lastAttackerNetId);
-         if (lastAttacker) {
-            spawnChest(lastAttacker.userId);
-         } else {
-            D.error("Sea monster couldn't drop a chest, due to not being able to locate last attacker");
+      if (isServer) {
+         if (seaMonsterData.shouldDropTreasure && !isPvpAI) {
+            NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(_lastAttackerNetId);
+            if (lastAttacker) {
+               spawnChest(lastAttacker.userId);
+            } else {
+               D.error("Sea monster couldn't drop a chest, due to not being able to locate last attacker");
+            }
          }
       }
 
