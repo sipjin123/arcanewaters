@@ -126,6 +126,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("create_open_world", "Creates many open world areas at once, measures their performance, and then reports the results.", requestCreateOpenWorld, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "numAreas (30)", "testDuration (30)", "delayBetweenAreas (1)" }));
       cm.addCommand(new CommandData("test_open_world", "Creates open world areas one at a time, until performance limits are hit.", requestTestOpenWorld, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "cpuCutoff (90)", "ramCutoff (90), numInitialAreas (5), delayBetweenNewAreas (10)" }));
       cm.addCommand(new CommandData("log_request", "Creates server inquiries.", requestServerLogs, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType" }));
+      cm.addCommand(new CommandData("spawn_obj", "Creates interactable objects.", requestSpawnObj, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "logType" }));
 
       // Used for combat simulation
       cm.addCommand(new CommandData("auto_attack", "During land combat, attacks automatically", autoAttack, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "attackDelay" }));
@@ -713,6 +714,39 @@ public class AdminManager : NetworkBehaviour
 
    private void requestLogs (string parameters) {
       Cmd_RequestServerLog(parameters);
+   }
+   
+   private void requestSpawnObj (string parameters) {
+      processSpawnObj(parameters);
+   }
+
+   protected void processSpawnObj (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+      if (list.Length > 0) {
+         int objType = 0;
+
+         try {
+            objType = int.Parse(list[0].ToLower());
+         } catch {
+            D.debug("Invalid Parameters");
+         }
+
+         switch (objType) {
+            case 1:
+               _player.rpc.Cmd_AdminSpawnBall();
+               break;
+            case 2:
+               _player.rpc.Cmd_AdminSpawnBox();
+               break;
+            case 3:
+               _player.rpc.Cmd_AdminSpawnBall2();
+               break;
+         }
+      }
    }
 
    private void requestServerLogs (string parameters) {
