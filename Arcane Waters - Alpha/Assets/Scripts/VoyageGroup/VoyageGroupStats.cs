@@ -12,3 +12,11 @@
 
    #endregion
 }
+
+public class DamageRecord {
+   // The last time the attack was triggered
+   public double lastAttackTime;
+
+   // The total damage dealt
+   public int totalDamage;
+}

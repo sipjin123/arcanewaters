@@ -91,6 +91,9 @@ public class SeaEntity : NetEntity
    [SyncVar]
    public bool sinkOnDeath = true;
 
+   // The total healed value of this entity
+   public int totalHealed;
+
    #region Enemy AI
 
    [Header("AI")]
@@ -256,6 +259,13 @@ public class SeaEntity : NetEntity
          customRegisterDamageReceived(sourceEntity.userId, amount);
       }
 
+      // Cache the source damage record inflicted
+      if (!_totalAttackers.ContainsKey(damageSourceNetId)) {
+         _totalAttackers.Add(damageSourceNetId, new DamageRecord());
+      }
+      _totalAttackers[damageSourceNetId].lastAttackTime = NetworkTime.time;
+      _totalAttackers[damageSourceNetId].totalDamage += amount;
+
       noteAttacker(damageSourceNetId);
       Rpc_NoteAttacker(damageSourceNetId);
 
@@ -295,14 +305,24 @@ public class SeaEntity : NetEntity
       if (isServer) {
          NetEntity lastAttacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(_lastAttackerNetId);
 
+         int healthValMAx = maxHealth + totalHealed;
          if (lastAttacker != null) {
             GameStatsManager gameStatsManager = GameStatsManager.self;
 
             if (gameStatsManager != null) {
                if (lastAttacker.isPlayerShip() && GameStatsManager.self.isUserRegistered(lastAttacker.userId)) {
-                  int silverReward = SilverManager.computeSilverReward(this);
-                  gameStatsManager.addSilverAmount(lastAttacker.userId, silverReward);
-                  Target_ReceiveSilverCurrency(lastAttacker.getPlayerShipEntity().connectionToClient, silverReward, SilverManager.SilverRewardReason.Kill);
+                  int totalSilverReward = SilverManager.computeSilverReward(this);
+                  if (_totalAttackers.Count > 0) {
+                     foreach (KeyValuePair<uint, DamageRecord> damagerData in _totalAttackers) {
+                        NetEntity damagerEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(damagerData.Key);
+                        float damagePercentage = ((float) damagerData.Value.totalDamage / (float) healthValMAx) * totalSilverReward;
+                        gameStatsManager.addSilverAmount(damagerEntity.userId, (int) damagePercentage);
+                        Target_ReceiveSilverCurrency(damagerEntity.getPlayerShipEntity().connectionToClient, (int) damagePercentage, SilverManager.SilverRewardReason.Kill);
+                     }
+                  } else {
+                     gameStatsManager.addSilverAmount(lastAttacker.userId, totalSilverReward);
+                     Target_ReceiveSilverCurrency(lastAttacker.getPlayerShipEntity().connectionToClient, totalSilverReward, SilverManager.SilverRewardReason.Kill);
+                  }
                }
 
                if (this.isPlayerShip()) {
@@ -447,6 +467,9 @@ public class SeaEntity : NetEntity
       // Regenerate health
       if (NetworkServer.active && isSeaMonsterPvp() && currentHealth < maxHealth && currentHealth > 0) {
          if (hasRegenerationBuff()) {
+            if (this is BotShipEntity || this is SeaMonsterEntity) {
+               totalHealed += (int) HEALTH_REGEN_RATE;
+            }
             currentHealth += (int) HEALTH_REGEN_RATE;
          }
       }
@@ -947,7 +970,6 @@ public class SeaEntity : NetEntity
       }
 
       _attackers[netId] = NetworkTime.time;
-      _totalAttackers[netId] = NetworkTime.time;
 
       // If this is a seamonster and is attacked by a tower, immediately retreat to spawn point
       if (isServer && isSeaMonsterPvp()) {
