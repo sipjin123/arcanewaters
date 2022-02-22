@@ -7020,8 +7020,12 @@ public class RPCManager : NetworkBehaviour
 
       processChestRewards(chest);
 
-      // Notify the client that the voyage is complete
-      Target_DisplayNotificationForVoyageCompleted(_player.connectionToClient, Notification.Type.VoyageCompleted);
+      if (AreaManager.self.getAreaSpecialState(_player.areaKey) > 0) {
+         // TODO: If POI has different completion effect, do logic here
+      } else {
+         // Notify the client that the voyage is complete
+         Target_DisplayNotificationForVoyageCompleted(_player.connectionToClient, Notification.Type.VoyageCompleted);
+      }
 
       // Check if the voyage group has opened all the chests in the treasure site
       if (_player.tryGetGroup(out VoyageGroupInfo groupInfo) && TreasureManager.self.areAllChestsOpenedForGroup(instance.id, groupInfo.members)) {
