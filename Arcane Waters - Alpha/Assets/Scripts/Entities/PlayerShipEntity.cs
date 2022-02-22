@@ -272,6 +272,11 @@ public class PlayerShipEntity : ShipEntity
          InputManager.self.inputMaster.Land.Disable();
          // Set our sprite sheets according to our types
          StartCoroutine(CO_UpdateAllSprites());
+      } else {
+         if (Util.isAutoMove()) {
+            // TODO: Remove player ship entity after batch test
+            StartCoroutine(CO_UpdateAllSprites());
+         }
       }
    }
 
@@ -1618,8 +1623,11 @@ public class PlayerShipEntity : ShipEntity
          c.enabled = false;
       }
 
-      foreach (SpriteRenderer renderer in _renderers) {
-         renderer.enabled = false;
+      // Do not disable sprites for auto move simulation
+      if (!Util.isAutoMove()) {
+         foreach (SpriteRenderer renderer in _renderers) {
+            renderer.enabled = false;
+         }
       }
 
       if (!Util.isStressTesting()) {

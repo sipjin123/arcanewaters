@@ -189,7 +189,7 @@ public class SeaEntity : NetEntity
       //}
 
       // Set our sprite sheets according to our types
-      if (!Util.isBatch()) {
+      if (!Util.isBatch() || (this is PlayerShipEntity && Util.isAutoMove())) {
          StartCoroutine(CO_UpdateAllSprites());
       }
 
@@ -456,7 +456,8 @@ public class SeaEntity : NetEntity
    }
 
    public void reloadSprites () {
-      if (!Util.isBatch()) {
+      // Remove player ship entity after batch test
+      if (!Util.isBatch() || (this is PlayerShipEntity && Util.isAutoMove())) {
          StartCoroutine(CO_UpdateAllSprites());
       }
    }

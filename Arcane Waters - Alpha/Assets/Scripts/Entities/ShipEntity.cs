@@ -597,7 +597,7 @@ public class ShipEntity : SeaEntity
 
       // TODO: Remove player ship entity after batch test
       if (this is PlayerShipEntity) {
-         D.debug("Ship entity sprite override: {" + skinPath + "} {" + _shipSprites + "} {" + (_shipSprites != null ? _shipSprites.name : "") + "}");
+         D.adminLog("Ship entity sprite override: {" + skinPath + "} {" + _shipSprites + "} {" + (_shipSprites != null ? _shipSprites.name : "") + "}", D.ADMIN_LOG_TYPE.Simulation_Sea);
       }
       if (spritesOverride) {
          spritesContainer.GetComponent<SpriteSwap>().newTexture = spritesOverride;
