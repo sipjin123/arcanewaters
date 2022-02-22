@@ -19,7 +19,7 @@ public class GuildManager : MonoBehaviour {
    // The maximum length of the guild name
    public static int MAX_NAME_LENGTH = 25;
 
-   // Referenece to the notice screen canvas component
+   // Reference to the notice screen canvas component
    public NoticeScreen noticeScreen;
 
    // Self
@@ -135,6 +135,7 @@ public class GuildManager : MonoBehaviour {
             recipient.guildIconBackPalettes = guildInfo.iconBackPalettes;
             recipient.guildIconSigil = guildInfo.iconSigil;
             recipient.guildIconSigilPalettes = guildInfo.iconSigilPalettes;
+            recipient.guildMapBaseId = guildInfo.guildMapBaseId;
             recipient.Rpc_UpdateGuildIconSprites(recipient.guildIconBackground, recipient.guildIconBackPalettes, recipient.guildIconBorder, recipient.guildIconSigil, recipient.guildIconSigilPalettes);
          });
       });

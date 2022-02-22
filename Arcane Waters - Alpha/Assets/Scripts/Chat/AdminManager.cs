@@ -3002,6 +3002,11 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
+      // Ignore restart logic for locally created server builds
+      if (Util.isLocalDevBuild()) {
+         return;
+      }
+      
       DateTime timePoint = DateTime.UtcNow + TimeSpan.FromMinutes(delay);
       long ticks = timePoint.Ticks;
 
@@ -3070,18 +3075,24 @@ public class AdminManager : NetworkBehaviour
                return;
             }
 
-            int userId = CustomMapManager.isUserSpecificAreaKey(partialAreaKey) ? CustomMapManager.getUserId(partialAreaKey) : _player.userId;
-            NetEntity entity = EntityManager.self.getEntity(userId);
+            if (customMapManager is CustomGuildMapManager) {
+               baseMapAreaKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(_player));
+               closestAreaKey = partialAreaKey;
+            } else {
+               int userId = CustomMapManager.isUserSpecificAreaKey(partialAreaKey) ? CustomMapManager.getUserId(partialAreaKey) : _player.userId;
+               NetEntity entity = EntityManager.self.getEntity(userId);
 
-            // Owner of the target map has to be in the server
-            // TODO: remove this constraint
-            if (entity == null) {
-               D.log("Owner of the map is not currently in the server.");
-               return;
+               // Owner of the target map has to be in the server
+               // TODO: remove this constraint
+               if (entity == null) {
+                  D.log("Owner of the map is not currently in the server.");
+                  return;
+               }
+
+               baseMapAreaKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(entity));
+               closestAreaKey = partialAreaKey;
             }
-
-            baseMapAreaKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(entity));
-            closestAreaKey = partialAreaKey;
+            
          } else {
             // Get the area key closest to the given partial key
             closestAreaKey = getClosestAreaKey(areaKeys, partialAreaKey);

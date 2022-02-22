@@ -44,6 +44,9 @@ public class PlantableTree : MonoBehaviour
    // When was the last chop added
    public float lastChopTime = 0;
 
+   // The main sprite of a fully grown tree
+   public Sprite grownTreeSprite = null;
+
    #endregion
 
    private void Awake () {

@@ -197,12 +197,16 @@ public class OptionsPanel : Panel
          showPlayersName(value);
       });
 
+      #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+      mouseLockToggle.transform.parent.gameObject.SetActive(false);
+      #else
       // Set the player name toggle event
       mouseLockToggle.isOn = PlayerPrefs.GetInt(OptionsManager.PREF_LOCK_CURSOR) == 1 ? true : false;
       ScreenSettingsManager.self.refreshMouseLockState();
       mouseLockToggle.onValueChanged.AddListener(value => {
          PlayerPrefs.SetInt(OptionsManager.PREF_LOCK_CURSOR, value ? 1 : 0);
       });
+      #endif
 
       // Initialize the help tips toggle
       displayHelpTipsToggle.SetIsOnWithoutNotify(!NotificationManager.self.areAllNotificationsDisabled());

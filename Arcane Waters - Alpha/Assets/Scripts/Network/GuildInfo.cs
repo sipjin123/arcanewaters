@@ -34,6 +34,9 @@ public class GuildInfo
    // The time at which the guild was created
    public long creationTime;
 
+   // The base id of the custom guild map for this guild
+   public int guildMapBaseId;
+
    #endregion
 
    public GuildInfo () { }
@@ -50,6 +53,7 @@ public class GuildInfo
          this.iconBackPalettes = DataUtil.getString(dataReader, "gldIconBackPalettes");
          this.iconSigilPalettes = DataUtil.getString(dataReader, "gldIconSigilPalettes");
          this.creationTime = DataUtil.getDateTime(dataReader, "gldCreationTime").ToBinary();
+         this.guildMapBaseId = DataUtil.getInt(dataReader, "gldMapBaseId");
       } catch {
          D.debug("Error in parsing MySqlData for GuildInfo!");
       }

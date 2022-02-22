@@ -544,6 +544,7 @@ Transform:
   - {fileID: 4458965587867258505}
   - {fileID: 1228457740679380943}
   - {fileID: 4198396743100960988}
+  - {fileID: 4061648270863613590}
   m_Father: {fileID: 6003827098852396580}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -901,6 +902,50 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 4298218442774231790, guid: 8dda6f84c22ac7d4fbc3e8494efd2c29, type: 3}
+--- !u!1 &4274752085613243011
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4061648270863613590}
+  - component: {fileID: 2259444329907473343}
+  m_Layer: 0
+  m_Name: whale
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4061648270863613590
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4274752085613243011}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.63, y: 43.04, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3719976920741877196}
+  m_RootOrder: 25
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2259444329907473343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4274752085613243011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d14a3bae45cba31478d29685e1dea398, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 177626351528150534, guid: 97e0dd9acbb163e4383d9f9d2e63ae74, type: 3}
 --- !u!1 &4930983925171879456
 GameObject:
   m_ObjectHideFlags: 0
@@ -8942,11 +8987,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 2
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 2
       collisionType: 0
     - layer: grass
       sublayer: 0
@@ -9118,11 +9163,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 2
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 2
       collisionType: 0
     - layer: grass
       sublayer: 0
@@ -9294,11 +9339,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 2
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 2
       collisionType: 0
     - layer: grass
       sublayer: 0
@@ -9470,11 +9515,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 2
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 2
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -11315,11 +11360,11 @@ MonoBehaviour:
     - layer: detail
       sublayer: 0
       cluster: 0
-      collisionType: 1
+      collisionType: 0
     - layer: detail
       sublayer: 0
       cluster: 0
-      collisionType: 1
+      collisionType: 0
     - layer: bay-grass
       sublayer: 0
       cluster: 0
@@ -11491,11 +11536,11 @@ MonoBehaviour:
     - layer: detail
       sublayer: 0
       cluster: 0
-      collisionType: 1
+      collisionType: 0
     - layer: detail
       sublayer: 0
       cluster: 0
-      collisionType: 1
+      collisionType: 0
     - layer: bay-water
       sublayer: 0
       cluster: 0

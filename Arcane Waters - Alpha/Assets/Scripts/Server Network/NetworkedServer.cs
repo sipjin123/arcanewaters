@@ -478,54 +478,25 @@ public class NetworkedServer : NetworkedBehaviour
 
    [ClientRPC]
    public void Server_ReceiveGlobalChatMessage (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted, bool isSenderAdmin) {
-      // Send the chat message to all users connected to this server
-      foreach (NetEntity netEntity in MyNetworkManager.getPlayers()) {
-         netEntity.Target_ReceiveGlobalChat(chatId, message, timestamp, senderName, senderUserId, guildIconDataString, guildName, isSenderMuted, isSenderAdmin);
-      }
-   }
-
-   [ServerRPC]
-   public void MasterServer_SendGuildChatMessage (int guildId, int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted) {
-      InvokeClientRpcOnEveryone(Server_ReceiveGuildChatMessage, guildId, chatId, message, timestamp, senderName, senderUserId, guildIconDataString, guildName, isSenderMuted);
-   }
-
-   [ClientRPC]
-   public void Server_ReceiveGuildChatMessage (int guildId, int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted) {
-      // Send the chat message to all guild members connected to this server
-      foreach (NetEntity player in MyNetworkManager.getPlayers()) {
-         if (player.guildId == guildId) {
-            player.Target_ReceiveSpecialChat(player.connectionToClient, chatId, message, senderName, player.entityName, timestamp, ChatInfo.Type.Guild, GuildIconData.guildIconDataFromString(guildIconDataString), guildName, senderUserId, isSenderMuted);
-         }
+      // Send the chat message to all users assigned to this server
+      foreach (int userId in ServerNetworkingManager.self.server.assignedUserIds.Keys) {
+         ChatManager.self.receiveChatMessageForUser(userId, chatId, ChatInfo.Type.Global, message, timestamp, senderName, "", senderUserId, guildIconDataString, guildName, isSenderMuted, isSenderAdmin);
       }
    }
 
    [ServerRPC]
    public void MasterServer_SendSpecialChatMessage (int userId, int chatId, ChatInfo.Type messageType, string message, long timestamp, string senderName, string receiverName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted) {
-      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingAssignedUser(userId);
       if (targetServer != null) {
          targetServer.InvokeClientRpcOnOwner(Server_ReceiveSpecialChatMessage, userId, chatId, messageType, message, timestamp, senderName, receiverName, senderUserId, guildIconDataString, guildName, isSenderMuted);
       } else {
-         handleChatMessageDeliveryError(senderUserId, messageType, message);
+         ChatManager.self.handleChatMessageDeliveryError(senderUserId, messageType, message);
       }
    }
 
    [ClientRPC]
    public void Server_ReceiveSpecialChatMessage (int userId, int chatId, ChatInfo.Type messageType, string message, long timestamp, string senderName, string receiverName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted) {
-      NetEntity player = EntityManager.self.getEntity(userId);
-      if (player != null) {
-         player.Target_ReceiveSpecialChat(player.connectionToClient, chatId, message, senderName, receiverName, timestamp, messageType, GuildIconData.guildIconDataFromString(guildIconDataString), guildName, senderUserId, isSenderMuted);
-      } else {
-         handleChatMessageDeliveryError(senderUserId, messageType, message);
-      }
-   }
-
-   private void handleChatMessageDeliveryError (int senderUserId, ChatInfo.Type messageType, string originalMessage) {
-      if (messageType == ChatInfo.Type.Whisper) {
-         // For whispers, send a notification to the sender when the message failed to be delivered   
-         ChatInfo chatInfo = new ChatInfo(0, "Could not find the recipient", DateTime.UtcNow, ChatInfo.Type.Error);
-         chatInfo.recipient = "";
-         ServerNetworkingManager.self.sendSpecialChatMessage(senderUserId, chatInfo);
-      }
+      ChatManager.self.receiveChatMessageForUser(userId, chatId, messageType, message, timestamp, senderName, receiverName, senderUserId, guildIconDataString, guildName, isSenderMuted, false);
    }
 
    [ServerRPC]

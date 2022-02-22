@@ -102,7 +102,7 @@ public class PvpManager : MonoBehaviour {
                   continue;
                }
 
-               string mapName = AreaManager.self.getMapInfo(activePvpGame.areaKey).displayName;
+               string mapName = Area.getName(activePvpGame.areaKey);
                string message = "A battle is breaking out in " + mapName + "!  Click here to take part!";
 
                // Check if user is already registered, if so then check if time stamp meets the required announcement interval
@@ -274,7 +274,9 @@ public class PvpManager : MonoBehaviour {
       PvpGame newGame = newGameObject.AddComponent<PvpGame>();
       newGame.init(instance.voyageId, instance.id, instance.areaKey);
       _activeGames[instance.id] = newGame;
-      D.adminLog("Create new game for pvp {" + instance.id + ":" + instance.areaKey + "}", D.ADMIN_LOG_TYPE.Pvp_Instance);
+      if (VoyageManager.isOpenWorld(instance.areaKey.ToLower())) {
+         D.adminLog("Create new game for pvp {" + instance.id + ":" + instance.areaKey + "}", D.ADMIN_LOG_TYPE.Pvp_Instance);
+      }
 
       pvpAnnouncementDataList.Add(new PvpAnnouncementClass {
          instanceId = instance.id,

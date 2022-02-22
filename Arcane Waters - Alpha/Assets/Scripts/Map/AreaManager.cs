@@ -204,6 +204,8 @@ public class AreaManager : MonoBehaviour
       return null;
    }
 
+   public bool tryGetArea (string areaKey, out Area area) => _areas.TryGetValue(areaKey, out area);
+
    public bool hasArea (string areaKey) {
       return _areas.ContainsKey(areaKey);
    }
@@ -255,7 +257,7 @@ public class AreaManager : MonoBehaviour
 
       _areas.Add(area.areaKey, area);
    }
-   
+
    public void removeArea (string areaKey) {
       _areas.Remove(areaKey);
 
@@ -339,7 +341,7 @@ public class AreaManager : MonoBehaviour
    protected List<string> _areaNames = new List<string>();
 
    // Managers of owned maps
-   protected CustomMapManager[] _customMapManagers = new CustomMapManager[] { new CustomHouseManager(), new CustomFarmManager() };
+   protected CustomMapManager[] _customMapManagers = new CustomMapManager[] { new CustomHouseManager(), new CustomFarmManager(), new CustomGuildMapManager() };
 
    #endregion
 }

@@ -23,14 +23,22 @@ public abstract class CustomMapManager
       return mapTypeAreaKey + "_user" + userId;
    }
 
+   public string getGuildSpecificAreaKey (int guildId) {
+      return mapTypeAreaKey + "_guild" + guildId;
+   }
+
    // Checks whether given area key is this map group's area key or this map group's user specific area key
    public bool associatedWithAreaKey (string areaKey) {
-      return mapTypeAreaKey.Equals(areaKey) || mapTypeAreaKey.Equals(getMapTypeAreaKey(areaKey));
+      return mapTypeAreaKey.Equals(areaKey) || mapTypeAreaKey.Equals(getMapTypeAreaKey(areaKey)) || mapTypeAreaKey.Equals(getGuildMapTypeAreaKey(areaKey));
    }
 
    // Check if this area key is a user-specific area key
    public static bool isUserSpecificAreaKey (string areaKey) {
       return areaKey.Contains("_user");
+   }
+
+   public static bool isGuildSpecificAreaKey (string areaKey) {
+      return areaKey.Contains("_guild");
    }
 
    // Extracts map type area key from a user specific area key
@@ -39,6 +47,15 @@ public abstract class CustomMapManager
          return userSpecificAreaKey.Split(new string[] { "_user" }, StringSplitOptions.RemoveEmptyEntries)[0];
       } catch {
          D.debug("{getMapTypeAreaKey} This area {" + userSpecificAreaKey + "} does not have the keyword {USER} returning default");
+         return string.Empty;
+      }
+   }
+
+   public static string getGuildMapTypeAreaKey (string guildSpecificAreaKey) {
+      try {
+         return guildSpecificAreaKey.Split(new string[] { "_guild" }, StringSplitOptions.RemoveEmptyEntries)[0];
+      } catch {
+         D.debug("{getMapTypeAreaKey} This area {" + guildSpecificAreaKey + "} does not have the keyword {GUILD} returning default");
          return string.Empty;
       }
    }
@@ -52,8 +69,12 @@ public abstract class CustomMapManager
       }
    }
 
+   public static int getGuildId (string guildSpecificAreaKey) {
+      return int.Parse(guildSpecificAreaKey.Split(new string[] { "_guild" }, StringSplitOptions.RemoveEmptyEntries)[1]);
+   }
+
    public static bool isPrivateCustomArea (string areaKey) {
-      return areaKey.Contains(CustomHouseManager.GROUP_AREA_KEY) || areaKey.Contains(CustomFarmManager.GROUP_AREA_KEY) || isUserSpecificAreaKey(areaKey);
+      return areaKey.Contains(CustomHouseManager.GROUP_AREA_KEY) || areaKey.Contains(CustomFarmManager.GROUP_AREA_KEY) || areaKey.Contains(CustomGuildMapManager.GROUP_AREA_KEY) || isUserSpecificAreaKey(areaKey);
    }
 
    // Gets the main placeholder map and the base maps for this type of custom map

@@ -114,11 +114,19 @@ public class PlantableTreeManager : MonoBehaviour
       }
    }
 
-   private bool canPlayerPlant (BodyEntity player, string areaKey, Vector2 position, out string message) {
+   public bool canPlayerPlant (BodyEntity player, string areaKey, Vector2 localPosition, out string message) =>
+      canPlayerPlant(player, areaKey, localPosition, out PlantableTreeDefinition _, out PlantableTree _, out message);
+
+   public bool canPlayerPlant (BodyEntity player, string areaKey, Vector2 localPosition, out PlantableTree treePrefab) =>
+      canPlayerPlant(player, areaKey, localPosition, out PlantableTreeDefinition _, out treePrefab, out string _);
+
+   public bool canPlayerPlant (BodyEntity player, string areaKey, Vector2 localPosition, out PlantableTreeDefinition targetTreeDefinition, out PlantableTree targetPrefab, out string message) {
+      targetTreeDefinition = null;
+      targetPrefab = null;
+
       // Check that we have information about this area
       Area area = AreaManager.self.getArea(areaKey);
       if (area == null) {
-         D.warning($"Can't plant tree in { areaKey} because missing area data!");
          message = null;
          return false;
       }
@@ -132,14 +140,13 @@ public class PlantableTreeManager : MonoBehaviour
 
       // Check that we can assosiate a tree definition with this seedbag
       int seedBagId = equipedData.sqlId;
-      PlantableTreeDefinition treeDefinition = null;
       foreach (PlantableTreeDefinition def in _treeDefinitions.Values) {
          if (def.seedBagId == seedBagId) {
-            treeDefinition = def;
+            targetTreeDefinition = def;
             break;
          }
       }
-      if (treeDefinition == null) {
+      if (targetTreeDefinition == null) {
          message = null;
          return false;
       }
@@ -164,10 +171,11 @@ public class PlantableTreeManager : MonoBehaviour
 
       // Get the prefab
       SpaceRequirer req = null;
-      GameObject prefGO = AssetSerializationMaps.getPrefab(treeDefinition.prefabId, area.biome, false);
+      GameObject prefGO = AssetSerializationMaps.getPrefab(targetTreeDefinition.prefabId, area.biome, false);
 
       if (prefGO != null) {
          if (prefGO.TryGetComponent(out PlantableTree tree)) {
+            targetPrefab = tree;
             req = tree.spaceRequirer;
          }
       }
@@ -178,7 +186,7 @@ public class PlantableTreeManager : MonoBehaviour
       }
 
       // Make sure exact spot is not occupied and that there is a bit of space around it
-      if (!req.wouldHaveSpace(area.transform.TransformPoint(position))) {
+      if (!req.wouldHaveSpace(area.transform.TransformPoint(localPosition))) {
          message = "No Space";
          return false;
       }
@@ -188,8 +196,8 @@ public class PlantableTreeManager : MonoBehaviour
    }
 
    [Server]
-   public void plantTree (BodyEntity planter, string areaKey, Vector2 position) {
-      if (!canPlayerPlant(planter, areaKey, position, out string message)) {
+   public void plantTree (BodyEntity planter, string areaKey, Vector2 localPosition) {
+      if (!canPlayerPlant(planter, areaKey, localPosition, out string message)) {
          return;
       }
 
@@ -210,7 +218,7 @@ public class PlantableTreeManager : MonoBehaviour
       // Create tree instance data
       PlantableTreeInstanceData data = new PlantableTreeInstanceData {
          areaKey = areaKey,
-         position = position,
+         position = localPosition,
          treeDefinitionId = treeDefinition.id,
          planterUserId = planter.userId,
          growthStagesCompleted = 0,

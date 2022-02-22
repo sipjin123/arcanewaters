@@ -277,6 +277,9 @@ public class MyNetworkManager : NetworkManager
 
       // Start the open areas management
       RedirectionManager.self.startOpenAreasManagement();
+
+      // Start the chat management
+      ChatManager.self.startChatManagement();
    }
 
    private void initializeXmlData () {
@@ -356,16 +359,24 @@ public class MyNetworkManager : NetworkManager
          GuildInfo guildInfo = userObjects.guildInfo;
          GuildRankInfo guildRankInfo = userObjects.guildRankInfo;
          string previousAreaKey = userInfo.areaKey;
+         userInfo.guildMapBaseId = guildInfo.guildMapBaseId;
 
          // Get information about owned map
          string baseMapAreaKey = previousAreaKey;
-         bool isSpecificArea = CustomMapManager.isUserSpecificAreaKey(previousAreaKey);
-         int mapOwnerId = CustomMapManager.isUserSpecificAreaKey(previousAreaKey) ? CustomMapManager.getUserId(previousAreaKey) : -1;
+         bool isUserSpecificArea = CustomMapManager.isUserSpecificAreaKey(previousAreaKey);
+         bool isGuildSpecificArea = CustomMapManager.isGuildSpecificAreaKey(previousAreaKey);
+         
+         // If the map is owned by a user, get their info
+         int mapOwnerId = isUserSpecificArea ? CustomMapManager.getUserId(previousAreaKey) : -1;
          UserInfo ownerInfo = mapOwnerId < 0 ? null : (mapOwnerId == userInfo.userId ? userInfo : DB_Main.getUserInfoById(mapOwnerId));
+         
+         // If the map is owned by a guild, get their info
+         int owningGuildId = isGuildSpecificArea ? CustomMapManager.getGuildId(previousAreaKey) : -1;
+         GuildInfo owningGuildInfo = owningGuildId < 0 ? null : DB_Main.getGuildInfo(owningGuildId);
 
          // If spawn map is owned by another user, fetch that users info
          UserObjects visiterUserObject = null;
-         if (CustomMapManager.isUserSpecificAreaKey(previousAreaKey)) {
+         if (isUserSpecificArea) {
             int getmapUser = CustomMapManager.getUserId(previousAreaKey);
             if (getmapUser != userObjects.userInfo.userId) {
                visiterUserObject = DB_Main.getUserObjects(getmapUser);
@@ -401,6 +412,13 @@ public class MyNetworkManager : NetworkManager
                      "Info:{" + (ownerInfo == null ? "null" : ownerInfo.userId + " " + ownerInfo.customHouseBaseId) + "}", D.ADMIN_LOG_TYPE.Visit);
                } else {
                   D.adminLog("Failed to fetch custom map: {" + customMapManager.getBaseMapId(ownerInfo) + "} {" + previousAreaKey + "}", D.ADMIN_LOG_TYPE.Visit);
+               }
+            } else if (owningGuildInfo != null) {
+               // If this is a guild map, get the base key
+               if (userInfo.guildId == owningGuildInfo.guildId) {
+                  if (AreaManager.self.tryGetCustomMapManager(previousAreaKey, out CustomMapManager customMapManager)) {
+                     baseMapAreaKey = AreaManager.self.getAreaName(owningGuildInfo.guildMapBaseId);
+                  }
                }
             }
 
@@ -451,6 +469,7 @@ public class MyNetworkManager : NetworkManager
             player.guildIconBorder = guildInfo.iconBorder;
             player.guildIconSigil = guildInfo.iconSigil;
             player.guildIconSigilPalettes = guildInfo.iconSigilPalettes;
+            player.guildMapBaseId = guildInfo.guildMapBaseId;
 
             // Verify if the area is instantiated and get its position
             Vector2 mapPosition;

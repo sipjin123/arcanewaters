@@ -23,6 +23,9 @@ public class ChatManager : GenericGameManager
    // Maximum number of item tags that a message can contain
    public const int MAX_ITEM_TAGS_IN_MESSAGE = 5;
 
+   // The time interval at which missed chat message are re-sent
+   public const float MISSED_CHAT_MESSAGE_RESEND_INTERVAL = 0.5f;
+
    // The Chat Panel, need to have direct reference in case something gets logged during Awake()
    public ChatPanel chatPanel;
 
@@ -72,6 +75,11 @@ public class ChatManager : GenericGameManager
       _commandData.Add(new CommandData("/who", "Search users", searchUsers, parameterNames: new List<string>() { "[is, in, level, help]", "username, area or level" }));
       _commandData.Add(new CommandData("/e", "Play an emote", requestPlayEmote, parameterNames: new List<string>() { "emoteType" }, parameterAutocompletes: EmoteManager.getSupportedEmoteNames()));
       _commandData.Add(new CommandData("/stuck", "Are you stuck? Use this to free yourself", requestUnstuck));
+   }
+
+   public void startChatManagement () {
+      // Start re-sending missed chat messages
+      InvokeRepeating(nameof(resendMissedChatMessages), 5f, MISSED_CHAT_MESSAGE_RESEND_INTERVAL);
    }
 
    public void updateChatFontSize (float size) {
@@ -956,6 +964,73 @@ public class ChatManager : GenericGameManager
       addChat(message, ChatInfo.Type.PendingFriendRequestsNotification);
    }
 
+   [Server]
+   public void receiveChatMessageForUser (int userId, int chatId, ChatInfo.Type messageType, string message, long timestamp, string senderName, string receiverName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted, bool isSenderAdmin) {
+      ChatInfo chatInfo = new ChatInfo(chatId, message, DateTime.FromBinary(timestamp), messageType, senderName, receiverName, senderUserId, GuildIconData.guildIconDataFromString(guildIconDataString), guildName, isSenderMuted, isSenderAdmin, userId);
+
+      NetEntity player = EntityManager.self.getEntity(userId);
+      if (player != null) {
+         commonSendChatMessageToPlayer(player, chatInfo);
+      } else {
+         // Add the chat message to the missed chat messages and try to re-send it later
+         _missedChatMessages.Add(chatInfo);
+      }
+   }
+
+   [Server]
+   private void resendMissedChatMessages () {
+      if (!NetworkServer.active) {
+         return;
+      }
+
+      List<ChatInfo> messagesToDelete = new List<ChatInfo>();
+
+      foreach (ChatInfo chatInfo in _missedChatMessages) {
+         // When the recipient is no longer assigned to this server, the user either moved to another server or disconnected, so the missed chat message is deleted
+         if (!ServerNetworkingManager.self.server.assignedUserIds.ContainsKey(chatInfo.recipientId)) {
+            messagesToDelete.Add(chatInfo);
+            handleChatMessageDeliveryError(chatInfo.senderId, chatInfo.messageType, chatInfo.text);
+            continue;
+         }
+
+         // If the player entity does not exist yet, the user is still in the process of redirection between servers, so try again later
+         NetEntity player = EntityManager.self.getEntity(chatInfo.recipientId);
+         if (player == null) {
+            continue;
+         }
+
+         commonSendChatMessageToPlayer(player, chatInfo);
+         messagesToDelete.Add(chatInfo);
+      }
+
+      // Delete messages tagged for deletion
+      foreach (ChatInfo chatInfo in messagesToDelete) {
+         _missedChatMessages.Remove(chatInfo);
+      }
+   }
+
+   [Server]
+   private void commonSendChatMessageToPlayer (NetEntity player, ChatInfo chatInfo) {
+      switch (chatInfo.messageType) {
+         case ChatInfo.Type.Global:
+            player.Target_ReceiveGlobalChat(chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.guildName, chatInfo.isSenderMuted, chatInfo.isSenderAdmin);
+            break;
+         default:
+            player.Target_ReceiveSpecialChat(player.connectionToClient, chatInfo.chatId, chatInfo.text, chatInfo.sender, chatInfo.recipient, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.guildName, chatInfo.senderId, chatInfo.isSenderMuted);
+            break;
+      }
+   }
+
+   [Server]
+   public void handleChatMessageDeliveryError (int senderUserId, ChatInfo.Type messageType, string originalMessage) {
+      if (messageType == ChatInfo.Type.Whisper) {
+         // For whispers, send a notification to the sender when the message failed to be delivered   
+         ChatInfo chatInfo = new ChatInfo(0, "Could not find the recipient", DateTime.UtcNow, ChatInfo.Type.Error);
+         chatInfo.recipient = "";
+         ServerNetworkingManager.self.sendSpecialChatMessage(senderUserId, chatInfo);
+      }
+   }
+
    #region Private Variables
 
    // A list of the data for all available chat commands
@@ -993,6 +1068,9 @@ public class ChatManager : GenericGameManager
 
    // Flag telling us when we should update auto-completes
    protected bool _shouldUpdateAutoCompletes = false;
+
+   // Chat messages sent to disconnected/redirected users
+   protected List<ChatInfo> _missedChatMessages = new List<ChatInfo>();
 
    #endregion
 }

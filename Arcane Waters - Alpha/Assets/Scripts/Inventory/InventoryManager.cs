@@ -210,6 +210,7 @@ public class InventoryManager : MonoBehaviour
       info.iconSigil = player.guildIconSigil;
       info.iconSigilPalettes = player.guildIconSigilPalettes;
       info.guildId = player.guildId;
+      info.guildMapBaseId = player.guildMapBaseId;
 
       return info;
    }

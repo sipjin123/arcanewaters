@@ -54,6 +54,9 @@ public class ChatInfo
    // The user ID of the sender
    public int senderId;
 
+   // The user ID of the recipient
+   public int recipientId;
+
    // The time at which this message was received by the server
    public DateTime chatTime;
 
@@ -75,7 +78,7 @@ public class ChatInfo
 
    }
 
-   public ChatInfo (int chatId, string text, DateTime chatTime, Type messageType, string sender = "", string receiver = "", int senderId = 0, GuildIconData guildIconData = null, string guildName="", bool isSenderMuted = false, bool isSenderAdmin = false) {
+   public ChatInfo (int chatId, string text, DateTime chatTime, Type messageType, string sender = "", string receiver = "", int senderId = 0, GuildIconData guildIconData = null, string guildName="", bool isSenderMuted = false, bool isSenderAdmin = false, int recipientId = 0) {
       this.chatId = chatId;
       this.text = text;
       this.chatTime = chatTime;
@@ -83,6 +86,7 @@ public class ChatInfo
       this.sender = sender;
       this.recipient = receiver;
       this.senderId = senderId;
+      this.recipientId = recipientId;
       this.guildIconData = guildIconData;
       this.guildName = guildName;
       this.isSenderMuted = isSenderMuted;

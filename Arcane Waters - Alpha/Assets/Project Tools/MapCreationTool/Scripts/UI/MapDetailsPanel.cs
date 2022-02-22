@@ -142,20 +142,19 @@ namespace MapCreationTool
                throw new ArgumentException($"Could not parse the max player count: {maxPlayerCountInput.text}");
             }
 
-            Map newMap = new Map {
-               id = targetMap.id,
-               name = nameInput.text,
-               displayName = displayNameInput.text,
-               notes = notesInput.text,
-               sourceMapId = sourceOptions[sourceMapDropdown.value].id,
-               specialType = typeOptions[typeDropdown.value].type,
-               weatherEffectType = weatherOptions[weatherEffectDropdown.value].type,
-               maxPlayerCount = maxPlayerCount,
-               pvpGameMode = pvpGameModeOptions[pvpGameModeDropdown.value].type,
-               pvpArenaSize = pvpArenaSizeOptions[pvpArenaSizeDropdown.value].type,
-               spawnsSeaMonsters = spawnsSeaMonsterToggle.isOn,
-               specialState = (int) specialState.value
-            };
+            // Duplicate target map via serialization, definitely not a fast sollution
+            Map newMap = JsonUtility.FromJson<Map>(JsonUtility.ToJson(targetMap));
+            newMap.name = nameInput.text;
+            newMap.displayName = displayNameInput.text;
+            newMap.notes = notesInput.text;
+            newMap.sourceMapId = sourceOptions[sourceMapDropdown.value].id;
+            newMap.specialType = typeOptions[typeDropdown.value].type;
+            newMap.weatherEffectType = weatherOptions[weatherEffectDropdown.value].type;
+            newMap.maxPlayerCount = maxPlayerCount;
+            newMap.pvpGameMode = pvpGameModeOptions[pvpGameModeDropdown.value].type;
+            newMap.pvpArenaSize = pvpArenaSizeOptions[pvpArenaSizeDropdown.value].type;
+            newMap.spawnsSeaMonsters = spawnsSeaMonsterToggle.isOn;
+            newMap.specialState = (int) specialState.value;
 
             if (string.IsNullOrWhiteSpace(newMap.name)) {
                throw new ArgumentException("Name cannot be empty");
@@ -168,7 +167,7 @@ namespace MapCreationTool
             if (newMap.specialType == Area.SpecialType.League && targetMap.editorType != EditorType.Sea) {
                throw new ArgumentException("Only sea maps can be league maps");
             }
-            
+
             if (newMap.specialType == Area.SpecialType.LeagueSeaBoss && targetMap.editorType != EditorType.Sea) {
                throw new ArgumentException("Only sea maps can be league boss maps");
             }

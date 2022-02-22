@@ -99,6 +99,9 @@ public class UserInfo {
    // The user rank within guild
    public int guildRankId;
 
+   // The custom guild map layout our guild has chosen
+   public int guildMapBaseId;
+
    // The house layout map we've chosen
    public int customHouseBaseId;
 

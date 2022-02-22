@@ -2155,6 +2155,15 @@ public class DB_Main : DB_MainStub
       cmd.ExecuteNonQuery();
    }
 
+   public static new void setCustomGuildMapBase (object command, int guildId, int baseMapId) {
+      MySqlCommand cmd = command as MySqlCommand;
+      cmd.CommandText = "UPDATE guilds SET gldMapBaseId = @baseMapId WHERE gldId = @guildId";
+      cmd.Parameters.AddWithValue("@guildId", guildId);
+      cmd.Parameters.AddWithValue("@baseMapId", baseMapId);
+      DebugQuery(cmd);
+      cmd.ExecuteNonQuery();
+   }
+
    #endregion
 
    #region Map Customization

@@ -62,8 +62,8 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          // If a player is client, show loading screen and stop the player         
          // If it's a custom map, we have to own it, otherwise let server prompt us with map selection panel
          if (!string.IsNullOrEmpty(areaTarget) && AreaManager.self.tryGetCustomMapManager(areaTarget, out CustomMapManager customMapManager)) {
-            if (!customMapManager.canUserWarpInto(player, areaTarget, out System.Action<NetEntity> warpHandler)) {
-               warpHandler?.Invoke(player);
+            if (!customMapManager.canUserWarpInto(player, areaTarget, out System.Action<NetEntity> denyWarpHandler)) {
+               denyWarpHandler?.Invoke(player);
                return;
             }
          }
@@ -193,18 +193,23 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             }
          }
       } else {
-         bool isWarpingToCustomArea = CustomMapManager.isPrivateCustomArea(areaTarget);
-         bool doesUserOwnPrivateArea = false;
-         bool isUserInPrivateArea = CustomMapManager.isUserSpecificAreaKey(player.areaKey);
-         if (isUserInPrivateArea) {
+         bool isWarpingToPrivateCustomArea = CustomMapManager.isPrivateCustomArea(areaTarget);
+         bool doesUserOwnUserSpecificArea = false;
+         bool isUserInUserSpecificArea = CustomMapManager.isUserSpecificAreaKey(player.areaKey);
+         bool isWarpingToGuildSpecificArea = areaTarget.Contains(CustomGuildMapManager.GROUP_AREA_KEY);
+
+         if (isUserInUserSpecificArea) {
             int userIdOfMapOwner = CustomMapManager.getUserId(player.areaKey);
-            doesUserOwnPrivateArea = userIdOfMapOwner == player.userId;
+            doesUserOwnUserSpecificArea = userIdOfMapOwner == player.userId;
          }
 
          string visitedArea = areaTarget + "_user";
-         if (isWarpingToCustomArea && isUserInPrivateArea) {
+         if (isWarpingToGuildSpecificArea) {
+            player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
+
+         } else if (isWarpingToPrivateCustomArea && isUserInUserSpecificArea) {
             int ownerIdOfNextMap = -1;
-            if (doesUserOwnPrivateArea) {
+            if (doesUserOwnUserSpecificArea) {
                visitedArea += player.userId;
                ownerIdOfNextMap = player.userId;
             } else {
@@ -219,7 +224,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             }
 
             D.adminLog("VISIT NULL {" + areaTarget + "} VISITOR IS {" + player.userId + "}", D.ADMIN_LOG_TYPE.Visit);
-         } else if (isWarpingToCustomArea && !isUserInPrivateArea) {
+         } else if (isWarpingToPrivateCustomArea && !isUserInUserSpecificArea) {
             if (areaTarget == CustomHouseManager.GROUP_AREA_KEY) {
                player.visitPrivateInstanceHouseById(player.userId, "");
             } else if (areaTarget == CustomFarmManager.GROUP_AREA_KEY) {

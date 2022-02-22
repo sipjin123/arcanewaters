@@ -496,6 +496,10 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static void setCustomGuildMapBase (object command, int guildId, int baseMapId) {
+
+   }
+
    public static MapCustomizationData getMapCustomizationData (object command, int mapId, int userId) {
       return null;
    }

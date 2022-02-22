@@ -1,6 +1,7 @@
 ﻿using MapCreationTool.PaletteTilesData;
 using MapCreationTool.Serialization;
 using MapCreationTool.UndoSystem;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -176,7 +177,13 @@ namespace MapCreationTool
             float centerOffset = p.GetComponent<PrefabCenterOffset>() ? p.GetComponent<PrefabCenterOffset>().offset : 0;
             p.transform.localPosition = pref.centerPoint - Vector2.up * centerOffset;
 
-            p.GetComponent<MapEditorPrefab>()?.createdInPalette();
+            if (p.TryGetComponent(out MapEditorPrefab mapEditorPrefab)) {
+               try {
+                  mapEditorPrefab.createdInPalette();
+               } catch (Exception ex) {
+                  D.error(ex.ToString());
+               }
+            }
 
             p.GetComponent<SpriteOutline>()?.setNewColor(new Color(0, 0, 0, 0));
 

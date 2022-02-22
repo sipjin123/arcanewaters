@@ -396,6 +396,9 @@ namespace MapCreationTool.Serialization
       public const string SPAWN_BLOCK_SIZE_X_KEY = "size_x";
       public const string SPAWN_BLOCK_SIZE_Y_KEY = "size_y";
 
+      public const string WHALE_RADIUS_KEY = "radius";
+      public const string WHALE_DELAY_KEY = "delay";
+
       public string k; // Key
       public string v; // Value
 
@@ -436,6 +439,10 @@ namespace MapCreationTool.Serialization
       public float floatValue
       {
          get { return float.Parse(v, US_CULTURE); }
+      }
+
+      public bool isKey (string key) {
+         return k.CompareTo(key) == 0;
       }
 
       public bool tryGetFloatValue (out float value) {

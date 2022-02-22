@@ -323,8 +323,8 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_PlantTree (Vector2 position) {
-      PlantableTreeManager.self.plantTree(_player as BodyEntity, _player.areaKey, position);
+   public void Cmd_PlantTree (Vector2 localPosition) {
+      PlantableTreeManager.self.plantTree(_player as BodyEntity, _player.areaKey, localPosition);
    }
 
    [Command]
@@ -1332,11 +1332,20 @@ public class RPCManager : NetworkBehaviour
             ServerNetworkingManager.self.sendSpecialChatMessage(userId, chatInfo);
          }
       } else if (chatType == ChatInfo.Type.Guild) {
-         ServerNetworkingManager.self.sendGuildChatMessage(_player.guildId, chatInfo);
-
          if (_player.guildId == 0) {
             return;
          }
+
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            GuildInfo guildInfo = DB_Main.getGuildInfo(_player.guildId);
+
+            // Back to the Unity thread
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               foreach (UserInfo userInfo in guildInfo.guildMembers) {
+                  ServerNetworkingManager.self.sendSpecialChatMessage(userInfo.userId, chatInfo);
+               }
+            });
+         });
       } else if (chatType == ChatInfo.Type.Officer) {
          if (!_player.canPerformAction(GuildPermission.OfficerChat)) {
             return;
@@ -4930,6 +4939,7 @@ public class RPCManager : NetworkBehaviour
             _player.guildIconBackPalettes = null;
             _player.guildIconSigil = null;
             _player.guildIconSigilPalettes = null;
+            _player.guildMapBaseId = 0;
             _player.Rpc_UpdateGuildIconSprites(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
 
             // Delete the guild if it has no more members
@@ -5175,6 +5185,7 @@ public class RPCManager : NetworkBehaviour
                _player.guildIconBackPalettes = null;
                _player.guildIconSigil = null;
                _player.guildIconSigilPalettes = null;
+               _player.guildMapBaseId = 0;
                _player.Rpc_UpdateGuildIconSprites(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
 
                // Remove past invite from kicked player. If he was kicked by accident, he can be invited back immediately
@@ -8714,8 +8725,21 @@ public class RPCManager : NetworkBehaviour
          }
 
          _player.customFarmBaseId = baseMapId;
+      } else if (manager is CustomGuildMapManager) {
+         await DB_Main.execAsync((cmd) => DB_Main.setCustomGuildMapBase(cmd, _player.guildId, baseMapId));
+
+         GuildInfo playerGuildInfo = await DB_Main.execAsync((cmd) => DB_Main.getGuildInfo(_player.guildId));
+         
+         // Update the guildMapBaseId for any members online
+         foreach (UserInfo memberInfo in playerGuildInfo.guildMembers) {
+            NetEntity playerEntity = EntityManager.self.getEntity(memberInfo.userId);
+            if (playerEntity != null) {
+               playerEntity.guildMapBaseId = baseMapId;
+            }
+         }
+
       } else {
-         D.error("Unrecoginzed custom map manager");
+         D.error("Unrecognized custom map manager");
          return;
       }
 

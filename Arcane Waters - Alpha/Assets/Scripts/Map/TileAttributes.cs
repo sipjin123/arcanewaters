@@ -7,7 +7,7 @@ public class TileAttributes
    #region Public Variables
 
    // The type of attribute a tile can have
-   // Note: I recommend not ever deleting entries from here for serialization8,
+   // Note: I recommend not ever deleting entries from here for serialization,
    // instead use ex. '[Obsolete] Grass = 1'
    public enum Type : byte
    {

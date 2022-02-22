@@ -32,6 +32,15 @@ public class FarmingTrigger : MonoBehaviour
    // Cached crop spots highlighted
    public List<CropSpot> cachedCropSpots = new List<CropSpot>();
 
+   // Tree plant indicator
+   [Space(5)]
+   public Transform treePlantIndicator = null;
+   public SpriteRenderer treePlantIndicatorRenderer = null;
+
+   // Types of colors plant tree indicator can have
+   public Color treeIndicatorValidColor = Color.white;
+   public Color treeIndicatorInvalidColor = Color.white;
+
    #endregion
 
    private void Start () {
@@ -52,10 +61,30 @@ public class FarmingTrigger : MonoBehaviour
       StartCoroutine(CO_ProcessInteraction());
    }
 
+   private void FixedUpdate () {
+      if (NetworkClient.active && Global.player != null && Global.player.userId == bodyEntity.userId) {
+         if (AreaManager.self.tryGetArea(bodyEntity.areaKey, out Area area)) {
+            Vector2 pos = area.transform.InverseTransformPoint(getTreePlantPosition());
+            bool canPlantTree = PlantableTreeManager.self.canPlayerPlant(bodyEntity, bodyEntity.areaKey, pos, out PlantableTree treePrefab);
+            bool hasTree = treePrefab != null;
+
+            if (treePlantIndicator.gameObject.activeSelf != hasTree) {
+               treePlantIndicator.gameObject.SetActive(hasTree);
+            }
+
+            if (hasTree) {
+               treePlantIndicator.transform.position = getTreePlantPosition();
+               treePlantIndicatorRenderer.sprite = treePrefab.grownTreeSprite;
+               treePlantIndicatorRenderer.color = canPlantTree ? treeIndicatorValidColor : treeIndicatorInvalidColor;
+            }
+         }
+      }
+   }
+
    private void checkForCropInteractions () {
       // Skip for batch mode
       if (Util.isBatch()) return;
-      
+
       if (Global.player == null) {
          return;
       }
@@ -155,7 +184,7 @@ public class FarmingTrigger : MonoBehaviour
    }
 
    private void clearCache () {
-   
+
    }
 
    private IEnumerator CO_ProcessInteraction () {
@@ -214,12 +243,14 @@ public class FarmingTrigger : MonoBehaviour
          }
 
          // Player might be trying to plant trees
-         PlantableTreeManager.self.playerTriesPlanting(
-            bodyEntity,
-            (Vector2) bodyEntity.transform.position + Util.getDirectionFromFacing(bodyEntity.facing) * 0.64f + Vector2.up * 0.3f);
+         PlantableTreeManager.self.playerTriesPlanting(bodyEntity, getTreePlantPosition());
       }
 
       _isFarming = false;
+   }
+
+   public Vector2 getTreePlantPosition () {
+      return bodyEntity.getRigidbody().position + Util.getDirectionFromFacing(bodyEntity.facing) * 0.64f + Vector2.up * 0.3f;
    }
 
    public void playFarmingParticles (Weapon.ActionType actionType) {
