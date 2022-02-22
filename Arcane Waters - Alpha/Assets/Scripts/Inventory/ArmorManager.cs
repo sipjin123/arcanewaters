@@ -89,7 +89,7 @@ public class ArmorManager : EquipmentManager {
    }
 
    [TargetRpc]
-   public void Target_ReceiveEquipArmor (int newArmorId, int newArmorSqlId, int newArmorType, string rawArmorData, string palettes) {
+   public void Target_ReceiveEquipArmor (int newArmorId, int newArmorSqlId, int newArmorType, string rawArmorData, string palettes, bool equipOnStart) {
       ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(rawArmorData);
       cachedArmorData = armorData;
 
@@ -97,7 +97,9 @@ public class ArmorManager : EquipmentManager {
       updateSprites(newArmorType, palettes);
 
       // Play a sound
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.EQUIP);
+      if (!equipOnStart) {
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.EQUIP);
+      }
 
       D.adminLog("Equipped armor" + " SQL: {" + armorData.sqlId +
          "} Name: {" + armorData.equipmentName +
@@ -125,7 +127,7 @@ public class ArmorManager : EquipmentManager {
    }
 
    [Server]
-   public void updateArmorSyncVars (int armorTypeId, int armorId, string palettes, int durability) {
+   public void updateArmorSyncVars (int armorTypeId, int armorId, string palettes, int durability, bool equipOnStart = false) {
       ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(armorTypeId);
 
       // This ensures that there is a palette being assigned for the armor
@@ -155,7 +157,7 @@ public class ArmorManager : EquipmentManager {
       this.palettes = palettes;
       this.armorDurability = durability;
 
-      Target_ReceiveEquipArmor(armorId, armorData.sqlId, armorData.armorType, ArmorStatData.serializeArmorStatData(armorData), palettes);
+      Target_ReceiveEquipArmor(armorId, armorData.sqlId, armorData.armorType, ArmorStatData.serializeArmorStatData(armorData), palettes, equipOnStart);
       Rpc_EquipArmor(armorId, armorData.sqlId, armorData.armorType, ArmorStatData.serializeArmorStatData(armorData), palettes);
    }
 

@@ -74,7 +74,7 @@ public class HatManager : EquipmentManager {
    }
 
    [TargetRpc]
-   public void Target_EquipHat (NetworkConnection connection, int newHatId, int newHatSqlId, int newHatType, string rawHatData, string palettes) {
+   public void Target_EquipHat (NetworkConnection connection, int newHatId, int newHatSqlId, int newHatType, string rawHatData, string palettes, bool equipOnStart) {
       HatStatData hatData = Util.xmlLoad<HatStatData>(rawHatData);
       cachedHatData = hatData;
 
@@ -82,7 +82,9 @@ public class HatManager : EquipmentManager {
       updateSprites(newHatType, palettes);
 
       // Play a sound
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.EQUIP);
+      if (!equipOnStart) {
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.EQUIP);
+      }
 
       Global.getUserObjects().hat = new Hat {
          id = newHatId,
@@ -104,7 +106,7 @@ public class HatManager : EquipmentManager {
    }
 
    [Server]
-   public void updateHatSyncVars (int hatDataId, int hatId, string hatPalettes) {
+   public void updateHatSyncVars (int hatDataId, int hatId, string hatPalettes, bool equipOnStart = false) {
       HatStatData hatData = EquipmentXMLManager.self.getHatData(hatDataId);
 
       if (hatData == null) {
@@ -136,7 +138,7 @@ public class HatManager : EquipmentManager {
          return;
       }
 
-      Target_EquipHat(connection, hatId, hatData.sqlId, hatData.hatType, HatStatData.serializeHatStatData(hatData), palettes);
+      Target_EquipHat(connection, hatId, hatData.sqlId, hatData.hatType, HatStatData.serializeHatStatData(hatData), palettes, equipOnStart);
 
       // Send the Info to all clients
       Rpc_BroadcastEquipHat(HatStatData.serializeHatStatData(hatData), palettes);

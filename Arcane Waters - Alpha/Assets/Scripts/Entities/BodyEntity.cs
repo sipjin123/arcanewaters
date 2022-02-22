@@ -48,9 +48,9 @@ public class BodyEntity : NetEntity
 
    public override void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item hat, ShipInfo shipInfo, GuildInfo guildInfo, GuildRankInfo guildRankInfo) {
       base.setDataFromUserInfo(userInfo, armor, weapon, hat, shipInfo, guildInfo, guildRankInfo);
-      this.armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id, armor.paletteNames, armor.durability);
-      this.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames, weapon.durability, weapon.count);
-      this.hatsManager.updateHatSyncVars(hat.itemTypeId, hat.id, hat.paletteNames);
+      this.armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id, armor.paletteNames, armor.durability, true);
+      this.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames, weapon.durability, weapon.count, true);
+      this.hatsManager.updateHatSyncVars(hat.itemTypeId, hat.id, hat.paletteNames, true);
    }
 
    public override Armor getArmorCharacteristics () {

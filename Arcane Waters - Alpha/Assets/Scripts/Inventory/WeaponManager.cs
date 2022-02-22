@@ -1,4 +1,7 @@
+using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
+using System;
 using Mirror;
 
 public class WeaponManager : EquipmentManager {
@@ -105,7 +108,7 @@ public class WeaponManager : EquipmentManager {
 
 
    [TargetRpc]
-   public void Target_EquipWeapon(NetworkConnection connection, int newWeaponId, int newWeaponSqlId, int newWeaponType, string rawWeaponData, string newPalettes, int count) {
+   public void Target_EquipWeapon(NetworkConnection connection, int newWeaponId, int newWeaponSqlId, int newWeaponType, string rawWeaponData, string newPalettes, int count, bool equipOnStart) {
       WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(rawWeaponData);
       cachedWeaponData = weaponData;
 
@@ -117,7 +120,9 @@ public class WeaponManager : EquipmentManager {
          "} Class: {" + weaponData.weaponClass + "}", D.ADMIN_LOG_TYPE.Equipment);
 
       // Play a sound
-      SoundEffectManager.self.playFmodSfx(SoundEffectManager.EQUIP);
+      if (!equipOnStart) {
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.EQUIP);
+      }
 
       Global.getUserObjects().weapon = new Weapon {
          id = newWeaponId,
@@ -143,7 +148,7 @@ public class WeaponManager : EquipmentManager {
    }
 
    [Server]
-   public void updateWeaponSyncVars (int weaponDataId, int weaponId, string palettes, int durability, int count) {
+   public void updateWeaponSyncVars (int weaponDataId, int weaponId, string palettes, int durability, int count, bool equipOnStart = false) {
       WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponDataId);
 
       if (weaponData == null) {
@@ -180,7 +185,7 @@ public class WeaponManager : EquipmentManager {
       }
 
       // Send the weapon info to the owner client
-      Target_EquipWeapon(connection, weaponId, weaponData.sqlId, weaponData.weaponType, WeaponStatData.serializeWeaponStatData(weaponData), this.palettes, count);
+      Target_EquipWeapon(connection, weaponId, weaponData.sqlId, weaponData.weaponType, WeaponStatData.serializeWeaponStatData(weaponData), this.palettes, count, equipOnStart);
 
       // Send the Weapon Info to all clients
       Rpc_BroadcastEquipWeapon(WeaponStatData.serializeWeaponStatData(weaponData), this.palettes);
