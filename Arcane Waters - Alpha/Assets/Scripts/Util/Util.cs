@@ -26,6 +26,10 @@ using MiniJSON;
 
 public class Util : MonoBehaviour
 {
+   // For editor simulation purposes, use with caution, DO NOT set true and upload to plastic scm
+   public const bool forceClientSimInEditor = false;
+   public const bool forceServerBatchInEditor = false;
+
    // Build name that matches the jenkins build
    public const string PRODUCTION_BUILD = "Windows-";
    public const string STANDALONE_BUILD = "Server-Dev-Windows-Standalone";
@@ -646,6 +650,9 @@ public class Util : MonoBehaviour
    }
 
    public static bool isBatch () {
+      if (forceClientSimInEditor || forceServerBatchInEditor) {
+         return true;
+      }
       // return true; // Debug usage only to simulate batch mode logic
       return Application.isBatchMode;
    }
@@ -973,7 +980,9 @@ public class Util : MonoBehaviour
 
    public static bool isAutoTest () {
       #region Debug in editor
-      // return true;
+      if (forceClientSimInEditor) {
+         return true;
+      }
       #endregion
 
       return CommandCodes.get(CommandCodes.Type.AUTO_TEST);
@@ -981,7 +990,9 @@ public class Util : MonoBehaviour
 
    public static int getAutoTesterNumber () {
       #region Debug in editor
-      // return 100;
+      if (forceClientSimInEditor) {
+         return 100;
+      }
       #endregion
 
       return Util.getCommandLineInt(CommandCodes.Type.AUTO_TEST + "");
@@ -989,7 +1000,9 @@ public class Util : MonoBehaviour
 
    public static bool isAutoWarping () {
       #region Debug in editor
-      // return true;
+      if (forceClientSimInEditor) {
+         return true;
+      }
       #endregion
 
       return CommandCodes.get(CommandCodes.Type.AUTO_WARP);
@@ -997,7 +1010,9 @@ public class Util : MonoBehaviour
 
    public static bool isAutoMove () {
       #region Debug in editor
-      // return true;
+      if (forceClientSimInEditor) {
+         return true;
+      }
       #endregion
 
       return CommandCodes.get(CommandCodes.Type.AUTO_MOVE);
@@ -1009,7 +1024,9 @@ public class Util : MonoBehaviour
 
    public static bool isForceServerLocal () {
       #region Debug in editor
-      // return true;
+      if (forceClientSimInEditor) {
+         return true;
+      }
       #endregion
 
       return false;

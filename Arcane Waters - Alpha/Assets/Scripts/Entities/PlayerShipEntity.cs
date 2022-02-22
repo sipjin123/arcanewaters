@@ -580,6 +580,8 @@ public class PlayerShipEntity : ShipEntity
             Vector2 targetVelocity = _movementInputDirection * targetSpeed * Time.fixedDeltaTime;
             _body.velocity = Vector2.SmoothDamp(_body.velocity, targetVelocity, ref _shipDampVelocity, 0.5f);
             movementForce = _movementInputDirection * targetSpeed * _body.mass;
+            D.adminLog("4) Server velocity has now been declared to do this: V:{" + _body.velocity + "} " +
+               "MF:{" + movementForce + "} MID:{"+ _movementInputDirection + "} TS:{"+targetSpeed+"}", D.ADMIN_LOG_TYPE.Simulation_Sea);
 
             // In ghost mode, clamp the position to the area bounds
             clampToMapBoundsInGhost();
@@ -1366,8 +1368,17 @@ public class PlayerShipEntity : ShipEntity
       Vector2 inputVector = InputManager.getMovementInput();
 
       if (inputVector != _movementInputDirection || (isSpeedingUp != InputManager.self.inputMaster.Sea.Dash.WasPressedThisFrame() && isSpeedingUp != (gamePadDashPressed == true))) {
+         if (Util.isBatch() && Util.isAutoMove()) {
+            D.adminLog("1) This unity is handling authoritative mode {" + userId + "}{" + entityName + "} {" + _lastMoveChangeTime.ToString("f2") + "}", D.ADMIN_LOG_TYPE.Simulation_Sea);
+         }
+
          // If the ship wasn't moving, apply a small force locally to make up for delay
          if (inputVector != Vector2.zero && _body.velocity.sqrMagnitude < 0.025f) {
+            if (Util.isBatch() && Util.isAutoMove()) {
+               var force = Quaternion.AngleAxis(this.desiredAngle, Vector3.forward) * Vector3.up * getMoveSpeed() * CLIENT_SIDE_FORCE;
+               D.adminLog("2) This unity is handling authoritative mode {" + userId + "}{" + entityName + "}" +
+                  " LMC:{" + _lastMoveChangeTime.ToString("f2") + "} F:{" + force.ToString("f2") + "}", D.ADMIN_LOG_TYPE.Simulation_Sea);
+            }
             _body.AddForce(Quaternion.AngleAxis(this.desiredAngle, Vector3.forward) * Vector3.up * getMoveSpeed() * CLIENT_SIDE_FORCE);
          }
 
@@ -1378,6 +1389,8 @@ public class PlayerShipEntity : ShipEntity
             }
 
             _movementInputDirection = inputVector;
+            D.adminLog("3) This unity is handling authoritative mode, requesting move to server {" + userId + "}{" + entityName + "}" +
+               " LMC:{" + _lastMoveChangeTime.ToString("f2") + "} MID:{" + _movementInputDirection + "}", D.ADMIN_LOG_TYPE.Simulation_Sea);
             Cmd_RequestServerAddMovementForce(inputVector, isSpeedingUp);
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.MoveShip);
          }
@@ -1396,7 +1409,7 @@ public class PlayerShipEntity : ShipEntity
          }
 
          _movementInputDirection = forceToApply.normalized;
-
+         D.adminLog("CMD: Server is now altering move input direction: " + _movementInputDirection + " for user {" + userId + "}{" + entityName + "} ", D.ADMIN_LOG_TYPE.Simulation_Sea);
          _lastInputChangeTime = NetworkTime.time;
          this.isSpeedingUp = isSpeedingUp;
          hasPerformedFirstActionAfterSpawn = true;
@@ -2005,7 +2018,8 @@ public class PlayerShipEntity : ShipEntity
          return;
       }
 
-      if (!Util.isGeneralInputAllowed()) {
+      // Do not clear movement input if auto move simulation is active
+      if (!Util.isGeneralInputAllowed() && !Util.isAutoMove()) {
          // Try to close any opened panel
          PanelManager.self.onEscapeKeyPressed();
          Cmd_ClearMovementInput();

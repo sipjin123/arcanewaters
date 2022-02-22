@@ -183,6 +183,9 @@ public class InputManager : GenericGameManager {
       // inputMaster.Player.MouseControl.performed += mfunc => mouseAction(mfunc.ReadValue<Vector2>());
       // inputMaster.Player.MouseControl.canceled += mfunc => mouseAction(new Vector2(0, 0));
 
+      if (Util.forceServerBatchInEditor) {
+         return;
+      }
       if (Util.isBatch()) {
          actionMapStates.DisableAll();
          inputMaster.Disable();
@@ -454,7 +457,8 @@ public class InputManager : GenericGameManager {
    }
 
    public static Vector2 getMovementInput () {
-      if (Util.isBatch()) {
+      // Do not block movement input when auto move simulated
+      if (Util.isBatch() && !Util.isAutoMove()) {
          return Vector2.zero;
       }
       return new Vector2(getHorizontalAxis(), getVerticalAxis());

@@ -532,11 +532,17 @@ public class NetEntity : NetworkBehaviour
             PlayerShipEntity playerShip = (PlayerShipEntity) this;
             // Clears the server side movement input if general input was blocked but move direction still has value
             if (playerShip.getMovementInputDirection().magnitude > .1f) {
-               playerShip.Cmd_ClearMovementInput();
+               // Do not clear movement based on magnitude if movement simulation is active
+               if (!Util.isAutoMove()) {
+                  playerShip.Cmd_ClearMovementInput();
+               }
             }
          }
 
-         return;
+         // Do not block movement if movement simulation is active
+         if (!Util.isAutoMove()) {
+            return;
+         }
       }
 
       // Only change our movement if enough time has passed
