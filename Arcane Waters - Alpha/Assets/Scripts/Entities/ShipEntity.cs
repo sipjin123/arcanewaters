@@ -595,6 +595,10 @@ public class ShipEntity : SeaEntity
       string skinPath = Ship.getSkinPath(shipType, skinType, isBotShip());
       _shipSprites = ImageManager.getTexture(skinPath);
 
+      // TODO: Remove player ship entity after batch test
+      if (this is PlayerShipEntity) {
+         D.debug("Ship entity sprite override: {" + skinPath + "} {" + _shipSprites + "} {" + (_shipSprites != null ? _shipSprites.name : "") + "}");
+      }
       if (spritesOverride) {
          spritesContainer.GetComponent<SpriteSwap>().newTexture = spritesOverride;
       } else {

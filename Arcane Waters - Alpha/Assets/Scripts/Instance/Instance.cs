@@ -865,7 +865,12 @@ public class Instance : NetworkBehaviour
             guildId = int.Parse(field.v.Split(':')[0]);
          }
          if (field.k.CompareTo(DataField.SHIP_DATA_KEY) == 0) {
-            xmlIdOverride = int.Parse(field.v.Split(':')[0]);
+            int newXmlOverride;
+            if (int.TryParse(field.v.Split(':')[0], out newXmlOverride)) {
+               xmlIdOverride = newXmlOverride;
+            } else {
+               D.debug("Invalid xml id: {" + field.v + "}");
+            }
          }
          if (field.k.CompareTo(DataField.RANDOMIZE_SHIP) == 0) {
             string randomizeShipData = field.v.Split(':')[0];

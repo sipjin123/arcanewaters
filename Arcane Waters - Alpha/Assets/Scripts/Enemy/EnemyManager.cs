@@ -454,6 +454,10 @@ public class EnemyManager : MonoBehaviour {
 
       SeaMonsterEntity seaEntity = Instantiate(PrefabsManager.self.seaMonsterPrefab);
       SeaMonsterEntityData data = SeaMonsterManager.self.getMonster(seaMonsterType);
+      if (data == null) {
+         D.debug("Failed to spawn seamonster type {" + seaMonsterType + "}");
+         return;
+      }
 
       // Basic setup
       seaEntity.monsterType = data.seaMonsterType;

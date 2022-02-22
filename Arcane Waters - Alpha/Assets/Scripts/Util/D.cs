@@ -48,7 +48,8 @@ public class D : MonoBehaviour {
       POI_WARP = 35,
       Player_Menu = 36,
       Pvp_Instance = 37,
-      OpenWorldPvp = 38
+      OpenWorldPvp = 38,
+      Simulation_Sea = 39
    }
 
    // Any log files older than this will be deleted

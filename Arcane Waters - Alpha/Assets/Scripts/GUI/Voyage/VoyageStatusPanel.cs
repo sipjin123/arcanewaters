@@ -270,7 +270,6 @@ public class VoyageStatusPanel : ClientMonoBehaviour
             pvpOpenWorldGuild.SetActive(true);
             break;
       }
-      D.debug("-> {" + (Global.player == null ? "Null : " : (Global.player.userId + ": " + Global.player.entityName)) + "} PvpWorldMapMode: " + gameMode);
    }
 
    public void onUserSpawn () {
