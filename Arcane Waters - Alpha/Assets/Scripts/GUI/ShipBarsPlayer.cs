@@ -92,22 +92,27 @@ public class ShipBarsPlayer : ShipBars
       }
 
       if (_entity.guildId > 0) {
-         PlayerShipEntity shipEntity = (PlayerShipEntity) _entity;
+         // If the player is in a pvp open world map but their pvp is set to inactive, do not show their guild icon
+         if (!_entity.enablePvp && _entity.openWorldGameMode == PvpGameMode.GuildWars) {
+            guildIcon.gameObject.SetActive(false);
+         } else {
+            PlayerShipEntity shipEntity = (PlayerShipEntity) _entity;
 
-         if (!Util.isEmpty(shipEntity.guildIconBorder)) {
-            guildIcon.setBorder(shipEntity.guildIconBorder);
-         } else {
-            guildIcon.border.enabled = false;
-         }
-         if (!Util.isEmpty(shipEntity.guildIconBackground)) {
-            guildIcon.setBackground(shipEntity.guildIconBackground, shipEntity.guildIconBackPalettes);
-         } else {
-            guildIcon.background.enabled = false;
-         }
-         if (!Util.isEmpty(shipEntity.guildIconSigil)) {
-            guildIcon.setSigil(shipEntity.guildIconSigil, shipEntity.guildIconSigilPalettes);
-         } else {
-            guildIcon.sigil.enabled = false;
+            if (!Util.isEmpty(shipEntity.guildIconBorder)) {
+               guildIcon.setBorder(shipEntity.guildIconBorder);
+            } else {
+               guildIcon.border.enabled = false;
+            }
+            if (!Util.isEmpty(shipEntity.guildIconBackground)) {
+               guildIcon.setBackground(shipEntity.guildIconBackground, shipEntity.guildIconBackPalettes);
+            } else {
+               guildIcon.background.enabled = false;
+            }
+            if (!Util.isEmpty(shipEntity.guildIconSigil)) {
+               guildIcon.setSigil(shipEntity.guildIconSigil, shipEntity.guildIconSigilPalettes);
+            } else {
+               guildIcon.sigil.enabled = false;
+            }
          }
       } else {
          guildIcon.gameObject.SetActive(false);
