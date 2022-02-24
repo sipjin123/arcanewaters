@@ -207,6 +207,9 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public int guildId;
 
+   // The current guild allies if any
+   public SyncList<int> guildAllies = new SyncList<int>();
+
    // The guild name this user belongs to
    [SyncVar]
    public string guildName;
@@ -1285,7 +1288,19 @@ public class NetEntity : NetworkBehaviour
          if (openWorldGameMode == PvpGameMode.FreeForAll && otherEntity.openWorldGameMode == PvpGameMode.FreeForAll) {
             return true;
          } else if (openWorldGameMode == PvpGameMode.GuildWars && otherEntity.openWorldGameMode == PvpGameMode.GuildWars) {
-            return otherEntity.guildId != guildId;
+            if (otherEntity.guildId != guildId) {
+               // Proceed to alliance check
+               if (otherEntity.guildAllies.Contains(guildId) || guildAllies.Contains(otherEntity.guildId)) {
+                  // If guilds are allied to each other, they are not enemies
+                  return false;
+               } else {
+                  // If no alliance is formed, they are enemies
+                  return true;
+               }
+            } else {
+               // If guild id of this unit and its target is the same, they are allies
+               return false;
+            }
          } else if (openWorldGameMode == PvpGameMode.GroupWars && otherEntity.openWorldGameMode == PvpGameMode.GroupWars) {
             return otherEntity.voyageGroupId != voyageGroupId;
          }

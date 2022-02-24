@@ -352,6 +352,7 @@ public class MyNetworkManager : NetworkManager
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Grab all of the user data in a single query
          UserObjects userObjects = DB_Main.getUserObjects(authenticatedUserId);
+         List<int> guildAllies = DB_Main.getGuildAlliance(userObjects.guildInfo.guildId);
 
          // Store references to the individual info objects for convenience
          UserInfo userInfo = userObjects.userInfo;
@@ -522,6 +523,12 @@ public class MyNetworkManager : NetworkManager
 
             player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, userObjects.hat, shipInfo, guildInfo, guildRankInfo);
             player.steamId = steamUserId;
+
+            if (guildAllies.Count > 0) {
+               foreach (int guildAllyId in guildAllies) {
+                  player.guildAllies.Add(guildAllyId);
+               }
+            }
 
             if (existingConnection != null && existingConnection.isReconnecting) {
                finishPlayerDisconnection(existingConnection);
