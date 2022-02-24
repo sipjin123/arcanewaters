@@ -1243,8 +1243,24 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static bool isGuildAlly (int guildId, int allyId) {
+      return false;
+   }
+   
    public static GuildInfo getGuildInfo (int guildId) {
       return null;
+   }
+
+   public static List<int> getGuildAlliance (int guildId) {
+      return new List<int>();
+   }
+
+   public static int addGuildAlliance (int guildId, int allyId) {
+      return -1;
+   }
+
+   public static int removeGuildAlliance (int guildId, int allyId) {
+      return -1;
    }
 
    public static string getGuildInfoJSON (int guildId) {

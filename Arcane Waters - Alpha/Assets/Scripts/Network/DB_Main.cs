@@ -9164,6 +9164,111 @@ public class DB_Main : DB_MainStub
       return jobs;
    }
 
+   public static new List<int> getGuildAlliance (int guildId) {
+      List<int> guildAllies = new List<int>();
+      if (guildId < 1) {
+         return guildAllies;
+      }
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM guild_relations WHERE guildId=@guildId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@guildId", guildId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  int allyId = DataUtil.getInt(dataReader, "allyId"); ;
+                  guildAllies.Add(allyId);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return guildAllies;
+   }
+
+   public static new int addGuildAlliance (int guildId, int allyId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO guild_relations (guildId, allyId) " +
+            "VALUES(@guildId, @allyId) ", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@guildId", guildId);
+            cmd.Parameters.AddWithValue("@allyId", allyId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+            int relationId = (int) cmd.LastInsertedId;
+            return relationId;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return -1;
+   }
+
+   public static new int removeGuildAlliance (int guildId, int allyId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM guild_relations WHERE guildId=@guildId AND allyId=@allyId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@guildId", guildId);
+            cmd.Parameters.AddWithValue("@allyId", allyId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+            return 1;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return -1;
+   }
+
+   public static new bool isGuildAlly (int guildId, int allyId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM guild_relations WHERE guildId=@guildId AND allyId=@allyId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@guildId", guildId);
+            cmd.Parameters.AddWithValue("@allyId", allyId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  int newGuildId = DataUtil.getInt(dataReader, "guildId");
+                  int newAllyId = DataUtil.getInt(dataReader, "allyId");
+
+                  if (newGuildId > 0 && newAllyId > 0) {
+                     return true;
+                  }
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return false;
+   }
+
    public static new GuildInfo getGuildInfo (int guildId) {
       GuildInfo info = null;
 
