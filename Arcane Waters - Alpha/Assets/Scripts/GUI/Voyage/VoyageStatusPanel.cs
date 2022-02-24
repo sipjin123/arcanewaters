@@ -26,6 +26,9 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    // The pvp open world icons
    public GameObject pvpOpenWorldRoyale, pvpOpenWorldGuild, pvpOpenWorldGroup;
 
+   // The general pvp buttons
+   public Button[] pvpActiveButtons, pvpInactiveButtons;
+
    // The PvP-PvE text
    public TextMeshProUGUI pvpPveText;
 
@@ -90,6 +93,9 @@ public class VoyageStatusPanel : ClientMonoBehaviour
 
    // The objects that blocks the pvp button
    public GameObject[] pvpStatBlockers;
+
+   // Blocks pvp panel when out of town
+   public GameObject pvpStaticBlocker;
 
    // The togglers indicating this user can participate in pvp
    public Toggle[] enablePvpTogglers;
@@ -226,6 +232,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    }
 
    public void enablePvpStatDisplay (bool isOn) {
+      // Toggles the drop down UI
       foreach (GameObject obj in pvpStatTextDisplay) {
          obj.gameObject.SetActive(isOn);
       }
@@ -235,6 +242,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    }
 
    public void clickOnPvpToggle () {
+      // Attempt to change the pvp state
       if (Global.player == null) {
          return;
       }
@@ -245,7 +253,17 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       Global.player.rpc.Cmd_RequestPvpToggle(!isPvpActive);
    }
 
-   public void togglePvpStatusInfo (bool isOn) {
+   public void togglePvpStatusInfo (bool isOn, bool isInTown) {
+      // Server content now sent to player to determine if pvp state is active or not
+      foreach (Button pvpInactiveButton in pvpInactiveButtons) {
+         pvpInactiveButton.gameObject.SetActive(!isOn);
+      }
+      foreach (Button pvpActiveButton in pvpActiveButtons) {
+         pvpActiveButton.gameObject.SetActive(isOn);
+      }
+
+      pvpStaticBlocker.SetActive(!isInTown);
+
       foreach (Toggle enablePvpToggler in enablePvpTogglers) {
          enablePvpToggler.isOn = isOn;
       }

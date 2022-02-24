@@ -1029,6 +1029,10 @@ public class DB_MainStub : MonoBehaviour
       return "";
    }
 
+   public static void changeUserPvpState (int userId, int pvpState) {
+
+   }
+
    public static void changeUserName (NameChangeInfo info) {
 
    }

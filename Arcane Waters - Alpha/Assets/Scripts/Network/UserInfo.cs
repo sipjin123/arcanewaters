@@ -84,7 +84,10 @@ public class UserInfo {
    // The Guild we're in
    public int guildId;
 
-      // The Guild Name
+   // The pvp state
+   public int pvpState;
+
+   // The Guild Name
    public string guildName;
 
    // The guild icon layers
@@ -144,6 +147,11 @@ public class UserInfo {
       this.flagshipId = dataReader.GetInt32("shpId");
       this.charSpot = dataReader.GetInt32("charSpot");
       this.guildId = dataReader.GetInt32("gldId");
+      try {
+         this.pvpState = dataReader.GetInt32("pvpState");
+      } catch {
+         D.debug("Does not have pvp state for UserInfo {" + userId + "}");
+      }
 
       this.guildRankId = dataReader.GetInt32("gldRankId");
       this.customHouseBaseId = dataReader.GetInt32("customHouseBase");

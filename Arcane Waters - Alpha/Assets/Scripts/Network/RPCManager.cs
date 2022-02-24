@@ -6535,13 +6535,19 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_RequestPvpToggle (bool isOn) {
-      _player.enablePvp = isOn;
-      Target_ReceivePvpToggle(_player.connectionToClient, isOn);
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.changeUserPvpState(_player.userId, isOn ? 1 : 0);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            _player.enablePvp = isOn;
+            bool isInTown = AreaManager.self.isTownArea(_player.areaKey);
+            Target_ReceivePvpToggle(_player.connectionToClient, isOn, isInTown);
+         });
+      });
    }
 
    [TargetRpc]
-   public void Target_ReceivePvpToggle (NetworkConnection connection, bool isOn) {
-      VoyageStatusPanel.self.togglePvpStatusInfo(isOn);
+   public void Target_ReceivePvpToggle (NetworkConnection connection, bool isOn, bool isInTown) {
+      VoyageStatusPanel.self.togglePvpStatusInfo(isOn, isInTown);
    }
 
    [Command]

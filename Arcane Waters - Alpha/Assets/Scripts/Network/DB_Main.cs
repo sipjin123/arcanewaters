@@ -7550,6 +7550,27 @@ public class DB_Main : DB_MainStub
       return stats;
    }
 
+   public static new void changeUserPvpState (int userId, int pvpState) {
+      try {
+         using (MySqlConnection conn = getConnection()) {
+            conn.Open();
+            using (MySqlCommand updateCmd = new MySqlCommand(
+               "UPDATE users SET pvpState = @pvpState WHERE usrId = @usrId", conn)) {
+               updateCmd.Prepare();
+               updateCmd.Parameters.AddWithValue("@usrId", userId);
+               updateCmd.Parameters.AddWithValue("@pvpState", pvpState);
+               DebugQuery(updateCmd);
+
+               // Execute the command
+               updateCmd.ExecuteNonQuery();
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         throw e;
+      }
+   }
+
    public static new void changeUserName (NameChangeInfo info) {
       try {
          using (MySqlConnection conn = getConnection()) {
