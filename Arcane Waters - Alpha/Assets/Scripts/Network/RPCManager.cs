@@ -4878,6 +4878,146 @@ public class RPCManager : NetworkBehaviour
    #region Guilds
 
    [Command]
+   public void Cmd_AddGuildAlly (int invitedUserId, int guildId, int allyId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         NetEntity invitedUserEntity = EntityManager.self.getEntity(invitedUserId);
+         GuildInfo guildInfo = DB_Main.getGuildInfo(guildId);
+         GuildInfo guildAllyInfo = DB_Main.getGuildInfo(allyId);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (invitedUserEntity == null || guildInfo == null || guildAllyInfo == null) {
+               _player.Target_ReceiveNormalChat("Failed to initialize guild alliance", ChatInfo.Type.System);
+               return;
+            }
+
+            invitedUserEntity.rpc.Target_ReceiveGuildAllianceInvite(invitedUserEntity.connectionToClient, _player.userId, guildInfo, guildAllyInfo);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveGuildAllianceInvite (NetworkConnection connection, int inviterUserId, GuildInfo guildInfo, GuildInfo guildAllyInfo) {
+      // Associate a new function with the confirmation button
+      PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
+      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => GuildManager.self.acceptGuildAllianceInviteOnClient(inviterUserId, guildInfo.guildId, guildAllyInfo.guildId));
+
+      // Show a confirmation panel with the user name
+      string message = "The guild alliance proposal has been initiated between " + guildInfo.guildName+ " and " + guildAllyInfo.guildName + "!";
+      PanelManager.self.confirmScreen.show(message);
+   }
+
+   [Command]
+   public void Cmd_AcceptGuildAlliance (int invitingUserId, int guildId, int allyId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.addGuildAlliance(guildId, allyId);
+         DB_Main.addGuildAlliance(allyId, guildId);
+         GuildInfo guildInfo = DB_Main.getGuildInfo(guildId);
+         GuildInfo guildAllyInfo = DB_Main.getGuildInfo(allyId);
+
+         List<int> inviterGuildAllyIds = new List<int>();
+         NetEntity invitingUserEntity = EntityManager.self.getEntity(invitingUserId);
+         if (invitingUserEntity != null) {
+            inviterGuildAllyIds = DB_Main.getGuildAlliance(invitingUserEntity.guildId);
+         }
+
+         List<GuildInfo> guildAlliesInfo = new List<GuildInfo>();
+         List<int> invitedGuildAllyIds = new List<int>();
+         invitedGuildAllyIds = DB_Main.getGuildAlliance(_player.guildId);
+         foreach (int guildAllyId in inviterGuildAllyIds) {
+            GuildInfo newGuildAllyInfo = DB_Main.getGuildInfo(guildAllyId);
+            if (newGuildAllyInfo != null) {
+               guildAlliesInfo.Add(newGuildAllyInfo);
+            }
+         }
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveGuildAllies(_player.connectionToClient, Util.serialize(guildAlliesInfo));
+            Target_ReceiveGuildAllyAddResult(_player.connectionToClient, guildAllyInfo);
+
+            // Notify the invite success
+            string message = "Guild alliance has been accepted between " +
+               "Guild {" + guildInfo.guildName + "} and Guild {" + guildAllyInfo.guildName + "}";
+            _player.Target_ReceiveNormalChat(message, ChatInfo.Type.System);
+            invitingUserEntity.Target_ReceiveNormalChat(message, ChatInfo.Type.System);
+
+            // Refresh alliance list for invited user
+            _player.guildAllies = new SyncList<int>();
+            foreach (int newId in invitedGuildAllyIds) {
+               _player.guildAllies.Add(newId);
+            }
+
+            // Refresh alliance list for inviting user
+            invitingUserEntity.guildAllies = new SyncList<int>();
+            foreach (int newId in inviterGuildAllyIds) {
+               invitingUserEntity.guildAllies.Add(newId);
+            }
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_RemoveGuildAlly (int guildId, int allyId) {
+      List<GuildInfo> guildAlliesInfo = new List<GuildInfo>();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.removeGuildAlliance(guildId, allyId);
+         DB_Main.removeGuildAlliance(allyId, guildId);
+         GuildInfo guildAllyInfo = DB_Main.getGuildInfo(allyId);
+
+         List<int> guildAlliesId = DB_Main.getGuildAlliance(guildId);
+         foreach (int guildAllyId in guildAlliesId) {
+            GuildInfo newGuildAllyInfo = DB_Main.getGuildInfo(guildAllyId);
+            if (newGuildAllyInfo != null) {
+               guildAlliesInfo.Add(newGuildAllyInfo);
+            }
+         }
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveGuildAllyDeleteResult(_player.connectionToClient, guildAllyInfo);
+            Target_ReceiveGuildAllies(_player.connectionToClient, Util.serialize(guildAlliesInfo));
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_GetGuildAllies (int guildId) {
+      List<GuildInfo> guildAlliesInfo = new List<GuildInfo>();
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<int> guildAlliesId= DB_Main.getGuildAlliance(guildId);
+         foreach (int guildAllyId in guildAlliesId) {
+            GuildInfo guildAllyInfo = DB_Main.getGuildInfo(guildAllyId);
+            if (guildAllyInfo != null) {
+               guildAlliesInfo.Add(guildAllyInfo);
+            }
+         }
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (_player != null) {
+               Target_ReceiveGuildAllies(_player.connectionToClient, Util.serialize(guildAlliesInfo));
+            }
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveGuildAllies (NetworkConnection connection, string[] guildAlliesInfo) {
+      if (guildAlliesInfo.Length > 0 && GuildPanel.self != null) {
+         List<GuildInfo> unserializedGuildInfo = Util.unserialize<GuildInfo>(guildAlliesInfo);
+         GuildPanel.self.receiveGuildAlliesFromServer(unserializedGuildInfo);
+      } else {
+         GuildPanel.self.receiveGuildAlliesFromServer(new List<GuildInfo>());
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveGuildAllyDeleteResult (NetworkConnection connection, GuildInfo allyInfo) {
+      D.debug("-- Deleted ally {" + allyInfo.guildName + "}");
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveGuildAllyAddResult (NetworkConnection connection, GuildInfo allyInfo) {
+      D.debug("-- Added ally {" + allyInfo.guildName + "}");
+   }
+
+   [Command]
    public void Cmd_GetGuildNameInGuildIconTooltip (int guildId) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          GuildInfo guildInfo = DB_Main.getGuildInfo(guildId);

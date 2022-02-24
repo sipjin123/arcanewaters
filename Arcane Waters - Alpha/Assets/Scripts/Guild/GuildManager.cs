@@ -102,6 +102,13 @@ public class GuildManager : MonoBehaviour {
       PanelManager.self.confirmScreen.hide();
    }
 
+   public void acceptGuildAllianceInviteOnClient (int inviterUserId, int guildId, int allyId) {
+      Global.player.rpc.Cmd_AcceptGuildAlliance(inviterUserId, guildId, allyId);
+
+      // Hide the confirm panel
+      PanelManager.self.confirmScreen.hide();
+   }
+
    public void acceptInviteOnServer (NetEntity recipient, GuildInvite invite) {
       // Make sure the player isn't already in a guild
       if (recipient.guildId != 0) {

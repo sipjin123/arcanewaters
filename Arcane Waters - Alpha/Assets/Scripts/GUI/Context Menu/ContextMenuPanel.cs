@@ -151,6 +151,10 @@ public class ContextMenuPanel : MonoBehaviour
             addButton("Group Invite", () => VoyageGroupManager.self.inviteUserToVoyageGroup(userName));
          }
 
+         if (Global.player.guildId > 0 && targetEntity.guildId > 0 && Global.player.guildId != targetEntity.guildId && !Global.player.guildAllies.Contains(targetEntity.guildId)) {
+            addButton("Form Guild Alliance", () => Global.player.rpc.Cmd_AddGuildAlly(targetEntity.userId, Global.player.guildId, targetEntity.guildId));
+         }
+
          if (!FriendListManager.self.isFriend(userId)) {
             addButton("Friend Invite", () => FriendListManager.self.sendFriendshipInvite(userId, userName));
          }
