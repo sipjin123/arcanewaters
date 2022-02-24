@@ -9,6 +9,9 @@ using System;
 public class GuildPanel : Panel {
    #region Public Variables
 
+   // The guild id
+   public int guildId;
+
    // The button for editting ranks in guild
    public Button ranksButton;
 
@@ -60,6 +63,26 @@ public class GuildPanel : Panel {
 
    // The button for appointing guild member to be new guild leader
    public Button appointLeaderButton;
+
+   [Header("Guild alliance")]
+
+   // Shows the guild panel
+   public Button showGuildAllyPanel;
+
+   // The ui load blocker
+   public GameObject guildAllyLoadBlocker;
+
+   // The guild ally panel
+   public GameObject guildAlliesPanel;
+
+   // Closes the guild ally panel
+   public Button closeGuildAllyPanelButton;
+
+   // Prefab container
+   public GameObject guildAllyEntryParent;
+
+   // Prefab containing guild ally info
+   public GuildAllyInfoTemplate guildAllyEntryPrefab;
 
    [Header("Sorting icons")]
    // Icons near name label describing sorting order
@@ -133,9 +156,35 @@ public class GuildPanel : Panel {
       base.Awake();
 
       self = this;
+
+      showGuildAllyPanel.onClick.AddListener(() => showGuildAllies());
+      closeGuildAllyPanelButton.onClick.AddListener(() => closeGuildAlliesPanel());
+   }
+
+   public void closeGuildAlliesPanel () {
+      guildAlliesPanel.SetActive(false);
+   }
+
+   private void showGuildAllies () {
+      if (Global.player == null) {
+         return;
+      }
+      guildAllyLoadBlocker.SetActive(true);
+      Global.player.rpc.Cmd_GetGuildAllies(guildId);
+   }
+
+   public void receiveGuildAlliesFromServer (List<GuildInfo> guildAlliesInfo) {
+      guildAllyEntryParent.gameObject.DestroyChildren();
+      foreach (GuildInfo guildInfo in guildAlliesInfo) {
+         GuildAllyInfoTemplate allyInfo = Instantiate(guildAllyEntryPrefab, guildAllyEntryParent.transform);
+         allyInfo.setGuildInfo(guildInfo);
+      }
+      guildAlliesPanel.SetActive(true);
+      guildAllyLoadBlocker.SetActive(false);
    }
 
    public void receiveDataFromServer (GuildInfo info, GuildRankInfo[] guildRanks) {
+      guildAlliesPanel.SetActive(false);
       bool inGuild = Global.player.guildId != 0;
 
       // Disable and enable images
@@ -163,6 +212,7 @@ public class GuildPanel : Panel {
       // Set the guild icon
       if (inGuild) {
          guildIcon.initialize(info);
+         guildId = info.guildId;
       }
 
       // Clear out any old member info
