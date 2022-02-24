@@ -238,6 +238,10 @@ public class DB_MainStub : MonoBehaviour
 
    public static void deleteEquipmentXML (int type, EquipmentType equipType) {
    }
+   
+   public static List<XMLPair> getQuestItemtXML () {
+      return new List<XMLPair>();
+   }
 
    public static List<XMLPair> getEquipmentXML (EquipmentType equipType) {
       return new List<XMLPair>();

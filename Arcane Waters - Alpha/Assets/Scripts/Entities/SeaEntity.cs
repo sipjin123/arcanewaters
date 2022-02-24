@@ -326,6 +326,8 @@ public class SeaEntity : NetEntity
                }
 
                if (this.isPlayerShip()) {
+                  rpc.processBadgeReward(_lastAttackerNetId);
+
                   gameStatsManager.addPlayerKillCount(lastAttacker.userId);
                   gameStatsManager.addDeathCount(this.userId);
                   this.rpc.broadcastPvPKill(lastAttacker, this);

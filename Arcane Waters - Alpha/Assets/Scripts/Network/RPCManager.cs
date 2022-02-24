@@ -6592,6 +6592,29 @@ public class RPCManager : NetworkBehaviour
       }
    }
 
+   [Server]
+   public void processBadgeReward (uint attackerNetId) {
+      QuestItem questItem = EquipmentXMLManager.self.getQuestItemById(13);
+      Item itmReward = new Item {
+         count = 1,
+         itemTypeId = 13,
+         category = Item.Category.Quest_Item,
+         iconPath = questItem != null ? questItem.iconPath : "",
+         itemName = questItem != null ? questItem.itemName : "",
+         itemDescription = questItem != null ? questItem.itemDescription : "",
+      };
+
+      NetEntity entity = EntityManager.self.getEntityByNetId(attackerNetId);
+      if (entity != null) {
+         Target_ReceiveBadges(entity.connectionToClient, itmReward);
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveBadges (NetworkConnection connection, Item itemReward) {
+      StartCoroutine(RewardManager.self.CO_CreatingFloatingIcon(itemReward, _player.transform.position));
+   }
+
    [TargetRpc]
    public void Target_ReceiveItemList (NetworkConnection connection, Item[] itemList) {
       foreach (Item item in itemList) {

@@ -131,6 +131,38 @@ public class EquipmentXMLManager : MonoBehaviour {
       _hatStatRegistry = new Dictionary<int, HatStatData>();
       _hatStatList = new List<HatStatData>();
 
+      List<XMLPair> rawQuestItemXml = DB_Main.getQuestItemtXML();
+      foreach (XMLPair xmlPair in rawQuestItemXml) {
+         if (xmlPair.isEnabled) {
+            try {
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
+               Item rawData = Util.xmlLoad<Item>(newTextAsset);
+               rawData.itemTypeId = xmlPair.xmlId;
+
+               QuestItem newItem = new QuestItem {
+                  category = Item.Category.Quest_Item,
+                  itemTypeId = rawData.itemTypeId,
+                  itemName = rawData.itemName,
+                  itemDescription = rawData.itemDescription,
+                  paletteNames = rawData.paletteNames,
+                  durability = 100,
+                  count = rawData.count,
+                  data = rawData.data,
+                  iconPath = rawData.iconPath,
+                  id = -1
+               };
+
+               // Save the data in the memory cache
+               QuestItem currQuestItem = _questItemList.Find(_ => _.itemTypeId == xmlPair.xmlId);
+               if (currQuestItem == null && xmlPair.isEnabled) {
+                  _questItemList.Add(newItem);
+               }
+            } catch {
+               D.editorLog("Failed to translate data: " + xmlPair.rawXmlData, Color.red);
+            }
+         }
+      }
+
       List<XMLPair> rawWeaponXml = DB_Main.getEquipmentXML(EquipmentType.Weapon);
       foreach (XMLPair xmlPair in rawWeaponXml) {
          if (xmlPair.isEnabled) {

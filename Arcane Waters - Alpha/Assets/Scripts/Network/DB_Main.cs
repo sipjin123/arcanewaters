@@ -4395,6 +4395,42 @@ public class DB_Main : DB_MainStub
       }
    }
 
+
+   public static new List<XMLPair> getQuestItemtXML () {
+      string tableName = "quest_items_xml";
+
+      List<XMLPair> rawDataList = new List<XMLPair>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM global." + tableName, conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  try {
+                     XMLPair xmlPair = new XMLPair {
+                        isEnabled = dataReader.GetInt32("isEnabled") == 1 ? true : false,
+                        rawXmlData = dataReader.GetString("xmlContent"),
+                        xmlId = dataReader.GetInt32("xmlId")
+                     };
+                     rawDataList.Add(xmlPair);
+                  } catch {
+                     D.debug("Failed to translate: " + dataReader.GetInt32("xml_id"));
+                  }
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<XMLPair>(rawDataList);
+   }
+
    public static new List<XMLPair> getEquipmentXML (EquipmentType equipType) {
       string tableName = "";
       switch (equipType) {
