@@ -35,73 +35,18 @@ public class AmbienceManager : ClientMonoBehaviour
       }
    }
 
-   public void setTitleScreenAmbience () {
-      updateAmbienceForArea("");
-   }
-
-   protected void updateAmbienceForArea (string newAreaKey) {
-      // Figure out what type we should be playing
-      //List<SoundManager.Type> ambienceTypes = getAmbienceTypeForArea(newAreaKey);
-
-      // Remove any currently playing ambience
-      this.gameObject.DestroyChildren();
-      LoopedSound[] loopedSounds = this.gameObject.GetComponents<LoopedSound>();
-      foreach (LoopedSound s in loopedSounds) {
-         Destroy(s);
-      }
-
-      Biome.Type biomeType = AreaManager.self.getDefaultBiome(newAreaKey);
-      //bool isSea = AreaManager.self.isSeaArea(newAreaKey);
-      //bool isInterior = AreaManager.self.isInteriorArea(newAreaKey);
-
-      SoundEffectManager.self.playAmbienceMusic(Area.getBackgroundMusic(newAreaKey, biomeType));
-   }
-
-   //public void setAmbienceWeatherEffect (WeatherEffectType weatherEffect) {
-   //   if (_ambienceEvent.isValid()) {
-   //      int weatherValue = 0;
-
-   //      switch (weatherEffect) {
-   //         case WeatherEffectType.None:
-   //            weatherValue = 0;
-   //            break;
-   //         case WeatherEffectType.Rain:
-   //            weatherValue = 1;
-   //            break;
-   //      }
-
-   //      _ambienceEvent.setParameterByName(SoundEffectManager.WEATHER_PARAM, weatherValue);
-   //   }
+   //public void setTitleScreenAmbience () {
+   //   SoundEffectManager.self.playAmbienceMusic(ambienceMusicType: SoundEffectManager.AmbienceMusicType.Title_Screen);
    //}
 
-   protected List<SoundManager.Type> getAmbienceTypeForArea (string areaKey) {
-      if (AreaManager.self.getArea(areaKey)?.isSea == true) {
-         return new List<SoundManager.Type>() { SoundManager.Type.Ambience_Ocean };
-      }
-
-      if (Area.isHouse(areaKey)) {
-         return new List<SoundManager.Type>() { SoundManager.Type.Ambience_Outdoor, SoundManager.Type.Ambience_House };
-      }
-
-      if (AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.Town) {
-         return new List<SoundManager.Type>() { SoundManager.Type.Ambience_Outdoor, SoundManager.Type.Ambience_Town };
-      }
-
-      return new List<SoundManager.Type>() { SoundManager.Type.Ambience_Forest_Chirps };
-   }
-
-   protected void playAmbience (SoundManager.Type ambienceType) {
-      LoopedSound loopedSound = this.gameObject.AddComponent<LoopedSound>();
-      loopedSound.soundType = ambienceType;
+   protected void updateAmbienceForArea (string newAreaKey) {
+      SoundEffectManager.self.playAmbienceMusic(newAreaKey);
    }
 
    #region Private Variables
 
    // The last area we were in
    protected string _lastArea = "";
-
-   // FMOD event instance
-   //FMOD.Studio.EventInstance _ambienceEvent;
 
    #endregion
 }

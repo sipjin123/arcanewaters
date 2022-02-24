@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class WindowInteractable : NetworkBehaviour {
+public class WindowInteractable : NetworkBehaviour
+{
    #region Public Variables
 
    // The particle effect animations
@@ -84,6 +85,12 @@ public class WindowInteractable : NetworkBehaviour {
          bool worldPositionStays = area.cameraBounds.bounds.Contains((Vector2) transform.position);
          setAreaParent(area, worldPositionStays);
          area.interactableWindows.Add(this);
+
+         if (TryGetComponent(out ZSnap snap)) {
+            snap.snapZ();
+         } else {
+            D.warning("Could not find ZSnap for window");
+         }
       }
    }
 

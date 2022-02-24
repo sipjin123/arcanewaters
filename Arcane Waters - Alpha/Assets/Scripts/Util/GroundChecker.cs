@@ -29,7 +29,7 @@ public class GroundChecker : ClientMonoBehaviour
       _player = GetComponent<NetEntity>();
 
       // Repeatedly check the ground
-      InvokeRepeating("checkTheGround", 0f, .1f);
+      //InvokeRepeating("checkTheGround", 0f, .1f);
    }
 
    protected void checkTheGround () {

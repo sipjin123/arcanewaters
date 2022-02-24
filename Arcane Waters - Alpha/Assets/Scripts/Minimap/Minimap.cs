@@ -1483,6 +1483,11 @@ public class Minimap : ClientMonoBehaviour {
                                  Color pixel = pixels[y * (int) sprite.rect.width + x];
                                  float z = areaEffector2D.transform.position.z;
                                  Vector2Int pos = new Vector2Int(areaEffector2DCellPosition.x + icon.offset.x + x, (layerSizeY - areaEffector2DCellPosition.y) + icon.offset.y + y);
+
+                                 if (pos.x < 0 || pos.y < 0 || pos.x >= layerSizeX || pos.y >= layerSizeY) {
+                                    continue;
+                                 }
+
                                  if (pixel.a != 0.0f && depthValues[pos.x, pos.y] > z) {
                                     map.SetPixel(pos.x, pos.y, pixel);
                                     depthValues[pos.x, pos.y] = z;

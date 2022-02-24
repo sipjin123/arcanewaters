@@ -2166,7 +2166,8 @@ public class NetEntity : NetworkBehaviour
          }
 
          // Set the music according to our Area
-         SoundManager.setBackgroundMusic(this.areaKey, getInstance().biome);
+         //SoundManager.setBackgroundMusic(this.areaKey, getInstance().biome);
+         SoundEffectManager.self.playBackgroundMusic(this.areaKey);
 
          // Show the Area name
          if (VoyageManager.isAnyLeagueArea(this.areaKey)) {

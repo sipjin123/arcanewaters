@@ -4,10 +4,10 @@ using TMPro;
 using System.Collections;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using System;
 
 public class GrabbedItem : MonoBehaviour
 {
-
    #region Public Variables
 
    // The item icon
@@ -18,7 +18,9 @@ public class GrabbedItem : MonoBehaviour
 
    #endregion
 
-   public void activate (Item item, Sprite itemSprite) {
+   public void activate (Item item, Sprite itemSprite, Action<Vector2> tryDropAction) {
+      _tryDropAction = tryDropAction;
+
       gameObject.SetActive(true);
       icon.sprite = itemSprite;
 
@@ -36,12 +38,13 @@ public class GrabbedItem : MonoBehaviour
       // Stop grabbing when the right click button is pressed
       if (KeyUtils.GetButtonDown(MouseButton.Right)) {
          InventoryPanel.self.stopGrabbingItem();
+         ShortcutPanel.self.dropGrabbedItems();
          return;
       }
 
       // When the left click button is released, try to drop the item
       if (!KeyUtils.GetButton(MouseButton.Left)) {
-         InventoryPanel.self.tryDropGrabbedItem(MouseUtils.mousePosition);
+         _tryDropAction?.Invoke(MouseUtils.mousePosition);
          return;
       }
    }
@@ -53,6 +56,9 @@ public class GrabbedItem : MonoBehaviour
    }
 
    #region Private Variables
+
+   // Method which should be called on drop
+   private Action<Vector2> _tryDropAction = null;
 
    #endregion
 }

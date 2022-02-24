@@ -29,6 +29,12 @@ public class ShortcutPanel : ClientMonoBehaviour {
       disableShortcuts();
    }
 
+   public void dropGrabbedItems () {
+      foreach(ShortcutBox box in _boxes) {
+         box.stopGrabbingItem();
+      }
+   }
+
    private void Update () {
       if (Util.isBatch()) {
          return;

@@ -63,36 +63,35 @@ public class FootSound : ClientMonoBehaviour {
    }
 
    private void setupFootStepAudioClip () {
+      //// When set, Allows main function access to footstep data, sounds, and more
+      //currentFootStepAudioGroup = null;
       
-      // When set, Allows main function access to footstep data, sounds, and more
-      currentFootStepAudioGroup = null;
-      
-      // If we have a player, check if they're in water or on some type of ground
-      if (Global.player != null) {
-         if (Global.player.waterChecker.inWater()) {
-            currentFootStepAudioGroup = findFootStepData(WATER_FOOTSTEP);
-         } else if (Global.player.groundChecker.isOnWood) {
-            currentFootStepAudioGroup = findFootStepData(WOOD_FOOTSTEP);
-         } else if (Global.player.groundChecker.isOnStone) {
-            currentFootStepAudioGroup = findFootStepData(STONE_FOOTSTEP);
-         } else if (Global.player.groundChecker.isOnGrass) {
-            currentFootStepAudioGroup = findFootStepData(GRASS_FOOTSTEP);
-         } else if (Global.player.groundChecker.isOnBridge) {
-            if (!_lastSoundTime.ContainsKey(BRIDGE_KEY) || _lastSoundTime[BRIDGE_KEY] + _minTimeBetweenBridgeSound < Time.time) {
-               //SoundManager.playClipAtPoint(SoundManager.Type.Bridge_Crunching_Wood, Global.player.transform.position);
+      //// If we have a player, check if they're in water or on some type of ground
+      //if (Global.player != null) {
+      //   if (Global.player.waterChecker.inWater()) {
+      //      currentFootStepAudioGroup = findFootStepData(WATER_FOOTSTEP);
+      //   } else if (Global.player.groundChecker.isOnWood) {
+      //      currentFootStepAudioGroup = findFootStepData(WOOD_FOOTSTEP);
+      //   } else if (Global.player.groundChecker.isOnStone) {
+      //      currentFootStepAudioGroup = findFootStepData(STONE_FOOTSTEP);
+      //   } else if (Global.player.groundChecker.isOnGrass) {
+      //      currentFootStepAudioGroup = findFootStepData(GRASS_FOOTSTEP);
+      //   } else if (Global.player.groundChecker.isOnBridge) {
+      //      if (!_lastSoundTime.ContainsKey(BRIDGE_KEY) || _lastSoundTime[BRIDGE_KEY] + _minTimeBetweenBridgeSound < Time.time) {
+      //         //SoundManager.playClipAtPoint(SoundManager.Type.Bridge_Crunching_Wood, Global.player.transform.position);
 
-               if (!_lastSoundTime.ContainsKey(BRIDGE_KEY)) {
-                  _lastSoundTime.Add(BRIDGE_KEY, Time.time);
-               } else {
-                  _lastSoundTime[BRIDGE_KEY] = Time.time;
-               }
-            }
-         }
-      }
+      //         if (!_lastSoundTime.ContainsKey(BRIDGE_KEY)) {
+      //            _lastSoundTime.Add(BRIDGE_KEY, Time.time);
+      //         } else {
+      //            _lastSoundTime[BRIDGE_KEY] = Time.time;
+      //         }
+      //      }
+      //   }
+      //}
 
-      if (currentFootStepAudioGroup) {
-         //audioSource.clip = currentFootStepAudioGroup.sounds.ChooseRandom();
-      }
+      //if (currentFootStepAudioGroup) {
+      //   //audioSource.clip = currentFootStepAudioGroup.sounds.ChooseRandom();
+      //}
    }
 
    #region Private Variables

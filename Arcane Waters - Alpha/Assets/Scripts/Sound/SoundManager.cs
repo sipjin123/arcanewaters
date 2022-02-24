@@ -12,10 +12,6 @@ public class SoundManager : GenericGameManager
    // The minimum amount of time we'll wait between playing the same clip
    public static float MIN_DELAY = .10f;
 
-   // Master bus address
-   //public static string MASTER_BUS_PATH = "Bus:/";
-   //public string MASTER_VCA_PATH = "vca:/Master";
-
    // The minimum velocity we must be moving to trigger a footstep sound
    public static float MIN_FOOTSTEP_VELOCITY = .8f;
 
@@ -46,13 +42,6 @@ public class SoundManager : GenericGameManager
 
    // The button that toggles the music
    public Button musicButton;
-
-   // The Audio Source for our background music
-   //public AudioSource backgroundMusicAudioSource;
-
-   // The master volume controls of FMOD
-   //public FMOD.Studio.Bus masterBus;
-   //public FMOD.Studio.VCA masterVCA;
 
    // FMOD volume variables
    public string musicVCAPath = "vca:/Music";
@@ -155,7 +144,8 @@ public class SoundManager : GenericGameManager
       }
 
       // Look up the background music for the Title Screen, if we have any
-      setBackgroundMusic(Type.Intro_Music);
+      //setBackgroundMusic(Type.Intro_Music);
+      SoundEffectManager.self.playBackgroundMusic(backgroundMusicType: SoundEffectManager.BackgroundMusicType.Intro);
    }
 
    public void Start () {
@@ -500,39 +490,39 @@ public class SoundManager : GenericGameManager
 
    #endregion
 
-   public static void setBackgroundMusic (string areaKey, Biome.Type biome) {
-      Type areaMusic = Area.getBackgroundMusic(areaKey, biome);
-      if (areaMusic != Type.None) {
-         setBackgroundMusic(areaMusic);
-      }
-   }
+   //public static void setBackgroundMusic (string areaKey, Biome.Type biome) {
+   //   Type areaMusic = Area.getBackgroundMusic(areaKey, biome);
+   //   if (areaMusic != Type.None) {
+   //      setBackgroundMusic(areaMusic);
+   //   }
+   //}
 
-   public static void setBackgroundMusic (Type type) {
-      if (Util.isBatch()) {
-         return;
-      }
+   //public static void setBackgroundMusic (Type type) {
+   //   if (Util.isBatch()) {
+   //      return;
+   //   }
 
-      // If we're already playing that music, there's nothing to do
-      if (_currentMusicType == type) {
-         return;
-      }
+   //   //// If we're already playing that music, there's nothing to do
+   //   //if (_currentMusicType == type) {
+   //   //   return;
+   //   //}
 
-      // Keep track of the previous music type, in case we need to switch back later
-      previousMusicType = _currentMusicType;
+   //   //// Keep track of the previous music type, in case we need to switch back later
+   //   //previousMusicType = _currentMusicType;
 
-      // Keep track of the music currently being played
-      _currentMusicType = type;
+   //   //// Keep track of the music currently being played
+   //   //_currentMusicType = type;
 
-      SoundEffectManager.self.playBackgroundMusic(type);
+   //   //SoundEffectManager.self.playBackgroundMusic(type);
 
-      // Smoothly transition to the new music using a coroutine, only if it's normal Sea Music
-      //if (type == Type.Sea_Forest || type == Type.Sea_Desert || type == Type.Sea_Snow ||
-      //   type == Type.Sea_Pine || type == Type.Sea_Lava || type == Type.Sea_Mushroom) {
-      //   self.StartCoroutine(self.transitionBackgroundMusic(type));
-      //} else {
-      //   self.StartCoroutine(self.transitionBackgroundMusic(Type.None));
-      //}
-   }
+   //   // Smoothly transition to the new music using a coroutine, only if it's normal Sea Music
+   //   //if (type == Type.Sea_Forest || type == Type.Sea_Desert || type == Type.Sea_Snow ||
+   //   //   type == Type.Sea_Pine || type == Type.Sea_Lava || type == Type.Sea_Mushroom) {
+   //   //   self.StartCoroutine(self.transitionBackgroundMusic(type));
+   //   //} else {
+   //   //   self.StartCoroutine(self.transitionBackgroundMusic(Type.None));
+   //   //}
+   //}
 
 
    #region Old Audio Implementation

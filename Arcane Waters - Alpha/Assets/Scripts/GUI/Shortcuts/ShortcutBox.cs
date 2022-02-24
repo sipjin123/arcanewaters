@@ -6,7 +6,7 @@ using Mirror;
 using UnityEngine.EventSystems;
 using TMPro;
 
-public class ShortcutBox : MonoBehaviour, IPointerClickHandler
+public class ShortcutBox : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
 {
    #region Public Variables
 
@@ -14,7 +14,7 @@ public class ShortcutBox : MonoBehaviour, IPointerClickHandler
    public int slotNumber = 0;
 
    // The prefab we use for creating item cells
-   public ItemCell itemCellPrefab;
+   public ItemCellInventory itemCellPrefab;
 
    // The container of the item cell
    public GameObject itemCellContainer;
@@ -37,6 +37,9 @@ public class ShortcutBox : MonoBehaviour, IPointerClickHandler
    // The sprite shown for the selected item
    public Sprite selectedSprite;
 
+   // The common object used to display any grabbed item
+   public GrabbedItem grabbedItem;
+
    #endregion
 
    private void Start () {
@@ -45,6 +48,8 @@ public class ShortcutBox : MonoBehaviour, IPointerClickHandler
       _containerImage = GetComponent<Image>();
 
       itemCellContainer.DestroyChildren();
+
+      stopGrabbingItem();
    }
 
    private void Update () {
@@ -57,7 +62,7 @@ public class ShortcutBox : MonoBehaviour, IPointerClickHandler
    }
 
    public void onShortcutPress () {
-      if (_itemCell != null && button.interactable) {
+      if (_itemCell != null && button.interactable && _grabbedItemCell == null) {
          //SoundEffectManager.self.playSoundEffect(SoundEffectManager.SHORTCUT_SELECTION, transform);
 
          InventoryManager.tryEquipOrUseItem(_itemCell.getItem());
@@ -81,19 +86,106 @@ public class ShortcutBox : MonoBehaviour, IPointerClickHandler
       toolTipPanel.SetActive(false);
    }
 
-   public void setItem(Item item) {
+   public void setItem (Item item) {
       clear();
 
       _itemCell = Instantiate(itemCellPrefab, itemCellContainer.transform, false);
       _itemCell.setCellForItem(item);
 
       if (item.itemTypeId != 0 && item.id != 0) {
-         _itemCell.disablePointerEvents();
          _itemCell.hideBackground();
          _itemCell.hideSelectedBox();
 
+         subscribeClickEventsForCell(_itemCell);
+
          toolTipText.SetText(_itemCell.getItem().getName());
       }
+   }
+
+   private void subscribeClickEventsForCell (ItemCell cell) {
+      if (cell == null) {
+         D.error("Cannot subscribe click events because cell is null");
+         return;
+      }
+
+      // Set the cell click events
+      cell.leftClickEvent.RemoveAllListeners();
+      cell.rightClickEvent.RemoveAllListeners();
+      cell.doubleClickEvent.RemoveAllListeners();
+      cell.onPointerEnter.RemoveAllListeners();
+      cell.onPointerExit.RemoveAllListeners();
+      cell.onDragStarted.RemoveAllListeners();
+
+      cell.shiftClickEvent.AddListener(() => {
+         if (ChatPanel.self != null) {
+            ChatPanel.self.addItemInsertToInput(cell.getItem());
+         }
+      });
+
+      cell.onDragStarted.AddListener(() => tryGrabItem(cell as ItemCellInventory));
+   }
+
+   public void tryGrabItem (ItemCellInventory itemCell) {
+      if (itemCell == null || !PanelManager.self.get<InventoryPanel>(Panel.Type.Inventory).isShowing()) {
+         return;
+      }
+
+      Item castedItem = itemCell.getItem();
+
+      // Only equippable items can be grabbed
+      if (castedItem.itemTypeId != 0 && castedItem.id != 0 && castedItem.canBeEquipped()) {
+         _grabbedItemCell = itemCell;
+
+         // Hide the cell being grabbed
+         _grabbedItemCell.hide();
+
+         // Initialize the common grabbed object
+         grabbedItem.activate(castedItem, itemCell.getItemSprite(), tryDropGrabbedItem);
+      }
+   }
+
+   public void tryDropGrabbedItem (Vector2 screenPosition) {
+      if (_grabbedItemCell != null) {
+         if (!PanelManager.self.get<InventoryPanel>(Panel.Type.Inventory).isShowing()) {
+            stopGrabbingItem();
+            return;
+         }
+
+         // Check if the item was dropped over a shortcut slot
+         ShortcutBox box = PanelManager.self.itemShortcutPanel.getShortcutBoxAtPosition(screenPosition);
+         if (box != null) {
+            // If the box is not us, swap our items
+            if (box.slotNumber != slotNumber) {
+               Global.player.rpc.Cmd_SwapItemShortcut(slotNumber, box.slotNumber);
+            }
+            stopGrabbingItem();
+            return;
+         }
+
+         // Items can also be dragged from shortcut to inventory, resulting in rebinding of item
+         bool droppedInInventory = PanelManager.self.get<InventoryPanel>(Panel.Type.Inventory).inventoryDropZone.isInZone(screenPosition);
+
+         if (droppedInInventory) {
+            Global.player.rpc.Cmd_DeleteItemShortcut(slotNumber);
+
+            stopGrabbingItem();
+            return;
+         }
+
+         // Otherwise, simply stop grabbing
+         stopGrabbingItem();
+      }
+   }
+
+   public void stopGrabbingItem () {
+      if (_grabbedItemCell != null) {
+         // Restore the grabbed cell
+         _grabbedItemCell.show();
+         _grabbedItemCell = null;
+      }
+
+      // Deactivate the grabbed item
+      grabbedItem.deactivate();
    }
 
    public void clear () {
@@ -107,6 +199,24 @@ public class ShortcutBox : MonoBehaviour, IPointerClickHandler
       return dropZone.isInZone(screenPoint);
    }
 
+   public void OnPointerDown (PointerEventData eventData) {
+      if (_itemCell != null) {
+         _itemCell.OnPointerDown(eventData);
+      }
+   }
+
+   public void OnPointerEnter (PointerEventData eventData) {
+      if (_itemCell != null) {
+         _itemCell.OnPointerEnter(eventData);
+      }
+   }
+
+   public void OnPointerExit (PointerEventData eventData) {
+      if (_itemCell != null) {
+         _itemCell.OnPointerExit(eventData);
+      }
+   }
+
    #region Private Variables
 
    // Our associated Button
@@ -116,7 +226,10 @@ public class ShortcutBox : MonoBehaviour, IPointerClickHandler
    protected Image _containerImage;
 
    // The item cell contained in the shortcut box
-   protected ItemCell _itemCell = null;
+   protected ItemCellInventory _itemCell = null;
+
+   // The cell from which an item was grabbed
+   private ItemCellInventory _grabbedItemCell;
 
    #endregion
 }

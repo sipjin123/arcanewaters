@@ -54,6 +54,23 @@ MonoBehaviour:
     tile: {fileID: 11400000, guid: 380f34db863dec248b72476dd599c762, type: 2}
   - direction: 7
     tile: {fileID: 11400000, guid: 789e25aea6036de48b115b68688c8afd, type: 2}
+  landCurrentTiles:
+  - direction: 3
+    tile: {fileID: 11400000, guid: 8d57699850207c14397aff66c6c1af84, type: 2}
+  - direction: 1
+    tile: {fileID: 11400000, guid: 31e5bbf7e0521494989d9edb3fa6bbcb, type: 2}
+  - direction: 2
+    tile: {fileID: 11400000, guid: 3822451c8548b784095ba64ecaef4c2c, type: 2}
+  - direction: 8
+    tile: {fileID: 11400000, guid: 68212a51962e3de45a1f3dc797756758, type: 2}
+  - direction: 5
+    tile: {fileID: 11400000, guid: d045d8ac1e5731547b8d2f29b45211e1, type: 2}
+  - direction: 4
+    tile: {fileID: 11400000, guid: fb01fa66f062de8499967c8f856bedb4, type: 2}
+  - direction: 6
+    tile: {fileID: 11400000, guid: ed53cfcb04af6274d896db1d24c9d091, type: 2}
+  - direction: 7
+    tile: {fileID: 11400000, guid: 579e8900db2aa254bba3a34a84612b06, type: 2}
   areaLayerIndexes:
   - layer: ground
     index: 0

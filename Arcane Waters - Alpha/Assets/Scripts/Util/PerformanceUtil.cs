@@ -5,8 +5,12 @@ using UnityEngine.UI;
 using Mirror;
 using System.Diagnostics;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ZabbixApi;
+using ZabbixApi.Entities;
+using Debug = UnityEngine.Debug;
 
 public class PerformanceUtil : MonoBehaviour {
    #region Public Variables
@@ -51,7 +55,41 @@ public class PerformanceUtil : MonoBehaviour {
       _lastCpuTime = new TimeSpan(0);
       _currentProcess = Process.GetCurrentProcess();
 
-      StartCoroutine(CO_Initialise());
+      // StartCoroutine(CO_Initialise());
+      
+      var url = "https://zabbix.arcanewaters.com/api_jsonrpc.php";
+      var user = "integration";
+      var password = "pQMxg8jmRqhvTVKJhsRVdF4kn7t3zuZL";
+      
+      using (var context = new Context(url, user, password)) {
+         Dictionary<string, object> histParams;
+         
+         // prod server
+         
+         // CPU utilization, %
+         //    ./GetHistory.ps1 -ItemID 33614 -Mode 1 -DataTable 0 -Limit 1
+         histParams = new Dictionary<string, object>();
+         histParams.Add("output", "extend");
+         histParams.Add("sortfield", "clock");
+         histParams.Add("sortorder", "DESC");
+         histParams.Add("limit", "1");
+         histParams.Add("itemids", "33614");
+         
+         var cpu = context.History.GetByType(History.HistoryType.FloatType, null, histParams).FirstOrDefault()?.value;
+         // Debug.Log(cpu);
+         
+         // Total memory, bytes
+         //    ./GetHistory.ps1 -ItemID 33622 -Mode 1 -DataTable 3 -Limit 1
+         histParams = new Dictionary<string, object>();
+         histParams.Add("output", "extend");
+         histParams.Add("sortfield", "clock");
+         histParams.Add("sortorder", "DESC");
+         histParams.Add("limit", "1");
+         histParams.Add("itemids", "33622");
+         
+         var memory = context.History.GetByType(History.HistoryType.IntegerType, null, histParams).FirstOrDefault()?.value;
+         // Debug.Log(memory);
+      }
    }
 
    private IEnumerator CO_Initialise () {

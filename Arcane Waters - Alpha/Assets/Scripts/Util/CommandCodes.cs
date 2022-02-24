@@ -25,13 +25,20 @@ public class CommandCodes : MonoBehaviour {
       CLIENT_DISABLE_NUBIS = 15 // On clients, disable Nubis and use Mirror requests instead
    }
 
+   public static Dictionary<Type, bool> cache;
    #endregion
 
    public static bool get (Type commandType) {
-      return System.Environment.CommandLine.Contains(commandType+"");
+      if (cache == null) {
+         cache = new Dictionary<Type, bool>();
+      }
+      
+      if (!cache.ContainsKey(commandType)) {
+         cache[commandType] = System.Environment.CommandLine.Contains(commandType + "");
+      }
+      return cache[commandType];
    }
-
+   
    #region Private Variables
-
    #endregion
 }

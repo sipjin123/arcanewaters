@@ -161,13 +161,13 @@ public class CraftingIngredients : RecipeItem
             return "Coal good for cooking";
 
          case Type.Iron_Ore:
-            return "An Iron Ore";
+            return "Iron Ore";
 
          case Type.Silver_Ore:
-            return "A Silver Ore";
+            return "Silver Ore";
 
          case Type.Gold_Ore:
-            return "A Golden Ore";
+            return "Gold Ore";
 
          // General Loots
          case Type.Fur:
@@ -310,7 +310,7 @@ public class CraftingIngredients : RecipeItem
             return "Silver Ore";
 
          case Type.Gold_Ore:
-            return "Golden Ore";
+            return "Gold Ore";
 
          // General Loots
          case Type.Fur:

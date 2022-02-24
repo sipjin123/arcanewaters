@@ -28,6 +28,9 @@ namespace MapCreationTool
       [Tooltip("Sea current tiles for creating effectors")]
       public TileDirectionPair[] seaCurrentTiles = new TileDirectionPair[0];
 
+      [Tooltip("Land current tiles for creating effectors")]
+      public TileDirectionPair[] landCurrentTiles = new TileDirectionPair[0];
+
       public LayerConfig[] areaLayerIndexes;
       public LayerConfig[] seaLayerIndexes;
       public LayerConfig[] interiorLayerIndexes;

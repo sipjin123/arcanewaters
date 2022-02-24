@@ -1436,10 +1436,11 @@ public class Util : MonoBehaviour
       }
 
       // Look up the background music for the Title Screen, if we have any
-      SoundManager.setBackgroundMusic(SoundManager.Type.Intro_Music);
+      //SoundManager.setBackgroundMusic(SoundManager.Type.Intro_Music);
+      SoundEffectManager.self.playBackgroundMusic(backgroundMusicType: SoundEffectManager.BackgroundMusicType.Intro);
 
       // Reset ambience
-      AmbienceManager.self.setTitleScreenAmbience();
+      //AmbienceManager.self.setTitleScreenAmbience();
 
       TitleScreen.self.showLoginPanels();
    }
@@ -1490,10 +1491,11 @@ public class Util : MonoBehaviour
       TitleScreen.self.showLoginPanels();
 
       // Look up the background music for the Title Screen, if we have any
-      SoundManager.setBackgroundMusic(SoundManager.Type.Intro_Music);
+      //SoundManager.setBackgroundMusic(SoundManager.Type.Intro_Music);
+      SoundEffectManager.self.playBackgroundMusic(backgroundMusicType: SoundEffectManager.BackgroundMusicType.Intro);
 
       // Reset ambience
-      AmbienceManager.self.setTitleScreenAmbience();
+      //AmbienceManager.self.setTitleScreenAmbience();
 
       TitleScreen.self.isPlayerLoggedOut = true;
    }

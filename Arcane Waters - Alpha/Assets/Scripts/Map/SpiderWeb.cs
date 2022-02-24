@@ -137,6 +137,8 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
       SimpleAnimation anim = Instantiate(webBouncePrefab, transform.position, Quaternion.identity).GetComponent<SimpleAnimation>();
       anim.updateIndexMinMax(bounceWebMin, bounceWebMax);
 
+      SoundEffectManager.self.playFmodSfx(SoundEffectManager.WEB_JUMP, transform.position);
+
       // Determine what direction the player should be facing in while they bounce / fall
       float bounceAngle = Util.angle(getDestination() - (Vector2) puppet.entity.transform.position);
       Direction bounceDir = Util.getFacing(bounceAngle);
@@ -196,7 +198,7 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
             t /= BOUNCE_POINT;
             puppet.entity.getRigidbody().MovePosition(Vector3.LerpUnclamped(puppet.startPos, transform.position, t));
 
-         // Over the rest of the bounce, the player needs to make it to the end point
+            // Over the rest of the bounce, the player needs to make it to the end point
          } else {
             t = (t - BOUNCE_POINT) / (1.0f - BOUNCE_POINT);
             puppet.entity.getRigidbody().MovePosition(Vector3.LerpUnclamped(transform.position, puppet.endPos, t));
@@ -217,7 +219,7 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
       if (player == null || !player.isLocalPlayer) {
          return;
       }
-      
+
       // Only check for colliders if  we're not bouncing to another web
       if (!_linkedWeb) {
          // Check that there are no colliders at the arriving position
@@ -255,7 +257,7 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
    private bool checkForColliders (Vector2 checkPosition, float checkRadius) {
       // Find any colliders at the location
       int colCount = Physics2D.OverlapCircle(checkPosition, checkRadius, new ContactFilter2D { useTriggers = false }, _colliderBuffer);
-      
+
       // Ignore enemies
       foreach (Collider2D collider in _colliderBuffer) {
          if (collider?.GetComponent<Enemy>()) {
@@ -268,7 +270,7 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
    }
 
    private Vector2 getDestination () {
-      return new Vector2(destinationX, destinationY) + (Vector2)transform.position;
+      return new Vector2(destinationX, destinationY) + (Vector2) transform.position;
    }
 
    private void OnDrawGizmosSelected () {

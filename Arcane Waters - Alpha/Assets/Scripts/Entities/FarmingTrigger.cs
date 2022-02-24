@@ -61,7 +61,7 @@ public class FarmingTrigger : MonoBehaviour
       StartCoroutine(CO_ProcessInteraction());
    }
 
-   private void FixedUpdate () {
+   private void Update () {
       if (NetworkClient.active && Global.player != null && Global.player.userId == bodyEntity.userId) {
          if (AreaManager.self.tryGetArea(bodyEntity.areaKey, out Area area)) {
             Vector2 pos = area.transform.InverseTransformPoint(getTreePlantPosition());
@@ -74,6 +74,14 @@ public class FarmingTrigger : MonoBehaviour
 
             if (hasTree) {
                treePlantIndicator.transform.position = getTreePlantPosition();
+
+               // Make sure indicator doesn't flip along with the player
+               treePlantIndicator.transform.localScale = new Vector3(
+                  Mathf.Sign(transform.lossyScale.x) * Mathf.Abs(treePlantIndicator.transform.localScale.x),
+                  treePlantIndicator.transform.localScale.y,
+                  treePlantIndicator.transform.localScale.z);
+
+
                treePlantIndicatorRenderer.sprite = treePrefab.grownTreeSprite;
                treePlantIndicatorRenderer.color = canPlantTree ? treeIndicatorValidColor : treeIndicatorInvalidColor;
             }
@@ -250,7 +258,13 @@ public class FarmingTrigger : MonoBehaviour
    }
 
    public Vector2 getTreePlantPosition () {
-      return bodyEntity.getRigidbody().position + Util.getDirectionFromFacing(bodyEntity.facing) * 0.64f + Vector2.up * 0.3f;
+      Vector2 mPos = Camera.main.ScreenToWorldPoint(MouseUtils.mousePosition);
+      Vector2 ourPos = transform.position;
+      if ((mPos - ourPos).sqrMagnitude > 1f * 1f) {
+         mPos = ourPos + (mPos - ourPos).normalized * 1f;
+      }
+
+      return mPos;
    }
 
    public void playFarmingParticles (Weapon.ActionType actionType) {

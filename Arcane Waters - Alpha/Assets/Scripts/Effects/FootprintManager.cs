@@ -49,7 +49,7 @@ public class FootprintManager : ClientMonoBehaviour
 
    protected void processFootstep () {
       // Figure out what sound to play
-      if (_player.isLocalPlayer) {
+      if (_player.isLocalPlayer && !_player.isBouncingOnWeb()) {
          SoundEffectManager.self.playFootstepSfx(_player.transform.position);
       }
 

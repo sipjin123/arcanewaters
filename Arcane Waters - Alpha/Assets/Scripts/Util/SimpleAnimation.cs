@@ -277,7 +277,7 @@ public class SimpleAnimation : ClientMonoBehaviour
       }
 
       // If we reached the last frame, we might be finished
-      if (stayAtLastFrame && maxIndex < 1000 ? (_index >= maxIndex) : _index == _sprites.Length - 1) {
+      if (stayAtLastFrame && (maxIndex < 1000 ? (_index >= maxIndex) : _index == _sprites.Length - 1)) {
          stopAnimation();
       }
    }

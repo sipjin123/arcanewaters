@@ -94,6 +94,10 @@ public class SoundEffectManager : GenericGameManager
    public const string FISHMAN_HURT = "event:/SFX/NPC/Enemy/Fishman_Seamonster/Seamonster_Hurt";
    public const string FISHMAN_DEATH = "event:/SFX/NPC/Enemy/Fishman_Seamonster/Fishman_Death";
 
+   public const string REEFMAN_ATTACK = "event:/SFX/NPC/Enemy/Giant_Reefman/Giant_Reefman_Throw";
+   public const string REEFMAN_HURT = "event:/SFX/NPC/Enemy/Giant_Reefman/Giant_Reefman_Pain";
+   public const string REEFMAN_DEATH = "event:/SFX/NPC/Enemy/Giant_Reefman/Giant_Reefman_Death";
+
    #endregion
 
    #region GAME
@@ -148,9 +152,8 @@ public class SoundEffectManager : GenericGameManager
    public const string GAIN_SILVER = "event:/SFX/Player/Interactions/Non_Diegetic/Gain_Silver";
    public const string HARVESTING_HIT = "event:/SFX/Player/Interactions/Diegetic/Harvesting_Hit";
    public const string CROP_PLANT = "event:/SFX/Player/Interactions/Diegetic/Crop_Plant";
-   //public const string BUYSELL = "event:/SFX/Game/UI/Buy_Sell";
-
    public const string SHIP_SAILING = "event:/SFX/Player/Interactions/Diegetic/Ship/Ship_Sailing";
+   public const string WEB_JUMP = "event:/SFX/Player/Interactions/Diegetic/Web_Jumps";
 
    #endregion
 
@@ -266,6 +269,98 @@ public class SoundEffectManager : GenericGameManager
       impactEvent.release();
    }
 
+
+   // Returns the state of the title screen ambience event
+   private void checkAmbienceEvent () {
+      checkTitleScreenAmbienceEvent();
+
+      if (!_ambienceMusicEvent.isValid()) {
+         _ambienceMusicEvent = FMODUnity.RuntimeManager.CreateInstance(AMBIENCE_BED_MASTER);
+      }
+   }
+
+   private void playAmbienceEvent () {
+      _ambienceMusicEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE playbackState);
+      if (playbackState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
+         _ambienceMusicEvent.start();
+      }
+   }
+
+   private AmbienceMusicType getAmbienceType (string areaKey) {
+      Biome.Type biomeType = AreaManager.self.getDefaultBiome(areaKey);
+
+      if (string.Equals(areaKey, _cementeryAreaKey, StringComparison.InvariantCultureIgnoreCase)) {
+         return AmbienceMusicType.Forest_Cementery;
+      }
+
+      if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
+         if (customMapManager is CustomFarmManager || CustomMapManager.isPrivateCustomArea(areaKey)) {
+            return AmbienceMusicType.Farm;
+         }
+      }
+
+      if (AreaManager.self.isInteriorArea(areaKey)) {
+         return AmbienceMusicType.Interior;
+      } else if (AreaManager.self.isSeaArea(areaKey)) {
+         return AmbienceMusicType.Sea;
+      } else {
+         switch (biomeType) {
+            case Biome.Type.Forest:
+               return AmbienceMusicType.Forest;
+            case Biome.Type.Desert:
+               return AmbienceMusicType.Desert;
+            case Biome.Type.Pine:
+               return AmbienceMusicType.Pine;
+            case Biome.Type.Snow:
+               return AmbienceMusicType.Snow;
+            case Biome.Type.Lava:
+               return AmbienceMusicType.Lava;
+            case Biome.Type.Mushroom:
+               return AmbienceMusicType.Mushroom;
+            default:
+               return AmbienceMusicType.None;
+         }
+      }
+   }
+
+   // We can use the areaKey or send an ambience type directly (optional)
+   public void playAmbienceMusic (string areaKey = "", AmbienceMusicType ambienceMusicType = AmbienceMusicType.None) {
+      checkAmbienceEvent();
+
+      AmbienceMusicType audioParam = ambienceMusicType;
+
+      if (ambienceMusicType == AmbienceMusicType.None) {
+         audioParam = getAmbienceType(areaKey);
+      }
+
+      if (_currentAmbience == audioParam) {
+         return;
+      }
+
+      _previousAmbience = _currentAmbience;
+      _currentAmbience = audioParam;
+
+      _ambienceMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, (int) _currentAmbience);
+
+      playAmbienceEvent();
+
+      if (_currentAmbience == AmbienceMusicType.None || _currentAmbience == AmbienceMusicType.Title_Screen) {
+         _ambienceMusicEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+      }
+
+      if (audioParam == AmbienceMusicType.Title_Screen) {
+         _titleScreenAmbienceEvent.start();
+      } else {
+         _titleScreenAmbienceEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+      }
+   }
+
+   private void checkTitleScreenAmbienceEvent () {
+      if (!_titleScreenAmbienceEvent.isValid()) {
+         _titleScreenAmbienceEvent = FMODUnity.RuntimeManager.CreateInstance(TITLE_SCREEN_AMBIENCE);
+      }
+   }
+
    private void checkBackgroundMusicEvent () {
       if (!_backgroundMusicEvent.isValid()) {
          _backgroundMusicEvent = FMODUnity.RuntimeManager.CreateInstance(BGM_MASTER);
@@ -279,90 +374,78 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   public void playBackgroundMusic (SoundManager.Type musicType) {
+   private BackgroundMusicType getBackgroundMusicType (string areaKey) {
+      Biome.Type biomeType = AreaManager.self.getDefaultBiome(areaKey);
+
+      if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
+         if (customMapManager is CustomFarmManager || CustomMapManager.isPrivateCustomArea(areaKey)) {
+            return BackgroundMusicType.Farm;
+         }
+      }
+
+      bool isSea = AreaManager.self.isSeaArea(areaKey);
+
+      if (isSea) {
+         if (VoyageManager.isPvpArenaArea(areaKey)) {
+            return BackgroundMusicType.Sea_PvP;
+         } else if (VoyageManager.isLeagueArea(areaKey)) {
+            return BackgroundMusicType.Sea_League;
+         } else if (VoyageManager.isLeagueSeaBossArea(areaKey)) {
+            return BackgroundMusicType.Sea_Lava; // Temp
+         }
+      }
+
+      if (AreaManager.self.isInteriorArea(areaKey)) {
+         return BackgroundMusicType.Interior;
+      } else {
+         switch (biomeType) {
+            case Biome.Type.Forest:
+               return isSea ? BackgroundMusicType.Sea_Forest : BackgroundMusicType.Forest;
+            case Biome.Type.Desert:
+               return isSea ? BackgroundMusicType.Sea_Desert : BackgroundMusicType.Desert;
+            case Biome.Type.Pine:
+               return isSea ? BackgroundMusicType.Sea_Pine : BackgroundMusicType.Pine;
+            case Biome.Type.Snow:
+               return isSea ? BackgroundMusicType.Sea_Snow : BackgroundMusicType.Snow;
+            case Biome.Type.Lava:
+               return isSea ? BackgroundMusicType.Sea_Lava : BackgroundMusicType.Lava;
+            case Biome.Type.Mushroom:
+               return isSea ? BackgroundMusicType.Sea_Mushroom : BackgroundMusicType.Mushroom;
+            default:
+               return BackgroundMusicType.None;
+         }
+      }
+   }
+
+   public void playBackgroundMusic (string areaKey = "", BackgroundMusicType backgroundMusicType = BackgroundMusicType.None) {
       checkBackgroundMusicEvent();
 
-      if (!_titleScreenAmbienceEvent.isValid()) {
-         _titleScreenAmbienceEvent = FMODUnity.RuntimeManager.CreateInstance(TITLE_SCREEN_AMBIENCE);
+      BackgroundMusicType audioParam = backgroundMusicType;
+
+      if (backgroundMusicType == BackgroundMusicType.None) {
+         audioParam = getBackgroundMusicType(areaKey);
       }
 
-      _titleScreenAmbienceEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE titleAmbienceState);
-
-      int param = -1;
-
-      switch (musicType) {
-         case SoundManager.Type.Town_Forest:
-         case SoundManager.Type.Town_Forest_Cementery:
-            param = 0;
-            break;
-         case SoundManager.Type.Town_Desert:
-            param = 1;
-            break;
-         case SoundManager.Type.Town_Snow:
-            param = 2;
-            break;
-         case SoundManager.Type.Town_Lava:
-            param = 3;
-            break;
-         case SoundManager.Type.Town_Pine:
-            param = 4;
-            break;
-         case SoundManager.Type.Town_Mushroom:
-            param = 5;
-            break;
-         case SoundManager.Type.Intro_Music:
-            // Here we play the ambience event for the Title Screen
-            if (titleAmbienceState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
-               _titleScreenAmbienceEvent.start();
-            }
-            param = 6;
-            break;
-         case SoundManager.Type.Farm_Music:
-            param = 7;
-            break;
-         case SoundManager.Type.Interior:
-            param = 8;
-            break;
-         case SoundManager.Type.Sea_PvP:
-            param = 10;
-            break;
-         case SoundManager.Type.Sea_Forest:
-            param = 11;
-            break;
-         case SoundManager.Type.Sea_Desert:
-            param = 12;
-            break;
-         case SoundManager.Type.Sea_Lava:
-            param = 13;
-            break;
-         case SoundManager.Type.Sea_Mushroom:
-            param = 14;
-            break;
-         case SoundManager.Type.Sea_Pine:
-            param = 15;
-            break;
-         case SoundManager.Type.Sea_Snow:
-            param = 16;
-            break;
-         case SoundManager.Type.Sea_League:
-            param = 17;
-            break;
-         case SoundManager.Type.Battle_Music:
-            param = 19;
-            break;
+      if (_currentMusic == audioParam) {
+         return;
       }
 
-      if (musicType != SoundManager.Type.Intro_Music) {
-         _titleScreenAmbienceEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-      }
+      _previousMusic = _currentMusic;
+      _currentMusic = audioParam;
 
-      _backgroundMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, param);
+      _backgroundMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, (int) _currentMusic);
 
       playBackgroundMusicEvent();
 
-      // If the type of music is "None"
-      if (param == -1) {
+      if (_currentMusic == BackgroundMusicType.None) {
          _backgroundMusicEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+      } else if (_currentMusic == BackgroundMusicType.Land_Battle) {
+         playAmbienceMusic(ambienceMusicType: AmbienceMusicType.Farm);
+      } else if (_previousMusic == BackgroundMusicType.Land_Battle) {
+         // If our previous background music was the land battle one, then we reset the ambience event to the correct area.
+         playAmbienceMusic(areaKey);
+      } else if (_currentMusic == BackgroundMusicType.Intro) {
+         playAmbienceMusic(ambienceMusicType: AmbienceMusicType.Title_Screen);
       }
    }
 
@@ -372,73 +455,6 @@ public class SoundEffectManager : GenericGameManager
       _backgroundMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, 20);
 
       playBackgroundMusicEvent();
-   }
-
-   private void checkAmbienceEvent () {
-      if (!_ambienceMusicEvent.isValid()) {
-         _ambienceMusicEvent = FMODUnity.RuntimeManager.CreateInstance(AMBIENCE_BED_MASTER);
-      }
-   }
-
-   private void playAmbienceEvent () {
-      _ambienceMusicEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE playbackState);
-      if (playbackState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
-         _ambienceMusicEvent.start();
-      }
-   }
-
-   public void playAmbienceMusic (SoundManager.Type musicType) {
-      checkAmbienceEvent();
-
-      int param = -1;
-
-      switch (musicType) {
-         case SoundManager.Type.Town_Forest:
-            param = 0;
-            break;
-         case SoundManager.Type.Town_Desert:
-            param = 1;
-            break;
-         case SoundManager.Type.Town_Snow:
-            param = 2;
-            break;
-         case SoundManager.Type.Town_Lava:
-            param = 3;
-            break;
-         case SoundManager.Type.Town_Pine:
-            param = 4;
-            break;
-         case SoundManager.Type.Town_Mushroom:
-            param = 5;
-            break;
-         case SoundManager.Type.Farm_Music:
-            param = 7;
-            break;
-         case SoundManager.Type.Interior:
-            param = 8;
-            break;
-         case SoundManager.Type.Sea_Forest:
-         case SoundManager.Type.Sea_Desert:
-         case SoundManager.Type.Sea_Snow:
-         case SoundManager.Type.Sea_Lava:
-         case SoundManager.Type.Sea_Pine:
-         case SoundManager.Type.Sea_Mushroom:
-         case SoundManager.Type.Sea_PvP:
-         case SoundManager.Type.Sea_League:
-            param = 9;
-            break;
-         case SoundManager.Type.Town_Forest_Cementery:
-            param = 10;
-            break;
-      }
-
-      _ambienceMusicEvent.setParameterByName(AMBIENCE_SWITCH_PARAM, param);
-
-      if (param == -1) {
-         _ambienceMusicEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-      }
-
-      playAmbienceEvent();
    }
 
    public void setAmbienceWeather (WeatherEffectType weatherEffect) {
@@ -551,6 +567,9 @@ public class SoundEffectManager : GenericGameManager
          case SeaMonsterEntity.Type.Fishman:
             path = FISHMAN_DEATH;
             break;
+         case SeaMonsterEntity.Type.Reef_Giant:
+            path = REEFMAN_DEATH;
+            break;
       }
 
       if (!string.IsNullOrEmpty(path)) {
@@ -625,6 +644,9 @@ public class SoundEffectManager : GenericGameManager
          case SeaMonsterEntity.Type.Tentacle:
             path = HORROR_TENTACLE_HURT;
             break;
+         case SeaMonsterEntity.Type.Reef_Giant:
+            path = REEFMAN_HURT;
+            break;
       }
 
       // Hit Event
@@ -666,6 +688,9 @@ public class SoundEffectManager : GenericGameManager
             break;
          case SeaAbilityType.Fishman_Attack:
             playFmodSfx(FISHMAN_ATTACK, position);
+            break;
+         case SeaAbilityType.Reef_Giant_Attack:
+            playFmodSfx(REEFMAN_ATTACK, position);
             break;
       }
    }
@@ -795,6 +820,7 @@ public class SoundEffectManager : GenericGameManager
                audioParam = 1;
                break;
             case TileAttributes.Type.Vine:
+            case TileAttributes.Type.Dirt:
                audioParam = 5;
                break;
             case TileAttributes.Type.WaterPartial:
@@ -869,7 +895,7 @@ public class SoundEffectManager : GenericGameManager
    #region Private Variables
 
    // The time at which we last player a specified clip
-   private static Dictionary<string, float> _lastPlayTime = new Dictionary<string, float>();
+   private Dictionary<string, float> _lastPlayTime = new Dictionary<string, float>();
 
    // Event for main background music
    private FMOD.Studio.EventInstance _backgroundMusicEvent;
@@ -885,6 +911,60 @@ public class SoundEffectManager : GenericGameManager
 
    // Ship Sailing event
    private FMOD.Studio.EventInstance _shipSailingEvent;
+
+   // Last music we played
+   private BackgroundMusicType _previousMusic = BackgroundMusicType.None;
+
+   // Current music we're playing
+   private BackgroundMusicType _currentMusic = BackgroundMusicType.None;
+
+   // Last ambience we played
+   private AmbienceMusicType _previousAmbience = AmbienceMusicType.None;
+
+   // Current ambience we're playing
+   private AmbienceMusicType _currentAmbience = AmbienceMusicType.None;
+
+   // Cementery area key
+   private const string _cementeryAreaKey = "Tutorial Town Cemetery v2";
+
+   public enum BackgroundMusicType
+   {
+      None = -1,
+      Forest = 0,
+      Desert = 1,
+      Snow = 2,
+      Lava = 3,
+      Pine = 4,
+      Mushroom = 5,
+      Intro = 6,
+      Farm = 7,
+      Interior = 8,
+      Sea_PvP = 10,
+      Sea_Forest = 11,
+      Sea_Desert = 12,
+      Sea_Lava = 13,
+      Sea_Mushroom = 14,
+      Sea_Pine = 15,
+      Sea_Snow = 16,
+      Sea_League = 17,
+      Land_Battle = 19
+   }
+
+   public enum AmbienceMusicType
+   {
+      None = -2,
+      Title_Screen = -1,
+      Forest = 0,
+      Desert = 1,
+      Snow = 2,
+      Lava = 3,
+      Pine = 4,
+      Mushroom = 5,
+      Interior = 8,
+      Farm = 7,
+      Sea = 9,
+      Forest_Cementery = 10
+   }
 
    private enum LandAbility
    {
@@ -912,7 +992,8 @@ public class SoundEffectManager : GenericGameManager
       Horror_Poison = 1,
       Sail_Shredder = 2,
       Davy_Jones = 3,
-      Fishman_Attack = 4
+      Fishman_Attack = 4,
+      Reef_Giant_Attack = 5
    }
 
    public enum Cannonball

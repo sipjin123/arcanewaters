@@ -118,8 +118,8 @@ public class CameraManager : ClientMonoBehaviour {
    }
 
    private bool isAutomaticPanningEnabled () {
-      if (Global.player == null) { 
-         return false; 
+      if (Global.player == null) {
+         return false;
       }
 
       if (Global.player.getPlayerBodyEntity() != null) {
@@ -192,7 +192,7 @@ public class CameraManager : ClientMonoBehaviour {
    }
 
    public static BaseCamera getCurrentBaseCamera () {
-      return defaultCamera.getDepth() > battleCamera.getDepth() ? (BaseCamera)defaultCamera : (BaseCamera)battleCamera;
+      return defaultCamera.getDepth() > battleCamera.getDepth() ? (BaseCamera) defaultCamera : (BaseCamera) battleCamera;
    }
 
    public static BaseCamera getBaseCameraForCurrentVirtualCamera () {
@@ -250,7 +250,8 @@ public class CameraManager : ClientMonoBehaviour {
       //SoundManager.play2DClip(SoundManager.Type.Battle_Intro, 0f);
 
       // Play the Battle music
-      SoundManager.setBackgroundMusic(SoundManager.Type.Battle_Music);
+      //SoundManager.setBackgroundMusic(SoundManager.Type.Battle_Music);
+      SoundEffectManager.self.playBackgroundMusic(backgroundMusicType: SoundEffectManager.BackgroundMusicType.Land_Battle);
 
       // Wait for it to finish
       yield return new WaitForSeconds(defaultCamera.getPixelFadeEffect().getFadeOutDuration());
@@ -275,7 +276,8 @@ public class CameraManager : ClientMonoBehaviour {
       SoundEffectManager.self.playFmodSfx(SoundEffectManager.TRANSITION_OUT);
 
       // End the Battle music
-      SoundManager.setBackgroundMusic(SoundManager.previousMusicType);
+      //SoundManager.setBackgroundMusic(SoundManager.previousMusicType);
+      SoundEffectManager.self.playBackgroundMusic(Global.player.areaKey);
 
       // Wait for it to finish
       yield return new WaitForSeconds(battleCamera.getPixelFadeEffect().getFadeOutDuration());

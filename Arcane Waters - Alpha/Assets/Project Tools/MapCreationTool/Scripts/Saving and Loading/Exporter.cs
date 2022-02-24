@@ -412,19 +412,22 @@ namespace MapCreationTool.Serialization
 
                   if (Layer.isWater(columns[i, j].tiles[z].layer) && columns[i, j].tiles[z].sublayer == 5) {
                      columns[i, j].hasWater5 = true;
-
-                     foreach (Direction dir in Enum.GetValues(typeof(Direction))) {
-                        if (columns[i, j].tiles[z].tileBase.name.EndsWith("_" + dir.ToString(), StringComparison.OrdinalIgnoreCase)) {
-                           columns[i, j].currentDirection = dir;
-                        }
-                     }
                   }
 
-                  if (Layer.isWater(columns[i, j].tiles[z].layer) && editorType == EditorType.Sea) {
-                     foreach (EditorConfig.TileDirectionPair pair in editorConfig.seaCurrentTiles) {
-                        if (pair.tile == columns[i, j].tiles[z].tileBase) {
-                           columns[i, j].hasSeaCurrents = true;
-                           columns[i, j].currentDirection = pair.direction;
+                  if (Layer.isWater(columns[i, j].tiles[z].layer)) {
+                     if (editorType == EditorType.Sea) {
+                        foreach (EditorConfig.TileDirectionPair pair in editorConfig.seaCurrentTiles) {
+                           if (pair.tile == columns[i, j].tiles[z].tileBase) {
+                              columns[i, j].hasCurrents = true;
+                              columns[i, j].currentDirection = pair.direction;
+                           }
+                        }
+                     } else if (editorType == EditorType.Area) {
+                        foreach (EditorConfig.TileDirectionPair pair in editorConfig.landCurrentTiles) {
+                           if (pair.tile == columns[i, j].tiles[z].tileBase) {
+                              columns[i, j].hasCurrents = true;
+                              columns[i, j].currentDirection = pair.direction;
+                           }
                         }
                      }
                   }
@@ -553,11 +556,9 @@ namespace MapCreationTool.Serialization
 
          IEnumerable<SpecialTileChunk> currents = Enumerable.Empty<SpecialTileChunk>();
 
-         if (editorType == EditorType.Area) {
-            currents = currents.Union(formWaterCurrentChunk((cell) => cell.hasWater4 || cell.hasWater5, Direction.South));
-         } else if (editorType == EditorType.Sea) {
+         if (editorType == EditorType.Area || editorType == EditorType.Sea) {
             foreach (Direction dir in Enum.GetValues(typeof(Direction))) {
-               currents = currents.Union(formWaterCurrentChunk((cell) => cell.hasSeaCurrents && cell.currentDirection == dir, dir));
+               currents = currents.Union(formWaterCurrentChunk((cell) => cell.hasCurrents && cell.currentDirection == dir, dir));
             }
          }
 
@@ -791,7 +792,7 @@ namespace MapCreationTool.Serialization
          public bool hasWater4 { get; set; }
          public bool hasWater5 { get; set; }
          public bool waterIsTop { get; set; }
-         public bool hasSeaCurrents { get; set; }
+         public bool hasCurrents { get; set; }
          public Direction currentDirection { get; set; }
 
          public TileInLayer getTileFromTop (string layer) {

@@ -5,7 +5,8 @@ using UnityEngine.EventSystems;
 using System;
 using NubisDataHandling;
 
-public class InventoryPanel : Panel {
+public class InventoryPanel : Panel
+{
 
    #region Public Variables
 
@@ -157,7 +158,7 @@ public class InventoryPanel : Panel {
 
       if (equippedArmorId != 0) {
          subscribeClickEventsForCell(characterInfoSection.equippedArmorCell);
-      } 
+      }
 
       if (equippedHatId != 0) {
          subscribeClickEventsForCell(characterInfoSection.equippedHatCell);
@@ -253,7 +254,7 @@ public class InventoryPanel : Panel {
       PanelManager.self.contextMenuPanel.show("");
    }
 
-   public void tryGrabItem(ItemCellInventory itemCell) {
+   public void tryGrabItem (ItemCellInventory itemCell) {
       if (itemCell == null) {
          return;
       }
@@ -268,7 +269,7 @@ public class InventoryPanel : Panel {
          _grabbedItemCell.hide();
 
          // Initialize the common grabbed object
-         grabbedItem.activate(castedItem, itemCell.getItemSprite());
+         grabbedItem.activate(castedItem, itemCell.getItemSprite(), tryDropGrabbedItem);
       }
    }
 
@@ -284,7 +285,7 @@ public class InventoryPanel : Panel {
    }
 
    public void tryDropGrabbedItem (Vector2 screenPosition) {
-     if (_grabbedItemCell != null) {
+      if (_grabbedItemCell != null) {
          // Check if the item was dropped over a shortcut slot
          ShortcutBox box = PanelManager.self.itemShortcutPanel.getShortcutBoxAtPosition(screenPosition);
          if (box != null) {
@@ -297,7 +298,7 @@ public class InventoryPanel : Panel {
          bool equipped = InventoryManager.isEquipped(_grabbedItemCell.getItem().id);
          bool droppedInInventory = inventoryDropZone.isInZone(screenPosition);
          bool droppedInEquipmentSlots = equipmentDropZone.isInZone(screenPosition);
-         
+
          if ((equipped && droppedInInventory) ||
             (!equipped && droppedInEquipmentSlots)) {
 
@@ -328,7 +329,7 @@ public class InventoryPanel : Panel {
          refreshPanel();
       }
    }
-   
+
    public void previousPage () {
       if (_currentPage > 0) {
          _currentPage--;
@@ -362,7 +363,7 @@ public class InventoryPanel : Panel {
       if (loadBlockerLarge.activeSelf || loadBlockerSmall.activeSelf) {
          if (!forced) {
             return;
-         }  
+         }
       }
 
       if (large) {

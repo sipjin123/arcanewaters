@@ -82,11 +82,11 @@ public class MinimapCreator : EditorWindow {
                      Tile.ColliderType colliderType = tilemap.GetColliderType(cellPos);
 
                      // Debug.Log("Tile name: " + tile.name);
-                     if (WaterChecker.getAllWaterTiles().Contains(tile.name)) {
-                        // map.SetPixel(x, 64 - y, Color.blue);
-                     } else if (colliderType != Tile.ColliderType.None) {
-                        // map.SetPixel(x, 64 - y, Color.black);
-                     }
+                     //if (WaterChecker.getAllWaterTiles().Contains(tile.name)) {
+                     //   // map.SetPixel(x, 64 - y, Color.blue);
+                     //} else if (colliderType != Tile.ColliderType.None) {
+                     //   // map.SetPixel(x, 64 - y, Color.black);
+                     //}
                   }
                }
             }

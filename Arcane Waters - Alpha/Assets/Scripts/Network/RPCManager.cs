@@ -1912,6 +1912,46 @@ public class RPCManager : NetworkBehaviour
       });
    }
 
+   [Command]
+   public void Cmd_SwapItemShortcut (int slotNumber1, int slotNumber2) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Get shortcut list
+         List<ItemShortcutInfo> shortcutList = DB_Main.getItemShortcutList(_player.userId);
+
+         ItemShortcutInfo shortcut1 = shortcutList.FirstOrDefault(i => i.slotNumber == slotNumber1);
+         ItemShortcutInfo shortcut2 = shortcutList.FirstOrDefault(i => i.slotNumber == slotNumber2);
+
+         if (shortcut1 == null && shortcut2 == null) {
+            return;
+         }
+
+         if (shortcut1 != null) {
+            DB_Main.updateItemShortcut(_player.userId, slotNumber2, shortcut1.itemId);
+         } else {
+            DB_Main.deleteItemShortcut(_player.userId, slotNumber2);
+         }
+
+         if (shortcut2 != null) {
+            DB_Main.updateItemShortcut(_player.userId, slotNumber1, shortcut2.itemId);
+         } else {
+            DB_Main.deleteItemShortcut(_player.userId, slotNumber1);
+         }
+
+         shortcutList = DB_Main.getItemShortcutList(_player.userId);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Send the updated shortcuts to the client
+            Target_ReceiveItemShortcuts(_player.connectionToClient, shortcutList.ToArray());
+         });
+      });
+   }
+
    [ClientRpc]
    public void Rpc_PlayWarpEffect (Vector3 position) {
       // Only play the effect locally if the player is in their ship

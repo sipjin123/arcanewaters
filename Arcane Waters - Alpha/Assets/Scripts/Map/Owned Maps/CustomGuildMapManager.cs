@@ -46,7 +46,7 @@ public class CustomGuildMapManager : CustomMapManager
                return false;
             } else {
                denyWarpHandler = (player) => {
-                  player.rpc.Target_DisplayServerMessage("Can't enter guild map until the guild leader chooses a layout.");
+                  ChatManager.self.addChat("Can't enter guild map until the guild leader chooses a layout.", ChatInfo.Type.System);
                };
 
                return false;

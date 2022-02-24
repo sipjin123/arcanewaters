@@ -79,13 +79,17 @@ namespace MapCustomization
       private void Update () {
          if (Global.player == null) return;
 
+         // Make sure that the user can only edit on a map where they have permissions
+         bool hasAreaPermissions = (CustomMapManager.isUserSpecificAreaKey(Global.player.areaKey) && CustomMapManager.getUserId(Global.player.areaKey) == Global.player.userId) || 
+         (Global.player.areaKey.Contains(CustomGuildMapManager.GROUP_AREA_KEY) && CustomMapManager.getGuildId(Global.player.areaKey) == Global.player.guildId);
+
          // Check if player should be customizing
          bool shouldBeCustomizing = AreaManager.self.tryGetCustomMapManager(Global.player.areaKey, out CustomMapManager cmm) && // Check that this is a customizable area
             AreaManager.self.getArea(Global.player.areaKey) != null && // Check that the area is already created
             (currentArea == null || currentArea.areaKey == Global.player.areaKey) && // Check that the area hasn't changed to a different customizable area
             (Global.player as PlayerBodyEntity).weaponManager.actionType == Weapon.ActionType.CustomizeMap && // Check that customization action weapon is equipped
             (Global.player as PlayerBodyEntity).weaponManager.weaponType > 0 &&
-            (CustomMapManager.isUserSpecificAreaKey(Global.player.areaKey) && CustomMapManager.getUserId(Global.player.areaKey) == Global.player.userId); // Make sure that the user can only edit on their own map
+            hasAreaPermissions; 
 
          if (!isCustomizing && shouldBeCustomizing) {
             enterCustomization(Global.player.areaKey);
@@ -105,8 +109,8 @@ namespace MapCustomization
             return;
          }
 
-         if (!CustomMapManager.isUserSpecificAreaKey(areaName)) {
-            D.error("Trying to customize a map by a key that is not user-specific: " + areaName);
+         if (!CustomMapManager.isUserSpecificAreaKey(areaName) && !areaName.Contains(CustomGuildMapManager.GROUP_AREA_KEY)) {
+            D.error("Trying to customize a map by a key that is not user-specific and is not a guild map: " + areaName);
             return;
          }
 
