@@ -160,6 +160,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    protected override void Awake () {
       base.Awake();
 
+      _compositeSimpleAnims = GetComponentsInChildren<SimpleAnimation>();
       _sprintDustParticlesMain = sprintDustParticles.main;
       _sprintDustParticlesEmission = sprintDustParticles.emission;
       _sprintWindParticlesEmissionHorizontal = sprintWindParticlesHorizontal.emission;
@@ -1344,8 +1345,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       // Pause all the normal animations
-      SimpleAnimation[] simpleAnims = GetComponentsInChildren<SimpleAnimation>();
-      foreach (SimpleAnimation anim in simpleAnims) {
+      foreach (SimpleAnimation anim in getCompositeSimpleAnimation()) {
          anim.isPaused = true;
       }
 
@@ -1377,8 +1377,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    public void stopCompositeAnimation () {
       // Pause all the normal animations
-      SimpleAnimation[] simpleAnims = GetComponentsInChildren<SimpleAnimation>();
-      foreach (SimpleAnimation anim in simpleAnims) {
+      foreach (SimpleAnimation anim in getCompositeSimpleAnimation()) {
          anim.isPaused = false;
       }
 
@@ -1521,11 +1520,27 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
    }
 
+   private SimpleAnimation[] getCompositeSimpleAnimation () {
+      if (_compositeSimpleAnims == null || _compositeSimpleAnims.Length < 1) {
+         SimpleAnimation[] simpleAnims = GetComponentsInChildren<SimpleAnimation>();
+         _compositeSimpleAnims = simpleAnims;
+      }
+
+      if (_compositeSimpleAnims != null && _compositeSimpleAnims.Length > 0) {
+         return _compositeSimpleAnims;
+      }
+
+      return null;
+   }
+
    #region Private Variables
 
    // The player the mouseover occurs on
    private PlayerBodyEntity _playerBody;
    private PlayerBodyEntity _previousPlayerBody;
+
+   // The simple animation components
+   private SimpleAnimation[] _compositeSimpleAnims;
 
    // The time at which this entity started its jump
    private double _jumpStartTime = 0.0f;
