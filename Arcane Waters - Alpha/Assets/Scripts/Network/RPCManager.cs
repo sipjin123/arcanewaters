@@ -276,6 +276,19 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
+   public void Cmd_InteractTrigger () {
+      Target_InteractTrigger(_player.connectionToClient);
+   }
+
+   [TargetRpc]
+   public void Target_InteractTrigger (NetworkConnection connection) {
+      PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
+      if (!_player.isInBattle()) {
+         playerBody.interactionTrigger();
+      }
+   }
+
+   [Command]
    public void Cmd_InteractAnimation (Anim.Type animType, Direction direction) {
       _player.Rpc_ForceLookat(direction);
       Rpc_InteractAnimation(animType, false);
@@ -294,12 +307,15 @@ public class RPCManager : NetworkBehaviour
       if (!_player.isInBattle()) {
          playerBody.farmingTrigger.interactFarming();
          playerBody.miningTrigger.interactOres();
-         playerBody.interactionTrigger();
       }
    }
 
    [ClientRpc]
    public void Rpc_InteractAnimation (Anim.Type animType, bool playedLocally) {
+      playInteractAnimation(animType, playedLocally);
+   }
+
+   public void playInteractAnimation (Anim.Type animType, bool playedLocally) {
       // If we are the local player, and the animation has already played locally, don't play it again in the Rpc
       if (isLocalPlayer && playedLocally) {
          return;

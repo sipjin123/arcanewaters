@@ -297,6 +297,9 @@ public class NetEntity : NetworkBehaviour
    // Should the renderers align with the direction faced by the current entity?
    public bool shouldAlignRenderersToFacingDirection = true;
 
+   // If interact event was triggered
+   public bool hasTriggeredInteractEvent;
+
    #endregion
 
    protected virtual void Awake () {
@@ -889,12 +892,14 @@ public class NetEntity : NetworkBehaviour
          case Anim.Type.Interact_East:
          case Anim.Type.Interact_North:
          case Anim.Type.Interact_South:
+            hasTriggeredInteractEvent = false;
             StartCoroutine(CO_DelayExitAnim(animType, 0.4f));
             interactingAnimation = true;
             break;
          case Anim.Type.Fast_Interact_East:
          case Anim.Type.Fast_Interact_North:
          case Anim.Type.Fast_Interact_South:
+            hasTriggeredInteractEvent = false;
             StartCoroutine(CO_DelayExitAnim(animType, 0.2f));
             interactingAnimation = true;
             break;

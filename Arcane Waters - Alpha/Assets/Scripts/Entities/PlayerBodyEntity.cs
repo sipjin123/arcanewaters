@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
+using UnityEngine.Events;
 
 public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHandler
 {
@@ -139,6 +140,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // Reference to the Warp Waiting Effect
    public IndeterminateProgressBar warpInProgressEffect;
 
+   // If the interact animation frame should collide with anything
+   public UnityEvent interactCollisionEvent = new UnityEvent();
+
    [Header("Emoting")]
 
    [SyncVar]
@@ -224,6 +228,12 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          InputManager.self.inputMaster.Land.Enable();
          InputManager.self.inputMaster.Sea.Disable();
       }
+
+      if (isLocalPlayer) {
+         interactCollisionEvent.AddListener(() => {
+            rpc.Cmd_InteractTrigger();
+         });
+      }
    }
 
    public void interactionTrigger () {
@@ -237,8 +247,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
                WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponManager.equipmentDataId);
                if (weaponData != null) {
                   rpc.Cmd_InteractWithEntity(interactedObj.objectId, true);
-               }
-               else {
+               } else {
                   rpc.Cmd_InteractWithEntity(interactedObj.objectId, false);
                }
             }
@@ -358,6 +367,20 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
       processSitting();
       processEmoting();
+
+      if (_animators.Count > 0) {
+         AnimatorStateInfo animationState = _animators[0].GetCurrentAnimatorStateInfo(0);
+         AnimatorClipInfo[] myAnimatorClip = _animators[0].GetCurrentAnimatorClipInfo(0);
+         if (myAnimatorClip.Length > 0) {
+            if (myAnimatorClip[0].clip.name.ToLower().ToString().Contains("interact")) {
+               float lapsedTime = myAnimatorClip[0].clip.length * animationState.normalizedTime;
+               if (lapsedTime > .025f && !hasTriggeredInteractEvent) {
+                  hasTriggeredInteractEvent = true;
+                  interactCollisionEvent.Invoke();
+               }
+            }
+         }
+      }
 
       if (!isLocalPlayer || !Util.isGeneralInputAllowed()) {
          webBounceUpdate();
@@ -926,6 +949,13 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             tryInteractAnimation();
             return true;
          }
+
+         // If we clicked on an interactable object, interact with it
+         InteractableObjEntity interactableObj = hit.GetComponent<InteractableObjEntity>();
+         if (interactableObj) {
+            tryInteractAnimation(false , true);
+            return true;
+         }
       }
 
       return false;
@@ -973,7 +1003,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       return foundInteractable;
    }
 
-   private void tryInteractAnimation (bool faceMouseDirection = true) {
+   private void tryInteractAnimation (bool faceMouseDirection = true, bool playLocallyFirst = false) {
       // Skip for batch mode
       if (Util.isBatch()) return;
 
@@ -986,10 +1016,19 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
          if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
             || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {
+            if (playLocallyFirst) {
+               rpc.playInteractAnimation(Anim.Type.Interact_East, true);
+            }
             rpc.Cmd_InteractAnimation(Anim.Type.Interact_East, newDirection);
          } else if (newDirection == Direction.North) {
+            if (playLocallyFirst) {
+               rpc.playInteractAnimation(Anim.Type.Interact_North, true);
+            }
             rpc.Cmd_InteractAnimation(Anim.Type.Interact_North, newDirection);
          } else if (newDirection == Direction.South) {
+            if (playLocallyFirst) {
+               rpc.playInteractAnimation(Anim.Type.Interact_South, true);
+            }
             rpc.Cmd_InteractAnimation(Anim.Type.Interact_South, newDirection);
          }
       }
