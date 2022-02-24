@@ -602,8 +602,26 @@ public class MyNetworkManager : NetworkManager
             player.rpc.sendVoyageGroupMembersInfo();
             player.rpc.setNextBiomeUnlocked();
             player.rpc.setAdminBattleParameters();
+
+            bool isInTown = AreaManager.self.isTownArea(player.areaKey);
+            bool isPvpEnabled = userInfo.pvpState == 1 ? true : false;
             PvpGameMode pvpGameMode = AreaManager.self.getAreaPvpGameMode(player.areaKey);
-            player.Target_ReceiveOpenWorldStatus(PvpGameMode.None, false);
+            if (isInTown) {
+               pvpGameMode = PvpGameMode.GuildWars;
+            }
+
+            // TODO: Finalize pvp game modes if group wars and free for all will be completely removed or not
+            if (pvpGameMode == PvpGameMode.GroupWars || pvpGameMode == PvpGameMode.FreeForAll) {
+               pvpGameMode = PvpGameMode.GuildWars;
+            }
+
+            if (guildInfo.guildId < 1) {
+               isPvpEnabled = false;
+               pvpGameMode = PvpGameMode.None;
+            }
+
+            player.Target_ReceiveOpenWorldStatus(pvpGameMode, isPvpEnabled, isInTown);
+            player.enablePvp = isPvpEnabled;
 
             // In sea voyages, if the player is spawning in a different position than the default spawn, we conclude he is returning from a treasure site and has already entered PvP
             if (instance.isVoyage && AreaManager.self.isSeaArea(player.areaKey)) {
@@ -613,13 +631,14 @@ public class MyNetworkManager : NetworkManager
             }
 
             // Players in open world pvp can attack each other without waiting for triggers
-            if (pvpGameMode != PvpGameMode.None && VoyageManager.isOpenWorld(player.areaKey)) {
+            if (pvpGameMode != PvpGameMode.None && VoyageManager.isOpenWorld(player.areaKey) && guildInfo.guildId > 0) {
                player.hasEnteredPvP = true;
+               
                player.openWorldGameMode = pvpGameMode;
                if (player is PlayerShipEntity) {
                   PlayerShipEntity playerShip = (PlayerShipEntity) player;
                   D.adminLog("This user {" + player.userId + ":" + player.entityName + "} is in an open world pvp {" + pvpGameMode + ":" + player.areaKey + "}", D.ADMIN_LOG_TYPE.OpenWorldPvp);
-                  playerShip.Target_ReceiveOpenWorldStatus(pvpGameMode, false);
+                  playerShip.Target_ReceiveOpenWorldStatus(pvpGameMode, isPvpEnabled, isInTown);
                }
             }
 

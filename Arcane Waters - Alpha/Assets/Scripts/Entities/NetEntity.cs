@@ -623,10 +623,11 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveOpenWorldStatus (PvpGameMode pvpMode, bool isOn) {
+   public void Target_ReceiveOpenWorldStatus (PvpGameMode pvpMode, bool isOn, bool isInTown) {
+      D.debug("->-> User {" + userId + ":" + entityName + "} has game mode {" + openWorldGameMode + " : " + pvpMode + " }");
       VoyageStatusPanel.self.refreshPvpStatDisplay();
       VoyageStatusPanel.self.setUserPvpMode(pvpMode);
-      VoyageStatusPanel.self.togglePvpStatusInfo(isOn);
+      VoyageStatusPanel.self.togglePvpStatusInfo(isOn, isInTown);
    }
 
    [Command]
