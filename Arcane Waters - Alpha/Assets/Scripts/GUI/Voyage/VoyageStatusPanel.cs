@@ -24,7 +24,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    public Image pvpPveModeImage;
 
    // The pvp open world icons
-   public GameObject pvpOpenWorldRoyale, pvpOpenWorldGuild, pvpOpenWorldGroup;
+   public GameObject pvpOpenWorldRoyale, pvpOpenWorldGuild, pvpOpenWorldGroup, disabledPvpDisplay;
 
    // The general pvp buttons
    public Button[] pvpActiveButtons, pvpInactiveButtons;
@@ -277,6 +277,8 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       pvpOpenWorldRoyale.SetActive(false);
       pvpOpenWorldGroup.SetActive(false);
       pvpOpenWorldGuild.SetActive(false);
+      disabledPvpDisplay.SetActive(false);
+
       switch (gameMode) {
          case PvpGameMode.FreeForAll:
             pvpOpenWorldRoyale.SetActive(true);
@@ -286,6 +288,9 @@ public class VoyageStatusPanel : ClientMonoBehaviour
             break;
          case PvpGameMode.GuildWars:
             pvpOpenWorldGuild.SetActive(true);
+            break;
+         default:
+            disabledPvpDisplay.SetActive(true);
             break;
       }
    }

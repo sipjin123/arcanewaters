@@ -5140,6 +5140,7 @@ public class RPCManager : NetworkBehaviour
          GuildInfo guildInfo = new GuildInfo(guildName, iconBorder, iconBackground, iconSigil,
             iconBackPalettes, iconSigilPalettes);
          int guildId = DB_Main.createGuild(guildInfo);
+         UserInfo userInfo = DB_Main.getUserInfoById(_player.userId);
 
          // Assign the guild to the player
          if (guildId > 0) {
@@ -5164,6 +5165,7 @@ public class RPCManager : NetworkBehaviour
                _player.guildIconSigil = iconSigil;
                _player.guildIconSigilPalettes = iconSigilPalettes;
                _player.Rpc_UpdateGuildIconSprites(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
+               refreshPvpStateForUser(userInfo, _player);
             });
 
          } else {
@@ -5175,11 +5177,33 @@ public class RPCManager : NetworkBehaviour
       });
    }
 
+   public void refreshPvpStateForUser (UserInfo userInfo, NetEntity player) {
+      bool isInTown = AreaManager.self.isTownArea(_player.areaKey);
+      bool isPvpEnabled = userInfo.pvpState == 1 ? true : false;
+      PvpGameMode pvpGameMode = AreaManager.self.getAreaPvpGameMode(_player.areaKey);
+      if (isInTown) {
+         pvpGameMode = PvpGameMode.GuildWars;
+      }
+
+      // TODO: Finalize pvp game modes if group wars and free for all will be completely removed or not
+      if (pvpGameMode == PvpGameMode.GroupWars || pvpGameMode == PvpGameMode.FreeForAll) {
+         pvpGameMode = PvpGameMode.GuildWars;
+      }
+
+      if (player.guildId < 1) {
+         pvpGameMode = PvpGameMode.None;
+      }
+
+      _player.Target_ReceiveOpenWorldStatus(pvpGameMode, isPvpEnabled, isInTown);
+      _player.enablePvp = isPvpEnabled;
+   }
+
    [Command]
    public void Cmd_LeaveGuild () {
       int guildId = _player.guildId;
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         UserInfo userInfo = DB_Main.getUserInfoById(_player.userId);
          int rankId = DB_Main.getGuildMemberRankId(_player.userId);
          if (rankId == 0 && DB_Main.getGuildInfo(guildId).guildMembers.Length > 1) {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -5211,6 +5235,7 @@ public class RPCManager : NetworkBehaviour
             _player.guildIconSigilPalettes = null;
             _player.guildMapBaseId = 0;
             _player.Rpc_UpdateGuildIconSprites(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
+            refreshPvpStateForUser(userInfo, _player);
 
             // Delete the guild if it has no more members
             GuildManager.self.deleteGuildIfEmpty(guildId);
