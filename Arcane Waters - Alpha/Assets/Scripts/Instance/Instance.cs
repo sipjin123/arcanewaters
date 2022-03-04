@@ -367,6 +367,10 @@ public class Instance : NetworkBehaviour
          return;
       }
 
+      if (Util.isHost() && !Util.isCloudBuild()) {
+         enableVoyageShops();
+      }
+
       aliveNPCEnemiesCount = 0;
       foreach (NetworkBehaviour networkBehaviour in getEntities()) {
          NetEntity entity = networkBehaviour as NetEntity;

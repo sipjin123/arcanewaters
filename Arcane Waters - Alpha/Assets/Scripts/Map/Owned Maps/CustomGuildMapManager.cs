@@ -16,7 +16,7 @@ public class CustomGuildMapManager : CustomMapManager
 
    public override string mapTypeAreaKey => GROUP_AREA_KEY;
 
-   public override string typeDisplayName => "Guild";
+   public override string typeDisplayName => "Guild Map";
 
    public override bool canUserWarpInto (NetEntity user, string areaKey, out Action<NetEntity> denyWarpHandler) {
       denyWarpHandler = null;

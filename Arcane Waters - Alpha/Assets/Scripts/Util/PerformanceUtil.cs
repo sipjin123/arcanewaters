@@ -196,17 +196,18 @@ public class PerformanceUtil : MonoBehaviour {
 
    public static float getZabbixRamUsage () {
       // If total ram amount wasn't fetched properly, try again
-      if (self._zabbixTotalRamBytes == 0.0f) {
+      if (self._zabbixTotalRamBytes == 0) {
          updateZabbixTotalRam();
 
          // If fetching total ram still didn't work, return to avoid dividing by zero
-         if (self._zabbixTotalRamBytes == 0.0f) {
+         if (self._zabbixTotalRamBytes == 0) {
             return 0.0f;
          }
       }
 
       string memoryString = self._zabbixContext.History.GetByType(History.HistoryType.IntegerType, null, self._ramHistParams).FirstOrDefault()?.value;
-      if (int.TryParse(memoryString, out int memoryUsage)) {
+      D.debug("Zabbix memory usage: " + memoryString);
+      if (long.TryParse(memoryString, out long memoryUsage)) {
          return (memoryUsage / self._zabbixTotalRamBytes);
       }
       return 0.0f;
@@ -214,7 +215,8 @@ public class PerformanceUtil : MonoBehaviour {
 
    private static void updateZabbixTotalRam () {
       string totalMemoryString = self._zabbixContext.History.GetByType(History.HistoryType.IntegerType, null, self._totalRamHistParams).FirstOrDefault()?.value;
-      if (int.TryParse(totalMemoryString, out int totalRamBytes)) {
+      D.debug("Zabbix total ram amount: " + totalMemoryString);
+      if (long.TryParse(totalMemoryString, out long totalRamBytes)) {
          self._zabbixTotalRamBytes = totalRamBytes;
       } else {
          D.error("PerformanceUtil couldn't get total ram amount from zabbix.");
@@ -235,14 +237,8 @@ public class PerformanceUtil : MonoBehaviour {
    // A reference to the timespan used to measure the cpu's time
    private TimeSpan _lastCpuTime;
 
-   // The cpu usage last measured by zabbix
-   private float _zabbixCpuUsage = 0.0f;
-
-   // The ram usage last measured by zabbix
-   private int _zabbixRamUsageBytes = 0;
-
    // The total ram, measured by zabbix
-   private int _zabbixTotalRamBytes = 0;
+   private long _zabbixTotalRamBytes = 0;
 
    // Zabbix history fetching parameters, configured to fetch CPU data
    private Dictionary<string, object> _cpuHistParams = new Dictionary<string, object>();

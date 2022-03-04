@@ -8,6 +8,10 @@ public class UINavigationManager : MonoBehaviour {
    #endregion
 
    public void ControllerEnabled (UINavigationController navigationController) {
+      if (_navigationControllers.Contains(navigationController)) {
+         _navigationControllers.Remove(navigationController);
+      }
+      
       _navigationControllers.Add(navigationController);
       RefreshControllers();
    }

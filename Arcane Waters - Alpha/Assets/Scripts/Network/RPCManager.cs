@@ -9077,7 +9077,13 @@ public class RPCManager : NetworkBehaviour
       Target_BaseMapUpdated(customMapKey, baseMapId);
 
       if (warpIntoAfterSetting) {
-         _player.spawnInNewMap(customMapKey, null, _player.facing);
+         // If warping to a guild map, make a guild specific area key if we need one
+         if (manager is CustomGuildMapManager && !CustomMapManager.isGuildSpecificAreaKey(customMapKey)) {
+            string guildSpecificAreaKey = (manager as CustomGuildMapManager).getGuildSpecificAreaKey(_player.guildId);
+            _player.spawnInNewMap(guildSpecificAreaKey, null, _player.facing);
+         } else {
+            _player.spawnInNewMap(customMapKey, null, _player.facing);
+         }
       }
 
       await giveItemRewardsToPlayer(_player.userId, rewards, false);

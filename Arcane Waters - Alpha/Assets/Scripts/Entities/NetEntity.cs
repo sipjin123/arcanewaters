@@ -1880,6 +1880,72 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Command]
+   public void Cmd_GoToGuildMap () {
+      string areaTarget = CustomGuildMapManager.GROUP_AREA_KEY;
+
+      // Don't allow users to go to the guild map if they are in combat.
+      if (hasAttackers()) {
+         if (isInCombat()) {
+            int timeUntilCanLeave = (int) (IN_COMBAT_STATUS_DURATION - getTimeSinceAttacked());
+            ServerMessageManager.sendError(ErrorMessage.Type.Misc, this, "Cannot move to guild map until out of combat for " + (int) IN_COMBAT_STATUS_DURATION + " seconds. \n(" + timeUntilCanLeave + " seconds left)");
+            return;
+         }
+      }
+
+      // End land combat is the user is in a battle
+      if (battleId > 0) {
+         Battle battle = BattleManager.self.getBattle(battleId);
+         if (battle == null) {
+            D.debug("Missing battle for user: {" + userId + "} using battle id: {" + battleId + "}, cant end battle properly");
+            return;
+         }
+
+         Battler battler = BattleManager.self.getBattle(battleId).getBattler(userId);
+         if (battler == null) {
+            D.debug("Missing battler for user: {" + userId + "}, cant end battle properly");
+            return;
+         }
+
+         battler.health = 0;
+         battle.onBattleEnded.Invoke();
+         return;
+      }
+
+      // If the user is currently in ghost mode, disable it
+      if (isGhost && tryGetGroup(out VoyageGroupInfo voyageGroup)) {
+         VoyageGroupManager.self.removeUserFromGroup(voyageGroup, userId);
+      }
+
+      CustomMapManager mapManager;
+      if (!AreaManager.self.tryGetCustomMapManager(areaTarget, out mapManager)) {
+         D.error("Cmd_GoToGuildMap error: Couldn't get the custom map manager.");
+         return;
+      }
+
+      CustomGuildMapManager guildMapManager = mapManager as CustomGuildMapManager;
+      if (guildMapManager == null) {
+         D.error("Cmd_GoToGuildMap error: Custom map manager was not a guild map manager.");
+         return;
+      }
+
+      if (!string.IsNullOrEmpty(areaTarget)) {
+         if (!mapManager.canUserWarpInto(this, areaTarget, out System.Action<NetEntity> denyWarpHandler)) {
+            denyWarpHandler?.Invoke(this);
+            return;
+         }
+      }
+
+      if (guildMapBaseId == 0) {
+         ServerMessageManager.sendError(ErrorMessage.Type.Misc, this, "Guild leader must select a map layout.");
+         return;
+      }
+
+      areaTarget = guildMapManager.getGuildSpecificAreaKey(guildId);
+
+      spawnInNewMap(areaTarget);
+   }
+
+   [Command]
    public void Cmd_GoHome () {
       // Don't allow users to go home if they are in combat.
       if (hasAttackers()) {
@@ -1985,7 +2051,7 @@ public class NetEntity : NetworkBehaviour
          // If this is a guild specific map
          if (customMapManager is CustomGuildMapManager) {
             // Make a guild-specific area key for this user, if it is not a guild-specific key already
-            if (!CustomMapManager.isGuildSpecificAreaKey(newArea)) {
+            if (newArea == CustomGuildMapManager.GROUP_AREA_KEY) {
                newArea = customMapManager.getGuildSpecificAreaKey(guildId);
             }
 

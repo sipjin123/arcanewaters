@@ -58,7 +58,7 @@ public class InstanceManager : MonoBehaviour
                if (existingInstance != null) {
                   instance = existingInstance;
                } else {
-                  D.debug("Error here, could not find the pvp instance id of area {" + areaKey + "}");
+                  D.debug("Error here, could not find the pvp instance id of area (Voyages) {" + areaKey + "}");
                }
             }
          } else if (VoyageManager.isTreasureSiteArea(areaKey)) {
@@ -121,16 +121,12 @@ public class InstanceManager : MonoBehaviour
                Instance existingInstance = getOpenWorldInstanceByArea(areaKey);
                if (existingInstance != null) {
                   instance = existingInstance;
-               } else {
-                  D.debug("Error here, could not find the pvp instance id of area {" + areaKey + "}");
                }
             }
          } else {
             Instance existingInstance = getOpenWorldInstanceByArea(areaKey);
             if (existingInstance != null) {
                instance = existingInstance;
-            } else {
-               D.debug("Error here, could not find the pvp instance id of area {" + areaKey + "}");
             }
          }
       }

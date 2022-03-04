@@ -13,7 +13,7 @@ public class DiscoveryPanel : Panel {
    public TextMeshProUGUI discoveryNameText;
 
    // The text containing the description of the discovery
-   public TextMeshProUGUI discoveryDescriptionText;
+   public TMP_InputField discoveryDescriptionText;
 
    // The text containing the rarity of the discovery
    public List<Image> discoveryRarityStars;
@@ -32,7 +32,7 @@ public class DiscoveryPanel : Panel {
    public void showDiscovery (DiscoveryData data) {
       discoveryNameText.SetText(data.name);
       discoveryNameText.color = Rarity.getColor(data.rarity);
-      discoveryDescriptionText.SetText(data.description);
+      discoveryDescriptionText.text = data.description;
       discoveryImage.sprite = ImageManager.getSprite(data.spriteUrl);
       setupRarityStars(data.rarity);
       PanelManager.self.linkIfNotShowing(Type.Discovery);

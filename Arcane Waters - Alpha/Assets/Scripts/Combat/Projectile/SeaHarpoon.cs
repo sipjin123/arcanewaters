@@ -50,7 +50,7 @@ public class SeaHarpoon : SeaProjectile {
 
       // Destroy the harpoon if either entity dies
       if (isServer) {
-         if ((_sourceEntity && _sourceEntity.isDead()) || (_attachedEntity && _attachedEntity.isDead())) {
+         if ((_sourceEntity && _sourceEntity.isDead()) || (_attachedEntity && _attachedEntity.isDead()) || (isAttachedToEntity && (_sourceEntity == null || _attachedEntity == null))) {
             NetworkServer.Destroy(gameObject);
             return;
          }
@@ -97,6 +97,10 @@ public class SeaHarpoon : SeaProjectile {
          float springConstant = 800.0f;
          Vector2 springForceOnSource = directionToAttachedEntity * springConstant * Time.deltaTime;
          Vector2 springForceOnAttached = directionToSourceEntity * springConstant * Time.deltaTime;
+
+         if (_sourceEntity.isReelingIn) {
+            springForceOnSource = Vector2.zero;
+         }
 
          forceOnSource += springForceOnSource;
          forceOnAttached += springForceOnAttached;
@@ -219,6 +223,26 @@ public class SeaHarpoon : SeaProjectile {
       
    }
 
+   protected override void OnDestroy () {
+      base.OnDestroy();
+
+      // Don't need to handle any of these effects in Batch Mode
+      if (Util.isBatch() || ClientManager.isApplicationQuitting) {
+         return;
+      }
+
+      bool hitLand = Util.hasLandTile(transform.position) || hitSeaStructureIsland();
+
+      playHitSound(hitLand, _hitEnemy);
+
+      // Plays SFX and VFX for land collision
+      if (hitLand || _hitEnemy) {
+         Instantiate(PrefabsManager.self.requestCannonSmokePrefab(_impactMagnitude), transform.position, Quaternion.identity);
+      } else {
+         Instantiate(PrefabsManager.self.requestCannonSplashPrefab(_impactMagnitude), transform.position, Quaternion.identity);
+      }
+   }
+
    #region Private Variables
 
    // A reference to the entity that created this projectile
@@ -250,6 +274,9 @@ public class SeaHarpoon : SeaProjectile {
 
    // The minimum amount of length for the harpoon rope, when reeling in, it will stop reeling once it reaches this length
    private const float ROPE_MIN_LENGTH = 0.5f;
+
+   // Returns true when the harpoon is connected to an entity
+   private bool isAttachedToEntity => _rigidbody.isKinematic;
 
    #endregion
 }

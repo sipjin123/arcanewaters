@@ -275,6 +275,8 @@ public class Minimap : ClientMonoBehaviour {
             TilemapToTextureColorsStatic(area, Biome.Type.Forest, _savingMinimapsWithScript);
          } else if (minimapKey.StartsWith("customhouse")) {
             TilemapToTextureColorsStatic(area, Biome.Type.Forest, _savingMinimapsWithScript);
+         } else {
+            TilemapToTextureColorsStatic(area, Biome.Type.Forest, _savingMinimapsWithScript);
          }
       } else {
          // Static minimap was found - setup data (minimap size for static images might be different than real area size)

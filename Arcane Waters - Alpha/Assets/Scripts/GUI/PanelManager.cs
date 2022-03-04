@@ -142,6 +142,8 @@ public class PanelManager : GenericGameManager {
          if (Global.isLoggedInAsAdmin()) {
             AdminPanel.self.show();
          }
+      } else if (KeyUtils.GetKeyDown(Key.F11)) {
+         togglePanel(Panel.Type.ReplayPanel);
       }
 
       if (InputManager.self.inputMaster?.Pvp.Stat.WasReleasedThisFrame() == true) {

@@ -149,6 +149,9 @@ public class InputManager : GenericGameManager {
    // Is movement simulated for stress testing
    public bool IsMoveSimulated { get { return _isMoveSimulated; } }
    
+   // Is any gamepad connected
+   public bool isGamepadConnected;
+   
    #endregion
 
    protected override void Awake () {
@@ -234,6 +237,8 @@ public class InputManager : GenericGameManager {
       if (!Util.isCloudBuild()) {
          InputSystem.Update();
       }
+
+      isGamepadConnected = Gamepad.all.Count > 0;
 
       if (mouseJoystickToggle) {
          Vector2 newValue = MouseUtils.mousePosition + (mouseJoystickNavigation * mouseSpeed);
@@ -404,6 +409,15 @@ public class InputManager : GenericGameManager {
       // Skip main logic for batch mode 
       if (Util.isBatch()) {
          return false;
+      }
+
+      // No direction move when game lost focus
+      if (!self.isFocused) {
+         if (self.inputMaster.General.enabled) self.inputMaster.General.Disable();
+         return false;
+      } 
+      else {
+         if (!self.inputMaster.General.enabled) self.inputMaster.General.Enable();
       }
 
       switch (direction) {

@@ -87,7 +87,7 @@ public class SoundEffectManager : GenericGameManager
    public const string HORROR_TENTACLE_HURT = "event:/SFX/NPC/Boss/Tentacle_Horror_Boss/Hurt";
    public const string HORROR_TENTACLE_DEATH = "event:/SFX/NPC/Boss/Tentacle_Horror_Boss/Tentacle Death";
    public const string HORROR_DEATH = "event:/SFX/NPC/Boss/Tentacle_Horror_Boss/Death";
-   public const string HORROR_POISON_BOMB = "event:/SFX/Game/Sea_Battle/Horror/Poison_Bomb";
+   public const string HORROR_POISON_BOMB = "event:/SFX/NPC/Boss/Tentacle_Horror_Boss/Poison_Bomb";
    public const string HORROR_BLOB_DAMAGE = "event:/SFX/NPC/Boss/Tentacle_Horror_Boss/Blob_Pylr_Damage";
 
    public const string FISHMAN_ATTACK = "event:/SFX/NPC/Enemy/Fishman_Seamonster/Fishman_Throw_Attack";
@@ -695,7 +695,9 @@ public class SoundEffectManager : GenericGameManager
       int param = attackType == HorrorAttackType.Cluster ? 1 : 0;
 
       eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, param);
-      playFmodSfx(path, position);
+      eventInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
+      eventInstance.start();
+      eventInstance.release();
    }
 
    // Ship Cannon Ball SFX

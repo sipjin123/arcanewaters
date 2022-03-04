@@ -100,7 +100,7 @@ public class MapManager : MonoBehaviour
             }
 
             // Fetch map customization data if required
-            if (ownerId != -1 && customizationData == null) {
+            if ((ownerId != -1 || CustomMapManager.isGuildSpecificAreaKey(areaKey)) && customizationData == null) {
                if (mapInfo != null) {
                   int baseMapId = DB_Main.getMapId(mapInfo.mapName);
                   customizationData = DB_Main.exec((cmd) => DB_Main.getMapCustomizationData(cmd, baseMapId, ownerId));

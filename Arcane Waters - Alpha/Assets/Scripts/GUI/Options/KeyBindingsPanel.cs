@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using SubjectNerd.Utilities;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public class KeyBindingsPanel : Panel
 {
@@ -21,9 +22,32 @@ public class KeyBindingsPanel : Panel
    public Transform entryKeyboardParent;
    // Parent for gamepad list entries
    public Transform entryGamepadParent;
+
+   // Tab buttons
+   public Button keyboardButton;
+   public Button gamepadButton;
+   
+   // Gamepad section
+   public GameObject gamepadTab;
+   public GameObject gamepadPanel;
    
    #endregion
 
+   
+   public override void Update () {
+      base.Update();
+
+      if (InputManager.self.isGamepadConnected) {
+         gamepadTab.SetActive(true);
+         gamepadPanel.SetActive(true);
+      } 
+      else {
+         keyboardButton.onClick.Invoke();
+         gamepadTab.SetActive(false);
+         gamepadPanel.SetActive(false);
+      }
+   }
+   
    public override void show () {
       if (!_initialized) {
          initialize();
