@@ -62,6 +62,9 @@ public class OptionsPanel : Panel
    // Help tips display
    public Toggle displayHelpTipsToggle;
 
+   // Ignores guild alliance invites
+   public Toggle ignoreGuildAllianceInviteToggle;
+
    // The constantly sprinting toggle
    public Toggle sprintConstantlyToggle;
 
@@ -174,6 +177,11 @@ public class OptionsPanel : Panel
       int vsyncCount = OptionsManager.vsyncCount;
       vsyncToggle.SetIsOnWithoutNotify(vsyncCount != 0);
       QualitySettings.vSyncCount = vsyncCount;
+      ignoreGuildAllianceInviteToggle.isOn = Global.ignoreGuildAllianceInvites;
+      ignoreGuildAllianceInviteToggle.onValueChanged.AddListener(_ => {
+         Global.ignoreGuildAllianceInvites = _;
+         PlayerPrefs.SetInt(OptionsManager.PREF_GUILD_ALLIANCE_INVITE, _ == true ? 1 : 0);
+      });
 
       // Set the single player toggle event
       singlePlayerToggle.onValueChanged.AddListener(_ => {

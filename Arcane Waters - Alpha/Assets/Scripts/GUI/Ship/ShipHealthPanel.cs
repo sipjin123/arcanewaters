@@ -53,7 +53,7 @@ public class ShipHealthPanel : ClientMonoBehaviour
 
       show();
 
-      if (Global.player.currentHealth == _lastHealth) {
+      if (Global.player.currentHealth == _lastHealth && Global.player.maxHealth == _lastMaxHealth) {
          return;
       }
 
@@ -101,6 +101,7 @@ public class ShipHealthPanel : ClientMonoBehaviour
       }
 
       _lastHealth = Global.player.currentHealth;
+      _lastMaxHealth = Global.player.maxHealth;
 
       PowerupPanel.self.rebuildLayoutGroup();
    }
@@ -129,7 +130,7 @@ public class ShipHealthPanel : ClientMonoBehaviour
    private List<SailorHP> _sailors = new List<SailorHP>();
 
    // The last registered ship health value
-   private float _lastHealth = 0;
+   private float _lastHealth = 0, _lastMaxHealth;
 
    #endregion
 }

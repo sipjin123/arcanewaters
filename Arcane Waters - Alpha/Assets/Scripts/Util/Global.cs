@@ -56,6 +56,9 @@ public class Global
    // If the game is set to single player mode
    public static bool isSinglePlayer = false;
 
+   // If the guild alliance invites are to be ignored
+   public static bool ignoreGuildAllianceInvites = false;
+
    // Keeps track of the last account name we provided
    public static string lastUsedAccountName;
 
