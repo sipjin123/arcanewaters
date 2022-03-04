@@ -19,6 +19,10 @@ public class PlayerShipEntity : ShipEntity
    [SyncVar]
    public int shipId;
 
+   // The ship xml id of this ship, info found in player ship web tool
+   [SyncVar]
+   public int shipXmlId;
+
    // Gets set to true when the next shot is scheduled
    public bool isNextShotDefined = false;
 
@@ -261,7 +265,8 @@ public class PlayerShipEntity : ShipEntity
             powerupTypes.Add(powerup.powerupType);
          }
 
-         if (VoyageManager.isPvpArenaArea(areaKey)) {
+         // Set ship type to default for pvp arenas since all ships should be the same and upgraded via shop
+         if (VoyageManager.isPvpArenaArea(areaKey) && !VoyageManager.isOpenWorld(areaKey)) {
             shipType = Ship.Type.Type_1;
             shipSize = ShipSize.Small;
          }
@@ -1284,6 +1289,7 @@ public class PlayerShipEntity : ShipEntity
 
       // Ship stuff
       shipId = shipInfo.shipId;
+      shipXmlId = shipInfo.shipXmlId;
 
       initialize(shipInfo);
 
