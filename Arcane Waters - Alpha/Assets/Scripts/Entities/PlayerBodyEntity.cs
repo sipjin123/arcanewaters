@@ -248,6 +248,11 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
                WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponManager.equipmentDataId);
                if (weaponData != null) {
                   rpc.Cmd_InteractWithEntity(interactedObj.objectId, true);
+                  if (interactedObj is InteractableBox) {
+                     InteractableBox boxObj = (InteractableBox) interactedObj;
+                     Vector2 dir = (boxObj.transform.position - transform.position).normalized;
+                     boxObj.localInteractTrigger(dir);
+                  }
                } else {
                   rpc.Cmd_InteractWithEntity(interactedObj.objectId, false);
                }
@@ -382,15 +387,23 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
                   timeTarget = 0.025f;
                } else if (currPing < 150) {
                   timeTarget = 0.015f;
-                  D.debug("Trigger interaction using Mid Speed {" + timeTarget + "}{" + currPing + "}");
                } else {
                   timeTarget = 0;
-                  D.debug("Trigger interaction using Slowest Speed {" + timeTarget + "}{" + currPing + "}");
                }
 
                if (lapsedTime > timeTarget && !hasTriggeredInteractEvent) {
                   hasTriggeredInteractEvent = true;
                   interactCollisionEvent.Invoke();
+
+                  if (currPing < 150) {
+                     if (isLocalPlayer) {
+                        D.debug("Trigger interaction using Mid Speed {" + timeTarget + "}{" + currPing + "}");
+                     }
+                  } else {
+                     if (isLocalPlayer) {
+                        D.debug("Trigger interaction using Slowest Speed {" + timeTarget + "}{" + currPing + "}");
+                     }
+                  }
                }
             }
          }

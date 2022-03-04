@@ -73,7 +73,11 @@ public class InteractableObjEntity : NetworkBehaviour {
       interactObject(dir, overrideForce);
    }
 
-   public void interactObject (Vector2 dir, float overrideForce = 0) {
+   public virtual void localInteractTrigger (Vector2 dir, float overrideForce = 0) {
+
+   }
+
+   public virtual void interactObject (Vector2 dir, float overrideForce = 0) {
       if (overrideForce < 1) {
          overrideForce = forceToApply;
       }
