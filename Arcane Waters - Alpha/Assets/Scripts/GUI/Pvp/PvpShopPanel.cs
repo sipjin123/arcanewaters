@@ -58,6 +58,17 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
    // The icon of the item when selected
    public Image itemIconInfo;
 
+   // The ship ability display
+   public GameObject shipAbilityPanel;
+
+   // The ability templates that display the info
+   public Image[] abilityIcons;
+   public Image[] abilityTooltipIcons;
+   public Text[] abilityTexts;
+   public Text[] toolTipText;
+   public GameObject[] abilityHoverable;
+   public GameObject[] abilityDetailHolder;
+   
    // The icon of the item when selected
    public Image itemIconFrameInfo;
 
@@ -137,6 +148,36 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       EventTrigger landPowerupEventTrigger = landPowerupCategoryObj.GetComponent<EventTrigger>();
       setupHovering(landPowerupEventTrigger, PvpShopItemType.LandPowerup);
 
+      clearDisplay();
+
+      foreach (GameObject newHoverableObj in abilityDetailHolder) {
+         newHoverableObj.SetActive(false);
+      }
+      int index = 0;
+      foreach (GameObject hoverableObj in abilityHoverable) {
+         EventTrigger eventTrigger = hoverableObj.GetComponent<EventTrigger>();
+         Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerEnter, (e) => selectIndex(hoverableObj));
+         index++;
+      }
+   }
+
+   private void selectIndex (GameObject newObj) {
+      foreach (GameObject newHoverableObj in abilityDetailHolder) {
+         newHoverableObj.SetActive(false);
+      }
+
+      int currentIndex = newObj.GetComponent<PvpShopAbility>().abilityIndex;
+      if (currentIndex < abilityDetailHolder.Length) {
+         abilityDetailHolder[currentIndex].SetActive(true);
+      }
+   }
+
+   private void Start () {
+      // Update shop panel templates to remove gray out if silver is sufficient
+      PvpStatusPanel.self.silverAddedEvent.AddListener(_ => updatedShopTemplates(_));
+   }
+
+   public void clearDisplay () {
       shipAttackText.text = "";
       shipSpeedText.text = "";
       shipRangeText.text = "";
@@ -144,11 +185,13 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       shipSupplyText.text = "";
       shipSailorsText.text = "";
       shipDefenseText.text = "";
-   }
 
-   private void Start () {
-      // Update shop panel templates to remove gray out if silver is sufficient
-      PvpStatusPanel.self.silverAddedEvent.AddListener(_ => updatedShopTemplates(_));
+      foreach (Text abilityText in abilityTexts) {
+         abilityText.text = "";
+      }
+      foreach (Image abilityIcon in abilityIcons) {
+         abilityIcon.sprite = ImageManager.self.blankSprite;
+      }
    }
 
    public void updatedShopTemplates (int silverValue) {
@@ -233,10 +276,12 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
          shopTemplateScroller.gameObject.SetActive(false);
          shipTemplateScroller.gameObject.SetActive(true);
          shipStatTab.SetActive(true);
+         shipAbilityPanel.SetActive(true);
       } else {
          shopTemplateScroller.gameObject.SetActive(true);
          shipTemplateScroller.gameObject.SetActive(false);
          shipStatTab.SetActive(false);
+         shipAbilityPanel.SetActive(false);
       }
 
       // Disable categories that dont exist in this shop

@@ -119,6 +119,49 @@ public class PvpShopTemplate : MonoBehaviour {
             PvpShopPanel.self.shipSupplyText.text = serverDeclaredData.supplies.ToString();
             PvpShopPanel.self.shipSailorsText.text = serverDeclaredData.sailors.ToString();
             PvpShopPanel.self.shipDefenseText.text = serverDeclaredData.health.ToString();
+
+            int index = 0;
+            foreach (Text abilityText in PvpShopPanel.self.abilityTexts) {
+               if (index < serverDeclaredData.shipAbilities.ShipAbilities.Length) {
+                  int abilityIndex = serverDeclaredData.shipAbilities.ShipAbilities[index];
+                  ShipAbilityData shipData = ShipAbilityManager.self.getAbility(abilityIndex);
+                  if (shipData != null) {
+                     abilityText.text = shipData.abilityName;
+                  } else {
+                     D.debug("Cant find Ship ability for Ability: " + abilityIndex);
+                  }
+                  index++;
+               }
+            }
+
+            index = 0;
+            foreach (Image abilityIcon in PvpShopPanel.self.abilityIcons) {
+               if (index < serverDeclaredData.shipAbilities.ShipAbilities.Length) {
+                  int abilityIndex = serverDeclaredData.shipAbilities.ShipAbilities[index];
+                  ShipAbilityData shipData = ShipAbilityManager.self.getAbility(abilityIndex);
+                  if (shipData != null) {
+                     abilityIcon.sprite = ImageManager.getSprite(shipData.skillIconPath);
+                     PvpShopPanel.self.abilityTooltipIcons[index].sprite = ImageManager.getSprite(shipData.skillIconPath);
+                  } else {
+                     D.debug("Cant find Ship ability for Ability: " + abilityIndex);
+                  }
+                  index++;
+               }
+            }
+
+            index = 0;
+            foreach (Text toolTip in PvpShopPanel.self.toolTipText) {
+               if (index < serverDeclaredData.shipAbilities.ShipAbilities.Length) {
+                  int abilityIndex = serverDeclaredData.shipAbilities.ShipAbilities[index];
+                  ShipAbilityData shipData = ShipAbilityManager.self.getAbility(abilityIndex);
+                  if (shipData != null) {
+                     toolTip.text = shipData.abilityDescription;
+                  } else {
+                     D.debug("Cant find Ship ability for Ability: " + abilityIndex);
+                  }
+                  index++;
+               }
+            }
          }
       }
    }
