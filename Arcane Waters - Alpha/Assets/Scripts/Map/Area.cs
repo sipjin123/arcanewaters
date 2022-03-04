@@ -628,6 +628,12 @@ public class Area : MonoBehaviour
       _graph = AstarPath.active.data.AddGraph(typeof(GridGraph)) as GridGraph;
       _graph.center = transform.position;
       _firstTilemap = GetComponentInChildren<Tilemap>();
+
+      if (_firstTilemap == null) {
+         D.warning("Found no tilemap for map: " + areaKey + ". Cancelling pathfinding graph configuration.");
+         return;
+      }
+
       _graph.SetDimensions(_firstTilemap.size.x, _firstTilemap.size.y, _firstTilemap.cellSize.x * GetComponentInChildren<Grid>().transform.localScale.x);
       _graph.rotation = new Vector3(-90.0f, 0.0f, 0.0f);
       _graph.collision.use2D = true;

@@ -393,6 +393,8 @@ namespace MapCreationTool
                   pref.transform.localScale = new Vector3(0.16f, 0.16f, 1f);
                } else if (original.GetComponent<SpiderWeb>() != null) {
                   pref.GetComponent<SpiderWeb>().initializeBiome(project.biome);
+               } else if (original.GetComponent<GenericActionTrigger>() != null) {
+                  pref.GetComponent<GenericActionTrigger>().biomeType = project.biome;
                } else if (original.GetComponent<OreNodeMapController>() != null) {
                   oreController = pref.GetComponent<OreNodeMapController>();
                } else if (original.GetComponent<OpenWorldController>() != null) {

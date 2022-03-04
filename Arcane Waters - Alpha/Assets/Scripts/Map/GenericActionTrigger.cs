@@ -15,6 +15,18 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
 
    #region Public Variables
 
+   // The sprite renderer assigned to this object
+   public SpriteRenderer spriteRender;
+
+   // The biome sprite pair
+   public List<GenericBiomeSpritePair> biomeSpritePair;
+
+   // The distance between this object to trigger interaction
+   public const float INTERACT_DIST = .5f;
+
+   // The distance between player and this object for the visibility of the sprite to render
+   public const float VISIBLITY_DIST = 3;
+
    // Hardcoded action strings
    public static string WARP_TO_LEAGUE_ACTION = "Warp To League";
 
@@ -37,6 +49,18 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
    // Arrow that is showed if this is a voyage trigger region
    public GameObject voyageArrow;
 
+   // The voyage collider
+   public CircleCollider2D circleVoyageCollider;
+
+   // Determine if this is within render bounds
+   public bool withinRenderBounds;
+
+   // The fade duration of the sprite
+   public const float FADE_SPEED = .5f;
+
+   // The current biome of this action trigger
+   public Biome.Type biomeType;
+
    #endregion
 
    private static void showVoyagePanel (NetEntity entity) {
@@ -53,6 +77,33 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
 
    private void Awake () {
       _collider = GetComponent<BoxCollider2D>();
+   }
+
+   private void Start () {
+      if (actionName == WARP_TO_LEAGUE_ACTION) {
+         if (biomeType != Biome.Type.None) {
+            spriteRender.gameObject.SetActive(true);
+            GenericBiomeSpritePair spritePairData = biomeSpritePair.Find(_ => _.biomeType == biomeType);
+            spriteRender.sprite = spritePairData == null ? null : spritePairData.sprite;
+            if (circleVoyageCollider != null) {
+               circleVoyageCollider.enabled = true;
+            }
+            _collider.enabled = false;
+         }
+      }
+   }
+
+   private void Update () {
+      if (actionName == WARP_TO_LEAGUE_ACTION) {
+         Color currColor = spriteRender.color;
+         if (withinRenderBounds && currColor.a < 1) {
+            currColor.a += Time.deltaTime * FADE_SPEED;
+            spriteRender.color = currColor;
+         } else if (!withinRenderBounds && currColor.a > 0) {
+            currColor.a -= Time.deltaTime * FADE_SPEED;
+            spriteRender.color = currColor;
+         }
+      }
    }
 
    public void receiveData (DataField[] dataFields) {
@@ -126,8 +177,7 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
 
    private void OnTriggerEnter2D (Collider2D collision) {
       NetEntity entity = collision.GetComponent<NetEntity>();
-
-      if (entity != null && interactionType == InteractionType.Enter && canActivateTrigger(entity)) {
+      if (entity != null && interactionType == InteractionType.Enter && actionName != WARP_TO_LEAGUE_ACTION && canActivateTrigger(entity)) {
          if (actions.TryGetValue(actionName, out Action<NetEntity> action)) {
             action.Invoke(entity);
          }
@@ -136,6 +186,9 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
 
    private void OnTriggerExit2D (Collider2D collision) {
       NetEntity entity = collision.GetComponent<NetEntity>();
+      if (entity != null && Global.player == entity) {
+         withinRenderBounds = false;
+      }
 
       if (entity != null && interactionType == InteractionType.Exit && canActivateTrigger(entity)) {
          if (actions.TryGetValue(actionName, out Action<NetEntity> action)) {
@@ -146,10 +199,19 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
 
    private void OnTriggerStay2D (Collider2D collision) {
       NetEntity entity = collision.GetComponent<NetEntity>();
+      float distanceBetweenPlayer = entity == null ? 0 : Vector2.Distance(transform.position, entity.transform.position);
 
-      if (entity != null && interactionType == InteractionType.Stay && canActivateTrigger(entity)) {
-         if (actions.TryGetValue(actionName, out Action<NetEntity> action)) {
-            action.Invoke(entity);
+      if (entity != null && (interactionType == InteractionType.Stay || (interactionType == InteractionType.Enter && actionName == WARP_TO_LEAGUE_ACTION))) {
+         if (distanceBetweenPlayer < INTERACT_DIST) {
+            if (canActivateTrigger(entity)) {
+               if (actions.TryGetValue(actionName, out Action<NetEntity> action)) {
+                  action.Invoke(entity);
+               }
+            }
+         } else {
+            if (distanceBetweenPlayer < VISIBLITY_DIST && actionName == WARP_TO_LEAGUE_ACTION) {
+               withinRenderBounds = true;
+            }
          }
       }
    }
