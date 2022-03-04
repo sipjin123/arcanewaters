@@ -64,7 +64,7 @@ public class CharacterSpot : ClientMonoBehaviour {
       charRestoreButtonContainer.sizeDelta = new Vector2(charRestoreButtonContainer.sizeDelta.x, isDeletedCharacter ? 0.65f : 0.4f);
 
       // Sync canvas visibility with canvas group interactable flag. UINavigation requirement.
-      buttonsCanvasGroup.gameObject.SetActive(CharacterScreen.self.canvasGroup.interactable);
+      buttonsCanvasGroup.gameObject.SetActive(!(!CharacterScreen.self.canvasGroup.interactable || CharacterScreen.self.canvasGroup.alpha < 0.01f));
    }
 
    public void assignCharacter (OfflineCharacter character) {
@@ -85,7 +85,7 @@ public class CharacterSpot : ClientMonoBehaviour {
 
       // Turn off buttons until we receive a response from the server
       CharacterScreen.self.canvasGroup.interactable = false;
-
+      
       // Set post spot fader to isLoggingIn every character login so that pixel camera effect can trigger every login
       PostSpotFader.self.isLoggingIn = true;
 

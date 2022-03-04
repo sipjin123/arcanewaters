@@ -76,8 +76,16 @@ public class WaterChecker : ClientMonoBehaviour
       // Look up the Area and Grid that we're currently in
       Area area = AreaManager.self.getArea(_entity.areaKey);
       if (area != null) {
-         isInFullWater = area.hasTileAttribute(TileAttributes.Type.WaterFull, _entity.transform.position);
-         isInPartialWater = area.hasTileAttribute(TileAttributes.Type.WaterPartial, _entity.transform.position);
+         TileAttributes.Type[] buffer = new TileAttributes.Type[16];
+
+         int count = area.getTileAttributes(_entity.transform.position, buffer);
+
+         if (count > 0) {
+            TileAttributes.Type attribute = buffer[count - 1];
+
+            isInFullWater = attribute == TileAttributes.Type.WaterFull;
+            isInPartialWater = attribute == TileAttributes.Type.WaterPartial;
+         }
       }
    }
 

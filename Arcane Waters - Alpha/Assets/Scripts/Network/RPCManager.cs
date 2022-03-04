@@ -1411,8 +1411,9 @@ public class RPCManager : NetworkBehaviour
 
       if (area != null && area.version == latestVersion) {
          if (area.isInterior) {
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_OPEN, transform.position);
-            //SoundEffectManager.self.playSoundEffect(SoundEffectManager.ENTER_DOOR, transform);
+            if (Global.player != null) {
+               SoundEffectManager.self.playDoorSfx(SoundEffectManager.DoorAction.Close, biome, Global.player.transform.position);
+            }
             WeatherManager.self.setWeatherSimulation(WeatherEffectType.None);
          }
 
@@ -8842,14 +8843,17 @@ public class RPCManager : NetworkBehaviour
       // Get the instance
       Instance instance = _player.getInstance();
 
-      // Check if someone is already customizing
-      if (instance.playerMakingCustomizations != null && instance.playerMakingCustomizations.userId != _player.userId) {
-         Target_DenyEnterMapCustomization("Someone else is already customizing the area");
-         return;
-      }
+      // Don't check if somone is already customising for guild maps
+      if (!CustomMapManager.isGuildSpecificAreaKey(areaKey)) {
+         // Check if someone is already customizing
+         if (instance.playerMakingCustomizations != null && instance.playerMakingCustomizations.userId != _player.userId) {
+            Target_DenyEnterMapCustomization("Someone else is already customizing the area");
+            return;
+         }
 
-      // Allow player to enter customization
-      instance.playerMakingCustomizations = _player;
+         // Allow player to enter customization
+         instance.playerMakingCustomizations = _player;
+      }
 
       // Get props that can be used for customization
       ItemInstance[] remainingProps = await DB_Main.execAsync((cmd) => DB_Main.getItemInstances(cmd, _player.userId, ItemDefinition.Category.Prop).ToArray());
@@ -8987,7 +8991,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public async void Cmd_AddPrefabCustomization (int areaOwnerId, string areaKey, PrefabState changes) {
+   public async void Cmd_AddPrefabCustomization (int areaOwnerId, string areaKey, PrefabState changes, int areaGuildId) {
       Area area = AreaManager.self.getArea(areaKey);
       Instance instance = _player.getInstance();
 
@@ -9002,8 +9006,22 @@ public class RPCManager : NetworkBehaviour
 
       // Figure out the base map of area
       AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager);
-      NetEntity areaOwner = EntityManager.self.getEntity(areaOwnerId);
-      int baseMapId = customMapManager.getBaseMapId(areaOwner);
+      int baseMapId;
+
+      // If the area has a valid owner id
+      if (areaOwnerId != -1) {
+         NetEntity areaOwner = EntityManager.self.getEntity(areaOwnerId);
+         baseMapId = customMapManager.getBaseMapId(areaOwner);
+      
+      // If the area has a valid guild owner id
+      } else if (areaGuildId != -1) {
+         baseMapId = customMapManager.getBaseMapId(_player);
+      } else {
+         string errorString = "Couldn't find the 'owner' of the map we are customising. OwnerId: " + areaOwnerId + ", GuildId: " + areaGuildId;
+         D.error(errorString);
+         Target_FailAddPrefabCustomization(changes, errorString);
+         return;
+      }
 
       // Find the customizable prefab that is being targeted
       CustomizablePrefab prefab = AssetSerializationMaps.tryGetPrefabGame(changes.serializationId, instance.biome).GetComponent<CustomizablePrefab>();

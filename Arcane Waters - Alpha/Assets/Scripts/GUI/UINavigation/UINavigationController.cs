@@ -131,26 +131,46 @@ public class UINavigationController : MonoBehaviour {
 
       // Continue
       if (InputManager.self.inputMaster.General.Continue.WasPressedThisFrame()) {
-         _itemsData[_currItemId].interactItem();
+         if (_itemsData[_currItemId].isActive) {
+            _itemsData[_currItemId].interactItem();
+         }
       }
 
       // Equip
       if (InputManager.self.inputMaster.UIControl.Equip.WasPressedThisFrame()) {
-         _itemsData[_currItemId].equipItem();
+         if (_itemsData[_currItemId].isActive) {
+            _itemsData[_currItemId].equipItem();
+         }
       }
 
       // Use
       if (InputManager.self.inputMaster.UIControl.Use.WasPressedThisFrame()) {
-         _itemsData[_currItemId].useItem();
+         if (_itemsData[_currItemId].isActive) {
+            _itemsData[_currItemId].useItem();
+         }
       }
       
       // Space
       if (Keyboard.current.spaceKey.wasPressedThisFrame) {
-         _itemsData[_currItemId].interactItem();
+         if (_itemsData[_currItemId].isActive) {
+            _itemsData[_currItemId].interactItem();
+         }
       }
    }
 
    private void changeSelection(int newItemId, int direction=1) {
+      bool isAnyItemActive = false;
+      foreach (var item in _itemsData) {
+         if (item.isActive) {
+            isAnyItemActive = true;
+            break;
+         }
+      }
+
+      if (!isAnyItemActive) {
+         return;
+      }
+      
       // If new item is not active - find active one
       if (!_itemsData[Mathf.Clamp(newItemId, 0, _itemsData.Count-1)].isActive) {
          // If moving to the next item and new id is the last one - move to prev active item 

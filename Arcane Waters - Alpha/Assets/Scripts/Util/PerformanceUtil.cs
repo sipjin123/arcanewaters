@@ -18,9 +18,6 @@ public class PerformanceUtil : MonoBehaviour {
    // Singleton instance
    public static PerformanceUtil self;
 
-   // Whether we should be updating our cpu and ram from zabbix
-   public bool updateZabbixData = false;
-
    [System.Serializable]
    public class PerformanceTestResult {
       // Set to true when the performance test is done, and the result is ready
@@ -56,115 +53,47 @@ public class PerformanceUtil : MonoBehaviour {
       _currentProcess = Process.GetCurrentProcess();
 
       // StartCoroutine(CO_Initialise());
-      
-      var url = "https://zabbix.arcanewaters.com/api_jsonrpc.php";
-      var user = "integration";
-      var password = "pQMxg8jmRqhvTVKJhsRVdF4kn7t3zuZL";
-      
-      using (var context = new Context(url, user, password)) {
-         Dictionary<string, object> histParams;
-         
-         // prod server
-         
-         // CPU utilization, %
-         //    ./GetHistory.ps1 -ItemID 33614 -Mode 1 -DataTable 0 -Limit 1
-         histParams = new Dictionary<string, object>();
-         histParams.Add("output", "extend");
-         histParams.Add("sortfield", "clock");
-         histParams.Add("sortorder", "DESC");
-         histParams.Add("limit", "1");
-         histParams.Add("itemids", "33614");
-         
-         var cpu = context.History.GetByType(History.HistoryType.FloatType, null, histParams).FirstOrDefault()?.value;
-         // Debug.Log(cpu);
-         
-         // Total memory, bytes
-         //    ./GetHistory.ps1 -ItemID 33622 -Mode 1 -DataTable 3 -Limit 1
-         histParams = new Dictionary<string, object>();
-         histParams.Add("output", "extend");
-         histParams.Add("sortfield", "clock");
-         histParams.Add("sortorder", "DESC");
-         histParams.Add("limit", "1");
-         histParams.Add("itemids", "33622");
-         
-         var memory = context.History.GetByType(History.HistoryType.IntegerType, null, histParams).FirstOrDefault()?.value;
-         // Debug.Log(memory);
-      }
-   }
-
-   private IEnumerator CO_Initialise () {
-      // Wait for server to start up
-      yield return new WaitForSeconds(60.0f);
-
-      // Only measure performance on the server
-      if (!NetworkServer.active) {
-         this.enabled = false;
-         yield break;
-      }
 
       if (Util.isBatch() && (Util.isProductionBuild() || Util.isDevelopmentBuild())) {
-         getTotalRamZabbix();
-         updateCpuResultZabbix();
-         updateRamResultZabbix();
+         setupZabbixWebRequest();
       }
    }
 
-   private async void updateCpuResultZabbix () {
-      while (this.enabled) {
-         if (updateZabbixData) {
-            string cpuProcessArguments = (Util.isProductionBuild()) ? $"cd C:/integrations/zabbix; ./GetHistory.ps1 -ItemID 33614 -Mode 1 -DataTable 0 -Limit 1" : $"cd C:/integrations/zabbix; ./GetHistory.ps1 -ItemID 33748 -Mode 1 -DataTable 0 -Limit 1";
-            string result = await getZabbixPerformanceParameter(cpuProcessArguments);
-            float floatResult;
-            if (float.TryParse(result, out floatResult)) {
-               _zabbixCpuUsage = floatResult;
-            }
-         } else {
-            await Task.Delay(1000);
-         }
+   private void setupZabbixWebRequest () {
+
+      // Setup hist params
+      _cpuHistParams.Add("output", "extend");
+      _cpuHistParams.Add("sortfield", "clock");
+      _cpuHistParams.Add("sortorder", "DESC");
+      _cpuHistParams.Add("limit", "1");
+
+      _ramHistParams.Add("output", "extend");
+      _ramHistParams.Add("sortfield", "clock");
+      _ramHistParams.Add("sortorder", "DESC");
+      _ramHistParams.Add("limit", "1");
+
+      // Fetch total ram once
+      _totalRamHistParams.Add("output", "extend");
+      _totalRamHistParams.Add("sortfield", "clock");
+      _totalRamHistParams.Add("sortorder", "DESC");
+      _totalRamHistParams.Add("limit", "1");
+
+      if (Util.isDevelopmentBuild()) {
+         _cpuHistParams.Add("itemids", "33748");
+         _ramHistParams.Add("itemids", "33757");
+         _totalRamHistParams.Add("itemids", "33756");
+      } else {
+         _cpuHistParams.Add("itemids", "33614");
+         _ramHistParams.Add("itemids", "33623");
+         _totalRamHistParams.Add("itemids", "33622");
       }
-   }
 
-   private async void updateRamResultZabbix () {
-      while (this.enabled) {
-         if (updateZabbixData) {
-            string ramProcessArguments = (Util.isProductionBuild()) ? $"cd C:/integrations/zabbix; ./GetHistory.ps1 -ItemID 33623 -Mode 1 -DataTable 3 -Limit 1" 
-               : $"cd C:/integrations/zabbix; ./GetHistory.ps1 -ItemID 33757 -Mode 1 -DataTable 3 -Limit 1";
-            string result = await getZabbixPerformanceParameter(ramProcessArguments);
-            float floatResult;
-            if (float.TryParse(result, out floatResult)) {
-               _zabbixRamUsage = floatResult;
-            }
-         } else {
-            await Task.Delay(1000);
-         }
-      }
-   }
+      string url = "https://zabbix.arcanewaters.com/api_jsonrpc.php";
+      string user = "integration";
+      string password = "pQMxg8jmRqhvTVKJhsRVdF4kn7t3zuZL";
+      _zabbixContext = new Context(url, user, password);
 
-   private async void getTotalRamZabbix () {
-      string totalRamProcessArguments = (Util.isProductionBuild()) ? $"cd C:/integrations/zabbix; ./GetHistory.ps1 -ItemID 33622 -Mode 1 -DataTable 3 -Limit 1" : $"cd C:/integrations/zabbix; ./GetHistory.ps1 -ItemID 33756 -Mode 1 -DataTable 3 -Limit 1";
-      string result = await getZabbixPerformanceParameter(totalRamProcessArguments);
-      float floatResult;
-      if (float.TryParse(result, out floatResult)) {
-         _zabbixTotalRam = floatResult;
-      }
-   }
-
-   private async Task<string> getZabbixPerformanceParameter (string processArguments) {
-      ProcessStartInfo startInfo = new ProcessStartInfo() {
-         FileName = "powershell.exe",
-         Arguments = processArguments,
-         UseShellExecute = false,
-         RedirectStandardOutput = true,
-         CreateNoWindow = true,
-      };
-
-      Process test = Process.Start(startInfo);
-
-      await Task.Run(() => {
-         test.WaitForExit();
-      });
-
-      return test.StandardOutput.ReadToEnd();
+      updateZabbixTotalRam();
    }
 
    private void Update () {
@@ -258,21 +187,38 @@ public class PerformanceUtil : MonoBehaviour {
    }
 
    public static float getZabbixCpuUsage () {
-      return self._zabbixCpuUsage;
+      string cpuString = self._zabbixContext.History.GetByType(History.HistoryType.FloatType, null, self._cpuHistParams).FirstOrDefault()?.value;
+      if (float.TryParse(cpuString, out float cpuUsage)) {
+         return cpuUsage;
+      }
+      return 0.0f;
    }
 
    public static float getZabbixRamUsage () {
-      // Avoid divide by zero
-      if (self._zabbixTotalRam <= Mathf.Epsilon) {
-         return 0.0f;
+      // If total ram amount wasn't fetched properly, try again
+      if (self._zabbixTotalRamBytes == 0.0f) {
+         updateZabbixTotalRam();
+
+         // If fetching total ram still didn't work, return to avoid dividing by zero
+         if (self._zabbixTotalRamBytes == 0.0f) {
+            return 0.0f;
+         }
       }
 
-      return (100.0f * (self._zabbixRamUsage / self._zabbixTotalRam));
+      string memoryString = self._zabbixContext.History.GetByType(History.HistoryType.IntegerType, null, self._ramHistParams).FirstOrDefault()?.value;
+      if (int.TryParse(memoryString, out int memoryUsage)) {
+         return (memoryUsage / self._zabbixTotalRamBytes);
+      }
+      return 0.0f;
    }
 
-   public static void resetZabbixValues () {
-      self._zabbixCpuUsage = 0.0f;
-      self._zabbixRamUsage = 0.0f;
+   private static void updateZabbixTotalRam () {
+      string totalMemoryString = self._zabbixContext.History.GetByType(History.HistoryType.IntegerType, null, self._totalRamHistParams).FirstOrDefault()?.value;
+      if (int.TryParse(totalMemoryString, out int totalRamBytes)) {
+         self._zabbixTotalRamBytes = totalRamBytes;
+      } else {
+         D.error("PerformanceUtil couldn't get total ram amount from zabbix.");
+      }
    }
 
    #region Private Variables
@@ -293,10 +239,22 @@ public class PerformanceUtil : MonoBehaviour {
    private float _zabbixCpuUsage = 0.0f;
 
    // The ram usage last measured by zabbix
-   private float _zabbixRamUsage = 0.0f;
+   private int _zabbixRamUsageBytes = 0;
 
    // The total ram, measured by zabbix
-   private float _zabbixTotalRam = 0.0f;
+   private int _zabbixTotalRamBytes = 0;
+
+   // Zabbix history fetching parameters, configured to fetch CPU data
+   private Dictionary<string, object> _cpuHistParams = new Dictionary<string, object>();
+
+   // Zabbix history fetching parameters, configured to fetch RAM data
+   private Dictionary<string, object> _ramHistParams = new Dictionary<string, object>();
+   
+   // Zabbix history fetching parameters, configured to fetch total RAM data
+   private Dictionary<string, object> _totalRamHistParams = new Dictionary<string, object>();
+
+   // Context for fetching data from zabbix
+   private Context _zabbixContext;
 
    #endregion
 }

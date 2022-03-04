@@ -102,7 +102,20 @@ public class CharacterScreen : GenericGameManager {
       return false;
    }
 
-   public void initializeScreen (UserInfo[] userArray, bool[] deletionStatusArray, Item[] armorArray, Item[] weaponArray, Item[] hatArray, string[] armorPalettes, int[] equipmentIds, int[] spriteIds) {
+   public void initializeScreen (
+      UserInfo[] userArray, 
+      bool[] deletionStatusArray, 
+      Item[] armorArray, 
+      Item[] weaponArray, 
+      Item[] hatArray, 
+      string[] armorPalettes, 
+      int[] equipmentIds, 
+      int[] spriteIds
+   ) {
+      // Store the data we receive for later reference
+      _userArray = userArray;
+      _deletionStatusArray = deletionStatusArray;
+      
       // Cache the starting armor info
       startingArmorData = new List<StartingArmorData>();
 
@@ -113,10 +126,6 @@ public class CharacterScreen : GenericGameManager {
          };
          startingArmorData.Add(newData);
       }
-
-      // Store the data we receive for later reference
-      _userArray = userArray;
-      _deletionStatusArray = deletionStatusArray;
 
       // Armor Setup
       _armorArray = new Armor[armorArray.Length];
@@ -170,37 +179,46 @@ public class CharacterScreen : GenericGameManager {
 
       // Make sure that the palette swap manager is setup before revealing the character in the scene to prevent rendering a blank or incomplete character sprite
       if (PaletteSwapManager.self.hasInitialized) {
-         setupCharacterSpots(userArray, deletionStatusArray, armorArray, weaponArray, hatArray, armorPalettes);
+         setupCharacterSpots(armorArray, weaponArray, hatArray, armorPalettes);
       } else {
          PaletteSwapManager.self.paletteCompleteEvent.AddListener(() => {
-            setupCharacterSpots(userArray, deletionStatusArray, armorArray, weaponArray, hatArray, armorPalettes);
+            setupCharacterSpots(armorArray, weaponArray, hatArray, armorPalettes);
          });
       }
    }
 
-   private void setupCharacterSpots (UserInfo[] userArray, bool[] deletionStatusArray, Item[] armorArray, Item[] weaponArray, Item[] hatArray, string[] armorPalettes) {
-      foreach (KeyValuePair<int, CharacterSpot> spot in _spots) {
-         spot.Value.rotationButtons.SetActive(false);
+   private void setupCharacterSpots (
+      Item[] armorArray, 
+      Item[] weaponArray, 
+      Item[] hatArray, 
+      string[] armorPalettes
+   ) {
+      // Disable spot rotation buttons
+      foreach (var spot in _spots.Values) {
+         spot.rotationButtons.SetActive(false);
       }
-      for (int i = 0; i < 3; i++) {
+      
+      // Init spots
+      for (int i = 0; i < _userArray.Length; i++) {
          // If they don't have a character in that spot, move on
-         if (i > userArray.Length - 1 || userArray[i] == null) {
+         if (i > _userArray.Length - 1 || _userArray[i] == null) {
             continue;
          }
-         
-         _deletionStatusArray = deletionStatusArray;
-         int charSpotNumber = userArray[i].charSpot;
+
+         int charSpotNumber = _userArray[i].charSpot;
 
          // Create the offline character object
          if (_spots.ContainsKey(charSpotNumber)) {
             CharacterSpot spot = _spots[charSpotNumber];
+            
+            Global.lastUserGold = _userArray[i].gold;
+            Global.lastUserGems = _userArray[i].gems;
+            
             OfflineCharacter offlineChar = Instantiate(offlineCharacterPrefab, spot.transform.position, Quaternion.identity);
-            Global.lastUserGold = userArray[i].gold;
-            Global.lastUserGems = userArray[i].gems;
             spot.rotationButtons.SetActive(true);
 
             try {
-               offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], hatArray[i], armorPalettes[i]);
+               offlineChar.setDataAndLayers(_userArray[i], weaponArray[i], armorArray[i], hatArray[i], armorPalettes[i]);
 
                // Set up the character for the ship rolling animation
                if (shipRollingAnimation != null) {
@@ -214,7 +232,7 @@ public class CharacterScreen : GenericGameManager {
                   "Hat Count: {" + hatArray.Length + "/3 } " +
                   "ArmorPalette Count: {" + armorPalettes.Length + "/3} :: INDEX:{" + i + "}");
 
-               offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], hatArray[i], armorPalettes[i]);
+               offlineChar.setDataAndLayers(_userArray[i], weaponArray[i], armorArray[i], hatArray[i], armorPalettes[i]);
             }
 
             spot.assignCharacter(offlineChar);

@@ -217,7 +217,7 @@ MonoBehaviour:
     toolTip: X position for the destination of this web
     type: 1
   - name: spider web y
-    defaultValue: 0
+    defaultValue: 5
     toolTip: Y position for the destination of this web
     type: 1
   selectDataFields: []
@@ -234,7 +234,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!1 &6895474712482297978
 GameObject:

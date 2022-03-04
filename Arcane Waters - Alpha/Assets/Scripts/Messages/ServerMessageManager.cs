@@ -128,7 +128,7 @@ public class ServerMessageManager : MonoBehaviour
             string capsLockPassword = Util.invertLetterCapitalization(logInUserMessage.accountPassword);
             string hashedCapsLockPassword = Util.hashPassword(salt, capsLockPassword);
 
-            if (masterServer.accountOverrides.ContainsKey(logInUserMessage.accountName)) {
+            if (masterServer && masterServer.accountOverrides.ContainsKey(logInUserMessage.accountName)) {
                if (masterServer.accountOverrides[logInUserMessage.accountName] == logInUserMessage.accountPassword) {
                   D.debug("This account password is temporarily overridden: " + logInUserMessage.accountName);
 
@@ -324,7 +324,7 @@ public class ServerMessageManager : MonoBehaviour
                return;
             }
 
-            if (masterServer.accountOverrides.ContainsKey(logInUserMessage.accountName)) {
+            if (masterServer && masterServer.accountOverrides.ContainsKey(logInUserMessage.accountName)) {
                D.debug("Attempting to login overridden user {" + logInUserMessage.accountName + "} : {" + accountId + "} : {" + logInUserMessage.selectedUserId + "}");
             }
 
@@ -523,11 +523,13 @@ public class ServerMessageManager : MonoBehaviour
 
       // Make sure the name is available
       int existingUserId = -1;
+      int existingDeletedUserId = -1;
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          existingUserId = DB_Main.getUserId(userInfo.username);
+         existingDeletedUserId = DB_Main.getDeletedUserId(userInfo.username);
 
          // Show a "Name Taken" panel on the client
-         if (existingUserId > 0) {
+         if (existingUserId > 0 || existingDeletedUserId > 0) {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                sendError(ErrorMessage.Type.NameTaken, conn.connectionId);
             });

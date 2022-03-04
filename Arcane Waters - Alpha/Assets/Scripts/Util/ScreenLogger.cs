@@ -34,10 +34,7 @@ public class ScreenLogger : GenericGameManager {
       canvasObj.SetActive(false);
 
       Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.Quest);
-      Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.POI_WARP);
       Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.Player_Menu);
-      Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.Pvp_Instance);
-      Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.OpenWorldPvp);
       D.debug("Screen Logger v5.0.5 {" + (Util.isProductionBuild() ? "Prod" : "Dev") + "}");
 
       if (!Util.isCloudBuild()) {

@@ -79,13 +79,7 @@ public class Door : ClientMonoBehaviour {
       }
       Biome.Type biome = Global.player.getInstance().biome;
 
-      // Different sounds based on the area type
-      if (biome == Biome.Type.Desert) {
-         //SoundManager.create3dSound("door_cloth_open", this.transform.position);
-      } else {
-         SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_OPEN, this.transform.position);
-         //SoundManager.create3dSound("door_open_", this.transform.position, 3);
-      }
+      SoundEffectManager.self.playDoorSfx(SoundEffectManager.DoorAction.Open, biome, this.transform.position);
    }
 
    protected void playDoorCloseSound () {
@@ -95,12 +89,7 @@ public class Door : ClientMonoBehaviour {
       }
       Biome.Type biome = Global.player.getInstance().biome;
 
-      // Different sounds based on the area type
-      if (biome == Biome.Type.Desert) {
-         SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_CLOTH_CLOSE, this.transform.position);
-      } else {
-         SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_CLOSE, this.transform.position);
-      }
+      SoundEffectManager.self.playDoorSfx(SoundEffectManager.DoorAction.Close, biome, this.transform.position);
    }
 
    protected void open () {

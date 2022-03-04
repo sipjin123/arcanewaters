@@ -114,7 +114,7 @@ public class NetEntity : NetworkBehaviour
    public AdminManager admin;
 
    // Our Ground Checker
-   public GroundChecker groundChecker;
+   //public GroundChecker groundChecker;
 
    // Our Water Checker
    public WaterChecker waterChecker;
@@ -238,6 +238,10 @@ public class NetEntity : NetworkBehaviour
 
    // The guild icon of the player
    public GuildIcon guildIcon;
+
+   // The base id of the custom guild map for this user's guild
+   [SyncVar]
+   public int guildMapBaseId;
 
    [Header("Warping")]
 
@@ -720,6 +724,7 @@ public class NetEntity : NetworkBehaviour
       this.customHouseBaseId = userInfo.customHouseBaseId;
       this.guildId = userInfo.guildId;
       this.guildName = guildInfo.guildName;
+      this.guildMapBaseId = guildInfo.guildMapBaseId;
       if (guildRankInfo != null) {
          this.guildPermissions = guildRankInfo.permissions;
       }
@@ -1978,25 +1983,39 @@ public class NetEntity : NetworkBehaviour
             return;
          }
 
-         // Make a user-specific area key for this user, if it is not a user-specific key already
-         if (!CustomMapManager.isUserSpecificAreaKey(newArea)) {
-            D.adminLog("{" + entityName + ":" + userId + "} This is not a specific area key! {From: " + newArea + " moving to: " + customMapManager.getUserSpecificAreaKey(userId) + "}", D.ADMIN_LOG_TYPE.Visit);
-            newArea = customMapManager.getUserSpecificAreaKey(userId);
+         // If this is a guild specific map
+         if (customMapManager is CustomGuildMapManager) {
+            // Make a guild-specific area key for this user, if it is not a guild-specific key already
+            if (!CustomMapManager.isGuildSpecificAreaKey(newArea)) {
+               newArea = customMapManager.getGuildSpecificAreaKey(guildId);
+            }
+
+            // Get the base map key
+            NetEntity guildMember = EntityManager.self.getEntity(userId);
+            string baseMapKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(guildMember));
+            targetLocalPos = (spawn == null) ? SpawnManager.self.getDefaultLocalPosition(baseMapKey) : SpawnManager.self.getLocalPosition(baseMapKey, spawn);
+         } else {
+            // Make a user-specific area key for this user, if it is not a user-specific area key already
+            if (!CustomMapManager.isUserSpecificAreaKey(newArea)) {
+               D.adminLog("{" + entityName + ":" + userId + "} This is not a specific area key! {From: " + newArea + " moving to: " + customMapManager.getUserSpecificAreaKey(userId) + "}", D.ADMIN_LOG_TYPE.Visit);
+               newArea = customMapManager.getUserSpecificAreaKey(userId);
+            }
+
+            // Get the owner of the target map
+            int targetUserId = CustomMapManager.getUserId(newArea);
+            D.adminLog("{" + entityName + ":" + userId + "} Spawning in new map with owner check! {" + newArea + ":" + targetUserId + "}", D.ADMIN_LOG_TYPE.Visit);
+
+            NetEntity owner = EntityManager.self.getEntity(targetUserId);
+
+            // Get the base map
+            string baseMapKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(owner));
+
+            D.adminLog("{" + entityName + ":" + userId + "} Spawning in new map finish! {" + newArea + ":" + baseMapKey + "} of user {" + owner == null ? "Null" : owner.userId + "}", D.ADMIN_LOG_TYPE.Visit);
+            targetLocalPos = spawn == null
+               ? SpawnManager.self.getDefaultLocalPosition(baseMapKey, true)
+               : SpawnManager.self.getLocalPosition(baseMapKey, spawn, true);
          }
 
-         // Get the owner of the target map
-         int targetUserId = CustomMapManager.getUserId(newArea);
-         D.adminLog("{" + entityName + ":" + userId + "} Spawning in new map with owner check! {" + newArea + ":" + targetUserId + "}", D.ADMIN_LOG_TYPE.Visit);
-
-         NetEntity owner = EntityManager.self.getEntity(targetUserId);
-
-         // Get the base map
-         string baseMapKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(owner));
-
-         D.adminLog("{" + entityName + ":" + userId + "} Spawning in new map finish! {" + newArea + ":" + baseMapKey + "} of user {" + owner == null ? "Null" : owner.userId + "}", D.ADMIN_LOG_TYPE.Visit);
-         targetLocalPos = spawn == null
-            ? SpawnManager.self.getDefaultLocalPosition(baseMapKey, true)
-            : SpawnManager.self.getLocalPosition(baseMapKey, spawn, true);
       } else {
          D.adminLog("{" + entityName + ":" + userId + "} Spawning in new map WITHOUT custom map Data! {" + newArea + "}", D.ADMIN_LOG_TYPE.Visit);
          targetLocalPos = spawn == null

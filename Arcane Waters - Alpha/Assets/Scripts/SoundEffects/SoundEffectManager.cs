@@ -176,7 +176,7 @@ public class SoundEffectManager : GenericGameManager
    }
 
    public void playFmodSfx (string path, Vector3 position = default) {
-      if (Util.isBatch()) {
+      if (Util.isBatch() || string.IsNullOrEmpty(path)) {
          return;
       }
 
@@ -200,9 +200,7 @@ public class SoundEffectManager : GenericGameManager
             break;
       }
 
-      if (!string.IsNullOrEmpty(path)) {
-         playFmodSfx(path, position);
-      }
+      playFmodSfx(path, position);
    }
 
    public void playBossAbilitySfx (Enemy.Type enemyType, int abilityId, Vector3 position) {
@@ -256,13 +254,11 @@ public class SoundEffectManager : GenericGameManager
          playFmodSfx(hitPath, position);
       }
 
-      if (!string.IsNullOrEmpty(hurtPath)) {
-         playFmodSfx(hurtPath, position);
-      }
+      playFmodSfx(hurtPath, position);
    }
 
    public void playCannonballImpact (Cannonball impactType, Vector3 position) {
-      FMOD.Studio.EventInstance impactEvent = FMODUnity.RuntimeManager.CreateInstance(CANNONBALL_IMPACT);
+      FMOD.Studio.EventInstance impactEvent = createEventInstance(CANNONBALL_IMPACT);
       impactEvent.setParameterByName(AUDIO_SWITCH_PARAM, ((int) impactType) - 1);
       impactEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
       impactEvent.start();
@@ -275,7 +271,7 @@ public class SoundEffectManager : GenericGameManager
       checkTitleScreenAmbienceEvent();
 
       if (!_ambienceMusicEvent.isValid()) {
-         _ambienceMusicEvent = FMODUnity.RuntimeManager.CreateInstance(AMBIENCE_BED_MASTER);
+         _ambienceMusicEvent = createEventInstance(AMBIENCE_BED_MASTER);
       }
    }
 
@@ -357,13 +353,13 @@ public class SoundEffectManager : GenericGameManager
 
    private void checkTitleScreenAmbienceEvent () {
       if (!_titleScreenAmbienceEvent.isValid()) {
-         _titleScreenAmbienceEvent = FMODUnity.RuntimeManager.CreateInstance(TITLE_SCREEN_AMBIENCE);
+         _titleScreenAmbienceEvent = createEventInstance(TITLE_SCREEN_AMBIENCE);
       }
    }
 
    private void checkBackgroundMusicEvent () {
       if (!_backgroundMusicEvent.isValid()) {
-         _backgroundMusicEvent = FMODUnity.RuntimeManager.CreateInstance(BGM_MASTER);
+         _backgroundMusicEvent = createEventInstance(BGM_MASTER);
       }
    }
 
@@ -475,7 +471,7 @@ public class SoundEffectManager : GenericGameManager
 
    public void playShipSailingSfx (ShipSailingType shipSailingType, Transform shipTransform, Rigidbody2D shipBody) {
       if (!_shipSailingEvent.isValid()) {
-         _shipSailingEvent = FMODUnity.RuntimeManager.CreateInstance(SHIP_SAILING);
+         _shipSailingEvent = createEventInstance(SHIP_SAILING);
       }
 
       FMODUnity.RuntimeManager.AttachInstanceToGameObject(_shipSailingEvent, shipTransform, shipBody);
@@ -527,7 +523,7 @@ public class SoundEffectManager : GenericGameManager
          }
 
          if (param > -1) {
-            FMOD.Studio.EventInstance animalEvent = FMODUnity.RuntimeManager.CreateInstance(CRITTER_INFLECTION);
+            FMOD.Studio.EventInstance animalEvent = createEventInstance(CRITTER_INFLECTION);
             animalEvent.setParameterByName(AUDIO_SWITCH_PARAM, param);
             animalEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(target.position));
             animalEvent.start();
@@ -548,9 +544,7 @@ public class SoundEffectManager : GenericGameManager
             break;
       }
 
-      if (!string.IsNullOrEmpty(path)) {
-         playFmodSfx(path, position);
-      }
+      playFmodSfx(path, position);
    }
 
    public void playSeaEnemyDeathSfx (SeaMonsterEntity.Type monsterType, Vector3 position) {
@@ -572,9 +566,7 @@ public class SoundEffectManager : GenericGameManager
             break;
       }
 
-      if (!string.IsNullOrEmpty(path)) {
-         playFmodSfx(path, position);
-      }
+      playFmodSfx(path, position);
    }
 
    public void playGuiButtonConfirmSfx () {
@@ -610,7 +602,7 @@ public class SoundEffectManager : GenericGameManager
 
    public void playWeaponSfx (WeaponType sfxType, Weapon.Class weaponClass, Vector3 position) {
       //if (sfxType != WeaponType.None) {
-      FMOD.Studio.EventInstance weaponEvent = FMODUnity.RuntimeManager.CreateInstance(WEAPON_SWING);
+      FMOD.Studio.EventInstance weaponEvent = createEventInstance(WEAPON_SWING);
 
       //eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, ((int) sfxType) - 1);
       weaponEvent.setParameterByName(AUDIO_SWITCH_PARAM, 3); // Using the same parameter, for now.
@@ -623,7 +615,7 @@ public class SoundEffectManager : GenericGameManager
    }
 
    public void playSeaEnemyHitSfx (bool isShip, SeaMonsterEntity.Type seaMonsterType, bool isCrit, CannonballEffector.Type effectorType, GameObject source) {
-      FMOD.Studio.EventInstance hitEvent = FMODUnity.RuntimeManager.CreateInstance(ENEMY_SHIP_IMPACT);
+      FMOD.Studio.EventInstance hitEvent = createEventInstance(ENEMY_SHIP_IMPACT);
 
       hitEvent.setParameterByName(AUDIO_SWITCH_PARAM, isShip ? 0 : 1);
       hitEvent.setParameterByName(APPLY_CRIT_PARAM, isCrit ? 0 : 1);
@@ -655,7 +647,7 @@ public class SoundEffectManager : GenericGameManager
       hitEvent.release();
 
       // Hurt Event
-      playAttachedSfx(path, source);
+      playAttachedWithPath(path, source);
    }
 
    public void playNotificationPanelSfx () {
@@ -695,9 +687,20 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
+   // Horror Poison Bomb.
+   public void playHorrorPoisonSfx (HorrorAttackType attackType, Vector3 position) {
+      string path = string.Empty;
+      FMOD.Studio.EventInstance eventInstance = createEventInstance(HORROR_POISON_BOMB);
+
+      int param = attackType == HorrorAttackType.Cluster ? 1 : 0;
+
+      eventInstance.setParameterByName(AUDIO_SWITCH_PARAM, param);
+      playFmodSfx(path, position);
+   }
+
    // Ship Cannon Ball SFX
    public void playShipCannonSfx (SeaAbilityType seaAbilityType = SeaAbilityType.None, ProjectileType projectileType = ProjectileType.None, Vector3 position = default, Transform projectileTransform = null, Rigidbody2D projectileBody = null) {
-      FMOD.Studio.EventInstance shipCannonEvent = FMODUnity.RuntimeManager.CreateInstance(SHIP_CANNON);
+      FMOD.Studio.EventInstance shipCannonEvent = createEventInstance(SHIP_CANNON);
 
       int audioParam = 0;
 
@@ -747,17 +750,22 @@ public class SoundEffectManager : GenericGameManager
          case ProjectileType.Sea_Mine:
             playAttachedSfx(THROW_SEA_MINE, projectileTransform, projectileBody);
             break;
+         case ProjectileType.Tentacle:
+            if (seaAbilityType != SeaAbilityType.Horror_Poison_Cirle) {
+               playHorrorPoisonSfx(HorrorAttackType.Single, projectileTransform.position);
+            }
+            break;
       }
    }
 
    // Play attached SFX
-   public void playAttachedSfx (string path, GameObject target) {
+   public void playAttachedWithPath (string path, GameObject target) {
       if (!string.IsNullOrEmpty(path)) {
          FMODUnity.RuntimeManager.PlayOneShotAttached(path, target);
       }
    }
 
-   public void playAttachedSfx (SoundManager.Type soundType, GameObject target) {
+   public void playAttachedWithType (SoundManager.Type soundType, GameObject target) {
       string path = "";
 
       switch (soundType) {
@@ -766,13 +774,11 @@ public class SoundEffectManager : GenericGameManager
             break;
       }
 
-      if (!string.IsNullOrEmpty(path)) {
-         FMODUnity.RuntimeManager.PlayOneShotAttached(path, target);
-      }
+      playAttachedWithPath(path, target);
    }
 
    public void playAttachedSfx (string path, Transform targetTransform, Rigidbody2D targetBody) {
-      FMOD.Studio.EventInstance soundEvent = FMODUnity.RuntimeManager.CreateInstance(path);
+      FMOD.Studio.EventInstance soundEvent = createEventInstance(path);
       FMODUnity.RuntimeManager.AttachInstanceToGameObject(soundEvent, targetTransform, targetBody);
       soundEvent.start();
       soundEvent.release();
@@ -792,52 +798,52 @@ public class SoundEffectManager : GenericGameManager
       TileAttributes.Type[] attributesBuffer = new TileAttributes.Type[16];
 
       int count = area.getTileAttributes(playerPosition, attributesBuffer);
-      int audioParam = 7; // For generic footsteps, default
-
-      //Debug.Log(string.Join(", ", attributesBuffer));
+      int audioParam = 7; // For generic / interior footsteps, default
 
       if (count > 0) {
-         TileAttributes.Type attribute = attributesBuffer[count - 1];
+         if (!AreaManager.self.isInteriorArea(Global.player.areaKey)) {
+            TileAttributes.Type attribute = attributesBuffer[count - 1];
 
-         switch (attribute) {
-            case TileAttributes.Type.Generic:
-               switch (biomeType) {
-                  case Biome.Type.Forest:
-                  case Biome.Type.Mushroom:
-                  case Biome.Type.Pine:
-                     audioParam = 0; // Grass
-                     break;
-                  case Biome.Type.Desert:
-                  case Biome.Type.Snow:
-                     audioParam = 6; // Sand / Snow
-                     break;
-                  case Biome.Type.Lava:
-                     audioParam = 1; // Stone
-                     break;
-               }
-               break;
-            case TileAttributes.Type.Stone:
-               audioParam = 1;
-               break;
-            case TileAttributes.Type.Vine:
-            case TileAttributes.Type.Dirt:
-               audioParam = 5;
-               break;
-            case TileAttributes.Type.WaterPartial:
-            case TileAttributes.Type.WaterFull:
-               audioParam = 4;
-               break;
-            case TileAttributes.Type.Wood:
-               audioParam = 3;
-               break;
-            case TileAttributes.Type.Wooden_Bridge:
-               audioParam = 2;
-               break;
+            switch (attribute) {
+               case TileAttributes.Type.Generic:
+                  switch (biomeType) {
+                     case Biome.Type.Forest:
+                     case Biome.Type.Mushroom:
+                     case Biome.Type.Pine:
+                        audioParam = 0; // Grass
+                        break;
+                     case Biome.Type.Desert:
+                     case Biome.Type.Snow:
+                        audioParam = 6; // Sand / Snow
+                        break;
+                     case Biome.Type.Lava:
+                        audioParam = 1; // Stone
+                        break;
+                  }
+                  break;
+               case TileAttributes.Type.Stone:
+                  audioParam = 1;
+                  break;
+               case TileAttributes.Type.Vine:
+               case TileAttributes.Type.Dirt:
+                  audioParam = 5;
+                  break;
+               case TileAttributes.Type.WaterPartial:
+               case TileAttributes.Type.WaterFull:
+                  audioParam = 4;
+                  break;
+               case TileAttributes.Type.Wood:
+                  audioParam = 3;
+                  break;
+               case TileAttributes.Type.Wooden_Bridge:
+                  audioParam = 2;
+                  break;
+            }
          }
       }
 
       if (!_footstepsLastSound.ContainsKey(audioParam) || Time.time - _footstepsLastSound[audioParam] > .25f) {
-         FMOD.Studio.EventInstance footstepEvent = FMODUnity.RuntimeManager.CreateInstance(FOOTSTEP);
+         FMOD.Studio.EventInstance footstepEvent = createEventInstance(FOOTSTEP);
 
          footstepEvent.setParameterByName(AUDIO_SWITCH_PARAM, audioParam);
          footstepEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(playerPosition));
@@ -858,38 +864,59 @@ public class SoundEffectManager : GenericGameManager
       int audioParam = 0; // Grass is default
 
       if (count > 0) {
-         TileAttributes.Type attribute = attributesBuffer[count - 1];
+         if (!AreaManager.self.isInteriorArea(Global.player.areaKey)) {
 
-         switch (attribute) {
-            case TileAttributes.Type.Generic:
-            case TileAttributes.Type.Dirt:
-               if (attribute == TileAttributes.Type.Dirt) {
-                  audioParam = 1;
-               } else {
-                  switch (biomeType) {
-                     case Biome.Type.Desert:
-                     case Biome.Type.Snow:
-                        audioParam = 1; // Sand / Snow
-                        break;
+            TileAttributes.Type attribute = attributesBuffer[count - 1];
+
+            switch (attribute) {
+               case TileAttributes.Type.Generic:
+               case TileAttributes.Type.Dirt:
+                  if (attribute == TileAttributes.Type.Dirt) {
+                     audioParam = 1;
+                  } else {
+                     switch (biomeType) {
+                        case Biome.Type.Desert:
+                        case Biome.Type.Snow:
+                           audioParam = 1; // Sand / Snow
+                           break;
+                     }
                   }
-               }
-               break;
-            case TileAttributes.Type.WaterPartial:
-            case TileAttributes.Type.WaterFull:
-               audioParam = 2;
-               break;
-            case TileAttributes.Type.Carpet:
-               audioParam = 3;
-               break;
+                  break;
+               case TileAttributes.Type.WaterPartial:
+               case TileAttributes.Type.WaterFull:
+                  audioParam = 2;
+                  break;
+            }
+         } else {
+            audioParam = 3; // Interior / Carpet
          }
       }
 
-      FMOD.Studio.EventInstance landEvent = FMODUnity.RuntimeManager.CreateInstance(JUMP_LAND);
+      FMOD.Studio.EventInstance landEvent = createEventInstance(JUMP_LAND);
 
       landEvent.setParameterByName(AUDIO_SWITCH_PARAM, audioParam);
       landEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(playerPosition));
       landEvent.start();
       landEvent.release();
+   }
+
+   public void playDoorSfx (DoorAction action, Biome.Type biomeType, Vector3 position) {
+      string path = string.Empty;
+
+      switch (action) {
+         case DoorAction.Open:
+            path = biomeType == Biome.Type.Desert ? string.Empty : DOOR_OPEN;
+            break;
+         case DoorAction.Close:
+            path = biomeType == Biome.Type.Desert ? DOOR_CLOTH_CLOSE : DOOR_CLOSE;
+            break;
+      }
+
+      playFmodSfx(path, position);
+   }
+
+   private FMOD.Studio.EventInstance createEventInstance (string path) {
+      return FMODUnity.RuntimeManager.CreateInstance(path);
    }
 
    #region Private Variables
@@ -966,6 +993,13 @@ public class SoundEffectManager : GenericGameManager
       Forest_Cementery = 10
    }
 
+   public enum DoorAction
+   {
+      None = 0,
+      Open = 1,
+      Close = 2
+   }
+
    private enum LandAbility
    {
       None = 0,
@@ -989,11 +1023,18 @@ public class SoundEffectManager : GenericGameManager
    public enum SeaAbilityType
    {
       None = 0,
-      Horror_Poison = 1,
+      Horror_Poison_Cirle = 1,
       Sail_Shredder = 2,
       Davy_Jones = 3,
       Fishman_Attack = 4,
       Reef_Giant_Attack = 5
+   }
+
+   public enum HorrorAttackType
+   {
+      None = 0,
+      Single = 1,
+      Cluster = 2
    }
 
    public enum Cannonball
@@ -1009,7 +1050,8 @@ public class SoundEffectManager : GenericGameManager
       Cannonball_Ice = 2,
       Cannonball_Fire = 3,
       Sea_Mine = 4,
-      Fishman_Attack = 6
+      Fishman_Attack = 6,
+      Tentacle = 7
    }
 
    public enum ShipSailingType

@@ -59,7 +59,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       }
 
       if (player.isLocalPlayer && canPlayerUseWarp(player) && !player.isAboutToWarpOnClient) {
-         // If a player is client, show loading screen and stop the player         
+                 
          // If it's a custom map, we have to own it, otherwise let server prompt us with map selection panel
          if (!string.IsNullOrEmpty(areaTarget) && AreaManager.self.tryGetCustomMapManager(areaTarget, out CustomMapManager customMapManager)) {
             if (!customMapManager.canUserWarpInto(player, areaTarget, out System.Action<NetEntity> denyWarpHandler)) {
@@ -68,6 +68,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             }
          }
 
+         // If a player is client, show loading screen and stop the player 
          D.adminLog("Sending warp request to server", D.ADMIN_LOG_TYPE.Warp);
          player.setupForWarpClient();
 
@@ -205,7 +206,23 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
          string visitedArea = areaTarget + "_user";
          if (isWarpingToGuildSpecificArea) {
-            player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
+            
+            // If the player isn't in a guild, send them to their home town
+            if (player.guildId <= 0) {
+               player.spawnInBiomeHomeTown();
+            } else {
+               if (areaTarget == CustomGuildMapManager.GROUP_AREA_KEY) {
+                  if (AreaManager.self.tryGetCustomMapManager(areaTarget, out CustomMapManager guildMapManager)) {
+                     areaTarget = guildMapManager.getGuildSpecificAreaKey(player.guildId);
+                     player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
+                  } else {
+                     D.error("Couldn't find custom guild map manager for area: " + areaTarget);
+                     player.spawnInBiomeHomeTown();
+                  }
+               } else {
+                  player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
+               }
+            }
 
          } else if (isWarpingToPrivateCustomArea && isUserInUserSpecificArea) {
             int ownerIdOfNextMap = -1;

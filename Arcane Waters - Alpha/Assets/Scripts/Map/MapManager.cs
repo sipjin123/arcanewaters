@@ -340,8 +340,8 @@ public class MapManager : MonoBehaviour
          _nextAreaKey = null;
       }
 
-      if (area.isInterior) {
-         SoundEffectManager.self.playFmodSfx(SoundEffectManager.DOOR_OPEN);
+      if (area.isInterior && Global.player != null) {
+         SoundEffectManager.self.playDoorSfx(SoundEffectManager.DoorAction.Close, biome, Global.player.transform.position);
       }
 
       // Invoke canvas checked in 5 seconds after map load
@@ -442,10 +442,15 @@ public class MapManager : MonoBehaviour
       }
 
       // Check if there are any prefab changes that occurred that does not exist for visiting users
-      bool isSpecificKey = CustomMapManager.isUserSpecificAreaKey(area.areaKey);
-      if (!hasFoundAnyChanges && isSpecificKey && Global.player != null) {
+      bool isUserSpecificKey = CustomMapManager.isUserSpecificAreaKey(area.areaKey);
+      bool isGuildSpecificKey = CustomMapManager.isGuildSpecificAreaKey(area.areaKey);
+      if (!hasFoundAnyChanges && isUserSpecificKey && Global.player != null) {
          int userOwner = CustomMapManager.getUserId(area.areaKey);
          if (userOwner != Global.player.userId) {
+            createPrefab(area, biome, changes, true);
+         }
+      } else if (!hasFoundAnyChanges && isGuildSpecificKey && Global.player != null) {
+         if (Global.player.guildId == CustomGuildMapManager.getGuildId(area.areaKey)) {
             createPrefab(area, biome, changes, true);
          }
       }

@@ -7015,7 +7015,32 @@ public class DB_Main : DB_MainStub
 
       return userId;
    }
+   
+   public static new int getDeletedUserId (string username) {
+      int userId = -1;
 
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT usrId FROM users_deleted WHERE usrName=@usrName", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrName", username);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  userId = dataReader.GetInt32("usrId");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return userId;
+   }   
+   
    public static new UserObjects getUserObjects (int userId) {
       UserObjects userObjects = new UserObjects();
 

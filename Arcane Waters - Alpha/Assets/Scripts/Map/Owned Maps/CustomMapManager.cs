@@ -38,7 +38,7 @@ public abstract class CustomMapManager
    }
 
    public static bool isGuildSpecificAreaKey (string areaKey) {
-      return areaKey.Contains("_guild");
+      return areaKey.Contains(CustomGuildMapManager.GROUP_AREA_KEY);
    }
 
    // Extracts map type area key from a user specific area key
@@ -70,11 +70,15 @@ public abstract class CustomMapManager
    }
 
    public static int getGuildId (string guildSpecificAreaKey) {
-      return int.Parse(guildSpecificAreaKey.Split(new string[] { "_guild" }, StringSplitOptions.RemoveEmptyEntries)[1]);
+      if (guildSpecificAreaKey.Contains("_guild")) {
+         return int.Parse(guildSpecificAreaKey.Split(new string[] { "_guild" }, StringSplitOptions.RemoveEmptyEntries)[1]);
+      } else {
+         return -1;
+      }
    }
 
    public static bool isPrivateCustomArea (string areaKey) {
-      return areaKey.Contains(CustomHouseManager.GROUP_AREA_KEY) || areaKey.Contains(CustomFarmManager.GROUP_AREA_KEY) || areaKey.Contains(CustomGuildMapManager.GROUP_AREA_KEY) || isUserSpecificAreaKey(areaKey);
+      return areaKey.Contains(CustomHouseManager.GROUP_AREA_KEY) || areaKey.Contains(CustomFarmManager.GROUP_AREA_KEY) || CustomMapManager.isGuildSpecificAreaKey(areaKey) || isUserSpecificAreaKey(areaKey);
    }
 
    // Gets the main placeholder map and the base maps for this type of custom map

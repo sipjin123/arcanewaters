@@ -241,19 +241,6 @@ public class AdminManager : NetworkBehaviour
 
    private IEnumerator CO_TestOpenWorld (int cpuCutoff, int ramCutoff, int numInitialAreas, int delayBetweenNewAreas) {
 
-      // Tell PerformanceUtil to start fetching data from zabbix
-      PerformanceUtil.resetZabbixValues();
-      PerformanceUtil.self.updateZabbixData = true;
-
-      // Wait for first params to be fetched from zabbix
-      while (PerformanceUtil.getZabbixCpuUsage() <= Mathf.Epsilon) {
-         yield return null;
-      }
-
-      while (PerformanceUtil.getZabbixRamUsage() <= Mathf.Epsilon) {
-         yield return null;
-      }
-
       // Measure initial values
       float baselineCpuUsage = PerformanceUtil.getZabbixCpuUsage();
       float baselineRamUsage = PerformanceUtil.getZabbixRamUsage();
@@ -318,8 +305,6 @@ public class AdminManager : NetworkBehaviour
          currentCpuUsage = PerformanceUtil.getZabbixCpuUsage();
          currentRamUsage = PerformanceUtil.getZabbixRamUsage();
       }
-
-      PerformanceUtil.self.updateZabbixData = false;
 
       float testDuration = (float) NetworkTime.time - testStartTime;
       D.debug("Testing Open World complete - reporting results to the player.");
@@ -3063,8 +3048,8 @@ public class AdminManager : NetworkBehaviour
       if (string.IsNullOrEmpty(partialAreaKey)) {
          // string[] testAreaKeys = { "Pineward_Shipyard", "Far Sands", "Snow Weapon Shop 1", "Andriusti", "Starting Sea Map", "Starting Treasure Site", "Andrius Ledge" };
          // string[] testAreaKeys = { "bot_test" };
-         // string[] testAreaKeys = { "Tutorial Town", "Tutorial Town General Shop", "Tutorial Town Cemetery v2", "Sea Voyage 1", "Sea Voyage 2", "Sea Voyage 3" };
-         string[] testAreaKeys = { "Sea Voyage 2", "Sea Voyage 3" };
+         string[] testAreaKeys = { "Tutorial Town", "Tutorial Town General Shop", "Tutorial Town Cemetery v2", "Sea Voyage 1", "Sea Voyage 2", "Sea Voyage 3" };
+         // string[] testAreaKeys = { "Sea Voyage 2", "Sea Voyage 3" };
          closestAreaKey = testAreaKeys[UnityEngine.Random.Range(0, testAreaKeys.Count())];
       } else {
          // Try to find a custom map of this key

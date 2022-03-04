@@ -861,7 +861,7 @@ public class SeaEntity : NetEntity
             ExplosionManager.createSlimeExplosion(pos);
 
             // Play attached SFX
-            SoundEffectManager.self.playAttachedSfx(SoundEffectManager.HORROR_BLOB_DAMAGE, this.gameObject);
+            SoundEffectManager.self.playAttachedWithPath(SoundEffectManager.HORROR_BLOB_DAMAGE, this.gameObject);
          } else if (attackType == Attack.Type.Ice) {
             // TODO: Add ice effect logic here
          } else {
@@ -1036,7 +1036,6 @@ public class SeaEntity : NetEntity
       updateSprites();
 
       assignEntityName();
-
    }
 
    protected virtual void assignEntityName () {
@@ -1124,6 +1123,9 @@ public class SeaEntity : NetEntity
             int shotToSkip = UnityEngine.Random.Range(0, totalNumShots);
             int shotCounter = -1;
 
+            // Play sfx for cluster
+            SoundEffectManager.self.playHorrorPoisonSfx(SoundEffectManager.HorrorAttackType.Cluster, spawnPosition);
+
             // Inner circle
             for (float angle = 0; angle < 360f; angle += angleStep) {
                shotCounter++;
@@ -1132,6 +1134,9 @@ public class SeaEntity : NetEntity
                }
                StartCoroutine(CO_FireAtSpot(spot + new Vector2(innerRadius * Mathf.Cos(Mathf.Deg2Rad * angle), innerRadius * Mathf.Sin(Mathf.Deg2Rad * angle)), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
             }
+
+            // Play sfx for cluster
+            SoundEffectManager.self.playHorrorPoisonSfx(SoundEffectManager.HorrorAttackType.Cluster, spawnPosition);
 
             // Outer circle
             for (float angle = angleStep / 2; angle < 360f; angle += angleStep) {
@@ -1211,7 +1216,7 @@ public class SeaEntity : NetEntity
       projectile.initAbilityProjectile(netId, instanceId, attackMagnitude, abilityId, projectileVelocity, lobHeight, lifetime: timeToReachTarget, attackType: attackType, disableColliderFor: disableColliderFor, minDropShadowScale: 0.5f);
       NetworkServer.Spawn(projectile.gameObject);
 
-      Rpc_SpawnProjectileIndicator(endPosition, timeToReachTarget, projectileData.projectileScale, abilityData.sfxType);
+      Rpc_SpawnProjectileIndicator(endPosition, timeToReachTarget, projectileData.projectileScale, seaAbilityType);
    }
 
    [ClientRpc]

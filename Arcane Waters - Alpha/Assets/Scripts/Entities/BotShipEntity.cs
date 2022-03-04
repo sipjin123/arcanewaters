@@ -272,9 +272,11 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       aimTransform.gameObject.SetActive(true);
       aimTransform.localScale = Vector3.one * 1.25f;
       aimTransform.DOScale(1.0f, 0.25f);
-      _reticleRenderer.enabled = true;
-      _reticleRenderer.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
-      _reticleRenderer.DOFade(1.0f, 0.25f);
+      if (_reticleRenderer) {
+         _reticleRenderer.enabled = true;
+         _reticleRenderer.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+         _reticleRenderer.DOFade(1.0f, 0.25f);
+      }
    }
 
    private void hideTargetingEffects () {

@@ -21,9 +21,6 @@ public class Discovery : NetworkBehaviour, IObserver
       Natural = 3
    }
 
-   // The max valid distance between the player and a discovery
-   public const float MAX_VALID_DISTANCE = 5.0f;
-
    // The discovery data
    [SyncVar]
    public DiscoveryData data;
@@ -78,7 +75,7 @@ public class Discovery : NetworkBehaviour, IObserver
       // Animate Slider based on progress
       _revealSliderVisual.transform.localPosition = new Vector3(_isRevealed ? 0 : _currentProgress, 0, 0);
 
-      if (!_isRevealed && _isLocalPlayerInside && !_isWaitingForRequestResponse) {
+      if (!_isRevealed && !_isWaitingForRequestResponse) {
          if (_hovered && _pointerHeld) {
             // Check if the animation is at the right point
             if (_revealSpriteAnim.getIndex() == revealAnimPressedFrame() - 1 || _revealSpriteAnim.getIndex() == revealAnimPressedFrame()) {
@@ -122,20 +119,30 @@ public class Discovery : NetworkBehaviour, IObserver
    public void onPointerEnter () {
       _hovered = true;
       _outline.setVisibility(_isRevealed);
+
+      _showMist = false;
+      if (!_isRevealed) {
+         if (_showRevealVisual == false) {
+            _revealSpriteAnim.updateIndexMinMax(0, revealAnimPressedFrame() - 1);
+            _revealSpriteAnim.setIndex(0);
+            _revealSpriteAnim.resetAnimation();
+         }
+
+         _showRevealVisual = true;
+      }
    }
 
    public void onPointerExit () {
       _hovered = false;
       _outline.setVisibility(false);
+
+      if (!_isRevealed) {
+         _showMist = true;
+      }
+      _showRevealVisual = false;
    }
 
    private void openDiscoveryPanel () {
-      // Make sure the player is close enough
-      if (!_isLocalPlayerInside) {
-         FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asTooFar();
-         return;
-      }
-
       DiscoveryPanel panel = PanelManager.self.get(Panel.Type.Discovery) as DiscoveryPanel;
 
       if (!panel.isShowing()) {
@@ -169,32 +176,6 @@ public class Discovery : NetworkBehaviour, IObserver
          if (canvas.renderMode == RenderMode.WorldSpace) {
             canvas.worldCamera = Camera.main;
          }
-      }
-   }
-
-   private void OnTriggerStay2D (Collider2D collision) {
-      if (Global.player != null && collision.GetComponent<NetEntity>() == Global.player) {
-         _isLocalPlayerInside = true;
-         _showMist = false;
-         if (!_isRevealed) {
-            if (_showRevealVisual == false) {
-               _revealSpriteAnim.updateIndexMinMax(0, revealAnimPressedFrame() - 1);
-               _revealSpriteAnim.setIndex(0);
-               _revealSpriteAnim.resetAnimation();
-            }
-
-            _showRevealVisual = true;
-         }
-      }
-   }
-
-   private void OnTriggerExit2D (Collider2D collision) {
-      if (_isLocalPlayerInside && Global.player != null && collision.GetComponent<NetEntity>() == Global.player) {
-         _isLocalPlayerInside = false;
-         if (!_isRevealed) {
-            _showMist = true;
-         }
-         _showRevealVisual = false;
       }
    }
 
@@ -261,9 +242,6 @@ public class Discovery : NetworkBehaviour, IObserver
 
    // How much progress has the player done exploring this discovery
    private float _currentProgress = default;
-
-   // True when the local player is within the trigger
-   private bool _isLocalPlayerInside = default;
 
    // True when the discovery is explored by the local player
    private bool _isRevealed = false;

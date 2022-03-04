@@ -267,15 +267,18 @@ public class Util : MonoBehaviour
    }
    
    public static bool isLocalDevBuild () {
-      TextAsset deploymentConfigAsset = Resources.Load<TextAsset>("config");
-      Dictionary<string, object> deploymentConfig = Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string, object>;
-      string buildId = "";
+      try {
+         TextAsset deploymentConfigAsset = Resources.Load<TextAsset>("config");
+         Dictionary<string, object> deploymentConfig = Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string, object>;
+         string buildId = "";
 
-      if (deploymentConfig != null && deploymentConfig.ContainsKey("branch")) {
-         buildId = deploymentConfig["buildId"].ToString();
+         if (deploymentConfig != null && deploymentConfig.ContainsKey("branch")) {
+            buildId = deploymentConfig["buildId"].ToString();
+         }
+         return (buildId == "");
+      } catch {
+         return true;
       }
-
-      return (buildId == "");
    }   
 
    public static bool isEmpty (String str) {

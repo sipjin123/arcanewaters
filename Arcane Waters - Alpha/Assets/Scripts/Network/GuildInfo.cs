@@ -9,6 +9,7 @@ using System;
 using MySql.Data.MySqlClient;
 #endif
 
+[Serializable]
 public class GuildInfo
 {
    #region Public Variables

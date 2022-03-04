@@ -95,7 +95,7 @@ public class DiscoveryManager : MonoBehaviour
    [Server]
    public bool isDiscoveryFindingValid (int discoveryId, NetEntity byPlayer, out Discovery discovery) {
       foreach (Discovery d in _discoveries) {
-         if (d != null && d.data.discoveryId == discoveryId && getDistanceFromDiscovery(d, byPlayer) <= Discovery.MAX_VALID_DISTANCE && d.instanceId == byPlayer.instanceId) {
+         if (d != null && d.data.discoveryId == discoveryId && d.instanceId == byPlayer.instanceId) {
             discovery = d;
             return true;
          }
@@ -103,10 +103,6 @@ public class DiscoveryManager : MonoBehaviour
 
       discovery = null;
       return false;
-   }
-
-   private float getDistanceFromDiscovery (Discovery discovery, NetEntity from) {
-      return Vector2.Distance(discovery.transform.position, from.transform.position);
    }
 
    [Server]

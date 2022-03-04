@@ -36,6 +36,9 @@ namespace MapCustomization
       // Owner userId of the current area
       public static int areaOwnerId { get; private set; }
 
+      // The guild id of the guild that owns the current area, if it's a guild area
+      public static int areaGuildId { get; private set; }
+
       // Remaining props for the user to place
       public static List<ItemInstance> remainingProps { get; private set; }
 
@@ -81,7 +84,7 @@ namespace MapCustomization
 
          // Make sure that the user can only edit on a map where they have permissions
          bool hasAreaPermissions = (CustomMapManager.isUserSpecificAreaKey(Global.player.areaKey) && CustomMapManager.getUserId(Global.player.areaKey) == Global.player.userId) || 
-         (Global.player.areaKey.Contains(CustomGuildMapManager.GROUP_AREA_KEY) && CustomMapManager.getGuildId(Global.player.areaKey) == Global.player.guildId);
+         (CustomMapManager.isGuildSpecificAreaKey(Global.player.areaKey) && CustomMapManager.getGuildId(Global.player.areaKey) == Global.player.guildId);
 
          // Check if player should be customizing
          bool shouldBeCustomizing = AreaManager.self.tryGetCustomMapManager(Global.player.areaKey, out CustomMapManager cmm) && // Check that this is a customizable area
@@ -109,7 +112,7 @@ namespace MapCustomization
             return;
          }
 
-         if (!CustomMapManager.isUserSpecificAreaKey(areaName) && !areaName.Contains(CustomGuildMapManager.GROUP_AREA_KEY)) {
+         if (!CustomMapManager.isUserSpecificAreaKey(areaName) && !CustomMapManager.isGuildSpecificAreaKey(areaName)) {
             D.error("Trying to customize a map by a key that is not user-specific and is not a guild map: " + areaName);
             return;
          }
@@ -128,6 +131,7 @@ namespace MapCustomization
 
          currentBiome = entity.getInstance().biome;
          areaOwnerId = CustomMapManager.getUserId(areaName);
+         areaGuildId = CustomMapManager.getGuildId(areaName);
 
          // Make sure the customization UI is active
          self.customizationUI.gameObject.SetActive(true);
@@ -195,7 +199,7 @@ namespace MapCustomization
 
          if (hoveredPrefab.anyUnappliedState()) {
             if (validatePrefabChanges(currentArea, currentBiome, remainingProps, hoveredPrefab.unappliedChanges, false, out string errorMessage)) {
-               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, hoveredPrefab.unappliedChanges);
+               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, hoveredPrefab.unappliedChanges, areaGuildId);
 
                // Increase remaining prop item that corresponds to this prefab if it was not placed in editor
                if (!hoveredPrefab.mapEditorState.created) {
@@ -293,7 +297,7 @@ namespace MapCustomization
             _customizablePrefabs.Add(_newPrefab.unappliedChanges.id, _newPrefab);
             if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _newPrefab.unappliedChanges, false, out string errorMessage)) {
                _newPrefab.setGameInteractionsActive(true);
-               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges);
+               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges, areaGuildId);
                SoundEffectManager.self.playFmodSfx(SoundEffectManager.PLACE_EDITABLE_OBJECT, position: worldPosition);
                selectPrefab(_newPrefab);
 
@@ -350,7 +354,7 @@ namespace MapCustomization
                _selectedPrefab.unappliedChanges.localPosition = dragStartPosition;
                _selectedPrefab.submitUnappliedChanges();
             } else {
-               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _draggedPrefab.unappliedChanges);
+               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _draggedPrefab.unappliedChanges, areaGuildId);
                _draggedPrefab.submitUnappliedChanges();
             }
             _draggedPrefab = null;

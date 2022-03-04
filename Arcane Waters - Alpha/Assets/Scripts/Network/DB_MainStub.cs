@@ -913,6 +913,10 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
+   public static int getDeletedUserId (string username) {
+      return 0;
+   }
+   
    public static void addGold (int userId, int amount) {
 
    }
