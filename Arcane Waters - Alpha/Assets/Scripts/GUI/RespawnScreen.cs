@@ -65,7 +65,7 @@ public class RespawnScreen : MonoBehaviour {
 
          if (playerShip != null) {         
             // If the player dies in a pvp or league area, respawn them in the same map
-            if (VoyageManager.isPvpArenaArea(playerShip.areaKey) || VoyageManager.isAnyLeagueArea(playerShip.areaKey)) {
+            if (!VoyageManager.isOpenWorld(playerShip.areaKey) && (VoyageManager.isPvpArenaArea(playerShip.areaKey) || VoyageManager.isAnyLeagueArea(playerShip.areaKey))) {
                D.adminLog("Player Ship Sending Request for Instance Respawn to server", D.ADMIN_LOG_TYPE.Respawn);
                setLifeboatVisibility(false);
                playerShip.Cmd_RespawnPlayerInInstance();
@@ -153,7 +153,7 @@ public class RespawnScreen : MonoBehaviour {
    }
 
    private void updateButtonText () {
-      if (Global.player != null && VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
+      if (Global.player != null && VoyageManager.isPvpArenaArea(Global.player.areaKey) && !VoyageManager.isOpenWorld(Global.player.areaKey)) {
          buttonText.text = BUTTON_TEXT_PVP;
       } else if (Global.player != null && VoyageManager.isAnyLeagueArea(Global.player.areaKey)) {
          buttonText.text = BUTTON_TEXT_LEAGUE;
@@ -163,6 +163,11 @@ public class RespawnScreen : MonoBehaviour {
    }
 
    private bool tryShowCountdown () {
+      // Do not show countdown for open world deaths
+      if (VoyageManager.isOpenWorld(Global.player.areaKey)) {
+         return false;
+      }
+
       if (Global.player != null && !PanelManager.self.countdownScreen.isShowing() && VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
          // Since the introduction of the UINavigation, the content can be hidden by making it not interactable
          Global.player.rpc.Cmd_RequestPvpRespawnTimeout();

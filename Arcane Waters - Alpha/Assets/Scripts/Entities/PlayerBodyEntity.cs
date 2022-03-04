@@ -375,7 +375,20 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          if (myAnimatorClip.Length > 0) {
             if (myAnimatorClip[0].clip.name.ToLower().ToString().Contains("interact")) {
                float lapsedTime = myAnimatorClip[0].clip.length * animationState.normalizedTime;
-               if (lapsedTime > .025f && !hasTriggeredInteractEvent) {
+
+               float timeTarget = 0;
+               int currPing = Util.getPing();
+               if (currPing < 100) {
+                  timeTarget = 0.025f;
+               } else if (currPing < 150) {
+                  timeTarget = 0.015f;
+                  D.debug("Trigger interaction using Mid Speed {" + timeTarget + "}{" + currPing + "}");
+               } else {
+                  timeTarget = 0;
+                  D.debug("Trigger interaction using Slowest Speed {" + timeTarget + "}{" + currPing + "}");
+               }
+
+               if (lapsedTime > timeTarget && !hasTriggeredInteractEvent) {
                   hasTriggeredInteractEvent = true;
                   interactCollisionEvent.Invoke();
                }
