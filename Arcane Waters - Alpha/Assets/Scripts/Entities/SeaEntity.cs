@@ -340,7 +340,9 @@ public class SeaEntity : NetEntity
                }
 
                if (this.isPlayerShip()) {
-                  rpc.processBadgeReward(_lastAttackerNetId);
+                  if (VoyageManager.isOpenWorld(areaKey)) {
+                     rpc.processBadgeReward(_lastAttackerNetId);
+                  }
 
                   gameStatsManager.addPlayerKillCount(lastAttacker.userId);
                   gameStatsManager.addDeathCount(this.userId);

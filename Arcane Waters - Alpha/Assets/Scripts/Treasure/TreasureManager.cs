@@ -17,9 +17,6 @@ public class TreasureManager : MonoBehaviour {
    // The prefab we use for creating Treasure Chests for monster drops
    public TreasureChest monsterBagPrefab;
 
-   // The floating item prefab reference
-   public GameObject floatingItemPrefab;
-
    // The prefab we use for creating floating icons
    public GameObject floatingIconPrefab;
 

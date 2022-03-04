@@ -10,7 +10,13 @@ public class RewardManager : MonoBehaviour {
 
    // Self reference
    public static RewardManager self;
-   
+
+   // The sprite for badges rewarded on pvp kill in open world
+   public Sprite badgeSprite;
+
+   // The floating item prefab reference
+   public GameObject floatingItemPrefab;
+
    #endregion
 
    private void Awake () {
@@ -21,7 +27,7 @@ public class RewardManager : MonoBehaviour {
       yield return new WaitForSeconds(.2f);
 
       // Create a floating icon
-      GameObject floatingItem = Instantiate(TreasureManager.self.floatingItemPrefab, transformVector, Quaternion.identity);
+      GameObject floatingItem = Instantiate(floatingItemPrefab, transformVector, Quaternion.identity);
       GameObject floatingIcon = floatingItem.transform.GetChild(0).gameObject;
       //floatingIcon.transform.SetParent(this.transform);
       floatingIcon.transform.localPosition = new Vector3(0f, .04f);
@@ -30,7 +36,11 @@ public class RewardManager : MonoBehaviour {
       if (item.category == Item.Category.Quest_Item) {
          QuestItem questItem = EquipmentXMLManager.self.getQuestItemById(item.itemTypeId);
          if (questItem != null) {
-            image.sprite = ImageManager.getSprite(questItem.iconPath);
+            if (questItem.itemTypeId == 13 && badgeSprite != null) {
+               image.sprite = badgeSprite;
+            } else {
+               image.sprite = ImageManager.getSprite(questItem.iconPath);
+            }
             itemName = questItem.itemName;
          }
       }
