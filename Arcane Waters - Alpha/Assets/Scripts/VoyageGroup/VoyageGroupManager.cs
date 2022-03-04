@@ -465,6 +465,17 @@ public class VoyageGroupManager : MonoBehaviour
       return false;
    }
 
+   [Server]
+   public bool isGuildAllianceInvitationSpam (int guildId, int allyId) {
+      // Get the invitee log for this user
+      if (_guildAllianceInvitationsLog.TryGetValue(guildId, out HashSet<int> inviteeLog)) {
+         if (inviteeLog.Contains(allyId)) {
+            return true;
+         }
+      }
+
+      return false;
+   }
 
    [Server]
    public bool isGroupInvitationSpam (int inviterUserId, string inviteeName) {
@@ -618,6 +629,36 @@ public class VoyageGroupManager : MonoBehaviour
    }
 
    [Server]
+   public void logGuildAllianceInvitation (int guildId, int allyId) {
+      // Check if the log exists for this inviter
+      if (_guildAllianceInvitationsLog.TryGetValue(guildId, out HashSet<int> inviteeLog)) {
+         if (!inviteeLog.Contains(allyId)) {
+            inviteeLog.Add(allyId);
+
+            // Remove the invitee from the log after the defined interval
+            StartCoroutine(CO_RemoveGuildAllianceInvitationLog(guildId, allyId));
+         }
+      } else {
+         // Create the log
+         HashSet<int> newInviteeLog = new HashSet<int>();
+         newInviteeLog.Add(allyId);
+         _guildAllianceInvitationsLog.Add(guildId, newInviteeLog);
+
+         // Remove the invitee from the log after the defined interval
+         StartCoroutine(CO_RemoveGuildAllianceInvitationLog(guildId, allyId));
+      }
+   }
+   
+   [Server]
+   private IEnumerator CO_RemoveGuildAllianceInvitationLog (int guildId, int allyId) {
+      yield return new WaitForSeconds(GROUP_INVITE_MIN_INTERVAL);
+
+      if (_guildAllianceInvitationsLog.TryGetValue(guildId, out HashSet<int> inviteeLog)) {
+         inviteeLog.Remove(allyId);
+      }
+   }
+
+   [Server]
    private IEnumerator CO_RemoveGroupInvitationLog (int inviterUserId, string inviteeName) {
       yield return new WaitForSeconds(GROUP_INVITE_MIN_INTERVAL);
 
@@ -702,6 +743,9 @@ public class VoyageGroupManager : MonoBehaviour
    }
 
    #region Private Variables
+   
+   // Keeps a log of the guild alliance invitations to prevent spamming
+   private Dictionary<int, HashSet<int>> _guildAllianceInvitationsLog = new Dictionary<int, HashSet<int>>();
 
    // Keeps a log of the group invitations to prevent spamming
    private Dictionary<int, HashSet<string>> _groupInvitationsLog = new Dictionary<int, HashSet<string>>();
