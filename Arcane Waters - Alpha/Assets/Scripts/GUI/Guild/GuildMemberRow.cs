@@ -116,7 +116,7 @@ public class GuildMemberRow : MonoBehaviour, IPointerClickHandler
          bool newState = !highlightRow.activeSelf;
 
          // Disable all rows
-         foreach (GuildMemberRow row in GuildPanel.self.getGuildMemeberRows()) {
+         foreach (GuildMemberRow row in GuildPanel.self.getGuildMemberRows()) {
             row.highlightRow.SetActive(false);
             foreach (Image image in row.backgroundImages) {
                image.sprite = inactiveBackgroundSprite;

@@ -125,6 +125,7 @@ public class GuildManager : MonoBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.assignGuild(recipient.userId, invite.guildId);
          int rankId = DB_Main.getLowestRankIdGuild(invite.guildId);
+         UserInfo userInfo = DB_Main.getUserInfoById(recipient.userId);
 
          DB_Main.assignRankGuild(recipient.userId, rankId);
          List<GuildRankInfo> info = DB_Main.getGuildRankInfo(invite.guildId);
@@ -144,6 +145,7 @@ public class GuildManager : MonoBehaviour {
             recipient.guildIconSigilPalettes = guildInfo.iconSigilPalettes;
             recipient.guildMapBaseId = guildInfo.guildMapBaseId;
             recipient.Rpc_UpdateGuildIconSprites(recipient.guildIconBackground, recipient.guildIconBackPalettes, recipient.guildIconBorder, recipient.guildIconSigil, recipient.guildIconSigilPalettes);
+            recipient.rpc.refreshPvpStateForUser(userInfo, recipient);
          });
       });
    }

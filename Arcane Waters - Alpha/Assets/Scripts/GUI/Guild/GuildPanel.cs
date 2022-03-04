@@ -12,8 +12,11 @@ public class GuildPanel : Panel {
    // The guild id
    public int guildId;
 
-   // The button for editting ranks in guild
+   // The button for editing ranks in guild
    public Button ranksButton;
+
+   // The button that will take a user to their guild map
+   public Button guildMapbutton;
 
    // The button for creating a guild
    public Button createButton;
@@ -67,7 +70,7 @@ public class GuildPanel : Panel {
    [Header("Guild alliance")]
 
    // Shows the guild panel
-   public Button showGuildAllyPanel;
+   public Button showGuildAllyPanelButton;
 
    // The ui load blocker
    public GameObject guildAllyLoadBlocker;
@@ -157,7 +160,7 @@ public class GuildPanel : Panel {
 
       self = this;
 
-      showGuildAllyPanel.onClick.AddListener(() => showGuildAllies());
+      showGuildAllyPanelButton.onClick.AddListener(() => showGuildAllies());
       closeGuildAllyPanelButton.onClick.AddListener(() => closeGuildAlliesPanel());
    }
 
@@ -196,6 +199,8 @@ public class GuildPanel : Panel {
       leaveButton.gameObject.SetActive(inGuild);
       ranksButton.gameObject.SetActive(inGuild);
       bottomDecarationNoLeader.SetActive(inGuild);
+      guildMapbutton.gameObject.SetActive(inGuild);
+      showGuildAllyPanelButton.gameObject.SetActive(inGuild);
       foreach (GameObject obj in notInGuildObjects) {
          obj.SetActive(!inGuild);
       }
@@ -304,7 +309,7 @@ public class GuildPanel : Panel {
       ranksButton.interactable = Global.player.canPerformAction(GuildPermission.EditRanks);
    }
 
-   public List<GuildMemberRow> getGuildMemeberRows () {
+   public List<GuildMemberRow> getGuildMemberRows () {
       return _guildMemberRowsReference;
    }
 
@@ -356,6 +361,11 @@ public class GuildPanel : Panel {
       if (row != null && !checkIfActionOnSelf(row)) {
          Global.player.rpc.Cmd_AppointGuildLeader(row.getUserId());
       }
+   }
+
+   public void goToGuildMapButtonClicked () {
+      Global.player.Cmd_GoToGuildMap();
+      hide();
    }
 
    #region Sorting
