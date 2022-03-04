@@ -1361,6 +1361,28 @@ public class NetEntity : NetworkBehaviour
          return false;
       }
 
+      if (enablePvp && otherEntity.enablePvp) {
+         if (openWorldGameMode == PvpGameMode.FreeForAll && otherEntity.openWorldGameMode == PvpGameMode.FreeForAll) {
+            return false;
+         } else if (openWorldGameMode == PvpGameMode.GuildWars && otherEntity.openWorldGameMode == PvpGameMode.GuildWars) {
+            if (otherEntity.guildId != guildId) {
+               // Proceed to alliance check
+               if (otherEntity.guildAllies.Contains(guildId) && guildAllies.Contains(otherEntity.guildId)) {
+                  // If guilds are allied to each other, they are not enemies
+                  return true;
+               } else {
+                  // If no alliance is formed, they are enemies
+                  return false;
+               }
+            } else {
+               // If guild id of this unit and its target is the same, they are allies
+               return true;
+            }
+         } else if (openWorldGameMode == PvpGameMode.GroupWars && otherEntity.openWorldGameMode == PvpGameMode.GroupWars) {
+            return otherEntity.voyageGroupId == voyageGroupId;
+         }
+      }
+
       if (VoyageGroupManager.isInGroup(this) && VoyageGroupManager.isInGroup(otherEntity)) {
          if (this.voyageGroupId == otherEntity.voyageGroupId) {
             return true;

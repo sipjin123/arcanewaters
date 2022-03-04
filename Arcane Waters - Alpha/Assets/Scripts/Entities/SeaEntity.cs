@@ -189,7 +189,7 @@ public class SeaEntity : NetEntity
       //}
 
       // Set our sprite sheets according to our types
-      if (!Util.isBatch() || (this is PlayerShipEntity && Util.isAutoMove())) {
+      if (!Util.isBatch() || (Util.isBatch() && this is PlayerShipEntity && Util.isAutoMove())) {
          StartCoroutine(CO_UpdateAllSprites());
       }
 
@@ -249,20 +249,28 @@ public class SeaEntity : NetEntity
 
       // Keep track of the damage each attacker has done on this entity
       NetEntity sourceEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(damageSourceNetId);
-      if (sourceEntity != null && sourceEntity.userId > 0) {
-         if (_damageReceivedPerAttacker.ContainsKey(sourceEntity.userId)) {
-            _damageReceivedPerAttacker[sourceEntity.userId] += amount;
-         } else {
-            _damageReceivedPerAttacker[sourceEntity.userId] = amount;
-         }
+      if (sourceEntity != null) {
+         if (sourceEntity.userId > 0) {
+            if (_damageReceivedPerAttacker.ContainsKey(sourceEntity.userId)) {
+               _damageReceivedPerAttacker[sourceEntity.userId] += amount;
+            } else {
+               _damageReceivedPerAttacker[sourceEntity.userId] = amount;
+            }
 
-         customRegisterDamageReceived(sourceEntity.userId, amount);
+            customRegisterDamageReceived(sourceEntity.userId, amount);
+         }
       }
 
       // Cache the source damage record inflicted
       if (!_totalAttackers.ContainsKey(damageSourceNetId)) {
          _totalAttackers.Add(damageSourceNetId, new DamageRecord());
       }
+
+      // Make sure class is initialized
+      if (_totalAttackers[damageSourceNetId] == null) {
+         _totalAttackers[damageSourceNetId] = new DamageRecord();
+      }
+
       _totalAttackers[damageSourceNetId].lastAttackTime = NetworkTime.time;
       _totalAttackers[damageSourceNetId].totalDamage += amount;
 
@@ -315,9 +323,15 @@ public class SeaEntity : NetEntity
                   if (_totalAttackers.Count > 0) {
                      foreach (KeyValuePair<uint, DamageRecord> damagerData in _totalAttackers) {
                         NetEntity damagerEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(damagerData.Key);
-                        float damagePercentage = ((float) damagerData.Value.totalDamage / (float) healthValMAx) * totalSilverReward;
-                        gameStatsManager.addSilverAmount(damagerEntity.userId, (int) damagePercentage);
-                        Target_ReceiveSilverCurrency(damagerEntity.getPlayerShipEntity().connectionToClient, (int) damagePercentage, SilverManager.SilverRewardReason.Kill);
+                        if (damagerEntity != null) {
+                           // Toggle on if silver reward is based on total damage inflicted
+                           bool splitBasedOnDamage = false;
+                           float damagePercentage = splitBasedOnDamage ? (((float) damagerData.Value.totalDamage / (float) healthValMAx) * totalSilverReward) : totalSilverReward;
+                           gameStatsManager.addSilverAmount(damagerEntity.userId, (int) damagePercentage);
+                           Target_ReceiveSilverCurrency(damagerEntity.getPlayerShipEntity().connectionToClient, (int) damagePercentage, SilverManager.SilverRewardReason.Kill);
+                        } else {
+                           D.debug("Error, damager entity {" + damagerData.Key + "} is missing!");
+                        }
                      }
                   } else {
                      gameStatsManager.addSilverAmount(lastAttacker.userId, totalSilverReward);
