@@ -322,15 +322,19 @@ public class SeaEntity : NetEntity
                   int totalSilverReward = SilverManager.computeSilverReward(this);
                   if (_totalAttackers.Count > 0) {
                      foreach (KeyValuePair<uint, DamageRecord> damagerData in _totalAttackers) {
-                        NetEntity damagerEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(damagerData.Key);
-                        if (damagerEntity != null) {
-                           // Toggle on if silver reward is based on total damage inflicted
-                           bool splitBasedOnDamage = false;
-                           float damagePercentage = splitBasedOnDamage ? (((float) damagerData.Value.totalDamage / (float) healthValMAx) * totalSilverReward) : totalSilverReward;
-                           gameStatsManager.addSilverAmount(damagerEntity.userId, (int) damagePercentage);
-                           Target_ReceiveSilverCurrency(damagerEntity.getPlayerShipEntity().connectionToClient, (int) damagePercentage, SilverManager.SilverRewardReason.Kill);
-                        } else {
-                           D.debug("Error, damager entity {" + damagerData.Key + "} is missing!");
+                        try {
+                           NetEntity damagerEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(damagerData.Key);
+                           if (damagerEntity != null) {
+                              // Toggle on if silver reward is based on total damage inflicted
+                              bool splitBasedOnDamage = false;
+                              float damagePercentage = splitBasedOnDamage ? (((float) damagerData.Value.totalDamage / (float) healthValMAx) * totalSilverReward) : totalSilverReward;
+                              gameStatsManager.addSilverAmount(damagerEntity.userId, (int) damagePercentage);
+                              Target_ReceiveSilverCurrency(damagerEntity.getPlayerShipEntity().connectionToClient, (int) damagePercentage, SilverManager.SilverRewardReason.Kill);
+                           } else {
+                              D.debug("Error, damager entity {" + damagerData.Key + "} is missing!");
+                           }
+                        } catch {
+                           D.debug("Something went wrong with Silver rewards!");
                         }
                      }
                   } else {

@@ -227,12 +227,14 @@ public class CharacterScreen : GenericGameManager {
                }
             } catch {
                D.debug("Investigate Here! Failed to assign data to offline character and character spot! " +
+                  "User Count: {" + _userArray.Length + "/3} " +
                   "Weapon Count: {" + weaponArray.Length + "/3} " +
                   "Armor Count: {" + armorArray.Length + "/3} " +
                   "Hat Count: {" + hatArray.Length + "/3 } " +
                   "ArmorPalette Count: {" + armorPalettes.Length + "/3} :: INDEX:{" + i + "}");
-
-               offlineChar.setDataAndLayers(_userArray[i], weaponArray[i], armorArray[i], hatArray[i], armorPalettes[i]);
+               if (i < 3) {
+                  offlineChar.setDataAndLayers(_userArray[i], weaponArray[i], armorArray[i], hatArray[i], armorPalettes[i]);
+               }
             }
 
             spot.assignCharacter(offlineChar);

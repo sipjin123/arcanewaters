@@ -299,10 +299,12 @@ public class PlayerShipEntity : ShipEntity
    }
 
    public void changeShipInfo (ShipInfo info) {
+      // Server side data initialization
       initialize(info);
    }
 
    protected override void initialize (ShipInfo shipInfo) {
+      // Server side data initialization
       base.initialize(shipInfo);
 
       for (int i = 0; i < CannonPanel.MAX_ABILITY_COUNT; i++) {
@@ -312,10 +314,15 @@ public class PlayerShipEntity : ShipEntity
       if (isServer) {
          shipAbilities.Clear();
          int index = 0;
+
+         string abilityNameData = "--> User {" + userId + ":" + entityName + "} {" + shipInfo.shipName + "} Ship Abilities: ";
          foreach (int newShipAbility in shipInfo.shipAbilities.ShipAbilities) {
+            ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(newShipAbility);
+            abilityNameData += "{" + newShipAbility + ":" + (shipAbilityData == null ? "Null" : shipAbilityData.abilityName) + "}";
             shipAbilities.Add(newShipAbility);
             index++;
          }
+         D.debug(abilityNameData);
 
          // If for some reason this user has insufficient abilities, assign the default abilities until ability count reaches 5
          if (index < CannonPanel.MAX_ABILITY_COUNT) {
@@ -1613,10 +1620,13 @@ public class PlayerShipEntity : ShipEntity
    }
 
    public override void noteAttacker (NetEntity entity) {
+      if (entity == null) {
+         return;
+      }
       base.noteAttacker(entity);
 
       // If we don't currently have a target selected, assign the attacker as our new target
-      if (isLocalPlayer && !isDead() && _targetSelector.getTarget() == null) {
+      if (isLocalPlayer && !isDead() && _targetSelector != null && _targetSelector.getTarget() == null) {
          SelectionManager.self.setSelectedEntity((SeaEntity) entity);
       }
    }
@@ -2124,9 +2134,12 @@ public class PlayerShipEntity : ShipEntity
       while (shipAbilities.Count <= 0) {
          yield return null;
       }
-
+      ShipData shipData = ShipDataManager.self.getShipData(shipXmlId);
+      string abilityNameData = "{" + (shipData != null ? shipData.shipName : "Null") + "} Ship Abilities: ";
       for (int abilityIndex = 0; abilityIndex < shipAbilities.Count; abilityIndex++) {
          int newShipAbilityId = abilityIdArray[abilityIndex];
+         ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(newShipAbilityId);
+         abilityNameData += "{" + abilityIndex + ":" + (shipAbilityData == null ? "Null" : shipAbilityData.abilityName) + "}";
          CannonPanel.self.setAbilityIcon(abilityIndex, newShipAbilityId);
          if (abilityIndex < CannonPanel.self.cannonBoxList.Count && abilityIndex >= 0) {
             CannonPanel.self.cannonBoxList[abilityIndex].abilityId = newShipAbilityId;
@@ -2134,6 +2147,7 @@ public class PlayerShipEntity : ShipEntity
             D.debug("Was trying to process invalid index {" + abilityIndex + "}");
          }
       }
+      D.debug(abilityNameData);
 
       CannonPanel.self.updateCooldownDurations();
    }

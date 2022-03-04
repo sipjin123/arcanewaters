@@ -9375,7 +9375,7 @@ public class DB_Main : DB_MainStub
       }
 
       // Look up the members only if guild id is valid
-      if (guildId > 0) {
+      if (guildId > 0 && info != null) {
          info.guildMembers = DB_Main.getUsersForGuild(guildId).ToArray();
       }
 

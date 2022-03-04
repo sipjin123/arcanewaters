@@ -132,7 +132,7 @@ public class ContextMenuPanel : MonoBehaviour
       // Try to find the entity of the clicked user
       NetEntity targetEntity = EntityManager.self.getEntity(userId);
       if (targetEntity == null) {
-         D.debug("Target entity is missing! User {" + userId + "}");
+         D.debug("Target entity is missing! User {" + userId + ":" + userName + "}");
          return;
       }
 
