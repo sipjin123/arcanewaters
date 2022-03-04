@@ -124,13 +124,17 @@ public class ContextMenuPanel : MonoBehaviour
       _hasAtLeastOneButton = true;
    }
 
-   public void showDefaultMenuForUser (int userId, string userName, bool isInSameGroup = false, bool isFriend = false) {
+   public void showDefaultMenuForUser (int userId, string userName, bool isInSameGroup = false) {
       if (Global.player == null) {
          return;
       }
 
       // Try to find the entity of the clicked user
       NetEntity targetEntity = EntityManager.self.getEntity(userId);
+      if (targetEntity == null) {
+         D.debug("Target entity is missing! User {" + userId + "}");
+         return;
+      }
 
       clearButtons();
       

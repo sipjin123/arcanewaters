@@ -628,32 +628,9 @@ public class NetEntity : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveOpenWorldStatus (PvpGameMode pvpMode, bool isOn, bool isInTown) {
-      D.debug("->-> User {" + userId + ":" + entityName + "} has game mode {" + openWorldGameMode + " : " + pvpMode + " }");
       VoyageStatusPanel.self.refreshPvpStatDisplay();
       VoyageStatusPanel.self.setUserPvpMode(pvpMode);
       VoyageStatusPanel.self.togglePvpStatusInfo(isOn, isInTown);
-   }
-
-   [Command]
-   public void Cmd_CheckContextMenuStatus (int senderId, string sender) {
-      D.adminLog("ContextMenu: Check ContextMenu Status Server", D.ADMIN_LOG_TYPE.Player_Menu);
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         FriendshipInfo friendInfo = DB_Main.getFriendshipInfo(this.userId, senderId);
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            bool isFriend = false;
-            if (friendInfo != null) {
-               isFriend = friendInfo.friendshipStatus == Friendship.Status.Friends;
-            }
-            Target_ReceiveContextMenuStatus(senderId, sender, isFriend);
-         });
-      });
-   }
-
-   [TargetRpc]
-   public void Target_ReceiveContextMenuStatus (int senderId, string sender, bool isFriend) {
-      D.adminLog("ContextMenu: Interact was performed via TargetRPC:" +
-            "{" + userId + ":" + entityName + "}{" + senderId + ":" + sender + "}", D.ADMIN_LOG_TYPE.Player_Menu);
-      PanelManager.self.contextMenuPanel.showDefaultMenuForUser(senderId, sender, false, isFriend);
    }
 
    [Command]
