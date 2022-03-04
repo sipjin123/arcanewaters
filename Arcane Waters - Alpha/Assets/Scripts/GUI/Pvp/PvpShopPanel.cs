@@ -148,8 +148,6 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       EventTrigger landPowerupEventTrigger = landPowerupCategoryObj.GetComponent<EventTrigger>();
       setupHovering(landPowerupEventTrigger, PvpShopItemType.LandPowerup);
 
-      clearDisplay();
-
       foreach (GameObject newHoverableObj in abilityDetailHolder) {
          newHoverableObj.SetActive(false);
       }
@@ -175,9 +173,14 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
    private void Start () {
       // Update shop panel templates to remove gray out if silver is sufficient
       PvpStatusPanel.self.silverAddedEvent.AddListener(_ => updatedShopTemplates(_));
+
+      clearDisplay();
    }
 
    public void clearDisplay () {
+      if (Util.isBatch()) {
+         return;
+      }
       shipAttackText.text = "";
       shipSpeedText.text = "";
       shipRangeText.text = "";
@@ -187,10 +190,14 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       shipDefenseText.text = "";
 
       foreach (Text abilityText in abilityTexts) {
-         abilityText.text = "";
+         if (abilityText != null) {
+            abilityText.text = "";
+         }
       }
       foreach (Image abilityIcon in abilityIcons) {
-         abilityIcon.sprite = ImageManager.self.blankSprite;
+         if (abilityIcon != null) {
+            abilityIcon.sprite = ImageManager.self.blankSprite;
+         }
       }
    }
 
