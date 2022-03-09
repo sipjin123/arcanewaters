@@ -245,7 +245,7 @@ public class VoyageManager : GenericGameManager {
    }
    
    public List<string> getPvpArenaAreaKeys () {
-      return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.PvpArena).ToList();
+      return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.PvpArena && !k.StartsWith(WorldMapManager.WORLD_MAP_PREFIX)).ToList();
    }
 
    public List<string> getLeagueAreaKeys () {

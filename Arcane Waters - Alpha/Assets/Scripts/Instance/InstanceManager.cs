@@ -547,7 +547,9 @@ public class InstanceManager : MonoBehaviour
       List<Instance> fetchedInst = _instances.Values.ToList().FindAll(_ => _.areaKey == areaKey);
       if (fetchedInst.Count > 0) {
          fetchedInst.OrderByDescending(_ => _.id);
-         return fetchedInst[0];
+         if (VoyageManager.isWorldMap(fetchedInst[0].areaKey)) {
+            return fetchedInst[0];
+         }
       }
 
       return null;
