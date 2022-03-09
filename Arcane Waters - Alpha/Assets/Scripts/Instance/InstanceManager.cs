@@ -136,7 +136,6 @@ public class InstanceManager : MonoBehaviour
          instance = getPlayerPrivateOpenInstance(areaKey, player.userId);
          if (instance == null) {
             instance = createNewInstance(areaKey, player.isSinglePlayer);
-
             // Register the user id as the privateAreaUserId
             instance.privateAreaUserId = player.userId;
          }

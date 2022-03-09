@@ -237,7 +237,7 @@ public class VoyageManager : GenericGameManager {
    }
 
    public static bool isOpenWorld(string areaKey) {
-      return !Util.isEmpty(areaKey) && areaKey.StartsWith(MapManager.OPEN_WORLD_MAP_PREFIX);
+      return !Util.isEmpty(areaKey) && areaKey.StartsWith(WorldMapManager.OPEN_WORLD_MAP_PREFIX);
    }
 
    public List<string> getVoyageAreaKeys () {
@@ -462,7 +462,6 @@ public class VoyageManager : GenericGameManager {
          if (voyageGroup.voyageId > 0 && ServerNetworkingManager.self.tryGetServerHostingVoyage(voyageGroup.voyageId, out NetworkedServer hostingServer)) {
             serverPort = hostingServer.networkedPort.Value;
          }
-
          difficulty = voyageGroup.members.Count;
       } else {
          NetworkedServer bestServer = ServerNetworkingManager.self.getRandomServerWithLeastAssignedPlayers();

@@ -2302,7 +2302,7 @@ public class PlayerShipEntity : ShipEntity
 
       Direction direction = mapEdges.computeDirectionFromEdge(edge);
 
-      if (MapManager.computeNextOpenWorldMap(areaKey, direction, out string nextAreaKey)) {
+      if (WorldMapManager.computeNextOpenWorldArea(areaKey, direction, out string nextAreaKey)) {
          setupForWarpClient();
          Cmd_SpawnInNewMapSpawn(nextAreaKey, spawn: null, direction);
       }

@@ -896,6 +896,7 @@ public class NetEntity : NetworkBehaviour
          case Anim.Type.NC_Jump_East:
          case Anim.Type.NC_Jump_North:
          case Anim.Type.NC_Jump_South:
+            // Sound effect
             SoundEffectManager.self.playFmodSfx(SoundEffectManager.JUMP, this.transform.position);
             if (!freezeAnim) {
                StartCoroutine(CO_DelayExitAnim(animType, 0.5f));
@@ -934,7 +935,9 @@ public class NetEntity : NetworkBehaviour
          case Anim.Type.NC_Jump_North:
          case Anim.Type.NC_Jump_South:
             shadow.transform.localScale = _shadowInitialScale;
-            SoundEffectManager.self.playJumpLandSfx(this.transform.position);
+
+            // Play jump landing sound effect
+            SoundEffectManager.self.playJumpLandSfx(this.sortPoint.transform.position, this.areaKey);
             break;
       }
 
@@ -1994,7 +1997,11 @@ public class NetEntity : NetworkBehaviour
    public void spawnInBiomeHomeTown (Biome.Type biome) {
       // Go to background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         bool isBiomeUnlocked = DB_Main.isBiomeUnlockedForUser(userId, biome);
+         bool isBiomeUnlocked = false;
+
+         if (Area.homeTownForBiome.TryGetValue(biome, out string biomeHomeTownAreaKey)) {
+            isBiomeUnlocked = DB_Main.hasUserVisitedArea(userId, biomeHomeTownAreaKey);
+         }
 
          // Back to unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -2827,6 +2834,19 @@ public class NetEntity : NetworkBehaviour
 
    public virtual void toggleWarpInProgressEffect (bool show) {
 
+   }
+
+   // Web jump sound effect
+   [Command]
+   public void Cmd_PlayWebSound (Vector3 position) {
+      Rpc_PlayWebSound(position);
+   }
+
+   [ClientRpc]
+   public void Rpc_PlayWebSound (Vector3 position) {
+      if (!isLocalPlayer) {
+         SoundEffectManager.self.playFmodSfx(SoundEffectManager.WEB_JUMP, position);
+      }
    }
 
    #region Private Variables

@@ -4552,12 +4552,12 @@ public class RPCManager : NetworkBehaviour
             case PvpShopItem.PvpShopItemType.Powerup:
                if (_player is PlayerShipEntity) {
                   SeaEntity seaEntity = (SeaEntity) _player;
-                  seaEntity.rpc.Target_ReceivePowerup((Powerup.Type) shopItem.itemId, shopItem.rarityType, seaEntity.transform.position);
                   PowerupManager.self.addPowerupServer(seaEntity.userId, new Powerup {
                      powerupRarity = shopItem.rarityType,
                      powerupType = (Powerup.Type) shopItem.itemId,
                      expiry = Powerup.Expiry.None
                   });
+                  seaEntity.rpc.Target_ReceivePowerup((Powerup.Type) shopItem.itemId, shopItem.rarityType, seaEntity.transform.position);
                }
                break;
             case PvpShopItem.PvpShopItemType.Ship:
@@ -5237,6 +5237,11 @@ public class RPCManager : NetworkBehaviour
             _player.Rpc_UpdateGuildIconSprites(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
             refreshPvpStateForUser(userInfo, _player);
 
+            // If the user is in a guild map, send them back to the tutorial town
+            if (CustomMapManager.isGuildSpecificAreaKey(_player.areaKey)) {
+               _player.spawnInBiomeHomeTown();
+            }
+
             // Delete the guild if it has no more members
             GuildManager.self.deleteGuildIfEmpty(guildId);
 
@@ -5500,6 +5505,12 @@ public class RPCManager : NetworkBehaviour
 
                   // Send a special confirmation to the user that performed the action
                   ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionUpdate, _player, "");
+
+                  // If the user is online and in a guild map, send them back to the tutorial town
+                  NetEntity entityToKick = EntityManager.self.getEntity(userToKickId);
+                  if (entityToKick && CustomMapManager.isGuildSpecificAreaKey(entityToKick.areaKey)) {
+                     entityToKick.spawnInBiomeHomeTown();
+                  }
                } else {
                   ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionLocal, _player, "You cannot kick Guild Leader!");
                }
@@ -6154,7 +6165,6 @@ public class RPCManager : NetworkBehaviour
                      allNames = allNames + name + ", ";
                   }
                   allNames = allNames.Substring(0, allNames.Length - 2);
-
                   ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Some group members are missing: " + allNames);
                   Target_OnWarpFailed("Missing group members");
                   return;
@@ -6433,25 +6443,6 @@ public class RPCManager : NetworkBehaviour
                }
             });
          }
-      });
-   }
-
-   [Server]
-   public void setNextBiomeUnlocked () {
-      // Get the next biome
-      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
-      Biome.Type nextBiome = Biome.getNextBiome(instance.biome);
-
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Check if the user has unlocked the biome
-         bool isNextBiomeUnlocked = DB_Main.isBiomeUnlockedForUser(_player.userId, nextBiome);
-
-         // Back to the Unity thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Set the value in the player entity
-            _player.isNextBiomeUnlocked = isNextBiomeUnlocked;
-         });
       });
    }
 
@@ -8137,6 +8128,7 @@ public class RPCManager : NetworkBehaviour
          }
 
          D.debug("Player {" + _player.userId + "}" + " attempted to engage in combat due invalid voyage conditions, returning to town" + " Reason: {" + reason + "}");
+
          _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
          return;
       }
@@ -9514,7 +9506,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_RequestUnlockedBiomeListFromServer () {
+   public void Cmd_RequestWorldMap () {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -9522,63 +9514,56 @@ public class RPCManager : NetworkBehaviour
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<Biome.Type> unlockedBiomeList = DB_Main.getUnlockedBiomes(_player.userId);
+         List<string> visitedAreas = DB_Main.getVisitedAreas(_player.userId);
+         List<UserDiscovery> userDiscoveries = DB_Main.getUserDiscoveries(_player.userId);
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // The forest biome is always accessible
-            bool hasForestBiome = false;
-            foreach (Biome.Type biome in unlockedBiomeList) {
-               if (biome == Biome.Type.Forest) {
-                  hasForestBiome = true;
-                  break;
+            // Process Map Pins
+            List<WorldMapPanelPinInfo> pins = WorldMapManager.getCachedWorldMapPins();
+            Dictionary<int, UserDiscovery> userDiscoveriesRegistry = userDiscoveries.ToDictionary(_ => _.discoveryId, _ => _);
+            List<Vector2Int> visitedWorldMapAreasCoords = WorldMapManager.computeOpenWorldAreaCoordsList(visitedAreas);
+            visitedWorldMapAreasCoords = new HashSet<Vector2Int>(visitedWorldMapAreasCoords).ToList();
+
+            // Filter pins
+            List<WorldMapPanelPinInfo> filteredPins = new List<WorldMapPanelPinInfo>();
+            foreach (WorldMapPanelPinInfo pin in pins) {
+               Vector2Int pinAreaCoords = new Vector2Int(pin.areaX, pin.areaY);
+
+               // The pin is not located in a visited area
+               if (!visitedWorldMapAreasCoords.Contains(pinAreaCoords)) {
+                  continue;
                }
+
+               if (pin.pinType == WorldMapPanelPin.PinTypes.Warp) {
+                  pin.discovered = visitedAreas.Contains(pin.target);
+               }
+               
+               if (pin.pinType == WorldMapPanelPin.PinTypes.Discovery && userDiscoveriesRegistry.ContainsKey(pin.discoveryId)) {
+                  pin.discovered = userDiscoveriesRegistry[pin.discoveryId].discovered;
+               }
+
+               filteredPins.Add(pin);
             }
-
-            if (!hasForestBiome) {
-               unlockedBiomeList.Add(Biome.Type.Forest);
-            }
-
-            // Get the area key of the home towns in each biome
-            string forestHomeTown = "";
-            string desertHomeTown = "";
-            string snowHomeTown = "";
-            string pineHomeTown = "";
-            string lavaHomeTown = "";
-            string mushroomHomeTown = "";
-
-            Area.homeTownForBiome.TryGetValue(Biome.Type.Forest, out forestHomeTown);
-            Area.homeTownForBiome.TryGetValue(Biome.Type.Desert, out desertHomeTown);
-            Area.homeTownForBiome.TryGetValue(Biome.Type.Snow, out snowHomeTown);
-            Area.homeTownForBiome.TryGetValue(Biome.Type.Pine, out pineHomeTown);
-            Area.homeTownForBiome.TryGetValue(Biome.Type.Lava, out lavaHomeTown);
-            Area.homeTownForBiome.TryGetValue(Biome.Type.Mushroom, out mushroomHomeTown);
 
             // Send the result to the client
-            Target_ReceiveUnlockedBiomeList(_player.connectionToClient, unlockedBiomeList.ToArray(), forestHomeTown,
-               desertHomeTown, snowHomeTown, pineHomeTown, lavaHomeTown, mushroomHomeTown);
+            Target_ReceiveWorldMap(_player.connectionToClient, visitedWorldMapAreasCoords, filteredPins);
          });
       });
    }
 
    [TargetRpc]
-   public void Target_ReceiveUnlockedBiomeList (NetworkConnection connection, Biome.Type[] unlockedBiomeArray,
-      string forestHomeTown, string desertHomeTown, string snowHomeTown, string pineHomeTown,
-      string lavaHomeTown, string mushroomHomeTown) {
-
-      List<Biome.Type> unlockedBiomeList = new List<Biome.Type>(unlockedBiomeArray);
-
+   public void Target_ReceiveWorldMap (NetworkConnection connection, List<Vector2Int> visitedWorldMapAreasCoords, List<WorldMapPanelPinInfo> pins) {
       // Make sure the panel is showing
       PanelManager.self.linkIfNotShowing(Panel.Type.WorldMap);
 
       // Pass the data to the panel
       WorldMapPanel panel = (WorldMapPanel) PanelManager.self.get(Panel.Type.WorldMap);
-      panel.updatePanelWithUnlockedBiomes(unlockedBiomeList, forestHomeTown, desertHomeTown,
-         snowHomeTown, pineHomeTown, lavaHomeTown, mushroomHomeTown);
+      panel.onWorldMapReceived(visitedWorldMapAreasCoords, pins);
    }
 
    [Command]
-   public void Cmd_RequestWarpToBiomeHomeTown (Biome.Type biome) {
+   public void Cmd_RequestWarpToArea (string areaTarget, string spawnTarget) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -9592,37 +9577,36 @@ public class RPCManager : NetworkBehaviour
       }
 
       // If
-      Rpc_ReceiveRequestWarpToBiomeHomeTown(biome);
+      Rpc_ReceiveRequestWarpToArea(areaTarget, spawnTarget);
       return;
    }
 
    [ClientRpc]
-   private void Rpc_ReceiveRequestWarpToBiomeHomeTown (Biome.Type biome) {
+   private void Rpc_ReceiveRequestWarpToArea (string areaTarget, string spawnTarget) {
       if (isLocalPlayer) {
          if (!PanelManager.self.countdownScreen.isShowing()) {
-            Area.homeTownForBiome.TryGetValue(biome, out string biomeHomeTownName);
-            bool isHomeTownNameValid = !Util.isEmpty(biomeHomeTownName) && !Util.isEmpty(Area.getName(biomeHomeTownName));
+            bool isAreaTargetValid = !Util.isEmpty(areaTarget) && !Util.isEmpty(Area.getName(areaTarget));
 
-            PanelManager.self.countdownScreen.customText.text = isHomeTownNameValid ? $"Warping to \"{Area.getName(biomeHomeTownName)}\" in:" : $"Warping in:";
+            PanelManager.self.countdownScreen.customText.text = isAreaTargetValid ? $"Warping to \"{Area.getName(areaTarget)}\" in:" : $"Warping in:";
             PanelManager.self.countdownScreen.seconds = 10;
 
             PanelManager.self.countdownScreen.onCountdownStep.RemoveAllListeners();
             PanelManager.self.countdownScreen.onCountdownStep.AddListener(() => {
                if (_player.hasAttackers() && _player.isInCombat()) {
-                  _player.rpc.Cmd_CancelWarpToBiomeHomeTown(biome);
+                  _player.rpc.Cmd_CancelWarpToArea(areaTarget, spawnTarget);
                   PanelManager.self.countdownScreen.hide();
                }
             });
 
             PanelManager.self.countdownScreen.onCountdownEndEvent.RemoveAllListeners();
             PanelManager.self.countdownScreen.onCountdownEndEvent.AddListener(() => {
-               _player.rpc.Cmd_ExecuteWarpToBiomeHomeTown(biome);
+               _player.rpc.Cmd_ExecuteWarpToArea(areaTarget, spawnTarget);
                PanelManager.self.countdownScreen.hide();
             });
 
             PanelManager.self.countdownScreen.cancelButton.onClick.RemoveAllListeners();
             PanelManager.self.countdownScreen.cancelButton.onClick.AddListener(() => {
-               _player.rpc.Cmd_CancelWarpToBiomeHomeTown(biome);
+               _player.rpc.Cmd_CancelWarpToArea(areaTarget, spawnTarget);
                PanelManager.self.countdownScreen.hide();
             });
 
@@ -9634,22 +9618,22 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_CancelWarpToBiomeHomeTown (Biome.Type biome) {
+   public void Cmd_CancelWarpToArea (string areaTarget, string spawnTarget) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
       }
 
-      Rpc_ReceiveCancelWarpToBiomeHomeTown(biome);
+      Rpc_ReceiveCancelWarpToArea(areaTarget, spawnTarget);
    }
 
    [ClientRpc]
-   private void Rpc_ReceiveCancelWarpToBiomeHomeTown (Biome.Type biome) {
+   private void Rpc_ReceiveCancelWarpToArea (string areaTarget, string spawnTarget) {
       _player.toggleWarpInProgressEffect(show: false);
    }
 
    [Command]
-   public void Cmd_ExecuteWarpToBiomeHomeTown (Biome.Type biome) {
+   public void Cmd_ExecuteWarpToArea (string areaTarget, string spawnTarget) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -9664,24 +9648,14 @@ public class RPCManager : NetworkBehaviour
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Check if the user has unlocked the biome
-         bool isBiomeUnlocked = DB_Main.isBiomeUnlockedForUser(_player.userId, biome);
+         bool canWarp = DB_Main.hasUserVisitedArea(_player.userId, areaTarget);
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (!isBiomeUnlocked) {
-               sendError("The " + biome.ToString() + " biome is locked!");
+            if (canWarp) {
+               _player.spawnInNewMap(areaTarget, spawnTarget, _player.facing);
             } else {
-               if (Area.homeTownForBiome.TryGetValue(biome, out string homeTown)) {
-                  if (Area.dockSpawnForBiome.TryGetValue(biome, out string dockSpawn)) {
-                     _player.spawnInNewMap(homeTown, dockSpawn, Direction.South);
-                  } else {
-                     _player.spawnInNewMap(homeTown);
-                  }
-               } else {
-                  sendError("Could not find the home town for the biome " + biome.ToString() + "!");
-                  _player.spawnInNewMap(Area.STARTING_TOWN);
-               }
+               sendError("The area is locked!");
             }
          });
       });
@@ -9941,7 +9915,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_RequestPlayersCount () {
+   public void Cmd_RequestPlayersCount (bool getConnectedPlayers) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -9950,15 +9924,20 @@ public class RPCManager : NetworkBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          int totalPlayersCount = DB_Main.getTotalPlayersCount();
 
+         string[] playersNames = new string[0];
+         if (getConnectedPlayers) {
+            playersNames = DB_Main.getPlayersNames(ServerNetworkingManager.self.server.assignedUserIds.Keys.ToArray());
+         }
+
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceivePlayersCount(_player.connectionToClient, totalPlayersCount);
+            Target_ReceivePlayersCount(_player.connectionToClient, totalPlayersCount, playersNames);
          });
       });
    }
 
    [TargetRpc]
-   private void Target_ReceivePlayersCount (NetworkConnection conn, int playersCount) {
-      OptionsPanel.self?.onPlayersCountReceived(playersCount);
+   private void Target_ReceivePlayersCount (NetworkConnection conn, int playersCount, string [] playersNames) {
+      OptionsPanel.self?.onPlayersCountReceived(playersCount, playersNames);
    }
 
    [Command]

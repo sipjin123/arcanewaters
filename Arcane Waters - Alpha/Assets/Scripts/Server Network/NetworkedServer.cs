@@ -468,7 +468,7 @@ public class NetworkedServer : NetworkedBehaviour
          D.adminLog("Cant deny visit, cant find entity any more {" + visitorUserId + "}", D.ADMIN_LOG_TYPE.Visit);
       }
    }
-   
+
    #endregion
 
    [ServerRPC]

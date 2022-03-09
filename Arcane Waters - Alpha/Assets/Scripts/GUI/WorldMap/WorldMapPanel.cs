@@ -1,17 +1,40 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
-using System.Linq;
 using TMPro;
+using System.Linq;
 
 public class WorldMapPanel : Panel
 {
    #region Public Variables
 
-   // The biomes areas
-   public List<WorldMapBiome> mapBiomesList;
+   // The size of each cell in the map
+   public Vector2Int cellSize = new Vector2Int(64, 64);
+
+   // The resolution of the grid
+   public Vector2Int mapDimensions = new Vector2Int(15, 9);
+
+   // Reference to the Sprite resolver
+   public WorldMapPanelCloudSpriteResolver cloudSpriteResolver;
+
+   // Reference to the Clouds Container
+   public WorldMapPanelCloudsContainer cloudsContainer;
+
+   // Reference to the Pins Container
+   public WorldMapPanelPinsContainer pinsContainer;
+
+   // Reference to the Progress Indicator
+   public WorldMapPanelProgressIndicator progressIndicator;
+
+   // Reference to the container holding the selector that highlights the area the player is in
+   public WorldMapPanelCurrentAreaSelectorContainer currentAreaSelectorContainer;
+
+   // Reference to the container holding the selector that highlights the currently hovered area
+   public WorldMapPanelHoveredAreaSelectorContainer hoveredAreaSelectorContainer;
+
+   // Reference to the Pins Menu
+   public WorldMapPinsMenu pinsMenu;
 
    // Self
    public static WorldMapPanel self;
@@ -24,88 +47,96 @@ public class WorldMapPanel : Panel
    }
 
    public void displayMap () {
-      displayMap(Biome.Type.None);
-   }
-
-   public void displayMap (Biome.Type newBiomeToReveal) {
       if (TutorialManager3.self.getCurrentTrigger() == TutorialTrigger.OpenMap) {
          TutorialManager3.self.tryCompletingStep(TutorialTrigger.OpenMap);
       }
 
-      _newBiomeToReveal = newBiomeToReveal;
-      Global.player.rpc.Cmd_RequestUnlockedBiomeListFromServer();
+      Global.player.rpc.Cmd_RequestWorldMap();
    }
 
-   public void updatePanelWithUnlockedBiomes (List<Biome.Type> unlockedBiomeList, string forestHomeTownAreaKey,
-      string desertHomeTownAreaKey, string snowHomeTownAreaKey, string pineHomeTownAreaKey, string lavaHomeTownAreaKey,
-      string mushroomHomeTownAreaKey) {
+   public void onWorldMapReceived (List<Vector2Int> visitedWorldMapAreasCoords, List<WorldMapPanelPinInfo> worldMapPins) {
+      _visitedWorldMapAreasCoords = visitedWorldMapAreasCoords.Select(adjustAreaCoords).ToList();
+      _worldMapPins = worldMapPins;
 
-      foreach (WorldMapBiome mapBiome in mapBiomesList) {
-         // Set the home town name and button
-         switch (mapBiome.biome) {
-            case Biome.Type.Forest:
-               mapBiome.setHomeTown(forestHomeTownAreaKey);
-               break;
-            case Biome.Type.Desert:
-               mapBiome.setHomeTown(desertHomeTownAreaKey);
-               break;
-            case Biome.Type.Pine:
-               mapBiome.setHomeTown(pineHomeTownAreaKey);
-               break;
-            case Biome.Type.Snow:
-               mapBiome.setHomeTown(snowHomeTownAreaKey);
-               break;
-            case Biome.Type.Lava:
-               mapBiome.setHomeTown(lavaHomeTownAreaKey);
-               break;
-            case Biome.Type.Mushroom:
-               mapBiome.setHomeTown(mushroomHomeTownAreaKey);
-               break;
-            default:
-               break;
-         }
+      // Clouds
+      cloudsContainer.fill();
+      cloudsContainer.hideCloudsAtCoords(_visitedWorldMapAreasCoords);
 
-         bool isAccessible = false;
+      // Update exploration progress
+      progressIndicator.updateProgress((float) _visitedWorldMapAreasCoords.Count / (mapDimensions.x * mapDimensions.y));
 
-         // Check if the biome is accessible and should be revealed
-         foreach (Biome.Type accessibleBiome in unlockedBiomeList) {
-            if (mapBiome.biome == accessibleBiome) {
-               isAccessible = true;
-               break;
-            }
-         }
+      // Pins
+      pinsContainer.clearPins();
+      pinsContainer.addPins(_worldMapPins);
 
-         if (isAccessible) {
-            // Reveal the new biome area with an animation if requested
-            if (mapBiome.biome == _newBiomeToReveal) {
-               mapBiome.revealWithAnimation();
-            } else {
-               mapBiome.reveal();
-            }
-         } else {
-            mapBiome.hideWithClouds();
+      // Pin Menu
+      pinsMenu.toggle(false);
+
+      // Current Area Selector
+      currentAreaSelectorContainer.setCurrentArea(Global.player.areaKey);
+
+      // Hovered Area Selector
+      hoveredAreaSelectorContainer.fill();
+   }
+
+   public Vector2Int adjustAreaCoords (Vector2Int areaCoords) {
+      // Adjust the location Y coordinate to match the coords system of the world map panel
+      return new Vector2Int(areaCoords.x, mapDimensions.y - areaCoords.y - 1);
+   }
+
+   public List<Vector2Int> getVisitedAreasCoords () {
+      return _visitedWorldMapAreasCoords;
+   }
+
+   public void onMapCellClicked (Vector2Int areaCoords) {
+      if (_visitedWorldMapAreasCoords.Contains(areaCoords)) {
+         List<WorldMapPanelPin> pins = pinsContainer.getPinsWithinArea(areaCoords);
+         pinsMenu.toggle(show: false);
+
+         if (pins.Any(pin => pin.info.pinType == WorldMapPanelPin.PinTypes.Warp)) {
+            List<WorldMapPanelPinInfo> pinInfos = pins.Where(pin => pin.info.pinType == WorldMapPanelPin.PinTypes.Warp).Select(_ => _.info).ToList();
+            pinsMenu.clear();
+            pinsMenu.add(pinInfos);
+            pinsMenu.toggle(show: true);
          }
       }
    }
 
-   public void onBiomeHomeTownButtonPressed (Biome.Type biome, bool skipPvpCheck = false) {
+   public void onMenuItemSelected (WorldMapPinsMenuItem menuItem) {
+      if (Global.player != null) {
+         WorldMapPanelPinInfo pin = menuItem.getPin();
+
+         if (pin != null && pin.pinType == WorldMapPanelPin.PinTypes.Warp) {
+            tryWarp(pin.target, pin.spawnTarget);
+         }
+      }
+   }
+
+   public void tryWarp (string areaTarget, string spawnTarget, bool skipPvpCheck = false) {
       if (!skipPvpCheck && VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
          PanelManager.self.showConfirmationPanel("Are you sure you want to leave your current Pvp Game?", () => {
-            onBiomeHomeTownButtonPressed(biome, true);
+            tryWarp(areaTarget, spawnTarget, skipPvpCheck: true);
          });
          return;
       }
 
-      Global.player.rpc.Cmd_RequestWarpToBiomeHomeTown(biome);
-      
+      Global.player.rpc.Cmd_RequestWarpToArea(areaTarget, spawnTarget);
+
       // Close any opened panel
       PanelManager.self.unlinkPanel();
    }
 
+   public IEnumerable<WorldMapPanelPinInfo> getMapPins () {
+      return _worldMapPins;
+   }
+
    #region Private Variables
 
-   // The new biome area to reveal when opening the panel
-   private Biome.Type _newBiomeToReveal = Biome.Type.None;
+   // Coordinates of the visited world map areas
+   private List<Vector2Int> _visitedWorldMapAreasCoords = new List<Vector2Int>();
+
+   // Local cache of the map pins
+   private List<WorldMapPanelPinInfo> _worldMapPins = new List<WorldMapPanelPinInfo>();
 
    #endregion
 }

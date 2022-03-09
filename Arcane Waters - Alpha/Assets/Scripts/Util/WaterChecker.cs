@@ -78,7 +78,7 @@ public class WaterChecker : ClientMonoBehaviour
       if (area != null) {
          TileAttributes.Type[] buffer = new TileAttributes.Type[16];
 
-         int count = area.getTileAttributes(_entity.transform.position, buffer);
+         int count = area.getTileAttributes(_entity.sortPoint.transform.position, buffer);
 
          if (count > 0) {
             TileAttributes.Type attribute = buffer[count - 1];

@@ -33,7 +33,9 @@ public class GrabbedItem : MonoBehaviour
 
    public void Update () {
       // Follow the mouse
-      transform.position = MouseUtils.mousePosition;
+      Vector3 pos = MouseUtils.mousePosition;
+      pos.z = transform.position.z;
+      transform.position = pos;
 
       // Stop grabbing when the right click button is pressed
       if (KeyUtils.GetButtonDown(MouseButton.Right)) {

@@ -155,13 +155,14 @@ public class BodyEntity : NetEntity
          EffectManager.self.create(Effect.Type.Crop_Water, this.sortPoint.transform.position);
       } else {
          Instantiate(PrefabsManager.self.poofPrefab, this.sortPoint.transform.position, Quaternion.identity);
-         //SoundManager.create3dSound("ledge", this.sortPoint.transform.position);
-
          // Shake the camera
          if (isLocalPlayer) {
             CameraManager.shakeCamera(.02f);
          }
       }
+
+      // Play jump landing sound effect
+      SoundEffectManager.self.playJumpLandSfx(this.sortPoint.transform.position, this.areaKey);
    }
 
    #region Private Variables

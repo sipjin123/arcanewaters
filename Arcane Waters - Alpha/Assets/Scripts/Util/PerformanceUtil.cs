@@ -206,16 +206,14 @@ public class PerformanceUtil : MonoBehaviour {
       }
 
       string memoryString = self._zabbixContext.History.GetByType(History.HistoryType.IntegerType, null, self._ramHistParams).FirstOrDefault()?.value;
-      D.debug("Zabbix memory usage: " + memoryString);
       if (long.TryParse(memoryString, out long memoryUsage)) {
-         return (memoryUsage / self._zabbixTotalRamBytes);
+         return (float)(100 * memoryUsage / self._zabbixTotalRamBytes);
       }
       return 0.0f;
    }
 
    private static void updateZabbixTotalRam () {
       string totalMemoryString = self._zabbixContext.History.GetByType(History.HistoryType.IntegerType, null, self._totalRamHistParams).FirstOrDefault()?.value;
-      D.debug("Zabbix total ram amount: " + totalMemoryString);
       if (long.TryParse(totalMemoryString, out long totalRamBytes)) {
          self._zabbixTotalRamBytes = totalRamBytes;
       } else {

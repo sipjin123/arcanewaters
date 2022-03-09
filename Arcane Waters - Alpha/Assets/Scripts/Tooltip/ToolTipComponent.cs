@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -72,6 +73,10 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
    #endregion
 
+   public void Awake () {
+      _parentButton = transform.parent.GetComponent<Button>();
+   }
+
    public bool isActive () {
       return _isActive;
    }
@@ -90,6 +95,11 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
    public void OnPointerDown (PointerEventData eventData) {
       if (displayType == DisplayType.OnPointerDown) {
          showTooltip();
+      } 
+      else {
+         if (_parentButton?.interactable == true) {
+            _parentButton?.onClick.Invoke();
+         }
       }
    }
 
@@ -222,6 +232,9 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
    // Determine whether tooltip is being shown now
    private bool _isActive = false;
+   
+   // Parent button
+   private Button _parentButton;
 
    #endregion
 }

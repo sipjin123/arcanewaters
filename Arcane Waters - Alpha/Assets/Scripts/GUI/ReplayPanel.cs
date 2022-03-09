@@ -40,8 +40,6 @@ public class ReplayPanel : Panel
             encodeProgressText.text = _encodeProgress.message;
          }
       }
-
-      recorderStatusText.text = GIFReplayManager.self.getUserFriendlyStateMessage();
    }
 
    public static string getNewGifPath () {
@@ -54,7 +52,7 @@ public class ReplayPanel : Panel
          return;
       }
 
-      _encodeProgress = GIFReplayManager.self.encode(getNewGifPath());
+      //_encodeProgress = GIFReplayManager.self.encode(getNewGifPath());
    }
 
    public void recorderToggleValueChanged () {

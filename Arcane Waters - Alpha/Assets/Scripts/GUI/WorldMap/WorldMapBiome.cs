@@ -74,7 +74,6 @@ public class WorldMapBiome : MonoBehaviour
    }
 
    public void onLocationButtonPressed (string areaKey) {
-      WorldMapPanel.self.onBiomeHomeTownButtonPressed(biome);
       PanelManager.self.unlinkPanel();
    }
 

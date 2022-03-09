@@ -129,8 +129,8 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             // If the voyage instance cannot be found, warp the player to the starting town
             if (!InstanceManager.self.tryGetVoyageInstance(voyageId, out Instance seaVoyageInstance)) {
                D.error(string.Format("Could not find the sea voyage instace when leaving a treasure site. userId: {0}, treasure site areaKey: {1}", player.userId, player.areaKey));
-
                D.debug("This player {" + player.userId + " " + player.entityName + "} could not find sea voyage after treasure site, returning to Town");
+
                player.spawnInNewMap(Area.STARTING_TOWN);
                yield break;
             }
@@ -167,7 +167,6 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          // If the instance is not a voyage, warp the player to the starting town
          if (instance == null || instance.voyageId <= 0) {
             D.error(string.Format("An instance in a league area is not a voyage. userId: {0}, league areaKey: {1}", player.userId, player.areaKey));
-
             D.debug("This player {" + player.userId + " " + player.entityName + "} is accessing instance that is not a voyage, returning to Town");
             player.spawnInNewMap(Area.STARTING_TOWN);
             yield break;
@@ -428,11 +427,6 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
          // Check that all enemies inside maps accessed through treasure sites in this instance have been defeated
          if (!instance.areAllTreasureSitesClearedOfEnemies) {
-            return false;
-         }
-
-         // In the last league map, the warp is only active if the user has unlocked the next biome
-         if (Voyage.isLastLeagueMap(instance.leagueIndex) && !player.isNextBiomeUnlocked) {
             return false;
          }
       }

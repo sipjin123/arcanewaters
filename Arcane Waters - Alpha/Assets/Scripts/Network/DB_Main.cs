@@ -438,6 +438,7 @@ public class DB_Main : DB_MainStub
                connection)) {
                command.Parameters.AddWithValue("@mapName", mapName);
                command.Parameters.AddWithValue("@mapVersion", version);
+               command.CommandTimeout = 120;
                DebugQuery(command);
 
                using (MySqlDataReader reader = command.ExecuteReader()) {
@@ -2424,6 +2425,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+            cmd.CommandTimeout = 300;
             cmd.Parameters.AddWithValue("@mapid", mapId);
             cmd.Parameters.AddWithValue("@version", mapVersion);
             conn.Open();
@@ -11555,69 +11557,49 @@ public class DB_Main : DB_MainStub
 
    #region World Map
 
-   public static new void addUnlockedBiome (int userId, Biome.Type biome) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO unlocked_locations (usrId, biome) VALUES (@usrId, @biome)" +
-            "ON DUPLICATE KEY UPDATE biome=values(biome)", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrId", userId);
-            cmd.Parameters.AddWithValue("@biome", (int) biome);
-            DebugQuery(cmd);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
-   public static new bool isBiomeUnlockedForUser (int userId, Biome.Type biome) {
-      // The forest biome is always unlocked
-      if (biome == Biome.Type.Forest) {
-         return true;
+   public static new void addVisitedAreas(int userId, IEnumerable<string> areaKeys) {
+      if (areaKeys == null || areaKeys.Count() == 0) {
+         return;
       }
 
-      bool isLocationUnlocked = false;
-
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT EXISTS (SELECT * FROM unlocked_locations WHERE usrId=@usrId AND biome=@biome) AS isLocationUnlocked"
-            , conn)) {
-            conn.Open();
-            cmd.Prepare();
+         using (MySqlConnection connection = getConnection()) {
+            using (MySqlCommand cmd = connection.CreateCommand()) {
+               connection.Open();
+               MySqlTransaction transaction = connection.BeginTransaction();
+               cmd.Transaction = transaction;
+               cmd.Connection = connection;
+               cmd.CommandTimeout = 1200;
 
-            cmd.Parameters.AddWithValue("@usrId", userId);
-            cmd.Parameters.AddWithValue("@biome", (int) biome);
-            DebugQuery(cmd);
+               try {
+                  cmd.CommandText = "INSERT INTO unlocked_world_map_areas (usrId, areaKey) VALUES (@usrId, @areaKey)";
 
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  isLocationUnlocked = DataUtil.getInt(dataReader, "isLocationUnlocked") > 0;
+                  foreach (string areaKey in areaKeys) {
+                     cmd.Parameters.Clear();
+                     cmd.Parameters.AddWithValue("@usrId", userId);
+                     cmd.Parameters.AddWithValue("@areaKey", areaKey);
+                     DebugQuery(cmd);
+                     cmd.ExecuteNonQuery();
+                  }
+
+                  transaction.Commit();
+               } catch (Exception ex) {
+                  transaction.Rollback();
+                  throw ex;
                }
             }
          }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
+      } catch (Exception ex) {
+         D.error(ex.Message);
       }
-
-      return isLocationUnlocked;
    }
 
-   public static new List<Biome.Type> getUnlockedBiomes (int userId) {
-      List<Biome.Type> unlockedBiomeList = new List<Biome.Type>();
+   public static new List<string> getVisitedAreas (int userId) {
+      List<string> unlockedAreas = new List<string>();
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM unlocked_locations WHERE usrId=@usrId"
-            , conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM unlocked_world_map_areas WHERE usrId=@usrId", conn)) {
             conn.Open();
             cmd.Prepare();
 
@@ -11627,8 +11609,7 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  Biome.Type biome = (Biome.Type) DataUtil.getInt(dataReader, "biome");
-                  unlockedBiomeList.Add(biome);
+                  unlockedAreas.Add(dataReader.GetString("areaKey"));
                }
             }
          }
@@ -11636,7 +11617,36 @@ public class DB_Main : DB_MainStub
          D.error("MySQL Error: " + e.ToString());
       }
 
-      return unlockedBiomeList;
+      return unlockedAreas;
+   }
+
+   public static new bool hasUserVisitedArea(int userId, string areaKey) {
+      bool isAreaUnlocked = false;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT EXISTS (SELECT * FROM unlocked_world_map_areas WHERE usrId=@usrId AND areaKey=@areaKey) AS isAreaUnlocked"
+            , conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@areaKey", areaKey);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               if (dataReader.Read()) {
+                  isAreaUnlocked = DataUtil.getInt(dataReader, "isAreaUnlocked") > 0;
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return isAreaUnlocked;
    }
 
    #endregion
@@ -12111,6 +12121,121 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
+   public static new void uploadWorldMapPins (IEnumerable<WorldMapPanelPinInfo> pins) {
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            using (MySqlCommand cmd = connection.CreateCommand()) {
+               connection.Open();
+               MySqlTransaction transaction = connection.BeginTransaction();
+               cmd.Transaction = transaction;
+               cmd.Connection = connection;
+               cmd.CommandTimeout = 1200;
+
+               try {
+                  //StringBuilder sb = new StringBuilder();
+                  //sb.AppendLine();
+
+                  //foreach (WorldMapPanelPinInfo pin in pins) {
+                  //   sb.Append($"({pin.areaWidth}, {pin.areaHeight}, {pin.areaX}, {pin.areaY}, {pin.x}, {pin.y}, {(int) pin.pinType}, {pin.specialType}, \"{pin.target}\", \"{pin.spawnTarget}\", {pin.discoveryId}, \"{pin.displayName}\")");
+
+                  //   if (pin != pins.Last()) {
+                  //      sb.AppendLine(",");
+                  //   }
+                  //}
+
+                  cmd.CommandText = "INSERT INTO global.world_map_pins (wmpAreaWidth, wmpAreaHeight, wmpAreaX, wmpAreaY, wmpPinX, wmpPinY, " +
+                     "wmpPinType, wmpPinSpecialType, wmpPinTarget, wmpPinSpawnTarget, wmpPinDiscoveryId, wmpPinDisplayName) VALUES " +
+                     "(@wmpAreaWidth, @wmpAreaHeight, @wmpAreaX, @wmpAreaY, @wmpPinX, @wmpPinY, " +
+                     "@wmpPinType, @wmpPinSpecialType, @wmpPinTarget, @wmpPinSpawnTarget, @wmpPinDiscoveryId, @wmpPinDisplayName)";
+
+                  foreach (WorldMapPanelPinInfo pin in pins) {
+                     cmd.Parameters.Clear();
+                     cmd.Parameters.AddWithValue("@wmpAreaWidth", pin.areaWidth);
+                     cmd.Parameters.AddWithValue("@wmpAreaHeight", pin.areaHeight);
+                     cmd.Parameters.AddWithValue("@wmpAreaX", pin.areaX);
+                     cmd.Parameters.AddWithValue("@wmpAreaY", pin.areaY);
+                     cmd.Parameters.AddWithValue("@wmpPinX", pin.x);
+                     cmd.Parameters.AddWithValue("@wmpPinY", pin.y);
+                     cmd.Parameters.AddWithValue("@wmpPinType", (int) pin.pinType);
+                     cmd.Parameters.AddWithValue("@wmpPinSpecialType", pin.specialType);
+                     cmd.Parameters.AddWithValue("@wmpPinTarget", pin.target);
+                     cmd.Parameters.AddWithValue("@wmpPinSpawnTarget", pin.spawnTarget);
+                     cmd.Parameters.AddWithValue("@wmpPinDiscoveryId", pin.discoveryId);
+                     cmd.Parameters.AddWithValue("@wmpPinDisplayName", pin.displayName);
+
+                     DebugQuery(cmd);
+                     cmd.ExecuteNonQuery();
+                  }
+
+                  transaction.Commit();
+               } catch (Exception ex) {
+                  transaction.Rollback();
+                  throw ex;
+               }
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+   }
+
+   public static new IEnumerable<WorldMapPanelPinInfo> fetchWorldMapPins () {
+      List<WorldMapPanelPinInfo> pins = new List<WorldMapPanelPinInfo>();
+
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+            using (MySqlCommand command = new MySqlCommand("SELECT * FROM global.world_map_pins", connection)) {
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  while (reader.Read()) {
+                     WorldMapPanelPinInfo pin = new WorldMapPanelPinInfo {
+                        areaWidth = reader.GetInt32("wmpAreaWidth"),
+                        areaHeight = reader.GetInt32("wmpAreaHeight"),
+                        areaX = reader.GetInt32("wmpAreaX"),
+                        areaY = reader.GetInt32("wmpAreaY"),
+                        x = reader.GetInt32("wmpPinX"),
+                        y = reader.GetInt32("wmpPinY"),
+                        pinType = (WorldMapPanelPin.PinTypes) reader.GetInt32("wmpPinType"),
+                        specialType = reader.GetInt32("wmpPinSpecialType"),
+                        target = reader.GetString("wmpPinTarget"),
+                        spawnTarget = reader.GetString("wmpPinSpawnTarget"),
+                        discoveryId = reader.GetInt32("wmpPinDiscoveryId"),
+                        displayName = reader.GetString("wmpPinDisplayName")
+                     };
+
+                     pins.Add(pin);
+                  }
+               }
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return pins;
+   }
+
+   public static new bool clearWorldMapPins () {
+      bool result = false;
+
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+            using (MySqlCommand command = new MySqlCommand("TRUNCATE global.world_map_pins", connection)) {
+               int rowsAffected = command.ExecuteNonQuery();
+
+               if (rowsAffected > 0) {
+                  result = true;
+               }
+            }
+         }
+      } catch (Exception ex) {
+         D.error(ex.Message);
+      }
+
+      return result;
+   }
+
    #endregion
 
    #region Soul Binding
@@ -12302,6 +12427,30 @@ public class DB_Main : DB_MainStub
 
       return result;
    }
+   
+   public static string [] getPlayersNames (int [] userIds) {
+      List<string> playersNames = new List<string>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT usrName FROM users WHERE usrId in (" + string.Join(",", userIds) + ") LIMIT 20", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  playersNames.Add(dataReader.GetString("usrName"));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return playersNames.ToArray();
+   }   
 
    #region Wrapper Call Methods
 

@@ -77,6 +77,12 @@ public class OptionsPanel : Panel
    // The screen mode toggle
    public Dropdown screenModeDropdown;
 
+   // GIF replay preset dropdown
+   public Dropdown gifReplaypresetDropdown = null;
+
+   // GIF replay memory estimation text
+   public Text gifReplayMemoryEstimation = null;
+
    // Bool to track if all players should continuously display their guild icon
    public static bool onlyShowGuildIconsOnMouseover = false;
 
@@ -122,6 +128,9 @@ public class OptionsPanel : Panel
    // The label that displays the total amount of active players
    public Text activePlayersCountLabel;
 
+   // Admin tooltip to display active players
+   public ToolTipComponent activePlayersAdminTooltip;
+   
    #endregion
 
    public override void Awake () {
@@ -133,6 +142,7 @@ public class OptionsPanel : Panel
    public override void Start () {
       initializeResolutionsDropdown();
       initializeFullScreenSettings();
+      setupGifReplayDropdown();
 
       musicSlider.value = SoundManager.musicVolume;
       effectsSlider.value = SoundManager.effectsVolume;
@@ -205,16 +215,16 @@ public class OptionsPanel : Panel
          showPlayersName(value);
       });
 
-      #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+#if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
       mouseLockToggle.transform.parent.gameObject.SetActive(false);
-      #else
+#else
       // Set the player name toggle event
       mouseLockToggle.isOn = PlayerPrefs.GetInt(OptionsManager.PREF_LOCK_CURSOR) == 1 ? true : false;
       ScreenSettingsManager.self.refreshMouseLockState();
       mouseLockToggle.onValueChanged.AddListener(value => {
          PlayerPrefs.SetInt(OptionsManager.PREF_LOCK_CURSOR, value ? 1 : 0);
       });
-      #endif
+#endif
 
       // Initialize the help tips toggle
       displayHelpTipsToggle.SetIsOnWithoutNotify(!NotificationManager.self.areAllNotificationsDisabled());
@@ -236,6 +246,12 @@ public class OptionsPanel : Panel
          Global.autoFarm = value;
       });
 
+      int gifReplay = PlayerPrefs.GetInt(GIFReplayManager.GIF_PRESET_SAVE_KEY, 0);
+      gifReplaypresetDropdown.SetValueWithoutNotify(gifReplay);
+      gifReplaypresetDropdown.onValueChanged.AddListener(value => {
+         GIFReplayManager.self.setSettingsPresetIndex(value, true);
+      });
+
       // Build string and show version number
       versionGameObject.SetActive(true);
       versionNumberText.text = Util.getFormattedGameVersion();
@@ -246,6 +262,8 @@ public class OptionsPanel : Panel
       refreshDisplaySettingsControls();
 
       requestPlayersCount();
+
+      activePlayersAdminTooltip.message = "";
    }
 
    public void showAllGuildIcons (bool showGuildIcons) {
@@ -281,6 +299,12 @@ public class OptionsPanel : Panel
             }
          }
       }
+   }
+
+   public override void Update () {
+      base.Update();
+
+      gifReplayMemoryEstimation.text = "~" + GIFReplayManager.self.getMemoryEstimationMB() + "MB RAM";
    }
 
 
@@ -341,6 +365,12 @@ public class OptionsPanel : Panel
             _supportedResolutions.Add(res);
          }
       }
+   }
+
+   private void setupGifReplayDropdown () {
+      gifReplaypresetDropdown.options = GIFReplayManager.self.possibleSettingsPresets.Select(s =>
+         new OptionData { text = s.description }
+      ).ToList();
    }
 
    private void initializeResolutionsDropdown () {
@@ -458,6 +488,8 @@ public class OptionsPanel : Panel
       requestPlayersCount();
 
       ScreenSettingsManager.self.refreshMouseLockState();
+      
+      activePlayersAdminTooltip.gameObject.SetActive(isAdmin);
    }
 
    public override void hide () {
@@ -467,7 +499,7 @@ public class OptionsPanel : Panel
 
    private void requestPlayersCount () {
       if (Global.player != null) {
-         Global.player.rpc.Cmd_RequestPlayersCount();
+         Global.player.rpc.Cmd_RequestPlayersCount(Global.player.isAdmin());
       }
    }
 
@@ -637,8 +669,9 @@ public class OptionsPanel : Panel
       }
    }
 
-   public void onPlayersCountReceived (int playersCount) {
+   public void onPlayersCountReceived (int playersCount, string [] playersNames) {
       activePlayersCountLabel.text = "Active Players: " + playersCount.ToString();
+      activePlayersAdminTooltip.message = string.Join("\n", playersNames);
    }
 
    #region Private Variables

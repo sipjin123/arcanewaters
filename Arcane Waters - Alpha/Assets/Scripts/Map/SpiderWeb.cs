@@ -139,6 +139,9 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
 
       SoundEffectManager.self.playFmodSfx(SoundEffectManager.WEB_JUMP, transform.position);
 
+      // Command to play the sound effect for other clients, using a RPC
+      puppet.entity.Cmd_PlayWebSound(transform.position);
+
       // Determine what direction the player should be facing in while they bounce / fall
       float bounceAngle = Util.angle(getDestination() - (Vector2) puppet.entity.transform.position);
       Direction bounceDir = Util.getFacing(bounceAngle);

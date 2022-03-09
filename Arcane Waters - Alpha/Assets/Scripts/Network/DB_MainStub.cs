@@ -1479,6 +1479,10 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
+   public static string [] getPlayersNames (int [] userIds) {
+      return Array.Empty<string>();
+   }     
+   
    public static int getMinimumClientGameVersionForMac () {
       return 0;
    }
@@ -1649,16 +1653,16 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static void addUnlockedBiome (int userId, Biome.Type biome) {
+   public static void addVisitedAreas (int userId, IEnumerable<string> areaKeys) {
 
    }
 
-   public static bool isBiomeUnlockedForUser (int userId, Biome.Type biome) {
+   public static List<string> getVisitedAreas (int userId) {
+      return new List<string>();
+   }
+
+   public static bool hasUserVisitedArea (int userId, string areaKey) {
       return false;
-   }
-
-   public static List<Biome.Type> getUnlockedBiomes (int userId) {
-      return null;
    }
 
    public static void addAdminGameSettings (AdminGameSettings settings) {
@@ -1782,6 +1786,17 @@ public class DB_MainStub : MonoBehaviour
 
    public static byte[] fetchWorldMapSector (int sectorIndex) {
       return null;
+   }
+
+   public static void uploadWorldMapPins (IEnumerable<WorldMapPanelPinInfo> pins) {
+   }
+
+   public static IEnumerable<WorldMapPanelPinInfo> fetchWorldMapPins () {
+      return Array.Empty<WorldMapPanelPinInfo>();
+   }
+
+   public static bool clearWorldMapPins () {
+      return false;
    }
    #endregion
 

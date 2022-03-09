@@ -786,25 +786,25 @@ public class SoundEffectManager : GenericGameManager
       soundEvent.release();
    }
 
-   public void playFootstepSfx (Vector3 playerPosition) {
-      Area area = AreaManager.self.getArea(Global.player.areaKey);
-      Biome.Type biomeType = AreaManager.self.getDefaultBiome(Global.player.areaKey);
+   public void playFootstepSfx (Vector3 playerPosition, string areaKey) {
+      Area area = AreaManager.self.getArea(areaKey);
+      Biome.Type biomeType = AreaManager.self.getDefaultBiome(areaKey);
 
       // Footsteps in the farm area
-      if (AreaManager.self.tryGetCustomMapManager(Global.player.areaKey, out CustomMapManager customMapManager)) {
+      if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
          if (customMapManager is CustomMapManager) {
             biomeType = Biome.Type.Forest;
          }
       }
 
-      TileAttributes.Type[] attributesBuffer = new TileAttributes.Type[16];
+      TileAttributes.Type[] buffer = new TileAttributes.Type[16];
 
-      int count = area.getTileAttributes(playerPosition, attributesBuffer);
+      int count = area.getTileAttributes(playerPosition, buffer);
       int audioParam = 7; // For generic / interior footsteps, default
 
       if (count > 0) {
-         if (!AreaManager.self.isInteriorArea(Global.player.areaKey)) {
-            TileAttributes.Type attribute = attributesBuffer[count - 1];
+         if (!AreaManager.self.isInteriorArea(areaKey)) {
+            TileAttributes.Type attribute = buffer[count - 1];
 
             switch (attribute) {
                case TileAttributes.Type.Generic:
@@ -856,50 +856,54 @@ public class SoundEffectManager : GenericGameManager
       }
    }
 
-   public void playJumpLandSfx (Vector3 playerPosition) {
-      Area area = AreaManager.self.getArea(Global.player.areaKey);
-      Biome.Type biomeType = AreaManager.self.getDefaultBiome(Global.player.areaKey);
+   public void playJumpLandSfx (Vector3 playerPosition, string areaKey) {
+      if (!Util.isBatch()) {
+         Area area = AreaManager.self.getArea(areaKey);
+         if (area != null) {
+            Biome.Type biomeType = AreaManager.self.getDefaultBiome(areaKey);
 
-      TileAttributes.Type[] attributesBuffer = new TileAttributes.Type[16];
+            TileAttributes.Type[] attributesBuffer = new TileAttributes.Type[16];
 
-      int count = area.getTileAttributes(playerPosition, attributesBuffer);
-      int audioParam = 0; // Grass is default
+            int count = area.getTileAttributes(playerPosition, attributesBuffer);
+            int audioParam = 0; // Grass is default
 
-      if (count > 0) {
-         if (!AreaManager.self.isInteriorArea(Global.player.areaKey)) {
+            if (count > 0) {
+               if (!AreaManager.self.isInteriorArea(areaKey)) {
 
-            TileAttributes.Type attribute = attributesBuffer[count - 1];
+                  TileAttributes.Type attribute = attributesBuffer[count - 1];
 
-            switch (attribute) {
-               case TileAttributes.Type.Generic:
-               case TileAttributes.Type.Dirt:
-                  if (attribute == TileAttributes.Type.Dirt) {
-                     audioParam = 1;
-                  } else {
-                     switch (biomeType) {
-                        case Biome.Type.Desert:
-                        case Biome.Type.Snow:
-                           audioParam = 1; // Sand / Snow
-                           break;
-                     }
+                  switch (attribute) {
+                     case TileAttributes.Type.Generic:
+                     case TileAttributes.Type.Dirt:
+                        if (attribute == TileAttributes.Type.Dirt) {
+                           audioParam = 1;
+                        } else {
+                           switch (biomeType) {
+                              case Biome.Type.Desert:
+                              case Biome.Type.Snow:
+                                 audioParam = 1; // Sand / Snow
+                                 break;
+                           }
+                        }
+                        break;
+                     case TileAttributes.Type.WaterPartial:
+                     case TileAttributes.Type.WaterFull:
+                        audioParam = 2;
+                        break;
                   }
-                  break;
-               case TileAttributes.Type.WaterPartial:
-               case TileAttributes.Type.WaterFull:
-                  audioParam = 2;
-                  break;
+               } else {
+                  audioParam = 3; // Interior / Carpet
+               }
             }
-         } else {
-            audioParam = 3; // Interior / Carpet
+
+            FMOD.Studio.EventInstance landEvent = createEventInstance(JUMP_LAND);
+
+            landEvent.setParameterByName(AUDIO_SWITCH_PARAM, audioParam);
+            landEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(playerPosition));
+            landEvent.start();
+            landEvent.release();
          }
       }
-
-      FMOD.Studio.EventInstance landEvent = createEventInstance(JUMP_LAND);
-
-      landEvent.setParameterByName(AUDIO_SWITCH_PARAM, audioParam);
-      landEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(playerPosition));
-      landEvent.start();
-      landEvent.release();
    }
 
    public void playDoorSfx (DoorAction action, Biome.Type biomeType, Vector3 position) {

@@ -89,10 +89,12 @@ public class Hat : EquippableItem
       Color color = Rarity.getColor(getRarity());
       string colorHex = ColorUtility.ToHtmlStringRGBA(color);
 
-      string palettes = Item.trimItmPalette(paletteNames);
-      if (palettes != "") {
-         palettes = "(" + palettes + ")";
-      }      
+      //string palettes = Item.trimItmPalette(paletteNames);
+      //if (palettes != "") {
+      //   palettes = "(" + palettes + ")";
+      //}
+
+      string palettes = PaletteSwapManager.self.getPalettesDisplayName(paletteNames);
 
       return string.Format("<color={0}>{1}</color> " + palettes + "\n\n{2}\n\nHat = <color=red>{3}</color>",
          "#" + colorHex, getName(), getDescription(), getHatDefense());

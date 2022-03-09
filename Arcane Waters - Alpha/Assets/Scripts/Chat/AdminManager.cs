@@ -1200,6 +1200,7 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
+      ChatManager.self.addChat("Unlocking world map...", ChatInfo.Type.System);
       Cmd_UnlockWorldMap();
    }
 
@@ -1211,13 +1212,18 @@ public class AdminManager : NetworkBehaviour
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<Biome.Type> unlockedBiomeList = DB_Main.getUnlockedBiomes(_player.userId);
+         // Open world areas
+         List<string> openWorldAreas = WorldMapManager.getOpenWorldAreasList();
+         List<string> visitedAreas = DB_Main.getVisitedAreas(_player.userId);
+         IEnumerable<string> unVisitedAreas = openWorldAreas.Except(visitedAreas);
+         DB_Main.addVisitedAreas(_player.userId, unVisitedAreas);
 
-         foreach (Biome.Type biome in Enum.GetValues(typeof(Biome.Type))) {
-            if (!unlockedBiomeList.Contains(biome)) {
-               DB_Main.addUnlockedBiome(_player.userId, biome);
-            }
-         }
+         // All Warps
+         List<WorldMapPanelPinInfo> pins = WorldMapManager.getCachedWorldMapPins();
+         IEnumerable<string> pinTargetAreas = pins.Where(pin => pin.pinType == WorldMapPanelPin.PinTypes.Warp).Select(pin => pin.target);
+         IEnumerable<string> visitedPinTargetAreas = visitedAreas.Intersect(pinTargetAreas);
+         IEnumerable<string> unVisitedPinTargetAreas = pinTargetAreas.Except(visitedPinTargetAreas);
+         DB_Main.addVisitedAreas(_player.userId, unVisitedPinTargetAreas);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             _player.Target_ReceiveNormalChat("The world map has been unlocked", ChatInfo.Type.System);

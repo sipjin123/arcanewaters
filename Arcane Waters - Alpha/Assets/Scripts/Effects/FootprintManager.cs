@@ -50,7 +50,7 @@ public class FootprintManager : ClientMonoBehaviour
    protected void processFootstep () {
       // Figure out what sound to play
       if (_player.isLocalPlayer && !_player.isBouncingOnWeb()) {
-         SoundEffectManager.self.playFootstepSfx(_player.transform.position);
+         SoundEffectManager.self.playFootstepSfx(_player.sortPoint.transform.position, _player.areaKey);
       }
 
       // If the player wasn't recently in water, don't do anything else

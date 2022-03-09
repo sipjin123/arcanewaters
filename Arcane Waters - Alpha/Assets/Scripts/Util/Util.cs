@@ -1880,4 +1880,8 @@ public class Util : MonoBehaviour
          return (vector.y > 0) ? Direction.North : Direction.South;
       }
    }
+
+   public static Color getColorWithA(Color color, float a) {
+      return new Color(color.r, color.g, color.b, a);
+   }
 }

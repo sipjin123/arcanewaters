@@ -207,7 +207,8 @@ public class CraftingIngredients : RecipeItem
       Color color = Rarity.getColor(getRarity());
       string colorHex = ColorUtility.ToHtmlStringRGBA(color);
 
-      string palettes = Item.trimItmPalette(paletteNames);
+      //string palettes = Item.trimItmPalette(paletteNames);
+      string palettes = PaletteSwapManager.self.getPalettesDisplayName(paletteNames);
 
       return string.Format("<color={0}>{1}</color> (" + palettes + ")\n\n{2}",
          "#" + colorHex, getName(), getDescription());

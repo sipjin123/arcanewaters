@@ -79,6 +79,24 @@ public class PaletteSwapManager : GenericGameManager {
       return paletteData;
    }
 
+   public string getPalettesDisplayName (string palettes) {
+      if (string.IsNullOrEmpty(palettes)) {
+         return "";
+      }
+
+      string[] paletteNames = palettes.Trim().Replace(" ", "").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+
+      string paletteDisplayNames = string.Join(", ", paletteNames.Select(name => {
+         // We try to get the display name, if the palette with this name doesn't exist, then we return the same string provided
+         if (_paletteNamesRegistry.TryGetValue(name, out string displayName)) {
+            return displayName;
+         }
+         return name;
+      }));
+
+      return $"({paletteDisplayNames})";
+   }
+
    public PaletteToolData[] getPaletteData () {
       return _paletteDataList.ToArray();
    }
@@ -86,10 +104,12 @@ public class PaletteSwapManager : GenericGameManager {
    public void storePaletteData (Dictionary<int, PaletteToolData> paletteData) {
       _paletteDataList.Clear();
       _paletteDataRegistry.Clear();
+      _paletteNamesRegistry.Clear();
 
       foreach (var pair in paletteData) {
          _paletteDataRegistry.Add(pair.Key, pair.Value);
          _paletteDataList.Add(pair.Value);
+         storePaletteNames(pair.Value);
       }
       paletteCompleteEvent.Invoke();
       hasInitialized = true;
@@ -98,6 +118,7 @@ public class PaletteSwapManager : GenericGameManager {
    public void fetchPaletteData () {
       _paletteDataList = new List<PaletteToolData>();
       _paletteDataRegistry = new Dictionary<int, PaletteToolData>();
+      _paletteNamesRegistry = new Dictionary<string, string>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> rawXMLData = DB_Main.getPaletteXML(true);
@@ -110,6 +131,7 @@ public class PaletteSwapManager : GenericGameManager {
                // Save the palette data in the memory cache
                _paletteDataList.Add(paletteData);
                _paletteDataRegistry.Add(xmlPair.xmlId, paletteData);
+               storePaletteNames(paletteData);
             }
          });
       });
@@ -136,7 +158,7 @@ public class PaletteSwapManager : GenericGameManager {
 
       List<Color> srcColors = new List<Color>();
       List<Color> dstColors = new List<Color>();
-            
+
       foreach (string name in names) {
          if (name == null || name.Trim() == "") {
             continue;
@@ -171,7 +193,7 @@ public class PaletteSwapManager : GenericGameManager {
       texture.filterMode = FilterMode.Point;
       texture.wrapMode = TextureWrapMode.Clamp;
 
-      for (int i = 0; i < srcColors.Count; i++) {         
+      for (int i = 0; i < srcColors.Count; i++) {
          Color source = srcColors[i];
          Color dest = dstColors[i];
 
@@ -191,15 +213,15 @@ public class PaletteSwapManager : GenericGameManager {
 
       return texture;
    }
-   
+
    private static Vector2Int getPointForColor (Color color) {
       Vector3 vec = new Vector3(color.r * 255, color.g * 255, color.b * 255);
       Vector2 xVector = new Vector2(vec.x * vec.y, Mathf.Max(vec.z, vec.x));
-      Vector2 yVector = new Vector2(vec.y * vec.z, Mathf.Max(vec.x, vec.y)); 
-      
+      Vector2 yVector = new Vector2(vec.y * vec.z, Mathf.Max(vec.x, vec.y));
+
       int x = Mathf.RoundToInt(Mathf.Sqrt(xVector.magnitude));
       int y = Mathf.RoundToInt(Mathf.Sqrt(yVector.magnitude));
-            
+
       return new Vector2Int(x, y);
    }
 
@@ -228,7 +250,7 @@ public class PaletteSwapManager : GenericGameManager {
 
    public static Color getRepresentingColor (string paletteName) {
       string p = paletteName;
-      if (p == PaletteDef.Eyes.Black ) {
+      if (p == PaletteDef.Eyes.Black) {
          return Color.black;
       } else if (p == PaletteDef.Eyes.Blue) {
          return intToColor(0, 102, 255);
@@ -289,7 +311,7 @@ public class PaletteSwapManager : GenericGameManager {
       return Color.magenta;
    }
 
-   public static Color intToColor(int r, int g, int b) {
+   public static Color intToColor (int r, int g, int b) {
       return new Color((float) r / 255.0f, (float) g / 255.0f, (float) b / 255.0f);
    }
 
@@ -315,11 +337,18 @@ public class PaletteSwapManager : GenericGameManager {
          if (counter > 0) {
             displayName += Util.UppercaseFirst(token) + " ";
          }
-         
+
          counter++;
       }
 
       return displayName.Trim();
+   }
+
+   private void storePaletteNames (PaletteToolData paletteData) {
+      // We use paletteName as key, and paletteDisplayName as value, if it isn't empty or null. We use paletteName as default.
+      if (!_paletteNamesRegistry.ContainsKey(paletteData.paletteName)) {
+         _paletteNamesRegistry.Add(paletteData.paletteName, string.IsNullOrEmpty(paletteData.paletteDisplayName) ? paletteData.paletteName : paletteData.paletteDisplayName);
+      }
    }
 
    #region Private Variables
@@ -331,6 +360,9 @@ public class PaletteSwapManager : GenericGameManager {
    // Stores the palette information
    [SerializeField]
    private protected Dictionary<int, PaletteToolData> _paletteDataRegistry = new Dictionary<int, PaletteToolData>();
+
+   // Stores palettes using their name as key, and their display name as value
+   private protected Dictionary<string, string> _paletteNamesRegistry = new Dictionary<string, string>();
 
    // Information about the last palette we created
    private static string[] _lastPaletteNames;

@@ -227,6 +227,9 @@ public class MyNetworkManager : NetworkManager
       // Initialize Store Items
       StoreDBManager.self.initialize();
 
+      // Initialize World Map Manager
+      WorldMapDBManager.self.initialize();
+
       // Initialize all xml managers to fetch from database
       initializeXmlData();
 
@@ -386,6 +389,30 @@ public class MyNetworkManager : NetworkManager
             }
          }
 
+         // Update the set of explored areas for the player
+         List<string> visitedAreas = DB_Main.getVisitedAreas(authenticatedUserId);
+         List<string> areasToBeAdded = new List<string>();
+
+         if (!visitedAreas.Contains(userInfo.areaKey)) {
+            areasToBeAdded.Add(userInfo.areaKey);
+         }
+
+         // The tutorial town area in the Forest Biome is always accessible
+         if (Area.homeTownForBiome.TryGetValue(Biome.Type.Forest, out string forestHomeTownAreaKey)) {
+            if (!visitedAreas.Contains(forestHomeTownAreaKey)) {
+               areasToBeAdded.Add(forestHomeTownAreaKey);
+            }
+
+            string forestHomeTownOpenWorldAreaKey = WorldMapManager.computeOpenWorldAreaKey(WorldMapManager.computeOpenWorldAreaCoordsForBiome(Biome.Type.Forest));
+            if (!visitedAreas.Contains(forestHomeTownOpenWorldAreaKey)) {
+               areasToBeAdded.Add(forestHomeTownOpenWorldAreaKey);
+            }
+         }
+
+         if (areasToBeAdded.Count > 0) {
+            DB_Main.addVisitedAreas(authenticatedUserId, new HashSet<string>(areasToBeAdded));
+         }
+
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Get the current voyage info the user is part of, if any
@@ -399,9 +426,31 @@ public class MyNetworkManager : NetworkManager
             }
             D.adminLog($"OnServerAddPlayer The user {userInfo.username} is assigned to this server.", D.ADMIN_LOG_TYPE.InstanceProcess);
 
-            // If this is a custom map, get the base key
-            if (ownerInfo != null) {
-               if (AreaManager.self.tryGetCustomMapManager(previousAreaKey, out CustomMapManager customMapManager)) {
+            // Check if this is a custom map
+            if (AreaManager.self.tryGetCustomMapManager(previousAreaKey, out CustomMapManager customMapManager)) {
+               if (customMapManager is CustomGuildMapManager) {
+                  
+                  // If the guild exists
+                  if (owningGuildInfo != null) {
+                     // If this is a guild map, get the base key
+                     if (userInfo.guildId == owningGuildInfo.guildId) {
+                        baseMapAreaKey = AreaManager.self.getAreaName(owningGuildInfo.guildMapBaseId);
+                     }
+                  } else {
+                     // If the guild doesn't exist, warp the player back to the tutorial town
+                     UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                        DB_Main.setNewLocalPosition(userInfo.userId, Vector2.zero, Direction.South, Area.STARTING_TOWN);
+
+                        UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                           StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, Area.STARTING_TOWN, "", -1, -1));
+                        });
+                     });
+
+                     return;
+                  }
+               }
+               
+               if (ownerInfo != null) {
                   baseMapAreaKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(ownerInfo));
 
                   D.adminLog("Successfully Added User: {" + userObjects.userInfo.userId + ":" + userObjects.userInfo.username + "} fetched custom map: " +
@@ -411,16 +460,9 @@ public class MyNetworkManager : NetworkManager
                      "Farm:{" + (customMapManager is CustomFarmManager) + "} " +
                      "House:{" + (customMapManager is CustomHouseManager) + "}" +
                      "Info:{" + (ownerInfo == null ? "null" : ownerInfo.userId + " " + ownerInfo.customHouseBaseId) + "}", D.ADMIN_LOG_TYPE.Visit);
-               } else {
-                  D.adminLog("Failed to fetch custom map: {" + customMapManager.getBaseMapId(ownerInfo) + "} {" + previousAreaKey + "}", D.ADMIN_LOG_TYPE.Visit);
                }
-            } else if (owningGuildInfo != null) {
-               // If this is a guild map, get the base key
-               if (userInfo.guildId == owningGuildInfo.guildId) {
-                  if (AreaManager.self.tryGetCustomMapManager(previousAreaKey, out CustomMapManager customMapManager)) {
-                     baseMapAreaKey = AreaManager.self.getAreaName(owningGuildInfo.guildMapBaseId);
-                  }
-               }
+            } else {
+               D.adminLog("Failed to fetch custom map: {" + previousAreaKey + "}", D.ADMIN_LOG_TYPE.Visit);
             }
 
             // If the area is invalid, warp the player to the starting town as a fallback mechanism
@@ -567,7 +609,7 @@ public class MyNetworkManager : NetworkManager
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                // Get map customizations if needed
                MapCustomizationData customizationData = new MapCustomizationData();
-               if (mapOwnerId != -1) {
+               if (mapOwnerId != -1 || CustomMapManager.isGuildSpecificAreaKey(previousAreaKey)) {
                   int baseMapId = DB_Main.getMapId(baseMapAreaKey);
                   customizationData = DB_Main.exec((cmd) => DB_Main.getMapCustomizationData(cmd, baseMapId, mapOwnerId) ?? customizationData);
                }
@@ -600,7 +642,6 @@ public class MyNetworkManager : NetworkManager
             player.rpc.checkForUnreadMails();
             player.rpc.checkForPendingFriendshipRequests();
             player.rpc.sendVoyageGroupMembersInfo();
-            player.rpc.setNextBiomeUnlocked();
             player.rpc.setAdminBattleParameters();
 
             bool isInTown = AreaManager.self.isTownArea(player.areaKey);

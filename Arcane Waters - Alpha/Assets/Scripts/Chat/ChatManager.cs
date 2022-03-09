@@ -75,6 +75,7 @@ public class ChatManager : GenericGameManager
       _commandData.Add(new CommandData("/who", "Search users", searchUsers, parameterNames: new List<string>() { "[is, in, level, help]", "username, area or level" }));
       _commandData.Add(new CommandData("/e", "Play an emote", requestPlayEmote, parameterNames: new List<string>() { "emoteType" }, parameterAutocompletes: EmoteManager.getSupportedEmoteNames()));
       _commandData.Add(new CommandData("/stuck", "Are you stuck? Use this to free yourself", requestUnstuck));
+      _commandData.Add(new CommandData("/gif", "Make a GIF of what just happened in game", GIFReplayManager.self.userRequestedGIF));
    }
 
    public void startChatManagement () {
