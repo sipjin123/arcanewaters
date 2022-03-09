@@ -155,6 +155,7 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
       foreach (GameObject hoverableObj in abilityHoverable) {
          EventTrigger eventTrigger = hoverableObj.GetComponent<EventTrigger>();
          Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerEnter, (e) => selectIndex(hoverableObj));
+         Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerExit, (e) => selectIndex(null));
          index++;
       }
    }
@@ -164,9 +165,11 @@ public class PvpShopPanel : ClientMonoBehaviour, IPointerClickHandler {
          newHoverableObj.SetActive(false);
       }
 
-      int currentIndex = newObj.GetComponent<PvpShopAbility>().abilityIndex;
-      if (currentIndex < abilityDetailHolder.Length) {
-         abilityDetailHolder[currentIndex].SetActive(true);
+      if (newObj != null) {
+         int currentIndex = newObj.GetComponent<PvpShopAbility>().abilityIndex;
+         if (currentIndex < abilityDetailHolder.Length) {
+            abilityDetailHolder[currentIndex].SetActive(true);
+         }
       }
    }
 
