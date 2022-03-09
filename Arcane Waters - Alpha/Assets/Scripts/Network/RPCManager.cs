@@ -6455,7 +6455,7 @@ public class RPCManager : NetworkBehaviour
          EntityManager.self.removeBypassForUser(_player.userId);
          return true;
       }
-      if (!VoyageManager.isPvpArenaArea(_player.areaKey) && !VoyageManager.isOpenWorld(_player.areaKey)) {
+      if (!VoyageManager.isPvpArenaArea(_player.areaKey) && !VoyageManager.isWorldMap(_player.areaKey)) {
          // If the player is not in a group, clear it from the netentity and redirect to the starting town
          if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
             _player.voyageGroupId = -1;
@@ -6512,7 +6512,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Remove the player from the game stats manager, when navigating open areas
-      if (VoyageManager.isOpenWorld(_player.areaKey)) {
+      if (VoyageManager.isWorldMap(_player.areaKey)) {
          GameStatsManager.self.unregisterUser(_player.userId);
       }
 

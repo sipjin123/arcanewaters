@@ -672,7 +672,7 @@ public class MyNetworkManager : NetworkManager
             }
 
             // Players in open world pvp can attack each other without waiting for triggers
-            if (pvpGameMode != PvpGameMode.None && VoyageManager.isOpenWorld(player.areaKey) && guildInfo.guildId > 0) {
+            if (pvpGameMode != PvpGameMode.None && VoyageManager.isWorldMap(player.areaKey) && guildInfo.guildId > 0) {
                player.hasEnteredPvP = true;
                
                player.openWorldGameMode = pvpGameMode;

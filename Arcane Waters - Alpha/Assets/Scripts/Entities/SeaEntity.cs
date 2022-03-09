@@ -344,7 +344,7 @@ public class SeaEntity : NetEntity
                }
 
                if (this.isPlayerShip()) {
-                  if (VoyageManager.isOpenWorld(areaKey)) {
+                  if (VoyageManager.isWorldMap(areaKey)) {
                      rpc.processBadgeReward(_lastAttackerNetId);
                   }
 

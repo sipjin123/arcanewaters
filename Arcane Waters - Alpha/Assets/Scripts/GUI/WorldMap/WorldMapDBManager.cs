@@ -97,7 +97,7 @@ public class WorldMapDBManager : MonoBehaviour
                   y = prefab.y - exportedProject.size.y / 2
                };
 
-               if (VoyageManager.isOpenWorld(areaKey)) {
+               if (VoyageManager.isWorldMap(areaKey)) {
                   Vector2Int areaCoords = WorldMapManager.computeOpenWorldAreaCoords(areaKey);
                   pin.areaX = areaCoords.x;
                   pin.areaY = areaCoords.y;
@@ -124,7 +124,7 @@ public class WorldMapDBManager : MonoBehaviour
                   y = prefab.y - exportedProject.size.y / 2
                };
 
-               if (VoyageManager.isOpenWorld(areaKey)) {
+               if (VoyageManager.isWorldMap(areaKey)) {
                   Vector2Int areaCoords = WorldMapManager.computeOpenWorldAreaCoords(areaKey);
                   pin.areaX = areaCoords.x;
                   pin.areaY = areaCoords.y;
@@ -152,7 +152,7 @@ public class WorldMapDBManager : MonoBehaviour
                   y = prefab.y - exportedProject.size.y / 2
                };
 
-               if (VoyageManager.isOpenWorld(areaKey)) {
+               if (VoyageManager.isWorldMap(areaKey)) {
                   Vector2Int areaCoords = WorldMapManager.computeOpenWorldAreaCoords(areaKey);
                   pin.areaX = areaCoords.x;
                   pin.areaY = areaCoords.y;

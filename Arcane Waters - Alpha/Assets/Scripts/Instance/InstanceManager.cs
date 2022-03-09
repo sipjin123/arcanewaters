@@ -54,7 +54,7 @@ public class InstanceManager : MonoBehaviour
                   D.debug("Failed to get voyage instance: " + voyageInstanceId);
                }
             } else {
-               Instance existingInstance = getOpenWorldInstanceByArea(areaKey);
+               Instance existingInstance = getWorldMapInstanceByArea(areaKey);
                if (existingInstance != null) {
                   instance = existingInstance;
                } else {
@@ -118,13 +118,13 @@ public class InstanceManager : MonoBehaviour
                   instance = inst;
                }
             } else {
-               Instance existingInstance = getOpenWorldInstanceByArea(areaKey);
+               Instance existingInstance = getWorldMapInstanceByArea(areaKey);
                if (existingInstance != null) {
                   instance = existingInstance;
                }
             }
          } else {
-            Instance existingInstance = getOpenWorldInstanceByArea(areaKey);
+            Instance existingInstance = getWorldMapInstanceByArea(areaKey);
             if (existingInstance != null) {
                instance = existingInstance;
             }
@@ -543,7 +543,7 @@ public class InstanceManager : MonoBehaviour
       return count;
    }
 
-   public Instance getOpenWorldInstanceByArea (string areaKey) {
+   public Instance getWorldMapInstanceByArea (string areaKey) {
       List<Instance> fetchedInst = _instances.Values.ToList().FindAll(_ => _.areaKey == areaKey);
       if (fetchedInst.Count > 0) {
          fetchedInst.OrderByDescending(_ => _.id);

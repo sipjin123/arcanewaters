@@ -12,7 +12,7 @@ public class WorldMapPanelCurrentAreaSelectorContainer : MonoBehaviour
    #endregion
 
    public void setCurrentArea (string areaKey) {
-      if (VoyageManager.isOpenWorld(areaKey)) {
+      if (VoyageManager.isWorldMap(areaKey)) {
          _areaCoords = WorldMapManager.computeOpenWorldAreaCoords(areaKey);
       } else {
          // See if the current area can be reached through one of the known warps

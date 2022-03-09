@@ -266,7 +266,7 @@ public class PlayerShipEntity : ShipEntity
          }
 
          // Set ship type to default for pvp arenas since all ships should be the same and upgraded via shop
-         if (VoyageManager.isPvpArenaArea(areaKey) && !VoyageManager.isOpenWorld(areaKey)) {
+         if (VoyageManager.isPvpArenaArea(areaKey) && !VoyageManager.isWorldMap(areaKey)) {
             shipType = Ship.Type.Type_1;
             shipSize = ShipSize.Small;
          }
@@ -1516,7 +1516,7 @@ public class PlayerShipEntity : ShipEntity
       }
 
       // Ensure the player's ship is always on water
-      if (VoyageManager.isOpenWorld(area.areaKey)) {
+      if (VoyageManager.isWorldMap(area.areaKey)) {
          if (area.isOpenWaterTile(transform.position)) {
             return;
          }

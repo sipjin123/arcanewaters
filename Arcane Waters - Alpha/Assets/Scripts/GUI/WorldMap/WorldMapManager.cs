@@ -13,7 +13,7 @@ public class WorldMapManager : MonoBehaviour
    public const string OPEN_WORLD_MAP_COORDS_Y = "012345678";
 
    // Open World Map Prefix
-   public const string OPEN_WORLD_MAP_PREFIX = "world_map_";
+   public const string WORLD_MAP_PREFIX = "world_map_";
 
    // Self
    public static WorldMapManager self;
@@ -83,7 +83,7 @@ public class WorldMapManager : MonoBehaviour
    }
 
    public static Vector2Int computeOpenWorldAreaCoords (string areaKey) {
-      if (Util.isEmpty(areaKey) || areaKey.Length < 2 || !areaKey.StartsWith(OPEN_WORLD_MAP_PREFIX)) {
+      if (Util.isEmpty(areaKey) || areaKey.Length < 2 || !areaKey.StartsWith(WORLD_MAP_PREFIX)) {
          return new Vector2Int(-1, -1);
       }
 
@@ -98,7 +98,7 @@ public class WorldMapManager : MonoBehaviour
 
    public static string computeOpenWorldAreaKey (Vector2Int areaCoords) {
       string suffix = computeOpenWorldAreaSuffix(areaCoords);
-      return $"{OPEN_WORLD_MAP_PREFIX}{suffix}";
+      return $"{WORLD_MAP_PREFIX}{suffix}";
    }
 
    public static Vector2Int computeOpenWorldAreaCoordsForBiome (Biome.Type biome) {
@@ -124,7 +124,7 @@ public class WorldMapManager : MonoBehaviour
       List<Vector2Int> areaCoordsList = new List<Vector2Int>();
 
       foreach (string areaKey in areaKeys) {
-         if (VoyageManager.isOpenWorld(areaKey)) {
+         if (VoyageManager.isWorldMap(areaKey)) {
             areaCoordsList.Add(computeOpenWorldAreaCoords(areaKey));
          }
       }
