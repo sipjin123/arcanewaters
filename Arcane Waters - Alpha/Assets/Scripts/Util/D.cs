@@ -49,7 +49,8 @@ public class D : MonoBehaviour {
       Player_Menu = 36,
       Pvp_Instance = 37,
       OpenWorldPvp = 38,
-      Simulation_Sea = 39
+      Simulation_Sea = 39,
+      Warp_To_Town = 40
    }
 
    // Any log files older than this will be deleted

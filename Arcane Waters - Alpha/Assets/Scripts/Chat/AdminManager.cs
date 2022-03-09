@@ -759,17 +759,47 @@ public class AdminManager : NetworkBehaviour
             case "break":
                message = "=================================================================\n\n";
                break;
-            case "instances":
+            case "voyages":
                Instance instInfo = InstanceManager.self.getInstance(_player.instanceId);
                message += "->>> User: {" + _player.entityName + ":" + _player.userId + "} Instance: {" + (instInfo == null ? "NULL" : (instInfo.id + ":" + instInfo.areaKey + ":" + instInfo.privateAreaUserId)) + "}";
+               foreach (Voyage voyage in VoyageManager.self.getAllVoyages()) {
+                  message += "-> Voyages: {" + voyage.voyageId + ":" + voyage.areaKey + ":" + voyage.playerCount + ":" + voyage.leagueIndex + "}\n";
+               }
+               break;
+            case "voyage_groups":
+               instInfo = InstanceManager.self.getInstance(_player.instanceId);
+               message += "->>> User: {" + _player.entityName + ":" + _player.userId + "} Instance: {" + (instInfo == null ? "NULL" : (instInfo.id + ":" + instInfo.areaKey + ":" + instInfo.privateAreaUserId)) + "}";
+               foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
+                  foreach (KeyValuePair<int, VoyageGroupInfo> serverGroup in server.voyageGroups) {
+                     message += "-> VoyageGrp: {" + server.networkedPort + "}{" + serverGroup.Key + ":" + 
+                        serverGroup.Value.voyageId + ":" + serverGroup.Value.groupId
+                        + ":" + serverGroup.Value.members.Count + "}\n";
+                  }
+               }
+               break;
+            case "instances":
+               instInfo = InstanceManager.self.getInstance(_player.instanceId);
+               message += "->>> User: {" + _player.entityName + ":" + _player.userId + "} Instance: {" + (instInfo == null ? "NULL" : (instInfo.id + ":" + instInfo.areaKey + ":" + instInfo.privateAreaUserId)) + "}";
                foreach (Instance inst in InstanceManager.self.getAllInstances()) {
-                  message += "-> Instance: {" + inst.id + ":" + inst.areaKey + ":" + inst.privateAreaUserId + "}\n";
+                  message += "-> Instance: {" + inst.id + ":" + inst.areaKey + ":" + inst.voyageId + "}\n";
                }
                break;
             case "user":
                instInfo = InstanceManager.self.getInstance(_player.instanceId);
                message += "->>> User: {" + _player.entityName + ":" + _player.userId + "} is in Instance: {" + (instInfo == null ? "NULL" : (instInfo.id + ":" + instInfo.areaKey + ":" + instInfo.isPvP)) + "}";
                break;
+            case "entities":
+               List<NetEntity> entityList = EntityManager.self.getAllEntities();
+               int index = 0;
+               foreach (NetEntity entityObj in entityList) {
+                  if (entityObj is PlayerBodyEntity || entityObj is PlayerShipEntity) {
+                     message += "->>> User: {" + _player.entityName + ":" + _player.userId + "} Searched for {" + entityObj.userId + ":" + entityObj.entityName + ":" + entityObj.areaKey + "}}";
+                     D.debug(message);
+                     Target_ReceiveServerLogs(message);
+                  }
+                  index++;
+               }
+               return;
          }
          D.debug(message);
          Target_ReceiveServerLogs(message);

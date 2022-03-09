@@ -6447,7 +6447,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [ServerOnly]
-   private bool canPlayerStayInVoyage () {
+   private bool canPlayerStayInVoyage (bool logReason = false) {
       // TODO: Setup a better solution for allowing users to bypass warping back to town
       // If player cant bypass restirctions, return them to town due to insufficient conditions being met
       if (EntityManager.self.canUserBypassWarpRestrictions(_player.userId)) {
@@ -6458,6 +6458,8 @@ public class RPCManager : NetworkBehaviour
       if (!VoyageManager.isPvpArenaArea(_player.areaKey) && !VoyageManager.isWorldMap(_player.areaKey)) {
          // If the player is not in a group, clear it from the netentity and redirect to the starting town
          if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
+            D.adminLog("{" + _player.userId + ":" + _player.entityName + "} {" + _player.areaKey + "} " +
+               "Player cant stay in voyage because of warp restriction, No Voyage group found {" + _player.voyageGroupId + "}!", D.ADMIN_LOG_TYPE.Warp_To_Town);
             _player.voyageGroupId = -1;
 
             // If player cant bypass restirctions, return them to town due to insufficient conditions being met
@@ -6471,9 +6473,14 @@ public class RPCManager : NetworkBehaviour
          if (voyageGroup.voyageId <= 0 || !_player.tryGetVoyage(out Voyage voyage) || _player.getInstance().voyageId != voyageGroup.voyageId) {
             if (voyageGroup.voyageId <= 0) {
                D.adminLog("Returning player to town: Voyage id is Invalid!", D.ADMIN_LOG_TYPE.Warp);
+               D.adminLog("{" + _player.userId + ":" + _player.entityName + "} {" + _player.areaKey + "} " +
+                  "Player cant stay in voyage because of warp restriction, Voyage Id is 0!", D.ADMIN_LOG_TYPE.Warp_To_Town);
             }
             if (_player.getInstance().voyageId != voyageGroup.voyageId) {
                D.adminLog("Returning player to town: Player voyage Id is incompatible with voyage group: {" + _player.getInstance().voyageId + "} : {" + voyageGroup.voyageId + "}", D.ADMIN_LOG_TYPE.Warp);
+               D.adminLog("{" + _player.userId + ":" + _player.entityName + "} {" + _player.areaKey + "} " +
+                  "Player cant stay in voyage because of warp restriction, " +
+                  "Instance Voyage does not match Group Voyage {" + _player.getInstance().voyageId + "}{" + _player.voyageGroupId + "}{" + voyageGroup.voyageId + "}!", D.ADMIN_LOG_TYPE.Warp_To_Town);
             }
 
             // If player cant bypass restirctions, return them to town due to insufficient conditions being met
@@ -6525,8 +6532,10 @@ public class RPCManager : NetworkBehaviour
       }
 
       // If the player does not meet the voyage requirements, warp the player back to town
-      if (!canPlayerStayInVoyage()) {
+      if (!canPlayerStayInVoyage(true)) {
          D.debug("This player {" + _player.userId + " " + _player.entityName + "} Cannot stay in Voyage, returning to Town");
+         D.adminLog("{" + _player.userId + ":" + _player.entityName + "} {" + _player.areaKey + "} Player cant stay in voyage!", D.ADMIN_LOG_TYPE.Warp_To_Town);
+
          _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
          return;
       }
