@@ -312,6 +312,14 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_SendPvpAnnouncement, chatInfo.senderId, chatInfo.text, chatInfo.sender, chatInfo.recipient);
    }
 
+   public void sendContextMenuRequest (int senderUserId, string senderUserName, int targetUserId) {
+      server.InvokeServerRpc(server.MasterServer_SendContextMenuRequest, senderUserId, senderUserName, server.networkedPort.Value, targetUserId);
+   }
+
+   public void returnContextMenuRequest (int senderUserId, string senderUserName, int originPort, int targetUserId, string targetName, int targetVoyageGroupId, int targetGuildId) {
+      server.InvokeServerRpc(server.MasterServer_ReturnContextMenuRequest, senderUserId, senderUserName, originPort, targetUserId, targetName, targetVoyageGroupId, targetGuildId);
+   }
+
    public void sendGlobalChatMessage (ChatInfo chatInfo) {
       server.InvokeServerRpc(server.MasterServer_SendGlobalMessage, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData), chatInfo.guildName, chatInfo.isSenderMuted, chatInfo.isSenderAdmin);
    }

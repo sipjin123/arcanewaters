@@ -1265,6 +1265,11 @@ public class RPCManager : NetworkBehaviour
    }
 
    [Command]
+   public void Cmd_ContextMenuRequest (int targetUserId) {
+      ServerNetworkingManager.self.sendContextMenuRequest(_player.userId, _player.entityName, targetUserId);
+   }
+
+   [Command]
    public void Cmd_SendChat (string message, ChatInfo.Type chatType) {
       GuildIconData guildIconData = null;
       string guildIconDataString = "";

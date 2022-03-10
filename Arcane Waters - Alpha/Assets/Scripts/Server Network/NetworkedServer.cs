@@ -472,6 +472,37 @@ public class NetworkedServer : NetworkedBehaviour
    #endregion
 
    [ServerRPC]
+   public void MasterServer_SendContextMenuRequest (int senderId, string senderName, int senderServerPort, int targetUserId) {
+      InvokeClientRpcOnEveryone(Server_ReceiveSendContextMenuRequest, senderId, senderName, senderServerPort, targetUserId);
+   }
+
+   [ClientRPC]
+   public void Server_ReceiveSendContextMenuRequest (int senderId, string senderName, int senderServerPort, int targetUserId) {
+      // Find the player entity in this server, if found then send back user information
+      if (ServerNetworkingManager.self.server.connectedUserIds.Contains(targetUserId)) {
+         NetEntity entityUser = EntityManager.self.getEntity(targetUserId);
+         if (entityUser != null) {
+            ServerNetworkingManager.self.returnContextMenuRequest(senderId, senderName, senderServerPort, targetUserId, entityUser.entityName, entityUser.voyageGroupId, entityUser.guildId);
+         }
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_ReturnContextMenuRequest (int senderId, string senderName, int senderServerPort, int targetUserId, string targetName, int targetVoyageGroupId, int targetGuildId) {
+      InvokeClientRpcOnEveryone(Server_ReceiveReturnContextMenuRequest, senderId, senderServerPort, targetUserId, targetName, targetVoyageGroupId, targetGuildId);
+   }
+
+   [ClientRPC]
+   public void Server_ReceiveReturnContextMenuRequest (int senderId, int senderServerPort, int targetUserId, string targetName, int targetVoyageGroupId, int targetGuildId) {
+      if (ServerNetworkingManager.self.server.networkedPort.Value == senderServerPort) {
+         NetEntity entityUser = EntityManager.self.getEntity(senderId);
+         if (entityUser != null) {
+            entityUser.Target_ReceiveContextMenuContent(targetUserId, targetName, targetVoyageGroupId, targetGuildId);
+         }
+      }
+   }
+
+   [ServerRPC]
    public void MasterServer_SendGlobalMessage (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString, string guildName, bool isSenderMuted, bool isSenderAdmin) {
       InvokeClientRpcOnEveryone(Server_ReceiveGlobalChatMessage, chatId, message, timestamp, senderName, senderUserId, guildIconDataString, guildName, isSenderMuted, isSenderAdmin);
    }

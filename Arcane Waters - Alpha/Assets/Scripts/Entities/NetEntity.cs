@@ -2521,6 +2521,11 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
+   [TargetRpc]
+   public void Target_ReceiveContextMenuContent (int targetUserId, string targetName, int targetVoyageGroupId, int targetGuildId) {
+      PanelManager.self.contextMenuPanel.processDefaultMenuForUser(null, targetUserId, targetName, targetVoyageGroupId, targetGuildId);
+   }
+
    public Vector3 getProjectedPosition (float afterSeconds) {
       return _body.position + _body.velocity * afterSeconds;
    }
