@@ -54,7 +54,7 @@ public class InstanceManager : MonoBehaviour
                   D.debug("Failed to get voyage instance: " + voyageInstanceId);
                }
             } else {
-               Instance existingInstance = getWorldMapInstanceByArea(areaKey);
+               Instance existingInstance = getWorldMapOpenInstance(areaKey);
                if (existingInstance != null) {
                   instance = existingInstance;
                } else {
@@ -118,13 +118,13 @@ public class InstanceManager : MonoBehaviour
                   instance = inst;
                }
             } else {
-               Instance existingInstance = getWorldMapInstanceByArea(areaKey);
+               Instance existingInstance = getWorldMapOpenInstance(areaKey);
                if (existingInstance != null) {
                   instance = existingInstance;
                }
             }
          } else {
-            Instance existingInstance = getWorldMapInstanceByArea(areaKey);
+            Instance existingInstance = getWorldMapOpenInstance(areaKey);
             if (existingInstance != null) {
                instance = existingInstance;
             }
@@ -368,6 +368,18 @@ public class InstanceManager : MonoBehaviour
       return null;
    }
 
+   public Instance getWorldMapOpenInstance (string areaKey) {
+      foreach (Instance instance in _instances.Values) {
+         if (VoyageManager.isWorldMap(instance.areaKey)) {
+            if (instance.areaKey == areaKey && instance.getPlayerCount() < instance.getMaxPlayers()) {
+               return instance;
+            }
+         }
+      }
+
+      return null;
+   }
+
    public Instance getPlayerPrivateOpenInstance (string areaKey, int userId) {
       foreach (Instance instance in _instances.Values) {
          if (instance.areaKey == areaKey && instance.getPlayerCount() < instance.getMaxPlayers() && instance.privateAreaUserId == userId) {
@@ -541,18 +553,6 @@ public class InstanceManager : MonoBehaviour
       }
 
       return count;
-   }
-
-   public Instance getWorldMapInstanceByArea (string areaKey) {
-      List<Instance> fetchedInst = _instances.Values.ToList().FindAll(_ => _.areaKey == areaKey);
-      if (fetchedInst.Count > 0) {
-         fetchedInst.OrderByDescending(_ => _.id);
-         if (VoyageManager.isWorldMap(fetchedInst[0].areaKey)) {
-            return fetchedInst[0];
-         }
-      }
-
-      return null;
    }
 
    public void reset () {
