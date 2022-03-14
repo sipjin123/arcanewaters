@@ -493,6 +493,9 @@ public class BattleUIManager : MonoBehaviour {
 
       List<Battler> enemyBattlersAlive = BattleSelectionManager.self.getLiveTargets();
       if (orderByUserId && enemyBattlersAlive.Count > 0) {
+         Battler newSelectedBattler = enemyBattlersAlive[0];
+         D.adminLog("OrderByUserId: Enemies alive is: {" + enemyBattlersAlive.Count + "}, now selecting first index {0} " +
+            "{" + (newSelectedBattler == null ? "Null" : (newSelectedBattler.userId + " : " + newSelectedBattler.enemyType)) + "}", D.ADMIN_LOG_TYPE.Battle_Selection);
          BattleSelectionManager.self.clickBattler(enemyBattlersAlive[0]);
          return;
       }
@@ -514,9 +517,14 @@ public class BattleUIManager : MonoBehaviour {
 
          // Simulate battle selection
          Battler sectionBattlers = enemyBattlersAlive.ElementAt<Battler>(selectionId);
+         D.adminLog("Enemies alive is: {" + enemyBattlersAlive.Count() + "}, now selecting index {" + selectionId + "} " +
+            "{" + (selectedBattler == null ? "Null" : (selectedBattler.userId + " : " + selectedBattler.enemyType)) + "}", D.ADMIN_LOG_TYPE.Battle_Selection);
          BattleSelectionManager.self.clickBattler(sectionBattlers);
       } else if (enemyBattlersAlive.Count() == 1) {
-         BattleSelectionManager.self.clickBattler(enemyBattlersAlive.ElementAt<Battler>(0));
+         Battler newSelectedBattler = enemyBattlersAlive.ElementAt<Battler>(0);
+         D.adminLog("Enemies alive is only {1} now selecting index {0} " +
+            "{" + (newSelectedBattler == null ? "Null" : (newSelectedBattler.userId + " : " + newSelectedBattler.enemyType)) + "}", D.ADMIN_LOG_TYPE.Battle_Selection);
+         BattleSelectionManager.self.clickBattler(newSelectedBattler);
       }
    }
 

@@ -34,7 +34,7 @@ public class ScreenLogger : GenericGameManager {
       canvasObj.SetActive(false);
 
       Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.Quest);
-      Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.Player_Menu);
+      Global.logTypesToShow.Add(D.ADMIN_LOG_TYPE.Battle_Selection);
       D.debug("Screen Logger v5.0.5 {" + (Util.isProductionBuild() ? "Prod" : "Dev") + "}");
 
       if (!Util.isCloudBuild()) {

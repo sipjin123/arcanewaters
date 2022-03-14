@@ -156,6 +156,10 @@ public class NPCPanel : Panel
          Global.player.rpc.Cmd_HireCompanion(landMonsterId);
       });
 
+      D.adminLog("Step3: Received a Quest Dialogue:: " +
+         "Quest:{" + questId + "} " + "Node:{" + questNodeId + ":" + nodeTitle + "} " +
+         "Dialogue:{" + dialogueId + "}", D.ADMIN_LOG_TYPE.Quest);
+
       processInternalDialogues(questId, questNodeId, dialogueId, friendshipLevel, itemStock, newJobsXp);
 
       /*
@@ -196,12 +200,16 @@ public class NPCPanel : Panel
             if (isShowing()) {
                AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
             }
+            D.debug("Step4-B: Dialogue node being Ended now {" + questId + ":" + questData.questGroupName + "}{" + questNodeId + "}{" + dialogueId + "} " +
+               "{" + (questNodeId + 1) + ":" + questData.questDataNodes.Length + "}");
 
             addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueEnd,
             () => dialogueEndClickedOn(), true);
          } else {
             QuestDataNode questDataNode = new List<QuestDataNode>(questData.questDataNodes).Find(_ => _.questDataNodeId == questNodeId);
             QuestDialogueNode dialogueNode = new List<QuestDialogueNode>(questDataNode.questDialogueNodes).Find(_ => _.dialogueIdIndex == dialogueId);
+            D.adminLog("Step4-A: Dialogue node being fetched is from {" + questId + "}{" + questNodeId + ":" + questDataNode.questNodeTitle + "}" +
+               "{" + dialogueId + ":" + dialogueNode.playerDialogue + "}", D.ADMIN_LOG_TYPE.Quest);
             if (dialogueNode != null) {
                npcDialogueText.enabled = true;
                _npcDialogueLine = getDynamicDialog(dialogueNode.npcDialogue);

@@ -320,14 +320,11 @@ public class PlayerShipEntity : ShipEntity
          shipAbilities.Clear();
          int index = 0;
 
-         string abilityNameData = "--> User {" + userId + ":" + entityName + "} {" + shipInfo.shipName + "} Ship Abilities: ";
          foreach (int newShipAbility in shipInfo.shipAbilities.ShipAbilities) {
             ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(newShipAbility);
-            abilityNameData += "{" + newShipAbility + ":" + (shipAbilityData == null ? "Null" : shipAbilityData.abilityName) + "}";
             shipAbilities.Add(newShipAbility);
             index++;
          }
-         D.debug(abilityNameData);
 
          // If for some reason this user has insufficient abilities, assign the default abilities until ability count reaches 5
          if (index < CannonPanel.MAX_ABILITY_COUNT) {

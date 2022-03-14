@@ -2917,7 +2917,8 @@ public class RPCManager : NetworkBehaviour
          questData = NPCQuestManager.self.getQuestData(NPCQuestManager.BLANK_QUEST_ID);
          D.debug("Using a blank quest template due to npc data (" + npcId + ") having no assigned quest id");
       }
-      D.adminLog("Player {" + _player.userId + "} requesting quest info from :{" + npcData.npcId + ":" + npcData.name + "} using quest {" + questData.questGroupName + "}", D.ADMIN_LOG_TYPE.Quest);
+      D.adminLog("Player {" + _player.userId + "} requesting quest info from: {" + npcData.npcId + ":" + npcData.name + "} " +
+         "using quest {" + questData.questGroupName + "}", D.ADMIN_LOG_TYPE.Quest);
 
       List<QuestDataNode> xmlQuestNodeList = new List<QuestDataNode>(questData.questDataNodes);
       List<QuestDataNode> removeNodeList = new List<QuestDataNode>();
@@ -2929,6 +2930,7 @@ public class RPCManager : NetworkBehaviour
          List<QuestStatusInfo> databaseQuestStatusList = DB_Main.getQuestStatuses(npcId, _player.userId);
 
          if (databaseQuestStatusList.Count < 1) {
+            D.adminLog("Generating quest status for npc {" + npcId + "}", D.ADMIN_LOG_TYPE.Quest);
             for (int i = 0; i < questData.questDataNodes.Length; i++) {
                DB_Main.updateQuestStatus(npcId, _player.userId, questId, i, 0);
             }
@@ -2939,7 +2941,6 @@ public class RPCManager : NetworkBehaviour
             if (databaseQuestStatusList.Count > 0) {
                QuestStatusInfo highestQuestNodeValue = databaseQuestStatusList.OrderByDescending(_ => _.questNodeId).ToList()[0];
 
-               D.adminLog("Total nodes to check :{" + xmlQuestNodeList.Count + "}", D.ADMIN_LOG_TYPE.Quest);
                foreach (QuestDataNode xmlQuestNode in xmlQuestNodeList) {
                   // Remove node if friendship level requirement is insufficient
                   if (xmlQuestNode.friendshipLevelRequirement > friendshipLevel) {
@@ -3033,6 +3034,9 @@ public class RPCManager : NetworkBehaviour
          D.editorLog("Npc has no valid quest id", Color.red);
       }
 
+      D.adminLog("Step1: Quest NPC Quest Title is now selected: {" + (questData == null ? "NULL" : questData.questGroupName) + "} " +
+         "{" + questId + "}{" + questNodeId + "}{" + dialogueId + "}", D.ADMIN_LOG_TYPE.Quest);
+
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Retrieve the friendship level
@@ -3056,12 +3060,18 @@ public class RPCManager : NetworkBehaviour
                questNodeId = questData.questDataNodes[0].questDataNodeId;
                dialogueId = questData.questDataNodes[0].questDialogueNodes[0].dialogueIdIndex;
 
+               D.adminLog("Step2: Quest Title Currently is: {" + (questData == null ? "NULL" : questData.questGroupName) + "} {" + questTitleName + "}" +
+                  "{" + questId + "}{" + questNodeId + "}{" + dialogueId + "}", D.ADMIN_LOG_TYPE.Quest);
+
                if (statusInfo != null) {
                   questNodeId = statusInfo.questNodeId;
                   dialogueId = statusInfo.questDialogueId;
 
                   if (questData.questDataNodes.Length > questNodeId) {
-                     QuestDataNode questDataNode = questData.questDataNodes[questNodeId];
+                     D.adminLog("Quest Title selected is: {" + (questData == null ? "NULL" : questData.questGroupName) + "} " +
+                        "{" + (questDataNode == null ? "NULL" : questDataNode.questNodeTitle) + "} " +
+                        "{" + questId + "}{" + questNodeId + "}{" + dialogueId + "}", D.ADMIN_LOG_TYPE.Quest);
+
                      if (questDataNode.questDialogueNodes.Length > dialogueId) {
                         // When the user selects a quest, we show again the dialogues up to the previously completed reward or quest node
                         for (dialogueId--; dialogueId >= 0; dialogueId--) {
@@ -3083,6 +3093,8 @@ public class RPCManager : NetworkBehaviour
                         }
                      }
                   }
+               } else {
+                  D.editorLog("No status for this quest {" + questId + "} {" + questNodeId + "}");
                }
             }
          }
@@ -3190,7 +3202,10 @@ public class RPCManager : NetworkBehaviour
 
       QuestData questData = NPCQuestManager.self.getQuestData(questId);
       QuestDataNode questDataNode = questData.questDataNodes[questNodeId];
+      D.adminLog("Dialogue Step1: Quest NPC Dialogue is now selected: {" + questId + "}{" + questNodeId + "}{" + dialogueId + "}", D.ADMIN_LOG_TYPE.Quest);
       if (questDataNode.questDialogueNodes.Length > dialogueId + 1) {
+         D.adminLog("Dialogue Step2-A: Quest NPC Dialogue has reached its end of statement: {" + questId + "}{" + questNodeId + ":" + questDataNode.questNodeTitle + "} " +
+            "Curr:{" + dialogueId + "} Total:{" + questDataNode.questDialogueNodes.Length + "}", D.ADMIN_LOG_TYPE.Quest);
          bool deliveredItems = false;
 
          // Gather the item list to deduct from the preview node
@@ -3212,8 +3227,9 @@ public class RPCManager : NetworkBehaviour
 
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             // Update the quest status of the npc
-            D.adminLog("1. Updating quest status into: " +
-               questId + ":: " + newQuestNodeId + ": " + newDialogueId + "/" + questDataNode.questDialogueNodes.Length, D.ADMIN_LOG_TYPE.Quest);
+            D.adminLog("Dialogue Step3-A: Updating quest status into: {" + questId + ":" + questData.questGroupName + "} " +
+               ":: {" + newQuestNodeId + ":" + (questDataNode == null ? "Null" : questDataNode.questNodeTitle) + "} " +
+               ":: {" + newDialogueId + "/" + questDataNode.questDialogueNodes.Length + "}", D.ADMIN_LOG_TYPE.Quest);
             DB_Main.updateQuestStatus(npcId, _player.userId, questId, newQuestNodeId, newDialogueId);
             int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
             Jobs newJobXP = DB_Main.getJobXP(_player.userId);
@@ -3256,10 +3272,11 @@ public class RPCManager : NetworkBehaviour
             });
          });
       } else {
+         D.adminLog("Dialogue Step2-B: Quest NPC Dialogue proceeding to next phase: {" + questId + "}{" + questNodeId + "}{" + dialogueId + ":" + (dialogueId + 1) + "}", D.ADMIN_LOG_TYPE.Quest);
          newDialogueId++;
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             // Update the quest status of the npc
-            D.adminLog("2. Updating quest status into: " +
+            D.adminLog("Dialogue Step3-B: Updating quest status into: " +
                questId + ":: " + questNodeId + ": " + newDialogueId + "/" + questDataNode.questDialogueNodes.Length, D.ADMIN_LOG_TYPE.Quest);
             DB_Main.updateQuestStatus(npcId, _player.userId, questId, newQuestNodeId, newDialogueId);
 
@@ -3639,6 +3656,8 @@ public class RPCManager : NetworkBehaviour
                               npcIdList.Remove(npcData.npcId);
                            }
                         }
+                     } else {
+                        D.debug("Quest data node {" + questStatus.questNodeId + "} does not exist in the list of quest {" + questData.questGroupName + "}");
                      }
                   }
                }
