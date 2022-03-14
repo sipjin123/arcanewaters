@@ -6752,6 +6752,7 @@ public class RPCManager : NetworkBehaviour
       NetEntity entity = EntityManager.self.getEntityByNetId(attackerNetId);
       if (entity != null) {
          Target_ReceiveBadges(entity.connectionToClient, itmReward);
+         processItemCreation(entity.userId, itmReward);
       }
    }
 
