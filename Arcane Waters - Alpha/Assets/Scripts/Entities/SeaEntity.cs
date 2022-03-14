@@ -250,7 +250,7 @@ public class SeaEntity : NetEntity
       // Keep track of the damage each attacker has done on this entity
       NetEntity sourceEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(damageSourceNetId);
       if (sourceEntity != null) {
-         if (sourceEntity.userId > 0) {
+         if (sourceEntity.userId > 0 && sourceEntity is PlayerShipEntity) {
             if (_damageReceivedPerAttacker.ContainsKey(sourceEntity.userId)) {
                _damageReceivedPerAttacker[sourceEntity.userId] += amount;
             } else {
@@ -258,21 +258,21 @@ public class SeaEntity : NetEntity
             }
 
             customRegisterDamageReceived(sourceEntity.userId, amount);
+
+            // Cache the source damage record inflicted
+            if (!_totalAttackers.ContainsKey(damageSourceNetId)) {
+               _totalAttackers.Add(damageSourceNetId, new DamageRecord());
+            }
+
+            // Make sure class is initialized
+            if (_totalAttackers[damageSourceNetId] == null) {
+               _totalAttackers[damageSourceNetId] = new DamageRecord();
+            }
+
+            _totalAttackers[damageSourceNetId].lastAttackTime = NetworkTime.time;
+            _totalAttackers[damageSourceNetId].totalDamage += amount;
          }
       }
-
-      // Cache the source damage record inflicted
-      if (!_totalAttackers.ContainsKey(damageSourceNetId)) {
-         _totalAttackers.Add(damageSourceNetId, new DamageRecord());
-      }
-
-      // Make sure class is initialized
-      if (_totalAttackers[damageSourceNetId] == null) {
-         _totalAttackers[damageSourceNetId] = new DamageRecord();
-      }
-
-      _totalAttackers[damageSourceNetId].lastAttackTime = NetworkTime.time;
-      _totalAttackers[damageSourceNetId].totalDamage += amount;
 
       noteAttacker(damageSourceNetId);
       Rpc_NoteAttacker(damageSourceNetId);
@@ -334,7 +334,8 @@ public class SeaEntity : NetEntity
                               D.debug("Error, damager entity {" + damagerData.Key + "} is missing!");
                            }
                         } catch {
-                           D.debug("Something went wrong with Silver rewards!");
+                           NetEntity damagerEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(damagerData.Key);
+                           D.debug("Something went wrong with Silver rewards! {" + damagerEntity + "} {" + damagerEntity == null ? "NUll" : damagerEntity.getPlayerShipEntity() + "} {" + damagerData + "}");
                         }
                      }
                   } else {
