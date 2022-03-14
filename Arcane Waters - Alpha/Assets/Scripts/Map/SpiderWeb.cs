@@ -41,6 +41,9 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
    // Bounce web frame indexes
    public int bounceWebMin, bounceWebMax;
 
+   // Returns whether this web has a linked web
+   public bool hasLinkedWeb => _linkedWeb != null;
+
    #endregion
 
    private void Awake () {

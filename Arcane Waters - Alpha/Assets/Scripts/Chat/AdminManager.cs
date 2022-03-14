@@ -314,11 +314,22 @@ public class AdminManager : NetworkBehaviour
 
       Target_ReportTestOpenWorldResults(_player.connectionToClient, numAreasCreated, testDuration, baselineCpuUsage, baselineRamUsage, currentCpuUsage, currentRamUsage);
 
+      List<Instance> allInstances = InstanceManager.self.getAllInstances();
+      int instancesDestroyed = 0;
+
       // Destroy all created open world maps
       for (int i = 0; i < numAreasCreated; i++) {
          string areaName = getOpenWorldMapName(i);
          AreaManager.self.destroyArea(areaName);
+
+         Instance areaInstance = allInstances.Find((x) => x.areaKey == areaName);
+         if (areaInstance != null) {
+            InstanceManager.self.removeEmptyInstance(areaInstance);
+            instancesDestroyed++;
+         }
       }
+
+      D.debug("Testing Open World - Upon test completion destroyed " + instancesDestroyed + " instances.");
    }
 
    [TargetRpc]

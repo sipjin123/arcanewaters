@@ -52,7 +52,10 @@ public class MM_PlayerIcon : ClientMonoBehaviour {
 
          // For pvp arenas, we never want to have minimap translation
          if (VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
-            minimapTranslationScale = 0.0f;
+            // Unless this PVP arena is actually an open-world map, then we absolutely do want minimap translation
+            if (!VoyageManager.isWorldMap(Global.player.areaKey)) {
+               minimapTranslationScale = 0.0f;
+            }
          }
 
          // It is more suited for Minimap class but to avoid race condition and ensure correct calling sequence, it is used here

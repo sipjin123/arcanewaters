@@ -5367,6 +5367,33 @@ public class DB_Main : DB_MainStub
       return cropList;
    }
 
+   public static new List<CropInfo> getGuildCropInfo (int guildId) {
+      List<CropInfo> cropList = new List<CropInfo>();
+      string guildMapAreaKey = CustomGuildMapManager.getGuildSpecificAreaKey(guildId);
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM crops WHERE areaKey=@areaKey", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@areaKey", guildMapAreaKey);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  CropInfo info = new CropInfo(dataReader);
+                  cropList.Add(info);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return cropList;
+   }
+
    public static new int insertCrop (CropInfo cropInfo, string areaKey) {
       int cropId = 0;
       string unixString = "CURRENT_TIMESTAMP";

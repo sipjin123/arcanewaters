@@ -9085,7 +9085,7 @@ public class RPCManager : NetworkBehaviour
       if (warpIntoAfterSetting) {
          // If warping to a guild map, make a guild specific area key if we need one
          if (manager is CustomGuildMapManager && !CustomMapManager.isGuildSpecificAreaKey(customMapKey)) {
-            string guildSpecificAreaKey = (manager as CustomGuildMapManager).getGuildSpecificAreaKey(_player.guildId);
+            string guildSpecificAreaKey = CustomGuildMapManager.getGuildSpecificAreaKey(_player.guildId);
             _player.spawnInNewMap(guildSpecificAreaKey, null, _player.facing);
          } else {
             _player.spawnInNewMap(customMapKey, null, _player.facing);

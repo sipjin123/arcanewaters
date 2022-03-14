@@ -896,8 +896,12 @@ public class NetEntity : NetworkBehaviour
          case Anim.Type.NC_Jump_East:
          case Anim.Type.NC_Jump_North:
          case Anim.Type.NC_Jump_South:
-            // Sound effect
-            SoundEffectManager.self.playFmodSfx(SoundEffectManager.JUMP, this.transform.position);
+
+            if (!isBouncingOnWeb()) {
+               // Play jumping sound effect
+               SoundEffectManager.self.playFmodSfx(SoundEffectManager.JUMP, this.transform.position);
+            }
+            
             if (!freezeAnim) {
                StartCoroutine(CO_DelayExitAnim(animType, 0.5f));
             }
@@ -936,8 +940,11 @@ public class NetEntity : NetworkBehaviour
          case Anim.Type.NC_Jump_South:
             shadow.transform.localScale = _shadowInitialScale;
 
-            // Play jump landing sound effect
-            SoundEffectManager.self.playJumpLandSfx(this.sortPoint.transform.position, this.areaKey);
+            if (!isBouncingOnWeb() || (isBouncingOnWeb() && !_activeWeb.hasLinkedWeb)) {
+               // Play jump landing sound effect
+               SoundEffectManager.self.playJumpLandSfx(this.sortPoint.transform.position, this.areaKey);
+            }
+            
             break;
       }
 
@@ -1943,7 +1950,7 @@ public class NetEntity : NetworkBehaviour
          return;
       }
 
-      areaTarget = guildMapManager.getGuildSpecificAreaKey(guildId);
+      areaTarget = CustomGuildMapManager.getGuildSpecificAreaKey(guildId);
 
       spawnInNewMap(areaTarget);
    }
@@ -2059,7 +2066,7 @@ public class NetEntity : NetworkBehaviour
          if (customMapManager is CustomGuildMapManager) {
             // Make a guild-specific area key for this user, if it is not a guild-specific key already
             if (newArea == CustomGuildMapManager.GROUP_AREA_KEY) {
-               newArea = customMapManager.getGuildSpecificAreaKey(guildId);
+               newArea = CustomGuildMapManager.getGuildSpecificAreaKey(guildId);
             }
 
             // Get the base map key
@@ -2523,7 +2530,7 @@ public class NetEntity : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveContextMenuContent (int targetUserId, string targetName, int targetVoyageGroupId, int targetGuildId) {
-      PanelManager.self.contextMenuPanel.processDefaultMenuForUser(null, targetUserId, targetName, targetVoyageGroupId, targetGuildId);
+      PanelManager.self.contextMenuPanel.processDefaultMenuForUser(null, targetUserId, targetName, targetGuildId, targetVoyageGroupId);
    }
 
    public Vector3 getProjectedPosition (float afterSeconds) {

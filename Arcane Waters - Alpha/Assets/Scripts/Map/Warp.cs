@@ -211,13 +211,8 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
                player.spawnInBiomeHomeTown();
             } else {
                if (areaTarget == CustomGuildMapManager.GROUP_AREA_KEY) {
-                  if (AreaManager.self.tryGetCustomMapManager(areaTarget, out CustomMapManager guildMapManager)) {
-                     areaTarget = guildMapManager.getGuildSpecificAreaKey(player.guildId);
-                     player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
-                  } else {
-                     D.error("Couldn't find custom guild map manager for area: " + areaTarget);
-                     player.spawnInBiomeHomeTown();
-                  }
+                  areaTarget = CustomGuildMapManager.getGuildSpecificAreaKey(player.guildId);
+                  player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
                } else {
                   player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
                }

@@ -158,7 +158,7 @@ public class PlantableTreeManager : MonoBehaviour
       }
 
       // Check that farm belongs to this user
-      if (!AreaManager.self.isFarmOfUser(areaKey, player.userId)) {
+      if (!AreaManager.self.isFarmOfUser(areaKey, player.userId) && !CustomGuildMapManager.canUserFarm(areaKey, player)) {
          message = "Not your farm";
          return false;
       }
@@ -301,7 +301,7 @@ public class PlantableTreeManager : MonoBehaviour
       }
 
       // Check that it is a farm and it belongs to this user
-      if (!AreaManager.self.isFarmOfUser(tree.data.areaKey, player.userId)) {
+      if (!AreaManager.self.isFarmOfUser(tree.data.areaKey, player.userId) && !CustomGuildMapManager.canUserFarm(tree.data.areaKey, player)) {
          return false;
       }
 

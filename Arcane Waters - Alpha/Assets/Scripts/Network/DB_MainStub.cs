@@ -749,6 +749,10 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static List<CropInfo> getGuildCropInfo (int guildId) {
+      return null;
+   }
+
    public static int insertCrop (CropInfo cropInfo, string areaKey) {
       return 0;
    }

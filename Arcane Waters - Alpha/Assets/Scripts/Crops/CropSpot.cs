@@ -48,8 +48,10 @@ public class CropSpot : MonoBehaviour {
    }
 
    public void tryToInteractWithCropOnClient () {
+      bool hasFarmingPermissions = (AreaManager.self.isFarmOfUser(areaKey, Global.player.userId) || CustomGuildMapManager.canUserFarm(areaKey, Global.player));
+
       // If a player tried to plant on this spot holding a seed bag, plant a seed
-      if (this.crop == null && (Global.player as PlayerBodyEntity).weaponManager.actionType == Weapon.ActionType.PlantCrop && AreaManager.self.isFarmOfUser(areaKey, Global.player.userId)) {
+      if (this.crop == null && (Global.player as PlayerBodyEntity).weaponManager.actionType == Weapon.ActionType.PlantCrop && hasFarmingPermissions) {
          Global.player.Cmd_PlantCrop((Crop.Type)(Global.player as PlayerBodyEntity).weaponManager.actionTypeValue, this.cropNumber, Global.player.areaKey);
          EffectManager.self.create(Effect.Type.Crop_Harvest, transform.position);
          EffectManager.self.create(Effect.Type.Crop_Dirt_Large, transform.position);
@@ -79,14 +81,16 @@ public class CropSpot : MonoBehaviour {
    }
 
    private void tryAutoFarm (Collider2D collision) {
+      
       // If the local player walked over this crop spot
       PlayerBodyEntity player = collision.GetComponent<PlayerBodyEntity>();
       if (Global.autoFarm && player && Global.player && player == Global.player && !player.interactingAnimation && AreaManager.isFarmingAllowed(player.areaKey)) {
          
          bool triggeredAction = false;
+         bool hasFarmingPermissions = (AreaManager.self.isFarmOfUser(player.areaKey, player.userId) || CustomGuildMapManager.canUserFarm(areaKey, player));
 
          // If the player is holding seeds, try plant seeds here
-         if (player.weaponManager.actionType == Weapon.ActionType.PlantCrop && !crop && AreaManager.self.isFarmOfUser(player.areaKey, player.userId)) {
+         if (player.weaponManager.actionType == Weapon.ActionType.PlantCrop && !crop && hasFarmingPermissions) {
             player.playFastInteractAnimation(transform.position, true);
             player.Cmd_PlantCrop((Crop.Type) player.weaponManager.actionTypeValue, cropNumber, player.areaKey);
 
@@ -111,7 +115,7 @@ public class CropSpot : MonoBehaviour {
          }
 
          // If the player is holding a pitchfork, try to harvest this plot
-         if (player.weaponManager.actionType == Weapon.ActionType.HarvestCrop && crop && crop.isMaxLevel() && !crop.hasBeenHarvested() && AreaManager.self.isFarmOfUser(player.areaKey, player.userId)) {
+         if (player.weaponManager.actionType == Weapon.ActionType.HarvestCrop && crop && crop.isMaxLevel() && !crop.hasBeenHarvested() && hasFarmingPermissions) {
             player.playFastInteractAnimation(transform.position, true);
             harvestCrop();
             triggeredAction = true;

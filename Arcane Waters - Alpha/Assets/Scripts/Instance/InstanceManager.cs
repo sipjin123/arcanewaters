@@ -57,8 +57,6 @@ public class InstanceManager : MonoBehaviour
                Instance existingInstance = getWorldMapOpenInstance(areaKey);
                if (existingInstance != null) {
                   instance = existingInstance;
-               } else {
-                  D.debug("Error here, could not find the pvp instance id of area (Voyages) {" + areaKey + "}");
                }
             }
          } else if (VoyageManager.isTreasureSiteArea(areaKey)) {
@@ -184,9 +182,14 @@ public class InstanceManager : MonoBehaviour
       // If they're entering their farm, send them their crops
       if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
          CustomFarmManager farmManager = customMapManager as CustomFarmManager;
+         CustomGuildMapManager guildMapManager = customMapManager as CustomGuildMapManager;
          if (farmManager != null) {
             int userId = CustomMapManager.isUserSpecificAreaKey(areaKey) ? CustomMapManager.getUserId(areaKey) : player.userId;
             player.cropManager.loadCrops(userId);
+         } else if (guildMapManager != null) {
+            int guildId = CustomMapManager.getGuildId(areaKey);
+            player.cropManager.loadGuildCrops(guildId);
+            D.debug("Entered custom guild map. Loading crops for guild: " + guildId);
          }
       } else {
          // TODO: Update this block of code after setting up farm maps

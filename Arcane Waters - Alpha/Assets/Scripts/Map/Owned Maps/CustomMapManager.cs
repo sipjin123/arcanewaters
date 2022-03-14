@@ -23,10 +23,6 @@ public abstract class CustomMapManager
       return mapTypeAreaKey + "_user" + userId;
    }
 
-   public string getGuildSpecificAreaKey (int guildId) {
-      return mapTypeAreaKey + "_guild" + guildId;
-   }
-
    // Checks whether given area key is this map group's area key or this map group's user specific area key
    public bool associatedWithAreaKey (string areaKey) {
       return mapTypeAreaKey.Equals(areaKey) || mapTypeAreaKey.Equals(getMapTypeAreaKey(areaKey)) || mapTypeAreaKey.Equals(getGuildMapTypeAreaKey(areaKey));

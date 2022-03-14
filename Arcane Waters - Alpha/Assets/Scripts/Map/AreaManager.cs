@@ -310,7 +310,7 @@ public class AreaManager : MonoBehaviour
    }
 
    public static bool isFarmingAllowed (string areaKey) {
-      return (areaKey.Contains(CustomFarmManager.GROUP_AREA_KEY) || areaKey.Contains(CustomHouseManager.GROUP_AREA_KEY));
+      return (areaKey.Contains(CustomFarmManager.GROUP_AREA_KEY) || areaKey.Contains(CustomHouseManager.GROUP_AREA_KEY) || areaKey.Contains(CustomGuildMapManager.GROUP_AREA_KEY));
    }
 
    protected void toggleAreaCollidersForPerformanceImprovement () {

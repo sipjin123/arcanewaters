@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class MM_Icon : ClientMonoBehaviour {
+public class MM_Icon : ClientMonoBehaviour
+{
    #region Public Variables
 
    // The target object that we represent
@@ -12,6 +13,12 @@ public class MM_Icon : ClientMonoBehaviour {
 
    // The tooltip we want for this icon
    public Tooltipped tooltip;
+
+   [Tooltip("Should we round the icon's position to 4ths?")]
+   public bool roundPositionTo4ths = false;
+
+   [Tooltip("Is icon anchored to the background? It needs to account for player position otherwise")]
+   public bool iconAnchoredToTheBackground = false;
 
    #endregion
 
@@ -36,9 +43,20 @@ public class MM_Icon : ClientMonoBehaviour {
          Area currentArea = AreaManager.self.getArea(Global.player.areaKey);
          if (currentArea != null) {
             // Keep the icon in the right position
-            Util.setLocalXY(this.transform, Minimap.self.getCorrectedPosition(target.transform, currentArea));
+            if (roundPositionTo4ths) {
+               Util.setLocalXY(this.transform, roundTo4ths(Minimap.self.getCorrectedPosition(target.transform, currentArea, !iconAnchoredToTheBackground)));
+            } else {
+               Util.setLocalXY(this.transform, Minimap.self.getCorrectedPosition(target.transform, currentArea, !iconAnchoredToTheBackground));
+            }
          }
       }
+   }
+
+   private Vector2 roundTo4ths (Vector2 position) {
+      return new Vector2(
+         Mathf.Round(position.x * 0.25f) * 4f,
+         Mathf.Round(position.y * 0.25f) * 4f
+         );
    }
 
    public virtual bool shouldShowIcon () {

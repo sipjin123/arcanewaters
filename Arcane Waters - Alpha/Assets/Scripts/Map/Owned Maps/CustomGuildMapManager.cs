@@ -68,6 +68,24 @@ public class CustomGuildMapManager : CustomMapManager
       return userInfo.guildMapBaseId;
    }
 
+   public static bool canUserFarm (string areaKey, NetEntity user) {
+      // Check if this is a guild map
+      if (CustomMapManager.isGuildSpecificAreaKey(areaKey)) {
+         
+         // Check if the user's guild id matches the map's guild id
+         if (CustomMapManager.getGuildId(areaKey) == user.guildId && user.guildId > 0) {
+            // Add new guild permissions check here once implemented
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+   public static string getGuildSpecificAreaKey (int guildId) {
+      return GROUP_AREA_KEY + "_guild" + guildId;
+   }
+
    #region Private Variables
 
    #endregion

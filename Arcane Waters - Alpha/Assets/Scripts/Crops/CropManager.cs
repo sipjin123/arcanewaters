@@ -100,7 +100,7 @@ public class CropManager : NetworkBehaviour {
       }
 
       // Make sure that it is farm map and this particular farm belongs to the user
-      if (!AreaManager.self.isFarmOfUser(areaKey, userId)) {
+      if (!AreaManager.self.isFarmOfUser(areaKey, userId) && !CustomGuildMapManager.canUserFarm(areaKey, _player)) {
          return;
       }
 
@@ -568,6 +568,26 @@ public class CropManager : NetworkBehaviour {
 
             // Send it to the player
             this.Target_ReceiveCropArray(_player.connectionToClient, cropList.ToArray(), quickGrow);
+
+            // Note that we're done loading them
+            _cropsDoneLoading = true;
+         });
+      });
+   }
+
+   [Server]
+   public void loadGuildCrops (int guildId) {
+
+      // Get the crops for this player from the database
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<CropInfo> cropList = DB_Main.getGuildCropInfo(guildId);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            _crops = cropList;
+
+            // Send it to the player
+            this.Target_ReceiveCropArray(_player.connectionToClient, cropList.ToArray(), false);
 
             // Note that we're done loading them
             _cropsDoneLoading = true;

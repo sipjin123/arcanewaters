@@ -30,14 +30,6 @@ public class Whale : ClientMonoBehaviour, IMapEditorDataReceiver
       transform.position = pos.Value;
       _zsnap.snapZ();
 
-      if (Global.player != null && AreaManager.self.tryGetArea(Global.player.areaKey, out Area area)) {
-         if (area.hasTileAttribute(TileAttributes.Type.DeepWater, transform.position)) {
-            _animation.setNewTexture(_darkWhaleTexture);
-         } else {
-            _animation.setNewTexture(_lightWhaleTexture);
-         }
-      }
-
       _animation.gameObject.SetActive(true);
       _animation.resetAnimation();
       _animation.setIndex(0);
@@ -108,10 +100,6 @@ public class Whale : ClientMonoBehaviour, IMapEditorDataReceiver
 
    // The ZSnap component
    [SerializeField] private ZSnap _zsnap = null;
-
-   // The different versions of whale
-   [SerializeField] private Texture2D _lightWhaleTexture = null;
-   [SerializeField] private Texture2D _darkWhaleTexture = null;
 
    #endregion
 }

@@ -64,11 +64,15 @@ public class PlantableTreeDefinition
       return treeData.growthStagesCompleted >= wateringsRequired && currentTimestamp - treeData.lastUpdateTime >= growthDuration;
    }
 
-   public string getStatusText (PlantableTreeInstanceData treeData, long currentTimestamp) {
+   public string getStatusText (PlantableTreeInstanceData treeData, long currentTimestamp, bool forOwner) {
       long timeRemaining = (long) Mathf.Max(0, growthDuration - (int) (currentTimestamp - treeData.lastUpdateTime));
 
       if (isFullyGrown(treeData, currentTimestamp)) {
-         return "Ready to\nHarvest";
+         if (forOwner) {
+            return "Ready to\nHarvest";
+         } else {
+            return "";
+         }
       }
 
       if (currentTimestamp - treeData.lastUpdateTime >= growthDuration) {

@@ -62,6 +62,10 @@ public class FarmingTrigger : MonoBehaviour
    }
 
    private void Update () {
+      if (Util.isBatch()) {
+         return;
+      }
+      
       if (NetworkClient.active && Global.player != null && Global.player.userId == bodyEntity.userId) {
          if (AreaManager.self.tryGetArea(bodyEntity.areaKey, out Area area)) {
             Vector2 pos = area.transform.InverseTransformPoint(getTreePlantPosition());

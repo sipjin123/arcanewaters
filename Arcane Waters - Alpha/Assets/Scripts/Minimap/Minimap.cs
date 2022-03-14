@@ -379,7 +379,7 @@ public class Minimap : ClientMonoBehaviour {
       _previousAreaKey = Global.player.areaKey;
    }
 
-   public Vector2 getCorrectedPosition (Transform target, Area area) {
+   public Vector2 getCorrectedPosition (Transform target, Area area, bool considerMinimapTranslation = true) {
       if (area == null) {
          D.debug("No area referenced");
          return new Vector2(0.0f, 0.0f);
@@ -402,8 +402,11 @@ public class Minimap : ClientMonoBehaviour {
       // Map [0, 1] to minimap
       relativePosition *= minimapSize;
 
-      // Adjust based on minimap translation (map is focused on player icon)
-      relativePosition += mapPos;
+      if (considerMinimapTranslation) {
+         // Adjust based on minimap translation (map is focused on player icon)
+         relativePosition += mapPos;
+      }
+      
       relativePosition -= (minimapSize - minimapMaskSize) * 0.5f;
       relativePosition -= minimapMaskSize * 0.5f;
 

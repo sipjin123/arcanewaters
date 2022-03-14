@@ -64,6 +64,8 @@ public class PlantableTree : MonoBehaviour
       _treeDefinition = definitionData;
       data = instanceData;
 
+      _isLocalPlayerOwner = Global.player != null && Global.player.userId == instanceData.planterUserId;
+
       updateVisuals(TimeManager.self.getLastServerUnixTimestamp());
    }
 
@@ -84,7 +86,7 @@ public class PlantableTree : MonoBehaviour
       spriteRenderer.SetPropertyBlock(_propertyBlock);
 
       if (_hovered) {
-         statusText.text = _treeDefinition.getStatusText(data, TimeManager.self.getLastServerUnixTimestamp());
+         statusText.text = _treeDefinition.getStatusText(data, TimeManager.self.getLastServerUnixTimestamp(), _isLocalPlayerOwner);
       }
 
       long time = TimeManager.self.getLastServerUnixTimestamp();
@@ -117,7 +119,7 @@ public class PlantableTree : MonoBehaviour
    [Client]
    public void hoverEnter () {
       _hovered = true;
-      statusText.text = _treeDefinition.getStatusText(data, TimeManager.self.getLastServerUnixTimestamp());
+      statusText.text = _treeDefinition.getStatusText(data, TimeManager.self.getLastServerUnixTimestamp(), _isLocalPlayerOwner);
       statusText.enabled = true;
    }
 
@@ -147,6 +149,9 @@ public class PlantableTree : MonoBehaviour
 
    // Material property block of the main renderer
    private MaterialPropertyBlock _propertyBlock;
+
+   // Is local player the owner of this tree
+   private bool _isLocalPlayerOwner = false;
 
    #endregion
 }
