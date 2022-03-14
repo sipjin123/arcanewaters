@@ -504,6 +504,7 @@ public class MyNetworkManager : NetworkManager
             player.guildId = userInfo.guildId;
             if (guildRankInfo != null) {
                player.guildPermissions = guildRankInfo.permissions;
+               player.guildRankPriority = guildRankInfo.rankPriority;
             }
 
             // Use the syncvars to populate the icon fields

@@ -140,7 +140,7 @@ public class ContextMenuPanel : MonoBehaviour
 
       int targetGuildId = targetEntity.guildId;
       int targetVoyageGroupId = targetEntity.voyageGroupId;
-      processDefaultMenuForUser(targetEntity, targetUserId, userName, targetVoyageGroupId, targetGuildId, isInSameGroup);
+      processDefaultMenuForUser(targetEntity, targetUserId, userName, targetGuildId, targetVoyageGroupId, isInSameGroup);
    }
 
    public void processDefaultMenuForUser (NetEntity targetEntity, int targetUserId, string userName, int targetGuildId, int targetVoyageGroupId, bool isInSameGroup = false) {
@@ -164,8 +164,12 @@ public class ContextMenuPanel : MonoBehaviour
          }
 
          if (targetEntity != null) {
-            if (Global.player.guildId > 0 && targetGuildId > 0 && Global.player.guildId != targetGuildId && !Global.player.guildAllies.Contains(targetGuildId)) {
+            if (Global.player.guildId > 0 && targetGuildId > 0 && Global.player.guildRankPriority <= 1 
+               && Global.player.guildId != targetGuildId && !Global.player.guildAllies.Contains(targetGuildId)) {
                addButton("Form Guild Alliance", () => Global.player.rpc.Cmd_AddGuildAlly(targetUserId, Global.player.guildId, targetGuildId));
+            } else {
+               D.adminLog("Not a guild ally because: {" + Global.player.guildId + "} {" + targetGuildId + "} {"
+                  + Global.player.guildAllies.Contains(targetGuildId) + "} {" + Global.player.guildRankPriority + "}", D.ADMIN_LOG_TYPE.Player_Menu);
             }
          }
 

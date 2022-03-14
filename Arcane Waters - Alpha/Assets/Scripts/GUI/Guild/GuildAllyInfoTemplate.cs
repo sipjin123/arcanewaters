@@ -17,6 +17,9 @@ public class GuildAllyInfoTemplate : MonoBehaviour {
    // The guild ally id
    public int allyId;
 
+   // The remove button object
+   public GameObject removeButtonObj;
+
    #endregion
 
    public void removeGuildAlliance () {
