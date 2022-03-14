@@ -2931,8 +2931,9 @@ public class RPCManager : NetworkBehaviour
 
          if (databaseQuestStatusList.Count < 1) {
             D.adminLog("Generating quest status for npc {" + npcId + "}", D.ADMIN_LOG_TYPE.Quest);
+            // Generate new quest status entries
             for (int i = 0; i < questData.questDataNodes.Length; i++) {
-               DB_Main.updateQuestStatus(npcId, _player.userId, questId, i, 0);
+               DB_Main.updateQuestStatus(npcId, _player.userId, questId, questData.questDataNodes[i].questDataNodeId, 0);
             }
             databaseQuestStatusList = DB_Main.getQuestStatuses(npcId, _player.userId);
          }
@@ -3057,8 +3058,13 @@ public class RPCManager : NetworkBehaviour
          if (questData != null) {
             questId = questData.questId;
             if (questData.questDataNodes != null) {
-               questNodeId = questData.questDataNodes[0].questDataNodeId;
-               dialogueId = questData.questDataNodes[0].questDialogueNodes[0].dialogueIdIndex;
+               string questTitleName = "";
+               QuestDataNode questDataNode = questData.questDataNodes.ToList().Find(_=>_.questDataNodeId == questNodeId);
+               if (questDataNode == null) {
+                  questTitleName = "Null";
+               } else {
+                  questTitleName = questDataNode.questNodeTitle;
+               }
 
                D.adminLog("Step2: Quest Title Currently is: {" + (questData == null ? "NULL" : questData.questGroupName) + "} {" + questTitleName + "}" +
                   "{" + questId + "}{" + questNodeId + "}{" + dialogueId + "}", D.ADMIN_LOG_TYPE.Quest);
@@ -3201,7 +3207,8 @@ public class RPCManager : NetworkBehaviour
       List<Item> itemsToDeduct = new List<Item>();
 
       QuestData questData = NPCQuestManager.self.getQuestData(questId);
-      QuestDataNode questDataNode = questData.questDataNodes[questNodeId];
+      QuestDataNode questDataNode = questData.questDataNodes.ToList().Find(_=>_.questDataNodeId == questNodeId);
+
       D.adminLog("Dialogue Step1: Quest NPC Dialogue is now selected: {" + questId + "}{" + questNodeId + "}{" + dialogueId + "}", D.ADMIN_LOG_TYPE.Quest);
       if (questDataNode.questDialogueNodes.Length > dialogueId + 1) {
          D.adminLog("Dialogue Step2-A: Quest NPC Dialogue has reached its end of statement: {" + questId + "}{" + questNodeId + ":" + questDataNode.questNodeTitle + "} " +
@@ -3637,23 +3644,28 @@ public class RPCManager : NetworkBehaviour
                   }
                } else {
                   foreach (QuestStatusInfo questStatus in databaseQuestStatus) {
-                     // If progressed dialogue is less than the end point dialogue
-                     if (questStatus.questDialogueId < questData.questDataNodes[questStatus.questNodeId].questDialogueNodes.Length) {
-                        // If friendship level meets, add to npc list
-                        if (friendshipLevel >= questData.questDataNodes[questStatus.questNodeId].friendshipLevelRequirement) {
-                           if (!npcIdList.Contains(npcData.npcId)) {
-                              // Enable Logs if there are quest process related issues
-                              //D.debug("Adding Npc {" + npcData.npcId + "} here because quest is not finished");
-                              npcIdList.Add(npcData.npcId);
-                           }
-                        } else {
-                           if (!lockedNpcIdList.Contains(npcData.npcId)) {
-                              //D.debug("Adding InvalidNpc {"+ npcData.npcId + "} here because friendship level is not enough");
-                              lockedNpcIdList.Add(npcData.npcId);
-                           }
-                           if (npcIdList.Contains(npcData.npcId)) {
-                              //D.debug("Removing {" + npcData.npcId + "} from list because friendship level is not enough!");
-                              npcIdList.Remove(npcData.npcId);
+                     // TODO: Use this if using index based search for quests status instead of id
+                     //QuestDataNode questDataNodeFetch = questData.questDataNodes[questStatus.questNodeId];
+                     QuestDataNode questDataNodeFetch = questData.questDataNodes.ToList().Find(_ => _.questDataNodeId == questStatus.questNodeId);
+                     if (questDataNodeFetch != null) {
+                        // If progressed dialogue is less than the end point dialogue
+                        if (questStatus.questDialogueId < questDataNodeFetch.questDialogueNodes.Length) {
+                           // If friendship level meets, add to npc list
+                           if (friendshipLevel >= questDataNodeFetch.friendshipLevelRequirement) {
+                              if (!npcIdList.Contains(npcData.npcId)) {
+                                 // Enable Logs if there are quest process related issues
+                                 //D.debug("Adding Npc {" + npcData.npcId + "} here because quest is not finished");
+                                 npcIdList.Add(npcData.npcId);
+                              }
+                           } else {
+                              if (!lockedNpcIdList.Contains(npcData.npcId)) {
+                                 //D.debug("Adding InvalidNpc {"+ npcData.npcId + "} here because friendship level is not enough");
+                                 lockedNpcIdList.Add(npcData.npcId);
+                              }
+                              if (npcIdList.Contains(npcData.npcId)) {
+                                 //D.debug("Removing {" + npcData.npcId + "} from list because friendship level is not enough!");
+                                 npcIdList.Remove(npcData.npcId);
+                              }
                            }
                         }
                      } else {

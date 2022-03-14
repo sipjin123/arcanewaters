@@ -6,6 +6,7 @@ using Mirror;
 using System.Text;
 using System.Xml.XPath;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 public class NPCPanel : Panel
 {
@@ -156,6 +157,14 @@ public class NPCPanel : Panel
          Global.player.rpc.Cmd_HireCompanion(landMonsterId);
       });
 
+      string nodeTitle = "Null";
+      QuestData questData = NPCQuestManager.self.getQuestData(questId);
+      if (questData != null) {
+         QuestDataNode questNodeData = questData.questDataNodes.ToList().Find(_ => _.questDataNodeId == questNodeId);
+         if (questNodeData != null) {
+            nodeTitle = questNodeData.questNodeTitle;
+         }
+      }
       D.adminLog("Step3: Received a Quest Dialogue:: " +
          "Quest:{" + questId + "} " + "Node:{" + questNodeId + ":" + nodeTitle + "} " +
          "Dialogue:{" + dialogueId + "}", D.ADMIN_LOG_TYPE.Quest);
@@ -193,7 +202,8 @@ public class NPCPanel : Panel
 
       NPCData npcData = NPCManager.self.getNPCData(_npc.npcId);
       if (questData != null) {
-         if (questNodeId + 1 > questData.questDataNodes.Length) {
+         int lastQuestDataNodeIndex = questData.questDataNodes.Length - 1;
+         if (questData.questDataNodes.Length > 0 && questNodeId + 1 > questData.questDataNodes[lastQuestDataNodeIndex].questDataNodeId) {
             // End the dialogue if the quest node is greater than the quest list
             npcDialogueText.enabled = true;
             _npcDialogueLine = getDynamicDialog(npcData.greetingTextStranger);
@@ -295,7 +305,7 @@ public class NPCPanel : Panel
          NPCPanelQuestObjectiveCell cell = Instantiate(questObjectiveCellPrefab);
          cell.icon.GetComponentInParent<ToolTipComponent>().message = EquipmentXMLManager.self.getItemName(itemRequirement);
          cell.transform.SetParent(questObjectivesContainer.transform);
-         cell.updateCellContent(itemRequirement, itemRequirement.count, itemStock[itemIndexCount]);
+         cell.updateCellContent(itemRequirement, itemRequirement.count, itemStock.Length > itemIndexCount ? itemStock[itemIndexCount] : 0);
          if (itemStock[itemIndexCount] >= itemRequirement.count) {
             // Add logic here if item reaches requirement
          } else {
