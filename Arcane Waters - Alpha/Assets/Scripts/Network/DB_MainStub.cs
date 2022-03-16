@@ -1335,6 +1335,10 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static int getGuildLeader (int guildId) {
+      return -1;
+   }
+
    public static List<GuildRankInfo> getGuildRankInfo (int guildId) {
       return null;
    }

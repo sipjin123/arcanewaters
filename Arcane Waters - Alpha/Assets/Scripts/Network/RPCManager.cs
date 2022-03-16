@@ -4932,36 +4932,40 @@ public class RPCManager : NetworkBehaviour
    #region Guilds
 
    [Command]
-   public void Cmd_AddGuildAlly (int invitedUserId, int guildId, int allyId) {
+   public void Cmd_AddGuildAlly (int invitedUserId, int guildId, int allyGuildId) {
       // Prevent spamming invitations
-      if (VoyageGroupManager.self.isGuildAllianceInvitationSpam(guildId, allyId)) {
+      if (VoyageGroupManager.self.isGuildAllianceInvitationSpam(guildId, allyGuildId)) {
          string message = "You must wait " + VoyageGroupManager.GROUP_INVITE_MIN_INTERVAL.ToString() + " seconds before inviting this guild again!";
          ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, message);
          _player.Target_ReceiveNormalChat(message, ChatInfo.Type.System);
          return;
       }
 
-      VoyageGroupManager.self.logGuildAllianceInvitation(guildId, allyId);
+      VoyageGroupManager.self.logGuildAllianceInvitation(guildId, allyGuildId);
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          GuildInfo guildInfo = DB_Main.getGuildInfo(guildId);
-         GuildInfo guildAllyInfo = DB_Main.getGuildInfo(allyId);
+         GuildInfo guildAllyInfo = DB_Main.getGuildInfo(allyGuildId);
          List<int> guildAllies = DB_Main.getGuildAlliance(guildId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (guildAllies.Contains(allyId)) {
+            if (guildAllies.Contains(allyGuildId)) {
                string message = "Already allied with guild " + guildInfo.guildName + "!";
                ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, message);
                _player.Target_ReceiveNormalChat(message, ChatInfo.Type.System);
                return;
             }
 
-            NetEntity invitedUserEntity = EntityManager.self.getEntity(invitedUserId);
-            if (invitedUserEntity == null || guildInfo == null || guildAllyInfo == null) {
-               _player.Target_ReceiveNormalChat("Failed to initialize guild alliance", ChatInfo.Type.System);
-               return;
-            }
+            // Find the guild leader here
+            int guildLeader = DB_Main.getGuildLeader(allyGuildId);
+            if (guildLeader > 0) {
+               NetEntity invitedUserEntity = EntityManager.self.getEntity(guildLeader);
+               if (invitedUserEntity == null || guildInfo == null || guildAllyInfo == null) {
+                  _player.Target_ReceiveNormalChat("Failed to initialize guild alliance", ChatInfo.Type.System);
+                  return;
+               }
 
-            invitedUserEntity.rpc.Target_ReceiveGuildAllianceInvite(invitedUserEntity.connectionToClient, _player.userId, guildInfo, guildAllyInfo);
+               invitedUserEntity.rpc.Target_ReceiveGuildAllianceInvite(invitedUserEntity.connectionToClient, _player.userId, guildInfo, guildAllyInfo);
+            }
          });
       });
    }
@@ -5039,14 +5043,14 @@ public class RPCManager : NetworkBehaviour
             _player.Target_ReceiveNormalChat(message, ChatInfo.Type.System);
             invitingUserEntity.Target_ReceiveNormalChat(message, ChatInfo.Type.System);
 
-            refreshGuildAllianceList(guildInfo, inviterGuildAllyIds, 0);
-            refreshGuildAllianceList(guildAllyInfo, invitedGuildAllyIds, 0);
+            refreshGuildAllianceList(guildInfo, guildAllyInfo, inviterGuildAllyIds, 0);
+            refreshGuildAllianceList(guildAllyInfo, guildInfo, invitedGuildAllyIds, 0);
          });
       });
    }
 
    [Server]
-   public void refreshGuildAllianceList (GuildInfo guildInfo, List<int> guildAllyIds, int removeAllyGuildId) {
+   public void refreshGuildAllianceList (GuildInfo guildInfo, GuildInfo targetGuildInfo, List<int> guildAllyIds, int removeAllyGuildId) {
       foreach (UserInfo userInfo in guildInfo.guildMembers) {
          NetEntity guildUser = EntityManager.self.getEntity(userInfo.userId);
          if (guildUser != null) {
@@ -5055,6 +5059,7 @@ public class RPCManager : NetworkBehaviour
                foreach (int currGuildId in guildAllyIds) {
                   if (!guildUser.guildAllies.Contains(currGuildId)) {
                      guildUser.guildAllies.Add(currGuildId);
+                     guildUser.Target_ReceiveNormalChat("An alliance has been established with guild " + targetGuildInfo.guildName, ChatInfo.Type.Guild);
                   }
                }
             }
@@ -5062,6 +5067,7 @@ public class RPCManager : NetworkBehaviour
             // Remove guild ally
             if (removeAllyGuildId > 0 && guildUser.guildAllies.Contains(removeAllyGuildId)) {
                guildUser.guildAllies.Remove(removeAllyGuildId);
+               guildUser.Target_ReceiveNormalChat("An alliance has been broken with guild " + targetGuildInfo.guildName, ChatInfo.Type.Guild);
             }
          }
       }
@@ -5091,8 +5097,8 @@ public class RPCManager : NetworkBehaviour
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Refresh all guild allies
-            refreshGuildAllianceList(guildInfo, userGuildAlliesId, allyId);
-            refreshGuildAllianceList(guildAllyInfo, allyGuildAlliesId, guildId);
+            refreshGuildAllianceList(guildInfo, guildAllyInfo, userGuildAlliesId, allyId);
+            refreshGuildAllianceList(guildAllyInfo, guildInfo, allyGuildAlliesId, guildId);
 
             Target_ReceiveGuildAllyDeleteResult(_player.connectionToClient, guildAllyInfo);
             Target_ReceiveGuildAllies(_player.connectionToClient, Util.serialize(guildAlliesInfo));

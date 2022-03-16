@@ -9730,6 +9730,30 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new int getGuildLeader (int guildId) {
+      int guildLeaderUser = -1;
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT usrId, usrName, gldRankId FROM users where gldRankId = 0 and gldId = @gldId;", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@gldId", guildId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  guildLeaderUser = dataReader.GetInt32("usrId");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return guildLeaderUser;
+   }
+
    public static new List<GuildRankInfo> getGuildRankInfo (int guildId) {
       List<GuildRankInfo> rankList = new List<GuildRankInfo>();
 
