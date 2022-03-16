@@ -209,7 +209,11 @@ public class WorldMapPanel : Panel
       }
 
       if (!skipPvpCheck && VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
-         PanelManager.self.showConfirmationPanel("Are you sure you want to leave your current Pvp Game?", () => {
+         string message = "Are you sure you want to leave your current Pvp Game?";
+         if (WorldMapManager.self.isWorldMapArea(Global.player.areaKey)) {
+            message = "Are you sure you want to leave the open seas?";
+         }
+         PanelManager.self.showConfirmationPanel(message, () => {
             tryWarp(areaTarget, spawnTarget, skipPvpCheck: true);
          });
          return;

@@ -6436,12 +6436,14 @@ public class RPCManager : NetworkBehaviour
 
       VoyageGroupManager.self.removeUserFromGroup(voyageGroup, playerToRemove);
 
-      // If the player is in a voyage area or is in ghost mode, warp him to the closest town
-      if (VoyageManager.isAnyLeagueArea(playerToRemove.areaKey) || VoyageManager.isPvpArenaArea(playerToRemove.areaKey) || VoyageManager.isTreasureSiteArea(playerToRemove.areaKey) || playerToRemove.isGhost) {
-         if (VoyageManager.isPvpArenaArea(playerToRemove.areaKey)) {
-            playerToRemove.spawnInBiomeHomeTown(Biome.Type.Forest);
-         } else {
-            playerToRemove.spawnInBiomeHomeTown();
+      if (!WorldMapManager.self.isWorldMapArea(playerToRemove.areaKey)) {
+         // If the player is in a voyage area or is in ghost mode, warp him to the closest town
+         if (VoyageManager.isAnyLeagueArea(playerToRemove.areaKey) || VoyageManager.isPvpArenaArea(playerToRemove.areaKey) || VoyageManager.isTreasureSiteArea(playerToRemove.areaKey) || playerToRemove.isGhost) {
+            if (VoyageManager.isPvpArenaArea(playerToRemove.areaKey)) {
+               playerToRemove.spawnInBiomeHomeTown(Biome.Type.Forest);
+            } else {
+               playerToRemove.spawnInBiomeHomeTown();
+            }
          }
       }
    }
@@ -9644,8 +9646,7 @@ public class RPCManager : NetworkBehaviour
             bool isAreaTargetValid = !Util.isEmpty(areaTarget) && !Util.isEmpty(Area.getName(areaTarget));
 
             PanelManager.self.countdownScreen.customText.text = isAreaTargetValid ? $"Warping to \"{Area.getName(areaTarget)}\" in:" : $"Warping in:";
-            PanelManager.self.countdownScreen.seconds = 10;
-
+            PanelManager.self.countdownScreen.seconds = _player.isAdmin() ? 0 : 10;
             PanelManager.self.countdownScreen.onCountdownStep.RemoveAllListeners();
             PanelManager.self.countdownScreen.onCountdownStep.AddListener(() => {
                if (_player.hasAttackers() && _player.isInCombat()) {
