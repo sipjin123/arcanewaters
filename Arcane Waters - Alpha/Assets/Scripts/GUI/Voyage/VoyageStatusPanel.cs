@@ -26,6 +26,12 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    // The pvp open world icons
    public GameObject pvpOpenWorldRoyale, pvpOpenWorldGuild, pvpOpenWorldGroup, disabledPvpDisplay;
 
+   // Determines if the pvp state is dropped down
+   public bool isPvpStateDroppedDown;
+
+   // The current pvp game mode
+   public PvpGameMode currentPvpGameMode;
+
    // The general pvp buttons
    public Button[] pvpActiveButtons, pvpInactiveButtons;
 
@@ -64,6 +70,12 @@ public class VoyageStatusPanel : ClientMonoBehaviour
 
    // The fps
    public TextMeshProUGUI fpsText;
+
+   // Tooltip text
+   public TextMeshProUGUI pvpTooltipText;
+
+   // The tooltip object holder
+   public RectTransform tooltipObject;
 
    // The image of the expand button
    public Image expandButtonImage;
@@ -105,6 +117,9 @@ public class VoyageStatusPanel : ClientMonoBehaviour
 
    // The pvp stat display that will always show on top of screen
    public GameObject[] passivePvpStatDisplay;
+
+   // Buttons that can be interacted
+   public Button[] pvpInteractableButtons;
 
    // If the pvp mode is active
    public bool isPvpActive;
@@ -239,6 +254,36 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       foreach (GameObject obj in passivePvpStatDisplay) {
          obj.gameObject.SetActive(!isOn);
       }
+
+      isPvpStateDroppedDown = isOn;
+   }
+
+   public void enableTooltipDisabled () {
+      tooltipObject.localPosition = new Vector3(tooltipObject.localPosition.x, 0, 0);
+      pvpTooltipText.text = "Pvp is currently unavailable for you";
+      tooltipObject.gameObject.SetActive(true);
+   }
+
+   public void enableTooltipPvpOpenWorld (bool isActive) {
+      tooltipObject.localPosition = new Vector3(tooltipObject.localPosition.x, isPvpStateDroppedDown ? -25 : 0, 0);
+
+      if (isActive) {
+         pvpTooltipText.text = "Pvp is currently active, this can be toggled off when user is in town";
+      } else {
+         pvpTooltipText.text = "Pvp is currently inactive, this can be toggled on when user is in town";
+      }
+      tooltipObject.gameObject.SetActive(true);
+   }
+
+   public void clearTooltip () {
+      pvpTooltipText.text = "";
+      tooltipObject.gameObject.SetActive(false);
+   }
+
+   public void togglePvpButtons (bool isActive) {
+      foreach (Button button in pvpInteractableButtons) {
+         button.enabled = isActive;
+      }
    }
 
    public void clickOnPvpToggle () {
@@ -293,6 +338,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
             disabledPvpDisplay.SetActive(true);
             break;
       }
+      currentPvpGameMode = gameMode;
    }
 
    public void onUserSpawn () {

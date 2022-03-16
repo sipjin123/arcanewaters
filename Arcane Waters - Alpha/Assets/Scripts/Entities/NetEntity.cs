@@ -631,6 +631,16 @@ public class NetEntity : NetworkBehaviour
       VoyageStatusPanel.self.refreshPvpStatDisplay();
       VoyageStatusPanel.self.setUserPvpMode(pvpMode);
       VoyageStatusPanel.self.togglePvpStatusInfo(isOn, isInTown);
+
+      if (WorldMapManager.self.isWorldMapArea(areaKey)) {
+         // Since the status of the pvp activity is not change able in open world, just display the icon
+         VoyageStatusPanel.self.enablePvpStatDisplay(false);
+         VoyageStatusPanel.self.togglePvpButtons(false);
+      } else if (AreaManager.self.isTownArea(areaKey)) {
+         // Allow the drop down of pvp status in town areas so it can be toggled on and off
+         VoyageStatusPanel.self.enablePvpStatDisplay(true);
+         VoyageStatusPanel.self.togglePvpButtons(true);
+      }
    }
 
    [Command]
