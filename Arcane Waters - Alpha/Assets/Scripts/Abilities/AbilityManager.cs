@@ -251,6 +251,7 @@ public class AbilityManager : MonoBehaviour
                   sourceBattler.cooldownEndTime -= cancelAction.timeToSubtract;
                   sourceBattler.stopActionCoroutine();
                   sourceBattler.setBattlerCanCastAbility(true);
+                  sourceBattler.processCancelStateUI();
                } else {
                   D.log("Ability can not be canceled!");
                }

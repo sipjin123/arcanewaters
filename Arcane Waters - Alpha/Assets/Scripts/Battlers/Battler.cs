@@ -778,7 +778,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       setAttackTimingIndicatorVisibility(false);
    }
 
-   protected void setAttackTimingIndicatorVisibility (bool isVisible) {
+   public void setAttackTimingIndicatorVisibility (bool isVisible) {
       if (!isVisible) {
          StopCoroutine(_attackTimingIndicatorCoroutine);
          attackTimingIndicatorCanvasGroup.DOFade(0.0f, 0.2f).OnComplete(() => {
@@ -2934,6 +2934,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public static HashSet<Battler> getHoveredBattlers () {
       return _hoveredBattlers;
+   }
+
+   public void processCancelStateUI () {
+      if (isLocalBattler()) {
+         setAttackTimingIndicatorVisibility(false);
+         BattleUIManager.self.selectNextTarget(true);
+      }
    }
 
    [ClientRpc]
