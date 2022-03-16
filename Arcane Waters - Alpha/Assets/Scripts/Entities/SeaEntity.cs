@@ -448,15 +448,20 @@ public class SeaEntity : NetEntity
             D.error("Negative Sailor XP is detected! KV.Key = " + KV.Key.ToString() + ", KV.Value = " + KV.Value.ToString() + ", totalDamage = " + totalDamage.ToString() + ", rewardedXP = " + rewardedXP.ToString());
             xp = 10;
          }
+         NetEntity entity = EntityManager.self.getEntity(targetUserId);
 
          // Background thread
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            // Rewards are greater for users that have enabled their pvp status in world maps
+            if (entity != null && entity.enablePvp && WorldMapManager.self.isWorldMapArea(areaKey)) {
+               xp = (int) (xp * 1.5f);
+            }
+
             DB_Main.addJobXP(targetUserId, jobType, xp);
             Jobs jobs = DB_Main.getJobXP(targetUserId);
 
             // Back to the Unity thread
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               NetEntity entity = EntityManager.self.getEntity(targetUserId);
                if (entity != null) {
                   entity.Target_GainedXP(entity.connectionToClient, xp, jobs, jobType, 0, true);
                }

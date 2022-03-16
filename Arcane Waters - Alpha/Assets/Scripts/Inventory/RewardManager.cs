@@ -29,18 +29,13 @@ public class RewardManager : MonoBehaviour {
       // Create a floating icon
       GameObject floatingItem = Instantiate(floatingItemPrefab, transformVector, Quaternion.identity);
       GameObject floatingIcon = floatingItem.transform.GetChild(0).gameObject;
-      //floatingIcon.transform.SetParent(this.transform);
       floatingIcon.transform.localPosition = new Vector3(0f, .04f);
       Image image = floatingIcon.GetComponentInChildren<Image>();
       string itemName = "";
       if (item.category == Item.Category.Quest_Item) {
          QuestItem questItem = EquipmentXMLManager.self.getQuestItemById(item.itemTypeId);
          if (questItem != null) {
-            if (questItem.itemTypeId == 13 && badgeSprite != null) {
-               image.sprite = badgeSprite;
-            } else {
-               image.sprite = ImageManager.getSprite(questItem.iconPath);
-            }
+            image.sprite = string.IsNullOrEmpty(questItem.iconPath) ? ImageManager.self.blankSprite : ImageManager.getSprite(questItem.iconPath);
             itemName = questItem.itemName;
          }
       }

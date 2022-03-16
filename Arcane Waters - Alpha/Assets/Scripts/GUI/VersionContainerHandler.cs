@@ -29,7 +29,8 @@ public class VersionContainerHandler : MonoBehaviour
          if (_miniMapCanvasGroup.alpha == 0) {
             verRectTransform.anchoredPosition = Vector2.zero;
          } else {
-            verRectTransform.anchoredPosition = new Vector2(((-pvpStateRectTransform.rect.width * pvpStateRectTransform.localScale.x) + (-mapRectTransform.rect.width * mapRectTransform.localScale.x)) - PADDING, 0);
+            verRectTransform.anchoredPosition = new Vector2(((-pvpStateRectTransform.rect.width * pvpStateRectTransform.localScale.x) 
+               + (-mapRectTransform.rect.width * mapRectTransform.localScale.x) - 15) - PADDING, 0);
          }
       }
    }
