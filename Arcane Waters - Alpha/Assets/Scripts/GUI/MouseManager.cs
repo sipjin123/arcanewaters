@@ -131,6 +131,13 @@ public class MouseManager : ClientMonoBehaviour
       MagnifyingGlass = 6
    }
 
+   [Header("Coords Indicator")]
+   // The coords indicator
+   public WorldMapPanelCoordsIndicator coordsIndicator;
+
+   // The offset applied to the coords indicator
+   public Vector2 coordsIndicatorOffset;
+
    // Self
    public static MouseManager self;
 
@@ -167,6 +174,7 @@ public class MouseManager : ClientMonoBehaviour
       processShimmer();
       processMouseTrail();
       processClickEffect();
+      processCoordsIndicator();
    }
 
    public void updatePressedState () {
@@ -536,6 +544,61 @@ public class MouseManager : ClientMonoBehaviour
       _particlePool.Add(particleComponent);
 
       return particleComponent;
+   }
+
+   public void processCoordsIndicator () {
+      if (coordsIndicator == null) {
+         return;
+      }
+
+      coordsIndicator.toggle(false);
+
+      if (KeyUtils.GetKey(Key.LeftShift) || KeyUtils.GetKey(Key.RightShift)) {
+         Vector2 mousePosition = MouseUtils.mousePosition;
+         Vector2 pointerPosWorldSpace = Camera.main.ScreenToWorldPoint(mousePosition);
+
+         if (Global.player == null || AreaManager.self.getArea(Global.player.areaKey) == null) {
+            return;
+         }
+
+         Area area = AreaManager.self.getArea(Global.player.areaKey);
+         Vector2 pointerPosLocalSpace = area.transform.InverseTransformPoint(pointerPosWorldSpace);
+         WorldMapSpot pointerSpot = WorldMapManager.self.getSpotFromPosition(Global.player.areaKey, pointerPosLocalSpace);
+
+         if (pointerSpot == null) {
+            return;
+         }
+
+         WorldMapGeoCoords pointerGeoCoords = WorldMapManager.self.getGeoCoordsFromSpot(pointerSpot);
+         string latitude = WorldMapManager.self.getLatitudeFromGeoCoords(pointerGeoCoords);
+         string longitude = WorldMapManager.self.getLongitudeFromGeoCoords(pointerGeoCoords);
+
+         coordsIndicator.setCoords(latitude, longitude);
+         coordsIndicator.toggle(true);
+
+         // Adjust the position of the indicator based on the relative position of the pointer to the edges of the screen
+         bool isPointerTop = mousePosition.y > Screen.height * 0.5f;
+         bool isPointerRight = mousePosition.x > Screen.width * 0.5f;
+         float isPointerRightValue = isPointerRight ? 1.0f : 0.0f;
+         float isPointerTopValue = isPointerTop ? 1.0f : 0.0f;
+         coordsIndicator.txtRect.anchorMin = new Vector2(isPointerRightValue, isPointerTopValue);
+         coordsIndicator.txtRect.anchorMax = coordsIndicator.txtRect.anchorMin;
+         coordsIndicator.txtRect.pivot = coordsIndicator.txtRect.anchorMin;
+         coordsIndicator.txtRect.anchoredPosition = Vector2.zero;
+
+         Vector2 adjustedOffset = new Vector2(isPointerRight ? 0 : coordsIndicatorOffset.x, isPointerTop ? coordsIndicatorOffset.y : -coordsIndicatorOffset.y);
+         coordsIndicator.rect.anchoredPosition = (mousePosition + adjustedOffset) / OptionsManager.self.mainGameCanvas.scaleFactor;
+
+         // Process press
+         if (Mouse.current.leftButton.wasPressedThisFrame) {
+            string currentInput = ChatPanel.self.inputField.getTextData();
+            ChatPanel.self.inputField.setTextWithoutNotify(currentInput + WorldMapManager.self.getStringFromGeoCoords(pointerGeoCoords));
+
+            if (PanelManager.self != null) {
+               PanelManager.self.noticeScreen.show("Location copied!");
+            }
+         }
+      }
    }
 
    #region Cursor setters

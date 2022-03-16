@@ -6,26 +6,13 @@ public class WorldMapPanelPin : MonoBehaviour
    #region Public Variables
 
    // Reference to the object that contains the information about the pin
-   public WorldMapPanelPinInfo info;
+   public WorldMapSpot spot;
 
    // Reference to the control that displays the image of the pin
    public Image image;
 
-   // Pin types
-   public enum PinTypes
-   {
-      // None
-      None = 0,
-
-      // Warp
-      Warp = 1,
-
-      // League
-      League = 2,
-
-      // Discovery
-      Discovery = 3
-   }
+   // Reference to the rect transform of the pin
+   public RectTransform rect;
 
    #endregion
 

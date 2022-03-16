@@ -403,9 +403,9 @@ public class MyNetworkManager : NetworkManager
                areasToBeAdded.Add(forestHomeTownAreaKey);
             }
 
-            string forestHomeTownOpenWorldAreaKey = WorldMapManager.computeOpenWorldAreaKey(WorldMapManager.computeOpenWorldAreaCoordsForBiome(Biome.Type.Forest));
-            if (!visitedAreas.Contains(forestHomeTownOpenWorldAreaKey)) {
-               areasToBeAdded.Add(forestHomeTownOpenWorldAreaKey);
+            string forestHomeTownWorldMapAreaKey = WorldMapManager.self.getAreaKey(WorldMapManager.self.getAreaCoordsForBiome(Biome.Type.Forest));
+            if (!visitedAreas.Contains(forestHomeTownWorldMapAreaKey)) {
+               areasToBeAdded.Add(forestHomeTownWorldMapAreaKey);
             }
          }
 
@@ -673,7 +673,7 @@ public class MyNetworkManager : NetworkManager
             }
 
             // Players in open world pvp can attack each other without waiting for triggers
-            if (pvpGameMode != PvpGameMode.None && VoyageManager.isWorldMap(player.areaKey) && guildInfo.guildId > 0) {
+            if (pvpGameMode != PvpGameMode.None && WorldMapManager.self.isWorldMapArea(player.areaKey) && guildInfo.guildId > 0) {
                player.hasEnteredPvP = true;
                
                player.openWorldGameMode = pvpGameMode;

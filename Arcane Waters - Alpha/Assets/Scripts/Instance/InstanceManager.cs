@@ -373,7 +373,7 @@ public class InstanceManager : MonoBehaviour
 
    public Instance getWorldMapOpenInstance (string areaKey) {
       foreach (Instance instance in _instances.Values) {
-         if (VoyageManager.isWorldMap(instance.areaKey)) {
+         if (WorldMapManager.self.isWorldMapArea(instance.areaKey)) {
             if (instance.areaKey == areaKey && instance.getPlayerCount() < instance.getMaxPlayers()) {
                return instance;
             }

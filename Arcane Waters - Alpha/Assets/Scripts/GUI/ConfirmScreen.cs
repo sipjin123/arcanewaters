@@ -42,6 +42,7 @@ public class ConfirmScreen : FullScreenSeparatePanel
    }
 
    public void show (string newText, int cost = 0, string newDescription = "") {
+      transform.SetAsLastSibling();
 
       text.text = newText;
 

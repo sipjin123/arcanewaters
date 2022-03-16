@@ -1254,17 +1254,17 @@ public class AdminManager : NetworkBehaviour
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Open world areas
-         List<string> openWorldAreas = WorldMapManager.getOpenWorldAreasList();
+         List<string> openWorldAreas = WorldMapManager.self.getAllAreasList();
          List<string> visitedAreas = DB_Main.getVisitedAreas(_player.userId);
          IEnumerable<string> unVisitedAreas = openWorldAreas.Except(visitedAreas);
          DB_Main.addVisitedAreas(_player.userId, unVisitedAreas);
 
          // All Warps
-         List<WorldMapPanelPinInfo> pins = WorldMapManager.getCachedWorldMapPins();
-         IEnumerable<string> pinTargetAreas = pins.Where(pin => pin.pinType == WorldMapPanelPin.PinTypes.Warp).Select(pin => pin.target);
-         IEnumerable<string> visitedPinTargetAreas = visitedAreas.Intersect(pinTargetAreas);
-         IEnumerable<string> unVisitedPinTargetAreas = pinTargetAreas.Except(visitedPinTargetAreas);
-         DB_Main.addVisitedAreas(_player.userId, unVisitedPinTargetAreas);
+         List<WorldMapSpot> spots = WorldMapDBManager.self.getWorldMapSpots();
+         IEnumerable<string> targetAreas = spots.Where(_ => _.type == WorldMapSpot.SpotType.Warp).Select(_ => _.target);
+         IEnumerable<string> visitedTargetAreas = visitedAreas.Intersect(targetAreas);
+         IEnumerable<string> unVisitedTargetAreas = targetAreas.Except(visitedTargetAreas);
+         DB_Main.addVisitedAreas(_player.userId, unVisitedTargetAreas);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             _player.Target_ReceiveNormalChat("The world map has been unlocked", ChatInfo.Type.System);

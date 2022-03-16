@@ -12,29 +12,35 @@ public class WorldMapPanelCurrentAreaSelectorContainer : MonoBehaviour
    #endregion
 
    public void setCurrentArea (string areaKey) {
-      if (VoyageManager.isWorldMap(areaKey)) {
-         _areaCoords = WorldMapManager.computeOpenWorldAreaCoords(areaKey);
-      } else {
-         // See if the current area can be reached through one of the known warps
-         IEnumerable<WorldMapPanelPinInfo> pins = WorldMapPanel.self.getMapPins();
-         bool isPinTargetArea = pins.Any(_ => _.target == areaKey);
-
-         if (isPinTargetArea) {
-            WorldMapPanelPinInfo pin = pins.FirstOrDefault(_ => _.target == areaKey);
-            _areaCoords = new Vector2Int(pin.areaX, pin.areaY);
-         } else {
-            // Fallback area
-            _areaCoords = WorldMapManager.computeOpenWorldAreaCoordsForBiome(AreaManager.self.getDefaultBiome(areaKey));
-         }
-      }
-
-      _areaCoords = WorldMapPanel.self.adjustAreaCoords(_areaCoords);
+      WorldMapAreaCoords mapAreaCoords = tryGetAreaCoords(areaKey);
+      _areaCoords = WorldMapPanel.self.transformCoords(mapAreaCoords);
 
       if (selector != null) {
          selector.localPosition = new Vector3(_areaCoords.x * WorldMapPanel.self.cellSize.x, -_areaCoords.y * WorldMapPanel.self.cellSize.y);
       }
 
       _currentAreaKey = areaKey;
+   }
+
+   private static WorldMapAreaCoords tryGetAreaCoords (string areaKey) {
+      if (WorldMapManager.self.isWorldMapArea(areaKey)) {
+         return WorldMapManager.self.getAreaCoords(areaKey);
+      }
+
+      // See if the current area can be reached through one of the known warps
+      WorldMapSpot spot = WorldMapManager.self.getSpots().FirstOrDefault(_ => _.target == areaKey);
+
+      if (spot != null) {
+         return new WorldMapAreaCoords(spot.worldX, spot.worldY);
+      }
+
+      if (Global.player != null) {
+         spot = WorldMapManager.self.getSpotFromPosition(Global.player.areaKey, Global.player.transform.localPosition);
+         return new WorldMapAreaCoords(spot.worldX, spot.worldY);
+      }
+
+      // Fallback area
+      return WorldMapManager.self.getAreaCoordsForBiome(AreaManager.self.getDefaultBiome(areaKey));
    }
 
    public string getCurrentArea () {
@@ -47,7 +53,7 @@ public class WorldMapPanelCurrentAreaSelectorContainer : MonoBehaviour
    private string _currentAreaKey;
 
    // The coords of the current area
-   private Vector2Int _areaCoords;
+   private WorldMapPanelAreaCoords _areaCoords;
 
    #endregion
 }

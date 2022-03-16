@@ -91,7 +91,7 @@ namespace MapCreationTool
       }
 
       public void stopAllCoroutines () {
-         stopAllCoroutines();
+         StopAllCoroutines();
       }
 
       public IEnumerator simulateBrushAction (WorldMapSector worldMapData) {

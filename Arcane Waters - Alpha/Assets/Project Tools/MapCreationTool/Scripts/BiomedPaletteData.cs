@@ -207,11 +207,14 @@ namespace MapCreationTool
                      burrowedPref = t.GetComponent<TreePrafabConfig>().burrowedPref,
                      refPref = t.GetComponent<TreePrafabConfig>().regularPref
                   });
-               } else if (t.GetComponent<PrefabConfig>()) {
+               } else if (t.TryGetComponent(out PrefabConfig config)) {
+                  if (config.inUnityEditorOnly && !Application.isEditor) {
+                     continue;
+                  }
                   result.Add(new PrefabGroup {
                      tiles = extractBiome(group.tiles, biome),
                      start = group.start,
-                     refPref = t.GetComponent<PrefabConfig>().prefab
+                     refPref = config.prefab
                   });
                } else {
                   result.Add(new PrefabGroup {

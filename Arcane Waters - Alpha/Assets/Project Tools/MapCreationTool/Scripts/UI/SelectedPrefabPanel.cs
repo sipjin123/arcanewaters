@@ -15,6 +15,8 @@ namespace MapCreationTool
       [SerializeField]
       private Field dropdownFieldPref = null;
       [SerializeField]
+      private Field mapObjectStateField = null;
+      [SerializeField]
       private DrawBoard drawBoard = null;
 
       private CanvasGroup cGroup;
@@ -141,6 +143,19 @@ namespace MapCreationTool
             f.ValueChanged += (value) => valueChanged(fieldDef.name, value);
 
             fields.Add(fieldDef.name, f);
+         }
+
+         if (data.hasVariableObjectState) {
+            Field f = Instantiate(mapObjectStateField, transform);
+            f.hasVariableObjectState = data.hasVariableObjectState;
+            f.toolTipMessage = "Object State Field";
+            f.ValueChanged += (value) => valueChanged(DataField.MAP_OBJECT_STATE_MODEL_KEY, value);
+            fields.Add(DataField.MAP_OBJECT_STATE_MODEL_KEY, f);
+
+            string id = prefab.getData(DataField.PLACED_PREFAB_ID).ToLower().Trim();
+            UI.objectStateEditorPanel.nameText.text =
+               id + ": " + (string.IsNullOrWhiteSpace(data.title) ? data.gameObject.name : data.title);
+            UI.objectStateEditorPanel.descriptionText.text = data.objectStateDescription;
          }
       }
 

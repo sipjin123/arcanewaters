@@ -47,6 +47,9 @@ public class Minimap : ClientMonoBehaviour {
    // The prefab we use for showing player icons in our voyage group (only in town)
    public MM_GroupPlayerIcon groupPlayerIconPrefab;
 
+   // The prefab we use for showing waypoint icons
+   public MM_WaypointIcon waypointIconPrefab;
+
    // The sprites we use for identifying ship entity icons (enemy, friendly, neutral)
    public Sprite enemyShipSprite;
    public Sprite friendlyShipSprite;
@@ -539,7 +542,7 @@ public class Minimap : ClientMonoBehaviour {
                continue;
             }
             // Spawn ship prefab
-            icon = Instantiate(VoyageManager.isWorldMap(area.areaKey) ? (ship.isAllyOf(Global.player) ? openWorldAlliedShipIconPrefab : openWorldOtherShipIconPrefab) : shipIconPrefab, this.playerShipIconContainer.transform);
+            icon = Instantiate(WorldMapManager.self.isWorldMapArea(area.areaKey) ? (ship.isAllyOf(Global.player) ? openWorldAlliedShipIconPrefab : openWorldOtherShipIconPrefab) : shipIconPrefab, this.playerShipIconContainer.transform);
             icon.shipEntity = ship;
             icon.currentArea = area;
             icon.setCorrectPosition();
@@ -551,13 +554,13 @@ public class Minimap : ClientMonoBehaviour {
          }
          // Friendly ship
          else if (ship.isAllyOf(Global.player)) {
-            if (!VoyageManager.isWorldMap(area.areaKey)) {
+            if (!WorldMapManager.self.isWorldMapArea(area.areaKey)) {
                icon.GetComponent<Image>().sprite = friendlyShipSprite;
             }
          }
          // Neutral ship
          else {
-            if (!VoyageManager.isWorldMap(area.areaKey)) {
+            if (!WorldMapManager.self.isWorldMapArea(area.areaKey)) {
                icon.GetComponent<Image>().sprite = neutralShipSprite;
             }
          }
@@ -1800,6 +1803,22 @@ public class Minimap : ClientMonoBehaviour {
 
    }
 
+   public void addWaypointIcon (Area currentArea, WorldMapWaypoint waypoint) {
+      if (waypoint != null) {
+         MM_WaypointIcon icon = Instantiate(waypointIconPrefab, this.iconContainer.transform);
+         icon.waypoint = waypoint;
+         _waypointIcons.Add(icon);
+      }
+   }
+
+   public void deleteWaypointIcon (WorldMapWaypoint waypoint) {
+      MM_WaypointIcon waypointIcon = _waypointIcons.Find(_ => _.waypoint == waypoint);
+
+      if (waypointIcon != null) {
+         Destroy(waypointIcon.gameObject);
+      }
+   }
+
    #region Private Variables
 
    // Create random sea map sprite
@@ -1828,6 +1847,9 @@ public class Minimap : ClientMonoBehaviour {
 
    // Current list of land monster entity icons
    public List<MM_LandMonsterIcon> _landMonsterIcons = new List<MM_LandMonsterIcon>();
+   
+   // Current list of waypoint icons
+   public List<MM_WaypointIcon> _waypointIcons = new List<MM_WaypointIcon>();
 
    [SerializeField] TileLayer[] _tileLayer = new TileLayer[0];
    [SerializeField] TileIcon[] _tileIconLayers = new TileIcon[0];

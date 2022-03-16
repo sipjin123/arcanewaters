@@ -6,7 +6,7 @@ public class WorldMapPanelCloud : MonoBehaviour
    #region Public Variables
 
    // The position of the cloud
-   public Vector2Int position;
+   public WorldMapPanelAreaCoords coords;
 
    // Cloud Image
    public Image cloudImage;

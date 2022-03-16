@@ -64,6 +64,7 @@ namespace MapCreationTool
       public static VersionListPanel versionListPanel { get; private set; }
       public static SettingsPanel settingsPanel { get; private set; }
       public static MapDetailsPanel mapDetailsPanel { get; private set; }
+      public static MapObjectStateVariables.ObjectStateEditorPanel objectStateEditorPanel { get; private set; }
 
       // Reference to self
       public static UI self;
@@ -140,6 +141,7 @@ namespace MapCreationTool
          versionListPanel = GetComponentInChildren<VersionListPanel>();
          settingsPanel = GetComponentInChildren<SettingsPanel>();
          mapDetailsPanel = GetComponentInChildren<MapDetailsPanel>();
+         objectStateEditorPanel = GetComponentInChildren<MapObjectStateVariables.ObjectStateEditorPanel>();
 
          uiPanels = GetComponentsInChildren<UIPanel>();
 

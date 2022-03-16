@@ -19,26 +19,26 @@ public class WorldMapDBManager : MonoBehaviour
    }
 
    public void initialize () {
-      // Fetches the pins previously uploaded to the database, and stores them locally
+      // Fetches the spots previously uploaded to the database, and stores them locally
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         WorldMapManager.setCachedWorldMapPins(DB_Main.fetchWorldMapPins().ToList());
+         setWorldMapSpots(DB_Main.fetchWorldMapSpots().ToList());
       });
    }
 
-   public static void BKG_UploadWorldMapPinsInAllAreas () {
+   public static void BKG_UploadWorldMapSpotsInAllAreas () {
       if (!NetworkServer.active) {
          return;
       }
 
-      List<string> maps = WorldMapManager.getOpenWorldAreasList();
+      List<string> maps = WorldMapManager.self.getAllAreasList();
 
       foreach (string mapKey in maps) {
-         D.debug($"Uploading the world map pins for map: '{mapKey}'...");
-         BKG_UploadWorldMapPinsInArea(mapKey);
+         D.debug($"Uploading the world map spots for area: '{mapKey}'...");
+         BKG_UploadWorldMapSpotsInArea(mapKey);
       }
    }
 
-   public static void BKG_UploadWorldMapPinsInArea (string areaKey) {
+   public static void BKG_UploadWorldMapSpotsInArea (string areaKey) {
       if (!NetworkServer.active) {
          return;
       }
@@ -49,7 +49,7 @@ public class WorldMapDBManager : MonoBehaviour
          // Deserialize the map
          ExportedProject001 exportedProject = MapImporter.deserializeMapData(mapInfo, areaKey);
          List<Warp> foundWarps = new List<Warp>();
-         List<WorldMapPanelPinInfo> pins = new List<WorldMapPanelPinInfo>();
+         List<WorldMapSpot> spots = new List<WorldMapSpot>();
 
          if (exportedProject == null) {
             return;
@@ -86,52 +86,52 @@ public class WorldMapDBManager : MonoBehaviour
                   }
                }
 
-               WorldMapPanelPinInfo pin = new WorldMapPanelPinInfo {
+               WorldMapSpot spot = new WorldMapSpot {
                   areaWidth = exportedProject.size.x,
                   areaHeight = exportedProject.size.y,
 
                   // The prefab position is relative to the center of the area,
                   // but for convenience we store the position of the pin relative
                   // to the top left corner instead
-                  x = prefab.x + exportedProject.size.x / 2,
-                  y = prefab.y - exportedProject.size.y / 2
+                  areaX = prefab.x + exportedProject.size.x / 2,
+                  areaY = prefab.y - exportedProject.size.y / 2
                };
 
-               if (VoyageManager.isWorldMap(areaKey)) {
-                  Vector2Int areaCoords = WorldMapManager.computeOpenWorldAreaCoords(areaKey);
-                  pin.areaX = areaCoords.x;
-                  pin.areaY = areaCoords.y;
+               if (WorldMapManager.self.isWorldMapArea(areaKey)) {
+                  WorldMapAreaCoords areaCoords = WorldMapManager.self.getAreaCoords(areaKey);
+                  spot.worldX = areaCoords.x;
+                  spot.worldY = areaCoords.y;
                }
 
                if (warpGO.TryGetComponent(out Warp warp)) {
-                  pin.pinType = WorldMapPanelPin.PinTypes.Warp;
-                  pin.spawnTarget = warp.spawnTarget;
-                  pin.target = warp.areaTarget;
-                  pin.displayName = Area.getName(warp.areaTarget);
-                  pin.specialType = (int) warp.targetInfo.specialType;
+                  spot.type = WorldMapSpot.SpotType.Warp;
+                  spot.spawnTarget = warp.spawnTarget;
+                  spot.target = warp.areaTarget;
+                  spot.displayName = Area.getName(warp.areaTarget);
+                  spot.specialType = (int) warp.targetInfo.specialType;
                }
 
-               pins.Add(pin);
+               spots.Add(spot);
                Destroy(warpGO);
             }
 
             // League Entrances
             if (original.TryGetComponent(out GenericActionTrigger gat)) {
-               WorldMapPanelPinInfo pin = new WorldMapPanelPinInfo {
+               WorldMapSpot spot = new WorldMapSpot {
                   areaWidth = exportedProject.size.x,
                   areaHeight = exportedProject.size.y,
-                  x = prefab.x + exportedProject.size.x / 2,
-                  y = prefab.y - exportedProject.size.y / 2
+                  areaX = prefab.x + exportedProject.size.x / 2,
+                  areaY = prefab.y - exportedProject.size.y / 2
                };
 
-               if (VoyageManager.isWorldMap(areaKey)) {
-                  Vector2Int areaCoords = WorldMapManager.computeOpenWorldAreaCoords(areaKey);
-                  pin.areaX = areaCoords.x;
-                  pin.areaY = areaCoords.y;
+               if (WorldMapManager.self.isWorldMapArea(areaKey)) {
+                  WorldMapAreaCoords areaCoords = WorldMapManager.self.getAreaCoords(areaKey);
+                  spot.worldX = areaCoords.x;
+                  spot.worldY = areaCoords.y;
                }
 
-               pin.pinType = WorldMapPanelPin.PinTypes.League;
-               pins.Add(pin);
+               spot.type = WorldMapSpot.SpotType.League;
+               spots.Add(spot);
             }
 
             // Discoveries
@@ -145,22 +145,22 @@ public class WorldMapDBManager : MonoBehaviour
                   }
                }
 
-               WorldMapPanelPinInfo pin = new WorldMapPanelPinInfo {
+               WorldMapSpot spot = new WorldMapSpot {
                   areaWidth = exportedProject.size.x,
                   areaHeight = exportedProject.size.y,
-                  x = prefab.x + exportedProject.size.x / 2,
-                  y = prefab.y - exportedProject.size.y / 2
+                  areaX = prefab.x + exportedProject.size.x / 2,
+                  areaY = prefab.y - exportedProject.size.y / 2
                };
 
-               if (VoyageManager.isWorldMap(areaKey)) {
-                  Vector2Int areaCoords = WorldMapManager.computeOpenWorldAreaCoords(areaKey);
-                  pin.areaX = areaCoords.x;
-                  pin.areaY = areaCoords.y;
+               if (WorldMapManager.self.isWorldMapArea(areaKey)) {
+                  WorldMapAreaCoords areaCoords = WorldMapManager.self.getAreaCoords(areaKey);
+                  spot.worldX = areaCoords.x;
+                  spot.worldY = areaCoords.y;
                }
 
-               pin.pinType = WorldMapPanelPin.PinTypes.Discovery;
-               pin.discoveryId = discoverySpot.targetDiscoveryID;
-               pins.Add(pin);
+               spot.type = WorldMapSpot.SpotType.Discovery;
+               spot.discoveryId = discoverySpot.targetDiscoveryID;
+               spots.Add(spot);
                Destroy(discoverySpotGO);
             }
          }
@@ -168,15 +168,26 @@ public class WorldMapDBManager : MonoBehaviour
          D.debug($"In '{areaKey}': {foundWarps.Count} warps found.");
 
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            if (pins != null && pins.Count > 0) {
-               DB_Main.uploadWorldMapPins(pins);
-               D.debug($"Uploading the world map pins for map: '{areaKey}': DONE");
+            if (spots != null && spots.Count > 0) {
+               DB_Main.uploadWorldMapSpots(spots);
+               D.debug($"Uploading the world map spots for area: '{areaKey}': DONE");
             }
          });
       });
    }
 
+   public void setWorldMapSpots (List<WorldMapSpot> spots) {
+      _worldMapSpots = spots;
+   }
+
+   public List<WorldMapSpot> getWorldMapSpots () {
+      return _worldMapSpots;
+   }
+
    #region Private Variables
+
+   // Server cache for the world spots
+   private List<WorldMapSpot> _worldMapSpots = new List<WorldMapSpot>();
 
    #endregion
 }

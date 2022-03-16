@@ -2183,11 +2183,11 @@ public class RPCManager : NetworkBehaviour
             }
 
             if (!isSteamIdValid) {
-#if UNITY_EDITOR
+               #if UNITY_EDITOR
                // Try to use the debug Steam Id instead
                steamId = SteamPurchaseManagerServer.self.debugSteamId;
                D.debug($"Purchase Warning: Couldn't get the steamId for user '{_player.userId}'. Using the debug Steam ID...");
-#endif
+               #endif
             }
 
             if (steamId == 0) {
@@ -6491,7 +6491,7 @@ public class RPCManager : NetworkBehaviour
          EntityManager.self.removeBypassForUser(_player.userId);
          return true;
       }
-      if (!VoyageManager.isPvpArenaArea(_player.areaKey) && !VoyageManager.isWorldMap(_player.areaKey)) {
+      if (!VoyageManager.isPvpArenaArea(_player.areaKey) && !WorldMapManager.self.isWorldMapArea(_player.areaKey)) {
          // If the player is not in a group, clear it from the netentity and redirect to the starting town
          if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
             D.adminLog("{" + _player.userId + ":" + _player.entityName + "} {" + _player.areaKey + "} " +
@@ -6555,12 +6555,15 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Remove the player from the game stats manager, when navigating open areas
-      if (VoyageManager.isWorldMap(_player.areaKey)) {
+      if (WorldMapManager.self.isWorldMapArea(_player.areaKey)) {
          GameStatsManager.self.unregisterUser(_player.userId);
       }
 
       Target_ResetPvpSilverPanel(_player.connectionToClient, GameStatsManager.self.getSilverAmount(_player.userId));
       Target_ResetPvpScoreIndicator(_player.connectionToClient, show: false);
+
+      // Send World Map information
+      requestWorldMapData();
 
       // Verify the voyage consistency only if the user is in a voyage group or voyage area
       if (!VoyageManager.isAnyLeagueArea(_player.areaKey) && !VoyageManager.isPvpArenaArea(_player.areaKey) && !VoyageManager.isTreasureSiteArea(_player.areaKey)) {
@@ -9551,8 +9554,8 @@ public class RPCManager : NetworkBehaviour
       VoyageManager.self.closeVoyageCompleteNotificationWhenLeavingArea();
    }
 
-   [Command]
-   public void Cmd_RequestWorldMap () {
+   [Server]
+   public void requestWorldMapData () {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -9565,47 +9568,48 @@ public class RPCManager : NetworkBehaviour
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Process Map Pins
-            List<WorldMapPanelPinInfo> pins = WorldMapManager.getCachedWorldMapPins();
+            // Process Map Spots
+            List<WorldMapSpot> spots = WorldMapDBManager.self.getWorldMapSpots();
             Dictionary<int, UserDiscovery> userDiscoveriesRegistry = userDiscoveries.ToDictionary(_ => _.discoveryId, _ => _);
-            List<Vector2Int> visitedWorldMapAreasCoords = WorldMapManager.computeOpenWorldAreaCoordsList(visitedAreas);
-            visitedWorldMapAreasCoords = new HashSet<Vector2Int>(visitedWorldMapAreasCoords).ToList();
+            List<WorldMapAreaCoords> visitedWorldMapAreasCoords = WorldMapManager.self.getAreaCoordsList(visitedAreas);
+            visitedWorldMapAreasCoords = new HashSet<WorldMapAreaCoords>(visitedWorldMapAreasCoords).ToList();
 
-            // Filter pins
-            List<WorldMapPanelPinInfo> filteredPins = new List<WorldMapPanelPinInfo>();
-            foreach (WorldMapPanelPinInfo pin in pins) {
-               Vector2Int pinAreaCoords = new Vector2Int(pin.areaX, pin.areaY);
+            // Filter
+            List<WorldMapSpot> filteredSpots = new List<WorldMapSpot>();
+            foreach (WorldMapSpot spot in spots) {
+               WorldMapAreaCoords areaCoords = new WorldMapAreaCoords(spot.worldX, spot.worldY);
 
-               // The pin is not located in a visited area
-               if (!visitedWorldMapAreasCoords.Contains(pinAreaCoords)) {
+               // The spot is not located in a visited area
+               if (!visitedWorldMapAreasCoords.Contains(areaCoords)) {
                   continue;
                }
 
-               if (pin.pinType == WorldMapPanelPin.PinTypes.Warp) {
-                  pin.discovered = visitedAreas.Contains(pin.target);
-               }
-               
-               if (pin.pinType == WorldMapPanelPin.PinTypes.Discovery && userDiscoveriesRegistry.ContainsKey(pin.discoveryId)) {
-                  pin.discovered = userDiscoveriesRegistry[pin.discoveryId].discovered;
+               if (spot.type == WorldMapSpot.SpotType.Warp) {
+                  spot.discovered = visitedAreas.Contains(spot.target);
                }
 
-               filteredPins.Add(pin);
+               if (spot.type == WorldMapSpot.SpotType.Discovery && userDiscoveriesRegistry.ContainsKey(spot.discoveryId)) {
+                  spot.discovered = userDiscoveriesRegistry[spot.discoveryId].discovered;
+               }
+
+               filteredSpots.Add(spot);
             }
 
             // Send the result to the client
-            Target_ReceiveWorldMap(_player.connectionToClient, visitedWorldMapAreasCoords, filteredPins);
+            Target_ReceiveWorldMapData(_player.connectionToClient, visitedWorldMapAreasCoords, filteredSpots);
          });
       });
    }
 
-   [TargetRpc]
-   public void Target_ReceiveWorldMap (NetworkConnection connection, List<Vector2Int> visitedWorldMapAreasCoords, List<WorldMapPanelPinInfo> pins) {
-      // Make sure the panel is showing
-      PanelManager.self.linkIfNotShowing(Panel.Type.WorldMap);
+   [Command]
+   public void Cmd_RequestWorldMapData () {
+      requestWorldMapData();
+   }
 
-      // Pass the data to the panel
-      WorldMapPanel panel = (WorldMapPanel) PanelManager.self.get(Panel.Type.WorldMap);
-      panel.onWorldMapReceived(visitedWorldMapAreasCoords, pins);
+   [TargetRpc]
+   public void Target_ReceiveWorldMapData (NetworkConnection connection, List<WorldMapAreaCoords> visitedWorldMapAreasCoords, List<WorldMapSpot> spots) {
+      // Store data in the client cache
+      WorldMapManager.self.setWorldMapData(visitedWorldMapAreasCoords, spots);
    }
 
    [Command]

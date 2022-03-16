@@ -12148,7 +12148,7 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
-   public static new void uploadWorldMapPins (IEnumerable<WorldMapPanelPinInfo> pins) {
+   public static new void uploadWorldMapSpots (IEnumerable<WorldMapSpot> spots) {
       try {
          using (MySqlConnection connection = getConnection()) {
             using (MySqlCommand cmd = connection.CreateCommand()) {
@@ -12159,36 +12159,25 @@ public class DB_Main : DB_MainStub
                cmd.CommandTimeout = 1200;
 
                try {
-                  //StringBuilder sb = new StringBuilder();
-                  //sb.AppendLine();
+                  cmd.CommandText = "INSERT INTO global.world_map_spots (wmsAreaWidth, wmsAreaHeight, wmsWorldX, wmsWorldY, wmsAreaX, wmsAreaY, " +
+                     "wmsType, wmsSpecialType, wmsTarget, wmsSpawnTarget, wmsDiscoveryId, wmsDisplayName) VALUES " +
+                     "(@wmsAreaWidth, @wmsAreaHeight, @wmsWorldX, @wmsWorldY, @wmsAreaX, @wmsAreaY, " +
+                     "@wmsType, @wmsSpecialType, @wmsTarget, @wmsSpawnTarget, @wmsDiscoveryId, @wmsDisplayName)";
 
-                  //foreach (WorldMapPanelPinInfo pin in pins) {
-                  //   sb.Append($"({pin.areaWidth}, {pin.areaHeight}, {pin.areaX}, {pin.areaY}, {pin.x}, {pin.y}, {(int) pin.pinType}, {pin.specialType}, \"{pin.target}\", \"{pin.spawnTarget}\", {pin.discoveryId}, \"{pin.displayName}\")");
-
-                  //   if (pin != pins.Last()) {
-                  //      sb.AppendLine(",");
-                  //   }
-                  //}
-
-                  cmd.CommandText = "INSERT INTO global.world_map_pins (wmpAreaWidth, wmpAreaHeight, wmpAreaX, wmpAreaY, wmpPinX, wmpPinY, " +
-                     "wmpPinType, wmpPinSpecialType, wmpPinTarget, wmpPinSpawnTarget, wmpPinDiscoveryId, wmpPinDisplayName) VALUES " +
-                     "(@wmpAreaWidth, @wmpAreaHeight, @wmpAreaX, @wmpAreaY, @wmpPinX, @wmpPinY, " +
-                     "@wmpPinType, @wmpPinSpecialType, @wmpPinTarget, @wmpPinSpawnTarget, @wmpPinDiscoveryId, @wmpPinDisplayName)";
-
-                  foreach (WorldMapPanelPinInfo pin in pins) {
+                  foreach (WorldMapSpot spot in spots) {
                      cmd.Parameters.Clear();
-                     cmd.Parameters.AddWithValue("@wmpAreaWidth", pin.areaWidth);
-                     cmd.Parameters.AddWithValue("@wmpAreaHeight", pin.areaHeight);
-                     cmd.Parameters.AddWithValue("@wmpAreaX", pin.areaX);
-                     cmd.Parameters.AddWithValue("@wmpAreaY", pin.areaY);
-                     cmd.Parameters.AddWithValue("@wmpPinX", pin.x);
-                     cmd.Parameters.AddWithValue("@wmpPinY", pin.y);
-                     cmd.Parameters.AddWithValue("@wmpPinType", (int) pin.pinType);
-                     cmd.Parameters.AddWithValue("@wmpPinSpecialType", pin.specialType);
-                     cmd.Parameters.AddWithValue("@wmpPinTarget", pin.target);
-                     cmd.Parameters.AddWithValue("@wmpPinSpawnTarget", pin.spawnTarget);
-                     cmd.Parameters.AddWithValue("@wmpPinDiscoveryId", pin.discoveryId);
-                     cmd.Parameters.AddWithValue("@wmpPinDisplayName", pin.displayName);
+                     cmd.Parameters.AddWithValue("@wmsAreaWidth", spot.areaWidth);
+                     cmd.Parameters.AddWithValue("@wmsAreaHeight", spot.areaHeight);
+                     cmd.Parameters.AddWithValue("@wmsWorldX", spot.worldX);
+                     cmd.Parameters.AddWithValue("@wmsWorldY", spot.worldY);
+                     cmd.Parameters.AddWithValue("@wmsAreaX", spot.areaX);
+                     cmd.Parameters.AddWithValue("@wmsAreaY", spot.areaY);
+                     cmd.Parameters.AddWithValue("@wmsType", (int) spot.type);
+                     cmd.Parameters.AddWithValue("@wmsSpecialType", spot.specialType);
+                     cmd.Parameters.AddWithValue("@wmsTarget", spot.target);
+                     cmd.Parameters.AddWithValue("@wmsSpawnTarget", spot.spawnTarget);
+                     cmd.Parameters.AddWithValue("@wmsDiscoveryId", spot.discoveryId);
+                     cmd.Parameters.AddWithValue("@wmsDisplayName", spot.displayName);
 
                      DebugQuery(cmd);
                      cmd.ExecuteNonQuery();
@@ -12206,31 +12195,31 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new IEnumerable<WorldMapPanelPinInfo> fetchWorldMapPins () {
-      List<WorldMapPanelPinInfo> pins = new List<WorldMapPanelPinInfo>();
+   public static new IEnumerable<WorldMapSpot> fetchWorldMapSpots () {
+      List<WorldMapSpot> spots = new List<WorldMapSpot>();
 
       try {
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
-            using (MySqlCommand command = new MySqlCommand("SELECT * FROM global.world_map_pins", connection)) {
+            using (MySqlCommand command = new MySqlCommand("SELECT * FROM global.world_map_spots", connection)) {
                using (MySqlDataReader reader = command.ExecuteReader()) {
                   while (reader.Read()) {
-                     WorldMapPanelPinInfo pin = new WorldMapPanelPinInfo {
-                        areaWidth = reader.GetInt32("wmpAreaWidth"),
-                        areaHeight = reader.GetInt32("wmpAreaHeight"),
-                        areaX = reader.GetInt32("wmpAreaX"),
-                        areaY = reader.GetInt32("wmpAreaY"),
-                        x = reader.GetInt32("wmpPinX"),
-                        y = reader.GetInt32("wmpPinY"),
-                        pinType = (WorldMapPanelPin.PinTypes) reader.GetInt32("wmpPinType"),
-                        specialType = reader.GetInt32("wmpPinSpecialType"),
-                        target = reader.GetString("wmpPinTarget"),
-                        spawnTarget = reader.GetString("wmpPinSpawnTarget"),
-                        discoveryId = reader.GetInt32("wmpPinDiscoveryId"),
-                        displayName = reader.GetString("wmpPinDisplayName")
+                     WorldMapSpot spot = new WorldMapSpot {
+                        areaWidth = reader.GetInt32("wmsAreaWidth"),
+                        areaHeight = reader.GetInt32("wmsAreaHeight"),
+                        worldX = reader.GetInt32("wmsWorldX"),
+                        worldY = reader.GetInt32("wmsWorldY"),
+                        areaX = reader.GetInt32("wmsAreaX"),
+                        areaY = reader.GetInt32("wmsAreaY"),
+                        type = (WorldMapSpot.SpotType) reader.GetInt32("wmsType"),
+                        specialType = reader.GetInt32("wmsSpecialType"),
+                        target = reader.GetString("wmsTarget"),
+                        spawnTarget = reader.GetString("wmsSpawnTarget"),
+                        discoveryId = reader.GetInt32("wmsDiscoveryId"),
+                        displayName = reader.GetString("wmsDisplayName")
                      };
 
-                     pins.Add(pin);
+                     spots.Add(spot);
                   }
                }
             }
@@ -12239,16 +12228,16 @@ public class DB_Main : DB_MainStub
          D.error(ex.Message);
       }
 
-      return pins;
+      return spots;
    }
 
-   public static new bool clearWorldMapPins () {
+   public static new bool clearWorldMapSites () {
       bool result = false;
 
       try {
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
-            using (MySqlCommand command = new MySqlCommand("TRUNCATE global.world_map_pins", connection)) {
+            using (MySqlCommand command = new MySqlCommand("TRUNCATE global.world_map_spots", connection)) {
                int rowsAffected = command.ExecuteNonQuery();
 
                if (rowsAffected > 0) {

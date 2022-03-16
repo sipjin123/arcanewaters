@@ -2111,7 +2111,7 @@ public class NetEntity : NetworkBehaviour
       }
 
       // Override the local position if we are in an Open World Area
-      if (VoyageManager.isWorldMap(areaKey) && VoyageManager.isWorldMap(newArea)) {
+      if (WorldMapManager.self.isWorldMapArea(areaKey) && WorldMapManager.self.isWorldMapArea(newArea)) {
          targetLocalPos = transform.localPosition;
          float offset = 0.2f;
 
@@ -2221,7 +2221,7 @@ public class NetEntity : NetworkBehaviour
       }
 
       // If the player just entered an open world area, restore the health of the ships
-      if (VoyageManager.isWorldMap(newArea) && !VoyageManager.isWorldMap(areaKey)) {
+      if (WorldMapManager.self.isWorldMapArea(newArea) && !WorldMapManager.self.isWorldMapArea(areaKey)) {
          restoreMaxShipHealth();
       }
 

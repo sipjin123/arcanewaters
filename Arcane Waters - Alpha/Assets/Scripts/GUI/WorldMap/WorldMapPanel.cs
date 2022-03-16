@@ -31,10 +31,16 @@ public class WorldMapPanel : Panel
    public WorldMapPanelCurrentAreaSelectorContainer currentAreaSelectorContainer;
 
    // Reference to the container holding the selector that highlights the currently hovered area
-   public WorldMapPanelHoveredAreaSelectorContainer hoveredAreaSelectorContainer;
+   public WorldMapPanelCellsContainer cellsContainer;
 
-   // Reference to the Pins Menu
-   public WorldMapPinsMenu pinsMenu;
+   // Reference to the container holding the waypoints
+   public WorldMapPanelWaypointsContainer waypointsContainer;
+
+   // Reference to the container holding the Coords indicator
+   public WorldMapPanelCoordsIndicatorContainer coordsIndicatorContainer;
+
+   // Reference to the Sites Menu
+   public WorldMapPanelMenu menu;
 
    // Self
    public static WorldMapPanel self;
@@ -46,73 +52,162 @@ public class WorldMapPanel : Panel
       self = this;
    }
 
+   public override void Update () {
+      if (menu.isShowing()) {
+         // While navigating the tabs in the panel's menu the selected cells might lose focus and become unselected
+         // To prevent this, force the cell that triggered the menu to stay selected 
+         cellsContainer.focus();
+      }
+   }
+
    public void displayMap () {
       if (TutorialManager3.self.getCurrentTrigger() == TutorialTrigger.OpenMap) {
          TutorialManager3.self.tryCompletingStep(TutorialTrigger.OpenMap);
       }
 
-      Global.player.rpc.Cmd_RequestWorldMap();
-   }
+      // Make sure the panel is showing
+      PanelManager.self.linkIfNotShowing(Type.WorldMap);
 
-   public void onWorldMapReceived (List<Vector2Int> visitedWorldMapAreasCoords, List<WorldMapPanelPinInfo> worldMapPins) {
-      _visitedWorldMapAreasCoords = visitedWorldMapAreasCoords.Select(adjustAreaCoords).ToList();
-      _worldMapPins = worldMapPins;
+      List<WorldMapPanelAreaCoords> visitedWorldMapPanelAreasCoords = WorldMapManager.self.getVisitedAreasCoordsList().Select(transformCoords).ToList();
 
       // Clouds
       cloudsContainer.fill();
-      cloudsContainer.hideCloudsAtCoords(_visitedWorldMapAreasCoords);
+      cloudsContainer.hideClouds(visitedWorldMapPanelAreasCoords);
 
       // Update exploration progress
-      progressIndicator.updateProgress((float) _visitedWorldMapAreasCoords.Count / (mapDimensions.x * mapDimensions.y));
+      int visitedWorldMapAreasCount = visitedWorldMapPanelAreasCoords.Count;
+      Vector2Int worldMapDimensions = WorldMapManager.self.getMapSize();
+      int worldMapAreasTotalCount = worldMapDimensions.x * worldMapDimensions.y;
+      progressIndicator.updateProgress((float) visitedWorldMapAreasCount / worldMapAreasTotalCount);
 
       // Pins
       pinsContainer.clearPins();
-      pinsContainer.addPins(_worldMapPins);
+      pinsContainer.addPins(WorldMapManager.self.getSpots());
 
-      // Pin Menu
-      pinsMenu.toggle(false);
+      // Menu
+      menu.hide();
 
       // Current Area Selector
       currentAreaSelectorContainer.setCurrentArea(Global.player.areaKey);
 
       // Hovered Area Selector
-      hoveredAreaSelectorContainer.fill();
+      cellsContainer.fill();
+
+      // Waypoints
+      waypointsContainer.clearWaypoints();
+      waypointsContainer.addWaypoints(WorldMapWaypointsManager.self.getWaypointSpots());
+
+      // For now hide the coords indicator
+      coordsIndicatorContainer.toggleIndicator(false);
+
+      show();
    }
 
-   public Vector2Int adjustAreaCoords (Vector2Int areaCoords) {
-      // Adjust the location Y coordinate to match the coords system of the world map panel
-      return new Vector2Int(areaCoords.x, mapDimensions.y - areaCoords.y - 1);
+   public WorldMapPanelAreaCoords transformCoords (WorldMapAreaCoords mapAreaCoords) {
+      WorldMapPanelAreaCoords panelAreaCoords = new WorldMapPanelAreaCoords {
+         x = mapAreaCoords.x,
+         y = mapDimensions.y - mapAreaCoords.y - 1
+      };
+      return panelAreaCoords;
    }
 
-   public List<Vector2Int> getVisitedAreasCoords () {
-      return _visitedWorldMapAreasCoords;
+   public WorldMapAreaCoords transformCoords (WorldMapPanelAreaCoords areaCoords) {
+      WorldMapAreaCoords panelAreaCoords = new WorldMapAreaCoords {
+         x = areaCoords.x,
+         y = mapDimensions.y - areaCoords.y - 1
+      };
+      return panelAreaCoords;
    }
 
-   public void onMapCellClicked (Vector2Int areaCoords) {
-      if (_visitedWorldMapAreasCoords.Contains(areaCoords)) {
-         List<WorldMapPanelPin> pins = pinsContainer.getPinsWithinArea(areaCoords);
-         pinsMenu.toggle(show: false);
+   public void onAreaPressed (WorldMapPanelAreaCoords areaCoords) {
+      // Prepare to show the menu with the warps and waypoints of the selected area
+      List<WorldMapPanelAreaCoords> adjustedAreaCoords = WorldMapManager.self.getVisitedAreasCoordsList().Select(transformCoords).ToList();
 
-         if (pins.Any(pin => pin.info.pinType == WorldMapPanelPin.PinTypes.Warp)) {
-            List<WorldMapPanelPinInfo> pinInfos = pins.Where(pin => pin.info.pinType == WorldMapPanelPin.PinTypes.Warp).Select(_ => _.info).ToList();
-            pinsMenu.clear();
-            pinsMenu.add(pinInfos);
-            pinsMenu.toggle(show: true);
+      // The player hasn't been to this area of the map yet
+      if (!adjustedAreaCoords.Contains(areaCoords)) {
+         return;
+      }
+
+      showMenu(areaCoords);
+   }
+
+   public void onAreaHovered (WorldMapPanelAreaCoords areaCoords) {
+      coordsIndicatorContainer.toggleIndicator(true);
+      coordsIndicatorContainer.positionIndicator(areaCoords);
+   }
+
+   private void showMenu (WorldMapPanelAreaCoords areaCoords, int menuTabIndex = 0) {
+      // Temporarily hide the menu
+      menu.hide();
+
+      // Register the pins with the menu
+      IEnumerable<WorldMapPanelPin> pins = pinsContainer.getPinsWithinArea(areaCoords).Where(pin => pin.spot.type == WorldMapSpot.SpotType.Warp);
+      menu.clearWarps();
+      menu.addWarps(pins.Select(_ => _.spot).ToList());
+
+      // Register the waypoints with the menu
+      IEnumerable<WorldMapPanelWaypoint> waypoints = waypointsContainer.getWaypointsWithinArea(areaCoords);
+      menu.clearWaypoints();
+      menu.addWaypoints(waypoints.Select(_ => _.spot).ToList());
+
+      // Show the menu and optionally specify the tab to display
+      menu.show(menuTabIndex);
+
+      // To ensure that the currently selected area is not covered by the menu
+      menu.shift(toLeftSide: areaCoords.x >= (mapDimensions.x / 2));
+   }
+
+   public void onMenuItemPressed (WorldMapPanelMenuItem menuItem) {
+      WorldMapSpot spot = menuItem.spot;
+
+      if (menu.isWarpMenuItem(menuItem)) {
+         // Ensure the spot is a warp spot
+         if (spot != null && spot.type == WorldMapSpot.SpotType.Warp) {
+            tryWarp(spot.target, spot.spawnTarget);
          }
+      } else if (menu.isWaypointMenuItem(menuItem)) {
+         // Delete the waypoint at spot from the scene
+         WorldMapWaypointsManager.self.removeWaypoint(spot);
+
+         // Delete the waypoint at spot from the map panel
+         waypointsContainer.removeWaypoint(spot);
+
+         // Redisplay the menu
+         WorldMapAreaCoords mapAreaCoords = WorldMapManager.self.getWorldMapAreaCoordsFromGeoCoords(WorldMapManager.self.getGeoCoordsFromSpot(menuItem.spot));
+         showMenu(transformCoords(mapAreaCoords), menu.getCurrentTab());
       }
    }
 
-   public void onMenuItemSelected (WorldMapPinsMenuItem menuItem) {
-      if (Global.player != null) {
-         WorldMapPanelPinInfo pin = menuItem.getPin();
+   public void onMenuItemPointerEnter (WorldMapPanelMenuItem menuItem) {
+      WorldMapSpot spot = menuItem.spot;
 
-         if (pin != null && pin.pinType == WorldMapPanelPin.PinTypes.Warp) {
-            tryWarp(pin.target, pin.spawnTarget);
-         }
+      if (menu.isWaypointMenuItem(menuItem)) {
+         waypointsContainer.highlightWaypoint(spot, show: true);
+      } else if (menu.isWarpMenuItem(menuItem)) {
+         pinsContainer.highlightPin(spot, show: true);
       }
+   }
+
+   public void onMenuItemPointerExit (WorldMapPanelMenuItem menuItem) {
+      WorldMapSpot spot = menuItem.spot;
+
+      if (menu.isWaypointMenuItem(menuItem)) {
+         waypointsContainer.highlightWaypoint(spot, show: false);
+      } else if (menu.isWarpMenuItem(menuItem)) {
+         pinsContainer.highlightPin(spot, show: false);
+      }
+   }
+
+   public void onMenuDismissed () {
+      // When the player closes the menu, makes sure to unselect all cells
+      cellsContainer.blur();
    }
 
    public void tryWarp (string areaTarget, string spawnTarget, bool skipPvpCheck = false) {
+      if (Global.player == null) {
+         return;
+      }
+
       if (!skipPvpCheck && VoyageManager.isPvpArenaArea(Global.player.areaKey)) {
          PanelManager.self.showConfirmationPanel("Are you sure you want to leave your current Pvp Game?", () => {
             tryWarp(areaTarget, spawnTarget, skipPvpCheck: true);
@@ -126,17 +221,7 @@ public class WorldMapPanel : Panel
       PanelManager.self.unlinkPanel();
    }
 
-   public IEnumerable<WorldMapPanelPinInfo> getMapPins () {
-      return _worldMapPins;
-   }
-
    #region Private Variables
-
-   // Coordinates of the visited world map areas
-   private List<Vector2Int> _visitedWorldMapAreasCoords = new List<Vector2Int>();
-
-   // Local cache of the map pins
-   private List<WorldMapPanelPinInfo> _worldMapPins = new List<WorldMapPanelPinInfo>();
 
    #endregion
 }

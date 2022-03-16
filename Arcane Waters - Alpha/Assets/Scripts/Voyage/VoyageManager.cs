@@ -236,10 +236,6 @@ public class VoyageManager : GenericGameManager {
       return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.PvpArena;
    }
 
-   public static bool isWorldMap(string areaKey) {
-      return !Util.isEmpty(areaKey) && areaKey.StartsWith(WorldMapManager.WORLD_MAP_PREFIX);
-   }
-
    public List<string> getVoyageAreaKeys () {
       return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.Voyage).ToList();
    }

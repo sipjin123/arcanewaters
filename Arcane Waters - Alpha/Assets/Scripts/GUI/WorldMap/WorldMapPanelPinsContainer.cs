@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public class WorldMapPanelPinsContainer : MonoBehaviour
 {
    #region Public Variables
 
-   // Reference to the prefab used to create indicators
-   public GameObject indicatorPrefab;
+   // Reference to the prefab used to create pins
+   public GameObject pinPrefab;
 
    // The sprite used to represent town warps
    public Sprite townSprite;
@@ -20,8 +21,8 @@ public class WorldMapPanelPinsContainer : MonoBehaviour
    // The sprite used to represent discoveries
    public Sprite discoverySprite;
 
-   // The pin filter
-   public WorldMapPanelPin.PinTypes[] filter;
+   // Filters pins by spot type
+   public WorldMapSpot.SpotType[] filter;
 
    #endregion
 
@@ -33,9 +34,9 @@ public class WorldMapPanelPinsContainer : MonoBehaviour
       _pins.Clear();
    }
 
-   public void addPins(IEnumerable<WorldMapPanelPinInfo> pinInfos) {
-      foreach (WorldMapPanelPinInfo pinInfo in pinInfos) {
-         WorldMapPanelPin newPin = createPin(pinInfo);
+   public void addPins (IEnumerable<WorldMapSpot> spots) {
+      foreach (WorldMapSpot spot in spots) {
+         WorldMapPanelPin newPin = createPin(spot);
          positionPin(newPin);
          texturePin(newPin);
       }
@@ -43,15 +44,15 @@ public class WorldMapPanelPinsContainer : MonoBehaviour
       applyFilter();
    }
 
-   private WorldMapPanelPin createPin (WorldMapPanelPinInfo pinInfo) {
-      GameObject o = Instantiate(indicatorPrefab);
+   private WorldMapPanelPin createPin (WorldMapSpot site) {
+      GameObject o = Instantiate(pinPrefab);
       WorldMapPanelPin pin = o.GetComponent<WorldMapPanelPin>();
-      pin.info = pinInfo;
+      pin.spot = site;
       _pins.Add(pin);
       return pin;
    }
 
-   private void positionPin(WorldMapPanelPin pin) {
+   private void positionPin (WorldMapPanelPin pin) {
       // Add the pin to the container
       pin.transform.SetParent(transform);
 
@@ -59,40 +60,43 @@ public class WorldMapPanelPinsContainer : MonoBehaviour
       Vector2Int cellSize = WorldMapPanel.self.cellSize;
       Vector2Int mapDimensions = WorldMapPanel.self.mapDimensions;
 
-      float computedX = pin.info.areaX * cellSize.x + pin.info.x / pin.info.areaWidth * cellSize.x;
-      float computedY = (mapDimensions.y - 1 - pin.info.areaY) * cellSize.y - pin.info.y / pin.info.areaHeight * cellSize.y;
+      float computedX = pin.spot.worldX * cellSize.x + pin.spot.areaX / pin.spot.areaWidth * cellSize.x;
+      float computedY = (mapDimensions.y - 1 - pin.spot.worldY) * cellSize.y - pin.spot.areaY / pin.spot.areaHeight * cellSize.y;
 
       pin.transform.localPosition = new Vector3(computedX, -computedY);
    }
 
-   private void texturePin(WorldMapPanelPin pin) {
+   private void texturePin (WorldMapPanelPin pin) {
       // Default sprite
       pin.setSprite(unknownSprite);
 
-      if (pin.info.pinType == WorldMapPanelPin.PinTypes.Warp) {
-         if (pin.info.specialType == (int) Area.SpecialType.Town) {
+      if (pin.spot.type == WorldMapSpot.SpotType.Warp) {
+         if (pin.spot.specialType == (int) Area.SpecialType.Town) {
             pin.setSprite(townSprite);
-         } else if (pin.info.specialType == (int) Area.SpecialType.POI || pin.info.specialType == (int) Area.SpecialType.TreasureSite) {
-            pin.setSprite(pin.info.discovered ? discoverySprite : unknownSprite);
+         } else if (pin.spot.specialType == (int) Area.SpecialType.POI || pin.spot.specialType == (int) Area.SpecialType.TreasureSite) {
+            pin.setSprite(pin.spot.discovered ? discoverySprite : unknownSprite);
          }
-      } else if (pin.info.pinType == WorldMapPanelPin.PinTypes.League) {
+      } else if (pin.spot.type == WorldMapSpot.SpotType.League) {
          pin.setSprite(shipSprite);
-      } else if (pin.info.pinType == WorldMapPanelPin.PinTypes.Discovery) {
-         pin.setSprite(pin.info.discovered ? discoverySprite : unknownSprite);
+      } else if (pin.spot.type == WorldMapSpot.SpotType.Discovery) {
+         pin.setSprite(pin.spot.discovered ? discoverySprite : unknownSprite);
       }
    }
 
    public void applyFilter () {
       foreach (WorldMapPanelPin pin in _pins) {
-         pin.toggle(filter.Contains(pin.info.pinType));
+         pin.toggle(filter.Contains(pin.spot.type));
       }
    }
 
-   public List<WorldMapPanelPin> getPinsWithinArea(Vector2Int areaCoords) {
+   public List<WorldMapPanelPin> getPinsWithinArea (WorldMapPanelAreaCoords mapPanelAreaCoords) {
       List<WorldMapPanelPin> results = new List<WorldMapPanelPin>();
 
       foreach (WorldMapPanelPin pin in _pins) {
-         if (pin.info.areaX == areaCoords.x && (WorldMapPanel.self.mapDimensions.y - 1 - pin.info.areaY) == areaCoords.y) {
+         WorldMapAreaCoords pinAreaCoords = new WorldMapAreaCoords(pin.spot.worldX, pin.spot.worldY);
+         WorldMapPanelAreaCoords pinPanelAreaCoords = WorldMapPanel.self.transformCoords(pinAreaCoords);
+
+         if (pinPanelAreaCoords == mapPanelAreaCoords) {
             results.Add(pin);
          }
       }
@@ -100,9 +104,17 @@ public class WorldMapPanelPinsContainer : MonoBehaviour
       return results;
    }
 
+   public void highlightPin (WorldMapSpot spot, bool show) {
+      WorldMapPanelPin pin = _pins.FirstOrDefault(_ => _.spot == spot);
+
+      if (pin != null && pin.rect != null) {
+         pin.rect.localScale += show ? Vector3.one * 0.5f : -Vector3.one * 0.5f;
+      }
+   }
+
    #region Private Variables
 
-   // Reference to the registry of the pins
+   // Pins Registry
    private List<WorldMapPanelPin> _pins = new List<WorldMapPanelPin>();
 
    #endregion

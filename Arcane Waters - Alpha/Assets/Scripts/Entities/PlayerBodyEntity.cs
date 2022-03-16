@@ -513,8 +513,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             shouldAlignRenderersToFacingDirection = false;
             toggleWeaponVisibility(show: false);
 
-            // Greeting
-            if (emoteType == EmoteManager.EmoteTypes.Greet) {
+            // Greeting / Waving
+            if (emoteType == EmoteManager.EmoteTypes.Greet || emoteType == EmoteManager.EmoteTypes.Wave) {
                if (facing == Direction.North) {
                   playCompositeAnimation(CompositeAnimationManager.self.WavingN);
                } else if (facing == Direction.South) {
@@ -1475,9 +1475,11 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    [Command]
    public void Cmd_StopEmote () {
-      if (emoteType != EmoteManager.EmoteTypes.None) {
-         emoteType = EmoteManager.EmoteTypes.None;
+      if (!isEmoting()) {
+         return;
       }
+      
+      emoteType = EmoteManager.EmoteTypes.None;
    }
 
    #endregion

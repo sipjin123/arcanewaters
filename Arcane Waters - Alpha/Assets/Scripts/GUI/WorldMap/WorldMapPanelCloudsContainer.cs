@@ -21,7 +21,7 @@ public class WorldMapPanelCloudsContainer : MonoBehaviour
 
       for (int row = 0; row < WorldMapPanel.self.mapDimensions.y; row++) {
          for (int col = 0; col < WorldMapPanel.self.mapDimensions.x; col++) {
-            createCloud(new Vector2Int(col, row));
+            createCloud(new WorldMapPanelAreaCoords(col, row));
          }
       }
 
@@ -29,9 +29,9 @@ public class WorldMapPanelCloudsContainer : MonoBehaviour
       textureAllClouds();
    }
 
-   public void hideCloudsAtCoords (List<Vector2Int> positions) {
-      foreach (Vector2Int position in positions) {
-         if (findCloud(position, out WorldMapPanelCloud cloud)) {
+   public void hideClouds (List<WorldMapPanelAreaCoords> coordsList) {
+      foreach (WorldMapPanelAreaCoords coords in coordsList) {
+         if (findCloud(coords, out WorldMapPanelCloud cloud)) {
             cloud.toggle(false);
          }
       }
@@ -41,48 +41,53 @@ public class WorldMapPanelCloudsContainer : MonoBehaviour
    }
 
    public void clearClouds () {
-      foreach (KeyValuePair<string, WorldMapPanelCloud> pair in _clouds) {
+      foreach (KeyValuePair<WorldMapPanelAreaCoords, WorldMapPanelCloud> pair in _clouds) {
          Destroy(pair.Value.gameObject);
       }
 
       _clouds.Clear();
    }
 
-   public static string computeKeyForPosition (Vector2Int position) {
-      return $"{position.x}_{position.y}";
-   }
-
-   public static Vector2Int computePositionInDirection (Vector2Int position, Direction direction) {
-      Vector2Int computedPosition = new Vector2Int();
+   public static WorldMapPanelAreaCoords computeNextCoords (WorldMapPanelAreaCoords coords, Direction direction) {
+      WorldMapPanelAreaCoords computedCoords = new WorldMapPanelAreaCoords();
 
       switch (direction) {
          case Direction.North:
-            computedPosition = new Vector2Int(position.x, position.y - 1);
+            computedCoords = new WorldMapPanelAreaCoords(coords.x, coords.y - 1);
             break;
          case Direction.NorthEast:
-            computedPosition = new Vector2Int(position.x + 1, position.y - 1);
+            computedCoords = new WorldMapPanelAreaCoords(coords.x + 1, coords.y - 1);
             break;
          case Direction.East:
-            computedPosition = new Vector2Int(position.x + 1, position.y);
+            computedCoords = new WorldMapPanelAreaCoords(coords.x + 1, coords.y);
             break;
          case Direction.SouthEast:
-            computedPosition = new Vector2Int(position.x + 1, position.y + 1);
+            computedCoords = new WorldMapPanelAreaCoords(coords.x + 1, coords.y + 1);
             break;
          case Direction.South:
-            computedPosition = new Vector2Int(position.x, position.y + 1);
+            computedCoords = new WorldMapPanelAreaCoords(coords.x, coords.y + 1);
             break;
          case Direction.SouthWest:
-            computedPosition = new Vector2Int(position.x - 1, position.y + 1);
+            computedCoords = new WorldMapPanelAreaCoords(coords.x - 1, coords.y + 1);
             break;
          case Direction.West:
-            computedPosition = new Vector2Int(position.x - 1, position.y);
+            computedCoords = new WorldMapPanelAreaCoords(coords.x - 1, coords.y);
             break;
          case Direction.NorthWest:
-            computedPosition = new Vector2Int(position.x - 1, position.y - 1);
+            computedCoords = new WorldMapPanelAreaCoords(coords.x - 1, coords.y - 1);
             break;
       }
 
-      return computedPosition;
+      return computedCoords;
+   }
+
+   public WorldMapPanelCloud findCloudInDirection (WorldMapPanelCloud cloud, Direction direction) {
+      WorldMapPanelAreaCoords computedCoords = computeNextCoords(cloud.coords, direction);
+      if (_clouds.TryGetValue(computedCoords, out WorldMapPanelCloud foundCloud)) {
+         return foundCloud;
+      }
+
+      return null;
    }
 
    public void findAdjacentClouds (WorldMapPanelCloud cloud, ref Dictionary<Direction, WorldMapPanelCloud> adjacentClouds) {
@@ -98,21 +103,10 @@ public class WorldMapPanelCloudsContainer : MonoBehaviour
       }
    }
 
-   public WorldMapPanelCloud findCloudInDirection (WorldMapPanelCloud cloud, Direction direction) {
-      Vector2Int computedPosition = computePositionInDirection(cloud.position, direction);
-      string computedKey = computeKeyForPosition(computedPosition);
-
-      if (_clouds.TryGetValue(computedKey, out WorldMapPanelCloud foundCloud)) {
-         return foundCloud;
-      }
-
-      return null;
-   }
-
-   private WorldMapPanelCloud createCloud (Vector2Int position) {
+   private WorldMapPanelCloud createCloud (WorldMapPanelAreaCoords coords) {
       GameObject cloudGo = Instantiate(cloudPrefab);
       WorldMapPanelCloud cloud = cloudGo.GetComponent<WorldMapPanelCloud>();
-      cloud.position = position;
+      cloud.coords = coords;
       cloud.toggle(true);
       parentCloud(cloud);
       positionCloud(cloud);
@@ -122,8 +116,8 @@ public class WorldMapPanelCloudsContainer : MonoBehaviour
       return cloud;
    }
 
-   private bool findCloud (Vector2Int location, out WorldMapPanelCloud cloud) {
-      if (_clouds.TryGetValue(computeKeyForPosition(location), out WorldMapPanelCloud c)) {
+   private bool findCloud (WorldMapPanelAreaCoords coords, out WorldMapPanelCloud cloud) {
+      if (_clouds.TryGetValue(coords, out WorldMapPanelCloud c)) {
          cloud = c;
          return true;
       }
@@ -133,14 +127,12 @@ public class WorldMapPanelCloudsContainer : MonoBehaviour
    }
 
    private bool registerCloud (WorldMapPanelCloud cloud) {
-      string key = computeKeyForPosition(cloud.position);
-
-      if (_clouds.ContainsKey(key)) {
+      if (_clouds.ContainsKey(cloud.coords)) {
          return false;
       }
 
-      _clouds.Add(key, cloud);
-      cloud.gameObject.name = "WorldMapPanelCloud_" + key;
+      _clouds.Add(cloud.coords, cloud);
+      cloud.gameObject.name = "WorldMapPanelCloud_" + cloud.coords.ToString();
       return true;
    }
 
@@ -151,12 +143,12 @@ public class WorldMapPanelCloudsContainer : MonoBehaviour
          return false;
       }
 
-      rectTransform.localPosition = new Vector3(cloud.position.x * WorldMapPanel.self.cellSize.x, -cloud.position.y * WorldMapPanel.self.cellSize.y, 0);
+      rectTransform.localPosition = new Vector3(cloud.coords.x * WorldMapPanel.self.cellSize.x, -cloud.coords.y * WorldMapPanel.self.cellSize.y, 0);
       return true;
    }
 
    private void parentCloud (WorldMapPanelCloud cloud) {
-      cloud.transform.SetParent(this.transform);
+      cloud.transform.SetParent(transform);
    }
 
    private void textureAllClouds () {
@@ -181,6 +173,7 @@ public class WorldMapPanelCloudsContainer : MonoBehaviour
       }
 
       rectTransform.sizeDelta = new Vector2(WorldMapPanel.self.cellSize.x, WorldMapPanel.self.cellSize.y);
+      rectTransform.localScale = Vector3.one;
       return true;
    }
 
@@ -237,15 +230,15 @@ public class WorldMapPanelCloudsContainer : MonoBehaviour
 
          // Additional adjustments for the clouds on the edge
          if (flushCloudsWithEdge && isCloudOnEdge(cloud)) {
-            if (cloud.position.x == 0) {
+            if (cloud.coords.x == 0) {
                cloud.configuration |= WorldMapPanelCloud.CloudConfiguration.West | WorldMapPanelCloud.CloudConfiguration.SouthWest | WorldMapPanelCloud.CloudConfiguration.NorthWest;
-            } else if (cloud.position.x == WorldMapPanel.self.mapDimensions.x - 1) {
+            } else if (cloud.coords.x == WorldMapPanel.self.mapDimensions.x - 1) {
                cloud.configuration |= WorldMapPanelCloud.CloudConfiguration.East | WorldMapPanelCloud.CloudConfiguration.NorthEast | WorldMapPanelCloud.CloudConfiguration.SouthEast;
             }
 
-            if (cloud.position.y == 0) {
+            if (cloud.coords.y == 0) {
                cloud.configuration |= WorldMapPanelCloud.CloudConfiguration.North | WorldMapPanelCloud.CloudConfiguration.NorthEast | WorldMapPanelCloud.CloudConfiguration.NorthWest;
-            } else if (cloud.position.y == WorldMapPanel.self.mapDimensions.y - 1) {
+            } else if (cloud.coords.y == WorldMapPanel.self.mapDimensions.y - 1) {
                cloud.configuration |= WorldMapPanelCloud.CloudConfiguration.South | WorldMapPanelCloud.CloudConfiguration.SouthEast | WorldMapPanelCloud.CloudConfiguration.SouthWest;
             }
          }
@@ -253,13 +246,13 @@ public class WorldMapPanelCloudsContainer : MonoBehaviour
    }
 
    private bool isCloudOnEdge (WorldMapPanelCloud cloud) {
-      return (cloud.position.x == 0 || cloud.position.x + 1 == WorldMapPanel.self.mapDimensions.x || cloud.position.y == 0 || cloud.position.y + 1 == WorldMapPanel.self.mapDimensions.y);
+      return (cloud.coords.x == 0 || cloud.coords.x + 1 == WorldMapPanel.self.mapDimensions.x || cloud.coords.y == 0 || cloud.coords.y + 1 == WorldMapPanel.self.mapDimensions.y);
    }
 
    #region Private Variables
 
    // Registry of clouds
-   private Dictionary<string, WorldMapPanelCloud> _clouds = new Dictionary<string, WorldMapPanelCloud>();
+   private Dictionary<WorldMapPanelAreaCoords, WorldMapPanelCloud> _clouds = new Dictionary<WorldMapPanelAreaCoords, WorldMapPanelCloud>();
 
    #endregion
 }

@@ -252,7 +252,8 @@ public class ChatManager : GenericGameManager
          case EmoteManager.EmoteTypes.Kneel:
             return $"kneels";
          case EmoteManager.EmoteTypes.Greet:
-            return $"greets";
+         case EmoteManager.EmoteTypes.Wave:
+            return $"waves";
          case EmoteManager.EmoteTypes.Point:
             return $"is pointing at something";
          case EmoteManager.EmoteTypes.None:

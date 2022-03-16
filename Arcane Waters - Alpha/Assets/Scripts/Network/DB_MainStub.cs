@@ -1776,6 +1776,7 @@ public class DB_MainStub : MonoBehaviour
    #endregion
 
    #region Server stats
+   
    public static void serverStatStarted (string machine, int port) {
    }
 
@@ -1788,21 +1789,22 @@ public class DB_MainStub : MonoBehaviour
    public static void serverStatUpdateFps (string machine, int port, float fps) {
    }
 
+   #endregion
+   
    public static byte[] fetchWorldMapSector (int sectorIndex) {
       return null;
    }
 
-   public static void uploadWorldMapPins (IEnumerable<WorldMapPanelPinInfo> pins) {
+   public static void uploadWorldMapSpots (IEnumerable<WorldMapSpot> spots) {
    }
 
-   public static IEnumerable<WorldMapPanelPinInfo> fetchWorldMapPins () {
-      return Array.Empty<WorldMapPanelPinInfo>();
+   public static IEnumerable<WorldMapSpot> fetchWorldMapSpots () {
+      return Array.Empty<WorldMapSpot>();
    }
 
-   public static bool clearWorldMapPins () {
+   public static bool clearWorldMapSites () {
       return false;
    }
-   #endregion
 
    /*
 

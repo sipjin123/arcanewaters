@@ -3,6 +3,7 @@ using System.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using MapObjectStateVariables;
 
 namespace MapCreationTool
 {
@@ -28,6 +29,14 @@ namespace MapCreationTool
 
       [Tooltip("Custom defined datafields, that are restructured to regular fields on start")]
       public CustomDataField[] customDataFields = new CustomDataField[0];
+
+      [Space(10), Tooltip("Can object have state that can be manipulated by players")]
+      public bool hasVariableObjectState = false;
+
+      [Header("If hasVariableObjectState, this should describe what values are valid for an object")]
+      // Ex. 'An example object should have one of three values: 0 - off, 1 - on, 2 - on at double speed'
+      public string objectStateDescription = "";
+
 
       /// <summary>
       /// Turns all custom fields into regular data fields

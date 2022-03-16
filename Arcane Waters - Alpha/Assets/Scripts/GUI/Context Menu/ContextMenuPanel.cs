@@ -204,11 +204,27 @@ public class ContextMenuPanel : MonoBehaviour
             addButton("Mute 5 min", () => Global.player.admin.requestMutePlayerWithConfirmation(userName, 5 * 60, ""));
             addButton("Ban 5 min", () => Global.player.admin.requestBanPlayerWithConfirmation(userName, 5 * 60, ""));
          }
-      } else if (!VoyageGroupManager.isInGroup(Global.player)) {
-         addButton("Create Group", () => VoyageGroupManager.self.requestPrivateGroupCreation());
       } else {
-         // If the player is in a group and clicks their own avatar, allow them to leave the group. Only make the button interactable if the player can leave the group.
-         addButton("Leave Group", () => VoyageGroupPanel.self.OnLeaveGroupButtonClickedOn(), () => !Global.player.hasAttackers() && !PanelManager.self.countdownScreen.isShowing());
+         if (!VoyageGroupManager.isInGroup(Global.player)) {
+            addButton("Create Group", () => VoyageGroupManager.self.requestPrivateGroupCreation());
+         } else {
+            // If the player is in a group and clicks their own avatar, allow them to leave the group. Only make the button interactable if the player can leave the group.
+            addButton("Leave Group", () => VoyageGroupPanel.self.OnLeaveGroupButtonClickedOn(), () => !Global.player.hasAttackers() && !PanelManager.self.countdownScreen.isShowing());
+         }
+
+         addButton("Copy Location", () => {
+            WorldMapSpot spot = WorldMapManager.self.getSpotFromPosition(Global.player.areaKey, Global.player.transform.localPosition);
+
+            if (spot != null) {
+               WorldMapGeoCoords geoCoords = WorldMapManager.self.getGeoCoordsFromSpot(spot);
+               string currentInput = ChatPanel.self.inputField.getTextData();
+               ChatPanel.self.inputField.setTextWithoutNotify(currentInput + WorldMapManager.self.getStringFromGeoCoords(geoCoords));
+
+               if (PanelManager.self != null) {
+                  PanelManager.self.noticeScreen.show("Location copied!");
+               }
+            }
+         });
       }
 
       addButton("Player Info", () => ((CharacterInfoPanel) PanelManager.self.get(Panel.Type.CharacterInfo)).refreshPanel(targetUserId));

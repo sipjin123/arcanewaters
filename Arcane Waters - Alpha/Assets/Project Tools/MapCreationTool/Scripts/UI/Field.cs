@@ -19,6 +19,12 @@ namespace MapCreationTool
       private UIToolTip toolTip;
       private SelectOption[] options = new SelectOption[0];
 
+      // If this is an object state field
+      public bool hasVariableObjectState = false;
+
+      // The current value, if this is an map object state variable field
+      public string mapObjectStateValue = "";
+
       public string toolTipMessage
       {
          set { toolTip.message = value; }
@@ -90,6 +96,10 @@ namespace MapCreationTool
                   index = i;
             valueDropdown.SetValueWithoutNotify(index);
          }
+         if (hasVariableObjectState) {
+            mapObjectStateValue = value;
+            UI.objectStateEditorPanel.setValue(value);
+         }
       }
 
       public string value
@@ -108,8 +118,20 @@ namespace MapCreationTool
                return valueDropdown.value >= 0 ? options[valueDropdown.value].value : "";
             }
 
+            if (hasVariableObjectState) {
+               return mapObjectStateValue;
+            }
+
             return "";
          }
+      }
+
+      public void onOpenMapObjectStateEditor () {
+         UI.objectStateEditorPanel.open(this);
+      }
+
+      public void mapObjectStateEditor_valueChanged (string value) {
+         ValueChanged?.Invoke(value);
       }
 
       private void inputValueChanged (string value) {

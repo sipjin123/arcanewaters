@@ -1,19 +1,26 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 public class WorldMapManager : MonoBehaviour
 {
    #region Public Variables
 
-   // The x coordinates for the Open World
-   public const string OPEN_WORLD_MAP_COORDS_X = "ABCDEFGHIJKLMNO";
+   // The x coordinates for the Open World Map
+   public const string WORLD_MAP_COORDS_X = "ABCDEFGHIJKLMNO";
 
-   // The y coordinates for the Opoen World
-   public const string OPEN_WORLD_MAP_COORDS_Y = "012345678";
+   // The y coordinates for the Open World Map
+   public const string WORLD_MAP_COORDS_Y = "012345678";
 
-   // Open World Map Prefix
+   // Prefix for the areas in the Open World Map
    public const string WORLD_MAP_PREFIX = "world_map_";
+
+   // X coordinate of the Origin of the Open World Map
+   public const int WORLD_MAP_GEO_COORDS_X = 21;
+
+   // Y coordinate of the Origin of the Open World Map
+   public const int WORLD_MAP_GEO_COORDS_Y = 55;
 
    // Self
    public static WorldMapManager self;
@@ -24,150 +31,428 @@ public class WorldMapManager : MonoBehaviour
       self = this;
    }
 
-   public static void setCachedWorldMapPins (List<WorldMapPanelPinInfo> pins) {
-      _worldPinsCache = pins;
+   public void Update () {
+    if (Global.player != null) {
+         updatePlayerSpot();
+      }  
    }
 
-   public static List<WorldMapPanelPinInfo> getCachedWorldMapPins () {
-      return _worldPinsCache;
+   private void updatePlayerSpot () {
+      WorldMapSpot spot = getSpotFromPosition(Global.player.areaKey, Global.player.transform.localPosition);
+
+      if (spot == null) {
+         return;
+      }
+
+      _playerSpotCache[Global.player.userId] = spot;
    }
 
-   private static bool areValidOpenWorldAreaCoords (Vector2Int mapCoords) {
-      if (mapCoords.x < 0 || mapCoords.x >= OPEN_WORLD_MAP_COORDS_X.Length || mapCoords.y < 0 || mapCoords.y >= OPEN_WORLD_MAP_COORDS_Y.Length) {
+   private bool areValidOpenWorldMapAreaCoords (WorldMapAreaCoords areaCoords) {
+      if (areaCoords.x < 0 || areaCoords.x >= WORLD_MAP_COORDS_X.Length || areaCoords.y < 0 || areaCoords.y >= WORLD_MAP_COORDS_Y.Length) {
          return false;
       }
 
       return true;
    }
 
-   public static bool computeNextOpenWorldArea (string areaKey, Direction direction, out string nextAreaKey) {
-      Vector2Int mapCoords = computeOpenWorldAreaCoords(areaKey);
+   public bool getNextArea (string areaKey, Direction direction, out string nextAreaKey) {
+      WorldMapAreaCoords mapAreaCoords = getAreaCoords(areaKey);
       nextAreaKey = "";
 
-      if (!areValidOpenWorldAreaCoords(mapCoords)) {
+      if (!areValidOpenWorldMapAreaCoords(mapAreaCoords)) {
          return false;
       }
 
       switch (direction) {
          case Direction.North:
-            mapCoords.y += 1;
+            mapAreaCoords.y += 1;
             break;
          case Direction.East:
-            mapCoords.x += 1;
+            mapAreaCoords.x += 1;
             break;
          case Direction.South:
-            mapCoords.y -= 1;
+            mapAreaCoords.y -= 1;
             break;
          case Direction.West:
-            mapCoords.x -= 1;
+            mapAreaCoords.x -= 1;
             break;
       }
 
-      if (!areValidOpenWorldAreaCoords(mapCoords)) {
+      if (!areValidOpenWorldMapAreaCoords(mapAreaCoords)) {
          return false;
       }
 
-      nextAreaKey = computeOpenWorldAreaKey(mapCoords);
+      nextAreaKey = getAreaKey(mapAreaCoords);
       return true;
    }
 
-   public static string computeOpenWorldAreaSuffix (Vector2Int areaCoords) {
-      if (!areValidOpenWorldAreaCoords(areaCoords)) {
+   public string getAreaSuffix (WorldMapAreaCoords areaCoords) {
+      if (!areValidOpenWorldMapAreaCoords(areaCoords)) {
          return "";
       }
 
-      char cx = OPEN_WORLD_MAP_COORDS_X[areaCoords.x];
-      char cy = OPEN_WORLD_MAP_COORDS_Y[areaCoords.y];
+      char cx = WORLD_MAP_COORDS_X[areaCoords.x];
+      char cy = WORLD_MAP_COORDS_Y[areaCoords.y];
 
       return $"{cx}{cy}".ToUpper();
    }
 
-   public static Vector2Int computeOpenWorldAreaCoords (string areaKey) {
+   public WorldMapAreaCoords getAreaCoords (string areaKey) {
       if (Util.isEmpty(areaKey) || areaKey.Length < 2 || !areaKey.StartsWith(WORLD_MAP_PREFIX)) {
-         return new Vector2Int(-1, -1);
+         return new WorldMapAreaCoords(-1, -1);
       }
 
       char cx = areaKey[areaKey.Length - 2];
       char cy = areaKey[areaKey.Length - 1];
 
-      int x = OPEN_WORLD_MAP_COORDS_X.IndexOf(cx.ToString().ToUpper());
-      int y = OPEN_WORLD_MAP_COORDS_Y.IndexOf(cy);
+      int x = WORLD_MAP_COORDS_X.IndexOf(cx.ToString().ToUpper());
+      int y = WORLD_MAP_COORDS_Y.IndexOf(cy);
 
-      return new Vector2Int(x, y);
+      return new WorldMapAreaCoords(x, y);
    }
 
-   public static string computeOpenWorldAreaKey (Vector2Int areaCoords) {
-      string suffix = computeOpenWorldAreaSuffix(areaCoords);
+   public string getAreaKey (WorldMapAreaCoords areaCoords) {
+      string suffix = getAreaSuffix(areaCoords);
       return $"{WORLD_MAP_PREFIX}{suffix}";
    }
 
-   public static Vector2Int computeOpenWorldAreaCoordsForBiome (Biome.Type biome) {
+   public WorldMapAreaCoords getAreaCoordsForBiome (Biome.Type biome) {
       switch (biome) {
          case Biome.Type.Forest:
-            return new Vector2Int(1, 6);
+            return new WorldMapAreaCoords(1, 6);
          case Biome.Type.Desert:
-            return new Vector2Int(2, 2);
+            return new WorldMapAreaCoords(2, 2);
          case Biome.Type.Pine:
-            return new Vector2Int(7, 0);
+            return new WorldMapAreaCoords(7, 0);
          case Biome.Type.Snow:
-            return new Vector2Int(8, 6);
+            return new WorldMapAreaCoords(8, 6);
          case Biome.Type.Lava:
-            return new Vector2Int(12, 2);
+            return new WorldMapAreaCoords(12, 2);
          case Biome.Type.Mushroom:
-            return new Vector2Int(13, 7);
+            return new WorldMapAreaCoords(13, 7);
          default:
-            return new Vector2Int(0, 0);
+            return new WorldMapAreaCoords(0, 0);
       }
    }
 
-   public static List<Vector2Int> computeOpenWorldAreaCoordsList (List<string> areaKeys) {
-      List<Vector2Int> areaCoordsList = new List<Vector2Int>();
+   public List<WorldMapAreaCoords> getAreaCoordsList (List<string> areaKeys) {
+      List<WorldMapAreaCoords> areaCoordsList = new List<WorldMapAreaCoords>();
 
       foreach (string areaKey in areaKeys) {
-         if (VoyageManager.isWorldMap(areaKey)) {
-            areaCoordsList.Add(computeOpenWorldAreaCoords(areaKey));
+         if (isWorldMapArea(areaKey)) {
+            areaCoordsList.Add(getAreaCoords(areaKey));
          }
       }
 
       return areaCoordsList;
    }
 
-   public static List<string> computeOpenWorldAreaKeysList (IEnumerable<Vector2Int> areaCoordsList) {
+   public List<string> getAreaKeysList (IEnumerable<WorldMapAreaCoords> areaCoordsList) {
       List<string> areaKeys = new List<string>();
-      
-      foreach (Vector2Int areaCoords in areaCoordsList) {
-         areaKeys.Add(computeOpenWorldAreaKey(areaCoords));
+
+      foreach (WorldMapAreaCoords areaCoords in areaCoordsList) {
+         areaKeys.Add(getAreaKey(areaCoords));
       }
 
       return areaKeys;
    }
 
-   public static List<Vector2Int> computeAreaCoordsForBiomesList (List<Biome.Type> biomes) {
-      List<Vector2Int> areaCoordsList = new List<Vector2Int>();
+   public List<WorldMapAreaCoords> getAreaCoordsForBiomesList (List<Biome.Type> biomes) {
+      List<WorldMapAreaCoords> areaCoordsList = new List<WorldMapAreaCoords>();
 
       foreach (Biome.Type biome in biomes) {
-         areaCoordsList.Add(computeOpenWorldAreaCoordsForBiome(biome));
+         areaCoordsList.Add(getAreaCoordsForBiome(biome));
       }
 
       return areaCoordsList;
    }
 
-   public static List<string> getOpenWorldAreasList () {
+   public List<string> getAllAreasList () {
       List<string> maps = new List<string>();
 
-      for (int row = 0; row < OPEN_WORLD_MAP_COORDS_Y.Length; row++) {
-         for (int col = 0; col < OPEN_WORLD_MAP_COORDS_X.Length; col++) {
-            maps.Add(computeOpenWorldAreaKey(new Vector2Int(col, row)));
+      for (int row = 0; row < WORLD_MAP_COORDS_Y.Length; row++) {
+         for (int col = 0; col < WORLD_MAP_COORDS_X.Length; col++) {
+            maps.Add(getAreaKey(new WorldMapAreaCoords(col, row)));
          }
       }
 
       return maps;
    }
 
+   public Vector2Int getMapSize () {
+      return new Vector2Int(WORLD_MAP_COORDS_X.Length, WORLD_MAP_COORDS_Y.Length);
+   }
+
+   public bool isWorldMapArea (string areaKey) {
+      return !Util.isEmpty(areaKey) && areaKey.StartsWith(WORLD_MAP_PREFIX);
+   }
+
+   public Vector3 getPositionFromSpot (string areaKey, WorldMapSpot spot) {
+      try {
+         Area area = AreaManager.self.getArea(areaKey);
+         Vector2Int areaTileSize = area.mapTileSize;
+         Vector2 halfAreaSize = area.getAreaHalfSizeWorld();
+         Vector2 relativePositionUnscaled = isWorldMapArea(areaKey) ? new Vector2(spot.areaX, spot.areaY) : new Vector2(spot.subAreaX, spot.subAreaY);
+         Vector2 relativePositionScaled = relativePositionUnscaled * 0.16f;
+         return new Vector3(relativePositionScaled.x - halfAreaSize.x, relativePositionScaled.y + halfAreaSize.y);
+      } catch {
+      }
+
+      return Vector3.zero;
+   }
+
+   public WorldMapSpot getSpotFromPosition (string areaKey, Vector3 localPosition) {
+      try {
+         Area area = AreaManager.self.getArea(areaKey);
+         Vector2Int areaTileSize = area.mapTileSize;
+         Vector2 halfAreaSize = area.getAreaHalfSizeWorld();
+         Vector2 entityPositionFromAreaTopLeftCornerScaled = new Vector2(localPosition.x + halfAreaSize.x, localPosition.y - halfAreaSize.y);
+         Vector2 entityPositionFromAreaTopLeftCornerUnscaled = entityPositionFromAreaTopLeftCornerScaled / 0.16f;
+
+         if (isWorldMapArea(areaKey)) {
+            WorldMapAreaCoords areaCoords = getAreaCoords(areaKey);
+            return new WorldMapSpot {
+               areaWidth = areaTileSize.x,
+               areaHeight = areaTileSize.y,
+               worldX = areaCoords.x,
+               worldY = areaCoords.y,
+               areaX = entityPositionFromAreaTopLeftCornerUnscaled.x,
+               areaY = entityPositionFromAreaTopLeftCornerUnscaled.y
+            };
+         } else {
+            IEnumerable<WorldMapSpot> warpSpots = _spots.Where(_ => _.type == WorldMapSpot.SpotType.Warp);
+            WorldMapSpot warpToCurrentArea = warpSpots.FirstOrDefault(_ => _.target == areaKey);
+
+            if (warpToCurrentArea != null) {
+               return new WorldMapSpot {
+                  areaWidth = warpToCurrentArea.areaWidth,
+                  areaHeight = warpToCurrentArea.areaHeight,
+                  worldX = warpToCurrentArea.worldX,
+                  worldY = warpToCurrentArea.worldY,
+                  areaX = warpToCurrentArea.areaX,
+                  areaY = warpToCurrentArea.areaY,
+                  subAreaX = entityPositionFromAreaTopLeftCornerUnscaled.x,
+                  subAreaY = entityPositionFromAreaTopLeftCornerUnscaled.y,
+                  subAreaKey = areaKey
+               };
+            } else {
+               // A spot for the current position couldn't be computed,
+               // so instead use the latest known position of the player as a fallback
+               if (_playerSpotCache.TryGetValue(Global.player.userId, out WorldMapSpot value)) {
+                  return value;
+               }
+            }
+         }
+      } catch {
+      }
+
+      return null;
+   }
+
+   public List<WorldMapSpot> getSpots () {
+      return _spots;
+   }
+
+   public List<WorldMapAreaCoords> getVisitedAreasCoordsList () {
+      return _visitedAreasCoords;
+   }
+
+   public void setWorldMapData (List<WorldMapAreaCoords> visitedAreasCoords, List<WorldMapSpot> spots) {
+      _visitedAreasCoords = visitedAreasCoords;
+      _spots = spots;
+   }
+
+   public WorldMapGeoCoords getGeoCoordsFromSpot (WorldMapSpot spot) {
+      Vector2Int worldSize = getMapSize();
+      int worldX = WORLD_MAP_GEO_COORDS_X + spot.worldX;
+      int worldY = WORLD_MAP_GEO_COORDS_Y + (worldSize.y - 1 - spot.worldY);
+      float areaX = spot.areaX / spot.areaWidth * 255;
+      float areaY = -spot.areaY / spot.areaHeight * 255;
+      float targetX = spot.subAreaX;
+      float targetY = -spot.subAreaY;
+      string subAreaKey = spot.subAreaKey;
+
+      return new WorldMapGeoCoords {
+         worldX = worldX,
+         worldY = worldY,
+         areaX = areaX,
+         areaY = areaY,
+         subAreaX = targetX,
+         subAreaY = targetY,
+         subAreaKey = subAreaKey
+      };
+   }
+
+   public WorldMapSpot getSpotFromGeoCoords (WorldMapGeoCoords geoCoords) {
+      Vector2Int worldSize = getMapSize();
+      int areaWidth = 256;
+      int areaHeight = 256;
+
+      return new WorldMapSpot {
+         areaWidth = areaWidth,
+         areaHeight = areaHeight,
+         worldX = geoCoords.worldX - WORLD_MAP_GEO_COORDS_X,
+         worldY = -geoCoords.worldY + WORLD_MAP_GEO_COORDS_Y + worldSize.y - 1,
+         areaX = geoCoords.areaX / 255 * areaWidth,
+         areaY = -geoCoords.areaY / 255 * areaHeight,
+         subAreaX = geoCoords.subAreaX,
+         subAreaY = -geoCoords.subAreaY,
+         subAreaKey = geoCoords.subAreaKey
+      };
+   }
+
+   public string getStringFromGeoCoords (WorldMapGeoCoords geoCoords) {
+      if (!Util.isEmpty(geoCoords.subAreaKey)) {
+         int subAreaId = AreaManager.self.getAreaId(geoCoords.subAreaKey);
+
+         if (subAreaId >= 0) {
+            string subAreaIdStr = subAreaId.ToString("D3");
+            string subAreaXStr = geoCoords.subAreaX.ToString("F0");
+            string subAreaYStr = geoCoords.subAreaY.ToString("F0");
+            return $"<{geoCoords.worldY}.{Mathf.FloorToInt(geoCoords.areaY)}.{subAreaIdStr}{subAreaYStr}, {geoCoords.worldX}.{Mathf.FloorToInt(geoCoords.areaX)}.{subAreaIdStr}{subAreaXStr}>";
+         }
+      }
+
+      return $"<{geoCoords.worldY}.{Mathf.FloorToInt(geoCoords.areaY)}, {geoCoords.worldX}.{Mathf.FloorToInt(geoCoords.areaX)}>";
+   }
+
+   public string getLatitudeFromGeoCoords (WorldMapGeoCoords geoCoords) {
+      if (!Util.isEmpty(geoCoords.subAreaKey)) {
+         int subAreaId = AreaManager.self.getAreaId(geoCoords.subAreaKey);
+
+         if (subAreaId >= 0) {
+            string subAreaIdStr = subAreaId.ToString("D3");
+            string subAreaYStr = geoCoords.subAreaY.ToString("F0");
+            return $"{geoCoords.worldY}.{Mathf.FloorToInt(geoCoords.areaY)}.{subAreaIdStr}{subAreaYStr}";
+         }
+      }
+
+      return $"{geoCoords.worldY}.{Mathf.FloorToInt(geoCoords.areaY)}";
+   }
+
+   public string getLongitudeFromGeoCoords (WorldMapGeoCoords geoCoords) {
+      if (!Util.isEmpty(geoCoords.subAreaKey)) {
+         int subAreaId = AreaManager.self.getAreaId(geoCoords.subAreaKey);
+
+         if (subAreaId >= 0) {
+            string subAreaIdStr = subAreaId.ToString("D3");
+            string subAreaXStr = geoCoords.subAreaX.ToString("F0");
+            return $"{geoCoords.worldX}.{Mathf.FloorToInt(geoCoords.areaX)}.{subAreaIdStr}{subAreaXStr}";
+         }
+      }
+
+      return $"{geoCoords.worldX}.{Mathf.FloorToInt(geoCoords.areaX)}";
+   }
+
+   public WorldMapGeoCoords getGeoCoordsFromString (string geoCoordsStr) {
+      if (!Util.isEmpty(geoCoordsStr)) {
+         int prefixIndex = geoCoordsStr.IndexOf("<");
+
+         if (prefixIndex >= 0) {
+            int suffixIndex = geoCoordsStr.IndexOf(">");
+
+            if (suffixIndex >= 0) {
+               int commaIndex = geoCoordsStr.IndexOf(",");
+
+               if (prefixIndex < commaIndex && commaIndex < suffixIndex) {
+                  // Latitude is the first coordinate
+                  string latitudeString = geoCoordsStr.Substring(prefixIndex + 1, commaIndex - prefixIndex - 1);
+                  string longitudeString = geoCoordsStr.Substring(commaIndex + 1, suffixIndex - commaIndex - 1);
+
+                  string[] latitudeStringTokens = latitudeString.Split(new[] { '.' }, System.StringSplitOptions.RemoveEmptyEntries);
+                  string[] longitudeStringTokens = longitudeString.Split(new[] { '.' }, System.StringSplitOptions.RemoveEmptyEntries);
+
+                  WorldMapGeoCoords newGeoCoords = new WorldMapGeoCoords();
+
+                  if (longitudeStringTokens.Length > 1) {
+                     newGeoCoords.worldX = int.Parse(longitudeStringTokens[0]);
+                     newGeoCoords.areaX = int.Parse(longitudeStringTokens[1]);
+                  }
+
+                  if (latitudeStringTokens.Length > 1) {
+                     newGeoCoords.worldY = int.Parse(latitudeStringTokens[0]);
+                     newGeoCoords.areaY = int.Parse(latitudeStringTokens[1]);
+                  }
+
+                  if (longitudeStringTokens.Length > 2) {
+                     string subAreaIdStr = longitudeStringTokens[2].Substring(0, 3);
+                     string subAreaXStr = longitudeStringTokens[2].Substring(3);
+                     float subAreaX = float.Parse(subAreaXStr);
+                     string subAreaKey = AreaManager.self.getAreaName(int.Parse(subAreaIdStr));
+                     newGeoCoords.subAreaX = subAreaX;
+                     newGeoCoords.subAreaKey = subAreaKey;
+                  }
+
+                  if (latitudeStringTokens.Length > 2) {
+                     string subAreaIdStr = latitudeStringTokens[2].Substring(0, 3);
+                     string subAreaYStr = latitudeStringTokens[2].Substring(3);
+                     float subAreaY = float.Parse(subAreaYStr);
+                     string subAreaKey = AreaManager.self.getAreaName(int.Parse(subAreaIdStr));
+                     newGeoCoords.subAreaY = subAreaY;
+                     newGeoCoords.subAreaKey = subAreaKey;
+                  }
+
+                  return newGeoCoords;
+               }
+            }
+         }
+      }
+
+      return null;
+   }
+
+   public WorldMapGeoCoords getGeoCoordsFromWorldMapAreaCoords (WorldMapAreaCoords areaCoords) {
+      return new WorldMapGeoCoords {
+         worldX = WORLD_MAP_GEO_COORDS_X + areaCoords.x,
+         worldY = WORLD_MAP_GEO_COORDS_Y + (getMapSize().y - 1 - areaCoords.y)
+      };
+   }
+
+   public WorldMapAreaCoords getWorldMapAreaCoordsFromGeoCoords (WorldMapGeoCoords geoCoords) {
+      return new WorldMapAreaCoords {
+         x = geoCoords.worldX - WORLD_MAP_GEO_COORDS_X,
+         y = -geoCoords.worldY + WORLD_MAP_GEO_COORDS_Y + getMapSize().y - 1,
+      };
+   }
+
+   public bool areGeoCoordsValid (WorldMapGeoCoords geoCoords) {
+      if (geoCoords.worldX < WORLD_MAP_GEO_COORDS_X ||
+         geoCoords.worldY < WORLD_MAP_GEO_COORDS_Y ||
+         geoCoords.worldX >= WORLD_MAP_GEO_COORDS_X + getMapSize().x ||
+         geoCoords.worldY >= WORLD_MAP_GEO_COORDS_Y + getMapSize().y ||
+         geoCoords.areaX < 0 || geoCoords.areaX > 255 ||
+         geoCoords.areaY < 0 || geoCoords.areaY > 255) {
+         return false;
+      }
+
+      return true;
+   }
+
+   public bool areSpotsInTheSamePosition (WorldMapSpot spotA, WorldMapSpot spotB) {
+      if (spotA.worldX == spotB.worldX &&
+         spotA.worldY == spotB.worldY &&
+         spotA.areaX == spotB.areaX &&
+         spotA.areaY == spotB.areaY &&
+         spotA.subAreaKey == spotB.subAreaKey &&
+         spotA.subAreaX == spotB.subAreaX &&
+         spotA.subAreaY == spotB.subAreaY
+         ) {
+         return true;
+      }
+
+      return false;
+   }
+
    #region Private Variables
 
-   // Global cache for the World pins
-   private static List<WorldMapPanelPinInfo> _worldPinsCache = new List<WorldMapPanelPinInfo>();
+   // Client cache for the world spots
+   private List<WorldMapSpot> _spots = new List<WorldMapSpot>();
+
+   // Client cache for the visited open world map areas
+   private List<WorldMapAreaCoords> _visitedAreasCoords = new List<WorldMapAreaCoords>();
+
+   // Client cache to store the current spot for the player
+   private Dictionary<int, WorldMapSpot> _playerSpotCache = new Dictionary<int, WorldMapSpot>();
 
    #endregion
 }

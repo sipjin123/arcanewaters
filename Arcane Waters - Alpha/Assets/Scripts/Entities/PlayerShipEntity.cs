@@ -266,7 +266,7 @@ public class PlayerShipEntity : ShipEntity
          }
 
          // Set ship type to default for pvp arenas since all ships should be the same and upgraded via shop
-         if (VoyageManager.isPvpArenaArea(areaKey) && !VoyageManager.isWorldMap(areaKey)) {
+         if (VoyageManager.isPvpArenaArea(areaKey) && !WorldMapManager.self.isWorldMapArea(areaKey)) {
             shipType = Ship.Type.Type_1;
             shipSize = ShipSize.Small;
          }
@@ -1513,7 +1513,7 @@ public class PlayerShipEntity : ShipEntity
       }
 
       // Ensure the player's ship is always on water
-      if (VoyageManager.isWorldMap(area.areaKey)) {
+      if (WorldMapManager.self.isWorldMapArea(area.areaKey)) {
          if (area.isOpenWaterTile(transform.position)) {
             return;
          }
@@ -2299,7 +2299,7 @@ public class PlayerShipEntity : ShipEntity
 
       Direction direction = mapEdges.computeDirectionFromEdge(edge);
 
-      if (WorldMapManager.computeNextOpenWorldArea(areaKey, direction, out string nextAreaKey)) {
+      if (WorldMapManager.self.getNextArea(areaKey, direction, out string nextAreaKey)) {
          setupForWarpClient();
          Cmd_SpawnInNewMapSpawn(nextAreaKey, spawn: null, direction);
       }

@@ -27,6 +27,8 @@ public class NoticeScreen : FullScreenSeparatePanel {
    }
 
    public void show () {
+      transform.SetAsLastSibling();
+      
       this.canvasGroup.alpha = 1f;
       this.canvasGroup.blocksRaycasts = true;
       this.canvasGroup.interactable = true;
