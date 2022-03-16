@@ -10166,7 +10166,8 @@ public class DB_Main : DB_MainStub
 
    public static new void getLeaderBoards (LeaderBoardsManager.Period period,
       out List<LeaderBoardInfo> farmingEntries, out List<LeaderBoardInfo> sailingEntries, out List<LeaderBoardInfo> exploringEntries,
-      out List<LeaderBoardInfo> tradingEntries, out List<LeaderBoardInfo> craftingEntries, out List<LeaderBoardInfo> miningEntries) {
+      out List<LeaderBoardInfo> tradingEntries, out List<LeaderBoardInfo> craftingEntries, out List<LeaderBoardInfo> miningEntries,
+      out List<LeaderBoardInfo> badgesEntries) {
 
       farmingEntries = new List<LeaderBoardInfo>();
       sailingEntries = new List<LeaderBoardInfo>();
@@ -10174,6 +10175,7 @@ public class DB_Main : DB_MainStub
       tradingEntries = new List<LeaderBoardInfo>();
       craftingEntries = new List<LeaderBoardInfo>();
       miningEntries = new List<LeaderBoardInfo>();
+      badgesEntries = new List<LeaderBoardInfo>();
 
       try {
          using (MySqlConnection conn = getConnection())
@@ -10212,6 +10214,9 @@ public class DB_Main : DB_MainStub
                         break;
                      case Jobs.Type.Miner:
                         miningEntries.Add(entry);
+                        break;
+                     case Jobs.Type.Badges:
+                        badgesEntries.Add(entry);
                         break;
                      default:
                         break;

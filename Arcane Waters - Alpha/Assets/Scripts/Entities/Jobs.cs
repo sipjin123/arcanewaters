@@ -8,7 +8,7 @@ public class Jobs {
    #region Public Variables
 
    // The Types of Jobs
-   public enum Type {  None = 0, Farmer = 1, Sailor = 2, Explorer = 3, Trader = 4, Crafter = 5, Miner = 6 }
+   public enum Type {  None = 0, Farmer = 1, Sailor = 2, Explorer = 3, Trader = 4, Crafter = 5, Miner = 6, Badges = 7 }
 
    // The user ID for these jobs
    public int userId;
@@ -20,6 +20,7 @@ public class Jobs {
    public int traderXP;
    public int crafterXP;
    public int minerXP;
+   public int badgesXP;
 
    #endregion
 
@@ -45,6 +46,8 @@ public class Jobs {
             return crafterXP;
          case Type.Miner:
             return minerXP;
+         case Type.Badges:
+            return badgesXP;
          default:
             return 0;
       }
@@ -65,6 +68,8 @@ public class Jobs {
             return "sailing";
          case Type.Trader:
             return "trading";
+         case Type.Badges:
+            return "badges";
          default:
             return "none";
       }

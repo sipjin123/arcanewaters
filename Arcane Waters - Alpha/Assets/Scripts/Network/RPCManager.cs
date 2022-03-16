@@ -962,7 +962,7 @@ public class RPCManager : NetworkBehaviour
    public void Target_ReceiveLeaderBoards (NetworkConnection connection, LeaderBoardsManager.Period period,
       double secondsLeftUntilRecalculation, LeaderBoardInfo[] farmingEntries,
       LeaderBoardInfo[] sailingEntries, LeaderBoardInfo[] exploringEntries, LeaderBoardInfo[] tradingEntries,
-      LeaderBoardInfo[] craftingEntries, LeaderBoardInfo[] miningEntries) {
+      LeaderBoardInfo[] craftingEntries, LeaderBoardInfo[] miningEntries, LeaderBoardInfo[] badgesEntries) {
 
       // Make sure the panel is showing
       LeaderBoardsPanel panel = (LeaderBoardsPanel) PanelManager.self.get(Panel.Type.LeaderBoards);
@@ -973,7 +973,7 @@ public class RPCManager : NetworkBehaviour
 
       // Pass them along to the Leader Boards panel
       panel.updatePanelWithLeaderBoardEntries(period, secondsLeftUntilRecalculation, farmingEntries, sailingEntries,
-         exploringEntries, tradingEntries, craftingEntries, miningEntries);
+         exploringEntries, tradingEntries, craftingEntries, miningEntries, badgesEntries);
    }
 
    private void receiveOnEquipItem (Item equippedWeapon, Item equippedArmor, Item equippedHat, Item soulBoundItem) {
@@ -1643,12 +1643,13 @@ public class RPCManager : NetworkBehaviour
       List<LeaderBoardInfo> tradingEntries;
       List<LeaderBoardInfo> craftingEntries;
       List<LeaderBoardInfo> miningEntries;
+      List<LeaderBoardInfo> badgesEntries;
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Get the leader boards from the database
          DB_Main.getLeaderBoards(period, out farmingEntries, out sailingEntries, out exploringEntries,
-            out tradingEntries, out craftingEntries, out miningEntries);
+            out tradingEntries, out craftingEntries, out miningEntries, out badgesEntries);
 
          // Get the last calculation date of this period
          DateTime lastCalculationDate = DB_Main.getLeaderBoardEndDate(period);
@@ -1660,7 +1661,7 @@ public class RPCManager : NetworkBehaviour
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             _player.rpc.Target_ReceiveLeaderBoards(_player.connectionToClient, period, timeLeftUntilRecalculation.TotalSeconds,
                farmingEntries.ToArray(), sailingEntries.ToArray(), exploringEntries.ToArray(), tradingEntries.ToArray(),
-               craftingEntries.ToArray(), miningEntries.ToArray());
+               craftingEntries.ToArray(), miningEntries.ToArray(), badgesEntries.ToArray());
          });
       });
    }
@@ -6764,11 +6765,16 @@ public class RPCManager : NetworkBehaviour
          itemDescription = questItem != null ? questItem.itemDescription : "",
       };
 
-      NetEntity entity = EntityManager.self.getEntityByNetId(attackerNetId);
-      if (entity != null) {
-         Target_ReceiveBadges(entity.connectionToClient, itmReward);
-         processItemCreation(entity.userId, itmReward);
-      }
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.addJobXP(_player.userId, Jobs.Type.Badges, itmReward.count);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            NetEntity entity = EntityManager.self.getEntityByNetId(attackerNetId);
+            if (entity != null) {
+               Target_ReceiveBadges(entity.connectionToClient, itmReward);
+               processItemCreation(entity.userId, itmReward);
+            }
+         });
+      });
    }
 
    [TargetRpc]

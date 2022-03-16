@@ -24,6 +24,7 @@ public class LeaderBoardsPanel : Panel
    public GameObject tradingBoardRowsContainer;
    public GameObject craftingBoardRowsContainer;
    public GameObject miningBoardRowsContainer;
+   public GameObject badgesBoardRowsContainer;
 
    // The time left until recalculation
    public Text timeLeftUntilRecalculationText;
@@ -51,7 +52,7 @@ public class LeaderBoardsPanel : Panel
    public void updatePanelWithLeaderBoardEntries(LeaderBoardsManager.Period period,
       double secondsLeftUntilRecalculation, LeaderBoardInfo[] farmingEntries, LeaderBoardInfo[] sailingEntries,
       LeaderBoardInfo[] exploringEntries, LeaderBoardInfo[] tradingEntries, LeaderBoardInfo[] craftingEntries,
-      LeaderBoardInfo[] miningEntries) {
+      LeaderBoardInfo[] miningEntries, LeaderBoardInfo[] badgesEntries) {
 
       // Update the board entries
       updateBoardWithEntries(farmingBoardRowsContainer, farmingEntries);
@@ -60,6 +61,7 @@ public class LeaderBoardsPanel : Panel
       updateBoardWithEntries(tradingBoardRowsContainer, tradingEntries);
       updateBoardWithEntries(craftingBoardRowsContainer, craftingEntries);
       updateBoardWithEntries(miningBoardRowsContainer, miningEntries);
+      updateBoardWithEntries(badgesBoardRowsContainer, badgesEntries);
 
       // Update the time left until recalculation
       // Show the seconds if it happened in the last 60s, the

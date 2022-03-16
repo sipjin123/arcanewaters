@@ -67,7 +67,6 @@ public class LeaderBoardsManager : MonoBehaviour
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-
             // The recalculation end date is always a rounded up hour
             DateTime roundedUtcNow = DateTime.UtcNow.Date + new TimeSpan(DateTime.UtcNow.Hour, 0, 0);
 
@@ -75,7 +74,6 @@ public class LeaderBoardsManager : MonoBehaviour
 
             // Check if 24 hours have passed since the last calculation
             if (getTimeLeftUntilRecalculation(Period.Day, lastDailyCalculationDate).Ticks <= 0) {
-
                // Set a new 24h interval from the current date backwards
                DateTime endDate = roundedUtcNow;
                DateTime startDate = endDate.AddHours(-DAILY_RECALC_HOUR_INTERVAL);
@@ -126,7 +124,8 @@ public class LeaderBoardsManager : MonoBehaviour
          List<LeaderBoardInfo> tradingBoard = DB_Main.calculateLeaderBoard(Jobs.Type.Trader, period, startDate, endDate);
          List<LeaderBoardInfo> craftingBoard = DB_Main.calculateLeaderBoard(Jobs.Type.Crafter, period, startDate, endDate);
          List<LeaderBoardInfo> miningBoard = DB_Main.calculateLeaderBoard(Jobs.Type.Miner, period, startDate, endDate);
-            
+         List<LeaderBoardInfo> badgesBoard = DB_Main.calculateLeaderBoard(Jobs.Type.Badges, period, startDate, endDate);
+
          // Insert the new records in the leader board table
          DB_Main.updateLeaderBoards(farmingBoard);
          DB_Main.updateLeaderBoards(sailingBoard);
@@ -134,6 +133,7 @@ public class LeaderBoardsManager : MonoBehaviour
          DB_Main.updateLeaderBoards(tradingBoard);
          DB_Main.updateLeaderBoards(craftingBoard);
          DB_Main.updateLeaderBoards(miningBoard);
+         DB_Main.updateLeaderBoards(badgesBoard);
 
          // Update the leader board dates intervals
          DB_Main.updateLeaderBoardDates(period, startDate, endDate);

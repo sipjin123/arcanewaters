@@ -1399,13 +1399,14 @@ public class DB_MainStub : MonoBehaviour
 
    public static void getLeaderBoards (LeaderBoardsManager.Period period, out List<LeaderBoardInfo> farmingEntries,
       out List<LeaderBoardInfo> sailingEntries, out List<LeaderBoardInfo> exploringEntries, out List<LeaderBoardInfo> tradingEntries,
-      out List<LeaderBoardInfo> craftingEntries, out List<LeaderBoardInfo> miningEntries) {
+      out List<LeaderBoardInfo> craftingEntries, out List<LeaderBoardInfo> miningEntries, out List<LeaderBoardInfo> badgesEntries) {
       farmingEntries = null;
       sailingEntries = null;
       exploringEntries = null;
       tradingEntries = null;
       craftingEntries = null;
       miningEntries = null;
+      badgesEntries = null;
    }
 
    public static void createFriendship (int userId, int friendUserId, Friendship.Status friendshipStatus, DateTime lastContactDate) {
