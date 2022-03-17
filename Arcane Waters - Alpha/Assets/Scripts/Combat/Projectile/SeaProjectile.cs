@@ -311,7 +311,7 @@ public class SeaProjectile : NetworkBehaviour
       }
 
       // Check if the hit entity is an ally
-      if (!sourceEntity.isEnemyOf(hitEntity)) {
+      if (!sourceEntity.isEnemyOf(hitEntity) || sourceEntity.isAllyOf(hitEntity)) {
          return;
       }
 

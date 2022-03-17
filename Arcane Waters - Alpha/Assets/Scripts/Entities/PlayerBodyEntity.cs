@@ -394,16 +394,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
                if (lapsedTime > timeTarget && !hasTriggeredInteractEvent) {
                   hasTriggeredInteractEvent = true;
                   interactCollisionEvent.Invoke();
-
-                  if (currPing < 150) {
-                     if (isLocalPlayer) {
-                        D.debug("Trigger interaction using Mid Speed {" + timeTarget + "}{" + currPing + "}");
-                     }
-                  } else {
-                     if (isLocalPlayer) {
-                        D.debug("Trigger interaction using Slowest Speed {" + timeTarget + "}{" + currPing + "}");
-                     }
-                  }
                }
             }
          }

@@ -24,6 +24,9 @@ public class SeaMonsterEntityData
    [XmlElement(Namespace = "DifficultyLevel")]
    public Voyage.Difficulty difficultyLevel;
 
+   // The biome this monster can spawn in
+   public List<Biome.Type> biomes = new List<Biome.Type>();
+
    // The xml id
    public int xmlId;
 

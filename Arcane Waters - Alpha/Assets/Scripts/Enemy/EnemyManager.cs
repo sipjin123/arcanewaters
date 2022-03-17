@@ -440,11 +440,11 @@ public class EnemyManager : MonoBehaviour {
                break;
          }
       } else {
-         SeaMonsterEntityData randomShipByDifficulty = randomizeMonsterByDifficulty(difficulty);
+         SeaMonsterEntityData randomShipByDifficulty = randomizeMonsterByDifficulty(difficulty, instance.biome);
          if (randomShipByDifficulty != null) {
             seaMonsterType = randomShipByDifficulty.seaMonsterType;
          } else {
-            seaMonsterType = SeaMonsterEntity.Type.Worm;
+            seaMonsterType = SeaMonsterEntity.Type.Fishman;
          }
       }
 
@@ -496,8 +496,15 @@ public class EnemyManager : MonoBehaviour {
       return null;
    }
 
-   private SeaMonsterEntityData randomizeMonsterByDifficulty (Voyage.Difficulty difficulty) {
-      List<SeaMonsterEntityData> seaMonsterList = SeaMonsterManager.self.getAllSeaMonsterData().FindAll(_ => _.difficultyLevel == difficulty && _.subVarietyTypeId < 1);
+   private SeaMonsterEntityData randomizeMonsterByDifficulty (Voyage.Difficulty difficulty, Biome.Type biomeType) {
+      List<SeaMonsterEntityData> seaMonsterList = SeaMonsterManager.self.getAllSeaMonsterData().FindAll(
+            _ => _.difficultyLevel == difficulty
+            // Sea monsters do not have variety types (for now)
+            && _.subVarietyTypeId < 1 
+            // There are biome filters that needs consideration
+            && _.biomes.Contains(biomeType)
+            // Only pick standalone mosnters
+            && _.roleType == RoleType.Standalone);
       if (seaMonsterList.Count > 0) {
          return seaMonsterList.ChooseRandom();
       }
