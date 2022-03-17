@@ -170,6 +170,8 @@ MonoBehaviour:
     type: 3
   selectDataFields: []
   customDataFields: []
+  hasVariableObjectState: 0
+  objectStateDescription: 
 --- !u!114 &7334979971553596672
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -182,25 +184,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 1
-  blurSize: 0
-  color: {r: 1, g: 1, b: 1, a: 1}
-  blurAlphaMultiplier: 0.7
-  blurAlphaChoke: 1
-  invertBlur: 0
-  alphaThreshold: 0.05
-  buffer: 0
-  includeChildren: 1
-  childLayers:
-    serializedVersion: 2
-    m_Bits: 1
-  ignoreChildNames: []
-  sortMethod: 1
-  isAnimated: 0
-  useExportedFrame: 0
-  customFrameName: 
-  generatesOnStart: 0
-  generatesOnValidate: 1
+  ignoredRenderers: []
+  _renderers: []
 --- !u!1001 &1588905405672293273
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -208,6 +193,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 224718600115291561, guid: c7b2effce4320f84b9bd0dec06f7e16e,
+        type: 3}
+      propertyPath: availableForPlacing
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 384970685727403341, guid: c7b2effce4320f84b9bd0dec06f7e16e,
         type: 3}
       propertyPath: m_LocalPosition.x

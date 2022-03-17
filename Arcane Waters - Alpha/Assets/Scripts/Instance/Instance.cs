@@ -36,7 +36,7 @@ public class Instance : NetworkBehaviour
 
    // The list of interactable objects in this instance (server only)
    public List<InteractableObjEntity> interactableObject = new List<InteractableObjEntity>();
-   
+
    // The list of sea structures in this instance (server only)
    public List<SeaStructure> seaStructures = new List<SeaStructure>();
 
@@ -991,14 +991,10 @@ public class Instance : NetworkBehaviour
    /// If not picked up, the item will cease to exist when the instance is destroyed.
    /// </summary>
    /// <param name="newItem">The item to create</param>
-   /// <param name="localPosition">At what position to drop item in relation to the instance</param>
-   /// <param name="appearDirection">Direction of travel when the item spawns</param>
-   /// <param name="limitToUserId">If not 0, this item will only be able to be picked up by this user</param>
-   /// <param name="lifetimeSeconds">After what time in seconds will this item despawn. 0 If no time limit</param>
-   /// <param name="spinWhileDropping">Should the item spin when it's dropping to the ground</param>
+   /// <param name="localPosition">At what position to drop item in relation to the instance - start position, not where eventually the item will drop to</param>
    /// <param name="configureBeforeSpawn">Action that's called on the item before it's spawned to the network, can be used to fine configure the item</param>
    [Server]
-   public void dropNewItem (Item newItem, Vector3 localPosition, Vector2 appearDirection, bool spinWhileDropping = true, int limitToUserId = 0, Action<DroppedItem> configureBeforeSpawn = null, float lifetimeSeconds = 600) {
+   public void dropNewItem (Item newItem, Vector3 localPosition, Action<DroppedItem> configureBeforeSpawn = null) {
       // Get area
       Area area = AreaManager.self.getArea(areaKey);
       if (area == null) {
@@ -1007,18 +1003,27 @@ public class Instance : NetworkBehaviour
 
       DroppedItem droppedItem = Instantiate(PrefabsManager.self.droppedItemPrefab);
       droppedItem.transform.position = area.transform.TransformPoint(localPosition);
+      droppedItem.appearStartPos = localPosition;
 
-      droppedItem.limitToUserId = limitToUserId;
-      droppedItem.lifetimeSeconds = lifetimeSeconds;
-      droppedItem.targetItem = newItem;
-      droppedItem.appearDirection = appearDirection;
+      // Set some default values
+      Vector2 vec = UnityEngine.Random.insideUnitCircle;
+      vec += Vector2.down;
+      vec += Mathf.Sign(vec.x) * Vector2.right * 0.3f;
+      vec = vec.normalized;
+      vec *= 0.7f;
 
-      InstanceManager.self.addDroppedItemToInstance(droppedItem, this);
+      droppedItem.appearTravel = vec;
+      droppedItem.appearLifeTime = UnityEngine.Random.Range(0.5f * droppedItem.appearLifeTime, 1.5f * droppedItem.appearLifeTime);
+      droppedItem.appearArchHeight = UnityEngine.Random.Range(0.5f * droppedItem.appearArchHeight, 1.5f * droppedItem.appearArchHeight);
 
-      if (!spinWhileDropping) {
-         droppedItem.setNoRotationsDuringAppearance();
+      if (droppedItem.appearTravel.x > 0) {
+         droppedItem.appearRotations *= -1;
       }
 
+      droppedItem.targetItem = newItem;
+      configureBeforeSpawn?.Invoke(droppedItem);
+
+      InstanceManager.self.addDroppedItemToInstance(droppedItem, this);
       NetworkServer.Spawn(droppedItem.gameObject);
    }
 

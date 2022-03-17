@@ -89,6 +89,8 @@ public class UINavigationController : MonoBehaviour {
          InputManager.self.inputMaster.UIControl.MoveDown.WasPressedThisFrame() ||
          Keyboard.current.tabKey.wasPressedThisFrame
       ) {
+         _isNavVisible = true;
+         
          // If not input field and sKey pressed
          if (!(_itemsData[_currItemId].isInputField && Keyboard.current.sKey.wasPressedThisFrame)) {
             
@@ -105,6 +107,8 @@ public class UINavigationController : MonoBehaviour {
 
       // Up
       if (InputManager.self.inputMaster.UIControl.MoveUp.WasPressedThisFrame()) {
+         _isNavVisible = true;
+         
          // If not input field and wKey pressed
          if (!(_itemsData[_currItemId].isInputField && Keyboard.current.wKey.wasPressedThisFrame)) {
             
@@ -121,11 +125,15 @@ public class UINavigationController : MonoBehaviour {
 
       // Left
       if (InputManager.self.inputMaster.UIControl.MoveLeft.WasPressedThisFrame()) {
+         _isNavVisible = true;
+         
          _itemsData[_currItemId].leftAction();
       }
 
       // Right
       if (InputManager.self.inputMaster.UIControl.MoveRight.WasPressedThisFrame()) {
+         _isNavVisible = true;
+         
          _itemsData[_currItemId].rightAction();
       }
 
@@ -205,14 +213,17 @@ public class UINavigationController : MonoBehaviour {
       }
 
       if (_itemsData != null && _currItemId < _itemsData.Count) {
-         _itemsData[_currItemId].selectItem();
+         if (force && !_isNavVisible)
+            _itemsData[_currItemId].deselectItem();
+         else
+            _itemsData[_currItemId].selectItem();
       }
    }
 
    private void OnEnable () {
       UINavigationManager.self.ControllerEnabled(this);
+      _isNavVisible = InputManager.self.isGamepadConnected;
       ResetItems();
-      updateSelection();
    }
 
    private void OnDisable () {
@@ -343,5 +354,6 @@ public class UINavigationController : MonoBehaviour {
    private int _prevItemId;
    private int _currItemId;
    private bool _canvasGroupInteractable;
+   private bool _isNavVisible;
    #endregion
 }

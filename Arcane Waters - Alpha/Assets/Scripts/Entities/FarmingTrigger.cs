@@ -12,7 +12,7 @@ public class FarmingTrigger : MonoBehaviour
    public BodyEntity bodyEntity;
 
    // The reference to the colliders
-   public Collider2D coneCollider, arcCollider;
+   public Collider2D coneCollider, arcCollider, chopCollider;
 
    // The spawn positions for the sprite effects
    public Transform[] effectSpawnList;
@@ -65,31 +65,39 @@ public class FarmingTrigger : MonoBehaviour
       if (Util.isBatch()) {
          return;
       }
-      
+
       if (NetworkClient.active && Global.player != null && Global.player.userId == bodyEntity.userId) {
          if (AreaManager.self.tryGetArea(bodyEntity.areaKey, out Area area)) {
             Vector2 pos = area.transform.InverseTransformPoint(getTreePlantPosition());
-            bool canPlantTree = PlantableTreeManager.self.canPlayerPlant(bodyEntity, bodyEntity.areaKey, pos, out PlantableTree treePrefab);
-            bool hasTree = treePrefab != null;
+            bool canPlantTree = PlantableTreeManager.self.canPlayerPlant(bodyEntity, bodyEntity.areaKey, pos, out PlantableTreeDefinition definition);
 
-            if (treePlantIndicator.gameObject.activeSelf != hasTree) {
-               treePlantIndicator.gameObject.SetActive(hasTree);
+            if (treePlantIndicator.gameObject.activeSelf != canPlantTree) {
+               treePlantIndicator.gameObject.SetActive(canPlantTree);
             }
 
-            if (hasTree) {
+            if (canPlantTree) {
                treePlantIndicator.transform.position = getTreePlantPosition();
 
                // Make sure indicator doesn't flip along with the player
                treePlantIndicator.transform.localScale = new Vector3(
-                  Mathf.Sign(transform.lossyScale.x) * Mathf.Abs(treePlantIndicator.transform.localScale.x),
+                  (Global.player.getRenderers()[0].flipX ? -1 : 1) * Mathf.Abs(treePlantIndicator.transform.localScale.x),
                   treePlantIndicator.transform.localScale.y,
                   treePlantIndicator.transform.localScale.z);
 
 
-               treePlantIndicatorRenderer.sprite = treePrefab.grownTreeSprite;
+               treePlantIndicatorRenderer.sprite = getGrownTreeSprite(definition);
                treePlantIndicatorRenderer.color = canPlantTree ? treeIndicatorValidColor : treeIndicatorInvalidColor;
             }
          }
+      }
+   }
+
+   private Sprite getGrownTreeSprite (PlantableTreeDefinition definition) {
+      Sprite[] sprites = ImageManager.getSprites(definition.growthStageSprites);
+      if (definition.leavesStump) {
+         return sprites[sprites.Length - 2];
+      } else {
+         return sprites[sprites.Length - 1];
       }
    }
 
@@ -202,6 +210,17 @@ public class FarmingTrigger : MonoBehaviour
    private IEnumerator CO_ProcessInteraction () {
       _isFarming = true;
 
+      // Player might be trying to plant trees
+      PlantableTreeManager.self.playerTriesPlanting(bodyEntity, getTreePlantPosition());
+
+      if (tryGetTreeInRange(out PlantableTree tree)) {
+         PlantableTreeManager.self.playerSwungAtTree(bodyEntity, tree);
+      }
+
+      if (tryGetTreeInChopRange(out tree)) {
+         PlantableTreeManager.self.playerSwungAtTreeAxeRange(bodyEntity, tree);
+      }
+
       yield return new WaitForSeconds(.1f);
 
       // Play weapon SFX upon triggering animation
@@ -243,22 +262,55 @@ public class FarmingTrigger : MonoBehaviour
                }
             }
 
-            if (hit.collider != null && hit.collider.GetComponentInParent<PlantableTree>()) {
-               PlantableTreeManager.self.playerSwungAtTree(Global.player, hit.collider.GetComponentInParent<PlantableTree>());
-            }
-
             //if (currentActionType == Weapon.ActionType.HarvestCrop) {
             //   if (!anyCropHarvested) {
             //      SoundManager.play2DClip(SoundManager.Type.Harvesting_Pitchfork_Miss);
             //   }
             //}
          }
-
-         // Player might be trying to plant trees
-         PlantableTreeManager.self.playerTriesPlanting(bodyEntity, getTreePlantPosition());
       }
 
       _isFarming = false;
+   }
+
+   public bool tryGetTreeInChopRange (out PlantableTree tree) {
+      bool wasActive = chopCollider.gameObject.activeSelf;
+      chopCollider.gameObject.SetActive(true);
+
+      int hitNum = chopCollider.Cast(new Vector2(0, 0), _treeCheckBuffer);
+
+      chopCollider.gameObject.SetActive(wasActive);
+
+      for (int i = 0; i < hitNum; i++) {
+         PlantableTree t = _treeCheckBuffer[i].collider.GetComponentInParent<PlantableTree>();
+         if (t != null) {
+            tree = t;
+            return true;
+         }
+      }
+
+      tree = null;
+      return false;
+   }
+
+   public bool tryGetTreeInRange (out PlantableTree tree) {
+      bool wasActive = arcCollider.gameObject.activeSelf;
+      arcCollider.gameObject.SetActive(true);
+
+      int hitNum = arcCollider.Cast(new Vector2(0, 0), _treeCheckBuffer);
+
+      arcCollider.gameObject.SetActive(wasActive);
+
+      for (int i = 0; i < hitNum; i++) {
+         PlantableTree t = _treeCheckBuffer[i].collider.GetComponentInParent<PlantableTree>();
+         if (t != null) {
+            tree = t;
+            return true;
+         }
+      }
+
+      tree = null;
+      return false;
    }
 
    public Vector2 getTreePlantPosition () {
@@ -335,6 +387,9 @@ public class FarmingTrigger : MonoBehaviour
 
    // Gets set to true when a farming action is underway
    private bool _isFarming = false;
+
+   // Buffer used to check for close trees
+   private RaycastHit2D[] _treeCheckBuffer = new RaycastHit2D[10];
 
    #endregion
 }

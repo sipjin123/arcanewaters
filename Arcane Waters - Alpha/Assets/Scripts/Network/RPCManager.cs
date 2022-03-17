@@ -332,10 +332,34 @@ public class RPCManager : NetworkBehaviour
                //SoundEffectManager.self.playLegacyInteractionOneShot(playerBody.weaponManager.equipmentDataId, playerBody.transform);
                // Playing FMOD SFX for interaction
                SoundEffectManager.self.playInteractionSfx(weaponData.actionType, weaponData.weaponClass, weaponData.sfxType, playerBody.transform.position);
+
+               // Play wood chop impact VFX if needed
+               if (playerBody.farmingTrigger.tryGetTreeInChopRange(out PlantableTree tree)) {
+                  if (PlantableTreeManager.self.canPlayerChop(playerBody, tree)) {
+                     if (playerBody.facing == Direction.East || playerBody.facing == Direction.West) {
+                        StartCoroutine(CO_CreateCrateVFXAfter(0.1f, transform.position + (Vector3) Util.getDirectionFromFacing(playerBody.facing) * 0.31f + Vector3.back * 3f + Vector3.up * 0.05f));
+                     } else if (playerBody.facing == Direction.North) {
+                        StartCoroutine(CO_CreateCrateVFXAfter(0.1f, transform.position + (Vector3) Util.getDirectionFromFacing(playerBody.facing) * 0.28f + Vector3.back * 3f + Vector3.left * 0.05f));
+                     } else if (playerBody.facing == Direction.South) {
+                        StartCoroutine(CO_CreateCrateVFXAfter(0.1f, transform.position + (Vector3) Util.getDirectionFromFacing(playerBody.facing) * 0.18f + Vector3.back * 3f + Vector3.right * 0.09f));
+                     }
+                  }
+               }
             }
+
             playerBody.playInteractParticles();
          }
       }
+   }
+
+   private IEnumerator CO_CreateCrateVFXAfter (float delay, Vector3 at) {
+      yield return new WaitForSeconds(delay);
+      GameObject vfx = Instantiate(EffectManager.self.interactCrateEffects);
+      if (vfx.TryGetComponent(out ZSnap zsnap)) {
+         Destroy(zsnap);
+      }
+      vfx.transform.position = at;
+      Destroy(vfx, 1);
    }
 
    [Command]
@@ -359,14 +383,14 @@ public class RPCManager : NetworkBehaviour
    }
 
    [ClientRpc]
-   public void Rpc_ReceiveChopTreeVisual (int treeId, int excludeUserId) {
+   public void Rpc_ReceiveChopTreeVisual (int treeId, int excludeUserId, bool swungFromLeftSide) {
       // Don't apply for the user that made the chop, he did it himself
       if (Global.player != null && Global.player.userId == excludeUserId) {
          return;
       }
 
       if (MapManager.self.tryGetPlantableTree(treeId, out PlantableTree tree)) {
-         tree.receiveChop();
+         tree.receiveChop(swungFromLeftSide);
       }
    }
 
@@ -374,14 +398,14 @@ public class RPCManager : NetworkBehaviour
    public void Rpc_UpdatePlantableTrees (int id, string areaKey, PlantableTreeInstanceData data) {
       Area area = AreaManager.self.getArea(areaKey);
       if (area != null) {
-         PlantableTreeManager.self.updatePlantableTrees(id, area, data);
+         PlantableTreeManager.self.updatePlantableTrees(id, area, data, true);
       }
    }
 
    [TargetRpc]
    public void Target_UpdatePlantableTrees (NetworkConnection connection, string areaKey, PlantableTreeInstanceData[] data, PlantableTreeDefinition[] def) {
       PlantableTreeManager.self.applyTreeDefinitions(def);
-      PlantableTreeManager.self.updatePlantableTrees(areaKey, data);
+      PlantableTreeManager.self.updatePlantableTrees(areaKey, data, true);
    }
 
    [ClientRpc]
@@ -2184,11 +2208,11 @@ public class RPCManager : NetworkBehaviour
             }
 
             if (!isSteamIdValid) {
-               #if UNITY_EDITOR
+#if UNITY_EDITOR
                // Try to use the debug Steam Id instead
                steamId = SteamPurchaseManagerServer.self.debugSteamId;
                D.debug($"Purchase Warning: Couldn't get the steamId for user '{_player.userId}'. Using the debug Steam ID...");
-               #endif
+#endif
             }
 
             if (steamId == 0) {
@@ -3060,7 +3084,7 @@ public class RPCManager : NetworkBehaviour
             questId = questData.questId;
             if (questData.questDataNodes != null) {
                string questTitleName = "";
-               QuestDataNode questDataNode = questData.questDataNodes.ToList().Find(_=>_.questDataNodeId == questNodeId);
+               QuestDataNode questDataNode = questData.questDataNodes.ToList().Find(_ => _.questDataNodeId == questNodeId);
                if (questDataNode == null) {
                   questTitleName = "Null";
                } else {
@@ -3208,7 +3232,7 @@ public class RPCManager : NetworkBehaviour
       List<Item> itemsToDeduct = new List<Item>();
 
       QuestData questData = NPCQuestManager.self.getQuestData(questId);
-      QuestDataNode questDataNode = questData.questDataNodes.ToList().Find(_=>_.questDataNodeId == questNodeId);
+      QuestDataNode questDataNode = questData.questDataNodes.ToList().Find(_ => _.questDataNodeId == questNodeId);
 
       D.adminLog("Dialogue Step1: Quest NPC Dialogue is now selected: {" + questId + "}{" + questNodeId + "}{" + dialogueId + "}", D.ADMIN_LOG_TYPE.Quest);
       if (questDataNode.questDialogueNodes.Length > dialogueId + 1) {
@@ -4982,7 +5006,7 @@ public class RPCManager : NetworkBehaviour
       PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => GuildManager.self.acceptGuildAllianceInviteOnClient(inviterUserId, guildInfo.guildId, guildAllyInfo.guildId));
 
       // Show a confirmation panel with the user name
-      string message = "The guild alliance proposal has been initiated between " + guildInfo.guildName+ " and " + guildAllyInfo.guildName + "!";
+      string message = "The guild alliance proposal has been initiated between " + guildInfo.guildName + " and " + guildAllyInfo.guildName + "!";
       PanelManager.self.confirmScreen.show(message);
    }
 
@@ -5111,7 +5135,7 @@ public class RPCManager : NetworkBehaviour
       List<GuildInfo> guildAlliesInfo = new List<GuildInfo>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<int> guildAlliesId= DB_Main.getGuildAlliance(guildId);
+         List<int> guildAlliesId = DB_Main.getGuildAlliance(guildId);
          foreach (int guildAllyId in guildAlliesId) {
             GuildInfo guildAllyInfo = DB_Main.getGuildInfo(guildAllyId);
             if (guildAllyInfo != null) {
@@ -9115,7 +9139,7 @@ public class RPCManager : NetworkBehaviour
          await DB_Main.execAsync((cmd) => DB_Main.setCustomGuildMapBase(cmd, _player.guildId, baseMapId));
 
          GuildInfo playerGuildInfo = await DB_Main.execAsync((cmd) => DB_Main.getGuildInfo(_player.guildId));
-         
+
          // Update the guildMapBaseId for any members online
          foreach (UserInfo memberInfo in playerGuildInfo.guildMembers) {
             NetEntity playerEntity = EntityManager.self.getEntity(memberInfo.userId);
@@ -9171,8 +9195,8 @@ public class RPCManager : NetworkBehaviour
       if (areaOwnerId != -1) {
          NetEntity areaOwner = EntityManager.self.getEntity(areaOwnerId);
          baseMapId = customMapManager.getBaseMapId(areaOwner);
-      
-      // If the area has a valid guild owner id
+
+         // If the area has a valid guild owner id
       } else if (areaGuildId != -1) {
          baseMapId = customMapManager.getBaseMapId(_player);
       } else {
@@ -9423,12 +9447,16 @@ public class RPCManager : NetworkBehaviour
    [ClientRpc]
    public void Rpc_TemporaryControlRequested (Vector2 controllerLocalPosition) {
       // If we are the local player, we don't do anything, the control was handled locally
-      if (isLocalPlayer) {
+      if (isLocalPlayer || _player == null) {
          return;
       }
 
-      TemporaryController con = AreaManager.self.getArea(_player.areaKey).getTemporaryControllerAtPosition(controllerLocalPosition);
-      _player.noteWebBounce(con);
+      if (AreaManager.self.tryGetArea(_player.areaKey, out Area area)) {
+         TemporaryController con = area.getTemporaryControllerAtPosition(controllerLocalPosition);
+         if (con != null) {
+            _player.noteWebBounce(con);
+         }
+      }
    }
 
    [Command]
@@ -9999,7 +10027,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   private void Target_ReceivePlayersCount (NetworkConnection conn, int playersCount, string [] playersNames) {
+   private void Target_ReceivePlayersCount (NetworkConnection conn, int playersCount, string[] playersNames) {
       OptionsPanel.self?.onPlayersCountReceived(playersCount, playersNames);
    }
 

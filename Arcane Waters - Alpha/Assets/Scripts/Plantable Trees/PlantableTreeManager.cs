@@ -40,7 +40,7 @@ public class PlantableTreeManager : MonoBehaviour
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             player.rpc.Target_UpdatePlantableTrees(player.connectionToClient, areaKey, instances, _treeDefinitions.Values.ToArray());
-            updatePlantableTrees(areaKey, instances);
+            updatePlantableTrees(areaKey, instances, false);
          });
       });
    }
@@ -64,32 +64,32 @@ public class PlantableTreeManager : MonoBehaviour
          // If this change matches the areaKey, apply it
          if (node.Value.areaKey.Equals(areaKey)) {
             _queuedTreeData.Remove(node);
-            updatePlantableTrees(node.Value.id, area, node.Value);
+            updatePlantableTrees(node.Value.id, area, node.Value, !NetworkServer.active);
          }
          node = next;
       }
    }
 
-   public void updatePlantableTrees (int id, Area area, PlantableTreeInstanceData data) {
+   public void updatePlantableTrees (int id, Area area, PlantableTreeInstanceData data, bool client) {
       // Can be called on both client and server
       if (data != null) {
          if (_treeDefinitions.TryGetValue(data.treeDefinitionId, out PlantableTreeDefinition def)) {
-            MapManager.self.updatePlantableTree(id, area, data, def);
+            MapManager.self.updatePlantableTree(id, area, data, def, client);
          } else {
             D.error("Missing tree definition " + data.treeDefinitionId);
          }
       } else {
          // Tree deleted
-         MapManager.self.updatePlantableTree(id, area, null, null);
+         MapManager.self.updatePlantableTree(id, area, null, null, client);
       }
    }
 
-   public void updatePlantableTrees (string areaKey, PlantableTreeInstanceData[] data) {
+   public void updatePlantableTrees (string areaKey, PlantableTreeInstanceData[] data, bool client) {
       Area area = AreaManager.self.getArea(areaKey);
 
       if (area != null) {
          foreach (PlantableTreeInstanceData d in data) {
-            updatePlantableTrees(d.id, area, d);
+            updatePlantableTrees(d.id, area, d, client);
          }
       } else {
          // It's possible the player received plantable trees before the area was created
@@ -119,6 +119,9 @@ public class PlantableTreeManager : MonoBehaviour
 
    public bool canPlayerPlant (BodyEntity player, string areaKey, Vector2 localPosition, out PlantableTree treePrefab) =>
       canPlayerPlant(player, areaKey, localPosition, out PlantableTreeDefinition _, out treePrefab, out string _);
+
+   public bool canPlayerPlant (BodyEntity player, string areaKey, Vector2 localPosition, out PlantableTreeDefinition targetTreeDefinition) =>
+      canPlayerPlant(player, areaKey, localPosition, out targetTreeDefinition, out PlantableTree _, out string _);
 
    public bool canPlayerPlant (BodyEntity player, string areaKey, Vector2 localPosition, out PlantableTreeDefinition targetTreeDefinition, out PlantableTree targetPrefab, out string message) {
       targetTreeDefinition = null;
@@ -261,7 +264,7 @@ public class PlantableTreeManager : MonoBehaviour
             if (area != null) {
                // Notify clients to update their trees
                planter.rpc.Rpc_UpdatePlantableTrees(data.id, areaKey, data);
-               updatePlantableTrees(data.id, area, data);
+               updatePlantableTrees(data.id, area, data, false);
             }
          });
       });
@@ -269,18 +272,24 @@ public class PlantableTreeManager : MonoBehaviour
 
    [Client]
    public void playerSwungAtTree (NetEntity player, PlantableTree tree) {
-      // Called when player wings any item while being close to a tree
+      // Called when player swings any item while being close to a tree
       if (canPlayerWater(player, tree)) {
          Global.player.rpc.Cmd_WaterTree(tree.data.id);
-      } else if (canPlayerChop(player, tree)) {
+      }
+   }
+
+   [Client]
+   public void playerSwungAtTreeAxeRange (NetEntity player, PlantableTree tree) {
+      // Called when player swings any item while being in chop range to a tree
+      if (canPlayerChop(player, tree)) {
          Global.player.rpc.Cmd_ChopTree(tree.data.id);
          if (!Util.isHost()) {
-            tree.receiveChop();
+            tree.receiveChop(player.transform.position.x < tree.transform.position.x);
          }
       }
    }
 
-   private bool canPlayerChop (NetEntity player, PlantableTree tree) {
+   public bool canPlayerChop (NetEntity player, PlantableTree tree) {
       if (player == null || !(player is PlayerBodyEntity)) {
          return false;
       }
@@ -330,32 +339,54 @@ public class PlantableTreeManager : MonoBehaviour
       Area area = AreaManager.self.getArea(treeData.areaKey);
 
       // Apply a chop to the tree
-      tree.receiveChop();
-      player.rpc.Rpc_ReceiveChopTreeVisual(treeId, player.userId);
+      tree.receiveChop(player.transform.position.x < tree.transform.position.x);
+      player.rpc.Rpc_ReceiveChopTreeVisual(treeId, player.userId, player.transform.position.x < tree.transform.position.x);
 
-      // Check if the tree has been chopped, destroy if so
+      // Check if the tree has been chopped
       if (tree.currentChopCount >= 3) {
-         // Delete the tree from db
-         Util.dbBackgroundExec((cmd) => DB_Main.deletePlantableTreeInstance(cmd, treeId));
+         tree.currentChopCount = 0;
+         // Now the tree can either be completely chopped, or leave a stump, or a stump can be chopped
+         List<Item> loot = treeDef.isStump(treeData) ? treeDef.getStumpHarvestLoot() : treeDef.getMainHarvestLoot();
 
-         // Destroy the tree in server and client
-         player.rpc.Rpc_UpdatePlantableTrees(treeId, treeData.areaKey, null);
-         updatePlantableTrees(treeId, area, null);
+         if (!treeDef.isStump(treeData) && treeDef.leavesStump) {
+            // Turn tree to stump
+            treeDef.turnTreeToStump(treeData, TimeManager.self.getLastServerUnixTimestamp());
 
-         // Drop resources
+            // Shove the update to the database in the background
+            Util.dbBackgroundExec((cmd) => DB_Main.updatePlantableTreeInstance(cmd, treeData));
+
+            // Update the tree and notify user of it
+            player.rpc.Rpc_UpdatePlantableTrees(treeId, treeData.areaKey, treeData);
+            updatePlantableTrees(treeId, area, treeData, false);
+         } else {
+            // Delete the tree from db
+            Util.dbBackgroundExec((cmd) => DB_Main.deletePlantableTreeInstance(cmd, treeId));
+
+            // Destroy the tree in server and client
+            player.rpc.Rpc_UpdatePlantableTrees(treeId, treeData.areaKey, null);
+            updatePlantableTrees(treeId, area, null, false);
+         }
+
+         // Drop loot for harvest
          if (InstanceManager.self.tryGetInstance(player.instanceId, out Instance instance)) {
-            instance.dropNewItem(
-               treeDef.getHarvestLoot(),
-               treeData.position,
-               new Vector2(0.7f * (Random.value > 0.5f ? 1f : -1f), 0.7f).normalized,
-               false,
-               player.userId,
-               (droppedItem) => {
-                  droppedItem.appearDistanceMin = 0.16f;
-                  droppedItem.appearDistanceMax = 0.32f;
-               });
+            // Drop resources
+            foreach (Item item in loot) {
+               dropItem(instance, item, treeData.position, player);
+            }
          }
       }
+   }
+
+   private void dropItem (Instance instance, Item item, Vector2 treePos, NetEntity forPlayer) {
+      instance.dropNewItem(
+         item,
+         treePos + Vector2.up * 0.32f,
+         (droppedItem) => {
+            droppedItem.limitToUserId = forPlayer.userId;
+            droppedItem.itemSpriteOverride = "Assets/Resources/Sprites/Icons/LogPickup.png";
+            droppedItem.appearLifeTime = 0.75f;
+            droppedItem.appearArchHeight = 0.48f;
+         });
    }
 
    private bool canPlayerWater (NetEntity player, PlantableTree tree) {
@@ -403,7 +434,7 @@ public class PlantableTreeManager : MonoBehaviour
 
       // Update the tree and notify user of it
       player.rpc.Rpc_UpdatePlantableTrees(treeId, treeData.areaKey, treeData);
-      updatePlantableTrees(treeId, area, treeData);
+      updatePlantableTrees(treeId, area, treeData, false);
    }
 
    #region Private Variables

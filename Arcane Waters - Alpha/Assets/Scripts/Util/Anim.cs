@@ -41,6 +41,9 @@ public class Anim : MonoBehaviour {
       Fast_Interact_North = 36,
       Fast_Interact_South = 37,
       Finish_Attack_Gun = 38,
+      Impact_Interact_East = 39,
+      Impact_Interact_North = 40,
+      Impact_Interact_South = 41
    }
 
    // The different animation groups

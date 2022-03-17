@@ -28,8 +28,8 @@ public class InteractableBox : InteractableObjEntity {
 
    public override void localInteractTrigger (Vector2 dir, float overrideForce = 0) {
       base.localInteractTrigger(dir, overrideForce);
-      if (InteractableObjManager.self.interactCrateEffects != null) {
-         GameObject interactVfx = Instantiate(InteractableObjManager.self.interactCrateEffects, transform);
+      if (EffectManager.self.interactCrateEffects != null) {
+         GameObject interactVfx = Instantiate(EffectManager.self.interactCrateEffects, transform);
          interactVfx.transform.position = transform.position;
          Destroy(interactVfx, 1);
       } else {

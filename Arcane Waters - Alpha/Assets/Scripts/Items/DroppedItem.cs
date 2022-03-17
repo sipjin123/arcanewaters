@@ -7,40 +7,46 @@ public class DroppedItem : NetworkBehaviour, IObserver
    #region Public Variables
 
    // The instance ID of this mine
+   [HideInInspector]
+   [SyncVar]
    public int instanceId;
 
    // If not 0, this item will only be able to be picked up by this user
    [SyncVar]
-   public int limitToUserId;
+   public int limitToUserId = 0;
 
    // After what time in seconds will this item despawn
    [SyncVar]
-   public float lifetimeSeconds;
+   public float lifetimeSeconds = 600;
 
    // How much will the projectile travel from appearance
    [SyncVar]
-   public Vector2 appearDirection;
+   public Vector2 appearTravel = Vector2.left;
 
    // The item we represent
    [SyncVar]
+   [HideInInspector]
    public Item targetItem;
 
-   // Range of maximum height that item will reach at its peak
-   [Space(10)]
-   public float appearArchHeightMin;
-   public float appeararchHeightMax;
+   // In case we want to override item's sprite
+   [SyncVar]
+   public string itemSpriteOverride = null;
 
-   // Range of how long will item's appearance last
-   public float appearLifeTimeMin;
-   public float appearLifeTimeMax;
+   // How long will the appearance animation last for
+   [SyncVar]
+   public float appearLifeTime = 1;
 
-   // Range of distance that item will move from initial position
-   public float appearDistanceMin;
-   public float appearDistanceMax;
+   // Maximum height that item will reach at its peak during appearance
+   [SyncVar]
+   public float appearArchHeight = 0.32f;
 
-   // Range of rotations during appearance
-   public int appearRotationsMin = 1;
-   public int appearRotationsMax = 3;
+   // Rotations for full flight
+   [SyncVar]
+   public float appearRotations = 2;
+
+   // Initial position of item
+   [SyncVar]
+   public Vector2 appearStartPos;
 
    // How many seconds to flash for before despawning
    public float flashBeforeDespawnDuration = 5;
@@ -102,27 +108,37 @@ public class DroppedItem : NetworkBehaviour, IObserver
 
    private void animateAppearance () {
       double timeAlive = Time.time - _startTime;
-      float lerpTime = (float) (timeAlive / _appearLifeTime);
+      float lerpTime = (float) (timeAlive / appearLifeTime);
 
       if (lerpTime >= 1f) {
          _appearing = false;
+         lerpTime = 1f;
       }
 
-      float angleInDegrees = lerpTime * 180f;
-      float height = Util.getSinOfAngle(angleInDegrees) * _appearArchHeight;
+      float easedLerpTime = lerpTime < 0.5f
+         ? Util.getSinOfAngle(lerpTime * 180f) * 0.5f
+         : 1f - (Util.getSinOfAngle(lerpTime * 180f) * 0.5f);
 
-      Vector3 rot = _sr.transform.localRotation.eulerAngles;
+      _sr.transform.rotation = Quaternion.Euler(0, 0, lerpTime * appearRotations * 360f);
 
-      // Calculating -log(x + 0.1) + 1; There is no physical basis to this equation
-      float rotLerp = -Mathf.Log(lerpTime + 0.1f) + 1.0f;
-      _sr.transform.SetPositionAndRotation(transform.position, Quaternion.Euler(rot.x, rot.y, _appearTotalRotation * rotLerp));
+      Instance instance = null;
+      if (NetworkServer.active) {
+         InstanceManager.self.tryGetInstance(instanceId, out instance);
+      } else if (Global.player != null) {
+         instance = Global.player.getInstance();
+      }
 
-      Util.setLocalY(_sr.transform, height);
+      if (!blockMovement && instance != null && AreaManager.self.tryGetArea(instance.areaKey, out Area a)) {
+         Vector2 pos = Vector2.zero;
 
-      Util.setXY(this.transform, Vector2.Lerp(_appearStartPos, _appearEndPos, lerpTime));
+         if (easedLerpTime < 0.5f) {
+            pos = new Vector2(Mathf.Lerp(appearStartPos.x, _appearMidPos.x, lerpTime * 2), Mathf.Lerp(appearStartPos.y, _appearMidPos.y, easedLerpTime * 2));
+         } else {
+            pos = new Vector2(Mathf.Lerp(_appearMidPos.x, _appearEndPos.x, (lerpTime - 0.5f) * 2), Mathf.Lerp(_appearMidPos.y, _appearEndPos.y, (easedLerpTime - 0.5f) * 2));
+         }
 
-      if (!blockMovement) {
-         Util.setXY(this.transform, Vector2.Lerp(_appearStartPos, _appearEndPos, lerpTime));
+         Util.setXY(transform, a.transform.TransformPoint(pos));
+         Util.setXY(_shadow, a.transform.TransformPoint(Vector2.Lerp(appearStartPos, _appearEndPos, lerpTime)));
       }
 
       // This prevents the item from bounding over obstructed areas
@@ -130,11 +146,10 @@ public class DroppedItem : NetworkBehaviour, IObserver
       int colliderCount = colliderComponent.OverlapCollider(contactFilter, _collisionCheckBuffer);
       if (colliderCount > 0) {
          for (int i = 0; i < colliderCount; i++) {
-            if (_collisionCheckBuffer[i] != null) {
-               if (_collisionCheckBuffer[i].GetComponent<CompositeCollider2D>() != null) {
-                  blockMovement = true;
-                  colliderComponent.enabled = false;
-               }
+            if (_collisionCheckBuffer[i].GetComponent<CompositeCollider2D>() != null) {
+               // Enable to block movement after collision
+               //blockMovement = true;
+               colliderComponent.enabled = false;
             }
          }
       }
@@ -150,6 +165,7 @@ public class DroppedItem : NetworkBehaviour, IObserver
       _pickedUpAt.z = _sr.transform.position.z;
 
       _sr.transform.position = Vector3.Lerp(_pickedUpAt, targetPos, lerpTime);
+      _shadow.position = Vector3.Lerp(_pickedUpAt, targetPos + Vector3.down * 0.08f, lerpTime);
 
       if (Vector3.Distance(_sr.transform.position, targetPos) < 0.16f) {
          // End it
@@ -159,34 +175,25 @@ public class DroppedItem : NetworkBehaviour, IObserver
             FloatingCanvas.instantiateAt(_sr.transform.position).asPickedUpItem(targetItem.getCastItem());
          }
          _sr.enabled = false;
+         _shadow.gameObject.SetActive(false);
 
          _pickedUpBy = null;
       }
    }
 
-   public void setNoRotationsDuringAppearance () {
-      appearRotationsMin = 0;
-      appearRotationsMax = 0;
-      _appearTotalRotation = 0;
-   }
-
    private void setAnimationProperties () {
-      _startTime = Time.time;
-
-      // Synchronize by using a known seed for the random
-      Random.InitState((int) netId);
-
-      _startTime = Time.time;
-      _appearArchHeight = Random.Range(appearArchHeightMin, appeararchHeightMax);
-      _appearLifeTime = Random.Range(appearLifeTimeMin, appearLifeTimeMax);
-
-      // Use one or two full rotation (360 degree) when crop is in the air
-      if (appearRotationsMin < appearRotationsMax) {
-         _appearTotalRotation = Random.Range(appearRotationsMin, appearRotationsMax) * 360.0f;
+      if (InstanceManager.self.tryGetInstance(instanceId, out Instance i)) {
+         transform.parent = i.transform;
       }
 
-      _appearStartPos = transform.position;
-      _appearEndPos = _appearStartPos + appearDirection * Random.Range(appearDistanceMin, appearDistanceMax);
+      if (targetItem != null) {
+         name = "Dropped item: " + targetItem.getCastItem().getName();
+      }
+
+      _startTime = Time.time;
+
+      _appearEndPos = appearStartPos + appearTravel;
+      _appearMidPos = (appearStartPos + _appearEndPos) * 0.5f + Vector2.up * appearArchHeight;
    }
 
    public override void OnStartClient () {
@@ -195,7 +202,11 @@ public class DroppedItem : NetworkBehaviour, IObserver
          return;
       }
 
-      Sprite sprite = ImageManager.getSprite(targetItem.getCastItem().getBorderlessIconPath());
+      string iconpath = string.IsNullOrWhiteSpace(itemSpriteOverride)
+         ? targetItem.getCastItem().getBorderlessIconPath()
+         : itemSpriteOverride;
+
+      Sprite sprite = ImageManager.getSprite(iconpath);
 
       _sr.sprite = sprite;
 
@@ -281,6 +292,10 @@ public class DroppedItem : NetworkBehaviour, IObserver
    [SerializeField]
    private SpriteRenderer _sr = null;
 
+   // The shadow renderer
+   [SerializeField]
+   private Transform _shadow = null;
+
    // ZSnap component
    [SerializeField]
    private ZSnap _zSnap = null;
@@ -297,17 +312,8 @@ public class DroppedItem : NetworkBehaviour, IObserver
    // Time at which item started its life
    private float _startTime;
 
-   // Maximum height that item will reach at its peak during appearance
-   private float _appearArchHeight;
-
-   // How long will the appearance animation last for
-   private float _appearLifeTime;
-
-   // Rotation value for full flight
-   private float _appearTotalRotation;
-
-   // Initial position of item
-   private Vector2 _appearStartPos;
+   // Midway point of item's appearance - the peak of arch
+   private Vector2 _appearMidPos;
 
    // End position of item appearance - it will freeze here
    private Vector2 _appearEndPos;

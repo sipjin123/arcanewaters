@@ -495,7 +495,7 @@ public class MapManager : MonoBehaviour
       return false;
    }
 
-   public void updatePlantableTree (int id, Area area, PlantableTreeInstanceData data, PlantableTreeDefinition treeDefinition) {
+   public void updatePlantableTree (int id, Area area, PlantableTreeInstanceData data, PlantableTreeDefinition treeDefinition, bool client) {
       PlantableTree tree = null;
 
       if (data == null) {
@@ -532,7 +532,7 @@ public class MapManager : MonoBehaviour
       }
 
       // Apply any changes that were made to the tree
-      tree.applyState(justCreated, data, treeDefinition);
+      tree.applyState(justCreated, data, treeDefinition, client);
    }
 
    public CustomizablePrefab createPrefab (Area area, Biome.Type biome, PrefabState state, bool confirmedState) {

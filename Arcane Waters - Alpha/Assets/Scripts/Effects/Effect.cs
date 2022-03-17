@@ -14,7 +14,8 @@ public class Effect : MonoBehaviour {
       Pickup_Effect = 11, Item_Discovery_Particles = 12, Cannon_Smoke = 13, Ranged_Fire = 14,
       Ranged_Air = 15, Poof = 16,
       Slam_Physical = 17, Slash_Physical = 18, Slash_Fire = 19, Slash_Ice = 20, Slash_Lightning = 21,
-      Blunt_Physical = 22, Block = 23, Hit = 24, Shock_Collision = 25, Slime_Collision = 26, Ranged_Earth = 27, Ranged_Water = 28
+      Blunt_Physical = 22, Block = 23, Hit = 24, Shock_Collision = 25, Slime_Collision = 26, Ranged_Earth = 27, Ranged_Water = 28,
+      Leaves_Exploding = 29
    }
 
    // The Type of effect this is

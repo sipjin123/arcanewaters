@@ -980,7 +980,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          // If we clicked on an interactable object, interact with it
          InteractableObjEntity interactableObj = hit.GetComponent<InteractableObjEntity>();
          if (interactableObj) {
-            tryInteractAnimation(false , true);
+            tryInteractAnimation(false, true);
             return true;
          }
       }
@@ -1041,22 +1041,45 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       if (NetworkTime.time - lastInteractAnimation > .2f) {
          lastInteractAnimation = NetworkTime.time;
 
-         if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
-            || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {
-            if (playLocallyFirst) {
-               rpc.playInteractAnimation(Anim.Type.Interact_East, true);
+         Anim.Type targetType = Anim.Type.None;
+         switch (newDirection) {
+            case Direction.East:
+            case Direction.SouthEast:
+            case Direction.NorthEast:
+            case Direction.West:
+            case Direction.SouthWest:
+            case Direction.NorthWest:
+               targetType = Anim.Type.Interact_East;
+               break;
+            case Direction.North:
+               targetType = Anim.Type.Interact_North;
+               break;
+            case Direction.South:
+               targetType = Anim.Type.Interact_South;
+               break;
+         }
+
+         if (farmingTrigger.tryGetTreeInChopRange(out PlantableTree tree)) {
+            if (PlantableTreeManager.self.canPlayerChop(this, tree)) {
+               // Check if this hit will destroy the tree
+               if (!tree.isOneHitAwayFromDestroy()) {
+                  // If we have a tree nearby, changed the animation to 'impact'
+                  if (targetType == Anim.Type.Interact_East) {
+                     targetType = Anim.Type.Impact_Interact_East;
+                  } else if (targetType == Anim.Type.Interact_North) {
+                     targetType = Anim.Type.Impact_Interact_North;
+                  } else if (targetType == Anim.Type.Interact_South) {
+                     targetType = Anim.Type.Impact_Interact_South;
+                  }
+               }
             }
-            rpc.Cmd_InteractAnimation(Anim.Type.Interact_East, newDirection);
-         } else if (newDirection == Direction.North) {
+         }
+
+         if (targetType != Anim.Type.None) {
             if (playLocallyFirst) {
-               rpc.playInteractAnimation(Anim.Type.Interact_North, true);
+               rpc.playInteractAnimation(targetType, true);
             }
-            rpc.Cmd_InteractAnimation(Anim.Type.Interact_North, newDirection);
-         } else if (newDirection == Direction.South) {
-            if (playLocallyFirst) {
-               rpc.playInteractAnimation(Anim.Type.Interact_South, true);
-            }
-            rpc.Cmd_InteractAnimation(Anim.Type.Interact_South, newDirection);
+            rpc.Cmd_InteractAnimation(targetType, newDirection);
          }
       }
    }
@@ -1478,7 +1501,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       if (!isEmoting()) {
          return;
       }
-      
+
       emoteType = EmoteManager.EmoteTypes.None;
    }
 

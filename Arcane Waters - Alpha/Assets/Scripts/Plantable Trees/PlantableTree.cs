@@ -17,11 +17,11 @@ public class PlantableTree : MonoBehaviour
       Untether = 2
    }
 
-   // Sprites for each growth stage
-   public List<Sprite> sprites = new List<Sprite>();
-
    // Main sprite renderer of this tree
    public SpriteRenderer spriteRenderer = null;
+
+   // Tree shadow renderer
+   public SpriteRenderer shadowRenderer = null;
 
    // The instance data of this tree
    public PlantableTreeInstanceData data = null;
@@ -44,46 +44,79 @@ public class PlantableTree : MonoBehaviour
    // When was the last chop added
    public float lastChopTime = 0;
 
-   // The main sprite of a fully grown tree
-   public Sprite grownTreeSprite = null;
+   // Animation curves used to determine how tree rotates during chopping
+   public AnimationCurve[] wiggleCurves;
+
+   // Particle system we use to play leaf fall effect
+   public ParticleSystem leafFallEffect;
 
    #endregion
 
    private void Awake () {
       statusText.enabled = false;
-
-      // Don't need this in server
-      if (!Util.isBatch()) {
-         _propertyBlock = new MaterialPropertyBlock();
-      }
    }
 
-   public void applyState (bool justCreated, PlantableTreeInstanceData instanceData, PlantableTreeDefinition definitionData) {
+   public void applyState (bool justCreated, PlantableTreeInstanceData instanceData, PlantableTreeDefinition definitionData, bool client) {
       transform.localPosition = instanceData.position;
       GetComponent<ZSnap>().snapZ();
+
       _treeDefinition = definitionData;
       data = instanceData;
 
       _isLocalPlayerOwner = Global.player != null && Global.player.userId == instanceData.planterUserId;
 
+      // If tree was cut down, play explode effect
+      if (!justCreated && client && definitionData.isStump(instanceData)) {
+         EffectManager.self.create(Effect.Type.Leaves_Exploding, (Vector2) transform.position + Vector2.up * 0.32f);
+      }
+
       updateVisuals(TimeManager.self.getLastServerUnixTimestamp());
+
+      if (Application.isEditor) {
+         _statePreviewEditor = JsonUtility.ToJson(instanceData) + System.Environment.NewLine + JsonUtility.ToJson(definitionData);
+      }
    }
 
-   private Sprite pickSprite (PlantableTreeInstanceData instanceData, PlantableTreeDefinition definitionData, long currentTimestamp) {
-      // We are hard picking indexes here, not ideal
-      return sprites[Mathf.Clamp(instanceData.growthStagesCompleted + (definitionData.isFullyGrown(instanceData, currentTimestamp) ? 1 : 0), 0, sprites.Count - 1)];
+   private void setTreeSprite (PlantableTreeInstanceData instanceData, PlantableTreeDefinition definitionData, long currentTimestamp) {
+      Sprite[] sprites = ImageManager.getSprites(definitionData.growthStageSprites);
+      if (sprites.Length == 0) {
+         D.error("Plantable tree " + definitionData.title + " has no sprites assigned!");
+         return;
+      }
+
+      // Check if we should use a stump
+      if (definitionData.leavesStump && instanceData.growthStagesCompleted >= PlantableTreeDefinition.STUMP_GROWTH_STAGE) {
+         shadowRenderer.sprite = null;
+         spriteRenderer.sprite = sprites[sprites.Length - 1];
+         return;
+      }
+
+      // Get current index, check if we are fully grown, clamp it in range
+      int max = definitionData.leavesStump ? sprites.Length - 2 : sprites.Length - 1;
+      int index = Mathf.Clamp(
+         instanceData.growthStagesCompleted + (definitionData.isFullyGrown(instanceData, currentTimestamp) ? 1 : 0),
+         0,
+         max);
+
+      spriteRenderer.sprite = sprites[index];
+      shadowRenderer.sprite = ImageManager.getSprites("Assets/Resources/Sprites/Biomable/forest-plantable-tree-shadow.png")[index];
    }
+
+   public float chopyness = 10f;
 
    private void Update () {
       if (Util.isBatch()) {
          return;
       }
 
-      // Shader controls whether the tree shakes or not
-      float shakeStrength = Time.time - lastChopTime > 0.5f ? 0 : currentChopCount / 3f;
-      spriteRenderer.GetPropertyBlock(_propertyBlock);
-      _propertyBlock.SetFloat("_ChopAmount", shakeStrength);
-      spriteRenderer.SetPropertyBlock(_propertyBlock);
+      // Animate chopping wiggle
+      if (currentChopCount == 0) {
+         spriteRenderer.transform.rotation = Quaternion.Euler(0, 0, 0);
+      } else {
+         float val = wiggleCurves[Mathf.Clamp(currentChopCount - 1, 0, wiggleCurves.Length - 1)].Evaluate(Time.time - lastChopTime);
+         val *= (_cutFromLeftSide ? 1f : -1f);
+         spriteRenderer.transform.rotation = Quaternion.Euler(0, 0, val);
+      }
 
       if (_hovered) {
          statusText.text = _treeDefinition.getStatusText(data, TimeManager.self.getLastServerUnixTimestamp(), _isLocalPlayerOwner);
@@ -96,12 +129,27 @@ public class PlantableTree : MonoBehaviour
       }
    }
 
-   public void receiveChop () {
-      if (Time.time - lastChopTime > 0.6f) {
+   public void receiveChop (bool isFromLeftSide) {
+      _cutFromLeftSide = isFromLeftSide;
+
+      if (Time.time - lastChopTime > 0.9f) {
          currentChopCount = 0;
       }
       lastChopTime = Time.time;
       currentChopCount++;
+
+      if (!_treeDefinition.isStump(data) && _treeDefinition.leavesStump) {
+         int particleCount = (int) Mathf.Pow(3, currentChopCount);
+
+         ParticleSystem.EmissionModule em = leafFallEffect.emission;
+         em.rateOverTime = (int) (particleCount / leafFallEffect.main.duration);
+
+         leafFallEffect.Play();
+      }
+   }
+
+   public bool isOneHitAwayFromDestroy () {
+      return currentChopCount == 2;
    }
 
    private void updateVisuals (long currentTimestamp) {
@@ -109,7 +157,7 @@ public class PlantableTree : MonoBehaviour
          return;
       }
 
-      spriteRenderer.sprite = pickSprite(data, _treeDefinition, currentTimestamp);
+      setTreeSprite(data, _treeDefinition, currentTimestamp);
 
       waterNeededIcon.SetActive(_treeDefinition.needsWatering(data, currentTimestamp));
       interactionNeededIcon.SetActive(false);
@@ -138,6 +186,10 @@ public class PlantableTree : MonoBehaviour
 
    #region Private Variables
 
+   // Preview of this tree's data in editor
+   [SerializeField, TextArea()]
+   private string _statePreviewEditor = "";
+
    // The type of tree this is
    private PlantableTreeDefinition _treeDefinition = null;
 
@@ -147,11 +199,11 @@ public class PlantableTree : MonoBehaviour
    // Last time we updated the tree
    private long _lastUpdateTime;
 
-   // Material property block of the main renderer
-   private MaterialPropertyBlock _propertyBlock;
-
    // Is local player the owner of this tree
    private bool _isLocalPlayerOwner = false;
+
+   // Is this tree being cut from left side
+   private bool _cutFromLeftSide = false;
 
    #endregion
 }
