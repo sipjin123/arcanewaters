@@ -1246,10 +1246,13 @@ public class BattleManager : MonoBehaviour {
                      if (battler.player.isInGroup() && VoyageManager.isTreasureSiteArea(battler.player.areaKey)) {
                         // When dying in a voyage treasure site, respawn at its entrance
                         Vector2 spawnLocalPosition = SpawnManager.self.getDefaultLocalPosition(battler.player.areaKey);
-
                         battler.player.transform.localPosition = spawnLocalPosition;
+                        LandPowerupManager.self.clearPowerupsForUser(battler.player.userId);
+                        battler.player.rpc.Target_UpdateLandPowerups(battler.player.connectionToClient, LandPowerupManager.self.getPowerupsForUser(battler.player.userId));
                         battler.player.rpc.Target_RespawnAtTreasureSiteEntrance(battler.player.connectionToClient, spawnLocalPosition);
                      } else {
+                        LandPowerupManager.self.clearPowerupsForUser(battler.player.userId);
+                        battler.player.rpc.Target_UpdateLandPowerups(battler.player.connectionToClient, LandPowerupManager.self.getPowerupsForUser(battler.player.userId));
                         battler.player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);
                      }
                   }

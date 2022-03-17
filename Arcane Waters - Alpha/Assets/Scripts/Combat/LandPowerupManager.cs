@@ -173,6 +173,14 @@ public class LandPowerupManager : MonoBehaviour {
       return false;
    }
 
+   public void clearPowerupsForUser (int userId) {
+      if (!landPowerupDataSet.ContainsKey(userId)) {
+         return;
+      }
+
+      landPowerupDataSet[userId].Clear();
+   }
+
    public int getPowerupValue (int userId, LandPowerupType type) {
       if (!landPowerupDataSet.ContainsKey(userId)) {
          return 0;
