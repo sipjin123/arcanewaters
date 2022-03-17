@@ -102,6 +102,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("ore_voyage", "Enables the players and ores within the area of the player to have valid voyage id", requestOre, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "voyage" }));
       cm.addCommand(new CommandData("/motd", "Displays the message of the day", requestGetMotd));
       cm.addCommand(new CommandData("set_motd", "Sets the message of the day", requestSetMotd, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "message" }));
+      cm.addCommand(new CommandData("who", "Checks connected players", requestPlayerList, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("lose", "Kills player in a land battle", requestLose, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("win", "Kills all of the enemies in a land battle", requestWin, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("difficulty", "Enables the players to alter difficulty of current instance", requestDifficulty, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "difficultyLevel" }));
@@ -577,6 +578,26 @@ public class AdminManager : NetworkBehaviour
          Powerup newPowerup = new Powerup(type, rarity, Powerup.Expiry.None);
          PowerupManager.self.addPowerupServer(_player.userId, newPowerup);
          _player.rpc.Target_AddPowerup(connectionToClient, newPowerup);
+      }
+   }
+   
+   private void requestPlayerList (string parameter) {
+      Cmd_RequestPlayerList();
+   }
+
+   [Command]
+   protected void Cmd_RequestPlayerList () {
+      List<NetEntity> entityList = EntityManager.self.getAllEntities();
+      int index = 0;
+      string message = "";
+      message = "-> Server : {" + ServerNetworkingManager.self.server.networkedPort.Value.ToString() + "} Players : {" + ServerNetworkingManager.self.server.connectedUserIds.Count + "}\n";
+      Target_ReceiveServerLogs(message);
+      foreach (NetEntity entityObj in entityList) {
+         if (entityObj is PlayerBodyEntity || entityObj is PlayerShipEntity) {
+            message = "-> User: {" + entityObj.entityName + ":" + entityObj.userId + "}";
+            Target_ReceiveServerLogs(message);
+         }
+         index++;
       }
    }
 
