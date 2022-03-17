@@ -121,12 +121,12 @@ public class SeaManager : MonoBehaviour {
 
          // Allow spawning a pirate ship
          if (KeyUtils.GetKeyUp(Key.F9) && Global.player is SeaEntity) {
-            Global.player.rpc.Cmd_SpawnPirateShip(Util.getMousePos(), BotShipEntity.PIRATES_GUILD_ID);
+            Global.player.rpc.Cmd_SpawnPirateShip(Util.getMousePos(), BotShipEntity.PIRATES_GUILD_ID, false);
          }
 
          // Allow spawning a privateer ship
          if (KeyUtils.GetKeyUp(Key.F10) && Global.player is SeaEntity) {
-            Global.player.rpc.Cmd_SpawnPirateShip(Util.getMousePos(), BotShipEntity.PRIVATEERS_GUILD_ID);
+            Global.player.rpc.Cmd_SpawnPirateShip(Util.getMousePos(), BotShipEntity.PRIVATEERS_GUILD_ID, false);
          }
       }
    }

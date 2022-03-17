@@ -304,6 +304,10 @@ public class NetEntity : NetworkBehaviour
    // If interact event was triggered
    public bool hasTriggeredInteractEvent;
 
+   // If this entity is friendly to players
+   [SyncVar]
+   public bool isPlayerAlly;
+
    #endregion
 
    protected virtual void Awake () {
@@ -1309,28 +1313,45 @@ public class NetEntity : NetworkBehaviour
          return false;
       }
 
-      if (enablePvp && otherEntity.enablePvp) {
-         if (openWorldGameMode == PvpGameMode.FreeForAll && otherEntity.openWorldGameMode == PvpGameMode.FreeForAll) {
-            return true;
-         } else if (openWorldGameMode == PvpGameMode.GuildWars && otherEntity.openWorldGameMode == PvpGameMode.GuildWars) {
-            if (otherEntity.guildId != guildId) {
-               // Proceed to alliance check
-               if (otherEntity.guildAllies.Contains(guildId) || guildAllies.Contains(otherEntity.guildId)) {
-                  // If guilds are allied to each other, they are not enemies
-                  return false;
-               } else {
-                  // If no alliance is formed, they are enemies
-                  return true;
-               }
-            } else {
-               // If guild id of this unit and its target is the same, they are allies
-               return false;
-            }
-         } else if (openWorldGameMode == PvpGameMode.GroupWars && otherEntity.openWorldGameMode == PvpGameMode.GroupWars) {
-            return otherEntity.voyageGroupId != voyageGroupId;
-         }
+      // This allows bot ships to be friendly to allies
+      if (isBotShip() && isPlayerAlly && otherEntity is PlayerShipEntity) {
+         return false;
       }
 
+      // This allows player ships to be friendly to bot ships
+      if (this is PlayerShipEntity && otherEntity.isPlayerAlly && otherEntity is BotShipEntity) {
+         return false;
+      }
+
+      // Bot ships can fight if they do not have the same guild (pirates vs privateers)
+      if (guildId > 0 && otherEntity.guildId > 0 && isBotShip() && otherEntity.isBotShip() && otherEntity.guildId != guildId) {
+         return true;
+      }
+
+      if (this is SeaEntity && otherEntity is SeaEntity) {
+         if (enablePvp && otherEntity.enablePvp) {
+            if (openWorldGameMode == PvpGameMode.FreeForAll && otherEntity.openWorldGameMode == PvpGameMode.FreeForAll) {
+               return true;
+            } else if (openWorldGameMode == PvpGameMode.GuildWars && otherEntity.openWorldGameMode == PvpGameMode.GuildWars) {
+               if (otherEntity.guildId != guildId) {
+                  // Proceed to alliance check
+                  if (otherEntity.guildAllies.Contains(guildId) || guildAllies.Contains(otherEntity.guildId)) {
+                     // If guilds are allied to each other, they are not enemies
+                     return false;
+                  } else {
+                     // If no alliance is formed, they are enemies
+                     return true;
+                  }
+               } else {
+                  // If guild id of this unit and its target is the same, they are allies
+                  return false;
+               }
+            } else if (openWorldGameMode == PvpGameMode.GroupWars && otherEntity.openWorldGameMode == PvpGameMode.GroupWars) {
+               return otherEntity.voyageGroupId != voyageGroupId;
+            }
+         }
+      }
+      
       // If both entities are on a pvp team, check if they're on our team
       if (pvpTeam != PvpTeamType.None && otherEntity.pvpTeam != PvpTeamType.None) {
          return (pvpTeam != otherEntity.pvpTeam);
@@ -1373,6 +1394,21 @@ public class NetEntity : NetworkBehaviour
    public bool isAllyOf (NetEntity otherEntity) {
       if (otherEntity == null || otherEntity.isDead()) {
          return false;
+      }
+
+      // This allows bot ships to be friendly to allies
+      if (isBotShip() && isPlayerAlly && otherEntity is PlayerShipEntity) {
+         return true;
+      }
+
+      // This allows player ships to be friendly to bot ships
+      if (this is PlayerShipEntity && otherEntity.isPlayerAlly && otherEntity is BotShipEntity) {
+         return true;
+      }
+
+      // Bot ships can fight if they do not have the same guild (pirates vs privateers)
+      if (guildId > 0 && otherEntity.guildId > 0 && isBotShip() && otherEntity.isBotShip() && otherEntity.guildId == guildId) {
+         return true;
       }
 
       if (enablePvp && otherEntity.enablePvp) {

@@ -7440,11 +7440,12 @@ public class RPCManager : NetworkBehaviour
    #region Spawn Sea Entities
 
    [Command]
-   public void Cmd_SpawnPirateShip (Vector2 spawnPosition, int guildID) {
+   public void Cmd_SpawnPirateShip (Vector2 spawnPosition, int guildID, bool isFriendly) {
       BotShipEntity bot = Instantiate(PrefabsManager.self.botShipPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaKey = _player.areaKey;
+      bot.isPlayerAlly = isFriendly;
 
       // Choose ship type at random
       List<Ship.Type> shipTypes = Enum.GetValues(typeof(Ship.Type)).Cast<Ship.Type>().ToList();

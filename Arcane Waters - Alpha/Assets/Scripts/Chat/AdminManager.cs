@@ -74,6 +74,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("check_fps", "Checks the user's FPS (Not implemented yet)", requestCheckFPS, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("shutdown", "Shuts down the server (Not implemented yet)", requestShutdown, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("enemy", "Spawns a lizard enemy", requestSpawnEnemy, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("spawn_friendlyship", "Spawns a friendly ship", requestFriendlyBotShipSpawn, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("spawn", "Spawns a custom enemy type", spawnCustomEnemy, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "enemyType" }));
       cm.addCommand(new CommandData("create_shop_ships", "Creates shop ships (Not implemented yet)", requestCreateShopShips, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("create_shop_items", "Creates shop items (Not implemented yet)", requestCreateShopItems, requiredPrefix: CommandType.Admin));
@@ -210,6 +211,10 @@ public class AdminManager : NetworkBehaviour
 
    private void requestTestOpenWorld (string parameters) {
       Cmd_TestOpenWorld(parameters);
+   }
+
+   private void requestFriendlyBotShipSpawn () {
+      _player.rpc.Cmd_SpawnPirateShip(Util.getMousePos(), BotShipEntity.PRIVATEERS_GUILD_ID, true);
    }
 
    [Command]
