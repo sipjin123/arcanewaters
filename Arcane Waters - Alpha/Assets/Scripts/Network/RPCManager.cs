@@ -6907,8 +6907,11 @@ public class RPCManager : NetworkBehaviour
       oreNode.updateSprite(oreNode.interactCount);
       ExplosionManager.createMiningParticle(oreNode.transform.position);
 
+      bool isGuildMap = CustomMapManager.isGuildSpecificAreaKey(oreNode.areaKey);
+      Map mapInfo = AreaManager.self.getMapInfo(oreNode.areaKey);
+
       // Start refresh timer for local instance
-      if (oreNode.finishedMining() && oreNode.mapSpecialType != Area.SpecialType.TreasureSite) {
+      if (oreNode.finishedMining() && oreNode.mapSpecialType != Area.SpecialType.TreasureSite && !isGuildMap && (mapInfo == null || mapInfo.specialState == 1)) {
          oreNode.startResetTimer();
          Cmd_ResetOreReference(oreId);
       }

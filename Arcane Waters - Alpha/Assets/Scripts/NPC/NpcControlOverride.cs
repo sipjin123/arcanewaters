@@ -30,7 +30,7 @@ public class NpcControlOverride : MonoBehaviour {
    // Distance to trigger petting
    public const float PET_DISTANCE = .1f;
    public const float STATIONARY_PET_DISTANCE = .22f;
-   public const float CLIENT_PET_DISTANCE = .75f;
+   public const float CLIENT_PET_DISTANCE = .25f;
 
    #endregion
 
@@ -41,7 +41,8 @@ public class NpcControlOverride : MonoBehaviour {
 
    private void Update () {
       if (isOverridingMovement) {
-         if (Vector2.Distance((Vector2) transform.position, endPosition) > PET_DISTANCE && npc.isStationary == false) {
+         float distanceGrap = Vector2.Distance((Vector2) transform.position, endPosition);
+         if (distanceGrap > PET_DISTANCE && npc.isStationary == false) {
             // Move animal linearly to the player
             float t = elapsedTime / maxTime;
             rigidBody.MovePosition(Vector3.Lerp(startPosition, endPosition, t));
