@@ -19,9 +19,6 @@ public class InteractableObjManager : MonoBehaviour {
    // The interactable box spawned by server
    public InteractableObjEntity interactableBox;
 
-   // The effects when interacting a crate
-   public GameObject interactCrateEffects;
-
    #endregion
 
    private void Awake () {

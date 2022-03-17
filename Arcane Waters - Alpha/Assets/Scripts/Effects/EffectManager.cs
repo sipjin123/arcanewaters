@@ -22,6 +22,9 @@ public class EffectManager : MonoBehaviour {
    // Generic effect prefab used when ships receive a buff
    public SeaBuffEffect seaBuffEffectPrefab;
 
+   // The effects when interacting a crate
+   public GameObject interactCrateEffects;
+
    // Self
    public static EffectManager self;
 

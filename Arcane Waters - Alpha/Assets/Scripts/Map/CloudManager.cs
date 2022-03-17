@@ -34,7 +34,7 @@ public class CloudManager : ClientMonoBehaviour {
 
       // Look up our area's camera bounds, and expand that for the area we're going to work with
       expandedBounds = GetComponentInParent<Area>().cameraBounds.bounds;
-      expandedBounds.Expand(3f);
+      expandedBounds.Expand(4.5f);
 
       // Store any clouds that we already made in the Editor
       _clouds = new List<Cloud>(GetComponentsInChildren<Cloud>());
