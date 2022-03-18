@@ -422,11 +422,15 @@ public class MyNetworkManager : NetworkManager
             if (voyageId < 1) {
                // If the user is in a voyage group, find the server containing the voyage group registry, then use that server port to be the primary server of that voyage group
                targetServerPort = voyageGroupInfo != null ? voyageGroupInfo.portRegistered : -1;
+               D.adminLog("[[VoyageGroupBreakdown]] Found the server containing group: " + (voyageGroupInfo != null ? voyageGroupInfo.portRegistered + ":" + voyageGroupInfo.groupId : "NULL"), D.ADMIN_LOG_TYPE.Redirecting);
+            } else {
+               D.adminLog("[[VoyageGroupBreakdown]] Try to get Voyage ID: {" + voyageId + "} for User: {" + authenticatedUserId + "}", D.ADMIN_LOG_TYPE.Redirecting);
             }
 
             // If the user is not assigned to this server, we must ask the master server where to redirect him
             if (!ServerNetworkingManager.self.server.assignedUserIds.ContainsKey(authenticatedUserId)) {
                D.debug($"OnServerAddPlayer The user {userInfo.username} is not assigned to this server - Redirecting.");
+               D.adminLog("<><><> Redirection Method-1 Port:[" + targetServerPort + "]", D.ADMIN_LOG_TYPE.Redirecting);
                StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, previousAreaKey, "", -1, targetServerPort));
                return;
             }
@@ -448,6 +452,7 @@ public class MyNetworkManager : NetworkManager
                         DB_Main.setNewLocalPosition(userInfo.userId, Vector2.zero, Direction.South, Area.STARTING_TOWN);
 
                         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                           D.adminLog("<><><> Redirection Method-2 Port:[" + targetServerPort + "]", D.ADMIN_LOG_TYPE.Redirecting);
                            StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, Area.STARTING_TOWN, "", -1, targetServerPort));
                         });
                      });
@@ -479,6 +484,7 @@ public class MyNetworkManager : NetworkManager
                   DB_Main.setNewLocalPosition(userInfo.userId, Vector2.zero, Direction.South, Area.STARTING_TOWN);
 
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     D.adminLog("<><><> Redirection Method-3 Port:[" + targetServerPort + "]", D.ADMIN_LOG_TYPE.Redirecting);
                      StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, Area.STARTING_TOWN, "", -1, targetServerPort));
                   });
                });
@@ -889,6 +895,7 @@ public class MyNetworkManager : NetworkManager
    }
 
    public IEnumerator CO_RedirectUser (NetworkConnection conn, int accountId, int userId, string userName, int voyageId, bool isSinglePlayer, string destinationAreaKey, string currentAreaKey, GameObject entityToDestroy, int instanceId, int serverPort) {
+      D.adminLog("<><><> Redirection Method-4 Port:[" + serverPort + "]", D.ADMIN_LOG_TYPE.Redirecting);
       yield return CO_RedirectUser(conn, accountId, userId, userName, voyageId, isSinglePlayer, destinationAreaKey, currentAreaKey, instanceId, serverPort);
 
       // Destroy the old Player object

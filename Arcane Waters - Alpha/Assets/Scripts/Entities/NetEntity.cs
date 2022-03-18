@@ -2189,6 +2189,7 @@ public class NetEntity : NetworkBehaviour
          }
       }
 
+      D.adminLog("Trigger Spawn in New Map Method-A: {" + newArea + ":-1}", D.ADMIN_LOG_TYPE.Redirecting);
       spawnInNewMap(newArea, targetLocalPos, adjustedNewFacingDirection, -1, -1);
    }
 
@@ -2239,6 +2240,7 @@ public class NetEntity : NetworkBehaviour
          return;
       }
 
+      D.adminLog("Trigger Spawn in New Map Method-B: {" + newArea + ":" + serverPort + "}", D.ADMIN_LOG_TYPE.Redirecting);
       // Now that we know the target server, redirect them there
       findBestServerAndWarp(newArea, newLocalPosition, -1, newFacingDirection, instanceId, serverPort);
    }
@@ -2255,6 +2257,7 @@ public class NetEntity : NetworkBehaviour
             ? SpawnManager.self.getDefaultLocalPosition(newArea, true)
             : SpawnManager.self.getLocalPosition(newArea, spawn, true);
 
+      D.adminLog("Trigger Spawn in New Map Method-AA: {" + newArea + ":-1}", D.ADMIN_LOG_TYPE.Redirecting);
       findBestServerAndWarp(newArea, spawnLocalPosition, voyageId, newFacingDirection, -1, -1);
    }
 
@@ -2329,11 +2332,15 @@ public class NetEntity : NetworkBehaviour
                // If the user is in a voyage group, find the server containing the voyage group registry, then use that server port to be the primary server of that voyage group
                if (newVoyageId < 1 && voyageGroupInfo != null) {
                   targetServerPort = voyageGroupInfo.portRegistered;
+                  D.adminLog("[[VoyageGroupBreakdown]] Found the server containing group: " + (voyageGroupInfo != null ? voyageGroupInfo.portRegistered + ":" + voyageGroupInfo.groupId : "NULL"), D.ADMIN_LOG_TYPE.Redirecting);
                   if (targetServerPort > 0) {
                      serverPort = targetServerPort;
                   }
+               } else {
+                  D.adminLog("[[VoyageGroupBreakdown]] Try to get Voyage ID: {" + voyageId + ":" + newVoyageId + "} for User: {" + userId + ":" + serverPort + "}", D.ADMIN_LOG_TYPE.Redirecting);
                }
             }
+            D.adminLog("NetEntity! Redirecting now! for user {" + userId + "}{" + entityName + "} Voyage ID: {" + voyageId + ":" + newVoyageId + "}{" + instanceId + "}{" + serverPort + "}{" + newArea + ":" + areaKey + "}", D.ADMIN_LOG_TYPE.Redirecting);
 
             // Redirect the player to the best server
             MyNetworkManager.self.StartCoroutine(MyNetworkManager.self.CO_RedirectUser(this.connectionToClient, accountId, userId, entityName, voyageId, isSinglePlayer, newArea, areaKey, entityObject, instanceId, serverPort));
