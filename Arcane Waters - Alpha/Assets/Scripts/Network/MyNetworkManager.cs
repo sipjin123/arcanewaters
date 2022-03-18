@@ -417,11 +417,17 @@ public class MyNetworkManager : NetworkManager
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Get the current voyage info the user is part of, if any
             int voyageId = VoyageGroupManager.self.tryGetGroupByUser(authenticatedUserId, out VoyageGroupInfo voyageGroupInfo) ? voyageGroupInfo.voyageId : -1;
+           
+            int targetServerPort = -1;
+            if (voyageId < 1) {
+               // If the user is in a voyage group, find the server containing the voyage group registry, then use that server port to be the primary server of that voyage group
+               targetServerPort = voyageGroupInfo != null ? voyageGroupInfo.portRegistered : -1;
+            }
 
             // If the user is not assigned to this server, we must ask the master server where to redirect him
             if (!ServerNetworkingManager.self.server.assignedUserIds.ContainsKey(authenticatedUserId)) {
                D.debug($"OnServerAddPlayer The user {userInfo.username} is not assigned to this server - Redirecting.");
-               StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, previousAreaKey, "", -1, -1));
+               StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, previousAreaKey, "", -1, targetServerPort));
                return;
             }
             D.adminLog($"OnServerAddPlayer The user {userInfo.username} is assigned to this server.", D.ADMIN_LOG_TYPE.InstanceProcess);
@@ -442,7 +448,7 @@ public class MyNetworkManager : NetworkManager
                         DB_Main.setNewLocalPosition(userInfo.userId, Vector2.zero, Direction.South, Area.STARTING_TOWN);
 
                         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                           StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, Area.STARTING_TOWN, "", -1, -1));
+                           StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, Area.STARTING_TOWN, "", -1, targetServerPort));
                         });
                      });
 
@@ -473,7 +479,7 @@ public class MyNetworkManager : NetworkManager
                   DB_Main.setNewLocalPosition(userInfo.userId, Vector2.zero, Direction.South, Area.STARTING_TOWN);
 
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, Area.STARTING_TOWN, "", -1, -1));
+                     StartCoroutine(CO_RedirectUser(conn, userInfo.accountId, userInfo.userId, userInfo.username, voyageId, userObjects.isSinglePlayer, Area.STARTING_TOWN, "", -1, targetServerPort));
                   });
                });
 
