@@ -795,8 +795,10 @@ public class AdminManager : NetworkBehaviour
 
          switch (logType) {
             case "break":
-               message = "=================================================================\n\n";
-               break;
+               message = "----->\n----->\n----->\n----->\n----->\n";
+               ServerNetworkingManager.self.logRequest(message);
+               Target_ReceiveServerLogs(message);
+               return;
             case "voyages":
                Instance instInfo = InstanceManager.self.getInstance(_player.instanceId);
                message += "->>> User: {" + _player.entityName + ":" + _player.userId + "} Instance: {" + (instInfo == null ? "NULL" : (instInfo.id + ":" + instInfo.areaKey + ":" + instInfo.privateAreaUserId)) + "}";
@@ -821,11 +823,16 @@ public class AdminManager : NetworkBehaviour
                foreach (Instance inst in InstanceManager.self.getAllInstances()) {
                   message += "-> Instance: {" + inst.id + ":" + inst.areaKey + ":" + inst.voyageId + "}\n";
                }
-               break;
+
+               ServerNetworkingManager.self.logRequest(message);
+               Target_ReceiveServerLogs(message);
+               return;
             case "user":
                instInfo = InstanceManager.self.getInstance(_player.instanceId);
-               message += "->>> User: {" + _player.entityName + ":" + _player.userId + "} is in Instance: {" + (instInfo == null ? "NULL" : (instInfo.id + ":" + instInfo.areaKey + ":" + instInfo.isPvP)) + "}";
-               break;
+               message += "->>> User: {" + _player.entityName + ":" + _player.userId + "} is in Instance: {" + (instInfo == null ? "NULL" : (instInfo.id + ":" + instInfo.areaKey + ":" + instInfo.isPvP)) + "} in server {" + ServerNetworkingManager.self.server.networkedPort.Value + "}";
+               ServerNetworkingManager.self.logRequest(message);
+               Target_ReceiveServerLogs(message);
+               return;
             case "entities":
                List<NetEntity> entityList = EntityManager.self.getAllEntities();
                int index = 0;

@@ -887,6 +887,18 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ServerRPC]
+   public void MasterServer_LogRequest (string message) {
+      foreach (NetworkedServer targetServer in ServerNetworkingManager.self.servers) {
+         targetServer.InvokeClientRpcOnOwner(Server_LogRequest, message);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_LogRequest (string message) {
+      D.debug(ServerNetworkingManager.self.server + ": " + message);
+   }
+
+   [ServerRPC]
    public int MasterServer_RedirectUserToBestServer (int userId, string userName, int voyageId, bool isSinglePlayer, string destinationAreaKey, int currentServerPort, string currentAddress, string currentAreaKey, int targetInstanceId, int targetServerPort) {
       return RedirectionManager.self.redirectUserToBestServer(userId, userName, voyageId, isSinglePlayer, destinationAreaKey, currentServerPort, currentAddress, currentAreaKey, targetInstanceId, targetServerPort);
    }

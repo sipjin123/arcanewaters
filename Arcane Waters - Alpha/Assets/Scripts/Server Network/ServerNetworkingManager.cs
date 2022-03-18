@@ -388,6 +388,10 @@ public class ServerNetworkingManager : MonoBehaviour
       server.InvokeServerRpc(server.MasterServer_WarpUser, userId, voyageId, areaKey, newFacingDirection, spawn);
    }
 
+   public void logRequest (string message) {
+      server.InvokeServerRpc(server.MasterServer_LogRequest, message);
+   }
+
    public void displayNoticeScreenWithError (int userId, ErrorMessage.Type errorType, string message) {
       server.InvokeServerRpc(server.MasterServer_DisplayNoticeScreenWithError, userId, errorType, message);
    }
