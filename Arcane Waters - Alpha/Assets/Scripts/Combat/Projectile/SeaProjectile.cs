@@ -340,6 +340,11 @@ public class SeaProjectile : NetworkBehaviour
          ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(projectileTypeId);
          int projectileBaseDamage = (int) projectileData.projectileDamage;
          int shipDamage = (int) (sourceEntity.damage * projectileBaseDamage * ((sourceEntity.getBuffValue(SeaBuff.Category.Buff, SeaBuff.Type.DamageAmplify) * 100) / 100.0f));
+         
+         // Override damage if god mode
+         if (sourceEntity is PlayerShipEntity && sourceEntity.isGodMode && sourceEntity.isAdmin()) {
+            shipDamage = 99999;
+         }
          int abilityDamage = 0;
          if (_abilityData != null) {
             abilityDamage = (int) (_abilityData.damageModifier * projectileBaseDamage);

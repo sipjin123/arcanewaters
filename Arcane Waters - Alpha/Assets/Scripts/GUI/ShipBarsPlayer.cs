@@ -94,7 +94,7 @@ public class ShipBarsPlayer : ShipBars
       if (_entity.guildId > 0) {
          // If the player is in a pvp open world map but their pvp is set to inactive, do not show their guild icon
          if (!_entity.enablePvp && _entity.openWorldGameMode == PvpGameMode.GuildWars) {
-            guildIcon.gameObject.SetActive(false);
+            guildIcon.transform.parent.gameObject.SetActive(false);
          } else {
             PlayerShipEntity shipEntity = (PlayerShipEntity) _entity;
 
@@ -115,7 +115,7 @@ public class ShipBarsPlayer : ShipBars
             }
          }
       } else {
-         guildIcon.gameObject.SetActive(false);
+         guildIcon.transform.parent.gameObject.SetActive(false);
       }
    }
 

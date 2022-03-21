@@ -1906,6 +1906,7 @@ public class AdminManager : NetworkBehaviour
          if (list.Length > 0) {
             int shipdamage = int.Parse(list[0]);
             GetComponent<PlayerShipEntity>().damage = shipdamage;
+            _player.isGodMode = true;
          }
       }
    }

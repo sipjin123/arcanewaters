@@ -19,6 +19,10 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public bool enablePvp;
 
+   // If this unit is in god mode
+   [SyncVar]
+   public bool isGodMode = false;
+
    // The account ID for this entity
    [SyncVar]
    public int accountId;
