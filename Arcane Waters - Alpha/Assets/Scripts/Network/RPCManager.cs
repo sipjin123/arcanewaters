@@ -1209,7 +1209,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveVoyageGroupMembers (NetworkConnection connection, VoyageGroupMemberCellInfo[] groupMembers) {
+   public void Target_ReceiveVoyageGroupMembers (NetworkConnection connection, VoyageGroupMemberCellInfo[] groupMembers, int voyageLeader) {
       // Get the panel
       VoyageGroupPanel panel = VoyageGroupPanel.self;
 
@@ -1219,7 +1219,7 @@ public class RPCManager : NetworkBehaviour
       }
 
       // Update the panel info
-      panel.updatePanelWithGroupMembers(groupMembers);
+      panel.updatePanelWithGroupMembers(groupMembers, voyageLeader);
    }
 
    [TargetRpc]
@@ -6507,7 +6507,8 @@ public class RPCManager : NetworkBehaviour
          } else {
             // Back to the Unity thread
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               Target_ReceiveVoyageGroupMembers(_player.connectionToClient, groupMembersInfo.ToArray());
+               int totalMembers = voyageGroup.members.Count;
+               Target_ReceiveVoyageGroupMembers(_player.connectionToClient, groupMembersInfo.ToArray(), totalMembers > 0 ? voyageGroup.members[0] : 0);
 
                // Also send updated info of this user to the other group members
                foreach (VoyageGroupMemberCellInfo cellInfo in groupMembersInfo) {

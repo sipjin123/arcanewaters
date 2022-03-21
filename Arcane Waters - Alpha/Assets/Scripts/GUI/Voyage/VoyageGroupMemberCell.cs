@@ -65,8 +65,9 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
       InvokeRepeating(nameof(updatePortrait), Random.Range(0f, 2f), 3f);
    }
 
-   public void setCellForGroupMember (VoyageGroupMemberCellInfo cellInfo) {
+   public void setCellForGroupMember (VoyageGroupMemberCellInfo cellInfo, int voyageLeader) {
       _userId = cellInfo.userId;
+      teamLeaderIndicator.SetActive(_userId == voyageLeader);
 
       Weapon weapon = WeaponStatData.translateDataToWeapon(WeaponStatData.getDefaultData());
       WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(cellInfo.weapon.itemTypeId);

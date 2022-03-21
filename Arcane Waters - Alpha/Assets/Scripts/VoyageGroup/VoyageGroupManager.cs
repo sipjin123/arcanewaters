@@ -190,7 +190,7 @@ public class VoyageGroupManager : MonoBehaviour
    public void removeUserFromGroup (VoyageGroupInfo voyageGroup, NetEntity player) {
       player.voyageGroupId = -1;
       removeUserFromGroup(voyageGroup, player.userId);
-      player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, new VoyageGroupMemberCellInfo[0]);
+      player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, new VoyageGroupMemberCellInfo[0], voyageGroup.members.Count > 0 ? voyageGroup.members[0] : 0);
       
       // Clear user powerups on the server
       PowerupManager.self.clearPowerupsForUser(player.userId);
@@ -586,8 +586,8 @@ public class VoyageGroupManager : MonoBehaviour
                if (player != null) {
                   // Make sure the player entity has the correct voyage group id set
                   player.voyageGroupId = groupId;
-
-                  player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, groupMembersInfo.ToArray());
+                  int groupMembersTotal = voyageGroup.members.Count;
+                  player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, groupMembersInfo.ToArray(), groupMembersTotal > 0 ? voyageGroup.members[0] : 0);
                }
             }
          });

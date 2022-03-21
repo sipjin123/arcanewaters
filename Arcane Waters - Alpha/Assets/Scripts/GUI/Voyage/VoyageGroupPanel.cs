@@ -177,40 +177,33 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       }
    }
 
-   public void updatePanelWithGroupMembers (VoyageGroupMemberCellInfo[] groupMembers) {
+   public void updatePanelWithGroupMembers (VoyageGroupMemberCellInfo[] groupMembers, int voyageLeader) {
       // Clear out any old info
       memberContainer.DestroyAllChildrenExcept(panelHoveringZone.gameObject);
       _memberCells.Clear();
       VoyageGroupManager.self.groupMemberArrowContainer.DestroyChildren();
       _memberArrows.Clear();
 
-      groupLeader = -1;
       if (groupMembers.Length > MAX_MEMBER_CELLS) {
          // Large groups only display the local player portrait (temporary)
          foreach (VoyageGroupMemberCellInfo cellInfo in groupMembers) {
-            if (groupLeader < 1) {
-               groupLeader = cellInfo.userId;
-            }
             if (cellInfo.userId == Global.player.userId) {
-               instantiatePortraitAndArrow(cellInfo);
+               instantiatePortraitAndArrow(cellInfo, voyageLeader);
             }
          }
       } else {
          foreach (VoyageGroupMemberCellInfo cellInfo in groupMembers) {
-            if (groupLeader < 1) {
-               groupLeader = cellInfo.userId;
-            }
-            instantiatePortraitAndArrow(cellInfo);
+            instantiatePortraitAndArrow(cellInfo, voyageLeader);
          }
       }
 
       Instantiate(columnBottomPrefab, memberContainer.transform, false);
    }
 
-   private void instantiatePortraitAndArrow (VoyageGroupMemberCellInfo cellInfo) {
+   private void instantiatePortraitAndArrow (VoyageGroupMemberCellInfo cellInfo, int voyageLeader) {
       // Instantiate the cell
       VoyageGroupMemberCell cell = Instantiate(memberCellPrefab, memberContainer.transform, false);
-      cell.setCellForGroupMember(cellInfo);
+      cell.setCellForGroupMember(cellInfo, voyageLeader);
       _memberCells.Add(cell);
    }
 
