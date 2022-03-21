@@ -564,6 +564,11 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
    }
 
+   public void resetCombatAvailability () {
+      isWithinEnemyRadius = false;
+      playerBattleCollider.combatInitCollider.enabled = true;
+   }
+
    public void OnPointerEnter (PointerEventData pointerEventData) {
       showEntityName();
 

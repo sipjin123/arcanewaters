@@ -8291,8 +8291,8 @@ public class RPCManager : NetworkBehaviour
 
       if (Global.player is PlayerBodyEntity) {
          PlayerBodyEntity playerBody = (PlayerBodyEntity) Global.player;
-         playerBody.isWithinEnemyRadius = false;
-         playerBody.playerBattleCollider.combatInitCollider.enabled = true;
+         float pixelFadeEffectDuration = CameraManager.battleCamera.getPixelFadeEffect().getFadeOutDuration() * 2;
+         playerBody.Invoke(nameof(playerBody.resetCombatAvailability), pixelFadeEffectDuration);
       } else {
          D.debug("Failed to restore player movement! Battle ID: " + battleId);
       }

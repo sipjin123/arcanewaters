@@ -228,9 +228,6 @@ public class BattleManager : MonoBehaviour {
    }
 
    public void endBattle (Battle battle, Battle.TeamType winningTeam) {
-      if (!Util.isBatch()) {
-         BattleUIManager.self.disableBattleUI();
-      }
       BattleUIManager.self.isInitialEnemySelected = false;
 
       if (battle == null) {
@@ -245,13 +242,14 @@ public class BattleManager : MonoBehaviour {
          // Update our internal mapping of users to battles
          _activeBattles[battler.userId] = null;
 
+         // Warp any losing players back to the starting town, or show the death animation for Enemies
+         battler.handleEndOfBattle(winningTeam);
+
          // If this was a Player, we can release the server claim now, so they can relog into any server
          if (battler.userId > 0) {
             ServerNetworkingManager.self.releasePlayerClaim(battler.userId);
+            battler.player.rpc.Target_ResetMoveDisable(battler.player.connectionToClient, battler.battleId.ToString());
          }
-
-         // Warp any losing players back to the starting town, or show the death animation for Enemies
-         battler.handleEndOfBattle(winningTeam);
 
          // Destroy the Battler from the Network
          NetworkServer.Destroy(battler.gameObject);

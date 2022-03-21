@@ -420,7 +420,6 @@ public class Battle : NetworkBehaviour {
                   if (isVoyageTreasureSite || (participant.teamType == winningTeam && participant.enemyType == Enemy.Type.PlayerBattler)) {
                      // Allow refresh movement when the winning battler is a player or when respawning in a voyage treasure site
                      playerIds += ": " + participant.player.userId;
-                     participant.player.rpc.Target_ResetMoveDisable(participant.player.connectionToClient, participant.battleId.ToString());
                   }
                }
             }
