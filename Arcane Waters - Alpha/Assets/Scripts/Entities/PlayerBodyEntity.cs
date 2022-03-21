@@ -1049,17 +1049,21 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
                break;
          }
 
-         if (farmingTrigger.tryGetTreeInChopRange(out PlantableTree tree)) {
-            if (PlantableTreeManager.self.canPlayerChop(this, tree)) {
-               // Check if this hit will destroy the tree
-               if (!tree.isOneHitAwayFromDestroy()) {
-                  // If we have a tree nearby, changed the animation to 'impact'
-                  if (targetType == Anim.Type.Interact_East) {
-                     targetType = Anim.Type.Impact_Interact_East;
-                  } else if (targetType == Anim.Type.Interact_North) {
-                     targetType = Anim.Type.Impact_Interact_North;
-                  } else if (targetType == Anim.Type.Interact_South) {
-                     targetType = Anim.Type.Impact_Interact_South;
+         if (farmingTrigger.tryGetTreesInChopRange(out List<PlantableTree> trees)) {
+            foreach(PlantableTree tree in trees) {
+               if (PlantableTreeManager.self.canPlayerChop(this, tree)) {
+                  // Check if this hit will destroy the tree
+                  if (!tree.isOneHitAwayFromDestroy()) {
+                     // If we have a tree nearby, changed the animation to 'impact'
+                     if (targetType == Anim.Type.Interact_East) {
+                        targetType = Anim.Type.Impact_Interact_East;
+                     } else if (targetType == Anim.Type.Interact_North) {
+                        targetType = Anim.Type.Impact_Interact_North;
+                     } else if (targetType == Anim.Type.Interact_South) {
+                        targetType = Anim.Type.Impact_Interact_South;
+                     }
+
+                     break;
                   }
                }
             }

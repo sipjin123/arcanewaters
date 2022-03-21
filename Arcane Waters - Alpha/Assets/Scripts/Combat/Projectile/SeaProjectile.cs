@@ -67,7 +67,7 @@ public class SeaProjectile : NetworkBehaviour
                shipAbilityData = ShipAbilityManager.self.getAbility(shipAbilityId);
             }
 
-            if(projectileTypeId > 0) {
+            if (projectileTypeId > 0) {
                projectileStatData = ProjectileStatManager.self.getProjectileData(projectileTypeId);
             }
 
@@ -508,45 +508,53 @@ public class SeaProjectile : NetworkBehaviour
    }
 
    protected void playHitSound (bool hitLand, bool hitEnemy) {
-      bool playDefaultSFX = false;
-
-      bool hitSolid = hitLand || hitEnemy;
-
       ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(projectileTypeId);
-      if (projectileData == null) {
-         playDefaultSFX = true;
-      } else {
-         if (hitSolid) {
-            if (projectileData.landHitSFX.Length < 1) {
-               playDefaultSFX = true;
-            } else {
-               playDefaultSFX = false;
-            }
-         } else {
-            if (projectileData.waterHitSFX.Length < 1) {
-               playDefaultSFX = true;
-            } else {
-               playDefaultSFX = false;
-            }
-         }
+      SoundEffectManager.ProjectileType sfxType = SoundEffectManager.ProjectileType.None;
+
+      if (projectileData != null) {
+         sfxType = projectileData.sfxType;
       }
 
-      if (hitLand) {
-         if (playDefaultSFX) {
-            //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position, true);
-         } else {
-            //SoundManager.create3dSoundWithPath(projectileData.landHitSFX, transform.position, projectileData.landHitVol);
-         }
-      } else if (!hitEnemy) {
-         // FMOD sfx for water
-         SoundEffectManager.self.playCannonballImpact(SoundEffectManager.Cannonball.Water_Impact, this.transform.position);
+      SoundEffectManager.self.playProjectileTerrainHitSound(hitLand, hitEnemy, sfxType, this.transform, this._rigidbody);
+      //bool playDefaultSFX = false;
 
-         //if (playDefaultSFX) {
-         //   SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position, true);
-         //} else {
-         //   SoundManager.create3dSoundWithPath(projectileData.waterHitSFX, transform.position, projectileData.waterHitVol);
-         //}
-      }
+      //bool hitSolid = hitLand || hitEnemy;
+
+      //ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(projectileTypeId);
+      //if (projectileData == null) {
+      //   playDefaultSFX = true;
+      //} else {
+      //   if (hitSolid) {
+      //      if (projectileData.landHitSFX.Length < 1) {
+      //         playDefaultSFX = true;
+      //      } else {
+      //         playDefaultSFX = false;
+      //      }
+      //   } else {
+      //      if (projectileData.waterHitSFX.Length < 1) {
+      //         playDefaultSFX = true;
+      //      } else {
+      //         playDefaultSFX = false;
+      //      }
+      //   }
+      //}
+
+      //if (hitLand) {
+      //   if (playDefaultSFX) {
+      //      //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position, true);
+      //   } else {
+      //      //SoundManager.create3dSoundWithPath(projectileData.landHitSFX, transform.position, projectileData.landHitVol);
+      //   }
+      //} else if (!hitEnemy) {
+      //   // FMOD sfx for water
+      //   SoundEffectManager.self.playCannonballImpact(SoundEffectManager.Cannonball.Water_Impact, this.transform.position);
+
+      //   //if (playDefaultSFX) {
+      //   //   SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position, true);
+      //   //} else {
+      //   //   SoundManager.create3dSoundWithPath(projectileData.waterHitSFX, transform.position, projectileData.waterHitVol);
+      //   //}
+      //}
    }
 
    #region Private Variables

@@ -48,6 +48,10 @@ public class SpaceRequirer : MonoBehaviour
          }
       }
 
+      if ((Vector2) transform.localPosition != Vector2.zero) {
+         D.error("Space Requirer should have it's local position at 0!");
+      }
+
       if (ignoreChildrenOf == null) {
          ignoreChildrenOf = transform;
       }

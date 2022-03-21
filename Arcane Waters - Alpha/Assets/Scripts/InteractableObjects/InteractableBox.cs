@@ -24,6 +24,8 @@ public class InteractableBox : InteractableObjEntity {
 
    public override void interactObject (Vector2 dir, float overrideForce = 0) {
       base.interactObject(dir, overrideForce);
+      
+      Rpc_PlayInteractSound();
    }
 
    public override void localInteractTrigger (Vector2 dir, float overrideForce = 0) {
@@ -62,6 +64,11 @@ public class InteractableBox : InteractableObjEntity {
             }
          }
       }
+   }
+
+   [ClientRpc]
+   public void Rpc_PlayInteractSound () {
+      SoundEffectManager.self.playAttachedSfx(SoundEffectManager.INTERACTABLE_BOX, this.transform, this._rigidBody);
    }
 
    #region Private Variables

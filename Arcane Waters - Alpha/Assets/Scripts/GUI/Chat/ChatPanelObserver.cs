@@ -12,7 +12,7 @@ public class ChatPanelObserver : MonoBehaviour {
       }
 
       // If chat if focused but UI shortcuts are active
-      if (ChatManager.self.chatPanel.inputField.isFocused && InputManager.self.inputMaster.UIShotcuts.enabled) {
+      if (ChatManager.self.chatPanel.inputField.isFocusedCached && InputManager.self.inputMaster.UIShotcuts.enabled) {
          _tickCount++;
 
          if (_tickCount >= FOCUS_CHECK_TICKS) {
@@ -24,7 +24,7 @@ public class ChatPanelObserver : MonoBehaviour {
             // Force chat on focus logic
             ChatManager.self.onChatGainedFocus();
          }
-      } 
+      }
       else {
          _tickCount = 0;
       }

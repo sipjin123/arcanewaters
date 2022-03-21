@@ -93,7 +93,7 @@ public class AdventureItemRow : MonoBehaviour {
                }
 
                // Disable rarity display for seeds
-               if (newWeaponData.actionType == Weapon.ActionType.PlantCrop) {
+               if (newWeaponData.actionType == Weapon.ActionType.PlantCrop || newWeaponData.actionType == Weapon.ActionType.PlantTree) {
                   displayStars = false;
                }
                break;

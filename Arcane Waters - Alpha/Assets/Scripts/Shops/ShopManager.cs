@@ -137,7 +137,7 @@ public class ShopManager : MonoBehaviour {
 
                   WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(rawItemData.shopItemTypeIndex);
                   if (weaponData != null) {
-                     if (weaponData.actionType == Weapon.ActionType.PlantCrop) {
+                     if (weaponData.actionType == Weapon.ActionType.PlantCrop || weaponData.actionType == Weapon.ActionType.PlantTree) {
                         rarity = Rarity.Type.Common;
                      }
                   }

@@ -41,6 +41,9 @@ public class UINavigationController : MonoBehaviour {
    private void Update () {
       // Skip for batch mode
       if (Util.isBatch()) return;
+
+      // Skip update when chat is focused
+      if (ChatManager.self.chatPanel.inputField.isFocused) return;
       
       // Check parentCanvasGroup status
       if (parentCanvasGroup) {

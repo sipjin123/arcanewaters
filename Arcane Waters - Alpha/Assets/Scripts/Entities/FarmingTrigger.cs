@@ -210,15 +210,19 @@ public class FarmingTrigger : MonoBehaviour
    private IEnumerator CO_ProcessInteraction () {
       _isFarming = true;
 
-      // Player might be trying to plant trees
+      // If player is planting trees, don't try to do anything else 
       PlantableTreeManager.self.playerTriesPlanting(bodyEntity, getTreePlantPosition());
 
-      if (tryGetTreeInRange(out PlantableTree tree)) {
-         PlantableTreeManager.self.playerSwungAtTree(bodyEntity, tree);
+      if (tryGetTreesInRange(out List<PlantableTree> trees)) {
+         foreach (PlantableTree tree in trees) {
+            PlantableTreeManager.self.playerSwungAtTree(bodyEntity, tree);
+         }
       }
 
-      if (tryGetTreeInChopRange(out tree)) {
-         PlantableTreeManager.self.playerSwungAtTreeAxeRange(bodyEntity, tree);
+      if (tryGetTreesInChopRange(out trees)) {
+         foreach (PlantableTree tree in trees) {
+            PlantableTreeManager.self.playerSwungAtTreeAxeRange(bodyEntity, tree);
+         }
       }
 
       yield return new WaitForSeconds(.1f);
@@ -273,7 +277,9 @@ public class FarmingTrigger : MonoBehaviour
       _isFarming = false;
    }
 
-   public bool tryGetTreeInChopRange (out PlantableTree tree) {
+   public bool tryGetTreesInChopRange (out List<PlantableTree> trees) {
+      trees = new List<PlantableTree>();
+
       bool wasActive = chopCollider.gameObject.activeSelf;
       chopCollider.gameObject.SetActive(true);
 
@@ -284,16 +290,16 @@ public class FarmingTrigger : MonoBehaviour
       for (int i = 0; i < hitNum; i++) {
          PlantableTree t = _treeCheckBuffer[i].collider.GetComponentInParent<PlantableTree>();
          if (t != null) {
-            tree = t;
-            return true;
+            trees.Add(t);
          }
       }
 
-      tree = null;
-      return false;
+      return trees.Count > 0;
    }
 
-   public bool tryGetTreeInRange (out PlantableTree tree) {
+   public bool tryGetTreesInRange (out List<PlantableTree> trees) {
+      trees = new List<PlantableTree>();
+
       bool wasActive = arcCollider.gameObject.activeSelf;
       arcCollider.gameObject.SetActive(true);
 
@@ -304,13 +310,11 @@ public class FarmingTrigger : MonoBehaviour
       for (int i = 0; i < hitNum; i++) {
          PlantableTree t = _treeCheckBuffer[i].collider.GetComponentInParent<PlantableTree>();
          if (t != null) {
-            tree = t;
-            return true;
+            trees.Add(t);
          }
       }
 
-      tree = null;
-      return false;
+      return trees.Count > 0;
    }
 
    public Vector2 getTreePlantPosition () {
@@ -328,6 +332,7 @@ public class FarmingTrigger : MonoBehaviour
       foreach (Transform spawnPoint in effectSpawnList) {
          switch (actionType) {
             case Weapon.ActionType.PlantCrop:
+            case Weapon.ActionType.PlantTree:
                ExplosionManager.createFarmingParticle(actionType, spawnPoint.position, fadeSpeed, 4);
                break;
             case Weapon.ActionType.WaterCrop:

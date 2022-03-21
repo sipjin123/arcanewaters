@@ -171,7 +171,7 @@ public class InstanceManager : MonoBehaviour
 
       // If player is entering a farm, we need to load plantable trees for him
       if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager cmm)) {
-         if (cmm is CustomFarmManager) {
+         if (cmm is CustomFarmManager || cmm is CustomGuildMapManager) {
             PlantableTreeManager.self.playerEnteredFarm(player, areaKey);
          }
       }

@@ -1,5 +1,44 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &761958767805968986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 689949730003979488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ignoredRenderers: []
+  _renderers: []
+--- !u!114 &8264398849854757973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 689949730003979488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3ce18de4c072c64482aed5eddf5469c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  title: Stump
+  canInheritPosition: 0
+  canControlPosition: 0
+  positionStep: {x: 0, y: 0}
+  dataFields:
+  - name: is permanent
+    defaultValue: true
+    toolTip: Is Prefab Placed Permanently
+    type: 3
+  selectDataFields: []
+  customDataFields: []
+  hasVariableObjectState: 0
+  objectStateDescription: 
 --- !u!1 &4930706645650025789
 GameObject:
   m_ObjectHideFlags: 0
@@ -81,43 +120,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &761958767805968986
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 689949730003979488}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
-  _renderers: []
---- !u!114 &8264398849854757973
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 689949730003979488}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3ce18de4c072c64482aed5eddf5469c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  title: Stump
-  canInheritPosition: 0
-  canControlPosition: 0
-  positionStep: {x: 0, y: 0}
-  dataFields:
-  - name: is permanent
-    defaultValue: true
-    toolTip: Is Prefab Placed Permanently
-    type: 3
-  selectDataFields: []
-  customDataFields: []
 --- !u!1001 &5010637928541173416
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -214,6 +216,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Size.y
       value: 1.9326336
+      objectReference: {fileID: 0}
+    - target: {fileID: 7996345402966009537, guid: 80c2c3920358bf8488f329a11053ae09,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80c2c3920358bf8488f329a11053ae09, type: 3}

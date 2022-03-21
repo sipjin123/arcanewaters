@@ -78,7 +78,7 @@ public class SoundEffectManager : GenericGameManager
 
    #region SEA BATTLE
 
-   public const string THROW_SEA_MINE = "event:/SFX/Player/Interactions/Diegetic/Sea_Mine";
+   public const string SEA_MINE = "event:/SFX/Player/Interactions/Diegetic/Sea_Mine";
 
    public const string PLAYER_SHIP_DESTROYED = "event:/SFX/Game/Sea_Battle/Player_Ship_Destroyed";
    public const string ENEMY_SHIP_IMPACT = "event:/SFX/Game/Sea_Battle/Enemy_Ship_Impact";
@@ -154,6 +154,8 @@ public class SoundEffectManager : GenericGameManager
    public const string CROP_PLANT = "event:/SFX/Player/Interactions/Diegetic/Crop_Plant";
    public const string SHIP_SAILING = "event:/SFX/Player/Interactions/Diegetic/Ship/Ship_Sailing";
    public const string WEB_JUMP = "event:/SFX/Player/Interactions/Diegetic/Web_Jumps";
+
+   public const string INTERACTABLE_BOX = "event:/SFX/Player/Interactions/Diegetic/Wooden_Box_SEQ";
 
    #endregion
 
@@ -257,21 +259,55 @@ public class SoundEffectManager : GenericGameManager
       playFmodSfx(hurtPath, position);
    }
 
-   public void playCannonballImpact (Cannonball impactType, Vector3 position) {
-      FMOD.Studio.EventInstance impactEvent = createEventInstance(CANNONBALL_IMPACT);
-      impactEvent.setParameterByName(AUDIO_SWITCH_PARAM, ((int) impactType) - 1);
-      impactEvent.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(position));
-      impactEvent.start();
-      impactEvent.release();
+   public void playProjectileTerrainHitSound (bool hitLand, bool hitEnemy, ProjectileType projectileType, Transform projectileTransform, Rigidbody2D projectileBody) {
+      if (hitLand || hitEnemy) {
+         return;
+      }
+
+      FMOD.Studio.EventInstance hitInstance;
+
+      string eventPath = CANNONBALL_IMPACT;
+      string parameterName = AUDIO_SWITCH_PARAM;
+      int parameterValue = 0;
+
+      switch (projectileType) {
+         case ProjectileType.Sea_Mine:
+            eventPath = SEA_MINE;
+            parameterName = AMBIENCE_SWITCH_PARAM;
+            parameterValue = 1;
+            break;
+      }
+
+      hitInstance = createEventInstance(eventPath);
+      hitInstance.setParameterByName(parameterName, parameterValue);
+
+      if (projectileType == ProjectileType.Sea_Mine) {
+         FMODUnity.RuntimeManager.AttachInstanceToGameObject(hitInstance, projectileTransform, projectileBody);
+      } else {
+         hitInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(projectileTransform.position));
+      }
+
+      hitInstance.start();
+      hitInstance.release();
    }
 
 
    // Returns the state of the title screen ambience event
    private void checkAmbienceEvent () {
-      checkTitleScreenAmbienceEvent();
-
       if (!_ambienceMusicEvent.isValid()) {
          _ambienceMusicEvent = createEventInstance(AMBIENCE_BED_MASTER);
+      }
+   }
+
+   private void checkTitleScreenAmbienceEvent () {
+      if (!_titleScreenAmbienceEvent.isValid()) {
+         _titleScreenAmbienceEvent = createEventInstance(TITLE_SCREEN_AMBIENCE);
+      }
+   }
+
+   private void checkBackgroundMusicEvent () {
+      if (!_backgroundMusicEvent.isValid()) {
+         _backgroundMusicEvent = createEventInstance(BGM_MASTER);
       }
    }
 
@@ -279,6 +315,23 @@ public class SoundEffectManager : GenericGameManager
       _ambienceMusicEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE playbackState);
       if (playbackState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
          _ambienceMusicEvent.start();
+      }
+   }
+
+   private void playBackgroundMusicEvent () {
+      _backgroundMusicEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE backgroundMusicState);
+      if (backgroundMusicState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
+         _backgroundMusicEvent.start();
+      }
+   }
+
+   public void playTitleScreenAmbienceEvent (bool stop = false) {
+      checkTitleScreenAmbienceEvent();
+
+      if (stop) {
+         _titleScreenAmbienceEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+      } else {
+         _titleScreenAmbienceEvent.start();
       }
    }
 
@@ -325,7 +378,7 @@ public class SoundEffectManager : GenericGameManager
 
       AmbienceMusicType audioParam = ambienceMusicType;
 
-      if (ambienceMusicType == AmbienceMusicType.None) {
+      if (!string.IsNullOrEmpty(areaKey)) {
          audioParam = getAmbienceType(areaKey);
       }
 
@@ -340,33 +393,8 @@ public class SoundEffectManager : GenericGameManager
 
       playAmbienceEvent();
 
-      if (_currentAmbience == AmbienceMusicType.None || _currentAmbience == AmbienceMusicType.Title_Screen) {
+      if (_currentAmbience == AmbienceMusicType.None) {
          _ambienceMusicEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-      }
-
-      if (audioParam == AmbienceMusicType.Title_Screen) {
-         _titleScreenAmbienceEvent.start();
-      } else {
-         _titleScreenAmbienceEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-      }
-   }
-
-   private void checkTitleScreenAmbienceEvent () {
-      if (!_titleScreenAmbienceEvent.isValid()) {
-         _titleScreenAmbienceEvent = createEventInstance(TITLE_SCREEN_AMBIENCE);
-      }
-   }
-
-   private void checkBackgroundMusicEvent () {
-      if (!_backgroundMusicEvent.isValid()) {
-         _backgroundMusicEvent = createEventInstance(BGM_MASTER);
-      }
-   }
-
-   private void playBackgroundMusicEvent () {
-      _backgroundMusicEvent.getPlaybackState(out FMOD.Studio.PLAYBACK_STATE backgroundMusicState);
-      if (backgroundMusicState == FMOD.Studio.PLAYBACK_STATE.STOPPED) {
-         _backgroundMusicEvent.start();
       }
    }
 
@@ -418,7 +446,7 @@ public class SoundEffectManager : GenericGameManager
 
       BackgroundMusicType audioParam = backgroundMusicType;
 
-      if (backgroundMusicType == BackgroundMusicType.None) {
+      if (!string.IsNullOrEmpty(areaKey)) {
          audioParam = getBackgroundMusicType(areaKey);
       }
 
@@ -433,15 +461,19 @@ public class SoundEffectManager : GenericGameManager
 
       playBackgroundMusicEvent();
 
-      if (_currentMusic == BackgroundMusicType.None) {
+      // Title Screen ambience
+      if (_currentMusic == BackgroundMusicType.Intro) {
+         playAmbienceMusic(ambienceMusicType: AmbienceMusicType.None);
+         playTitleScreenAmbienceEvent();
+      } else if (_currentMusic == BackgroundMusicType.None) {
          _backgroundMusicEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
       } else if (_currentMusic == BackgroundMusicType.Land_Battle) {
          playAmbienceMusic(ambienceMusicType: AmbienceMusicType.Farm);
       } else if (_previousMusic == BackgroundMusicType.Land_Battle) {
          // If our previous background music was the land battle one, then we reset the ambience event to the correct area.
          playAmbienceMusic(areaKey);
-      } else if (_currentMusic == BackgroundMusicType.Intro) {
-         playAmbienceMusic(ambienceMusicType: AmbienceMusicType.Title_Screen);
+      } else {
+         playTitleScreenAmbienceEvent(true);
       }
    }
 
@@ -589,6 +621,7 @@ public class SoundEffectManager : GenericGameManager
    public void playInteractionSfx (Weapon.ActionType weaponAction, Weapon.Class weaponClass, WeaponType sfxType, Vector3 position) {
       switch (weaponAction) {
          case Weapon.ActionType.PlantCrop:
+         case Weapon.ActionType.PlantTree:
             playFmodSfx(THROW_SEEDS, position);
             break;
          case Weapon.ActionType.WaterCrop:
@@ -750,7 +783,7 @@ public class SoundEffectManager : GenericGameManager
             }
             break;
          case ProjectileType.Sea_Mine:
-            playAttachedSfx(THROW_SEA_MINE, projectileTransform, projectileBody);
+            playAttachedSfx(SEA_MINE, projectileTransform, projectileBody);
             break;
          case ProjectileType.Tentacle:
             if (seaAbilityType != SeaAbilityType.Horror_Poison_Cirle) {
@@ -1041,12 +1074,6 @@ public class SoundEffectManager : GenericGameManager
       None = 0,
       Single = 1,
       Cluster = 2
-   }
-
-   public enum Cannonball
-   {
-      None = 0,
-      Water_Impact = 1
    }
 
    public enum ProjectileType

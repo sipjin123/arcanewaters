@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineRenderer: {fileID: 0}
+  ignoredRenderers: []
   _renderers: []
 --- !u!114 &-4792779448397002096
 MonoBehaviour:
@@ -37,6 +37,8 @@ MonoBehaviour:
     type: 3
   selectDataFields: []
   customDataFields: []
+  hasVariableObjectState: 0
+  objectStateDescription: 
 --- !u!1001 &2232772757019588243
 PrefabInstance:
   m_ObjectHideFlags: 0

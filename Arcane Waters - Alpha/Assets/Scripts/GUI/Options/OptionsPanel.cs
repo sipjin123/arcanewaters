@@ -301,13 +301,6 @@ public class OptionsPanel : Panel
       }
    }
 
-   public override void Update () {
-      base.Update();
-
-      gifReplayMemoryEstimation.text = "~" + GIFReplayManager.self.getMemoryEstimationMB() + "MB RAM";
-   }
-
-
    public void setHelpTipsDisplay () {
       NotificationManager.self.toggleNotifications(displayHelpTipsToggle.isOn);
    }

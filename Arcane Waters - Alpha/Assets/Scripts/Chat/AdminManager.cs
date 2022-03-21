@@ -3906,21 +3906,21 @@ public class AdminManager : NetworkBehaviour
 
    private void downloadSteamUserWishlistTest () {
       try {
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            if (Global.isSteamLogin && SteamManager.Initialized) {
-               D.debug($"Downloading wishlist for steam user '{Global.lastSteamId}'");
-               var httpRequest = new System.Net.Http.HttpRequestMessage(System.Net.Http.HttpMethod.Get, $"https://store.steampowered.com/wishlist/profiles/{Global.lastSteamId}/wishlistdata");
-               var httpClient = new System.Net.Http.HttpClient();
+         D.warning($"Is Steam initialized?: {SteamManager.Initialized}");
+         
+         if (SteamManager.Initialized) {
+            D.warning($"Downloading wishlist for steam user '{Global.lastSteamId}'");
+            var httpRequest = new System.Net.Http.HttpRequestMessage(System.Net.Http.HttpMethod.Get, $"https://store.steampowered.com/wishlist/profiles/{Global.lastSteamId}/wishlistdata");
+            var httpClient = new System.Net.Http.HttpClient();
 
-               httpClient.SendAsync(httpRequest).ContinueWith((t) => {
-                  D.debug($"Tried to download the wishlist. Status Code: {t.Result.StatusCode}.");
+            httpClient.SendAsync(httpRequest).ContinueWith((t) => {
+               D.warning($"Tried to download the wishlist. Status Code: {t.Result.StatusCode}.");
 
-                  t.Result.Content.ReadAsStringAsync().ContinueWith((t2) => {
-                     D.debug($"Tried to download the wishlist. Response body: {t2.Result}");
-                  });
+               t.Result.Content.ReadAsStringAsync().ContinueWith((t2) => {
+                  D.warning($"Tried to download the wishlist. Response body: {t2.Result}");
                });
-            }
-         });
+            });
+         }
       } catch (Exception ex) {
          D.error(ex.Message);
          D.error(ex.StackTrace);

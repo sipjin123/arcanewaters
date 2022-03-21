@@ -90,6 +90,7 @@ public class ExplosionManager : ClientMonoBehaviour {
 
       switch (actionType) {
          case Weapon.ActionType.PlantCrop:
+         case Weapon.ActionType.PlantTree:
             selectedPrefab = self.seedScatterParticlePrefab;
             break;
          case Weapon.ActionType.WaterCrop:

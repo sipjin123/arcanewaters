@@ -73,9 +73,14 @@ public class ChatManager : GenericGameManager
       _commandData.Add(new CommandData("/w", "Sends a private message to a user", sendWhisperMessageToServer, parameterNames: new List<string>() { "userName", "message" }));
       _commandData.Add(new CommandData("/r", "Sends a private message to the last user that whispered to you", tryReply, parameterNames: new List<string>() { "message" }));
       _commandData.Add(new CommandData("/who", "Search users", searchUsers, parameterNames: new List<string>() { "[is, in, level, help]", "username, area or level" }));
-      _commandData.Add(new CommandData("/e", "Play an emote", requestPlayEmote, parameterNames: new List<string>() { "emoteType" }, parameterAutocompletes: EmoteManager.getSupportedEmoteNames()));
       _commandData.Add(new CommandData("/stuck", "Are you stuck? Use this to free yourself", requestUnstuck));
       _commandData.Add(new CommandData("/gif", "Make a GIF of what just happened in game", GIFReplayManager.self.userRequestedGIF));
+      _commandData.Add(new CommandData("/e", "Lists the available emotes", requestEmoteList));
+      _commandData.Add(new CommandData("/dance", "Dance!", () => requestPlayEmote(EmoteManager.EmoteTypes.Dance)));
+      _commandData.Add(new CommandData("/greet", "Wave your hand", () => requestPlayEmote(EmoteManager.EmoteTypes.Greet)));
+      _commandData.Add(new CommandData("/kneel", "Kneeling pose", () => requestPlayEmote(EmoteManager.EmoteTypes.Kneel)));
+      _commandData.Add(new CommandData("/point", "Point at something", () => requestPlayEmote(EmoteManager.EmoteTypes.Point)));
+      _commandData.Add(new CommandData("/wave", "Wave your hand", () => requestPlayEmote(EmoteManager.EmoteTypes.Wave)));
    }
 
    public void startChatManagement () {
@@ -262,22 +267,30 @@ public class ChatManager : GenericGameManager
       }
    }
 
-   public void requestPlayEmote (string parameters) {
-      if (Global.player == null || Global.player.getPlayerBodyEntity() == null || Global.player.getPlayerBodyEntity().isSitting() || Global.player.isInBattle()|| Global.player.getPlayerBodyEntity().isEmoting()) {
+   public void requestEmoteList() {
+      StringBuilder sb = new StringBuilder();
+      sb.Append("The available emotes are: ");
+
+      // Get comma-separated list of emotes
+      sb.Append(string.Join(", ", EmoteManager.getSupportedEmoteNames()));
+
+      addChat(sb.ToString(), ChatInfo.Type.System);
+   }
+
+   public void requestPlayEmote (EmoteManager.EmoteTypes emote) {
+      if (Global.player == null ||
+         Global.player.getPlayerBodyEntity() == null ||
+         Global.player.getPlayerBodyEntity().isSitting() || 
+         Global.player.isInBattle() ||
+         Global.player.getPlayerBodyEntity().isEmoting() ||
+         emote == EmoteManager.EmoteTypes.None) {
          addChat("Can't do that now...", ChatInfo.Type.System);
          return;
       }
 
-      EmoteManager.EmoteTypes parsedEmote = EmoteManager.parse(parameters);
-
-      if (parsedEmote == EmoteManager.EmoteTypes.None) {
-         addChat($"Unrecognized emote '{parameters}'", ChatInfo.Type.System);
-         return;
-      }
-
       Direction playerFacingDirection = Global.player.getPlayerBodyEntity().facing;
-      Global.player.getPlayerBodyEntity().Cmd_PlayEmote(parsedEmote, playerFacingDirection);
-      sendEmoteMessageToServer(computeEmoteChatMessage(parsedEmote));
+      Global.player.getPlayerBodyEntity().Cmd_PlayEmote(emote, playerFacingDirection);
+      sendEmoteMessageToServer(computeEmoteChatMessage(emote));
    }
 
    public void sendGlobalMessageToServer (string message) {

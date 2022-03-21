@@ -104,6 +104,8 @@ MonoBehaviour:
     type: 3
   selectDataFields: []
   customDataFields: []
+  hasVariableObjectState: 0
+  objectStateDescription: 
 --- !u!114 &-3871889513652387206
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -116,25 +118,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 1
-  blurSize: 0
-  color: {r: 1, g: 1, b: 1, a: 1}
-  blurAlphaMultiplier: 0.7
-  blurAlphaChoke: 1
-  invertBlur: 0
-  alphaThreshold: 0.05
-  buffer: 0
-  includeChildren: 0
-  childLayers:
-    serializedVersion: 2
-    m_Bits: 1
-  ignoreChildNames: []
-  sortMethod: 1
-  isAnimated: 1
-  useExportedFrame: 0
-  customFrameName: 
-  generatesOnStart: 0
-  generatesOnValidate: 1
+  ignoredRenderers: []
+  _renderers: []
 --- !u!1001 &7510866201789295964
 PrefabInstance:
   m_ObjectHideFlags: 0

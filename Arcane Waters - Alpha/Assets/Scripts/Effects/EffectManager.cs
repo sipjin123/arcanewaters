@@ -106,6 +106,8 @@ public class EffectManager : MonoBehaviour {
          case Effect.Type.Slash_Physical:
          case Effect.Type.Blunt_Physical:
             return .08f;
+         case Effect.Type.Leaves_Exploding:
+            return 0.05f;
          default:
             return .10f;
       }

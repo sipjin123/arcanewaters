@@ -146,6 +146,11 @@ public class ChatPanel : MonoBehaviour {
    public Color groupNameLocalColor, groupMessageLocalColor, groupNameOtherColor, groupMessageOtherColor;
    public Color guildChatLocalColor, guildChatOtherColor, officerChatLocalColor, officerChatOtherColor;
    public Color adminNameColor;
+   public Color pendingFriendRequestNotificationColor;
+
+   // Default sprites used with the generic icon of a Chat Line
+   public Sprite friendsSprite;
+   public Sprite systemSprite;
 
    #endregion
 
@@ -591,6 +596,16 @@ public class ChatPanel : MonoBehaviour {
          bool shouldHighlight = chatLine.getFormattedText().ToLower().Contains("@" + Global.player.entityName.ToLower());
          chatRowComponent.toggleHighlight(shouldHighlight);
       }
+
+      // Show the generic icon if needed
+      chatRowComponent.toggleGenericIcon(false);
+      if (chatInfo.messageType == ChatInfo.Type.PendingFriendRequestsNotification) {
+         chatRowComponent.toggleGenericIcon(true);
+         chatRowComponent.setGenericIcon(friendsSprite);
+      } else if (chatInfo.messageType == ChatInfo.Type.System) {
+         chatRowComponent.toggleGenericIcon(true);
+         chatRowComponent.setGenericIcon(systemSprite);
+      }
    }
 
    private void setChatLineText (SpeakChatLine chatLine) {
@@ -636,18 +651,20 @@ public class ChatPanel : MonoBehaviour {
       }
 
       // We'll set the message up differently based on whether a sender was defined
+      string resultFormat = string.Format("<color={0}>{1}</color>", getColorString(chatInfo.messageType), message);
+
       if (Util.isEmpty(chatInfo.sender)) {
-         return string.Format("<color={0}>{1}</color>", getSenderNameColor(chatInfo.messageType), message);
+         resultFormat = string.Format("<color={0}>{1}</color>", getSenderNameColor(chatInfo.messageType), message);
       } else if (chatInfo.messageType == ChatInfo.Type.Emote) {
-         return string.Format("<color={0}>{1} {2}</color>", getColorString(chatInfo.messageType), chatInfo.sender, message);
+         resultFormat = string.Format("<color={0}>{1} {2}</color>", getColorString(chatInfo.messageType), chatInfo.sender, message);
       } else if (chatInfo.messageType == ChatInfo.Type.Group) {
-         return string.Format("<color={0}>[GROUP] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType), chatInfo.sender, getColorString(chatInfo.messageType), message);
+         resultFormat = string.Format("<color={0}>[GROUP] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType), chatInfo.sender, getColorString(chatInfo.messageType), message);
       } else if (chatInfo.messageType == ChatInfo.Type.Guild) {
-         return string.Format("<color={0}>[GUILD] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, false), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), message);
+         resultFormat = string.Format("<color={0}>[GUILD] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, false), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), message);
       } else if (chatInfo.messageType == ChatInfo.Type.Officer) {
-         return string.Format("<color={0}>[OFFICER] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, false), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), message);
+         resultFormat = string.Format("<color={0}>[OFFICER] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, false), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), message);
       } else if (chatInfo.messageType == ChatInfo.Type.UserOnline || chatInfo.messageType == ChatInfo.Type.UserOffline) {
-         return string.Format("<color={0}>{1}</color>", getColorString(chatInfo.messageType, isLocalPlayer), message);
+         resultFormat = string.Format("<color={0}>{1}</color>", getColorString(chatInfo.messageType, isLocalPlayer), message);
       } else {
          string messageSource = chatInfo.sender;
          if (chatInfo.messageType == ChatInfo.Type.Whisper) {
@@ -657,12 +674,18 @@ public class ChatPanel : MonoBehaviour {
          // If the message is from an Admin, set color of message to Admin color
          if (chatInfo.isSenderAdmin) {
             string senderAdminColor = "#" + ColorUtility.ToHtmlStringRGBA(adminNameColor);
-            return string.Format("<color={0}>[ADMIN] {1}:</color> <color={2}>{3}</color>", senderAdminColor, messageSource, getColorString(chatInfo.messageType, isLocalPlayer), message);
+            resultFormat = string.Format("<color={0}>[ADMIN] {1}:</color> <color={2}>{3}</color>", senderAdminColor, messageSource, getColorString(chatInfo.messageType, isLocalPlayer), message);
          } else {
             string stringFormat = chatInfo.messageType == ChatInfo.Type.Global ? "<color={0}>[GLOBAL] {1}:</color> <color={2}>{3}</color>" : "<color={0}>{1}:</color> <color={2}>{3}</color>";
-            return string.Format(stringFormat, getSenderNameColor(chatInfo.messageType, isLocalPlayer), messageSource, getColorString(chatInfo.messageType, isLocalPlayer), message);
+            resultFormat = string.Format(stringFormat, getSenderNameColor(chatInfo.messageType, isLocalPlayer), messageSource, getColorString(chatInfo.messageType, isLocalPlayer), message);
          }
       }
+
+      if (chatInfo.messageType == ChatInfo.Type.PendingFriendRequestsNotification) {
+         resultFormat = string.Format("<color={0}>{1}</color>", getColorString(chatInfo.messageType, isLocalPlayer), message);
+      }
+
+      return resultFormat;
    }
 
    public string getSenderNameColor (ChatInfo.Type chatType, bool isLocalPlayer = false) {
@@ -1033,6 +1056,8 @@ public class ChatPanel : MonoBehaviour {
          case ChatInfo.Type.UserOnline:
          case ChatInfo.Type.UserOffline:
             return globalChatLocalColor;
+         case ChatInfo.Type.PendingFriendRequestsNotification:
+            return pendingFriendRequestNotificationColor;
          default:
             return Color.white;
       }

@@ -334,14 +334,17 @@ public class RPCManager : NetworkBehaviour
                SoundEffectManager.self.playInteractionSfx(weaponData.actionType, weaponData.weaponClass, weaponData.sfxType, playerBody.transform.position);
 
                // Play wood chop impact VFX if needed
-               if (playerBody.farmingTrigger.tryGetTreeInChopRange(out PlantableTree tree)) {
-                  if (PlantableTreeManager.self.canPlayerChop(playerBody, tree)) {
-                     if (playerBody.facing == Direction.East || playerBody.facing == Direction.West) {
-                        StartCoroutine(CO_CreateCrateVFXAfter(0.1f, transform.position + (Vector3) Util.getDirectionFromFacing(playerBody.facing) * 0.31f + Vector3.back * 3f + Vector3.up * 0.05f));
-                     } else if (playerBody.facing == Direction.North) {
-                        StartCoroutine(CO_CreateCrateVFXAfter(0.1f, transform.position + (Vector3) Util.getDirectionFromFacing(playerBody.facing) * 0.28f + Vector3.back * 3f + Vector3.left * 0.05f));
-                     } else if (playerBody.facing == Direction.South) {
-                        StartCoroutine(CO_CreateCrateVFXAfter(0.1f, transform.position + (Vector3) Util.getDirectionFromFacing(playerBody.facing) * 0.18f + Vector3.back * 3f + Vector3.right * 0.09f));
+               if (playerBody.farmingTrigger.tryGetTreesInChopRange(out List<PlantableTree> trees)) {
+                  foreach (PlantableTree tree in trees) {
+                     if (PlantableTreeManager.self.canPlayerChop(playerBody, tree)) {
+                        if (playerBody.facing == Direction.East || playerBody.facing == Direction.West) {
+                           StartCoroutine(CO_CreateCrateVFXAfter(0.1f, transform.position + (Vector3) Util.getDirectionFromFacing(playerBody.facing) * 0.31f + Vector3.back * 3f + Vector3.up * 0.05f));
+                        } else if (playerBody.facing == Direction.North) {
+                           StartCoroutine(CO_CreateCrateVFXAfter(0.1f, transform.position + (Vector3) Util.getDirectionFromFacing(playerBody.facing) * 0.28f + Vector3.back * 3f + Vector3.left * 0.05f));
+                        } else if (playerBody.facing == Direction.South) {
+                           StartCoroutine(CO_CreateCrateVFXAfter(0.1f, transform.position + (Vector3) Util.getDirectionFromFacing(playerBody.facing) * 0.18f + Vector3.back * 3f + Vector3.right * 0.09f));
+                        }
+                        break;
                      }
                   }
                }
@@ -2723,6 +2726,8 @@ public class RPCManager : NetworkBehaviour
             DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, 1);
 
             Bkg_RequestSetWeaponId(weapon.id);
+
+            sendItemShortcutList();
 
             // Back to Unity
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {

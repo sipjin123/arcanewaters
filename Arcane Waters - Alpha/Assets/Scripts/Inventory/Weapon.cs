@@ -21,7 +21,8 @@ public class Weapon : EquippableItem {
       HarvestCrop = 3,
       CustomizeMap = 4,
       Shovel = 5,
-      Chop = 6
+      Chop = 6,
+      PlantTree = 7
    }
 
    // The generic value of the action type
@@ -258,7 +259,7 @@ public class Weapon : EquippableItem {
 
    public override bool canBeStacked () {
       // Seed bags can be stacked
-      return getActionType() == ActionType.PlantCrop;
+      return getActionType() == ActionType.PlantCrop || getActionType() == ActionType.PlantTree;
    }
 
    public static Weapon castItemToWeapon (Item item) {

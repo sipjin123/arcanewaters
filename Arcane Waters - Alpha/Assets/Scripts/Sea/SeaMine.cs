@@ -73,6 +73,11 @@ public class SeaMine : NetworkBehaviour, IObserver
          Color outlineColor = (sourceEntity.isEnemyOf(globalPlayerShip)) ? Color.red : Color.green;
          spriteOutline.setNewColor(outlineColor);
       }
+
+      // Playing the sea mine deploy sound effect for all clients
+      if(NetworkServer.active) {
+         Rpc_PlayDeploySound();
+      }
    }
 
    public void init (int instanceId, uint sourceEntityNetId, float explosionRadius, float explosionForce) {
@@ -256,6 +261,11 @@ public class SeaMine : NetworkBehaviour, IObserver
    [ClientRpc]
    private void Rpc_NotifyTriggered () {
       _timeTriggered = (float)NetworkTime.time;
+   }
+
+   [ClientRpc]
+   public void Rpc_PlayDeploySound () {
+      SoundEffectManager.self.playProjectileTerrainHitSound(false,false, SoundEffectManager.ProjectileType.Sea_Mine, this.transform, null);
    }
 
    private PlayerShipEntity getGlobalPlayerShip () {

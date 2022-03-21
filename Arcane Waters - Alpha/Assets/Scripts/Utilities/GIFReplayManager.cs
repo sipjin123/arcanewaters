@@ -1,11 +1,8 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
-using System.Linq;
-using UTJ.FrameCapturer;
-using System;
-using System.Threading.Tasks;
-using System.IO;
+﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
 using UnityEngine.Rendering;
 
 public class GIFReplayManager : ClientMonoBehaviour
@@ -24,8 +21,14 @@ public class GIFReplayManager : ClientMonoBehaviour
    // Possible recorder settings presets, indexed by serialization ID
    public RecorderSettings[] possibleSettingsPresets = new RecorderSettings[] {
       new RecorderSettings { downscaleFactor = 1, fps = 0, length = 0, description = "Off (Recommended)" }, // Turned off
+      new RecorderSettings { downscaleFactor = 2, fps = 10, length = 10, description = "1/2 Res, 10 FPS, 10s" },
+      new RecorderSettings { downscaleFactor = 4, fps = 10, length = 10, description = "1/4 Res, 10 FPS, 10s" },
       new RecorderSettings { downscaleFactor = 1, fps = 10, length = 10, description = "Full Res, 10 FPS, 10s" },
-      new RecorderSettings { downscaleFactor = 1, fps = 5, length = 20, description = "Full Res, 5 FPS, 20s" }
+      new RecorderSettings { downscaleFactor = 1, fps = 10, length = 20, description = "Full Res, 10 FPS, 20s" },
+      new RecorderSettings { downscaleFactor = 1, fps = 10, length = 30, description = "Full Res, 10 FPS, 30s" },
+      new RecorderSettings { downscaleFactor = 1, fps = 30, length = 10, description = "Full Res, 30 FPS, 10s" },
+      new RecorderSettings { downscaleFactor = 8, fps = 10, length = 60, description = "1/8 Res, 10 FPS, 60s" }
+
    };
 
    public struct RecorderSettings
@@ -105,15 +108,6 @@ public class GIFReplayManager : ClientMonoBehaviour
             }
          }
 
-         // Check if screen resolution changed
-         int targetWidth = Camera.main.pixelWidth / 1;// _resolutionDownscaleFactor;
-         int targetHeight = Camera.main.pixelHeight / 1;// _resolutionDownscaleFactor;
-         if (targetWidth != _outputWidth || targetHeight != _outputHeight) {
-            clearRecordedFrames();
-            _outputWidth = targetWidth;
-            _outputHeight = targetHeight;
-         }
-
          if (!_isRecording || isEncoding()) {
             continue;
          }
@@ -141,16 +135,47 @@ public class GIFReplayManager : ClientMonoBehaviour
       if (request.hasError) {
          D.error("Error recording frame");
       } else {
+         // Fetch the captured data
+         int sourceW = request.width;
+         int sourceH = request.height;
+         byte[] sourceData = request.GetData<byte>().ToArray();
+
+         // Create new frame
+         int f = (_resolutionDownscaleFactor <= 0 ? 1 : _resolutionDownscaleFactor);
+         int targetW = sourceW / f;
+         int targetH = sourceH / f;
+
+         CustomFrame frame = new CustomFrame {
+            Width = targetW,
+            Height = targetH
+         };
+
+         if (f == 1) {
+            frame.Data = sourceData;
+         } else {
+            frame.Data = new byte[frame.Width * frame.Height * 3];
+            int n = 0;
+
+            for (int j = 0; j < frame.Height; j++) {
+               for (int i = 0; i < frame.Width; i++) {
+                  frame.Data[n++] = sourceData[(i * f + j * f * sourceW) * 3];
+                  frame.Data[n++] = sourceData[(i * f + j * f * sourceW) * 3 + 1];
+                  frame.Data[n++] = sourceData[(i * f + j * f * sourceW) * 3 + 2];
+               }
+            }
+         }
+
+         // Make sure all frames are of same size
+         if (_currentFrames.Count > 0 && (_currentFrames[0].Width != frame.Width || _currentFrames[0].Height != frame.Height)) {
+            _currentFrames.Clear();
+         }
+
          // Keep frame count within max
          if (_currentFrames.Count >= _maxFrames) {
-            Destroy(_currentFrames[0]);
             _currentFrames.RemoveAt(0);
          }
 
-         Texture2D tex = new Texture2D(request.width, request.height, _recordFormat, false);
-         tex.LoadRawTextureData(request.GetData<byte>());
-
-         _currentFrames.Add(tex);
+         _currentFrames.Add(frame);
       }
    }
 
@@ -173,36 +198,139 @@ public class GIFReplayManager : ClientMonoBehaviour
 
       try {
          // Take currently recorded frames for the encoder, wipe them for the recorder
-         List<Texture2D> frames = _currentFrames;
-         _currentFrames = new List<Texture2D>();
+         List<CustomFrame> frames = _currentFrames;
+         _currentFrames = new List<CustomFrame>();
 
-         ProGifTexturesToGIF encoder = ProGifTexturesToGIF.Create(currentProgress.path);
-         encoder.m_Rotation = ImageRotator.Rotation.FlipY;
-         encoder.Save(frames, _outputWidth, _outputHeight, _recordDelay, 0, 50,
-            smooth_yieldPerFrame: true,
-            destroyOriginTexture: true,
-            onFileSaved: (i, path) => {
-               try {
-                  File.Move(path, currentProgress.path);
-                  currentProgress.progress = 1f;
-                  currentProgress.message = "Finished";
-                  currentProgress.completed = true;
-               } catch (Exception ex) {
-                  currentProgress.message = ex.Message;
-                  currentProgress.error = true;
-                  D.warning("Error while encoding GIF: " + ex);
-               }
-            },
-            onFileSaveProgress: (i, prog) => {
-               currentProgress.completed = false;
-               currentProgress.message = "Encoding...";
-               currentProgress.progress = prog;
-            });
+         StartEncode(frames, (int) (1 / _recordDelay), 0, 50);
       } catch (Exception ex) {
          currentProgress.message = ex.Message;
          currentProgress.error = true;
          D.warning("Error while encoding GIF: " + ex);
       }
+   }
+
+   // We are taking the code from the custom package we are using
+   // And heavily messing with it
+   // For performance and better results
+   private void StartEncode (List<CustomFrame> frames, int fps, int loop, int quality) {
+      quality = (int) Mathf.Clamp(quality, 1, 100);
+
+      int frameCountFinal = frames.Count;
+
+      // Multithreaded encoding starts here.
+      _encodingNumberOfThreads = SystemInfo.processorCount - 1;
+      if (_encodingNumberOfThreads <= 0) {
+         _encodingNumberOfThreads = 1;
+      }
+
+      // Start of by creating a palette from all frames
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         CustomQuant quantizer = new CustomQuant(frames, quality, currentProgress);
+         byte[] sharedPalette = quantizer.Process();
+
+#if UNITY_EDITOR
+         Debug.Log("GIF: Number of threads: " + _encodingNumberOfThreads);
+#endif
+
+         _encodingFramesFinished = 0;
+         _encodingJobsFinished = 0;
+         _encodingTotalFrames = frames.Count;
+
+         // Split frames
+         _encodingWorkers = new List<ProGifWorker>();
+         List<Frame>[] framesArray = new List<Frame>[_encodingNumberOfThreads];
+
+         int framesOnEachThread = Mathf.FloorToInt((float) frameCountFinal / (float) _encodingNumberOfThreads);
+         int leftOverFrames = frameCountFinal % _encodingNumberOfThreads;
+
+         int startIndex = 0;
+         for (int threadIndex = 0; threadIndex < _encodingNumberOfThreads; threadIndex++) {
+            int leftOverFrameAvg = (leftOverFrames > 0 ? 1 : 0);
+
+            framesArray[threadIndex] = new List<Frame>();
+            for (int i = startIndex; i < startIndex + framesOnEachThread + leftOverFrameAvg; i++) {
+               framesArray[threadIndex].Add(frames[i]);
+            }
+            //The leftover frames are added to the first thread.
+            startIndex += framesOnEachThread + leftOverFrameAvg;
+            if (leftOverFrames > 0) leftOverFrames--;
+         }
+
+         for (int i = 0; i < _encodingNumberOfThreads; i++) {
+            // Setup a worker thread for GIF encoding and save file -----------------
+            CustomGIFEncoder encoder = new CustomGIFEncoder(loop, quality, i, EncoderFinished);
+
+            encoder.setQuantizer(quantizer, sharedPalette);
+
+            // Check if apply the Override Frame Delay value
+            float timePerFrame = 1f / fps;
+            encoder.SetDelay(Mathf.RoundToInt(timePerFrame * 1000f));
+
+            ProGifWorker worker = new ProGifWorker(System.Threading.ThreadPriority.BelowNormal) {
+               m_Encoder = encoder,
+               m_Frames = framesArray[i],
+               m_OnFileSaveProgress = FileSaveProgress
+            };
+
+            _encodingWorkers.Add(worker);
+
+            // Make sure only the first encoder writes the beginning
+            worker.m_Encoder.m_IsFirstFrame = i == 0;
+
+            // Make sure only the last encoder appends the trail.
+            worker.m_Encoder.m_IsLastEncoder = i == _encodingNumberOfThreads - 1;
+
+            worker.Start();
+         }
+      });
+   }
+
+   private void EncoderFinished (int encoderIndex) {
+#if UNITY_EDITOR
+      //UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+      //   Debug.Log("GIF: Thread finished - " + encoderIndex + " out of " + _encodingNumberOfThreads);
+      //});
+#endif
+      try {
+         _encodingJobsFinished++;
+         if (_encodingJobsFinished == _encodingNumberOfThreads) {
+#if UNITY_EDITOR
+            //UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            //   Debug.Log("GIF: All threads finished.");
+            //});
+#endif
+            FileStream fileStream = new FileStream(currentProgress.path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+            for (int i = 0; i < _encodingWorkers.Count; i++) {
+               MemoryStream stream = _encodingWorkers[i].m_Encoder.GetMemoryStream();
+               stream.Position = 0;
+               stream.WriteTo(fileStream);
+               stream.Close();
+            }
+            fileStream.Close();
+            _encodingWorkers.Clear();
+
+            currentProgress.progress = 1f;
+            currentProgress.message = "Finished";
+            currentProgress.completed = true;
+         }
+      } catch (Exception ex) {
+         currentProgress.message = ex.Message;
+         currentProgress.error = true;
+         D.warning("Error while encoding GIF: " + ex);
+      }
+   }
+
+   private void FileSaveProgress (int id) {
+      _encodingFramesFinished++;
+
+#if UNITY_EDITOR
+      //UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+      //   Debug.Log("GIF: Frame finished - " + _encodingFramesFinished + " " + id);
+      //});
+#endif
+
+      currentProgress.message = "Encoding...";
+      currentProgress.progress = 0.6f + ((float) _encodingFramesFinished / _encodingTotalFrames) * 0.4f;
    }
 
    public bool isRecording () {
@@ -212,7 +340,7 @@ public class GIFReplayManager : ClientMonoBehaviour
    public void setIsRecording (bool value) {
       if (value != _isRecording) {
          _isRecording = value;
-         clearRecordedFrames();
+         _currentFrames.Clear();
       }
    }
 
@@ -235,10 +363,6 @@ public class GIFReplayManager : ClientMonoBehaviour
       _recordDelay = settings.fps == 0 ? 0 : 1f / settings.fps;
    }
 
-   private void clearRecordedFrames () {
-      _currentFrames.Clear();
-   }
-
    public void userRequestedGIF () {
       if (!_isRecording) {
          ChatManager.self.addChat("GIF replays are currently disabled", ChatInfo.Type.System);
@@ -258,31 +382,19 @@ public class GIFReplayManager : ClientMonoBehaviour
       return currentProgress != null && !currentProgress.completed && !currentProgress.error;
    }
 
-   public int getMemoryEstimationMB () {
-      if (!_isRecording) {
-         return 0;
-      }
-
-      return Mathf.RoundToInt(3 * ((float) _outputWidth * _outputHeight * _maxFrames) / 1024f / 1024f);
-   }
-
    #region Private Variables
 
    // Texture format of the texture we use to record
    private TextureFormat _recordFormat = TextureFormat.RGB24;
 
    // The frames we have so far recorded
-   private List<Texture2D> _currentFrames = new List<Texture2D>();
+   private List<CustomFrame> _currentFrames = new List<CustomFrame>();
 
    // Temp textures we use for capturing
    private RenderTexture _tempRenderTexture;
 
    // -------------------------------
    // Properties of the replay system
-
-   // Resolution at which we record
-   private int _outputWidth = 1;
-   private int _outputHeight = 1;
 
    // Last time we recorded a frame
    private float _lastRecordTime = 0f;
@@ -298,6 +410,13 @@ public class GIFReplayManager : ClientMonoBehaviour
 
    // Maximum number of frames we can record
    private float _maxFrames = 300;
+
+   // Status of current encoding process
+   private int _encodingTotalFrames = 0;
+   private int _encodingFramesFinished = 0;
+   private int _encodingJobsFinished = 0;
+   private int _encodingNumberOfThreads = 0;
+   private List<ProGifWorker> _encodingWorkers;
 
    #endregion
 }

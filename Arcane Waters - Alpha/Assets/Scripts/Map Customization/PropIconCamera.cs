@@ -26,7 +26,7 @@ namespace MapCustomization
          foreach (KeyValuePair<int, GameObject> indexPref in AssetSerializationMaps.allBiomes.indexToPrefab) {
             // Only prefabs with CustomizablePrefab component can be placed
             CustomizablePrefab cPref = indexPref.Value.GetComponent<CustomizablePrefab>();
-            if (cPref != null) {
+            if (cPref != null && cPref.availableForPlacing) {
                if (cPref.propIcon == null) {
                   D.warning("Prop icon null for " + cPref.name + ". Rendering...");
                   yield return CO_RenderPrefab(indexPref.Key, cPref);

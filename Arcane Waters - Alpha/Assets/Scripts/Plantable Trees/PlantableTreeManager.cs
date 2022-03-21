@@ -101,17 +101,21 @@ public class PlantableTreeManager : MonoBehaviour
    }
 
    [Client]
-   public void playerTriesPlanting (BodyEntity player, Vector2 worldPos) {
+   public bool playerTriesPlanting (BodyEntity player, Vector2 worldPos) {
       Area area = AreaManager.self.getArea(player.areaKey);
 
       if (area != null) {
          Vector2 at = area.transform.InverseTransformPoint(worldPos);
          if (canPlayerPlant(player, player.areaKey, at, out string message)) {
             player.rpc.Cmd_PlantTree(at);
+            return true;
          } else {
-            FloatingCanvas.instantiateAt(worldPos).asCustomMessage(message);
+            if (!string.IsNullOrWhiteSpace(message)) {
+               FloatingCanvas.instantiateAt(worldPos).asCustomMessage(message);
+            }
          }
       }
+      return false;
    }
 
    public bool canPlayerPlant (BodyEntity player, string areaKey, Vector2 localPosition, out string message) =>
@@ -136,7 +140,7 @@ public class PlantableTreeManager : MonoBehaviour
 
       // Check if player has a seedbag equiped
       WeaponStatData equipedData = EquipmentXMLManager.self.getWeaponData(player.weaponManager.equipmentDataId);
-      if (equipedData == null || equipedData.actionType != Weapon.ActionType.PlantCrop) {
+      if (equipedData == null || equipedData.actionType != Weapon.ActionType.PlantTree) {
          message = null;
          return false;
       }

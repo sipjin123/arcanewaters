@@ -1615,7 +1615,6 @@ public class PlayerShipEntity : ShipEntity
       // Apply the damage
       int finalDamage = applyDamage(damage, source.netId);
       target.Rpc_ShowExplosion(source.netId, target.transform.position, finalDamage, attackType, false);
-      target.noteAttacker(source);
    }
 
    protected override void onDamage (int damage) {
@@ -2454,7 +2453,7 @@ public class PlayerShipEntity : ShipEntity
    private const float NON_LOCAL_SHIP_INFO_DEFAULT_ALPHA = 0.2f;
 
    // The maximum number of seconds player ships are invulnerable after spawning
-   private const float SPAWN_INVULNERABILITY_DURATION = 5;
+   private const float SPAWN_INVULNERABILITY_DURATION = 600;
 
    // Current ability index
    private int _currentAbilitySlotIndex = 0;

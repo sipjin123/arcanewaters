@@ -34,12 +34,16 @@ public class ChatInputField : MonoBehaviour
    }
 
    private void Update () {
+      _isFocusedCached = isFocused || _isRecentlyChanged;
+      
       if (!parentPanel.shouldShowChat()) {
          return;
       }
 
       UpdateItemIcons();
       forceCaretOutOfItemInserts();
+
+      _isRecentlyChanged = false;
    }
 
    private void UpdateItemIcons () {
@@ -107,6 +111,9 @@ public class ChatInputField : MonoBehaviour
    }
 
    private void inputFieldValueChanged (string value) {
+      // Cache that input field has been changed recently (flushed every update)
+      _isRecentlyChanged = true;
+      
       // User typed something in the input field
 
       _inputField.ForceLabelUpdate();
@@ -216,6 +223,7 @@ public class ChatInputField : MonoBehaviour
 
    public bool isFocused => _inputField.isFocused;
    public int caretPosition => _inputField.caretPosition;
+   public bool isFocusedCached { get { return _isFocusedCached; } }
 
    public void selectTextPart (int from, int to) {
       _inputField.selectionAnchorPosition = from;
@@ -241,6 +249,12 @@ public class ChatInputField : MonoBehaviour
 
    // Item icons we currently have instantiated
    protected List<HoverableItemIcon> _itemIcons = new List<HoverableItemIcon>();
+   
+   // Cached values is focused 
+   private bool _isFocusedCached;
+   
+   // Is input field recently changed
+   private bool _isRecentlyChanged;
 
    #endregion
 }

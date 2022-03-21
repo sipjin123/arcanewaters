@@ -225,7 +225,7 @@ public class SeaEntity : NetEntity
    }
 
    [Server]
-   public virtual int applyDamage (int amount, uint damageSourceNetId) {
+   public virtual int applyDamage (int amount, uint damageSourceNetId) {      
       float damageMultiplier = 1.0f;
 
       // Apply damage reduction, if there is any
@@ -246,6 +246,11 @@ public class SeaEntity : NetEntity
 
       amount = (int) (amount * damageMultiplier);
       currentHealth -= amount;
+
+      // Don't trigger damage-related functions if we didn't take any damage
+      if (amount == 0) {
+         return 0;
+      }
 
       // Keep track of the damage each attacker has done on this entity
       NetEntity sourceEntity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(damageSourceNetId);
@@ -910,8 +915,6 @@ public class SeaEntity : NetEntity
             Destroy(critEffect, 2.0f);
          }
 
-         noteAttacker(attackerNetId);
-
          // Play the damage sound (FMOD SFX)
          // SoundEffectManager.self.playEnemyHitSfx(this is ShipEntity, this.transform);
       }
@@ -945,7 +948,7 @@ public class SeaEntity : NetEntity
          Instantiate(PrefabsManager.self.requestCannonSplashPrefab(impactMagnitude), pos + new Vector3(0f, -.1f), Quaternion.identity);
 
          // FMOD sfx for water
-         SoundEffectManager.self.playCannonballImpact(SoundEffectManager.Cannonball.Water_Impact, pos);
+         //SoundEffectManager.self.playCannonballImpact(SoundEffectManager.Cannonball.Water_Impact, pos);
          //SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, pos);
       }
    }
@@ -953,7 +956,6 @@ public class SeaEntity : NetEntity
    [ClientRpc]
    public void Rpc_NetworkProjectileDamage (uint attackerNetID, Attack.Type attackType, Vector3 location) {
       SeaEntity sourceEntity = SeaManager.self.getEntity(attackerNetID);
-      noteAttacker(sourceEntity);
 
       switch (attackType) {
          case Attack.Type.Boulder:
@@ -1375,7 +1377,6 @@ public class SeaEntity : NetEntity
                   } else {
                      targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, 0, Attack.Type.None, false);
                   }
-                  targetEntity.noteAttacker(attacker);
 
                   // Apply any status effects from the attack
                   if (attackType == Attack.Type.Ice) {

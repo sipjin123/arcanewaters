@@ -70,7 +70,7 @@ public class PlantableTree : MonoBehaviour
          EffectManager.self.create(Effect.Type.Leaves_Exploding, (Vector2) transform.position + Vector2.up * 0.32f);
       }
 
-      updateVisuals(TimeManager.self.getLastServerUnixTimestamp());
+      updateVisuals(TimeManager.self.getLastServerUnixTimestamp(), true);
 
       if (Application.isEditor) {
          _statePreviewEditor = JsonUtility.ToJson(instanceData) + System.Environment.NewLine + JsonUtility.ToJson(definitionData);
@@ -86,10 +86,12 @@ public class PlantableTree : MonoBehaviour
 
       // Check if we should use a stump
       if (definitionData.leavesStump && instanceData.growthStagesCompleted >= PlantableTreeDefinition.STUMP_GROWTH_STAGE) {
-         shadowRenderer.sprite = null;
+         shadowRenderer.enabled = false;
          spriteRenderer.sprite = sprites[sprites.Length - 1];
          return;
       }
+
+      shadowRenderer.enabled = true;
 
       // Get current index, check if we are fully grown, clamp it in range
       int max = definitionData.leavesStump ? sprites.Length - 2 : sprites.Length - 1;
@@ -99,7 +101,7 @@ public class PlantableTree : MonoBehaviour
          max);
 
       spriteRenderer.sprite = sprites[index];
-      shadowRenderer.sprite = ImageManager.getSprites("Assets/Resources/Sprites/Biomable/forest-plantable-tree-shadow.png")[index];
+      shadowRenderer.sprite = ImageManager.getSprites(shadowRenderer.sprite.texture)[index];
    }
 
    public float chopyness = 10f;
@@ -125,7 +127,7 @@ public class PlantableTree : MonoBehaviour
       long time = TimeManager.self.getLastServerUnixTimestamp();
       if (time != _lastUpdateTime) {
          _lastUpdateTime = time;
-         updateVisuals(_lastUpdateTime);
+         updateVisuals(_lastUpdateTime, false);
       }
    }
 
@@ -152,23 +154,47 @@ public class PlantableTree : MonoBehaviour
       return currentChopCount == 2;
    }
 
-   private void updateVisuals (long currentTimestamp) {
+   private void updateVisuals (long currentTimestamp, bool stateChanged) {
       if (Util.isBatch()) {
          return;
       }
 
-      setTreeSprite(data, _treeDefinition, currentTimestamp);
+      if (stateChanged) {
+         setTreeSprite(data, _treeDefinition, currentTimestamp);
+      }
 
       waterNeededIcon.SetActive(_treeDefinition.needsWatering(data, currentTimestamp));
       interactionNeededIcon.SetActive(false);
       //interactionNeededIcon.SetActive(_treeDefinition.canTetherUntether(data, currentTimestamp));
+
+      if (stateChanged && spriteRenderer.sprite != null) {
+         waterNeededIcon.transform.localPosition = new Vector3(
+            waterNeededIcon.transform.localPosition.x,
+            getSpriteNonTransparentHeight(spriteRenderer.sprite),
+            waterNeededIcon.transform.localPosition.z);
+      }
+   }
+
+   private float getSpriteNonTransparentHeight (Sprite sprite) {
+      int pixelX = (int) sprite.rect.center.x;
+      int pixelHeight = (int) sprite.rect.height;
+
+      for (int i = 0; i < sprite.rect.height && i < 500; i++) {
+         if (sprite.texture.GetPixel(pixelX, (int) sprite.rect.yMax - i).a > 0.05f) {
+            pixelHeight = (int) sprite.rect.height - i;
+            break;
+         }
+      }
+
+      return pixelHeight / sprite.pixelsPerUnit;
    }
 
    [Client]
    public void hoverEnter () {
       _hovered = true;
       statusText.text = _treeDefinition.getStatusText(data, TimeManager.self.getLastServerUnixTimestamp(), _isLocalPlayerOwner);
-      statusText.enabled = true;
+      //statusText.enabled = true;
+      statusText.enabled = false;
    }
 
    [Client]
